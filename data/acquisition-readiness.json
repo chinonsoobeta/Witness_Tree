@@ -29,6 +29,56 @@
       "productionEligible": false
     },
     {
+      "id": "nrcan-forest-canopy-cover-2022",
+      "publisher": "Natural Resources Canada",
+      "datasetTitle": "Forest Canopy Cover (2022)",
+      "format": "ZIP",
+      "licence": "Open Government Licence – Canada",
+      "updateCadence": "as-needed",
+      "temporalCoverage": "2022",
+      "url": "https://opendata.nfis.org/downloads/forest_change/CA_canopy_cover_2022.zip",
+      "head": {
+        "observedOn": "2026-08-11",
+        "observedTimezone": "America/Vancouver",
+        "lastModified": "2025-04-08T17:14:10Z",
+        "contentLengthBytes": 9954395939
+      },
+      "unresolvedFields": [
+        "Attribution", "Checksum", "Storage", "Compute"
+      ],
+      "storageReviewed": false,
+      "computeReviewed": false,
+      "checksumPlanReviewed": false,
+      "attributionReviewed": false,
+      "sourceSelected": false,
+      "productionEligible": false
+    },
+    {
+      "id": "nrcan-forest-canopy-height-2022",
+      "publisher": "Natural Resources Canada",
+      "datasetTitle": "Forest Canopy Height (2022)",
+      "format": "ZIP",
+      "licence": "Open Government Licence – Canada",
+      "updateCadence": "as-needed",
+      "temporalCoverage": "2022",
+      "url": "https://opendata.nfis.org/downloads/forest_change/CA_canopy_height_2022.zip",
+      "head": {
+        "observedOn": "2026-08-11",
+        "observedTimezone": "America/Vancouver",
+        "lastModified": "2025-04-08T17:16:07Z",
+        "contentLengthBytes": 10347564066
+      },
+      "unresolvedFields": [
+        "Attribution", "Checksum", "Storage", "Compute"
+      ],
+      "storageReviewed": false,
+      "computeReviewed": false,
+      "checksumPlanReviewed": false,
+      "attributionReviewed": false,
+      "sourceSelected": false,
+      "productionEligible": false
+    },
+    {
       "id": "qc-current-ecoforest",
       "publisher": "Ministère des Ressources naturelles et des Forêts du Québec",
       "datasetTitle": "Current ecoforest map",

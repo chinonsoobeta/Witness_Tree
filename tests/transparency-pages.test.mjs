@@ -26,6 +26,12 @@ test("data page labels examples and links the ledger and documentation", async (
   assert.match(page, /illustrative examples/);
   assert.match(page, /href="https:\/\/github\.com\/chinonsoobeta\/Witness_Tree\/blob\/main\/data\/source-ledger\.json"/);
   assert.match(page, /href="https:\/\/github\.com\/chinonsoobeta\/Witness_Tree\/blob\/main\/docs\/SOURCE_LEDGER\.md"/);
+  assert.match(page, /Two source archives have verified byte lengths/);
+  assert.match(page, /lossless local copy/);
+  assert.match(page, /608 self-intersections in Alberta/);
+  assert.match(page, /href="https:\/\/github\.com\/chinonsoobeta\/Witness_Tree\/blob\/main\/data\/staged-acquisitions\.json"/);
+  assert.match(page, /href="https:\/\/github\.com\/chinonsoobeta\/Witness_Tree\/blob\/main\/data\/staged-geospatial-profile\.json"/);
+  assert.match(page, /href="https:\/\/github\.com\/chinonsoobeta\/Witness_Tree\/blob\/main\/data\/transformation-runs\/qc-historic-wildfire-v1-2026-08-12\.json"/);
 });
 
 test("transparency pages do not make prohibited product claims or turn unknown into zero", async () => {

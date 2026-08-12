@@ -1,0 +1,36 @@
+{
+  "id": "qc-historic-wildfire-v1",
+  "status": "local-derived-validation",
+  "sourceId": "qc-historic-wildfire-detailed",
+  "rawArchiveSha256": "cfed6c16eac901e6887a2518f566dff7608d4c4c371bd9c1ce6b2eff03fa0815",
+  "input": {
+    "format": "GeoPackage",
+    "layers": ["feux_prov", "meta_feux_prov"],
+    "crs": "EPSG:32198"
+  },
+  "output": {
+    "format": "GeoPackage",
+    "layers": ["feux_prov", "meta_feux_prov"],
+    "crs": "EPSG:32198"
+  },
+  "operation": "lossless-layer-copy",
+  "fieldNormalizations": [],
+  "geometryOperation": "none",
+  "semanticChanges": [],
+  "requiredValidation": {
+    "sourceAndOutputFeatureCountsMustMatch": true,
+    "sourceAndOutputFieldsMustMatch": true,
+    "sourceAndOutputContentFingerprintMustMatch": true,
+    "outputMissingGeometryCount": 0,
+    "outputEmptyGeometryCount": 0,
+    "outputInvalidGeometryCount": 0
+  },
+  "attribution": {
+    "text": "Source: Ministère des Ressources naturelles et des Forêts du Québec, Secteur des Forêts, Direction des inventaires forestiers and Direction de la protection des forêts, Feux de forêt. Licensed under CC BY 4.0.",
+    "licenceUrl": "https://www.donneesquebec.ca/licence/#cc-by",
+    "changesNotice": "Witness Tree made no semantic, attribute, coordinate, or geometry changes in this lossless layer copy."
+  },
+  "immutableObjectStorage": false,
+  "ingested": false,
+  "productionEligible": false
+}

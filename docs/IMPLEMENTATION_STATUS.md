@@ -1,8 +1,8 @@
 # Implementation status
 
-**Status: 40% complete — technical-preview foundation, not a completed public-data product.**
+**Status: 43% complete — technical-preview foundation with two verified staged source archives and one verified lossless local transformation, not a completed public-data product.**
 
-The delivered work is deliberately stronger in policy, rendering, contracts, and automated checks than in data acquisition and operations. Most visible product surfaces use labelled illustrative fixtures; no verified national or provincial dataset, production geography archive, managed account store, outbound alert sender, or authoritative live wildfire feed has been connected. The unbuilt work is therefore the dependency-heavy part of the approved programme, rather than cosmetic finishing work.
+The delivered work is deliberately stronger in policy, rendering, contracts, and automated checks than in data acquisition and operations. Québec historical-fire and Alberta AVI ZIPs now have 971,285,693 verified local-staging bytes, ZIP integrity, SHA-256 evidence, and read-only schema/geometry profiles. Québec attribution is metadata-verified, and its two clean layers have a checksum-bound, verified 1,017,495,552-byte lossless local copy. Alberta remains blocked by pending attribution and 608 self-intersecting geometries. Pure transformation-admission and immutable-promotion contracts prevent those gaps from being bypassed. Neither source has been ingested, promoted to immutable object storage, or connected to product records. Most visible product surfaces still use labelled illustrative fixtures; no production geography archive, managed account store, outbound alert sender, or authoritative live wildfire feed has been connected.
 
 ## Authoritative references and identity
 
@@ -40,6 +40,8 @@ npm run lint
 npm run check:bilingual
 npm run check:source-candidates
 npm run check:acquisition-readiness
+npm run check:staged-acquisitions
+npm run check:staged-geospatial-profile
 npm run check:claims
 npm run check:style-tokens
 npm run check:brand-token
@@ -61,6 +63,7 @@ The following are accepted foundations, primarily with illustrative fixtures and
 - Strict Figure/Unknown reporting components; exact evidence word-and-shape mapping; required coverage, provenance, and generated confidence reasons.
 - Bilingual fixtures across eight place types and four provinces, location histories, annual chart/table alternatives, source/citation/download metadata, search aliases, compare and Explore route foundations.
 - Source ledger, source/release/download, archive-manifest, normalized-record, ingestion, matching/precedence, coverage, fire-impact, and corrections contracts with negative tests.
+- Real-staging admission contracts bind exact source checksums, attribution and geometry profiles. Québec is admitted to transformation design only; Alberta remains blocked. A provider-neutral immutable-promotion contract requires Canadian-region, remote checksum, provider-version and active compliance-retention evidence before `remote-verified` is valid.
 - Illustration-only wildfire snapshot/refresh policy and public status surfaces; account/alert policy and evaluator without managed storage or delivery.
 - Bilingual/static accessibility, claim-language, raw-colour, brand-token, and artifact-budget gates wired into CI; BC Sans integration and third-party notice.
 - A client MapLibre/PMTiles Explore foundation with illustrative points and server-rendered List/Table equivalents. No verified PMTiles archive or live operational map is claimed.
@@ -75,7 +78,7 @@ The following are accepted foundations, primarily with illustrative fixtures and
 
 ### Phase 1 — source acquisition and lineage
 
-1. Resolve the owner decisions in [`docs/ACQUISITION_DECISION.md`](ACQUISITION_DECISION.md). Current read-only preflight has confirmed at least 72,325,455,437 compressed bytes across four candidate artifacts; Ontario FRI still lacks a verified downloadable data endpoint.
+1. Resolve the owner decisions in [`docs/ACQUISITION_DECISION.md`](ACQUISITION_DECISION.md). Current read-only preflight has confirmed at least 92,627,415,442 compressed bytes across six candidate artifacts; Ontario FRI still lacks a verified downloadable data endpoint, and CA Forest Harvest has an unresolved catalogue resource-name/URL conflict.
 2. Replace illustrative ledger entries with verified sources, actual licences, versions, retrieval timestamps, and attributable publisher metadata.
 3. Acquire lawful immutable raw snapshots using the archive contract; put real objects in approved storage and retain checksums/previous links.
 4. Create a source-review process for updates, corrections, licence changes, and reprocessing. Do not fabricate a successful acquisition or current coverage.

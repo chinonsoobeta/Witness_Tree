@@ -16,6 +16,14 @@ const EXPECTED = new Map([
     bytes: 58954694668, annualFiles: 39, sourceVersion: "Version 2", licence: "Open Government Licence – Canada", updateCadence: "as-needed", temporalCoverage: "1984-2022",
     urlTemplate: "https://opendata.nfis.org/downloads/forest_change/CA_forest_VLCE2_{YEAR}.zip",
   }],
+  ["nrcan-forest-canopy-cover-2022", {
+    bytes: 9954395939, format: "ZIP", licence: "Open Government Licence – Canada", updateCadence: "as-needed", temporalCoverage: "2022", lastModified: "2025-04-08T17:14:10Z",
+    url: "https://opendata.nfis.org/downloads/forest_change/CA_canopy_cover_2022.zip",
+  }],
+  ["nrcan-forest-canopy-height-2022", {
+    bytes: 10347564066, format: "ZIP", licence: "Open Government Licence – Canada", updateCadence: "as-needed", temporalCoverage: "2022", lastModified: "2025-04-08T17:16:07Z",
+    url: "https://opendata.nfis.org/downloads/forest_change/CA_canopy_height_2022.zip",
+  }],
   ["qc-current-ecoforest", {
     bytes: 12399475076, licence: "CC BY 4.0", updateCadence: "annual",
     url: "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Cartes_ecoforestieres_perturbations/02-Donnees/PROV/CARTE_ECO_MAJ_PROV_GPKG.zip",
@@ -83,7 +91,7 @@ export function validateAcquisitionReadiness(registry) {
       if (!Number.isSafeInteger(source.head.contentLengthBytes) || source.head.contentLengthBytes <= 0) throw new Error("HEAD content length must be a positive safe integer.");
       if (source.head.contentLengthBytes !== expected.bytes) throw new Error(`HEAD content length for ${source.id} must match the audited total.`);
       if (expected.annualFiles && source.annualFiles !== expected.annualFiles) throw new Error("NRCan annual file count must be 39.");
-      if (expected.lastModified && source.head.lastModified !== expected.lastModified) throw new Error("Alberta HEAD last-modified value must match the audited header.");
+      if (expected.lastModified && source.head.lastModified !== expected.lastModified) throw new Error(`HEAD last-modified value for ${source.id} must match the audited header.`);
     }
     for (const field of ["kind", "url", "urlTemplate", "catalogueUrl", "sourceVersion", "format", "licence", "updateCadence", "temporalCoverage"]) {
       if (expected[field] !== undefined && source[field] !== expected[field]) throw new Error(`${field} for ${source.id} must match the audited fact.`);

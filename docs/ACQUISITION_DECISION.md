@@ -1,6 +1,6 @@
 # Acquisition decision required
 
-**Status:** Decision required. No provider has been selected; no download, archive write, transformation, ingestion, or production-data release has occurred.
+**Status:** Object-storage decision required. No provider has been selected. Two compressed source archives have been downloaded to a separate local staging tree and verified. A verified lossless Québec layer copy exists in local derived storage; no immutable object-storage write, ingestion, or production-data release has occurred.
 
 This record turns the approved architecture into an owner decision. It does not recommend a storage vendor.
 
@@ -9,12 +9,14 @@ This record turns the approved architecture into an owner decision. It does not 
 | Priority artifact | Compressed bytes |
 | --- | ---: |
 | NRCan annual forest-land-cover volume | 58,954,694,668 |
+| NRCan 2022 canopy-cover ZIP | 9,954,395,939 |
+| NRCan 2022 canopy-height ZIP | 10,347,564,066 |
 | Québec ecoforest volume | 12,399,475,076 |
 | Québec historical detailed-fire GeoPackage | 414,244,435 |
 | Alberta AVI Crown FGDB ZIP | 557,041,258 |
-| **Minimum one-snapshot sum** | **72,325,455,437** |
+| **Minimum one-snapshot sum** | **92,627,415,442** |
 
-The sum is a minimum for one retained compressed snapshot of these four candidate artifacts only. It excludes all other required sources, repeat retrievals, live-fire snapshots, metadata sidecars, derived products, backups, and retained historical versions. Ontario FRI Term 2 is also excluded because only its web explorer—not a downloadable data artifact—has been verified.
+The sum is a minimum for one retained compressed snapshot of these six candidate artifacts only. It excludes all other required sources, repeat retrievals, live-fire snapshots, metadata sidecars, derived products, backups, and retained historical versions. Ontario FRI Term 2 is also excluded because only its web explorer—not a downloadable data artifact—has been verified. CA Forest Harvest is excluded because its official catalogue currently names a harvest ZIP while linking to a fire-named ZIP; a working predictable harvest URL is not enough to resolve that authoritative identity conflict.
 
 Unconfirmed until selected resources are retrieved and profiled:
 
@@ -39,11 +41,11 @@ Before any multi-gigabyte acquisition, record approval for:
 4. Legal and attribution approval for every selected resource, including redistribution and any required publisher wording.
 5. The exact selected artifacts and versions—including whether each priority source is approved for the first acquisition.
 
-Candidate status does not authorize acquisition. [Source verification](SOURCE_VERIFICATION.md) records the current source/rights distinctions, and [external gates](EXTERNAL_GATES.md) remain open.
+The owner authorized large dataset acquisition on 11 August 2026. That authorization permits staged downloads, but it does not resolve object-storage, compute, attribution, retention, or production-release decisions. [Source verification](SOURCE_VERIFICATION.md) records the current source/rights distinctions, and [external gates](EXTERNAL_GATES.md) remain open.
 
 ## Simplest staged option
 
-First validate one small official index or resource: confirm its exact URL, licence/attribution, version, retrieval metadata, checksum procedure, archive key, and restoration/read path. Do not acquire the multi-gigabyte artifacts until that review succeeds and the decisions above are recorded. This is a staging exercise, not a provider selection.
+The first two real transfers validated the 414,244,435-byte Québec historical-fire ZIP and 557,041,258-byte Alberta AVI ZIP: exact lengths, ZIP integrity, and SHA-256 passed. Their evidence is in [`data/staged-acquisitions.json`](../data/staged-acquisitions.json), while the 971,285,693 bytes remain outside Git in the separate staging tree. Québec attribution is metadata-verified. Alberta attribution and its geometry repair-or-quarantine policy remain open. Continue staged, resumable downloads only within available local capacity. Promotion to immutable object storage still requires the decisions above.
 
 ## Claude Code continuation
 
@@ -58,4 +60,4 @@ git diff --check
 git status --short
 ```
 
-**Next step:** obtain the owner decisions above, then run the one-small-resource validation and record the approved source-ledger and immutable-archive evidence. Do not claim successful acquisition or production readiness until the real evidence exists.
+**Next step:** complete and verify the authorized staging transfers, obtain the remaining owner decisions, then copy verified bytes and sidecars into approved immutable object storage. Do not claim production readiness until that evidence exists.
