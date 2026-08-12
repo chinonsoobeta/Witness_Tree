@@ -1,0 +1,42 @@
+name: Wildfire refresh
+
+on:
+  schedule:
+    - cron: '0 0,4,5,12,13,19,20,23 * * *'
+  workflow_dispatch:
+
+jobs:
+  refresh:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - id: gate
+        run: node scripts/wildfire/dst-gate.mjs
+      - id: refresh
+        if: steps.gate.outputs.run == 'true'
+        continue-on-error: true
+        run: node scripts/wildfire/refresh.mjs
+        env:
+          WILDFIRE_DATA_DIR: public/wildfire
+          WILDFIRE_SOURCE_URLS: ${{ vars.WILDFIRE_SOURCE_URLS }}
+      - id: retry
+        if: steps.gate.outputs.run == 'true' && steps.refresh.outcome == 'failure'
+        continue-on-error: true
+        run: sleep 900 && node scripts/wildfire/refresh.mjs
+        env:
+          WILDFIRE_DATA_DIR: public/wildfire
+          WILDFIRE_SOURCE_URLS: ${{ vars.WILDFIRE_SOURCE_URLS }}
+      - if: steps.gate.outputs.run == 'true'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add public/wildfire
+          git diff --cached --quiet || git commit -m 'chore: refresh wildfire data'
+          git push
+      - if: steps.gate.outputs.run == 'true' && steps.refresh.outcome == 'failure' && steps.retry.outcome == 'failure'
+        run: exit 1
