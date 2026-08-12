@@ -42,6 +42,7 @@ npm run check:source-candidates
 npm run check:acquisition-readiness
 npm run check:staged-acquisitions
 npm run check:staged-geospatial-profile
+npm run check:boundary-editions
 npm run check:claims
 npm run check:style-tokens
 npm run check:brand-token
@@ -85,7 +86,7 @@ The following are accepted foundations, primarily with illustrative fixtures and
 
 ### Phase 2 — national baseline processing (1984–present)
 
-1. Obtain and validate NTEMS annual forest/change products, the Canada forest definition inputs, CA Forest Harvest and authoritative boundaries.
+1. Obtain and validate NTEMS annual forest/change products, the Canada forest definition inputs, CA Forest Harvest and authoritative boundaries. Boundaries are partly started: [`data/boundary-editions.json`](../data/boundary-editions.json) records five staged archives totalling 578,421,880 bytes — Statistics Canada 2021 Census province/territory, census division, census subdivision, and federal electoral district (2013 Representation Order) cartographic boundary files, plus the Elections Canada 2023 Representation Order federal electoral districts. Each entry carries its catalogue and file URL, edition, licence, required attribution, byte length, SHA-256, feature count, `unzip -t` result, and `productionEligible: false`, gated by `npm run check:boundary-editions`. What is verified is transport and container only: byte length equals the preflight `Content-Length`, SHA-256 recorded, `unzip -t` passes. `gdalinfo` is NOT installed, so geometry, CRS, and attribute schema are `Unknown` — no vector content was opened. Feature counts were derived from each shapefile's `.shx` index (100-byte header, 8 bytes per record), not by reading geometry. None of these has been ingested, promoted to object storage, or connected to product records. Two separate licences apply and both attributions are required: the Statistics Canada Open Licence, whose version is `Unknown` — the published text carries no version number — and the Open Government Licence – Canada version 2.0 for the Elections Canada product. French-language editions of the Statistics Canada files are not staged and the bilingual app will need them. Statistics Canada publishes no 2023 Representation Order boundary file, so the current-order geometry has to come from Elections Canada. `lib/boundaries/` makes the resulting vintage hazard a compile-time failure: 2021 census attributes on the 338-riding 2013 basis cannot be joined to 343-riding 2023 geometry.
 2. Build the actual forest mask, versioned boundary intersections, normalized event store, matching/precedence logic, aggregates, and lineage queries.
 3. Validate against independent records, publish coverage/error limits, and produce real downloadable/citable releases. This requires real data, reviewed methods, and compute/storage choices.
 
