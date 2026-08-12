@@ -1,6 +1,9 @@
-import type { ArchivePromotionManifest, LocalStagingRecord, RemoteArchiveEvidence } from "./types";
+import type { ArchivePromotionManifest, CompositeChecksum, FullObjectChecksum, LocalStagingRecord, RemoteArchiveEvidence } from "./types";
 
 const SHA_256 = /^[a-f\d]{64}$/i;
+const CRC64NVME = /^[a-f\d]{16}$/i;
+const COMPOSITE_DIGEST = /^[A-Za-z\d+/]+={0,2}-\d+$/;
+const DIGEST_SHAPE = { sha256: SHA_256, crc64nvme: CRC64NVME } as const;
 const SEGMENT = /^[a-z0-9]+(?:[._-][a-z0-9]+)*$/;
 const FILENAME = /^[A-Za-z0-9]+(?:[._-][A-Za-z0-9]+)*$/;
 const UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/;
@@ -25,16 +28,43 @@ export function snapshotId(input: Pick<LocalStagingRecord, "sourceId" | "sourceV
 
 export function validateLocalStaging(record: LocalStagingRecord) {
   if (record.storageState !== "local-staging" || record.immutableObjectStorage !== false || record.production !== false) throw new Error("Staging inputs can never claim immutable or production storage.");
+  if (record.crc64nvme !== undefined && !CRC64NVME.test(record.crc64nvme)) throw new Error("A staged CRC64NVME must be a 16-character hex digest of the whole file.");
   if (!safeSegment(record.sourceId) || !safeSegment(record.sourceVersion) || !timestamp(record.retrievedAt) || !Number.isSafeInteger(record.byteLength) || record.byteLength <= 0 || !SHA_256.test(record.sha256) || !FILENAME.test(record.originalFilename) || record.originalFilename.includes("/") || record.originalFilename.includes("\\") || alias(record.originalFilename)) throw new Error("Staging input requires safe lineage, exact byte evidence, checksum, and basename.");
   if (![record.publisher, record.licenceId, record.requiredAttribution, record.changesNotice].every((value) => value.trim())) throw new Error("Staging input requires publisher attribution and a changes notice.");
   if (![record.catalogueUrl, record.requestedUrl, record.licenceUrl].every(https)) throw new Error("Staging input requires HTTPS catalogue, requested, and licence URLs.");
   return record;
 }
 
+/** A whole-object digest is comparable to the staged digest of the same algorithm at any object size. */
+export function fullObjectChecksumMatches(checksum: FullObjectChecksum, staged: Pick<LocalStagingRecord, "sha256" | "crc64nvme">) {
+  const expected = checksum.algorithm === "sha256" ? staged.sha256 : staged.crc64nvme;
+  const shape = DIGEST_SHAPE[checksum.algorithm];
+  return expected !== undefined && shape.test(expected) && shape.test(checksum.digest) && checksum.digest.toLowerCase() === expected.toLowerCase();
+}
+
+/**
+ * A multipart digest links back to staging only through a local recomputation at the same part size
+ * and part count. Absent part metadata leaves the link Unknown, which is never treated as a match.
+ */
+export function compositeChecksumMatches(remote: CompositeChecksum, local: CompositeChecksum | undefined, byteLength: number) {
+  const partSizeBytes = remote.partSizeBytes;
+  const partCount = remote.partCount;
+  if (partSizeBytes === undefined || partCount === undefined || !Number.isSafeInteger(partSizeBytes) || partSizeBytes <= 0 || !Number.isSafeInteger(partCount) || partCount <= 0) return false;
+  if (!local || local.algorithm !== remote.algorithm || local.partSizeBytes !== partSizeBytes || local.partCount !== partCount) return false;
+  if (!COMPOSITE_DIGEST.test(remote.digest) || !remote.digest.endsWith(`-${partCount}`) || remote.digest !== local.digest) return false;
+  return partSizeBytes * partCount >= byteLength && partSizeBytes * (partCount - 1) < byteLength;
+}
+
+function checksumLinked(remote: RemoteArchiveEvidence, staged: LocalStagingRecord) {
+  const checksum = remote.remoteChecksum;
+  if (!checksum) return false;
+  return checksum.checksumType === "full-object" ? fullObjectChecksumMatches(checksum, staged) : compositeChecksumMatches(checksum, remote.locallyRecomputedComposite, staged.byteLength);
+}
+
 function validateRemote(remote: RemoteArchiveEvidence, state: ArchivePromotionManifest["promotion"]["state"], staged: LocalStagingRecord) {
   if (!safeSegment(remote.bucketId) || remote.region.countryCode !== "CA" || !safeSegment(remote.region.regionId) || !remote.region.evidenceReference.trim()) throw new Error("Remote evidence requires a named Canadian region and evidence reference.");
   if (state !== "remote-verified") return;
-  if (!remote.payloadVersionId?.trim() || !remote.manifestVersionId?.trim() || !Number.isSafeInteger(remote.remoteByteLength) || remote.remoteByteLength !== staged.byteLength || !remote.remoteSha256 || remote.remoteSha256.toLowerCase() !== staged.sha256.toLowerCase() || remote.retentionMode !== "compliance" || !remote.retentionUntil || !timestamp(remote.retentionUntil)) throw new Error("Remote verification requires matching bytes and checksum, provider version IDs, and compliance retention evidence.");
+  if (!remote.payloadVersionId?.trim() || !remote.manifestVersionId?.trim() || !Number.isSafeInteger(remote.remoteByteLength) || remote.remoteByteLength !== staged.byteLength || !checksumLinked(remote, staged) || remote.retentionMode !== "compliance" || !remote.retentionUntil || !timestamp(remote.retentionUntil)) throw new Error("Remote verification requires matching bytes and checksum, provider version IDs, and compliance retention evidence.");
 }
 
 export function validatePromotionManifest(manifest: ArchivePromotionManifest) {
