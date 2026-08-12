@@ -1,13 +1,21 @@
 {
   "status": "local-staging-record",
-  "notice": "Read-only acquisition evidence for boundary archives. Nothing here has been ingested, converted, reprojected, promoted to object storage, or connected to product records. gdalinfo is NOT installed on the staging machine, so no geometry, CRS, or attribute schema was validated. Verified evidence covers transport and container only: byte length equals the preflight Content-Length, SHA-256 recorded, and unzip -t passes.",
+  "notice": "Read-only acquisition evidence for boundary archives. Nothing here has been ingested, converted, reprojected, promoted to object storage, or connected to product records. GDAL 3.13.2 (PROJ 9.8.1, GEOS 3.14.1) is installed on the staging machine, but it was not run against these archives, so no geometry, CRS, or attribute schema was validated here. Verified evidence covers transport and container only: byte length equals the preflight Content-Length, SHA-256 recorded, and unzip -t passes.",
   "stagedAt": "2026-08-12T16:26:00Z",
   "stagingDirectory": "/Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data/raw/statcan-boundaries/2026-08-12/",
   "preflightReport": "/Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data/work/statcan-boundaries-2026-08-12/PREFLIGHT.md",
   "totalByteLength": 578421880,
   "featureCountMethod": "Derived from each shapefile's .shx index length: (index byte length − 100-byte header) ÷ 8 bytes per record. The .shp vector content was NOT opened, so geometry, CRS, and attribute schema remain Unknown.",
+  "toolchain": {
+    "gdal": "3.13.2",
+    "proj": "9.8.1",
+    "geos": "3.14.1",
+    "versionSource": "`gdalinfo --version`, `proj`, and `geos-config --version` on the staging machine.",
+    "vectorContentRead": false,
+    "readNote": "The GDAL toolchain is installed and available; an earlier version of this record wrongly stated it was not. It was still not run against these boundary archives, so geometry, CRS, and attribute schema remain Unknown here. Feature counts come from the .shx index, not from GDAL."
+  },
   "limitations": [
-    "gdalinfo is not installed. Geometry, coordinate reference system, and attribute schema are Unknown — no vector content was read. A file can pass byte-length, checksum, and unzip -t and still contain the wrong geography.",
+    "The staged archives were not opened with GDAL. Geometry, coordinate reference system, and attribute schema are Unknown — no vector content was read for this record. A file can pass byte-length, checksum, and unzip -t and still contain the wrong geography.",
     "French-language editions of the Statistics Canada files are NOT staged. The `_f` suffix guess returns 404, so the actual French filename convention still has to be read off the download form. The bilingual app will need French FED, CD, and CSD names before any of this can reach a public surface.",
     "Statistics Canada publishes no 2023 Representation Order boundary file. Its federal electoral district product is the 2013 order. Current-order geometry therefore comes from Elections Canada under a different licence and a different publisher.",
     "No boundary edition here is production eligible. None has been ingested, promoted to immutable object storage, or connected to product records."
