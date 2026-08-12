@@ -51,7 +51,7 @@ npm test
 
 Every future production input must have a source-ledger entry with publisher/custodian, exact catalogue URL, effective and retrieval dates, spatial and temporal coverage, immutable SHA-256, update cadence, transform version, attribution, and a typed licence ID. The present [`data/source-ledger.json`](data/source-ledger.json) uses reserved `example.local` URLs and placeholder hashes solely to test that contract.
 
-Code is not yet released under an open-source licence. Data retains its source-specific licence; no example fixture grants redistribution rights. Licence review, real-source approval, professional translation, engagement, accessibility review, and other launch gates remain listed in [docs/EXTERNAL_GATES.md](docs/EXTERNAL_GATES.md).
+Code is currently distributed under an [all-rights-reserved notice](LICENSE), not an open-source licence. [DATA_LICENSES.md](DATA_LICENSES.md) records the example fixtures and the clearance required before real data is distributed. Data retains its source-specific licence; no example fixture grants redistribution rights. Licence review, real-source approval, professional translation, engagement, accessibility review, and other launch gates remain listed in [docs/EXTERNAL_GATES.md](docs/EXTERNAL_GATES.md).
 
 ## Status
 

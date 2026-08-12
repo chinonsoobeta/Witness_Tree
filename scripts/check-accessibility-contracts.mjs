@@ -1,7 +1,7 @@
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
-const MAIN_COMPONENTS = new Set(["ComponentGallery", "DataPage", "GovernancePage", "LocationResult", "MethodologyPage", "PlacePage", "WildfireView"]);
+const MAIN_COMPONENTS = new Set(["AccountStatusPage", "ComponentGallery", "DataPage", "GovernancePage", "LocationResult", "MethodologyPage", "PlacePage", "WildfireView"]);
 
 async function tsxFiles(root) {
   const entries = await readdir(root, { withFileTypes: true });
@@ -27,7 +27,7 @@ function auditFile(file, source) {
   for (const svg of source.matchAll(/<svg\b([^>]*)>([\s\S]*?)<\/svg>/gi)) {
     if (!/\baria-label\s*=/.test(svg[1]) && !/<title\b/i.test(svg[2])) failures.push(`${file}: SVG requires a title or aria-label.`);
   }
-  if (/explore/i.test(file) && /<svg\b/i.test(source) && (!/<Symbol\b/.test(source) || !/<li\b/.test(source))) {
+  if (/explore/i.test(file) && /<svg\b/i.test(source) && (!/(?:<Symbol\b|\{symbol\()/.test(source) || !/<li\b/.test(source))) {
     failures.push(`${file}: Explore legend must use named symbols and text, not colour alone.`);
   }
 

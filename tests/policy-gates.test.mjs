@@ -77,3 +77,18 @@ test("budget gate reports raw and gzip totals for a measured manifest", async ()
     assert.equal(result.gzipExplore, 0);
   } finally { await rm(root, { recursive: true }); }
 });
+
+test("budget gate attributes dynamic Explore dependencies to Explore, not shared", async () => {
+  const root = await fixture();
+  try {
+    await budgetFixture(root, {
+      app: { file: "app.js", isEntry: true, imports: ["base"], dynamicImports: ["Explore"] },
+      base: { file: "base.js" },
+      Explore: { file: "explore.js", name: "Explore", imports: ["base"], dynamicImports: ["map"] },
+      map: { file: "map.js", name: "maplibre-gl" },
+    }, { "app.js": "app", "base.js": "base", "explore.js": "explore", "map.js": "map dependency" });
+    const result = await checkBudgets(root);
+    assert.equal(result.rawShared, 7);
+    assert.equal(result.rawExplore, 21);
+  } finally { await rm(root, { recursive: true }); }
+});

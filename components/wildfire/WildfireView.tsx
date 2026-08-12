@@ -1,6 +1,7 @@
 import { ReportedValue } from "@/components/policy/ReportedValue";
 import type { Locale } from "@/lib/domain";
 import { buildWildfireViewModel, type WildfireFeedState, wildfireText } from "@/lib/wildfire";
+import { ReaderLocalTime } from "./ReaderLocalTime";
 
 export type WildfireViewProps = Readonly<{ locale: Locale; feed: WildfireFeedState; now?: Date }>;
 
@@ -20,7 +21,7 @@ export function WildfireView({ locale, feed, now }: WildfireViewProps) {
         <div><dt>{text.sourceUpdated}</dt><dd><time dateTime={model.sourceUpdatedAt}>{model.sourceUpdatedAt}</time></dd></div>
         <div><dt>{text.lastRefresh}</dt><dd><time dateTime={model.lastSuccessfulRefreshAt}>{model.lastSuccessfulRefreshAt}</time></dd></div>
         <div><dt>{text.agency}</dt><dd>{model.agencyName}</dd></div>
-        <div><dt>{text.nextRefresh}</dt><dd>{model.nextScheduledRefresh}</dd></div>
+        <div><dt>{text.nextRefresh}</dt><dd><ReaderLocalTime dateTime={model.nextScheduledRefresh} locale={locale} /></dd></div>
         <div><dt>{text.emergency}</dt><dd>{emergencyLink}</dd></div>
       </dl>
       {model.state === "degraded" ? <aside role="alert"><p>{text.degraded}</p>{emergencyLink}</aside> : null}

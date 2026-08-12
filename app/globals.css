@@ -199,6 +199,9 @@ h1, h2, h3, h4 { font-family: var(--ui); }
 .site-footer-inner { width: min(var(--plate), calc(100% - 40px)); margin: 0 auto; display: flex; justify-content: space-between; gap: 26px; color: var(--muted); font-family: var(--ui); font-size: 12px; }
 .site-footer nav { display: flex; flex-wrap: wrap; gap: 14px; }
 
+.explore-map { min-height: 430px; border: 1px solid var(--rule); background: var(--surface-2); }
+.explore-map-status { margin-top: 8px; color: var(--muted); font-size: 14px; }
+
 @media (max-width: 760px) {
   .site-header-inner { align-items: flex-start; flex-direction: column; padding: 18px 0; }
   .global-nav { width: 100%; overflow-x: auto; padding-bottom: 4px; }

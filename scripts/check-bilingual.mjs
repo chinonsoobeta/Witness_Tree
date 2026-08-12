@@ -9,6 +9,7 @@ export const REQUIRED_ROUTE_PAIRS = [
   { en: '/en/data', fr: '/fr/donnees' },
   { en: '/en/compare', fr: '/fr/comparer' },
   { en: '/en/wildfire', fr: '/fr/incendies' },
+  { en: '/en/account', fr: '/fr/compte' },
   { en: '/en/explore', fr: '/fr/explorer' },
   { en: '/en/search', fr: '/fr/recherche' },
   { en: '/en/places/[placeId]', fr: '/fr/lieux/[placeId]' },

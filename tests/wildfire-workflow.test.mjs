@@ -72,10 +72,10 @@ test('two failures produce degraded state and 15-minute retry metadata', async (
   assert.equal(second.state.nextRetryAt, '2026-08-11T19:15:00.001Z');
 });
 
-test('data more than 25 hours old is stale', async () => {
+test('data more than 24 hours old is stale', async () => {
   const directory = await root();
   const store = createSnapshotStore(directory);
   const start = new Date('2026-08-10T00:00:00Z');
   await store.publish({ sources, now: start });
-  assert.equal((await store.status(new Date('2026-08-11T01:00:00.001Z'))).status, 'stale');
+  assert.equal((await store.status(new Date('2026-08-11T00:00:00.001Z'))).status, 'stale');
 });

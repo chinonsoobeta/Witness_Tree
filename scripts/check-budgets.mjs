@@ -66,12 +66,42 @@ async function reachableEntries(root, manifest) {
   }));
 }
 
+function dependencyClosure(manifest, roots) {
+  const seen = new Set();
+  const stack = [...roots];
+  while (stack.length) {
+    const key = stack.pop();
+    if (seen.has(key) || !manifest[key]) continue;
+    seen.add(key);
+    const entry = manifest[key];
+    stack.push(...(entry.imports ?? []), ...(entry.dynamicImports ?? []));
+  }
+  return seen;
+}
+
+function staticDependencyClosure(manifest, roots) {
+  const seen = new Set();
+  const stack = [...roots];
+  while (stack.length) {
+    const key = stack.pop();
+    if (seen.has(key) || !manifest[key]) continue;
+    seen.add(key);
+    stack.push(...(manifest[key].imports ?? []));
+  }
+  return seen;
+}
+
 export async function checkBudgets(root = path.resolve("dist/client"), { exploreSource = path.resolve("app/en/explore/page.tsx") } = {}) {
   const manifest = await loadManifest(root);
   const artifacts = await reachableEntries(root, manifest);
   const application = artifacts.filter(({ key, entry }) => !isFramework(key, entry));
-  const exploreArtifacts = application.filter(({ key, entry }) => hasExploreName(key, entry));
-  const sharedArtifacts = application.filter(({ key, entry }) => !hasExploreName(key, entry));
+  const entryKeys = Object.entries(manifest).filter(([, entry]) => entry?.isEntry).map(([key]) => key);
+  const sharedRoots = staticDependencyClosure(manifest, entryKeys);
+  const exploreRoots = Object.entries(manifest).filter(([key, entry]) => hasExploreName(key, entry)).map(([key]) => key);
+  const exploreClosure = dependencyClosure(manifest, exploreRoots);
+  const exploreArtifacts = application.filter(({ key }) => exploreClosure.has(key) && (!sharedRoots.has(key) || exploreRoots.includes(key)));
+  const exploreKeys = new Set(exploreArtifacts.map(({ key }) => key));
+  const sharedArtifacts = application.filter(({ key }) => !exploreKeys.has(key));
   const rawShared = sharedArtifacts.reduce((sum, artifact) => sum + artifact.rawSize, 0);
   const rawExplore = exploreArtifacts.reduce((sum, artifact) => sum + artifact.rawSize, 0);
   const gzipShared = sharedArtifacts.reduce((sum, artifact) => sum + artifact.gzipSize, 0);

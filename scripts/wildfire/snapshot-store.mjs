@@ -98,7 +98,7 @@ export function createSnapshotStore(root) {
       const state = await this.readState();
       if (!state.lastSuccessAt) return state;
       const ageMs = now.getTime() - new Date(state.lastSuccessAt).getTime();
-      return { ...state, ageMs, status: ageMs > 25 * 60 * 60 * 1000 ? 'stale' : state.status };
+      return { ...state, ageMs, status: ageMs > 24 * 60 * 60 * 1000 ? 'stale' : state.status };
     },
   };
 }

@@ -1,9 +1,12 @@
-import type { Locale } from "@/lib/domain";
+import { PRODUCT_NAME, type Locale } from "@/lib/domain";
 
 export type GovernancePageKind = "glossary" | "corrections" | "decisions" | "engagement" | "privacy" | "terms" | "releases";
 
 type Section = Readonly<{ heading: string; paragraphs: readonly string[] }>;
 type PageCopy = Readonly<{ title: string; status: string; sections: readonly Section[] }>;
+
+const enBrand = PRODUCT_NAME.en;
+const frBrand = PRODUCT_NAME.fr;
 
 const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
   glossary: {
@@ -34,13 +37,13 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
   },
   decisions: {
     en: { title: "Decision log", status: "Decisions transcribed from implementation plan version 2, dated 11 August 2026.", sections: [
-      { heading: "Product", paragraphs: ["Working name: Witness Tree. Record starts in 1984; the default view starts in 2000. Scope is British Columbia, Alberta, Ontario and Quebec.", "NTEMS is the satellite spine. Live wildfire, riding comparison, accounts and alerts, reserve and treaty pages are in version 1. Advanced layer controls and asserted traditional territories are excluded."] },
-      { heading: "Mistik request", paragraphs: ["Mistik is not an approved product name. No request outcome, permission, honorarium or terms exist yet. The working name remains Witness Tree unless written permission is obtained through the engagement process."] },
+      { heading: "Product", paragraphs: [`Working name: ${enBrand}. Record starts in 1984; the default view starts in 2000. Scope is British Columbia, Alberta, Ontario and Quebec.`, "NTEMS is the satellite spine. Live wildfire, riding comparison, accounts and alerts, reserve and treaty pages are in version 1. Advanced layer controls and asserted traditional territories are excluded."] },
+      { heading: "Mistik request", paragraphs: [`Mistik is not an approved product name. No request outcome, permission, honorarium or terms exist yet. The working name remains ${enBrand} unless written permission is obtained through the engagement process.`] },
       { heading: "Change control", paragraphs: ["Method changes, new sources and changes to published figures require future editorial-board approval. No board has yet been appointed."] },
     ] },
     fr: { title: "Registre des décisions", status: "Décisions transcrites de la version 2 du plan de mise en œuvre, datée du 11 août 2026.", sections: [
-      { heading: "Produit", paragraphs: ["Nom de travail : Witness Tree. Le registre commence en 1984; la vue par défaut commence en 2000. La portée comprend la Colombie-Britannique, l’Alberta, l’Ontario et le Québec.", "NTEMS constitue la base satellitaire. Les incendies actuels, la comparaison des circonscriptions, les comptes et alertes ainsi que les pages de réserves et de traités sont prévus dans la version 1. Les commandes avancées de couches et les territoires traditionnels revendiqués sont exclus."] },
-      { heading: "Demande concernant Mistik", paragraphs: ["Mistik n’est pas un nom de produit approuvé. Aucun résultat de demande, aucune permission, aucun honoraire ni aucune condition n’existent encore. Le nom de travail demeure Witness Tree sauf obtention d’une permission écrite par le processus de dialogue."] },
+      { heading: "Produit", paragraphs: [`Nom de travail : ${frBrand}. Le registre commence en 1984; la vue par défaut commence en 2000. La portée comprend la Colombie-Britannique, l’Alberta, l’Ontario et le Québec.`, "NTEMS constitue la base satellitaire. Les incendies actuels, la comparaison des circonscriptions, les comptes et alertes ainsi que les pages de réserves et de traités sont prévus dans la version 1. Les commandes avancées de couches et les territoires traditionnels revendiqués sont exclus."] },
+      { heading: "Demande concernant Mistik", paragraphs: [`Mistik n’est pas un nom de produit approuvé. Aucun résultat de demande, aucune permission, aucun honoraire ni aucune condition n’existent encore. Le nom de travail demeure ${frBrand} sauf obtention d’une permission écrite par le processus de dialogue.`] },
       { heading: "Contrôle des changements", paragraphs: ["Les changements de méthode, les nouvelles sources et les modifications de valeurs publiées devront être approuvés par un futur comité éditorial. Aucun comité n’a encore été nommé."] },
     ] },
   },
@@ -57,12 +60,12 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
     ] },
   },
   privacy: {
-    en: { title: "Privacy notice — draft", status: "Accounts are not active and Witness Tree currently stores no account, email or saved-area data.", sections: [
+    en: { title: "Privacy notice — draft", status: `Accounts are not active and ${enBrand} currently stores no account, email or saved-area data.`, sections: [
       { heading: "Planned minimum data", paragraphs: ["With explicit consent: email, password hash, locale, saved geometries, alert preferences and send history. Saved areas will be treated as sensitive and will not be joined to analytics identifiers or written to logs."] },
       { heading: "Planned controls", paragraphs: ["Database-enforced row-level isolation, encryption at rest, verified email, one-click unsubscribe, deletion within 30 days, send-history purge after 24 months, no tracking pixels and one transactional provider carrying the minimum payload."] },
       { heading: "Hosting", paragraphs: ["Canadian hosting for account data is required but has not been selected or verified. Accounts cannot launch until the location and legal review are published."] },
     ] },
-    fr: { title: "Avis de confidentialité — ébauche", status: "Les comptes ne sont pas actifs et Witness Tree ne conserve actuellement aucune donnée de compte, d’adresse courriel ou de zone enregistrée.", sections: [
+    fr: { title: "Avis de confidentialité — ébauche", status: `Les comptes ne sont pas actifs et ${frBrand} ne conserve actuellement aucune donnée de compte, d’adresse courriel ou de zone enregistrée.`, sections: [
       { heading: "Données minimales prévues", paragraphs: ["Avec consentement explicite : adresse courriel, condensat du mot de passe, langue, géométries enregistrées, préférences d’alerte et historique d’envoi. Les zones enregistrées seront traitées comme sensibles et ne seront ni reliées à un identifiant analytique ni inscrites dans les journaux."] },
       { heading: "Contrôles prévus", paragraphs: ["Isolement des lignes imposé par la base de données, chiffrement au repos, courriel vérifié, désabonnement en un clic, suppression dans les 30 jours, purge de l’historique d’envoi après 24 mois, aucun pixel de suivi et un seul fournisseur transactionnel recevant le minimum de données."] },
       { heading: "Hébergement", paragraphs: ["L’hébergement canadien des données de compte est exigé, mais n’a pas encore été choisi ou vérifié. Les comptes ne peuvent être lancés avant la publication du lieu et de l’examen juridique."] },
@@ -70,12 +73,12 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
   },
   terms: {
     en: { title: "Terms and limitations — draft", status: "These terms have not received legal review and do not authorize a production release.", sections: [
-      { heading: "Informational record", paragraphs: ["Witness Tree is an evidence record, not an emergency service, legal opinion, compliance finding, ownership history, merchantable-timber estimate or wildfire forecast. Source agencies remain authoritative."] },
+      { heading: "Informational record", paragraphs: [`${enBrand} is an evidence record, not an emergency service, legal opinion, compliance finding, ownership history, merchantable-timber estimate or wildfire forecast. Source agencies remain authoritative.`] },
       { heading: "Interpretation", paragraphs: ["Satellite-observed change does not establish cause. A named organisation appears only in the exact role and dated version of an authoritative public record; proximity is never attribution."] },
       { heading: "Licences", paragraphs: ["Code has no open-source licence yet. Data retains source-specific terms. Illustrative fixtures grant no redistribution rights."] },
     ] },
     fr: { title: "Conditions et limites — ébauche", status: "Ces conditions n’ont pas fait l’objet d’un examen juridique et n’autorisent pas une diffusion de production.", sections: [
-      { heading: "Registre d’information", paragraphs: ["Witness Tree est un registre de preuves, et non un service d’urgence, un avis juridique, une conclusion de conformité, un historique de propriété, une estimation du bois marchand ou une prévision d’incendie. Les organismes sources demeurent les autorités."] },
+      { heading: "Registre d’information", paragraphs: [`${frBrand} est un registre de preuves, et non un service d’urgence, un avis juridique, une conclusion de conformité, un historique de propriété, une estimation du bois marchand ou une prévision d’incendie. Les organismes sources demeurent les autorités.`] },
       { heading: "Interprétation", paragraphs: ["Un changement observé par satellite n’en établit pas la cause. Une organisation n’est nommée que dans le rôle exact et la version datée d’un registre public faisant autorité; la proximité ne constitue jamais une attribution."] },
       { heading: "Licences", paragraphs: ["Le code ne possède pas encore de licence libre. Les données conservent leurs conditions propres à la source. Les exemples illustratifs n’accordent aucun droit de redistribution."] },
     ] },
@@ -83,11 +86,11 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
   releases: {
     en: { title: "Data releases", status: "No production data release exists. The current repository contains only an illustrative source-ledger fixture.", sections: [
       { heading: "Future manifests", paragraphs: ["Every release will state its ID and date, latest data end year, boundary edition, method version, bilingual note, corrections link and stale or degraded state. Every artifact requires a licence ID and immutable SHA-256."] },
-      { heading: "Citation format", paragraphs: ["Witness Tree, place or record title, time range, boundary edition, data release ID, method version, retrieval date and stable URL. No production citation can be generated until a verified release exists."] },
+      { heading: "Citation format", paragraphs: [`${enBrand}, place or record title, time range, boundary edition, data release ID, method version, retrieval date and stable URL. No production citation can be generated until a verified release exists.`] },
     ] },
     fr: { title: "Versions des données", status: "Aucune version de données de production n’existe. Le dépôt actuel ne contient qu’un exemple illustratif de registre des sources.", sections: [
       { heading: "Manifestes futurs", paragraphs: ["Chaque version indiquera son identifiant et sa date, la dernière année de données, l’édition de limite, la version de méthode, une note bilingue, le lien de correction et l’état périmé ou dégradé. Chaque artefact exige un identifiant de licence et une somme SHA-256 immuable."] },
-      { heading: "Format de citation", paragraphs: ["Witness Tree, titre du lieu ou du dossier, période, édition de limite, identifiant de version des données, version de méthode, date de consultation et URL stable. Aucune citation de production ne peut être générée avant l’existence d’une version vérifiée."] },
+      { heading: "Format de citation", paragraphs: [`${frBrand}, titre du lieu ou du dossier, période, édition de limite, identifiant de version des données, version de méthode, date de consultation et URL stable. Aucune citation de production ne peut être générée avant l’existence d’une version vérifiée.`] },
     ] },
   },
 };

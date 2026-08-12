@@ -1,5 +1,7 @@
 import type { ConfidenceResult, CoverageGrade, EvidenceClass, Locale, Provenance } from "../domain";
-export const EXPLORE_MODES = ["detected-change", "official-harvest", "wildfire-perimeter", "insect-mortality"] as const;
+export const EXPLORE_MODES = ["forest-change", "recorded-harvest", "wildfire", "condition-recovery"] as const;
 export type ExploreMode = (typeof EXPLORE_MODES)[number];
-export type ExploreEvent = Readonly<{ id: string; mode: ExploreMode; year: number; name: Record<Locale, string>; evidence: EvidenceClass; confidence: ConfidenceResult; coverageGrade: CoverageGrade; provenance: Provenance; unknownReason?: string }>;
-export type ExploreViewMode = "map" | "table";
+export type ExploreEvent = Readonly<{ id: string; mode: ExploreMode; year: number; coordinates: readonly [longitude: number, latitude: number]; name: Record<Locale, string>; evidence: EvidenceClass; confidence: ConfidenceResult; coverageGrade: CoverageGrade; provenance: Provenance; unknownReason?: string }>;
+export type ExplorePresentation = "map" | "list";
+export type ExploreDataView = "chart" | "table";
+export const EXPLORE_BOUNDARY_OVERLAYS = ["watersheds", "federal-ridings", "provincial-ridings", "reserves", "treaty-areas"] as const;

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteShell } from "@/components/site";
+import { PRODUCT_NAME } from "@/lib/domain";
 
 export const metadata: Metadata = { title: "Public forest-change record", alternates: { languages: { en: "/en", fr: "/fr" } } };
 
@@ -9,7 +10,7 @@ export default function EnglishHome() {
     <header className="masthead">
       <p className="eyebrow">Evidence record · 1984 to present</p>
       <h1>What happened to the forest here?</h1>
-      <p className="dek">Witness Tree helps you understand recorded and observed forest change in four provinces. Every result shows what the evidence says, where it came from, how current it is, and what it cannot tell you.</p>
+      <p className="dek">{PRODUCT_NAME.en} helps you understand recorded and observed forest change in four provinces. Every result shows what the evidence says, where it came from, how current it is, and what it cannot tell you.</p>
       <div className="meta-row"><span>British Columbia</span><span>Alberta</span><span>Ontario</span><span>Quebec</span></div>
     </header>
     <section className="content-section prose-measure">
@@ -29,7 +30,7 @@ export default function EnglishHome() {
         <article className="record-card"><p className="eyebrow">Methods</p><h3>Definitions before numbers</h3><p>See the forest denominator, evidence classes, confidence rules, coverage grades and matching method.</p><Link href="/en/methods">Read the methods</Link></article>
         <article className="record-card"><p className="eyebrow">Data status</p><h3>Illustrative sources only</h3><p>No production dataset is integrated yet. Review the strict source-ledger contract and the gates that must pass before publication.</p><Link href="/en/data">Review data transparency</Link></article>
       </div>
-      <aside className="notice"><h3>What this record does not claim</h3><p>Witness Tree does not estimate merchantable timber, predict wildfire spread, label detected change as logging or deforestation, make legal or compliance findings, or infer responsibility from proximity.</p></aside>
+      <aside className="notice"><h3>What this record does not claim</h3><p>{PRODUCT_NAME.en} does not estimate merchantable timber, predict wildfire spread, label detected change as logging or deforestation, make legal or compliance findings, or infer responsibility from proximity.</p></aside>
     </section>
   </main></SiteShell>;
 }

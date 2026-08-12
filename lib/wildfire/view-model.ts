@@ -1,4 +1,4 @@
-import { assignConfidence, type Locale, type Reported } from "@/lib/domain";
+import { assignConfidence, PRODUCT_NAME, type Locale, type Reported } from "@/lib/domain";
 
 export type WildfireFeedState = Readonly<{
   status: "healthy" | "degraded";
@@ -16,6 +16,20 @@ export type WildfireViewModel = WildfireFeedState & Readonly<{
 }>;
 
 const STALE_AFTER_MS = 24 * 60 * 60 * 1000;
+const REFRESH_HOURS = new Set([5, 12, 16, 21]);
+
+export function nextScheduledRefresh(now: Date): string {
+  if (Number.isNaN(now.getTime())) throw new Error("A valid time is required to calculate the next refresh.");
+  const candidate = new Date(now);
+  candidate.setUTCMinutes(0, 0, 0);
+  if (candidate <= now) candidate.setUTCHours(candidate.getUTCHours() + 1);
+  const formatter = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Vancouver", hour: "2-digit", hourCycle: "h23" });
+  for (let offset = 0; offset < 25; offset += 1) {
+    if (REFRESH_HOURS.has(Number(formatter.format(candidate)))) return candidate.toISOString();
+    candidate.setUTCHours(candidate.getUTCHours() + 1);
+  }
+  throw new Error("No Pacific refresh slot could be resolved.");
+}
 
 export function buildWildfireViewModel(feed: WildfireFeedState, now = new Date()): WildfireViewModel {
   const age = now.getTime() - new Date(feed.lastSuccessfulRefreshAt).getTime();
@@ -23,7 +37,7 @@ export function buildWildfireViewModel(feed: WildfireFeedState, now = new Date()
   return {
     ...feed,
     state,
-    nextScheduledRefresh: "21:00 America/Vancouver",
+    nextScheduledRefresh: nextScheduledRefresh(now),
     isIllustrative: true,
     summary: {
       kind: "figure",
@@ -46,11 +60,11 @@ export const wildfireText = (locale: Locale) => locale === "en" ? {
   title: "Wildfire context",
   fixture: "Illustrative fixture — not live wildfire data.",
   sourceUpdated: "Source updated",
-  lastRefresh: "Last successful Witness Tree refresh",
+  lastRefresh: `Last successful ${PRODUCT_NAME.en} refresh`,
   agency: "Source agency",
   nextRefresh: "Next scheduled refresh",
   emergency: "Official emergency information",
-  context: "Witness Tree provides context, not emergency direction. The responsible agency is the authority for public safety information.",
+  context: `${PRODUCT_NAME.en} provides context, not emergency direction. The responsible agency is the authority for public safety information.`,
   degraded: "This illustrative source is degraded. Consult the responsible agency.",
   stale: "This illustrative feed is more than 24 hours old. Live wildfire content is unavailable; consult the responsible agency.",
   summary: "Illustrative derived estimate",
@@ -59,11 +73,11 @@ export const wildfireText = (locale: Locale) => locale === "en" ? {
   title: "Contexte des incendies",
   fixture: "Exemple illustratif — ces données sur les incendies ne sont pas en direct.",
   sourceUpdated: "Mise à jour de la source",
-  lastRefresh: "Dernière actualisation réussie de Witness Tree",
+  lastRefresh: `Dernière actualisation réussie de ${PRODUCT_NAME.fr}`,
   agency: "Organisme source",
   nextRefresh: "Prochaine actualisation prévue",
   emergency: "Information officielle d’urgence",
-  context: "Witness Tree fournit du contexte, et non des directives d’urgence. L’organisme responsable fait autorité pour les renseignements de sécurité publique.",
+  context: `${PRODUCT_NAME.fr} fournit du contexte, et non des directives d’urgence. L’organisme responsable fait autorité pour les renseignements de sécurité publique.`,
   degraded: "Cette source illustrative est dégradée. Consultez l’organisme responsable.",
   stale: "Cette source illustrative a plus de 24 heures. Le contenu actuel sur les incendies est indisponible; consultez l’organisme responsable.",
   summary: "Estimation dérivée illustrative",

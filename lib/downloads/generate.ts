@@ -1,6 +1,8 @@
 import { LICENCE_IDS }
 // @ts-expect-error -- Node's TypeScript runner requires explicit local extensions.
 from "../domain/source-ledger.ts";
+// @ts-expect-error -- Node's TypeScript runner requires explicit local extensions.
+import { PRODUCT_NAME } from "../domain/brand.ts";
 import { createHash } from "node:crypto";
 import type { DownloadArtifact, DownloadRelease, DownloadRow } from "./types";
 const hasUnknownZero = (value: string) => /(?:unknown|inconnu)\s*(?:value|valeur)?\s*0\b/i.test(value);
@@ -12,4 +14,4 @@ export function addRelease(releases: readonly DownloadRelease[], release: Downlo
 export function verifyArtifactContent(artifact: DownloadArtifact, content: Uint8Array | string): boolean { validateArtifact(artifact); return createHash("sha256").update(content).digest("hex") === artifact.sha256.toLowerCase(); }
 const escape = (value: string) => /[",\n]/.test(value) ? `"${value.replaceAll('"', '""')}"` : value;
 export function generateCsv(rows: readonly DownloadRow[]): string { return ["id,value,unit,unknown_reason", ...rows.map((row) => row.reported.kind === "figure" ? [row.id, row.reported.value, row.reported.unit, ""].map(String).map(escape).join(",") : [row.id, "", "", row.reported.reason].map(escape).join(","))].join("\n"); }
-export function citation(release: DownloadRelease, artifact: DownloadArtifact): string { validateRelease(release); if (!release.artifacts.some((item) => item.id === artifact.id)) throw new Error("Artifact is not part of the release."); return `Witness Tree. ${artifact.id}. Release ${release.id}. ${artifact.timeRange}; ${artifact.boundaryEdition}; method ${artifact.methodVersion}; retrieved ${artifact.retrievedDate}. ${artifact.url}`; }
+export function citation(release: DownloadRelease, artifact: DownloadArtifact): string { validateRelease(release); if (!release.artifacts.some((item) => item.id === artifact.id)) throw new Error("Artifact is not part of the release."); return `${PRODUCT_NAME.en}. ${artifact.id}. Release ${release.id}. ${artifact.timeRange}; ${artifact.boundaryEdition}; method ${artifact.methodVersion}; retrieved ${artifact.retrievedDate}. ${artifact.url}`; }
