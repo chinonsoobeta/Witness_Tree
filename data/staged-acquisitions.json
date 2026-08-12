@@ -50,6 +50,36 @@
       "changesNotice": "This raw archive is unchanged. A separately documented deterministic repair-or-quarantine evaluation computed geometry repairs in memory only; it changed no source geometry and wrote no derived geometry.",
       "immutableObjectStorage": false,
       "productionEligible": false
+    },
+    {
+      "id": "nrcan-forest-canopy-cover-2022-2026-08-11",
+      "sourceId": "nrcan-forest-canopy-cover-2022",
+      "datasetTitle": "Forest Canopy Cover (2022)",
+      "publisher": "Natural Resources Canada",
+      "catalogueUrl": "https://open.canada.ca/data/en/dataset/5b905ab8-44dc-42b4-ad5b-3b1dde8423ab",
+      "sourceUrl": "https://opendata.nfis.org/downloads/forest_change/CA_canopy_cover_2022.zip",
+      "localPath": "../Witness_Tree-data/raw/nrcan-forest-canopy-cover-2022/2026-08-11/CA_canopy_cover_2022.zip",
+      "verifiedAt": "2026-08-12T11:02:59Z",
+      "byteLength": 9954395939,
+      "sha256": "80c37461f4deccfdfffc26124e9064d53a94dde660b9f96194445870393af130",
+      "zipIntegrity": "passed",
+      "licenceId": "ogl-canada",
+      "temporalCoverage": "reference year 2022; catalogue temporal extent 2022-01-01 to 2022-01-01",
+      "attributionState": "metadata-verified",
+      "attribution": "Contains information licensed under the Open Government Licence – Canada. When using this data, please cite: Matasci, G., Hermosilla, T., Wulder, M.A., White, J.C., Coops, N.C., Hobart, G.W., Bolton, D.K., Tompalski, P., Bater, C.W., 2018. Three decades of forest structural dynamics over Canada's forested ecosystems using Landsat time-series and lidar plots. Remote Sensing of Environment, 216, 697–714. https://doi.org/10.1016/j.rse.2018.07.024.",
+      "licenceUrl": "https://open.canada.ca/en/open-government-licence-canada",
+      "licenceVersion": "2.0",
+      "attributionBasis": "The Open Government Licence - Canada version 2.0 requires the user to acknowledge the source by including any attribution statement specified by the Information Provider and, where possible, to provide a link to the licence; where no statement is specified it requires the default statement \"Contains information licensed under the Open Government Licence – Canada.\" The Open Government catalogue record assigns the Open Government Licence - Canada and publishes no separate OGL attribution statement, so the default statement applies. The catalogue record and the archive's own CA_canopy_cover_2022_README.txt both separately request the Matasci et al. 2018 citation when the data is used, so that citation is carried alongside the default statement.",
+      "attributionSources": [
+        "https://open.canada.ca/en/open-government-licence-canada",
+        "https://open.canada.ca/data/en/dataset/5b905ab8-44dc-42b4-ad5b-3b1dde8423ab",
+        "CA_canopy_cover_2022.zip:CA_canopy_cover_2022_README.txt"
+      ],
+      "attributionVerifiedAt": "2026-08-12T11:02:59Z",
+      "archiveContents": "8 entries, 10701523618 bytes uncompressed: CA_canopy_cover_2022.tif (8165437669 bytes, 30-m GeoTIFF raster), CA_canopy_cover_2022.tif.ovr (2536047413 bytes, overviews), CA_canopy_cover_2022.tif.aux.xml, CA_canopy_cover_2022.tif.xml, CA_canopy_cover_2022.tfw, CA_canopy_cover_2022.lyr, CA_canopy_cover_2022_README.txt, CA_canopy_cover_2022_LISEZMOI.txt.",
+      "changesNotice": "This raw archive is unchanged. No extraction, transformation, or ingestion has been performed; verification read the bytes only.",
+      "immutableObjectStorage": false,
+      "productionEligible": false
     }
   ]
 }
