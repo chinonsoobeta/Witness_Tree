@@ -42,6 +42,7 @@ npm run check:source-candidates
 npm run check:acquisition-readiness
 npm run check:staged-acquisitions
 npm run check:staged-geospatial-profile
+npm run check:source-review
 npm run check:claims
 npm run check:style-tokens
 npm run check:brand-token
@@ -81,7 +82,7 @@ The following are accepted foundations, primarily with illustrative fixtures and
 1. Resolve the owner decisions in [`docs/ACQUISITION_DECISION.md`](ACQUISITION_DECISION.md). Current read-only preflight has confirmed at least 92,627,415,442 compressed bytes across six candidate artifacts; Ontario FRI still lacks a verified downloadable data endpoint, and CA Forest Harvest has an unresolved catalogue resource-name/URL conflict.
 2. Replace illustrative ledger entries with verified sources, actual licences, versions, retrieval timestamps, and attributable publisher metadata.
 3. Acquire lawful immutable raw snapshots using the archive contract; put real objects in approved storage and retain checksums/previous links.
-4. Create a source-review process for updates, corrections, licence changes, and reprocessing. Do not fabricate a successful acquisition or current coverage.
+4. Create a source-review process for updates, corrections, licence changes, and reprocessing. Do not fabricate a successful acquisition or current coverage. The process, its evidence requirements, and its acceptance states are defined in [`docs/SOURCE_REVIEW.md`](SOURCE_REVIEW.md), with the decision contract in `lib/source-review/` and the registered baselines in `data/source-review-register.json`. No review has been run against a live publisher change; the register records baselines only, and the process cannot grant re-acceptance, immutable promotion, or production eligibility.
 
 ### Phase 2 — national baseline processing (1984–present)
 

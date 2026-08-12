@@ -1,0 +1,56 @@
+{
+  "status": "process-definition",
+  "notice": "Process definition and recorded baselines only. No source review has been run against a live publisher change, and this register is not immutable object storage, ingested data, or a production release. Acceptance here means admission to verified local staging and, for Québec, transformation design only.",
+  "baselines": [
+    {
+      "sourceId": "qc-historic-wildfire-detailed",
+      "acceptedRecordId": "qc-historic-wildfire-detailed-2026-08-11",
+      "acceptedAt": "2026-08-12T05:22:16Z",
+      "sha256": "cfed6c16eac901e6887a2518f566dff7608d4c4c371bd9c1ce6b2eff03fa0815",
+      "byteLength": 414244435,
+      "sourceVersion": {
+        "state": "not-recorded",
+        "reason": "The staging evidence records a catalogue temporal endpoint rather than a publisher version identifier."
+      },
+      "updateVersusCorrection": "undetermined",
+      "licence": {
+        "state": "recorded",
+        "licenceId": "cc-by-4.0-quebec",
+        "licenceVersion": "4.0",
+        "licenceUrl": "https://www.donneesquebec.ca/licence/#cc-by",
+        "requiredAttribution": "Source: Ministère des Ressources naturelles et des Forêts du Québec, Secteur des Forêts, Direction des inventaires forestiers and Direction de la protection des forêts, Feux de forêt. Licensed under CC BY 4.0."
+      },
+      "acceptedFacts": [
+        { "id": "qc-staged-archive-checksum", "dependsOn": "source-bytes" },
+        { "id": "qc-lossless-local-layer-copy", "dependsOn": "source-bytes" },
+        { "id": "qc-transformation-design-admission", "dependsOn": "source-bytes" },
+        { "id": "qc-recorded-attribution-wording", "dependsOn": "licence-terms" }
+      ],
+      "immutableObjectStorage": false,
+      "productionEligible": false
+    },
+    {
+      "sourceId": "alberta-avi-crown",
+      "acceptedRecordId": "alberta-avi-crown-2026-08-11",
+      "acceptedAt": "2026-08-12T05:28:16Z",
+      "sha256": "e93572129f25c83911b73eadfacff12624ff6b08f2db4b311c1662196b665093",
+      "byteLength": 557041258,
+      "sourceVersion": {
+        "state": "not-recorded",
+        "reason": "The staging evidence records a catalogue publication year and irregular maintenance rather than a publisher version identifier."
+      },
+      "updateVersusCorrection": "undetermined",
+      "licence": {
+        "state": "not-recorded",
+        "reason": "Attribution and licence wording remain pending review, so no licence baseline exists to compare against."
+      },
+      "licenceReviewWithoutFurtherEvidence": "evidence-insufficient",
+      "acceptedFacts": [
+        { "id": "ab-staged-archive-checksum", "dependsOn": "source-bytes" }
+      ],
+      "immutableObjectStorage": false,
+      "productionEligible": false
+    }
+  ],
+  "reviews": []
+}
