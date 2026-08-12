@@ -15,6 +15,8 @@ export type RankedRiding = Readonly<{
   detectedChangePercent: number;
   detectedChangeHectares: number;
   forestedHectares: number;
+  /** Share of the detected change with no matching official record, as a 0–100 percent like `detectedChangePercent`. Required so a rank is never readable without it. */
+  unmatchedSharePercent: number;
   coverageGrade: CoverageGrade;
   evidence: EvidenceClass;
   sufficientCoverage: boolean;

@@ -5,8 +5,8 @@ from "./types.ts";
 
 export type RankedRidingsResult = Readonly<{ ranked: readonly RankedRiding[]; insufficientCoverage: readonly RankedRiding[] }>;
 export const RANKING_COPY = {
-  en: { metric: "Detected change as a share of forested area", insufficient: "Insufficient coverage — not ranked", hectares: "Detected change (ha)", forested: "Forested area (ha)" },
-  fr: { metric: "Changement détecté en part de la superficie forestière", insufficient: "Couverture insuffisante — non classée", hectares: "Changement détecté (ha)", forested: "Superficie forestière (ha)" },
+  en: { metric: "Detected change as a share of forested area", insufficient: "Insufficient coverage — not ranked", hectares: "Detected change (ha)", forested: "Forested area (ha)", unmatched: "No matching official record" },
+  fr: { metric: "Changement détecté en part de la superficie forestière", insufficient: "Couverture insuffisante — non classée", hectares: "Changement détecté (ha)", forested: "Superficie forestière (ha)", unmatched: "Sans registre officiel correspondant" },
 } as const;
 
 export function rankRidings(rows: readonly RankedRiding[]): RankedRidingsResult {
