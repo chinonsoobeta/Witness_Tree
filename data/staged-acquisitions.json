@@ -37,7 +37,17 @@
       "zipIntegrity": "passed",
       "licenceId": "ogl-alberta",
       "temporalCoverage": "catalogue publication 2022; irregular maintenance",
-      "attributionState": "pending-review",
+      "attributionState": "metadata-verified",
+      "attribution": "Contains information licensed under the Open Government Licence – Alberta.",
+      "licenceUrl": "https://open.alberta.ca/licence",
+      "licenceVersion": "2.2",
+      "attributionBasis": "The Open Government Licence - Alberta version 2.2 requires the attribution statement specified by the Information Provider, and requires this exact default statement when the Information Provider specifies none. No dataset-specific statement is published in the Open Government catalogue record, in the GeoDiscover record, or in the archive's own FGDB metadata, so the default statement applies. The licence also asks that a link to the licence be provided where possible.",
+      "attributionSources": [
+        "https://open.alberta.ca/licence",
+        "https://open.canada.ca/data/en/dataset/64b0e73a-da5f-4f7f-bca1-b656b6e86c94"
+      ],
+      "attributionVerifiedAt": "2026-08-12T06:34:26Z",
+      "changesNotice": "This raw archive is unchanged. A separately documented deterministic repair-or-quarantine evaluation computed geometry repairs in memory only; it changed no source geometry and wrote no derived geometry.",
       "immutableObjectStorage": false,
       "productionEligible": false
     }
