@@ -6,6 +6,7 @@ import { validateStagedAcquisitions } from "../scripts/check-staged-acquisitions
 const manifest = JSON.parse(readFileSync(new URL("../data/staged-acquisitions.json", import.meta.url), "utf8"));
 const first = manifest.entries[0];
 const alberta = manifest.entries.find((entry) => entry.sourceId === "alberta-avi-crown");
+const canopy = manifest.entries.find((entry) => entry.sourceId === "nrcan-forest-canopy-cover-2022");
 
 test("verified local acquisition remains staging-only", () => {
   assert.equal(validateStagedAcquisitions(manifest), manifest);
@@ -16,8 +17,18 @@ test("verified local acquisition remains staging-only", () => {
   assert.equal(first.attributionState, "metadata-verified");
   assert.match(first.attribution, /Ministère des Ressources naturelles et des Forêts/);
   assert.equal(first.licenceUrl, "https://www.donneesquebec.ca/licence/#cc-by");
-  assert.equal(manifest.entries.reduce((total, entry) => total + entry.byteLength, 0), 971285693);
+  assert.equal(manifest.entries.reduce((total, entry) => total + entry.byteLength, 0), 10925681632);
   assert.equal(alberta?.sha256, "e93572129f25c83911b73eadfacff12624ff6b08f2db4b311c1662196b665093");
+});
+
+test("staged canopy cover acquisition is pinned and staging-only", () => {
+  assert.ok(canopy, "nrcan-forest-canopy-cover-2022 entry is missing from the manifest");
+  assert.equal(canopy.byteLength, 9954395939);
+  assert.equal(canopy.sha256, "80c37461f4deccfdfffc26124e9064d53a94dde660b9f96194445870393af130");
+  assert.equal(canopy.immutableObjectStorage, false);
+  assert.equal(canopy.productionEligible, false);
+  assert.equal(canopy.attributionState, "metadata-verified");
+  assert.match(canopy.licenceUrl, /^https:\/\/open\.canada\.ca\//);
 });
 
 test("staging gate rejects unsafe paths, missing integrity, and inflated claims", () => {

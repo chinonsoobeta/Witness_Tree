@@ -19,10 +19,39 @@ test("national and provincial discovery entries retain their bounded role and un
   assert.equal(byId.get("elections-canada-45th-electoral-boundaries")?.licence.state, "unresolved");
   assert.equal(byId.get("canadian-protected-and-conserved-areas-database")?.licence.state, "unresolved");
   assert.match(byId.get("qc-historical-wildfire")?.intendedRole.en ?? "", /not a live-fire source/);
-  assert.equal(byId.get("nrcan-ca-forest-harvest-1985-2022")?.access.state, "catalogue-listed");
-  assert.match(byId.get("nrcan-ca-forest-harvest-1985-2022")?.unresolvedFields.join(" ") ?? "", /resource name and URL conflict/i);
   assert.equal(byId.get("nrcan-forest-canopy-cover-2022")?.access.url, "https://opendata.nfis.org/downloads/forest_change/CA_canopy_cover_2022.zip");
   assert.equal(byId.get("nrcan-forest-canopy-height-2022")?.access.url, "https://opendata.nfis.org/downloads/forest_change/CA_canopy_height_2022.zip");
+});
+
+test("the resolved harvest record carries a verified harvest URL and keeps the publisher link error open", () => {
+  const byId = new Map(registry.entries.map((entry) => [entry.id, entry]));
+  const harvest = byId.get("nrcan-ca-forest-harvest-1985-2022");
+  const wildfire = byId.get("nrcan-ca-forest-wildfire-1985-2022");
+  assert.equal(harvest?.access.state, "verified");
+  assert.equal(harvest?.access.url, "https://opendata.nfis.org/downloads/forest_change/CA_Forest_Harvest_1985-2022.zip");
+  assert.deepEqual(harvest?.access.formats, ["zip"]);
+  assert.equal(harvest?.licence.state, "verified");
+  assert.equal(harvest?.licence.id, "ogl-canada");
+  assert.equal(harvest?.productionEligible, false);
+  // The catalogue conflict is resolved only because harvest and wildfire are proven to be
+  // two distinct artifacts. If either URL ever collapses onto the other, the resolution is void.
+  assert.equal(wildfire?.access.state, "verified");
+  assert.equal(wildfire?.access.url, "https://opendata.nfis.org/downloads/forest_change/CA_Forest_Fire_1985-2022.zip");
+  assert.notEqual(harvest?.access.url, wildfire?.access.url);
+  assert.equal(wildfire?.productionEligible, false);
+  // Resolving the download URL must not be mistaken for the publisher having fixed its catalogue.
+  assert.match(harvest?.unresolvedFields.join(" ") ?? "", /publisher correction/i);
+  assert.match(harvest?.verifiedFacts.join(" ") ?? "", /still points to a URL named CA_Forest_Fire_1985-2022\.zip/i);
+});
+
+test("Ontario FRI Term 2 stays unresolved and records a request-based access route", () => {
+  const fri = registry.entries.find((entry) => entry.id === "ontario-fri-term-2-2018-2028");
+  assert.equal(fri?.access.state, "unresolved");
+  assert.equal("url" in (fri?.access ?? {}), false);
+  assert.equal(fri?.productionEligible, false);
+  assert.match(fri?.unresolvedFields.join(" ") ?? "", /no open Term 2 bulk endpoint|none was found/i);
+  assert.match(fri?.verifiedFacts.join(" ") ?? "", /info\.mnrfscience@ontario\.ca/);
+  assert.match(fri?.verifiedFacts.join(" ") ?? "", /draft data/i);
 });
 
 test("candidate registry rejects production, unsafe URLs, incomplete bilingual purpose, and removed uncertainty", () => {
