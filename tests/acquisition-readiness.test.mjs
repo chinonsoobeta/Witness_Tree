@@ -6,12 +6,18 @@ import { validateAcquisitionReadiness } from "../scripts/check-acquisition-readi
 const registry = JSON.parse(readFileSync(new URL("../data/acquisition-readiness.json", import.meta.url), "utf8"));
 const first = registry.sources[0];
 const alberta = registry.sources.find((source) => source.id === "alberta-avi-crown");
+const canopyCover = registry.sources.find((source) => source.id === "nrcan-forest-canopy-cover-2022");
+const canopyHeight = registry.sources.find((source) => source.id === "nrcan-forest-canopy-height-2022");
 
 test("audited acquisition metadata is exact and remains blocked", () => {
   assert.equal(validateAcquisitionReadiness(registry), registry);
   assert.equal(registry.sources.every((source) => source.productionEligible === false), true);
   assert.equal(registry.sources.every((source) => source.storageReviewed === false && source.computeReviewed === false && source.checksumPlanReviewed === false && source.attributionReviewed === false && source.sourceSelected === false), true);
-  assert.equal(registry.sources.filter((source) => source.head).reduce((total, source) => total + source.head.contentLengthBytes, 0), 72325455437);
+  assert.equal(registry.sources.filter((source) => source.head).reduce((total, source) => total + source.head.contentLengthBytes, 0), 92627415442);
+  assert.equal(canopyCover?.head.contentLengthBytes, 9954395939);
+  assert.equal(canopyCover?.head.lastModified, "2025-04-08T17:14:10Z");
+  assert.equal(canopyHeight?.head.contentLengthBytes, 10347564066);
+  assert.equal(canopyHeight?.head.lastModified, "2025-04-08T17:16:07Z");
   assert.deepEqual(alberta?.unresolvedFields, ["Attribution", "Source version", "Checksum", "Archive", "Storage", "Compute"]);
   assert.equal(alberta?.head.lastModified, "2022-03-24T19:21:24Z");
   const ontario = registry.sources.find((source) => source.id === "ontario-fri-term-2-2018-2028");

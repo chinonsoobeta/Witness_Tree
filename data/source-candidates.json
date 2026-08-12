@@ -130,6 +130,48 @@
       "productionEligible": false
     },
     {
+      "id": "nrcan-ca-forest-harvest-1985-2022",
+      "status": "candidate",
+      "datasetTitle": "CA Forest Harvest (1985–2022)",
+      "publisher": "Natural Resources Canada",
+      "catalogueUrl": "https://open.canada.ca/data/en/dataset/87e35bf0-b734-4c4e-9eb6-e08ffe80e3fe",
+      "intendedRole": { "en": "National harvest-disturbance context for 1985–2022, subject to resolving the catalogue artifact mismatch.", "fr": "Contexte national des perturbations liées à la récolte pour 1985–2022, sous réserve de la résolution de l’incohérence de l’artefact du catalogue." },
+      "metadataVerification": "verified",
+      "licence": { "state": "verified", "id": "ogl-canada", "officialUrl": "https://open.canada.ca/en/open-government-licence-canada" },
+      "access": { "state": "catalogue-listed" },
+      "verifiedFacts": ["Official catalogue describes a national 30-m Landsat-derived harvest-disturbance product for 1985–2022.", "Catalogue assigns Open Government Licence – Canada and an as-needed update frequency.", "The catalogue resource named CA_Forest_Harvest_1985-2022.zip currently points to a URL named CA_Forest_Fire_1985-2022.zip."],
+      "unresolvedFields": ["Authoritative harvest ZIP URL because catalogue resource name and URL conflict", "Artifact identity", "Attribution", "Snapshot checksum", "Retrieval date"],
+      "productionEligible": false
+    },
+    {
+      "id": "nrcan-forest-canopy-cover-2022",
+      "status": "candidate",
+      "datasetTitle": "Forest Canopy Cover (2022)",
+      "publisher": "Natural Resources Canada",
+      "catalogueUrl": "https://open.canada.ca/data/en/dataset/5b905ab8-44dc-42b4-ad5b-3b1dde8423ab",
+      "intendedRole": { "en": "National 2022 canopy-cover context at 30-m resolution, for strategic assessment only.", "fr": "Contexte national du couvert forestier de 2022 à une résolution de 30 m, pour l’évaluation stratégique seulement." },
+      "metadataVerification": "verified",
+      "licence": { "state": "verified", "id": "ogl-canada", "officialUrl": "https://open.canada.ca/en/open-government-licence-canada" },
+      "access": { "state": "verified", "formats": ["zip"], "url": "https://opendata.nfis.org/downloads/forest_change/CA_canopy_cover_2022.zip" },
+      "verifiedFacts": ["Official catalogue describes wall-to-wall 2022 canopy-cover estimates at 30-m resolution across Canada's forested ecosystems.", "Catalogue says the product supports strategic assessment and is not designed for operational forest management.", "Catalogue assigns Open Government Licence – Canada and an as-needed update frequency."],
+      "unresolvedFields": ["Attribution", "Snapshot checksum", "Retrieval date", "Storage and compute approval"],
+      "productionEligible": false
+    },
+    {
+      "id": "nrcan-forest-canopy-height-2022",
+      "status": "candidate",
+      "datasetTitle": "Forest Canopy Height (2022)",
+      "publisher": "Natural Resources Canada",
+      "catalogueUrl": "https://open.canada.ca/data/en/dataset/016d2624-30b4-45f3-87d7-30b06c6a30ca",
+      "intendedRole": { "en": "National 2022 canopy-height context at 30-m resolution, for strategic assessment only.", "fr": "Contexte national de la hauteur du couvert forestier de 2022 à une résolution de 30 m, pour l’évaluation stratégique seulement." },
+      "metadataVerification": "verified",
+      "licence": { "state": "verified", "id": "ogl-canada", "officialUrl": "https://open.canada.ca/en/open-government-licence-canada" },
+      "access": { "state": "verified", "formats": ["zip"], "url": "https://opendata.nfis.org/downloads/forest_change/CA_canopy_height_2022.zip" },
+      "verifiedFacts": ["Official catalogue describes wall-to-wall 2022 canopy-height estimates at 30-m resolution across Canada's forested ecosystems.", "Catalogue says the product supports strategic assessment and is not designed for operational forest management.", "Catalogue assigns Open Government Licence – Canada and an as-needed update frequency."],
+      "unresolvedFields": ["Attribution", "Snapshot checksum", "Retrieval date", "Storage and compute approval"],
+      "productionEligible": false
+    },
+    {
       "id": "elections-canada-45th-electoral-boundaries",
       "status": "candidate",
       "datasetTitle": "45th General Election Electoral District Boundary Files",
