@@ -6,8 +6,10 @@ function TableHeaders({ locale, copy }: { locale: Locale; copy: (typeof RANKING_
   return <tr><th scope="col">{locale === "en" ? "Riding" : "Circonscription"}</th><th scope="col">{copy.metric}</th><th scope="col">{copy.hectares}</th><th scope="col">{copy.forested}</th><th scope="col">{locale === "en" ? "Coverage" : "Couverture"}</th><th scope="col">{locale === "en" ? "Evidence" : "Élément de preuve"}</th></tr>;
 }
 
+/** The rank basis and its denominator share the one cell, so a cropped screenshot cannot separate them. */
 function RidingRow({ row, locale }: { row: RankedRiding; locale: Locale }) {
-  return <tr><th scope="row">{row.name[locale]}</th><td>{row.detectedChangePercent}%</td><td>{row.detectedChangeHectares} ha</td><td>{row.forestedHectares} ha</td><td><CoverageBand coverageGrade={row.coverageGrade} locale={locale} /></td><td><EvidenceChip evidence={row.evidence} locale={locale} /></td></tr>;
+  const copy = RANKING_COPY[locale];
+  return <tr><th scope="row">{row.name[locale]}</th><td>{row.detectedChangePercent}%<span className="rank-unmatched-share"> · {copy.unmatched}: {row.unmatchedSharePercent}%</span></td><td>{row.detectedChangeHectares} ha</td><td>{row.forestedHectares} ha</td><td><CoverageBand coverageGrade={row.coverageGrade} locale={locale} /></td><td><EvidenceChip evidence={row.evidence} locale={locale} /></td></tr>;
 }
 
 export function RankedRidingsTable({ rows, context, locale }: { rows: readonly RankedRiding[]; context: RankingContext; locale: Locale }) {
