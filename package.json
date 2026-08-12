@@ -13,6 +13,7 @@
     "test:unit": "node --test tests/*.test.mjs && tsx --test tests/*.test.ts tests/*.test.tsx",
     "typecheck": "tsc --noEmit",
     "check:bilingual": "node scripts/check-bilingual.mjs",
+    "check:source-candidates": "node scripts/check-source-candidates.mjs",
     "check:claims": "node scripts/check-claim-language.mjs",
     "check:style-tokens": "node scripts/check-style-tokens.mjs",
     "check:brand-token": "node scripts/check-brand-token.mjs",

@@ -17,6 +17,7 @@ jobs:
       - run: npx tsc --noEmit
       - run: npm run lint
       - run: node scripts/check-bilingual.mjs
+      - run: npm run check:source-candidates
       - run: npm run check:accessibility
       - run: npm run build
       - run: npm run check:claims
