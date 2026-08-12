@@ -39,6 +39,7 @@ npm run typecheck
 npm run lint
 npm run check:bilingual
 npm run check:source-candidates
+npm run check:acquisition-readiness
 npm run check:claims
 npm run check:style-tokens
 npm run check:brand-token
@@ -74,9 +75,10 @@ The following are accepted foundations, primarily with illustrative fixtures and
 
 ### Phase 1 — source acquisition and lineage
 
-1. Replace illustrative ledger entries with verified sources, actual licences, versions, retrieval timestamps, and attributable publisher metadata.
-2. Acquire lawful immutable raw snapshots using the archive contract; put real objects in approved storage and retain checksums/previous links.
-3. Create a source-review process for updates, corrections, licence changes, and reprocessing. Do not fabricate a successful acquisition or current coverage.
+1. Resolve the owner decisions in [`docs/ACQUISITION_DECISION.md`](ACQUISITION_DECISION.md). Current read-only preflight has confirmed at least 72,325,455,437 compressed bytes across four candidate artifacts; Ontario FRI still lacks a verified downloadable data endpoint.
+2. Replace illustrative ledger entries with verified sources, actual licences, versions, retrieval timestamps, and attributable publisher metadata.
+3. Acquire lawful immutable raw snapshots using the archive contract; put real objects in approved storage and retain checksums/previous links.
+4. Create a source-review process for updates, corrections, licence changes, and reprocessing. Do not fabricate a successful acquisition or current coverage.
 
 ### Phase 2 — national baseline processing (1984–present)
 

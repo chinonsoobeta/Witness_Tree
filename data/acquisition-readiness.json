@@ -1,0 +1,119 @@
+{
+  "status": "audit-observed",
+  "notice": "This registry records only audit-time HEAD observations. It does not authorize acquisition or production use.",
+  "sources": [
+    {
+      "id": "nrcan-annual-land-cover-v2",
+      "publisher": "Natural Resources Canada",
+      "datasetTitle": "Annual land cover, Version 2",
+      "sourceVersion": "Version 2",
+      "format": "ZIP",
+      "licence": "Open Government Licence – Canada",
+      "updateCadence": "as-needed",
+      "temporalCoverage": "1984-2022",
+      "annualFiles": 39,
+      "urlTemplate": "https://opendata.nfis.org/downloads/forest_change/CA_forest_VLCE2_{YEAR}.zip",
+      "head": {
+        "observedOn": "2026-08-11",
+        "observedTimezone": "America/Vancouver",
+        "contentLengthBytes": 58954694668
+      },
+      "unresolvedFields": [
+        "Attribution", "Checksum", "Storage", "Compute"
+      ],
+      "storageReviewed": false,
+      "computeReviewed": false,
+      "checksumPlanReviewed": false,
+      "attributionReviewed": false,
+      "sourceSelected": false,
+      "productionEligible": false
+    },
+    {
+      "id": "qc-current-ecoforest",
+      "publisher": "Ministère des Ressources naturelles et des Forêts du Québec",
+      "datasetTitle": "Current ecoforest map",
+      "format": "GPKG ZIP",
+      "licence": "CC BY 4.0",
+      "updateCadence": "annual",
+      "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Cartes_ecoforestieres_perturbations/02-Donnees/PROV/CARTE_ECO_MAJ_PROV_GPKG.zip",
+      "head": {
+        "observedOn": "2026-08-11",
+        "observedTimezone": "America/Vancouver",
+        "contentLengthBytes": 12399475076
+      },
+      "unresolvedFields": [
+        "Attribution", "Checksum", "Storage", "Compute"
+      ],
+      "storageReviewed": false,
+      "computeReviewed": false,
+      "checksumPlanReviewed": false,
+      "attributionReviewed": false,
+      "sourceSelected": false,
+      "productionEligible": false
+    },
+    {
+      "id": "qc-historic-wildfire-detailed",
+      "publisher": "Ministère des Ressources naturelles et des Forêts du Québec",
+      "datasetTitle": "Historic detailed wildfire",
+      "format": "GPKG ZIP",
+      "licence": "CC BY 4.0",
+      "updateCadence": "annual",
+      "temporalCoverage": "since 1976; catalogue temporal endpoint 2024",
+      "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/PERTURBATIONS_NATURELLES/Feux_foret/02-Donnees/PROV/FEUX_PROV_GPKG.zip",
+      "head": {
+        "observedOn": "2026-08-11",
+        "observedTimezone": "America/Vancouver",
+        "contentLengthBytes": 414244435
+      },
+      "unresolvedFields": [
+        "Attribution", "Checksum", "Storage", "Compute"
+      ],
+      "storageReviewed": false,
+      "computeReviewed": false,
+      "checksumPlanReviewed": false,
+      "attributionReviewed": false,
+      "sourceSelected": false,
+      "productionEligible": false
+    },
+    {
+      "id": "alberta-avi-crown",
+      "publisher": "Government of Alberta",
+      "datasetTitle": "Alberta Vegetation Inventory Crown",
+      "format": "FGDB ZIP",
+      "licence": "Open Government Licence - Alberta",
+      "updateCadence": "irregular",
+      "url": "https://extranet.gov.ab.ca/srd/geodiscover/srd_pub/biota/AlbertaVegetationInventoryCrown.zip",
+      "head": {
+        "observedOn": "2026-08-11",
+        "observedTimezone": "America/Vancouver",
+        "lastModified": "2022-03-24T19:21:24Z",
+        "contentLengthBytes": 557041258
+      },
+      "unresolvedFields": [
+        "Attribution", "Source version", "Checksum", "Archive", "Storage", "Compute"
+      ],
+      "storageReviewed": false,
+      "computeReviewed": false,
+      "checksumPlanReviewed": false,
+      "attributionReviewed": false,
+      "sourceSelected": false,
+      "productionEligible": false
+    },
+    {
+      "id": "ontario-fri-term-2-2018-2028",
+      "kind": "discovery-blocked",
+      "publisher": "Ontario Ministry of Natural Resources and Forestry",
+      "datasetTitle": "Forest Resource Inventory Term 2 (T2), 2018–2028",
+      "catalogueUrl": "https://data.ontario.ca/dataset/forest-resource-inventory-term-2-t2-2018-2028",
+      "unresolvedFields": [
+        "Verified data URL", "HEAD-observed byte size", "Attribution", "Source version", "Checksum", "Archive", "Storage", "Compute"
+      ],
+      "storageReviewed": false,
+      "computeReviewed": false,
+      "checksumPlanReviewed": false,
+      "attributionReviewed": false,
+      "sourceSelected": false,
+      "productionEligible": false
+    }
+  ]
+}
