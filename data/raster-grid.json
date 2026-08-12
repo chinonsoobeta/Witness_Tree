@@ -1,0 +1,139 @@
+{
+  "status": "local-validation-record",
+  "notice": "Read-only validation evidence for the NTEMS VLCE2 annual land cover series. Nothing here has been ingested, converted, reprojected, promoted to object storage, or connected to product records. Every value below was read with GDAL over the /vsizip virtual filesystem; no archive was extracted, modified, moved, or re-downloaded.",
+  "validatedAt": "2026-08-12T17:07:15Z",
+  "validationReport": "/Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data/work/geospatial-validation-2026-08-12/VALIDATION.md",
+  "stagingDirectory": "/Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data/raw/nrcan-annual-land-cover-v2/2026-08-12/",
+  "productName": "NTEMS Annual Forest Land Cover (VLCE2), Canada",
+  "publisher": "Natural Resources Canada, Canadian Forest Service",
+  "toolchain": {
+    "gdal": "3.13.2",
+    "proj": "9.8.1",
+    "geos": "3.14.1",
+    "readMethod": "gdalinfo -nomd over the /vsizip virtual filesystem, one invocation per year, 39 of 39 opened with zero GDAL errors.",
+    "statsRun": false,
+    "statsNote": "gdalinfo -stats was NOT run on any year. Class values were checked from the embedded raster attribute table and from the coarsest built-in overview only."
+  },
+  "temporalCoverage": {
+    "firstYear": 1984,
+    "lastYear": 2022,
+    "yearCount": 39,
+    "label": {
+      "en": "1984–2022",
+      "fr": "1984–2022"
+    },
+    "note": {
+      "en": "The staged NTEMS VLCE2 series ends at 2022. Coverage after 2022 is Unknown — no later year has been published to this archive, and none may be implied.",
+      "fr": "La série NTEMS VLCE2 archivée se termine en 2022. La couverture après 2022 est inconnue — aucune année ultérieure n'a été publiée dans cette archive, et aucune ne peut être sous-entendue."
+    }
+  },
+  "grid": {
+    "crs": {
+      "id": "vlce2-lcc-nad83",
+      "name": "Lambert_Conformal_Conic_2SP",
+      "proj4": "+proj=lcc +lat_0=49 +lon_0=-95 +lat_1=49 +lat_2=77 +x_0=0 +y_0=0 +datum=NAD83 +units=m +no_defs",
+      "wkt": "PROJCRS[\"Lambert_Conformal_Conic_2SP\",BASEGEOGCRS[\"NAD83\",DATUM[\"North American Datum 1983\",ELLIPSOID[\"GRS 1980\",6378137,298.257222101004,LENGTHUNIT[\"metre\",1]]],PRIMEM[\"Greenwich\",0,ANGLEUNIT[\"degree\",0.0174532925199433]],ID[\"EPSG\",4269]],CONVERSION[\"Lambert Conic Conformal (2SP)\",METHOD[\"Lambert Conic Conformal (2SP)\",ID[\"EPSG\",9802]],PARAMETER[\"Latitude of false origin\",49,ANGLEUNIT[\"degree\",0.0174532925199433],ID[\"EPSG\",8821]],PARAMETER[\"Longitude of false origin\",-95,ANGLEUNIT[\"degree\",0.0174532925199433],ID[\"EPSG\",8822]],PARAMETER[\"Latitude of 1st standard parallel\",49,ANGLEUNIT[\"degree\",0.0174532925199433],ID[\"EPSG\",8823]],PARAMETER[\"Latitude of 2nd standard parallel\",77,ANGLEUNIT[\"degree\",0.0174532925199433],ID[\"EPSG\",8824]],PARAMETER[\"Easting at false origin\",0,LENGTHUNIT[\"metre\",1],ID[\"EPSG\",8826]],PARAMETER[\"Northing at false origin\",0,LENGTHUNIT[\"metre\",1],ID[\"EPSG\",8827]]],CS[Cartesian,2],AXIS[\"easting\",east,ORDER[1],LENGTHUNIT[\"metre\",1,ID[\"EPSG\",9001]]],AXIS[\"northing\",north,ORDER[2],LENGTHUNIT[\"metre\",1,ID[\"EPSG\",9001]]]]",
+      "authorityCode": null,
+      "authorityCodeNote": "The PROJCRS carries no EPSG code; only the base geographic CRS does (EPSG:4269 / NAD83). The EPSG identity of this projected CRS is Unknown and must not be guessed. Carry the full WKT."
+    },
+    "geotransform": [-2660910.524, 30.0, 0.0, 2998848.1105, 0.0, -30.0],
+    "width": 193936,
+    "height": 128340,
+    "cellCount": 24889746240,
+    "pixelSize": {
+      "x": 30.0,
+      "y": -30.0,
+      "unit": "metre"
+    },
+    "bandCount": 1,
+    "dataType": "Byte",
+    "noDataValue": 255,
+    "blockSize": [128, 128],
+    "origin": {
+      "x": -2660910.524,
+      "y": 2998848.1105,
+      "convention": "upper-left pixel corner"
+    },
+    "extent": {
+      "minX": -2660910.524,
+      "minY": -851351.89,
+      "maxX": 3157169.476,
+      "maxY": 2998848.11
+    },
+    "identicalAcrossYears": true,
+    "identicalAcrossYearsEvidence": "Every field was compared against the 1984 baseline across all 39 years: driver, raster X/Y size, origin, pixel size, nodata, band data type, band count, and a SHA-256 of the full CRS WKT block. One distinct CRS hash, one distinct size, one distinct origin, one distinct nodata, one distinct band count. No year deviates."
+  },
+  "classScheme": {
+    "name": "VLCE2 land cover classes",
+    "classCount": 13,
+    "source": "The class scheme is documented in the README bundled with each annual archive and is reproduced here so no code has to read the .vat.dbf sidecar to learn it.",
+    "classes": [
+      { "value": 0, "code": "unclassified", "label": { "en": "Unclassified", "fr": "Non classé" } },
+      { "value": 20, "code": "water", "label": { "en": "Water", "fr": "Eau" } },
+      { "value": 31, "code": "snow_ice", "label": { "en": "Snow and ice", "fr": "Neige et glace" } },
+      { "value": 32, "code": "rock_rubble", "label": { "en": "Rock and rubble", "fr": "Roche et éboulis" } },
+      { "value": 33, "code": "exposed_barren_land", "label": { "en": "Exposed and barren land", "fr": "Sol exposé et dénudé" } },
+      { "value": 40, "code": "bryoids", "label": { "en": "Bryoids", "fr": "Bryoïdes" } },
+      { "value": 50, "code": "shrubs", "label": { "en": "Shrubs", "fr": "Arbustes" } },
+      { "value": 80, "code": "wetland", "label": { "en": "Wetland", "fr": "Milieu humide" } },
+      { "value": 81, "code": "wetland_treed", "label": { "en": "Wetland – treed", "fr": "Milieu humide arboré" } },
+      { "value": 100, "code": "herbs", "label": { "en": "Herbs", "fr": "Herbacées" } },
+      { "value": 210, "code": "coniferous", "label": { "en": "Coniferous", "fr": "Conifères" } },
+      { "value": 220, "code": "broadleaf", "label": { "en": "Broadleaf", "fr": "Feuillus" } },
+      { "value": 230, "code": "mixedwood", "label": { "en": "Mixedwood", "fr": "Peuplement mixte" } }
+    ]
+  },
+  "years": [
+    1984, 1985, 1986, 1987, 1988, 1989, 1990, 1991, 1992, 1993,
+    1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003,
+    2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013,
+    2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022
+  ],
+  "resamplingPolicy": {
+    "policy": "never-resample-the-raster",
+    "statement": {
+      "en": "The raster is categorical. Its cell values are class codes, not measurements, so any resampling that averages or interpolates them invents classes that are not in the source. The raster is never warped, reprojected, or resampled; vectors are reprojected onto this grid instead.",
+      "fr": "Le raster est catégoriel. Ses valeurs de cellule sont des codes de classe et non des mesures : tout rééchantillonnage qui les moyenne ou les interpole invente des classes absentes de la source. Le raster n'est jamais déformé, reprojeté ni rééchantillonné; ce sont les vecteurs qui sont reprojetés sur cette grille."
+    }
+  },
+  "reprojection": {
+    "direction": "vector-to-raster-grid",
+    "rasterCrsProj4": "+proj=lcc +lat_0=49 +lon_0=-95 +lat_1=49 +lat_2=77 +x_0=0 +y_0=0 +datum=NAD83 +units=m +no_defs",
+    "boundaryCrsProj4": "+proj=lcc +lat_0=63.390675 +lon_0=-91.8666666666667 +lat_1=49 +lat_2=77 +x_0=6200000 +y_0=3000000 +datum=NAD83 +units=m +no_defs",
+    "crsMatch": false,
+    "observedOffsetMetres": {
+      "upperLeft": [6121717.0, 1562023.5],
+      "lowerRight": [5925069.2, 1280202.8]
+    },
+    "statement": {
+      "en": "The raster CRS and the boundary CRS are different Lambert Conformal Conic definitions on NAD83. Overlaying them without reprojection produces a result offset by roughly 6,000 km, which is disjoint rather than subtly wrong. Boundary vectors must be reprojected onto the raster grid CRS before any intersection; the raster is never reprojected onto the boundary CRS.",
+      "fr": "Le SRC du raster et celui des limites sont deux définitions coniques conformes de Lambert distinctes sur NAD83. Les superposer sans reprojection produit un décalage d'environ 6 000 km, donc un résultat disjoint plutôt que légèrement faux. Les vecteurs de limites doivent être reprojetés vers le SRC de la grille raster avant toute intersection; le raster n'est jamais reprojeté vers le SRC des limites."
+    }
+  },
+  "boundaryCrsAgreement": {
+    "statCanEqualsElectionsCanada": true,
+    "method": "PROJ OSR IsSame() and IsSame(CRITERION=EQUIVALENT) both true; three test points including both extent corners round-trip with zero displacement.",
+    "statement": {
+      "en": "The Statistics Canada and Elections Canada boundary CRSs are the same CRS. Only the name string differs, so a StatCan-to-FED intersection needs no reprojection step between them.",
+      "fr": "Les SRC des limites de Statistique Canada et d'Élections Canada sont identiques. Seule la chaîne du nom diffère, de sorte qu'une intersection entre les deux ne nécessite aucune étape de reprojection."
+    }
+  },
+  "boundaryFeatureCounts": {
+    "method": "Real OGR reads (ogrinfo -so -al over /vsizip), 5 of 5 opened with zero GDAL errors. These confirm the counts previously derived from the .shx index arithmetic.",
+    "layers": [
+      { "archive": "FED_CA_2023_EN-SHP.zip", "layer": "FED_CA_2023_EN", "featureCount": 343, "geometryType": "Polygon" },
+      { "archive": "lfed000b21a_e.zip", "layer": "lfed000b21a_e", "featureCount": 338, "geometryType": "Polygon" },
+      { "archive": "lpr_000b21a_e.zip", "layer": "lpr_000b21a_e", "featureCount": 13, "geometryType": "Polygon" },
+      { "archive": "lcd_000b21a_e.zip", "layer": "lcd_000b21a_e", "featureCount": 293, "geometryType": "Polygon" },
+      { "archive": "lcsd000b21a_e.zip", "layer": "lcsd000b21a_e", "featureCount": 5161, "geometryType": "Polygon" }
+    ]
+  },
+  "limitations": [
+    "gdalinfo -stats was never run. Class-value checking used the embedded raster attribute table, which is publisher-supplied metadata rather than a recomputation from the pixels, plus the coarsest built-in overview (379 x 251) — a decimated sample of roughly 1 cell in 261,000. A rare out-of-scheme pixel at full resolution would not have been caught.",
+    "ogrinfo -so reads headers only. No geometry validity check has been run on any vector: self-intersections, ring order, null or empty geometries, duplicate identifiers, and topological gaps or overlaps between adjacent polygons are all Unknown.",
+    "No reprojection and no raster-to-vector intersection has actually been executed. Only the CRS difference was established; whether the boundary polygons fall inside the raster footprint once reprojected is Unknown.",
+    "The 1991 and 2005 raster attribute tables are empty. Their full-resolution class distribution is Unknown; see data/raster-defects.json.",
+    "Nothing in this record has been ingested, converted, promoted to object storage, or connected to product records, and nothing here is production eligible."
+  ],
+  "productionEligible": false
+}
