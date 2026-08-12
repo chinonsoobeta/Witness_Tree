@@ -15,19 +15,10 @@ async function fixture(routes) {
   return root;
 }
 
-const english = '<SiteShell locale="en"><main>English content</main></SiteShell>';
-const french = '<SiteShell locale="fr"><main>Contenu français</main></SiteShell>';
+const english = 'export default function Page() { return <SiteShell locale="en"><main>English content</main></SiteShell>; }';
+const french = 'export default function Page() { return <SiteShell locale="fr"><main>Contenu français</main></SiteShell>; }';
 
-const completeRoutes = {
-  '/en': english,
-  '/fr': french,
-  '/en/components': english,
-  '/fr/composants': french,
-  '/en/methods': english,
-  '/fr/methodes': french,
-  '/en/data': english,
-  '/fr/donnees': french,
-};
+const completeRoutes = Object.fromEntries(REQUIRED_ROUTE_PAIRS.flatMap(({ en, fr }) => [[en, english], [fr, french]]));
 
 test('parity passes when every required route has translated content', async () => {
   const root = await fixture(completeRoutes);

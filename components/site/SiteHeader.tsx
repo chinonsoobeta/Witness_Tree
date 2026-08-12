@@ -3,14 +3,16 @@ import type { Locale } from "@/lib/domain";
 
 const NAV = {
   en: [
+    ["Compare", "/en/compare"],
+    ["Wildfire", "/en/wildfire"],
     ["Methods", "/en/methods"],
     ["Data", "/en/data"],
-    ["Components", "/en/components"],
   ],
   fr: [
+    ["Comparer", "/fr/comparer"],
+    ["Incendies", "/fr/incendies"],
     ["Méthodes", "/fr/methodes"],
     ["Données", "/fr/donnees"],
-    ["Composants", "/fr/composants"],
   ],
 } as const;
 

@@ -1,0 +1,8 @@
+import type { Locale } from "@/lib/domain";
+import type { Location, Place } from "@/lib/places";
+import { ConfidenceBadge, EvidenceChip, ProvenanceBlock } from "@/components/policy";
+
+export function LocationResult({ locale, location, places }: Readonly<{ locale: Locale; location: Location; places: readonly Place[] }>) {
+  const text = locale === "en" ? { coordinates: "Coordinates and accuracy", contains: "Containing geographies", events: "Events", limitation: "Limitation", provenance: "Provenance" } : { coordinates: "Coordonnées et précision", contains: "Géographies contenantes", events: "Événements", limitation: "Limite", provenance: "Provenance" };
+  return <main id="main" className="page-wrap"><header><p>{locale === "en" ? "Illustrative fixture" : "Exemple illustratif"}</p><h1>{location.summary[locale]}</h1></header><section><h2>{text.coordinates}</h2><p>{location.latitude}, {location.longitude}; ±{location.accuracyMetres} m</p></section><section><h2>{text.contains}</h2><ul>{places.map((place) => <li key={place.id}><a href={locale === "en" ? `/en/places/${place.id}` : `/fr/lieux/${place.id}`}>{place.name[locale]}</a></li>)}</ul></section><section><h2>{text.events}</h2>{location.events.map((event) => <article key={event.id}><h3>{event.year} — {event.title[locale]}</h3><EvidenceChip evidence={event.evidence} locale={locale} /><ConfidenceBadge confidence={event.confidence} locale={locale} /><p><strong>{text.limitation}:</strong> {event.limitation[locale]}</p><h4>{text.provenance}</h4><ProvenanceBlock provenance={event.provenance} locale={locale} /></article>)}</section></main>;
+}

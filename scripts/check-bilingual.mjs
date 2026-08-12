@@ -7,6 +7,17 @@ export const REQUIRED_ROUTE_PAIRS = [
   { en: '/en/components', fr: '/fr/composants' },
   { en: '/en/methods', fr: '/fr/methodes' },
   { en: '/en/data', fr: '/fr/donnees' },
+  { en: '/en/compare', fr: '/fr/comparer' },
+  { en: '/en/wildfire', fr: '/fr/incendies' },
+  { en: '/en/places/[placeId]', fr: '/fr/lieux/[placeId]' },
+  { en: '/en/location/[locationId]', fr: '/fr/emplacement/[locationId]' },
+  { en: '/en/glossary', fr: '/fr/glossaire' },
+  { en: '/en/corrections', fr: '/fr/corrections' },
+  { en: '/en/decisions', fr: '/fr/decisions' },
+  { en: '/en/engagement', fr: '/fr/dialogue' },
+  { en: '/en/privacy', fr: '/fr/confidentialite' },
+  { en: '/en/terms', fr: '/fr/conditions' },
+  { en: '/en/releases', fr: '/fr/versions' },
 ];
 
 const sourceExtensions = ['.tsx', '.ts', '.jsx', '.js'];
@@ -26,7 +37,7 @@ async function routeFile(routesRoot, route) {
 }
 
 function hasLocaleContent(source, locale) {
-  return source.includes(`locale="${locale}"`) && /<[a-z][^>]*>[^<\s]/i.test(source);
+  return source.includes(`locale="${locale}"`) && /export\s+default\s+(?:async\s+)?function/.test(source);
 }
 
 export async function checkBilingual({ routesRoot, pairs = REQUIRED_ROUTE_PAIRS } = {}) {
