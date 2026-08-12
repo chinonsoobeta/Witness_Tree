@@ -11,6 +11,8 @@ export type LocalStagingRecord = Readonly<{
   retrievedAt: string;
   byteLength: number;
   sha256: string;
+  /** Lower-case hex CRC64NVME of the whole file, computed locally. Optional: it exists only where a full-object remote comparison is needed. */
+  crc64nvme?: string;
   originalFilename: string;
   publisher: string;
   catalogueUrl: string;
@@ -29,13 +31,49 @@ export type CanadianRegionEvidence = Readonly<{
 
 export type PromotionState = "uploaded" | "remote-verified" | "rejected";
 
+/**
+ * Algorithms this contract can link to a locally staged whole-object digest.
+ * A single-PUT object tops out at 5 GB and can carry a full-object SHA-256; anything larger is
+ * multipart, where S3 offers a full-object digest only for CRC32, CRC32C and CRC64NVME. CRC64NVME
+ * is the one this contract stages locally, so it is the size-independent integrity link.
+ */
+export type FullObjectChecksumAlgorithm = "sha256" | "crc64nvme";
+
+/** A digest over the whole object, directly comparable to the locally staged digest of the same algorithm. */
+export type FullObjectChecksum = Readonly<{
+  checksumType: "full-object";
+  algorithm: FullObjectChecksumAlgorithm;
+  /** Lower-case hex digest of the entire object. */
+  digest: string;
+}>;
+
+/**
+ * A multipart digest: a hash over the concatenated per-part digests, suffixed with the part count.
+ * It is never equal to the whole-object digest of the same algorithm, so it is a distinct type and
+ * comparing it to a FullObjectChecksum is a type error. It carries meaning only alongside the part
+ * size and part count that produced it; either being absent leaves the object's integrity Unknown.
+ */
+export type CompositeChecksum = Readonly<{
+  checksumType: "composite";
+  algorithm: "sha256";
+  /** Provider-formatted digest: base64 over the concatenated per-part digests, then "-{partCount}". */
+  digest: string;
+  partSizeBytes?: number;
+  partCount?: number;
+}>;
+
+export type RemoteChecksumEvidence = FullObjectChecksum | CompositeChecksum;
+
 export type RemoteArchiveEvidence = Readonly<{
   bucketId: string;
   region: CanadianRegionEvidence;
   payloadVersionId?: string;
   manifestVersionId?: string;
   remoteByteLength?: number;
-  remoteSha256?: string;
+  /** What the provider reports for the stored object. */
+  remoteChecksum?: RemoteChecksumEvidence;
+  /** A composite recomputed locally from the staged bytes, the only way to link a multipart digest back to staging. */
+  locallyRecomputedComposite?: CompositeChecksum;
   retentionMode?: "compliance";
   retentionUntil?: string;
 }>;
