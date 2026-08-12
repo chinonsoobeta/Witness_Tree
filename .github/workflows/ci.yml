@@ -22,6 +22,7 @@ jobs:
       - run: npm run check:staged-acquisitions
       - run: npm run check:staged-geospatial-profile
       - run: npm run check:immutable-promotions
+      - run: npm run check:boundary-editions
       - run: npm run check:accessibility
       - run: npm run build
       - run: npm run check:claims
