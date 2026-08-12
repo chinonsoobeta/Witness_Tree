@@ -74,6 +74,44 @@ const EXPECTED_TOOLCHAIN = { gdal: "3.13.2", proj: "9.8.1", geos: "3.14.1" };
  */
 const RETIRED_MISSING_GDAL_CLAIM = /gdalinfo is not installed|GDAL is not installed/i;
 
+/**
+ * The second retired claim. GDAL was not merely installed, it was run: `ogrinfo -so` header
+ * reads against these archives confirmed the feature counts and the CRS identity.
+ * Understating a verified read is as much a defect as overstating one.
+ */
+const RETIRED_UNREAD_ARCHIVES_CLAIM =
+  /(?:it |GDAL |OGR |ogrinfo )?was not run against these archives|were not opened with GDAL|no vector content was (?:read|opened)|the \.shp vector content was NOT opened/i;
+
+/**
+ * `ogrinfo -so` reads headers only. Geometry validity, topology, the full attribute schema,
+ * reprojection, and intersection were all never performed, and the record may not say they
+ * were. These patterns are the overclaims the gate refuses.
+ */
+const NOT_NEGATED = "(?<!\\bno )(?<!\\bnot )(?<!\\bnever )";
+/** A short span of the same sentence, so "X ... were checked" is caught as well as "X was checked". */
+const SPAN = "[^.;—]{0,48}?\\s";
+const WAS = "(?:was|were|has been|have been|is|are)\\b";
+const OVERCLAIMED_VALIDATION = [
+  new RegExp(`${NOT_NEGATED}\\bgeometr(?:y|ies)\\b${SPAN}${WAS} (?:checked|validated|verified|confirmed|sound|valid)\\b`, "i"),
+  new RegExp(`\\b(?:validated|verified|checked) (?:the )?geometr(?:y|ies)\\b`, "i"),
+  new RegExp(`${NOT_NEGATED}\\btopolog(?:y|ical)\\b${SPAN}${WAS} (?:checked|validated|verified|confirmed|clean|sound)\\b`, "i"),
+  new RegExp(`${NOT_NEGATED}\\b(?:self-intersections|ring order|duplicate identifiers|null or empty geometries)\\b${SPAN}${WAS} (?:checked|validated|verified|ruled out)\\b`, "i"),
+  new RegExp(`${NOT_NEGATED}\\b(?:reprojection|intersection)s?\\b${SPAN}(?:was|were|has|have)\\b\\s(?:been )?(?:run|executed|performed|completed)\\b`, "i"),
+  new RegExp(`${NOT_NEGATED}\\b(?:full )?attribute schema\\b${SPAN}${WAS} (?:validated|verified|read|checked|confirmed|known)\\b`, "i"),
+];
+
+/** Any prose field of the record that must not overclaim what the header reads established. */
+function refuseOverclaims(text, where) {
+  for (const pattern of OVERCLAIMED_VALIDATION) {
+    const match = pattern.exec(text);
+    if (match) {
+      throw new Error(
+        `${where} claims validation that was never performed: "${match[0]}". ogrinfo -so reads headers only; geometry validity, topology, and the full attribute schema are Unknown, and no reprojection or intersection has been executed.`,
+      );
+    }
+  }
+}
+
 const DISTRICT_COUNT_BY_ORDER = { "2013": 338, "2023": 343 };
 const SHA_256 = /^[a-f0-9]{64}$/;
 const UTC_TIMESTAMP = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/;
@@ -142,9 +180,22 @@ function validateToolchain(record) {
   }
   required(toolchain.versionSource, "Toolchain version source");
   required(toolchain.readNote, "Toolchain read note");
-  if (toolchain.vectorContentRead !== false) {
-    throw new Error("No vector content was read for this record; the record must not claim it was.");
+  if (toolchain.vectorContentRead !== true) {
+    throw new Error("ogrinfo -so was run against these archives; the record must not understate that read.");
   }
+  if (toolchain.vectorReadDepth !== "headers-only") {
+    throw new Error("The read was ogrinfo -so, which is headers-only; the record must record that depth.");
+  }
+  if (toolchain.geometryValidated !== false) {
+    throw new Error("No geometry validity check has been run; the record must not claim one.");
+  }
+  if (!/ogrinfo -so/.test(toolchain.readNote)) {
+    throw new Error("The read note must name the read that was actually performed, ogrinfo -so.");
+  }
+  if (RETIRED_MISSING_GDAL_CLAIM.test(toolchain.readNote) || RETIRED_UNREAD_ARCHIVES_CLAIM.test(toolchain.readNote)) {
+    throw new Error("GDAL is installed and was run against these archives; the read note must not deny either.");
+  }
+  refuseOverclaims(toolchain.readNote, "The toolchain read note");
 }
 
 function validateEditions(record) {
@@ -227,13 +278,30 @@ export function validateBoundaryEditions(record) {
   if (!record.notice.includes(`GDAL ${EXPECTED_TOOLCHAIN.gdal}`)) {
     throw new Error("The notice must record the installed GDAL version.");
   }
-  if (!/it was not run against these archives/.test(record.notice)) {
-    throw new Error("The notice must keep the unread-vector-content limitation.");
+  if (RETIRED_UNREAD_ARCHIVES_CLAIM.test(record.notice)) {
+    throw new Error("ogrinfo -so was run against these archives; the notice must not claim otherwise.");
   }
+  if (!/ogrinfo -so/.test(record.notice)) {
+    throw new Error("The notice must record the read that was performed, ogrinfo -so.");
+  }
+  if (!/reads headers only/.test(record.notice)) {
+    throw new Error("The notice must keep the headers-only limitation on that read.");
+  }
+  if (!/geometry validity and the full attribute schema remain Unknown/.test(record.notice)) {
+    throw new Error("The notice must keep geometry validity and the full attribute schema as Unknown.");
+  }
+  if (!/no reprojection and no intersection has been executed/.test(record.notice)) {
+    throw new Error("The notice must keep the no-reprojection, no-intersection limitation.");
+  }
+  refuseOverclaims(record.notice, "The notice");
   if (!/not been ingested|Nothing here has been ingested/i.test(record.notice)) throw new Error("The notice must keep the not-ingested limitation.");
   requireUtcTimestamp(record.stagedAt, "Staging time");
   required(record.featureCountMethod, "Feature-count method");
   if (!/\.shx/.test(record.featureCountMethod)) throw new Error("The feature-count method must state that counts come from the .shx index.");
+  if (!/OGR|ogrinfo/.test(record.featureCountMethod)) {
+    throw new Error("The feature-count method must record that the .shx arithmetic was confirmed by real OGR reads.");
+  }
+  refuseOverclaims(record.featureCountMethod, "The feature-count method");
   required(record.licenceNotice, "Licence notice");
 
   if (!Array.isArray(record.limitations) || record.limitations.length === 0) throw new Error("Limitations are required.");
@@ -244,9 +312,19 @@ export function validateBoundaryEditions(record) {
   if (RETIRED_MISSING_GDAL_CLAIM.test(limitations)) {
     throw new Error("GDAL is installed; the limitations must not claim it is missing.");
   }
-  if (!/were not opened with GDAL/.test(limitations)) {
-    throw new Error("The record must state that the archives were not opened with GDAL.");
+  if (RETIRED_UNREAD_ARCHIVES_CLAIM.test(limitations)) {
+    throw new Error("ogrinfo -so was run against these archives; the limitations must not claim otherwise.");
   }
+  if (!/opened with ogrinfo -so, which reads headers only/.test(limitations)) {
+    throw new Error("The record must state that the archives were read with ogrinfo -so, headers only.");
+  }
+  if (!/no geometry was examined/.test(limitations)) {
+    throw new Error("The record must state that no geometry was examined.");
+  }
+  if (!/No reprojection and no intersection has been executed/.test(limitations)) {
+    throw new Error("The record must state that no reprojection and no intersection has been executed.");
+  }
+  refuseOverclaims(limitations, "The limitations");
   if (!/Unknown/.test(limitations)) throw new Error("Unvalidated geometry must be recorded as Unknown.");
   if (!/publishes no 2023 Representation Order boundary file/.test(limitations)) {
     throw new Error("The record must state why the current-order geometry comes from Elections Canada.");
