@@ -13,10 +13,15 @@
     "test:unit": "node --test tests/*.test.mjs && node --experimental-strip-types --test tests/*.test.ts && tsx --test tests/*.test.tsx",
     "typecheck": "tsc --noEmit",
     "check:bilingual": "node scripts/check-bilingual.mjs",
+    "check:claims": "node scripts/check-claim-language.mjs",
+    "check:style-tokens": "node scripts/check-style-tokens.mjs",
+    "check:accessibility": "node scripts/check-accessibility-contracts.mjs",
+    "check:budgets": "node scripts/check-budgets.mjs",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
+    "@bcgov/bc-sans": "^2.1.0",
     "drizzle-orm": "0.45.2",
     "react": "19.2.6",
     "react-dom": "19.2.6"

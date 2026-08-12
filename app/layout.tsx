@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import "@bcgov/bc-sans/css/BC_Sans.css";
 import "./globals.css";
 
 export const metadata: Metadata = {

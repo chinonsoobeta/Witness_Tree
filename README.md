@@ -2,11 +2,13 @@
 
 Witness Tree is a bilingual public record of documented and satellite-observed forest change in British Columbia, Alberta, Ontario, and Quebec. It is being built from the [implementation plan](docs/specification/Witness%20Tree%20Implementation%20Plan.docx).
 
-This repository currently delivers the audited technical foundation and a public component/methodology preview. Its source ledger is explicitly illustrative: no real provincial or national dataset has yet been ingested. The current data end year is therefore **unknown**, not zero.
+Public technical preview: [witness-tree-canada.r7bv67rgkk.chatgpt.site](https://witness-tree-canada.r7bv67rgkk.chatgpt.site)
+
+This repository currently delivers the audited technical foundation and a public preview. Its source ledger is explicitly illustrative: no real provincial or national dataset has yet been ingested. The current data end year is therefore **unknown**, not zero.
 
 ## What exists
 
-- English and French public routes, methodology, data-transparency pages, and component gallery
+- English and French public routes for methods, data, places, location records, wildfire context, riding comparison, and governance disclosures
 - enforced `Figure` versus `Unknown` reporting types
 - visible evidence, confidence, coverage, and provenance components
 - forest definition and denominator policy

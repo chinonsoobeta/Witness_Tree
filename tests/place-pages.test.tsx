@@ -45,3 +45,9 @@ test("localized routes use the shared shell and consistent main landmark", () =>
     assert.match(readFileSync(new URL(path, import.meta.url), "utf8"), /<main id="main" className="page-wrap">/);
   }
 });
+
+test("annual table has a caption and scoped column headers", () => {
+  const chart = readFileSync(new URL("../components/places/AnnualChangeChart.tsx", import.meta.url), "utf8");
+  assert.match(chart, /<caption>\{title\}<\/caption>/);
+  assert.equal((chart.match(/<th scope="col">/g) ?? []).length, 3);
+});

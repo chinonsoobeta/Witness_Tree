@@ -1,0 +1,10 @@
+import type { LocalizedString, Reported } from "@/lib/domain";
+export const CORRECTION_CLASSES = ["critical", "indigenous-geography", "material", "minor"] as const;
+export type CorrectionClass = typeof CORRECTION_CLASSES[number];
+export type CaseStatus = "submitted" | "acknowledged" | "resolved" | "rejected";
+export type Recipient = Readonly<{ name: string; role: string }>;
+export type CorrectionCase = Readonly<{ id: string; status: CaseStatus; classification: CorrectionClass; submittedAt: Date; acknowledgedAt?: Date; resolvedAt?: Date; accountableRecipient?: Recipient; priorFigureAddress: string; publicRecord?: PublicCorrectionRecord; previouslyNotifiedSubscriberIds: readonly string[]; statusKind: "production" | "example" }>;
+export type PublicCorrectionRecord = Readonly<{ whatWasWrong: LocalizedString; whatIsNow: LocalizedString; whyChanged: LocalizedString; publicationDate: string }>;
+export type CorrectionNotice = Readonly<{ caseId: string; subscriberId: string; publicationDate: string }>;
+export type CorrectionInput = Omit<CorrectionCase, "id" | "status">;
+export type ReportedCorrection = Readonly<{ value: Reported }>;
