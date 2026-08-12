@@ -43,3 +43,12 @@ Candidate is not ingestion approval. It does not grant rights beyond the verifie
 - Elections Canada 45th-boundary and CPCAD use remain blocked until the applicable terms, attribution and selected release are captured.
 
 The Québec MRNF historical CC BY wildfire dataset and SOPFEU live information must never be treated as the same source or as carrying the same reuse rights.
+
+## Artifact preflight observations
+
+Read-only HTTP header checks on 11 August 2026 (Pacific) resolved these additional acquisition facts without downloading data bodies:
+
+- Alberta AVI Crown advertises an FGDB ZIP at `https://extranet.gov.ab.ca/srd/geodiscover/srd_pub/biota/AlbertaVegetationInventoryCrown.zip`; its declared compressed length is 557,041,258 bytes, content type is `application/x-zip-compressed`, and the server reports `Thu, 24 Mar 2022 19:21:24 GMT` as last modified. The catalogue assigns OGL–Alberta and irregular maintenance, but exact attribution and a dataset version remain unresolved.
+- Ontario FRI Term 2 advertises a GeoHub web explorer, not a verified downloadable data artifact. The explorer page’s 95,930-byte HTML length is not dataset size and must not be recorded as one. A direct download or ArcGIS service endpoint remains unresolved, so acquisition stays blocked.
+
+Header lengths and ETags are preflight observations, not cryptographic checksums, retrieval evidence, or archive records.
