@@ -107,10 +107,45 @@ test("the superseded 2013 riding edition can never present itself as current", (
   );
 });
 
+test("the record states the installed GDAL toolchain and cannot claim GDAL is missing", () => {
+  assert.deepEqual(
+    { gdal: record.toolchain.gdal, proj: record.toolchain.proj, geos: record.toolchain.geos },
+    { gdal: "3.13.2", proj: "9.8.1", geos: "3.14.1" },
+  );
+  assert.equal(record.toolchain.vectorContentRead, false);
+  assert.match(record.notice, /GDAL 3\.13\.2/);
+  assert.equal(/gdalinfo is not installed/i.test(record.notice), false);
+  assert.equal(/gdalinfo is not installed/i.test(record.limitations.join("\n")), false);
+
+  assert.throws(
+    () => validateBoundaryEditions({
+      ...record,
+      notice: `${record.notice} gdalinfo is NOT installed on the staging machine.`,
+    }),
+    /must not claim it is missing/,
+  );
+  assert.throws(
+    () => validateBoundaryEditions({ ...record, notice: "Boundary archives staged. Nothing here has been ingested." }),
+    /must record the installed GDAL version/,
+  );
+  assert.throws(
+    () => validateBoundaryEditions({ ...record, toolchain: { ...record.toolchain, gdal: "3.9.0" } }),
+    /Recorded gdal version is 3\.9\.0/,
+  );
+  assert.throws(
+    () => validateBoundaryEditions({ ...record, toolchain: { ...record.toolchain, vectorContentRead: true } }),
+    /must not claim it was/,
+  );
+  assert.throws(() => validateBoundaryEditions({ ...record, toolchain: undefined }), /toolchain must be recorded/);
+});
+
 test("the record keeps its unvalidated-geometry and missing-French limitations", () => {
   assert.throws(
-    () => validateBoundaryEditions({ ...record, notice: "Boundary archives staged." }),
-    /missing-GDAL limitation/,
+    () => validateBoundaryEditions({
+      ...record,
+      limitations: record.limitations.filter((limitation) => !/were not opened with GDAL/.test(limitation)),
+    }),
+    /were not opened with GDAL/,
   );
   assert.throws(
     () => validateBoundaryEditions({ ...record, limitations: record.limitations.filter((limitation) => !/French-language/.test(limitation)) }),

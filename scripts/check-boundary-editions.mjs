@@ -65,6 +65,15 @@ const EXPECTED_EDITIONS = new Map([
   }],
 ]);
 
+/** The geospatial toolchain actually installed on the staging machine. */
+const EXPECTED_TOOLCHAIN = { gdal: "3.13.2", proj: "9.8.1", geos: "3.14.1" };
+
+/**
+ * Wording this record used to carry. It was false: GDAL is installed. The gate keeps the
+ * retired claim out so the record cannot drift back to it.
+ */
+const RETIRED_MISSING_GDAL_CLAIM = /gdalinfo is not installed|GDAL is not installed/i;
+
 const DISTRICT_COUNT_BY_ORDER = { "2013": 338, "2023": 343 };
 const SHA_256 = /^[a-f0-9]{64}$/;
 const UTC_TIMESTAMP = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/;
@@ -116,6 +125,25 @@ function validateLicences(record) {
     if (licence.requiredAttributionTemplate !== expected.attribution) {
       throw new Error(`${licence.id} required attribution wording changed; it is quoted verbatim from the licence.`);
     }
+  }
+}
+
+/**
+ * The toolchain claim must match the machine in both directions: it may not understate the
+ * installed versions, and it may not overstate what was read with them.
+ */
+function validateToolchain(record) {
+  const toolchain = record.toolchain;
+  if (!toolchain || typeof toolchain !== "object") throw new Error("The installed geospatial toolchain must be recorded.");
+  for (const [tool, version] of Object.entries(EXPECTED_TOOLCHAIN)) {
+    if (toolchain[tool] !== version) {
+      throw new Error(`Recorded ${tool} version is ${toolchain[tool]}; the installed version is ${version}.`);
+    }
+  }
+  required(toolchain.versionSource, "Toolchain version source");
+  required(toolchain.readNote, "Toolchain read note");
+  if (toolchain.vectorContentRead !== false) {
+    throw new Error("No vector content was read for this record; the record must not claim it was.");
   }
 }
 
@@ -193,7 +221,15 @@ function validateEditions(record) {
 export function validateBoundaryEditions(record) {
   if (record?.status !== "local-staging-record") throw new Error("Boundary editions must remain a local-staging-record.");
   required(record.notice, "Notice");
-  if (!/gdalinfo is NOT installed/.test(record.notice)) throw new Error("The notice must keep the missing-GDAL limitation.");
+  if (RETIRED_MISSING_GDAL_CLAIM.test(record.notice)) {
+    throw new Error("GDAL is installed; the notice must not claim it is missing.");
+  }
+  if (!record.notice.includes(`GDAL ${EXPECTED_TOOLCHAIN.gdal}`)) {
+    throw new Error("The notice must record the installed GDAL version.");
+  }
+  if (!/it was not run against these archives/.test(record.notice)) {
+    throw new Error("The notice must keep the unread-vector-content limitation.");
+  }
   if (!/not been ingested|Nothing here has been ingested/i.test(record.notice)) throw new Error("The notice must keep the not-ingested limitation.");
   requireUtcTimestamp(record.stagedAt, "Staging time");
   required(record.featureCountMethod, "Feature-count method");
@@ -205,11 +241,18 @@ export function validateBoundaryEditions(record) {
   if (!/French-language editions of the Statistics Canada files are NOT staged/.test(limitations)) {
     throw new Error("The record must state that French-language editions are not staged.");
   }
+  if (RETIRED_MISSING_GDAL_CLAIM.test(limitations)) {
+    throw new Error("GDAL is installed; the limitations must not claim it is missing.");
+  }
+  if (!/were not opened with GDAL/.test(limitations)) {
+    throw new Error("The record must state that the archives were not opened with GDAL.");
+  }
   if (!/Unknown/.test(limitations)) throw new Error("Unvalidated geometry must be recorded as Unknown.");
   if (!/publishes no 2023 Representation Order boundary file/.test(limitations)) {
     throw new Error("The record must state why the current-order geometry comes from Elections Canada.");
   }
 
+  validateToolchain(record);
   validateLicences(record);
   const total = validateEditions(record);
   if (total !== EXPECTED_TOTAL_BYTES) {
