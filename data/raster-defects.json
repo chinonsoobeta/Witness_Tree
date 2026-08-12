@@ -1,0 +1,88 @@
+{
+  "status": "local-validation-record",
+  "notice": "Read-only defect evidence for the NTEMS VLCE2 annual land cover series. No archive was modified. Nothing here has been ingested, converted, promoted to object storage, or connected to product records.",
+  "observedAt": "2026-08-12T17:07:15Z",
+  "validationReport": "/Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data/work/geospatial-validation-2026-08-12/VALIDATION.md",
+  "defectType": "empty-raster-attribute-table",
+  "sidecarSuffix": ".tif.vat.dbf",
+  "seriesYearCount": 39,
+  "populatedYearCount": 37,
+  "defectiveYearCount": 2,
+  "control": {
+    "byteLength": 488,
+    "recordCount": 13,
+    "statement": {
+      "en": "Every one of the other 37 years ships a 488-byte sidecar carrying 13 records, one per documented class, whose counts sum to exactly 24,889,746,240 — the full 193,936 × 128,340 cell count.",
+      "fr": "Chacune des 37 autres années fournit un fichier annexe de 488 octets contenant 13 enregistrements, un par classe documentée, dont la somme est exactement 24 889 746 240 — le nombre total de cellules 193 936 × 128 340."
+    }
+  },
+  "origin": {
+    "en": "This is an upstream packaging defect in the published archives, not damage caused locally. The archives are byte-exact and were not disturbed.",
+    "fr": "Il s'agit d'un défaut d'empaquetage en amont dans les archives publiées, et non d'un dommage causé localement. Les archives sont exactes au bit près et n'ont pas été altérées."
+  },
+  "rule": {
+    "en": "Render insufficient evidence as `Unknown` with an em dash and a reason. Do not substitute `0`, including in summaries, exports, tables, or tests.",
+    "fr": "Présenter une preuve insuffisante comme « Inconnu » avec un tiret cadratin et un motif. Ne jamais substituer « 0 », y compris dans les résumés, les exportations, les tableaux et les tests."
+  },
+  "consequence": {
+    "en": "A per-class area of 0 derived from an empty sidecar would read as \"no forest of that class existed in that year\", which is a false public claim. A class list derived from an empty sidecar would read as \"this year has no land cover classes\", which is equally false.",
+    "fr": "Une superficie par classe de 0 dérivée d'un fichier annexe vide se lirait comme « aucune forêt de cette classe n'existait cette année-là », ce qui est une affirmation publique fausse. Une liste de classes dérivée d'un fichier annexe vide se lirait comme « cette année ne comporte aucune classe de couverture terrestre », ce qui est tout aussi faux."
+  },
+  "defects": [
+    {
+      "year": 1991,
+      "archive": "CA_forest_VLCE2_1991.zip",
+      "sidecarFileName": "CA_forest_VLCE2_1991.tif.vat.dbf",
+      "observedByteLength": 98,
+      "observedRecordCount": 0,
+      "expectedRecordCount": 13,
+      "fieldDefinitionsPresent": true,
+      "fieldDefinitions": ["Value (Integer)", "Count (Real)"],
+      "controlYears": [1990, 1992],
+      "controlByteLength": 488,
+      "controlRecordCount": 13,
+      "confirmedBy": [
+        "ogrinfo -so -al reports Feature Count: 0",
+        "unzip -l reports a 98-byte sidecar against 488 bytes for the control years",
+        "gdalinfo emits a GDALRasterAttributeTable with field definitions and no Row elements"
+      ],
+      "severity": "metadata-only",
+      "pixelsVerifiedSound": true,
+      "pixelEvidence": "The 1991 pixel data carries all 13 documented classes and no out-of-scheme values, read from the built-in overview. Its raster dimensions, CRS, geotransform, nodata value, and data type match the canonical grid exactly.",
+      "statement": {
+        "en": "1991 ships a header-only 98-byte raster attribute table with 0 records against 488 bytes and 13 records in the control years 1990 and 1992. The pixels were verified sound and carry all 13 classes; only the sidecar is empty. Any class list or per-class area for 1991 taken from the sidecar is Unknown, never 0.",
+        "fr": "L'année 1991 fournit une table d'attributs raster de 98 octets, réduite à son en-tête, avec 0 enregistrement, contre 488 octets et 13 enregistrements pour les années témoins 1990 et 1992. Les pixels ont été vérifiés et portent les 13 classes; seul le fichier annexe est vide. Toute liste de classes ou superficie par classe pour 1991 tirée du fichier annexe est inconnue, jamais 0."
+      }
+    },
+    {
+      "year": 2005,
+      "archive": "CA_forest_VLCE2_2005.zip",
+      "sidecarFileName": "CA_forest_VLCE2_2005.tif.vat.dbf",
+      "observedByteLength": 98,
+      "observedRecordCount": 0,
+      "expectedRecordCount": 13,
+      "fieldDefinitionsPresent": true,
+      "fieldDefinitions": ["Value (Integer)", "Count (Real)"],
+      "controlYears": [2004, 2006],
+      "controlByteLength": 488,
+      "controlRecordCount": 13,
+      "confirmedBy": [
+        "ogrinfo -so -al reports Feature Count: 0",
+        "unzip -l reports a 98-byte sidecar against 488 bytes for the control years",
+        "gdalinfo emits a GDALRasterAttributeTable with field definitions and no Row elements"
+      ],
+      "severity": "metadata-only",
+      "pixelsVerifiedSound": true,
+      "pixelEvidence": "The 2005 pixel data carries all 13 documented classes and no out-of-scheme values, read from the built-in overview. Its raster dimensions, CRS, geotransform, nodata value, and data type match the canonical grid exactly.",
+      "statement": {
+        "en": "2005 ships a header-only 98-byte raster attribute table with 0 records against 488 bytes and 13 records in the control years 2004 and 2006. The pixels were verified sound and carry all 13 classes; only the sidecar is empty. Any class list or per-class area for 2005 taken from the sidecar is Unknown, never 0.",
+        "fr": "L'année 2005 fournit une table d'attributs raster de 98 octets, réduite à son en-tête, avec 0 enregistrement, contre 488 octets et 13 enregistrements pour les années témoins 2004 et 2006. Les pixels ont été vérifiés et portent les 13 classes; seul le fichier annexe est vide. Toute liste de classes ou superficie par classe pour 2005 tirée du fichier annexe est inconnue, jamais 0."
+      }
+    }
+  ],
+  "limitations": [
+    "The 1991 and 2005 pixel data was assessed through the built-in overviews only, because their sidecar is empty. Their full-resolution class distribution remains Unknown.",
+    "Both years remain usable for grid-conformant change comparison: their CRS, geotransform, and dimensions match the canonical grid. Only sidecar-derived class statistics are blocked."
+  ],
+  "productionEligible": false
+}
