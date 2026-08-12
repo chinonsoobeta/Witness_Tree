@@ -1,0 +1,103 @@
+{
+  "attribution": "Contains information licensed under the Open Government Licence – Alberta.",
+  "changesNotice": "Witness Tree changed no source geometry. Repairs were computed in memory only, and every feature was recorded as unchanged, repaired, or quarantined.",
+  "immutableObjectStorage": false,
+  "ingested": false,
+  "layers": [
+    {
+      "crs": "EPSG:3400",
+      "emptyGeometryCount": 0,
+      "featureCount": 788810,
+      "invalidGeometryCount": 587,
+      "maxRelativeAreaChange": 7.008939612391968e-14,
+      "missingGeometryCount": 0,
+      "name": "AVI_Crown",
+      "quarantinedCount": 0,
+      "repairedCount": 587,
+      "repairedReasons": {
+        "Ring Self-intersection": 587
+      },
+      "unchangedCount": 788223
+    },
+    {
+      "crs": "EPSG:3400",
+      "emptyGeometryCount": 0,
+      "featureCount": 3631,
+      "invalidGeometryCount": 19,
+      "maxRelativeAreaChange": 8.683085075934495e-15,
+      "missingGeometryCount": 0,
+      "name": "AVI_PostInventoryHarvest",
+      "quarantinedCount": 0,
+      "repairedCount": 19,
+      "repairedReasons": {
+        "Ring Self-intersection": 19
+      },
+      "unchangedCount": 3612
+    },
+    {
+      "crs": "EPSG:3400",
+      "emptyGeometryCount": 0,
+      "featureCount": 1,
+      "invalidGeometryCount": 1,
+      "maxRelativeAreaChange": 4.777662641863702e-15,
+      "missingGeometryCount": 0,
+      "name": "AVI_CrownIndex",
+      "quarantinedCount": 0,
+      "repairedCount": 1,
+      "repairedReasons": {
+        "Ring Self-intersection": 1
+      },
+      "unchangedCount": 0
+    },
+    {
+      "crs": "EPSG:3400",
+      "emptyGeometryCount": 0,
+      "featureCount": 1,
+      "invalidGeometryCount": 1,
+      "maxRelativeAreaChange": 0.0,
+      "missingGeometryCount": 0,
+      "name": "AVI_PostInventoryHarvestIndex",
+      "quarantinedCount": 1,
+      "repairedCount": 0,
+      "repairedReasons": {},
+      "unchangedCount": 0
+    }
+  ],
+  "licenceUrl": "https://open.alberta.ca/licence",
+  "notice": "Deterministic repair-or-quarantine evaluation only. No source geometry was changed, no derived geometry was written, and the source remains outside immutable object storage, ingestion, and production.",
+  "output": {
+    "byteLength": 1075,
+    "externalPath": "../Witness_Tree-data/derived/alberta-avi-geometry-repair-v1/2026-08-12/quarantine.json",
+    "sha256": "e633f56ac029c19e785e0699464fc3c9763f7162939920f539823cd00d4dde7b"
+  },
+  "productionEligible": false,
+  "rawArchiveSha256": "e93572129f25c83911b73eadfacff12624ff6b08f2db4b311c1662196b665093",
+  "rule": {
+    "areaRelativeTolerance": 1e-06,
+    "polygonalTypeIds": [
+      3,
+      6
+    ],
+    "repairFunction": "shapely.make_valid(method='structure', keep_collapsed=False)"
+  },
+  "sourceId": "alberta-avi-crown",
+  "specification": "alberta-avi-geometry-repair-v1",
+  "status": "local-geometry-policy-run",
+  "tools": {
+    "gdal": "3.12.4",
+    "geos": "3.13.1",
+    "numpy": "2.5.2",
+    "pyogrio": "0.13.0",
+    "python": "3.14.6",
+    "shapely": "2.1.2"
+  },
+  "totals": {
+    "featureCount": 792443,
+    "invalidGeometryCount": 608,
+    "quarantinedCount": 1,
+    "repairedCount": 607,
+    "unchangedCount": 791835
+  },
+  "transformedAt": "2026-08-12T06:36:03Z",
+  "workingDatasetSha256": "1ea5759caaf3dfbaf622c513e54fff2fda2c3051a80d6b571e06b23b4e3affbe"
+}
