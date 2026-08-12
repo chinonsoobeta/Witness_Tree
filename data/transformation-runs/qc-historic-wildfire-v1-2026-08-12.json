@@ -1,0 +1,45 @@
+{
+  "status": "local-derived-validation",
+  "notice": "Verified lossless local transformation evidence only. The derived bytes remain outside Git and are not immutable object storage, ingested data, or a production release.",
+  "specification": "qc-historic-wildfire-v1",
+  "transformedAt": "2026-08-12T05:54:38Z",
+  "sourceId": "qc-historic-wildfire-detailed",
+  "rawArchiveSha256": "cfed6c16eac901e6887a2518f566dff7608d4c4c371bd9c1ce6b2eff03fa0815",
+  "workingGeoPackageSha256": "87489e402b89dea4cb5a4fb155efed3e275d70a475547bad38d28d7878085bfa",
+  "output": {
+    "externalPath": "../Witness_Tree-data/derived/qc-historic-wildfire-v1/2026-08-12/FEUX_PROV_lossless-verified.gpkg",
+    "byteLength": 1017495552,
+    "sha256": "7b0749f5a237f1abb3cf110c5748ed5cbdc8afa738beb021bba68a19927a24a8"
+  },
+  "layers": [
+    {
+      "name": "feux_prov",
+      "featureCount": 94572,
+      "crs": "EPSG:32198",
+      "contentSha256": "c57577012afa8591ed0ff18a7cf67400d7c4056d7c0564ad2737c470ad39c8de",
+      "missingGeometryCount": 0,
+      "emptyGeometryCount": 0,
+      "invalidGeometryCount": 0
+    },
+    {
+      "name": "meta_feux_prov",
+      "featureCount": 94572,
+      "crs": "EPSG:32198",
+      "contentSha256": "75127c5ae6b2cf62908ebbc2f4b9f01278254e11254ba15a62d5e5891da56600",
+      "missingGeometryCount": 0,
+      "emptyGeometryCount": 0,
+      "invalidGeometryCount": 0
+    }
+  ],
+  "attribution": "Source: Ministère des Ressources naturelles et des Forêts du Québec, Secteur des Forêts, Direction des inventaires forestiers and Direction de la protection des forêts, Feux de forêt. Licensed under CC BY 4.0.",
+  "licenceUrl": "https://www.donneesquebec.ca/licence/#cc-by",
+  "changesNotice": "Witness Tree made no semantic, attribute, coordinate, or geometry changes in this lossless layer copy.",
+  "tools": {
+    "python": "3.14.6",
+    "pyogrio": "0.13.0",
+    "gdal": "3.12.4"
+  },
+  "immutableObjectStorage": false,
+  "ingested": false,
+  "productionEligible": false
+}

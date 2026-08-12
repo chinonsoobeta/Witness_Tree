@@ -1,6 +1,6 @@
 # Acquisition decision required
 
-**Status:** Object-storage decision required. No provider has been selected. Two compressed source archives have been downloaded to a separate local staging tree and verified; no immutable object-storage write, transformation, ingestion, or production-data release has occurred.
+**Status:** Object-storage decision required. No provider has been selected. Two compressed source archives have been downloaded to a separate local staging tree and verified. A verified lossless Québec layer copy exists in local derived storage; no immutable object-storage write, ingestion, or production-data release has occurred.
 
 This record turns the approved architecture into an owner decision. It does not recommend a storage vendor.
 

@@ -1,6 +1,6 @@
 # Source verification
 
-Verified on 11 August 2026 from the official catalogue or responsible public authority named below. Most rows remain discovery records rather than source-ledger entries. The staged-acquisition section records two completed real transfers; no transformation, ingestion, immutable object-storage write, or production release has occurred.
+Verified on 11 August 2026 from the official catalogue or responsible public authority named below. Most rows remain discovery records rather than source-ledger entries. The staged-acquisition section records two completed real transfers and one verified lossless local Québec layer copy; no ingestion, immutable object-storage write, or production release has occurred.
 
 | Source | Official catalogue or authority | Publisher | Verified facts | Unresolved item or rights | Production decision |
 | --- | --- | --- | --- | --- | --- |
@@ -67,7 +67,7 @@ Two archives were downloaded to the separate, non-Git staging tree after the own
 - Québec detailed historical fire, verified at `2026-08-12T05:22:16Z`: 414,244,435 bytes, valid ZIP containing `FEUX_PROV.gpkg`, SHA-256 `cfed6c16eac901e6887a2518f566dff7608d4c4c371bd9c1ce6b2eff03fa0815`.
 - Alberta AVI Crown, verified at `2026-08-12T05:28:16Z`: 557,041,258 bytes, valid FGDB ZIP, SHA-256 `e93572129f25c83911b73eadfacff12624ff6b08f2db4b311c1662196b665093`.
 
-The total verified staged size is 971,285,693 bytes. Machine-checked records are in [`data/staged-acquisitions.json`](../data/staged-acquisitions.json). Québec attribution is verified against the official catalogue metadata and CC BY page; Alberta attribution remains pending. This is verified retrieval evidence, but it is not immutable object storage, transformation, ingestion, or production eligibility.
+The total verified staged size is 971,285,693 bytes. Machine-checked records are in [`data/staged-acquisitions.json`](../data/staged-acquisitions.json). Québec attribution is verified against the official catalogue metadata and CC BY page; Alberta attribution remains pending. This is verified retrieval evidence, but it is not immutable object storage, ingestion, or production eligibility.
 
 ## Read-only geospatial profile
 
@@ -77,3 +77,5 @@ The extracted working copies were profiled without modifying source geometry. Th
 - Alberta contains 788,810 AVI Crown features, 3,631 post-inventory harvest features, and two index features in EPSG:3400. Profiling found 608 ring self-intersections: 587 in `AVI_Crown`, 19 in `AVI_PostInventoryHarvest`, and one in each index layer.
 
 Alberta is blocked from transformation and ingestion until a deterministic repair-or-quarantine policy is implemented, tested, and its changes are recorded. No invalid geometry was silently repaired or discarded.
+
+The first Québec transformation is a lossless layer copy: no semantic, attribute, coordinate, or geometry change. Its two 94,572-feature layers retain matching input/output fingerprints and zero missing, empty, or invalid geometries. The 1,017,495,552-byte external GeoPackage has SHA-256 `7b0749f5a237f1abb3cf110c5748ed5cbdc8afa738beb021bba68a19927a24a8`; the checked-in summary is [`data/transformation-runs/qc-historic-wildfire-v1-2026-08-12.json`](../data/transformation-runs/qc-historic-wildfire-v1-2026-08-12.json). It is not ingested, immutable, or production eligible.
