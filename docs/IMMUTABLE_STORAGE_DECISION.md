@@ -1,6 +1,6 @@
 # Immutable object-storage implementation decision
 
-**Status:** Proposed implementation design; no provider, bucket, object, retention policy, replication target, or production archive exists yet.
+**Status:** Proposed implementation design. One empty AWS S3 bucket now exists in `ca-central-1` with versioning and Object Lock enabled, SSE-S3 default encryption, and block-all-public-access on. No default retention is set, deliberately, because compliance-mode retention cannot be shortened by anyone including the account root, so the duration is the owner's decision. No object has been uploaded, no replication target exists, no production archive exists, and 6 of the 7 required controls below are not satisfied, with the seventh still an open owner decision. The read-back configuration is recorded in `docs/IMMUTABLE_STORAGE_PROVISIONING.md`.
 
 This is the Phase 1 storage design for verified source bytes. It supplements the [acquisition decision](ACQUISITION_DECISION.md) and the example-only [raw archive contract](RAW_ARCHIVE.md). It does not authorize a download, upload, transformation, ingestion, or public release.
 
@@ -55,11 +55,11 @@ Retention duration is deliberately not invented here. It is an owner/legal decis
 Promotion is a copy of already verified local bytes, never a transform step. A source is eligible only when every applicable gate passes:
 
 1. The staged record has an exact byte length, SHA-256, successful archive-integrity result, safe local path, retrieval timestamp, and source URL.
-2. Source selection, licence/reuse review, publisher attribution, changes notice, and any source-specific release restriction are approved. Québec has metadata-verified attribution; Alberta still needs attribution/source-version review.
+2. Source selection, licence/reuse review, publisher attribution, changes notice, and any source-specific release restriction are approved. Québec, Alberta, and NRCan 2022 canopy cover all have metadata-verified attribution; Alberta still needs source-version review.
 3. The approved storage configuration has documented Canadian residency, versioning, immutable retention, access policy, logging, and recovery controls.
 4. Upload is made to the new deterministic prefix. The completed remote object’s exact byte count and independently calculated SHA-256 match the local record; provider version IDs and retention evidence are written to the sidecar.
 5. A reviewer compares the remote sidecar to the staged record and marks it `remote-verified`. A failed upload, mismatch, or missing retention proof is `rejected`; it never becomes a source-ledger, transformation, ingestion, or public-release input.
-6. Transformation requires a separate approval after remote verification. The Alberta AVI profile is blocked pending a deterministic repair-or-quarantine rule for 608 self-intersecting geometries. Raw archive promotion does not waive that gate.
+6. Transformation requires a separate approval after remote verification. The deterministic repair-or-quarantine rule for the Alberta AVI profile's 608 self-intersecting geometries has been implemented, tested, and recorded, so Alberta is admitted to transformation design only; it is not admitted to ingestion. Raw archive promotion does not waive that gate.
 
 ## Verification and rollback
 
@@ -73,11 +73,11 @@ Current evidence supports these limits only:
 
 | Measure | Bytes | Decimal GB | Binary GiB |
 | --- | ---: | ---: | ---: |
-| Two locally verified staged ZIPs | 971,285,693 | 0.97 | 0.90 |
+| Three locally verified staged ZIPs | 10,925,681,632 | 10.93 | 10.18 |
 | Six priority compressed candidate artifacts, one snapshot each | 92,627,415,442 | 92.63 | 86.26 |
 | Conservative raw reservation for one snapshot plus one complete replacement | 185,254,830,884 | 185.25 | 172.53 |
 
-Reserve **at least 200 GB of immutable raw capacity** for the first six-artifact snapshot plus one full replacement, before metadata overhead. This is a planning floor, not a forecast: it excludes uncompressed extraction, geometry repair/quarantine copies, transform scratch, derived files, tiles, releases, backups beyond the replacement, live wildfire snapshots, and future source versions. The only bytes currently verified are the 0.97 GB local staging set; the 92.63 GB total is HEAD-observed candidate volume, not acquired storage.
+Reserve **at least 200 GB of immutable raw capacity** for the first six-artifact snapshot plus one full replacement, before metadata overhead. This is a planning floor, not a forecast: it excludes uncompressed extraction, geometry repair/quarantine copies, transform scratch, derived files, tiles, releases, backups beyond the replacement, live wildfire snapshots, and future source versions. The only bytes currently verified are the 10.93 GB local staging set; the 92.63 GB total is HEAD-observed candidate volume, not acquired storage.
 
 ## Next implementation units
 
@@ -91,8 +91,8 @@ Reserve **at least 200 GB of immutable raw capacity** for the first six-artifact
 ### Owner/provider decisions before an uploader is written or run
 
 1. Name the provider, exact Canadian region, account/project, bucket, cost centre, storage ceiling, retention period, recovery/replication approach, encryption choice, and accountable operator.
-2. Create the immutable bucket with the controls above and retain a redacted configuration/evidence record outside public Git as appropriate.
-3. Approve licence/attribution and source version for each source; resolve Alberta review and the blocked national-source records.
+2. Create the immutable bucket with the controls above and retain a redacted configuration/evidence record outside public Git as appropriate. A bucket now exists in `ca-central-1` with versioning and Object Lock enabled, SSE-S3 encryption, and public access blocked, but with no approved retention duration, no default retention, no dedicated service or break-glass identity, no access logging, and no recovery copy. The remaining controls above are still required.
+3. Approve licence/attribution and source version for each source; resolve the Alberta source-version review and the blocked national-source records.
 4. Choose the provider’s authenticated upload and inventory mechanism. Only then implement the smallest provider-specific adapter and run a non-production proof upload using non-source test bytes.
 
 ## Acceptance evidence for Phase 1 storage
