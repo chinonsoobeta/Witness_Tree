@@ -1,6 +1,12 @@
 # Staged transformation decision contract
 
-This is a pure TypeScript decision boundary for the two verified local staging archives. It does not read files, change geometries, fetch data, write object storage, ingest records, or create a production release.
+This is a pure TypeScript decision boundary for the staged geospatial vector archives enumerated in `STAGED_TRANSFORMATION_SOURCE_IDS`. It does not read files, change geometries, fetch data, write object storage, ingest records, or create a production release.
+
+## What this boundary covers
+
+The scope is those vector archives rather than every staged source, and this document states no count of them on purpose. Both admission tests are feature-level: one reads a profiled invalid-geometry count, and the other checks a policy that accounts for every profiled feature. An archive that carries no feature-level geometry profile, such as a raster archive, presents nothing for either test to read. A source outside the enumeration also has no expected checksum here, so it cannot reach a decision at this boundary at all.
+
+Bringing a further source under this contract therefore means adding it to that enumeration and to the checksum table in `lib/transformation/decision.ts`. Because the scope is written as a pointer to the enumeration and not as a running total, staging a source elsewhere in the pipeline does not falsify this section.
 
 Each decision is bound to the source ID, exact SHA-256 archive checksum, profiling decision, attribution state, and an explicit invalid-geometry count. An unknown count is rejected; it can never be silently converted to zero.
 
@@ -25,4 +31,4 @@ The Alberta AVI archive's attribution is verified: the Open Government Licence â
 
 Admission is to transformation **design** only. In every case `eligibleForIngestion` and `productionEligible` remain `false`, and no archive becomes ingested, immutable, or production eligible by way of this decision.
 
-This contract deliberately makes no claim that a transformation has happened or that either data source is ready for public use.
+This contract deliberately makes no claim that a transformation has happened, or that any archive it admits is ready for public use.
