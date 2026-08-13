@@ -1,6 +1,20 @@
 {
   "status": "local-staging",
   "notice": "Verified local staging evidence only. These files are outside Git and are not immutable object storage, transformed data, ingested data, or production releases.",
+  "lineageConventions": {
+    "sourceVersion": {
+      "en": "sourceVersion is the literal \"undeclared\" wherever the publisher declares no dataset version. It is an explicit marker of absence, not an edition name, and it must never be replaced by a date, a retrieval stamp, or a guessed edition.",
+      "fr": "sourceVersion vaut littéralement « undeclared » lorsque l'éditeur ne déclare aucune version du jeu de données. C'est un marqueur explicite d'absence et non un nom d'édition; il ne doit jamais être remplacé par une date, un horodatage de récupération ou une édition supposée."
+    },
+    "retrievedAt": {
+      "en": "retrievedAt is the download completion instant in UTC, read from the staged file's modification time on local disk. It is an approximation recorded by this project, not an attestation from the publisher, and every record carries that basis with it.",
+      "fr": "retrievedAt est l'instant d'achèvement du téléchargement en UTC, lu à partir de la date de modification du fichier sur le disque local. C'est une approximation consignée par ce projet et non une attestation de l'éditeur, et chaque enregistrement en conserve la justification."
+    },
+    "crc64nvme": {
+      "en": "crc64nvme is computed locally over the whole staged file and recorded as lower-case hex, matching the digest encoding of the promotion contract. S3 reports the same digest base64-encoded; that provider form is kept only in data/immutable-promotions.json and is converted to hex before any comparison.",
+      "fr": "crc64nvme est calculé localement sur l'ensemble du fichier préparé et consigné en hexadécimal minuscule, conformément à l'encodage des empreintes du contrat de promotion. S3 renvoie la même empreinte encodée en base64; cette forme du fournisseur n'est conservée que dans data/immutable-promotions.json et est convertie en hexadécimal avant toute comparaison."
+    }
+  },
   "entries": [
     {
       "id": "qc-historic-wildfire-detailed-2026-08-11",
@@ -10,9 +24,21 @@
       "catalogueUrl": "https://www.donneesquebec.ca/recherche/dataset/feux-de-foret",
       "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/PERTURBATIONS_NATURELLES/Feux_foret/02-Donnees/PROV/FEUX_PROV_GPKG.zip",
       "localPath": "../Witness_Tree-data/raw/qc-historic-wildfire-detailed/2026-08-11/FEUX_PROV_GPKG.zip",
+      "originalFilename": "FEUX_PROV_GPKG.zip",
+      "sourceVersion": "undeclared",
+      "sourceVersionBasis": {
+        "en": "The Données Québec record and the download itself declare no dataset version, so the explicit absence marker is recorded.",
+        "fr": "La fiche de Données Québec et le téléchargement lui-même ne déclarent aucune version du jeu de données; le marqueur explicite d'absence est donc consigné."
+      },
+      "retrievedAt": "2026-08-12T05:21:46Z",
+      "retrievedAtBasis": {
+        "en": "Download completion instant in UTC, derived from the staged file's local modification time. It is an approximation recorded by this project, not a provider attestation.",
+        "fr": "Instant d'achèvement du téléchargement en UTC, dérivé de la date de modification locale du fichier préparé. C'est une approximation consignée par ce projet et non une attestation du fournisseur."
+      },
       "verifiedAt": "2026-08-12T05:22:16Z",
       "byteLength": 414244435,
       "sha256": "cfed6c16eac901e6887a2518f566dff7608d4c4c371bd9c1ce6b2eff03fa0815",
+      "crc64nvme": "4948f7aa6bae7187",
       "zipIntegrity": "passed",
       "licenceId": "cc-by-4.0-quebec",
       "temporalCoverage": "since 1976; catalogue temporal endpoint 2024",
@@ -31,9 +57,21 @@
       "catalogueUrl": "https://open.canada.ca/data/en/dataset/64b0e73a-da5f-4f7f-bca1-b656b6e86c94",
       "sourceUrl": "https://extranet.gov.ab.ca/srd/geodiscover/srd_pub/biota/AlbertaVegetationInventoryCrown.zip",
       "localPath": "../Witness_Tree-data/raw/alberta-avi-crown/2026-08-11/AlbertaVegetationInventoryCrown.zip",
+      "originalFilename": "AlbertaVegetationInventoryCrown.zip",
+      "sourceVersion": "undeclared",
+      "sourceVersionBasis": {
+        "en": "Neither the Open Government catalogue record, the GeoDiscover record, nor the archive's own metadata declares a dataset version, so the explicit absence marker is recorded.",
+        "fr": "Ni la fiche du catalogue Gouvernement ouvert, ni la fiche GeoDiscover, ni les métadonnées de l'archive ne déclarent de version du jeu de données; le marqueur explicite d'absence est donc consigné."
+      },
+      "retrievedAt": "2026-08-12T05:28:04Z",
+      "retrievedAtBasis": {
+        "en": "Download completion instant in UTC, derived from the staged file's local modification time. It is an approximation recorded by this project, not a provider attestation.",
+        "fr": "Instant d'achèvement du téléchargement en UTC, dérivé de la date de modification locale du fichier préparé. C'est une approximation consignée par ce projet et non une attestation du fournisseur."
+      },
       "verifiedAt": "2026-08-12T05:28:16Z",
       "byteLength": 557041258,
       "sha256": "e93572129f25c83911b73eadfacff12624ff6b08f2db4b311c1662196b665093",
+      "crc64nvme": "d97ad5e9e940dc76",
       "zipIntegrity": "passed",
       "licenceId": "ogl-alberta",
       "temporalCoverage": "catalogue publication 2022; irregular maintenance",
@@ -59,9 +97,22 @@
       "catalogueUrl": "https://open.canada.ca/data/en/dataset/5b905ab8-44dc-42b4-ad5b-3b1dde8423ab",
       "sourceUrl": "https://opendata.nfis.org/downloads/forest_change/CA_canopy_cover_2022.zip",
       "localPath": "../Witness_Tree-data/raw/nrcan-forest-canopy-cover-2022/2026-08-11/CA_canopy_cover_2022.zip",
+      "originalFilename": "CA_canopy_cover_2022.zip",
+      "sourceVersion": "undeclared",
+      "sourceVersionBasis": {
+        "en": "The Open Government catalogue record and the archive's own README declare a reference year but no dataset version, so the explicit absence marker is recorded. The 2022 in the dataset title is the reference year, not an edition.",
+        "fr": "La fiche du catalogue Gouvernement ouvert et le fichier LISEZMOI de l'archive déclarent une année de référence mais aucune version du jeu de données; le marqueur explicite d'absence est donc consigné. L'année 2022 du titre est l'année de référence et non une édition."
+      },
+      "retrievedAt": "2026-08-12T07:24:32Z",
+      "retrievedAtBasis": {
+        "en": "Download completion instant in UTC, derived from the staged file's local modification time. It is an approximation recorded by this project, not a provider attestation. This retrieval spanned a resumed window that began 2026-08-12T05:23:16Z; the recorded instant is completion, not the start of the transfer.",
+        "fr": "Instant d'achèvement du téléchargement en UTC, dérivé de la date de modification locale du fichier préparé. C'est une approximation consignée par ce projet et non une attestation du fournisseur. Cette récupération s'est déroulée sur une fenêtre reprise commencée le 2026-08-12T05:23:16Z; l'instant consigné est l'achèvement et non le début du transfert."
+      },
+      "retrievalWindowStart": "2026-08-12T05:23:16Z",
       "verifiedAt": "2026-08-12T11:02:59Z",
       "byteLength": 9954395939,
       "sha256": "80c37461f4deccfdfffc26124e9064d53a94dde660b9f96194445870393af130",
+      "crc64nvme": "b75556db15478f1e",
       "zipIntegrity": "passed",
       "licenceId": "ogl-canada",
       "temporalCoverage": "reference year 2022; catalogue temporal extent 2022-01-01 to 2022-01-01",

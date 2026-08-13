@@ -1,6 +1,6 @@
 # Immutable raw-archive provisioning record
 
-**Status:** One empty bucket exists. Nothing has been uploaded. This record states only what was created and read back from the AWS console; it does not authorize an upload, a promotion, a transformation, an ingestion, or a public release.
+**Status:** The bucket exists and now holds three promoted source snapshots. The provisioning tables below are the creation-time record, read back from the AWS console on 2026-08-12 before anything was uploaded; the "Since this record" section states what has changed since. This record does not authorize a transformation, an ingestion, or a public release.
 
 This record supplements the [immutable storage decision](IMMUTABLE_STORAGE_DECISION.md), the [immutable storage contract](IMMUTABLE_STORAGE_CONTRACT.md), and the [provider options](IMMUTABLE_STORAGE_PROVIDER_OPTIONS.md).
 
@@ -43,7 +43,15 @@ Every value below was read from the bucket's Properties and Permissions tabs aft
 | Lifecycle rules | None created |
 | Cross-Region Replication | Not configured |
 | Tags | None |
-| Objects | None |
+| Objects | None at the time of this read-back. See "Since this record" below. |
+
+## Since this record
+
+Three verified staged archives were uploaded to this bucket and locked. Each payload object version carries compliance-mode Object Lock retention until 2033-08-12T00:00:00Z, applied per object version, not as a bucket default. A manifest.json sidecar sits beside each payload and is deliberately not locked. The remote byte length, full-object CRC64NVME, both provider version IDs, and the retention read-back for every snapshot are recorded in [`data/immutable-promotions.json`](../data/immutable-promotions.json), and `tests/archive-staging-promotions.test.ts` runs the real promotion gate over that record.
+
+An earlier upload of the same three archives to a flat key layout is recorded there as superseded. It was never locked, and those object versions are still in the bucket.
+
+Default retention is still Disabled on the bucket, for the reason given below. Nothing in this section changes the unmet controls in the mapping table: there is still no dedicated service identity, no access logging, no recovery copy, and no replication decision.
 
 ## Why no default retention is set
 
@@ -62,8 +70,8 @@ Each row of the Required storage controls table in [IMMUTABLE_STORAGE_DECISION.m
 | Control | Current state | Evidence and gap |
 | --- | --- | --- |
 | Region and replication | Not satisfied | The primary bucket is in `ca-central-1`, a Canadian region, and no replication rule exists, so no cross-border replication is configured. But no replica, backup, inventory, or source-processing location has been chosen or documented, so the row's full requirement is unmet. |
-| Versioning | Not satisfied | Bucket Versioning reads Enabled and cannot be suspended while Object Lock is on. The second half of the row, retaining every provider version ID in a sidecar, has no implementation and no object to record. |
-| Immutability | Not satisfied | Object Lock reads Enabled, so the bucket supports compliance-grade write-once retention. No retention period is approved, no default retention is set, no per-object retention has been applied, and no legal-hold procedure exists. |
+| Versioning | Partly satisfied | Bucket Versioning reads Enabled and cannot be suspended while Object Lock is on. Both provider version IDs, payload and sidecar, are recorded for each of the three promoted snapshots in `data/immutable-promotions.json`. No source beyond those three is covered. |
+| Immutability | Partly satisfied | Object Lock reads Enabled, so the bucket supports compliance-grade write-once retention. Compliance-mode retention until 2033-08-12T00:00:00Z is applied to the three promoted payload object versions and read back with `get-object-retention`. No default retention is set, deliberately. The manifest.json sidecars are not locked, and no legal-hold procedure exists. |
 | Access | Not satisfied | Block all public access reads On and Object Ownership reads Bucket owner enforced, so there is no public or ACL-based access. There is no dedicated service identity, no least-privilege read policy, no bucket policy, no limited break-glass role for administering retention, and no access audit logging. No IAM user, role, or access key was created by this provisioning step. |
 | Encryption and audit | Not satisfied | Default encryption reads SSE-S3, which satisfies the explicit encryption-selection part of the row. Server access logging reads Disabled, no CloudTrail data events are configured for this bucket, and no retention or deletion-attempt log review process exists. |
 | Lifecycle | Owner decision pending | No lifecycle, expiration, transition, or replica rule exists, so no rule currently bypasses anything. The row cannot be satisfied until an approved retention period exists to measure rules against, and until a multipart cleanup rule is decided. |
@@ -71,12 +79,14 @@ Each row of the Required storage controls table in [IMMUTABLE_STORAGE_DECISION.m
 
 ## Standing limits
 
-No object has been uploaded. No source is promoted, remote-verified, or production-eligible. Retention duration, budget ceiling, recovery-copy policy and the accountable operator remain owner decisions. Upload requires AWS credentials that this agent is not permitted to create or handle.
+Three payload snapshots are uploaded, remote-verified, and locked until 2033-08-12. That is a storage fact and nothing more: no source is ingested, transformed by this step, or production eligible, and the three manifest.json sidecars are not locked. Budget ceiling, recovery-copy policy, and the accountable operator remain owner decisions. Compliance-mode retention cannot be shortened or removed by anyone, including the account root, so any further upload must be checked against the canonical key layout before retention is applied.
 
-## Not done in this step
+## Not done in the provisioning step
+
+This list describes the bucket-creation step recorded above, not everything that has happened since.
 
 - No IAM user, role, access key, secret key, or session token was created, viewed, copied, or handled.
-- No file was uploaded to the bucket.
+- No file was uploaded to the bucket during this step.
 - No Cross-Region Replication was enabled.
 - No lifecycle rule was created.
 - No account setting, billing setting, or existing bucket was changed.

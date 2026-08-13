@@ -1,7 +1,11 @@
 {
-  "status": "uploaded",
-  "notice": "Three verified staged archives were uploaded to a Canadian-region S3 bucket with Object Lock and versioning enabled. Upload and remote byte/checksum verification are complete. No Object Lock retention has been applied, so these objects are NOT yet immutable and NOT remote-verified under docs/IMMUTABLE_STORAGE_CONTRACT.md. They remain non-production and are not admitted to transformation or ingestion.",
+  "status": "remote-verified",
+  "notice": {
+    "en": "Three verified staged archives were re-uploaded to the canonical snapshot keys that lib/archive-staging derives, verified remotely, and locked under compliance-mode Object Lock retention until 2033-08-12. Each payload satisfies the remote-verified gate in lib/archive-staging/validate.ts. The manifest.json sidecars are uploaded and deliberately left unlocked, so the sidecar bytes can still be corrected; the payload bytes cannot. Remote verification is a storage fact only: these snapshots are still not transformed data, ingested data, or a production release.",
+    "fr": "Trois archives préparées et vérifiées ont été téléversées de nouveau vers les clés d'instantané canoniques dérivées par lib/archive-staging, vérifiées à distance, puis verrouillées en rétention Object Lock en mode conformité jusqu'au 2033-08-12. Chaque charge utile satisfait au contrôle « remote-verified » de lib/archive-staging/validate.ts. Les fichiers manifest.json d'accompagnement sont téléversés et volontairement laissés déverrouillés, afin que leurs octets puissent encore être corrigés; ceux des charges utiles ne le peuvent pas. La vérification à distance est un fait de stockage seulement : ces instantanés ne constituent ni des données transformées, ni des données ingérées, ni une version de production."
+  },
   "recordedAt": "2026-08-12T17:22:52Z",
+  "revisedAt": "2026-08-12T23:55:00Z",
   "bucket": {
     "bucketId": "witness-tree-raw-archive-ca-central-1",
     "region": {
@@ -22,81 +26,231 @@
       "restrictPublicBuckets": true
     }
   },
-  "verificationMethod": "Byte length and checksum were read back from S3 with head-object --checksum-mode ENABLED after upload. get-object-attributes is not available to the current principal (AccessDenied on s3:GetObjectAttributes), so head-object is the remote evidence source.",
+  "verificationMethod": "Byte length and checksum were read back from S3 with head-object --checksum-mode ENABLED after upload, and retention was read back with get-object-retention. get-object-attributes is not available to the current principal (AccessDenied on s3:GetObjectAttributes), so head-object is the remote evidence source.",
+  "checksumEncoding": {
+    "recordedEncoding": "lower-case-hex",
+    "en": "Whole-object digests are recorded in exactly one encoding: lower-case hex. S3 returns checksum values base64-encoded, so each provider value is kept verbatim under providerReported as evidence and normalised to hex with hexDigestFromProviderBase64 before it is recorded as the promotion digest. A base64 value left in a digest field fails the shape gate for its algorithm and the promotion is rejected rather than admitted. Composite multipart digests are the single exception: they stay in the provider's base64-{partCount} form because they are opaque and are only ever compared to a local recomputation in that identical form.",
+    "fr": "Les empreintes portant sur l'objet entier sont consignées dans un seul encodage : l'hexadécimal minuscule. S3 renvoie les valeurs d'empreinte encodées en base64; chaque valeur du fournisseur est donc conservée telle quelle sous providerReported à titre de preuve, puis normalisée en hexadécimal par hexDigestFromProviderBase64 avant d'être consignée comme empreinte de promotion. Une valeur base64 laissée dans un champ d'empreinte échoue au contrôle de forme de son algorithme et la promotion est rejetée plutôt qu'admise. Les empreintes composites de téléversement en plusieurs parties sont la seule exception : elles conservent la forme base64-{nombreDeParties} du fournisseur, car elles sont opaques et ne sont jamais comparées qu'à un recalcul local dans cette forme identique."
+  },
+  "reviewer": "Chinonso Obeta",
+  "reviewedAt": "2026-08-12T23:37:20Z",
+  "reviewBasis": {
+    "en": "The named reviewer read every value recorded here back from S3 directly: byte length and checksum with head-object --checksum-mode ENABLED, version IDs from the same responses, and retention mode and retention-until with get-object-retention. reviewedAt is the instant this record was written, which is after the last remote read.",
+    "fr": "Le réviseur nommé a relu directement dans S3 chacune des valeurs consignées ici : la taille en octets et l'empreinte avec head-object --checksum-mode ENABLED, les identifiants de version dans les mêmes réponses, ainsi que le mode et l'échéance de rétention avec get-object-retention. reviewedAt est l'instant de rédaction de cet enregistrement, postérieur à la dernière lecture à distance."
+  },
   "entries": [
     {
       "sourceId": "qc-historic-wildfire-detailed",
       "stagedEntryId": "qc-historic-wildfire-detailed-2026-08-11",
-      "objectKey": "raw/qc-historic-wildfire-detailed/2026-08-11/FEUX_PROV_GPKG.zip",
-      "versionId": "H7mwn1A1OGvniGjHLh0gkmgL9cM_UCqN",
+      "snapshotId": "qc-historic-wildfire-detailed:undeclared:2026-08-12T05:21:46Z:cfed6c16eac901e6887a2518f566dff7608d4c4c371bd9c1ce6b2eff03fa0815",
+      "payloadKey": "raw/qc-historic-wildfire-detailed/undeclared/2026-08-12T05-21-46Z/cfed6c16eac901e6887a2518f566dff7608d4c4c371bd9c1ce6b2eff03fa0815/payload/feux_prov_gpkg.zip",
+      "manifestKey": "raw/qc-historic-wildfire-detailed/undeclared/2026-08-12T05-21-46Z/cfed6c16eac901e6887a2518f566dff7608d4c4c371bd9c1ce6b2eff03fa0815/manifest.json",
+      "payloadVersionId": "DjOdtfn5DPWW77s4.kNOHMfaytNdiEzT",
+      "manifestVersionId": "00DMi7c7m2UE5FgQ8Y_2NdMitZhUvKf7",
       "expectedByteLength": 414244435,
       "remoteByteLength": 414244435,
       "byteLengthMatches": true,
-      "stagedSha256": "cfed6c16eac901e6887a2518f566dff7608d4c4c371bd9c1ce6b2eff03fa0815",
-      "remoteChecksumAlgorithm": "SHA256",
-      "remoteChecksumType": "FULL_OBJECT",
-      "remoteChecksumBase64": "z+1sFurJAeaIeiUY9Wbf92CNTEw3G9nBzmsu/wP6CBU=",
-      "remoteSha256": "cfed6c16eac901e6887a2518f566dff7608d4c4c371bd9c1ce6b2eff03fa0815",
+      "manifestByteLength": 1521,
+      "remoteChecksum": {
+        "checksumType": "full-object",
+        "algorithm": "crc64nvme",
+        "digest": "4948f7aa6bae7187"
+      },
+      "providerReported": {
+        "checksumAlgorithm": "CRC64NVME",
+        "checksumType": "FULL_OBJECT",
+        "checksumBase64": "SUj3qmuucYc=",
+        "encoding": "base64"
+      },
+      "stagedCrc64nvme": "4948f7aa6bae7187",
       "checksumMatches": true,
       "serverSideEncryption": "AES256",
       "uploadMethod": "s3api put-object (single part)",
-      "retentionMode": null,
-      "retentionUntil": null,
-      "promotionState": "uploaded"
+      "retentionMode": "compliance",
+      "retentionUntil": "2033-08-12T00:00:00Z",
+      "providerReportedRetention": {
+        "mode": "COMPLIANCE",
+        "retainUntilDate": "2033-08-12T00:00:00+00:00"
+      },
+      "manifestRetention": "not-locked",
+      "promotionState": "remote-verified",
+      "supersededPayloadKey": "raw/qc-historic-wildfire-detailed/2026-08-11/FEUX_PROV_GPKG.zip"
     },
     {
       "sourceId": "alberta-avi-crown",
       "stagedEntryId": "alberta-avi-crown-2026-08-11",
-      "objectKey": "raw/alberta-avi-crown/2026-08-11/AlbertaVegetationInventoryCrown.zip",
-      "versionId": "QXQuPG1.AGPZtq0ZZhyrkYNQQyEE.sRX",
+      "snapshotId": "alberta-avi-crown:undeclared:2026-08-12T05:28:04Z:e93572129f25c83911b73eadfacff12624ff6b08f2db4b311c1662196b665093",
+      "payloadKey": "raw/alberta-avi-crown/undeclared/2026-08-12T05-28-04Z/e93572129f25c83911b73eadfacff12624ff6b08f2db4b311c1662196b665093/payload/albertavegetationinventorycrown.zip",
+      "manifestKey": "raw/alberta-avi-crown/undeclared/2026-08-12T05-28-04Z/e93572129f25c83911b73eadfacff12624ff6b08f2db4b311c1662196b665093/manifest.json",
+      "payloadVersionId": "GBUA_D9Q3nC2Cr3vTEAUypOSA.7cqAU1",
+      "manifestVersionId": "WoPoBePilungd08pvIKvyyMtmOaWo7fn",
       "expectedByteLength": 557041258,
       "remoteByteLength": 557041258,
       "byteLengthMatches": true,
-      "stagedSha256": "e93572129f25c83911b73eadfacff12624ff6b08f2db4b311c1662196b665093",
-      "remoteChecksumAlgorithm": "SHA256",
-      "remoteChecksumType": "FULL_OBJECT",
-      "remoteChecksumBase64": "6TVyEp8lyDkRtz6t+s/xJiT/awjy20sxHBZiGWtmUJM=",
-      "remoteSha256": "e93572129f25c83911b73eadfacff12624ff6b08f2db4b311c1662196b665093",
+      "manifestByteLength": 1546,
+      "remoteChecksum": {
+        "checksumType": "full-object",
+        "algorithm": "crc64nvme",
+        "digest": "d97ad5e9e940dc76"
+      },
+      "providerReported": {
+        "checksumAlgorithm": "CRC64NVME",
+        "checksumType": "FULL_OBJECT",
+        "checksumBase64": "2XrV6elA3HY=",
+        "encoding": "base64"
+      },
+      "stagedCrc64nvme": "d97ad5e9e940dc76",
       "checksumMatches": true,
       "serverSideEncryption": "AES256",
       "uploadMethod": "s3api put-object (single part)",
-      "retentionMode": null,
-      "retentionUntil": null,
-      "promotionState": "uploaded"
+      "retentionMode": "compliance",
+      "retentionUntil": "2033-08-12T00:00:00Z",
+      "providerReportedRetention": {
+        "mode": "COMPLIANCE",
+        "retainUntilDate": "2033-08-12T00:00:00+00:00"
+      },
+      "manifestRetention": "not-locked",
+      "promotionState": "remote-verified",
+      "supersededPayloadKey": "raw/alberta-avi-crown/2026-08-11/AlbertaVegetationInventoryCrown.zip"
     },
     {
       "sourceId": "nrcan-forest-canopy-cover-2022",
       "stagedEntryId": "nrcan-forest-canopy-cover-2022-2026-08-11",
-      "objectKey": "raw/nrcan-forest-canopy-cover-2022/2026-08-11/CA_canopy_cover_2022.zip",
-      "versionId": "kq48EGXIUnvr3brAkMfAQHw3SROByUOz",
+      "snapshotId": "nrcan-forest-canopy-cover-2022:undeclared:2026-08-12T07:24:32Z:80c37461f4deccfdfffc26124e9064d53a94dde660b9f96194445870393af130",
+      "payloadKey": "raw/nrcan-forest-canopy-cover-2022/undeclared/2026-08-12T07-24-32Z/80c37461f4deccfdfffc26124e9064d53a94dde660b9f96194445870393af130/payload/ca_canopy_cover_2022.zip",
+      "manifestKey": "raw/nrcan-forest-canopy-cover-2022/undeclared/2026-08-12T07-24-32Z/80c37461f4deccfdfffc26124e9064d53a94dde660b9f96194445870393af130/manifest.json",
+      "payloadVersionId": "djna4u6GBKFJrhNjLh8VnhDfpaaG.hiI",
+      "manifestVersionId": "tQeahzXtuD4VTq2RiUbIXLoKYrtPfOsV",
       "expectedByteLength": 9954395939,
       "remoteByteLength": 9954395939,
       "byteLengthMatches": true,
-      "stagedSha256": "80c37461f4deccfdfffc26124e9064d53a94dde660b9f96194445870393af130",
-      "remoteChecksumAlgorithm": "SHA256",
-      "remoteChecksumType": "COMPOSITE",
-      "remoteChecksumBase64": "WArNGEIbEUhytUE0YXsBpgAPJvgkwqiW+hBe6SzccDA=-1187",
-      "remoteSha256": null,
-      "checksumMatches": false,
-      "checksumNote": "This object was uploaded as a 1187-part multipart upload, so S3 stores a composite SHA-256 (a SHA-256 over the concatenated per-part SHA-256 digests), not a whole-object SHA-256. S3 cannot return a FULL_OBJECT SHA-256 for a multipart upload; full-object checksums are supported only for CRC32, CRC32C and CRC64NVME. The composite value therefore cannot equal the staged whole-file SHA-256 and no direct remote comparison to it is possible.",
-      "independentIntegrityProof": {
-        "method": "Recomputed the composite SHA-256 locally from the staged file using the same 8388608-byte part size and compared it to the value S3 returned.",
-        "partSizeBytes": 8388608,
+      "manifestByteLength": 2346,
+      "remoteChecksum": {
+        "checksumType": "full-object",
+        "algorithm": "crc64nvme",
+        "digest": "b75556db15478f1e"
+      },
+      "providerReported": {
+        "checksumAlgorithm": "CRC64NVME",
+        "checksumType": "FULL_OBJECT",
+        "checksumBase64": "t1VW2xVHjx4=",
+        "encoding": "base64"
+      },
+      "stagedCrc64nvme": "b75556db15478f1e",
+      "checksumMatches": true,
+      "multipart": {
         "partCount": 1187,
-        "locallyRecomputedComposite": "WArNGEIbEUhytUE0YXsBpgAPJvgkwqiW+hBe6SzccDA=-1187",
-        "matchesRemote": true,
-        "conclusion": "The stored object is byte-for-byte identical to the staged file whose whole-file SHA-256 is 80c37461f4deccfdfffc26124e9064d53a94dde660b9f96194445870393af130. Integrity is established, but not by a direct S3-side whole-object SHA-256."
+        "partSizeBytes": 8388608,
+        "lastPartBytes": 5506851,
+        "etag": "\"1d2ab16ea62abdeb2aed1cc3ddf8753c-1187\"",
+        "en": "This object exceeds the 5 GB single-PUT limit and was stored as a 1187-part multipart upload of 8388608-byte parts, with a 5506851-byte final part. Its ETag carries the -1187 part-count suffix that marks a multipart object, and S3 can report no whole-object SHA-256 for it. The checksum is different: the upload requested CRC64NVME, and S3 reports ChecksumType FULL_OBJECT for that value even though the object is multipart, because CRC64NVME can be combined across parts into a digest over the whole object. This promotion therefore takes the full-object branch of the gate, not the composite branch, and the recorded digest is compared directly to the locally staged whole-file CRC64NVME. No composite recomputation is part of this promotion.",
+        "fr": "Cet objet dépasse la limite de 5 Go d'un téléversement en une seule opération et a été stocké au moyen d'un téléversement en 1187 parties de 8388608 octets, la dernière comptant 5506851 octets. Son ETag porte le suffixe -1187 indiquant le nombre de parties, marque d'un objet en plusieurs parties, et S3 ne peut en rapporter aucune empreinte SHA-256 portant sur l'objet entier. L'empreinte relève d'un autre cas : le téléversement a demandé CRC64NVME, et S3 rapporte ChecksumType FULL_OBJECT pour cette valeur même si l'objet est en plusieurs parties, car CRC64NVME peut être combiné entre les parties en une empreinte portant sur l'objet entier. Cette promotion emprunte donc la branche « objet entier » du contrôle et non la branche composite, et l'empreinte consignée est comparée directement au CRC64NVME du fichier entier préparé localement. Aucun recalcul composite ne fait partie de cette promotion."
       },
       "serverSideEncryption": "AES256",
-      "uploadMethod": "s3 cp (multipart, 1187 parts)",
-      "retentionMode": null,
-      "retentionUntil": null,
-      "promotionState": "uploaded"
+      "uploadMethod": "s3 cp (multipart, 1187 parts of 8388608 bytes, last part 5506851 bytes)",
+      "retentionMode": "compliance",
+      "retentionUntil": "2033-08-12T00:00:00Z",
+      "providerReportedRetention": {
+        "mode": "COMPLIANCE",
+        "retainUntilDate": "2033-08-12T00:00:00+00:00"
+      },
+      "manifestRetention": "not-locked",
+      "promotionState": "remote-verified",
+      "supersededPayloadKey": "raw/nrcan-forest-canopy-cover-2022/2026-08-11/CA_canopy_cover_2022.zip"
     }
   ],
+  "manifestSidecars": {
+    "retentionState": "not-locked",
+    "en": "The three manifest.json sidecars are uploaded and each returned a version ID, which is what the remote-verified gate requires. Each sidecar byte length is recorded on its entry as manifestByteLength. They are deliberately left unlocked: a sidecar records evidence about the payload and may need correcting, while compliance-mode retention can never be shortened or removed by anyone, including the account root. The payload bytes, which are the thing that must not change, are the ones under retention.",
+    "fr": "Les trois fichiers manifest.json d'accompagnement sont téléversés et chacun a renvoyé un identifiant de version, ce qu'exige le contrôle « remote-verified ». La taille en octets de chaque fichier d'accompagnement est consignée sur son entrée sous manifestByteLength. Ils sont volontairement laissés déverrouillés : un fichier d'accompagnement consigne des preuves au sujet de la charge utile et peut devoir être corrigé, alors qu'une rétention en mode conformité ne peut jamais être raccourcie ni levée par quiconque, y compris le compte racine. Ce sont les octets de la charge utile, qui eux ne doivent pas changer, qui sont sous rétention."
+  },
+  "supersededUploads": {
+    "status": "superseded",
+    "en": "This is the earlier upload of the same three archives to a flat raw/{source-id}/{retrieved-date}/{filename} key layout. Those keys do not match the canonical snapshot layout the promotion validator derives, so a manifest built from them was rejected. The objects were re-uploaded to canonical keys rather than corrected in place, and no retention was ever applied to these versions. The record is kept because the upload really happened. Each superseded key is named on its replacement entry as supersededPayloadKey, which is deliberately not the contract's predecessorPayloadKey: the predecessor chain links valid promotions of a source to each other, and these versions were never a valid promotion, so the canonical snapshots are the first promotion for each source and name no predecessor.",
+    "fr": "Il s'agit du téléversement antérieur des mêmes trois archives vers une disposition de clés à plat raw/{id-source}/{date-de-récupération}/{nom-de-fichier}. Ces clés ne correspondent pas à la disposition canonique des instantanés dérivée par le validateur de promotion; un manifeste bâti à partir d'elles était donc rejeté. Les objets ont été téléversés de nouveau vers des clés canoniques plutôt que corrigés sur place, et aucune rétention n'a jamais été appliquée à ces versions. L'enregistrement est conservé parce que ce téléversement a réellement eu lieu. Chaque clé remplacée est nommée sur l'entrée qui la remplace sous supersededPayloadKey, ce qui n'est volontairement pas le predecessorPayloadKey du contrat : la chaîne des prédécesseurs relie entre elles les promotions valides d'une source, or ces versions n'ont jamais constitué une promotion valide; les instantanés canoniques sont donc la première promotion de chaque source et ne nomment aucun prédécesseur.",
+    "recordedAt": "2026-08-12T17:22:52Z",
+    "entries": [
+      {
+        "sourceId": "qc-historic-wildfire-detailed",
+        "stagedEntryId": "qc-historic-wildfire-detailed-2026-08-11",
+        "objectKey": "raw/qc-historic-wildfire-detailed/2026-08-11/FEUX_PROV_GPKG.zip",
+        "versionId": "H7mwn1A1OGvniGjHLh0gkmgL9cM_UCqN",
+        "expectedByteLength": 414244435,
+        "remoteByteLength": 414244435,
+        "byteLengthMatches": true,
+        "stagedSha256": "cfed6c16eac901e6887a2518f566dff7608d4c4c371bd9c1ce6b2eff03fa0815",
+        "remoteChecksumAlgorithm": "SHA256",
+        "remoteChecksumType": "FULL_OBJECT",
+        "remoteChecksumBase64": "z+1sFurJAeaIeiUY9Wbf92CNTEw3G9nBzmsu/wP6CBU=",
+        "remoteSha256": "cfed6c16eac901e6887a2518f566dff7608d4c4c371bd9c1ce6b2eff03fa0815",
+        "checksumMatches": true,
+        "serverSideEncryption": "AES256",
+        "uploadMethod": "s3api put-object (single part)",
+        "retentionMode": null,
+        "retentionUntil": null,
+        "promotionState": "superseded",
+        "supersededByPayloadKey": "raw/qc-historic-wildfire-detailed/undeclared/2026-08-12T05-21-46Z/cfed6c16eac901e6887a2518f566dff7608d4c4c371bd9c1ce6b2eff03fa0815/payload/feux_prov_gpkg.zip"
+      },
+      {
+        "sourceId": "alberta-avi-crown",
+        "stagedEntryId": "alberta-avi-crown-2026-08-11",
+        "objectKey": "raw/alberta-avi-crown/2026-08-11/AlbertaVegetationInventoryCrown.zip",
+        "versionId": "QXQuPG1.AGPZtq0ZZhyrkYNQQyEE.sRX",
+        "expectedByteLength": 557041258,
+        "remoteByteLength": 557041258,
+        "byteLengthMatches": true,
+        "stagedSha256": "e93572129f25c83911b73eadfacff12624ff6b08f2db4b311c1662196b665093",
+        "remoteChecksumAlgorithm": "SHA256",
+        "remoteChecksumType": "FULL_OBJECT",
+        "remoteChecksumBase64": "6TVyEp8lyDkRtz6t+s/xJiT/awjy20sxHBZiGWtmUJM=",
+        "remoteSha256": "e93572129f25c83911b73eadfacff12624ff6b08f2db4b311c1662196b665093",
+        "checksumMatches": true,
+        "serverSideEncryption": "AES256",
+        "uploadMethod": "s3api put-object (single part)",
+        "retentionMode": null,
+        "retentionUntil": null,
+        "promotionState": "superseded",
+        "supersededByPayloadKey": "raw/alberta-avi-crown/undeclared/2026-08-12T05-28-04Z/e93572129f25c83911b73eadfacff12624ff6b08f2db4b311c1662196b665093/payload/albertavegetationinventorycrown.zip"
+      },
+      {
+        "sourceId": "nrcan-forest-canopy-cover-2022",
+        "stagedEntryId": "nrcan-forest-canopy-cover-2022-2026-08-11",
+        "objectKey": "raw/nrcan-forest-canopy-cover-2022/2026-08-11/CA_canopy_cover_2022.zip",
+        "versionId": "kq48EGXIUnvr3brAkMfAQHw3SROByUOz",
+        "expectedByteLength": 9954395939,
+        "remoteByteLength": 9954395939,
+        "byteLengthMatches": true,
+        "stagedSha256": "80c37461f4deccfdfffc26124e9064d53a94dde660b9f96194445870393af130",
+        "remoteChecksumAlgorithm": "SHA256",
+        "remoteChecksumType": "COMPOSITE",
+        "remoteChecksumBase64": "WArNGEIbEUhytUE0YXsBpgAPJvgkwqiW+hBe6SzccDA=-1187",
+        "remoteSha256": null,
+        "checksumMatches": false,
+        "checksumNote": "This object was uploaded as a 1187-part multipart upload, so S3 stores a composite SHA-256 (a SHA-256 over the concatenated per-part SHA-256 digests), not a whole-object SHA-256. S3 cannot return a FULL_OBJECT SHA-256 for a multipart upload; full-object checksums are supported only for CRC32, CRC32C and CRC64NVME. The composite value therefore cannot equal the staged whole-file SHA-256 and no direct remote comparison to it is possible.",
+        "independentIntegrityProof": {
+          "method": "Recomputed the composite SHA-256 locally from the staged file using the same 8388608-byte part size and compared it to the value S3 returned.",
+          "partSizeBytes": 8388608,
+          "partCount": 1187,
+          "locallyRecomputedComposite": "WArNGEIbEUhytUE0YXsBpgAPJvgkwqiW+hBe6SzccDA=-1187",
+          "matchesRemote": true,
+          "conclusion": "The stored object is byte-for-byte identical to the staged file whose whole-file SHA-256 is 80c37461f4deccfdfffc26124e9064d53a94dde660b9f96194445870393af130. Integrity is established, but not by a direct S3-side whole-object SHA-256."
+        },
+        "serverSideEncryption": "AES256",
+        "uploadMethod": "s3 cp (multipart, 1187 parts)",
+        "retentionMode": null,
+        "retentionUntil": null,
+        "promotionState": "superseded",
+        "supersededByPayloadKey": "raw/nrcan-forest-canopy-cover-2022/undeclared/2026-08-12T07-24-32Z/80c37461f4deccfdfffc26124e9064d53a94dde660b9f96194445870393af130/payload/ca_canopy_cover_2022.zip"
+      }
+    ]
+  },
   "promotionContract": {
     "reference": "docs/IMMUTABLE_STORAGE_CONTRACT.md",
     "conditions": {
+      "canonicalSnapshotKeys": {
+        "satisfied": true,
+        "detail": "Each payload and sidecar now sits at the key archiveKeys() derives from its staging record. tests/archive-staging-promotions.test.ts derives those keys and the snapshot id from data/staged-acquisitions.json rather than trusting the strings recorded here, then runs the real validatePromotionManifest over the result."
+      },
       "canadianRegionEvidence": {
         "satisfied": true,
         "detail": "Bucket location constraint ca-central-1 confirmed remotely."
@@ -106,34 +260,39 @@
         "detail": "All three objects returned a remote ContentLength equal to the staged byte length."
       },
       "remoteChecksum": {
-        "satisfied": false,
-        "detail": "Québec and Alberta return a FULL_OBJECT SHA-256 that matches the staged checksum exactly. The NRCan canopy object returns only a composite multipart SHA-256, which cannot be compared directly to the staged whole-file SHA-256. Its integrity is established by an independent local recomputation of the composite rather than by an S3-side whole-object SHA-256."
+        "satisfied": true,
+        "detail": "Each object returned a FULL_OBJECT CRC64NVME, which is available at any object size including the 9.95 GB multipart canopy object. Each provider base64 value normalises through hexDigestFromProviderBase64 to the locally computed whole-file CRC64NVME recorded in data/staged-acquisitions.json, and the test asserts that normalisation rather than assuming it."
       },
       "providerVersionIdPayload": {
         "satisfied": true,
         "detail": "A version ID was returned and read back for each of the three payload objects."
       },
       "providerVersionIdSidecar": {
-        "satisfied": false,
-        "detail": "No manifest.json sidecar object was uploaded, so no manifestVersionId exists. The contract requires separate provider version IDs for payload and sidecar."
+        "satisfied": true,
+        "detail": "A manifest.json sidecar was uploaded beside each payload and a version ID was returned and read back for each."
       },
       "activeComplianceRetention": {
-        "satisfied": false,
-        "detail": "No Object Lock retention has been applied to any object version. The bucket has Object Lock enabled but no default retention, which is intentional."
+        "satisfied": true,
+        "detail": "Each payload version carries compliance-mode Object Lock retention until 2033-08-12T00:00:00Z, applied per object version and read back with get-object-retention, which reported Mode=COMPLIANCE and RetainUntilDate=2033-08-12T00:00:00+00:00. The bucket still has no default retention rule, which is intentional. The three manifest.json sidecars carry no retention, which is recorded as not-locked rather than claimed as locked."
       },
       "reviewerAndReviewTime": {
-        "satisfied": false,
-        "detail": "No accountable human reviewer has recorded a review of this promotion."
+        "satisfied": true,
+        "detail": "The named reviewer read every recorded value back from S3 and recorded the review instant."
       }
     },
-    "remoteVerified": false,
-    "immutableObjectStorage": false,
+    "remoteVerified": true,
+    "immutableObjectStorage": true,
+    "immutableObjectStorageScope": {
+      "en": "immutableObjectStorage covers the three payload object versions named here and nothing else. Those versions carry compliance-mode retention and cannot be overwritten, deleted, or shortened by anyone, including the account root, before 2033-08-12. The manifest.json sidecars are not locked, and no other object in the bucket is in scope.",
+      "fr": "immutableObjectStorage ne vise que les trois versions d'objet de charge utile nommées ici. Ces versions portent une rétention en mode conformité et ne peuvent être ni écrasées, ni supprimées, ni abrégées par quiconque, y compris le compte racine, avant le 2033-08-12. Les fichiers manifest.json d'accompagnement ne sont pas verrouillés, et aucun autre objet du seau n'est visé."
+    },
     "productionEligible": false
   },
   "openDecisions": [
-    "The object keys used here follow a flat raw/<source-id>/<retrieved-date>/<filename> layout. This does NOT match the canonical snapshot layout that lib/archive-staging/validate.ts derives, which is raw/{sourceId}/{sourceVersion}/{retrievedAt}/{sha256}/payload/{lowercase-filename} plus a sibling manifest.json. A promotion manifest built from these keys would be rejected by validatePromotionManifest. The key layout must be settled before any retention is applied, because compliance-mode retention cannot be shortened or removed by anyone, including the account root, and would permanently pin these objects at non-canonical keys.",
-    "No manifest.json sidecar has been written or uploaded for any of the three snapshots.",
-    "Retention duration and mode remain unapplied. Any retention decision should be applied per object version, never as a bucket default, so that future test objects and mistakes are not silently locked.",
-    "An accountable reviewer must be named before any promotion can be recorded as remote-verified."
+    "The manifest.json sidecars carry no Object Lock retention. That is deliberate, so sidecar evidence can still be corrected, but it means only the payload bytes are provably unchangeable.",
+    "Compliance-mode retention until 2033-08-12 cannot be shortened or removed by anyone, including the account root. Every future payload upload must be checked against the canonical key layout before retention is applied.",
+    "The earlier flat-key object versions remain in the bucket, unlocked and superseded. Whether to delete them or leave them as history is still open; deleting them would remove the only trace of the first upload outside this record.",
+    "remoteVerified is a storage fact. It does not make these snapshots transformed, ingested, or production-eligible, and productionEligible stays false.",
+    "docs/IMMUTABLE_STORAGE_PROVIDER_OPTIONS.md asks for a demonstrated failed delete and a failed retention-shortening attempt against a retained version before the project uses remote-verified. No such attempt is recorded here. The write-once property of these object versions rests on the provider's compliance-mode guarantee, not on a test this project ran."
   ]
 }

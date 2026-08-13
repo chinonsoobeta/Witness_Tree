@@ -11,7 +11,10 @@ export type LocalStagingRecord = Readonly<{
   retrievedAt: string;
   byteLength: number;
   sha256: string;
-  /** Lower-case hex CRC64NVME of the whole file, computed locally. Optional: it exists only where a full-object remote comparison is needed. */
+  /**
+   * Lower-case hex CRC64NVME of the whole file, computed locally: 16 hex characters, never a
+   * provider's base64 form. Optional: it exists only where a full-object remote comparison is needed.
+   */
   crc64nvme?: string;
   originalFilename: string;
   publisher: string;
@@ -39,11 +42,19 @@ export type PromotionState = "uploaded" | "remote-verified" | "rejected";
  */
 export type FullObjectChecksumAlgorithm = "sha256" | "crc64nvme";
 
-/** A digest over the whole object, directly comparable to the locally staged digest of the same algorithm. */
+/**
+ * A digest over the whole object, directly comparable to the locally staged digest of the same
+ * algorithm. This contract records whole-object digests in exactly one encoding: lower-case hex.
+ */
 export type FullObjectChecksum = Readonly<{
   checksumType: "full-object";
   algorithm: FullObjectChecksumAlgorithm;
-  /** Lower-case hex digest of the entire object. */
+  /**
+   * Lower-case hex digest of the entire object: 64 characters for SHA-256, 16 for CRC64NVME.
+   * A provider that reports base64 (S3 does) must be normalised with `hexDigestFromProviderBase64`
+   * before the value is recorded here. A base64 value left in this field fails the digest shape gate
+   * instead of passing it, because base64 of these digests can never match the hex shape.
+   */
   digest: string;
 }>;
 
@@ -56,7 +67,11 @@ export type FullObjectChecksum = Readonly<{
 export type CompositeChecksum = Readonly<{
   checksumType: "composite";
   algorithm: "sha256";
-  /** Provider-formatted digest: base64 over the concatenated per-part digests, then "-{partCount}". */
+  /**
+   * Provider-formatted digest: base64 over the concatenated per-part digests, then "-{partCount}".
+   * This is the one digest kept in the provider's own encoding, because it is opaque: it is never
+   * compared to a hex whole-object digest, only to a local recomputation in the identical format.
+   */
   digest: string;
   partSizeBytes?: number;
   partCount?: number;
