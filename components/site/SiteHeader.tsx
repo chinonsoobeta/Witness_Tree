@@ -1,5 +1,9 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
 import { PRODUCT_NAME, type Locale } from "@/lib/domain";
+import { localeHref } from "@/lib/locale-navigation";
 
 const NAV = {
   en: [
@@ -9,6 +13,7 @@ const NAV = {
     ["Account", "/en/account"],
     ["Methods", "/en/methods"],
     ["Data", "/en/data"],
+    ["Search", "/en/search"],
   ],
   fr: [
     ["Explorer", "/fr/explorer"],
@@ -17,11 +22,13 @@ const NAV = {
     ["Compte", "/fr/compte"],
     ["Méthodes", "/fr/methodes"],
     ["Données", "/fr/donnees"],
+    ["Recherche", "/fr/recherche"],
   ],
 } as const;
 
 export function SiteHeader({ locale }: { locale: Locale }) {
-  const alternate = locale === "en" ? "/fr" : "/en";
+  const pathname = usePathname();
+  const alternate = localeHref(pathname, useSearchParams(), locale);
   return (
     <header className="site-header">
       <a className="skip-link" href="#main">{locale === "en" ? "Skip to content" : "Passer au contenu"}</a>

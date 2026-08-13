@@ -4,7 +4,10 @@ import { PlacePage } from "@/components/places";
 import { SiteShell } from "@/components/site";
 import { PLACES, placeById } from "@/lib/places";
 
-export const metadata: Metadata = { alternates: { languages: { en: "/en/places", fr: "/fr/lieux" } } };
+export async function generateMetadata({ params }: { params: Promise<{ placeId: string }> }): Promise<Metadata> {
+  const { placeId } = await params;
+  return { alternates: { languages: { en: `/en/places/${placeId}`, fr: `/fr/lieux/${placeId}` } } };
+}
 
 export function generateStaticParams() { return PLACES.map(({ id: placeId }) => ({ placeId })); }
 
