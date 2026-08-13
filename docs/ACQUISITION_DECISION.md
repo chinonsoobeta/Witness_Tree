@@ -1,6 +1,6 @@
 # Acquisition decision required
 
-**Status:** Object-storage decision required. No provider has been selected. Two compressed source archives have been downloaded to a separate local staging tree and verified. A verified lossless Québec layer copy exists in local derived storage; no immutable object-storage write, ingestion, or production-data release has occurred.
+**Status:** Object-storage decision required. No provider has been selected. Three compressed source archives have been downloaded to a separate local staging tree and verified. A verified lossless Québec layer copy exists in local derived storage; no immutable object-storage write, ingestion, or production-data release has occurred.
 
 This record turns the approved architecture into an owner decision. It does not recommend a storage vendor.
 
@@ -96,7 +96,7 @@ The owner authorized large dataset acquisition on 11 August 2026. That authoriza
 
 ## Simplest staged option
 
-The first two real transfers validated the 414,244,435-byte Québec historical-fire ZIP and 557,041,258-byte Alberta AVI ZIP: exact lengths, ZIP integrity, and SHA-256 passed. Their evidence is in [`data/staged-acquisitions.json`](../data/staged-acquisitions.json), while the 971,285,693 bytes remain outside Git in the separate staging tree. Québec attribution is metadata-verified. Alberta attribution and its geometry repair-or-quarantine policy remain open. Continue staged, resumable downloads only within available local capacity. Promotion to immutable object storage still requires the decisions above.
+Three real transfers have been validated: the 414,244,435-byte Québec historical-fire ZIP, the 557,041,258-byte Alberta AVI ZIP, and the 9,954,395,939-byte NRCan 2022 canopy-cover ZIP. Each passed exact length, ZIP integrity, and SHA-256. Their evidence is in [`data/staged-acquisitions.json`](../data/staged-acquisitions.json), while the 10,925,681,632 bytes remain outside Git in the separate staging tree. All three attributions are metadata-verified: Québec under CC BY 4.0, Alberta under the Open Government Licence – Alberta version 2.2 default statement, and NRCan under the Open Government Licence – Canada version 2.0 plus the citation its catalogue record and README request. Alberta's geometry repair-or-quarantine policy is settled: a deterministic run over 792,443 features left 791,835 unchanged, repaired 607 of the 608 invalid geometries, and quarantined 1, recorded in [`data/transformation-runs/alberta-avi-geometry-repair-v1-2026-08-12.json`](../data/transformation-runs/alberta-avi-geometry-repair-v1-2026-08-12.json) with the reasoning in [source verification](SOURCE_VERIFICATION.md). Alberta is admitted to transformation design only; it is not admitted to ingestion and is not production eligible. Continue staged, resumable downloads only within available local capacity. Promotion to immutable object storage still requires the decisions above.
 
 ## Claude Code continuation
 
