@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
@@ -29,5 +29,11 @@ test("locale SiteShell route without a main contract fails", () => rejects({ "ap
 test("unlabelled SVG and colour-only Explore legend fail", () => rejects({ "components/explore/Explore.tsx": "<svg></svg>" }, /SVG requires a title or aria-label|not colour alone/));
 test("table without caption and scoped headers fails", () => rejects({ "components/Table.tsx": "<table><thead><tr><th>Name</th></tr></thead></table>" }, /table requires a caption|header requires scope/));
 test("unlabelled input fails", () => rejects({ "components/Input.tsx": "<input type=\"text\" />" }, /input requires a label/));
+test("Explore hidden state inputs retain localized accessible names", async () => {
+  const source = await readFile(new URL("../components/explore/ExploreView.tsx", import.meta.url), "utf8");
+  assert.match(source, /name="mode"[^>]*aria-label=\{text\.modeInput\}/);
+  assert.match(source, /name="presentation"[^>]*aria-label=\{text\.presentationInput\}/);
+  assert.match(source, /name="data"[^>]*aria-label=\{text\.dataInput\}/);
+});
 test("image without alt fails", () => rejects({ "components/Image.tsx": "<img src=\"tree.png\" />" }, /img requires alt/));
 test("button without type fails", () => rejects({ "components/Button.tsx": "<button>Open</button>" }, /button requires an explicit type/));
