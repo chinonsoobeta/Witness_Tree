@@ -1,3 +1,5 @@
+import assert from "node:assert/strict";
+import test from "node:test";
 import { joinFederalRidingAttributes } from "@/lib/boundaries";
 import type { BoundaryLicence, CensusAttributeVintage, FederalRidingBoundaryEdition } from "@/lib/boundaries";
 
@@ -8,7 +10,24 @@ import type { BoundaryLicence, CensusAttributeVintage, FederalRidingBoundaryEdit
  * order and the call does not type-check.
  */
 
-const licences: readonly BoundaryLicence[] = [];
+const licences: readonly BoundaryLicence[] = [
+  {
+    id: "ogl-canada-2.0",
+    name: "Open Government Licence – Canada",
+    publisher: "Elections Canada",
+    url: "https://open.canada.ca/en/open-government-licence-canada",
+    version: { kind: "known", value: "2.0" },
+    requiredAttributionTemplate: "Contains information licensed under the Open Government Licence – Canada.",
+  },
+  {
+    id: "statcan-open-licence",
+    name: "Statistics Canada Open Licence",
+    publisher: "Statistics Canada",
+    url: "https://www.statcan.gc.ca/en/reference/licence",
+    version: { kind: "unknown", reason: "no version published" },
+    requiredAttributionTemplate: "Adapted from Statistics Canada.",
+  },
+];
 
 const evidence = {
   byteLength: 9388965,
@@ -57,16 +76,21 @@ const census2021On2023Order: CensusAttributeVintage<"2023"> = {
 
 const matched = joinFederalRidingAttributes(fed2023, census2021On2023Order, licences);
 
-// @ts-expect-error 2021 census attributes on the 338-riding 2013 basis cannot be joined to 2023 riding geometry.
-const mismatched = joinFederalRidingAttributes(fed2023, census2021On2013Order, licences);
+test("an incompatible census vintage cannot be joined at runtime", () => {
+  assert.throws(() => {
+    // @ts-expect-error 2021 census attributes on the 338-riding 2013 basis cannot be joined to 2023 riding geometry.
+    joinFederalRidingAttributes(fed2023, census2021On2013Order, licences);
+  }, /cannot be joined/);
+});
 
 // @ts-expect-error A staged join is never production eligible.
 const notProduction: { productionEligible: true } = matched;
 
-// @ts-expect-error An unversioned licence has no version value to read.
-const fabricatedVersion: string = ({ kind: "unknown", reason: "no version published" } as BoundaryLicence["version"]).value;
+test("an unversioned licence has no readable version at runtime", () => {
+  // @ts-expect-error An unversioned licence has no version value to read.
+  const fabricatedVersion: string = ({ kind: "unknown", reason: "no version published" } as BoundaryLicence["version"]).value;
+  assert.equal(fabricatedVersion, undefined);
+});
 
 void matched;
-void mismatched;
 void notProduction;
-void fabricatedVersion;

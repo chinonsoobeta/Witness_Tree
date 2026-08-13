@@ -1,3 +1,5 @@
+import assert from "node:assert/strict";
+import test from "node:test";
 import {
   assertGridConformance,
   compareChangeBetweenYears,
@@ -56,8 +58,12 @@ const gridAligned = declareReprojectedToGrid(boundaryLayer);
 // been reprojected onto the raster grid CRS.
 const intersection = planRasterVectorIntersection(conformant2022, gridAligned);
 
-// @ts-expect-error A boundary-CRS vector layer has not been reprojected onto the raster grid and cannot be intersected.
-const unreprojected = planRasterVectorIntersection(conformant2022, boundaryLayer);
+test("a boundary-CRS vector layer cannot be intersected at runtime", () => {
+  assert.throws(() => {
+    // @ts-expect-error A boundary-CRS vector layer has not been reprojected onto the raster grid and cannot be intersected.
+    planRasterVectorIntersection(conformant2022, boundaryLayer);
+  }, /has not been reprojected to the VLCE2 grid coordinate reference system/);
+});
 
 // @ts-expect-error The only admitted direction moves vectors onto the raster grid; the raster is never reprojected into the boundary CRS.
 const reversedDirection: ReprojectionDirection = { from: RASTER_GRID_CRS_ID, to: BOUNDARY_CRS_ID };
@@ -81,25 +87,28 @@ const zeroFilled: ClassArea = { kind: "empty", classValue: 210, hectares: 0 };
 // Hazard (c): only a year proven to sit on the canonical grid enters a change comparison.
 const comparison = compareChangeBetweenYears(conformant1984, conformant2022);
 
-// @ts-expect-error A raster year that was never checked against the canonical grid cannot enter a change comparison.
-const uncheckedComparison = compareChangeBetweenYears(conformant1984, {
-  year: 2021,
-  crsId: RASTER_GRID_CRS_ID,
-  crsProj4: RASTER_GRID_CRS_PROJ4,
-  geotransform: [-2660910.524, 30.0, 0.0, 2998848.1105, 0.0, -30.0],
-  width: 193936,
-  height: 128340,
-  bandCount: 1,
-  dataType: "Byte",
-  noDataValue: 255,
-  resampled: false,
+test("an unchecked raster year cannot enter a change comparison at runtime", () => {
+  assert.throws(() => {
+    // @ts-expect-error A raster year that was never checked against the canonical grid cannot enter a change comparison.
+    compareChangeBetweenYears(conformant1984, {
+      year: 2021,
+      crsId: RASTER_GRID_CRS_ID,
+      crsProj4: RASTER_GRID_CRS_PROJ4,
+      geotransform: [-2660910.524, 30.0, 0.0, 2998848.1105, 0.0, -30.0],
+      width: 193936,
+      height: 128340,
+      bandCount: 1,
+      dataType: "Byte",
+      noDataValue: 255,
+      resampled: false,
+    });
+  }, /has not been checked against the canonical VLCE2 grid/);
 });
 
 // @ts-expect-error A grid-identity comparison reads no pixels and is never production eligible.
 const pixelsCompared: { pixelsCompared: true } = comparison;
 
 void intersection;
-void unreprojected;
 void reversedDirection;
 void resampledYear;
 void computedIntersection;
@@ -107,5 +116,4 @@ void requireClassArea;
 void fabricatedHectares;
 void zeroFilled;
 void comparison;
-void uncheckedComparison;
 void pixelsCompared;
