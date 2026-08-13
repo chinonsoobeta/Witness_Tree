@@ -3,6 +3,7 @@ import type { ArchivePromotionManifest, CompositeChecksum, FullObjectChecksum, L
 const SHA_256 = /^[a-f\d]{64}$/i;
 const CRC64NVME = /^[a-f\d]{16}$/i;
 const COMPOSITE_DIGEST = /^[A-Za-z\d+/]+={0,2}-\d+$/;
+const BASE64 = /^(?:[A-Za-z\d+/]{4})*(?:[A-Za-z\d+/]{2}==|[A-Za-z\d+/]{3}=)?$/;
 const DIGEST_SHAPE = { sha256: SHA_256, crc64nvme: CRC64NVME } as const;
 const SEGMENT = /^[a-z0-9]+(?:[._-][a-z0-9]+)*$/;
 const FILENAME = /^[A-Za-z0-9]+(?:[._-][A-Za-z0-9]+)*$/;
@@ -10,6 +11,19 @@ const UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/;
 const alias = (value: string) => /(?:^|[._/-])(?:current|latest)(?:$|[._/-])/i.test(value);
 const timestamp = (value: string) => UTC.test(value) && !Number.isNaN(new Date(value).getTime()) && new Date(value).toISOString() === value.replace("Z", ".000Z");
 const https = (value: string) => /^https:\/\/\S+$/i.test(value);
+
+/**
+ * Normalises a provider's base64 whole-object digest to the lower-case hex this contract records.
+ * Recording is single-encoding on purpose: every whole-object digest in this contract is hex, so an
+ * unconverted base64 value fails `fullObjectChecksumMatches` rather than passing it unnoticed.
+ */
+export function hexDigestFromProviderBase64(value: string) {
+  if (!BASE64.test(value) || value.length === 0 || value.length % 4 !== 0) throw new Error("A provider digest must be base64 before it can be normalised to hex.");
+  const bytes = atob(value);
+  let hex = "";
+  for (let index = 0; index < bytes.length; index += 1) hex += bytes.charCodeAt(index).toString(16).padStart(2, "0");
+  return hex;
+}
 
 export function safeSegment(value: string) {
   return SEGMENT.test(value) && !alias(value) && !value.includes("%") && !value.includes("/") && !value.includes("\\");
@@ -35,7 +49,10 @@ export function validateLocalStaging(record: LocalStagingRecord) {
   return record;
 }
 
-/** A whole-object digest is comparable to the staged digest of the same algorithm at any object size. */
+/**
+ * A whole-object digest is comparable to the staged digest of the same algorithm at any object size.
+ * Both sides must already be hex: a provider's base64 form fails the shape test for its algorithm.
+ */
 export function fullObjectChecksumMatches(checksum: FullObjectChecksum, staged: Pick<LocalStagingRecord, "sha256" | "crc64nvme">) {
   const expected = checksum.algorithm === "sha256" ? staged.sha256 : staged.crc64nvme;
   const shape = DIGEST_SHAPE[checksum.algorithm];
