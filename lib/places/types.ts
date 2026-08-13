@@ -7,10 +7,13 @@ export type ExampleStatus = "example";
 export type CoverageShare = Readonly<{ grade: CoverageGrade; share: number }>;
 export type PlaceEvent = Readonly<{ id: string; year: number; evidence: EvidenceClass; title: LocalizedString; confidence: ConfidenceResult; limitation: LocalizedString; provenance: Provenance }>;
 export type AnnualSummary = Readonly<{ year: number; hectares: number; eventIds: readonly string[] }>;
+/** Example-only disclosure for a geography below the documented display threshold. */
+export type SmallAreaDisclosure = Readonly<{ thresholdHectares: number; rawRecord: LocalizedString; computedRate: null }>;
 export type Place = Readonly<{
   status: ExampleStatus; id: string; type: PlaceType; province: "BC" | "AB" | "ON" | "QC"; name: LocalizedString; aliases: LocalizedString;
   boundaryEdition: string; boundaryVersion: string; forestHectares: number; coverage: readonly CoverageShare[]; annual: readonly AnnualSummary[]; events: readonly PlaceEvent[];
   stats: readonly Reported[]; sources: readonly string[]; citation: Readonly<{ timeRange: string; dataVersion: string; method: string }>;
   safeguard?: LocalizedString;
+  smallArea?: SmallAreaDisclosure;
 }>;
 export type Location = Readonly<{ status: ExampleStatus; id: string; summary: LocalizedString; latitude: number; longitude: number; accuracyMetres: number; containingPlaceIds: readonly string[]; events: readonly PlaceEvent[] }>;

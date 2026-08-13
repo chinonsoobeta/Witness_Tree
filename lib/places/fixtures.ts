@@ -6,6 +6,9 @@ const provenance: Provenance = { dataset: "Illustrative source-ledger entry", ve
 const high: ConfidenceResult = { level: "high", ruleId: "CONF-HIGH-001", reason: local("Direct authoritative record with clear geometry, date and attributes.", "Registre faisant directement autorité, avec une géométrie, une date et des attributs clairs.") };
 const limited: ConfidenceResult = { level: "limited", ruleId: "CONF-LIMITED-001", reason: local("Useful indication only because a documented coverage or resolution limit affects this location.", "Indication utile seulement, car une limite documentée de couverture ou de résolution touche cet emplacement.") };
 
+// Fixture policy only: this is not a production threshold or an assertion about any real geography.
+export const EXAMPLE_SMALL_AREA_THRESHOLD_HECTARES = 1;
+
 function event(id: string, year: number, evidence: PlaceEvent["evidence"], title: LocalizedString, confidence = high): PlaceEvent {
   return { id, year, evidence, title, confidence, limitation: confidence.reason, provenance };
 }
@@ -33,6 +36,7 @@ export const PLACES: readonly Place[] = specs.map(([id, type, province, name], i
       { kind: "unknown", evidence: "unknown", reason: "No authoritative public record has been integrated for this question.", coverageGrade: "national-baseline-plus-local-context" },
     ], sources: ["example-official-record", "example-satellite-observation"], citation: { timeRange: "1984–2025 (illustrative)", dataVersion: "example-1.0", method: "example-method-1" },
     ...(type === "reserve" || type === "treaty-area" ? { safeguard: local("Illustrative geography only. This example does not identify a community contact or speak for rights holders; a right of reply is retained before publication.", "Géographie illustrative seulement. Cet exemple ne désigne aucun contact communautaire et ne parle pas au nom des titulaires de droits; un droit de réponse est maintenu avant publication.") } : {}),
+    ...(type === "reserve" ? { smallArea: { thresholdHectares: EXAMPLE_SMALL_AREA_THRESHOLD_HECTARES, rawRecord: local("Illustrative raw record: 0.4 ha. No rate is published.", "Registre brut illustratif : 0,4 ha. Aucun taux n’est publié."), computedRate: null } } : {}),
   };
 });
 

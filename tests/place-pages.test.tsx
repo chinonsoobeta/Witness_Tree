@@ -1,8 +1,11 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
+import { renderToStaticMarkup } from "react-dom/server";
 // @ts-expect-error -- Node's TypeScript runner requires explicit local extensions.
-import { LOCATIONS, PLACE_TYPES, PLACES } from "../lib/places/index.ts";
+import { EXAMPLE_SMALL_AREA_THRESHOLD_HECTARES, LOCATIONS, PLACE_TYPES, PLACES } from "../lib/places/index.ts";
+// @ts-expect-error -- Node's TypeScript runner requires explicit local extensions.
+import { PlacePage } from "../components/places/PlacePage.tsx";
 
 test("illustrative fixtures cover all place types and provinces", () => {
   assert.deepEqual(new Set(PLACES.map((place) => place.type)), new Set(PLACE_TYPES));
@@ -13,6 +16,29 @@ test("illustrative fixtures cover all place types and provinces", () => {
 test("all fixture locale fields and coverage shares are complete", () => {
   assert.equal(PLACES.filter((place) => Boolean(place.name.en)).length, PLACES.filter((place) => Boolean(place.name.fr)).length);
   assert.ok(PLACES.every((place) => Math.abs(place.coverage.reduce((total, item) => total + item.share, 0) - 1) < 0.001));
+});
+
+test("Indigenous-geography fixtures retain bilingual safeguards without an active reply contact", () => {
+  const indigenousPlaces = PLACES.filter((place) => place.type === "reserve" || place.type === "treaty-area");
+  assert.equal(indigenousPlaces.length, 2);
+  for (const place of indigenousPlaces) {
+    assert.match(place.safeguard?.en ?? "", /Illustrative geography only.*does not identify a community contact.*before publication/);
+    assert.match(place.safeguard?.fr ?? "", /Géographie illustrative seulement.*ne désigne aucun contact communautaire.*avant publication/);
+    const markup = renderToStaticMarkup(<PlacePage place={place} locale="en" view="table" />);
+    assert.doesNotMatch(markup, /mailto:|right-of-reply contact|active reply/i);
+  }
+});
+
+test("the explicitly illustrative small-area reserve shows a raw record and no computed rate", () => {
+  const place = PLACES.find((candidate) => candidate.type === "reserve");
+  assert.ok(place?.smallArea);
+  assert.equal(place.smallArea.thresholdHectares, EXAMPLE_SMALL_AREA_THRESHOLD_HECTARES);
+  assert.ok(place.smallArea.thresholdHectares > Number(place.smallArea.rawRecord.en.match(/([\d.]+) ha/)!.at(1)!));
+  assert.equal(place.smallArea.computedRate, null);
+  const english = renderToStaticMarkup(<PlacePage place={place} locale="en" view="table" />);
+  const french = renderToStaticMarkup(<PlacePage place={place} locale="fr" view="table" />);
+  assert.match(english, /data-testid="small-area-raw-record"[\s\S]*Illustrative raw record: 0\.4 ha\. No rate is published\./);
+  assert.match(french, /data-testid="small-area-raw-record"[\s\S]*Registre brut illustratif : 0,4 ha\. Aucun taux n’est publié\./);
 });
 
 test("annual summaries retain event identifiers and locations are newest first", () => {
