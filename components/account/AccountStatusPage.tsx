@@ -1,4 +1,5 @@
 import { PRODUCT_NAME, type Locale } from "@/lib/domain";
+import { ACCOUNT_SERVICE_STATUS } from "@/lib/accounts";
 
 const COPY = {
   en: {
@@ -30,6 +31,7 @@ const COPY = {
 } as const;
 
 export function AccountStatusPage({ locale }: Readonly<{ locale: Locale }>) {
+  if (ACCOUNT_SERVICE_STATUS.enabled) throw new Error("An active account service needs an implemented account experience.");
   const copy = COPY[locale]; const prefix = `/${locale}`; const alertCopy = copy.alertCopy.replace(locale === "en" ? "product" : "produit", PRODUCT_NAME[locale]);
   return <main id="main" className="page-wrap"><header className="masthead"><h1>{copy.title}</h1><p className="dek">{copy.status}</p></header><section className="content-section prose-measure"><h2>{copy.planned}</h2><ul>{copy.capabilities.map((item) => <li key={item}>{item}</li>)}</ul><h2>{copy.safeguards}</h2><ul>{copy.safeguardsList.map((item) => <li key={item}>{item}</li>)}</ul><h2>{copy.alerts}</h2><p>{alertCopy}</p><p>{copy.links} <a href={`${prefix}/${locale === "en" ? "privacy" : "confidentialite"}`}>{copy.privacy}</a> · <a href={`${prefix}/${locale === "en" ? "terms" : "conditions"}`}>{copy.terms}</a></p></section></main>;
 }

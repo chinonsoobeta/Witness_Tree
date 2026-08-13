@@ -2,4 +2,10 @@
 
 This is a database-agnostic policy model, not a claim that a hosted database or email service exists. It specifies private account credentials, verified-email state, consent wording and timestamp, saved geometry/radius/area/name/note, preferences, send history, one-click unsubscribe tokens, deletion requests, and correction records. Owner filters enforce row isolation in this pure model. Deletion becomes due after 30 days; send history expires after 24 months.
 
+## Activation boundary
+
+`lib/accounts/activation-gate.ts` is deliberately disabled by default. It is a non-secret internal approval record, not a deployment setting or vendor configuration. Account routes and any future mutation or sender boundary must call `requireAccountActivation`; they cannot be marked enabled from a partial record.
+
+Before a complete record can satisfy the gate, it needs evidence for Canadian hosting and residency; a direct database RLS isolation test; geometry encryption and no-log verification; consent, deletion, and history-retention tests; a verified sender and one-click unsubscribe; rate-limit and queue controls; a kill-switch rehearsal under five minutes; reviewed English and French templates; privacy, security, and legal sign-off; and a named incident owner with a runbook. The gate neither creates an account nor authorizes collection, email, vendor configuration, deployment, or a production claim.
+
 The pure alert evaluator models the seven planned triggers and their default cadences, duplicate/release suppression, correction recipients, and the six immediate alerts per saved area per UTC day limit (overflow is marked for a digest). It requires evidence-first-line text, data version, source agency, observation time, a versioned internal URL and a chosen locale. Wildfire payloads additionally require an authoritative agency URL before product content. It neither sends nor queues email. Custom saved areas may be at most 5,000 km²; a supplied radius is converted to a circle area and checked against that limit.
