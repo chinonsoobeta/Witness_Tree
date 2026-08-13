@@ -42,6 +42,7 @@ npm run check:source-candidates
 npm run check:acquisition-readiness
 npm run check:staged-acquisitions
 npm run check:staged-geospatial-profile
+npm run check:immutable-promotions
 npm run check:claims
 npm run check:style-tokens
 npm run check:brand-token
