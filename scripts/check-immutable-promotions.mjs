@@ -48,6 +48,7 @@ const CREDENTIAL_PATTERNS = [
 /** Every localised block this record must carry. Deleting one language by deleting the block fails here. */
 const REQUIRED_LOCALIZED = [
   "notice",
+  "revisedAtBasis",
   "checksumEncoding",
   "reviewBasis",
   "manifestSidecars",
@@ -66,6 +67,17 @@ const REQUIRED_LOCALIZED = [
  */
 const ABSENT_EVIDENCE = [
   { field: "bucket.objectLockDefaultRetention", reasonField: "promotionContract.conditions.activeComplianceRetention.detail", reason: /no default retention rule/i },
+];
+
+/**
+ * These are the calendar-day fields that say when evidence in this record was
+ * gathered. They are deliberately enumerated: retention dates are future
+ * controls, not evidence dates, and must not constrain revisedAt.
+ */
+const EMBEDDED_EVIDENCE_DATES = [
+  "evidenceAddedOn",
+  "writeOnceDemonstration.demonstratedOn",
+  "versionIdVerification.verifiedOn",
 ];
 
 function resolve(root, dotted) {
@@ -374,6 +386,12 @@ export function validateImmutablePromotions(record) {
   for (const field of ["recordedAt", "revisedAt", "reviewedAt"]) must(field, TIMESTAMP.test(record[field] ?? ""), "must be a UTC timestamp");
   must("evidenceAddedOn", CALENDAR_DAY.test(record.evidenceAddedOn ?? ""), "must be a calendar day");
   must("revisedAt", new Date(record.revisedAt ?? 0).getTime() >= new Date(record.recordedAt ?? 0).getTime(), "cannot precede recordedAt");
+  for (const field of EMBEDDED_EVIDENCE_DATES) {
+    const day = resolve(record, field);
+    if (!must(field, CALENDAR_DAY.test(day ?? ""), "must be a calendar day")) continue;
+    const evidenceStart = new Date(`${day}T00:00:00Z`).getTime();
+    must("revisedAt", new Date(record.revisedAt ?? 0).getTime() >= evidenceStart, `cannot precede the evidence date recorded in ${field}`);
+  }
   must("reviewedAt", new Date(record.reviewedAt ?? 0).getTime() >= new Date(record.recordedAt ?? 0).getTime(), "cannot precede recordedAt");
   text("reviewer", record.reviewer);
   text("verificationMethod", record.verificationMethod);

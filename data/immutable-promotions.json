@@ -5,7 +5,11 @@
     "fr": "Trois archives préparées et vérifiées ont été téléversées de nouveau vers les clés d'instantané canoniques dérivées par lib/archive-staging, vérifiées à distance, puis verrouillées en rétention Object Lock en mode conformité jusqu'au 2033-08-12. Chaque charge utile satisfait au contrôle « remote-verified » de lib/archive-staging/validate.ts. Les fichiers manifest.json d'accompagnement sont téléversés et volontairement laissés déverrouillés, afin que leurs octets puissent encore être corrigés; ceux des charges utiles ne le peuvent pas. La propriété d'écriture unique est démontrée et non seulement citée : trois tentatives adverses contre une version de charge utile verrouillée ont été refusées, et les six identifiants de version consignés ont été résolus dans S3 en direct. Voir writeOnceDemonstration et versionIdVerification ci-dessous. La vérification à distance est un fait de stockage seulement : ces instantanés ne constituent ni des données transformées, ni des données ingérées, ni une version de production."
   },
   "recordedAt": "2026-08-12T17:22:52Z",
-  "revisedAt": "2026-08-12T23:55:00Z",
+  "revisedAt": "2026-08-13T02:46:39Z",
+  "revisedAtBasis": {
+    "en": "revisedAt is the authored instant of commit 4fa7277, the commit that wrote the evidence recorded below into this file. It is read from version control rather than estimated, so it is a recorded instant and not a guess. The evidence fields record calendar days, and revisedAt falls on the same day or later.",
+    "fr": "revisedAt est l'instant de création du commit 4fa7277, celui qui a inscrit dans ce fichier les preuves consignées ci-dessous. Il est lu depuis le système de gestion de versions plutôt qu'estimé; il s'agit donc d'un instant consigné et non d'une supposition. Les champs de preuve consignent des jours civils, et revisedAt tombe le même jour ou plus tard."
+  },
   "evidenceAddedOn": "2026-08-13",
   "bucket": {
     "bucketId": "witness-tree-raw-archive-ca-central-1",
