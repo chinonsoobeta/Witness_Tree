@@ -3,7 +3,7 @@
 **Audit date:** 2026-08-11 (Pacific)
 
 **Authoritative specification:** [`Witness Tree Implementation Plan.docx`](specification/Witness%20Tree%20Implementation%20Plan.docx), with the local extracted working copy at `/Users/chinonsoobeta/Documents/Codex/2026-08-11/go/work/witness-tree-plan.md`.
-**Overall plan progress:** **43%**. This is an implementation-readiness estimate, not a claim that a production data service is 43% ready. The repository has substantial public-interface, policy, contract, and automated-check foundations plus three verified local-staging source archives, one checksum-bound lossless local transformation, one deterministic geometry repair-or-quarantine run, and guarded transformation/storage-promotion boundaries; most acquired-data, operational, review, and launch work remains incomplete.
+**Overall plan progress:** **45%**. This is an implementation-readiness estimate, not a claim that a production data service is 45% ready. The repository has substantial public-interface, policy, contract, and automated-check foundations plus verified local staging, boundary/raster validation, one checksum-bound lossless local transformation, and guarded transformation/storage-promotion boundaries; most acquired-data, operational, review, and launch work remains incomplete.
 
 ## Current handoff state
 
@@ -11,6 +11,7 @@
 | --- | --- |
 | Repository and released main revision | `chinonsoobeta/Witness_Tree`, main commit [`2b52a0a6ba4ae3e529f6193883e88bc1a1ed68d9`](https://github.com/chinonsoobeta/Witness_Tree/commit/2b52a0a6ba4ae3e529f6193883e88bc1a1ed68d9). |
 | Public technical preview | [witness-tree-canada.r7bv67rgkk.chatgpt.site](https://witness-tree-canada.r7bv67rgkk.chatgpt.site). It is a technical preview with illustrative data only, not a data-ready public launch. |
+| Current working branch | `data/raster-grid-contract`, based on the released main revision and including the boundary-edition evidence. |
 | Main integration workflow | `main` is protected. Work must be committed to a branch, proposed by pull request, pass required `verify`, resolve conversations, and preserve linear history. Do not force-push or delete `main`. |
 | Secrets | No secret, credential, access token, personal data, or production configuration belongs in repository files, fixtures, tests, rendered output, Git history, or Sites configuration. See [`IMPLEMENTATION_STATUS.md`](IMPLEMENTATION_STATUS.md). |
 
@@ -43,4 +44,4 @@ Percentages are per-phase estimates. They are intentionally not averaged: later 
 
 ## Completion rule
 
-Do not increase the overall percentage merely because fixture, documentation, or UI work is added. Increase it only when a phase exit criterion has verifiable evidence: acquired/licensed/versioned data, reproducible processing, deployed operations, required review sign-offs, or observed beta/launch results. The present **43%** reflects three verified real source transfers, exact attribution for all three, reproducible geometry profiles, enforceable admission gates, one verified lossless real-data transformation, and one deterministic geometry repair-or-quarantine run; further increases require additional exit evidence, not more scaffolding.
+Do not increase the overall percentage merely because fixture, documentation, or UI work is added. Increase it only when a phase exit criterion has verifiable evidence: acquired/licensed/versioned data, reproducible processing, deployed operations, required review sign-offs, or observed beta/launch results. The present **45%** reflects three verified real source transfers, exact attribution for all three, reproducible geometry profiles, boundary/raster admission gates, immutable-promotion evidence, one verified lossless real-data transformation, and one deterministic geometry repair-or-quarantine run; further increases require additional exit evidence, not more scaffolding.

@@ -4,4 +4,7 @@ export type ExploreMode = (typeof EXPLORE_MODES)[number];
 export type ExploreEvent = Readonly<{ id: string; mode: ExploreMode; year: number; coordinates: readonly [longitude: number, latitude: number]; name: Record<Locale, string>; evidence: EvidenceClass; confidence: ConfidenceResult; coverageGrade: CoverageGrade; provenance: Provenance; unknownReason?: string }>;
 export type ExplorePresentation = "map" | "list";
 export type ExploreDataView = "chart" | "table";
+export const EXPLORE_YEAR_MIN = 1984;
+export const EXPLORE_YEAR_MAX = 2026;
+export const EXPLORE_DEFAULT_YEAR = EXPLORE_YEAR_MAX;
 export const EXPLORE_BOUNDARY_OVERLAYS = ["watersheds", "federal-ridings", "provincial-ridings", "reserves", "treaty-areas"] as const;
