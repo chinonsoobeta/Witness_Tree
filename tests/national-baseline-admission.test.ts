@@ -29,7 +29,7 @@ test("only an immutable, remotely verified VLCE2 raster on the canonical grid is
   const rejected = { ...localOnly, promotion: { state: "uploaded" as const } };
   assert.throws(() => admitVerifiedImmutableRaster({ promotion: rejected, header: header(1991), vat: vat(1991) }), /remote-verified/);
   assert.throws(() => admitVerifiedImmutableRaster({ promotion: { ...manifest(1991), staged: { ...manifest(1991).staged, sourceId: "other-source" } }, header: header(1991), vat: vat(1991) }), /only accepts/);
-  assert.throws(() => admitVerifiedImmutableRaster({ promotion: manifest(1991), header: { ...header(1991), width: 1 }, vat: vat(1991) }), /Raster width/);
+  assert.throws(() => admitVerifiedImmutableRaster({ promotion: manifest(1991), header: { ...header(1991), width: 1 }, vat: vat(1991) }), /canonical VLCE2 grid/);
 });
 
 test("the 2005 VAT hazard remains Unknown and planning creates no public or production result", () => {
