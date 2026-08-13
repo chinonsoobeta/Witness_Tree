@@ -1,11 +1,12 @@
 {
   "status": "remote-verified",
   "notice": {
-    "en": "Three verified staged archives were re-uploaded to the canonical snapshot keys that lib/archive-staging derives, verified remotely, and locked under compliance-mode Object Lock retention until 2033-08-12. Each payload satisfies the remote-verified gate in lib/archive-staging/validate.ts. The manifest.json sidecars are uploaded and deliberately left unlocked, so the sidecar bytes can still be corrected; the payload bytes cannot. Remote verification is a storage fact only: these snapshots are still not transformed data, ingested data, or a production release.",
-    "fr": "Trois archives préparées et vérifiées ont été téléversées de nouveau vers les clés d'instantané canoniques dérivées par lib/archive-staging, vérifiées à distance, puis verrouillées en rétention Object Lock en mode conformité jusqu'au 2033-08-12. Chaque charge utile satisfait au contrôle « remote-verified » de lib/archive-staging/validate.ts. Les fichiers manifest.json d'accompagnement sont téléversés et volontairement laissés déverrouillés, afin que leurs octets puissent encore être corrigés; ceux des charges utiles ne le peuvent pas. La vérification à distance est un fait de stockage seulement : ces instantanés ne constituent ni des données transformées, ni des données ingérées, ni une version de production."
+    "en": "Three verified staged archives were re-uploaded to the canonical snapshot keys that lib/archive-staging derives, verified remotely, and locked under compliance-mode Object Lock retention until 2033-08-12. Each payload satisfies the remote-verified gate in lib/archive-staging/validate.ts. The manifest.json sidecars are uploaded and deliberately left unlocked, so the sidecar bytes can still be corrected; the payload bytes cannot. The write-once property is demonstrated, not only cited: three adversarial attempts against one locked payload version were refused, and all six recorded version IDs were resolved against live S3. See writeOnceDemonstration and versionIdVerification below. Remote verification is a storage fact only: these snapshots are still not transformed data, ingested data, or a production release.",
+    "fr": "Trois archives préparées et vérifiées ont été téléversées de nouveau vers les clés d'instantané canoniques dérivées par lib/archive-staging, vérifiées à distance, puis verrouillées en rétention Object Lock en mode conformité jusqu'au 2033-08-12. Chaque charge utile satisfait au contrôle « remote-verified » de lib/archive-staging/validate.ts. Les fichiers manifest.json d'accompagnement sont téléversés et volontairement laissés déverrouillés, afin que leurs octets puissent encore être corrigés; ceux des charges utiles ne le peuvent pas. La propriété d'écriture unique est démontrée et non seulement citée : trois tentatives adverses contre une version de charge utile verrouillée ont été refusées, et les six identifiants de version consignés ont été résolus dans S3 en direct. Voir writeOnceDemonstration et versionIdVerification ci-dessous. La vérification à distance est un fait de stockage seulement : ces instantanés ne constituent ni des données transformées, ni des données ingérées, ni une version de production."
   },
   "recordedAt": "2026-08-12T17:22:52Z",
   "revisedAt": "2026-08-12T23:55:00Z",
+  "evidenceAddedOn": "2026-08-13",
   "bucket": {
     "bucketId": "witness-tree-raw-archive-ca-central-1",
     "region": {
@@ -164,6 +165,99 @@
     "en": "The three manifest.json sidecars are uploaded and each returned a version ID, which is what the remote-verified gate requires. Each sidecar byte length is recorded on its entry as manifestByteLength. They are deliberately left unlocked: a sidecar records evidence about the payload and may need correcting, while compliance-mode retention can never be shortened or removed by anyone, including the account root. The payload bytes, which are the thing that must not change, are the ones under retention.",
     "fr": "Les trois fichiers manifest.json d'accompagnement sont téléversés et chacun a renvoyé un identifiant de version, ce qu'exige le contrôle « remote-verified ». La taille en octets de chaque fichier d'accompagnement est consignée sur son entrée sous manifestByteLength. Ils sont volontairement laissés déverrouillés : un fichier d'accompagnement consigne des preuves au sujet de la charge utile et peut devoir être corrigé, alors qu'une rétention en mode conformité ne peut jamais être raccourcie ni levée par quiconque, y compris le compte racine. Ce sont les octets de la charge utile, qui eux ne doivent pas changer, qui sont sous rétention."
   },
+  "writeOnceDemonstration": {
+    "status": "satisfied",
+    "requirement": "docs/IMMUTABLE_STORAGE_PROVIDER_OPTIONS.md asks for a demonstrated failed delete and a demonstrated failed retention-shortening attempt against a retained version before this project uses remote-verified.",
+    "demonstratedOn": "2026-08-13",
+    "demonstratedBy": "Chinonso Obeta",
+    "principal": "the bucket-owning account with full administrative privileges, which is the most privileged principal available",
+    "target": {
+      "sourceId": "qc-historic-wildfire-detailed",
+      "payloadKey": "raw/qc-historic-wildfire-detailed/undeclared/2026-08-12T05-21-46Z/cfed6c16eac901e6887a2518f566dff7608d4c4c371bd9c1ce6b2eff03fa0815/payload/feux_prov_gpkg.zip",
+      "payloadVersionId": "DjOdtfn5DPWW77s4.kNOHMfaytNdiEzT"
+    },
+    "attempts": [
+      {
+        "attempt": "delete-object-version",
+        "detail": "Delete that specific object version.",
+        "outcome": "refused",
+        "errorCode": "AccessDenied",
+        "providerMessage": "Access Denied because object protected by object lock."
+      },
+      {
+        "attempt": "shorten-retention",
+        "detail": "Shorten retention from 2033-08-12 to 2027-01-01, keeping compliance mode.",
+        "outcome": "refused",
+        "errorCode": "AccessDenied",
+        "providerMessage": "Access Denied because object protected by object lock."
+      },
+      {
+        "attempt": "downgrade-retention-mode",
+        "detail": "Downgrade the mode from COMPLIANCE to GOVERNANCE, keeping the same retention date.",
+        "outcome": "refused",
+        "errorCode": "AccessDenied",
+        "providerMessage": "Access Denied because object protected by object lock."
+      }
+    ],
+    "postCheck": {
+      "remoteByteLength": 414244435,
+      "checksumAlgorithm": "CRC64NVME",
+      "providerReportedChecksumBase64": "SUj3qmuucYc=",
+      "objectLockMode": "COMPLIANCE",
+      "objectLockRetainUntilDate": "2033-08-12T00:00:00+00:00",
+      "deleteMarkersUnderPrefix": 0,
+      "matchesRecordedEntry": true
+    },
+    "en": "On 2026-08-13 the auditor ran three adversarial attempts against the locked Québec payload object version named above, using the bucket-owning account with full administrative privileges, which is the most privileged principal available. Deleting that object version was refused. Shortening retention from 2033-08-12 to 2027-01-01 while keeping compliance mode was refused. Downgrading the mode from COMPLIANCE to GOVERNANCE while keeping the same date was refused. All three returned AccessDenied with the message \"Access Denied because object protected by object lock.\" After all three attempts the object version still returns the recorded byte length, the recorded provider checksum, mode COMPLIANCE, and retain-until 2033-08-12T00:00:00+00:00, and the prefix carries no delete markers. The write-once property of this record is now demonstrated, not merely cited.",
+    "fr": "Le 2026-08-13, le vérificateur a mené trois tentatives adverses contre la version d'objet de charge utile verrouillée du Québec nommée ci-dessus, au moyen du compte propriétaire du seau doté des pleins privilèges d'administration, soit le mandataire le plus privilégié disponible. La suppression de cette version d'objet a été refusée. Le raccourcissement de la rétention du 2033-08-12 au 2027-01-01, en conservant le mode conformité, a été refusé. Le passage du mode COMPLIANCE au mode GOVERNANCE, en conservant la même date, a été refusé. Les trois tentatives ont renvoyé AccessDenied accompagné du message « Access Denied because object protected by object lock. ». Après ces trois tentatives, la version d'objet renvoie toujours la taille en octets consignée, l'empreinte du fournisseur consignée, le mode COMPLIANCE et l'échéance 2033-08-12T00:00:00+00:00, et le préfixe ne porte aucun marqueur de suppression. La propriété d'écriture unique de cet enregistrement est désormais démontrée, et non seulement citée.",
+    "scope": {
+      "en": "The three attempts were run against one of the three locked payload object versions, not all three. All three payload versions carry the same compliance mode and the same 2033-08-12 retention date, applied the same way. A compliance-mode retention cannot be shortened or removed by anyone, including the account root, until it expires. The demonstration covers deletion and retention weakening. It does not cover every conceivable loss mode. Bucket deletion, account closure, and region loss are separate risks and remain out of scope for this evidence.",
+      "fr": "Les trois tentatives ont visé une seule des trois versions d'objet de charge utile verrouillées, et non les trois. Les trois versions portent le même mode conformité et la même échéance du 2033-08-12, appliqués de la même manière. Une rétention en mode conformité ne peut être ni raccourcie ni levée par quiconque, y compris le compte racine, avant son échéance. La démonstration couvre la suppression et l'affaiblissement de la rétention. Elle ne couvre pas tous les modes de perte imaginables. La suppression du seau, la fermeture du compte et la perte de la région sont des risques distincts qui demeurent hors de la portée de cette preuve."
+    }
+  },
+  "versionIdVerification": {
+    "status": "verified-out-of-band",
+    "verifiedOn": "2026-08-13",
+    "verifiedBy": "Chinonso Obeta",
+    "method": "Each recorded version ID was resolved against live S3 by reading that exact object version back, and payload retention was read with get-object-retention.",
+    "recordedVersionIdCount": 6,
+    "resolvedVersionIdCount": 6,
+    "pointInTime": true,
+    "ciCanRepeat": false,
+    "payloadFinding": "Each of the three payload versions exists and returned the recorded byte length, the recorded CRC64NVME, and compliance retention until 2033-08-12.",
+    "manifestFinding": "Each of the three manifest versions exists and returned the recorded byte length and no lock, which matches the recorded not-locked state.",
+    "en": "All six recorded version IDs, three payload and three manifest, were resolved against live S3 on 2026-08-13. Every one exists. Each payload version returned the recorded byte length, the recorded CRC64NVME, and compliance retention until 2033-08-12. Each manifest version returned the recorded byte length and no lock, which matches the recorded not-locked state. This is a point-in-time check by the named reviewer. CI does not repeat it and cannot, because resolving a version ID requires a call to S3 and CI holds no S3 credentials.",
+    "fr": "Les six identifiants de version consignés, trois pour les charges utiles et trois pour les manifestes, ont été résolus dans S3 en direct le 2026-08-13. Chacun existe. Chaque version de charge utile a renvoyé la taille en octets consignée, le CRC64NVME consigné et une rétention en mode conformité jusqu'au 2033-08-12. Chaque version de manifeste a renvoyé la taille en octets consignée et aucun verrou, ce qui correspond à l'état « non verrouillé » consigné. Il s'agit d'une vérification ponctuelle effectuée par le réviseur nommé. L'intégration continue ne la répète pas et ne le peut pas, car résoudre un identifiant de version exige un appel à S3 et l'intégration continue ne détient aucune autorisation S3.",
+    "gap": {
+      "en": "The automated test suite cannot detect a wrong version ID. The auditor confirmed this by mutation on 2026-08-13: changing a recorded payload version ID to a different well-formed value fails zero tests, because the validator can only check that the field is present and non-empty. It has no way to know the true value without calling S3. A version ID is the only field that pins this record to one specific immutable object version. Every other recorded field describes bytes that some other version could carry too. A wrong value would therefore leave the record pointing at nothing while every automated check still passed.",
+      "fr": "La suite de tests automatisés ne peut pas détecter un identifiant de version erroné. Le vérificateur l'a confirmé par mutation le 2026-08-13 : remplacer un identifiant de version de charge utile consigné par une autre valeur bien formée ne fait échouer aucun test, car le validateur ne peut que vérifier que le champ est présent et non vide. Il n'a aucun moyen de connaître la valeur véritable sans appeler S3. L'identifiant de version est le seul champ qui rattache cet enregistrement à une version d'objet immuable précise. Tous les autres champs consignés décrivent des octets qu'une autre version pourrait porter également. Une valeur erronée laisserait donc l'enregistrement pointer vers rien alors que toutes les vérifications automatisées continueraient de réussir.",
+      "mutationEvidence": [
+        {
+          "mutation": "Change a recorded payload version ID to a different well-formed value.",
+          "testsFailed": 0,
+          "detected": false,
+          "reason": "The validator can only check that the field is present and non-empty, and CI has no S3 credentials with which to resolve it."
+        },
+        {
+          "mutation": "Flip one hex digit of the staged digest, consistently across the file.",
+          "testsFailed": 1,
+          "detected": true,
+          "reason": "The key-derivation test fails, because the snapshot key and snapshot id are derived from the staged digest rather than read from this record."
+        },
+        {
+          "mutation": "Flip only the remote CRC digest.",
+          "testsFailed": 3,
+          "detected": true,
+          "reason": "The recorded digest no longer normalises from the provider base64 value and no longer equals the staged digest, so the promotion gate rejects it."
+        }
+      ]
+    },
+    "ciProtection": {
+      "test": "tests/archive-staging-promotions.test.ts",
+      "en": "The test file asserts the shape of each recorded version ID: 32 characters drawn from the alphabet S3 uses for version IDs, all six distinct, and none a placeholder. A truncated, empty, placeholder, or obviously malformed value now fails a test. Shape is not identity. A different but well-formed version ID still passes, so this test narrows the gap without closing it. Only a live S3 read closes it, and that read is the point-in-time check recorded here.",
+      "fr": "Le fichier de tests vérifie la forme de chaque identifiant de version consigné : 32 caractères tirés de l'alphabet utilisé par S3 pour les identifiants de version, les six étant distincts et aucun n'étant une valeur de remplissage. Une valeur tronquée, vide, de remplissage ou manifestement mal formée fait désormais échouer un test. La forme n'est pas l'identité. Un identifiant différent mais bien formé passe toujours; ce test réduit donc l'écart sans le refermer. Seule une lecture réelle dans S3 le referme, et cette lecture est la vérification ponctuelle consignée ici."
+    }
+  },
   "supersededUploads": {
     "status": "superseded",
     "en": "This is the earlier upload of the same three archives to a flat raw/{source-id}/{retrieved-date}/{filename} key layout. Those keys do not match the canonical snapshot layout the promotion validator derives, so a manifest built from them was rejected. The objects were re-uploaded to canonical keys rather than corrected in place, and no retention was ever applied to these versions. The record is kept because the upload really happened. Each superseded key is named on its replacement entry as supersededPayloadKey, which is deliberately not the contract's predecessorPayloadKey: the predecessor chain links valid promotions of a source to each other, and these versions were never a valid promotion, so the canonical snapshots are the first promotion for each source and name no predecessor.",
@@ -283,8 +377,8 @@
     "remoteVerified": true,
     "immutableObjectStorage": true,
     "immutableObjectStorageScope": {
-      "en": "immutableObjectStorage covers the three payload object versions named here and nothing else. Those versions carry compliance-mode retention and cannot be overwritten, deleted, or shortened by anyone, including the account root, before 2033-08-12. The manifest.json sidecars are not locked, and no other object in the bucket is in scope.",
-      "fr": "immutableObjectStorage ne vise que les trois versions d'objet de charge utile nommées ici. Ces versions portent une rétention en mode conformité et ne peuvent être ni écrasées, ni supprimées, ni abrégées par quiconque, y compris le compte racine, avant le 2033-08-12. Les fichiers manifest.json d'accompagnement ne sont pas verrouillés, et aucun autre objet du seau n'est visé."
+      "en": "immutableObjectStorage covers the three payload object versions named here and nothing else. Those versions carry compliance-mode retention and cannot be overwritten, deleted, or shortened by anyone, including the account root, before 2033-08-12. That refusal is demonstrated against one of the three versions and recorded under writeOnceDemonstration; the other two carry the same mode and date, applied the same way. The manifest.json sidecars are not locked, and no other object in the bucket is in scope.",
+      "fr": "immutableObjectStorage ne vise que les trois versions d'objet de charge utile nommées ici. Ces versions portent une rétention en mode conformité et ne peuvent être ni écrasées, ni supprimées, ni abrégées par quiconque, y compris le compte racine, avant le 2033-08-12. Ce refus est démontré à l'égard d'une des trois versions et consigné sous writeOnceDemonstration; les deux autres portent le même mode et la même date, appliqués de la même manière. Les fichiers manifest.json d'accompagnement ne sont pas verrouillés, et aucun autre objet du seau n'est visé."
     },
     "productionEligible": false
   },
@@ -293,6 +387,7 @@
     "Compliance-mode retention until 2033-08-12 cannot be shortened or removed by anyone, including the account root. Every future payload upload must be checked against the canonical key layout before retention is applied.",
     "The earlier flat-key object versions remain in the bucket, unlocked and superseded. Whether to delete them or leave them as history is still open; deleting them would remove the only trace of the first upload outside this record.",
     "remoteVerified is a storage fact. It does not make these snapshots transformed, ingested, or production-eligible, and productionEligible stays false.",
-    "docs/IMMUTABLE_STORAGE_PROVIDER_OPTIONS.md asks for a demonstrated failed delete and a failed retention-shortening attempt against a retained version before the project uses remote-verified. No such attempt is recorded here. The write-once property of these object versions rests on the provider's compliance-mode guarantee, not on a test this project ran."
+    "The six recorded version IDs were resolved against live S3 by the named reviewer on 2026-08-13. That is a point-in-time check and CI does not repeat it, because CI holds no S3 credentials. The shape test in tests/archive-staging-promotions.test.ts catches a truncated, empty, placeholder, or malformed version ID, but not a well-formed wrong one. Whether to schedule a periodic out-of-band re-resolution is still open.",
+    "The write-once demonstration covers deletion and retention weakening on one locked payload version. Bucket deletion, account closure, and region loss are separate risks with no evidence here, and no Canadian recovery copy exists."
   ]
 }

@@ -51,7 +51,9 @@ type PromotionEntry = Readonly<{
 }>;
 
 const staging = JSON.parse(readFileSync(new URL("../data/staged-acquisitions.json", import.meta.url), "utf8")) as Readonly<{ status: "local-staging"; entries: readonly StagedEntry[] }>;
-const promotions = JSON.parse(readFileSync(new URL("../data/immutable-promotions.json", import.meta.url), "utf8")) as Readonly<{ status: string; reviewer: string; reviewedAt: string; bucket: Readonly<{ bucketId: string; region: CanadianRegionEvidence }>; entries: readonly PromotionEntry[] }>;
+type VersionIdVerification = Readonly<{ recordedVersionIdCount: number; resolvedVersionIdCount: number; pointInTime: boolean; ciCanRepeat: boolean }>;
+
+const promotions = JSON.parse(readFileSync(new URL("../data/immutable-promotions.json", import.meta.url), "utf8")) as Readonly<{ status: string; reviewer: string; reviewedAt: string; bucket: Readonly<{ bucketId: string; region: CanadianRegionEvidence }>; entries: readonly PromotionEntry[]; versionIdVerification: VersionIdVerification }>;
 
 function stagedFor(entry: PromotionEntry): StagedEntry {
   const staged = staging.entries.find((candidate) => candidate.id === entry.stagedEntryId);
@@ -145,6 +147,37 @@ test("the gate rejects a blanked or wrong manifest version id", () => {
     assert.throws(() => validatePromotionManifest(tampered({ manifestVersionId: undefined })), /provider version IDs/);
     assert.notEqual(entry.manifestVersionId.trim(), "");
   }
+});
+
+/**
+ * An S3 version id is 32 characters drawn from a fixed alphabet. Asserting that shape catches a
+ * truncated, empty, placeholder, or obviously malformed recorded value, which the gate itself cannot
+ * catch: it only requires the field to be present and non-empty.
+ *
+ * Shape is not identity. A different but well-formed version id passes this test while pointing at
+ * nothing, and no test that runs in CI can tell the difference, because resolving a version id needs
+ * a call to S3 and CI holds no S3 credentials. The identity check is the out-of-band read recorded
+ * under versionIdVerification in data/immutable-promotions.json. This test narrows that gap; it does
+ * not close it.
+ */
+const versionIdShape = /^[A-Za-z\d._-]{32}$/;
+const placeholderVersionId = /^(?:null|undefined|none|unknown|todo|tbd|placeholder|example|changeme|x+|0+)$/i;
+
+test("every recorded version id has the shape of an S3 version id, and shape is not identity", () => {
+  const ids = recorded.flatMap(({ entry }) => [entry.payloadVersionId, entry.manifestVersionId]);
+  assert.equal(ids.length, 6);
+  assert.equal(new Set(ids).size, ids.length);
+  for (const id of ids) {
+    assert.match(id, versionIdShape);
+    assert.doesNotMatch(id, placeholderVersionId);
+  }
+  for (const malformed of ["", "   ", "DjOdtfn5DPWW77s4", "DjOdtfn5DPWW77s4.kNOHMfaytNdiEzTA", "DjOdtfn5DPWW77s4/kNOHMfaytNdiEzT", "placeholder"]) assert.doesNotMatch(malformed, versionIdShape);
+  for (const placeholder of ["null", "undefined", "TODO", "x".repeat(32), "0".repeat(32)]) assert.match(placeholder, placeholderVersionId);
+  // The record must not claim more resolved version ids than the file actually carries, and must keep saying CI cannot repeat the resolution.
+  assert.equal(promotions.versionIdVerification.recordedVersionIdCount, ids.length);
+  assert.equal(promotions.versionIdVerification.resolvedVersionIdCount, ids.length);
+  assert.equal(promotions.versionIdVerification.pointInTime, true);
+  assert.equal(promotions.versionIdVerification.ciCanRepeat, false);
 });
 
 test("the gate rejects a remote byte length that does not match the staged byte length", () => {
