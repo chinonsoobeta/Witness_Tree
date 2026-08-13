@@ -2,15 +2,30 @@ import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { validateLocalAdmission } from "../lib/archive-staging/admission.ts";
+import { validateStagedAcquisitions } from "./check-staged-acquisitions.mjs";
+import { validateStagedGeospatialProfile } from "./check-staged-geospatial-profile.mjs";
+
+const RECORDED_STAGING_SOURCE_IDS = new Set([
+  "qc-historic-wildfire-detailed",
+  "alberta-avi-crown",
+  "nrcan-forest-canopy-cover-2022",
+]);
 
 /**
  * Cross-checks recorded acquisition and profiling metadata only. It does not inspect
  * payload bytes, retrieve sources, transform data, or make any release claim.
  */
 export function validateRecordedLocalAdmissions(acquisitions, profile) {
-  if (acquisitions?.status !== "local-staging" || profile?.status !== "local-staging-profile") throw new Error("Admission inputs must remain local staging records.");
+  validateStagedAcquisitions(acquisitions);
+  validateStagedGeospatialProfile(profile);
+  for (const entry of acquisitions.entries) {
+    if (!RECORDED_STAGING_SOURCE_IDS.has(entry.sourceId)) throw new Error(`Unexpected staged acquisition ${entry.sourceId}.`);
+  }
   const profiles = new Map(profile.sources?.map((source) => [source.sourceId, source]));
-  const admissions = acquisitions.entries.filter((entry) => profiles.has(entry.sourceId)).map((entry) => {
+  for (const source of profile.sources ?? []) {
+    if (!acquisitions.entries.some((entry) => entry.sourceId === source.sourceId)) throw new Error(`Missing recorded staging metadata for ${source.sourceId}.`);
+  }
+  const admissions = (acquisitions.entries ?? []).filter((entry) => profiles.has(entry.sourceId)).map((entry) => {
     const profiled = profiles.get(entry.sourceId);
     if (!profiled) throw new Error(`Missing recorded geometry evidence for ${entry.sourceId}.`);
     if (profiled.inputSha256?.toLowerCase() !== entry.sha256.toLowerCase()) throw new Error(`Recorded geometry evidence checksum must match staged acquisition for ${entry.sourceId}.`);
