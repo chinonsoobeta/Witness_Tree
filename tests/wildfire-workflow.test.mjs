@@ -9,6 +9,7 @@ import { createSnapshotStore } from '../scripts/wildfire/snapshot-store.mjs';
 
 const root = () => mkdtemp(path.join(os.tmpdir(), 'wildfire-workflow-'));
 const sources = [{ id: 'bc', response: { incidents: [{ id: 'BC-1' }], perimeters: [] } }];
+const national = { id: 'national', response: { incidents: [{ id: 'CA-1' }], perimeters: [] } };
 
 test('DST gate uses America/Vancouver and selects exactly the four local hours', () => {
   assert.equal(vancouverHour(new Date('2026-01-15T13:00:00Z')), 5);
@@ -78,4 +79,31 @@ test('data more than 24 hours old is stale', async () => {
   const start = new Date('2026-08-10T00:00:00Z');
   await store.publish({ sources, now: start });
   assert.equal((await store.status(new Date('2026-08-11T00:00:00.001Z'))).status, 'stale');
+});
+
+test('one source outage retains its last-good data while other configured sources continue', async () => {
+  const directory = await root();
+  const start = new Date('2026-08-11T19:00:00Z');
+  await refreshWildfire({ root: directory, now: start, fetchSources: async () => [...sources, national] });
+  const result = await refreshWildfire({ root: directory, now: new Date('2026-08-11T20:00:00Z'), fetchSources: async () => [{ id: 'bc', response: { incidents: [{ id: 'BC-2' }], perimeters: [] } }, { id: 'national', error: 'upstream unavailable' }] });
+  assert.equal(result.ok, true);
+  const current = JSON.parse(await readFile(path.join(directory, 'current.json')));
+  assert.deepEqual(current.sources.map((source) => source.id), ['bc', 'national']);
+  assert.equal(current.sources[0].response.incidents[0].id, 'BC-2');
+  assert.equal(current.sources[1].response.incidents[0].id, 'CA-1');
+  const manifest = JSON.parse(await readFile(path.join(directory, 'current-status.json')));
+  assert.deepEqual(manifest.sources.map(({ id, status }) => [id, status]), [['bc', 'healthy'], ['national', 'retrying']]);
+  assert.match(manifest.sources[1].lastGoodSnapshot, /national/);
+});
+
+test('a failed source is marked stale without discarding its last-good snapshot', async () => {
+  const directory = await root();
+  const start = new Date('2026-08-10T00:00:00Z');
+  await refreshWildfire({ root: directory, now: start, fetchSources: async () => [...sources, national] });
+  await refreshWildfire({ root: directory, now: new Date('2026-08-11T00:00:00.001Z'), fetchSources: async () => [{ ...sources[0], response: { incidents: [{ id: 'BC-2' }], perimeters: [] } }, { id: 'national', error: 'still unavailable' }] });
+  const manifest = JSON.parse(await readFile(path.join(directory, 'current-status.json')));
+  const stale = manifest.sources.find((source) => source.id === 'national');
+  assert.equal(stale.status, 'retrying');
+  assert.equal(stale.stale, true);
+  assert.match(stale.lastGoodSnapshot, /national/);
 });
