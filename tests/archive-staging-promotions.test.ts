@@ -25,6 +25,7 @@ type StagedEntry = Readonly<{
   sourceUrl: string;
   licenceId: string;
   licenceUrl: string;
+  attributionState: "metadata-verified";
   attribution: string;
   changesNotice: string;
   immutableObjectStorage: false;
@@ -39,6 +40,7 @@ type PromotionEntry = Readonly<{
   manifestKey: string;
   payloadVersionId: string;
   manifestVersionId: string;
+  expectedByteLength: number;
   remoteByteLength: number;
   manifestByteLength: number;
   remoteChecksum: FullObjectChecksum;
@@ -86,6 +88,24 @@ test("the three recorded promotions sit at the keys and snapshot ids the contrac
     assert.equal(entry.promotionState, "remote-verified");
     assert.notEqual(entry.payloadKey, entry.supersededPayloadKey);
   }
+});
+
+test("the ledger is a closed join to the three metadata-verified, non-production staged records", () => {
+  assert.equal(promotions.entries.length, 3);
+  assert.equal(new Set(promotions.entries.map((entry) => entry.stagedEntryId)).size, 3);
+  for (const entry of promotions.entries) {
+    const staged = stagedFor(entry);
+    assert.equal(entry.sourceId, staged.sourceId);
+    assert.equal(entry.expectedByteLength, staged.byteLength);
+    assert.equal(entry.snapshotId.endsWith(`:${staged.sha256}`), true);
+    assert.equal(staged.attributionState, "metadata-verified");
+    assert.equal(staged.immutableObjectStorage, false);
+    assert.equal(staged.productionEligible, false);
+  }
+  assert.deepEqual(
+    promotions.entries.map((entry) => entry.stagedEntryId).sort(),
+    staging.entries.map((entry) => entry.id).sort(),
+  );
 });
 
 test("the promotion gate admits all three recorded promotions", () => {
