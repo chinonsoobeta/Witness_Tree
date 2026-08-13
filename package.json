@@ -14,6 +14,7 @@
     "typecheck": "tsc --noEmit",
     "check:bilingual": "node scripts/check-bilingual.mjs",
     "check:source-candidates": "node scripts/check-source-candidates.mjs",
+    "check:phase1-source-inventory": "node scripts/check-phase1-source-inventory.mjs",
     "check:acquisition-readiness": "node scripts/check-acquisition-readiness.mjs",
     "check:staged-acquisitions": "node scripts/check-staged-acquisitions.mjs",
     "check:staged-geospatial-profile": "node scripts/check-staged-geospatial-profile.mjs",
