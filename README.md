@@ -13,7 +13,7 @@ This repository currently delivers the audited technical foundation and a public
 - visible evidence, confidence, coverage, and provenance components
 - forest definition and denominator policy
 - spatial/temporal matching and hectare-year precedence rules
-- immutable wildfire snapshot workflow with Vancouver DST gating and retry/degraded/stale states
+- illustrative wildfire snapshot contract/workflow with Vancouver DST gating and retry/degraded/stale states
 - strict example source ledger and versioned release manifests
 - privacy-safe alert/digest domain policy (no outbound delivery yet)
 - CI gates for types, lint, bilingual parity, tests, and build
