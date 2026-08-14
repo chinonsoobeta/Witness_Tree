@@ -56,6 +56,8 @@
     "check:bc-fta-operational-sources": "node scripts/check-bc-fta-operational-sources.mjs",
     "check:alberta-plvi-geometry-repair": "node scripts/check-alberta-plvi-geometry-repair.mjs",
     "check:alberta-plvi-full-release-readiness": "node scripts/check-alberta-plvi-full-release-readiness.mjs",
+    "check:alberta-plvi-immutable-promotion-preparation": "node scripts/prepare-alberta-plvi-immutable-promotion.mjs",
+    "dry-run:alberta-plvi-immutable-promotion": "zsh scripts/run-alberta-plvi-approved-promotion.sh",
     "check:immutable-promotions": "node scripts/check-immutable-promotions.mjs",
     "check:immutable-restore-drill": "node scripts/check-immutable-restore-drill.mjs",
     "check:boundary-editions": "node scripts/check-boundary-editions.mjs",
