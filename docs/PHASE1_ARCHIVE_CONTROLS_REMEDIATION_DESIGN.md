@@ -13,15 +13,15 @@ Do not enable AWS Config for this one-bucket design. CloudTrail plus the explici
 | Resource | Exact name / scope | State before creation |
 | --- | --- | --- |
 | Primary archive | `witness-tree-raw-archive-ca-central-1` in `ca-central-1` | Exists; versioning and Object Lock enabled; three original payloads and 39 VLCE2 payloads are retained. |
-| Uploader role | `WitnessTreeArchiveUploader` | New; assumed only by the owner-approved federated workload principal; no long-lived IAM user or access key. |
-| Break-glass role | `WitnessTreeArchiveRetentionBreakGlass` | New; MFA-required owner-approved human principal; no ordinary upload/read/delete access. |
+| Uploader role | `WitnessTreeArchiveUploader` | New; assumed only by MFA-authenticated temporary sessions from the approved no-console bootstrap user; no direct S3 identity. |
+| Break-glass role | `WitnessTreeArchiveRetentionBreakGlass` | New; MFA-required temporary session from that user; no ordinary upload/read/delete access. |
 | Audit-log bucket | `witness-tree-archive-audit-logs-ca-central-1` in `ca-central-1` | New, private, bucket-owner-enforced, public-access-blocked, SSE-S3. Do not use the Object-Lock source bucket for logs. |
 | Trail | `witness-tree-archive-object-audit-ca-central-1` in `ca-central-1` | New; one free management-event copy and S3 data events limited to the primary bucket. |
 | Inventory | `weekly-object-lock-inventory` | New; weekly CSV or Parquet to the audit-log bucket under `inventory/`; include version ID, Object Lock mode, retain-until date and legal-hold status. |
 | Lifecycle rule | `abort-incomplete-multipart-after-7-days` | New on the primary bucket; prefix `raw/`, no Expiration, NoncurrentVersionExpiration, Transition, or delete-marker action. |
 | Recovery bucket | `witness-tree-raw-recovery-ca-central-1` in `ca-central-1` | New only after recovery approval; Object Lock and versioning must be enabled at creation. |
 
-`ACCOUNT_ID`, `OWNER_FEDERATED_PRINCIPAL_ARN`, and the account's actual identity-provider condition must be supplied by the owner in a private change record; do not substitute a root principal or put those identifiers in Git.
+`ACCOUNT_ID` and the exact ARN of the owner-approved `WitnessTreeArchiveOperator` bootstrap user must be supplied in a private change record. Do not substitute a root principal or put identifiers in Git. The read-only preflight found no existing federation; its decision and required MFA bootstrap are in [`PHASE1_ARCHIVE_IDENTITY_PREFLIGHT.md`](PHASE1_ARCHIVE_IDENTITY_PREFLIGHT.md).
 
 ## Least-privilege policy templates
 
@@ -38,13 +38,13 @@ Uploader permissions, restricted to the primary bucket and `raw/` only:
 }
 ```
 
-Break-glass is a separate MFA-gated role. Its permission policy contains only `s3:GetObjectRetention`, `s3:GetObjectLegalHold`, `s3:PutObjectLegalHold`, and `s3:PutObjectRetention` on `raw/legal-hold-exercises/*`; it explicitly denies all delete, bucket-policy, lifecycle, replication, and `s3:BypassGovernanceRetention` actions. Its trust policy must require `aws:MultiFactorAuthPresent=true` and the owner-approved federation principal. It cannot administer historical payload keys.
+Break-glass is a separate MFA-gated role. Its permission policy contains only `s3:GetObjectRetention`, `s3:GetObjectLegalHold`, `s3:PutObjectLegalHold`, and `s3:PutObjectRetention` on `raw/legal-hold-exercises/*`; it explicitly denies all delete, bucket-policy, lifecycle, replication, and `s3:BypassGovernanceRetention` actions. Its trust policy must require `aws:MultiFactorAuthPresent=true` and the exact approved no-console bootstrap user. It cannot administer historical payload keys.
 
 The trail logs all management events plus S3 data events for `arn:aws:s3:::witness-tree-raw-archive-ca-central-1/` with `ReadWriteType: All`; this captures object access, object writes/deletes, and the S3 control-plane operations that affect policies, retention, and lifecycle. Do not add CloudWatch Logs, Lake, Insights, or broad all-bucket selectors.
 
 ## Reversible, approval-gated order
 
-1. **Approve identity owner, federation source, MFA, review cadence, and cost ceiling.** Create roles and validate their policies with IAM Access Analyzer. Run a denied-delete probe under the uploader role. Reversible: delete unused roles.
+1. **Approve identity custodian, no-console bootstrap user, MFA, review cadence, and cost ceiling.** Create and enroll the bootstrap user outside this package, then create roles and validate their policies with IAM Access Analyzer. Run a denied-delete probe under the uploader role. Reversible: delete unused roles and revoke the bootstrap credentials.
 2. **Approve Canadian log bucket, log retention, and named reviewer.** Create the log bucket and the one trail; read back selectors and confirm a test `PutObject` and deliberately denied delete appear in the trail. Reversible: stop/delete trail after retaining required logs; log costs and retained evidence persist.
 3. **Approve inventory retention and report review.** Configure weekly inventory to the Canadian log bucket; read back a report with Object Lock fields. Reversible: disable future reports; existing reports remain until their approved retention ends.
 4. **Approve seven-day incomplete-multipart cleanup.** Apply exactly the single lifecycle rule and verify no expiration/transition action appears. It can only delete unfinished upload parts, never completed retained versions. Reversible for future multipart uploads; already-aborted parts cannot be restored.
@@ -62,7 +62,7 @@ For the default design, set a first-month budget ceiling of **US$5/month excludi
 
 ## Required approvals
 
-- Identity/federation principals, MFA, break-glass custodians, and policy review owner.
+- Bootstrap-user custodian, no-console/MFA setup, break-glass custodian, and policy review owner.
 - Canadian audit-log destination, log/inventory retention, reviewer, and monthly ceiling.
 - Seven-day multipart abort rule and acceptance that incomplete parts become unrecoverable.
 - Legal-hold SOP, exercise object, named authorized operator, and audit review.

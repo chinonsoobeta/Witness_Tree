@@ -3,7 +3,7 @@ import { execFileSync } from "node:child_process";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
-const APPROVAL_FLAGS = ["approve-identities", "approve-audit-logging", "approve-inventory", "approve-lifecycle", "approve-legal-hold-exercise", "approve-recovery-replication", "approve-usd-10-monthly-ceiling"];
+const APPROVAL_FLAGS = ["approve-identities", "approve-identity-bootstrap", "approve-audit-logging", "approve-inventory", "approve-lifecycle", "approve-legal-hold-exercise", "approve-recovery-replication", "approve-usd-10-monthly-ceiling"];
 const REGION = "ca-central-1";
 const PRIMARY = "witness-tree-raw-archive-ca-central-1";
 const UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/;
@@ -20,6 +20,7 @@ export function validateArchiveControlsExecution(plan) {
   assert.equal(plan.resources?.uploaderRole, "WitnessTreeArchiveUploader");
   assert.equal(plan.resources?.breakGlassRole, "WitnessTreeArchiveRetentionBreakGlass");
   assert.equal(plan.resources?.replicationRole, "WitnessTreeArchiveReplication");
+  assert.equal(plan.resources?.trustedBootstrapUser, "WitnessTreeArchiveOperator");
   assert.equal(plan.resources?.trail, "witness-tree-archive-object-audit-ca-central-1");
   assert.equal(plan.resources?.inventory, "weekly-object-lock-inventory");
   assert.equal(plan.resources?.lifecycleRule, "abort-incomplete-multipart-after-7-days");
@@ -45,8 +46,8 @@ export function validateExecutionOptions(plan, options) {
   if (!options.execute) return { mode: "dry-run" };
   for (const flag of APPROVAL_FLAGS) assert.equal(options[flag], true, `Execution requires --${flag}.`);
   assert.match(input(options.accountId, "--account-id"), /^\d{12}$/, "--account-id must be a 12-digit AWS account ID supplied at runtime.");
-  const principal = input(options.ownerFederatedPrincipalArn, "--owner-federated-principal-arn");
-  assert.match(principal, new RegExp(`^arn:aws:iam::${options.accountId}:role/`), "The owner federated principal must be an approved role in the supplied account.");
+  const principal = input(options.trustedPrincipalArn, "--trusted-principal-arn");
+  assert.match(principal, new RegExp(`^arn:aws:iam::${options.accountId}:user/${plan.resources.trustedBootstrapUser}$`), "The trusted principal must be the approved no-console IAM bootstrap user in the supplied account.");
   assert.ok(futureUtc(options.exerciseRetentionUntil), "--exercise-retention-until must be a future UTC instant.");
   assert.match(input(options.exerciseKey, "--exercise-key"), /^raw\/legal-hold-exercises\/\d{4}-\d{2}-\d{2}\/[A-Za-z0-9-]+\/payload\.txt$/, "Exercise key must be a dedicated non-source legal-hold object.");
   input(options.exercisePayloadFile, "--exercise-payload-file");
@@ -62,13 +63,13 @@ export function policies(plan, options) {
   const recovery = bucketArn(r.recoveryBucket);
   const trust = (principal, mfa = false) => ({ Version: "2012-10-17", Statement: [{ Effect: "Allow", Principal: { AWS: principal }, Action: "sts:AssumeRole", ...(mfa ? { Condition: { Bool: { "aws:MultiFactorAuthPresent": "true" } } } : {}) }] });
   return {
-    uploaderTrust: trust(options.ownerFederatedPrincipalArn),
+    uploaderTrust: trust(options.trustedPrincipalArn, true),
     uploader: { Version: "2012-10-17", Statement: [
       { Sid: "ListRawPrefix", Effect: "Allow", Action: ["s3:ListBucket", "s3:ListBucketMultipartUploads"], Resource: primary, Condition: { StringLike: { "s3:prefix": ["raw/*"] } } },
       { Sid: "WriteAndVerifyRawOnly", Effect: "Allow", Action: ["s3:PutObject", "s3:AbortMultipartUpload", "s3:ListMultipartUploadParts", "s3:GetObject", "s3:GetObjectAttributes", "s3:GetObjectRetention", "s3:GetObjectLegalHold"], Resource: `${primary}/raw/*` },
       { Sid: "DenyDeletionAndLockWeakening", Effect: "Deny", Action: ["s3:DeleteObject", "s3:DeleteObjectVersion", "s3:PutObjectRetention", "s3:PutObjectLegalHold", "s3:BypassGovernanceRetention"], Resource: `${primary}/raw/*` }
     ] },
-    breakGlassTrust: trust(options.ownerFederatedPrincipalArn, true),
+    breakGlassTrust: trust(options.trustedPrincipalArn, true),
     breakGlass: { Version: "2012-10-17", Statement: [
       { Sid: "ExerciseHoldAndRetentionOnly", Effect: "Allow", Action: ["s3:GetObjectRetention", "s3:GetObjectLegalHold", "s3:PutObjectLegalHold", "s3:PutObjectRetention"], Resource: `${primary}/raw/legal-hold-exercises/*` },
       { Sid: "DenyDestructiveAndBucketAdministration", Effect: "Deny", Action: ["s3:DeleteObject", "s3:DeleteObjectVersion", "s3:BypassGovernanceRetention", "s3:PutBucketPolicy", "s3:DeleteBucketPolicy", "s3:PutBucketLifecycleConfiguration", "s3:PutBucketReplication"], Resource: [primary, `${primary}/*`] }
@@ -153,7 +154,7 @@ function option(name) { const i = process.argv.indexOf(name); return i === -1 ? 
 function flag(name) { return process.argv.includes(`--${name}`); }
 if (process.argv[1]?.endsWith("phase1-archive-controls-execution.mjs")) {
   const plan = JSON.parse(readFileSync(new URL("../data/phase1-archive-controls-execution.json", import.meta.url), "utf8"));
-  const options = { execute: flag("execute"), accountId: option("--account-id"), ownerFederatedPrincipalArn: option("--owner-federated-principal-arn"), exerciseRetentionUntil: option("--exercise-retention-until"), exerciseKey: option("--exercise-key"), exercisePayloadFile: option("--exercise-payload-file"), monthlyCeiling: Number(option("--monthly-ceiling")), workDir: option("--work-dir"), ...Object.fromEntries(APPROVAL_FLAGS.map((name) => [name, flag(name)])) };
+  const options = { execute: flag("execute"), accountId: option("--account-id"), trustedPrincipalArn: option("--trusted-principal-arn"), exerciseRetentionUntil: option("--exercise-retention-until"), exerciseKey: option("--exercise-key"), exercisePayloadFile: option("--exercise-payload-file"), monthlyCeiling: Number(option("--monthly-ceiling")), workDir: option("--work-dir"), ...Object.fromEntries(APPROVAL_FLAGS.map((name) => [name, flag(name)])) };
   const commands = options.execute ? executeArchiveControls(plan, options) : commandPlan(plan, options);
   console.log(JSON.stringify({ mode: options.execute ? "execute" : "dry-run", applied: false, commands: commands.map((args) => ["aws", ...args].join(" ")) }, null, 2));
 }

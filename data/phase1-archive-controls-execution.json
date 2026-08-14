@@ -10,6 +10,7 @@
     "uploaderRole": "WitnessTreeArchiveUploader",
     "breakGlassRole": "WitnessTreeArchiveRetentionBreakGlass",
     "replicationRole": "WitnessTreeArchiveReplication",
+    "trustedBootstrapUser": "WitnessTreeArchiveOperator",
     "trail": "witness-tree-archive-object-audit-ca-central-1",
     "inventory": "weekly-object-lock-inventory",
     "lifecycleRule": "abort-incomplete-multipart-after-7-days"
@@ -29,6 +30,7 @@
   },
   "requiredApprovals": [
     "approve-identities",
+    "approve-identity-bootstrap",
     "approve-audit-logging",
     "approve-inventory",
     "approve-lifecycle",
