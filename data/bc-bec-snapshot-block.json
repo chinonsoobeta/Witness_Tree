@@ -1,0 +1,61 @@
+{
+  "status": "blocked",
+  "verificationDate": "2026-08-14",
+  "nonClaimNotice": "This is a source-access and snapshot-consistency verification record. It is not an accepted acquisition, staging, transformation, ingestion, or production authorization.",
+  "source": {
+    "inventoryRow": "bc-old-growth-bec",
+    "id": "bc-bec-map-v13-1",
+    "catalogueUrl": "https://catalogue.data.gov.bc.ca/dataset/f358a53b-ffde-4830-a325-a5a03ff672c3",
+    "edition": "13.1",
+    "editionDate": "2026-07-08",
+    "licence": "Open Government Licence - British Columbia",
+    "wfsUrl": "https://openmaps.gov.bc.ca/geo/pub/WHSE_FOREST_VEGETATION.BEC_BIOGEOCLIMATIC_POLY/wfs",
+    "capabilitiesUpdateSequence": "2188590",
+    "declaredCrs": "EPSG:3005",
+    "authoritativeFeatureCount": 17870
+  },
+  "singleRequestObservation": {
+    "requestedFormat": "SHAPE-ZIP",
+    "requestedCount": 17870,
+    "returnedFeatureCount": 10000,
+    "zipIntegrity": "passed",
+    "excludedDiagnosticSha256": "c7b2189003625d1d530cae15d70635048620539de47d72882e1c88f0ad8baf13"
+  },
+  "serviceSemantics": {
+    "pagingIsTransactionSafe": false,
+    "implementsFeatureVersioning": false,
+    "consequence": "A paged union cannot establish a complete, internally consistent edition 13.1 snapshot."
+  },
+  "scope": {
+    "roleAfterAdmission": "BC ecosystem context.",
+    "notEquivalentTo": [
+      "Vegetation Resources Inventory forest-condition attributes",
+      "Forest Tenure Cutblock Polygons (FTA 4.0)",
+      "Forest Tenure Harvesting Authority Polygons",
+      "Old Growth Technical Advisory Panel layers"
+    ]
+  },
+  "admission": {
+    "downloaded": false,
+    "staged": false,
+    "immutable": false,
+    "transformed": false,
+    "ingested": false,
+    "productionEligible": false
+  },
+  "blockers": [
+    "The only attempted one-request response returned 10,000 of 17,870 authoritative features.",
+    "The service declares paging non-transaction-safe.",
+    "The service declares no feature versioning, so page-to-page consistency cannot be proven."
+  ],
+  "requestDraft": {
+    "status": "unsent",
+    "contact": "datamaps@gov.bc.ca",
+    "requestedItems": [
+      "A complete immutable BEC Map version 13.1 vector export",
+      "A publisher checksum and edition/effective-date statement",
+      "Documented refresh and correction contact",
+      "If a service export is intended, documented transaction-consistent snapshot semantics"
+    ]
+  }
+}
