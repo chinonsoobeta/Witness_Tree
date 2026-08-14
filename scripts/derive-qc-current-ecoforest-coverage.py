@@ -36,18 +36,32 @@ def run(*args: str) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--archive", required=True, type=Path)
+    parser.add_argument("--source-profile", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--evidence", required=True, type=Path)
     args = parser.parse_args()
-    archive, output, evidence = args.archive.resolve(), args.output.resolve(), args.evidence.resolve()
+    archive, source_profile, output, evidence = args.archive.resolve(), args.source_profile.resolve(), args.output.resolve(), args.evidence.resolve()
     if not archive.is_file():
         raise SystemExit(f"Archive does not exist: {archive}")
     if archive.stat().st_size != EXPECTED_BYTES:
         raise SystemExit(f"Archive byte length does not match official HTTP length: {archive.stat().st_size}")
+    if not source_profile.is_file():
+        raise SystemExit(f"Source profile does not exist: {source_profile}")
     if output.exists() or evidence.exists():
         raise SystemExit("Refusing to overwrite an existing derivative or evidence record.")
 
     raw_sha256 = sha256(archive)
+    profile_sha256 = sha256(source_profile)
+    source_profile_document = json.loads(source_profile.read_text(encoding="utf-8"))
+    profiled_layers = [
+        layer for source in source_profile_document.get("sources", [])
+        for layer in source.get("layers", []) if layer.get("name") == SOURCE_LAYER
+    ]
+    if len(profiled_layers) != 1:
+        raise SystemExit(f"Source profile must contain exactly one {SOURCE_LAYER} layer")
+    source_layer_profile = profiled_layers[0]
+    if source_layer_profile.get("invalidGeometryCount") != 0:
+        raise SystemExit(f"Published {SOURCE_LAYER} geometry profile is not valid")
     verified_at = datetime.now(UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z")
     with zipfile.ZipFile(archive) as source_zip:
         bad_member = source_zip.testzip()
@@ -92,7 +106,8 @@ def main() -> int:
                       "catalogueUrl": CATALOGUE_URL, "publisher": "Ministère des Ressources naturelles et des Forêts du Québec, Secteur des forêts, Direction des inventaires forestiers",
                       "licence": {"id": "cc-by-4.0", "url": LICENCE_URL},
                       "attribution": "Source : Ministère des Ressources naturelles et des Forêts du Québec, Secteur des forêts, Direction des inventaires forestiers. Sous licence CC BY 4.0.",
-                      "verifiedAt": verified_at},
+                      "verifiedAt": verified_at,
+                      "profile": {"path": str(source_profile), "sha256": profile_sha256, "peeMajProv": source_layer_profile}},
         "derivative": {"path": str(output), "byteLength": output.stat().st_size, "sha256": output_sha256,
                        "layer": "qc_current_ecoforest_coverage",
                        "method": "GDAL SQLite ST_Union over every published PEE_MAJ_PROV polygon; no latitude clipping, tile-index geometry, repair, filtering, or attribute mapping.",
