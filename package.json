@@ -20,6 +20,7 @@
     "check:phase1-corruption-corpus": "tsx --test tests/phase1-corruption-gate.test.ts",
     "check:staged-geospatial-profile": "node scripts/check-staged-geospatial-profile.mjs",
     "check:immutable-promotions": "node scripts/check-immutable-promotions.mjs",
+    "check:immutable-restore-drill": "node scripts/check-immutable-restore-drill.mjs",
     "check:boundary-editions": "node scripts/check-boundary-editions.mjs",
     "check:raster-grid": "node scripts/check-raster-grid.mjs",
     "check:local-staging-admission": "tsx scripts/check-local-staging-admission.mjs",
