@@ -8,6 +8,12 @@ const SHA256 = /^[a-f0-9]{64}$/;
 const HTTPS = /^https:\/\//;
 const FTP = /^ftp:\/\//;
 const BC_TERRESTRIAL_FTP = "ftp://ftp.geobc.gov.bc.ca/sections/outgoing/bmgs/BC_Boundary_Terrestrial/BC_Boundary_Terrestrial.gdb.zip";
+const QC_SOURCE_ID = "qc-current-ecoforest-coverage-footprint-v1";
+const QC_INPUT_ID = "qc-current-ecoforest-pee-maj-prov-2026-08-14";
+const QC_SOURCE_URL = "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Cartes_ecoforestieres_perturbations/02-Donnees/PROV/CARTE_ECO_MAJ_PROV_GPKG.zip";
+const QC_INPUT_SHA256 = "c67c56b0c101e95bef4fbca53a06e2f1578fe38293961017f70d815209740cf1";
+const QC_GEOMETRY_SHA256 = "03209000faefff5715cec570050de2ea0716cedc900a1b4154cc431da7e96383";
+const QC_EVIDENCE_SHA256 = "922c7b51c265d69646ba7104ec3ada6ad33c14c5b5455e783ca41f0f4f04e75c";
 const ISO_TIMESTAMP = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/;
 const FORBIDDEN_PROOF = /\b(?:example|fixture|illustrative|latitude(?:[- ]?proxy)?|latitudeproxy)\b/i;
 const FORBIDDEN_PARTIAL_CLAIM = /\b(?:land[ -]?base|province[ -]?wide|all\s+alberta|complete\s+alberta|all\s+forest\s+land)\b/i;
@@ -103,7 +109,29 @@ function validateLayer(layer) {
     throw new Error("Local context cannot use the national-baseline grade.");
   }
 
-  if (layer.province === "BC" && layer.coverageClass === "national-baseline-jurisdiction-reference") {
+  if (layer.province === "QC" && layer.coverageClass === "publisher-current-ecoforest-footprint") {
+    if (layer.evidenceClass !== "lineage-bound-derived-geometry") throw new Error("Québec current-ecoforest coverage requires lineage-bound derived geometry.");
+    if (layer.sourceId !== QC_SOURCE_ID || layer.sourceUrl !== QC_SOURCE_URL) throw new Error("Québec coverage must use the admitted official current-ecoforest source.");
+    sha256(profile.geometryChecksumSha256, "profile.geometryChecksumSha256");
+    if (layer.checksumSha256 !== QC_GEOMETRY_SHA256 || profile.geometryChecksumSha256 !== QC_GEOMETRY_SHA256) throw new Error("Québec geometry checksum must match its admitted profiled derivative.");
+    if (profile.evidenceChecksumSha256 !== QC_EVIDENCE_SHA256) throw new Error("Québec profile must match its admitted evidence record.");
+    if (profile.geometryType !== "MultiPolygon" || profile.featureCount !== 1) throw new Error("Québec coverage must be one profiled MultiPolygon.");
+    if (profile.missingGeometryCount !== 0 || profile.emptyGeometryCount !== 0 || profile.invalidGeometryCount !== 0) throw new Error("Québec coverage geometry must be present, non-empty, and valid.");
+    if (licence.id !== "cc-by-4.0" || licence.url !== "https://www.donneesquebec.ca/licence/#cc-by") throw new Error("Québec coverage requires the verified CC BY 4.0 licence.");
+    const scope = layer.scope;
+    if (!scope || typeof scope !== "object") throw new Error("Québec publisher-footprint scope is required.");
+    if (scope.decision !== "publisher-current-ecoforest-footprint") throw new Error("Québec scope must remain the publisher current-ecoforest footprint.");
+    if (scope.outsideBoundaryCoverage !== "national-baseline") throw new Error("Québec areas outside the publisher footprint must retain the national baseline.");
+    if (scope.forestLandBaseDenominator !== false) throw new Error("Québec current-ecoforest footprint cannot be a forest land-base denominator.");
+    if (scope.enhancedRecordCoverage !== false) throw new Error("Québec current-ecoforest footprint cannot enable enhanced records.");
+    text(scope.limitation, "Québec publisher-footprint limitation");
+    if (layer.coverageRole !== "local-context" || layer.coverageGrade !== "national-baseline-plus-local-context") throw new Error("Québec current-ecoforest geometry can supply only bounded local context.");
+    if (!Array.isArray(layer.inputEvidence) || layer.inputEvidence.length !== 1) throw new Error("Québec coverage requires exactly one checksum-bound official archive input.");
+    const [input] = layer.inputEvidence;
+    if (!input || input.sourceId !== QC_INPUT_ID || input.sourceUrl !== QC_SOURCE_URL || input.checksumSha256 !== QC_INPUT_SHA256) throw new Error("Québec coverage input must match the verified official archive.");
+  } else if (layer.province === "QC" && layer.coverageClass !== "land-base") {
+    throw new Error("Québec coverage must be the admitted publisher footprint or independently verified land-base geometry.");
+  } else if (layer.province === "BC" && layer.coverageClass === "national-baseline-jurisdiction-reference") {
     const scope = layer.scope;
     if (!scope || typeof scope !== "object") throw new Error("BC reference scope is required.");
     if (scope.decision !== "jurisdiction-reference-only") throw new Error("BC scope must be jurisdiction reference only.");

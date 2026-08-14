@@ -12,13 +12,14 @@ const layer = (province) => ({
   licence: { id: "public-licence", url: "https://authority.invalid/licence" }, attribution: "Source authority attribution."
 });
 
-test("default admission manifest assigns national baseline to all four provinces and retains bounded overlays", () => {
+test("default admission manifest completes all four baselines and retains bounded overlays", () => {
   assert.equal(validateCoverageGeometryAdmission(manifest), manifest);
-  assert.equal(manifest.status, "partial");
-  assert.equal(manifest.layers.length, 6);
+  assert.equal(manifest.status, "complete");
+  assert.equal(manifest.layers.length, 7);
   const bc = manifest.layers.find((entry) => entry.province === "BC");
   const alberta = manifest.layers.find((entry) => entry.sourceId === "alberta-known-coverage-fma-and-avi-v1");
   const ontario = manifest.layers.find((entry) => entry.sourceId === "ontario-forest-management-units");
+  const quebec = manifest.layers.find((entry) => entry.sourceId === "qc-current-ecoforest-coverage-footprint-v1");
   const baselineProvinces = manifest.layers.filter((entry) => entry.coverageRole === "national-baseline-land-base").map((entry) => entry.province).sort();
   assert.deepEqual(baselineProvinces, ["AB", "BC", "ON", "QC"]);
   assert.equal(bc.coverageClass, "national-baseline-jurisdiction-reference");
@@ -26,6 +27,11 @@ test("default admission manifest assigns national baseline to all four provinces
   assert.equal(alberta.coverageGrade, "national-baseline-plus-local-context");
   assert.equal(ontario.coverageClass, "national-baseline-plus-managed-forest-context");
   assert.equal(ontario.scope.enhancedRecordCoverage, false);
+  assert.equal(quebec.coverageClass, "publisher-current-ecoforest-footprint");
+  assert.equal(quebec.scope.outsideBoundaryCoverage, "national-baseline");
+  assert.equal(quebec.scope.forestLandBaseDenominator, false);
+  assert.equal(quebec.scope.enhancedRecordCoverage, false);
+  assert.equal(manifest.requiredProvinceDecisions.quebecSouthOf52, "approved");
 });
 
 test("complete admission requires all provinces and both explicit scope decisions", () => {
@@ -57,6 +63,14 @@ test("negative corpus rejects incomplete, proxy, and illustrative coverage evide
   assert.throws(() => validateCoverageGeometryAdmission({ ...manifest, status: "partial", layers: [{ ...bc, scope: { ...bc.scope, forestLandBaseDenominator: true } }] }), /cannot be a forest land-base denominator/);
   assert.throws(() => validateCoverageGeometryAdmission({ ...manifest, status: "partial", layers: [{ ...bc, resourceUrl: "ftp://unrelated.invalid/bc.zip" }] }), /official FTP resource URL/);
   assert.throws(() => validateCoverageGeometryAdmission({ ...manifest, status: "partial", layers: [{ ...layer("BC"), coverageRole: "local-context", coverageGrade: "national-baseline" }] }), /Local context cannot use/);
+  const quebec = manifest.layers.find((entry) => entry.sourceId === "qc-current-ecoforest-coverage-footprint-v1");
+  assert.throws(() => validateCoverageGeometryAdmission({ ...manifest, status: "partial", layers: [{ ...quebec, coverageClass: "land-base" }] }), /Derived coverage must be explicitly partial/);
+  assert.throws(() => validateCoverageGeometryAdmission({ ...manifest, status: "partial", layers: [{ ...quebec, scope: { ...quebec.scope, forestLandBaseDenominator: true } }] }), /cannot be a forest land-base denominator/);
+  assert.throws(() => validateCoverageGeometryAdmission({ ...manifest, status: "partial", layers: [{ ...quebec, scope: { ...quebec.scope, enhancedRecordCoverage: true } }] }), /cannot enable enhanced records/);
+  assert.throws(() => validateCoverageGeometryAdmission({ ...manifest, status: "partial", layers: [{ ...quebec, scope: { ...quebec.scope, outsideBoundaryCoverage: "enhanced-local-records" } }] }), /must retain the national baseline/);
+  assert.throws(() => validateCoverageGeometryAdmission({ ...manifest, status: "partial", layers: [{ ...quebec, inputEvidence: [] }] }), /exactly one checksum-bound/);
+  assert.throws(() => validateCoverageGeometryAdmission({ ...manifest, status: "partial", layers: [{ ...quebec, checksumSha256: "d".repeat(64) }] }), /must match its admitted profiled derivative/);
+  assert.throws(() => validateCoverageGeometryAdmission({ ...manifest, status: "partial", layers: [{ ...quebec, profile: { ...quebec.profile, evidenceChecksumSha256: "d".repeat(64) } }] }), /must match its admitted evidence record/);
 });
 
 test("partial known coverage requires lineage, an honest scope, and the local-context grade", () => {

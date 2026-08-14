@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0",
-  "status": "partial",
-  "notice": "Verified national-baseline jurisdiction/reference geometry now exists for BC, Alberta, Ontario, and Québec. Alberta's bounded known-coverage footprint and Ontario's official Forest Management Unit union remain local context only. No baseline is a forest land-base denominator, proof of province-wide forest coverage, or enhanced-record coverage. The coverage exit remains partial until Québec's south-of-52 scope decision and publisher-defined current ecoforest footprint are separately admitted.",
+  "status": "complete",
+  "notice": "Verified national-baseline jurisdiction/reference geometry assigns the national-baseline grade across BC, Alberta, Ontario, and Québec. Alberta's bounded known-coverage footprint, Ontario's Forest Management Unit union, and Québec's publisher-defined current-ecoforest footprint remain local context only. Neither baseline nor context is a forest-land denominator, proof of province-wide forest inventory coverage, or enhanced-record coverage. This completes the Phase 1 coverage-geometry exit only; production-source ledger and immutable-storage requirements remain separate.",
   "layers": [
     {
       "evidenceClass": "versioned-source-geometry",
@@ -184,10 +184,53 @@
       },
       "licence": { "id": "ogl-ontario", "url": "https://www.ontario.ca/page/open-government-licence-ontario" },
       "attribution": "Ontario Ministry of Natural Resources and Forestry © King's Printer for Ontario, 2022"
+    },
+    {
+      "evidenceClass": "lineage-bound-derived-geometry",
+      "sourceId": "qc-current-ecoforest-coverage-footprint-v1",
+      "province": "QC",
+      "edition": "CARTE_ECO_MAJ_PROV provincial archive retrieved 2026-08-14; product documentation June 2024",
+      "crs": "EPSG:32198",
+      "checksumSha256": "03209000faefff5715cec570050de2ea0716cedc900a1b4154cc431da7e96383",
+      "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Cartes_ecoforestieres_perturbations/02-Donnees/PROV/CARTE_ECO_MAJ_PROV_GPKG.zip",
+      "extent": { "west": -830340.25, "south": 117964.1499999985, "east": 543807.6400000006, "north": 942382.6700000018 },
+      "areaSquareKilometres": 627871.397328488,
+      "coverageClass": "publisher-current-ecoforest-footprint",
+      "coverageRole": "local-context",
+      "coverageGrade": "national-baseline-plus-local-context",
+      "scope": {
+        "decision": "publisher-current-ecoforest-footprint",
+        "outsideBoundaryCoverage": "national-baseline",
+        "forestLandBaseDenominator": false,
+        "enhancedRecordCoverage": false,
+        "limitation": "The geometry is the union of published current-ecoforest stand polygons, not a provincial boundary or complete forest-land extent. The publisher documents an exception east of management unit 09551."
+      },
+      "profile": {
+        "evidenceId": "qc-current-ecoforest-coverage-footprint-v1-2026-08-14",
+        "profiledAt": "2026-08-14T21:08:44Z",
+        "evidencePath": "../Witness_Tree-data/work/qc-current-ecoforest/2026-08-14/qc-current-ecoforest-coverage-evidence-v8.json",
+        "evidenceChecksumSha256": "922c7b51c265d69646ba7104ec3ada6ad33c14c5b5455e783ca41f0f4f04e75c",
+        "geometryChecksumSha256": "03209000faefff5715cec570050de2ea0716cedc900a1b4154cc431da7e96383",
+        "geometryType": "MultiPolygon",
+        "featureCount": 1,
+        "missingGeometryCount": 0,
+        "emptyGeometryCount": 0,
+        "invalidGeometryCount": 0,
+        "validity": "passed"
+      },
+      "licence": { "id": "cc-by-4.0", "url": "https://www.donneesquebec.ca/licence/#cc-by" },
+      "attribution": "Source : Ministère des Ressources naturelles et des Forêts du Québec, Secteur des forêts, Direction des inventaires forestiers. Sous licence CC BY 4.0.",
+      "inputEvidence": [
+        {
+          "sourceId": "qc-current-ecoforest-pee-maj-prov-2026-08-14",
+          "checksumSha256": "c67c56b0c101e95bef4fbca53a06e2f1578fe38293961017f70d815209740cf1",
+          "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Cartes_ecoforestieres_perturbations/02-Donnees/PROV/CARTE_ECO_MAJ_PROV_GPKG.zip"
+        }
+      ]
     }
   ],
   "requiredProvinceDecisions": {
     "ontarioManagedForest": "approved",
-    "quebecSouthOf52": "pending"
+    "quebecSouthOf52": "approved"
   }
 }
