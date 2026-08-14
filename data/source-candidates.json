@@ -182,7 +182,7 @@
       "licence": { "state": "verified", "id": "ogl-canada", "officialUrl": "https://open.canada.ca/en/open-government-licence-canada" },
       "access": { "state": "verified", "formats": ["zip"], "url": "https://opendata.nfis.org/downloads/forest_change/CA_canopy_height_2022.zip" },
       "verifiedFacts": ["Official catalogue describes wall-to-wall 2022 canopy-height estimates at 30-m resolution across Canada's forested ecosystems.", "Catalogue says the product supports strategic assessment and is not designed for operational forest management.", "Catalogue assigns Open Government Licence – Canada and an as-needed update frequency."],
-      "unresolvedFields": ["Attribution", "Snapshot checksum", "Retrieval date", "Storage and compute approval"],
+      "unresolvedFields": ["Immutable storage", "Transformation and ingestion approval", "Compute approval"],
       "productionEligible": false
     },
     {

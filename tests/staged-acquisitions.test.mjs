@@ -9,6 +9,7 @@ const alberta = manifest.entries.find((entry) => entry.sourceId === "alberta-avi
 const canopy = manifest.entries.find((entry) => entry.sourceId === "nrcan-forest-canopy-cover-2022");
 const fma = manifest.entries.find((entry) => entry.sourceId === "alberta-fma-published-area");
 const ontario = manifest.entries.find((entry) => entry.sourceId === "ontario-forest-management-units");
+const canopyHeight = manifest.entries.find((entry) => entry.sourceId === "nrcan-forest-canopy-height-2022");
 
 test("verified local acquisition remains staging-only", () => {
   assert.equal(validateStagedAcquisitions(manifest), manifest);
@@ -20,9 +21,11 @@ test("verified local acquisition remains staging-only", () => {
   assert.equal(first.attributionState, "metadata-verified");
   assert.match(first.attribution, /Ministère des Ressources naturelles et des Forêts/);
   assert.equal(first.licenceUrl, "https://www.donneesquebec.ca/licence/#cc-by");
-  assert.equal(manifest.entries.reduce((total, entry) => total + entry.byteLength, 0), 10955540355);
+  assert.equal(manifest.entries.reduce((total, entry) => total + entry.byteLength, 0), 21303104421);
   assert.equal(alberta?.sha256, "e93572129f25c83911b73eadfacff12624ff6b08f2db4b311c1662196b665093");
 });
+
+test("staged canopy-height acquisition is pinned and staging-only", () => { assert.ok(canopyHeight); assert.equal(canopyHeight.byteLength, 10347564066); assert.equal(canopyHeight.sha256, "86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124"); assert.equal(canopyHeight.productionEligible, false); });
 
 test("staged Ontario FMU archive is checksum-bound and remains staging-only", () => {
   assert.ok(ontario, "ontario-forest-management-units entry is missing from the manifest");
