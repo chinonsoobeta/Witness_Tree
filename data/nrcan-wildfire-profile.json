@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "1.0",
+  "status": "read-only-staging-profile",
+  "notice": "This records a read-only profile of the checksum-bound raw archive. It is not a transformation, ingestion, immutable archive, or production dataset.",
+  "sourceId": "nrcan-ca-forest-wildfire-1985-2022",
+  "stagedAcquisitionId": "nrcan-ca-forest-wildfire-1985-2022-2026-08-14",
+  "profiledAt": "2026-08-14T17:04:58Z",
+  "raw": {
+    "localPath": "../Witness_Tree-data/raw/nrcan-ca-forest-wildfire-1985-2022/2026-08-14/CA_Forest_Fire_1985-2022.zip",
+    "byteLength": 252364563,
+    "sha256": "725f3b582c87cb7c6f3fd397a523fba6621718ac59c68dc904cd1d849a9160c9",
+    "zipIntegrity": "passed",
+    "memberCount": 8,
+    "uncompressedByteLength": 751116195
+  },
+  "raster": {
+    "member": "CA_Forest_Fire_1985-2022.tif",
+    "driver": "GTiff",
+    "geometryKind": "raster",
+    "bandCount": 1,
+    "dataType": "UInt16",
+    "pixelWidth": 193936,
+    "pixelHeight": 128340,
+    "pixelSizeMetres": 30,
+    "crs": "EPSG:3978 (GDAL identification confidence 70%)",
+    "geoTransform": [-2660910.524, 30, 0, 2998848.1105, 0, -30],
+    "noDataValue": 65536,
+    "valueTable": {
+      "member": "CA_Forest_Fire_1985-2022.tif.vat.dbf",
+      "rowCount": 39,
+      "fields": ["Value", "Count"],
+      "values": [0, 1985, 1986, 1987, 1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022],
+      "pixelCountSum": 24889746240,
+      "matchesRasterCellCount": true
+    },
+    "geometryValidity": "not-applicable-raster"
+  },
+  "limitations": [
+    "The product records the year of greatest mapped wildfire disturbance per pixel, not all wildfire activity or a live-fire feed.",
+    "Other changes may be present but are not portrayed; the publisher applied an agricultural mask, so changes near agricultural areas may not be captured.",
+    "The source period ends in 2022. Coverage after 2022 is Unknown and must not be inferred.",
+    "No source pixels, classes, geometry, coordinates, attributes, or supporting files were changed."
+  ],
+  "productionEligible": false
+}

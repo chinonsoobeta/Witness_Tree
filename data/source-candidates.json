@@ -139,8 +139,8 @@
       "metadataVerification": "verified",
       "licence": { "state": "verified", "id": "ogl-canada", "officialUrl": "https://open.canada.ca/en/open-government-licence-canada" },
       "access": { "state": "verified", "formats": ["zip"], "url": "https://opendata.nfis.org/downloads/forest_change/CA_Forest_Fire_1985-2022.zip" },
-      "verifiedFacts": ["Official catalogue assigns Open Government Licence – Canada and an as-needed update frequency.", "This dataset's own catalogue resource is CA_Forest_Fire_1985-2022.zip, which is the same URL wrongly listed under the CA Forest Harvest record.", "The Canadian Forest Service NTEMS distribution page labels this artifact Wildfire change year 1985-2022.", "A HEAD request returned HTTP 200, Content-Type application/zip and Content-Length 252364563 with no redirect.", "The first bytes of the ZIP name an internal member CA_Forest_Fire_1985-2022.lyr."],
-      "unresolvedFields": ["Attribution", "Relationship to the separate wildfire dNBR magnitude product", "Snapshot checksum", "Retrieval date", "Storage and compute approval"],
+      "verifiedFacts": ["Official catalogue assigns Open Government Licence – Canada and an as-needed update frequency.", "This dataset's own catalogue resource is CA_Forest_Fire_1985-2022.zip, which is the same URL wrongly listed under the CA Forest Harvest record.", "The Canadian Forest Service NTEMS distribution page labels this artifact Wildfire change year 1985-2022.", "A HEAD request returned HTTP 200, Content-Type application/zip and Content-Length 252364563 with no redirect.", "The staged archive passed ZIP integrity and has SHA-256 725f3b582c87cb7c6f3fd397a523fba6621718ac59c68dc904cd1d849a9160c9.", "The archive README provides the OGL Canada and Hermosilla et al. 2016 attribution; its members are wildfire-named, confirming the artifact identity."],
+      "unresolvedFields": ["Relationship to the separate wildfire dNBR magnitude product", "Immutable storage", "Transformation and ingestion approval", "Compute approval"],
       "productionEligible": false
     },
     {
