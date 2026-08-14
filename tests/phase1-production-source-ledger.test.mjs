@@ -10,7 +10,7 @@ test("canonical production ledger reconciles all 31 plan rows without runtime pr
   assert.equal(validatePhase1ProductionSourceLedger(ledger, inventory), ledger);
   assert.equal(ledger.entries.length, 31);
   assert.equal(ledger.entries.filter((entry) => entry.productionEligible).length, 0);
-  assert.equal(ledger.rawEvidenceNumerator, 12.75);
+  assert.equal(ledger.rawEvidenceNumerator, 13);
   assert.equal(ledger.entries.reduce((sum, entry) => sum + entry.rawCredit, 0), ledger.rawEvidenceNumerator);
   const bcWildfire = ledger.entries.find((entry) => entry.id === "bc-wildfire");
   assert.equal(bcWildfire.evidenceState, "local-verified-profiled");
@@ -19,11 +19,12 @@ test("canonical production ledger reconciles all 31 plan rows without runtime pr
   assert.equal(bcWildfire.proof.immutableArchive, false);
   assert.equal(bcWildfire.proof.productionAdmission, false);
   const plvi = ledger.entries.find((entry) => entry.id === "ab-primary-land-vegetation");
-  assert.equal(plvi.evidenceState, "local-verified-profiled");
-  assert.equal(plvi.rawCredit, 0.75);
-  assert.equal(plvi.proof.immutableArchive, false);
+  assert.equal(plvi.evidenceState, "remote-verified-archived-profiled");
+  assert.equal(plvi.rawCredit, 1);
+  assert.equal(plvi.proof.immutableArchive, true);
   assert.equal(plvi.proof.productionAdmission, false);
   assert.ok(plvi.evidenceRefs.includes("data/alberta-plvi-immutable-promotion-preparation.json"));
+  assert.ok(plvi.evidenceRefs.includes("data/alberta-plvi-immutable-promotion-evidence.json"));
   const qcOriginalCurrent = ledger.entries.find((entry) => entry.id === "qc-original-current-inventory");
   assert.equal(qcOriginalCurrent.evidenceState, "local-verified-profiled");
   assert.equal(qcOriginalCurrent.rawCredit, 0.75);
