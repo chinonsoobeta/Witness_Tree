@@ -19,6 +19,13 @@ test("archive-controls package remains explicit, Canadian, cost-bounded, and dry
   const generated = policies(plan, approved("/private/tmp/archive-controls-test"));
   assert.equal(generated.uploaderTrust.Statement[0].Condition.Bool["aws:MultiFactorAuthPresent"], "true");
   assert.equal(generated.breakGlassTrust.Statement[0].Principal.AWS, "arn:aws:iam::123456789012:user/WitnessTreeArchiveOperator");
+  assert.equal(generated.verifierTrust.Statement[0].Condition.Bool["aws:MultiFactorAuthPresent"], "true");
+  const versionList = generated.verifier.Statement.find((statement) => statement.Sid === "ListExerciseVersionsOnly");
+  assert.deepEqual(versionList, { Sid: "ListExerciseVersionsOnly", Effect: "Allow", Action: ["s3:ListBucketVersions"], Resource: "arn:aws:s3:::witness-tree-raw-archive-ca-central-1", Condition: { StringLike: { "s3:prefix": ["raw/legal-hold-exercises/*"] } } });
+  const read = generated.verifier.Statement.find((statement) => statement.Sid === "ReadExerciseObjectMetadataOnly");
+  assert.ok(read.Action.includes("s3:GetObject"));
+  assert.equal(read.Action.includes("s3:HeadObject"), false);
+  assert.equal(generated.verifier.Statement.flatMap((statement) => statement.Action).some((action) => /^s3:(Put|Delete|Bypass)/.test(action)), false);
 });
 
 test("execution fails closed without every approval, a Canadian account principal, bounded cost, or dedicated exercise key", () => {

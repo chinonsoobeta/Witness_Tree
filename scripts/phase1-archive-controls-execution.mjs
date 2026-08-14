@@ -19,6 +19,7 @@ export function validateArchiveControlsExecution(plan) {
   assert.equal(plan.resources?.recoveryBucket, "witness-tree-raw-recovery-ca-central-1");
   assert.equal(plan.resources?.uploaderRole, "WitnessTreeArchiveUploader");
   assert.equal(plan.resources?.breakGlassRole, "WitnessTreeArchiveRetentionBreakGlass");
+  assert.equal(plan.resources?.verifierRole, "WitnessTreeArchiveVerifier");
   assert.equal(plan.resources?.replicationRole, "WitnessTreeArchiveReplication");
   assert.equal(plan.resources?.trustedBootstrapUser, "WitnessTreeArchiveOperator");
   assert.equal(plan.resources?.trail, "witness-tree-archive-object-audit-ca-central-1");
@@ -74,6 +75,13 @@ export function policies(plan, options) {
       { Sid: "ExerciseHoldAndRetentionOnly", Effect: "Allow", Action: ["s3:GetObjectRetention", "s3:GetObjectLegalHold", "s3:PutObjectLegalHold", "s3:PutObjectRetention"], Resource: `${primary}/raw/legal-hold-exercises/*` },
       { Sid: "DenyDestructiveAndBucketAdministration", Effect: "Deny", Action: ["s3:DeleteObject", "s3:DeleteObjectVersion", "s3:BypassGovernanceRetention", "s3:PutBucketPolicy", "s3:DeleteBucketPolicy", "s3:PutBucketLifecycleConfiguration", "s3:PutBucketReplication"], Resource: [primary, `${primary}/*`] }
     ] },
+    verifierTrust: trust(options.trustedPrincipalArn, true),
+    verifier: { Version: "2012-10-17", Statement: [
+      { Sid: "ListExercisePrefix", Effect: "Allow", Action: ["s3:ListBucket"], Resource: [primary, recovery], Condition: { StringLike: { "s3:prefix": ["raw/legal-hold-exercises/*"] } } },
+      { Sid: "ListExerciseVersionsOnly", Effect: "Allow", Action: ["s3:ListBucketVersions"], Resource: primary, Condition: { StringLike: { "s3:prefix": ["raw/legal-hold-exercises/*"] } } },
+      { Sid: "ReadExerciseObjectMetadataOnly", Effect: "Allow", Action: ["s3:GetObject", "s3:GetObjectLegalHold", "s3:GetObjectRetention"], Resource: [`${primary}/raw/legal-hold-exercises/*`, `${recovery}/raw/legal-hold-exercises/*`] },
+      { Sid: "ReadArchiveAuditStatus", Effect: "Allow", Action: ["cloudtrail:LookupEvents", "cloudtrail:DescribeTrails", "cloudtrail:GetTrailStatus"], Resource: "*" }
+    ] },
     replicationTrust: { Version: "2012-10-17", Statement: [{ Effect: "Allow", Principal: { Service: "s3.amazonaws.com" }, Action: "sts:AssumeRole" }] },
     replication: { Version: "2012-10-17", Statement: [
       { Effect: "Allow", Action: ["s3:GetReplicationConfiguration", "s3:ListBucket"], Resource: primary },
@@ -94,6 +102,7 @@ export function executionFiles(plan, options) {
   return {
     "uploader-trust.json": p.uploaderTrust, "uploader-policy.json": p.uploader,
     "break-glass-trust.json": p.breakGlassTrust, "break-glass-policy.json": p.breakGlass,
+    "verifier-trust.json": p.verifierTrust, "verifier-policy.json": p.verifier,
     "replication-trust.json": p.replicationTrust, "replication-policy.json": p.replication, "log-bucket-policy.json": p.logBucket,
     "lifecycle.json": { Rules: [{ ID: r.lifecycleRule, Status: "Enabled", Filter: { Prefix: "raw/" }, AbortIncompleteMultipartUpload: { DaysAfterInitiation: 7 } }] },
     "inventory.json": { Id: r.inventory, IsEnabled: true, IncludedObjectVersions: "All", Schedule: { Frequency: "Weekly" }, Filter: { Prefix: "raw/" }, Destination: { S3BucketDestination: { AccountId: options.accountId, Bucket: bucketArn(r.auditLogBucket), Format: "CSV", Prefix: "inventory/", Encryption: { SSES3: {} } } }, OptionalFields: ["Size", "LastModifiedDate", "ObjectLockRetainUntilDate", "ObjectLockMode", "ObjectLockLegalHoldStatus"] },
@@ -113,6 +122,8 @@ export function commandPlan(plan, options) {
     ["iam", "put-role-policy", "--role-name", r.uploaderRole, "--policy-name", "WitnessTreeArchiveUploaderLeastPrivilege", "--policy-document", file("uploader-policy.json")],
     ["iam", "create-role", "--role-name", r.breakGlassRole, "--assume-role-policy-document", file("break-glass-trust.json")],
     ["iam", "put-role-policy", "--role-name", r.breakGlassRole, "--policy-name", "WitnessTreeArchiveRetentionBreakGlassExerciseOnly", "--policy-document", file("break-glass-policy.json")],
+    ["iam", "create-role", "--role-name", r.verifierRole, "--assume-role-policy-document", file("verifier-trust.json")],
+    ["iam", "put-role-policy", "--role-name", r.verifierRole, "--policy-name", "WitnessTreeArchiveVerifierReadOnly", "--policy-document", file("verifier-policy.json")],
     ["s3api", "create-bucket", "--bucket", r.auditLogBucket, "--create-bucket-configuration", `LocationConstraint=${REGION}`, ...base],
     ["s3api", "create-bucket", "--bucket", r.recoveryBucket, "--object-lock-enabled-for-bucket", "--create-bucket-configuration", `LocationConstraint=${REGION}`, ...base],
     ["s3api", "put-public-access-block", "--bucket", r.auditLogBucket, "--public-access-block-configuration", json({ BlockPublicAcls: true, IgnorePublicAcls: true, BlockPublicPolicy: true, RestrictPublicBuckets: true }), ...base],

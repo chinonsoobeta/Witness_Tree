@@ -9,6 +9,7 @@
     "recoveryBucket": "witness-tree-raw-recovery-ca-central-1",
     "uploaderRole": "WitnessTreeArchiveUploader",
     "breakGlassRole": "WitnessTreeArchiveRetentionBreakGlass",
+    "verifierRole": "WitnessTreeArchiveVerifier",
     "replicationRole": "WitnessTreeArchiveReplication",
     "trustedBootstrapUser": "WitnessTreeArchiveOperator",
     "trail": "witness-tree-archive-object-audit-ca-central-1",
