@@ -20,6 +20,9 @@ export function validateLocalProfiledPromotionPreparation(plan, staged, ledger) 
     for (const id of artifact.productionRowIds) { assert.ok(expectedRows.includes(id)); assert.ok(!seenRows.has(id)); seenRows.add(id); }
     const source = staged.entries.find((entry) => entry.id === artifact.stagedAcquisitionId);
     assert.ok(source, "Preparation must bind an exact staged acquisition.");
+    assert.equal(artifact.localPath, source.localPath);
+    assert.equal(artifact.byteLength, source.byteLength);
+    assert.equal(artifact.sha256, source.sha256);
     assert.equal(artifact.sourceVersion, source.sourceVersion);
     assert.equal(source.immutableObjectStorage, false); assert.equal(source.productionEligible, false);
     const profile = read(artifact.profile);

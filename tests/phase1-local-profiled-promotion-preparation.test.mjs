@@ -19,6 +19,8 @@ test("preparation rejects missing local rows, mutable aliases, invented archive 
   assert.throws(() => validateLocalProfiledPromotionPreparation(missing, staged, ledger));
   const alias = structuredClone(plan); alias.artifacts[0].archiveKeyVersion = "latest";
   assert.throws(() => validateLocalProfiledPromotionPreparation(alias, staged, ledger));
+  const drift = structuredClone(plan); drift.artifacts[0].sha256 = "0".repeat(64);
+  assert.throws(() => validateLocalProfiledPromotionPreparation(drift, staged, ledger));
   const claimed = structuredClone(plan); claimed.claims.retentionApplied = true;
   assert.throws(() => validateLocalProfiledPromotionPreparation(claimed, staged, ledger));
   const duplicate = structuredClone(plan); duplicate.artifacts.push(structuredClone(plan.artifacts[0]));
