@@ -1,0 +1,3 @@
+# Remote-source Phase 1 admission decisions
+
+The four remotely verified, archived, and profiled rows have all source-evidence proofs except the separate `productionAdmission` decision. `ntems-annual-land-cover`, `ntems-canopy-cover`, and `ab-avi-post-harvest` are ready for an owner Phase 1 ledger decision; no transformation, ingestion, or release is needed for that decision. `ab-avi-crown` additionally requires resolution of its quarantined-feature profile decision. All remain non-production and contribute **0/31** to the complete-ledger numerator until explicit decisions are recorded. A later source decision does not change the 45% ledger component until all 31 rows are complete and admitted.
