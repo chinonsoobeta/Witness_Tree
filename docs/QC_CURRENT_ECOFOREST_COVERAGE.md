@@ -19,11 +19,13 @@ coverage boundary.
 
 After the provincial archive passes byte-length and ZIP-integrity checks,
 `scripts/derive-qc-current-ecoforest-coverage.py` extracts its one GeoPackage
-and applies `ST_Union` to every geometry in published `PEE_MAJ_PROV`. It writes
-a one-feature checksum-bound GeoPackage and JSON evidence. It does not use
+and applies `ST_Union` to every geometry in published `PEE_MAJ_PROV`. A
+read-only source profile must first prove that the published layer is valid;
+the script checksum-binds that profile to its output evidence. It writes a
+one-feature checksum-bound GeoPackage and JSON evidence. It does not use
 sheet-index geometry, clip by latitude, repair, simplify, filter, or map source
 polygons. Evidence preserves raw/derived SHA-256 values, member/layer, tool
-version, and OGR profile.
+version, and source/output profiles.
 
 The derivative describes where MRNF publishes current ecoforest stand polygons.
 It does not claim a forest-land denominator, northern Québec coverage, full
