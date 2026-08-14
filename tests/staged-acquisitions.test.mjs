@@ -9,6 +9,7 @@ const alberta = manifest.entries.find((entry) => entry.sourceId === "alberta-avi
 const canopy = manifest.entries.find((entry) => entry.sourceId === "nrcan-forest-canopy-cover-2022");
 const fma = manifest.entries.find((entry) => entry.sourceId === "alberta-fma-published-area");
 const ontario = manifest.entries.find((entry) => entry.sourceId === "ontario-forest-management-units");
+const bcWildfire = manifest.entries.find((entry) => entry.sourceId === "bc-wildfire");
 
 test("verified local acquisition remains staging-only", () => {
   assert.equal(validateStagedAcquisitions(manifest), manifest);
@@ -20,8 +21,19 @@ test("verified local acquisition remains staging-only", () => {
   assert.equal(first.attributionState, "metadata-verified");
   assert.match(first.attribution, /Ministère des Ressources naturelles et des Forêts/);
   assert.equal(first.licenceUrl, "https://www.donneesquebec.ca/licence/#cc-by");
-  assert.equal(manifest.entries.reduce((total, entry) => total + entry.byteLength, 0), 10955540355);
+  assert.equal(manifest.entries.reduce((total, entry) => total + entry.byteLength, 0), 10960353647);
   assert.equal(alberta?.sha256, "e93572129f25c83911b73eadfacff12624ff6b08f2db4b311c1662196b665093");
+});
+
+test("BC current wildfire perimeter snapshot is checksum-bound and remains staging-only", () => {
+  assert.ok(bcWildfire, "bc-wildfire entry is missing from the manifest");
+  assert.equal(bcWildfire.byteLength, 4813292);
+  assert.equal(bcWildfire.sha256, "46ee3a97ff83128630a030b5cfcc7f3c389fc94e3ca95d463595ab6f4fb57e83");
+  assert.equal(bcWildfire.contentIntegrity, "passed");
+  assert.match(bcWildfire.sourceUrl, /BCWS_FirePerimeters_PublicView/);
+  assert.match(bcWildfire.temporalCoverage, /not a real-time or complete incident claim/);
+  assert.equal(bcWildfire.immutableObjectStorage, false);
+  assert.equal(bcWildfire.productionEligible, false);
 });
 
 test("staged Ontario FMU archive is checksum-bound and remains staging-only", () => {
