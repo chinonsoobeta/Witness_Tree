@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { spawnSync } from "node:child_process";
 import test from "node:test";
 import { dryRunLines, sidecarFor, validateAlbertaPlviImmutablePromotionPreparation, writeSidecars } from "../scripts/prepare-alberta-plvi-immutable-promotion.mjs";
 
@@ -30,6 +31,18 @@ test("MFA runner has a dry-run default and excludes deletion, IAM mutation, and 
   assert.match(runner, /Approved raw ZIP drifted[\s\S]*vared/);
   assert.match(runner, /WitnessTreePlviArchivePromotionUploader/);
   assert.doesNotMatch(runner, /DeleteObject|BypassGovernanceRetention|aws iam (?:create|put|delete|attach|update)/i);
+});
+
+test("owner-local preflight finds and fully hashes both controlled workspace artifacts before TOTP or AWS", () => {
+  const runner = new URL("../scripts/run-alberta-plvi-approved-promotion.sh", import.meta.url).pathname;
+  const pass = spawnSync("zsh", [runner, "--preflight"], { encoding: "utf8", timeout: 120_000 });
+  assert.equal(pass.status, 0, pass.stderr);
+  assert.match(pass.stdout, /PRECHECK passed: both approved artifacts exist/);
+  assert.doesNotMatch(`${pass.stdout}${pass.stderr}`, /Current MFA TOTP|aws (?:s3|sts|iam)/i);
+  const fail = spawnSync("zsh", [runner, "--preflight"], { encoding: "utf8", env: { ...process.env, WITNESS_TREE_PLVI_PREFLIGHT_DATA_ROOT: "/private/tmp/witness-tree-plvi-missing-data-root" } });
+  assert.equal(fail.status, 65);
+  assert.match(fail.stderr, /missing at the controlled workspace-data path/);
+  assert.doesNotMatch(`${fail.stdout}${fail.stderr}`, /Current MFA TOTP|aws (?:s3|sts|iam)/i);
 });
 
 test("provisioning policies bind only the named MFA operator, four keys, and two payload retentions", () => {

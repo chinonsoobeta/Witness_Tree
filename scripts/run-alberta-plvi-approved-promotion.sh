@@ -10,21 +10,29 @@ REGION="ca-central-1"
 RETAIN_UNTIL="2033-08-12T00:00:00Z"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 PLAN="$ROOT/data/alberta-plvi-immutable-promotion-preparation.json"
-RAW="$ROOT/../Witness_Tree-data/raw/alberta-primary-land-vegetation/2026-08-14/PrimaryLandAndVegetationInventoryPLVI.zip"
-DERIVED="$ROOT/../Witness_Tree-data/derived/alberta-plvi-full-repair-v1/2026-08-14/alberta-plvi-full-repaired-closed-join.gpkg"
+# The approved owner-local workspace data root is deliberately absolute. The
+# promotion worktree lives under /private/tmp and is not a sibling of this data.
+DATA_ROOT="/Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data"
+if [[ "${1:-}" == "--preflight" && -n "${WITNESS_TREE_PLVI_PREFLIGHT_DATA_ROOT:-}" ]]; then DATA_ROOT="$WITNESS_TREE_PLVI_PREFLIGHT_DATA_ROOT"; fi
+RAW="$DATA_ROOT/raw/alberta-primary-land-vegetation/2026-08-14/PrimaryLandAndVegetationInventoryPLVI.zip"
+DERIVED="$DATA_ROOT/derived/alberta-plvi-full-repair-v1/2026-08-14/alberta-plvi-full-repaired-closed-join.gpkg"
 TMP=""
 cleanup() { unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN BOOTSTRAP_ACCESS_KEY_ID BOOTSTRAP_SECRET_ACCESS_KEY BOOTSTRAP_SESSION_TOKEN; [[ -n "$TMP" && -d "$TMP" ]] && rm -rf "$TMP"; }
 trap cleanup EXIT
 fail() { print -u2 -- "Stopped: $1"; exit "${2:-1}"; }
 
 if [[ $# -eq 0 ]]; then node "$ROOT/scripts/prepare-alberta-plvi-immutable-promotion.mjs"; exit 0; fi
-[[ "${1:-}" == "--run" && $# -eq 1 ]] || fail "Usage: $0 [--run]" 64
-command -v aws >/dev/null || fail "aws CLI is required" 69
-command -v jq >/dev/null || fail "jq is required" 69
+[[ ( "${1:-}" == "--preflight" || "${1:-}" == "--run" ) && $# -eq 1 ]] || fail "Usage: $0 [--preflight|--run]" 64
 command -v shasum >/dev/null || fail "shasum is required" 69
 node "$ROOT/scripts/prepare-alberta-plvi-immutable-promotion.mjs" >/dev/null
-[[ "$(stat -f %z "$RAW")" == 675544895 && "$(shasum -a 256 "$RAW" | awk '{print $1}')" == 017a0a835c680ca1b6c1eb790322a28e1b4c0c64e36924da46d8bb99cb1571d3 ]] || fail "Approved raw ZIP drifted; no AWS call was made" 65
-[[ "$(stat -f %z "$DERIVED")" == 899551232 && "$(shasum -a 256 "$DERIVED" | awk '{print $1}')" == 5633e7d49982ee1232b415f362654744c1f1dab11d7c3c7ef8a7928dac20825b ]] || fail "Approved derived GeoPackage drifted; no AWS call was made" 65
+[[ -f "$RAW" ]] || fail "Approved raw ZIP is missing at the controlled workspace-data path; no TOTP or AWS call was made" 65
+[[ -f "$DERIVED" ]] || fail "Approved derived GeoPackage is missing at the controlled workspace-data path; no TOTP or AWS call was made" 65
+[[ "$(stat -f %z "$RAW")" == 675544895 && "$(shasum -a 256 "$RAW" | awk '{print $1}')" == 017a0a835c680ca1b6c1eb790322a28e1b4c0c64e36924da46d8bb99cb1571d3 ]] || fail "Approved raw ZIP drifted; no TOTP or AWS call was made" 65
+[[ "$(stat -f %z "$DERIVED")" == 899551232 && "$(shasum -a 256 "$DERIVED" | awk '{print $1}')" == 5633e7d49982ee1232b415f362654744c1f1dab11d7c3c7ef8a7928dac20825b ]] || fail "Approved derived GeoPackage drifted; no TOTP or AWS call was made" 65
+print -- "PRECHECK passed: both approved artifacts exist at the controlled workspace-data path with exact bytes and SHA-256; no TOTP or AWS call was made."
+[[ "${1:-}" == "--preflight" ]] && exit 0
+command -v aws >/dev/null || fail "aws CLI is required" 69
+command -v jq >/dev/null || fail "jq is required" 69
 vared -p 'Current MFA TOTP (not stored): ' -s totp
 [[ "$totp" =~ '^[0-9]{6}$' ]] || fail "TOTP must be exactly six digits; no AWS call was made" 64
 mfa_serial="$(aws iam list-mfa-devices --user-name WitnessTreeArchiveOperator --profile "$PROFILE" --query 'MFADevices[0].SerialNumber' --output text)" || fail "Cannot read configured MFA serial" 69
