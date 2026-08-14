@@ -23,6 +23,15 @@ test("national and provincial discovery entries retain their bounded role and un
   assert.equal(byId.get("nrcan-forest-canopy-cover-2022")?.access.url, "https://opendata.nfis.org/downloads/forest_change/CA_canopy_cover_2022.zip");
   assert.equal(byId.get("nrcan-forest-canopy-height-2022")?.access.url, "https://opendata.nfis.org/downloads/forest_change/CA_canopy_height_2022.zip");
   assert.match(byId.get("alberta-historical-wildfire-2006-2025")?.intendedRole.en ?? "", /not a current incident feed/i);
+  const legislative = byId.get("nrcan-aboriginal-lands-legislative-boundaries");
+  const modernTreaties = byId.get("cirnac-finalized-modern-treaties-map");
+  assert.equal(legislative?.productionEligible, false);
+  assert.equal(legislative?.licence.state, "unresolved");
+  assert.match(legislative?.verifiedFacts.join(" ") ?? "", /NRCan rather than Indigenous Services Canada/);
+  assert.equal(modernTreaties?.productionEligible, false);
+  assert.equal(modernTreaties?.access.state, "catalogue-listed");
+  assert.match(modernTreaties?.intendedRole.en ?? "", /not a GIS boundary source/i);
+  assert.match(modernTreaties?.verifiedFacts.join(" ") ?? "", /informal purposes/i);
 });
 
 test("the resolved harvest record carries a verified harvest URL and keeps the publisher link error open", () => {
