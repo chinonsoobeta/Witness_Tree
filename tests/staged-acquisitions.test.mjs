@@ -8,6 +8,7 @@ const first = manifest.entries[0];
 const alberta = manifest.entries.find((entry) => entry.sourceId === "alberta-avi-crown");
 const canopy = manifest.entries.find((entry) => entry.sourceId === "nrcan-forest-canopy-cover-2022");
 const harvest = manifest.entries.find((entry) => entry.sourceId === "nrcan-ca-forest-harvest-1985-2022");
+const wildfire = manifest.entries.find((entry) => entry.sourceId === "nrcan-ca-forest-wildfire-1985-2022");
 
 test("verified local acquisition remains staging-only", () => {
   assert.equal(validateStagedAcquisitions(manifest), manifest);
@@ -18,8 +19,18 @@ test("verified local acquisition remains staging-only", () => {
   assert.equal(first.attributionState, "metadata-verified");
   assert.match(first.attribution, /Ministère des Ressources naturelles et des Forêts/);
   assert.equal(first.licenceUrl, "https://www.donneesquebec.ca/licence/#cc-by");
-  assert.equal(manifest.entries.reduce((total, entry) => total + entry.byteLength, 0), 11173627111);
+  assert.equal(manifest.entries.reduce((total, entry) => total + entry.byteLength, 0), 11425991674);
   assert.equal(alberta?.sha256, "e93572129f25c83911b73eadfacff12624ff6b08f2db4b311c1662196b665093");
+});
+
+test("staged NRCan wildfire archive is checksum-bound, distinct from harvest, and remains staging-only", () => {
+  assert.ok(wildfire, "nrcan-ca-forest-wildfire-1985-2022 entry is missing from the manifest");
+  assert.equal(wildfire.byteLength, 252364563);
+  assert.equal(wildfire.sha256, "725f3b582c87cb7c6f3fd397a523fba6621718ac59c68dc904cd1d849a9160c9");
+  assert.equal(wildfire.zipIntegrity, "passed");
+  assert.match(wildfire.catalogueRelationship, /distinct artifact/i);
+  assert.equal(wildfire.immutableObjectStorage, false);
+  assert.equal(wildfire.productionEligible, false);
 });
 
 test("staged NRCan harvest archive is distinct from the catalogue's fire-named link and remains staging-only", () => {
