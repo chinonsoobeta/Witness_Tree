@@ -37,6 +37,7 @@ jobs:
       - run: npm run check:ontario-in-year-fire-perimeters
       - run: npm run check:alberta-plvi-full-release-readiness
       - run: npm run check:alberta-plvi-immutable-promotion-preparation
+      - run: npm run check:current-wildfire-immutable-promotion-preparation
       - run: npm run check:immutable-promotions
       - run: npm run check:boundary-editions
       - run: npm run check:elections-canada-fed-2025
