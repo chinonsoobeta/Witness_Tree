@@ -4,12 +4,14 @@ import test from "node:test";
 import { validateStagedAcquisitions } from "../scripts/check-staged-acquisitions.mjs";
 
 const manifest = JSON.parse(readFileSync(new URL("../data/staged-acquisitions.json", import.meta.url), "utf8"));
-const first = manifest.entries[0];
+const first = manifest.entries.find((entry) => entry.sourceId === "qc-historic-wildfire-detailed");
 const alberta = manifest.entries.find((entry) => entry.sourceId === "alberta-avi-crown");
 const canopy = manifest.entries.find((entry) => entry.sourceId === "nrcan-forest-canopy-cover-2022");
+const fma = manifest.entries.find((entry) => entry.sourceId === "alberta-fma-published-area");
 
 test("verified local acquisition remains staging-only", () => {
   assert.equal(validateStagedAcquisitions(manifest), manifest);
+  assert.ok(first, "qc-historic-wildfire-detailed entry is missing from the manifest");
   assert.equal(first.byteLength, 414244435);
   assert.equal(first.sha256, "cfed6c16eac901e6887a2518f566dff7608d4c4c371bd9c1ce6b2eff03fa0815");
   assert.equal(first.immutableObjectStorage, false);
@@ -17,8 +19,17 @@ test("verified local acquisition remains staging-only", () => {
   assert.equal(first.attributionState, "metadata-verified");
   assert.match(first.attribution, /Ministère des Ressources naturelles et des Forêts/);
   assert.equal(first.licenceUrl, "https://www.donneesquebec.ca/licence/#cc-by");
-  assert.equal(manifest.entries.reduce((total, entry) => total + entry.byteLength, 0), 10925681632);
+  assert.equal(manifest.entries.reduce((total, entry) => total + entry.byteLength, 0), 10941215987);
   assert.equal(alberta?.sha256, "e93572129f25c83911b73eadfacff12624ff6b08f2db4b311c1662196b665093");
+});
+
+test("staged Alberta FMA snapshot is a checked GeoJSON, not a ZIP", () => {
+  assert.ok(fma, "alberta-fma-published-area entry is missing from the manifest");
+  assert.equal(fma.byteLength, 15534355);
+  assert.equal(fma.sha256, "da4d3d80ddf71e6cae738077fed807cdb9ae39ba946a6a7ce5e2d3ffc69e0e0f");
+  assert.equal(fma.contentIntegrity, "passed");
+  assert.equal(fma.immutableObjectStorage, false);
+  assert.equal(fma.productionEligible, false);
 });
 
 test("staged canopy cover acquisition is pinned and staging-only", () => {

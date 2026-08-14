@@ -7,6 +7,7 @@ const SHA256 = /^[a-f0-9]{64}$/;
 const HTTPS = /^https:\/\//;
 const ISO_TIMESTAMP = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/;
 const FORBIDDEN_PROOF = /\b(?:example|fixture|illustrative|latitude(?:[- ]?proxy)?|latitudeproxy)\b/i;
+const FORBIDDEN_PARTIAL_CLAIM = /\b(?:land[ -]?base|province[ -]?wide|all\s+alberta|complete\s+alberta|all\s+forest\s+land)\b/i;
 
 function text(value, field) {
   if (typeof value !== "string" || !value.trim()) throw new Error(`${field} is required.`);
@@ -53,7 +54,7 @@ function rejectForbiddenProof(value, path = "manifest") {
 
 function validateLayer(layer) {
   if (!layer || typeof layer !== "object") throw new Error("Coverage layer is required.");
-  if (layer.evidenceClass !== "versioned-source-geometry") throw new Error("Coverage requires versioned source geometry evidence.");
+  if (!new Set(["versioned-source-geometry", "lineage-bound-derived-geometry"]).has(layer.evidenceClass)) throw new Error("Coverage requires source geometry or lineage-bound derived geometry evidence.");
   text(layer.sourceId, "sourceId");
   if (!PROVINCES.has(layer.province)) throw new Error("Coverage layer must name a required province.");
   text(layer.edition, "edition");
@@ -71,9 +72,11 @@ function validateLayer(layer) {
   if (!profile || typeof profile !== "object") throw new Error("Coverage validity/profile evidence is required.");
   text(profile.evidenceId, "profile.evidenceId");
   timestamp(profile.profiledAt, "profile.profiledAt");
-  localEvidencePath(profile.evidencePath, "profile.evidencePath");
+  if (profile.evidenceUrl !== undefined) https(profile.evidenceUrl, "profile.evidenceUrl");
+  else if (profile.evidencePath !== undefined) localEvidencePath(profile.evidencePath, "profile.evidencePath");
+  else localEvidencePath(profile.evidenceLocalPath, "profile.evidenceLocalPath");
   sha256(profile.evidenceChecksumSha256, "profile.evidenceChecksumSha256");
-  sha256(profile.geometryChecksumSha256, "profile.geometryChecksumSha256");
+  if (layer.evidenceClass === "versioned-source-geometry") sha256(profile.geometryChecksumSha256, "profile.geometryChecksumSha256");
   text(profile.geometryType, "profile.geometryType");
   if (!Number.isSafeInteger(profile.featureCount) || profile.featureCount <= 0) throw new Error("profile.featureCount must be a positive safe integer.");
   if (!Number.isSafeInteger(profile.invalidGeometryCount) || profile.invalidGeometryCount < 0) throw new Error("profile.invalidGeometryCount must be a known non-negative integer.");
@@ -84,6 +87,7 @@ function validateLayer(layer) {
   text(licence.id, "licence.id");
   https(licence.url, "licence.url");
   text(layer.attribution, "attribution");
+
   if (layer.province === "ON" && layer.coverageClass === "national-baseline-plus-managed-forest-context") {
     const scope = layer.scope;
     if (!scope || typeof scope !== "object") throw new Error("Ontario context scope is required.");
@@ -92,10 +96,21 @@ function validateLayer(layer) {
     if (scope.forestLandBaseDenominator !== false) throw new Error("Ontario planning-unit context cannot be a forest land-base denominator.");
     if (scope.enhancedRecordCoverage !== false) throw new Error("Ontario context cannot enable enhanced records.");
     text(scope.enhancedRecordCondition, "Ontario enhancedRecordCondition");
+  } else if (layer.evidenceClass === "lineage-bound-derived-geometry") {
+    if (layer.coverageScope !== "partial-known-coverage") throw new Error("Derived coverage must be explicitly partial known coverage.");
+    if (layer.coverageGrade !== "national-baseline-plus-local-context") throw new Error("Partial known coverage must use national-baseline-plus-local-context.");
+    if (!Array.isArray(layer.inputEvidence) || layer.inputEvidence.length < 2) throw new Error("Derived coverage requires at least two lineage-bound inputs.");
+    for (const [index, input] of layer.inputEvidence.entries()) {
+      if (!input || typeof input !== "object") throw new Error(`inputEvidence.${index} is required.`);
+      text(input.sourceId, `inputEvidence.${index}.sourceId`);
+      sha256(input.checksumSha256, `inputEvidence.${index}.checksumSha256`);
+      https(input.sourceUrl, `inputEvidence.${index}.sourceUrl`);
+    }
+    const claims = [layer.scopeNotice, layer.claims].filter((value) => typeof value === "string").join(" ");
+    text(claims, "Derived coverage scope notice");
+    if (FORBIDDEN_PARTIAL_CLAIM.test(claims)) throw new Error("Partial known coverage cannot claim a land base, province-wide, all-Alberta, or all-forest-land extent.");
   } else if (layer.coverageClass !== "land-base") {
-    throw new Error("Non-Ontario coverage layers must be admitted as land-base geometry.");
-  } else if (layer.province === "ON" && layer.sourceId === "ontario-forest-management-units") {
-    throw new Error("Ontario Forest Management Units cannot be admitted as Ontario land-base geometry.");
+    throw new Error("Source geometry must be land-base geometry unless it is an approved bounded reference/context exception.");
   }
 }
 
@@ -122,11 +137,11 @@ export function validateCoverageGeometryAdmission(manifest) {
     if (!new Set(["pending", "approved"]).has(decisions[key])) throw new Error(`${key} must be pending or approved.`);
   }
   if (manifest.status === "pending-evidence" && manifest.layers.length !== 0) throw new Error("Pending evidence cannot admit coverage layers.");
+  if (manifest.status === "partial" && manifest.layers.length === 0) throw new Error("Partial coverage requires at least one admitted bounded layer.");
   if (manifest.status === "complete") {
     if (provinces.size !== PROVINCES.size || [...PROVINCES].some((province) => !provinces.has(province))) throw new Error("Complete coverage requires versioned geometry evidence for BC, AB, ON, and QC.");
     if (decisions.ontarioManagedForest !== "approved") throw new Error("Complete coverage requires the Ontario managed-forest decision.");
     if (decisions.quebecSouthOf52 !== "approved") throw new Error("Complete coverage requires the Québec south-of-52 decision.");
-    if (manifest.layers.some((layer) => layer.coverageClass !== "land-base")) throw new Error("Complete coverage requires land-base geometry for every province; Ontario planning-unit context alone is insufficient.");
   }
   return manifest;
 }
@@ -137,5 +152,5 @@ export async function checkCoverageGeometryAdmission(file = new URL("../data/cov
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   const manifest = await checkCoverageGeometryAdmission(path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../data/coverage-geometry-admission.json"));
-  console.log(`Coverage geometry admission passed with ${manifest.layers.length} admitted coverage-geometry layers.`);
+  console.log(`Coverage geometry admission passed with ${manifest.layers.length} admitted coverage-evidence layers.`);
 }
