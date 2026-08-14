@@ -1,0 +1,11 @@
+# Phase 1 access-blocker resolution
+
+On 2026-08-14, every one of the 13 canonical `access-blocked` production rows was rechecked against its named primary official source. The machine-readable ranking, direct official URLs, existing source record, finding, and exact resolution required are in [`data/phase1-access-blocker-resolution.json`](../data/phase1-access-blocker-resolution.json).
+
+No row was acquired. That is an intentional result, not an absence of work: none has both a coherent reusable artifact (or transaction-safe API) and the source-specific rights, authority, or engagement evidence needed by the Phase 1 ledger. Downloading a public service under an Access Only licence, stitching non-transaction-safe pages, treating a web explorer as a released package, or digitizing an approximate treaty map would create false evidence.
+
+The first two rows are the highest-impact practical resolution paths. BC's FTA cutblocks and harvesting-authority records have OGL-BC reuse terms but lack a publisher-bounded coherent export. Their named data steward can issue BCGW Custom Download exports with the as-of/version, feature count, CRS, schema, checksum and attribution needed to begin normal acquisition. This repository does not submit that request or treat a live paged service as its replacement.
+
+Rows 3–9 require a publisher artifact and/or written reuse decision. Rows 10–13 additionally require authority and Indigenous engagement/right-of-reply decisions. The federal historic- and modern-treaty candidates are specifically unsuitable for legal or precision geometry, independent of whether a map can be viewed or downloaded.
+
+Run `npm run check:phase1-access-blocker-resolution`. It rejects missing rows, a non-primary HTTPS citation, a missing underlying evidence record, rank drift, an altered ledger state, or any claim that a blocked row is lawfully acquirable now.

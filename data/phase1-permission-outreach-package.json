@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "status": "owner-review-only-unsent",
+  "preparedAt": "2026-08-14T23:55:00Z",
+  "sender": "Chinonso Obeta <chinonso8@gmail.com>",
+  "scope": "A consolidated owner-review package for the genuine external export, permission, rights, authority, and engagement blockers in the Phase 1 access-block matrix. It is not authorization to contact anyone, an email-send record, an acquisition, an archive, a transformation, an ingestion, or a production-admission decision.",
+  "messages": [
+    {
+      "id": "bc-forest-tenures-export",
+      "status": "draft-not-sent",
+      "recipient": "ForestTenuresBranch@gov.bc.ca",
+      "recipientEvidence": "https://www2.gov.bc.ca/gov/content/industry/forestry/forest-tenures",
+      "subject": "Request for coherent BCGW exports — FTA cutblocks and harvesting authorities",
+      "language": "English",
+      "canonicalRowIds": ["bc-fta-cutblocks", "bc-harvesting-authorities"],
+      "requestTerms": ["stable artifact or snapshot", "edition or as-of timestamp", "feature count, CRS, schema and checksum", "licence and attribution", "Canadian immutable raw archive", "transformation and derived/public reuse", "refresh and correction route", "right-of-reply/contact route"]
+    },
+    {
+      "id": "ontario-fri-term2-package-and-rights",
+      "status": "draft-not-sent",
+      "recipient": "info.mnrfscience@ontario.ca",
+      "recipientEvidence": "https://www.ontario.ca/page/forest-resources-inventory",
+      "subject": "Request for reproducible Forest Resource Inventory Term 2 package and reuse confirmation",
+      "language": "English / Français",
+      "canonicalRowIds": ["on-fri", "on-fri-term-2"],
+      "requestTerms": ["stable artifact or snapshot", "edition or as-of timestamp", "FMU coverage, CRS, schema, feature count and checksum", "exact-package licence and attribution", "Canadian immutable raw archive", "transformation and derived/public reuse", "refresh and correction route", "right-of-reply/contact route"]
+    },
+    {
+      "id": "bc-bec-v13-1-snapshot",
+      "status": "draft-not-sent",
+      "recipient": "datamaps@gov.bc.ca",
+      "recipientEvidence": "data/bc-bec-snapshot-block.json",
+      "subject": "Request for complete immutable BEC Map v13.1 export or snapshot semantics",
+      "language": "English",
+      "canonicalRowIds": ["bc-old-growth-bec"],
+      "requestTerms": ["stable artifact or snapshot with documented transaction consistency", "edition or effective date", "feature count, CRS, schema and checksum", "OGL-BC licence and attribution", "Canadian immutable raw archive", "transformation and derived/public reuse", "refresh and correction route", "right-of-reply/contact route"]
+    },
+    {
+      "id": "bc-copyright-access-only-forest-layers",
+      "status": "draft-not-sent",
+      "recipient": "QPIPPCopyright@gov.bc.ca",
+      "recipientEvidence": "https://forms.gov.bc.ca/copyright-permission-request/",
+      "subject": "Permission and authoritative-export request — VRI 2025, FOM Cutblocks, and TAP deferral layer",
+      "language": "English",
+      "canonicalRowIds": ["bc-old-growth-bec", "bc-vri", "bc-forest-operations-map"],
+      "requestTerms": ["stable artifact or snapshot", "edition or effective date", "feature count, CRS, schema and checksum", "exact licence and attribution", "Canadian immutable raw archive", "transformation and derived/public reuse", "refresh and correction route", "right-of-reply/contact route"]
+    },
+    {
+      "id": "sopfeu-wildfire-data-permission",
+      "status": "draft-not-sent",
+      "recipient": "courrier@sopfeu.qc.ca",
+      "recipientEvidence": "https://www.sopfeu.qc.ca/en/privacy-policy/",
+      "subject": "Demande d’autorisation — données officielles sur les feux de forêt / Permission request — official wildfire data",
+      "language": "Français / English",
+      "canonicalRowIds": ["sopfeu"],
+      "requestTerms": ["stable artifact or snapshot", "version or snapshot identifier", "coverage, cadence, format and checksum", "licence and attribution", "Canadian immutable raw archive", "transformation and derived/public reuse", "refresh and correction route", "right-of-reply/contact route"]
+    },
+    {
+      "id": "isc-reserve-boundary-authority-and-engagement",
+      "status": "draft-not-sent",
+      "recipient": "communicationspublications@sac-isc.gc.ca",
+      "recipientEvidence": "https://www.isc-sac.gc.ca/eng/1634312499368/1634312554965",
+      "subject": "Request for authoritative reserve-boundary release, reuse terms, and appropriate engagement route / Demande de jeu de données, de conditions de réutilisation et de voie de dialogue",
+      "language": "English / Français",
+      "canonicalRowIds": ["indian-reserves", "first-nation-reserves"],
+      "requestTerms": ["stable artifact or snapshot", "edition and precision/scope statement", "feature count, CRS, schema and checksum", "exact licence and attribution", "Canadian immutable raw archive", "transformation and derived/public reuse", "refresh and correction route", "named Indigenous engagement and right-of-reply route"]
+    },
+    {
+      "id": "cirnac-treaty-geometry-authority-and-engagement",
+      "status": "draft-not-sent",
+      "recipient": "infopubs@sac-isc.gc.ca",
+      "recipientEvidence": "https://www.rcaanc-cirnac.gc.ca/eng/1603225519672/1603310558983",
+      "subject": "Request for suitable treaty-boundary source, reuse terms, and appropriate engagement route / Demande de source appropriée, de conditions de réutilisation et de voie de dialogue",
+      "language": "English / Français",
+      "canonicalRowIds": ["historic-treaties", "modern-treaties"],
+      "requestTerms": ["stable artifact or snapshot", "edition and legal/precision scope statement", "feature count, CRS, schema and checksum", "exact licence and attribution", "Canadian immutable raw archive", "transformation and derived/public reuse", "refresh and correction route", "named Indigenous engagement and right-of-reply route"]
+    },
+    {
+      "id": "bc-consolidated-cutblocks-existing-request",
+      "status": "already-sent-awaiting-response-no-new-message",
+      "recipient": "FAIB.Data.Management@gov.bc.ca",
+      "recipientEvidence": "data/bc-consolidated-cutblocks-access.json",
+      "subject": "Permission request — Harvested Areas of BC (Consolidated Cutblocks)",
+      "language": "English",
+      "canonicalRowIds": ["bc-consolidated-cutblocks"],
+      "requestTerms": ["stable artifact or snapshot", "edition or release date", "checksum", "licence and attribution", "Canadian immutable raw archive", "transformation and derived/public reuse", "refresh and correction route", "right-of-reply/contact route"]
+    }
+  ]
+}

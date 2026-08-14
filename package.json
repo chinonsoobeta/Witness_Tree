@@ -41,6 +41,8 @@
     "check:bc-forest-operations-map-access": "node scripts/check-bc-forest-operations-map-access.mjs",
     "check:phase1-source-inventory": "node scripts/check-phase1-source-inventory.mjs",
     "check:phase1-production-source-ledger": "node scripts/check-phase1-production-source-ledger.mjs",
+    "check:phase1-access-blocker-resolution": "node scripts/check-phase1-access-blocker-resolution.mjs",
+    "check:phase1-permission-outreach-package": "node scripts/check-phase1-permission-outreach-package.mjs",
     "prepare:phase1-local-profiled-immutable-promotion": "tsx scripts/prepare-phase1-local-profiled-immutable-promotion.mjs",
     "check:vlce2-promotion": "node scripts/check-vlce2-promotion-preparation.mjs",
     "check:vlce2-remote-promotion": "node scripts/check-vlce2-remote-promotion-evidence.mjs",
