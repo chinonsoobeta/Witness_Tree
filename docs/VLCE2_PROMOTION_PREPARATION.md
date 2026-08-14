@@ -2,6 +2,10 @@
 
 [`data/vlce2-promotion-preparation.json`](../data/vlce2-promotion-preparation.json) is the repository-controlled record for all 39 Canadian Annual High-Resolution Forest Land Cover (VLCE2) payload versions, 1984–2022. It replaces dependence on the removed scratchpad manifests. It contains the byte length, locally recorded SHA-256, locally recorded whole-file CRC64NVME, S3 `FULL_OBJECT` CRC64NVME in provider base64 form, S3 payload VersionId, deterministic S3 keys, and the Open Government Licence – Canada attribution for every year.
 
+It deliberately preserves the **pre-promotion** observation: at that point only the 1984 payload was retained. It is not rewritten after a later remote operation. The separately captured, post-promotion authority is [`data/vlce2-remote-promotion-evidence.json`](../data/vlce2-remote-promotion-evidence.json). That record contains the read-back of every payload, every rebuildable sidecar, and every payload retention state; `npm run check:vlce2-remote-promotion` validates it without AWS credentials.
+
+This annual-series evidence is intentionally separate from `data/immutable-promotions.json`: the latter is the three-entry ledger linked to `data/staged-acquisitions.json`, while VLCE2 has 39 independently acquired annual payload versions and its own preparation lineage. Neither ledger substitutes for the other.
+
 It is a reversible preparation record, not a storage action. The validator has no AWS SDK, upload, retention, or deletion code. Run it with:
 
 ```sh
