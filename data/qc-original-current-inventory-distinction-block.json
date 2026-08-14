@@ -34,6 +34,6 @@
     "engagementOrScopeDecisionVerified": false,
     "reason": "The catalogue API and MRNF response establish a distinct direct GPKG ZIP with a resumable response. A dedicated raw transfer began after disk preflight, but it is incomplete and cannot be used as profile, checksum, archive, or admission evidence."
   },
-  "actions": {"reusedCurrentArchive": false, "resumableDownloadStarted": true, "downloadComplete": false, "staged": false, "profiled": false, "transformed": false, "ingested": false, "productionEligible": false},
+  "actions": {"reusedCurrentArchive": false, "untrustedConcurrentPartialQuarantined": true, "cleanResumableDownloadStarted": true, "downloadComplete": false, "staged": false, "profiled": false, "transformed": false, "ingested": false, "productionEligible": false},
   "requiredBeforeAnyAcquisition": ["Exact original/current-inventory resource URL and version bound to the catalogue edition", "Checksum, archive recovery and read-only profile for that exact artifact", "Schema confirmation that original polygons and required GEOCODE-linked tables are present", "Owner scope decision covering use of the original inventory product"]
 }
