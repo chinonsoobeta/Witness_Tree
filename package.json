@@ -16,6 +16,7 @@
     "check:source-candidates": "node scripts/check-source-candidates.mjs",
     "check:phase1-source-inventory": "node scripts/check-phase1-source-inventory.mjs",
     "check:vlce2-promotion": "node scripts/check-vlce2-promotion-preparation.mjs",
+    "dry-run:vlce2-remote-promotion": "node scripts/vlce2-remote-promotion.mjs",
     "check:acquisition-readiness": "node scripts/check-acquisition-readiness.mjs",
     "check:staged-acquisitions": "node scripts/check-staged-acquisitions.mjs",
     "check:phase1-corruption-corpus": "tsx --test tests/phase1-corruption-gate.test.ts",
