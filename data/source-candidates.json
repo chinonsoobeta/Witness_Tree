@@ -214,6 +214,20 @@
       "productionEligible": false
     },
     {
+      "id": "alberta-historical-wildfire-2006-2025",
+      "status": "candidate",
+      "datasetTitle": "Historical wildfire data : 2006 to 2025",
+      "publisher": "Government of Alberta, Forestry and Parks",
+      "catalogueUrl": "https://open.alberta.ca/publications/wildfire-data",
+      "intendedRole": {"en": "Historical Alberta wildfire-record context; not a current incident feed, fire-perimeter layer, or damage assessment.", "fr": "Contexte historique des enregistrements de feux de forêt de l’Alberta; ni flux d’incidents actuel, ni couche de périmètres d’incendie, ni évaluation des dommages."},
+      "metadataVerification": "verified",
+      "licence": {"state": "verified", "id": "ogl-alberta", "officialUrl": "https://open.alberta.ca/licence"},
+      "access": {"state": "verified", "formats": ["csv", "pdf"], "url": "https://open.alberta.ca/dataset/a221e7a0-4f46-4be7-9c5a-e29de9a3447e/resource/80480824-0c50-456c-9723-f9d4fc136141/download/fp-historical-wildfire-data-2006-2025.csv"},
+      "verifiedFacts": ["Official catalogue describes Alberta wildfire records from 2006 through 2025 inclusive.", "The official record assigns the Open Government Licence – Alberta and identifies a 10,400,030-byte CSV resource plus its data dictionary.", "The publisher says records concern wildfire origins inside Alberta's Forest Protection Area; mutual-aid fires outside it are excluded.", "The data dictionary defines latitude and longitude as confirmed ignition-area GPS decimal-degree locations, not perimeter geometry."],
+      "unresolvedFields": ["Current operational incident endpoint and refresh cadence", "Immutable archive evidence", "Ingestion and release approval"],
+      "productionEligible": false
+    },
+    {
       "id": "alberta-avi-crown",
       "status": "candidate",
       "datasetTitle": "Alberta Vegetation Inventory (AVI) Crown",
