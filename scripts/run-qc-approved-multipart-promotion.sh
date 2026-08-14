@@ -1,0 +1,132 @@
+#!/bin/zsh
+set -euo pipefail
+umask 077
+
+# Owner-local only.  The default is a no-AWS preparation check.  --run is
+# intentionally unusable until the exact artifact and IAM approval is granted.
+PROFILE="WitnessTreeArchiveOperator"
+ROLE="WitnessTreeQcArchivePromotionUploader"
+BUCKET="witness-tree-raw-archive-ca-central-1"
+REGION="ca-central-1"
+RETAIN_UNTIL="2033-08-12T00:00:00Z"
+PART_SIZE=134217728
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+PLAN="$ROOT/data/qc-immutable-promotion-preparation.json"
+DATA_ROOT="/Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data"
+STATE_ROOT="/private/tmp/witness-tree-qc-archive-promotion-state"
+TMP=""
+
+cleanup() { unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN bootstrap creds totp; [[ -n "$TMP" && -d "$TMP" ]] && rm -rf "$TMP"; }
+trap cleanup EXIT
+fail() { print -u2 -- "Stopped: $1"; exit "${2:-1}"; }
+need() { command -v "$1" >/dev/null || fail "$1 is required" 69; }
+file_size() { stat -f %z "$1"; }
+sha256_hex() { shasum -a 256 "$1" | awk '{print $1}'; }
+sha256_b64() { print -n -- "$(sha256_hex "$1")" | xxd -r -p | base64 | tr -d '\n'; }
+write_json() { local target="$1" value="$2" tmpfile="${1}.tmp.$$"; print -r -- "$value" > "$tmpfile" && chmod 600 "$tmpfile" && mv -f "$tmpfile" "$target"; }
+state_update() { local state="$1" filter="$2"; shift 2; local temp="${state}.tmp.$$"; jq "$filter" "$@" "$state" > "$temp" && chmod 600 "$temp" && mv -f "$temp" "$state"; }
+
+if [[ $# -eq 0 ]]; then node "$ROOT/scripts/prepare-qc-immutable-promotion.mjs"; exit 0; fi
+[[ "${1:-}" == "--preflight" || "${1:-}" == "--run" ]] && [[ $# -eq 1 ]] || fail "Usage: $0 [--preflight|--run]" 64
+for tool in node jq shasum xxd base64 dd stat; do need "$tool"; done
+node "$ROOT/scripts/prepare-qc-immutable-promotion.mjs" >/dev/null
+
+while IFS= read -r artifact; do
+  relative="$(jq -r '.localPath' <<<"$artifact")"; file="$DATA_ROOT/$relative"; expected_bytes="$(jq -r '.byteLength' <<<"$artifact")"; expected_sha="$(jq -r '.sha256' <<<"$artifact")"
+  [[ -f "$file" ]] || fail "Approved Québec artifact is missing at the controlled workspace-data path; no TOTP or AWS call was made" 65
+  [[ "$(file_size "$file")" == "$expected_bytes" && "$(sha256_hex "$file")" == "$expected_sha" ]] || fail "Approved Québec artifact drifted; no TOTP or AWS call was made" 65
+done < <(jq -c '.artifacts[]' "$PLAN")
+print -- "PRECHECK passed: both approved Québec archives exist at the controlled workspace-data path with exact bytes and SHA-256; no TOTP or AWS call was made."
+[[ "${1:-}" == "--preflight" ]] && exit 0
+
+for tool in aws openssl; do need "$tool"; done
+[[ -t 0 && -t 1 ]] || fail "MFA TOTP prompt requires an interactive terminal; no AWS call was made" 64
+read -r -s 'totp?Current MFA TOTP (not stored): '
+print
+[[ "${totp:-}" =~ '^[0-9]{6}$' ]] || fail "TOTP must be exactly six digits; no AWS call was made" 64
+mfa_serial="$(aws configure get mfa_serial --profile "$PROFILE")" || fail "Cannot read local configured MFA serial" 69
+[[ "$mfa_serial" =~ '^arn:aws:iam::286853118812:mfa/WitnessTreeArchiveOperator$' ]] || fail "Configured MFA serial is absent, malformed, or does not name the approved operator; no STS or AWS storage call was made" 69
+bootstrap="$(aws sts get-session-token --serial-number "$mfa_serial" --token-code "$totp" --profile "$PROFILE" --duration-seconds 3600 --output json)" || fail "MFA session failed" 77
+unset totp
+export AWS_ACCESS_KEY_ID="$(jq -r '.Credentials.AccessKeyId' <<<"$bootstrap")" AWS_SECRET_ACCESS_KEY="$(jq -r '.Credentials.SecretAccessKey' <<<"$bootstrap")" AWS_SESSION_TOKEN="$(jq -r '.Credentials.SessionToken' <<<"$bootstrap")"; unset bootstrap
+account="$(aws sts get-caller-identity --query Account --output text)" || fail "Cannot identify MFA session" 77
+[[ "$account" == "286853118812" ]] || fail "MFA session is outside the approved account" 77
+creds="$(aws sts assume-role --role-arn "arn:aws:iam::${account}:role/${ROLE}" --role-session-name witness-tree-qc-approved-promotion --duration-seconds 3600 --output json)" || fail "Promotion role assumption failed" 77
+export AWS_ACCESS_KEY_ID="$(jq -r '.Credentials.AccessKeyId' <<<"$creds")" AWS_SECRET_ACCESS_KEY="$(jq -r '.Credentials.SecretAccessKey' <<<"$creds")" AWS_SESSION_TOKEN="$(jq -r '.Credentials.SessionToken' <<<"$creds")"; unset creds account
+
+TMP="$(mktemp -d /private/tmp/witness-tree-qc-approved-promotion.XXXXXX)"; chmod 700 "$TMP"
+mkdir -p "$STATE_ROOT"; chmod 700 "$STATE_ROOT"
+node "$ROOT/scripts/prepare-qc-immutable-promotion.mjs" --write-sidecars "$TMP" >/dev/null
+
+promote_one() {
+  local artifact="$1" id relative file bytes sha payload sidecar sidecar_file state state_dir expected_state sidecar_sha sidecar_b64 sidecar_put sidecar_version sidecar_head upload_id list part_number offset part_bytes part_file part_b64 part_result parts_file composite_file composite composite_b64 complete version payload_head retention
+  id="$(jq -r '.id' <<<"$artifact")"; relative="$(jq -r '.localPath' <<<"$artifact")"; file="$DATA_ROOT/$relative"; bytes="$(jq -r '.byteLength' <<<"$artifact")"; sha="$(jq -r '.sha256' <<<"$artifact")"; payload="$(jq -r '.payloadKey' <<<"$artifact")"; sidecar="$(jq -r '.manifestKey' <<<"$artifact")"; sidecar_file="$TMP/${id}.manifest.json"
+  state_dir="$STATE_ROOT/${id}-${sha}"; state="$state_dir/state.json"; mkdir -p "$state_dir"; chmod 700 "$state_dir"
+  expected_state="$(jq -n --arg id "$id" --arg payload "$payload" --arg sidecar "$sidecar" --arg sha "$sha" --argjson bytes "$bytes" --argjson partSize "$PART_SIZE" '{artifactId:$id,payloadKey:$payload,manifestKey:$sidecar,sha256:$sha,byteLength:$bytes,partSizeBytes:$partSize,initiation:"not-started",uploadId:null,payloadVersionId:null,compositeChecksumSha256:null,sidecarVersionId:null}')"
+  if [[ ! -f "$state" ]]; then write_json "$state" "$expected_state"; else jq -e --argjson expected "$expected_state" 'del(.initiation,.uploadId,.payloadVersionId,.compositeChecksumSha256,.sidecarVersionId) == ($expected | del(.initiation,.uploadId,.payloadVersionId,.compositeChecksumSha256,.sidecarVersionId))' "$state" >/dev/null || fail "Existing multipart state does not match this approved artifact; no new upload was started" 70; fi
+
+  # Sidecars are deterministic, direct, exact-key objects.  A prior accepted
+  # version is read back rather than overwritten on resume.
+  sidecar_sha="$(sha256_hex "$sidecar_file")"; sidecar_b64="$(sha256_b64 "$sidecar_file")"; sidecar_version="$(jq -r '.sidecarVersionId // empty' "$state")"
+  if [[ -z "$sidecar_version" ]]; then
+    print -- "Uploading deterministic sidecar for $id."
+    sidecar_put="$(aws s3api put-object --bucket "$BUCKET" --key "$sidecar" --body "$sidecar_file" --checksum-algorithm SHA256 --checksum-sha256 "$sidecar_b64" --region "$REGION" --output json)" || fail "Sidecar upload failed" 70
+    sidecar_version="$(jq -r '.VersionId // empty' <<<"$sidecar_put")"; [[ -n "$sidecar_version" ]] || fail "Sidecar upload acknowledgement lacks a version ID" 70
+    state_update "$state" '.sidecarVersionId=$version' --arg version "$sidecar_version"
+  fi
+  sidecar_head="$(aws s3api head-object --bucket "$BUCKET" --key "$sidecar" --version-id "$sidecar_version" --checksum-mode ENABLED --region "$REGION" --output json)" || fail "Sidecar read-back failed" 70
+  jq -e --arg checksum "$sidecar_b64" --argjson bytes "$(file_size "$sidecar_file")" '.ContentLength==$bytes and .ChecksumSHA256==$checksum' <<<"$sidecar_head" >/dev/null || fail "Sidecar read-back mismatch" 70
+
+  upload_id="$(jq -r '.uploadId // empty' "$state")"
+  if [[ -z "$upload_id" ]]; then
+    [[ "$(jq -r '.initiation' "$state")" == "not-started" ]] || fail "Multipart initiation is indeterminate; preserve this state directory and obtain a read-only recovery audit before any new upload" 70
+    state_update "$state" '.initiation="requested"'
+    print -- "Initiating sequential multipart upload for $id."
+    local initiated; initiated="$(aws s3api create-multipart-upload --bucket "$BUCKET" --key "$payload" --checksum-algorithm SHA256 --region "$REGION" --output json)" || fail "Multipart initiation failed; state records that no retry may start a second upload" 70
+    upload_id="$(jq -r '.UploadId // empty' <<<"$initiated")"; [[ -n "$upload_id" ]] || fail "Multipart initiation acknowledgement lacks an upload ID; state prevents a duplicate upload" 70
+    state_update "$state" '.initiation="accepted" | .uploadId=$uploadId' --arg uploadId "$upload_id"
+  fi
+
+  list="$(aws s3api list-parts --bucket "$BUCKET" --key "$payload" --upload-id "$upload_id" --region "$REGION" --output json)" || fail "Cannot read approved multipart state; no new part was sent" 70
+  composite_file="$state_dir/part-digests.bin"; : > "$composite_file"; chmod 600 "$composite_file"
+  part_number=1; offset=0
+  while (( offset < bytes )); do
+    part_bytes=$(( bytes - offset )); (( part_bytes > PART_SIZE )) && part_bytes=$PART_SIZE
+    part_file="$TMP/${id}.part"; dd if="$file" of="$part_file" bs="$PART_SIZE" skip=$((part_number - 1)) count=1 2>/dev/null
+    [[ "$(file_size "$part_file")" == "$part_bytes" ]] || fail "Local multipart part extraction mismatched the approved byte range" 70
+    part_b64="$(sha256_b64 "$part_file")"; print -n -- "$(sha256_hex "$part_file")" | xxd -r -p >> "$composite_file"
+    local observed; observed="$(jq -c --argjson n "$part_number" '.Parts[]? | select(.PartNumber==$n)' <<<"$list")"
+    if [[ -n "$observed" ]]; then
+      jq -e --arg checksum "$part_b64" --argjson size "$part_bytes" '.Size==$size and .ChecksumSHA256==$checksum and (.ETag // "") != ""' <<<"$observed" >/dev/null || fail "Previously uploaded part does not match the approved local bytes; no completion was attempted" 70
+      print -- "Resuming verified part $part_number."
+    else
+      print -- "Uploading $id part $part_number (offset $offset, $part_bytes bytes)."
+      part_result="$(aws s3api upload-part --bucket "$BUCKET" --key "$payload" --upload-id "$upload_id" --part-number "$part_number" --body "$part_file" --checksum-algorithm SHA256 --checksum-sha256 "$part_b64" --region "$REGION" --cli-read-timeout 0 --output json)" || fail "Multipart part upload failed; rerun resumes only verified parts" 70
+      jq -e --arg checksum "$part_b64" '(.ETag // "") != "" and .ChecksumSHA256==$checksum' <<<"$part_result" >/dev/null || fail "Multipart part acknowledgement lacks its matching checksum; no completion was attempted" 70
+      list="$(aws s3api list-parts --bucket "$BUCKET" --key "$payload" --upload-id "$upload_id" --region "$REGION" --output json)" || fail "Part was sent but cannot be verified; rerun must resume from provider state" 70
+    fi
+    rm -f "$part_file"; (( part_number += 1, offset += part_bytes ))
+  done
+  composite_b64="$(openssl dgst -sha256 -binary "$composite_file" | base64 | tr -d '\n')"; composite="${composite_b64}-$((part_number - 1))"
+  version="$(jq -r '.payloadVersionId // empty' "$state")"
+  if [[ -z "$version" ]]; then
+    list="$(aws s3api list-parts --bucket "$BUCKET" --key "$payload" --upload-id "$upload_id" --region "$REGION" --output json)" || fail "Cannot obtain the final provider part list; no completion was attempted" 70
+    parts_file="$TMP/${id}.complete.json"
+    jq --argjson count "$((part_number - 1))" --arg checksum "$composite" 'if ((.Parts | length) != $count) then error("missing provider parts") else {Parts: [.Parts | sort_by(.PartNumber)[] | {PartNumber, ETag, ChecksumSHA256}]} end' <<<"$list" > "$parts_file" || fail "Provider part list is incomplete; no completion was attempted" 70
+    print -- "Completing $id only after all $((part_number - 1)) provider-verified parts match local SHA-256 values."
+    complete="$(aws s3api complete-multipart-upload --bucket "$BUCKET" --key "$payload" --upload-id "$upload_id" --multipart-upload "file://$parts_file" --region "$REGION" --output json)" || fail "Multipart completion failed; rerun preserves the upload state" 70
+    version="$(jq -r '.VersionId // empty' <<<"$complete")"; jq -e --arg checksum "$composite" '.ChecksumSHA256==$checksum' <<<"$complete" >/dev/null || fail "Multipart completion acknowledgement lacks the locally recomputed composite checksum" 70
+    [[ -n "$version" ]] || fail "Multipart completion acknowledgement lacks a version ID" 70
+    state_update "$state" '.payloadVersionId=$version | .compositeChecksumSha256=$checksum' --arg version "$version" --arg checksum "$composite"
+  fi
+  composite="$(jq -r '.compositeChecksumSha256' "$state")"
+  payload_head="$(aws s3api head-object --bucket "$BUCKET" --key "$payload" --version-id "$version" --checksum-mode ENABLED --region "$REGION" --output json)" || fail "Payload version read-back failed" 70
+  jq -e --argjson bytes "$bytes" --arg checksum "$composite" '.ContentLength==$bytes and .ChecksumType=="COMPOSITE" and .ChecksumSHA256==$checksum' <<<"$payload_head" >/dev/null || fail "Payload version read-back does not prove expected bytes and composite checksum" 70
+  aws s3api put-object-retention --bucket "$BUCKET" --key "$payload" --version-id "$version" --retention "Mode=COMPLIANCE,RetainUntilDate=$RETAIN_UNTIL" --region "$REGION" >/dev/null || fail "Payload retention could not be applied; the verified version ID remains in local recovery state" 70
+  retention="$(aws s3api get-object-retention --bucket "$BUCKET" --key "$payload" --version-id "$version" --region "$REGION" --output json)" || fail "Payload retention read-back failed" 70
+  jq -e --arg date "$RETAIN_UNTIL" '.Retention.Mode=="COMPLIANCE" and (.Retention.RetainUntilDate | startswith($date[0:10]))' <<<"$retention" >/dev/null || fail "Payload retention read-back mismatch" 70
+  print -- "Completed and retained $id version $version; retain local state for redacted independent read-back."
+}
+
+while IFS= read -r artifact; do promote_one "$artifact"; done < <(jq -c '.artifacts[]' "$PLAN")
+print -- "Promotion completed; capture redacted independent version, byte-length, provider-checksum, and retention read-backs before any archival admission."
