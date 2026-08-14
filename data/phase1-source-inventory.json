@@ -383,10 +383,10 @@
       "name": "Indian Reserve boundaries",
       "purpose": "Reserve polygons defined by Legal Surveys Division.",
       "planUse": "production",
-      "evidence": "plan URL only",
+      "evidence": "official NRCan legislative-boundaries authority/access block; no authoritative reserve-only artifact admitted",
       "ownerRole": "geography data lead",
-      "missing": "Edition, terms, checksum and archive evidence.",
-      "externalDependency": "NRCan Legal Surveys Division"
+      "missing": "Authoritative publisher/edition, HTTPS checksum-bound reserve artifact, exact reuse/redistribution terms, and engagement/right-of-reply route.",
+      "externalDependency": "NRCan/ISC authority decision and Indigenous engagement route"
     },
     {
       "id": "first-nation-reserves",

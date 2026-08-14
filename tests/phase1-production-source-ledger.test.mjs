@@ -39,3 +39,17 @@ test("Ontario FRI is explicitly access-blocked by its official Term 2 record", (
   invented.rawEvidenceNumerator = 11.25;
   assert.throws(() => validatePhase1ProductionSourceLedger(invented, inventory), /Local evidence must remain profile\/re-fetch evidence/i);
 });
+
+test("Indian reserve geometry remains authority, rights, and engagement blocked", () => {
+  const reserves = ledger.entries.find((entry) => entry.id === "indian-reserves");
+  assert.equal(reserves.evidenceState, "access-blocked");
+  assert.deepEqual(reserves.evidenceRefs, ["data/indian-reserves-authority-access-block.json", "data/source-candidates.json"]);
+  assert.equal(reserves.rawCredit, 0);
+  assert.equal(reserves.productionEligible, false);
+  const invented = structuredClone(ledger);
+  const inventedReserves = invented.entries.find((entry) => entry.id === "indian-reserves");
+  inventedReserves.evidenceState = "local-verified-profiled";
+  inventedReserves.rawCredit = 0.75;
+  invented.rawEvidenceNumerator = 11.25;
+  assert.throws(() => validatePhase1ProductionSourceLedger(invented, inventory), /Local evidence must remain profile\/re-fetch evidence/i);
+});

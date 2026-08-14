@@ -22,6 +22,7 @@
     "check:nfdb-poly-current": "node scripts/check-nfdb-poly-current.mjs",
     "check:bc-harvesting-authority-access": "node scripts/check-bc-harvesting-authority-access.mjs",
     "check:ontario-fri-term2-access": "node scripts/check-ontario-fri-term2-access.mjs",
+    "check:indian-reserves-authority-access": "node scripts/check-indian-reserves-authority-access-block.mjs",
     "check:sopfeu-wildfire-access": "node scripts/check-sopfeu-wildfire-access.mjs",
     "check:bc-vri-access": "node scripts/check-bc-vri-access.mjs",
     "check:bc-bec-snapshot": "node scripts/check-bc-bec-snapshot.mjs",

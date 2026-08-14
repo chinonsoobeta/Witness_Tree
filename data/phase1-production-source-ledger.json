@@ -542,8 +542,11 @@
     },
     {
       "id": "indian-reserves",
-      "evidenceState": "unaddressed",
-      "evidenceRefs": [],
+      "evidenceState": "access-blocked",
+      "evidenceRefs": [
+        "data/indian-reserves-authority-access-block.json",
+        "data/source-candidates.json"
+      ],
       "proof": {
         "licence": false,
         "attribution": false,
@@ -556,7 +559,7 @@
       },
       "rawCredit": 0,
       "productionEligible": false,
-      "blocker": "Obtain version, terms, checksum/archive/profile and engagement-safe release conditions."
+      "blocker": "NRCan candidate lists a mutable service and former GeoBase download but no verified authoritative reserve-only release, exact-artifact rights, or engagement/right-of-reply route."
     },
     {
       "id": "first-nation-reserves",

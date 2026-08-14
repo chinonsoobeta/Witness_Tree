@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "status": "authority-and-access-blocked",
+  "productionRowId": "indian-reserves",
+  "reviewedAt": "2026-08-14T22:15:00Z",
+  "candidate": {
+    "publisher": "Natural Resources Canada, Surveyor General Branch / Canada Lands Survey System",
+    "catalogueUrl": "https://open.canada.ca/data/en/dataset/522b07b9-78e2-4819-b736-ad9208eb1067",
+    "datasetTitle": "Aboriginal Lands of Canada Legislative Boundaries",
+    "scope": "The catalogue describes Indian Reserves, selected land-claim settlement lands, and Indian Lands. It is not an Indigenous Services Canada release and must not be represented as Indigenous territory, title, rights, or a consultation determination."
+  },
+  "observedAccess": {
+    "officialRestServiceListed": true,
+    "downloadableShapefileListed": true,
+    "downloadTransport": "HTTP",
+    "versionedCoherentArtifact": false,
+    "reason": "The catalogue says its downloadable resource is the former GeoBase product, that attributes differ from the service, and that alignment remains in progress. The reviewed record did not establish a versioned coherent reserve-only artifact with a checksum or a stable release identity."
+  },
+  "authorityAndRights": {
+    "iscAuthoredReserveReleaseVerified": false,
+    "exactArtifactReuseAndRedistributionVerified": false,
+    "engagementAndRightOfReplyRouteVerified": false,
+    "reason": "The identified record is published by NRCan. This review did not verify an ISC-authored authoritative reserve-boundary release, exact-artifact reuse and redistribution terms, or a named engagement and right-of-reply route."
+  },
+  "actions": {
+    "downloaded": false,
+    "staged": false,
+    "profiled": false,
+    "transformed": false,
+    "archived": false,
+    "ingested": false,
+    "productionEligible": false
+  },
+  "requiredBeforeAnyAcquisition": [
+    "Owner decision identifying the authoritative publisher and exact reserve-boundary edition for this intended use",
+    "Versioned coherent artifact available over HTTPS with declared checksum and required attribution",
+    "Written reuse and redistribution terms for that exact artifact",
+    "Named Indigenous engagement and right-of-reply route"
+  ]
+}
