@@ -563,8 +563,10 @@
     },
     {
       "id": "first-nation-reserves",
-      "evidenceState": "unaddressed",
-      "evidenceRefs": [],
+      "evidenceState": "access-blocked",
+      "evidenceRefs": [
+        "data/first-nation-reserves-authority-access-block.json"
+      ],
       "proof": {
         "licence": false,
         "attribution": false,
@@ -577,7 +579,7 @@
       },
       "rawCredit": 0,
       "productionEligible": false,
-      "blocker": "Obtain version, terms, checksum/archive/profile and engagement-safe release conditions."
+      "blocker": "ISC's reviewed reserve polygon service is unversioned and its reviewed First Nation service is point geometry, not a polygon substitute; no versioned released artifact, exact-artifact rights, checksum/archive recovery, or engagement/right-of-reply route is verified."
     },
     {
       "id": "historic-treaties",
