@@ -6,8 +6,10 @@ import { validateStagedAcquisitions } from "./check-staged-acquisitions.mjs";
 import { validateStagedGeospatialProfile } from "./check-staged-geospatial-profile.mjs";
 
 const RECORDED_STAGING_SOURCE_IDS = new Set([
+  "alberta-fma-published-area",
   "qc-historic-wildfire-detailed",
   "alberta-avi-crown",
+  "ontario-forest-management-units",
   "nrcan-forest-canopy-cover-2022",
 ]);
 
