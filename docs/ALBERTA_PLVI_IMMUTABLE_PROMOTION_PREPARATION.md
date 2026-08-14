@@ -8,6 +8,8 @@ The proposed destination is the existing Canadian bucket `witness-tree-raw-archi
 
 The runner resolves its artifacts from the controlled absolute workspace-data root `/Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data`, not from the temporary promotion worktree. Run `zsh scripts/run-alberta-plvi-approved-promotion.sh --preflight` first: it finds both files and verifies their exact byte lengths and SHA-256 values, then exits before any TOTP prompt or AWS call.
 
+The owner-local `--run` path requires an interactive terminal and uses zsh's hidden `read -s` prompt. It prints a newline after input, does not echo or store the code, and rejects an empty or non-six-digit value before any AWS command.
+
 Suggested artifact-specific immutable-promotion approval:
 
 > I approve, for this one operation only, MFA-gated upload and S3 Object Lock **COMPLIANCE** retention through `2033-08-12T00:00:00Z` in `witness-tree-raw-archive-ca-central-1` / `ca-central-1` for (1) `PrimaryLandAndVegetationInventoryPLVI.zip`, 675,544,895 bytes, SHA-256 `017a0a835c680ca1b6c1eb790322a28e1b4c0c64e36924da46d8bb99cb1571d3`, and (2) `alberta-plvi-full-repaired-closed-join.gpkg`, 899,551,232 bytes, SHA-256 `5633e7d49982ee1232b415f362654744c1f1dab11d7c3c7ef8a7928dac20825b`. I approve only the four deterministic payload/sidecar keys recorded in the preparation record and require version, byte-length, provider-checksum, and retention read-backs. This does not approve ingestion, public release, or production use.

@@ -33,8 +33,10 @@ print -- "PRECHECK passed: both approved artifacts exist at the controlled works
 [[ "${1:-}" == "--preflight" ]] && exit 0
 command -v aws >/dev/null || fail "aws CLI is required" 69
 command -v jq >/dev/null || fail "jq is required" 69
-vared -p 'Current MFA TOTP (not stored): ' -s totp
-[[ "$totp" =~ '^[0-9]{6}$' ]] || fail "TOTP must be exactly six digits; no AWS call was made" 64
+[[ -t 0 && -t 1 ]] || fail "MFA TOTP prompt requires an interactive terminal; no AWS call was made" 64
+read -r -s 'totp?Current MFA TOTP (not stored): '
+print
+[[ "${totp:-}" =~ '^[0-9]{6}$' ]] || fail "TOTP must be exactly six digits; no AWS call was made" 64
 mfa_serial="$(aws iam list-mfa-devices --user-name WitnessTreeArchiveOperator --profile "$PROFILE" --query 'MFADevices[0].SerialNumber' --output text)" || fail "Cannot read configured MFA serial" 69
 bootstrap="$(aws sts get-session-token --serial-number "$mfa_serial" --token-code "$totp" --profile "$PROFILE" --duration-seconds 3600 --output json)" || fail "MFA session failed" 77
 unset totp
