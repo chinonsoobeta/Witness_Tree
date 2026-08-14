@@ -1,1 +1,36 @@
-{"schemaVersion":1,"status":"pending-owner-decisions","notice":"This is a Phase 1 source-ledger admission decision record, not authorization to transform, ingest, release, or claim production eligibility.","decisions":[{"id":"ntems-annual-land-cover","sourceEvidenceComplete":true,"profileIssueResolved":true,"ownerAdmission":"pending"},{"id":"ntems-canopy-cover","sourceEvidenceComplete":true,"profileIssueResolved":true,"ownerAdmission":"pending"},{"id":"ab-avi-crown","sourceEvidenceComplete":true,"profileIssueResolved":true,"ownerAdmission":"pending","evidenceRef":"data/alberta-avi-crown-quarantine-decision.json"},{"id":"ab-avi-post-harvest","sourceEvidenceComplete":true,"profileIssueResolved":true,"ownerAdmission":"pending"}]}
+{
+  "schemaVersion": 1,
+  "status": "owner-decisions-recorded",
+  "notice": "Four named Phase 1 source-ledger evidence decisions are recorded. They authorize neither transformation nor ingestion, release, runtime production eligibility, or any unlisted source.",
+  "decisions": [
+    {
+      "id": "ntems-annual-land-cover",
+      "sourceEvidenceComplete": true,
+      "profileIssueResolved": true,
+      "ownerAdmission": "approved-source-ledger-only",
+      "scope": "This approval is limited to this named source-ledger evidence row and does not authorize transformation, ingestion, release, runtime production eligibility, or any other source."
+    },
+    {
+      "id": "ntems-canopy-cover",
+      "sourceEvidenceComplete": true,
+      "profileIssueResolved": true,
+      "ownerAdmission": "approved-source-ledger-only",
+      "scope": "This approval is limited to this named source-ledger evidence row and does not authorize transformation, ingestion, release, runtime production eligibility, or any other source."
+    },
+    {
+      "id": "ab-avi-crown",
+      "sourceEvidenceComplete": true,
+      "profileIssueResolved": true,
+      "ownerAdmission": "approved-source-ledger-only",
+      "evidenceRef": "data/alberta-avi-crown-quarantine-decision.json",
+      "scope": "Only AVI_PostInventoryHarvestIndex FID 1 is excluded; it has zero AVI_Crown observations and no Crown denominator impact. This does not authorize transformation, ingestion, release, runtime production eligibility, or any other source."
+    },
+    {
+      "id": "ab-avi-post-harvest",
+      "sourceEvidenceComplete": true,
+      "profileIssueResolved": true,
+      "ownerAdmission": "approved-source-ledger-only",
+      "scope": "This approval is limited to this named source-ledger evidence row and does not authorize transformation, ingestion, release, runtime production eligibility, or any other source."
+    }
+  ]
+}

@@ -1,1 +1,24 @@
-import assert from"node:assert/strict";import{readFileSync}from"node:fs";import test from"node:test";import{validateRemoteAdmissionDecisions}from"../scripts/check-phase1-remote-source-admission-decisions.mjs";const read=p=>JSON.parse(readFileSync(new URL(p,import.meta.url)));const d=read("../data/phase1-remote-source-admission-decisions.json"),l=read("../data/phase1-production-source-ledger.json");test("remote rows remain owner-gated and non-production",()=>{assert.doesNotThrow(()=>validateRemoteAdmissionDecisions(d,l));const bad=structuredClone(d);bad.decisions[0].ownerAdmission="approved";assert.throws(()=>validateRemoteAdmissionDecisions(bad,l))});
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import test from "node:test";
+import { validateRemoteAdmissionDecisions } from "../scripts/check-phase1-remote-source-admission-decisions.mjs";
+
+const read = (file) => JSON.parse(readFileSync(new URL(file, import.meta.url), "utf8"));
+const decisions = read("../data/phase1-remote-source-admission-decisions.json");
+const ledger = read("../data/phase1-production-source-ledger.json");
+
+test("four named remote rows have narrowly scoped owner source-ledger approvals only", () => {
+  assert.doesNotThrow(() => validateRemoteAdmissionDecisions(decisions, ledger));
+  assert.equal(decisions.decisions.filter((decision) => decision.ownerAdmission === "approved-source-ledger-only").length, 4);
+  assert.equal(ledger.entries.filter((entry) => entry.proof.productionAdmission).length, 0);
+  assert.equal(ledger.entries.filter((entry) => entry.productionEligible).length, 0);
+});
+
+test("remote decision rejects broader authority or a changed Crown exclusion", () => {
+  const broader = structuredClone(decisions);
+  broader.decisions[0].scope = "This source is approved for transformation.";
+  assert.throws(() => validateRemoteAdmissionDecisions(broader, ledger));
+  const crown = structuredClone(decisions);
+  crown.decisions.find((decision) => decision.id === "ab-avi-crown").scope = "AVI_PostInventoryHarvestIndex FID 2 is excluded; zero AVI_Crown observations and no Crown denominator impact.";
+  assert.throws(() => validateRemoteAdmissionDecisions(crown, ledger));
+});
