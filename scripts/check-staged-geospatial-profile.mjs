@@ -1,6 +1,13 @@
 import { readFile } from "node:fs/promises";
 
 const EXPECTED = new Map([
+  ["ab-primary-land-vegetation", {
+    sha256: "017a0a835c680ca1b6c1eb790322a28e1b4c0c64e36924da46d8bb99cb1571d3",
+    decision: "blocked-pending-geometry-policy",
+    layers: new Map([
+      ["PrimaryLandAndVegetationInventory", ["Polygon", 179087, "EPSG:3400", 63, 12]],
+    ]),
+  }],
   ["qc-historic-wildfire-detailed", {
     sha256: "cfed6c16eac901e6887a2518f566dff7608d4c4c371bd9c1ce6b2eff03fa0815",
     decision: "ready-for-transformation-design",
@@ -32,17 +39,17 @@ export function validateStagedGeospatialProfile(profile) {
   if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(profile.profiledAt ?? "") || Number.isNaN(new Date(profile.profiledAt).getTime())) throw new Error("Profile time must be a UTC timestamp.");
   required(profile.tools?.pyogrio, "pyogrio version");
   required(profile.tools?.gdal, "GDAL version");
-  if (!Array.isArray(profile.sources) || profile.sources.length !== EXPECTED.size) throw new Error("Profile must contain the exact staged sources.");
+  if (!Array.isArray(profile.sources)) throw new Error("Profile sources are required.");
   const sourceIds = new Set();
   for (const source of profile.sources) {
     const expected = EXPECTED.get(source.sourceId);
-    if (!expected) throw new Error(`Unexpected source ${source.sourceId}.`);
-    if (sourceIds.has(source.sourceId)) throw new Error("Profile source ids must be unique.");
+    if (!expected) throw new Error(`Profile must contain the exact staged sources; unexpected source ${source.sourceId}.`);
+    if (sourceIds.has(source.sourceId)) throw new Error("Profile source ids must be unique; profile must contain the exact staged sources.");
     sourceIds.add(source.sourceId);
     if (source.inputSha256 !== expected.sha256) throw new Error(`${source.sourceId} input checksum changed.`);
     if (source.decision !== expected.decision) throw new Error(`${source.sourceId} decision is unsafe.`);
     if (source.productionEligible !== false) throw new Error("A staging profile cannot grant production eligibility.");
-    if (source.sourceId === "alberta-avi-crown") required(source.requiredAction, "Alberta required action");
+    if (["alberta-avi-crown", "ab-primary-land-vegetation"].includes(source.sourceId)) required(source.requiredAction, "Alberta required action");
     if (!Array.isArray(source.layers) || source.layers.length !== expected.layers.size) throw new Error(`${source.sourceId} layer set changed.`);
     const layerNames = new Set();
     for (const layer of source.layers) {
@@ -62,6 +69,7 @@ export function validateStagedGeospatialProfile(profile) {
       if (!Array.isArray(layer.requiredFields) || layer.requiredFields.length === 0) throw new Error(`${layer.name} required fields are missing.`);
     }
   }
+  if (profile.sources.length !== EXPECTED.size) throw new Error("Profile must contain the exact staged sources.");
   return profile;
 }
 

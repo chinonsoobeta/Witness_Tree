@@ -6,12 +6,20 @@ import { validateStagedGeospatialProfile } from "../scripts/check-staged-geospat
 const profile = JSON.parse(readFileSync(new URL("../data/staged-geospatial-profile.json", import.meta.url), "utf8"));
 const alberta = profile.sources.find((source) => source.sourceId === "alberta-avi-crown");
 const crown = alberta.layers.find((layer) => layer.name === "AVI_Crown");
+const plvi = profile.sources.find((source) => source.sourceId === "ab-primary-land-vegetation");
 
 test("real staged schemas and geometry findings remain reproducible", () => {
   assert.equal(validateStagedGeospatialProfile(profile), profile);
   assert.equal(alberta.decision, "blocked-pending-geometry-policy");
   assert.equal(alberta.layers.reduce((total, layer) => total + layer.invalidGeometryCount, 0), 608);
   assert.equal(profile.sources.every((source) => source.productionEligible === false), true);
+});
+
+test("PLVI invalid publisher geometry remains blocked without a repair policy", () => {
+  assert.ok(plvi, "PLVI profile is missing");
+  assert.equal(plvi.decision, "blocked-pending-geometry-policy");
+  assert.equal(plvi.layers[0].invalidGeometryCount, 12);
+  assert.match(plvi.requiredAction, /do not repair/i);
 });
 
 test("profile gate rejects schema drift, hidden defects, and production claims", () => {

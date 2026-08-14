@@ -40,6 +40,28 @@
       ]
     },
     {
+      "sourceId": "ab-primary-land-vegetation",
+      "inputSha256": "017a0a835c680ca1b6c1eb790322a28e1b4c0c64e36924da46d8bb99cb1571d3",
+      "profiledWith": {"gdal": "3.13.2"},
+      "decision": "blocked-pending-geometry-policy",
+      "requiredAction": "Define and test a source-specific deterministic repair-or-quarantine policy before transformation or ingestion; do not repair the publisher geometry in this staged snapshot.",
+      "productionEligible": false,
+      "layers": [
+        {
+          "name": "PrimaryLandAndVegetationInventory",
+          "geometryType": "Polygon",
+          "featureCount": 179087,
+          "crs": "EPSG:3400",
+          "fieldCount": 63,
+          "requiredFields": ["POLYGON_ID", "NSR", "LAND_CLS1", "ECO_PHASE1", "IMAGE_YR", "Shape_Area"],
+          "missingGeometryCount": 0,
+          "emptyGeometryCount": 0,
+          "invalidGeometryCount": 12,
+          "invalidGeometryReasons": {"Ring Self-intersection": 12}
+        }
+      ]
+    },
+    {
       "sourceId": "alberta-avi-crown",
       "inputSha256": "e93572129f25c83911b73eadfacff12624ff6b08f2db4b311c1662196b665093",
       "decision": "blocked-pending-geometry-policy",

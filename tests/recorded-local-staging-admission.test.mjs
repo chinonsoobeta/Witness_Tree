@@ -6,9 +6,9 @@ import { validateRecordedLocalAdmissions } from "../scripts/check-local-staging-
 const acquisitions = JSON.parse(readFileSync(new URL("../data/staged-acquisitions.json", import.meta.url), "utf8"));
 const profile = JSON.parse(readFileSync(new URL("../data/staged-geospatial-profile.json", import.meta.url), "utf8"));
 
-test("admission joins only the two recorded local staging manifests", () => {
+test("admission joins only the three recorded local staging manifests", () => {
   const admissions = validateRecordedLocalAdmissions(acquisitions, profile);
-  assert.equal(admissions.length, 2);
+  assert.equal(admissions.length, 3);
   assert.equal(admissions.every((entry) => entry.release.production === false && entry.release.ingested === false), true);
 });
 

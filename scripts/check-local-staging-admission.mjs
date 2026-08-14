@@ -11,6 +11,7 @@ const RECORDED_STAGING_SOURCE_IDS = new Set([
   "alberta-avi-crown",
   "ontario-forest-management-units",
   "nrcan-forest-canopy-cover-2022",
+  "ab-primary-land-vegetation",
 ]);
 
 /**

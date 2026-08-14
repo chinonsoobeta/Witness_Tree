@@ -9,6 +9,7 @@ const alberta = manifest.entries.find((entry) => entry.sourceId === "alberta-avi
 const canopy = manifest.entries.find((entry) => entry.sourceId === "nrcan-forest-canopy-cover-2022");
 const fma = manifest.entries.find((entry) => entry.sourceId === "alberta-fma-published-area");
 const ontario = manifest.entries.find((entry) => entry.sourceId === "ontario-forest-management-units");
+const plvi = manifest.entries.find((entry) => entry.sourceId === "ab-primary-land-vegetation");
 
 test("verified local acquisition remains staging-only", () => {
   assert.equal(validateStagedAcquisitions(manifest), manifest);
@@ -20,8 +21,18 @@ test("verified local acquisition remains staging-only", () => {
   assert.equal(first.attributionState, "metadata-verified");
   assert.match(first.attribution, /Ministère des Ressources naturelles et des Forêts/);
   assert.equal(first.licenceUrl, "https://www.donneesquebec.ca/licence/#cc-by");
-  assert.equal(manifest.entries.reduce((total, entry) => total + entry.byteLength, 0), 10955540355);
+  assert.equal(manifest.entries.reduce((total, entry) => total + entry.byteLength, 0), 11631085250);
   assert.equal(alberta?.sha256, "e93572129f25c83911b73eadfacff12624ff6b08f2db4b311c1662196b665093");
+});
+
+test("staged Alberta PLVI archive is checksum-bound and blocks invalid publisher geometry", () => {
+  assert.ok(plvi, "ab-primary-land-vegetation entry is missing from the manifest");
+  assert.equal(plvi.byteLength, 675544895);
+  assert.equal(plvi.sha256, "017a0a835c680ca1b6c1eb790322a28e1b4c0c64e36924da46d8bb99cb1571d3");
+  assert.equal(plvi.zipIntegrity, "passed");
+  assert.equal(plvi.immutableObjectStorage, false);
+  assert.equal(plvi.productionEligible, false);
+  assert.match(plvi.changesNotice, /12 invalid polygon geometries/);
 });
 
 test("staged Ontario FMU archive is checksum-bound and remains staging-only", () => {
