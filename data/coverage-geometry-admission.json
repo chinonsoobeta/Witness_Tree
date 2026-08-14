@@ -1,8 +1,39 @@
 {
   "schemaVersion": "1.0",
   "status": "partial",
-  "notice": "Ontario's official Forest Management Unit union is admitted only as Crown-forest planning-unit context alongside the national baseline. It is not the Ontario forest land-base denominator, does not prove province-wide forest coverage, and does not enable enhanced records. Complete land-base coverage still requires accepted source geometry evidence for BC, Alberta, Ontario, and Québec.",
+  "notice": "Alberta's bounded known-coverage footprint is admitted for national-baseline-plus-local-context only. Ontario's official Forest Management Unit union is admitted only as Crown-forest planning-unit context alongside the national baseline. Neither is a forest land-base denominator, proof of province-wide forest coverage, or enhanced-record coverage. Complete land-base coverage still requires accepted source geometry evidence for BC, Alberta, Ontario, and Québec.",
   "layers": [
+    {
+      "evidenceClass": "lineage-bound-derived-geometry",
+      "sourceId": "alberta-known-coverage-fma-and-avi-v1",
+      "province": "AB",
+      "edition": "FMA published area revised 2026-05-01; AVI Crown staging snapshot 2026-08-11",
+      "crs": "EPSG:3400",
+      "checksumSha256": "39dd568c092f6c85801dd27f2eaeb42eac30887ffec124d820af7de781b5c723",
+      "sourceUrl": "https://geospatial.alberta.ca/titan/rest/services/boundaries/forest_management_agreement_public/FeatureServer/0",
+      "extent": { "west": 175129.7987852724, "south": 5425905.7224, "east": 860954.5066999998, "north": 6651154.715916611 },
+      "areaSquareKilometres": 325741.37445817376,
+      "profile": {
+        "evidenceId": "alberta-known-coverage-fma-and-avi-v1-2026-08-14",
+        "profiledAt": "2026-08-14T15:46:37Z",
+        "evidenceLocalPath": "../Witness_Tree-data/derived/alberta-known-coverage-fma-and-avi-v1/2026-08-14/transformation-evidence.json",
+        "evidenceChecksumSha256": "41343e5ddf97600cc623309b478f29ab4fd374b32e686d5f7b077059ce07af31",
+        "geometryType": "MultiPolygon",
+        "featureCount": 1,
+        "invalidGeometryCount": 0,
+        "validity": "passed"
+      },
+      "licence": { "id": "ogl-alberta-2.2", "url": "https://open.alberta.ca/licence" },
+      "attribution": "Contains information licensed under the Open Government Licence – Alberta.",
+      "coverageScope": "partial-known-coverage",
+      "coverageGrade": "national-baseline-plus-local-context",
+      "inputEvidence": [
+        { "sourceId": "alberta-fma-published-area", "checksumSha256": "da4d3d80ddf71e6cae738077fed807cdb9ae39ba946a6a7ce5e2d3ffc69e0e0f", "sourceUrl": "https://geospatial.alberta.ca/titan/rest/services/boundaries/forest_management_agreement_public/FeatureServer/0" },
+        { "sourceId": "alberta-avi-crown-coverage-footprint-v1", "checksumSha256": "ee27adbaacbf0733e08733f51c5c8711369ee1af5b9f9ee2b8b9c2708e0eb995", "sourceUrl": "https://extranet.gov.ab.ca/srd/geodiscover/srd_pub/biota/AlbertaVegetationInventoryCrown.zip" }
+      ],
+      "scopeNotice": "Known FMA published-area and AVI Crown source footprints only; locations outside both input footprints remain outside this bounded coverage.",
+      "claims": "This supports national-baseline-plus-local-context only."
+    },
     {
       "evidenceClass": "versioned-source-geometry",
       "sourceId": "ontario-forest-management-units",
@@ -11,12 +42,7 @@
       "crs": "EPSG:4269",
       "checksumSha256": "b7fb8d30bf377725f97a0236be04e2d2611e2e4410215d99794fb9a14e9f4384",
       "sourceUrl": "https://ws.gisetl.lrc.gov.on.ca/fmedatadownload/Packages/fgdb/FORMGMT.zip",
-      "extent": {
-        "west": -95.15362549999998,
-        "south": 44.31562780000007,
-        "east": -75.81623799999994,
-        "north": 52.39880620000008
-      },
+      "extent": { "west": -95.15362549999998, "south": 44.31562780000007, "east": -75.81623799999994, "north": 52.39880620000008 },
       "areaSquareKilometres": 439635.341866697,
       "coverageClass": "national-baseline-plus-managed-forest-context",
       "scope": {
@@ -37,10 +63,7 @@
         "invalidGeometryCount": 0,
         "validity": "passed"
       },
-      "licence": {
-        "id": "ogl-ontario",
-        "url": "https://www.ontario.ca/page/open-government-licence-ontario"
-      },
+      "licence": { "id": "ogl-ontario", "url": "https://www.ontario.ca/page/open-government-licence-ontario" },
       "attribution": "Ontario Ministry of Natural Resources and Forestry © King's Printer for Ontario, 2022"
     }
   ],

@@ -17,6 +17,28 @@
   },
   "entries": [
     {
+      "id": "alberta-fma-published-area-2026-08-14",
+      "sourceId": "alberta-fma-published-area",
+      "datasetTitle": "Forest Management Agreement Published Area",
+      "publisher": "Government of Alberta",
+      "catalogueUrl": "https://open.alberta.ca/dataset/f49dde59-1c64-4824-a5e1-8d49b0b0038e",
+      "sourceUrl": "https://geospatial.alberta.ca/titan/rest/services/boundaries/forest_management_agreement_public/FeatureServer/0/query?where=1%3D1&outFields=*&returnGeometry=true&f=geojson",
+      "localPath": "../Witness_Tree-data/raw/alberta-fma-published-area/2026-08-14/forest-management-agreement-published-area.geojson",
+      "verifiedAt": "2026-08-14T15:43:58Z",
+      "byteLength": 15534355,
+      "sha256": "da4d3d80ddf71e6cae738077fed807cdb9ae39ba946a6a7ce5e2d3ffc69e0e0f",
+      "contentIntegrity": "passed",
+      "integrityMethod": "jq confirmed a GeoJSON FeatureCollection with exactly 21 features",
+      "licenceId": "ogl-alberta-2.2",
+      "temporalCoverage": "FMA Published Area revision 2026-05-01; maintenance as needed",
+      "attributionState": "metadata-verified",
+      "attribution": "Contains information licensed under the Open Government Licence – Alberta.",
+      "licenceUrl": "https://open.alberta.ca/licence",
+      "changesNotice": "This raw GeoJSON is unchanged. Read-only profiling found 10 self-intersecting FMA polygons; a separately documented derived footprint repairs them under an explicit tolerance and does not alter this source snapshot.",
+      "immutableObjectStorage": false,
+      "productionEligible": false
+    },
+    {
       "id": "qc-historic-wildfire-detailed-2026-08-11",
       "sourceId": "qc-historic-wildfire-detailed",
       "datasetTitle": "Feux de forêt — detailed GeoPackage",
