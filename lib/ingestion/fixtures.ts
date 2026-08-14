@@ -1,7 +1,8 @@
 import type { NormalizedEvent, SourceContract } from "./schema";
+import { INGESTION_CRS } from "./schema";
 
 const checksum = "a".repeat(64);
-const geometry: NormalizedEvent["geometry"] = { type: "Polygon", coordinates: [[[0, 0], [0, 1], [1, 1], [0, 0]]] };
+const geometry: NormalizedEvent["geometry"] = { type: "Polygon", crs: INGESTION_CRS, coordinates: [[[-75, 46], [-75, 46.1], [-74.9, 46.1], [-75, 46]]] };
 const confidence: NormalizedEvent["confidence"] = { level: "high", ruleId: "CONF-HIGH-001", reason: { en: "Illustrative authoritative record.", fr: "Registre illustratif faisant autorité." } };
 
 export const EXAMPLE_SOURCE_CONTRACT: SourceContract = Object.freeze({
