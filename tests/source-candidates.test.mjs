@@ -53,6 +53,18 @@ test("BC Consolidated Cutblocks stays blocked when the authoritative catalogue s
   assert.equal(cutblocks?.productionEligible, false);
 });
 
+test("BC FTA sources retain their verified OGL BC licence and fail closed before a publisher export", () => {
+  const byId = new Map(registry.entries.map((entry) => [entry.id, entry]));
+  for (const id of ["bc-fta-4-cutblocks", "bc-harvesting-authority-polygons"]) {
+    const source = byId.get(id);
+    assert.equal(source?.licence.state, "verified");
+    assert.equal(source?.licence.id, "ogl-british-columbia");
+    assert.equal(source?.productionEligible, false);
+    assert.match(source?.unresolvedFields.join(" ") ?? "", /Publisher-exported complete snapshot/);
+    assert.match(source?.verifiedFacts.join(" ") ?? "", /PagingIsTransactionSafe=false/);
+  }
+});
+
 test("Ontario FRI Term 2 stays unresolved and records a request-based access route", () => {
   const fri = registry.entries.find((entry) => entry.id === "ontario-fri-term-2-2018-2028");
   assert.equal(fri?.access.state, "unresolved");

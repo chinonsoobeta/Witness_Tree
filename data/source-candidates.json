@@ -80,11 +80,11 @@
       "publisher": "Province of British Columbia",
       "catalogueUrl": "https://catalogue.data.gov.bc.ca/dataset/dfb8b498-fa4b-4286-b3ec-58db88aca1cf",
       "intendedRole": { "en": "BC cutblock geometry and linked tenure fields, subject to lifecycle-code verification.", "fr": "Géométrie des blocs de coupe de la Colombie-Britannique et champs de tenure liés, sous réserve de la vérification des codes de cycle de vie." },
-      "metadataVerification": "partial",
-      "licence": { "state": "unresolved" },
+      "metadataVerification": "verified",
+      "licence": { "state": "verified", "id": "ogl-british-columbia", "officialUrl": "https://www2.gov.bc.ca/gov/content?id=A519A56BC2BF44E4A008B33FCF527F61" },
       "access": { "state": "verified", "formats": ["json", "geojson", "pbf"], "url": "https://delivery.maps.gov.bc.ca/arcgis/rest/services/whse/bcgw_pub_whse_forest_tenure/MapServer/8" },
-      "verifiedFacts": ["Official feature layer exposes polygons and cutblock, disturbance, client, harvest-authority, retirement, and lifecycle-status-code fields.", "Official service supports JSON, GeoJSON, and PBF queries."],
-      "unresolvedFields": ["Catalogue licence assignment", "Lifecycle-code value definitions", "Publisher metadata in accessible service response", "Snapshot checksum", "Retrieval date"],
+      "verifiedFacts": ["The official catalogue assigns Open Government Licence - British Columbia and says the source is ongoing.", "Official feature layer exposes polygons and cutblock, disturbance, client, harvest-authority, retirement, and lifecycle-status-code fields.", "The official catalogue defines PENDING, ACTIVE, and RETIRED lifecycle meanings.", "Official WFS paging reports PagingIsTransactionSafe=false and has a 10,000-feature default page limit, so a paged service scrape cannot prove one coherent source edition."],
+      "unresolvedFields": ["Publisher-exported complete snapshot", "Declared edition/version and cadence", "Snapshot checksum", "Archive integrity", "Schema/geometry profile", "Lifecycle-rule approval"],
       "productionEligible": false
     },
     {
@@ -94,11 +94,11 @@
       "publisher": "Province of British Columbia",
       "catalogueUrl": "https://catalogue.data.gov.bc.ca/dataset/cff7b8f7-6897-444f-8c53-4bb93c7e9f8b",
       "intendedRole": { "en": "BC harvesting-authority geometry and permit context.", "fr": "Géométrie des autorisations de récolte et contexte des permis de la Colombie-Britannique." },
-      "metadataVerification": "partial",
-      "licence": { "state": "unresolved" },
+      "metadataVerification": "verified",
+      "licence": { "state": "verified", "id": "ogl-british-columbia", "officialUrl": "https://www2.gov.bc.ca/gov/content?id=A519A56BC2BF44E4A008B33FCF527F61" },
       "access": { "state": "verified", "formats": ["json", "geojson", "pbf"], "url": "https://delivery.maps.gov.bc.ca/arcgis/rest/services/whse/bcgw_pub_whse_forest_tenure/MapServer/12?f=pjson" },
-      "verifiedFacts": ["Official feature layer exposes harvesting-authority, forest-file, cutting-permit, type, status, date, client, and lifecycle-status-code fields.", "Official service supports JSON, GeoJSON, and PBF queries."],
-      "unresolvedFields": ["Catalogue licence assignment", "Lifecycle-code value definitions", "Update cadence", "Snapshot checksum", "Retrieval date"],
+      "verifiedFacts": ["The official catalogue assigns Open Government Licence - British Columbia and says the source is ongoing.", "Official feature layer exposes harvesting-authority, forest-file, cutting-permit, type, status, date, client, and lifecycle-status-code fields.", "The official catalogue defines PENDING, ACTIVE, and RETIRED lifecycle meanings.", "Official WFS paging reports PagingIsTransactionSafe=false and has a 10,000-feature default page limit, so a paged service scrape cannot prove one coherent source edition."],
+      "unresolvedFields": ["Publisher-exported complete snapshot", "Declared edition/version and cadence", "Snapshot checksum", "Archive integrity", "Schema/geometry profile", "Lifecycle-rule approval"],
       "productionEligible": false
     },
     {

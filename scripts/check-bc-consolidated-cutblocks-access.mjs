@@ -13,6 +13,9 @@ export function validateBcConsolidatedCutblocksAccess(record) {
   const edition = record.editionAndCadence;
   if (!edition || edition.documentationEdition !== "November 2024" || edition.datasetRunCadence !== "quarterly" || edition.satelliteChangeDetectionCadence !== "annual 1999–2023; quarterly since 2023") throw new Error("Edition and cadence evidence are required.");
   if (!Array.isArray(record.scopeAndLifecycleCaveats) || record.scopeAndLifecycleCaveats.length < 4) throw new Error("Lifecycle caveats are required.");
+  const permissionRequest = record.permissionRequest;
+  if (!permissionRequest || permissionRequest.status !== "sent-awaiting-response" || permissionRequest.sentAt !== "2026-08-14T17:17:15Z" || permissionRequest.sender !== "Chinonso Obeta <chinonso8@gmail.com>" || permissionRequest.recipient !== "FAIB.Data.Management@gov.bc.ca" || permissionRequest.subject !== "Permission request — Harvested Areas of BC (Consolidated Cutblocks)" || permissionRequest.authorizationOutcome !== "pending") throw new Error("Sent permission-request evidence must be bounded and awaiting a response.");
+  for (const key of Object.keys(permissionRequest)) if (/gmail.*(?:message|thread)|(?:message|thread).*gmail/i.test(key)) throw new Error("Permission evidence must not store Gmail identifiers.");
   const blocker = record.blocker;
   if (!blocker || !/written publisher authorization|redistributable licence/i.test(blocker.requiredBeforeAcquisition ?? "") || blocker.rawDownloadPerformed !== false || blocker.sha256 !== null || blocker.archiveIntegrity !== "not-run-access-blocked" || blocker.schemaProfile !== "not-run-access-blocked" || blocker.productionEligible !== false) throw new Error("Access-only source must not claim acquisition, integrity, profiling, or production.");
   return record;

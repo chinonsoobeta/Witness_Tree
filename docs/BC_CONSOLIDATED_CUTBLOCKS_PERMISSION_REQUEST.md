@@ -1,4 +1,8 @@
-# Draft permission request — do not send without approval
+# Permission request — sent, awaiting a response
+
+**Sent:** 14 August 2026, 17:17:15 UTC<br>
+**From:** Chinonso Obeta &lt;chinonso8@gmail.com&gt;<br>
+**Status:** Delivery is recorded; no authorization outcome has been received or claimed. This repository deliberately stores no Gmail message/thread identifier or mailbox URL.
 
 **To:** FAIB.Data.Management@gov.bc.ca  
 **Subject:** Permission request — Harvested Areas of BC (Consolidated Cutblocks)
@@ -26,6 +30,6 @@ Thank you for your guidance.
 
 Regards,
 
-[Name]  
-[Organization / Witness Tree Canada]  
-[Reply email]
+Chinonso Obeta<br>
+Witness Tree Canada<br>
+chinonso8@gmail.com

@@ -10,10 +10,14 @@ test("BC Consolidated Cutblocks records exact access-only source facts without a
   assert.equal(record.resource.head.contentLengthBytes, 555382445);
   assert.equal(record.blocker.rawDownloadPerformed, false);
   assert.equal(record.blocker.productionEligible, false);
+  assert.equal(record.permissionRequest.status, "sent-awaiting-response");
+  assert.equal(record.permissionRequest.authorizationOutcome, "pending");
+  assert.equal(Object.keys(record.permissionRequest).some((key) => /gmail.*(?:message|thread)|(?:message|thread).*gmail/i.test(key)), false);
 });
 
 test("BC Consolidated Cutblocks fails closed if access-only evidence is treated as staging or production", () => {
   assert.throws(() => validateBcConsolidatedCutblocksAccess({ ...record, catalogue: { ...record.catalogue, licenceTitle: "Open Government Licence - British Columbia" } }), /Access Only/);
   assert.throws(() => validateBcConsolidatedCutblocksAccess({ ...record, blocker: { ...record.blocker, rawDownloadPerformed: true } }), /must not claim acquisition/);
   assert.throws(() => validateBcConsolidatedCutblocksAccess({ ...record, blocker: { ...record.blocker, productionEligible: true } }), /must not claim acquisition/);
+  assert.throws(() => validateBcConsolidatedCutblocksAccess({ ...record, permissionRequest: { ...record.permissionRequest, gmailMessageId: "forbidden" } }), /Gmail identifiers/);
 });
