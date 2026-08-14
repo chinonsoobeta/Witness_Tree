@@ -1,0 +1,46 @@
+{
+  "status": "local-staging-profile",
+  "notice": "Read-only GDAL/OGR profile of the locally staged archive. No source geometry was changed, transformed, ingested, or made production eligible.",
+  "profiledAt": "2026-08-14T17:43:09Z",
+  "tools": { "gdal": "3.13.2" },
+  "sourceId": "elections-canada-federal-electoral-districts-45th-general-election-2025-shp",
+  "inputSha256": "4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93",
+  "layer": {
+    "path": "SHP/FED_CA_2025_EN.shp",
+    "name": "FED_CA_2025_EN",
+    "geometryType": "Polygon",
+    "featureCount": 352,
+    "distinctFederalDistrictCount": 343,
+    "representationOrderField": "REPORDER",
+    "representationOrderValues": ["2023"],
+    "crs": {
+      "name": "PCS_Lambert_Conformal_Conic",
+      "datum": "NAD83",
+      "unit": "metre",
+      "authority": null,
+      "parameters": {
+        "latitudeOfFalseOrigin": 63.390675,
+        "longitudeOfFalseOrigin": -91.8666666666667,
+        "standardParallel1": 49,
+        "standardParallel2": 77,
+        "falseEasting": 6200000,
+        "falseNorthing": 3000000
+      }
+    },
+    "extent": [3658201.494286, 658872.974286, 9019156.614286, 6083004.851429],
+    "fields": [
+      { "name": "FED_NUM", "type": "Integer64", "width": 10 },
+      { "name": "ED_NAMEE", "type": "String", "width": 100 },
+      { "name": "ED_NAMEF", "type": "String", "width": 100 },
+      { "name": "REPORDER", "type": "String", "width": 8 },
+      { "name": "SHAPE_Leng", "type": "Real", "width": 19, "precision": 11 },
+      { "name": "SHAPE_Area", "type": "Real", "width": 19, "precision": 11 }
+    ],
+    "encoding": "UTF-8",
+    "bilingualNames": { "englishField": "ED_NAMEE", "frenchField": "ED_NAMEF" },
+    "geometryValidation": { "missingGeometryCount": 0, "emptyGeometryCount": 0, "invalidGeometryCount": 0 },
+    "featureCountExplanation": "There are 352 polygon features but 343 distinct FED_NUM values. The district count, not raw polygon-feature count, is the representation-order count; multipart districts are represented by more than one polygon feature.",
+    "identifierWarning": "ED_NAMEE and ED_NAMEF are not unique feature keys: six name values repeat because some districts have multiple polygon features. Use FED_NUM with representation order 2023 as the district identifier."
+  },
+  "productionEligible": false
+}

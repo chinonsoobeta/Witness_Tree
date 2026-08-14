@@ -16,7 +16,8 @@ test("national and provincial discovery entries retain their bounded role and un
   const byId = new Map(registry.entries.map((entry) => [entry.id, entry]));
   for (const id of ["nrcan-annual-high-resolution-forest-land-cover", "nrcan-ca-forest-harvest-1985-2022", "nrcan-forest-canopy-cover-2022", "nrcan-forest-canopy-height-2022", "elections-canada-45th-electoral-boundaries", "canadian-protected-and-conserved-areas-database", "alberta-avi-crown", "ontario-fri-term-2-2018-2028", "qc-historical-wildfire"]) assert.equal(byId.get(id)?.productionEligible, false);
   assert.match(byId.get("nrcan-annual-high-resolution-forest-land-cover")?.intendedRole.en ?? "", /1984–2022/);
-  assert.equal(byId.get("elections-canada-45th-electoral-boundaries")?.licence.state, "unresolved");
+  assert.equal(byId.get("elections-canada-45th-electoral-boundaries")?.licence.state, "verified");
+  assert.equal(byId.get("elections-canada-45th-electoral-boundaries")?.access.url, "https://www.elections.ca/res/cir/mapsCorner/vector/FederalElectoralDistricts_2025_SHP.zip");
   assert.equal(byId.get("canadian-protected-and-conserved-areas-database")?.licence.state, "unresolved");
   assert.match(byId.get("qc-historical-wildfire")?.intendedRole.en ?? "", /not a live-fire source/);
   assert.equal(byId.get("nrcan-forest-canopy-cover-2022")?.access.url, "https://opendata.nfis.org/downloads/forest_change/CA_canopy_cover_2022.zip");

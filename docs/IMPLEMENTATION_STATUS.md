@@ -44,6 +44,7 @@ npm run check:staged-acquisitions
 npm run check:staged-geospatial-profile
 npm run check:immutable-promotions
 npm run check:boundary-editions
+npm run check:elections-canada-fed-2025
 npm run check:claims
 npm run check:style-tokens
 npm run check:brand-token
