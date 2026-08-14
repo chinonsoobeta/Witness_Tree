@@ -22,6 +22,7 @@
     "check:nfdb-poly-current": "node scripts/check-nfdb-poly-current.mjs",
     "check:phase1-source-inventory": "node scripts/check-phase1-source-inventory.mjs",
     "check:phase1-production-source-ledger": "node scripts/check-phase1-production-source-ledger.mjs",
+    "prepare:phase1-local-profiled-immutable-promotion": "tsx scripts/prepare-phase1-local-profiled-immutable-promotion.mjs",
     "check:vlce2-promotion": "node scripts/check-vlce2-promotion-preparation.mjs",
     "check:vlce2-remote-promotion": "node scripts/check-vlce2-remote-promotion-evidence.mjs",
     "dry-run:vlce2-remote-promotion": "node scripts/vlce2-remote-promotion.mjs",

@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "status": "blocked-preparation-only",
+  "notice": "Dry-run preparation only. It does not call AWS, upload a payload or sidecar, create an object, apply Object Lock retention, transform, ingest, or release data.",
+  "requiredApproval": "Before any remote action, the owner must freshly approve these exact artifacts, the exact Canadian bucket and region, an exact COMPLIANCE retain-until instant, and the named execution/read-back procedure.",
+  "artifacts": [
+    {"productionRowIds":["ntems-forest-harvest"],"stagedAcquisitionId":"nrcan-ca-forest-harvest-1985-2022-2026-08-14","profile":"data/nrcan-harvest-profile.json","archiveKeyVersion":"undeclared","sourceVersion":"undeclared","predecessorPayloadKey":null},
+    {"productionRowIds":["ntems-canopy-height"],"stagedAcquisitionId":"nrcan-forest-canopy-height-2022-2026-08-14","profile":"data/nrcan-canopy-height-profile.json","archiveKeyVersion":"undeclared","sourceVersion":"undeclared","predecessorPayloadKey":null},
+    {"productionRowIds":["fed-2023-ridings","elections-canada-45th-files"],"stagedAcquisitionId":"elections-canada-federal-electoral-districts-45th-general-election-2025-shp","profile":"data/elections-canada-fed-2025-profile.json","archiveKeyVersion":"federal-electoral-districts-2025-shp","sourceVersion":"FederalElectoralDistricts_2025_SHP.zip","predecessorPayloadKey":null}
+  ],
+  "claims":{"remoteObjectExists":false,"sidecarUploaded":false,"retentionApplied":false,"immutableObjectStorage":false,"transformed":false,"ingested":false,"productionEligible":false}
+}
