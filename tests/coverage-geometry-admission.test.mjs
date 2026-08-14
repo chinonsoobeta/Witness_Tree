@@ -12,10 +12,12 @@ const layer = (province) => ({
   licence: { id: "public-licence", url: "https://authority.invalid/licence" }, attribution: "Source authority attribution."
 });
 
-test("default admission manifest admits no land-base coverage", () => {
+test("default admission manifest admits only the bounded Alberta known-coverage layer", () => {
   assert.equal(validateCoverageGeometryAdmission(manifest), manifest);
-  assert.equal(manifest.status, "pending-evidence");
-  assert.deepEqual(manifest.layers, []);
+  assert.equal(manifest.status, "partial");
+  assert.equal(manifest.layers.length, 1);
+  assert.equal(manifest.layers[0].province, "AB");
+  assert.equal(manifest.layers[0].coverageGrade, "national-baseline-plus-local-context");
 });
 
 test("complete admission requires all provinces and both explicit scope decisions", () => {
@@ -32,4 +34,20 @@ test("negative corpus rejects incomplete, proxy, and illustrative coverage evide
   assert.throws(() => validateCoverageGeometryAdmission({ ...manifest, status: "partial", latitudeProxy: true, layers: [layer("BC")] }), /latitude-proxy/);
   assert.throws(() => validateCoverageGeometryAdmission({ ...manifest, status: "partial", layers: [{ ...layer("BC"), sourceId: "fixture-boundary" }] }), /fixture/);
   assert.throws(() => validateCoverageGeometryAdmission({ ...manifest, status: "partial", layers: [{ ...layer("BC"), profile: { ...layer("BC").profile, invalidGeometryCount: "unknown" } }] }), /known non-negative/);
+});
+
+test("partial known coverage requires lineage, an honest scope, and the local-context grade", () => {
+  const partial = {
+    ...layer("AB"), evidenceClass: "lineage-bound-derived-geometry", coverageScope: "partial-known-coverage", coverageGrade: "national-baseline-plus-local-context",
+    inputEvidence: [
+      { sourceId: "alberta-fma-published-area", checksumSha256: "c".repeat(64), sourceUrl: "https://authority.invalid/fma" },
+      { sourceId: "alberta-avi-crown-coverage-footprint-v1", checksumSha256: "d".repeat(64), sourceUrl: "https://authority.invalid/avi" },
+    ],
+    scopeNotice: "Known FMA and AVI source footprints only; areas outside both inputs remain outside this bounded coverage.",
+    claims: "This does not assert complete coverage.",
+  };
+  assert.equal(validateCoverageGeometryAdmission({ ...manifest, status: "partial", layers: [partial] }).status, "partial");
+  assert.throws(() => validateCoverageGeometryAdmission({ ...manifest, status: "partial", layers: [{ ...partial, coverageGrade: "enhanced-local-records" }] }), /national-baseline-plus-local-context/);
+  assert.throws(() => validateCoverageGeometryAdmission({ ...manifest, status: "partial", layers: [{ ...partial, scopeNotice: "Province-wide Alberta forest land-base coverage." }] }), /cannot claim/);
+  assert.throws(() => validateCoverageGeometryAdmission({ ...manifest, status: "partial", layers: [] }), /requires at least one/);
 });
