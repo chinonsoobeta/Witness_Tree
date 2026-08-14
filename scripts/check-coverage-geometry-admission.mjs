@@ -5,6 +5,8 @@ import { fileURLToPath } from "node:url";
 const PROVINCES = new Set(["BC", "AB", "ON", "QC"]);
 const SHA256 = /^[a-f0-9]{64}$/;
 const HTTPS = /^https:\/\//;
+const FTP = /^ftp:\/\//;
+const BC_TERRESTRIAL_FTP = "ftp://ftp.geobc.gov.bc.ca/sections/outgoing/bmgs/BC_Boundary_Terrestrial/BC_Boundary_Terrestrial.gdb.zip";
 const ISO_TIMESTAMP = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/;
 const FORBIDDEN_PROOF = /\b(?:example|fixture|illustrative|latitude(?:[- ]?proxy)?|latitudeproxy)\b/i;
 const FORBIDDEN_PARTIAL_CLAIM = /\b(?:land[ -]?base|province[ -]?wide|all\s+alberta|complete\s+alberta|all\s+forest\s+land)\b/i;
@@ -61,6 +63,10 @@ function validateLayer(layer) {
   text(layer.crs, "crs");
   sha256(layer.checksumSha256, "checksumSha256");
   https(layer.sourceUrl, "sourceUrl");
+  if (layer.resourceUrl !== undefined) {
+    text(layer.resourceUrl, "resourceUrl");
+    if (layer.sourceId !== "bc-boundary-terrestrial" || layer.resourceUrl !== BC_TERRESTRIAL_FTP || !FTP.test(layer.resourceUrl)) throw new Error("Only the BC terrestrial reference source may retain its official FTP resource URL.");
+  }
 
   const extent = layer.extent;
   if (!extent || typeof extent !== "object") throw new Error("Coverage extent is required.");
@@ -88,7 +94,15 @@ function validateLayer(layer) {
   https(licence.url, "licence.url");
   text(layer.attribution, "attribution");
 
-  if (layer.province === "ON" && layer.coverageClass === "national-baseline-plus-managed-forest-context") {
+  if (layer.province === "BC" && layer.coverageClass === "national-baseline-jurisdiction-reference") {
+    const scope = layer.scope;
+    if (!scope || typeof scope !== "object") throw new Error("BC reference scope is required.");
+    if (scope.decision !== "jurisdiction-reference-only") throw new Error("BC scope must be jurisdiction reference only.");
+    if (scope.coverageWithinBoundary !== "national-baseline") throw new Error("BC reference geometry must retain the national baseline.");
+    if (scope.forestLandBaseDenominator !== false) throw new Error("BC reference geometry cannot be a forest land-base denominator.");
+    if (scope.enhancedRecordCoverage !== false) throw new Error("BC reference geometry cannot enable enhanced records.");
+    text(scope.limitation, "BC reference limitation");
+  } else if (layer.province === "ON" && layer.coverageClass === "national-baseline-plus-managed-forest-context") {
     const scope = layer.scope;
     if (!scope || typeof scope !== "object") throw new Error("Ontario context scope is required.");
     if (scope.decision !== "crown-forest-planning-unit-context-only") throw new Error("Ontario scope must be Crown-forest planning-unit context only.");
@@ -112,6 +126,7 @@ function validateLayer(layer) {
   } else if (layer.coverageClass !== "land-base") {
     throw new Error("Source geometry must be land-base geometry unless it is an approved bounded reference/context exception.");
   }
+  if (layer.province === "BC" && layer.sourceId === "bc-boundary-terrestrial" && layer.coverageClass === "land-base") throw new Error("BC terrestrial boundary cannot be admitted as BC land-base geometry.");
 }
 
 /**

@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0",
   "status": "partial",
-  "notice": "Alberta's bounded known-coverage footprint is admitted for national-baseline-plus-local-context only. Ontario's official Forest Management Unit union is admitted only as Crown-forest planning-unit context alongside the national baseline. Neither is a forest land-base denominator, proof of province-wide forest coverage, or enhanced-record coverage. Complete land-base coverage still requires accepted source geometry evidence for BC, Alberta, Ontario, and Québec.",
+  "notice": "BC's terrestrial boundary is admitted only as national-baseline jurisdiction/reference geometry. Alberta's bounded known-coverage footprint is admitted for national-baseline-plus-local-context only. Ontario's official Forest Management Unit union is admitted only as Crown-forest planning-unit context alongside the national baseline. None is a forest land-base denominator, proof of province-wide forest coverage, or enhanced-record coverage. Complete land-base coverage still requires accepted source geometry evidence for BC, Alberta, Ontario, and Québec.",
   "layers": [
     {
       "evidenceClass": "lineage-bound-derived-geometry",
@@ -33,6 +33,39 @@
       ],
       "scopeNotice": "Known FMA published-area and AVI Crown source footprints only; locations outside both input footprints remain outside this bounded coverage.",
       "claims": "This supports national-baseline-plus-local-context only."
+    },
+    {
+      "evidenceClass": "versioned-source-geometry",
+      "sourceId": "bc-boundary-terrestrial",
+      "province": "BC",
+      "edition": "BC-Boundary-Terrestrial-2020-06-15-source-snapshot",
+      "crs": "EPSG:3005",
+      "checksumSha256": "ec97381d0601cd60d22305ba6a853c689e7bdb55a49fbb853123fe5676703dc7",
+      "sourceUrl": "https://catalogue.data.gov.bc.ca/dataset/province-of-british-columbia-boundary-terrestrial",
+      "resourceUrl": "ftp://ftp.geobc.gov.bc.ca/sections/outgoing/bmgs/BC_Boundary_Terrestrial/BC_Boundary_Terrestrial.gdb.zip",
+      "extent": { "west": 273366.802, "south": 367780.717, "east": 1870586.8005, "north": 1735720.874 },
+      "areaSquareKilometres": 948063.63656736,
+      "coverageClass": "national-baseline-jurisdiction-reference",
+      "scope": {
+        "decision": "jurisdiction-reference-only",
+        "coverageWithinBoundary": "national-baseline",
+        "forestLandBaseDenominator": false,
+        "enhancedRecordCoverage": false,
+        "limitation": "The terrestrial boundary is jurisdiction/reference geometry, not evidence of forest extent, a forest-land denominator, enhanced coverage, or a provincial inventory footprint."
+      },
+      "profile": {
+        "evidenceId": "bc-terrestrial-reference-v1-2026-08-14",
+        "profiledAt": "2026-08-14T16:00:39Z",
+        "evidencePath": "../Witness_Tree-data/derived/bc-terrestrial-reference-v1/2026-08-14/transformation-evidence.json",
+        "evidenceChecksumSha256": "98269c907282e0ff8c0defc5ca8d32ca99df61d30c8b4476709d894f5228046d",
+        "geometryChecksumSha256": "5eeced91259c15c2532398591430538265286c7f4faa3306ad3ca89565c52d06",
+        "geometryType": "MultiPolygon",
+        "featureCount": 1,
+        "invalidGeometryCount": 0,
+        "validity": "passed"
+      },
+      "licence": { "id": "ogl-bc", "url": "https://www2.gov.bc.ca/gov/content/data/open-data/open-government-licence-bc" },
+      "attribution": "Government of British Columbia"
     },
     {
       "evidenceClass": "versioned-source-geometry",
