@@ -19,6 +19,7 @@ const bcWildfire = manifest.entries.find((entry) => entry.sourceId === "bc-wildf
 const albertaCurrentWildfire = manifest.entries.find((entry) => entry.sourceId === "ab-wildfire");
 const ontarioFire = manifest.entries.find((entry) => entry.sourceId === "on-fire-disturbance");
 const plvi = manifest.entries.find((entry) => entry.sourceId === "ab-primary-land-vegetation");
+const qcOriginalCurrent = manifest.entries.find((entry) => entry.sourceId === "qc-original-current-inventory");
 
 test("verified local acquisition remains staging-only", () => {
   assert.equal(validateStagedAcquisitions(manifest), manifest);
@@ -30,7 +31,7 @@ test("verified local acquisition remains staging-only", () => {
   assert.equal(first.attributionState, "metadata-verified");
   assert.match(first.attribution, /Ministère des Ressources naturelles et des Forêts/);
   assert.equal(first.licenceUrl, "https://www.donneesquebec.ca/licence/#cc-by");
-  assert.equal(manifest.entries.reduce((total, entry) => total + entry.byteLength, 0), 22524454602);
+  assert.equal(manifest.entries.reduce((total, entry) => total + entry.byteLength, 0), 33769122228);
   assert.equal(alberta?.sha256, "e93572129f25c83911b73eadfacff12624ff6b08f2db4b311c1662196b665093");
 });
 
@@ -42,6 +43,16 @@ test("staged Alberta PLVI archive is checksum-bound and blocks invalid publisher
   assert.equal(plvi.immutableObjectStorage, false);
   assert.equal(plvi.productionEligible, false);
   assert.match(plvi.changesNotice, /12 invalid polygon geometries/);
+});
+
+test("Québec original/current archive is checksum-bound and distinct from Québec's other ecoforest products", () => {
+  assert.ok(qcOriginalCurrent);
+  assert.equal(qcOriginalCurrent.byteLength, 11244667626);
+  assert.equal(qcOriginalCurrent.sha256, "c10d691516569de76642dc1fc64e662f2569b5b58ab5d945b58b8b7834ba9c61");
+  assert.equal(qcOriginalCurrent.zipIntegrity, "passed");
+  assert.match(qcOriginalCurrent.temporalCoverage, /distinct from the current ecoforest and fourth-inventory products/i);
+  assert.equal(qcOriginalCurrent.immutableObjectStorage, false);
+  assert.equal(qcOriginalCurrent.productionEligible, false);
 });
 
 test("Ontario in-year fire perimeters are checksum-bound and remain staging-only", () => {

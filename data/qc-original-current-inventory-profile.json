@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "status": "local-verified-profiled",
+  "notice": "Checksum-bound, read-only local staging evidence. The raw archive and extracted GeoPackage were not altered, transformed, ingested, promoted, released, or made production eligible.",
+  "sourceId": "qc-original-current-inventory",
+  "sourceDistinction": "This is the provincial CARTE_ECO_ORI_PROV original/current-inventory product. It is distinct from the annually updated CARTE_ECO_MAJ_PROV current ecoforest map and from the fixed fourth-inventory CARTE_ECO_ORI_4_PROV product.",
+  "publisher": "Ministère des Ressources naturelles et des Forêts du Québec, Secteur des Forêts, Direction des inventaires forestiers",
+  "catalogueResourceId": "41ef9e5a-722f-482c-bc22-805700ba9917",
+  "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Resultats_inventaire_et_carte_ecofor/02-Donnees/PROV/CARTE_ECO_ORI_PROV_GPKG.zip",
+  "licence": {
+    "id": "cc-by-4.0",
+    "url": "https://www.donneesquebec.ca/licence/#cc-by",
+    "attribution": "Source: Ministère des Ressources naturelles et des Forêts du Québec, Secteur des Forêts, Direction des inventaires forestiers. Licensed under CC BY 4.0."
+  },
+  "retrieval": {
+    "sourceVersion": "undeclared",
+    "sourceVersionBasis": "The official resource identifies the original/current product but declares no publisher dataset version; the literal absence marker is not an inferred edition.",
+    "retrievedAt": "2026-08-14T15:15:58Z",
+    "retrievedAtBasis": "Project-recorded local completion time from the raw archive modification time; not a publisher attestation."
+  },
+  "rawArchive": {
+    "localPath": "../Witness_Tree-data/raw/qc-original-current-inventory/2026-08-14/CARTE_ECO_ORI_PROV_GPKG.zip",
+    "originalFilename": "CARTE_ECO_ORI_PROV_GPKG.zip",
+    "byteLength": 11244667626,
+    "sha256": "c10d691516569de76642dc1fc64e662f2569b5b58ab5d945b58b8b7834ba9c61",
+    "zipIntegrity": "passed",
+    "zipMemberCount": 1,
+    "uncompressedByteLength": 33243570176,
+    "zipIntegrityReceipt": "data/qc-original-current-inventory-zip-integrity-2026-08-14.txt"
+  },
+  "extractedGeoPackage": {
+    "member": "CARTE_ECO_ORI_PROV.gpkg",
+    "byteLength": 33243570176,
+    "sha256": "70539d99497de2773342611d73bf9e4fadf01f1fdbfe3ca536ad711d87916e7c",
+    "sqliteIntegrity": "passed",
+    "crs": "EPSG:32198"
+  },
+  "spatialLayers": [
+    {
+      "name": "pee_ori_prov",
+      "geometryType": "MultiPolygon",
+      "featureCount": 8387062,
+      "crs": "EPSG:32198",
+      "extent": [-830340.25, 117964.15, 543807.64, 942382.67],
+      "fieldCount": 33,
+      "fields": ["fid:INTEGER", "geom:MULTIPOLYGON", "geocode:TEXT(21)", "origine:TEXT(12)", "an_origine:TEXT(4)", "perturb:TEXT(12)", "an_perturb:TEXT(4)", "reb_ess1:TEXT(2)", "reb_ess2:TEXT(2)", "reb_ess3:TEXT(2)", "et_domi:TEXT(3)", "part_str:TEXT(2)", "type_couv:TEXT(1)", "gr_ess:TEXT(6)", "cl_dens:TEXT(1)", "cl_haut:TEXT(1)", "cl_age:TEXT(5)", "etagement:TEXT(2)", "couv_gaule:TEXT(2)", "cl_pent:TEXT(1)", "dep_sur:TEXT(4)", "cl_drai:TEXT(2)", "type_eco:TEXT(5)", "co_ter:TEXT(3)", "type_ter:TEXT(3)", "strate:TEXT(46)", "met_at_str:TEXT(8)", "superficie:REAL", "toponyme:TEXT(60)", "no_prg:TEXT(2)", "ver_prg:TEXT(10)", "shape_length:REAL", "shape_area:REAL"],
+      "geocodeField": "geocode",
+      "geometryValidation": { "missingGeometryCount": 0, "emptyGeometryCount": 0, "invalidGeometryCount": 0 }
+    },
+    {
+      "name": "meta_ori_prov",
+      "geometryType": "Point",
+      "featureCount": 8387062,
+      "crs": "EPSG:32198",
+      "extent": [-829465.43, 118007.94, 534128.5, 942313],
+      "fieldCount": 34,
+      "fields": ["fid:INTEGER", "geom:POINT", "geocode:TEXT(21)", "latitude:REAL", "longitude:REAL", "no_prg:TEXT(2)", "ver_prg:TEXT(10)", "ver_carto:TEXT(7)", "ver_eco:TEXT(7)", "ver_cmp:TEXT(7)", "statut_acq:TEXT(10)", "met_prod:TEXT(10)", "pro_sou:TEXT(10)", "an_pro_sou:TEXT(4)", "an_saisie:TEXT(4)", "met_ori:TEXT(10)", "pro_ori:TEXT(10)", "an_pro_ori:TEXT(4)", "resolution:TEXT(6)", "or_cl_pent:TEXT(12)", "correction:TEXT(10)", "dt_correct:DATETIME", "ty_correct:TEXT(14)", "in_etage:TEXT(1)", "in_essence:TEXT(1)", "us_for:TEXT(6)", "in_son_pee:TEXT(1)", "no_uco:TEXT(10)", "in_cmp_pee:TEXT(1)", "in_contr:TEXT(1)", "in_produ:TEXT(1)", "in_station:TEXT(1)", "in_bois:TEXT(1)", "in_biom:TEXT(1)"],
+      "geocodeField": "geocode",
+      "geometryValidation": { "missingGeometryCount": 0, "emptyGeometryCount": 0, "invalidGeometryCount": 0 }
+    }
+  ],
+  "geocodeLinkedTables": [
+    { "name": "pee_ori_prov", "kind": "feature", "rowCount": 8387062, "distinctNonblankGeocodeCount": 8387062, "nullOrBlankGeocodeCount": 0, "fieldCount": 33 },
+    { "name": "meta_ori_prov", "kind": "feature", "rowCount": 8387062, "distinctNonblankGeocodeCount": 8387062, "nullOrBlankGeocodeCount": 0, "fieldCount": 34 },
+    { "name": "essence_ori_prov", "kind": "attribute", "rowCount": 19113947, "distinctNonblankGeocodeCount": 6411086, "nullOrBlankGeocodeCount": 0, "fieldCount": 5, "fields": ["fid:INTEGER", "geocode:TEXT(21)", "etage:TEXT(3)", "essence:TEXT(2)", "st_ess_pc:SMALLINT"] },
+    { "name": "etage_ori_prov", "kind": "attribute", "rowCount": 6465021, "distinctNonblankGeocodeCount": 6411086, "nullOrBlankGeocodeCount": 0, "fieldCount": 8, "fields": ["fid:INTEGER", "geocode:TEXT(21)", "etage:TEXT(3)", "ty_couv_et:TEXT(2)", "densite:SMALLINT", "hauteur:SMALLINT", "cl_age_et:TEXT(5)", "eta_ess_pc:TEXT(28)"] }
+  ],
+  "evidenceReceipts": [
+    "data/qc-original-current-inventory-zip-integrity-2026-08-14.txt",
+    "data/qc-original-current-inventory-geocode-tables-2026-08-14.generated.json",
+    "data/qc-original-current-inventory-geometry-validity-2026-08-14.txt"
+  ],
+  "immutableObjectStorage": false,
+  "productionEligible": false,
+  "blocker": "Immutable archive and recovery evidence, then a separate owner admission for transformation, ingestion, release, and production eligibility."
+}

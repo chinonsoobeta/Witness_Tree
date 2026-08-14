@@ -348,21 +348,24 @@
     },
     {
       "id": "qc-original-current-inventory",
-      "evidenceState": "unaddressed",
-      "evidenceRefs": [],
+      "evidenceState": "local-verified-profiled",
+      "evidenceRefs": [
+        "data/qc-original-current-inventory-profile.json",
+        "data/staged-acquisitions.json"
+      ],
       "proof": {
-        "licence": false,
-        "attribution": false,
-        "retrievalVersion": false,
-        "checksum": false,
-        "rawArchiveRefetch": false,
-        "profile": false,
+        "licence": true,
+        "attribution": true,
+        "retrievalVersion": true,
+        "checksum": true,
+        "rawArchiveRefetch": true,
+        "profile": true,
         "immutableArchive": false,
         "productionAdmission": false
       },
-      "rawCredit": 0,
+      "rawCredit": 0.75,
       "productionEligible": false,
-      "blocker": "Obtain exact resource, edition, checksum, archive/profile and ledger."
+      "blocker": "Immutable archive/recovery evidence and a separate owner admission for transformation, ingestion, release, and production eligibility."
     },
     {
       "id": "qc-fourth-inventory",
@@ -629,5 +632,5 @@
       "blocker": "CIRNAC's official map is informal, approximate, subject to revision, and expressly cannot be relied on for consultation. It is not legal or precision boundary geometry; no admissible legal artifact, rights, checksum/archive recovery, or engagement route is verified."
     }
   ],
-  "rawEvidenceNumerator": 12
+  "rawEvidenceNumerator": 12.75
 }

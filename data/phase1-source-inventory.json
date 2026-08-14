@@ -207,10 +207,10 @@
       "name": "Carte écoforestière originale et résultats d’inventaire courants",
       "purpose": "Original mapping and inventory tables.",
       "planUse": "production",
-      "evidence": "candidate registry; not production",
+      "evidence": "Official original/current provincial archive locally staged with exact byte count and SHA-256, ZIP and SQLite integrity receipts, exhaustive spatial geometry validation, and complete GEOCODE-linked table profile; not immutable, ingested, released, or production.",
       "ownerRole": "provincial data lead",
-      "missing": "Download resource, edition, checksum and archive evidence.",
-      "externalDependency": "Québec forest ministry"
+      "missing": "Immutable object-storage promotion/recovery evidence and separate owner admission for transformation, ingestion, release, and production eligibility.",
+      "externalDependency": "Immutable storage and owner admission"
     },
     {
       "id": "qc-fourth-inventory",
@@ -262,10 +262,10 @@
       "name": "Primary Land and Vegetation Inventory",
       "purpose": "Additional land and vegetation coverage.",
       "planUse": "production",
-      "evidence": "plan URL only",
+      "evidence": "Official Alberta PLVI ZIP locally staged with exact byte count and SHA-256, ZIP integrity receipt, exhaustive geometry profile, and a deterministic closed-join repair receipt. The raw source has 12 invalid publisher polygons; the derived repair remains explicitly non-production pending immutable archive evidence and owner admission.",
       "ownerRole": "provincial data lead",
-      "missing": "Licence, version, coverage, checksum and archive evidence.",
-      "externalDependency": "Alberta data publisher"
+      "missing": "Immutable object-storage promotion/recovery evidence and separate owner admission for transformation, ingestion, release, and production eligibility.",
+      "externalDependency": "Immutable storage and owner admission"
     },
     {
       "id": "ab-avi-standards",
