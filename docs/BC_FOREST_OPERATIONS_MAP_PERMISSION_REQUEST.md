@@ -7,7 +7,7 @@ Use the Province of British Columbia's [Copyright Permission Request Form](https
 
 ## Proposed message
 
-**From:** Chinonso Obeta `<chinonso8@gmail.com>`  
+**From:** Chinonso Obeta `<chinonso8@gmail.com>`
 **Subject:** Permission request — Forest Operations Map (FOM) - Cutblocks
 
 Hello,
