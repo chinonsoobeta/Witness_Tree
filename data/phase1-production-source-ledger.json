@@ -429,13 +429,14 @@
     },
     {
       "id": "ab-primary-land-vegetation",
-      "evidenceState": "local-verified-profiled",
+      "evidenceState": "remote-verified-archived-profiled",
       "evidenceRefs": [
         "data/staged-acquisitions.json",
         "data/staged-geospatial-profile.json",
         "data/transformation-runs/alberta-plvi-geometry-repair-v1-2026-08-14.json",
         "data/alberta-plvi-full-release-readiness.json",
-        "data/alberta-plvi-immutable-promotion-preparation.json"
+        "data/alberta-plvi-immutable-promotion-preparation.json",
+        "data/alberta-plvi-immutable-promotion-evidence.json"
       ],
       "proof": {
         "licence": true,
@@ -444,12 +445,12 @@
         "checksum": true,
         "rawArchiveRefetch": true,
         "profile": true,
-        "immutableArchive": false,
+        "immutableArchive": true,
         "productionAdmission": false
       },
-      "rawCredit": 0.75,
+      "rawCredit": 1,
       "productionEligible": false,
-      "blocker": "The exact raw ZIP and local repaired closed-join release are verified and profiled. MFA-gated remote promotion is authorized but unproven: require readbacks for each of the four approved keys (version ID, byte length, provider checksum, and payload COMPLIANCE retention) before archival admission. Transformation, ingestion, release, and production eligibility remain separately blocked."
+      "blocker": "Exact raw and derived payload versions and deterministic sidecar versions are remotely verified; both payload versions carry COMPLIANCE retention through 2033-08-12. This is immutable-archive evidence only. Owner source-ledger admission, transformation, analysis, ingestion, public release, production admission, and production eligibility remain separately blocked."
     },
     {
       "id": "on-fri",
@@ -632,5 +633,5 @@
       "blocker": "CIRNAC's official map is informal, approximate, subject to revision, and expressly cannot be relied on for consultation. It is not legal or precision boundary geometry; no admissible legal artifact, rights, checksum/archive recovery, or engagement route is verified."
     }
   ],
-  "rawEvidenceNumerator": 12.75
+  "rawEvidenceNumerator": 13
 }

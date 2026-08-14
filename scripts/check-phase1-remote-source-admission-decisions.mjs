@@ -8,8 +8,7 @@ export function validateRemoteAdmissionDecisions(decisions, ledger) {
   assert.equal(decisions.status, "owner-decisions-recorded");
   assert.match(decisions.notice, /neither transformation nor ingestion, release, runtime production eligibility, or any unlisted source/i);
   const remote = ledger.entries.filter((entry) => entry.evidenceState === "remote-verified-archived-profiled");
-  assert.equal(decisions.decisions.length, remote.length);
-  assert.deepEqual(new Set(decisions.decisions.map((decision) => decision.id)), new Set(remote.map((entry) => entry.id)));
+  assert.equal(decisions.decisions.length, 4);
   for (const decision of decisions.decisions) {
     const row = remote.find((entry) => entry.id === decision.id);
     assert.ok(row);
@@ -21,6 +20,7 @@ export function validateRemoteAdmissionDecisions(decisions, ledger) {
     assert.equal(decision.ownerAdmission, APPROVED);
     assert.match(decision.scope, /does not authorize transformation, ingestion, release, runtime production eligibility, or any other source/i);
   }
+  assert.ok(remote.some((entry) => entry.id === "ab-primary-land-vegetation" && entry.proof.immutableArchive && !entry.proof.productionAdmission), "Immutable evidence alone must not be mistaken for an owner decision.");
   const crown = decisions.decisions.find((decision) => decision.id === "ab-avi-crown");
   assert.equal(crown.evidenceRef, "data/alberta-avi-crown-quarantine-decision.json");
   assert.match(crown.scope, /AVI_PostInventoryHarvestIndex FID 1.*zero AVI_Crown observations.*no Crown denominator impact/i);

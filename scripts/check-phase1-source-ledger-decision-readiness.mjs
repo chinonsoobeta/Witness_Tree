@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 
-const READINESS = new Set(["owner-decision-recorded", "immutable-archive-then-owner-decision", "owner-scope-decision-after-archive", "external-evidence-blocked"]);
+const READINESS = new Set(["owner-decision-recorded", "immutable-archive-then-owner-decision", "owner-scope-decision-after-archive", "owner-scope-decision-ready", "external-evidence-blocked"]);
 
 export function validatePhase1SourceLedgerDecisionReadiness(audit, ledger, decisions) {
   assert.equal(audit.schemaVersion, 1);
@@ -29,7 +29,13 @@ export function validatePhase1SourceLedgerDecisionReadiness(audit, ledger, decis
       assert.equal(row.proof.immutableArchive, false);
       assert.equal(row.proof.productionAdmission, false);
     }
-    if (entry.readiness === "owner-scope-decision-after-archive") assert.match(entry.scope, /.+/);
+    if (entry.readiness === "owner-scope-decision-after-archive" || entry.readiness === "owner-scope-decision-ready") assert.match(entry.scope, /.+/);
+    if (entry.readiness === "owner-scope-decision-ready") {
+      assert.equal(row.evidenceState, "remote-verified-archived-profiled");
+      assert.equal(row.proof.immutableArchive, true);
+      assert.equal(row.proof.productionAdmission, false);
+      assert.equal(decisions.decisions.some((decision) => decision.id === entry.id), false);
+    }
     if (entry.readiness === "external-evidence-blocked") assert.match(entry.blocker, /.+/);
   }
   assert.deepEqual(audit.nonProduction, { productionAdmissionChanged: false, productionEligibleChanged: false, transformationAuthorized: false, ingestionAuthorized: false, releaseAuthorized: false });
