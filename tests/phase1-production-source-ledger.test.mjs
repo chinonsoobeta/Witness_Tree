@@ -78,3 +78,13 @@ test("Historic treaty mapping remains blocked and cannot infer legal or local-pr
   row.evidenceState = "local-verified-profiled"; row.rawCredit = 0.75; invented.rawEvidenceNumerator = 11.25;
   assert.throws(() => validatePhase1ProductionSourceLedger(invented, inventory), /Local evidence must remain profile\/re-fetch evidence/i);
 });
+
+test("Modern treaty mapping remains blocked and cannot infer legal or local-profile geometry", () => {
+  const treaties = ledger.entries.find((entry) => entry.id === "modern-treaties");
+  assert.equal(treaties.evidenceState, "access-blocked");
+  assert.deepEqual(treaties.evidenceRefs, ["data/modern-treaties-authority-access-block.json", "data/source-candidates.json"]);
+  assert.equal(treaties.rawCredit, 0); assert.equal(treaties.productionEligible, false);
+  const invented = structuredClone(ledger); const row = invented.entries.find((entry) => entry.id === "modern-treaties");
+  row.evidenceState = "local-verified-profiled"; row.rawCredit = 0.75; invented.rawEvidenceNumerator = 11.25;
+  assert.throws(() => validatePhase1ProductionSourceLedger(invented, inventory), /Local evidence must remain profile\/re-fetch evidence/i);
+});

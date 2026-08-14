@@ -427,10 +427,10 @@
       "name": "Modern treaties",
       "purpose": "Modern treaty settlement-area context.",
       "planUse": "production",
-      "evidence": "plan URL only",
+      "evidence": "official CIRNAC map reviewed; approximate informal non-legal geometry",
       "ownerRole": "geography data lead",
-      "missing": "Edition, terms, caveats, checksum and archive evidence.",
-      "externalDependency": "CIRNAC / ISC and engagement review"
+      "missing": "Authoritative legal boundary edition, terms, checksum/archive recovery and engagement route.",
+      "externalDependency": "CIRNAC/ISC legal-boundary authority and Indigenous engagement route"
     },
     {
       "id": "indigenous-agreements",
