@@ -23,6 +23,7 @@ jobs:
       - run: npm run check:historic-treaties-authority-access
       - run: npm run check:modern-treaties-authority-access
       - run: npm run check:bc-wildfire-current-perimeters
+      - run: npm run check:bc-wildfire-geometry-policy
       - run: npm run check:bc-forest-operations-map-access
       - run: npm run check:acquisition-readiness
       - run: npm run check:staged-acquisitions

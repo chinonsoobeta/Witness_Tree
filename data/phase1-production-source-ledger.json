@@ -133,7 +133,8 @@
       "evidenceState": "local-verified-profiled",
       "evidenceRefs": [
         "data/staged-acquisitions.json",
-        "data/bc-wildfire-current-perimeters-profile.json"
+        "data/bc-wildfire-current-perimeters-profile.json",
+        "data/bc-wildfire-geometry-policy-2026-08-14.json"
       ],
       "proof": {
         "licence": true,
@@ -147,7 +148,7 @@
       },
       "rawCredit": 0.75,
       "productionEligible": false,
-      "blocker": "Immutable archive, owner admission, transformation, ingestion, release, and production eligibility remain separately blocked."
+      "blocker": "The 217-feature raw snapshot has a checksummed 216-feature local derived release: G70362 is repaired within tolerance and V10755 remains quarantined. Immutable archive and owner admission for both artifacts, plus transformation, ingestion, release, and production approval, remain separately blocked."
     },
     {
       "id": "ab-wildfire",

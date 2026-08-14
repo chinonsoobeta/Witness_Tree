@@ -75,7 +75,7 @@
       "name": "National Burned Area Composite and Canadian National Fire Database",
       "purpose": "National historical fire context.",
       "planUse": "production",
-      "evidence": "plan URL only",
+      "evidence": "One official OGL-BC 2026-08-14 current-perimeter snapshot is locally staged, checksummed and profiled. A 216-feature local derived release repairs G70362 within tolerance; V10755 remains quarantined. Neither artifact is archived, admitted, ingested, or production eligible.",
       "ownerRole": "data lead",
       "missing": "Dataset editions, licence, retrieval and archive evidence.",
       "externalDependency": "Canadian Forest Service datamart"
@@ -88,7 +88,7 @@
       "planUse": "production",
       "evidence": "plan URL only",
       "ownerRole": "wildfire operations lead",
-      "missing": "Authoritative service selection, terms and refresh evidence.",
+      "missing": "Immutable archive and owner admission for raw and derived artifacts; operational refresh contract, transformation, ingestion and release approval. One of 217 raw features remains excluded from geometry-dependent use.",
       "externalDependency": "BC Wildfire Service"
     },
     {
