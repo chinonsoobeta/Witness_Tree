@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "1.0",
+  "status": "pending-evidence",
+  "notice": "No land-base coverage is admitted. Admission requires versioned source geometry evidence for all four provinces and the recorded Ontario and Québec scope decisions.",
+  "layers": [],
+  "requiredProvinceDecisions": {
+    "ontarioManagedForest": "pending",
+    "quebecSouthOf52": "pending"
+  }
+}
