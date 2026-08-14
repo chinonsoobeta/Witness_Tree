@@ -432,6 +432,41 @@
       "changesNotice": "The raw GeoJSON is unchanged. Read-only JSON and GDAL/GEOS profiling made no transformation, geometry repair, ingestion, object-storage promotion, or production use. The two recorded invalid geometries must not be silently repaired.",
       "immutableObjectStorage": false,
       "productionEligible": false
+    },
+    {
+      "id": "alberta-wildfire-locations-2026-08-14",
+      "sourceId": "ab-wildfire",
+      "datasetTitle": "Alberta Fire Status — Alberta Wildfire Locations",
+      "publisher": "Government of Alberta, Forestry and Parks",
+      "catalogueUrl": "https://www.alberta.ca/wildfire-maps-and-data",
+      "sourceUrl": "https://geospatial.alberta.ca/mimas/rest/services/wildfire/alberta_fire_status/FeatureServer/0/query?where=1%3D1&outFields=*&returnGeometry=true&f=geojson",
+      "localPath": "../Witness_Tree-data/raw/alberta-wildfire-locations/2026-08-14/alberta-wildfire-locations_2026-08-14.geojson",
+      "originalFilename": "alberta-wildfire-locations_2026-08-14.geojson",
+      "sourceVersion": "undeclared",
+      "sourceVersionBasis": "The public FeatureServer metadata declares no dataset edition; the service describes a current fire-year operational feed, not a versioned release.",
+      "retrievedAt": "2026-08-14T13:42:09Z",
+      "retrievedAtBasis": "Download completion instant recorded by the project from the staged file's local modification time; it is not a publisher attestation.",
+      "verifiedAt": "2026-08-14T13:42:09Z",
+      "byteLength": 423853,
+      "sha256": "f0e86ea34a7624c365349b3a8fbb77967bb45ab73c507cf441efb8f6a8736ee0",
+      "contentIntegrity": "passed",
+      "integrityMethod": "jq confirmed a GeoJSON FeatureCollection with exactly 751 Point features; read-only GDAL reported EPSG:4326 and the coordinate-range check found zero missing, non-Point, malformed, or out-of-range geometries.",
+      "licenceId": "ogl-alberta-2.2",
+      "temporalCoverage": "Current fire-year and carryover Alberta Wildfire locations as returned by the live service; the snapshot is not a real-time, complete-incident, or perimeter claim.",
+      "attributionState": "metadata-verified",
+      "attribution": "Contains information licensed under the Open Government Licence – Alberta.",
+      "licenceUrl": "https://open.alberta.ca/licence",
+      "licenceVersion": "2.2",
+      "attributionBasis": "The Alberta open-data policy states that information and data made publicly available are published under the Open Government Licence – Alberta unless exempt. The official Alberta Wildfire page directs current and historical wildfire GIS data to the Alberta Geospatial Services Platform, and this public service declares no different licence or attribution statement; the licence default attribution is therefore recorded. This is licensing evidence for local staging only, not a production grant.",
+      "attributionSources": [
+        "https://open.alberta.ca/licence",
+        "https://www.alberta.ca/wildfire-maps-and-data",
+        "https://geospatial.alberta.ca/mimas/rest/services/wildfire/alberta_fire_status/FeatureServer"
+      ],
+      "attributionVerifiedAt": "2026-08-14T13:42:09Z",
+      "changesNotice": "This raw GeoJSON is unchanged. Read-only inspection made no source modification, feature transformation, repair, filtering, extraction, ingestion, or promotion.",
+      "immutableObjectStorage": false,
+      "productionEligible": false
     }
   ]
 }

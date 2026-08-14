@@ -12,7 +12,9 @@
       "inputSha256": "46ee3a97ff83128630a030b5cfcc7f3c389fc94e3ca95d463595ab6f4fb57e83",
       "decision": "blocked-pending-geometry-policy",
       "requiredAction": "Define and test a deterministic repair-or-quarantine rule for the two recorded invalid source polygons before transformation or ingestion.",
-      "profiledWith": {"gdal": "3.13.2"},
+      "profiledWith": {
+        "gdal": "3.13.2"
+      },
       "productionEligible": false,
       "layers": [
         {
@@ -21,11 +23,20 @@
           "featureCount": 217,
           "crs": "EPSG:4326",
           "fieldCount": 16,
-          "requiredFields": ["FIRE_NUMBER", "FIRE_YEAR", "FIRE_SIZE_HECTARES", "TRACK_DATE", "FIRE_STATUS", "GlobalID"],
+          "requiredFields": [
+            "FIRE_NUMBER",
+            "FIRE_YEAR",
+            "FIRE_SIZE_HECTARES",
+            "TRACK_DATE",
+            "FIRE_STATUS",
+            "GlobalID"
+          ],
           "missingGeometryCount": 0,
           "emptyGeometryCount": 0,
           "invalidGeometryCount": 2,
-          "invalidGeometryReasons": {"Nested shells": 2}
+          "invalidGeometryReasons": {
+            "Nested shells": 2
+          }
         }
       ]
     },
@@ -41,7 +52,14 @@
           "featureCount": 94572,
           "crs": "EPSG:32198",
           "fieldCount": 11,
-          "requiredFields": ["geoc_fmj", "origine", "an_origine", "perturb", "an_perturb", "superficie"],
+          "requiredFields": [
+            "geoc_fmj",
+            "origine",
+            "an_origine",
+            "perturb",
+            "an_perturb",
+            "superficie"
+          ],
           "missingGeometryCount": 0,
           "emptyGeometryCount": 0,
           "invalidGeometryCount": 0,
@@ -53,7 +71,14 @@
           "featureCount": 94572,
           "crs": "EPSG:32198",
           "fieldCount": 10,
-          "requiredFields": ["geoc_fmj", "no_prg", "ver_prg", "met_prod", "source_maj", "statut_maj"],
+          "requiredFields": [
+            "geoc_fmj",
+            "no_prg",
+            "ver_prg",
+            "met_prod",
+            "source_maj",
+            "statut_maj"
+          ],
           "missingGeometryCount": 0,
           "emptyGeometryCount": 0,
           "invalidGeometryCount": 0,
@@ -74,11 +99,20 @@
           "featureCount": 788810,
           "crs": "EPSG:3400",
           "fieldCount": 67,
-          "requiredFields": ["POLY_NUM", "DENSITY", "HEIGHT", "ORIGIN", "PHOTO_YR", "Shape_Area"],
+          "requiredFields": [
+            "POLY_NUM",
+            "DENSITY",
+            "HEIGHT",
+            "ORIGIN",
+            "PHOTO_YR",
+            "Shape_Area"
+          ],
           "missingGeometryCount": 0,
           "emptyGeometryCount": 0,
           "invalidGeometryCount": 587,
-          "invalidGeometryReasons": {"Ring Self-intersection": 587}
+          "invalidGeometryReasons": {
+            "Ring Self-intersection": 587
+          }
         },
         {
           "name": "AVI_PostInventoryHarvest",
@@ -86,11 +120,16 @@
           "featureCount": 3631,
           "crs": "EPSG:3400",
           "fieldCount": 3,
-          "requiredFields": ["HARVEST_YEAR", "Shape_Area"],
+          "requiredFields": [
+            "HARVEST_YEAR",
+            "Shape_Area"
+          ],
           "missingGeometryCount": 0,
           "emptyGeometryCount": 0,
           "invalidGeometryCount": 19,
-          "invalidGeometryReasons": {"Ring Self-intersection": 19}
+          "invalidGeometryReasons": {
+            "Ring Self-intersection": 19
+          }
         },
         {
           "name": "AVI_CrownIndex",
@@ -98,11 +137,16 @@
           "featureCount": 1,
           "crs": "EPSG:3400",
           "fieldCount": 3,
-          "requiredFields": ["Name", "Shape_Area"],
+          "requiredFields": [
+            "Name",
+            "Shape_Area"
+          ],
           "missingGeometryCount": 0,
           "emptyGeometryCount": 0,
           "invalidGeometryCount": 1,
-          "invalidGeometryReasons": {"Ring Self-intersection": 1}
+          "invalidGeometryReasons": {
+            "Ring Self-intersection": 1
+          }
         },
         {
           "name": "AVI_PostInventoryHarvestIndex",
@@ -110,11 +154,45 @@
           "featureCount": 1,
           "crs": "EPSG:3400",
           "fieldCount": 2,
-          "requiredFields": ["Shape_Area"],
+          "requiredFields": [
+            "Shape_Area"
+          ],
           "missingGeometryCount": 0,
           "emptyGeometryCount": 0,
           "invalidGeometryCount": 1,
-          "invalidGeometryReasons": {"Ring Self-intersection": 1}
+          "invalidGeometryReasons": {
+            "Ring Self-intersection": 1
+          }
+        }
+      ]
+    },
+    {
+      "sourceId": "ab-wildfire",
+      "inputSha256": "f0e86ea34a7624c365349b3a8fbb77967bb45ab73c507cf441efb8f6a8736ee0",
+      "profiledWith": {
+        "gdal": "3.13.2"
+      },
+      "decision": "ready-for-transformation-design",
+      "productionEligible": false,
+      "layers": [
+        {
+          "name": "alberta-wildfire-locations_2026-08-14",
+          "geometryType": "Point",
+          "featureCount": 751,
+          "crs": "EPSG:4326",
+          "fieldCount": 17,
+          "requiredFields": [
+            "FIRE_NUMBER",
+            "FIRE_STATUS",
+            "FIRE_YEAR",
+            "LATITUDE",
+            "LONGITUDE",
+            "FIRE_STATUS_DATE"
+          ],
+          "missingGeometryCount": 0,
+          "emptyGeometryCount": 0,
+          "invalidGeometryCount": 0,
+          "invalidGeometryReasons": {}
         }
       ]
     }
