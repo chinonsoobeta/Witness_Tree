@@ -1,10 +1,51 @@
 {
   "schemaVersion": "1.0",
-  "status": "pending-evidence",
-  "notice": "No land-base coverage is admitted. Admission requires versioned source geometry evidence for all four provinces and the recorded Ontario and Québec scope decisions.",
-  "layers": [],
+  "status": "partial",
+  "notice": "Ontario's official Forest Management Unit union is admitted only as Crown-forest planning-unit context alongside the national baseline. It is not the Ontario forest land-base denominator, does not prove province-wide forest coverage, and does not enable enhanced records. Complete land-base coverage still requires accepted source geometry evidence for BC, Alberta, Ontario, and Québec.",
+  "layers": [
+    {
+      "evidenceClass": "versioned-source-geometry",
+      "sourceId": "ontario-forest-management-units",
+      "province": "ON",
+      "edition": "FORMGMT-2025-12-12-source-snapshot",
+      "crs": "EPSG:4269",
+      "checksumSha256": "b7fb8d30bf377725f97a0236be04e2d2611e2e4410215d99794fb9a14e9f4384",
+      "sourceUrl": "https://ws.gisetl.lrc.gov.on.ca/fmedatadownload/Packages/fgdb/FORMGMT.zip",
+      "extent": {
+        "west": -95.15362549999998,
+        "south": 44.31562780000007,
+        "east": -75.81623799999994,
+        "north": 52.39880620000008
+      },
+      "areaSquareKilometres": 439635.341866697,
+      "coverageClass": "national-baseline-plus-managed-forest-context",
+      "scope": {
+        "decision": "crown-forest-planning-unit-context-only",
+        "outsideBoundaryCoverage": "national-baseline",
+        "forestLandBaseDenominator": false,
+        "enhancedRecordCoverage": false,
+        "enhancedRecordCondition": "A separately verified provincial FRI or other local record must identify the applicable FMU and period before enhanced coverage can be assigned."
+      },
+      "profile": {
+        "evidenceId": "ontario-fmu-context-union-v1-2026-08-14",
+        "profiledAt": "2026-08-14T15:43:48Z",
+        "evidencePath": "../Witness_Tree-data/derived/ontario-fmu-context-union-v1/2026-08-14/transformation-evidence.json",
+        "evidenceChecksumSha256": "a7faffdd586f5151f8f13c1af78fc2e9f30f4eb87415fc15f3f58031cb790683",
+        "geometryChecksumSha256": "37ba09deb9c3694b79cfb644b57781bfe146e527f88b329457215460b999abec",
+        "geometryType": "MultiPolygon",
+        "featureCount": 1,
+        "invalidGeometryCount": 0,
+        "validity": "passed"
+      },
+      "licence": {
+        "id": "ogl-ontario",
+        "url": "https://www.ontario.ca/page/open-government-licence-ontario"
+      },
+      "attribution": "Ontario Ministry of Natural Resources and Forestry © King's Printer for Ontario, 2022"
+    }
+  ],
   "requiredProvinceDecisions": {
-    "ontarioManagedForest": "pending",
+    "ontarioManagedForest": "approved",
     "quebecSouthOf52": "pending"
   }
 }
