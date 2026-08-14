@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "witness-tree/qc-immutable-promotion-preparation/1",
+  "status": "preparation-only",
+  "notice": "Dry-run preparation only. It does not call AWS, create or upload an object, apply Object Lock retention, transform, ingest, release, or admit data.",
+  "destination": {"bucket": "witness-tree-raw-archive-ca-central-1", "region": "ca-central-1", "countryCode": "CA"},
+  "mfaGatedExecution": {"operatorProfile": "WitnessTreeArchiveOperator", "proposedRole": "WitnessTreeQcArchivePromotionUploader", "required": true, "retentionMode": "COMPLIANCE", "recommendedRetainUntil": "2033-08-12T00:00:00Z", "multipartPartSizeBytes": 134217728},
+  "requiredApproval": "Before any remote action, the owner must freshly approve both exact artifacts below, their four exact keys, the exact Canadian bucket and region, MFA-gated sequential multipart execution, COMPLIANCE retention until 2033-08-12T00:00:00Z, and version, byte-length, provider-checksum, and retention read-backs.",
+  "artifacts": [
+    {
+      "id": "qc-ecoforest-map-2026-08-14",
+      "kind": "raw-source",
+      "productionSourceId": "qc-current-ecoforest",
+      "archiveSourceId": "qc-ecoforest-map",
+      "localPath": "raw/qc-current-ecoforest/2026-08-14/CARTE_ECO_MAJ_PROV_GPKG.zip",
+      "originalFilename": "CARTE_ECO_MAJ_PROV_GPKG.zip",
+      "sourceVersion": "undeclared",
+      "retrievedAt": "2026-08-14T09:00:15Z",
+      "byteLength": 12399475076,
+      "sha256": "c67c56b0c101e95bef4fbca53a06e2f1578fe38293961017f70d815209740cf1",
+      "payloadKey": "raw/qc-ecoforest-map/undeclared/2026-08-14T09-00-15Z/c67c56b0c101e95bef4fbca53a06e2f1578fe38293961017f70d815209740cf1/payload/carte_eco_maj_prov_gpkg.zip",
+      "manifestKey": "raw/qc-ecoforest-map/undeclared/2026-08-14T09-00-15Z/c67c56b0c101e95bef4fbca53a06e2f1578fe38293961017f70d815209740cf1/manifest.json",
+      "sourceEvidence": {"profile": "data/coverage-geometry-admission.json", "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Cartes_ecoforestieres_perturbations/02-Donnees/PROV/CARTE_ECO_MAJ_PROV_GPKG.zip", "licenceId": "cc-by-4.0", "licenceUrl": "https://www.donneesquebec.ca/licence/#cc-by", "attribution": "Source: Ministère des Ressources naturelles et des Forêts du Québec, Secteur des forêts, Direction des inventaires forestiers. Licensed under CC BY 4.0.", "profileSummary": "Official provincial archive, exact raw bytes and SHA-256, exhaustive source geometry profile, and checksum-bound publisher-footprint evidence."}
+    },
+    {
+      "id": "qc-original-current-inventory-2026-08-14",
+      "kind": "raw-source",
+      "productionSourceId": "qc-original-current-inventory",
+      "archiveSourceId": "qc-original-inventory",
+      "localPath": "raw/qc-original-current-inventory/2026-08-14/CARTE_ECO_ORI_PROV_GPKG.zip",
+      "originalFilename": "CARTE_ECO_ORI_PROV_GPKG.zip",
+      "sourceVersion": "undeclared",
+      "retrievedAt": "2026-08-14T15:15:58Z",
+      "byteLength": 11244667626,
+      "sha256": "c10d691516569de76642dc1fc64e662f2569b5b58ab5d945b58b8b7834ba9c61",
+      "payloadKey": "raw/qc-original-inventory/undeclared/2026-08-14T15-15-58Z/c10d691516569de76642dc1fc64e662f2569b5b58ab5d945b58b8b7834ba9c61/payload/carte_eco_ori_prov_gpkg.zip",
+      "manifestKey": "raw/qc-original-inventory/undeclared/2026-08-14T15-15-58Z/c10d691516569de76642dc1fc64e662f2569b5b58ab5d945b58b8b7834ba9c61/manifest.json",
+      "sourceEvidence": {"profile": "data/qc-original-current-inventory-profile.json", "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Resultats_inventaire_et_carte_ecofor/02-Donnees/PROV/CARTE_ECO_ORI_PROV_GPKG.zip", "licenceId": "cc-by-4.0", "licenceUrl": "https://www.donneesquebec.ca/licence/#cc-by", "attribution": "Source: Ministère des Ressources naturelles et des Forêts du Québec, Secteur des Forêts, Direction des inventaires forestiers. Licensed under CC BY 4.0.", "profileSummary": "Official provincial archive, ZIP and SQLite integrity receipts, exhaustive spatial validation, and complete GEOCODE-linked table profile."}
+    }
+  ],
+  "proposedRoleScope": {"allow": ["s3:PutObject", "s3:GetObject", "s3:AbortMultipartUpload", "s3:ListMultipartUploadParts", "s3:PutObjectRetention", "s3:GetObjectRetention"], "denyByOmission": ["s3:DeleteObject", "s3:DeleteObjectVersion", "s3:BypassGovernanceRetention", "s3:PutObjectLegalHold", "s3:ReplicateObject", "s3:PutBucket*", "s3:DeleteBucket*", "iam:*"], "retentionKeys": ["raw/qc-ecoforest-map/undeclared/2026-08-14T09-00-15Z/c67c56b0c101e95bef4fbca53a06e2f1578fe38293961017f70d815209740cf1/payload/carte_eco_maj_prov_gpkg.zip", "raw/qc-original-inventory/undeclared/2026-08-14T15-15-58Z/c10d691516569de76642dc1fc64e662f2569b5b58ab5d945b58b8b7834ba9c61/payload/carte_eco_ori_prov_gpkg.zip"]},
+  "claims": {"remoteObjectExists": false, "sidecarUploaded": false, "retentionApplied": false, "immutableObjectStorage": false, "ownerSourceLedgerAdmission": false, "transformed": false, "ingested": false, "productionEligible": false}
+}

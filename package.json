@@ -65,6 +65,8 @@
     "check:alberta-plvi-immutable-promotion-preparation": "node scripts/prepare-alberta-plvi-immutable-promotion.mjs",
     "check:alberta-plvi-immutable-promotion-evidence": "node scripts/check-alberta-plvi-immutable-promotion-evidence.mjs",
     "dry-run:alberta-plvi-immutable-promotion": "zsh scripts/run-alberta-plvi-approved-promotion.sh",
+    "check:qc-immutable-promotion-preparation": "node scripts/prepare-qc-immutable-promotion.mjs",
+    "dry-run:qc-immutable-promotion": "zsh scripts/run-qc-approved-multipart-promotion.sh",
     "check:immutable-promotions": "node scripts/check-immutable-promotions.mjs",
     "check:immutable-restore-drill": "node scripts/check-immutable-restore-drill.mjs",
     "check:boundary-editions": "node scripts/check-boundary-editions.mjs",
