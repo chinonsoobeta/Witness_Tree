@@ -12,6 +12,8 @@ The runner resolves its artifacts from the controlled absolute workspace-data ro
 
 The owner-local `--run` path requires an interactive terminal and uses zsh's hidden `read -s` prompt. It prints a newline after input, does not echo or store the code, and rejects an empty or non-six-digit value before any AWS command.
 
+The runner never calls IAM to discover an MFA device. It reads `mfa_serial` only from the local `WitnessTreeArchiveOperator` AWS profile, requires the exact virtual-MFA ARN for account `286853118812` and that operator, and otherwise stops before any STS or storage command. The ARN is never printed.
+
 Suggested artifact-specific immutable-promotion approval:
 
 > I approve, for this one operation only, MFA-gated upload and S3 Object Lock **COMPLIANCE** retention through `2033-08-12T00:00:00Z` in `witness-tree-raw-archive-ca-central-1` / `ca-central-1` for (1) `PrimaryLandAndVegetationInventoryPLVI.zip`, 675,544,895 bytes, SHA-256 `017a0a835c680ca1b6c1eb790322a28e1b4c0c64e36924da46d8bb99cb1571d3`, and (2) `alberta-plvi-full-repaired-closed-join.gpkg`, 899,551,232 bytes, SHA-256 `5633e7d49982ee1232b415f362654744c1f1dab11d7c3c7ef8a7928dac20825b`. I approve only the four deterministic payload/sidecar keys recorded in the preparation record and require version, byte-length, provider-checksum, and retention read-backs. This does not approve ingestion, public release, or production use.
