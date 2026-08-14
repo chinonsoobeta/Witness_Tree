@@ -17,6 +17,7 @@
     "check:cpcad-acquisition-block": "node scripts/check-cpcad-acquisition-block.mjs",
     "check:bc-provincial-electoral": "node scripts/check-bc-provincial-electoral-2023.mjs",
     "check:alberta-electoral-block": "node scripts/check-alberta-electoral-boundary-block.mjs",
+    "check:ontario-electoral": "node scripts/check-on-electoral-2022.mjs",
     "check:phase1-source-inventory": "node scripts/check-phase1-source-inventory.mjs",
     "check:vlce2-promotion": "node scripts/check-vlce2-promotion-preparation.mjs",
     "check:vlce2-remote-promotion": "node scripts/check-vlce2-remote-promotion-evidence.mjs",
