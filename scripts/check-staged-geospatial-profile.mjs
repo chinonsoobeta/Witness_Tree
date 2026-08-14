@@ -33,6 +33,13 @@ const EXPECTED = new Map([
       ["alberta-wildfire-locations_2026-08-14", ["Point", 751, "EPSG:4326", 17, 0]],
     ]),
   }],
+  ["on-fire-disturbance", {
+    sha256: "99881f19a32068b5d66b244955f7b088e873ffe76eafebf1740f03e16f042f11",
+    decision: "blocked-pending-geometry-policy",
+    layers: new Map([
+      ["ontario-in-year-fire-perimeters_2026-08-14", ["Polygon/MultiPolygon", 188, "EPSG:4326", 7, 9]],
+    ]),
+  }],
 ]);
 
 function required(value, field) {

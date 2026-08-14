@@ -1,0 +1,7 @@
+# Ontario in-year fire-perimeters staging
+
+The plan row `on-fire-disturbance` is represented by one checksum-bound local snapshot of Ontario's official **In-year Fire Perimeters** layer, `LIO_OPEN_DATA/LIO_Open09/MapServer/51`. The Ontario catalogue describes this as a daily, current-year layer under the Open Government Licence – Ontario. It also says that perimeters are illustrative, may be several days old, and are not captured for every fire; this record makes no real-time, complete-incident, or exact-location claim.
+
+The raw GeoJSON is outside Git at `Witness_Tree-data/raw/ontario-in-year-fire-perimeters/2026-08-14/ontario-in-year-fire-perimeters_2026-08-14.geojson`. It is 19,510,504 bytes with SHA-256 `99881f19a32068b5d66b244955f7b088e873ffe76eafebf1740f03e16f042f11`. The service declared a 2,000-record limit and reported 188 records; the single unfiltered response contains those 188 features, so no paging, filtering, or merge was used.
+
+Read-only GDAL/GEOS profiling found EPSG:4326 with 118 Polygon and 70 MultiPolygon features, no missing or empty geometries, and nine source self-intersections. Those geometries remain unchanged. The source is blocked pending a documented Ontario-specific deterministic repair-or-quarantine policy before any transformation or ingestion. It remains local staging only: not immutable storage, transformed data, ingested data, or production output.

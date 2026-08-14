@@ -17,6 +17,7 @@ const albertaWildfire = manifest.entries.find((entry) => entry.sourceId === "alb
 const cwfisCurrent = manifest.entries.find((entry) => entry.sourceId === "cwfis-current");
 const bcWildfire = manifest.entries.find((entry) => entry.sourceId === "bc-wildfire");
 const albertaCurrentWildfire = manifest.entries.find((entry) => entry.sourceId === "ab-wildfire");
+const ontarioFire = manifest.entries.find((entry) => entry.sourceId === "on-fire-disturbance");
 
 test("verified local acquisition remains staging-only", () => {
   assert.equal(validateStagedAcquisitions(manifest), manifest);
@@ -28,8 +29,17 @@ test("verified local acquisition remains staging-only", () => {
   assert.equal(first.attributionState, "metadata-verified");
   assert.match(first.attribution, /Ministère des Ressources naturelles et des Forêts/);
   assert.equal(first.licenceUrl, "https://www.donneesquebec.ca/licence/#cc-by");
-  assert.equal(manifest.entries.reduce((total, entry) => total + entry.byteLength, 0), 21829399203);
+  assert.equal(manifest.entries.reduce((total, entry) => total + entry.byteLength, 0), 21848909707);
   assert.equal(alberta?.sha256, "e93572129f25c83911b73eadfacff12624ff6b08f2db4b311c1662196b665093");
+});
+
+test("Ontario in-year fire perimeters are checksum-bound and remain staging-only", () => {
+  assert.ok(ontarioFire, "on-fire-disturbance entry is missing from the manifest");
+  assert.equal(ontarioFire.byteLength, 19510504);
+  assert.equal(ontarioFire.sha256, "99881f19a32068b5d66b244955f7b088e873ffe76eafebf1740f03e16f042f11");
+  assert.equal(ontarioFire.contentIntegrity, "passed");
+  assert.equal(ontarioFire.immutableObjectStorage, false);
+  assert.equal(ontarioFire.productionEligible, false);
 });
 
 test("Alberta current wildfire locations are checksum-bound and remain staging-only", () => {
