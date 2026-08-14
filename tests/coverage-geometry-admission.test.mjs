@@ -14,12 +14,16 @@ const layer = (province) => ({
   licence: { id: "public-licence", url: "https://authority.invalid/licence" }, attribution: "Source authority attribution."
 });
 
-test("Ontario is admitted only as baseline-plus-context planning-unit geometry", () => {
+test("BC and Ontario are admitted only as bounded reference/context geometry", () => {
   assert.equal(validateCoverageGeometryAdmission(manifest), manifest);
   assert.equal(manifest.status, "partial");
-  assert.equal(manifest.layers.length, 1);
-  assert.equal(manifest.layers[0].coverageClass, "national-baseline-plus-managed-forest-context");
-  assert.equal(manifest.layers[0].scope.enhancedRecordCoverage, false);
+  assert.equal(manifest.layers.length, 2);
+  const bc = manifest.layers.find((entry) => entry.province === "BC");
+  const ontario = manifest.layers.find((entry) => entry.province === "ON");
+  assert.equal(bc.coverageClass, "national-baseline-jurisdiction-reference");
+  assert.equal(bc.scope.enhancedRecordCoverage, false);
+  assert.equal(ontario.coverageClass, "national-baseline-plus-managed-forest-context");
+  assert.equal(ontario.scope.enhancedRecordCoverage, false);
 });
 
 test("complete admission requires all provinces and both explicit scope decisions", () => {
@@ -40,4 +44,7 @@ test("negative corpus rejects incomplete, proxy, and illustrative coverage evide
   assert.throws(() => validateCoverageGeometryAdmission({ ...manifest, status: "partial", layers: [{ ...layer("BC"), profile: { ...layer("BC").profile, invalidGeometryCount: "unknown" } }] }), /known non-negative/);
   assert.throws(() => validateCoverageGeometryAdmission({ ...manifest, status: "partial", layers: [{ ...layer("ON"), scope: { ...layer("ON").scope, forestLandBaseDenominator: true } }] }), /cannot be a forest land-base denominator/);
   assert.throws(() => validateCoverageGeometryAdmission({ ...manifest, status: "partial", layers: [{ ...layer("ON"), scope: { ...layer("ON").scope, enhancedRecordCoverage: true } }] }), /cannot enable enhanced records/);
+  const reference = manifest.layers.find((entry) => entry.province === "BC");
+  assert.throws(() => validateCoverageGeometryAdmission({ ...manifest, status: "partial", layers: [{ ...reference, scope: { ...reference.scope, forestLandBaseDenominator: true } }] }), /cannot be a forest land-base denominator/);
+  assert.throws(() => validateCoverageGeometryAdmission({ ...manifest, status: "partial", layers: [{ ...reference, resourceUrl: "ftp://unrelated.invalid/bc.zip" }] }), /official FTP resource URL/);
 });

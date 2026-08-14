@@ -12,4 +12,8 @@ Ontario's current official Forest Management Unit union is admitted as **Crown-f
 
 The union is derived deterministically from all 39 polygons in the approved `FORMGMT.zip` archive. Its evidence binds the source ZIP checksum, output geometry checksum, profile checksum, input count, CRS, extent, equal-area area calculation, and the no-repair/no-filter/no-clipping method. The raw and derivative files remain external evidence artifacts; the admission record references them by normalized path and checksum.
 
+## British Columbia reference boundary
+
+The official BC terrestrial boundary is admitted only as **national-baseline jurisdiction/reference geometry**. It identifies the jurisdictional extent for baseline presentation; it does not establish BC forest extent, forest hectares, a provincial inventory footprint, enhanced coverage, or a forest-land denominator. Its official catalogue address remains HTTPS. The publisher-hosted FTP resource is retained separately and is allowed only for this explicitly named source; that exception does not weaken the HTTPS requirement for catalogue evidence or other coverage sources.
+
 Run `npm run check:coverage-geometry-admission` to enforce the contract. The negative corpus proves that missing provinces, unapproved Ontario/Québec decisions, latitude-proxy labels, fixtures, and unknown profile validity cannot satisfy the gate. Test literals exercise parsing only; they are never checked-in coverage evidence or a claim that geometry has been obtained.
