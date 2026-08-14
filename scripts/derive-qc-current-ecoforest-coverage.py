@@ -55,11 +55,12 @@ def main() -> int:
     source_profile_document = json.loads(source_profile.read_text(encoding="utf-8"))
     profiled_layers = [
         layer for source in source_profile_document.get("sources", [])
-        for layer in source.get("layers", []) if layer.get("name") == SOURCE_LAYER
+        for layer in source.get("layers", []) if str(layer.get("name", "")).lower() == SOURCE_LAYER.lower()
     ]
     if len(profiled_layers) != 1:
         raise SystemExit(f"Source profile must contain exactly one {SOURCE_LAYER} layer")
     source_layer_profile = profiled_layers[0]
+    published_table = str(source_layer_profile["name"])
     for count_name in ("missingGeometryCount", "emptyGeometryCount", "invalidGeometryCount"):
         if source_layer_profile.get(count_name) != 0:
             raise SystemExit(f"Published {SOURCE_LAYER} profile has non-zero {count_name}")
@@ -78,21 +79,23 @@ def main() -> int:
             connection = sqlite3.connect(source_gpkg)
             try:
                 feature_table = connection.execute(
-                    "SELECT table_name FROM gpkg_contents WHERE table_name = ? AND data_type = 'features'", (SOURCE_LAYER,)
+                    "SELECT table_name FROM gpkg_contents WHERE lower(table_name) = lower(?) AND data_type = 'features'", (SOURCE_LAYER,)
                 ).fetchone()
                 geometry_column = connection.execute(
-                    "SELECT column_name FROM gpkg_geometry_columns WHERE table_name = ?", (SOURCE_LAYER,)
+                    "SELECT column_name FROM gpkg_geometry_columns WHERE table_name = ?", (feature_table[0],)
                 ).fetchone()
             finally:
                 connection.close()
             if feature_table is None or geometry_column is None:
                 raise SystemExit(f"Required published layer {SOURCE_LAYER} is absent")
+            if not feature_table[0].replace("_", "").isalnum():
+                raise SystemExit(f"Unsafe GeoPackage table name: {feature_table[0]}")
             geometry_name = geometry_column[0]
             if not geometry_name.replace("_", "").isalnum():
                 raise SystemExit(f"Unsafe GeoPackage geometry-column name: {geometry_name}")
             output.parent.mkdir(parents=True, exist_ok=True)
             run("ogr2ogr", "-f", "GPKG", str(output), str(source_gpkg), "-dialect", "SQLite", "-sql",
-                f"SELECT ST_Union(\"{geometry_name}\") AS geometry FROM {SOURCE_LAYER}", "-nln", "qc_current_ecoforest_coverage", "-nlt", "MULTIPOLYGON")
+                f"SELECT ST_Union(\"{geometry_name}\") AS geometry FROM \"{feature_table[0]}\"", "-nln", "qc_current_ecoforest_coverage", "-nlt", "MULTIPOLYGON")
 
     output_sha256 = sha256(output)
     profile = subprocess.check_output(["ogrinfo", "-ro", "-so", "-json", str(output), "qc_current_ecoforest_coverage"], text=True)
@@ -102,7 +105,7 @@ def main() -> int:
         "kind": "deterministic-coverage-derivative",
         "derivedAt": verified_at,
         "rawSource": {"path": str(archive), "byteLength": archive.stat().st_size, "sha256": raw_sha256,
-                      "zipIntegrity": "passed", "member": gpkg_member, "publishedLayer": SOURCE_LAYER,
+                      "zipIntegrity": "passed", "member": gpkg_member, "publishedLayer": published_table,
                       "publishedGeometryColumn": geometry_name, "sourceUrl": SOURCE_URL,
                       "catalogueUrl": CATALOGUE_URL, "publisher": "Ministère des Ressources naturelles et des Forêts du Québec, Secteur des forêts, Direction des inventaires forestiers",
                       "licence": {"id": "cc-by-4.0", "url": LICENCE_URL},
