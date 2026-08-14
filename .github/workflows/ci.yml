@@ -35,6 +35,7 @@ jobs:
       - run: npm run check:staged-geospatial-profile
       - run: npm run check:alberta-wildfire-locations
       - run: npm run check:ontario-in-year-fire-perimeters
+      - run: npm run check:alberta-plvi-full-release-readiness
       - run: npm run check:immutable-promotions
       - run: npm run check:boundary-editions
       - run: npm run check:elections-canada-fed-2025
