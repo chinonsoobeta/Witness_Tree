@@ -19,6 +19,13 @@ const EXPECTED = new Map([
       ["AVI_PostInventoryHarvestIndex", ["MultiPolygon", 1, "EPSG:3400", 2, 1]],
     ]),
   }],
+  ["bc-wildfire", {
+    sha256: "46ee3a97ff83128630a030b5cfcc7f3c389fc94e3ca95d463595ab6f4fb57e83",
+    decision: "blocked-pending-geometry-policy",
+    layers: new Map([
+      ["bc-wildfire-perimeters-2026-08-14", ["Polygon/MultiPolygon", 217, "EPSG:4326", 16, 2]],
+    ]),
+  }],
 ]);
 
 function required(value, field) {
@@ -32,7 +39,10 @@ export function validateStagedGeospatialProfile(profile) {
   if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(profile.profiledAt ?? "") || Number.isNaN(new Date(profile.profiledAt).getTime())) throw new Error("Profile time must be a UTC timestamp.");
   required(profile.tools?.pyogrio, "pyogrio version");
   required(profile.tools?.gdal, "GDAL version");
-  if (!Array.isArray(profile.sources) || profile.sources.length !== EXPECTED.size) throw new Error("Profile must contain the exact staged sources.");
+  if (!Array.isArray(profile.sources)) throw new Error("Profile must contain the exact staged sources.");
+  const suppliedIds = profile.sources.map((source) => source?.sourceId);
+  if (new Set(suppliedIds).size !== suppliedIds.length) throw new Error("Profile source ids must be unique.");
+  if (profile.sources.length !== EXPECTED.size) throw new Error("Profile must contain the exact staged sources.");
   const sourceIds = new Set();
   for (const source of profile.sources) {
     const expected = EXPECTED.get(source.sourceId);
@@ -42,7 +52,7 @@ export function validateStagedGeospatialProfile(profile) {
     if (source.inputSha256 !== expected.sha256) throw new Error(`${source.sourceId} input checksum changed.`);
     if (source.decision !== expected.decision) throw new Error(`${source.sourceId} decision is unsafe.`);
     if (source.productionEligible !== false) throw new Error("A staging profile cannot grant production eligibility.");
-    if (source.sourceId === "alberta-avi-crown") required(source.requiredAction, "Alberta required action");
+    if (["alberta-avi-crown", "bc-wildfire"].includes(source.sourceId)) required(source.requiredAction, "required action");
     if (!Array.isArray(source.layers) || source.layers.length !== expected.layers.size) throw new Error(`${source.sourceId} layer set changed.`);
     const layerNames = new Set();
     for (const layer of source.layers) {

@@ -18,6 +18,7 @@ jobs:
       - run: npm run lint
       - run: node scripts/check-bilingual.mjs
       - run: npm run check:source-candidates
+      - run: npm run check:bc-wildfire-current-perimeters
       - run: npm run check:acquisition-readiness
       - run: npm run check:staged-acquisitions
       - run: npm run check:nrcan-canopy-height-profile

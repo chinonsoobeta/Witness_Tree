@@ -1,12 +1,34 @@
 {
   "status": "local-staging-profile",
   "notice": "Read-only profiling evidence. No source geometry was changed, transformed, ingested, or made production eligible.",
-  "profiledAt": "2026-08-12T05:36:34Z",
+  "profiledAt": "2026-08-14T20:34:00Z",
   "tools": {
     "pyogrio": "0.13.0",
     "gdal": "3.12.4"
   },
   "sources": [
+    {
+      "sourceId": "bc-wildfire",
+      "inputSha256": "46ee3a97ff83128630a030b5cfcc7f3c389fc94e3ca95d463595ab6f4fb57e83",
+      "decision": "blocked-pending-geometry-policy",
+      "requiredAction": "Define and test a deterministic repair-or-quarantine rule for the two recorded invalid source polygons before transformation or ingestion.",
+      "profiledWith": {"gdal": "3.13.2"},
+      "productionEligible": false,
+      "layers": [
+        {
+          "name": "bc-wildfire-perimeters-2026-08-14",
+          "geometryType": "Polygon/MultiPolygon",
+          "featureCount": 217,
+          "crs": "EPSG:4326",
+          "fieldCount": 16,
+          "requiredFields": ["FIRE_NUMBER", "FIRE_YEAR", "FIRE_SIZE_HECTARES", "TRACK_DATE", "FIRE_STATUS", "GlobalID"],
+          "missingGeometryCount": 0,
+          "emptyGeometryCount": 0,
+          "invalidGeometryCount": 2,
+          "invalidGeometryReasons": {"Nested shells": 2}
+        }
+      ]
+    },
     {
       "sourceId": "qc-historic-wildfire-detailed",
       "inputSha256": "cfed6c16eac901e6887a2518f566dff7608d4c4c371bd9c1ce6b2eff03fa0815",
