@@ -55,8 +55,16 @@ SHAS=(017a0a835c680ca1b6c1eb790322a28e1b4c0c64e36924da46d8bb99cb1571d3 5633e7d49
 PAYLOADS=(raw/ab-primary-land-vegetation/undeclared/2026-08-14T14-01-07Z/017a0a835c680ca1b6c1eb790322a28e1b4c0c64e36924da46d8bb99cb1571d3/payload/primarylandandvegetationinventoryplvi.zip derived/ab-primary-land-vegetation/alberta-plvi-full-repair-v1-2026-08-14/2026-08-14T14-14-31Z/5633e7d49982ee1232b415f362654744c1f1dab11d7c3c7ef8a7928dac20825b/payload/alberta-plvi-full-repaired-closed-join.gpkg)
 SIDECARS=(raw/ab-primary-land-vegetation/undeclared/2026-08-14T14-01-07Z/017a0a835c680ca1b6c1eb790322a28e1b4c0c64e36924da46d8bb99cb1571d3/manifest.json derived/ab-primary-land-vegetation/alberta-plvi-full-repair-v1-2026-08-14/2026-08-14T14-14-31Z/5633e7d49982ee1232b415f362654744c1f1dab11d7c3c7ef8a7928dac20825b/manifest.json)
 for i in {1..2}; do
-  aws s3 cp "${FILES[$i]}" "s3://$BUCKET/${PAYLOADS[$i]}" --region "$REGION" --only-show-errors --checksum-algorithm CRC64NVME
-  aws s3 cp "$TMP/${IDS[$i]}.manifest.json" "s3://$BUCKET/${SIDECARS[$i]}" --region "$REGION" --only-show-errors --checksum-algorithm CRC64NVME
+  # Do not use the high-level transfer wrapper here.  Its multipart orchestration
+  # can report a completed command without returning the resulting version to this
+  # narrowly scoped runner.  A direct PutObject is within the approved action set
+  # and lets us fail closed unless S3 returns the exact new version and checksum.
+  print -- "Uploading approved payload $i/2 by one direct S3 request; wait for the acknowledgement."
+  payload_put="$(aws s3api put-object --bucket "$BUCKET" --key "${PAYLOADS[$i]}" --body "${FILES[$i]}" --checksum-algorithm CRC64NVME --region "$REGION" --cli-read-timeout 0 --output json)" || fail "Payload upload failed" 70
+  jq -e '.VersionId != null and (.ChecksumCRC64NVME // empty) != ""' <<<"$payload_put" >/dev/null || fail "Payload upload acknowledgement incomplete" 70
+  print -- "Payload $i/2 acknowledged by S3; uploading its deterministic sidecar."
+  sidecar_put="$(aws s3api put-object --bucket "$BUCKET" --key "${SIDECARS[$i]}" --body "$TMP/${IDS[$i]}.manifest.json" --checksum-algorithm CRC64NVME --region "$REGION" --cli-read-timeout 0 --output json)" || fail "Sidecar upload failed" 70
+  jq -e '.VersionId != null and (.ChecksumCRC64NVME // empty) != ""' <<<"$sidecar_put" >/dev/null || fail "Sidecar upload acknowledgement incomplete" 70
   payload_head="$(aws s3api head-object --bucket "$BUCKET" --key "${PAYLOADS[$i]}" --checksum-mode ENABLED --region "$REGION" --output json)" || fail "Payload read-back failed" 70
   version="$(jq -r '.VersionId' <<<"$payload_head")"; [[ -n "$version" && "$version" != null ]] || fail "Payload version read-back missing" 70
   [[ "$(jq -r '.ContentLength' <<<"$payload_head")" == "${BYTES[$i]}" && "$(jq -r '.ChecksumCRC64NVME // empty' <<<"$payload_head")" != '' ]] || fail "Payload read-back integrity incomplete" 70

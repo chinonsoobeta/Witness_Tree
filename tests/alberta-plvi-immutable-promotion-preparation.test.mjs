@@ -35,7 +35,7 @@ test("MFA runner has a dry-run default and excludes deletion, IAM mutation, and 
   assert.doesNotMatch(runner, /list-mfa-devices|iam list/i);
 });
 
-test("valid-shaped dummy TOTP uses local MFA config then STS and role assumption before a mocked S3 boundary", () => {
+test("valid-shaped dummy TOTP uses local MFA config then STS and role assumption before a mocked direct S3 put boundary", () => {
   const dir = mkdtempSync(join(tmpdir(), "plvi-mfa-sts-"));
   const marker = join(dir, "calls");
   const aws = join(dir, "aws");
@@ -45,7 +45,7 @@ case "$1:$2" in
   sts:get-session-token) print -- "sts-get-session-token" >> ${JSON.stringify(marker)}; print -- '{"Credentials":{"AccessKeyId":"dummy","SecretAccessKey":"dummy","SessionToken":"dummy"}}' ;;
   sts:get-caller-identity) print -- "sts-get-caller-identity" >> ${JSON.stringify(marker)}; print -- "286853118812" ;;
   sts:assume-role) print -- "sts-assume-role" >> ${JSON.stringify(marker)}; print -- '{"Credentials":{"AccessKeyId":"dummy","SecretAccessKey":"dummy","SessionToken":"dummy"}}' ;;
-  s3:cp) print -- "s3-cp-blocked" >> ${JSON.stringify(marker)}; exit 88 ;;
+  s3api:put-object) print -- "s3-put-object-blocked" >> ${JSON.stringify(marker)}; exit 88 ;;
   *) print -- "unexpected-$1-$2" >> ${JSON.stringify(marker)}; exit 98 ;;
 esac
 `, { mode: 0o700 });
@@ -61,11 +61,22 @@ expect {
 }`;
   try {
     const run = spawnSync("expect", ["-c", expectProgram], { encoding: "utf8", timeout: 120_000, env: { ...process.env, PATH: `${dir}:${process.env.PATH}` } });
-    assert.equal(run.status, 88, `${run.stdout}\n${run.stderr}`);
-    assert.deepEqual(readFileSync(marker, "utf8").trim().split("\n"), ["configure-get", "sts-get-session-token", "sts-get-caller-identity", "sts-assume-role", "s3-cp-blocked"]);
+    assert.equal(run.status, 70, `${run.stdout}\n${run.stderr}`);
+    assert.match(`${run.stdout}${run.stderr}`, /Payload upload failed/);
+    assert.deepEqual(readFileSync(marker, "utf8").trim().split("\n"), ["configure-get", "sts-get-session-token", "sts-get-caller-identity", "sts-assume-role", "s3-put-object-blocked"]);
     assert.doesNotMatch(readFileSync(marker, "utf8"), /iam|list-mfa/i);
     assert.doesNotMatch(`${run.stdout}${run.stderr}`, /123456/);
   } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("runner uses direct exact-key PutObject acknowledgements before every read-back", () => {
+  const runner = readFileSync(new URL("../scripts/run-alberta-plvi-approved-promotion.sh", import.meta.url), "utf8");
+  assert.match(runner, /aws s3api put-object --bucket "\$BUCKET" --key "\$\{PAYLOADS\[\$i\]\}" --body "\$\{FILES\[\$i\]\}"/);
+  assert.match(runner, /--cli-read-timeout 0/);
+  assert.match(runner, /Uploading approved payload \$i\/2 by one direct S3 request/);
+  assert.match(runner, /Payload upload acknowledgement incomplete/);
+  assert.match(runner, /Sidecar upload acknowledgement incomplete/);
+  assert.doesNotMatch(runner, /aws s3 cp/);
 });
 
 test("runner accepts an alternate safe device path but rejects a wrong account before STS", () => {
