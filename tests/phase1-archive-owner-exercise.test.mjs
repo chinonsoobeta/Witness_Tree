@@ -23,11 +23,13 @@ function invalidTotpPty(mode, input) {
 
 test("owner-local archive exercise has bounded, redacted MFA and control flow", () => {
   assert.match(helper, /read -r -s -p "Current WitnessTreeArchiveOperator TOTP/);
+  assert.match(helper, /CLI_READ_TIMEOUT=15/);
   assert.match(helper, /--cli-connect-timeout "\$CLI_CONNECT_TIMEOUT" --cli-read-timeout "\$CLI_READ_TIMEOUT"/);
   assert.match(helper, /sts get-session-token/);
   assert.match(helper, /Date\.parse\(wanted\) !== Date\.parse\(actual\)/);
   assert.doesNotMatch(helper, /Retention\.RetainUntilDate == \$until/);
   assert.match(helper, /Set this profile's exact assigned virtual-MFA serial locally, then retry\./);
+  assert.match(helper, /arn:aws:iam::\$\{account_id\}:mfa\/WitnessTreeArchiveOperator/);
   assert.doesNotMatch(helper, /mfa_serial="arn:aws:iam::\$\{account_id\}:mfa\/WitnessTreeArchiveOperator"/);
   assert.match(helper, /sts assume-role/);
   assert.match(helper, /VERIFIER_ROLE="WitnessTreeArchiveVerifier"/);
@@ -39,8 +41,10 @@ test("owner-local archive exercise has bounded, redacted MFA and control flow", 
   assert.match(helper, /put-object-legal-hold.*Status=ON/);
   assert.match(helper, /put-object-legal-hold.*Status=OFF/);
   assert.match(helper, /Safety failure: uploader version-specific delete unexpectedly succeeded/);
-  assert.match(helper, /not-verifiable-with-verifier-role/);
-  assert.match(helper, /assume_role "\$VERIFIER_ROLE"\nphase "attempt bounded CloudTrail and recovery readbacks through verifier"/);
+  assert.match(helper, /not-queryable-by-verifier-role/);
+  assert.match(helper, /bounded recovery-replica readback \$\{attempt\}\/6/);
+  assert.match(helper, /Recovery replica did not read back within the bounded window/);
+  assert.match(helper, /check-phase1-archive-exercise-readback\.mjs/);
   assert.doesNotMatch(helper, /exec 2>|--no-verify-ssl|root-access-key|console-password/);
   assert.ok(helper.indexOf('read -r -s -p "Current WitnessTreeArchiveOperator TOTP') < helper.indexOf('identity="$(run_aws identity'), "TOTP validation must occur before the first AWS call.");
 });

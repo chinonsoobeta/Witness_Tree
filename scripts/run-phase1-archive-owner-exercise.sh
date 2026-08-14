@@ -11,7 +11,8 @@ UPLOADER_ROLE="WitnessTreeArchiveUploader"
 BREAK_GLASS_ROLE="WitnessTreeArchiveRetentionBreakGlass"
 VERIFIER_ROLE="WitnessTreeArchiveVerifier"
 CLI_CONNECT_TIMEOUT=10
-CLI_READ_TIMEOUT=30
+CLI_READ_TIMEOUT=15
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 usage() {
   cat <<'EOF'
@@ -83,7 +84,7 @@ account_id="$(jq -er '.Account | select(test("^[0-9]{12}$"))' <<<"$identity")"
 jq -er '.Arn | select(endswith(":user/WitnessTreeArchiveOperator"))' <<<"$identity" >/dev/null
 unset identity
 mfa_serial="$(aws configure get mfa_serial --profile "$PROFILE" 2>"$evidence_dir/mfa-serial.stderr" || true)"
-[[ "$mfa_serial" == arn:aws:iam::*:mfa/* ]] || fail "Set this profile's exact assigned virtual-MFA serial locally, then retry."
+[[ "$mfa_serial" == "arn:aws:iam::${account_id}:mfa/WitnessTreeArchiveOperator" ]] || fail "Set this profile's exact assigned virtual-MFA serial locally, then retry."
 
 phase "obtain a short-lived MFA session"
 bootstrap="$(run_aws get-session-token --profile "$PROFILE" sts get-session-token --serial-number "$mfa_serial" --token-code "$totp" --duration-seconds 3600 --output json)"
@@ -189,17 +190,19 @@ delete_status="unexpected-success"
 if run_aws delete-probe --region "$REGION" s3api delete-object --bucket "$PRIMARY_BUCKET" --key "$exercise_key" --version-id "$version_id" --output json >"$evidence_dir/delete-probe.stdout"; then fail "Safety failure: uploader version-specific delete unexpectedly succeeded." 70; else delete_status="denied-as-required"; fi
 
 assume_role "$VERIFIER_ROLE"
-phase "attempt bounded CloudTrail and recovery readbacks through verifier"
-cloudtrail_status="not-verifiable-with-verifier-role"
-if run_aws cloudtrail --region "$REGION" cloudtrail lookup-events --lookup-attributes AttributeKey=EventName,AttributeValue=PutObject --max-results 1 --output json >"$evidence_dir/cloudtrail.stdout"; then cloudtrail_status="delivery-query-authorized"; fi
-recovery_status="not-verifiable-with-verifier-role"
-for _ in 1 2 3 4 5 6; do
+phase "record CloudTrail query as outside the verifier role; do not broaden it"
+cloudtrail_status="not-queryable-by-verifier-role"
+recovery_status="replica-readback-pending"
+for attempt in 1 2 3 4 5 6; do
+  phase "bounded recovery-replica readback ${attempt}/6"
   if run_aws recovery --region "$REGION" s3api head-object --bucket "$RECOVERY_BUCKET" --key "$exercise_key" --output json >"$evidence_dir/recovery.stdout"; then recovery_status="replica-readback-authorized"; break; fi
   sleep 10
 done
 
 jq -n --arg capturedAt "$(date -u +%Y-%m-%dT%H:%M:%SZ)" --arg retentionUntil "$retention_until" --arg delete "$delete_status" --arg cloudtrail "$cloudtrail_status" --arg recovery "$recovery_status" \
-  '{schemaVersion:1,capturedAt:$capturedAt,identity:"mfa-temporary-session-verified; identifiers omitted",legalHold:{onReadback:"ON",offReadback:"OFF",complianceRetentionUnchanged:true,retainUntil:$retentionUntil},deniedVersionDeleteProbe:$delete,cloudTrail:$cloudtrail,recoveryReplication:$recovery,productionEligible:false}' > "$evidence"
+  '{schemaVersion:1,capturedAt:$capturedAt,identity:"mfa-temporary-session-verified; identifiers omitted",legalHold:{onReadback:"ON",offReadback:"OFF",complianceRetentionUnchanged:true,retainUntil:$retentionUntil},deniedVersionDeleteProbe:$delete,cloudTrail:$cloudtrail,recoveryReplication:$recovery,completed:($recovery == "replica-readback-authorized"),productionEligible:false}' > "$evidence"
+node "$SCRIPT_DIR/check-phase1-archive-exercise-readback.mjs" "$evidence" >/dev/null
 unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN BOOTSTRAP_ACCESS_KEY_ID BOOTSTRAP_SECRET_ACCESS_KEY BOOTSTRAP_SESSION_TOKEN account_id version_id
+[[ "$recovery_status" == "replica-readback-authorized" ]] || fail "Recovery replica did not read back within the bounded window; inspect the redacted evidence and do not count this exercise complete." 75
 printf 'Exercise completed. Redacted evidence is at: %s\n' "$evidence"
-printf 'CloudTrail and recovery were queried through the read-only verifier role; do not use root to bypass a failed readback.\n'
+printf 'CloudTrail lookup is deliberately outside the verifier role; do not use root to bypass that boundary.\n'

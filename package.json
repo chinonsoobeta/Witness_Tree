@@ -29,6 +29,7 @@
     "check:local-staging-admission": "tsx scripts/check-local-staging-admission.mjs",
     "check:archive-operations-readiness": "node scripts/check-archive-operations-readiness.mjs",
     "check:phase1-archive-controls-live-audit": "node scripts/check-phase1-archive-controls-live-audit.mjs",
+    "check:phase1-archive-exercise-readback": "node scripts/check-phase1-archive-exercise-readback.mjs",
     "check:phase1-archive-controls-execution": "node scripts/phase1-archive-controls-execution.mjs --check",
     "dry-run:phase1-archive-controls": "node scripts/phase1-archive-controls-execution.mjs",
     "check:coverage-geometry-admission": "node scripts/check-coverage-geometry-admission.mjs",
