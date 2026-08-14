@@ -1,0 +1,188 @@
+# Phase 1 permission and export outreach package
+
+Status: **owner review only — seven drafts are unsent.** This package does not authorize sending email, downloading data, or any other external or production action. It consolidates the genuine external blockers in the [access-block matrix](../data/phase1-access-blocker-resolution.json), rather than treating a public service, web explorer, or approximate map as a released source.
+
+One earlier request to FAIB is already recorded as sent and awaiting a response. It is tracked below only to prevent a duplicate message. The package contains **seven new drafts**, which together cover the other 12 canonical access-blocked rows. The exact machine-readable mapping is [`data/phase1-permission-outreach-package.json`](../data/phase1-permission-outreach-package.json).
+
+## 1. BC Forest Tenures Branch — FTA cutblocks and harvesting authorities
+
+**To:** ForestTenuresBranch@gov.bc.ca  
+**From:** Chinonso Obeta <chinonso8@gmail.com>  
+**Subject:** Request for coherent BCGW exports — FTA cutblocks and harvesting authorities
+
+Hello Forest Tenures Branch,
+
+I am requesting reproducible BCGW Custom Download exports for both Forest Tenure Cutblock Polygons (FTA 4.0) and Forest Tenure Harvesting Authority Polygons. The public services are mutable and non-transaction-safe, so a page-by-page retrieval would not be a coherent source release.
+
+For each export, please provide or confirm the stable file or snapshot, publisher edition or as-of timestamp, full feature count, CRS, schema, format, checksum, required OGL-BC attribution, and refresh/correction contact. Please confirm whether the supplied artifact may be retained as a checksum-verified raw copy in immutable Canadian object storage, transformed for internal analysis, and used in derived/public map and aggregate outputs. We will not redistribute raw data or infer completed harvest from authority status. Please also identify the appropriate response or right-of-reply route for source and use concerns.
+
+Regards,
+
+Chinonso Obeta  
+Witness Tree  
+chinonso8@gmail.com
+
+**Can unblock:** `bc-fta-cutblocks`, `bc-harvesting-authorities`. The latter still requires a separate lifecycle-semantics review.
+
+## 2. Ontario MNRF — Term 2 FRI package and rights
+
+**To:** info.mnrfscience@ontario.ca  
+**From:** Chinonso Obeta <chinonso8@gmail.com>  
+**Subject:** Request for reproducible Forest Resource Inventory Term 2 package and reuse confirmation
+
+Hello,
+
+Witness Tree is seeking the appropriate, reproducible access route for Forest Resource Inventory Term 2 (2018–2028). The catalogue currently exposes only web explorers, which we will not treat as a released package.
+
+Please identify available FMU package options and, for any package you authorize us to request, provide the stable artifact, edition/as-of date, FMU coverage list, CRS, schema, feature count, checksum, update status, required attribution, and the licence governing that exact package. Please confirm whether we may retain the approved raw artifact in immutable Canadian object storage, transform it for internal analysis, and publish only source-derived/aggregate public results under stated conditions. Please provide the proper refresh, correction, and response/right-of-reply contact. We will not acquire a web explorer or mix editions.
+
+Thank you,
+
+Chinonso Obeta  
+Witness Tree  
+chinonso8@gmail.com
+
+---
+
+Bonjour,
+
+Witness Tree cherche la voie d’accès appropriée et reproductible à l’Inventaire des ressources forestières, période 2 (2018–2028). Le catalogue ne fournit actuellement que des explorateurs Web; nous ne les traiterons pas comme un jeu de données publié.
+
+Veuillez indiquer les options de jeux de données par unité de gestion forestière et, pour tout jeu que vous autorisez, fournir l’artefact stable, l’édition ou la date de référence, la couverture, le SCR, le schéma, le nombre d’entités, la somme de contrôle, l’état des mises à jour, l’attribution et la licence applicables. Veuillez aussi confirmer les conditions de conservation d’une copie brute dans une archive immuable canadienne, de transformation interne et de publication de résultats dérivés ou agrégés, ainsi que le contact de mise à jour, de correction et de droit de réponse.
+
+**Can unblock:** `on-fri`, `on-fri-term-2`.
+
+## 3. BC Data Maps — BEC v13.1 coherent snapshot
+
+**To:** datamaps@gov.bc.ca  
+**From:** Chinonso Obeta <chinonso8@gmail.com>  
+**Subject:** Request for complete immutable BEC Map v13.1 export or snapshot semantics
+
+Hello,
+
+Could you provide a complete, coherent BEC Map v13.1 vector export, or document a transaction-consistent snapshot method for the service? The observed one-request response contains 10,000 of 17,870 published features and the WFS declares non-transaction-safe paging.
+
+For the authoritative release, please provide the stable artifact or snapshot method, edition/effective date, feature count, CRS, schema, checksum, OGL-BC attribution, refresh/correction contact, and response/right-of-reply route. Please confirm the conditions for retaining a checksum-verified raw copy in immutable Canadian object storage, internal transformation, and derived/public outputs. This request concerns BEC ecosystem context only; it does not request or imply a substitute for old-growth-deferral geometry.
+
+Regards,
+
+Chinonso Obeta  
+Witness Tree  
+chinonso8@gmail.com
+
+**Can unblock:** the BEC snapshot component of `bc-old-growth-bec`.
+
+## 4. BC Intellectual Property Program — Access Only forest layers
+
+**To:** QPIPPCopyright@gov.bc.ca  
+**From:** Chinonso Obeta <chinonso8@gmail.com>  
+**Subject:** Permission and authoritative-export request — VRI 2025, FOM Cutblocks, and TAP deferral layer
+
+Hello,
+
+Witness Tree requests written guidance and, where available, permission for these Access Only BC catalogue sources: VRI – 2025 Forest Vegetation Composite Polygons; Forest Operations Map (FOM) – Cutblocks; and the Old Growth TAP Priority Deferral Areas – Current View. We will not use their public services as permission to reproduce or redistribute them.
+
+For each source, please identify the authoritative stable export or snapshot, edition/effective date, full feature count, CRS, schema, checksum, applicable licence and attribution. For VRI, the advertised FGDB URL currently fails; please provide a functioning complete 2025 export and refresh cadence. For TAP, please identify the authoritative implemented-deferral layer if the current view is not it. Please state whether we may keep a checksum-verified raw copy only in immutable Canadian object storage, transform it internally, and publish derived/public outputs; state any limits, required attribution, refresh/correction contact, and response/right-of-reply route. We will not redistribute raw data and will preserve each source’s documented purpose limitations.
+
+Regards,
+
+Chinonso Obeta  
+Witness Tree  
+chinonso8@gmail.com
+
+**Can unblock:** `bc-vri`, `bc-forest-operations-map`, and the TAP/implemented-deferral component of `bc-old-growth-bec`.
+
+## 5. SOPFEU — official wildfire data
+
+**To:** courrier@sopfeu.qc.ca  
+**From:** Chinonso Obeta <chinonso8@gmail.com>  
+**Subject:** Demande d’autorisation — données officielles sur les feux de forêt / Permission request — official wildfire data
+
+Bonjour,
+
+Witness Tree demande si la SOPFEU peut autoriser l’accès à un jeu de données officiel sur les feux actuels ou historiques. Nous n’utiliserons pas le site public comme une licence de reproduction, de distribution ou de modification.
+
+Veuillez préciser tout artefact stable ou instantané officiel, l’identifiant de version, la couverture, la cadence, le format, la somme de contrôle, les limites de requêtes, la licence, l’attribution et le contact de correction/actualisation. Veuillez aussi confirmer par écrit si une copie brute vérifiée peut être conservée dans une archive immuable canadienne, si les données peuvent être transformées en interne et si des résultats dérivés ou publics peuvent être publiés. Veuillez indiquer la voie de réponse appropriée et les restrictions ou avis requis.
+
+Merci,
+
+Chinonso Obeta  
+Witness Tree  
+chinonso8@gmail.com
+
+---
+
+Hello,
+
+Witness Tree requests written authorization, if available, to access an official current and/or historical wildfire dataset. We will not treat the public website as a licence to reproduce, distribute, or modify its contents.
+
+Please identify any stable official artifact or snapshot, version identifier, coverage, cadence, format, checksum, rate limits, licence, attribution, and correction/refresh contact. Please confirm whether a verified raw copy may be retained in immutable Canadian object storage, whether internal transformation is allowed, and whether derived or public results may be published. Please identify the appropriate response/right-of-reply route and any required restrictions or disclaimers.
+
+**Can unblock:** `sopfeu`.
+
+## 6. Indigenous Services Canada — reserve-boundary authority and engagement
+
+**To:** communicationspublications@sac-isc.gc.ca  
+**From:** Chinonso Obeta <chinonso8@gmail.com>  
+**Subject:** Request for authoritative reserve-boundary release, reuse terms, and appropriate engagement route / Demande de jeu de données, de conditions de réutilisation et de voie de dialogue
+
+Hello,
+
+Witness Tree is not seeking to infer Indigenous territory, title, rights, or consultation obligations. Before considering any reserve-boundary source, please identify whether ISC can designate an authoritative, reserve-only polygon release suitable for the stated purpose.
+
+If a suitable release exists, please provide its stable artifact or snapshot, edition, scope and precision statement, feature count, CRS, schema, checksum, exact licence, attribution, and refresh/correction contact. Please state whether a checksum-verified raw copy may be retained in immutable Canadian object storage, transformed internally, and used for derived/public results. Crucially, please identify the appropriate Indigenous engagement and right-of-reply process; we will not contact communities or acquire data before that route is identified.
+
+Regards,
+
+Chinonso Obeta  
+Witness Tree  
+chinonso8@gmail.com
+
+---
+
+Bonjour,
+
+Witness Tree ne cherche pas à inférer les territoires, titres, droits autochtones ni les obligations de consultation. Avant toute considération d’une source de limites de réserves, veuillez indiquer si ISC peut désigner une publication polygonale de réserves, faisant autorité et adaptée à cet usage.
+
+S’il existe une publication appropriée, veuillez fournir l’artefact stable ou l’instantané, l’édition, l’énoncé de portée et de précision, le nombre d’entités, le SCR, le schéma, la somme de contrôle, la licence, l’attribution et le contact de mise à jour/correction. Veuillez indiquer les conditions d’archivage brut immuable au Canada, de transformation interne et de résultats dérivés/publics. Surtout, veuillez indiquer la démarche de dialogue et de droit de réponse appropriée avec les détenteurs de droits; aucune communauté ne sera contactée et aucune donnée ne sera acquise avant cette indication.
+
+**Can unblock:** `indian-reserves`, `first-nation-reserves`.
+
+## 7. CIRNAC — treaty geometry authority and engagement
+
+**To:** infopubs@sac-isc.gc.ca  
+**From:** Chinonso Obeta <chinonso8@gmail.com>  
+**Subject:** Request for suitable treaty-boundary source, reuse terms, and appropriate engagement route / Demande de source appropriée, de conditions de réutilisation et de voie de dialogue
+
+Hello,
+
+Witness Tree will not digitize, spatially join, or treat the published historic-treaty illustrations or modern-treaty map as legal or precision geometry. Could CIRNAC identify whether a suitable authoritative source exists for a clearly limited, non-legal purpose, or confirm that none should be used for this purpose?
+
+For any suitable release, please provide the stable artifact or snapshot, edition, legal/precision scope statement, feature count, CRS, schema, checksum, exact licence, attribution, and refresh/correction contact. Please state the conditions for a checksum-verified raw copy in immutable Canadian object storage, internal transformation, and derived/public outputs. Please also identify the appropriate Indigenous engagement and right-of-reply process. We will not acquire any geometry or contact rights-holders before receiving that direction.
+
+Regards,
+
+Chinonso Obeta  
+Witness Tree  
+chinonso8@gmail.com
+
+---
+
+Bonjour,
+
+Witness Tree ne numérisera pas les illustrations des traités historiques ni la carte des traités modernes, et ne les utilisera pas comme géométrie juridique ou précise. CIRNAC peut-il indiquer si une source faisant autorité convient à un usage clairement limité et non juridique, ou confirmer qu’aucune source ne devrait être utilisée à cette fin?
+
+Pour toute publication appropriée, veuillez fournir l’artefact stable ou l’instantané, l’édition, l’énoncé de portée juridique/de précision, le nombre d’entités, le SCR, le schéma, la somme de contrôle, la licence, l’attribution et le contact de mise à jour/correction. Veuillez aussi indiquer les conditions d’archive brute immuable au Canada, de transformation interne et de résultats dérivés/publics, ainsi que la démarche appropriée de dialogue et de droit de réponse avec les détenteurs de droits. Aucune géométrie ne sera acquise et aucun détenteur de droits ne sera contacté avant cette orientation.
+
+**Can unblock:** `historic-treaties`, `modern-treaties`.
+
+## Already sent — no duplicate message
+
+**To:** FAIB.Data.Management@gov.bc.ca  
+**Subject:** Permission request — Harvested Areas of BC (Consolidated Cutblocks)
+
+This request was recorded as sent on 2026-08-14 at 17:17:15 UTC and is awaiting a response. Do not send a second request. Its existing wording already asks for the exact-resource licence, attribution, immutable Canadian archival, transformation, derived/public reuse, refresh, and correction terms. It can unblock `bc-consolidated-cutblocks` only if the publisher replies with a sufficient written authorization or redistributable licence.
+
+## Review boundary
+
+Even a positive response does not admit a source. Before any source can advance, the response must be preserved as evidence, the exact supplied artifact must be retrieved through the approved path, its bytes and checksum verified, and the appropriate archive, geometry, governance, owner-admission, transformation, ingestion, release, and production gates independently satisfied.
