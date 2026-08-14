@@ -31,3 +31,18 @@ test("MFA runner has a dry-run default and excludes deletion, IAM mutation, and 
   assert.match(runner, /WitnessTreePlviArchivePromotionUploader/);
   assert.doesNotMatch(runner, /DeleteObject|BypassGovernanceRetention|aws iam (?:create|put|delete|attach|update)/i);
 });
+
+test("provisioning policies bind only the named MFA operator, four keys, and two payload retentions", () => {
+  const trust = JSON.parse(readFileSync(new URL("../infra/aws/plvi-archive-promotion-trust-policy.json", import.meta.url), "utf8"));
+  const role = JSON.parse(readFileSync(new URL("../infra/aws/plvi-archive-promotion-role-policy.json", import.meta.url), "utf8"));
+  const operator = JSON.parse(readFileSync(new URL("../infra/aws/plvi-archive-promotion-assume-role-policy.json", import.meta.url), "utf8"));
+  assert.equal(trust.Statement[0].Principal.AWS, "arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator");
+  assert.equal(trust.Statement[0].Condition.Bool["aws:MultiFactorAuthPresent"], "true");
+  assert.equal(role.Statement[0].Resource.length, 4);
+  assert.equal(role.Statement[1].Resource.length, 2);
+  assert.deepEqual(role.Statement[1].Action, ["s3:PutObjectRetention", "s3:GetObjectRetention"]);
+  assert.ok(role.Statement[3].Action.includes("s3:DeleteObject"));
+  assert.ok(role.Statement[3].Action.includes("s3:BypassGovernanceRetention"));
+  assert.equal(operator.Statement[0].Resource, "arn:aws:iam::286853118812:role/WitnessTreePlviArchivePromotionUploader");
+  assert.equal(operator.Statement[0].Condition.Bool["aws:MultiFactorAuthPresent"], "true");
+});

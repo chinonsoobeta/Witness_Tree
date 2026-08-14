@@ -1,0 +1,12 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AssumeOnlyTheNarrowPlviPromotionRole",
+      "Effect": "Allow",
+      "Action": "sts:AssumeRole",
+      "Resource": "arn:aws:iam::286853118812:role/WitnessTreePlviArchivePromotionUploader",
+      "Condition": {"Bool": {"aws:MultiFactorAuthPresent": "true"}}
+    }
+  ]
+}

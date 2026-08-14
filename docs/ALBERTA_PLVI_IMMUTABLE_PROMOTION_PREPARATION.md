@@ -4,6 +4,8 @@
 
 The proposed destination is the existing Canadian bucket `witness-tree-raw-archive-ca-central-1` in `ca-central-1`. The proposed role is limited to upload, version read-back, multipart cleanup, and payload retention for the four exact payload/sidecar keys in the record. It has no delete, retention-bypass, bucket, or IAM permission.
 
+The reviewed IAM definitions are versioned in [`infra/aws`](../infra/aws): the trust policy names only `arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator` and requires an MFA session; the role policy permits the four canonical keys, limits retention to the two payload keys, and explicitly denies deletion, legal hold, retention bypass, replication, bucket administration, and IAM actions. The separate managed operator policy grants only MFA-gated assumption of this role. These files are a reviewed desired state, not evidence that AWS has accepted or applied it.
+
 `scripts/run-alberta-plvi-approved-promotion.sh` is dry-run by default. Its `--run` path is deliberately owner-local: it rechecks both local byte lengths and SHA-256 values before prompting for a six-digit MFA TOTP, assumes only `WitnessTreePlviArchivePromotionUploader`, uploads the two payloads and deterministic sidecars, reads each version and checksum back, then requires a `COMPLIANCE` retention read-back through `2033-08-12T00:00:00Z`. It must not be run until the exact approval below is received.
 
 Suggested artifact-specific immutable-promotion approval:
