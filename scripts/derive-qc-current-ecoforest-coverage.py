@@ -61,13 +61,19 @@ def main() -> int:
                 feature_table = connection.execute(
                     "SELECT table_name FROM gpkg_contents WHERE table_name = ? AND data_type = 'features'", (SOURCE_LAYER,)
                 ).fetchone()
+                geometry_column = connection.execute(
+                    "SELECT column_name FROM gpkg_geometry_columns WHERE table_name = ?", (SOURCE_LAYER,)
+                ).fetchone()
             finally:
                 connection.close()
-            if feature_table is None:
+            if feature_table is None or geometry_column is None:
                 raise SystemExit(f"Required published layer {SOURCE_LAYER} is absent")
+            geometry_name = geometry_column[0]
+            if not geometry_name.replace("_", "").isalnum():
+                raise SystemExit(f"Unsafe GeoPackage geometry-column name: {geometry_name}")
             output.parent.mkdir(parents=True, exist_ok=True)
             run("ogr2ogr", "-f", "GPKG", str(output), str(source_gpkg), "-dialect", "SQLite", "-sql",
-                f"SELECT ST_Union(geometry) AS geometry FROM {SOURCE_LAYER}", "-nln", "qc_current_ecoforest_coverage", "-nlt", "MULTIPOLYGON")
+                f"SELECT ST_Union(\"{geometry_name}\") AS geometry FROM {SOURCE_LAYER}", "-nln", "qc_current_ecoforest_coverage", "-nlt", "MULTIPOLYGON")
 
     output_sha256 = sha256(output)
     profile = subprocess.check_output(["ogrinfo", "-ro", "-so", "-json", str(output), "qc_current_ecoforest_coverage"], text=True)
@@ -77,7 +83,8 @@ def main() -> int:
         "kind": "deterministic-coverage-derivative",
         "derivedAt": datetime.now(UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z"),
         "rawSource": {"path": str(archive), "byteLength": archive.stat().st_size, "sha256": raw_sha256,
-                      "zipIntegrity": "passed", "member": gpkg_member, "publishedLayer": SOURCE_LAYER},
+                      "zipIntegrity": "passed", "member": gpkg_member, "publishedLayer": SOURCE_LAYER,
+                      "publishedGeometryColumn": geometry_name},
         "derivative": {"path": str(output), "byteLength": output.stat().st_size, "sha256": output_sha256,
                        "layer": "qc_current_ecoforest_coverage",
                        "method": "GDAL SQLite ST_Union over every published PEE_MAJ_PROV polygon; no latitude clipping, tile-index geometry, repair, filtering, or attribute mapping.",
