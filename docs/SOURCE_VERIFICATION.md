@@ -48,6 +48,7 @@ Candidate is not ingestion approval. It does not grant rights beyond the verifie
 - CA Forest Harvest artifact identity is resolved: the harvest and wildfire ZIPs are distinct archives with distinct internal members, and the fire-named URL belongs to the separate CA Forest Wildfire (1985–2022) record. NRCan has still not corrected the harvest resource URL on its own catalogue record, so an automated harvest of that record would still pull the wrong file.
 - SOPFEU live reuse remains blocked until SOPFEU gives written permission; its website terms are not an open-data licence.
 - CPCAD use remains blocked until the applicable terms, attribution and selected release are captured.
+- CPCAD is licensed under the Open Government Licence – Canada and its official ECCC MapServer was read on 14 August 2026, but it remains inadmissible: `OBJECTID` 21563 has attributes yet no retrievable geometry across the official CPCAD and BDCAPC representations. The exact diagnostic is machine-checked in `data/cpcad-acquisition-block.json`; no partial response is a snapshot, staging record, immutable archive, ingestion input, or production data.
 
 The Québec MRNF historical CC BY wildfire dataset and SOPFEU live information must never be treated as the same source or as carrying the same reuse rights.
 
