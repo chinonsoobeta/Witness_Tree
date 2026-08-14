@@ -21,6 +21,15 @@ test("national and provincial discovery entries retain their bounded role and un
   assert.match(byId.get("qc-historical-wildfire")?.intendedRole.en ?? "", /not a live-fire source/);
   assert.equal(byId.get("nrcan-forest-canopy-cover-2022")?.access.url, "https://opendata.nfis.org/downloads/forest_change/CA_canopy_cover_2022.zip");
   assert.equal(byId.get("nrcan-forest-canopy-height-2022")?.access.url, "https://opendata.nfis.org/downloads/forest_change/CA_canopy_height_2022.zip");
+  const legislative = byId.get("nrcan-aboriginal-lands-legislative-boundaries");
+  const modernTreaties = byId.get("cirnac-finalized-modern-treaties-map");
+  assert.equal(legislative?.productionEligible, false);
+  assert.equal(legislative?.licence.state, "unresolved");
+  assert.match(legislative?.verifiedFacts.join(" ") ?? "", /NRCan rather than Indigenous Services Canada/);
+  assert.equal(modernTreaties?.productionEligible, false);
+  assert.equal(modernTreaties?.access.state, "catalogue-listed");
+  assert.match(modernTreaties?.intendedRole.en ?? "", /not a GIS boundary source/i);
+  assert.match(modernTreaties?.verifiedFacts.join(" ") ?? "", /informal purposes/i);
 });
 
 test("the resolved harvest record carries a verified harvest URL and keeps the publisher link error open", () => {
@@ -70,4 +79,10 @@ test("candidate registry rejects invented lineage and incomplete verified licenc
   assert.throws(() => validateSourceCandidates({ ...registry, entries: [{ ...first, access: { ...first.access, retrievalDate: "2026-08-11" } }] }), /retrieval or checksum/);
   assert.throws(() => validateSourceCandidates({ ...registry, entries: [{ ...first, licence: { state: "verified", id: "cc-by-4.0" } }] }), /Official licence URL/);
   assert.throws(() => validateSourceCandidates({ ...registry, entries: [{ ...first, licence: { state: "verified", officialUrl: "https://www.donneesquebec.ca/licence/" } }] }), /Licence id/);
+});
+
+test("Indigenous-boundary candidates fail closed before permission and precision evidence", () => {
+  const entries = registry.entries;
+  assert.throws(() => validateSourceCandidates({ ...registry, entries: entries.map((entry) => entry.id === "nrcan-aboriginal-lands-legislative-boundaries" ? { ...entry, access: { state: "verified", formats: ["shp"], url: "https://example.org/data.zip" } } : entry) }), /Legislative-land boundaries/);
+  assert.throws(() => validateSourceCandidates({ ...registry, entries: entries.map((entry) => entry.id === "cirnac-finalized-modern-treaties-map" ? { ...entry, intendedRole: { ...entry.intendedRole, en: "Boundary geometry." } } : entry) }), /precision use/);
 });

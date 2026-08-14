@@ -254,6 +254,34 @@
       "verifiedFacts": ["Official catalogue lists annual updates and records from 1887–2024.", "Catalogue lists GPKG, FGDB, SHP, WMS, and ZIP resources under CC BY 4.0.", "Catalogue distinguishes principally southern-Québec perimeter coverage from province-wide origin points beginning in 1972."],
       "unresolvedFields": ["Selected resource URL and exact attribution", "Selected spatial coverage", "Snapshot checksum", "Retrieval date"],
       "productionEligible": false
+    },
+    {
+      "id": "nrcan-aboriginal-lands-legislative-boundaries",
+      "status": "candidate",
+      "datasetTitle": "Aboriginal Lands of Canada Legislative Boundaries",
+      "publisher": "Natural Resources Canada — Surveyor General Branch / Canada Lands Survey System",
+      "catalogueUrl": "https://open.canada.ca/data/en/dataset/522b07b9-78e2-4819-b736-ad9208eb1067",
+      "intendedRole": { "en": "Potential legislative reserve and settlement-land boundary reference only, pending authoritative release, terms, scope, and Indigenous-engagement review; never a representation of rights, title, or traditional territory.", "fr": "Référence éventuelle aux limites législatives des réserves et des terres de règlement seulement, sous réserve de la vérification de la diffusion, des conditions, de la portée et de l’examen de mobilisation autochtone; ne représente jamais les droits, les titres ou les territoires traditionnels." },
+      "metadataVerification": "verified",
+      "licence": { "state": "unresolved" },
+      "access": { "state": "catalogue-listed" },
+      "verifiedFacts": ["The official federal catalogue identifies a monthly-maintained vector service for Indian Reserves, selected land-claim settlement lands, and Indian Lands.", "The catalogue identifies both an official ESRI REST service and downloadable SHP resources, but describes downloadable data as the former GeoBase product and states that attribute differences from the service remain while alignment work continues.", "The federal record is published by NRCan rather than Indigenous Services Canada; no ISC-authored authoritative reserve-boundary release was verified in this review."],
+      "unresolvedFields": ["Applicable reuse licence, redistribution permission, and required attribution", "Whether the selected service or download is the authoritative edition for the intended reserve use", "Exact release/version and schema", "Indigenous engagement and right-of-reply review", "Snapshot checksum", "Retrieval date"],
+      "productionEligible": false
+    },
+    {
+      "id": "cirnac-finalized-modern-treaties-map",
+      "status": "candidate",
+      "datasetTitle": "Modern treaties map",
+      "publisher": "Crown-Indigenous Relations and Northern Affairs Canada",
+      "catalogueUrl": "https://www.rcaanc-cirnac.gc.ca/eng/1677073191939/1677073214344",
+      "intendedRole": { "en": "Discovery and contact-reference only for finalized modern-treaty and agreement information; not a GIS boundary source and never precision analytics geometry.", "fr": "Référence de découverte et de contact seulement pour les renseignements sur les traités modernes et les accords finalisés; n’est pas une source de limites SIG ni une géométrie pour l’analyse de précision." },
+      "metadataVerification": "verified",
+      "licence": { "state": "unresolved" },
+      "access": { "state": "catalogue-listed" },
+      "verifiedFacts": ["CIRNAC states that its map illustrates boundaries of finalized modern treaties between Indigenous communities and Canada.", "CIRNAC's map disclaimer says it is distributed for informal purposes, boundaries are approximate and subject to revision, and the drawings must not be relied on for any purpose or activity including consultation obligations.", "No official CIRNAC vector download, machine-readable geometry endpoint, precision statement, or reuse/redistribution permission was verified in this review."],
+      "unresolvedFields": ["Written permission and applicable reuse licence", "Authoritative vector release, version, schema, and precision statement", "Confirmation from each affected rights holder and engagement/right-of-reply process", "Whether any geometry may be used beyond non-analytical discovery", "Snapshot checksum", "Retrieval date"],
+      "productionEligible": false
     }
   ]
 }
