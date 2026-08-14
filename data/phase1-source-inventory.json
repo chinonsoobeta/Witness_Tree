@@ -185,10 +185,10 @@
       "name": "Forest Operations Map",
       "purpose": "Planned activity, distinct from completed harvest.",
       "planUse": "production",
-      "evidence": "candidate registry; not production",
+      "evidence": "official catalogue and public-service observation; Access Only rights blocker recorded; not acquired or production",
       "ownerRole": "provincial data lead",
-      "missing": "Licence, lifecycle semantics, snapshot and archive evidence.",
-      "externalDependency": "BC data publisher"
+      "missing": "Written permission or a redistributable licence before any snapshot, checksum, archive, profile, or use.",
+      "externalDependency": "Province of British Columbia copyright authorization"
     },
     {
       "id": "qc-current-ecoforest",
