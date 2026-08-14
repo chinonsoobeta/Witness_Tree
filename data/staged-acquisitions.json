@@ -131,6 +131,49 @@
       "changesNotice": "This raw archive is unchanged. No extraction, transformation, or ingestion has been performed; verification read the bytes only.",
       "immutableObjectStorage": false,
       "productionEligible": false
+    },
+    {
+      "id": "nrcan-ca-forest-harvest-1985-2022-2026-08-14",
+      "sourceId": "nrcan-ca-forest-harvest-1985-2022",
+      "datasetTitle": "CA Forest Harvest (1985–2022)",
+      "publisher": "Natural Resources Canada, Canadian Forest Service",
+      "catalogueUrl": "https://open.canada.ca/data/en/dataset/87e35bf0-b734-4c4e-9eb6-e08ffe80e3fe",
+      "sourceUrl": "https://opendata.nfis.org/downloads/forest_change/CA_Forest_Harvest_1985-2022.zip",
+      "localPath": "../Witness_Tree-data/raw/nrcan-ca-forest-harvest-1985-2022/2026-08-14/CA_Forest_Harvest_1985-2022.zip",
+      "originalFilename": "CA_Forest_Harvest_1985-2022.zip",
+      "sourceVersion": "undeclared",
+      "sourceVersionBasis": {
+        "en": "The Open Government catalogue record, the official NTEMS distribution page, and the archive README identify the 1985–2022 product but declare no dataset version. The explicit absence marker is therefore recorded; the temporal range and server last-modified time are not inferred editions.",
+        "fr": "La fiche du catalogue Gouvernement ouvert, la page officielle de distribution NTEMS et le fichier README de l'archive désignent le produit de 1985 à 2022 sans déclarer de version du jeu de données. Le marqueur explicite d'absence est donc consigné; la période temporelle et la date de dernière modification du serveur ne sont pas des éditions inférées."
+      },
+      "retrievedAt": "2026-08-14T09:27:41Z",
+      "retrievedAtBasis": {
+        "en": "Download completion instant in UTC, derived from the staged file's local modification time. It is an approximation recorded by this project, not a provider attestation.",
+        "fr": "Instant d'achèvement du téléchargement en UTC, dérivé de la date de modification locale du fichier préparé. C'est une approximation consignée par ce projet et non une attestation du fournisseur."
+      },
+      "verifiedAt": "2026-08-14T16:58:51Z",
+      "byteLength": 247945479,
+      "sha256": "c6f41dff46d91812874672edb53233dac4126952132ad6d1131ad47b11ad7aad",
+      "zipIntegrity": "passed",
+      "licenceId": "ogl-canada",
+      "licenceVersion": "2.0",
+      "temporalCoverage": "1985–2022; 38 annual harvest-change classes plus no-change",
+      "attributionState": "metadata-verified",
+      "attribution": "Contains information licensed under the Open Government Licence – Canada. When using this data, please cite: Hermosilla, T., M.A. Wulder, J.C. White, N.C. Coops, G.W. Hobart, L.B. Campbell, 2016. Mass data processing of time series Landsat imagery: pixels to data products for forest monitoring. International Journal of Digital Earth 9(11), 1035–1054. https://doi.org/10.1080/17538947.2016.1187673.",
+      "licenceUrl": "https://open.canada.ca/en/open-government-licence-canada",
+      "attributionBasis": "The archive README identifies the Open Government Licence – Canada and requests the Hermosilla et al. (2016) citation. The licence requires acknowledgement of the source, any provider attribution statement, and a licence link where possible. The Open Government catalogue assigns the same licence; its resource URL is currently fire-named, so the verified NTEMS distribution page and archive member names bind this separate harvest archive without treating the catalogue link error as evidence for the wrong artifact.",
+      "attributionSources": [
+        "https://open.canada.ca/en/open-government-licence-canada",
+        "https://open.canada.ca/data/en/dataset/87e35bf0-b734-4c4e-9eb6-e08ffe80e3fe",
+        "https://opendata.nfis.org/mapserver/nfis-change_eng.html",
+        "CA_Forest_Harvest_1985-2022.zip:CA_Forest_Harvest_1985-2022_README.txt"
+      ],
+      "attributionVerifiedAt": "2026-08-14T16:58:51Z",
+      "archiveContents": "8 entries, 751204296 bytes uncompressed: one 30-m GeoTIFF harvest-change-year raster with LZW compression and seven supporting layer, overview, value-table, world-file, and bilingual README files.",
+      "catalogueResourceDiscrepancy": "The Open Government record resource labelled CA_Forest_Harvest_1985-2022.zip currently points to the separate fire-named ZIP. The official NTEMS distribution page links this exact harvest-named URL, and the staged archive contains harvest-named internal members. The discrepancy remains recorded for publisher correction.",
+      "changesNotice": "This raw archive is unchanged. No extraction, transformation, ingestion, object-storage promotion, or production use has been performed; verification read the bytes only.",
+      "immutableObjectStorage": false,
+      "productionEligible": false
     }
   ]
 }
