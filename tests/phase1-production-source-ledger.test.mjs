@@ -67,3 +67,14 @@ test("First Nation reserve geometry remains blocked and cannot infer a point or 
   invented.rawEvidenceNumerator = 11.25;
   assert.throws(() => validatePhase1ProductionSourceLedger(invented, inventory), /Local evidence must remain profile\/re-fetch evidence/i);
 });
+
+test("Historic treaty mapping remains blocked and cannot infer legal or local-profile geometry", () => {
+  const treaties = ledger.entries.find((entry) => entry.id === "historic-treaties");
+  assert.equal(treaties.evidenceState, "access-blocked");
+  assert.deepEqual(treaties.evidenceRefs, ["data/historic-treaties-authority-access-block.json"]);
+  assert.equal(treaties.rawCredit, 0);
+  assert.equal(treaties.productionEligible, false);
+  const invented = structuredClone(ledger); const row = invented.entries.find((entry) => entry.id === "historic-treaties");
+  row.evidenceState = "local-verified-profiled"; row.rawCredit = 0.75; invented.rawEvidenceNumerator = 11.25;
+  assert.throws(() => validatePhase1ProductionSourceLedger(invented, inventory), /Local evidence must remain profile\/re-fetch evidence/i);
+});
