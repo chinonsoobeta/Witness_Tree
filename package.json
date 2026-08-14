@@ -26,6 +26,7 @@
     "check:bc-vri-access": "node scripts/check-bc-vri-access.mjs",
     "check:bc-bec-snapshot": "node scripts/check-bc-bec-snapshot.mjs",
     "check:bc-tap-priority-deferral": "node scripts/check-bc-tap-priority-deferral.mjs",
+    "check:cwfis-current-active-fires": "node scripts/check-cwfis-current-active-fires.mjs",
     "check:phase1-source-inventory": "node scripts/check-phase1-source-inventory.mjs",
     "check:phase1-production-source-ledger": "node scripts/check-phase1-production-source-ledger.mjs",
     "prepare:phase1-local-profiled-immutable-promotion": "tsx scripts/prepare-phase1-local-profiled-immutable-promotion.mjs",
