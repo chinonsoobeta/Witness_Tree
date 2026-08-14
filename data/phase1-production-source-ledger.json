@@ -439,12 +439,14 @@
     },
     {
       "id": "on-fri",
-      "evidenceState": "unaddressed",
-      "evidenceRefs": [],
+      "evidenceState": "access-blocked",
+      "evidenceRefs": [
+        "data/ontario-fri-term2-access-block.json"
+      ],
       "proof": {
         "licence": false,
         "attribution": false,
-        "retrievalVersion": false,
+        "retrievalVersion": true,
         "checksum": false,
         "rawArchiveRefetch": false,
         "profile": false,
@@ -453,7 +455,7 @@
       },
       "rawCredit": 0,
       "productionEligible": false,
-      "blocker": "Ontario FMU is supporting context, not FRI; obtain FRI access and evidence."
+      "blocker": "Official Term 2 FRI catalogue exposes only mutable WEB explorer resources; no stable complete payload/deterministic API or exact-package reuse confirmation exists."
     },
     {
       "id": "on-fri-term-2",

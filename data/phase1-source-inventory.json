@@ -295,10 +295,10 @@
       "name": "Forest Resources Inventory",
       "purpose": "Pre-event forest condition.",
       "planUse": "production",
-      "evidence": "plan URL only",
+      "evidence": "official Term 2 catalogue/access-and-rights block; no downloadable package; not production",
       "ownerRole": "provincial data lead",
-      "missing": "Term/edition, access, licence, coverage and archive evidence.",
-      "externalDependency": "Ontario forest ministry"
+      "missing": "Publisher-provided stable complete Term 2 FRI package, declared edition/coverage/checksum and written exact-package reuse confirmation.",
+      "externalDependency": "Ontario Ministry of Natural Resources and Forestry package and rights confirmation"
     },
     {
       "id": "on-fri-term-2",

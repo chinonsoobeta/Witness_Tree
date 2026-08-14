@@ -25,3 +25,17 @@ test("ledger fails closed for omission, credit inflation, a missing proof, or in
   const staleTotal = structuredClone(ledger); staleTotal.rawEvidenceNumerator = 7.5;
   assert.throws(() => validatePhase1ProductionSourceLedger(staleTotal, inventory), /computed from its row states/i);
 });
+
+test("Ontario FRI is explicitly access-blocked by its official Term 2 record", () => {
+  const fri = ledger.entries.find((entry) => entry.id === "on-fri");
+  assert.equal(fri.evidenceState, "access-blocked");
+  assert.deepEqual(fri.evidenceRefs, ["data/ontario-fri-term2-access-block.json"]);
+  assert.equal(fri.rawCredit, 0);
+  assert.equal(fri.productionEligible, false);
+  const invented = structuredClone(ledger);
+  const inventedFri = invented.entries.find((entry) => entry.id === "on-fri");
+  inventedFri.evidenceState = "local-verified-profiled";
+  inventedFri.rawCredit = 0.75;
+  invented.rawEvidenceNumerator = 11.25;
+  assert.throws(() => validatePhase1ProductionSourceLedger(invented, inventory), /Local evidence must remain profile\/re-fetch evidence/i);
+});
