@@ -41,6 +41,20 @@ run_aws() {
     return 1
   fi
 }
+assert_retention_readback() {
+  local readback="$1" actual
+  jq -e '.Retention.Mode == "COMPLIANCE"' <<<"$readback" >/dev/null || fail "Retention readback is not compliance mode."
+  actual="$(jq -er '.Retention.RetainUntilDate' <<<"$readback")" || fail "Retention readback has no retention instant."
+  node -e 'const [wanted, actual] = process.argv.slice(1); if (Date.parse(wanted) !== Date.parse(actual)) process.exit(1)' "$retention_until" "$actual" || fail "Retention readback does not match the requested instant."
+}
+cleanup_legal_hold() {
+  local status=$?
+  if [[ "${hold_cleanup_required:-0}" == 1 ]]; then
+    phase "best-effort cleanup: set the exercise legal hold OFF"
+    run_aws cleanup-legal-hold-off --region "$REGION" s3api put-object-legal-hold --bucket "$PRIMARY_BUCKET" --key "$exercise_key" --version-id "$version_id" --legal-hold Status=OFF >/dev/null || true
+  fi
+  exit "$status"
+}
 
 # Prompt before any AWS call, so invalid/empty input cannot mutate AWS state.
 phase "enter the current virtual-MFA TOTP; it is not saved"
@@ -91,16 +105,24 @@ assume_role "$BREAK_GLASS_ROLE"
 phase "set compliance retention and legal hold ON, then read both"
 run_aws put-retention --region "$REGION" s3api put-object-retention --bucket "$PRIMARY_BUCKET" --key "$exercise_key" --version-id "$version_id" --retention "Mode=COMPLIANCE,RetainUntilDate=${retention_until}" >/dev/null
 run_aws legal-hold-on --region "$REGION" s3api put-object-legal-hold --bucket "$PRIMARY_BUCKET" --key "$exercise_key" --version-id "$version_id" --legal-hold Status=ON >/dev/null
+hold_cleanup_required=1
+trap cleanup_legal_hold EXIT
 hold_on="$(run_aws legal-hold-on-readback --region "$REGION" s3api get-object-legal-hold --bucket "$PRIMARY_BUCKET" --key "$exercise_key" --version-id "$version_id" --output json)"
 retention_on="$(run_aws retention-on-readback --region "$REGION" s3api get-object-retention --bucket "$PRIMARY_BUCKET" --key "$exercise_key" --version-id "$version_id" --output json)"
+printf '%s\n' "$hold_on" >"$evidence_dir/legal-hold-on-readback.json"
+printf '%s\n' "$retention_on" >"$evidence_dir/retention-on-readback.json"
 jq -e '.LegalHold.Status == "ON"' <<<"$hold_on" >/dev/null
-jq -e --arg until "$retention_until" '.Retention.Mode == "COMPLIANCE" and .Retention.RetainUntilDate == $until' <<<"$retention_on" >/dev/null
+assert_retention_readback "$retention_on"
 phase "set legal hold OFF and verify unchanged compliance retention"
 run_aws legal-hold-off --region "$REGION" s3api put-object-legal-hold --bucket "$PRIMARY_BUCKET" --key "$exercise_key" --version-id "$version_id" --legal-hold Status=OFF >/dev/null
 hold_off="$(run_aws legal-hold-off-readback --region "$REGION" s3api get-object-legal-hold --bucket "$PRIMARY_BUCKET" --key "$exercise_key" --version-id "$version_id" --output json)"
 retention_off="$(run_aws retention-off-readback --region "$REGION" s3api get-object-retention --bucket "$PRIMARY_BUCKET" --key "$exercise_key" --version-id "$version_id" --output json)"
+printf '%s\n' "$hold_off" >"$evidence_dir/legal-hold-off-readback.json"
+printf '%s\n' "$retention_off" >"$evidence_dir/retention-off-readback.json"
 jq -e '.LegalHold.Status == "OFF"' <<<"$hold_off" >/dev/null
-jq -e --arg until "$retention_until" '.Retention.Mode == "COMPLIANCE" and .Retention.RetainUntilDate == $until' <<<"$retention_off" >/dev/null
+assert_retention_readback "$retention_off"
+hold_cleanup_required=0
+trap - EXIT
 unset hold_on retention_on hold_off retention_off
 
 assume_role "$UPLOADER_ROLE"

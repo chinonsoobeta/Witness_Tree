@@ -25,6 +25,8 @@ test("owner-local archive exercise has bounded, redacted MFA and control flow", 
   assert.match(helper, /read -r -s -p "Current WitnessTreeArchiveOperator TOTP/);
   assert.match(helper, /--cli-connect-timeout "\$CLI_CONNECT_TIMEOUT" --cli-read-timeout "\$CLI_READ_TIMEOUT"/);
   assert.match(helper, /sts get-session-token/);
+  assert.match(helper, /Date\.parse\(wanted\) !== Date\.parse\(actual\)/);
+  assert.doesNotMatch(helper, /Retention\.RetainUntilDate == \$until/);
   assert.match(helper, /Set this profile's exact assigned virtual-MFA serial locally, then retry\./);
   assert.doesNotMatch(helper, /mfa_serial="arn:aws:iam::\$\{account_id\}:mfa\/WitnessTreeArchiveOperator"/);
   assert.match(helper, /sts assume-role/);
@@ -34,6 +36,10 @@ test("owner-local archive exercise has bounded, redacted MFA and control flow", 
   assert.match(helper, /not-verifiable-with-approved-role/);
   assert.doesNotMatch(helper, /exec 2>|--no-verify-ssl|root-access-key|console-password/);
   assert.ok(helper.indexOf('read -r -s -p "Current WitnessTreeArchiveOperator TOTP') < helper.indexOf('identity="$(run_aws identity'), "TOTP validation must occur before the first AWS call.");
+});
+
+test("retention instants compare across equivalent Z and UTC-offset forms", () => {
+  assert.equal(Date.parse("2026-08-16T12:34:56Z"), Date.parse("2026-08-16T12:34:56+00:00"));
 });
 
 test("interactive PTY shows prompt and rejects invalid or empty input before AWS mutation", () => {
