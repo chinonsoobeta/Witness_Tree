@@ -1,0 +1,862 @@
+{
+  "schemaVersion": "witness-tree/vlce2-remote-promotion-evidence/1",
+  "status": "remote-verified",
+  "observedAt": "2026-08-14T16:53:24Z",
+  "historicalPreparation": {
+    "path": "data/vlce2-promotion-preparation.json",
+    "commit": "c5c23bb",
+    "status": "preparation-only",
+    "supersededByThisRecord": true,
+    "en": "The preparation record preserves the pre-promotion observations: only 1984 was then retained. This later record is the authoritative remote observation after the approved promotion; it does not rewrite the earlier state.",
+    "fr": "Le registre de préparation conserve les observations antérieures à la promotion : seule l’année 1984 était alors retenue. Le présent registre ultérieur constitue l’observation distante faisant autorité après la promotion approuvée; il ne réécrit pas l’état antérieur."
+  },
+  "source": {
+    "id": "nrcan-annual-land-cover-v2",
+    "publisher": "Natural Resources Canada",
+    "catalogueUrl": "https://open.canada.ca/data/en/dataset/2785c103-9c2d-429b-9f3d-89f5cd9ea94d",
+    "licence": {
+      "id": "ogl-canada",
+      "url": "https://open.canada.ca/en/open-government-licence-canada",
+      "attribution": {
+        "en": "Contains information licensed under the Open Government Licence – Canada.",
+        "fr": "Contient des informations octroyées sous licence en vertu de la Licence du gouvernement ouvert – Canada."
+      }
+    }
+  },
+  "storage": {
+    "bucket": "witness-tree-raw-archive-ca-central-1",
+    "region": "ca-central-1",
+    "retentionMode": "COMPLIANCE",
+    "retainUntilDate": "2033-08-12T00:00:00+00:00"
+  },
+  "tools": {
+    "awsCli": "aws-cli/2.36.21 Python/3.14.6 Darwin/27.0.0 source/arm64",
+    "node": "v26.5.0"
+  },
+  "counts": {
+    "payloads": 39,
+    "sidecars": 39,
+    "retainedPayloadVersions": 39
+  },
+  "entries": [
+    {
+      "year": 1984,
+      "payload": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T11-38-19Z/6da3aaa2181b3ab4c0a5ae6313776a298f1eea26a5a4f45f178984ae5cb17724/payload/ca_forest_vlce2_1984.zip",
+        "versionId": "qV_FqbG9DGbKtvkcgQVUTVKiYu5CUAlZ",
+        "byteLength": 1520973970,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "5jT00MHO+70="
+      },
+      "sidecar": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T11-38-19Z/6da3aaa2181b3ab4c0a5ae6313776a298f1eea26a5a4f45f178984ae5cb17724/manifest.json",
+        "versionId": "XMcZ5S.BhxrfUTkkcfMHULexirdSb2EE",
+        "byteLength": 1716,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "8dXbNBeYIOg="
+      },
+      "retention": {
+        "mode": "COMPLIANCE",
+        "retainUntilDate": "2033-08-12T00:00:00+00:00"
+      }
+    },
+    {
+      "year": 1985,
+      "payload": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T16-16-29Z/bab13422243844be74946c3fa51199f7c3816b1b43357bac645612dad15bcf18/payload/ca_forest_vlce2_1985.zip",
+        "versionId": "T16ecKIY32MqZekUiwPNYD_jFjuPBZYa",
+        "byteLength": 1515795138,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "ay88oVtjXwI="
+      },
+      "sidecar": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T16-16-29Z/bab13422243844be74946c3fa51199f7c3816b1b43357bac645612dad15bcf18/manifest.json",
+        "versionId": "2VIdojG9ZlJCM3lDQYOTBbe6UTYmoKRW",
+        "byteLength": 1716,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "i0gYj8w61DE="
+      },
+      "retention": {
+        "mode": "COMPLIANCE",
+        "retainUntilDate": "2033-08-12T00:00:00+00:00"
+      }
+    },
+    {
+      "year": 1986,
+      "payload": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T11-37-13Z/915f32af6b5250513a44eda7134c24803b1c4c95c87f111c726f2751012929f8/payload/ca_forest_vlce2_1986.zip",
+        "versionId": "8YQc.X34nOY6LSXMPfJ513mieUP3Pqyx",
+        "byteLength": 1510230189,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "ahVq6r0LtYM="
+      },
+      "sidecar": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T11-37-13Z/915f32af6b5250513a44eda7134c24803b1c4c95c87f111c726f2751012929f8/manifest.json",
+        "versionId": "iGCTEQYj8iA8V6hVGwAD19P2CVl61in1",
+        "byteLength": 1716,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "3S7O+CLn5kM="
+      },
+      "retention": {
+        "mode": "COMPLIANCE",
+        "retainUntilDate": "2033-08-12T00:00:00+00:00"
+      }
+    },
+    {
+      "year": 1987,
+      "payload": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T11-52-04Z/33c16553d73e5c6f38c8404724ad48ef1b874107c413553223cd3a961bc85ee5/payload/ca_forest_vlce2_1987.zip",
+        "versionId": "PuMiq_oP773ypP8ams0HtI7Rhxx3KCtR",
+        "byteLength": 1506185331,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "PqLdShE15dU="
+      },
+      "sidecar": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T11-52-04Z/33c16553d73e5c6f38c8404724ad48ef1b874107c413553223cd3a961bc85ee5/manifest.json",
+        "versionId": "U4.gnYkymy3DcrDXGscsdpK_rWZiWh4q",
+        "byteLength": 1716,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "L3iIoR267N8="
+      },
+      "retention": {
+        "mode": "COMPLIANCE",
+        "retainUntilDate": "2033-08-12T00:00:00+00:00"
+      }
+    },
+    {
+      "year": 1988,
+      "payload": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T11-47-45Z/e51475a4a368a7f014cbbea84eefbce449632529e512064415afb5f868c58889/payload/ca_forest_vlce2_1988.zip",
+        "versionId": "m5yuVIH3KXE.aGyyJp2RhIkOCu7JAgM3",
+        "byteLength": 1501993855,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "2eAYorIyEko="
+      },
+      "sidecar": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T11-47-45Z/e51475a4a368a7f014cbbea84eefbce449632529e512064415afb5f868c58889/manifest.json",
+        "versionId": "VaJ12aQ0ATzL9EObZxMz40RfA.qACR6l",
+        "byteLength": 1716,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "kF912cqSbmo="
+      },
+      "retention": {
+        "mode": "COMPLIANCE",
+        "retainUntilDate": "2033-08-12T00:00:00+00:00"
+      }
+    },
+    {
+      "year": 1989,
+      "payload": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T11-59-22Z/399ca35d03c7b38462e1bd4599cc5ba6dc4bbcf7763ea51f485f938f24fc8d63/payload/ca_forest_vlce2_1989.zip",
+        "versionId": "tyKnoCQzhGm8dhh_vplqFB0cZ5WOrpNZ",
+        "byteLength": 1501339049,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "UMzwTFVyiNs="
+      },
+      "sidecar": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T11-59-22Z/399ca35d03c7b38462e1bd4599cc5ba6dc4bbcf7763ea51f485f938f24fc8d63/manifest.json",
+        "versionId": "dQg5LfqdmZW2SRRJXxtiLTkJw5th.Dm4",
+        "byteLength": 1716,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "C/vJKbPdkiQ="
+      },
+      "retention": {
+        "mode": "COMPLIANCE",
+        "retainUntilDate": "2033-08-12T00:00:00+00:00"
+      }
+    },
+    {
+      "year": 1990,
+      "payload": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T12-02-37Z/a62046969e278bc09f5aa8dba81ed3f27b83ef4ee28b03a5b78b1fca99362bbd/payload/ca_forest_vlce2_1990.zip",
+        "versionId": "GKcvIm2p3U2iqk7PmyhyynZl99.eTuxv",
+        "byteLength": 1497437365,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "cRDZjTinspk="
+      },
+      "sidecar": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T12-02-37Z/a62046969e278bc09f5aa8dba81ed3f27b83ef4ee28b03a5b78b1fca99362bbd/manifest.json",
+        "versionId": "D2bxLTLdi0V.xtmR_7bDNErAN4ic4d3F",
+        "byteLength": 1716,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "xrhSkoKFY2E="
+      },
+      "retention": {
+        "mode": "COMPLIANCE",
+        "retainUntilDate": "2033-08-12T00:00:00+00:00"
+      }
+    },
+    {
+      "year": 1991,
+      "payload": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T12-04-02Z/a977d0887ba2b7b2fe6fe6a24e0ff863703eb01d3463d5519944664b9a3de58f/payload/ca_forest_vlce2_1991.zip",
+        "versionId": "Vg_D_Izr7qzm5dOIQu7wvbRdeZzplbWO",
+        "byteLength": 1494487119,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "HfuDNBuoaEE="
+      },
+      "sidecar": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T12-04-02Z/a977d0887ba2b7b2fe6fe6a24e0ff863703eb01d3463d5519944664b9a3de58f/manifest.json",
+        "versionId": "3qW3q80ubLlvq6SS7jHDc9it4AUxUadh",
+        "byteLength": 1716,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "jx+AxuKaZNk="
+      },
+      "retention": {
+        "mode": "COMPLIANCE",
+        "retainUntilDate": "2033-08-12T00:00:00+00:00"
+      }
+    },
+    {
+      "year": 1992,
+      "payload": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T12-14-19Z/266faa58e29bdcff906bf577f3bbc80bbd36e2b2da1994f7a5c22a4e2aac088d/payload/ca_forest_vlce2_1992.zip",
+        "versionId": "jAyF1uz9u9Or5J72xtAd5OL6Hr9wGiCG",
+        "byteLength": 1491133163,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "gTPZOsDST8A="
+      },
+      "sidecar": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T12-14-19Z/266faa58e29bdcff906bf577f3bbc80bbd36e2b2da1994f7a5c22a4e2aac088d/manifest.json",
+        "versionId": "yq0skd9YMXI90LzzCY2IW86yWRaFUP1k",
+        "byteLength": 1716,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "xZ1YXg0RM64="
+      },
+      "retention": {
+        "mode": "COMPLIANCE",
+        "retainUntilDate": "2033-08-12T00:00:00+00:00"
+      }
+    },
+    {
+      "year": 1993,
+      "payload": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T12-17-32Z/78e49dd3513b36d28a82efc23ebdf6d2c99cc7d412f0c61ab8bedbfe98aea9aa/payload/ca_forest_vlce2_1993.zip",
+        "versionId": "Mvp4gSMyGNvpTvA9rOKrfqrwAH1mj.xA",
+        "byteLength": 1490251627,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "EmQQ4bLZCcA="
+      },
+      "sidecar": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T12-17-32Z/78e49dd3513b36d28a82efc23ebdf6d2c99cc7d412f0c61ab8bedbfe98aea9aa/manifest.json",
+        "versionId": "yqEODJx.Cr_9DXCD4aK9egcPvdbFvfSQ",
+        "byteLength": 1716,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "5j3ny9kApFc="
+      },
+      "retention": {
+        "mode": "COMPLIANCE",
+        "retainUntilDate": "2033-08-12T00:00:00+00:00"
+      }
+    },
+    {
+      "year": 1994,
+      "payload": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T12-27-26Z/62eaba23ca60f4489873c7634ca9b91034986b0103e262adeac11f09236574ac/payload/ca_forest_vlce2_1994.zip",
+        "versionId": "MooYBPzhzyjE77hd47AEzr.K.i_3qbNl",
+        "byteLength": 1492328775,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "CZP069uU7EI="
+      },
+      "sidecar": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T12-27-26Z/62eaba23ca60f4489873c7634ca9b91034986b0103e262adeac11f09236574ac/manifest.json",
+        "versionId": "e6YRNbvCZUZaiej3_TDmCmUUojBxAGkw",
+        "byteLength": 1716,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "QqJ+ebdQt+0="
+      },
+      "retention": {
+        "mode": "COMPLIANCE",
+        "retainUntilDate": "2033-08-12T00:00:00+00:00"
+      }
+    },
+    {
+      "year": 1995,
+      "payload": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T12-31-47Z/24798848d49183d0a39dd282a89830039acb6e4374056d86a0c4d0425d6884e9/payload/ca_forest_vlce2_1995.zip",
+        "versionId": "XZ3P2PxNCTcBgT_GsJeoqMc8KWakP9hT",
+        "byteLength": 1498053540,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "Jw0jVsMi4Ms="
+      },
+      "sidecar": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T12-31-47Z/24798848d49183d0a39dd282a89830039acb6e4374056d86a0c4d0425d6884e9/manifest.json",
+        "versionId": "mVg2ruMyO8.OtJX2fkuIwIbcc0AIg7xr",
+        "byteLength": 1716,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "qxgoe4EOXIA="
+      },
+      "retention": {
+        "mode": "COMPLIANCE",
+        "retainUntilDate": "2033-08-12T00:00:00+00:00"
+      }
+    },
+    {
+      "year": 1996,
+      "payload": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T12-40-25Z/6da70b4f070b22799445580d03bd55e2b1a7e438fc9b171c6608ae6f5b7ee464/payload/ca_forest_vlce2_1996.zip",
+        "versionId": "S6aoo4flAztOX_I.D5TSwueDP3mQiRwA",
+        "byteLength": 1498624946,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "IhCbzTaSVCE="
+      },
+      "sidecar": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T12-40-25Z/6da70b4f070b22799445580d03bd55e2b1a7e438fc9b171c6608ae6f5b7ee464/manifest.json",
+        "versionId": "8a4kQupx8QaL3ew4DmsvJM5B8qNLfXDz",
+        "byteLength": 1716,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "XsBQxGdCQh0="
+      },
+      "retention": {
+        "mode": "COMPLIANCE",
+        "retainUntilDate": "2033-08-12T00:00:00+00:00"
+      }
+    },
+    {
+      "year": 1997,
+      "payload": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T12-50-15Z/2e63621c57c1104ac8fb4d0ffd165e0b831d1301aba73df6b00c89088df345a1/payload/ca_forest_vlce2_1997.zip",
+        "versionId": "TTLQPqpyVRzTbTxR31e8BpgGxvCfDynz",
+        "byteLength": 1500301551,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "VMqfL8sf/Ko="
+      },
+      "sidecar": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T12-50-15Z/2e63621c57c1104ac8fb4d0ffd165e0b831d1301aba73df6b00c89088df345a1/manifest.json",
+        "versionId": "RRB058iNF3wZ9DAj6AdwP521Rk_293G6",
+        "byteLength": 1716,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "26+2mif5d3E="
+      },
+      "retention": {
+        "mode": "COMPLIANCE",
+        "retainUntilDate": "2033-08-12T00:00:00+00:00"
+      }
+    },
+    {
+      "year": 1998,
+      "payload": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T12-46-31Z/b48e47c197f1d87416a2528437c51e01a386c2b5f0206f11ecbd060e2ea19c9b/payload/ca_forest_vlce2_1998.zip",
+        "versionId": "PNO8gWZaysBiU6bVVtSDg1.t4NXhm0v7",
+        "byteLength": 1502974375,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "OKrUJ4QoV10="
+      },
+      "sidecar": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T12-46-31Z/b48e47c197f1d87416a2528437c51e01a386c2b5f0206f11ecbd060e2ea19c9b/manifest.json",
+        "versionId": "kLpnTSDw3aNZGlEaICWblqq89fsjUppl",
+        "byteLength": 1716,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "Ws9wll8m3FY="
+      },
+      "retention": {
+        "mode": "COMPLIANCE",
+        "retainUntilDate": "2033-08-12T00:00:00+00:00"
+      }
+    },
+    {
+      "year": 1999,
+      "payload": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T13-04-33Z/0b5c53ba5effabc8c075871593cd410d24d67898054370d28c20b6a22fbdf2a2/payload/ca_forest_vlce2_1999.zip",
+        "versionId": "fr5iisuIjMpwpMTu1BHgd0i99G0VHkwL",
+        "byteLength": 1504085117,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "j1res2npNPY="
+      },
+      "sidecar": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T13-04-33Z/0b5c53ba5effabc8c075871593cd410d24d67898054370d28c20b6a22fbdf2a2/manifest.json",
+        "versionId": "uk3.1BwNlS8geYDm3k9l0aMC2WhLpfXF",
+        "byteLength": 1716,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "mB5d2sGl48Y="
+      },
+      "retention": {
+        "mode": "COMPLIANCE",
+        "retainUntilDate": "2033-08-12T00:00:00+00:00"
+      }
+    },
+    {
+      "year": 2000,
+      "payload": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T13-02-19Z/36bbe9f63fdcc13355e21abcdab98af8fdc0016a910e9be8513a329fb13a40cc/payload/ca_forest_vlce2_2000.zip",
+        "versionId": "eSh3XPccK7VmmKm3M21fZ5ymJJErtMTp",
+        "byteLength": 1506122428,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "KwFrbY94hUo="
+      },
+      "sidecar": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T13-02-19Z/36bbe9f63fdcc13355e21abcdab98af8fdc0016a910e9be8513a329fb13a40cc/manifest.json",
+        "versionId": "Eanw_oUk0u47.CuhNHuD72vpHKbEehD0",
+        "byteLength": 1716,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "7/4g/JAZCA8="
+      },
+      "retention": {
+        "mode": "COMPLIANCE",
+        "retainUntilDate": "2033-08-12T00:00:00+00:00"
+      }
+    },
+    {
+      "year": 2001,
+      "payload": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T13-18-59Z/aabec291d296ea3588ff0fb1d195d11189eaed921978edf4e5348a675919930e/payload/ca_forest_vlce2_2001.zip",
+        "versionId": "A0LMUeeEUf6xfN4P_Lti0O03ec86oKvP",
+        "byteLength": 1505838178,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "M0g/7fz7YJQ="
+      },
+      "sidecar": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T13-18-59Z/aabec291d296ea3588ff0fb1d195d11189eaed921978edf4e5348a675919930e/manifest.json",
+        "versionId": "QRI4OZTQF_5M_0nF50qnna4pQAXF_uja",
+        "byteLength": 1716,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "922O9w9nN7M="
+      },
+      "retention": {
+        "mode": "COMPLIANCE",
+        "retainUntilDate": "2033-08-12T00:00:00+00:00"
+      }
+    },
+    {
+      "year": 2002,
+      "payload": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T13-27-23Z/d15ef4086be6fe53a7811fc34a6c1c3b9096c46855a9b6620b2ea0232ffd38a9/payload/ca_forest_vlce2_2002.zip",
+        "versionId": "zUXPUccPHqmSiNX370R5S89xMB5_Xsgo",
+        "byteLength": 1505579245,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "uwkJM5NKYTw="
+      },
+      "sidecar": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T13-27-23Z/d15ef4086be6fe53a7811fc34a6c1c3b9096c46855a9b6620b2ea0232ffd38a9/manifest.json",
+        "versionId": "yve8xqAIk1ln5iF_Jn5IKZqKrA2h8hgM",
+        "byteLength": 1716,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "GeguQpS6PE4="
+      },
+      "retention": {
+        "mode": "COMPLIANCE",
+        "retainUntilDate": "2033-08-12T00:00:00+00:00"
+      }
+    },
+    {
+      "year": 2003,
+      "payload": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T13-17-24Z/7139f2e512508298bc00a16416a1177ca1ad0c771c3f852eba8a1f1d25ac1301/payload/ca_forest_vlce2_2003.zip",
+        "versionId": "PH_egOTdHJzc76RwjSD_jn1l4FSJ91Rj",
+        "byteLength": 1504483054,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "IEm1gAp5FEY="
+      },
+      "sidecar": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T13-17-24Z/7139f2e512508298bc00a16416a1177ca1ad0c771c3f852eba8a1f1d25ac1301/manifest.json",
+        "versionId": "eVqW0C8jJYT0.24H2UllHdcUCDTpfvtF",
+        "byteLength": 1716,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "3q8WibCPo3g="
+      },
+      "retention": {
+        "mode": "COMPLIANCE",
+        "retainUntilDate": "2033-08-12T00:00:00+00:00"
+      }
+    },
+    {
+      "year": 2004,
+      "payload": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T13-30-40Z/7b3927642c11a2ae80c71651407a0142ad127cd7ce420bf35416e996487bcab4/payload/ca_forest_vlce2_2004.zip",
+        "versionId": "zoWTtcsuED7jwBisr6ktL4B.pUboY40C",
+        "byteLength": 1505123532,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "ExmJETZUiCc="
+      },
+      "sidecar": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T13-30-40Z/7b3927642c11a2ae80c71651407a0142ad127cd7ce420bf35416e996487bcab4/manifest.json",
+        "versionId": "CE7HAqD6CzH9snL6Ab8ztKYEa_RDeztt",
+        "byteLength": 1716,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "AN3kNOK2Egg="
+      },
+      "retention": {
+        "mode": "COMPLIANCE",
+        "retainUntilDate": "2033-08-12T00:00:00+00:00"
+      }
+    },
+    {
+      "year": 2005,
+      "payload": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T13-31-39Z/802281cb3a4a7b0ff01370eba3e2e79f71b2cf96ccbf2e5967a8f41736a88ee4/payload/ca_forest_vlce2_2005.zip",
+        "versionId": "HLgj4EXYxEA7ftl3WNa81WbdMbexZHNJ",
+        "byteLength": 1506734685,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "5VCy3K9yIq4="
+      },
+      "sidecar": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T13-31-39Z/802281cb3a4a7b0ff01370eba3e2e79f71b2cf96ccbf2e5967a8f41736a88ee4/manifest.json",
+        "versionId": "rwRDjqfaykLHN9sUyxQ.TfaVBAmeWdhR",
+        "byteLength": 1716,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "DYfLjjgfz9w="
+      },
+      "retention": {
+        "mode": "COMPLIANCE",
+        "retainUntilDate": "2033-08-12T00:00:00+00:00"
+      }
+    },
+    {
+      "year": 2006,
+      "payload": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T13-34-50Z/611e6d0339dbf8f9934457dc5edb2761927329f9e33f07814d7fa9a1b329dc4c/payload/ca_forest_vlce2_2006.zip",
+        "versionId": ".bVOmOiQS0EUxvm6eG14t96JypKCeJcw",
+        "byteLength": 1508214599,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "vqMuUh3h7l8="
+      },
+      "sidecar": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T13-34-50Z/611e6d0339dbf8f9934457dc5edb2761927329f9e33f07814d7fa9a1b329dc4c/manifest.json",
+        "versionId": "IiZGMO95a1F_R40_3ghcybi6ZaKPqsce",
+        "byteLength": 1716,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "8jWWqAx9uLA="
+      },
+      "retention": {
+        "mode": "COMPLIANCE",
+        "retainUntilDate": "2033-08-12T00:00:00+00:00"
+      }
+    },
+    {
+      "year": 2007,
+      "payload": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T13-38-13Z/9a2292d5169884bb41199ce7717ad87ff49dabbfd08c9ac3410b1902f6ccc02e/payload/ca_forest_vlce2_2007.zip",
+        "versionId": "KMF_lBX_pYakSIi7QrVlEzBJbRoL21l9",
+        "byteLength": 1506551890,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "d9xr4eSe6Wc="
+      },
+      "sidecar": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T13-38-13Z/9a2292d5169884bb41199ce7717ad87ff49dabbfd08c9ac3410b1902f6ccc02e/manifest.json",
+        "versionId": "oT2iJ_HUUAsdUNLkPtIONAjjuolGtZ8J",
+        "byteLength": 1716,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "D8KinNdB7L0="
+      },
+      "retention": {
+        "mode": "COMPLIANCE",
+        "retainUntilDate": "2033-08-12T00:00:00+00:00"
+      }
+    },
+    {
+      "year": 2008,
+      "payload": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T13-38-15Z/098264bbd04fbe246c9caa9e2fe183b596e62574eb0abd3761b83e1de8f8e76b/payload/ca_forest_vlce2_2008.zip",
+        "versionId": "98A5wdtpGPseI5Xz64NKm.9H0PTDp4XO",
+        "byteLength": 1504569657,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "PjB6pRq7WAI="
+      },
+      "sidecar": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T13-38-15Z/098264bbd04fbe246c9caa9e2fe183b596e62574eb0abd3761b83e1de8f8e76b/manifest.json",
+        "versionId": "X.hSQg3nhrOgjEJVRPXyjWxQRQMWJvWU",
+        "byteLength": 1716,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "jhoYCdfiasA="
+      },
+      "retention": {
+        "mode": "COMPLIANCE",
+        "retainUntilDate": "2033-08-12T00:00:00+00:00"
+      }
+    },
+    {
+      "year": 2009,
+      "payload": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T13-42-47Z/d6431ef5b72a136d6ec6ed17c87b402ef15671bf01fafa0866ff92dbdd2c77e7/payload/ca_forest_vlce2_2009.zip",
+        "versionId": "dg7pGJAeDU2y9kqjeMC6l2efRqRmQy4j",
+        "byteLength": 1503537551,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "3rksb8ODsXo="
+      },
+      "sidecar": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T13-42-47Z/d6431ef5b72a136d6ec6ed17c87b402ef15671bf01fafa0866ff92dbdd2c77e7/manifest.json",
+        "versionId": "fjiFgy0I2cxGWLVbuZ48X3dp6.UnKzMG",
+        "byteLength": 1716,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "U6mkH5g/pTc="
+      },
+      "retention": {
+        "mode": "COMPLIANCE",
+        "retainUntilDate": "2033-08-12T00:00:00+00:00"
+      }
+    },
+    {
+      "year": 2010,
+      "payload": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T13-44-22Z/30ed54e0f37190009c342a65462505594647f408e2d064473a2fd3d9de2471da/payload/ca_forest_vlce2_2010.zip",
+        "versionId": "fic2w3AzEJn.kLb6e1no8LCkj2njyfaN",
+        "byteLength": 1507074555,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "AwY16GAfcZM="
+      },
+      "sidecar": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T13-44-22Z/30ed54e0f37190009c342a65462505594647f408e2d064473a2fd3d9de2471da/manifest.json",
+        "versionId": "_kHVHW17aFkx2rKYAnB448pAf3PsTFYf",
+        "byteLength": 1716,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "Z7WXb3C0fxM="
+      },
+      "retention": {
+        "mode": "COMPLIANCE",
+        "retainUntilDate": "2033-08-12T00:00:00+00:00"
+      }
+    },
+    {
+      "year": 2011,
+      "payload": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T13-44-17Z/f8a386793fd9c4d588388b98490f03e60242303cf14360a238b3dcbaba5eff9b/payload/ca_forest_vlce2_2011.zip",
+        "versionId": "RE2tYp03NllKiLf8pSZohYF9CldQAy4t",
+        "byteLength": 1511598018,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "L/oNXvWrvww="
+      },
+      "sidecar": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T13-44-17Z/f8a386793fd9c4d588388b98490f03e60242303cf14360a238b3dcbaba5eff9b/manifest.json",
+        "versionId": "cih.RCtrgSr6Pvgo6_vqy2dbKiYmsywR",
+        "byteLength": 1716,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "JJ34z4slF9g="
+      },
+      "retention": {
+        "mode": "COMPLIANCE",
+        "retainUntilDate": "2033-08-12T00:00:00+00:00"
+      }
+    },
+    {
+      "year": 2012,
+      "payload": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T13-54-57Z/2fe932f00881694f0fd36add97ad52614b32cb0944e4b23120cb5b88883ec6e7/payload/ca_forest_vlce2_2012.zip",
+        "versionId": "AYKwyv4tcDXD2R5rlEY6h_vUKuIqWZZN",
+        "byteLength": 1520484319,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "QmZPqQ14HrM="
+      },
+      "sidecar": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T13-54-57Z/2fe932f00881694f0fd36add97ad52614b32cb0944e4b23120cb5b88883ec6e7/manifest.json",
+        "versionId": "QH6B.ozyZLDwBgzHLTRDXdAIEYc2InI_",
+        "byteLength": 1716,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "MgUnNxNiWcE="
+      },
+      "retention": {
+        "mode": "COMPLIANCE",
+        "retainUntilDate": "2033-08-12T00:00:00+00:00"
+      }
+    },
+    {
+      "year": 2013,
+      "payload": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T13-55-52Z/37b2ef95a16c615e90dbfda9300e7f37436bb024482e616f867d8954924fb50d/payload/ca_forest_vlce2_2013.zip",
+        "versionId": "lR5Fp5LlHtiBV1ejROhH7IU4XpYVXSy3",
+        "byteLength": 1524673952,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "NxyIcgn8Pek="
+      },
+      "sidecar": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T13-55-52Z/37b2ef95a16c615e90dbfda9300e7f37436bb024482e616f867d8954924fb50d/manifest.json",
+        "versionId": "NPaOtvTcL0wh5wPI1d.Rc_lIta.chrT6",
+        "byteLength": 1716,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "rnUtHa+1nA0="
+      },
+      "retention": {
+        "mode": "COMPLIANCE",
+        "retainUntilDate": "2033-08-12T00:00:00+00:00"
+      }
+    },
+    {
+      "year": 2014,
+      "payload": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T13-59-22Z/56ea51e217ef5ebe393d826808e4558aa9b48c4b79c3eab7bb5322aa623fbc38/payload/ca_forest_vlce2_2014.zip",
+        "versionId": "sKr1aS_XNe6k7gSOdkihxy6uLx1diAvm",
+        "byteLength": 1528666741,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "ZOa6/yQC+y0="
+      },
+      "sidecar": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T13-59-22Z/56ea51e217ef5ebe393d826808e4558aa9b48c4b79c3eab7bb5322aa623fbc38/manifest.json",
+        "versionId": "bGqDv7srhDqybINcUibKsdK1DorkTO.M",
+        "byteLength": 1716,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "ZuTsNkYFgAQ="
+      },
+      "retention": {
+        "mode": "COMPLIANCE",
+        "retainUntilDate": "2033-08-12T00:00:00+00:00"
+      }
+    },
+    {
+      "year": 2015,
+      "payload": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T16-22-40Z/abc3453125d3b76bab4d4cb54ad219a9c9d0c33c8bbb642e34886d4ecf66c8db/payload/ca_forest_vlce2_2015.zip",
+        "versionId": "VL.Ae07h5JSQDvMw.X0PTrd7iT0V9UNW",
+        "byteLength": 1533932205,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "rx8TKiQ3YVU="
+      },
+      "sidecar": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T16-22-40Z/abc3453125d3b76bab4d4cb54ad219a9c9d0c33c8bbb642e34886d4ecf66c8db/manifest.json",
+        "versionId": "mU2dmR1cDu6frzZB.uSkA5uAp0I3hOO0",
+        "byteLength": 1716,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "ngokD4k+lC4="
+      },
+      "retention": {
+        "mode": "COMPLIANCE",
+        "retainUntilDate": "2033-08-12T00:00:00+00:00"
+      }
+    },
+    {
+      "year": 2016,
+      "payload": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T16-18-47Z/2c6997eec4df23e36fdbc5b47b5756897614961f887be5114f883eeefd3125f3/payload/ca_forest_vlce2_2016.zip",
+        "versionId": "hEBEP7oarxda9m4S4sx5Xj.mBXujfWSY",
+        "byteLength": 1535950872,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "09i/+rmwunM="
+      },
+      "sidecar": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T16-18-47Z/2c6997eec4df23e36fdbc5b47b5756897614961f887be5114f883eeefd3125f3/manifest.json",
+        "versionId": "sMMUPs.Ewklp6_HNVeb.S795XF2oEaTa",
+        "byteLength": 1716,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "NK2J/FkYhZg="
+      },
+      "retention": {
+        "mode": "COMPLIANCE",
+        "retainUntilDate": "2033-08-12T00:00:00+00:00"
+      }
+    },
+    {
+      "year": 2017,
+      "payload": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T16-22-41Z/b0cf041c1efa3e2ea5666aed05d6b9543ead180ec64ad6b0916ea8c4d17664fe/payload/ca_forest_vlce2_2017.zip",
+        "versionId": "JEcpWP5IJ1utb7FjJTfIFsxOa5T3xYn0",
+        "byteLength": 1533444187,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "4ycErdQA+kw="
+      },
+      "sidecar": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T16-22-41Z/b0cf041c1efa3e2ea5666aed05d6b9543ead180ec64ad6b0916ea8c4d17664fe/manifest.json",
+        "versionId": "YgV3.RUAaOTgQSes_TORsMXVS7rPg_sN",
+        "byteLength": 1716,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "MxOOQ/oN+DY="
+      },
+      "retention": {
+        "mode": "COMPLIANCE",
+        "retainUntilDate": "2033-08-12T00:00:00+00:00"
+      }
+    },
+    {
+      "year": 2018,
+      "payload": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T16-24-30Z/e39f70e8482ed718fc3f2128dedf8014204a8f771d2a1a7f742508cec5b3c974/payload/ca_forest_vlce2_2018.zip",
+        "versionId": "TRf3F3mJS6mliRljHvVAqT.ISggEmu2D",
+        "byteLength": 1532753141,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "8qb3xO2gt/k="
+      },
+      "sidecar": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T16-24-30Z/e39f70e8482ed718fc3f2128dedf8014204a8f771d2a1a7f742508cec5b3c974/manifest.json",
+        "versionId": "UluG8GeI.YPXHXYiFpTx05Itluh0Wl8j",
+        "byteLength": 1716,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "kWDkTJ/FHew="
+      },
+      "retention": {
+        "mode": "COMPLIANCE",
+        "retainUntilDate": "2033-08-12T00:00:00+00:00"
+      }
+    },
+    {
+      "year": 2019,
+      "payload": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T16-32-49Z/a785a45513eb2248ca6d8536b0bf0e0ad72a214807372f715729263e2857e301/payload/ca_forest_vlce2_2019.zip",
+        "versionId": "RTFb4p3Y8jdUD.NbUrzK4cd4xA5Qgk5s",
+        "byteLength": 1535802581,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "blG4sLmKZ4I="
+      },
+      "sidecar": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T16-32-49Z/a785a45513eb2248ca6d8536b0bf0e0ad72a214807372f715729263e2857e301/manifest.json",
+        "versionId": "WdbXoEEMqDzaIWsFtcbVC2EACf9ZEBQ9",
+        "byteLength": 1716,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "qZrck3zDjnY="
+      },
+      "retention": {
+        "mode": "COMPLIANCE",
+        "retainUntilDate": "2033-08-12T00:00:00+00:00"
+      }
+    },
+    {
+      "year": 2020,
+      "payload": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T16-35-09Z/e4a043d2a06adda4c87ad260579a1c97996d1f226fbf7591f83fae3a28368097/payload/ca_forest_vlce2_2020.zip",
+        "versionId": "FszhvV..eeSoP7ksFr9Rdq0d8YKWOKDw",
+        "byteLength": 1536672675,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "ZBkOuD13VGA="
+      },
+      "sidecar": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T16-35-09Z/e4a043d2a06adda4c87ad260579a1c97996d1f226fbf7591f83fae3a28368097/manifest.json",
+        "versionId": "sh53H6WFrlN1oe4C8dmThMTIHBANEpRS",
+        "byteLength": 1716,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "dUAnP/JF0Qw="
+      },
+      "retention": {
+        "mode": "COMPLIANCE",
+        "retainUntilDate": "2033-08-12T00:00:00+00:00"
+      }
+    },
+    {
+      "year": 2021,
+      "payload": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T16-31-18Z/96376658236c252ad27d6ecad4d2a76abd215d95905dec748617e6d861ae7a25/payload/ca_forest_vlce2_2021.zip",
+        "versionId": "ShN7LY0AXCTe.NqHBQwzrcNc9fy8H.ka",
+        "byteLength": 1535181282,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "8L8NmNm+nRo="
+      },
+      "sidecar": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T16-31-18Z/96376658236c252ad27d6ecad4d2a76abd215d95905dec748617e6d861ae7a25/manifest.json",
+        "versionId": "0WKM4egiMOASaaW.dwJyB4GAVFo8g_yq",
+        "byteLength": 1716,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "JmQirfDkzvs="
+      },
+      "retention": {
+        "mode": "COMPLIANCE",
+        "retainUntilDate": "2033-08-12T00:00:00+00:00"
+      }
+    },
+    {
+      "year": 2022,
+      "payload": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T16-40-20Z/53555f815ffa68adb7c5b6117dd15d7b5385771a36926691e8a41e5fc12b11dd/payload/ca_forest_vlce2_2022.zip",
+        "versionId": "Pc.7VTkC5xT_6QkD8inUNHMQ.4IV.Mrr",
+        "byteLength": 1535510211,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "ZIZJwjgqX9U="
+      },
+      "sidecar": {
+        "key": "raw/nrcan-annual-land-cover-v2/version-2/2026-08-12T16-40-20Z/53555f815ffa68adb7c5b6117dd15d7b5385771a36926691e8a41e5fc12b11dd/manifest.json",
+        "versionId": "nq160sylAMc6OhDOgOk4.uBzsOAyQDVv",
+        "byteLength": 1716,
+        "checksumType": "FULL_OBJECT",
+        "checksumCrc64nvmeBase64": "shv9bxumwVI="
+      },
+      "retention": {
+        "mode": "COMPLIANCE",
+        "retainUntilDate": "2033-08-12T00:00:00+00:00"
+      }
+    }
+  ]
+}

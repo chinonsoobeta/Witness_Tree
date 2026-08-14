@@ -15,3 +15,5 @@ node scripts/vlce2-remote-promotion.mjs --execute --approve-compliance-retention
 ```
 
 Do not run that command until the owner has explicitly approved the compliance retention date. It first reads every one of the 39 exact payload versions and fails on any byte, CRC64, checksum-type, or VersionId drift. Only then does it create deterministic bilingual, OGL-Canada-attributed manifest sidecars, upload and read them back, and apply `COMPLIANCE` retention to the 1985–2022 payload VersionIds. Sidecars are deliberately rebuildable, not locked; their named payloads are the immutable evidence.
+
+After every retention request, the workflow reads the same payload version with `get-object-retention` and fails unless it reports `COMPLIANCE` and the exact approved instant. A successful request alone is never evidence of a lock. The first complete independent read-back is recorded in [`data/vlce2-remote-promotion-evidence.json`](../data/vlce2-remote-promotion-evidence.json); its local gate is `npm run check:vlce2-remote-promotion`.
