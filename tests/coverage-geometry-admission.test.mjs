@@ -12,13 +12,15 @@ const layer = (province) => ({
   licence: { id: "public-licence", url: "https://authority.invalid/licence" }, attribution: "Source authority attribution."
 });
 
-test("default admission manifest admits BC reference, Alberta bounded coverage, and Ontario planning-unit context", () => {
+test("default admission manifest assigns national baseline to all four provinces and retains bounded overlays", () => {
   assert.equal(validateCoverageGeometryAdmission(manifest), manifest);
   assert.equal(manifest.status, "partial");
-  assert.equal(manifest.layers.length, 3);
+  assert.equal(manifest.layers.length, 6);
   const bc = manifest.layers.find((entry) => entry.province === "BC");
-  const alberta = manifest.layers.find((entry) => entry.province === "AB");
-  const ontario = manifest.layers.find((entry) => entry.province === "ON");
+  const alberta = manifest.layers.find((entry) => entry.sourceId === "alberta-known-coverage-fma-and-avi-v1");
+  const ontario = manifest.layers.find((entry) => entry.sourceId === "ontario-forest-management-units");
+  const baselineProvinces = manifest.layers.filter((entry) => entry.coverageRole === "national-baseline-land-base").map((entry) => entry.province).sort();
+  assert.deepEqual(baselineProvinces, ["AB", "BC", "ON", "QC"]);
   assert.equal(bc.coverageClass, "national-baseline-jurisdiction-reference");
   assert.equal(bc.scope.enhancedRecordCoverage, false);
   assert.equal(alberta.coverageGrade, "national-baseline-plus-local-context");
@@ -37,7 +39,8 @@ test("local context never substitutes for a provincial national-baseline land-ba
   const localBc = { ...layer("BC"), coverageRole: "local-context", coverageGrade: "national-baseline-plus-local-context" };
   assert.throws(() => validateCoverageGeometryAdmission({ ...manifest, status: "complete", layers: [localBc, layer("AB"), layer("ON"), layer("QC")], requiredProvinceDecisions: { ontarioManagedForest: "approved", quebecSouthOf52: "approved" } }), /national-baseline land-base geometry/);
   const enhancedQc = { ...layer("QC"), sourceId: "qc-current-ecoforest-footprint", coverageRole: "local-context", coverageGrade: "enhanced-local-records" };
-  assert.throws(() => validateCoverageGeometryAdmission({ ...manifest, status: "complete", layers: [...manifest.layers, enhancedQc], requiredProvinceDecisions: { ontarioManagedForest: "approved", quebecSouthOf52: "approved" } }), /national-baseline land-base geometry/);
+  const layersWithoutQcBaseline = manifest.layers.filter((entry) => entry.province !== "QC");
+  assert.throws(() => validateCoverageGeometryAdmission({ ...manifest, status: "complete", layers: [...layersWithoutQcBaseline, enhancedQc], requiredProvinceDecisions: { ontarioManagedForest: "approved", quebecSouthOf52: "approved" } }), /national-baseline land-base geometry/);
 });
 
 test("negative corpus rejects incomplete, proxy, and illustrative coverage evidence", () => {
@@ -47,7 +50,7 @@ test("negative corpus rejects incomplete, proxy, and illustrative coverage evide
   assert.throws(() => validateCoverageGeometryAdmission({ ...manifest, status: "partial", latitudeProxy: true, layers: [layer("BC")] }), /latitude-proxy/);
   assert.throws(() => validateCoverageGeometryAdmission({ ...manifest, status: "partial", layers: [{ ...layer("BC"), sourceId: "fixture-boundary" }] }), /fixture/);
   assert.throws(() => validateCoverageGeometryAdmission({ ...manifest, status: "partial", layers: [{ ...layer("BC"), profile: { ...layer("BC").profile, invalidGeometryCount: "unknown" } }] }), /known non-negative/);
-  const ontario = manifest.layers.find((entry) => entry.province === "ON");
+  const ontario = manifest.layers.find((entry) => entry.sourceId === "ontario-forest-management-units");
   assert.throws(() => validateCoverageGeometryAdmission({ ...manifest, status: "partial", layers: [{ ...ontario, scope: { ...ontario.scope, forestLandBaseDenominator: true } }] }), /cannot be a forest land-base denominator/);
   assert.throws(() => validateCoverageGeometryAdmission({ ...manifest, status: "partial", layers: [{ ...ontario, scope: { ...ontario.scope, enhancedRecordCoverage: true } }] }), /cannot enable enhanced records/);
   const bc = manifest.layers.find((entry) => entry.province === "BC");
