@@ -28,6 +28,7 @@
     "check:bc-tap-priority-deferral": "node scripts/check-bc-tap-priority-deferral.mjs",
     "check:cwfis-current-active-fires": "node scripts/check-cwfis-current-active-fires.mjs",
     "check:bc-wildfire-current-perimeters": "node scripts/check-bc-wildfire-current-perimeters.mjs",
+    "check:bc-wildfire-geometry-policy": "node scripts/check-bc-wildfire-geometry-policy.mjs",
     "check:alberta-wildfire-locations": "node scripts/check-alberta-wildfire-locations.mjs",
     "check:ontario-in-year-fire-perimeters": "node scripts/check-ontario-in-year-fire-perimeters.mjs",
     "check:bc-forest-operations-map-access": "node scripts/check-bc-forest-operations-map-access.mjs",

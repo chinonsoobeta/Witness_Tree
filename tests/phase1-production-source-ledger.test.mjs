@@ -12,6 +12,12 @@ test("canonical production ledger reconciles all 31 plan rows without runtime pr
   assert.equal(ledger.entries.filter((entry) => entry.productionEligible).length, 0);
   assert.equal(ledger.rawEvidenceNumerator, 10.5);
   assert.equal(ledger.entries.reduce((sum, entry) => sum + entry.rawCredit, 0), ledger.rawEvidenceNumerator);
+  const bcWildfire = ledger.entries.find((entry) => entry.id === "bc-wildfire");
+  assert.equal(bcWildfire.evidenceState, "local-verified-profiled");
+  assert.equal(bcWildfire.rawCredit, 0.75);
+  assert.ok(bcWildfire.evidenceRefs.includes("data/bc-wildfire-geometry-policy-2026-08-14.json"));
+  assert.equal(bcWildfire.proof.immutableArchive, false);
+  assert.equal(bcWildfire.proof.productionAdmission, false);
 });
 
 test("ledger fails closed for omission, credit inflation, a missing proof, or inferred production admission", () => {

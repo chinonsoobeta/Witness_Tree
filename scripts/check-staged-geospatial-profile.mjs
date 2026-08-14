@@ -21,7 +21,7 @@ const EXPECTED = new Map([
   }],
   ["bc-wildfire", {
     sha256: "46ee3a97ff83128630a030b5cfcc7f3c389fc94e3ca95d463595ab6f4fb57e83",
-    decision: "blocked-pending-geometry-policy",
+    decision: "local-derived-release-pending-immutable-archive-and-owner-admission",
     layers: new Map([
       ["bc-wildfire-perimeters-2026-08-14", ["Polygon/MultiPolygon", 217, "EPSG:4326", 16, 2]],
     ]),
@@ -66,6 +66,10 @@ export function validateStagedGeospatialProfile(profile) {
     if (source.inputSha256 !== expected.sha256) throw new Error(`${source.sourceId} input checksum changed.`);
     if (source.decision !== expected.decision) throw new Error(`${source.sourceId} decision is unsafe.`);
     if (source.productionEligible !== false) throw new Error("A staging profile cannot grant production eligibility.");
+    if (source.sourceId === "bc-wildfire") {
+      const policy = source.geometryPolicy;
+      if (policy?.record !== "data/bc-wildfire-geometry-policy-2026-08-14.json" || policy.rawFeatureCount !== 217 || policy.derivedReleaseFeatureCount !== 216 || policy.quarantinedFeatureIds?.join(",") !== "V10755" || policy.immutablePromotionReady !== false || policy.ownerAdmissionReady !== false || policy.productionEligible !== false) throw new Error("BC wildfire derived-release and quarantine evidence is incomplete or unsafe.");
+    }
     if (["alberta-avi-crown", "bc-wildfire"].includes(source.sourceId)) required(source.requiredAction, "required action");
     if (!Array.isArray(source.layers) || source.layers.length !== expected.layers.size) throw new Error(`${source.sourceId} layer set changed.`);
     const layerNames = new Set();
