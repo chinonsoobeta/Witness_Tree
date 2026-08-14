@@ -22,6 +22,7 @@
     "check:boundary-editions": "node scripts/check-boundary-editions.mjs",
     "check:raster-grid": "node scripts/check-raster-grid.mjs",
     "check:local-staging-admission": "tsx scripts/check-local-staging-admission.mjs",
+    "check:archive-operations-readiness": "node scripts/check-archive-operations-readiness.mjs",
     "check:claims": "node scripts/check-claim-language.mjs",
     "check:style-tokens": "node scripts/check-style-tokens.mjs",
     "check:brand-token": "node scripts/check-brand-token.mjs",

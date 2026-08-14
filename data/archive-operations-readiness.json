@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "status": "blocked",
+  "productionEligible": false,
+  "notice": "This is a Phase 1 archive-operations evidence record. It does not authorize an upload, promotion, transformation, ingestion, or production release. Every control remains blocked until its owner and redacted evidence are recorded.",
+  "archive": {
+    "provider": "AWS S3",
+    "region": "ca-central-1",
+    "resourceState": "empty-non-production"
+  },
+  "decisions": {
+    "recoveryCopy": {
+      "state": "unapproved",
+      "ownerRole": "Archive owner",
+      "reason": "No Canadian recovery copy or equivalent provider durability and recovery test has been approved."
+    },
+    "replication": {
+      "state": "not-configured",
+      "ownerRole": "Archive owner",
+      "reason": "No replication rule exists. A future recovery design must document every destination as Canadian before replication is enabled."
+    }
+  },
+  "controls": [
+    {
+      "id": "dedicated-identity",
+      "state": "missing",
+      "ownerRole": "Archive owner",
+      "requiredEvidence": ["Dedicated upload identity and least-privilege policy reference", "Separate, tightly limited break-glass retention-administration role reference", "Independent access-policy review record"],
+      "evidence": []
+    },
+    {
+      "id": "access-logging",
+      "state": "missing",
+      "ownerRole": "Archive owner",
+      "requiredEvidence": ["Object access, policy, retention, and deletion-attempt logging configuration reference", "Canadian log destination and retention reference", "Named log-review procedure and review record"],
+      "evidence": []
+    },
+    {
+      "id": "lifecycle",
+      "state": "missing",
+      "ownerRole": "Archive owner",
+      "requiredEvidence": ["Approved retention duration", "Lifecycle configuration reference showing no rule bypasses retained objects", "Multipart cleanup scope and review record"],
+      "evidence": []
+    },
+    {
+      "id": "legal-hold",
+      "state": "missing",
+      "ownerRole": "Archive owner",
+      "requiredEvidence": ["Owner-approved legal-hold procedure", "Authorized role and audit-log review reference", "Test or exercise record showing the procedure does not weaken compliance retention"],
+      "evidence": []
+    },
+    {
+      "id": "recovery-and-replication",
+      "state": "missing",
+      "ownerRole": "Archive owner",
+      "requiredEvidence": ["Approved recovery-copy or equivalent provider durability decision", "Canadian residency evidence for every recovery, replica, backup, inventory, and log destination", "Recovery exercise record that preserves primary-object retention"],
+      "evidence": []
+    }
+  ]
+}
