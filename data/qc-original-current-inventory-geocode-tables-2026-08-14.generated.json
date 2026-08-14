@@ -1,0 +1,4 @@
+[{"table_name":"pee_ori_prov","row_count":8387062,"null_or_blank_geocode":0,"distinct_nonblank_geocode":8387062},
+{"table_name":"meta_ori_prov","row_count":8387062,"null_or_blank_geocode":0,"distinct_nonblank_geocode":8387062},
+{"table_name":"essence_ori_prov","row_count":19113947,"null_or_blank_geocode":0,"distinct_nonblank_geocode":6411086},
+{"table_name":"etage_ori_prov","row_count":6465021,"null_or_blank_geocode":0,"distinct_nonblank_geocode":6411086}]
