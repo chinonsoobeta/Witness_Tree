@@ -416,10 +416,10 @@
       "name": "Historic treaties",
       "purpose": "Historic treaty boundary context.",
       "planUse": "production",
-      "evidence": "plan URL only",
+      "evidence": "official CIRNAC/ISC mapping dataset reviewed; explicitly non-legal geometry",
       "ownerRole": "geography data lead",
-      "missing": "Edition, terms, caveats, checksum and archive evidence.",
-      "externalDependency": "Federal publisher and engagement review"
+      "missing": "Authoritative legal boundary edition, terms, checksum/archive recovery and engagement route.",
+      "externalDependency": "CIRNAC/ISC legal-boundary authority and Indigenous engagement route"
     },
     {
       "id": "modern-treaties",
