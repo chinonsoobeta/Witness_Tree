@@ -20,6 +20,7 @@
     "check:staged-geospatial-profile": "node scripts/check-staged-geospatial-profile.mjs",
     "check:nrcan-harvest-profile": "node scripts/check-nrcan-harvest-profile.mjs",
     "check:nrcan-wildfire-profile": "node scripts/check-nrcan-wildfire-profile.mjs",
+    "check:bc-consolidated-cutblocks-access": "node scripts/check-bc-consolidated-cutblocks-access.mjs",
     "check:immutable-promotions": "node scripts/check-immutable-promotions.mjs",
     "check:boundary-editions": "node scripts/check-boundary-editions.mjs",
     "check:raster-grid": "node scripts/check-raster-grid.mjs",
