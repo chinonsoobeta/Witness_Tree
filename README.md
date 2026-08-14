@@ -41,6 +41,7 @@ Open `http://localhost:3000/en` or `http://localhost:3000/fr`.
 npm run typecheck
 npm run lint
 npm run check:bilingual
+npm run check:archive-operations-readiness
 npm run test:unit
 npm test
 ```

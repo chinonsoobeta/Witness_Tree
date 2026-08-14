@@ -17,6 +17,7 @@
     "check:acquisition-readiness": "node scripts/check-acquisition-readiness.mjs",
     "check:staged-acquisitions": "node scripts/check-staged-acquisitions.mjs",
     "check:staged-geospatial-profile": "node scripts/check-staged-geospatial-profile.mjs",
+    "check:archive-operations-readiness": "node scripts/check-archive-operations-readiness.mjs",
     "check:claims": "node scripts/check-claim-language.mjs",
     "check:style-tokens": "node scripts/check-style-tokens.mjs",
     "check:brand-token": "node scripts/check-brand-token.mjs",

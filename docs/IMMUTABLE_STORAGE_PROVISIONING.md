@@ -73,6 +73,8 @@ Each row of the Required storage controls table in [IMMUTABLE_STORAGE_DECISION.m
 
 No object has been uploaded. No source is promoted, remote-verified, or production-eligible. Retention duration, budget ceiling, recovery-copy policy and the accountable operator remain owner decisions. Upload requires AWS credentials that this agent is not permitted to create or handle.
 
+The machine-checked [archive operations readiness record](ARCHIVE_OPERATIONS_READINESS.md) captures these missing controls as a blocked, non-production evidence package. It cannot be marked ready without documented recovery/replication decisions and evidence for dedicated identities, access logging, lifecycle, legal-hold, and recovery controls.
+
 ## Not done in this step
 
 - No IAM user, role, access key, secret key, or session token was created, viewed, copied, or handled.
