@@ -20,7 +20,9 @@ The official BC terrestrial boundary is admitted only as **national-baseline jur
 
 ## What remains for the Phase 1 coverage exit
 
-BC's verified terrestrial boundary is the only current national-baseline land-base layer. Alberta still needs a verified provincial land-boundary geometry to surround its bounded FMA/AVI local-context footprint. Ontario still needs a verified provincial land-boundary geometry around the FMU local-context union. Québec needs a verified provincial land-boundary geometry plus the publisher-defined current ecoforest footprint, profiled and licence/lineage-bound, to grade the footprint and leave the remainder at national baseline. The Québec footprint alone cannot cover all Québec land or make the exit complete.
+Verified national-baseline jurisdiction/reference geometry now exists for all four provinces: BC's official terrestrial boundary plus the Statistics Canada 2021 Province/Territory Cartographic Boundary File selected by PRUID for Alberta (48), Ontario (35), and Québec (24). Alberta is a lossless source copy. Ontario and Québec had invalid source polygons, so their admitted derivatives use the explicit, checksum-bound `ST_MakeValid` plus polygon-only collection extraction recorded in the external transformation evidence; both area changes are within its 0.05% tolerance. These layers establish baseline geographic context only, never a forest denominator or enhanced-record claim.
+
+Québec still needs an approved south-of-52 scope decision and the publisher-defined current ecoforest footprint, profiled and licence/lineage-bound, before its local coverage can be admitted. That footprint cannot cover all Québec land or make the coverage exit complete by itself.
 
 Ontario FRI access and terms remain a separate source-acquisition requirement before the FMU area can be upgraded to enhanced local records. Likewise, a coverage admission does not itself prove that every Phase 1 production dataset has been acquired, archived immutably, licensed, versioned, checksummed, and entered in the source ledger.
 

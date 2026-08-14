@@ -1,8 +1,35 @@
 {
   "schemaVersion": "1.0",
   "status": "partial",
-  "notice": "BC's terrestrial boundary is admitted only as national-baseline jurisdiction/reference geometry. Alberta's bounded known-coverage footprint is admitted for national-baseline-plus-local-context only. Ontario's official Forest Management Unit union is admitted only as Crown-forest planning-unit context alongside the national baseline. None is a forest land-base denominator, proof of province-wide forest coverage, or enhanced-record coverage. Complete land-base coverage still requires accepted source geometry evidence for BC, Alberta, Ontario, and Québec.",
+  "notice": "Verified national-baseline jurisdiction/reference geometry now exists for BC, Alberta, Ontario, and Québec. Alberta's bounded known-coverage footprint and Ontario's official Forest Management Unit union remain local context only. No baseline is a forest land-base denominator, proof of province-wide forest coverage, or enhanced-record coverage. The coverage exit remains partial until Québec's south-of-52 scope decision and publisher-defined current ecoforest footprint are separately admitted.",
   "layers": [
+    {
+      "evidenceClass": "versioned-source-geometry",
+      "sourceId": "statcan-2021-alberta-provincial-baseline",
+      "province": "AB",
+      "edition": "2021 Census Province/Territory Cartographic Boundary File; PRUID 48",
+      "crs": "EPSG:3347",
+      "checksumSha256": "d28bbb15d7b49e3d1828755a5f1b4ebcee699ad70efe8b0f1b902d29ebffd20b",
+      "sourceUrl": "https://www12.statcan.gc.ca/census-recensement/2021/geo/sip-pis/boundary-limites/files-fichiers/lpr_000b21a_e.zip",
+      "extent": { "west": 4427326.16285718, "south": 1616915.88000003, "east": 5229748.67428575, "north": 2965270.49142861 },
+      "areaSquareKilometres": 639928.693015698,
+      "coverageClass": "land-base",
+      "coverageRole": "national-baseline-land-base",
+      "coverageGrade": "national-baseline",
+      "profile": {
+        "evidenceId": "statcan-2021-provincial-baselines-v1-2026-08-14",
+        "profiledAt": "2026-08-14T16:00:00Z",
+        "evidencePath": "../Witness_Tree-data/derived/statcan-2021-provincial-baselines-v1/2026-08-14/transformation-evidence.json",
+        "evidenceChecksumSha256": "96e50e2ff391d087312f0bdcccad731aab317773e8dd1db94b87c964501da325",
+        "geometryChecksumSha256": "c03d70204f88b2570d27b4d5de39fb0ff7c111829ea5a8eccfba9d56b2e7936e",
+        "geometryType": "Polygon",
+        "featureCount": 1,
+        "invalidGeometryCount": 0,
+        "validity": "passed"
+      },
+      "licence": { "id": "statcan-open-licence", "url": "https://www.statcan.gc.ca/en/reference/licence" },
+      "attribution": "Adapted from Statistics Canada, 2021 Census Province/Territory Cartographic Boundary File, reference date January 1, 2021. This does not constitute an endorsement by Statistics Canada of this product."
+    },
     {
       "evidenceClass": "lineage-bound-derived-geometry",
       "sourceId": "alberta-known-coverage-fma-and-avi-v1",
@@ -34,6 +61,33 @@
       ],
       "scopeNotice": "Known FMA published-area and AVI Crown source footprints only; locations outside both input footprints remain outside this bounded coverage.",
       "claims": "This supports national-baseline-plus-local-context only."
+    },
+    {
+      "evidenceClass": "versioned-source-geometry",
+      "sourceId": "statcan-2021-quebec-provincial-baseline",
+      "province": "QC",
+      "edition": "2021 Census Province/Territory Cartographic Boundary File; PRUID 24; explicit make-valid derivative",
+      "crs": "EPSG:3347",
+      "checksumSha256": "d28bbb15d7b49e3d1828755a5f1b4ebcee699ad70efe8b0f1b902d29ebffd20b",
+      "sourceUrl": "https://www12.statcan.gc.ca/census-recensement/2021/geo/sip-pis/boundary-limites/files-fichiers/lpr_000b21a_e.zip",
+      "extent": { "west": 6882976.50571433, "south": 1166055.13428575, "east": 8480541.24857147, "north": 3030878.02857146 },
+      "areaSquareKilometres": 1475448.63693446,
+      "coverageClass": "land-base",
+      "coverageRole": "national-baseline-land-base",
+      "coverageGrade": "national-baseline",
+      "profile": {
+        "evidenceId": "statcan-2021-provincial-baselines-v1-2026-08-14",
+        "profiledAt": "2026-08-14T16:00:00Z",
+        "evidencePath": "../Witness_Tree-data/derived/statcan-2021-provincial-baselines-v1/2026-08-14/transformation-evidence.json",
+        "evidenceChecksumSha256": "96e50e2ff391d087312f0bdcccad731aab317773e8dd1db94b87c964501da325",
+        "geometryChecksumSha256": "c875b6775bdf751a796e33bf152e797a64ce1b01de391e72405e8f753d3b7bdd",
+        "geometryType": "MultiPolygon",
+        "featureCount": 1,
+        "invalidGeometryCount": 0,
+        "validity": "passed"
+      },
+      "licence": { "id": "statcan-open-licence", "url": "https://www.statcan.gc.ca/en/reference/licence" },
+      "attribution": "Adapted from Statistics Canada, 2021 Census Province/Territory Cartographic Boundary File, reference date January 1, 2021. This does not constitute an endorsement by Statistics Canada of this product."
     },
     {
       "evidenceClass": "versioned-source-geometry",
@@ -69,6 +123,33 @@
       },
       "licence": { "id": "ogl-bc", "url": "https://www2.gov.bc.ca/gov/content/data/open-data/open-government-licence-bc" },
       "attribution": "Government of British Columbia"
+    },
+    {
+      "evidenceClass": "versioned-source-geometry",
+      "sourceId": "statcan-2021-ontario-provincial-baseline",
+      "province": "ON",
+      "edition": "2021 Census Province/Territory Cartographic Boundary File; PRUID 35; explicit make-valid derivative",
+      "crs": "EPSG:3347",
+      "checksumSha256": "d28bbb15d7b49e3d1828755a5f1b4ebcee699ad70efe8b0f1b902d29ebffd20b",
+      "sourceUrl": "https://www12.statcan.gc.ca/census-recensement/2021/geo/sip-pis/boundary-limites/files-fichiers/lpr_000b21a_e.zip",
+      "extent": { "west": 5961699.64857147, "south": 659305.002857175, "east": 7581710.59428576, "north": 2296884.40000004 },
+      "areaSquareKilometres": 979329.450541721,
+      "coverageClass": "land-base",
+      "coverageRole": "national-baseline-land-base",
+      "coverageGrade": "national-baseline",
+      "profile": {
+        "evidenceId": "statcan-2021-provincial-baselines-v1-2026-08-14",
+        "profiledAt": "2026-08-14T16:00:00Z",
+        "evidencePath": "../Witness_Tree-data/derived/statcan-2021-provincial-baselines-v1/2026-08-14/transformation-evidence.json",
+        "evidenceChecksumSha256": "96e50e2ff391d087312f0bdcccad731aab317773e8dd1db94b87c964501da325",
+        "geometryChecksumSha256": "70ba34a11871c3670d00b0a96ea78961b38aba09bbc574dd11984612214c972a",
+        "geometryType": "MultiPolygon",
+        "featureCount": 1,
+        "invalidGeometryCount": 0,
+        "validity": "passed"
+      },
+      "licence": { "id": "statcan-open-licence", "url": "https://www.statcan.gc.ca/en/reference/licence" },
+      "attribution": "Adapted from Statistics Canada, 2021 Census Province/Territory Cartographic Boundary File, reference date January 1, 2021. This does not constitute an endorsement by Statistics Canada of this product."
     },
     {
       "evidenceClass": "versioned-source-geometry",
