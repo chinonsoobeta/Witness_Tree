@@ -158,6 +158,20 @@
       "productionEligible": false
     },
     {
+      "id": "bc-tap-priority-deferral-current-view",
+      "status": "candidate",
+      "datasetTitle": "Old Growth Technical Advisory Panel (TAP) - Priority Deferral Areas - Current View",
+      "publisher": "Province of British Columbia, Ministry of Forests",
+      "catalogueUrl": "https://catalogue.data.gov.bc.ca/dataset/f257ca4a-0c33-4eb2-9da8-21dff4482f58",
+      "intendedRole": { "en": "Candidate old-growth and priority-deferral context only; not the separate BEC ecosystem map, not a currently implemented deferral layer, and not a legal restriction determination.", "fr": "Contexte candidat de vieilles forêts et de reports prioritaires seulement; ce n’est ni la carte écosystémique BEC distincte, ni une couche de reports actuellement mise en œuvre, ni une détermination juridique de restriction." },
+      "metadataVerification": "verified",
+      "licence": { "state": "unresolved" },
+      "access": { "state": "verified", "formats": ["json", "geojson", "pbf"], "url": "https://delivery.maps.gov.bc.ca/arcgis/rest/services/whse/bcgw_pub_whse_forest_vegetation/MapServer/69?f=pjson" },
+      "verifiedFacts": ["The official catalogue assigns Access Only, rather than an open-data licence.", "The linked Province copyright terms say Access Only catalogue material may not be reproduced or redistributed without prior written permission.", "The catalogue says this current view does not represent the supported old-growth deferral areas currently being implemented.", "The official live service declares EPSG:3005, supports JSON/GeoJSON/PBF and pagination, has maxRecordCount 1000, and returned a current count of 255486 on 2026-08-14."],
+      "unresolvedFields": ["Written permission for archive, transformation and derived/public redistribution", "Authoritative current implemented-deferral layer selection", "Immutable complete export, version/effective date and checksum", "Attribution, refresh cadence and correction contact"],
+      "productionEligible": false
+    },
+    {
       "id": "nrcan-annual-high-resolution-forest-land-cover",
       "status": "candidate",
       "datasetTitle": "Annual High-Resolution Forest Land Cover, Canada, 1984–2022",
