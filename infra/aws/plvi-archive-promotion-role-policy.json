@@ -22,12 +22,6 @@
       ]
     },
     {
-      "Sid": "AllowMultipartListingOnlyInTheApprovedBucket",
-      "Effect": "Allow",
-      "Action": "s3:ListBucketMultipartUploads",
-      "Resource": "arn:aws:s3:::witness-tree-raw-archive-ca-central-1"
-    },
-    {
       "Sid": "ExplicitlyDenyDestructiveOrPrivilegeChangingOperations",
       "Effect": "Deny",
       "Action": [

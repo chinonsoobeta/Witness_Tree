@@ -39,10 +39,13 @@ test("provisioning policies bind only the named MFA operator, four keys, and two
   assert.equal(trust.Statement[0].Principal.AWS, "arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator");
   assert.equal(trust.Statement[0].Condition.Bool["aws:MultiFactorAuthPresent"], "true");
   assert.equal(role.Statement[0].Resource.length, 4);
+  assert.deepEqual(role.Statement[0].Action, ["s3:PutObject", "s3:GetObject", "s3:AbortMultipartUpload", "s3:ListMultipartUploadParts"]);
   assert.equal(role.Statement[1].Resource.length, 2);
   assert.deepEqual(role.Statement[1].Action, ["s3:PutObjectRetention", "s3:GetObjectRetention"]);
-  assert.ok(role.Statement[3].Action.includes("s3:DeleteObject"));
-  assert.ok(role.Statement[3].Action.includes("s3:BypassGovernanceRetention"));
+  assert.equal(role.Statement.length, 3);
+  assert.ok(role.Statement[2].Action.includes("s3:DeleteObject"));
+  assert.ok(role.Statement[2].Action.includes("s3:BypassGovernanceRetention"));
+  assert.equal(role.Statement.flatMap((statement) => statement.Action).includes("s3:ListBucketMultipartUploads"), false);
   assert.equal(operator.Statement[0].Resource, "arn:aws:iam::286853118812:role/WitnessTreePlviArchivePromotionUploader");
   assert.equal(operator.Statement[0].Condition.Bool["aws:MultiFactorAuthPresent"], "true");
 });
