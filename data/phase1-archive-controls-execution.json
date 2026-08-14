@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "witness-tree/phase1-archive-controls-execution/1",
+  "state": "unapplied",
+  "notice": "This package is a reviewed plan only. It must not be applied until every named approval is recorded outside Git and supplied again as an execution flag.",
+  "region": "ca-central-1",
+  "resources": {
+    "primaryBucket": "witness-tree-raw-archive-ca-central-1",
+    "auditLogBucket": "witness-tree-archive-audit-logs-ca-central-1",
+    "recoveryBucket": "witness-tree-raw-recovery-ca-central-1",
+    "uploaderRole": "WitnessTreeArchiveUploader",
+    "breakGlassRole": "WitnessTreeArchiveRetentionBreakGlass",
+    "replicationRole": "WitnessTreeArchiveReplication",
+    "trail": "witness-tree-archive-object-audit-ca-central-1",
+    "inventory": "weekly-object-lock-inventory",
+    "lifecycleRule": "abort-incomplete-multipart-after-7-days"
+  },
+  "scope": {
+    "uploadPrefix": "raw/*",
+    "legalHoldExercisePrefix": "raw/legal-hold-exercises/*",
+    "inventoryPrefix": "inventory/",
+    "lifecycleAbortIncompleteMultipartAfterDays": 7,
+    "inventoryFrequency": "Weekly",
+    "replication": "same-region-ca-central-1-new-objects-only"
+  },
+  "costGuard": {
+    "currency": "USD",
+    "monthlyCeiling": 10,
+    "estimate": "US$1.40-$2.00/month for a roughly 60 GB same-region recovery copy plus small S3 request, Inventory, and CloudTrail data-event charges; actual cost is usage-dependent and must remain at or below the approved US$10 monthly ceiling."
+  },
+  "requiredApprovals": [
+    "approve-identities",
+    "approve-audit-logging",
+    "approve-inventory",
+    "approve-lifecycle",
+    "approve-legal-hold-exercise",
+    "approve-recovery-replication",
+    "approve-usd-10-monthly-ceiling"
+  ],
+  "rollbackLimits": [
+    "Deleting unused IAM roles, disabling future Inventory reports, stopping a trail, and deleting an empty recovery bucket are reversible only before retained evidence or replicas are required.",
+    "The lifecycle rule only aborts unfinished multipart uploads, but aborted parts cannot be restored.",
+    "Compliance retention cannot be shortened or removed; legal holds may be removed only from the dedicated exercise object after retention is read back unchanged.",
+    "Object Lock can only be enabled when a bucket is created; a bucket created with Object Lock cannot later have Object Lock disabled.",
+    "Replication only covers new objects in this plan. Historical payload replication needs a separately approved S3 Batch Replication scope and cost review."
+  ]
+}
