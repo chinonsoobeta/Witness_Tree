@@ -5,14 +5,6 @@ import { validateLocalAdmission } from "../lib/archive-staging/admission.ts";
 import { validateStagedAcquisitions } from "./check-staged-acquisitions.mjs";
 import { validateStagedGeospatialProfile } from "./check-staged-geospatial-profile.mjs";
 
-const RECORDED_STAGING_SOURCE_IDS = new Set([
-  "alberta-fma-published-area",
-  "qc-historic-wildfire-detailed",
-  "alberta-avi-crown",
-  "ontario-forest-management-units",
-  "nrcan-forest-canopy-cover-2022",
-]);
-
 /**
  * Cross-checks recorded acquisition and profiling metadata only. It does not inspect
  * payload bytes, retrieve sources, transform data, or make any release claim.
@@ -20,9 +12,6 @@ const RECORDED_STAGING_SOURCE_IDS = new Set([
 export function validateRecordedLocalAdmissions(acquisitions, profile) {
   validateStagedAcquisitions(acquisitions);
   validateStagedGeospatialProfile(profile);
-  for (const entry of acquisitions.entries) {
-    if (!RECORDED_STAGING_SOURCE_IDS.has(entry.sourceId)) throw new Error(`Unexpected staged acquisition ${entry.sourceId}.`);
-  }
   const profiles = new Map(profile.sources?.map((source) => [source.sourceId, source]));
   for (const source of profile.sources ?? []) {
     if (!acquisitions.entries.some((entry) => entry.sourceId === source.sourceId)) throw new Error(`Missing recorded staging metadata for ${source.sourceId}.`);

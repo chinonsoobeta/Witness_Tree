@@ -9,6 +9,7 @@ const alberta = manifest.entries.find((entry) => entry.sourceId === "alberta-avi
 const canopy = manifest.entries.find((entry) => entry.sourceId === "nrcan-forest-canopy-cover-2022");
 const fma = manifest.entries.find((entry) => entry.sourceId === "alberta-fma-published-area");
 const ontario = manifest.entries.find((entry) => entry.sourceId === "ontario-forest-management-units");
+const electionsCanada = manifest.entries.find((entry) => entry.sourceId === "elections-canada-federal-electoral-districts-45th-general-election-2025-shp");
 
 test("verified local acquisition remains staging-only", () => {
   assert.equal(validateStagedAcquisitions(manifest), manifest);
@@ -20,8 +21,17 @@ test("verified local acquisition remains staging-only", () => {
   assert.equal(first.attributionState, "metadata-verified");
   assert.match(first.attribution, /Ministère des Ressources naturelles et des Forêts/);
   assert.equal(first.licenceUrl, "https://www.donneesquebec.ca/licence/#cc-by");
-  assert.equal(manifest.entries.reduce((total, entry) => total + entry.byteLength, 0), 10955540355);
+  assert.equal(manifest.entries.reduce((total, entry) => total + entry.byteLength, 0), 10965842003);
   assert.equal(alberta?.sha256, "e93572129f25c83911b73eadfacff12624ff6b08f2db4b311c1662196b665093");
+});
+
+test("current Elections Canada boundaries are checksum-bound and staging-only", () => {
+  assert.ok(electionsCanada, "current Elections Canada entry is missing from the manifest");
+  assert.equal(electionsCanada.byteLength, 10301648);
+  assert.equal(electionsCanada.sha256, "4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93");
+  assert.equal(electionsCanada.zipIntegrity, "passed");
+  assert.equal(electionsCanada.immutableObjectStorage, false);
+  assert.equal(electionsCanada.productionEligible, false);
 });
 
 test("staged Ontario FMU archive is checksum-bound and remains staging-only", () => {

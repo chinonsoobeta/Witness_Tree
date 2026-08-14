@@ -24,6 +24,7 @@ jobs:
       - run: npm run check:staged-geospatial-profile
       - run: npm run check:immutable-promotions
       - run: npm run check:boundary-editions
+      - run: npm run check:elections-canada-fed-2025
       - run: npm run check:raster-grid
       - run: npm run check:accessibility
       - run: npm run build

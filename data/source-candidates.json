@@ -193,10 +193,10 @@
       "catalogueUrl": "https://www.elections.ca/content.aspx?dir=cir%2FmapsCorner%2Fvector&document=index&lang=e&section=res",
       "intendedRole": { "en": "Reference electoral-district boundaries for presentation and geographic context.", "fr": "Limites des circonscriptions électorales de référence pour la présentation et le contexte géographique." },
       "metadataVerification": "verified",
-      "licence": { "state": "unresolved" },
-      "access": { "state": "catalogue-listed" },
-      "verifiedFacts": ["Official Elections Canada page lists vector boundary files for the 45th general election.", "Listed formats include GDB, KMZ, and SHP."],
-      "unresolvedFields": ["Applicable reuse licence and attribution", "Selected resource URL", "Boundary effective-date handling", "Snapshot checksum", "Retrieval date"],
+      "licence": { "state": "verified", "id": "ogl-canada-2.0", "officialUrl": "https://open.canada.ca/en/open-government-licence-canada" },
+      "access": { "state": "verified", "formats": ["SHP ZIP"], "url": "https://www.elections.ca/res/cir/mapsCorner/vector/FederalElectoralDistricts_2025_SHP.zip" },
+      "verifiedFacts": ["Official Elections Canada page lists and directly links the FederalElectoralDistricts_2025_SHP.zip file for the 45th general election.", "Elections Canada states that the 2023 Representation Orders took effect on 2025-03-23, when writs for the 45th general election were issued.", "The distinct current local-staging source-ledger and profile records capture the exact archive, OGL Canada attribution, raw-byte evidence, schema and validity profile without making this candidate production eligible."],
+      "unresolvedFields": ["Immutable archive promotion", "Explicit ingestion approval", "Public-release approval"],
       "productionEligible": false
     },
     {

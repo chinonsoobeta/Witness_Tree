@@ -25,6 +25,7 @@
     "check:immutable-promotions": "node scripts/check-immutable-promotions.mjs",
     "check:immutable-restore-drill": "node scripts/check-immutable-restore-drill.mjs",
     "check:boundary-editions": "node scripts/check-boundary-editions.mjs",
+    "check:elections-canada-fed-2025": "node scripts/check-elections-canada-fed-2025.mjs",
     "check:raster-grid": "node scripts/check-raster-grid.mjs",
     "check:local-staging-admission": "tsx scripts/check-local-staging-admission.mjs",
     "check:archive-operations-readiness": "node scripts/check-archive-operations-readiness.mjs",
