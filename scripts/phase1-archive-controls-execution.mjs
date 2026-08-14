@@ -3,7 +3,7 @@ import { execFileSync } from "node:child_process";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
-const APPROVAL_FLAGS = ["approve-identities", "approve-identity-bootstrap", "approve-audit-logging", "approve-inventory", "approve-lifecycle", "approve-legal-hold-exercise", "approve-recovery-replication", "approve-usd-10-monthly-ceiling"];
+const APPROVAL_FLAGS = ["approve-identities", "approve-identity-bootstrap", "approve-audit-logging", "approve-inventory", "approve-lifecycle", "approve-legal-hold-exercise", "approve-recovery-replication", "approve-usd-20-monthly-ceiling"];
 const REGION = "ca-central-1";
 const PRIMARY = "witness-tree-raw-archive-ca-central-1";
 const UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/;
@@ -31,7 +31,7 @@ export function validateArchiveControlsExecution(plan) {
   assert.equal(plan.scope?.inventoryFrequency, "Weekly");
   assert.equal(plan.scope?.replication, "same-region-ca-central-1-new-objects-only");
   assert.equal(plan.costGuard?.currency, "USD");
-  assert.equal(plan.costGuard?.monthlyCeiling, 10, "The committed package may not exceed US$10/month.");
+  assert.equal(plan.costGuard?.monthlyCeiling, 20, "The committed package may not exceed the owner-approved US$20/month.");
   assert.deepEqual(plan.requiredApprovals, APPROVAL_FLAGS);
   assert.ok(Array.isArray(plan.rollbackLimits) && plan.rollbackLimits.length >= 5);
   assert.match(plan.notice, /must not be applied/i);
@@ -51,7 +51,7 @@ export function validateExecutionOptions(plan, options) {
   assert.ok(futureUtc(options.exerciseRetentionUntil), "--exercise-retention-until must be a future UTC instant.");
   assert.match(input(options.exerciseKey, "--exercise-key"), /^raw\/legal-hold-exercises\/\d{4}-\d{2}-\d{2}\/[A-Za-z0-9-]+\/payload\.txt$/, "Exercise key must be a dedicated non-source legal-hold object.");
   input(options.exercisePayloadFile, "--exercise-payload-file");
-  assert.equal(options.monthlyCeiling, 10, "Execution is limited to the approved US$10 monthly ceiling.");
+  assert.equal(options.monthlyCeiling, 20, "Execution is limited to the owner-approved US$20 monthly ceiling.");
   input(options.workDir, "--work-dir");
   return { mode: "execute" };
 }
@@ -78,7 +78,7 @@ export function policies(plan, options) {
     replication: { Version: "2012-10-17", Statement: [
       { Effect: "Allow", Action: ["s3:GetReplicationConfiguration", "s3:ListBucket"], Resource: primary },
       { Effect: "Allow", Action: ["s3:GetObjectVersionForReplication", "s3:GetObjectVersionAcl", "s3:GetObjectVersionTagging", "s3:GetObjectRetention", "s3:GetObjectLegalHold"], Resource: `${primary}/raw/*` },
-      { Effect: "Allow", Action: ["s3:ReplicateObject", "s3:ReplicateDelete", "s3:ReplicateTags", "s3:ObjectOwnerOverrideToBucketOwner"], Resource: `${recovery}/raw/*` }
+      { Effect: "Allow", Action: ["s3:ReplicateObject", "s3:ReplicateTags", "s3:ObjectOwnerOverrideToBucketOwner"], Resource: `${recovery}/raw/*` }
     ] },
     logBucket: { Version: "2012-10-17", Statement: [
       { Sid: "CloudTrailAclCheck", Effect: "Allow", Principal: { Service: "cloudtrail.amazonaws.com" }, Action: "s3:GetBucketAcl", Resource: logs, Condition: { StringEquals: { "aws:SourceArn": `arn:aws:cloudtrail:${REGION}:${options.accountId}:trail/${r.trail}` } } },
@@ -96,8 +96,8 @@ export function executionFiles(plan, options) {
     "break-glass-trust.json": p.breakGlassTrust, "break-glass-policy.json": p.breakGlass,
     "replication-trust.json": p.replicationTrust, "replication-policy.json": p.replication, "log-bucket-policy.json": p.logBucket,
     "lifecycle.json": { Rules: [{ ID: r.lifecycleRule, Status: "Enabled", Filter: { Prefix: "raw/" }, AbortIncompleteMultipartUpload: { DaysAfterInitiation: 7 } }] },
-    "inventory.json": { Id: r.inventory, IsEnabled: true, IncludedObjectVersions: "All", Schedule: { Frequency: "Weekly" }, Filter: { Prefix: "raw/" }, Destination: { S3BucketDestination: { AccountId: options.accountId, Bucket: bucketArn(r.auditLogBucket), Format: "CSV", Prefix: "inventory/" } }, OptionalFields: ["Size", "LastModifiedDate", "VersionId", "IsLatest", "ObjectLockRetainUntilDate", "ObjectLockMode", "ObjectLockLegalHoldStatus"] },
-    "replication.json": { Role: `arn:aws:iam::${options.accountId}:role/${r.replicationRole}`, Rules: [{ ID: "replicate-new-raw-objects-to-canadian-recovery", Status: "Enabled", Priority: 1, Filter: { Prefix: "raw/" }, DeleteMarkerReplication: { Status: "Disabled" }, ExistingObjectReplication: { Status: "Disabled" }, Destination: { Bucket: bucketArn(r.recoveryBucket), Account: options.accountId, AccessControlTranslation: { Owner: "Destination" } } }] },
+    "inventory.json": { Id: r.inventory, IsEnabled: true, IncludedObjectVersions: "All", Schedule: { Frequency: "Weekly" }, Filter: { Prefix: "raw/" }, Destination: { S3BucketDestination: { AccountId: options.accountId, Bucket: bucketArn(r.auditLogBucket), Format: "CSV", Prefix: "inventory/", Encryption: { SSES3: {} } } }, OptionalFields: ["Size", "LastModifiedDate", "ObjectLockRetainUntilDate", "ObjectLockMode", "ObjectLockLegalHoldStatus"] },
+    "replication.json": { Role: `arn:aws:iam::${options.accountId}:role/${r.replicationRole}`, Rules: [{ ID: "replicate-new-raw-objects-to-canadian-recovery", Status: "Enabled", Priority: 1, Filter: { Prefix: "raw/" }, DeleteMarkerReplication: { Status: "Disabled" }, Destination: { Bucket: bucketArn(r.recoveryBucket), Account: options.accountId } }] },
     "event-selectors.json": [{ ReadWriteType: "All", IncludeManagementEvents: true, DataResources: [{ Type: "AWS::S3::Object", Values: [`${bucketArn(r.primaryBucket)}/`] }] }],
     "retention.json": { Retention: { Mode: "COMPLIANCE", RetainUntilDate: options.exerciseRetentionUntil } },
     "legal-hold-on.json": { LegalHold: { Status: "ON" } }, "legal-hold-off.json": { LegalHold: { Status: "OFF" } }
@@ -123,7 +123,7 @@ export function commandPlan(plan, options) {
     ["s3api", "put-bucket-encryption", "--bucket", r.auditLogBucket, "--server-side-encryption-configuration", json({ Rules: [{ ApplyServerSideEncryptionByDefault: { SSEAlgorithm: "AES256" } }] }), ...base],
     ["s3api", "put-bucket-encryption", "--bucket", r.recoveryBucket, "--server-side-encryption-configuration", json({ Rules: [{ ApplyServerSideEncryptionByDefault: { SSEAlgorithm: "AES256" } }] }), ...base],
     ["s3api", "put-bucket-policy", "--bucket", r.auditLogBucket, "--policy", file("log-bucket-policy.json"), ...base],
-    ["cloudtrail", "create-trail", "--name", r.trail, "--s3-bucket-name", r.auditLogBucket, "--is-multi-region-trail", "false", "--include-global-service-events", "false", ...base],
+    ["cloudtrail", "create-trail", "--name", r.trail, "--s3-bucket-name", r.auditLogBucket, "--no-is-multi-region-trail", "--no-include-global-service-events", ...base],
     ["cloudtrail", "put-event-selectors", "--trail-name", r.trail, "--event-selectors", file("event-selectors.json"), ...base],
     ["cloudtrail", "start-logging", "--name", r.trail, ...base],
     ["s3api", "put-bucket-inventory-configuration", "--bucket", r.primaryBucket, "--id", r.inventory, "--inventory-configuration", file("inventory.json"), ...base],

@@ -22,9 +22,9 @@ The exercise writes a tiny, non-source object under `raw/legal-hold-exercises/YY
 
 ## Approval and cost guard
 
-Actual execution requires `--execute`, all eight `--approve-*` flags recorded in the plan, an owner-supplied account ID and the exact MFA-backed `WitnessTreeArchiveOperator` user ARN, a future exercise retention instant, dedicated exercise key and payload file, a new empty local work directory, and exactly `--monthly-ceiling 10`. No account ID, principal ARN, credentials, signed URL, source byte, or live version ID is committed. The role trust policies require MFA for both uploader and break-glass sessions; see [the identity preflight](PHASE1_ARCHIVE_IDENTITY_PREFLIGHT.md).
+Actual execution requires `--execute`, all eight `--approve-*` flags recorded in the plan, an owner-supplied account ID and the exact MFA-backed `WitnessTreeArchiveOperator` user ARN, a future exercise retention instant, dedicated exercise key and payload file, a new empty local work directory, and exactly `--monthly-ceiling 20`. No account ID, principal ARN, credentials, signed URL, source byte, or live version ID is committed. The role trust policies require MFA for both uploader and break-glass sessions; see [the identity preflight](PHASE1_ARCHIVE_IDENTITY_PREFLIGHT.md).
 
-The package estimates roughly US$1.40–$2.00/month for the current 60 GB same-region recovery copy plus small request, Inventory, and CloudTrail data-event charges. This is only a planning estimate. The operator must confirm the current AWS price calculator result and stop if it is greater than US$10/month. IAM and the lifecycle rule have no direct service fee; retained log/inventory/recovery data and event volume can increase cost.
+The package estimates roughly US$1.40–$2.00/month for the current 60 GB same-region recovery copy plus small request, Inventory, and CloudTrail data-event charges. This is only a planning estimate. The operator must confirm the current AWS price calculator result and stop if it is greater than the owner-approved US$20/month. IAM and the lifecycle rule have no direct service fee; retained log/inventory/recovery data and event volume can increase cost.
 
 ## Rollback limits
 

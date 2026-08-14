@@ -25,8 +25,8 @@
   },
   "costGuard": {
     "currency": "USD",
-    "monthlyCeiling": 10,
-    "estimate": "US$1.40-$2.00/month for a roughly 60 GB same-region recovery copy plus small S3 request, Inventory, and CloudTrail data-event charges; actual cost is usage-dependent and must remain at or below the approved US$10 monthly ceiling."
+    "monthlyCeiling": 20,
+    "estimate": "US$1.40-$2.00/month for a roughly 60 GB same-region recovery copy plus small S3 request, Inventory, and CloudTrail data-event charges; actual cost is usage-dependent and must remain at or below the owner-approved US$20 monthly ceiling."
   },
   "requiredApprovals": [
     "approve-identities",
@@ -36,7 +36,7 @@
     "approve-lifecycle",
     "approve-legal-hold-exercise",
     "approve-recovery-replication",
-    "approve-usd-10-monthly-ceiling"
+    "approve-usd-20-monthly-ceiling"
   ],
   "rollbackLimits": [
     "Deleting unused IAM roles, disabling future Inventory reports, stopping a trail, and deleting an empty recovery bucket are reversible only before retained evidence or replicas are required.",
