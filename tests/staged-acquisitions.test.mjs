@@ -14,6 +14,7 @@ const wildfire = manifest.entries.find((entry) => entry.sourceId === "nrcan-ca-f
 const canopyHeight = manifest.entries.find((entry) => entry.sourceId === "nrcan-forest-canopy-height-2022");
 const electionsCanada = manifest.entries.find((entry) => entry.sourceId === "elections-canada-federal-electoral-districts-45th-general-election-2025-shp");
 const albertaWildfire = manifest.entries.find((entry) => entry.sourceId === "alberta-historical-wildfire-2006-2025");
+const cwfisCurrent = manifest.entries.find((entry) => entry.sourceId === "cwfis-current");
 
 test("verified local acquisition remains staging-only", () => {
   assert.equal(validateStagedAcquisitions(manifest), manifest);
@@ -25,8 +26,19 @@ test("verified local acquisition remains staging-only", () => {
   assert.equal(first.attributionState, "metadata-verified");
   assert.match(first.attribution, /Ministère des Ressources naturelles et des Forêts/);
   assert.equal(first.licenceUrl, "https://www.donneesquebec.ca/licence/#cc-by");
-  assert.equal(manifest.entries.reduce((total, entry) => total + entry.byteLength, 0), 21824116141);
+  assert.equal(manifest.entries.reduce((total, entry) => total + entry.byteLength, 0), 21824162058);
   assert.equal(alberta?.sha256, "e93572129f25c83911b73eadfacff12624ff6b08f2db4b311c1662196b665093");
+});
+
+test("CWFIS current active-fire snapshot is complete for its fixed query and remains staging-only", () => {
+  assert.ok(cwfisCurrent, "cwfis-current entry is missing from the manifest");
+  assert.equal(cwfisCurrent.byteLength, 45917);
+  assert.equal(cwfisCurrent.sha256, "fc3d4a0730f30d6f12782b16e9459c173dabd6e50d0715b27cddecd954097f86");
+  assert.equal(cwfisCurrent.zipIntegrity, "passed");
+  assert.match(cwfisCurrent.sourceUrl, /cwfif_national_activefires/);
+  assert.match(cwfisCurrent.temporalCoverage, /586 records valid at the fixed WFS query instant/);
+  assert.equal(cwfisCurrent.immutableObjectStorage, false);
+  assert.equal(cwfisCurrent.productionEligible, false);
 });
 
 test("staged NRCan wildfire archive is checksum-bound, distinct from harvest, and remains staging-only", () => {
