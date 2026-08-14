@@ -10,7 +10,7 @@ test("canonical production ledger reconciles all 31 plan rows without runtime pr
   assert.equal(validatePhase1ProductionSourceLedger(ledger, inventory), ledger);
   assert.equal(ledger.entries.length, 31);
   assert.equal(ledger.entries.filter((entry) => entry.productionEligible).length, 0);
-  assert.equal(ledger.rawEvidenceNumerator, 10.5);
+  assert.equal(ledger.rawEvidenceNumerator, 11.25);
   assert.equal(ledger.entries.reduce((sum, entry) => sum + entry.rawCredit, 0), ledger.rawEvidenceNumerator);
 });
 

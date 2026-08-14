@@ -325,21 +325,24 @@
     },
     {
       "id": "qc-current-ecoforest",
-      "evidenceState": "in-progress-not-admitted",
-      "evidenceRefs": [],
+      "evidenceState": "local-verified-profiled",
+      "evidenceRefs": [
+        "data/acquisition-readiness.json",
+        "data/coverage-geometry-admission.json"
+      ],
       "proof": {
-        "licence": false,
-        "attribution": false,
-        "retrievalVersion": false,
-        "checksum": false,
-        "rawArchiveRefetch": false,
-        "profile": false,
+        "licence": true,
+        "attribution": true,
+        "retrievalVersion": true,
+        "checksum": true,
+        "rawArchiveRefetch": true,
+        "profile": true,
         "immutableArchive": false,
         "productionAdmission": false
       },
-      "rawCredit": 0,
+      "rawCredit": 0.75,
       "productionEligible": false,
-      "blocker": "Complete source/archive/profile/ledger evidence and admitted scope decision."
+      "blocker": "Promote the verified raw archive and derivative evidence to immutable object storage, then complete separate production admission and ingestion."
     },
     {
       "id": "qc-original-current-inventory",
@@ -611,5 +614,5 @@
       "blocker": "Obtain version, terms/caveats, checksum/archive/profile and engagement-safe release conditions."
     }
   ],
-  "rawEvidenceNumerator": 10.5
+  "rawEvidenceNumerator": 11.25
 }

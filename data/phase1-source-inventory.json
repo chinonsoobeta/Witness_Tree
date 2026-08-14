@@ -196,10 +196,10 @@
       "name": "Carte écoforestière à jour",
       "purpose": "Southern Québec forest context and disturbances.",
       "planUse": "production",
-      "evidence": "candidate registry; not production",
+      "evidence": "Official provincial archive retrieved locally with exact byte count and SHA-256, exhaustive source geometry profile, and checksum-bound publisher-footprint derivative evidence; not yet in immutable object storage or admitted to production ingestion.",
       "ownerRole": "provincial data lead",
-      "missing": "Spatial-file selection, schema, checksum and archive evidence.",
-      "externalDependency": "Québec forest ministry"
+      "missing": "Immutable object-storage promotion and separate production ingestion admission.",
+      "externalDependency": "Immutable storage and production admission"
     },
     {
       "id": "qc-original-current-inventory",
