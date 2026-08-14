@@ -108,9 +108,9 @@
       "name": "Ontario fire disturbance data",
       "purpose": "Ontario current and historical fire context.",
       "planUse": "production",
-      "evidence": "plan URL only",
+      "evidence": "Official daily in-year perimeter snapshot locally staged/profiled under OGL Ontario; nine bounded raw self-intersections have a separate local-only closed-join derived release, not production",
       "ownerRole": "wildfire operations lead",
-      "missing": "Layer edition, terms and refresh evidence.",
+      "missing": "Immutable archive, owner admission, operational refresh contract, ingestion and release approval.",
       "externalDependency": "Ontario GeoHub"
     },
     {
