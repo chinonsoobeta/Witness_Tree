@@ -9,6 +9,7 @@ const alberta = manifest.entries.find((entry) => entry.sourceId === "alberta-avi
 const canopy = manifest.entries.find((entry) => entry.sourceId === "nrcan-forest-canopy-cover-2022");
 const fma = manifest.entries.find((entry) => entry.sourceId === "alberta-fma-published-area");
 const ontario = manifest.entries.find((entry) => entry.sourceId === "ontario-forest-management-units");
+const harvest = manifest.entries.find((entry) => entry.sourceId === "nrcan-ca-forest-harvest-1985-2022");
 
 test("verified local acquisition remains staging-only", () => {
   assert.equal(validateStagedAcquisitions(manifest), manifest);
@@ -20,8 +21,19 @@ test("verified local acquisition remains staging-only", () => {
   assert.equal(first.attributionState, "metadata-verified");
   assert.match(first.attribution, /Ministère des Ressources naturelles et des Forêts/);
   assert.equal(first.licenceUrl, "https://www.donneesquebec.ca/licence/#cc-by");
-  assert.equal(manifest.entries.reduce((total, entry) => total + entry.byteLength, 0), 10955540355);
+  assert.equal(manifest.entries.reduce((total, entry) => total + entry.byteLength, 0), 11203485834);
   assert.equal(alberta?.sha256, "e93572129f25c83911b73eadfacff12624ff6b08f2db4b311c1662196b665093");
+});
+
+test("staged NRCan harvest archive is distinct from the catalogue's fire-named link and remains staging-only", () => {
+  assert.ok(harvest, "nrcan-ca-forest-harvest-1985-2022 entry is missing from the manifest");
+  assert.equal(harvest.byteLength, 247945479);
+  assert.equal(harvest.sha256, "c6f41dff46d91812874672edb53233dac4126952132ad6d1131ad47b11ad7aad");
+  assert.equal(harvest.zipIntegrity, "passed");
+  assert.equal(harvest.attributionState, "metadata-verified");
+  assert.match(harvest.catalogueResourceDiscrepancy, /fire-named ZIP/);
+  assert.equal(harvest.immutableObjectStorage, false);
+  assert.equal(harvest.productionEligible, false);
 });
 
 test("staged Ontario FMU archive is checksum-bound and remains staging-only", () => {
