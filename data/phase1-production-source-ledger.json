@@ -604,8 +604,8 @@
     },
     {
       "id": "modern-treaties",
-      "evidenceState": "unaddressed",
-      "evidenceRefs": [],
+      "evidenceState": "access-blocked",
+      "evidenceRefs": ["data/modern-treaties-authority-access-block.json", "data/source-candidates.json"],
       "proof": {
         "licence": false,
         "attribution": false,
@@ -618,7 +618,7 @@
       },
       "rawCredit": 0,
       "productionEligible": false,
-      "blocker": "Obtain version, terms/caveats, checksum/archive/profile and engagement-safe release conditions."
+      "blocker": "CIRNAC's official map is informal, approximate, subject to revision, and expressly cannot be relied on for consultation. It is not legal or precision boundary geometry; no admissible legal artifact, rights, checksum/archive recovery, or engagement route is verified."
     }
   ],
   "rawEvidenceNumerator": 11.25
