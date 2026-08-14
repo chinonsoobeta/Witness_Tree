@@ -20,6 +20,7 @@
     "check:immutable-promotions": "node scripts/check-immutable-promotions.mjs",
     "check:boundary-editions": "node scripts/check-boundary-editions.mjs",
     "check:raster-grid": "node scripts/check-raster-grid.mjs",
+    "check:coverage-geometry-admission": "node scripts/check-coverage-geometry-admission.mjs",
     "check:claims": "node scripts/check-claim-language.mjs",
     "check:style-tokens": "node scripts/check-style-tokens.mjs",
     "check:brand-token": "node scripts/check-brand-token.mjs",
