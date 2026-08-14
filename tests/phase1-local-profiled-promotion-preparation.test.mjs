@@ -12,6 +12,7 @@ test("one dry-run preparation binds the four local-profiled rows to three exact 
   assert.equal(validateLocalProfiledPromotionPreparation(plan, staged, ledger), plan);
   assert.equal(plan.artifacts.length, 3);
   assert.deepEqual(plan.artifacts.at(-1).productionRowIds, ["fed-2023-ridings", "elections-canada-45th-files"]);
+  assert.deepEqual([...plan.plannedProductionRowIds].sort(), ["elections-canada-45th-files", "fed-2023-ridings", "ntems-canopy-height", "ntems-forest-harvest"]);
 });
 
 test("preparation rejects missing local rows, mutable aliases, invented archive claims, and duplicated uploads", () => {
@@ -25,4 +26,6 @@ test("preparation rejects missing local rows, mutable aliases, invented archive 
   assert.throws(() => validateLocalProfiledPromotionPreparation(claimed, staged, ledger));
   const duplicate = structuredClone(plan); duplicate.artifacts.push(structuredClone(plan.artifacts[0]));
   assert.throws(() => validateLocalProfiledPromotionPreparation(duplicate, staged, ledger));
+  const unprofiled = structuredClone(plan); unprofiled.plannedProductionRowIds.push("ntems-annual-land-cover");
+  assert.throws(() => validateLocalProfiledPromotionPreparation(unprofiled, staged, ledger));
 });

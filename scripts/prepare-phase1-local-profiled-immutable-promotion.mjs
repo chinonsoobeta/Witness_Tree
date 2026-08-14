@@ -10,7 +10,12 @@ export function validateLocalProfiledPromotionPreparation(plan, staged, ledger) 
   assert.match(plan.notice, /does not call AWS, upload.*sidecar.*Object Lock retention.*ingest.*release/i);
   assert.match(plan.requiredApproval, /exact artifacts.*exact Canadian bucket and region.*COMPLIANCE retain-until instant/i);
   assert.deepEqual(plan.claims, { remoteObjectExists: false, sidecarUploaded: false, retentionApplied: false, immutableObjectStorage: false, transformed: false, ingested: false, productionEligible: false });
-  const expectedRows = ledger.entries.filter((entry) => entry.evidenceState === "local-verified-profiled").map((entry) => entry.id).sort();
+  assert.ok(Array.isArray(plan.plannedProductionRowIds) && plan.plannedProductionRowIds.length > 0);
+  const expectedRows = [...plan.plannedProductionRowIds].sort();
+  assert.equal(new Set(expectedRows).size, expectedRows.length, "Prepared production rows must be unique.");
+  for (const id of expectedRows) {
+    assert.equal(ledger.entries.find((entry) => entry.id === id)?.evidenceState, "local-verified-profiled", "Every prepared row must be locally verified and profiled.");
+  }
   const seenRows = new Set(); const seenAcquisitions = new Set();
   for (const artifact of plan.artifacts) {
     assert.ok(Array.isArray(artifact.productionRowIds) && artifact.productionRowIds.length > 0);

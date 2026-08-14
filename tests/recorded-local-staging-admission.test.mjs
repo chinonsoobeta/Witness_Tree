@@ -17,5 +17,5 @@ test("recorded admission fails closed when staged metadata disagrees", () => {
   assert.throws(() => validateRecordedLocalAdmissions(acquisitions, { ...profile, sources: profile.sources.filter((source) => source.sourceId !== "alberta-avi-crown") }), /exact staged sources/i);
   assert.equal(validateRecordedLocalAdmissions({ ...acquisitions, entries: [...acquisitions.entries, { ...acquisitions.entries[0], id: "unprofiled-source", sourceId: "unprofiled-source" }] }, profile).length, 5);
   assert.throws(() => validateRecordedLocalAdmissions(acquisitions, { ...profile, sources: [...profile.sources, { ...profile.sources[0], sourceId: "unmatched-profile" }] }), /exact staged sources/i);
-  assert.throws(() => validateRecordedLocalAdmissions(acquisitions, { ...profile, sources: [...profile.sources, profile.sources[0]] }), /exact staged sources/i);
+  assert.throws(() => validateRecordedLocalAdmissions(acquisitions, { ...profile, sources: [...profile.sources, profile.sources[0]] }), /source ids must be unique/i);
 });
