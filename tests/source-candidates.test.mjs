@@ -86,6 +86,17 @@ test("Ontario FRI Term 2 stays unresolved and records a request-based access rou
   assert.match(fri?.verifiedFacts.join(" ") ?? "", /draft data/i);
 });
 
+test("BC current VRI retains the Access Only, broken-artifact, and non-substitution constraints", () => {
+  const vri = registry.entries.find((entry) => entry.id === "bc-vri-2025-composite-polygons");
+  assert.equal(vri?.productionEligible, false);
+  assert.equal(vri?.licence.id, "bc-access-only");
+  assert.equal(vri?.access.state, "catalogue-listed");
+  assert.match(vri?.verifiedFacts.join(" ") ?? "", /HTTP HEAD request.*404/i);
+  assert.match(vri?.verifiedFacts.join(" ") ?? "", /historical 2002–2024.*not substituted/i);
+  assert.match(vri?.intendedRole.en ?? "", /not a cutblock.*harvesting-authority/i);
+  assert.match(vri?.unresolvedFields.join(" ") ?? "", /Written permission/i);
+});
+
 test("candidate registry rejects production, unsafe URLs, incomplete bilingual purpose, and removed uncertainty", () => {
   assert.throws(() => validateSourceCandidates({ ...registry, status: "production" }), /candidate/);
   assert.throws(() => validateSourceCandidates({ ...registry, entries: [{ ...first, status: "production" }] }), /production eligible/);

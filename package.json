@@ -23,6 +23,7 @@
     "check:bc-harvesting-authority-access": "node scripts/check-bc-harvesting-authority-access.mjs",
     "check:ontario-fri-term2-access": "node scripts/check-ontario-fri-term2-access.mjs",
     "check:sopfeu-wildfire-access": "node scripts/check-sopfeu-wildfire-access.mjs",
+    "check:bc-vri-access": "node scripts/check-bc-vri-access.mjs",
     "check:phase1-source-inventory": "node scripts/check-phase1-source-inventory.mjs",
     "check:vlce2-promotion": "node scripts/check-vlce2-promotion-preparation.mjs",
     "check:vlce2-remote-promotion": "node scripts/check-vlce2-remote-promotion-evidence.mjs",
