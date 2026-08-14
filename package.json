@@ -19,6 +19,7 @@
     "check:staged-acquisitions": "node scripts/check-staged-acquisitions.mjs",
     "check:staged-geospatial-profile": "node scripts/check-staged-geospatial-profile.mjs",
     "check:immutable-promotions": "node scripts/check-immutable-promotions.mjs",
+    "check:immutable-restore-drill": "node scripts/check-immutable-restore-drill.mjs",
     "check:boundary-editions": "node scripts/check-boundary-editions.mjs",
     "check:raster-grid": "node scripts/check-raster-grid.mjs",
     "check:claims": "node scripts/check-claim-language.mjs",
