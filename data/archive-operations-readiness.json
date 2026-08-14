@@ -6,7 +6,7 @@
   "archive": {
     "provider": "AWS S3",
     "region": "ca-central-1",
-    "resourceState": "empty-non-production"
+    "resourceState": "provisioned-locked-non-production"
   },
   "decisions": {
     "recoveryCopy": {

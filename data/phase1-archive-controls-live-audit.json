@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "status": "blocked",
+  "capturedAt": "2026-08-14T17:11:06Z",
+  "scope": "Read-only AWS IAM, S3, CloudTrail, and AWS Config control-plane audit of the Canadian raw-archive bucket.",
+  "identity": "root-account-principal; account identifier deliberately omitted",
+  "observed": {
+    "region": "ca-central-1",
+    "versioning": "enabled",
+    "objectLock": "enabled-without-default-retention",
+    "payloadRetentionSample": "COMPLIANCE until 2033-08-12T00:00:00Z",
+    "publicAccessBlock": "all-four-settings-enabled",
+    "bucketPolicy": "absent",
+    "serverAccessLogging": "absent",
+    "cloudTrailTrails": "absent",
+    "cloudTrailEventDataStores": "absent",
+    "awsConfigRecorder": "absent",
+    "lifecycle": "absent",
+    "replication": "absent",
+    "inventory": "absent",
+    "iamUsers": "absent",
+    "dedicatedUploaderOrBreakGlassRole": "absent",
+    "customerManagedPolicies": "absent",
+    "legalHoldSample": "not-configured"
+  },
+  "remediation": [
+    {"id":"dedicated-identity","approvalRequired":true,"change":"Create separate least-privilege uploader and narrowly scoped break-glass retention-administration roles; independently review their trust and permission policies."},
+    {"id":"access-logging","approvalRequired":true,"change":"Choose a Canadian log destination and retention period, then enable S3 object-level CloudTrail data events and a documented review process."},
+    {"id":"lifecycle","approvalRequired":true,"change":"Approve retention and storage-cost policy before adding only non-bypassing lifecycle and incomplete-multipart-cleanup rules."},
+    {"id":"legal-hold","approvalRequired":true,"change":"Approve a legal-hold SOP, authorized role, audit review and a reversible exercise that does not change compliance retention."},
+    {"id":"recovery-and-replication","approvalRequired":true,"change":"Approve a Canadian recovery design and destination, then exercise recovery while preserving primary version retention; do not enable replication before residency and cost review."}
+  ],
+  "productionEligible": false
+}

@@ -1,6 +1,6 @@
 # Archive operations readiness gate
 
-`data/archive-operations-readiness.json` is the Phase 1 evidence record for the archive controls that are currently absent from the empty AWS bucket. It is intentionally **blocked** and `productionEligible: false`. Passing `npm run check:archive-operations-readiness` confirms that this record is structurally complete and does not overstate readiness; it does not make the archive ready.
+`data/archive-operations-readiness.json` is the Phase 1 evidence record for controls absent from the provisioned, locked AWS bucket. It is intentionally **blocked** and `productionEligible: false`. Passing `npm run check:archive-operations-readiness` confirms that this record is structurally complete and does not overstate readiness; it does not make the archive ready.
 
 The record separately preserves the recovery-copy and replication decisions. It also requires owned evidence for five controls:
 
@@ -15,3 +15,5 @@ For a control to become `evidenced`, add at least one redacted evidence object f
 The gate permits `status: "ready"` only when every control is evidenced and both the recovery-copy and Canadian-replication decisions are approved. `productionEligible` is permanently `false` in this record: even a ready archive-control package cannot authorize raw-source promotion. That remains subject to the immutable-storage, attribution, checksum, remote-verification, and reviewer gates in [IMMUTABLE_STORAGE_DECISION.md](IMMUTABLE_STORAGE_DECISION.md).
 
 Current provisioned-state facts and their limitations remain in [IMMUTABLE_STORAGE_PROVISIONING.md](IMMUTABLE_STORAGE_PROVISIONING.md). No cloud configuration is changed by this record or check.
+
+The read-only live audit and approval-gated remediation sequence are recorded in [PHASE1_ARCHIVE_CONTROLS_LIVE_AUDIT.md](PHASE1_ARCHIVE_CONTROLS_LIVE_AUDIT.md). It records observed gaps; it is not provisioning evidence.
