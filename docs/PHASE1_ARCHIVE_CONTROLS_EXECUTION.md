@@ -24,6 +24,8 @@ The exercise writes a tiny, non-source object under `raw/legal-hold-exercises/YY
 
 Actual execution requires `--execute`, all eight `--approve-*` flags recorded in the plan, an owner-supplied account ID and the exact MFA-backed `WitnessTreeArchiveOperator` user ARN, a future exercise retention instant, dedicated exercise key and payload file, a new empty local work directory, and exactly `--monthly-ceiling 20`. No account ID, principal ARN, credentials, signed URL, source byte, or live version ID is committed. The role trust policies require MFA for both uploader and break-glass sessions; see [the identity preflight](PHASE1_ARCHIVE_IDENTITY_PREFLIGHT.md).
 
+The bootstrap user has no console password. It requires one owner-created CLI access key and a virtual/TOTP MFA device so it can obtain the MFA-backed STS session that assumes the two archive roles. The access-key secret, MFA seed, TOTP code, and temporary credentials must remain solely on the owner-controlled machine; they must never be sent to Codex or committed. The exact owner-only flow is in [the identity preflight](PHASE1_ARCHIVE_IDENTITY_PREFLIGHT.md#owner-only-cli-bootstrap-and-role-session-flow).
+
 The package estimates roughly US$1.40–$2.00/month for the current 60 GB same-region recovery copy plus small request, Inventory, and CloudTrail data-event charges. This is only a planning estimate. The operator must confirm the current AWS price calculator result and stop if it is greater than the owner-approved US$20/month. IAM and the lifecycle rule have no direct service fee; retained log/inventory/recovery data and event volume can increase cost.
 
 ## Rollback limits
