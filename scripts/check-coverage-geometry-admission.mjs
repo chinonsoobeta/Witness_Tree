@@ -32,6 +32,13 @@ function timestamp(value, field) {
   if (!ISO_TIMESTAMP.test(value) || Number.isNaN(new Date(value).getTime())) throw new Error(`${field} must be a UTC timestamp.`);
 }
 
+function localEvidencePath(value, field) {
+  text(value, field);
+  if (!value.startsWith("../Witness_Tree-data/") || value.includes("..", "../Witness_Tree-data/".length)) {
+    throw new Error(`${field} must be a normalized Witness_Tree-data evidence path.`);
+  }
+}
+
 function rejectForbiddenProof(value, path = "manifest") {
   if (typeof value === "string") {
     if (FORBIDDEN_PROOF.test(value)) throw new Error(`${path} cannot use example, fixture, illustrative, or latitude-proxy evidence.`);
@@ -64,8 +71,9 @@ function validateLayer(layer) {
   if (!profile || typeof profile !== "object") throw new Error("Coverage validity/profile evidence is required.");
   text(profile.evidenceId, "profile.evidenceId");
   timestamp(profile.profiledAt, "profile.profiledAt");
-  https(profile.evidenceUrl, "profile.evidenceUrl");
+  localEvidencePath(profile.evidencePath, "profile.evidencePath");
   sha256(profile.evidenceChecksumSha256, "profile.evidenceChecksumSha256");
+  sha256(profile.geometryChecksumSha256, "profile.geometryChecksumSha256");
   text(profile.geometryType, "profile.geometryType");
   if (!Number.isSafeInteger(profile.featureCount) || profile.featureCount <= 0) throw new Error("profile.featureCount must be a positive safe integer.");
   if (!Number.isSafeInteger(profile.invalidGeometryCount) || profile.invalidGeometryCount < 0) throw new Error("profile.invalidGeometryCount must be a known non-negative integer.");
@@ -76,6 +84,19 @@ function validateLayer(layer) {
   text(licence.id, "licence.id");
   https(licence.url, "licence.url");
   text(layer.attribution, "attribution");
+  if (layer.province === "ON" && layer.coverageClass === "national-baseline-plus-managed-forest-context") {
+    const scope = layer.scope;
+    if (!scope || typeof scope !== "object") throw new Error("Ontario context scope is required.");
+    if (scope.decision !== "crown-forest-planning-unit-context-only") throw new Error("Ontario scope must be Crown-forest planning-unit context only.");
+    if (scope.outsideBoundaryCoverage !== "national-baseline") throw new Error("Ontario areas outside the planning-unit boundary must retain the national baseline.");
+    if (scope.forestLandBaseDenominator !== false) throw new Error("Ontario planning-unit context cannot be a forest land-base denominator.");
+    if (scope.enhancedRecordCoverage !== false) throw new Error("Ontario context cannot enable enhanced records.");
+    text(scope.enhancedRecordCondition, "Ontario enhancedRecordCondition");
+  } else if (layer.coverageClass !== "land-base") {
+    throw new Error("Non-Ontario coverage layers must be admitted as land-base geometry.");
+  } else if (layer.province === "ON" && layer.sourceId === "ontario-forest-management-units") {
+    throw new Error("Ontario Forest Management Units cannot be admitted as Ontario land-base geometry.");
+  }
 }
 
 /**
@@ -105,6 +126,7 @@ export function validateCoverageGeometryAdmission(manifest) {
     if (provinces.size !== PROVINCES.size || [...PROVINCES].some((province) => !provinces.has(province))) throw new Error("Complete coverage requires versioned geometry evidence for BC, AB, ON, and QC.");
     if (decisions.ontarioManagedForest !== "approved") throw new Error("Complete coverage requires the Ontario managed-forest decision.");
     if (decisions.quebecSouthOf52 !== "approved") throw new Error("Complete coverage requires the Québec south-of-52 decision.");
+    if (manifest.layers.some((layer) => layer.coverageClass !== "land-base")) throw new Error("Complete coverage requires land-base geometry for every province; Ontario planning-unit context alone is insufficient.");
   }
   return manifest;
 }
@@ -115,5 +137,5 @@ export async function checkCoverageGeometryAdmission(file = new URL("../data/cov
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   const manifest = await checkCoverageGeometryAdmission(path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../data/coverage-geometry-admission.json"));
-  console.log(`Coverage geometry admission passed with ${manifest.layers.length} admitted land-base layers.`);
+  console.log(`Coverage geometry admission passed with ${manifest.layers.length} admitted coverage-geometry layers.`);
 }

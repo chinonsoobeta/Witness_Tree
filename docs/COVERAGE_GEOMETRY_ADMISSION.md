@@ -6,4 +6,10 @@ An entry is acceptable only when it identifies an actual, versioned source geome
 
 `complete` is deliberately stricter than syntactically valid evidence. It requires exactly one accepted layer for BC, Alberta, Ontario, and Québec, plus recorded `approved` decisions for Ontario's managed-forest scope and Québec's south-of-52 scope. Until those external source and scope decisions exist, the record must remain `pending-evidence` or `partial`; neither status admits complete land-base coverage.
 
+## Ontario decision and current partial admission
+
+Ontario's current official Forest Management Unit union is admitted as **Crown-forest planning-unit context only**. It is not a statement of Ontario's total forest land base, does not supply a forest-hectare denominator, and does not itself enable an enhanced provincial record. The national baseline remains the coverage outside the union. An enhanced Ontario record requires separately verified provincial FRI or other local evidence that names the applicable FMU and period.
+
+The union is derived deterministically from all 39 polygons in the approved `FORMGMT.zip` archive. Its evidence binds the source ZIP checksum, output geometry checksum, profile checksum, input count, CRS, extent, equal-area area calculation, and the no-repair/no-filter/no-clipping method. The raw and derivative files remain external evidence artifacts; the admission record references them by normalized path and checksum.
+
 Run `npm run check:coverage-geometry-admission` to enforce the contract. The negative corpus proves that missing provinces, unapproved Ontario/Québec decisions, latitude-proxy labels, fixtures, and unknown profile validity cannot satisfy the gate. Test literals exercise parsing only; they are never checked-in coverage evidence or a claim that geometry has been obtained.
