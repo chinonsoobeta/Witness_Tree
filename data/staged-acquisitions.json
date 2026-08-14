@@ -179,6 +179,39 @@
       "changesNotice": "This raw archive is unchanged. No extraction, transformation, or ingestion has been performed; verification read the bytes only.",
       "immutableObjectStorage": false,
       "productionEligible": false
+    },
+    {
+      "id": "ontario-in-year-fire-perimeters-2026-08-14",
+      "sourceId": "on-fire-disturbance",
+      "datasetTitle": "In-year Fire Perimeters",
+      "publisher": "Ontario Ministry of Natural Resources",
+      "catalogueUrl": "https://data.ontario.ca/dataset/in-year-fire-perimeters",
+      "sourceUrl": "https://ws.lioservices.lrc.gov.on.ca/arcgis2/rest/services/LIO_OPEN_DATA/LIO_Open09/MapServer/51/query?where=1%3D1&outFields=*&returnGeometry=true&f=geojson",
+      "localPath": "../Witness_Tree-data/raw/ontario-in-year-fire-perimeters/2026-08-14/ontario-in-year-fire-perimeters_2026-08-14.geojson",
+      "originalFilename": "ontario-in-year-fire-perimeters_2026-08-14.geojson",
+      "sourceVersion": "undeclared",
+      "sourceVersionBasis": "The public Ontario catalogue and Feature Service identify an ongoing daily in-year feed, not a versioned dataset edition.",
+      "retrievedAt": "2026-08-14T13:49:36Z",
+      "retrievedAtBasis": "Download completion instant recorded by the project from the staged file's local modification time; it is not a publisher attestation.",
+      "verifiedAt": "2026-08-14T13:49:36Z",
+      "byteLength": 19510504,
+      "sha256": "99881f19a32068b5d66b244955f7b088e873ffe76eafebf1740f03e16f042f11",
+      "contentIntegrity": "passed",
+      "integrityMethod": "The service reported 188 records with a 2,000-record limit; jq confirmed a GeoJSON FeatureCollection with exactly 188 features in the unpaged response. Read-only GDAL/GEOS profiling found 118 Polygon and 70 MultiPolygon features, with nine self-intersections retained unchanged.",
+      "licenceId": "ogl-ontario",
+      "temporalCoverage": "This year's Ontario forest-fire perimeters as returned by the daily live service; illustrations only, potentially several days old, not captured for every fire, and not a real-time or complete incident claim.",
+      "attributionState": "metadata-verified",
+      "attribution": "Ontario Ministry of Natural Resources © King’s Printer for Ontario, 2025",
+      "licenceUrl": "https://www.ontario.ca/page/open-government-licence-ontario",
+      "attributionBasis": "The official public ArcGIS item declares Open Government Licence – Ontario and this attribution statement.",
+      "attributionSources": [
+        "https://data.ontario.ca/dataset/in-year-fire-perimeters",
+        "https://www.arcgis.com/sharing/rest/content/items/85d44c5ec6154982b9dbeae19dfc778f?f=pjson"
+      ],
+      "attributionVerifiedAt": "2026-08-14T13:49:36Z",
+      "changesNotice": "This raw GeoJSON is unchanged. Read-only inspection made no source modification, feature transformation, repair, filtering, extraction, ingestion, or promotion. Nine invalid source geometries remain blocked pending a documented source-specific policy.",
+      "immutableObjectStorage": false,
+      "productionEligible": false
     }
   ]
 }

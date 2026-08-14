@@ -95,6 +95,28 @@
           "invalidGeometryReasons": {"Ring Self-intersection": 1}
         }
       ]
+    },
+    {
+      "sourceId": "on-fire-disturbance",
+      "inputSha256": "99881f19a32068b5d66b244955f7b088e873ffe76eafebf1740f03e16f042f11",
+      "profiledWith": {"gdal": "3.13.2", "geos": "3.14.1"},
+      "decision": "blocked-pending-geometry-policy",
+      "requiredAction": "Define and test an Ontario-specific deterministic repair-or-quarantine rule before transformation or ingestion.",
+      "productionEligible": false,
+      "layers": [
+        {
+          "name": "ontario-in-year-fire-perimeters_2026-08-14",
+          "geometryType": "Polygon/MultiPolygon",
+          "featureCount": 188,
+          "crs": "EPSG:4326",
+          "fieldCount": 7,
+          "requiredFields": ["FIRENUMB", "CUR_SIZE", "FIRETYPE", "STATUS", "DATE_MAPPED"],
+          "missingGeometryCount": 0,
+          "emptyGeometryCount": 0,
+          "invalidGeometryCount": 9,
+          "invalidGeometryReasons": {"Ring Self-intersection": 9}
+        }
+      ]
     }
   ]
 }

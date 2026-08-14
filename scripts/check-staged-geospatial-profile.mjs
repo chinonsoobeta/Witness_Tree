@@ -19,6 +19,13 @@ const EXPECTED = new Map([
       ["AVI_PostInventoryHarvestIndex", ["MultiPolygon", 1, "EPSG:3400", 2, 1]],
     ]),
   }],
+  ["on-fire-disturbance", {
+    sha256: "99881f19a32068b5d66b244955f7b088e873ffe76eafebf1740f03e16f042f11",
+    decision: "blocked-pending-geometry-policy",
+    layers: new Map([
+      ["ontario-in-year-fire-perimeters_2026-08-14", ["Polygon/MultiPolygon", 188, "EPSG:4326", 7, 9]],
+    ]),
+  }],
 ]);
 
 function required(value, field) {
@@ -32,17 +39,20 @@ export function validateStagedGeospatialProfile(profile) {
   if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(profile.profiledAt ?? "") || Number.isNaN(new Date(profile.profiledAt).getTime())) throw new Error("Profile time must be a UTC timestamp.");
   required(profile.tools?.pyogrio, "pyogrio version");
   required(profile.tools?.gdal, "GDAL version");
-  if (!Array.isArray(profile.sources) || profile.sources.length !== EXPECTED.size) throw new Error("Profile must contain the exact staged sources.");
+  if (!Array.isArray(profile.sources)) throw new Error("Profile sources are required.");
   const sourceIds = new Set();
+  for (const source of profile.sources) {
+    if (sourceIds.has(source.sourceId)) throw new Error("Profile source ids must be unique.");
+    sourceIds.add(source.sourceId);
+  }
+  if (profile.sources.length !== EXPECTED.size) throw new Error("Profile must contain the exact staged sources.");
   for (const source of profile.sources) {
     const expected = EXPECTED.get(source.sourceId);
     if (!expected) throw new Error(`Unexpected source ${source.sourceId}.`);
-    if (sourceIds.has(source.sourceId)) throw new Error("Profile source ids must be unique.");
-    sourceIds.add(source.sourceId);
     if (source.inputSha256 !== expected.sha256) throw new Error(`${source.sourceId} input checksum changed.`);
     if (source.decision !== expected.decision) throw new Error(`${source.sourceId} decision is unsafe.`);
     if (source.productionEligible !== false) throw new Error("A staging profile cannot grant production eligibility.");
-    if (source.sourceId === "alberta-avi-crown") required(source.requiredAction, "Alberta required action");
+    if (source.sourceId === "alberta-avi-crown" || source.sourceId === "on-fire-disturbance") required(source.requiredAction, "Geometry-policy required action");
     if (!Array.isArray(source.layers) || source.layers.length !== expected.layers.size) throw new Error(`${source.sourceId} layer set changed.`);
     const layerNames = new Set();
     for (const layer of source.layers) {
