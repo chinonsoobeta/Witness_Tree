@@ -95,6 +95,27 @@
           "invalidGeometryReasons": {"Ring Self-intersection": 1}
         }
       ]
+    },
+    {
+      "sourceId": "ab-wildfire",
+      "inputSha256": "f0e86ea34a7624c365349b3a8fbb77967bb45ab73c507cf441efb8f6a8736ee0",
+      "profiledWith": {"gdal": "3.13.2"},
+      "decision": "ready-for-transformation-design",
+      "productionEligible": false,
+      "layers": [
+        {
+          "name": "alberta-wildfire-locations_2026-08-14",
+          "geometryType": "Point",
+          "featureCount": 751,
+          "crs": "EPSG:4326",
+          "fieldCount": 17,
+          "requiredFields": ["FIRE_NUMBER", "FIRE_STATUS", "FIRE_YEAR", "LATITUDE", "LONGITUDE", "FIRE_STATUS_DATE"],
+          "missingGeometryCount": 0,
+          "emptyGeometryCount": 0,
+          "invalidGeometryCount": 0,
+          "invalidGeometryReasons": {}
+        }
+      ]
     }
   ]
 }
