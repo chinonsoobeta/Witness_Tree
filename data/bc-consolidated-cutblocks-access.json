@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "1.0",
+  "status": "blocked-access-only-licence",
+  "sourceId": "bc-consolidated-cutblocks",
+  "verifiedAt": "2026-08-14T17:08:45Z",
+  "catalogue": {
+    "url": "https://catalogue.data.gov.bc.ca/dataset/harvested-areas-of-bc-consolidated-cutblocks-",
+    "datasetId": "b1b647a6-f271-42e0-9cd0-89ec24bce9f7",
+    "title": "Harvested Areas of BC (Consolidated Cutblocks)",
+    "publisher": "Province of British Columbia, Forest Analysis and Inventory Branch",
+    "pointOfContact": {
+      "name": "FAIB Data Analysis and Data Management Group",
+      "email": "FAIB.Data.Management@gov.bc.ca",
+      "role": "pointOfContact"
+    },
+    "metadataModifiedAt": "2026-08-14T12:37:38.398230Z",
+    "licenceTitle": "Access Only",
+    "licenceUrl": "https://www2.gov.bc.ca/gov/content?id=1AAACC9C65754E4D89A118B875E0FBDA"
+  },
+  "resource": {
+    "title": "Consolidated Cutblocks Complete Download",
+    "format": "fgdb ZIP",
+    "url": "https://www.for.gov.bc.ca/ftp/HTS/external/!publish/DataCatalogue_FAIB_Data/consolidated_cutblocks/Cut_Block_all_BC.zip",
+    "head": {
+      "observedAt": "2026-08-14T17:08:45Z",
+      "status": 200,
+      "contentType": "application/x-zip-compressed",
+      "contentLengthBytes": 555382445,
+      "lastModified": "2025-07-25T23:00:56Z",
+      "etag": "bf33c5fab7fddb1:0"
+    }
+  },
+  "editionAndCadence": {
+    "documentationUrl": "https://www.for.gov.bc.ca/ftp/HTS/external/!publish/DataCatalogue_FAIB_Data/Consolidated_Cutblocks/About_Consolidated_Cut_Blocks_2024.pdf",
+    "documentationEdition": "November 2024",
+    "datasetRunCadence": "quarterly",
+    "satelliteChangeDetectionCadence": "annual 1999–2023; quarterly since 2023"
+  },
+  "scopeAndLifecycleCaveats": [
+    "The dataset combines RESULTS, satellite change detection, and VRI into an analysis-ready historical harvest context with estimated harvest dates.",
+    "It includes only RESULTS cutblocks with spatial information present on the quarterly run date; multi-year openings can appear after harvest start.",
+    "Older records can be incomplete or spatially less accurate, private-land and some licence-type harvest may not be reported, and older reserve exclusions are less reliable.",
+    "This is not a live operational record and must not be used to infer every harvest or a completed-harvest lifecycle without the documented source-specific limitations."
+  ],
+  "blocker": {
+    "reason": "The authoritative BC Data Catalogue assigns the dataset the licence title Access Only, not the Open Government Licence – British Columbia or another verified redistribution licence.",
+    "requiredBeforeAcquisition": "Obtain a written publisher authorization or an authoritative redistributable licence for this exact resource.",
+    "rawDownloadPerformed": false,
+    "sha256": null,
+    "archiveIntegrity": "not-run-access-blocked",
+    "schemaProfile": "not-run-access-blocked",
+    "productionEligible": false
+  }
+}

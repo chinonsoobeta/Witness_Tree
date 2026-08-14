@@ -116,6 +116,20 @@
       "productionEligible": false
     },
     {
+      "id": "bc-consolidated-cutblocks",
+      "status": "candidate",
+      "datasetTitle": "Harvested Areas of BC (Consolidated Cutblocks)",
+      "publisher": "Province of British Columbia, Forest Analysis and Inventory Branch",
+      "catalogueUrl": "https://catalogue.data.gov.bc.ca/dataset/harvested-areas-of-bc-consolidated-cutblocks-",
+      "intendedRole": { "en": "Historical BC harvest context consolidated from RESULTS, satellite change detection, and VRI; not a complete or live operational harvest record.", "fr": "Contexte historique des récoltes en Colombie-Britannique, consolidé à partir de RESULTS, de la détection des changements par satellite et de VRI; sans prétendre à un relevé complet ou opérationnel en direct." },
+      "metadataVerification": "verified",
+      "licence": { "state": "unresolved" },
+      "access": { "state": "catalogue-listed" },
+      "verifiedFacts": ["The official BC Data Catalogue identifies the exact consolidated-cutblocks dataset and a 555382445-byte FGDB ZIP resource.", "The authoritative catalogue licence title is Access Only, so no redistributable licence has been verified.", "The November 2024 methodology says the dataset runs quarterly, merges RESULTS, Landsat change detection, and VRI, and carries source-specific historical completeness and timing limitations."],
+      "unresolvedFields": ["Written publisher authorization or a redistributable licence", "Raw snapshot", "Checksum", "Archive integrity", "Schema and geometry profile", "Lifecycle approval"],
+      "productionEligible": false
+    },
+    {
       "id": "nrcan-annual-high-resolution-forest-land-cover",
       "status": "candidate",
       "datasetTitle": "Annual High-Resolution Forest Land Cover, Canada, 1984–2022",

@@ -44,6 +44,15 @@ test("the resolved harvest record carries a verified harvest URL and keeps the p
   assert.match(harvest?.verifiedFacts.join(" ") ?? "", /still points to a URL named CA_Forest_Fire_1985-2022\.zip/i);
 });
 
+test("BC Consolidated Cutblocks stays blocked when the authoritative catalogue says Access Only", () => {
+  const cutblocks = registry.entries.find((entry) => entry.id === "bc-consolidated-cutblocks");
+  assert.ok(cutblocks, "bc-consolidated-cutblocks candidate is missing");
+  assert.equal(cutblocks?.licence.state, "unresolved");
+  assert.equal(cutblocks?.access.state, "catalogue-listed");
+  assert.match(cutblocks?.unresolvedFields.join(" ") ?? "", /redistributable licence/i);
+  assert.equal(cutblocks?.productionEligible, false);
+});
+
 test("Ontario FRI Term 2 stays unresolved and records a request-based access route", () => {
   const fri = registry.entries.find((entry) => entry.id === "ontario-fri-term-2-2018-2028");
   assert.equal(fri?.access.state, "unresolved");
