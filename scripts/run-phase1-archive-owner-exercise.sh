@@ -54,7 +54,7 @@ account_id="$(jq -er '.Account | select(test("^[0-9]{12}$"))' <<<"$identity")"
 jq -er '.Arn | select(endswith(":user/WitnessTreeArchiveOperator"))' <<<"$identity" >/dev/null
 unset identity
 mfa_serial="$(aws configure get mfa_serial --profile "$PROFILE" 2>"$evidence_dir/mfa-serial.stderr" || true)"
-if [[ -z "$mfa_serial" ]]; then mfa_serial="arn:aws:iam::${account_id}:mfa/WitnessTreeArchiveOperator"; fi
+[[ "$mfa_serial" == arn:aws:iam::*:mfa/* ]] || fail "Set this profile's exact assigned virtual-MFA serial locally, then retry."
 
 phase "obtain a short-lived MFA session"
 bootstrap="$(run_aws get-session-token --profile "$PROFILE" sts get-session-token --serial-number "$mfa_serial" --token-code "$totp" --duration-seconds 3600 --output json)"

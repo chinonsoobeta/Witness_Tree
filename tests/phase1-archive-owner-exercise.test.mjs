@@ -25,6 +25,8 @@ test("owner-local archive exercise has bounded, redacted MFA and control flow", 
   assert.match(helper, /read -r -s -p "Current WitnessTreeArchiveOperator TOTP/);
   assert.match(helper, /--cli-connect-timeout "\$CLI_CONNECT_TIMEOUT" --cli-read-timeout "\$CLI_READ_TIMEOUT"/);
   assert.match(helper, /sts get-session-token/);
+  assert.match(helper, /Set this profile's exact assigned virtual-MFA serial locally, then retry\./);
+  assert.doesNotMatch(helper, /mfa_serial="arn:aws:iam::\$\{account_id\}:mfa\/WitnessTreeArchiveOperator"/);
   assert.match(helper, /sts assume-role/);
   assert.match(helper, /put-object-legal-hold.*Status=ON/);
   assert.match(helper, /put-object-legal-hold.*Status=OFF/);
