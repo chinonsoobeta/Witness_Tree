@@ -42,6 +42,15 @@
     "Older records can be incomplete or spatially less accurate, private-land and some licence-type harvest may not be reported, and older reserve exclusions are less reliable.",
     "This is not a live operational record and must not be used to infer every harvest or a completed-harvest lifecycle without the documented source-specific limitations."
   ],
+  "permissionRequest": {
+    "status": "sent-awaiting-response",
+    "sentAt": "2026-08-14T17:17:15Z",
+    "sender": "Chinonso Obeta <chinonso8@gmail.com>",
+    "recipient": "FAIB.Data.Management@gov.bc.ca",
+    "subject": "Permission request — Harvested Areas of BC (Consolidated Cutblocks)",
+    "evidenceScope": "The sent-mail evidence confirms delivery from the named sender to the named recipient at the recorded time. This repository intentionally stores no Gmail message or thread identifier, no mailbox URL, and no response claim.",
+    "authorizationOutcome": "pending"
+  },
   "blocker": {
     "reason": "The authoritative BC Data Catalogue assigns the dataset the licence title Access Only, not the Open Government Licence – British Columbia or another verified redistribution licence.",
     "requiredBeforeAcquisition": "Obtain a written publisher authorization or an authoritative redistributable licence for this exact resource.",

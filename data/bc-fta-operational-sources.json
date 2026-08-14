@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "1.0",
+  "status": "blocked-publisher-export-required",
+  "notice": "This is an audit of two public, Open Government Licence – British Columbia services. It is not an acquisition, a coherent local snapshot, an archive, an ingestion, or a production release.",
+  "observedAt": "2026-08-14T17:30:00Z",
+  "licence": { "id": "ogl-british-columbia", "title": "Open Government Licence - British Columbia", "url": "https://www2.gov.bc.ca/gov/content?id=A519A56BC2BF44E4A008B33FCF527F61" },
+  "sources": [
+    {
+      "sourceId": "bc-fta-4-cutblocks",
+      "catalogueId": "dfb8b498-fa4b-4286-b3ec-58db88aca1cf",
+      "catalogueUrl": "https://catalogue.data.gov.bc.ca/dataset/dfb8b498-fa4b-4286-b3ec-58db88aca1cf",
+      "title": "Forest Tenure Cutblock Polygons (FTA 4.0)",
+      "publisher": "Province of British Columbia, Forest Tenures Branch",
+      "pointOfContact": "foresttenuresbranch@gov.bc.ca",
+      "cadence": "not declared; catalogue resource status is On Going and metadata was modified 2026-08-14",
+      "customDownload": "https://catalogue.data.gov.bc.ca/dataset/forest-tenure-cutblock-polygons-fta-4-0/resource/f23e2d7f-5d47-4502-9116-3d7db50ab4ae",
+      "mapService": "https://delivery.maps.gov.bc.ca/arcgis/rest/services/whse/bcgw_pub_whse_forest_tenure/MapServer/8",
+      "wfs": "https://openmaps.gov.bc.ca/geo/pub/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=pub%3AWHSE_FOREST_TENURE.FTEN_CUT_BLOCK_POLY_SVW",
+      "serviceObservations": { "mapServiceCount": 149371, "wfsNumberMatched": 222198, "wfsDefaultPageLimit": 10000, "wfsPagingTransactionSafe": false, "geometryType": "Polygon", "crs": "EPSG:3005", "queryFormats": ["JSON", "geoJSON", "PBF"] },
+      "lifecycleSemantics": "PENDING means submitted but not approved or rejected; ACTIVE means approved and activities may be taking place; RETIRED means all harvesting-authority activities are completed. These are operational lifecycle meanings, not a universal completed-harvest determination.",
+      "requiredFieldsObserved": ["CUT_BLOCK_ID", "BLOCK_STATUS_CODE", "DISTURBANCE_START_DATE", "DISTURBANCE_END_DATE", "HARVEST_AUTH_SKEY", "HARVEST_AUTH_STATUS_CODE", "RETIREMENT_DATE", "LIFE_CYCLE_STATUS_CODE"],
+      "productionEligible": false
+    },
+    {
+      "sourceId": "bc-harvesting-authority-polygons",
+      "catalogueId": "cff7b8f7-6897-444f-8c53-4bb93c7e9f8b",
+      "catalogueUrl": "https://catalogue.data.gov.bc.ca/dataset/cff7b8f7-6897-444f-8c53-4bb93c7e9f8b",
+      "title": "Forest Tenure Harvesting Authority Polygons",
+      "publisher": "Province of British Columbia, Forest Tenures Branch",
+      "pointOfContact": "foresttenuresbranch@gov.bc.ca",
+      "cadence": "not declared; catalogue resource status is On Going and metadata was modified 2026-08-14",
+      "customDownload": "https://catalogue.data.gov.bc.ca/dataset/forest-tenure-harvesting-authority-polygons/resource/9a12228b-35c8-4620-953c-8e7c11126a8d",
+      "mapService": "https://delivery.maps.gov.bc.ca/arcgis/rest/services/whse/bcgw_pub_whse_forest_tenure/MapServer/12",
+      "wfs": "https://openmaps.gov.bc.ca/geo/pub/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=pub%3AWHSE_FOREST_TENURE.FTEN_HARVEST_AUTH_POLY_SVW",
+      "serviceObservations": { "mapServiceCount": 46833, "wfsDefaultPageLimit": 10000, "wfsPagingTransactionSafe": false, "geometryType": "Polygon", "crs": "EPSG:3005", "queryFormats": ["JSON", "geoJSON", "PBF"] },
+      "lifecycleSemantics": "PENDING means submitted but not approved or rejected; ACTIVE means approved and activities may be taking place; RETIRED means all harvesting-authority activities are completed. It describes authority status, not evidence that every spatially related cutblock was harvested.",
+      "requiredFieldsObserved": ["HARVEST_AUTH_SKEY", "HARVESTING_AUTHORITY_ID", "HARVEST_AUTH_STATUS_CODE", "ISSUE_DATE", "EXPIRY_DATE", "RETIREMENT_DATE", "LIFE_CYCLE_STATUS_CODE"],
+      "productionEligible": false
+    }
+  ],
+  "blocker": {
+    "reason": "The official WFS states PagingIsTransactionSafe=false and returns at most 10,000 features per response. A paged public-service scrape cannot prove one coherent edition; the two official service count observations also differ for the cutblock layer.",
+    "requiredBeforeAcquisition": "Submit and receive the publisher's BC Geographic Warehouse Custom Download export for each source, then record the delivered file's exact version/edition, retrieval completion, byte length, SHA-256, archive integrity, schema/geometry profile, and lifecycle review.",
+    "rawDownloadPerformed": false,
+    "sha256": null,
+    "archiveIntegrity": "not-run-publisher-export-required",
+    "schemaProfile": "not-run-publisher-export-required",
+    "productionEligible": false
+  }
+}
