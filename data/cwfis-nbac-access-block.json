@@ -1,0 +1,28 @@
+{
+  "status": "rights-and-snapshot-blocked",
+  "sourceId": "cwfis-historical",
+  "publisher": "Natural Resources Canada, Canadian Forest Service / CWFIS",
+  "checkedAt": "2026-08-14T20:00:00Z",
+  "officialRequestUrl": "https://cwfis.cfs.nrcan.gc.ca/datamart/datarequest/nbac",
+  "dataset": "National Burned Area Composite",
+  "licenceFinding": {
+    "type": "End-user agreement, not an open-data licence",
+    "result": "The official agreement grants internal-use rights and does not verify public redistribution, sublicensing, immutable archival, transformation, or public derivative-output rights."
+  },
+  "scope": {
+    "nfdb": "The separately staged NFDB polygons are not a substitute for the missing NBAC component of this combined plan row.",
+    "selectedEdition": null,
+    "publishedArtifactUrl": null,
+    "snapshotCadence": null
+  },
+  "downloaded": false,
+  "staged": false,
+  "immutable": false,
+  "transformed": false,
+  "ingested": false,
+  "productionEligible": false,
+  "permissionRequest": {
+    "en": "Please confirm whether Natural Resources Canada authorizes Witness Tree to obtain a specified National Burned Area Composite edition, retain exact raw snapshots in an internal immutable archive, transform the data, and publish or redistribute source-derived public results. Please specify the approved artifact URL or request route, edition, coverage, cadence, checksum/version identifiers, required attribution, redistribution and sublicensing terms, correction contact, and any limits. We will not download or use NBAC data until written authorization is received. This draft has not been sent.",
+    "fr": "Veuillez confirmer si Ressources naturelles Canada autorise Witness Tree à obtenir une édition précise de la Base nationale de données sur les zones brûlées, à conserver des instantanés bruts exacts dans une archive interne immuable, à transformer les données et à publier ou redistribuer des résultats publics dérivés de la source. Veuillez préciser l’artefact ou le processus de demande approuvé, l’édition, la couverture, la fréquence, les identifiants de somme de contrôle ou de version, l’attribution requise, les conditions de redistribution et de sous-licence, le contact de correction et toute limite. Nous ne téléchargerons ni n’utiliserons les données NBAC avant d’obtenir une autorisation écrite. Ce brouillon n’a pas été envoyé."
+  }
+}
