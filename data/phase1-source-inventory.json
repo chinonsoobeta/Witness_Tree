@@ -394,10 +394,10 @@
       "name": "First Nation Reserve",
       "purpose": "Reserve polygons and associated names.",
       "planUse": "production",
-      "evidence": "plan URL only",
+      "evidence": "official ISC service review recorded; no admissible boundary artifact",
       "ownerRole": "geography data lead",
-      "missing": "Edition, terms, checksum and archive evidence.",
-      "externalDependency": "Federal publisher"
+      "missing": "Versioned released polygon edition, exact-artifact terms, checksum/archive recovery and engagement route.",
+      "externalDependency": "Indigenous Services Canada authority and Indigenous engagement route"
     },
     {
       "id": "first-nations-locations",

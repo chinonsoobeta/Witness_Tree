@@ -53,3 +53,17 @@ test("Indian reserve geometry remains authority, rights, and engagement blocked"
   invented.rawEvidenceNumerator = 11.25;
   assert.throws(() => validatePhase1ProductionSourceLedger(invented, inventory), /Local evidence must remain profile\/re-fetch evidence/i);
 });
+
+test("First Nation reserve geometry remains blocked and cannot infer a point or local-profile admission", () => {
+  const reserves = ledger.entries.find((entry) => entry.id === "first-nation-reserves");
+  assert.equal(reserves.evidenceState, "access-blocked");
+  assert.deepEqual(reserves.evidenceRefs, ["data/first-nation-reserves-authority-access-block.json"]);
+  assert.equal(reserves.rawCredit, 0);
+  assert.equal(reserves.productionEligible, false);
+  const invented = structuredClone(ledger);
+  const inventedReserves = invented.entries.find((entry) => entry.id === "first-nation-reserves");
+  inventedReserves.evidenceState = "local-verified-profiled";
+  inventedReserves.rawCredit = 0.75;
+  invented.rawEvidenceNumerator = 11.25;
+  assert.throws(() => validatePhase1ProductionSourceLedger(invented, inventory), /Local evidence must remain profile\/re-fetch evidence/i);
+});

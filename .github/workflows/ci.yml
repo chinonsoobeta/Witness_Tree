@@ -19,6 +19,7 @@ jobs:
       - run: node scripts/check-bilingual.mjs
       - run: npm run check:source-candidates
       - run: npm run check:indian-reserves-authority-access
+      - run: npm run check:first-nation-reserves-authority-access
       - run: npm run check:bc-wildfire-current-perimeters
       - run: npm run check:bc-forest-operations-map-access
       - run: npm run check:acquisition-readiness
