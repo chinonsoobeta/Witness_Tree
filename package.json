@@ -26,6 +26,7 @@
     "check:first-nation-reserves-authority-access": "node scripts/check-first-nation-reserves-authority-access-block.mjs",
     "check:historic-treaties-authority-access": "node scripts/check-historic-treaties-authority-access-block.mjs",
     "check:modern-treaties-authority-access": "node scripts/check-modern-treaties-authority-access-block.mjs",
+    "check:qc-original-current-inventory-distinction": "node scripts/check-qc-original-current-inventory-distinction-block.mjs",
     "check:sopfeu-wildfire-access": "node scripts/check-sopfeu-wildfire-access.mjs",
     "check:bc-vri-access": "node scripts/check-bc-vri-access.mjs",
     "check:bc-bec-snapshot": "node scripts/check-bc-bec-snapshot.mjs",

@@ -207,10 +207,10 @@
       "name": "Carte écoforestière originale et résultats d’inventaire courants",
       "purpose": "Original mapping and inventory tables.",
       "planUse": "production",
-      "evidence": "candidate registry; not production",
+      "evidence": "official MRNF catalogue reviewed; distinct from current-ecoforest archive",
       "ownerRole": "provincial data lead",
-      "missing": "Download resource, edition, checksum and archive evidence.",
-      "externalDependency": "Québec forest ministry"
+      "missing": "Exact versioned artifact, checksum/archive/profile, table schema and owner scope decision.",
+      "externalDependency": "Québec forest ministry and owner scope decision"
     },
     {
       "id": "qc-fourth-inventory",
