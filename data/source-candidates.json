@@ -116,6 +116,20 @@
       "productionEligible": false
     },
     {
+      "id": "bc-vri-2025-composite-polygons",
+      "status": "candidate",
+      "datasetTitle": "VRI - 2025 - Forest Vegetation Composite Polygons",
+      "publisher": "Province of British Columbia, Ministry of Forests",
+      "catalogueUrl": "https://catalogue.data.gov.bc.ca/dataset/6ba30649-14cd-44ad-a11f-794feed39f40",
+      "intendedRole": { "en": "BC pre-event forest-condition inventory context; not a cutblock, Forest Tenure Application cutblock, harvesting-authority, or planned-operations record.", "fr": "Contexte d’inventaire de l’état forestier avant événement en Colombie-Britannique; il ne s’agit ni d’un bloc de coupe, ni d’un bloc de coupe de demande de tenure forestière, ni d’une autorisation de récolte, ni d’un enregistrement d’activités planifiées." },
+      "metadataVerification": "verified",
+      "licence": { "state": "verified", "id": "bc-access-only", "officialUrl": "https://www2.gov.bc.ca/gov/content/home/copyright" },
+      "access": { "state": "catalogue-listed" },
+      "verifiedFacts": ["The official catalogue labels the 2025 composite-polygon record Access Only and describes a province-wide FGDB in BC Environment Albers.", "The official catalogue lists VEG_COMP_POLY_AND_LAYER_2025.gdb.zip at its current path and describes it as 5.3 GB.", "On 2026-08-14, an HTTP HEAD request to that exact advertised path returned 404, so it is not a verified retrievable artifact.", "The official BC copyright page states that Access Only catalogue materials may not be reproduced or redistributed without written permission.", "The separate VRI historical 2002–2024 catalogue collection is OGL-BC but is a historical series and is not substituted for the current 2025 inventory."],
+      "unresolvedFields": ["Written permission for internal archival reproduction, transformation and any derived or public redistribution", "A functioning, complete, versioned 2025 export URL", "Publisher edition/effective-date and refresh cadence", "Required attribution text", "Snapshot checksum and archive evidence"],
+      "productionEligible": false
+    },
+    {
       "id": "nrcan-annual-high-resolution-forest-land-cover",
       "status": "candidate",
       "datasetTitle": "Annual High-Resolution Forest Land Cover, Canada, 1984–2022",

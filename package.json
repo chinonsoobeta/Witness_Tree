@@ -14,6 +14,7 @@
     "typecheck": "tsc --noEmit",
     "check:bilingual": "node scripts/check-bilingual.mjs",
     "check:source-candidates": "node scripts/check-source-candidates.mjs",
+    "check:bc-vri-access": "node scripts/check-bc-vri-access.mjs",
     "check:phase1-source-inventory": "node scripts/check-phase1-source-inventory.mjs",
     "check:vlce2-promotion": "node scripts/check-vlce2-promotion-preparation.mjs",
     "check:vlce2-remote-promotion": "node scripts/check-vlce2-remote-promotion-evidence.mjs",
