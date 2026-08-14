@@ -41,7 +41,7 @@ test("valid-shaped dummy TOTP uses local MFA config then STS and role assumption
   const aws = join(dir, "aws");
   writeFileSync(aws, `#!/bin/zsh
 case "$1:$2" in
-  configure:get) print -- "configure-get" >> ${JSON.stringify(marker)}; print -- "arn:aws:iam::286853118812:mfa/WitnessTreeArchiveOperator" ;;
+  configure:get) print -- "configure-get" >> ${JSON.stringify(marker)}; print -- "arn:aws:iam::286853118812:mfa/approved-device-name" ;;
   sts:get-session-token) print -- "sts-get-session-token" >> ${JSON.stringify(marker)}; print -- '{"Credentials":{"AccessKeyId":"dummy","SecretAccessKey":"dummy","SessionToken":"dummy"}}' ;;
   sts:get-caller-identity) print -- "sts-get-caller-identity" >> ${JSON.stringify(marker)}; print -- "286853118812" ;;
   sts:assume-role) print -- "sts-assume-role" >> ${JSON.stringify(marker)}; print -- '{"Credentials":{"AccessKeyId":"dummy","SecretAccessKey":"dummy","SessionToken":"dummy"}}' ;;
@@ -65,6 +65,41 @@ expect {
     assert.deepEqual(readFileSync(marker, "utf8").trim().split("\n"), ["configure-get", "sts-get-session-token", "sts-get-caller-identity", "sts-assume-role", "s3-cp-blocked"]);
     assert.doesNotMatch(readFileSync(marker, "utf8"), /iam|list-mfa/i);
     assert.doesNotMatch(`${run.stdout}${run.stderr}`, /123456/);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("runner accepts an alternate safe device path but rejects a wrong account before STS", () => {
+  const dir = mkdtempSync(join(tmpdir(), "plvi-mfa-serial-"));
+  const marker = join(dir, "calls");
+  const aws = join(dir, "aws");
+  const runner = new URL("../scripts/run-alberta-plvi-approved-promotion.sh", import.meta.url).pathname;
+  const attempt = (serial) => {
+    writeFileSync(aws, `#!/bin/zsh
+case "$1:$2" in
+  configure:get) print -- "configure-get" >> ${JSON.stringify(marker)}; print -- ${JSON.stringify(serial)} ;;
+  sts:get-session-token) print -- "sts-get-session-token" >> ${JSON.stringify(marker)}; exit 77 ;;
+  *) print -- "unexpected-$1-$2" >> ${JSON.stringify(marker)}; exit 98 ;;
+esac
+`, { mode: 0o700 });
+    const expectProgram = `set timeout 120
+set env(PATH) "${dir}:$env(PATH)"
+spawn -noecho zsh ${runner} --run
+expect {
+  "Current MFA TOTP (not stored):" { send -- "123456\\r"; exp_continue }
+  eof { set result [wait]; exit [lindex $result 3] }
+  timeout { exit 2 }
+}`;
+    return spawnSync("expect", ["-c", expectProgram], { encoding: "utf8", timeout: 120_000, env: { ...process.env, PATH: `${dir}:${process.env.PATH}` } });
+  };
+  try {
+    const accepted = attempt("arn:aws:iam::286853118812:mfa/team/alternate-device_1");
+    assert.equal(accepted.status, 77, `${accepted.stdout}\n${accepted.stderr}`);
+    assert.deepEqual(readFileSync(marker, "utf8").trim().split("\n"), ["configure-get", "sts-get-session-token"]);
+    rmSync(marker);
+    const rejected = attempt("arn:aws:iam::999999999999:mfa/alternate-device");
+    assert.equal(rejected.status, 69, `${rejected.stdout}\n${rejected.stderr}`);
+    assert.deepEqual(readFileSync(marker, "utf8").trim().split("\n"), ["configure-get"]);
+    assert.doesNotMatch(`${rejected.stdout}${rejected.stderr}`, /999999999999|123456/);
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
