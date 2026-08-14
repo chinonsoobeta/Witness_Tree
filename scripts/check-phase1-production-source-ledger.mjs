@@ -36,8 +36,8 @@ export function validatePhase1ProductionSourceLedger(ledger, inventory, root = p
     if (entry.evidenceState.startsWith("remote-") && (!entry.proof.immutableArchive || !entry.proof.profile || !entry.proof.rawArchiveRefetch)) throw new Error("Remote-verified evidence requires archive, profile, and raw recovery proof.");
     if (entry.evidenceState === "local-verified-profiled" && (!entry.proof.profile || !entry.proof.rawArchiveRefetch || entry.proof.immutableArchive)) throw new Error("Local evidence must remain profile/re-fetch evidence without immutable proof.");
   }
-  const totalRawCredit = ledger.entries.reduce((sum, entry) => sum + entry.rawCredit, 0);
-  if (totalRawCredit !== 7.5) throw new Error("Current ledger evidence must total 7.50 raw credits, not an inferred completion value.");
+  const totalRawCredit = ledger.entries.reduce((sum, entry) => sum + STATES.get(entry.evidenceState), 0);
+  if (ledger.rawEvidenceNumerator !== totalRawCredit) throw new Error("Ledger raw-evidence numerator must be computed from its row states.");
   return ledger;
 }
 
@@ -52,5 +52,5 @@ export async function checkPhase1ProductionSourceLedger(file = new URL("../data/
 if (import.meta.url === `file://${process.argv[1]}`) {
   const ledger = await checkPhase1ProductionSourceLedger(path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../data/phase1-production-source-ledger.json"));
   const counts = Object.groupBy(ledger.entries, ({ evidenceState }) => evidenceState);
-  console.log(`Phase 1 production-source ledger is blocked: ${ledger.entries.length} rows, ${ledger.entries.reduce((sum, entry) => sum + entry.rawCredit, 0).toFixed(2)} raw-evidence credits; ${Object.entries(counts).map(([state, entries]) => `${state}=${entries.length}`).join(", ")}.`);
+  console.log(`Phase 1 production-source ledger is blocked: ${ledger.entries.length} rows, ${ledger.rawEvidenceNumerator.toFixed(2)} raw-evidence credits; ${Object.entries(counts).map(([state, entries]) => `${state}=${entries.length}`).join(", ")}.`);
 }

@@ -89,21 +89,24 @@
     },
     {
       "id": "cwfis-current",
-      "evidenceState": "unaddressed",
-      "evidenceRefs": [],
+      "evidenceState": "local-verified-profiled",
+      "evidenceRefs": [
+        "data/staged-acquisitions.json",
+        "data/cwfis-current-active-fires-profile.json"
+      ],
       "proof": {
-        "licence": false,
-        "attribution": false,
-        "retrievalVersion": false,
-        "checksum": false,
-        "rawArchiveRefetch": false,
-        "profile": false,
+        "licence": true,
+        "attribution": true,
+        "retrievalVersion": true,
+        "checksum": true,
+        "rawArchiveRefetch": true,
+        "profile": true,
         "immutableArchive": false,
         "productionAdmission": false
       },
-      "rawCredit": 0,
+      "rawCredit": 0.75,
       "productionEligible": false,
-      "blocker": "Select an authoritative live endpoint, terms, cadence, snapshots and retention."
+      "blocker": "Immutable archive, owner admission, transformation, ingestion, release, and production eligibility remain separately blocked."
     },
     {
       "id": "cwfis-historical",
@@ -127,59 +130,66 @@
     },
     {
       "id": "bc-wildfire",
-      "evidenceState": "unaddressed",
-      "evidenceRefs": [],
+      "evidenceState": "local-verified-profiled",
+      "evidenceRefs": [
+        "data/staged-acquisitions.json",
+        "data/bc-wildfire-current-perimeters-profile.json"
+      ],
       "proof": {
-        "licence": false,
-        "attribution": false,
-        "retrievalVersion": false,
-        "checksum": false,
-        "rawArchiveRefetch": false,
-        "profile": false,
+        "licence": true,
+        "attribution": true,
+        "retrievalVersion": true,
+        "checksum": true,
+        "rawArchiveRefetch": true,
+        "profile": true,
         "immutableArchive": false,
         "productionAdmission": false
       },
-      "rawCredit": 0,
+      "rawCredit": 0.75,
       "productionEligible": false,
-      "blocker": "Select the current authoritative service, terms, cadence and snapshot/archive contract."
+      "blocker": "Immutable archive, owner admission, transformation, ingestion, release, and production eligibility remain separately blocked."
     },
     {
       "id": "ab-wildfire",
-      "evidenceState": "supporting-only",
+      "evidenceState": "local-verified-profiled",
       "evidenceRefs": [
-        "data/alberta-historical-wildfire-profile.json"
+        "data/staged-acquisitions.json",
+        "data/alberta-wildfire-locations-profile.json"
       ],
       "proof": {
-        "licence": false,
-        "attribution": false,
-        "retrievalVersion": false,
-        "checksum": false,
-        "rawArchiveRefetch": false,
-        "profile": false,
+        "licence": true,
+        "attribution": true,
+        "retrievalVersion": true,
+        "checksum": true,
+        "rawArchiveRefetch": true,
+        "profile": true,
         "immutableArchive": false,
         "productionAdmission": false
       },
-      "rawCredit": 0,
+      "rawCredit": 0.75,
       "productionEligible": false,
-      "blocker": "A historical CSV is not the required current operational feed."
+      "blocker": "Immutable archive, owner admission, transformation, ingestion, release, and production eligibility remain separately blocked."
     },
     {
       "id": "on-fire-disturbance",
-      "evidenceState": "unaddressed",
-      "evidenceRefs": [],
+      "evidenceState": "local-verified-profiled",
+      "evidenceRefs": [
+        "data/staged-acquisitions.json",
+        "data/ontario-in-year-fire-perimeters-profile.json"
+      ],
       "proof": {
-        "licence": false,
-        "attribution": false,
-        "retrievalVersion": false,
-        "checksum": false,
-        "rawArchiveRefetch": false,
-        "profile": false,
+        "licence": true,
+        "attribution": true,
+        "retrievalVersion": true,
+        "checksum": true,
+        "rawArchiveRefetch": true,
+        "profile": true,
         "immutableArchive": false,
         "productionAdmission": false
       },
-      "rawCredit": 0,
+      "rawCredit": 0.75,
       "productionEligible": false,
-      "blocker": "Select exact layer, rights, cadence, archive/profile and ledger evidence."
+      "blocker": "Immutable archive, owner admission, transformation, ingestion, release, and production eligibility remain separately blocked."
     },
     {
       "id": "sopfeu",
@@ -295,12 +305,14 @@
     },
     {
       "id": "bc-forest-operations-map",
-      "evidenceState": "unaddressed",
-      "evidenceRefs": [],
+      "evidenceState": "access-blocked",
+      "evidenceRefs": [
+        "data/bc-forest-operations-map-access.json"
+      ],
       "proof": {
         "licence": false,
         "attribution": false,
-        "retrievalVersion": false,
+        "retrievalVersion": true,
         "checksum": false,
         "rawArchiveRefetch": false,
         "profile": false,
@@ -309,7 +321,7 @@
       },
       "rawCredit": 0,
       "productionEligible": false,
-      "blocker": "Obtain licence, lifecycle semantics, versioned snapshot and profile."
+      "blocker": "Access Only rights block raw acquisition, profile, archive, transformation, ingestion, release, and production eligibility."
     },
     {
       "id": "qc-current-ecoforest",
@@ -598,5 +610,6 @@
       "productionEligible": false,
       "blocker": "Obtain version, terms/caveats, checksum/archive/profile and engagement-safe release conditions."
     }
-  ]
+  ],
+  "rawEvidenceNumerator": 10.5
 }
