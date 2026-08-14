@@ -1,0 +1,48 @@
+{
+  "status": "blocked",
+  "verificationDate": "2026-08-14",
+  "nonClaimNotice": "This is a source-rights and snapshot-suitability verification record. It is not an acquisition, staging, transformation, ingestion, or production authorization.",
+  "source": {
+    "inventoryRow": "bc-old-growth-bec",
+    "id": "bc-tap-priority-deferral-current-view",
+    "catalogueUrl": "https://catalogue.data.gov.bc.ca/dataset/f257ca4a-0c33-4eb2-9da8-21dff4482f58",
+    "serviceUrl": "https://delivery.maps.gov.bc.ca/arcgis/rest/services/whse/bcgw_pub_whse_forest_vegetation/MapServer/69",
+    "datasetTitle": "Old Growth Technical Advisory Panel (TAP) - Priority Deferral Areas - Current View",
+    "licence": "Access Only",
+    "licenceUrl": "https://www2.gov.bc.ca/gov/content?id=1AAACC9C65754E4D89A118B875E0FBDA",
+    "catalogueModified": "2026-06-19T12:45:21.779296",
+    "declaredCrs": "EPSG:3005",
+    "serviceFeatureCount": 255486,
+    "maxRecordCount": 1000
+  },
+  "observedLimitations": [
+    "The catalogue assigns Access Only, not an open-data licence.",
+    "The Province copyright terms state that Access Only catalogue material may not be reproduced or redistributed without prior written permission.",
+    "The catalogue says this current TAP view does not represent the supported old-growth deferral areas currently being implemented.",
+    "The service is live and exposes pagination, but no versioned immutable artifact, publisher checksum, stable snapshot edition, or transaction-consistency statement was identified."
+  ],
+  "scope": {
+    "roleIfAuthorized": "Old-growth and priority-deferral context only.",
+    "notEquivalentTo": [
+      "the separate BEC ecosystem map",
+      "currently supported old-growth deferral areas being implemented",
+      "Vegetation Resources Inventory forest-condition attributes",
+      "Forest Tenure Cutblock Polygons (FTA 4.0)",
+      "a legal protected-area or harvest-prohibition determination"
+    ]
+  },
+  "admission": {
+    "downloaded": false,
+    "staged": false,
+    "immutable": false,
+    "transformed": false,
+    "ingested": false,
+    "productionEligible": false
+  },
+  "requestDraft": {
+    "status": "unsent",
+    "permissionRoute": "https://forms.gov.bc.ca/copyright-permission-request/",
+    "en": "Request written permission for an internal immutable archive, transformation, and any derived or public redistribution of the selected TAP priority-deferral layer; request the authoritative implemented-deferral layer if this current view is not it, plus version/effective date, complete export, checksum, attribution, refresh cadence, and correction contact.",
+    "fr": "Demander une autorisation écrite pour une archive interne immuable, la transformation et toute redistribution dérivée ou publique de la couche TAP de report prioritaire retenue; demander la couche de reports mis en œuvre faisant autorité si cette vue courante ne l’est pas, ainsi que la version ou date d’effet, l’exportation complète, la somme de contrôle, l’attribution, la fréquence d’actualisation et le contact de correction."
+  }
+}
