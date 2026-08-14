@@ -343,7 +343,7 @@
     },
     {
       "id": "qc-original-current-inventory",
-      "evidenceState": "access-blocked",
+      "evidenceState": "in-progress-not-admitted",
       "evidenceRefs": ["data/qc-original-current-inventory-distinction-block.json"],
       "proof": {
         "licence": false,
@@ -357,7 +357,7 @@
       },
       "rawCredit": 0,
       "productionEligible": false,
-      "blocker": "The staged 12.4 GB current-ecoforest package and its coverage-footprint derivative are distinct from MRNF's original-map plus inventory-table product. Do not substitute or duplicate those bytes; the exact original/current artifact, checksum/archive/profile, schema and owner scope decision remain unverified."
+      "blocker": "The official distinct MRNF GPKG URL, resource identity and resumable response are recorded, and a dedicated transfer is incomplete. The staged 12.4 GB current-ecoforest package remains a non-substitute. No checksum, complete ZIP/GPKG integrity, profile, archive recovery, schema confirmation, owner scope, or admission is established."
     },
     {
       "id": "qc-fourth-inventory",

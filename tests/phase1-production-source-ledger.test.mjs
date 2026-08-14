@@ -91,7 +91,7 @@ test("Modern treaty mapping remains blocked and cannot infer legal or local-prof
 
 test("QC original/current inventory remains distinct from the current-map archive", () => {
   const inventoryRow = ledger.entries.find((entry) => entry.id === "qc-original-current-inventory");
-  assert.equal(inventoryRow.evidenceState, "access-blocked");
+  assert.equal(inventoryRow.evidenceState, "in-progress-not-admitted");
   assert.deepEqual(inventoryRow.evidenceRefs, ["data/qc-original-current-inventory-distinction-block.json"]);
   assert.equal(inventoryRow.rawCredit, 0); assert.equal(inventoryRow.productionEligible, false);
   const invented = structuredClone(ledger); const row = invented.entries.find((entry) => entry.id === "qc-original-current-inventory");

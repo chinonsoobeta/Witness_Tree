@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "status": "distinct-source-and-access-blocked",
+  "status": "distinct-source-acquisition-in-progress",
   "productionRowId": "qc-original-current-inventory",
   "reviewedAt": "2026-08-14T23:15:00Z",
   "currentEcoforestArchive": {
@@ -15,7 +15,10 @@
     "catalogueUrl": "https://www.donneesquebec.ca/recherche/dataset/resultats-d-inventaire-et-carte-ecoforestiere",
     "datasetTitle": "Carte écoforestière originale et résultats d’inventaire courants",
     "licence": "CC BY 4.0",
-    "catalogueAdvertisedProvincialGpkgBytes": 10600000000,
+    "artifactUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Resultats_inventaire_et_carte_ecofor/02-Donnees/PROV/CARTE_ECO_ORI_PROV_GPKG.zip",
+    "resourceId": "41ef9e5a-722f-482c-bc22-805700ba9917",
+    "catalogueResourceModifiedAt": "2026-06-19T12:00:00",
+    "head": {"observedAt": "2026-08-14T21:24:06Z", "contentLength": 11244667626, "lastModified": "Fri, 12 Jun 2026 15:52:04 GMT", "etag": "\"d8b1406a83fadc1:0\"", "acceptRanges": "bytes"},
     "scope": "The official catalogue identifies original ecoforest polygons as the geographic basis for related inventory tables, tied by GEOCODE, and separately tells users to consult the current ecoforest map for the up-to-date forest portrait."
   },
   "distinction": {
@@ -25,12 +28,12 @@
     "reason": "The staged 12.4 GB archive is the current-map package and the footprint derivative only proves where its current stand polygons are published. The original/current-inventory product is a separate MRNF dataset containing original mapping plus linked inventory tables. Reusing the current-map bytes would silently substitute a different artifact and omit the requested tables."
   },
   "authorityAndAccess": {
-    "exactVersionedArtifactVerified": false,
+    "exactDirectArtifactVerified": true,
     "exactArtifactChecksumAndArchiveRecoveryVerified": false,
     "exactArtifactProfileVerified": false,
     "engagementOrScopeDecisionVerified": false,
-    "reason": "The catalogue establishes authority, CC BY 4.0, and a provincial GPKG resource, but this review did not retrieve, checksum, archive, or profile that distinct package and did not make an owner scope decision."
+    "reason": "The catalogue API and MRNF response establish a distinct direct GPKG ZIP with a resumable response. A dedicated raw transfer began after disk preflight, but it is incomplete and cannot be used as profile, checksum, archive, or admission evidence."
   },
-  "actions": {"reusedCurrentArchive": false, "downloaded": false, "staged": false, "profiled": false, "transformed": false, "ingested": false, "productionEligible": false},
+  "actions": {"reusedCurrentArchive": false, "resumableDownloadStarted": true, "downloadComplete": false, "staged": false, "profiled": false, "transformed": false, "ingested": false, "productionEligible": false},
   "requiredBeforeAnyAcquisition": ["Exact original/current-inventory resource URL and version bound to the catalogue edition", "Checksum, archive recovery and read-only profile for that exact artifact", "Schema confirmation that original polygons and required GEOCODE-linked tables are present", "Owner scope decision covering use of the original inventory product"]
 }
