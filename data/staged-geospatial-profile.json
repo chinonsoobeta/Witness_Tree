@@ -10,12 +10,21 @@
     {
       "sourceId": "bc-wildfire",
       "inputSha256": "46ee3a97ff83128630a030b5cfcc7f3c389fc94e3ca95d463595ab6f4fb57e83",
-      "decision": "blocked-pending-geometry-policy",
-      "requiredAction": "Define and test a deterministic repair-or-quarantine rule for the two recorded invalid source polygons before transformation or ingestion.",
+      "decision": "local-derived-release-pending-immutable-archive-and-owner-admission",
+      "requiredAction": "Archive the unchanged raw snapshot and separately checksummed derived release, then obtain owner admission. V10755 remains excluded from geometry-dependent use; neither raw nor derived data is admitted for transformation, ingestion, release, or production.",
       "profiledWith": {
         "gdal": "3.13.2"
       },
       "productionEligible": false,
+      "geometryPolicy": {
+        "record": "data/bc-wildfire-geometry-policy-2026-08-14.json",
+        "rawFeatureCount": 217,
+        "derivedReleaseFeatureCount": 216,
+        "quarantinedFeatureIds": ["V10755"],
+        "immutablePromotionReady": false,
+        "ownerAdmissionReady": false,
+        "productionEligible": false
+      },
       "layers": [
         {
           "name": "bc-wildfire-perimeters-2026-08-14",
