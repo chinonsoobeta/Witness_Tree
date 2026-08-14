@@ -22,6 +22,7 @@ jobs:
       - run: npm run check:staged-acquisitions
       - run: npm run check:nrcan-canopy-height-profile
       - run: npm run check:alberta-historical-wildfire-profile
+      - run: npm run check:nfdb-poly-current
       - run: npm run check:phase1-corruption-corpus
       - run: npm run check:staged-geospatial-profile
       - run: npm run check:immutable-promotions
