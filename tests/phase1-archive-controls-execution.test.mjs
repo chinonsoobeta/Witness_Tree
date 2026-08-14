@@ -6,7 +6,7 @@ import test from "node:test";
 import { commandPlan, executeArchiveControls, policies, validateArchiveControlsExecution, validateExecutionOptions } from "../scripts/phase1-archive-controls-execution.mjs";
 
 const plan = JSON.parse(readFileSync(new URL("../data/phase1-archive-controls-execution.json", import.meta.url), "utf8"));
-const approved = (workDir) => ({ execute: true, "approve-identities": true, "approve-identity-bootstrap": true, "approve-audit-logging": true, "approve-inventory": true, "approve-lifecycle": true, "approve-legal-hold-exercise": true, "approve-recovery-replication": true, "approve-usd-10-monthly-ceiling": true, accountId: "123456789012", trustedPrincipalArn: "arn:aws:iam::123456789012:user/WitnessTreeArchiveOperator", exerciseRetentionUntil: "2033-08-12T00:00:00Z", exerciseKey: "raw/legal-hold-exercises/2030-01-01/test-run/payload.txt", exercisePayloadFile: join(workDir, "payload.txt"), monthlyCeiling: 10, workDir });
+const approved = (workDir) => ({ execute: true, "approve-identities": true, "approve-identity-bootstrap": true, "approve-audit-logging": true, "approve-inventory": true, "approve-lifecycle": true, "approve-legal-hold-exercise": true, "approve-recovery-replication": true, "approve-usd-20-monthly-ceiling": true, accountId: "123456789012", trustedPrincipalArn: "arn:aws:iam::123456789012:user/WitnessTreeArchiveOperator", exerciseRetentionUntil: "2033-08-12T00:00:00Z", exerciseKey: "raw/legal-hold-exercises/2030-01-01/test-run/payload.txt", exercisePayloadFile: join(workDir, "payload.txt"), monthlyCeiling: 20, workDir });
 
 test("archive-controls package remains explicit, Canadian, cost-bounded, and dry-run by default", () => {
   assert.equal(validateArchiveControlsExecution(plan), plan);
@@ -28,7 +28,7 @@ test("execution fails closed without every approval, a Canadian account principa
     assert.throws(() => validateExecutionOptions(plan, { ...options, "approve-inventory": false }), /approve-inventory/);
     assert.throws(() => validateExecutionOptions(plan, { ...options, accountId: "not-an-account" }), /12-digit/);
     assert.throws(() => validateExecutionOptions(plan, { ...options, trustedPrincipalArn: "arn:aws:iam::123456789012:role/wrong" }), /no-console IAM bootstrap user/);
-    assert.throws(() => validateExecutionOptions(plan, { ...options, monthlyCeiling: 11 }), /US\$10/);
+    assert.throws(() => validateExecutionOptions(plan, { ...options, monthlyCeiling: 11 }), /US\$20/);
     assert.throws(() => validateExecutionOptions(plan, { ...options, exerciseKey: "raw/source.zip" }), /dedicated non-source/);
     assert.throws(() => validateArchiveControlsExecution({ ...plan, state: "applied" }), /unapplied/);
   } finally { rmSync(dir, { recursive: true, force: true }); }
@@ -44,6 +44,7 @@ test("approved execution creates only local policy files before invoking the inj
     const lifecycle = JSON.parse(readFileSync(join(dir, "lifecycle.json"), "utf8"));
     assert.deepEqual(lifecycle.Rules[0], { ID: "abort-incomplete-multipart-after-7-days", Status: "Enabled", Filter: { Prefix: "raw/" }, AbortIncompleteMultipartUpload: { DaysAfterInitiation: 7 } });
     const replication = JSON.parse(readFileSync(join(dir, "replication.json"), "utf8"));
-    assert.equal(replication.Rules[0].ExistingObjectReplication.Status, "Disabled");
+    assert.equal(replication.Rules[0].DeleteMarkerReplication.Status, "Disabled");
+    assert.equal(replication.Rules[0].ExistingObjectReplication, undefined);
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });

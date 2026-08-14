@@ -4,7 +4,7 @@
 
 ## Observed configuration
 
-The account is standalone: AWS Organizations is not enabled. The read-only IAM inventory found no IAM users, SAML providers, or OpenID Connect providers; it found only AWS service-linked roles, none suitable for a human or archive workload. No IAM Identity Center instance was found in the Canadian Region. The session used for the preflight was the account root principal, and account-level root MFA was not enabled. Identifiers are deliberately omitted.
+The account is standalone: AWS Organizations is not enabled. The read-only IAM inventory found no IAM users, SAML providers, or OpenID Connect providers; it found only AWS service-linked roles, none suitable for a human or archive workload. No IAM Identity Center instance was found in the Canadian Region. The original preflight used the account root principal and found root MFA absent. The owner subsequently confirmed root MFA is enabled on 2026-08-14; this update is owner attestation, not routine root verification. Identifiers are deliberately omitted.
 
 Therefore there is **no existing federation or trusted principal** that can safely assume `WitnessTreeArchiveUploader` or `WitnessTreeArchiveRetentionBreakGlass`. Routine root use is prohibited for this package.
 
@@ -55,3 +55,15 @@ Do these steps in the AWS Console as the account owner; do not send any key, sec
 5. Use the uploader role for the tiny exercise upload and the break-glass role only for legal-hold ON/readback/OFF/readback. Preserve the CloudTrail records. Rotate the bootstrap access key after the exercise or at the owner's documented review interval; deactivate it before deletion and keep no second active key unless temporary rotation overlap is required.
 
 Direct `AssumeRole` with the same long-lived user key plus `--serial-number` and `--token-code` also satisfies the roles' MFA trust condition, so `GetSessionToken` is optional at the AWS API level. This plan uses the explicit `GetSessionToken` step because it minimizes long-lived-key use after authentication and makes the MFA session boundary auditable.
+
+## Owner-local exercise helper
+
+After the roles and archive controls exist, run the committed helper in an owner-controlled Terminal:
+
+```sh
+scripts/run-phase1-archive-owner-exercise.sh --run --profile WitnessTreeArchiveOperator
+```
+
+It first verifies the configured IAM-user profile, derives the standard virtual-MFA serial internally if the profile has no `mfa_serial` setting, and securely prompts for the current TOTP. It uses `GetSessionToken` followed by MFA-backed `AssumeRole`; no TOTP, secret, temporary credential, account identifier, ARN, or object version is printed or committed. The generated JSON contains only redacted control outcomes.
+
+The helper uses the uploader role for one tiny dedicated exercise upload and a version-specific delete that must be denied. It uses the break-glass role only to set compliance retention, read legal-hold ON and retention, set legal-hold OFF, and confirm the same retention remains. It makes a best-effort CloudTrail-status and recovery-replica readback. The approved least-privilege roles intentionally have no general CloudTrail or recovery-bucket read permission, so an authorization failure is a recorded verification blocker—not permission to use root or broaden the roles. A separately approved read-only verifier is required before those two claims can be marked verified.
