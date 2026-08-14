@@ -1,0 +1,24 @@
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import test from "node:test";
+import { validatePhase1ProductionSourceLedger } from "../scripts/check-phase1-production-source-ledger.mjs";
+
+const ledger = JSON.parse(readFileSync(new URL("../data/phase1-production-source-ledger.json", import.meta.url), "utf8"));
+const inventory = JSON.parse(readFileSync(new URL("../data/phase1-source-inventory.json", import.meta.url), "utf8"));
+
+test("canonical production ledger reconciles all 31 plan rows without admitting any", () => {
+  assert.equal(validatePhase1ProductionSourceLedger(ledger, inventory), ledger);
+  assert.equal(ledger.entries.length, 31);
+  assert.equal(ledger.entries.filter((entry) => entry.productionEligible).length, 0);
+  assert.equal(ledger.entries.reduce((sum, entry) => sum + entry.rawCredit, 0), 7.5);
+});
+
+test("ledger fails closed for omission, credit inflation, a missing proof, or inferred production admission", () => {
+  assert.throws(() => validatePhase1ProductionSourceLedger({ ...ledger, entries: ledger.entries.slice(1) }, inventory), /every required production row/i);
+  const credit = structuredClone(ledger); credit.entries[0].rawCredit = 0.75;
+  assert.throws(() => validatePhase1ProductionSourceLedger(credit, inventory), /fixed raw-evidence credit/i);
+  const proof = structuredClone(ledger); delete proof.entries[0].proof.checksum;
+  assert.throws(() => validatePhase1ProductionSourceLedger(proof, inventory), /production proof/i);
+  const admitted = structuredClone(ledger); admitted.entries[0].proof.productionAdmission = true;
+  assert.throws(() => validatePhase1ProductionSourceLedger(admitted, inventory), /cannot be inferred/i);
+});
