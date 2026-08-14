@@ -26,6 +26,7 @@
       "licence": { "id": "ogl-alberta-2.2", "url": "https://open.alberta.ca/licence" },
       "attribution": "Contains information licensed under the Open Government Licence – Alberta.",
       "coverageScope": "partial-known-coverage",
+      "coverageRole": "local-context",
       "coverageGrade": "national-baseline-plus-local-context",
       "inputEvidence": [
         { "sourceId": "alberta-fma-published-area", "checksumSha256": "da4d3d80ddf71e6cae738077fed807cdb9ae39ba946a6a7ce5e2d3ffc69e0e0f", "sourceUrl": "https://geospatial.alberta.ca/titan/rest/services/boundaries/forest_management_agreement_public/FeatureServer/0" },
@@ -46,6 +47,8 @@
       "extent": { "west": 273366.802, "south": 367780.717, "east": 1870586.8005, "north": 1735720.874 },
       "areaSquareKilometres": 948063.63656736,
       "coverageClass": "national-baseline-jurisdiction-reference",
+      "coverageRole": "national-baseline-land-base",
+      "coverageGrade": "national-baseline",
       "scope": {
         "decision": "jurisdiction-reference-only",
         "coverageWithinBoundary": "national-baseline",
@@ -78,6 +81,8 @@
       "extent": { "west": -95.15362549999998, "south": 44.31562780000007, "east": -75.81623799999994, "north": 52.39880620000008 },
       "areaSquareKilometres": 439635.341866697,
       "coverageClass": "national-baseline-plus-managed-forest-context",
+      "coverageRole": "local-context",
+      "coverageGrade": "national-baseline-plus-local-context",
       "scope": {
         "decision": "crown-forest-planning-unit-context-only",
         "outsideBoundaryCoverage": "national-baseline",
