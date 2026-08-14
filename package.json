@@ -18,6 +18,7 @@
     "check:alberta-electoral-block": "node scripts/check-alberta-electoral-boundary-block.mjs",
     "check:ontario-electoral": "node scripts/check-on-electoral-2022.mjs",
     "check:qc-electoral": "node scripts/check-qc-electoral-editions.mjs",
+    "check:nfdb-poly-current": "node scripts/check-nfdb-poly-current.mjs",
     "check:phase1-source-inventory": "node scripts/check-phase1-source-inventory.mjs",
     "check:vlce2-promotion": "node scripts/check-vlce2-promotion-preparation.mjs",
     "check:vlce2-remote-promotion": "node scripts/check-vlce2-remote-promotion-evidence.mjs",

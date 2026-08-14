@@ -1,0 +1,60 @@
+{
+  "status": "local-staging-profile",
+  "sourceId": "cwfis-nfdb-fire-polygons-current",
+  "publisher": "Natural Resources Canada, Canadian Forest Service / Canadian Wildland Fire Information System",
+  "resourceUrl": "https://cwfis.cfs.nrcan.gc.ca/downloads/nfdb/fire_poly/current_version/NFDB_poly.zip",
+  "retrievedAt": "2026-08-14T19:24:20Z",
+  "artifact": {
+    "bytes": 778498701,
+    "sha256": "a0373a6dd8e341c3440ed9907f81e8ba6227135dacd9cdc07e4c6af0a59b1b4e",
+    "zipIntegrity": "passed",
+    "externalStagingPath": "Witness_Tree-data/staging/nfdb-poly-current/NFDB_poly_verified.zip"
+  },
+  "licence": {
+    "basis": "Official NFDB polygon metadata identifies the Open Government Licence – Canada and requires preservation of source-specific provincial attribution/provenance notices; no implied endorsement.",
+    "url": "https://cwfis.cfs.nrcan.gc.ca/downloads/nfdb/fire_poly/current_version/NFDB_poly_shapefile_metadata.pdf",
+    "requiredNotices": [
+      "British Columbia source notice under the Open Government Licence – British Columbia.",
+      "Ontario data produced by NRCan under licence with Ontario MNR © Queen's Printer for Ontario, 2024.",
+      "Québec source attribution and applicable open-data licence notice."
+    ]
+  },
+  "snapshot": {
+    "edition": "current_version; layers dated 2025-06-30",
+    "lastModified": "2026-01-28T21:33:02Z",
+    "etag": "697a808e-2e66f28d",
+    "cadence": "publisher current-version directory; not a real-time feed"
+  },
+  "layers": [
+    {
+      "name": "NFDB_poly_1972to2020_20250630",
+      "count": 41210,
+      "yearCounts": {"-9999": 104, "1972": 331, "1973": 454, "1974": 334, "1975": 286, "1976": 1516, "1977": 1150, "1978": 508, "1979": 1040, "1980": 513, "1981": 423, "1982": 346, "1983": 389, "1984": 330, "1985": 388, "1986": 273, "1987": 427, "1988": 347, "1989": 939, "1990": 349, "1991": 429, "1992": 232, "1993": 285, "1994": 563, "1995": 568, "1996": 662, "1997": 249, "1998": 1204, "1999": 793, "2000": 750, "2001": 814, "2002": 881, "2003": 1231, "2004": 854, "2005": 932, "2006": 1567, "2007": 1261, "2008": 1288, "2009": 1310, "2010": 1658, "2011": 949, "2012": 1606, "2013": 1575, "2014": 1209, "2015": 1828, "2016": 1021, "2017": 1601, "2018": 1833, "2019": 924, "2020": 686},
+      "sourceAgencyCounts": {"AB": 3929, "BC": 7793, "MB": 12978, "NB": 39, "NL": 298, "NS": 614, "NT": 4309, "ON": 2385, "PC": 1585, "QC": 3504, "SK": 2310, "YT": 1466},
+      "geometry": "3D Polygon",
+      "crs": "NAD83 Lambert Conformal Conic (latitudes 49/77, central meridian -95; metre units)",
+      "extent": [-2307184.843682, -716411.552459, 2981026.016509, 2761236.409951],
+      "missing": 0,
+      "empty": 0,
+      "invalid": 441
+    },
+    {
+      "name": "NFDB_poly_2021to2024_20250630",
+      "count": 7361,
+      "yearCounts": {"2021": 1823, "2022": 1360, "2023": 2200, "2024": 1978},
+      "sourceAgencyCounts": {"AB": 876, "BC": 1929, "MB": 1307, "NB": 4, "NS": 194, "NT": 590, "ON": 257, "PC": 211, "PE": 8, "QC": 950, "SK": 607, "YT": 428},
+      "geometry": "3D Polygon",
+      "crs": "NAD83 Lambert Conformal Conic (latitudes 49/77, central meridian -95; metre units)",
+      "extent": [-2302090.6455, -694754.4691, 2608216.4731, 2683253.9894],
+      "missing": 0,
+      "empty": 0,
+      "invalid": 41
+    }
+  ],
+  "schema": ["SRC_AGENCY", "NAT_PARK", "FIRE_ID", "FIRENAME", "YEAR", "MONTH", "DAY", "REP_DATE", "DATE_TYPE", "OUT_DATE", "DECADE", "SIZE_HA", "CALC_HA", "CAUSE", "PRESCRIBED", "MAP_SOURCE", "SOURCE_KEY", "MAP_METHOD", "WATER_REM", "UNBURN_REM", "MORE_INFO", "POLY_DATE", "CFS_REF_ID", "CFS_NOTE1", "CFS_NOTE2", "AG_SRCFILE"],
+  "limitations": ["Raw archive is staged only; invalid geometries are recorded and must not be silently repaired.", "This historic polygon snapshot is neither real-time fire reporting nor a completeness claim for any specific jurisdiction."],
+  "immutable": false,
+  "transformed": false,
+  "ingested": false,
+  "productionEligible": false
+}
