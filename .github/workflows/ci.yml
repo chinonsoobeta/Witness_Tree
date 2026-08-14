@@ -20,6 +20,7 @@ jobs:
       - run: npm run check:source-candidates
       - run: npm run check:acquisition-readiness
       - run: npm run check:staged-acquisitions
+      - run: npm run check:phase1-corruption-corpus
       - run: npm run check:staged-geospatial-profile
       - run: npm run check:immutable-promotions
       - run: npm run check:boundary-editions
