@@ -103,6 +103,36 @@ expect {
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
+test("runner constructs the exact approved role ARN before the S3 boundary", () => {
+  const dir = mkdtempSync(join(tmpdir(), "plvi-role-arn-"));
+  const marker = join(dir, "calls");
+  const aws = join(dir, "aws");
+  const runner = new URL("../scripts/run-alberta-plvi-approved-promotion.sh", import.meta.url).pathname;
+  writeFileSync(aws, `#!/bin/zsh
+case "$1:$2" in
+  configure:get) print -- "arn:aws:iam::286853118812:mfa/approved-device" ;;
+  sts:get-session-token) print -- '{"Credentials":{"AccessKeyId":"dummy","SecretAccessKey":"dummy","SessionToken":"dummy"}}' ;;
+  sts:get-caller-identity) print -- "286853118812" ;;
+  sts:assume-role) print -r -- "$@" > ${JSON.stringify(marker)}; exit 77 ;;
+  *) exit 98 ;;
+esac
+`, { mode: 0o700 });
+  const expectProgram = `set timeout 120
+set env(PATH) "${dir}:$env(PATH)"
+spawn -noecho zsh ${runner} --run
+expect {
+  "Current MFA TOTP (not stored):" { send -- "123456\\r"; exp_continue }
+  eof { set result [wait]; exit [lindex $result 3] }
+  timeout { exit 2 }
+}`;
+  try {
+    const run = spawnSync("expect", ["-c", expectProgram], { encoding: "utf8", timeout: 120_000, env: { ...process.env, PATH: `${dir}:${process.env.PATH}` } });
+    assert.equal(run.status, 77, `${run.stdout}\n${run.stderr}`);
+    assert.match(readFileSync(marker, "utf8"), /--role-arn arn:aws:iam::286853118812:role\/WitnessTreePlviArchivePromotionUploader/);
+    assert.doesNotMatch(readFileSync(marker, "utf8"), /286853118812ole/);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
 test("owner-local preflight finds and fully hashes both controlled workspace artifacts before TOTP or AWS", () => {
   const runner = new URL("../scripts/run-alberta-plvi-approved-promotion.sh", import.meta.url).pathname;
   const pass = spawnSync("zsh", [runner, "--preflight"], { encoding: "utf8", timeout: 120_000 });

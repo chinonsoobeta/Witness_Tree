@@ -43,7 +43,7 @@ bootstrap="$(aws sts get-session-token --serial-number "$mfa_serial" --token-cod
 unset totp
 export AWS_ACCESS_KEY_ID="$(jq -r '.Credentials.AccessKeyId' <<<"$bootstrap")" AWS_SECRET_ACCESS_KEY="$(jq -r '.Credentials.SecretAccessKey' <<<"$bootstrap")" AWS_SESSION_TOKEN="$(jq -r '.Credentials.SessionToken' <<<"$bootstrap")"; unset bootstrap
 account="$(aws sts get-caller-identity --query Account --output text)" || fail "Cannot identify MFA session" 77
-creds="$(aws sts assume-role --role-arn "arn:aws:iam::$account:role/$ROLE" --role-session-name witness-tree-plvi-approved-promotion --duration-seconds 3600 --output json)" || fail "Promotion role assumption failed" 77
+creds="$(aws sts assume-role --role-arn "arn:aws:iam::${account}:role/${ROLE}" --role-session-name witness-tree-plvi-approved-promotion --duration-seconds 3600 --output json)" || fail "Promotion role assumption failed" 77
 export AWS_ACCESS_KEY_ID="$(jq -r '.Credentials.AccessKeyId' <<<"$creds")" AWS_SECRET_ACCESS_KEY="$(jq -r '.Credentials.SecretAccessKey' <<<"$creds")" AWS_SESSION_TOKEN="$(jq -r '.Credentials.SessionToken' <<<"$creds")"; unset creds account
 TMP="$(mktemp -d /private/tmp/witness-tree-plvi-approved-promotion.XXXXXX)"; chmod 700 "$TMP"
 node "$ROOT/scripts/prepare-alberta-plvi-immutable-promotion.mjs" --write-sidecars "$TMP" >/dev/null
