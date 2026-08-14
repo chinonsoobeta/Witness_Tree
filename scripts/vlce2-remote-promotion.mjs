@@ -38,8 +38,8 @@ export function validateWorkflow(plan, options) {
 }
 
 function aws(args) { return JSON.parse(execFileSync("aws", args, { encoding: "utf8" })); }
-function head(entry) {
-  const response = aws(["s3api", "head-object", "--bucket", BUCKET, "--key", entry.remote.payloadKey, "--version-id", entry.remote.versionId, "--checksum-mode", "ENABLED", "--region", REGION, "--output", "json"]);
+function head(entry, invoke = aws) {
+  const response = invoke(["s3api", "head-object", "--bucket", BUCKET, "--key", entry.remote.payloadKey, "--version-id", entry.remote.versionId, "--checksum-mode", "ENABLED", "--region", REGION, "--output", "json"]);
   assert.equal(response.ContentLength, entry.byteLength, `${entry.year} remote byte length mismatch.`);
   assert.equal(response.VersionId, entry.remote.versionId, `${entry.year} remote VersionId mismatch.`);
   assert.equal(response.ChecksumType, "FULL_OBJECT", `${entry.year} lacks FULL_OBJECT checksum evidence.`);
@@ -58,25 +58,33 @@ export function dryRunLines(plan, options) {
   });
 }
 
-export function execute(plan, options) {
+export function execute(plan, options, invoke = aws) {
   validateWorkflow(plan, options);
-  for (const entry of plan.entries) head(entry); // Every payload head succeeds before any write.
+  for (const entry of plan.entries) head(entry, invoke); // Every payload head succeeds before any write.
   mkdirSync(options.sidecarDir, { recursive: true });
   const sidecarEvidence = [];
   for (const entry of plan.entries) {
     const sidecar = sidecarFor(plan, entry);
     const file = join(options.sidecarDir, `vlce2-${entry.year}.manifest.json`);
     writeFileSync(file, sidecar, { flag: "wx" });
-    aws(["s3api", "put-object", "--bucket", BUCKET, "--key", entry.remote.manifestKey, "--body", file, "--checksum-algorithm", "CRC64NVME", "--region", REGION, "--output", "json"]);
-    const remote = aws(["s3api", "head-object", "--bucket", BUCKET, "--key", entry.remote.manifestKey, "--checksum-mode", "ENABLED", "--region", REGION, "--output", "json"]);
+    invoke(["s3api", "put-object", "--bucket", BUCKET, "--key", entry.remote.manifestKey, "--body", file, "--checksum-algorithm", "CRC64NVME", "--region", REGION, "--output", "json"]);
+    const remote = invoke(["s3api", "head-object", "--bucket", BUCKET, "--key", entry.remote.manifestKey, "--checksum-mode", "ENABLED", "--region", REGION, "--output", "json"]);
     assert.equal(remote.ContentLength, Buffer.byteLength(sidecar), `${entry.year} sidecar read-back bytes mismatch.`);
     assert.ok(remote.VersionId, `${entry.year} sidecar read-back VersionId missing.`);
     assert.equal(remote.ChecksumType, "FULL_OBJECT", `${entry.year} sidecar lacks provider FULL_OBJECT checksum evidence.`);
     assert.ok(remote.ChecksumCRC64NVME, `${entry.year} sidecar CRC64 evidence missing.`);
     sidecarEvidence.push({ year: entry.year, key: entry.remote.manifestKey, versionId: remote.VersionId, byteLength: remote.ContentLength, checksumType: remote.ChecksumType, checksumCrc64nvmeBase64: remote.ChecksumCRC64NVME });
   }
-  for (const entry of plan.entries.filter((entry) => entry.year !== 1984)) aws(["s3api", "put-object-retention", "--bucket", BUCKET, "--key", entry.remote.payloadKey, "--version-id", entry.remote.versionId, "--retention", JSON.stringify({ Mode: "COMPLIANCE", RetainUntilDate: options.retentionUntil }), "--region", REGION]);
-  return { sidecarEvidence };
+  const retentionEvidence = [];
+  for (const entry of plan.entries.filter((entry) => entry.year !== 1984)) {
+    invoke(["s3api", "put-object-retention", "--bucket", BUCKET, "--key", entry.remote.payloadKey, "--version-id", entry.remote.versionId, "--retention", JSON.stringify({ Mode: "COMPLIANCE", RetainUntilDate: options.retentionUntil }), "--region", REGION, "--output", "json"]);
+    const remote = invoke(["s3api", "get-object-retention", "--bucket", BUCKET, "--key", entry.remote.payloadKey, "--version-id", entry.remote.versionId, "--region", REGION, "--output", "json"]);
+    assert.equal(remote.Retention?.Mode, "COMPLIANCE", `${entry.year} retention read-back is not COMPLIANCE.`);
+    assert.equal(new Date(remote.Retention?.RetainUntilDate).toISOString(), new Date(options.retentionUntil).toISOString(), `${entry.year} retention read-back date mismatch.`);
+    retentionEvidence.push({ year: entry.year, mode: remote.Retention.Mode, retainUntilDate: remote.Retention.RetainUntilDate });
+  }
+  assert.equal(retentionEvidence.length, 38, "Every 1985–2022 payload must have a verified retention read-back.");
+  return { sidecarEvidence, retentionEvidence };
 }
 
 if (process.argv[1]?.endsWith("vlce2-remote-promotion.mjs")) {
