@@ -7,6 +7,7 @@ const profile = JSON.parse(readFileSync(new URL("../data/staged-geospatial-profi
 const alberta = profile.sources.find((source) => source.sourceId === "alberta-avi-crown");
 const crown = alberta.layers.find((layer) => layer.name === "AVI_Crown");
 const bcWildfire = profile.sources.find((source) => source.sourceId === "bc-wildfire");
+const plvi = profile.sources.find((source) => source.sourceId === "ab-primary-land-vegetation");
 
 test("real staged schemas and geometry findings remain reproducible", () => {
   assert.equal(validateStagedGeospatialProfile(profile), profile);
@@ -15,6 +16,7 @@ test("real staged schemas and geometry findings remain reproducible", () => {
   assert.equal(bcWildfire.geometryPolicy.derivedReleaseFeatureCount, 216);
   assert.deepEqual(bcWildfire.geometryPolicy.quarantinedFeatureIds, ["V10755"]);
   assert.equal(bcWildfire.geometryPolicy.immutablePromotionReady, false);
+  assert.equal(plvi.layers[0].invalidGeometryCount, 12);
   assert.equal(profile.sources.every((source) => source.productionEligible === false), true);
 });
 

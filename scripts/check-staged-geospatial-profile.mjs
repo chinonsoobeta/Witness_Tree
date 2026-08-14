@@ -40,6 +40,13 @@ const EXPECTED = new Map([
       ["ontario-in-year-fire-perimeters_2026-08-14", ["Polygon/MultiPolygon", 188, "EPSG:4326", 7, 9]],
     ]),
   }],
+  ["ab-primary-land-vegetation", {
+    sha256: "017a0a835c680ca1b6c1eb790322a28e1b4c0c64e36924da46d8bb99cb1571d3",
+    decision: "blocked-pending-geometry-policy",
+    layers: new Map([
+      ["PrimaryLandAndVegetationInventory", ["Polygon", 179087, "EPSG:3400", 63, 12]],
+    ]),
+  }],
 ]);
 
 function required(value, field) {
@@ -70,7 +77,7 @@ export function validateStagedGeospatialProfile(profile) {
       const policy = source.geometryPolicy;
       if (policy?.record !== "data/bc-wildfire-geometry-policy-2026-08-14.json" || policy.rawFeatureCount !== 217 || policy.derivedReleaseFeatureCount !== 216 || policy.quarantinedFeatureIds?.join(",") !== "V10755" || policy.immutablePromotionReady !== false || policy.ownerAdmissionReady !== false || policy.productionEligible !== false) throw new Error("BC wildfire derived-release and quarantine evidence is incomplete or unsafe.");
     }
-    if (["alberta-avi-crown", "bc-wildfire"].includes(source.sourceId)) required(source.requiredAction, "required action");
+    if (["alberta-avi-crown", "bc-wildfire", "ab-primary-land-vegetation"].includes(source.sourceId)) required(source.requiredAction, "required action");
     if (!Array.isArray(source.layers) || source.layers.length !== expected.layers.size) throw new Error(`${source.sourceId} layer set changed.`);
     const layerNames = new Set();
     for (const layer of source.layers) {

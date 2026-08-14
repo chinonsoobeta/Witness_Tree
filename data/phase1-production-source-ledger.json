@@ -426,21 +426,27 @@
     },
     {
       "id": "ab-primary-land-vegetation",
-      "evidenceState": "unaddressed",
-      "evidenceRefs": [],
+      "evidenceState": "local-verified-profiled",
+      "evidenceRefs": [
+        "data/staged-acquisitions.json",
+        "data/staged-geospatial-profile.json",
+        "data/transformation-runs/alberta-plvi-geometry-repair-v1-2026-08-14.json",
+        "data/alberta-plvi-full-release-readiness.json",
+        "data/alberta-plvi-immutable-promotion-preparation.json"
+      ],
       "proof": {
-        "licence": false,
-        "attribution": false,
-        "retrievalVersion": false,
-        "checksum": false,
-        "rawArchiveRefetch": false,
-        "profile": false,
+        "licence": true,
+        "attribution": true,
+        "retrievalVersion": true,
+        "checksum": true,
+        "rawArchiveRefetch": true,
+        "profile": true,
         "immutableArchive": false,
         "productionAdmission": false
       },
-      "rawCredit": 0,
+      "rawCredit": 0.75,
       "productionEligible": false,
-      "blocker": "Obtain exact dataset/version, terms, archive/profile and ledger."
+      "blocker": "The exact raw ZIP and local repaired closed-join release are verified and profiled. MFA-gated remote promotion is authorized but unproven: require readbacks for each of the four approved keys (version ID, byte length, provider checksum, and payload COMPLIANCE retention) before archival admission. Transformation, ingestion, release, and production eligibility remain separately blocked."
     },
     {
       "id": "on-fri",
@@ -623,5 +629,5 @@
       "blocker": "CIRNAC's official map is informal, approximate, subject to revision, and expressly cannot be relied on for consultation. It is not legal or precision boundary geometry; no admissible legal artifact, rights, checksum/archive recovery, or engagement route is verified."
     }
   ],
-  "rawEvidenceNumerator": 11.25
+  "rawEvidenceNumerator": 12
 }

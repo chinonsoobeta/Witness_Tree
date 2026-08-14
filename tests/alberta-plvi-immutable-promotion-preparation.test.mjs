@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
-import { mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
@@ -27,7 +28,7 @@ test("sidecars are deterministic and the preparation rejects drift or remote cla
 test("MFA runner has a dry-run default and excludes deletion, IAM mutation, and retention bypass", () => {
   const runner = readFileSync(new URL("../scripts/run-alberta-plvi-approved-promotion.sh", import.meta.url), "utf8");
   assert.match(runner, /if \[\[ \$# -eq 0 \]\]; then node/);
-  assert.match(runner, /Approved raw ZIP drifted[\s\S]*vared/);
+  assert.match(runner, /Approved raw ZIP drifted[\s\S]*read -r -s/);
   assert.match(runner, /WitnessTreePlviArchivePromotionUploader/);
   assert.doesNotMatch(runner, /DeleteObject|BypassGovernanceRetention|aws iam (?:create|put|delete|attach|update)/i);
   assert.match(runner, /aws configure get mfa_serial --profile/);

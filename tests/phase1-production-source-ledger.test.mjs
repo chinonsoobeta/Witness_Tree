@@ -10,7 +10,7 @@ test("canonical production ledger reconciles all 31 plan rows without runtime pr
   assert.equal(validatePhase1ProductionSourceLedger(ledger, inventory), ledger);
   assert.equal(ledger.entries.length, 31);
   assert.equal(ledger.entries.filter((entry) => entry.productionEligible).length, 0);
-  assert.equal(ledger.rawEvidenceNumerator, 11.25);
+  assert.equal(ledger.rawEvidenceNumerator, 12);
   assert.equal(ledger.entries.reduce((sum, entry) => sum + entry.rawCredit, 0), ledger.rawEvidenceNumerator);
   const bcWildfire = ledger.entries.find((entry) => entry.id === "bc-wildfire");
   assert.equal(bcWildfire.evidenceState, "local-verified-profiled");
@@ -18,6 +18,12 @@ test("canonical production ledger reconciles all 31 plan rows without runtime pr
   assert.ok(bcWildfire.evidenceRefs.includes("data/bc-wildfire-geometry-policy-2026-08-14.json"));
   assert.equal(bcWildfire.proof.immutableArchive, false);
   assert.equal(bcWildfire.proof.productionAdmission, false);
+  const plvi = ledger.entries.find((entry) => entry.id === "ab-primary-land-vegetation");
+  assert.equal(plvi.evidenceState, "local-verified-profiled");
+  assert.equal(plvi.rawCredit, 0.75);
+  assert.equal(plvi.proof.immutableArchive, false);
+  assert.equal(plvi.proof.productionAdmission, false);
+  assert.ok(plvi.evidenceRefs.includes("data/alberta-plvi-immutable-promotion-preparation.json"));
 });
 
 test("ledger fails closed for omission, credit inflation, a missing proof, or inferred production admission", () => {
