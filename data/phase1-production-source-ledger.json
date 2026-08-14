@@ -175,7 +175,8 @@
       "evidenceState": "local-verified-profiled",
       "evidenceRefs": [
         "data/staged-acquisitions.json",
-        "data/ontario-in-year-fire-perimeters-profile.json"
+        "data/ontario-in-year-fire-perimeters-profile.json",
+        "data/ontario-in-year-fire-geometry-policy-2026-08-14.json"
       ],
       "proof": {
         "licence": true,
@@ -189,7 +190,7 @@
       },
       "rawCredit": 0.75,
       "productionEligible": false,
-      "blocker": "Immutable archive, owner admission, transformation, ingestion, release, and production eligibility remain separately blocked."
+      "blocker": "The raw snapshot is locally verified and the separately checksummed 188-feature derived release is local-only. Immutable archive, owner admission, ingestion, release, and production eligibility remain separately blocked."
     },
     {
       "id": "sopfeu",
