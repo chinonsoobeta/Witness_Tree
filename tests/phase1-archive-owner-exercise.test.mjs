@@ -6,10 +6,10 @@ import test from "node:test";
 const helperPath = new URL("../scripts/run-phase1-archive-owner-exercise.sh", import.meta.url).pathname;
 const helper = readFileSync(helperPath, "utf8");
 
-function invalidTotpPty(input) {
+function invalidTotpPty(mode, input) {
   const program = [
     "set timeout 5",
-    `spawn bash ${helperPath} --run`,
+    `spawn bash ${helperPath} ${mode}`,
     "expect \"Current WitnessTreeArchiveOperator TOTP (not saved): \"",
     "send -- \"" + input + "\\n\"",
     "expect \"Stopped: TOTP must contain 6–8 digits.\"",
@@ -30,10 +30,17 @@ test("owner-local archive exercise has bounded, redacted MFA and control flow", 
   assert.match(helper, /Set this profile's exact assigned virtual-MFA serial locally, then retry\./);
   assert.doesNotMatch(helper, /mfa_serial="arn:aws:iam::\$\{account_id\}:mfa\/WitnessTreeArchiveOperator"/);
   assert.match(helper, /sts assume-role/);
+  assert.match(helper, /VERIFIER_ROLE="WitnessTreeArchiveVerifier"/);
+  assert.match(helper, /--recover-latest/);
+  assert.match(helper, /verifier-list-exercise-versions/);
+  assert.match(helper, /recovery-legal-hold-off/);
+  assert.match(helper, /redacted-recovery-readback\.json/);
+  assert.match(helper, /assert_same_retention/);
   assert.match(helper, /put-object-legal-hold.*Status=ON/);
   assert.match(helper, /put-object-legal-hold.*Status=OFF/);
   assert.match(helper, /Safety failure: uploader version-specific delete unexpectedly succeeded/);
-  assert.match(helper, /not-verifiable-with-approved-role/);
+  assert.match(helper, /not-verifiable-with-verifier-role/);
+  assert.match(helper, /assume_role "\$VERIFIER_ROLE"\nphase "attempt bounded CloudTrail and recovery readbacks through verifier"/);
   assert.doesNotMatch(helper, /exec 2>|--no-verify-ssl|root-access-key|console-password/);
   assert.ok(helper.indexOf('read -r -s -p "Current WitnessTreeArchiveOperator TOTP') < helper.indexOf('identity="$(run_aws identity'), "TOTP validation must occur before the first AWS call.");
 });
@@ -43,6 +50,7 @@ test("retention instants compare across equivalent Z and UTC-offset forms", () =
 });
 
 test("interactive PTY shows prompt and rejects invalid or empty input before AWS mutation", () => {
-  invalidTotpPty("abc");
-  invalidTotpPty("");
+  invalidTotpPty("--run", "abc");
+  invalidTotpPty("--run", "");
+  invalidTotpPty("--recover-latest", "abc");
 });
