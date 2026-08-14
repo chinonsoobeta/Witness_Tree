@@ -16,6 +16,9 @@ from pathlib import Path
 
 EXPECTED_BYTES = 12_399_475_076
 SOURCE_LAYER = "PEE_MAJ_PROV"
+SOURCE_URL = "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Cartes_ecoforestieres_perturbations/02-Donnees/PROV/CARTE_ECO_MAJ_PROV_GPKG.zip"
+CATALOGUE_URL = "https://www.donneesquebec.ca/recherche/dataset/carte-ecoforestiere-avec-perturbations"
+LICENCE_URL = "https://www.donneesquebec.ca/licence/#cc-by"
 
 
 def sha256(path: Path) -> str:
@@ -45,6 +48,7 @@ def main() -> int:
         raise SystemExit("Refusing to overwrite an existing derivative or evidence record.")
 
     raw_sha256 = sha256(archive)
+    verified_at = datetime.now(UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z")
     with zipfile.ZipFile(archive) as source_zip:
         bad_member = source_zip.testzip()
         if bad_member:
@@ -81,10 +85,14 @@ def main() -> int:
     evidence.write_text(json.dumps({
         "schemaVersion": "1.0",
         "kind": "deterministic-coverage-derivative",
-        "derivedAt": datetime.now(UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z"),
+        "derivedAt": verified_at,
         "rawSource": {"path": str(archive), "byteLength": archive.stat().st_size, "sha256": raw_sha256,
                       "zipIntegrity": "passed", "member": gpkg_member, "publishedLayer": SOURCE_LAYER,
-                      "publishedGeometryColumn": geometry_name},
+                      "publishedGeometryColumn": geometry_name, "sourceUrl": SOURCE_URL,
+                      "catalogueUrl": CATALOGUE_URL, "publisher": "Ministère des Ressources naturelles et des Forêts du Québec, Secteur des forêts, Direction des inventaires forestiers",
+                      "licence": {"id": "cc-by-4.0", "url": LICENCE_URL},
+                      "attribution": "Source : Ministère des Ressources naturelles et des Forêts du Québec, Secteur des forêts, Direction des inventaires forestiers. Sous licence CC BY 4.0.",
+                      "verifiedAt": verified_at},
         "derivative": {"path": str(output), "byteLength": output.stat().st_size, "sha256": output_sha256,
                        "layer": "qc_current_ecoforest_coverage",
                        "method": "GDAL SQLite ST_Union over every published PEE_MAJ_PROV polygon; no latitude clipping, tile-index geometry, repair, filtering, or attribute mapping.",
