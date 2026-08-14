@@ -60,8 +60,9 @@ def main() -> int:
     if len(profiled_layers) != 1:
         raise SystemExit(f"Source profile must contain exactly one {SOURCE_LAYER} layer")
     source_layer_profile = profiled_layers[0]
-    if source_layer_profile.get("invalidGeometryCount") != 0:
-        raise SystemExit(f"Published {SOURCE_LAYER} geometry profile is not valid")
+    for count_name in ("missingGeometryCount", "emptyGeometryCount", "invalidGeometryCount"):
+        if source_layer_profile.get(count_name) != 0:
+            raise SystemExit(f"Published {SOURCE_LAYER} profile has non-zero {count_name}")
     verified_at = datetime.now(UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z")
     with zipfile.ZipFile(archive) as source_zip:
         bad_member = source_zip.testzip()
