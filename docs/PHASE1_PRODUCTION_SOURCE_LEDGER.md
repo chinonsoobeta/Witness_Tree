@@ -1,0 +1,7 @@
+# Canonical Phase 1 production-source ledger
+
+[`data/phase1-production-source-ledger.json`](../data/phase1-production-source-ledger.json) is the canonical reconciliation of the 31 production rows in the authoritative Phase 1 inventory. It is deliberately separate from [`data/source-ledger.json`](../data/source-ledger.json), which remains an illustrative fixture and must never be mistaken for acquired data.
+
+The ledger has no admitted source. It records the exact current evidence state and forces every row to name all required proofs: licence, attribution, retrieval/version, checksum, raw archive or official re-fetch path, profile, immutable archive, and a separate production-admission decision. It fails closed if a row is omitted, a local/profiled record is given immutable credit, raw credit is inflated, evidence references do not exist, or production is inferred from archive/profile evidence.
+
+Current evidence-state counts are: 4 remote-verified/archive/profiled, 4 local-verified/profiled, 2 partial components, 1 supporting-only record, 7 access-blocked rows, 1 in-progress but not admitted row, and 12 unaddressed rows. This is 31 rows. The raw-evidence numerator remains 7.50/31; the complete-ledger portion of the Phase 1 score remains 0/31, therefore the 45% ledger component contributes **0 percentage points**. The formal Phase 1 progress remains 30% until all 31 rows have complete, independently verified production-ledger evidence and admission.
