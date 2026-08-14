@@ -3,6 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const PROVINCES = new Set(["BC", "AB", "ON", "QC"]);
+const COVERAGE_GRADES = new Set(["national-baseline", "national-baseline-plus-local-context", "enhanced-local-records"]);
 const SHA256 = /^[a-f0-9]{64}$/;
 const HTTPS = /^https:\/\//;
 const FTP = /^ftp:\/\//;
@@ -93,6 +94,14 @@ function validateLayer(layer) {
   text(licence.id, "licence.id");
   https(licence.url, "licence.url");
   text(layer.attribution, "attribution");
+  if (!new Set(["national-baseline-land-base", "local-context"]).has(layer.coverageRole)) throw new Error("Coverage role must be national-baseline-land-base or local-context.");
+  if (!COVERAGE_GRADES.has(layer.coverageGrade)) throw new Error("Coverage grade is invalid.");
+  if (layer.coverageRole === "national-baseline-land-base") {
+    if (layer.evidenceClass !== "versioned-source-geometry") throw new Error("A national-baseline land-base layer must be versioned source geometry.");
+    if (layer.coverageGrade !== "national-baseline") throw new Error("A national-baseline land-base layer must use the national-baseline grade.");
+  } else if (layer.coverageGrade === "national-baseline") {
+    throw new Error("Local context cannot use the national-baseline grade.");
+  }
 
   if (layer.province === "BC" && layer.coverageClass === "national-baseline-jurisdiction-reference") {
     const scope = layer.scope;
@@ -102,6 +111,7 @@ function validateLayer(layer) {
     if (scope.forestLandBaseDenominator !== false) throw new Error("BC reference geometry cannot be a forest land-base denominator.");
     if (scope.enhancedRecordCoverage !== false) throw new Error("BC reference geometry cannot enable enhanced records.");
     text(scope.limitation, "BC reference limitation");
+    if (layer.coverageRole !== "national-baseline-land-base" || layer.coverageGrade !== "national-baseline") throw new Error("BC reference geometry can supply only the national baseline over the provincial land base.");
   } else if (layer.province === "ON" && layer.coverageClass === "national-baseline-plus-managed-forest-context") {
     const scope = layer.scope;
     if (!scope || typeof scope !== "object") throw new Error("Ontario context scope is required.");
@@ -110,9 +120,11 @@ function validateLayer(layer) {
     if (scope.forestLandBaseDenominator !== false) throw new Error("Ontario planning-unit context cannot be a forest land-base denominator.");
     if (scope.enhancedRecordCoverage !== false) throw new Error("Ontario context cannot enable enhanced records.");
     text(scope.enhancedRecordCondition, "Ontario enhancedRecordCondition");
+    if (layer.coverageRole !== "local-context" || layer.coverageGrade !== "national-baseline-plus-local-context") throw new Error("Ontario FMU geometry can supply only bounded local context.");
   } else if (layer.evidenceClass === "lineage-bound-derived-geometry") {
     if (layer.coverageScope !== "partial-known-coverage") throw new Error("Derived coverage must be explicitly partial known coverage.");
     if (layer.coverageGrade !== "national-baseline-plus-local-context") throw new Error("Partial known coverage must use national-baseline-plus-local-context.");
+    if (layer.coverageRole !== "local-context") throw new Error("Partial known coverage must remain local context.");
     if (!Array.isArray(layer.inputEvidence) || layer.inputEvidence.length < 2) throw new Error("Derived coverage requires at least two lineage-bound inputs.");
     for (const [index, input] of layer.inputEvidence.entries()) {
       if (!input || typeof input !== "object") throw new Error(`inputEvidence.${index} is required.`);
@@ -131,7 +143,7 @@ function validateLayer(layer) {
 
 /**
  * Validates evidence only. It does not read geometry, infer coverage from a
- * coordinate, fetch a source, or admit any land-base coverage by default.
+ * coordinate, fetch a source, or infer complete spatial coverage by default.
  */
 export function validateCoverageGeometryAdmission(manifest) {
   if (!manifest || typeof manifest !== "object") throw new Error("Coverage admission manifest is required.");
@@ -140,11 +152,13 @@ export function validateCoverageGeometryAdmission(manifest) {
   if (!new Set(["pending-evidence", "partial", "complete"]).has(manifest.status)) throw new Error("Coverage admission status is invalid.");
   text(manifest.notice, "notice");
   if (!Array.isArray(manifest.layers)) throw new Error("Coverage layers must be an array.");
-  const provinces = new Set();
+  const sourceIds = new Set();
+  const baselineProvinces = new Set();
   for (const layer of manifest.layers) {
     validateLayer(layer);
-    if (provinces.has(layer.province)) throw new Error("Only one land-base coverage layer per province is allowed.");
-    provinces.add(layer.province);
+    if (sourceIds.has(layer.sourceId)) throw new Error("Coverage source ids must be unique.");
+    sourceIds.add(layer.sourceId);
+    if (layer.coverageRole === "national-baseline-land-base") baselineProvinces.add(layer.province);
   }
   const decisions = manifest.requiredProvinceDecisions;
   if (!decisions || typeof decisions !== "object") throw new Error("Required province decisions are required.");
@@ -154,7 +168,7 @@ export function validateCoverageGeometryAdmission(manifest) {
   if (manifest.status === "pending-evidence" && manifest.layers.length !== 0) throw new Error("Pending evidence cannot admit coverage layers.");
   if (manifest.status === "partial" && manifest.layers.length === 0) throw new Error("Partial coverage requires at least one admitted bounded layer.");
   if (manifest.status === "complete") {
-    if (provinces.size !== PROVINCES.size || [...PROVINCES].some((province) => !provinces.has(province))) throw new Error("Complete coverage requires versioned geometry evidence for BC, AB, ON, and QC.");
+    if (baselineProvinces.size !== PROVINCES.size || [...PROVINCES].some((province) => !baselineProvinces.has(province))) throw new Error("Complete coverage requires a versioned national-baseline land-base geometry for BC, AB, ON, and QC.");
     if (decisions.ontarioManagedForest !== "approved") throw new Error("Complete coverage requires the Ontario managed-forest decision.");
     if (decisions.quebecSouthOf52 !== "approved") throw new Error("Complete coverage requires the Québec south-of-52 decision.");
   }

@@ -7,7 +7,7 @@ const manifest = JSON.parse(readFileSync(new URL("../data/coverage-geometry-admi
 const checksum = "a".repeat(64);
 const layer = (province) => ({
   evidenceClass: "versioned-source-geometry", sourceId: `authority-${province.toLowerCase()}-land-base`, province, edition: "2026-01", crs: "EPSG:3347", checksumSha256: checksum,
-  sourceUrl: `https://authority.invalid/${province.toLowerCase()}/2026-01`, coverageClass: "land-base", extent: { west: -130, south: 45, east: -60, north: 61 }, areaSquareKilometres: 1,
+  sourceUrl: `https://authority.invalid/${province.toLowerCase()}/2026-01`, coverageClass: "land-base", coverageRole: "national-baseline-land-base", coverageGrade: "national-baseline", extent: { west: -130, south: 45, east: -60, north: 61 }, areaSquareKilometres: 1,
   profile: { evidenceId: `profile-${province.toLowerCase()}-2026-01`, profiledAt: "2026-08-14T00:00:00Z", evidenceUrl: `https://authority.invalid/${province.toLowerCase()}/profile`, evidenceChecksumSha256: "b".repeat(64), geometryChecksumSha256: "c".repeat(64), geometryType: "MultiPolygon", featureCount: 1, invalidGeometryCount: 0, validity: "passed" },
   licence: { id: "public-licence", url: "https://authority.invalid/licence" }, attribution: "Source authority attribution."
 });
@@ -33,6 +33,13 @@ test("complete admission requires all provinces and both explicit scope decision
   assert.equal(validateCoverageGeometryAdmission({ ...manifest, status: "complete", layers, requiredProvinceDecisions: { ontarioManagedForest: "approved", quebecSouthOf52: "approved" } }).status, "complete");
 });
 
+test("local context never substitutes for a provincial national-baseline land-base layer", () => {
+  const localBc = { ...layer("BC"), coverageRole: "local-context", coverageGrade: "national-baseline-plus-local-context" };
+  assert.throws(() => validateCoverageGeometryAdmission({ ...manifest, status: "complete", layers: [localBc, layer("AB"), layer("ON"), layer("QC")], requiredProvinceDecisions: { ontarioManagedForest: "approved", quebecSouthOf52: "approved" } }), /national-baseline land-base geometry/);
+  const enhancedQc = { ...layer("QC"), sourceId: "qc-current-ecoforest-footprint", coverageRole: "local-context", coverageGrade: "enhanced-local-records" };
+  assert.throws(() => validateCoverageGeometryAdmission({ ...manifest, status: "complete", layers: [...manifest.layers, enhancedQc], requiredProvinceDecisions: { ontarioManagedForest: "approved", quebecSouthOf52: "approved" } }), /national-baseline land-base geometry/);
+});
+
 test("negative corpus rejects incomplete, proxy, and illustrative coverage evidence", () => {
   assert.throws(() => validateCoverageGeometryAdmission({ ...manifest, status: "pending-evidence", layers: [layer("BC")] }), /Pending evidence/);
   assert.throws(() => validateCoverageGeometryAdmission({ ...manifest, status: "complete", layers: [layer("BC")], requiredProvinceDecisions: { ontarioManagedForest: "approved", quebecSouthOf52: "approved" } }), /BC, AB, ON, and QC/);
@@ -46,11 +53,12 @@ test("negative corpus rejects incomplete, proxy, and illustrative coverage evide
   const bc = manifest.layers.find((entry) => entry.province === "BC");
   assert.throws(() => validateCoverageGeometryAdmission({ ...manifest, status: "partial", layers: [{ ...bc, scope: { ...bc.scope, forestLandBaseDenominator: true } }] }), /cannot be a forest land-base denominator/);
   assert.throws(() => validateCoverageGeometryAdmission({ ...manifest, status: "partial", layers: [{ ...bc, resourceUrl: "ftp://unrelated.invalid/bc.zip" }] }), /official FTP resource URL/);
+  assert.throws(() => validateCoverageGeometryAdmission({ ...manifest, status: "partial", layers: [{ ...layer("BC"), coverageRole: "local-context", coverageGrade: "national-baseline" }] }), /Local context cannot use/);
 });
 
 test("partial known coverage requires lineage, an honest scope, and the local-context grade", () => {
   const partial = {
-    ...layer("AB"), evidenceClass: "lineage-bound-derived-geometry", coverageScope: "partial-known-coverage", coverageGrade: "national-baseline-plus-local-context",
+    ...layer("AB"), evidenceClass: "lineage-bound-derived-geometry", coverageScope: "partial-known-coverage", coverageRole: "local-context", coverageGrade: "national-baseline-plus-local-context",
     inputEvidence: [
       { sourceId: "alberta-fma-published-area", checksumSha256: "c".repeat(64), sourceUrl: "https://authority.invalid/fma" },
       { sourceId: "alberta-avi-crown-coverage-footprint-v1", checksumSha256: "d".repeat(64), sourceUrl: "https://authority.invalid/avi" },
