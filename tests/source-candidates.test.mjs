@@ -18,7 +18,7 @@ test("national and provincial discovery entries retain their bounded role and un
   assert.match(byId.get("nrcan-annual-high-resolution-forest-land-cover")?.intendedRole.en ?? "", /1984–2022/);
   assert.equal(byId.get("elections-canada-45th-electoral-boundaries")?.licence.state, "verified");
   assert.equal(byId.get("elections-canada-45th-electoral-boundaries")?.access.url, "https://www.elections.ca/res/cir/mapsCorner/vector/FederalElectoralDistricts_2025_SHP.zip");
-  assert.equal(byId.get("canadian-protected-and-conserved-areas-database")?.licence.state, "unresolved");
+  assert.equal(byId.get("canadian-protected-and-conserved-areas-database")?.licence.state, "verified");
   assert.match(byId.get("qc-historical-wildfire")?.intendedRole.en ?? "", /not a live-fire source/);
   assert.equal(byId.get("nrcan-forest-canopy-cover-2022")?.access.url, "https://opendata.nfis.org/downloads/forest_change/CA_canopy_cover_2022.zip");
   assert.equal(byId.get("nrcan-forest-canopy-height-2022")?.access.url, "https://opendata.nfis.org/downloads/forest_change/CA_canopy_height_2022.zip");
