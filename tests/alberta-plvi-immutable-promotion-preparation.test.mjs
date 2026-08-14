@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { spawnSync } from "node:child_process";
@@ -28,7 +28,7 @@ test("sidecars are deterministic and the preparation rejects drift or remote cla
 test("MFA runner has a dry-run default and excludes deletion, IAM mutation, and retention bypass", () => {
   const runner = readFileSync(new URL("../scripts/run-alberta-plvi-approved-promotion.sh", import.meta.url), "utf8");
   assert.match(runner, /if \[\[ \$# -eq 0 \]\]; then node/);
-  assert.match(runner, /Approved raw ZIP drifted[\s\S]*vared/);
+  assert.match(runner, /Approved raw ZIP drifted[\s\S]*read -r -s/);
   assert.match(runner, /WitnessTreePlviArchivePromotionUploader/);
   assert.doesNotMatch(runner, /DeleteObject|BypassGovernanceRetention|aws iam (?:create|put|delete|attach|update)/i);
 });
@@ -43,6 +43,32 @@ test("owner-local preflight finds and fully hashes both controlled workspace art
   assert.equal(fail.status, 65);
   assert.match(fail.stderr, /missing at the controlled workspace-data path/);
   assert.doesNotMatch(`${fail.stdout}${fail.stderr}`, /Current MFA TOTP|aws (?:s3|sts|iam)/i);
+});
+
+test("macOS zsh runner prompts without echo and rejects invalid TOTP before any AWS command", () => {
+  const dir = mkdtempSync(join(tmpdir(), "plvi-mfa-pty-"));
+  const marker = join(dir, "aws-called");
+  const aws = join(dir, "aws");
+  writeFileSync(aws, `#!/bin/zsh\nprintf called > ${JSON.stringify(marker)}\nexit 99\n`, { mode: 0o700 });
+  const runner = new URL("../scripts/run-alberta-plvi-approved-promotion.sh", import.meta.url).pathname;
+  try {
+    const expectProgram = `set timeout 120
+set env(PATH) "${dir}:$env(PATH)"
+set runner "${runner}"
+spawn -noecho zsh $runner --run
+expect {
+  "Current MFA TOTP (not stored):" { send -- "12bad\\r"; exp_continue }
+  "TOTP must be exactly six digits; no AWS call was made" { expect eof; set result [wait]; exit [lindex $result 3] }
+  timeout { exit 2 }
+  eof { exit 3 }
+}`;
+    const run = spawnSync("expect", ["-c", expectProgram], { encoding: "utf8", timeout: 120_000, env: { ...process.env, PATH: `${dir}:${process.env.PATH}` } });
+    assert.equal(run.status, 64, `${run.stdout}\n${run.stderr}`);
+    assert.match(`${run.stdout}${run.stderr}`, /Current MFA TOTP \(not stored\):/);
+    assert.match(`${run.stdout}${run.stderr}`, /TOTP must be exactly six digits; no AWS call was made/);
+    assert.equal(existsSync(marker), false);
+    assert.doesNotMatch(`${run.stdout}${run.stderr}`, /12bad/);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
 test("provisioning policies bind only the named MFA operator, four keys, and two payload retentions", () => {
