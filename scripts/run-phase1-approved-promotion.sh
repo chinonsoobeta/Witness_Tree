@@ -124,7 +124,7 @@ prepare_resume_state() {
   RESUME_PARTS="$(jq -c '.parts' <<<"$state_json")"
 }
 resume_canopy() {
-  local listed state_parts="$RESUME_PARTS" remote_parts bytes="${BYTES[2]}" part_size=67108864 part_count first_missing part_number part_file result etag checksum parts_file complete version sidecar sidecar_put payload_head retention sidecar_head
+  local listed state_parts="$RESUME_PARTS" remote_parts bytes="${BYTES[2]}" part_size=67108864 part_count first_missing part_number part_file result etag checksum parts_file complete version payload_crc sidecar sidecar_bytes sidecar_put sidecar_version sidecar_crc payload_head retention sidecar_head
   part_count=$(( (bytes + part_size - 1) / part_size ))
   listed="$(resume_aws s3api list-parts --bucket "$BUCKET" --key "${PAYLOADS[2]}" --upload-id "$RESUME_UPLOAD_ID" --region "$REGION" --output json)"
   jq -e '(.IsTruncated // false) == false and (.Parts|type == "array")' <<<"$listed" >/dev/null || fail "Remote multipart parts response is incomplete; no new part was uploaded" 70
@@ -142,15 +142,22 @@ resume_canopy() {
     state_parts="$(jq -cn --argjson prior "$state_parts" --arg ETag "$etag" --arg ChecksumCRC64NVME "$checksum" --argjson PartNumber "$part_number" --argjson Size "$(( part_number == part_count ? bytes - part_size * (part_count - 1) : part_size ))" '$prior + [{PartNumber:$PartNumber,ETag:$ETag,ChecksumCRC64NVME:$ChecksumCRC64NVME,Size:$Size}]')"
     write_resume_state "$state_parts"
   done
-  parts_file="$TMP/resume-parts.json"; jq -n --argjson Parts "$state_parts" '{Parts:$Parts}' > "$parts_file"
+  # Size is required in the private state and ListParts comparison, but it is
+  # not a valid CompleteMultipartUpload.Parts member. Project only the three
+  # acknowledgement fields accepted by S3 so a fully uploaded resume can
+  # complete without changing, re-uploading, or discarding any part.
+  parts_file="$TMP/resume-parts.json"
+  jq -n --argjson parts "$state_parts" \
+    '{Parts: [$parts[] | {PartNumber, ETag, ChecksumCRC64NVME}]}' > "$parts_file"
   complete="$(resume_aws s3api complete-multipart-upload --bucket "$BUCKET" --key "${PAYLOADS[2]}" --upload-id "$RESUME_UPLOAD_ID" --multipart-upload "file://$parts_file" --region "$REGION" --cli-read-timeout 0 --output json)"
-  version="$(jq -er '.VersionId' <<<"$complete")"; jq -e '(.ChecksumCRC64NVME // empty) != ""' <<<"$complete" >/dev/null || fail "Multipart completion acknowledgement incomplete; state preserved" 70
+  version="$(jq -er '.VersionId' <<<"$complete")"; payload_crc="$(jq -er 'select(.ChecksumType == "FULL_OBJECT") | .ChecksumCRC64NVME' <<<"$complete")" || fail "Multipart completion acknowledgement lacks FULL_OBJECT CRC64NVME; state preserved" 70
   sidecar="$TMP/${IDS[2]}.manifest.json"; jq -n --arg id "${IDS[2]}" --arg payload "${PAYLOADS[2]}" --arg sha "${SHAS[2]}" --argjson bytes "${BYTES[2]}" '{schemaVersion:1,sourceId:$id,payloadKey:$payload,byteLength:$bytes,sha256:$sha,notice:"Approved raw payload; no transformation, ingestion, or release."}' > "$sidecar"
-  sidecar_put="$(resume_aws s3api put-object --bucket "$BUCKET" --key "${SIDECARS[2]}" --body "$sidecar" --checksum-algorithm CRC64NVME --region "$REGION" --cli-read-timeout 0 --output json)"; jq -e '.VersionId != null and (.ChecksumCRC64NVME // empty) != ""' <<<"$sidecar_put" >/dev/null || fail "Sidecar upload acknowledgement incomplete; state preserved" 70
-  payload_head="$(resume_aws s3api head-object --bucket "$BUCKET" --key "${PAYLOADS[2]}" --checksum-mode ENABLED --region "$REGION" --output json)"; [[ "$(jq -r '.ContentLength' <<<"$payload_head")" == "$bytes" && "$(jq -r '.ChecksumCRC64NVME // empty' <<<"$payload_head")" != "" ]] || fail "Payload read-back integrity incomplete" 70
+  sidecar_bytes="$(stat -f %z "$sidecar")"
+  sidecar_put="$(resume_aws s3api put-object --bucket "$BUCKET" --key "${SIDECARS[2]}" --body "$sidecar" --checksum-algorithm CRC64NVME --region "$REGION" --cli-read-timeout 0 --output json)"; sidecar_version="$(jq -er '.VersionId' <<<"$sidecar_put")"; sidecar_crc="$(jq -er '.ChecksumCRC64NVME' <<<"$sidecar_put")" || fail "Sidecar upload acknowledgement incomplete; state preserved" 70
+  payload_head="$(resume_aws s3api head-object --bucket "$BUCKET" --key "${PAYLOADS[2]}" --version-id "$version" --checksum-mode ENABLED --region "$REGION" --output json)"; jq -e --arg version "$version" --arg crc "$payload_crc" --argjson bytes "$bytes" '.VersionId == $version and .ContentLength == $bytes and .ChecksumType == "FULL_OBJECT" and .ChecksumCRC64NVME == $crc' <<<"$payload_head" >/dev/null || fail "Payload exact-version read-back lacks exact bytes or matching FULL_OBJECT CRC64NVME" 70
   resume_aws s3api put-object-retention --bucket "$BUCKET" --key "${PAYLOADS[2]}" --version-id "$version" --retention "Mode=COMPLIANCE,RetainUntilDate=$RETAIN_UNTIL" --region "$REGION" >/dev/null
-  retention="$(resume_aws s3api get-object-retention --bucket "$BUCKET" --key "${PAYLOADS[2]}" --version-id "$version" --region "$REGION" --output json)"; jq -e --arg d "$RETAIN_UNTIL" '.Retention.Mode == "COMPLIANCE" and (.Retention.RetainUntilDate | startswith($d[0:10]))' <<<"$retention" >/dev/null || fail "Retention read-back mismatch" 70
-  sidecar_head="$(resume_aws s3api head-object --bucket "$BUCKET" --key "${SIDECARS[2]}" --checksum-mode ENABLED --region "$REGION" --output json)"; jq -e '.VersionId != null and (.ChecksumCRC64NVME // empty) != ""' <<<"$sidecar_head" >/dev/null || fail "Sidecar read-back incomplete" 70
+  retention="$(resume_aws s3api get-object-retention --bucket "$BUCKET" --key "${PAYLOADS[2]}" --version-id "$version" --region "$REGION" --output json)"; jq -e '.Retention.Mode == "COMPLIANCE"' <<<"$retention" >/dev/null && node -e 'const [a,b]=process.argv.slice(1).map(Date.parse); if (!Number.isFinite(a) || a !== b) process.exit(1)' "$(jq -er '.Retention.RetainUntilDate' <<<"$retention")" "$RETAIN_UNTIL" || fail "Retention read-back mismatch" 70
+  sidecar_head="$(resume_aws s3api head-object --bucket "$BUCKET" --key "${SIDECARS[2]}" --version-id "$sidecar_version" --checksum-mode ENABLED --region "$REGION" --output json)"; jq -e --arg version "$sidecar_version" --arg crc "$sidecar_crc" --argjson bytes "$sidecar_bytes" '.VersionId == $version and .ContentLength == $bytes and .ChecksumType == "FULL_OBJECT" and .ChecksumCRC64NVME == $crc' <<<"$sidecar_head" >/dev/null || fail "Sidecar exact-version read-back lacks exact bytes or matching FULL_OBJECT CRC64NVME" 70
   print -- "Canopy multipart resume completed with required read-backs; do not infer source admission."
 }
 
