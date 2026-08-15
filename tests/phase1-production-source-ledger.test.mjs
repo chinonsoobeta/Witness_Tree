@@ -10,20 +10,20 @@ test("canonical production ledger reconciles all 31 plan rows without runtime pr
   assert.equal(validatePhase1ProductionSourceLedger(ledger, inventory), ledger);
   assert.equal(ledger.entries.length, 31);
   assert.equal(ledger.entries.filter((entry) => entry.productionEligible).length, 0);
-  assert.equal(ledger.rawEvidenceNumerator, 13.75);
+  assert.equal(ledger.rawEvidenceNumerator, 14.75);
   assert.equal(ledger.entries.reduce((sum, entry) => sum + entry.rawCredit, 0), ledger.rawEvidenceNumerator);
   assert.deepEqual(ledger.formalProgress, {
     baselinePercentagePoints: 25,
     rawEvidenceWeightPercentagePoints: 30,
     completeLedgerWeightPercentagePoints: 45,
-    percentage: 38.3064516,
+    percentage: 39.2741935,
     notice: "This is an evidence-tracking score only. It does not grant source-ledger admission, transformation, analysis, ingestion, public release, production admission, or production eligibility."
   });
   const bcWildfire = ledger.entries.find((entry) => entry.id === "bc-wildfire");
-  assert.equal(bcWildfire.evidenceState, "local-verified-profiled");
-  assert.equal(bcWildfire.rawCredit, 0.75);
+  assert.equal(bcWildfire.evidenceState, "remote-verified-archived-profiled");
+  assert.equal(bcWildfire.rawCredit, 1);
   assert.ok(bcWildfire.evidenceRefs.includes("data/bc-wildfire-geometry-policy-2026-08-14.json"));
-  assert.equal(bcWildfire.proof.immutableArchive, false);
+  assert.equal(bcWildfire.proof.immutableArchive, true);
   assert.equal(bcWildfire.proof.productionAdmission, false);
   const plvi = ledger.entries.find((entry) => entry.id === "ab-primary-land-vegetation");
   assert.equal(plvi.evidenceState, "remote-verified-archived-profiled");

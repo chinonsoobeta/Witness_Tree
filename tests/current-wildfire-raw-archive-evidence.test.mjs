@@ -1,0 +1,2 @@
+import assert from "node:assert/strict"; import test from "node:test"; import {validate} from "../scripts/check-current-wildfire-raw-archive-evidence.mjs";
+test("four raw wildfire objects are remotely verified but the two derived objects cannot activate admission",()=>{const e=validate();assert.equal(e.entries.length,4);assert.equal(e.claims.ownerAdmission,false);assert.equal(e.claims.derivedObjectsVerified,false);assert.throws(()=>validate({...e,claims:{...e.claims,productionEligible:true}}));});
