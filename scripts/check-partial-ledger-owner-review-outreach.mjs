@@ -101,7 +101,7 @@ export function validatePartialLedgerOwnerReviewOutreach(pkg, audit, existing, l
   assert.equal(audit.claims.permissionRequested, false);
   assert.equal(audit.claims.acceptedPublisherAgreement, false);
   assert.equal(audit.claims.downloadedNewArtifact, false);
-  assert.equal(audit.numerator.after, 13.75);
+  assert.equal(audit.numerator.after, 14.75);
   assert.equal(audit.numerator.impact, 0);
   const rows = ledger.entries.filter(({ id }) => ["cwfis-historical", "provincial-electoral-boundaries"].includes(id));
   assert.equal(rows.reduce((sum, row) => sum + row.rawCredit, 0), 0.5);
@@ -124,5 +124,5 @@ export function loadPartialLedgerOwnerReviewOutreach() {
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   const pkg = loadPartialLedgerOwnerReviewOutreach();
-  console.log(`Owner-review outreach package passed for ${pkg.requests.length} unsent requests; ledger numerator remains 13.75/31.`);
+  console.log(`Owner-review outreach package passed for ${pkg.requests.length} unsent requests; ledger numerator remains 14.75/31.`);
 }
