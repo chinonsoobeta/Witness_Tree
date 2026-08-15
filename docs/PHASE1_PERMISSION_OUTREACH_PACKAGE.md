@@ -1,8 +1,8 @@
 # Phase 1 permission and export outreach package
 
-Status: **owner review only — seven drafts are unsent.** This package does not authorize sending email, downloading data, or any other external or production action. It consolidates the genuine external blockers in the [access-block matrix](../data/phase1-access-blocker-resolution.json), rather than treating a public service, web explorer, or approximate map as a released source.
+Status: **seven owner-reviewed messages sent; awaiting responses.** On 2026-08-14, Gmail's Sent label was read-only searched for each exact sender, recipient, and subject. The resulting package records only the verified sent timestamp and non-sensitive verification method; it intentionally retains no Gmail message ID, thread ID, body, or Gmail link. A send does not authorize acquisition, downloading, archival, transformation, ingestion, release, source-ledger admission, or production use. The package consolidates the genuine external blockers in the [access-block matrix](../data/phase1-access-blocker-resolution.json), rather than treating a public service, web explorer, or approximate map as a released source.
 
-One earlier request to FAIB is already recorded as sent and awaiting a response. It is tracked below only to prevent a duplicate message. The package contains **seven new drafts**, which together cover the other 12 canonical access-blocked rows. The exact machine-readable mapping is [`data/phase1-permission-outreach-package.json`](../data/phase1-permission-outreach-package.json).
+One earlier request to FAIB is already recorded as sent and awaiting a response. It is tracked below only to prevent a duplicate message. The package now records **seven verified sends**, which together cover the other 12 canonical access-blocked rows. The exact machine-readable mapping and send timestamps are in [`data/phase1-permission-outreach-package.json`](../data/phase1-permission-outreach-package.json).
 
 ## 1. BC Forest Tenures Branch — FTA cutblocks and harvesting authorities
 
