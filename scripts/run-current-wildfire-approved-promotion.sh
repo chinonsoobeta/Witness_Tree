@@ -38,11 +38,12 @@ command -v jq >/dev/null || fail "jq is required" 69
 read -r -s 'totp?Current MFA TOTP (not stored): '; print
 [[ "${totp:-}" =~ '^[0-9]{6}$' ]] || fail "TOTP must be exactly six digits; no AWS call was made" 64
 mfa_serial="$(aws configure get mfa_serial --profile "$PROFILE")" || fail "Cannot read local configured MFA serial" 69
-[[ "$mfa_serial" =~ '^arn:aws:iam::286853118812:mfa/WitnessTreeArchiveOperator$' ]] || fail "Configured MFA serial is absent or does not name the approved operator; no STS or AWS storage call was made" 69
-bootstrap="$(aws sts get-session-token --serial-number "$mfa_serial" --token-code "$totp" --profile "$PROFILE" --duration-seconds 3600 --output json)" || fail "MFA session failed" 77; unset totp
+[[ "$mfa_serial" =~ '^arn:aws:iam::286853118812:mfa/[A-Za-z0-9+=,.@_/-]+$' ]] || fail "Configured MFA serial is absent, malformed, or outside the approved account; no STS or AWS storage call was made" 69
+bootstrap="$(aws sts get-session-token --serial-number "$mfa_serial" --token-code "$totp" --profile "$PROFILE" --duration-seconds 3600 --output json)" || fail "MFA session failed" 77; unset totp mfa_serial
 export AWS_ACCESS_KEY_ID="$(jq -r '.Credentials.AccessKeyId' <<<"$bootstrap")" AWS_SECRET_ACCESS_KEY="$(jq -r '.Credentials.SecretAccessKey' <<<"$bootstrap")" AWS_SESSION_TOKEN="$(jq -r '.Credentials.SessionToken' <<<"$bootstrap")"; unset bootstrap
-account="$(aws sts get-caller-identity --query Account --output text)" || fail "Cannot identify MFA session" 77
-[[ "$account" == "286853118812" ]] || fail "MFA session is outside the approved account" 77
+identity="$(aws sts get-caller-identity --output json)" || fail "Cannot identify MFA session" 77
+jq -e '.Account == "286853118812" and .Arn == "arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator"' <<<"$identity" >/dev/null || fail "MFA session is not the approved operator in the approved account" 77; unset identity
+account="286853118812"
 creds="$(aws sts assume-role --role-arn "arn:aws:iam::${account}:role/${ROLE}" --role-session-name witness-tree-current-wildfire-approved-promotion --duration-seconds 3600 --output json)" || fail "Promotion role assumption failed" 77
 export AWS_ACCESS_KEY_ID="$(jq -r '.Credentials.AccessKeyId' <<<"$creds")" AWS_SECRET_ACCESS_KEY="$(jq -r '.Credentials.SecretAccessKey' <<<"$creds")" AWS_SESSION_TOKEN="$(jq -r '.Credentials.SessionToken' <<<"$creds")"; unset creds account
 TMP="$(mktemp -d /private/tmp/witness-tree-current-wildfire-approved-promotion.XXXXXX)"; chmod 700 "$TMP"

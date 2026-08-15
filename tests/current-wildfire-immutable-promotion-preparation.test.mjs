@@ -27,6 +27,8 @@ test("MFA runner defaults to dry run and excludes prohibited operations", () => 
   assert.match(runner, /put-object-retention/);
   assert.doesNotMatch(runner, /aws s3 cp|DeleteObject|BypassGovernanceRetention|PutObjectLegalHold|ReplicateObject|aws iam /i);
   assert.match(runner, /aws configure get mfa_serial --profile/);
+  assert.match(runner, /mfa\/\[A-Za-z0-9\+=,.@_\/-\]\+/);
+  assert.match(runner, /Arn == "arn:aws:iam::286853118812:user\/WitnessTreeArchiveOperator"/);
   assert.doesNotMatch(runner, /list-mfa-devices|iam list/i);
 });
 
@@ -36,9 +38,9 @@ test("valid-shaped dummy TOTP reaches only the mocked direct PutObject boundary"
   const aws = join(dir, "aws");
   writeFileSync(aws, `#!/bin/zsh
 case "$1:$2" in
-  configure:get) print -- "configure-get" >> ${JSON.stringify(marker)}; print -- "arn:aws:iam::286853118812:mfa/WitnessTreeArchiveOperator" ;;
+  configure:get) print -- "configure-get" >> ${JSON.stringify(marker)}; print -- "arn:aws:iam::286853118812:mfa/alternate-safe-device.path" ;;
   sts:get-session-token) print -- "sts-get-session-token" >> ${JSON.stringify(marker)}; print -- '{"Credentials":{"AccessKeyId":"dummy","SecretAccessKey":"dummy","SessionToken":"dummy"}}' ;;
-  sts:get-caller-identity) print -- "sts-get-caller-identity" >> ${JSON.stringify(marker)}; print -- "286853118812" ;;
+  sts:get-caller-identity) print -- "sts-get-caller-identity" >> ${JSON.stringify(marker)}; print -- '{"Account":"286853118812","Arn":"arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator"}' ;;
   sts:assume-role) print -- "sts-assume-role" >> ${JSON.stringify(marker)}; print -- '{"Credentials":{"AccessKeyId":"dummy","SecretAccessKey":"dummy","SessionToken":"dummy"}}' ;;
   s3api:put-object) print -- "s3-put-object-blocked" >> ${JSON.stringify(marker)}; exit 88 ;;
   *) print -- "unexpected-$1-$2" >> ${JSON.stringify(marker)}; exit 98 ;;
@@ -62,4 +64,32 @@ expect {
     assert.doesNotMatch(readFileSync(marker, "utf8"), /iam|list-mfa/i);
     assert.doesNotMatch(`${run.stdout}${run.stderr}`, /123456/);
   } finally { rmSync(dir, {recursive: true, force: true}); }
+});
+
+test("empty, malformed, or wrong-account MFA serial stops after local config and never reaches STS or S3", () => {
+  for (const serial of ["", "arn:aws:iam::999999999999:mfa/other-device", "not-an-arn"]) {
+    const dir = mkdtempSync(join(tmpdir(), "current-wildfire-mfa-rejection-"));
+    const marker = join(dir, "calls");
+    const aws = join(dir, "aws");
+    writeFileSync(aws, `#!/bin/zsh
+print -- "$1:$2" >> ${JSON.stringify(marker)}
+case "$1:$2" in configure:get) print -- ${JSON.stringify(serial)} ;; *) exit 99 ;; esac
+`, {mode: 0o700});
+    const runner = new URL("../scripts/run-current-wildfire-approved-promotion.sh", import.meta.url).pathname;
+    const expectProgram = `set timeout 120
+set env(PATH) "${dir}:$env(PATH)"
+spawn -noecho zsh ${JSON.stringify(runner)} --run
+expect {
+  "Current MFA TOTP (not stored):" { send -- "123456\\r"; exp_continue }
+  eof { set result [wait]; exit [lindex $result 3] }
+  timeout { exit 2 }
+}`;
+    try {
+      const run = spawnSync("expect", ["-c", expectProgram], {encoding: "utf8", timeout: 120_000, env: {...process.env, PATH: `${dir}:${process.env.PATH}`}});
+      assert.equal(run.status, 69, `${run.stdout}\n${run.stderr}`);
+      assert.match(`${run.stdout}${run.stderr}`, /Configured MFA serial is absent, malformed, or outside the approved account/);
+      assert.doesNotMatch(`${run.stdout}${run.stderr}`, /123456/);
+      assert.deepEqual(readFileSync(marker, "utf8").trim().split("\n"), ["configure:get"]);
+    } finally { rmSync(dir, {recursive: true, force: true}); }
+  }
 });
