@@ -71,6 +71,10 @@ test('archive-control exercise is present but does not satisfy required proofs',
     deniedExactVersionDelete: false,
     authorizedRecoveryReadback: false,
   });
+  assert.equal(record.percentageImpact.baselineRawEvidenceNumerator, 14.75);
+  assert.equal(record.percentageImpact.baselineFormalPercentage, 39.2741935);
+  assert.equal(record.percentageImpact.canonicalRawReconciliation.rawEvidenceNumeratorDelta, 1);
+  assert.equal(record.percentageImpact.canonicalRawReconciliation.formalPercentagePointDelta, 0.9677419);
   assert.equal(record.percentageImpact.productionPercentagePointDelta, 0);
-  assert.equal(record.percentageImpact.repositoryPercentagePointDelta, 0);
+  assert.equal(record.percentageImpact.repositoryPercentagePointDelta, 0.9677419);
 });

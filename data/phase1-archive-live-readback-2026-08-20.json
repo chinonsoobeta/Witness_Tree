@@ -195,13 +195,19 @@
     "Close control gaps in recovery coverage, access logging, and archive identity evidence before production admission."
   ],
   "percentageImpact": {
-    "baselineLedgerRef": "phase1/national-resume-convergence:data/phase1-production-source-ledger.json",
-    "baselineAsOf": "2026-08-14",
-    "baselineRawEvidenceNumerator": 13.75,
-    "baselineFormalPercentage": 38.3064516,
+    "baselineLedgerRef": "phase1/current-state-convergence-audit:data/phase1-production-source-ledger.json",
+    "baselineAsOf": "2026-08-20",
+    "baselineRawEvidenceNumerator": 14.75,
+    "baselineFormalPercentage": 39.2741935,
+    "canonicalRawReconciliation": {
+      "rows": ["cwfis-current", "bc-wildfire", "ab-wildfire", "on-fire-disturbance"],
+      "rawEvidenceNumeratorDelta": 1,
+      "formalPercentagePointDelta": 0.9677419,
+      "basis": "Four raw payload/sidecar pairs have live retention, checksum, and recovery-replica readbacks; the two derived objects remain excluded from the six-object owner gate."
+    },
     "productionEligibleRows": 0,
     "productionPercentagePointDelta": 0,
-    "repositoryPercentagePointDelta": 0,
-    "rawEvidenceUplift": "pending repository integration of redacted exact readback records and owner approvals"
+    "repositoryPercentagePointDelta": 0.9677419,
+    "rawEvidenceUplift": "No further credit is claimed here; derived and production gates remain blocked."
   }
 }

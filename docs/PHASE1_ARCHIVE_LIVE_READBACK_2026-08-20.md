@@ -17,10 +17,12 @@ This is a read-only live audit of the Phase 1 archive groups. The machine-readab
 
 Promotion is not authorized by this audit. The national missing objects, Quebec promotion sets, and current-wildfire derived outputs require the applicable owner approvals and version-specific dry-run/readback workflow. The BC derived orphan needs an explicit disposition before it can be considered an archive proof.
 
+The derived-specific stop conditions are captured in [data/current-wildfire-derived-live-recovery-guard-2026-08-20.json](../data/current-wildfire-derived-live-recovery-guard-2026-08-20.json), and the exact national/Quebec preflight commands and owner preconditions are reconciled in [docs/PHASE1_ARCHIVE_OWNER_COMMAND_RECONCILIATION_2026-08-20.md](PHASE1_ARCHIVE_OWNER_COMMAND_RECONCILIATION_2026-08-20.md).
+
 The normal archive-control exercise remains incomplete. It must be performed by an authorized owner and must preserve evidence of the legal-hold transitions, unchanged COMPLIANCE retention, denied exact-version deletion, and approved recovery readback. No such mutation was attempted here.
 
 Recovery coverage and control evidence also remain incomplete: annual VLCE2, canopy cover, and derived objects are not represented in the recovery bucket; server access logging is not configured; and the repository still needs reconciled, redacted live readback evidence before any raw-evidence score changes.
 
 ## Phase 1 impact
 
-The latest repository ledger baseline is 13.75 raw-evidence numerator points and 38.3064516% formal evidence tracking, with zero production-eligible rows. This read-only record changes neither percentage: production impact is 0 percentage points, and any raw-evidence uplift is pending integration and owner approval. No Phase 2 work, deployment, push, email, or AWS/IAM/S3 mutation was performed.
+The corrected latest convergence ledger is 14.75 raw-evidence numerator points, 39.2741935% formal evidence tracking, 9 immutable rows, and zero production-eligible rows. The four raw wildfire pairs support a canonical reconciliation of +1.00 raw point and +0.9677419 formal percentage points from the preceding 13.75 / 38.3064516 baseline. That credit is raw-only: the owner gate is 4/6 because BC and Ontario derived archives are still incomplete, and production impact remains 0 percentage points. No Phase 2 work, deployment, push, email, or AWS/IAM/S3 mutation was performed.
