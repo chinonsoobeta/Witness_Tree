@@ -89,11 +89,12 @@
     },
     {
       "id": "cwfis-current",
-      "evidenceState": "local-verified-profiled",
+      "evidenceState": "remote-verified-archived-profiled",
       "evidenceRefs": [
         "data/staged-acquisitions.json",
         "data/cwfis-current-active-fires-profile.json",
-        "data/current-wildfire-owner-admission.json"
+        "data/current-wildfire-owner-admission.json",
+        "data/current-wildfire-raw-archive-evidence.json"
       ],
       "proof": {
         "licence": true,
@@ -102,10 +103,10 @@
         "checksum": true,
         "rawArchiveRefetch": true,
         "profile": true,
-        "immutableArchive": false,
+        "immutableArchive": true,
         "productionAdmission": false
       },
-      "rawCredit": 0.75,
+      "rawCredit": 1,
       "productionEligible": false,
       "blocker": "Owner scope, transformation, ingestion, public release and production admission are approved with conservative snapshot/authority semantics, but cannot activate until the exact raw object has integrated immutable version, checksum, readback and COMPLIANCE-retention evidence."
     },
@@ -132,12 +133,13 @@
     },
     {
       "id": "bc-wildfire",
-      "evidenceState": "local-verified-profiled",
+      "evidenceState": "remote-verified-archived-profiled",
       "evidenceRefs": [
         "data/staged-acquisitions.json",
         "data/bc-wildfire-current-perimeters-profile.json",
         "data/bc-wildfire-geometry-policy-2026-08-14.json",
-        "data/current-wildfire-owner-admission.json"
+        "data/current-wildfire-owner-admission.json",
+        "data/current-wildfire-raw-archive-evidence.json"
       ],
       "proof": {
         "licence": true,
@@ -146,20 +148,21 @@
         "checksum": true,
         "rawArchiveRefetch": true,
         "profile": true,
-        "immutableArchive": false,
+        "immutableArchive": true,
         "productionAdmission": false
       },
-      "rawCredit": 0.75,
+      "rawCredit": 1,
       "productionEligible": false,
       "blocker": "Owner approved the unchanged 217-feature raw archive and only the 216-feature geometry release: 215 unchanged plus bounded repair G70362, with V10755 permanently quarantined at 3.167100456% area delta and no 217-feature coverage claim. Activation remains blocked until exact raw and derived immutable readbacks are integrated."
     },
     {
       "id": "ab-wildfire",
-      "evidenceState": "local-verified-profiled",
+      "evidenceState": "remote-verified-archived-profiled",
       "evidenceRefs": [
         "data/staged-acquisitions.json",
         "data/alberta-wildfire-locations-profile.json",
-        "data/current-wildfire-owner-admission.json"
+        "data/current-wildfire-owner-admission.json",
+        "data/current-wildfire-raw-archive-evidence.json"
       ],
       "proof": {
         "licence": true,
@@ -168,21 +171,22 @@
         "checksum": true,
         "rawArchiveRefetch": true,
         "profile": true,
-        "immutableArchive": false,
+        "immutableArchive": true,
         "productionAdmission": false
       },
-      "rawCredit": 0.75,
+      "rawCredit": 1,
       "productionEligible": false,
       "blocker": "Owner scope, transformation, ingestion, public release and production admission are approved for an as-of point snapshot that is neither real-time nor a complete perimeter dataset. Activation remains blocked until the exact raw immutable readback is integrated."
     },
     {
       "id": "on-fire-disturbance",
-      "evidenceState": "local-verified-profiled",
+      "evidenceState": "remote-verified-archived-profiled",
       "evidenceRefs": [
         "data/staged-acquisitions.json",
         "data/ontario-in-year-fire-perimeters-profile.json",
         "data/ontario-in-year-fire-geometry-policy-2026-08-14.json",
-        "data/current-wildfire-owner-admission.json"
+        "data/current-wildfire-owner-admission.json",
+        "data/current-wildfire-raw-archive-evidence.json"
       ],
       "proof": {
         "licence": true,
@@ -191,10 +195,10 @@
         "checksum": true,
         "rawArchiveRefetch": true,
         "profile": true,
-        "immutableArchive": false,
+        "immutableArchive": true,
         "productionAdmission": false
       },
-      "rawCredit": 0.75,
+      "rawCredit": 1,
       "productionEligible": false,
       "blocker": "Owner approved the unchanged 188-feature raw archive and full 188-feature derived release: 179 unchanged plus all nine bounded repairs with zero exclusion. Activation remains blocked until exact raw and derived immutable readbacks are integrated."
     },
@@ -639,12 +643,12 @@
       "blocker": "CIRNAC's official map is informal, approximate, subject to revision, and expressly cannot be relied on for consultation. It is not legal or precision boundary geometry; no admissible legal artifact, rights, checksum/archive recovery, or engagement route is verified."
     }
   ],
-  "rawEvidenceNumerator": 13.75,
+  "rawEvidenceNumerator": 14.75,
   "formalProgress": {
     "baselinePercentagePoints": 25,
     "rawEvidenceWeightPercentagePoints": 30,
     "completeLedgerWeightPercentagePoints": 45,
-    "percentage": 38.3064516,
+    "percentage": 39.2741935,
     "notice": "This is an evidence-tracking score only. It does not grant source-ledger admission, transformation, analysis, ingestion, public release, production admission, or production eligibility."
   }
 }

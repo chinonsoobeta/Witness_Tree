@@ -12,10 +12,10 @@
     "condition": "Every exact raw payload and each required derived payload must first have repository-integrated immutable archive readback evidence. Approval does not itself satisfy that condition."
   },
   "archiveGate": {
-    "status": "blocked-missing-remote-readbacks",
-    "evidenceRef": null,
+    "status": "blocked-two-derived-remote-readbacks-missing",
+    "evidenceRef": "data/current-wildfire-raw-archive-evidence.json",
     "requiredObjectCount": 6,
-    "verifiedObjectCount": 0,
+    "verifiedObjectCount": 4,
     "requirements": [
       "exact immutable object key",
       "exact object version ID",
