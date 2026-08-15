@@ -88,10 +88,11 @@ fi
 phase "verify the configured no-console operator identity"
 identity="$(run_aws identity --profile "$PROFILE" sts get-caller-identity --output json)"
 account_id="$(jq -er '.Account | select(test("^[0-9]{12}$"))' <<<"$identity")"
-operator_user="$(jq -er --arg account "$account_id" '.Arn | capture("^arn:aws:iam::" + $account + ":user/(?<name>[^/]+)$").name' <<<"$identity")" || fail "Configured profile must resolve to an IAM user in its own account."
+[[ "$account_id" == "286853118812" ]] || fail "Configured profile is outside the approved account."
+jq -er --arg account "$account_id" '.Arn == ("arn:aws:iam::" + $account + ":user/WitnessTreeArchiveOperator")' <<<"$identity" >/dev/null || fail "Configured profile must authenticate as WitnessTreeArchiveOperator."
 unset identity
 mfa_serial="$(aws configure get mfa_serial --profile "$PROFILE" 2>"$evidence_dir/mfa-serial.stderr" || true)"
-[[ "$mfa_serial" == "arn:aws:iam::${account_id}:mfa/${operator_user}" ]] || fail "Set this profile's exact account-scoped virtual-MFA serial locally, then retry."
+[[ "$mfa_serial" =~ ^arn:aws:iam::${account_id}:mfa/[A-Za-z0-9+=,.@_/-]+$ ]] || fail "Set this profile's exact account-scoped virtual-MFA serial locally, then retry."
 [[ "$mode" == "--preflight" ]] && { printf 'PRECHECK passed: configured profile identity and account-scoped MFA serial match; no TOTP was requested and no AWS mutation was attempted.\n'; exit 0; }
 
 phase "obtain a short-lived MFA session"
