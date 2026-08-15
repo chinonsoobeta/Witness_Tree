@@ -103,23 +103,35 @@ write_resume_state() {
   chmod 600 "$state_tmp" && mv -f "$state_tmp" "$RESUME_STATE" || fail "Could not replace private resume state" 70
 }
 prepare_resume_state() {
-  local state_json
+  local state_json canopy_bytes="${BYTES[2]}" part_size=67108864 part_count final_size
+  part_count=$(( (canopy_bytes + part_size - 1) / part_size ))
+  final_size=$(( canopy_bytes - part_size * (part_count - 1) ))
   [[ "$RESUME_STATE" == /* && -f "$RESUME_STATE" && -O "$RESUME_STATE" && "$(stat -f %Lp "$RESUME_STATE")" == 600 ]] || fail "Private resume state must be an owner-owned mode-600 absolute-path file; no storage call was made" 65
   state_json="$(<"$RESUME_STATE")"
-  jq -e --arg bucket "$BUCKET" --arg region "$REGION" --arg key "${PAYLOADS[2]}" '
+  jq -e --arg bucket "$BUCKET" --arg region "$REGION" --arg key "${PAYLOADS[2]}" --argjson partSize "$part_size" --argjson partCount "$part_count" --argjson finalSize "$final_size" '
     .schemaVersion == 1 and .bucket == $bucket and .region == $region and .key == $key and
-    (.uploadId|type=="string" and length>20) and .partSize == 67108864 and
-    (.parts|type=="array" and length==49 and all(to_entries[]; .key + 1 == .value.PartNumber and .value.Size == 67108864 and (.value.ETag|test("^\\\"[a-f0-9]{32}\\\"$")) and (.value.ChecksumCRC64NVME|test("^[A-Za-z0-9+/]{11}=$"))))
+    (.uploadId|type=="string" and length>20) and .partSize == $partSize and
+    (.parts|type=="array" and length >= 1 and length <= $partCount and
+      all(to_entries[];
+        .key + 1 == .value.PartNumber and
+        .value.Size == (if .value.PartNumber == $partCount then $finalSize else $partSize end) and
+        (.value.ETag|type=="string" and test("^\\\"[^\\\"]+\\\"$")) and
+        (.value.ChecksumCRC64NVME|type=="string" and test("^[A-Za-z0-9+/]{11}=$"))
+      )
+    )
   ' <<<"$state_json" >/dev/null || fail "Private resume state does not bind the exact approved canopy upload; no storage call was made" 65
   RESUME_UPLOAD_ID="$(jq -er '.uploadId' <<<"$state_json")"
   RESUME_PARTS="$(jq -c '.parts' <<<"$state_json")"
 }
 resume_canopy() {
-  local listed state_parts="$RESUME_PARTS" remote_parts bytes="${BYTES[2]}" part_size=67108864 part_count=155 part_number part_file result etag checksum parts_file complete version sidecar sidecar_put payload_head retention sidecar_head
+  local listed state_parts="$RESUME_PARTS" remote_parts bytes="${BYTES[2]}" part_size=67108864 part_count first_missing part_number part_file result etag checksum parts_file complete version sidecar sidecar_put payload_head retention sidecar_head
+  part_count=$(( (bytes + part_size - 1) / part_size ))
   listed="$(resume_aws s3api list-parts --bucket "$BUCKET" --key "${PAYLOADS[2]}" --upload-id "$RESUME_UPLOAD_ID" --region "$REGION" --output json)"
+  jq -e '(.IsTruncated // false) == false and (.Parts|type == "array")' <<<"$listed" >/dev/null || fail "Remote multipart parts response is incomplete; no new part was uploaded" 70
   remote_parts="$(jq -c '[.Parts[] | {PartNumber,ETag,ChecksumCRC64NVME,Size}]' <<<"$listed")"
   [[ "$remote_parts" == "$state_parts" ]] || fail "Remote multipart parts do not exactly match private resume state; no new part was uploaded" 70
-  for ((part_number = 50; part_number <= part_count; part_number++)); do
+  first_missing=$(( $(jq 'length' <<<"$state_parts") + 1 ))
+  for ((part_number = first_missing; part_number <= part_count; part_number++)); do
     (( SESSION_EXPIRES_EPOCH == 0 || $(date +%s) + 300 < SESSION_EXPIRES_EPOCH )) || { print -- "Phase: refresh short-lived MFA session before expiry"; prompt_and_assume; }
     part_file="$TMP/resume-part-${part_number}"
     dd if="${FILES[2]}" of="$part_file" bs="$part_size" skip=$((part_number - 1)) count=1 2>/dev/null || fail "Could not prepare canopy resume part; state preserved" 70
