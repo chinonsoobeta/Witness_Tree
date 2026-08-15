@@ -48,6 +48,7 @@
     "check:phase1-source-ledger-decision-readiness": "node scripts/check-phase1-source-ledger-decision-readiness.mjs",
     "prepare:phase1-local-profiled-immutable-promotion": "tsx scripts/prepare-phase1-local-profiled-immutable-promotion.mjs",
     "check:current-wildfire-immutable-promotion-preparation": "node scripts/prepare-current-wildfire-immutable-promotion.mjs",
+    "dry-run:current-wildfire-immutable-promotion": "zsh scripts/run-current-wildfire-approved-promotion.sh",
     "check:vlce2-promotion": "node scripts/check-vlce2-promotion-preparation.mjs",
     "check:vlce2-remote-promotion": "node scripts/check-vlce2-remote-promotion-evidence.mjs",
     "dry-run:vlce2-remote-promotion": "node scripts/vlce2-remote-promotion.mjs",
