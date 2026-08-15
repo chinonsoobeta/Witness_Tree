@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { readFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 const read = (p) => JSON.parse(readFileSync(new URL(`../${p}`, import.meta.url), "utf8"));
 const sha = /^[a-f0-9]{64}$/;
 export const manifestKey = (a) => a.payloadKey.replace(/\/payload\/[^/]+$/, "/manifest.json");
@@ -30,5 +30,6 @@ export function validateIamDesiredState(desired = read("data/wildfire-derived-im
   for (const excluded of ["s3:DeleteObject","s3:DeleteObjectVersion","s3:BypassGovernanceRetention","s3:PutObjectLegalHold","s3:AbortMultipartUpload","s3:ListBucket*","s3:PutBucket*","s3:DeleteBucket*","s3:Replicate*","iam:*"]) assert.ok(desired.excluded.includes(excluded));
   return desired;
 }
+export function writeSidecars(directory, plan=validate()) { return plan.artifacts.map((artifact) => { const path=`${directory}/${artifact.id}.manifest.json`; writeFileSync(path, sidecarFor(artifact), {encoding:"utf8",flag:"wx",mode:0o600}); return path; }); }
 export function dryRunLines(plan=validate()) { return plan.artifacts.flatMap(a => [`VERIFY ${a.id} bytes=${a.byteLength} sha256=${a.sha256}`,`UPLOAD-PENDING s3://${plan.destination.bucket}/${a.payloadKey}`,`SIDECAR-PENDING s3://${plan.destination.bucket}/${manifestKey(a)} sha256=${createHash("sha256").update(sidecarFor(a)).digest("hex")}`,`RETAIN-PENDING ${a.id} mode=COMPLIANCE until=${plan.mfaGatedExecution.recommendedRetainUntil}`,`ADMISSION-BLOCK ${a.sourceId}`]); }
-if (import.meta.url === `file://${process.argv[1]}`) console.log(dryRunLines().join("\n"));
+if (import.meta.url === `file://${process.argv[1]}`) { if (process.argv[2] === "--write-sidecars" && process.argv[3] && process.argv.length === 4) writeSidecars(process.argv[3]); else if (process.argv.length === 2) console.log(dryRunLines().join("\n")); else process.exitCode=64; }
