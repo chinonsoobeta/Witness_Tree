@@ -157,13 +157,11 @@ esac
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
-test("the explicit resume-state validator is no-TOTP and no-AWS after exact local preflight", () => {
+test("the explicit resume-state validator accepts safe contiguous prefixes at 49, 102, and 155 with no TOTP or AWS", () => {
   const dir = mkdtempSync(join(tmpdir(), "phase1-approved-resume-validation-"));
   const marker = join(dir, "calls");
   const state = join(dir, "resume.json");
   const payloadKey = "raw/nrcan-forest-canopy-height-2022/undeclared/2026-08-14T18-57-22Z/86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124/payload/ca_canopy_height_2022.zip";
-  const parts = Array.from({ length: 49 }, (_, index) => ({ PartNumber: index + 1, ETag: `"${String(index + 1).padStart(32, "0")}"`, ChecksumCRC64NVME: "AAAAAAAAAAA=", Size: 67_108_864 }));
-  writeFileSync(state, `${JSON.stringify({ schemaVersion: 1, bucket: "witness-tree-raw-archive-ca-central-1", region: "ca-central-1", key: payloadKey, uploadId: "private-upload-id-that-is-never-printed", partSize: 67_108_864, parts })}\n`, { mode: 0o600 });
   writeFileSync(join(dir, "aws"), `#!/bin/zsh\nprint -- called >> ${JSON.stringify(marker)}\nexit 99\n`, { mode: 0o700 });
   writeFileSync(join(dir, "stat"), `#!/bin/zsh
 case "$3" in
@@ -184,20 +182,57 @@ esac
 `, { mode: 0o700 });
   const executable = new URL("../scripts/run-phase1-approved-promotion.sh", import.meta.url).pathname;
   try {
-    const run = spawnSync("zsh", [executable, "--validate-resume-state", state], { encoding: "utf8", env: { ...process.env, PATH: `${dir}:${process.env.PATH}` } });
-    assert.equal(run.status, 0, `${run.stdout}\n${run.stderr}`);
-    assert.match(run.stdout, /Private canopy resume state validation passed; no TOTP or AWS call was made/);
+    for (const count of [49, 102, 155]) {
+      const parts = Array.from({ length: count }, (_, index) => ({ PartNumber: index + 1, ETag: `"etag-${index + 1}"`, ChecksumCRC64NVME: "AAAAAAAAAAA=", Size: index === 154 ? 12_799_010 : 67_108_864 }));
+      writeFileSync(state, `${JSON.stringify({ schemaVersion: 1, bucket: "witness-tree-raw-archive-ca-central-1", region: "ca-central-1", key: payloadKey, uploadId: "private-upload-id-that-is-never-printed", partSize: 67_108_864, parts })}\n`, { mode: 0o600 });
+      const run = spawnSync("zsh", [executable, "--validate-resume-state", state], { encoding: "utf8", env: { ...process.env, PATH: `${dir}:${process.env.PATH}` } });
+      assert.equal(run.status, 0, `${run.stdout}\n${run.stderr}`);
+      assert.match(run.stdout, /Private canopy resume state validation passed; no TOTP or AWS call was made/);
+    }
     assert.equal(existsSync(marker), false);
-    assert.doesNotMatch(`${run.stdout}${run.stderr}`, /private-upload-id/);
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
-test("an expired resume preserves the private state and a fresh invocation completes from the same verified 49 parts", () => {
+test("resume-state validation rejects gaps, wrong sizes, bad acknowledgements, and an incorrect final remainder offline", () => {
+  const dir = mkdtempSync(join(tmpdir(), "phase1-approved-resume-shape-rejection-"));
+  const state = join(dir, "resume.json");
+  const marker = join(dir, "calls");
+  const payloadKey = "raw/nrcan-forest-canopy-height-2022/undeclared/2026-08-14T18-57-22Z/86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124/payload/ca_canopy_height_2022.zip";
+  writeFileSync(join(dir, "aws"), `#!/bin/zsh\nprint -- called >> ${JSON.stringify(marker)}\nexit 99\n`, { mode: 0o700 });
+  writeFileSync(join(dir, "stat"), `#!/bin/zsh
+case "$3" in *CA_Forest_Harvest_1985-2022.zip) print -- 247945479 ;; *CA_canopy_height_2022.zip) print -- 10347564066 ;; *FederalElectoralDistricts_2025_SHP.zip) print -- 10301648 ;; *.json) print -- 600 ;; *) exit 99 ;; esac
+`, { mode: 0o700 });
+  writeFileSync(join(dir, "shasum"), `#!/bin/zsh
+case "$3" in *CA_Forest_Harvest_1985-2022.zip) print -- "c6f41dff46d91812874672edb53233dac4126952132ad6d1131ad47b11ad7aad  $3" ;; *CA_canopy_height_2022.zip) print -- "86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124  $3" ;; *FederalElectoralDistricts_2025_SHP.zip) print -- "4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93  $3" ;; *) exit 99 ;; esac
+`, { mode: 0o700 });
+  const executable = new URL("../scripts/run-phase1-approved-promotion.sh", import.meta.url).pathname;
+  const base = Array.from({ length: 102 }, (_, index) => ({ PartNumber: index + 1, ETag: `"etag-${index + 1}"`, ChecksumCRC64NVME: "AAAAAAAAAAA=", Size: 67_108_864 }));
+  const cases = [
+    (parts) => { parts[50].PartNumber = 52; },
+    (parts) => { parts[50].Size = 67_108_865; },
+    (parts) => { parts[50].ETag = ""; },
+    (parts) => { parts[50].ChecksumCRC64NVME = ""; },
+    (parts) => { while (parts.length < 155) parts.push({ PartNumber: parts.length + 1, ETag: `"etag-${parts.length + 1}"`, ChecksumCRC64NVME: "AAAAAAAAAAA=", Size: 67_108_864 }); }
+  ];
+  try {
+    for (const mutate of cases) {
+      const parts = structuredClone(base); mutate(parts);
+      writeFileSync(state, `${JSON.stringify({ schemaVersion: 1, bucket: "witness-tree-raw-archive-ca-central-1", region: "ca-central-1", key: payloadKey, uploadId: "private-upload-id-that-is-never-printed", partSize: 67_108_864, parts })}\n`, { mode: 0o600 });
+      const run = spawnSync("zsh", [executable, "--validate-resume-state", state], { encoding: "utf8", env: { ...process.env, PATH: `${dir}:${process.env.PATH}` } });
+      assert.equal(run.status, 65, `${run.stdout}\n${run.stderr}`);
+      assert.match(`${run.stdout}${run.stderr}`, /Private resume state does not bind the exact approved canopy upload/);
+    }
+    assert.equal(existsSync(marker), false);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("an expired PTY resume preserves state and the next PTY invocation completes from verified prefixes at 49 and 102", () => {
+ for (const initialCount of [49, 102]) {
   const dir = mkdtempSync(join(tmpdir(), "phase1-approved-resume-"));
   const marker = join(dir, "calls");
   const state = join(dir, "resume.json");
   const payloadKey = "raw/nrcan-forest-canopy-height-2022/undeclared/2026-08-14T18-57-22Z/86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124/payload/ca_canopy_height_2022.zip";
-  const initialParts = Array.from({ length: 49 }, (_, index) => ({ PartNumber: index + 1, ETag: `"${String(index + 1).padStart(32, "0")}"`, ChecksumCRC64NVME: "AAAAAAAAAAA=", Size: 67_108_864 }));
+  const initialParts = Array.from({ length: initialCount }, (_, index) => ({ PartNumber: index + 1, ETag: `"${String(index + 1).padStart(32, "0")}"`, ChecksumCRC64NVME: "AAAAAAAAAAA=", Size: 67_108_864 }));
   writeFileSync(state, `${JSON.stringify({ schemaVersion: 1, bucket: "witness-tree-raw-archive-ca-central-1", region: "ca-central-1", key: payloadKey, uploadId: "private-upload-id-that-is-never-printed", partSize: 67_108_864, parts: initialParts })}\n`, { mode: 0o600 });
   const aws = join(dir, "aws");
   const stat = join(dir, "stat");
@@ -256,7 +291,7 @@ expect {
     assert.equal(expired.status, 75, `${expired.stdout}\n${expired.stderr}`);
     assert.match(`${expired.stdout}${expired.stderr}`, /private resume state was preserved unchanged/);
     assert.doesNotMatch(`${expired.stdout}${expired.stderr}`, /123456|private-upload-id/);
-    assert.equal(JSON.parse(readFileSync(state, "utf8")).parts.length, 49);
+    assert.equal(JSON.parse(readFileSync(state, "utf8")).parts.length, initialCount);
     const complete = invoke("complete");
     assert.equal(complete.status, 0, `${complete.stdout}\n${complete.stderr}`);
     assert.match(`${complete.stdout}${complete.stderr}`, /Canopy multipart resume completed with required read-backs/);
@@ -268,4 +303,5 @@ expect {
     assert.match(calls, /s3api:complete-multipart-upload/);
     assert.doesNotMatch(calls, /abort|delete|bypass/i);
   } finally { rmSync(dir, { recursive: true, force: true }); }
+ }
 });
