@@ -7,7 +7,14 @@ no retention was applied, no IAM policy was created or attached, and no remote
 object is claimed. The exact plan is
 `data/qc-fourth-inventory-immutable-promotion-preparation.json`; its SHA-256 at
 commit preparation is
-`8cedb3551aa4c1c4bc1675b38175d8ace9dcfb44c7dd9629e81155280ec999ff`.
+`1bcb8c1d44b15c7cd5176012acc87c8893b31e8d0e420fa6d4d720f113239eb9`.
+
+`data/qc-fourth-inventory-immutable-promotion-iam-desired-state.json` records
+concrete **non-applied** desired state only: account `286853118812`, profile
+and user `WitnessTreeArchiveOperator`, and role
+`WitnessTreeQcFourthArchivePromotionUploader`. Its MFA-only trust and
+operator-assume policy bind only that relationship; it is not evidence that
+the role or policy exists in AWS.
 
 The target is pinned to bucket `witness-tree-raw-archive-ca-central-1` in
 `ca-central-1`. Every object would receive `COMPLIANCE` retention at creation
@@ -87,29 +94,36 @@ The low-level API shape follows AWS's current documentation for
 [`CreateMultipartUpload`](https://docs.aws.amazon.com/cli/latest/reference/s3api/create-multipart-upload.html),
 and [`CompleteMultipartUpload`](https://docs.aws.amazon.com/cli/latest/reference/s3api/complete-multipart-upload.html).
 
-The intentionally non-runnable command shape is:
+The runner intentionally remains fail-closed. Its safe dry run is available,
+but execution requires an owner-local MFA role-session runner that is not
+enabled until the separate exact artifact/retention approval exists. That future
+runner may read only local `aws configure get mfa_serial`, must accept a safe
+nonempty `arn:aws:iam::286853118812:mfa/<path>` without printing it, pin the
+caller to the operator user/account, and assume only the role above. It must
+never call `ListMFADevices` or take an MFA code as a command-line argument.
+
+The deliberately non-executable command shape is:
 
 ```text
 node scripts/qc-fourth-inventory-immutable-promotion.mjs --execute \
   --approve-exact-artifact-set --approve-iam-policy \
   --approve-compliance-retention --approve-mfa-session \
-  --retention-until 2033-08-12T00:00:00Z \
-  --aws-profile <EXACT_CONFIGURED_PROFILE> \
-  --mfa-serial <EXACT_IAM_MFA_DEVICE_ARN> --mfa-code <FRESH_6_DIGIT_CODE> \
+  --retention-until 2033-08-12T00:00:00Z --session-ready \
   --data-root <ABSOLUTE_WITNESS_TREE_DATA_DIRECTORY> \
   --state-dir <EXISTING_CONTROLLED_STATE_DIRECTORY> \
   --sidecar-dir <EXISTING_CONTROLLED_SIDECAR_DIRECTORY>
 ```
 
-The placeholders are intentional blockers. They must not be guessed or stored
-in Git.
+`--session-ready` is intentionally unavailable in this repository. It cannot
+be supplied with long-lived credentials or manually passed MFA values. The
+controlled directory paths must not be guessed or stored in Git.
 
 ## Exact IAM policy and separate approval wording
 
-The proposed policy is
+The proposed role policy is
 `data/qc-fourth-inventory-immutable-promotion-iam-policy.json`, SHA-256
-`69816a61c0f0e9c5eef55e13db65d55069f250c10729ff5a1082876f587cfa82`.
-It allows an MFA session and the minimum read/upload/retention/multipart-read
+`9259e120095f87da7420ff545aea55175ccdefa0be04687d4a9b4626880118d1`.
+It allows only the minimum read/upload/retention/multipart-read
 actions on the 62 exact object ARNs. It explicitly denies object access outside
 those ARNs, denies bucket listing, and denies deletion, multipart abort,
 retention bypass, legal-hold changes, bucket Object Lock/versioning/lifecycle
@@ -127,7 +141,7 @@ controlled values:
 
 > I approve uploading exactly the 62 objects enumerated by
 > `data/qc-fourth-inventory-immutable-promotion-preparation.json` at SHA-256
-> `8cedb3551aa4c1c4bc1675b38175d8ace9dcfb44c7dd9629e81155280ec999ff`
+> `1bcb8c1d44b15c7cd5176012acc87c8893b31e8d0e420fa6d4d720f113239eb9`
 > to their enumerated keys in `witness-tree-raw-archive-ca-central-1`,
 > `ca-central-1`, and applying irreversible S3 Object Lock `COMPLIANCE`
 > retention through `2033-08-12T00:00:00Z`. I approve excluding the separately
@@ -136,14 +150,18 @@ controlled values:
 
 **IAM and MFA execution approval**
 
-> I approve attaching exactly
+> In AWS account `286853118812`, I authorize creation or update only of
+> `WitnessTreeQcFourthArchivePromotionUploader`, trusted only by
+> `arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator` when MFA is
+> present. I authorize attaching to that user only an MFA-gated
+> `sts:AssumeRole` policy for that role. I authorize attaching exactly
 > `data/qc-fourth-inventory-immutable-promotion-iam-policy.json` at SHA-256
-> `69816a61c0f0e9c5eef55e13db65d55069f250c10729ff5a1082876f587cfa82`
-> to `[EXACT IAM PRINCIPAL ARN]`, using configured AWS profile
-> `[EXACT PROFILE]` and MFA device `[EXACT MFA DEVICE ARN]` for one controlled
-> execution and read-back. I approve no other IAM, bucket, key, deletion,
-> bypass, lifecycle, legal-hold, logging, replication, transformation,
-> ingestion, release, or production change.
+> `9259e120095f87da7420ff545aea55175ccdefa0be04687d4a9b4626880118d1` to
+> that role for the exact 62 keys enumerated by the preparation plan. This
+> excludes all deletes, multipart aborts, bypasses, legal-hold changes,
+> replication, bucket administration, wildcard object scope, other keys,
+> other buckets, and other IAM changes. This IAM approval does not authorize
+> upload until the separate artifact-and-retention approval above is also given.
 
 Both approvals are required. Approval of one does not imply the other, and
 neither is present in this preparation commit.

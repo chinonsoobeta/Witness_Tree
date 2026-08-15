@@ -2,12 +2,6 @@
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Sid": "ObtainMfaSession",
-      "Effect": "Allow",
-      "Action": "sts:GetSessionToken",
-      "Resource": "*"
-    },
-    {
       "Sid": "ExactMfaGatedPromotionObjectsOnly",
       "Effect": "Allow",
       "Action": [
