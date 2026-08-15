@@ -64,7 +64,8 @@ Québec, or a boundary dataset. The east-of-09551 exception remains documented.
 
 ## Admission condition
 
-The Québec entry may be added to coverage admission because source and
-derivative profiling, CC BY attribution, and the scope decision are recorded.
-The four-province gate remains incomplete until BC, Alberta and Ontario meet the
-same evidence standard.
+The Québec entry is admitted because source and derivative profiling, CC BY
+attribution, and the scope decision are recorded. Together with the four
+national baselines and Ontario's separate scope decision, it completes the
+six-part Phase 1 coverage-geometry exit. This does not promote the raw archive
+or derivative to immutable storage or production use.

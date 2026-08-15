@@ -26,9 +26,9 @@
       "intendedRole": { "en": "Ecoforest stand attributes and original fourth-inventory context.", "fr": "Attributs des peuplements écoforestiers et contexte du quatrième inventaire original." },
       "metadataVerification": "verified",
       "licence": { "state": "verified", "id": "cc-by-4.0", "officialUrl": "https://www.donneesquebec.ca/licence/" },
-      "access": { "state": "catalogue-listed" },
-      "verifiedFacts": ["Catalogue describes original fourth-inventory mapping and related ecoforest stand tables.", "Catalogue describes conditions as of aerial-photograph year."],
-      "unresolvedFields": ["Download resource URL and format", "Snapshot checksum", "Retrieval date"],
+      "access": { "state": "verified", "formats": ["gpkg", "csv"], "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/03-Telechargement/URL_4e.csv" },
+      "verifiedFacts": ["Catalogue UUID 77ec9009-b733-4f09-ade3-99d7b2156ad4 identifies the fixed fourth-inventory product; the provincial GPKG is a map-only component, while the publisher-defined sheet products contain the full result tables.", "The fourth-inventory map is complete since 2018 and receives no new mapping; this distinguishes it from the annually replaced current-original product and the disturbance-updated current map.", "The product covers 2001–2018 southern Québec and contains original stand polygons, merchantable-volume compilations, ecological classification, and forest-station characterization linked principally by GEOCODE.", "The official June 2026 documentation states that temporary sample plots are not included."],
+      "unresolvedFields": ["Immutable object-storage promotion", "Production transformation and ingestion admission", "Semantic field and join selection for product use"],
       "productionEligible": false
     },
     {

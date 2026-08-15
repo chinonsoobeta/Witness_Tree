@@ -218,10 +218,10 @@
       "name": "Carte écoforestière originale et résultats du quatrième inventaire",
       "purpose": "Fourth inventory series context.",
       "planUse": "production",
-      "evidence": "candidate registry; not production",
+      "evidence": "checksum-bound local profile of all 56 official fourth-inventory sheet GeoPackages, publisher metadata, documentation, licence and deterministic refetch evidence; not immutable or production",
       "ownerRole": "provincial data lead",
-      "missing": "Download resource, edition, checksum and archive evidence.",
-      "externalDependency": "Québec forest ministry"
+      "missing": "Immutable archival, semantic transform and join selection, ingestion approval, and release approval.",
+      "externalDependency": "Canadian immutable storage and owner approvals"
     },
     {
       "id": "qc-data-portal",

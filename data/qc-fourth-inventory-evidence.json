@@ -1,0 +1,114 @@
+{
+  "schemaVersion": "1.0",
+  "status": "local-verified-profiled",
+  "asOf": "2026-08-14",
+  "notice": "Checksum-bound local read-only evidence only. This record is not immutable object storage, a transformation, ingestion, production admission, or production eligibility.",
+  "dataset": {
+    "id": "77ec9009-b733-4f09-ade3-99d7b2156ad4",
+    "title": "Carte écoforestière originale et résultats du quatrième inventaire",
+    "publisher": "Ministère des Ressources naturelles et des Forêts du Québec, Direction des inventaires forestiers",
+    "catalogueUrl": "https://www.donneesquebec.ca/recherche/dataset/resultats-d-inventaire-et-carte-ecoforestiere_4eme",
+    "edition": "Fourth inventory, 2001–2018; complete since 2018; catalogue and resources updated 2026-06-19",
+    "scope": "Original fourth-inventory stand polygons, merchantable-volume compilations, ecological classification, and forest-station characterization; temporary sample plots excluded.",
+    "distinction": "Fixed fourth-inventory product; neither the disturbance-updated current ecoforest map nor the rolling current-original inventory product.",
+    "licence": {
+      "id": "cc-by-4.0",
+      "url": "https://www.donneesquebec.ca/licence/#cc-by"
+    },
+    "attribution": "Source : Ministère des Ressources naturelles et des Forêts du Québec, Secteur des forêts, Direction des inventaires forestiers. Sous licence CC BY 4.0."
+  },
+  "publisherRecords": {
+    "metadata": {
+      "localPath": "../Witness_Tree-data/raw/qc-fourth-inventory/2026-08-14/donnees-quebec-package-show.json",
+      "byteLength": 26567,
+      "sha256": "eb78b91cb0c8ec05ad0b25e13a0a2569663e04abc6a6f42432f51b66e1676e60"
+    },
+    "documentation": {
+      "localPath": "../Witness_Tree-data/raw/qc-fourth-inventory/2026-08-14/LISEZ-MOI_carteco-ori-res-4_DQ.pdf",
+      "byteLength": 612203,
+      "sha256": "ffeacd42c75c27b019f4ea46e2bfd73e9b23a04b55be236259ecf6a2147e456c"
+    },
+    "downloadIndex": {
+      "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/03-Telechargement/URL_4e.csv",
+      "localPath": "../Witness_Tree-data/raw/qc-fourth-inventory/2026-08-14/URL_4e.csv",
+      "byteLength": 29104,
+      "sha256": "8525f3153f2e4ea30b6be78f0c93019e80fb9f4570db53221badea4c4a4abadd"
+    }
+  },
+  "provincialMapComponent": {
+    "notice": "This publisher archive contains the provincial map layers but not the complete inventory-result product; it is supporting evidence and cannot satisfy the canonical row alone.",
+    "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/PROV/CARTE_ECO_ORI_4_PROV_gpkg.zip",
+    "localPath": "../Witness_Tree-data/raw/qc-fourth-inventory/2026-08-14/CARTE_ECO_ORI_4_PROV_gpkg.zip",
+    "byteLength": 8096656664,
+    "sha256": "62f61998be33d1e3d2f23f6c77e90ca946a40bda0d5d86b00c976c339877d25b",
+    "zipIntegrity": "passed",
+    "member": {
+      "name": "CARTE_ECO_ORI_4_PROV.gpkg",
+      "byteLength": 22784430080,
+      "sha256": "5492d599d08aac9637471ea45e7a3f427f864410251cb36be4c05fa920e1b9e7"
+    },
+    "layers": {
+      "PEE_ORI_4_PROV": 7439159,
+      "META_ORI_4_PROV": 7439159,
+      "ESSENCE_ORI_4_PROV": 5873511,
+      "ETAGE_ORI_4_PROV": 2841085
+    }
+  },
+  "fullProductAcquisition": {
+    "sourcePattern": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/{sheet}/PRODUITS_IEQM_4_{sheet}_GPKG.zip",
+    "officialSheetCount": 56,
+    "archiveCount": 56,
+    "archiveByteLength": 16177306782,
+    "archiveSetSha256": "394f05f984b164b7524e77b00fc73246a791d6c4112f7cc080c43fb3d8a2c0e0",
+    "zipIntegrity": "passed-all-56",
+    "publishedIndexDefect": {
+      "status": "all-56-published-gpkg-links-returned-404",
+      "resolution": "The same official sheet directories exposed corrected filenames PRODUITS_IEQM_4_{sheet}_GPKG.zip; all 56 corrected URLs returned HTTP 200 and exact Content-Length before acquisition.",
+      "headEvidenceLocalPath": "../Witness_Tree-data/raw/qc-fourth-inventory/2026-08-14/official-sheet-heads.tsv",
+      "headEvidenceByteLength": 12661,
+      "headEvidenceSha256": "cf8b068eb3164fd3d195ce6c84edd1057ff93dae3e844f50fbea54ceda700539"
+    }
+  },
+  "profile": {
+    "localPath": "../Witness_Tree-data/work/qc-fourth-inventory/2026-08-14/qc-fourth-inventory-profile.json",
+    "profiledAt": "2026-08-14T23:58:20Z",
+    "byteLength": 1027637,
+    "sha256": "5450a1beade6f8dbbf73320a8751a3131bede150d95bb8847d9522b10ad985f9",
+    "crs": "EPSG:32198",
+    "extentOrder": ["minX", "maxX", "minY", "maxY"],
+    "layerSetVariantCount": 6,
+    "layerSetVariantSheetCounts": [2, 2, 1, 1, 12, 38],
+    "baseGeometry": {
+      "perimetre_no_terri": {
+        "geometryType": "Multi Polygon",
+        "featureCount": 56,
+        "extent": [-886998, 643731, 6895.33, 1000400],
+        "missing": 0,
+        "empty": 0,
+        "invalid": 0
+      },
+      "pee_ori_4": {
+        "geometryType": "Multi Polygon",
+        "featureCount": 7489195,
+        "extent": [-830340, 543808, 117964, 900666],
+        "missing": 0,
+        "empty": 0,
+        "invalid": 0
+      },
+      "meta_ori_4": {
+        "geometryType": "Point",
+        "featureCount": 7489195,
+        "extent": [-829347, 534128, 118044, 900318],
+        "missing": 0,
+        "empty": 0,
+        "invalid": 0
+      }
+    },
+    "spatialViewGeometryLineage": "Every profiled spatial result view obtains geometry from pee_ori_4; the external profile checksum-binds each sheet's view SQL."
+  },
+  "immutableObjectStorage": false,
+  "transformed": false,
+  "ingested": false,
+  "productionAdmission": false,
+  "productionEligible": false
+}

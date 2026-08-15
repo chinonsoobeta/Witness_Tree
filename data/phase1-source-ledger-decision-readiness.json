@@ -30,7 +30,7 @@
     {"id":"bc-forest-operations-map","readiness":"external-evidence-blocked","decisionBundle":"none","blocker":"Access Only rights prohibit raw acquisition and downstream use."},
     {"id":"qc-current-ecoforest","readiness":"immutable-archive-then-owner-decision","decisionBundle":"quebec-ecoforest"},
     {"id":"qc-original-current-inventory","readiness":"immutable-archive-then-owner-decision","decisionBundle":"quebec-ecoforest"},
-    {"id":"qc-fourth-inventory","readiness":"external-evidence-blocked","decisionBundle":"none","blocker":"No exact resource, edition, checksum, archive, or profile is recorded at this convergence."},
+    {"id":"qc-fourth-inventory","readiness":"immutable-archive-then-owner-decision","decisionBundle":"quebec-ecoforest"},
     {"id":"ab-avi-crown","readiness":"owner-decision-recorded","decisionBundle":"remote-source-evidence-recorded"},
     {"id":"ab-avi-post-harvest","readiness":"owner-decision-recorded","decisionBundle":"remote-source-evidence-recorded"},
     {"id":"ab-primary-land-vegetation","readiness":"owner-scope-decision-ready","decisionBundle":"alberta-plvi-geometry-scope","scope":"Immutable archive evidence is complete only. Decide whether to admit the unchanged raw ZIP and separately the 179,087-feature closed-join derived artifact with 12 bounded repairs, preserved duplicate POLYGON_ID 41405, and no feature loss or deduplication."},
@@ -44,10 +44,10 @@
     {"id":"historic-treaties","readiness":"external-evidence-blocked","decisionBundle":"none","blocker":"Reviewed federal mapping is informational and non-legal, not admissible precision geometry; rights and engagement route are also unverified."},
     {"id":"modern-treaties","readiness":"external-evidence-blocked","decisionBundle":"none","blocker":"Reviewed federal map is informal, approximate, revisable, and not for consultation reliance; rights and engagement route are also unverified."}
   ],
-  "counts": {"owner-decision-recorded":4,"immutable-archive-then-owner-decision":6,"owner-scope-decision-after-archive":4,"owner-scope-decision-ready":1,"external-evidence-blocked":16},
+  "counts": {"owner-decision-recorded":4,"immutable-archive-then-owner-decision":7,"owner-scope-decision-after-archive":4,"owner-scope-decision-ready":1,"external-evidence-blocked":15},
   "minimalOwnerDecisionBundles": [
     {"id":"national-baselines","rows":["ntems-forest-harvest","ntems-canopy-height"],"precondition":"Each named payload has immutable archive/recovery readbacks."},
-    {"id":"quebec-ecoforest","rows":["qc-current-ecoforest","qc-original-current-inventory"],"precondition":"Each named payload and any named derivative has immutable archive/recovery readbacks."},
+    {"id":"quebec-ecoforest","rows":["qc-current-ecoforest","qc-original-current-inventory","qc-fourth-inventory"],"precondition":"Each named payload and any named derivative has immutable archive/recovery readbacks; the fourth-inventory source also requires separately scoped semantic transformation and join selection."},
     {"id":"elections-canada-2025-shared-artifact","rows":["fed-2023-ridings","elections-canada-45th-files"],"physicalArtifactGroup":"elections-canada-2025-shp","precondition":"One immutable archive/recovery proof for the shared exact Elections Canada 2025 SHP artifact, followed by two named ledger-row decisions."},
     {"id":"wildfire-operational-scope","rows":["cwfis-current","ab-wildfire"],"precondition":"Each named payload has immutable archive/recovery readbacks; decide operational scope separately per row."},
     {"id":"wildfire-geometry-scope","rows":["bc-wildfire","on-fire-disturbance"],"precondition":"Each raw and separately named derived artifact has immutable archive/recovery readbacks; decide raw/derived scope and listed repair/quarantine disposition per row."},

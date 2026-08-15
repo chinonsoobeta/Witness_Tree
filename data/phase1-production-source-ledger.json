@@ -369,21 +369,21 @@
     },
     {
       "id": "qc-fourth-inventory",
-      "evidenceState": "unaddressed",
-      "evidenceRefs": [],
+      "evidenceState": "local-verified-profiled",
+      "evidenceRefs": ["data/qc-fourth-inventory-evidence.json"],
       "proof": {
-        "licence": false,
-        "attribution": false,
-        "retrievalVersion": false,
-        "checksum": false,
-        "rawArchiveRefetch": false,
-        "profile": false,
+        "licence": true,
+        "attribution": true,
+        "retrievalVersion": true,
+        "checksum": true,
+        "rawArchiveRefetch": true,
+        "profile": true,
         "immutableArchive": false,
         "productionAdmission": false
       },
-      "rawCredit": 0,
+      "rawCredit": 0.75,
       "productionEligible": false,
-      "blocker": "Obtain exact resource, edition, checksum, archive/profile and ledger."
+      "blocker": "Immutable archive/recovery evidence, semantic transformation and join selection, ingestion approval, release approval, and production admission remain separate."
     },
     {
       "id": "ab-avi-crown",
@@ -633,12 +633,12 @@
       "blocker": "CIRNAC's official map is informal, approximate, subject to revision, and expressly cannot be relied on for consultation. It is not legal or precision boundary geometry; no admissible legal artifact, rights, checksum/archive recovery, or engagement route is verified."
     }
   ],
-  "rawEvidenceNumerator": 13,
+  "rawEvidenceNumerator": 13.75,
   "formalProgress": {
     "baselinePercentagePoints": 25,
     "rawEvidenceWeightPercentagePoints": 30,
     "completeLedgerWeightPercentagePoints": 45,
-    "percentage": 37.5806,
+    "percentage": 38.3064516,
     "notice": "This is an evidence-tracking score only. It does not grant source-ledger admission, transformation, analysis, ingestion, public release, production admission, or production eligibility."
   }
 }
