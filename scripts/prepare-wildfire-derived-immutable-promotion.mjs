@@ -9,7 +9,7 @@ export function validate(plan = read("data/wildfire-derived-immutable-promotion-
   assert.equal(plan.status, "preparation-only"); assert.equal(plan.artifacts.length, 2); assert.equal(plan.mfaGatedExecution.proposedRole, "WitnessTreeWildfireDerivedPromotionUploader"); assert.match(plan.requiredApproval, /V10755 quarantine/); assert.deepEqual(plan.claims, {remoteObjectExists:false,retentionApplied:false,immutableObjectStorage:false,ownerAdmission:false,transformed:false,ingested:false,productionEligible:false});
   const [bc,on] = plan.artifacts; assert.equal(bc.featureCount,216); assert.equal(bc.lineage.quarantined,"V10755"); assert.equal(bc.lineage.repaired,"G70362"); assert.equal(on.featureCount,188); assert.equal(on.lineage.repairedFeatureCount,9); assert.equal(on.lineage.closedJoin,true);
   const objectKeys = plan.artifacts.flatMap((a) => [a.payloadKey, manifestKey(a)]);
-  assert.deepEqual(plan.proposedRoleScope.allow, ["s3:PutObject","s3:GetObject","s3:PutObjectRetention","s3:GetObjectRetention"]);
+  assert.deepEqual(plan.proposedRoleScope.allow, ["s3:PutObject","s3:GetObject","s3:GetObjectVersion","s3:PutObjectRetention","s3:GetObjectRetention"]);
   assert.deepEqual(plan.proposedRoleScope.objectKeys, objectKeys);
   assert.deepEqual(plan.proposedRoleScope.payloadKeys, plan.artifacts.map(({ payloadKey }) => payloadKey));
   for (const a of plan.artifacts) { assert.ok(a.payloadKey.startsWith("derived/") && !a.payloadKey.includes("*")); assert.ok(Number.isSafeInteger(a.byteLength) && a.byteLength>0 && sha.test(a.sha256)); assert.equal(manifestKey(a).endsWith("/manifest.json"),true); assert.match(sidecarFor(a),/never an admission/i); }
@@ -25,7 +25,7 @@ export function validateIamDesiredState(desired = read("data/wildfire-derived-im
   assert.deepEqual(desired.operatorAssumeRolePolicy.Statement, [{Effect:"Allow",Action:"sts:AssumeRole",Resource:plan.proposedRoleScope.assumeRoleIdentityPolicy.resource}]);
   const [objects, retention] = desired.rolePolicy.Statement;
   const prefix = `arn:aws:s3:::${plan.destination.bucket}/`;
-  assert.deepEqual(objects.Action, ["s3:PutObject","s3:GetObject"]); assert.deepEqual(objects.Resource, plan.proposedRoleScope.objectKeys.map((key) => `${prefix}${key}`));
+  assert.deepEqual(objects.Action, ["s3:PutObject","s3:GetObject","s3:GetObjectVersion"]); assert.deepEqual(objects.Resource, plan.proposedRoleScope.objectKeys.map((key) => `${prefix}${key}`));
   assert.deepEqual(retention.Action, ["s3:PutObjectRetention","s3:GetObjectRetention"]); assert.deepEqual(retention.Resource, plan.proposedRoleScope.payloadKeys.map((key) => `${prefix}${key}`));
   for (const excluded of ["s3:DeleteObject","s3:DeleteObjectVersion","s3:BypassGovernanceRetention","s3:PutObjectLegalHold","s3:AbortMultipartUpload","s3:ListBucket*","s3:PutBucket*","s3:DeleteBucket*","s3:Replicate*","iam:*"]) assert.ok(desired.excluded.includes(excluded));
   return desired;
