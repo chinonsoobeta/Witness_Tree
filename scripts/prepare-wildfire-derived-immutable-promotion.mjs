@@ -8,8 +8,27 @@ export function sidecarFor(a) { return `${JSON.stringify({schemaVersion:"witness
 export function validate(plan = read("data/wildfire-derived-immutable-promotion-preparation.json")) {
   assert.equal(plan.status, "preparation-only"); assert.equal(plan.artifacts.length, 2); assert.equal(plan.mfaGatedExecution.proposedRole, "WitnessTreeWildfireDerivedPromotionUploader"); assert.match(plan.requiredApproval, /V10755 quarantine/); assert.deepEqual(plan.claims, {remoteObjectExists:false,retentionApplied:false,immutableObjectStorage:false,ownerAdmission:false,transformed:false,ingested:false,productionEligible:false});
   const [bc,on] = plan.artifacts; assert.equal(bc.featureCount,216); assert.equal(bc.lineage.quarantined,"V10755"); assert.equal(bc.lineage.repaired,"G70362"); assert.equal(on.featureCount,188); assert.equal(on.lineage.repairedFeatureCount,9); assert.equal(on.lineage.closedJoin,true);
+  const objectKeys = plan.artifacts.flatMap((a) => [a.payloadKey, manifestKey(a)]);
+  assert.deepEqual(plan.proposedRoleScope.allow, ["s3:PutObject","s3:GetObject","s3:PutObjectRetention","s3:GetObjectRetention"]);
+  assert.deepEqual(plan.proposedRoleScope.objectKeys, objectKeys);
+  assert.deepEqual(plan.proposedRoleScope.payloadKeys, plan.artifacts.map(({ payloadKey }) => payloadKey));
   for (const a of plan.artifacts) { assert.ok(a.payloadKey.startsWith("derived/") && !a.payloadKey.includes("*")); assert.ok(Number.isSafeInteger(a.byteLength) && a.byteLength>0 && sha.test(a.sha256)); assert.equal(manifestKey(a).endsWith("/manifest.json"),true); assert.match(sidecarFor(a),/never an admission/i); }
+  for (const denied of ["s3:DeleteObject","s3:DeleteObjectVersion","s3:BypassGovernanceRetention","s3:PutObjectLegalHold","s3:ReplicateObject","s3:PutBucket*","s3:DeleteBucket*","iam:*"]) assert.ok(plan.proposedRoleScope.denyByOmission.includes(denied));
   return plan;
+}
+export function validateIamDesiredState(desired = read("data/wildfire-derived-immutable-promotion-iam-desired-state.json"), plan = validate()) {
+  assert.equal(desired.status, "proposed-not-applied");
+  assert.equal(desired.roleName, plan.mfaGatedExecution.proposedRole);
+  assert.deepEqual(desired.claims, {iamApplied:false,archiveOperationAuthorized:false,remoteObjectExists:false,retentionApplied:false,ownerAdmission:false,productionEligible:false});
+  const [trust] = desired.trustPolicy.Statement;
+  assert.deepEqual(trust.Principal, {AWS: plan.proposedRoleScope.trust.principal}); assert.deepEqual(trust.Condition, {Bool:{"aws:MultiFactorAuthPresent":"true"}});
+  assert.deepEqual(desired.operatorAssumeRolePolicy.Statement, [{Effect:"Allow",Action:"sts:AssumeRole",Resource:plan.proposedRoleScope.assumeRoleIdentityPolicy.resource}]);
+  const [objects, retention] = desired.rolePolicy.Statement;
+  const prefix = `arn:aws:s3:::${plan.destination.bucket}/`;
+  assert.deepEqual(objects.Action, ["s3:PutObject","s3:GetObject"]); assert.deepEqual(objects.Resource, plan.proposedRoleScope.objectKeys.map((key) => `${prefix}${key}`));
+  assert.deepEqual(retention.Action, ["s3:PutObjectRetention","s3:GetObjectRetention"]); assert.deepEqual(retention.Resource, plan.proposedRoleScope.payloadKeys.map((key) => `${prefix}${key}`));
+  for (const excluded of ["s3:DeleteObject","s3:DeleteObjectVersion","s3:BypassGovernanceRetention","s3:PutObjectLegalHold","s3:AbortMultipartUpload","s3:ListBucket*","s3:PutBucket*","s3:DeleteBucket*","s3:Replicate*","iam:*"]) assert.ok(desired.excluded.includes(excluded));
+  return desired;
 }
 export function dryRunLines(plan=validate()) { return plan.artifacts.flatMap(a => [`VERIFY ${a.id} bytes=${a.byteLength} sha256=${a.sha256}`,`UPLOAD-PENDING s3://${plan.destination.bucket}/${a.payloadKey}`,`SIDECAR-PENDING s3://${plan.destination.bucket}/${manifestKey(a)} sha256=${createHash("sha256").update(sidecarFor(a)).digest("hex")}`,`RETAIN-PENDING ${a.id} mode=COMPLIANCE until=${plan.mfaGatedExecution.recommendedRetainUntil}`,`ADMISSION-BLOCK ${a.sourceId}`]); }
 if (import.meta.url === `file://${process.argv[1]}`) console.log(dryRunLines().join("\n"));

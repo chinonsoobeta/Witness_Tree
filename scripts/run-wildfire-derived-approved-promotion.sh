@@ -14,3 +14,4 @@ SHAS=(8ee36cc6bdfb5ef267340537e4cf822df7cc886873c7fcf65a1b2b12006d34ce 5e55c5d47
 for i in {1..2}; do [[ -f "${FILES[$i]}" && "$(stat -f %z "${FILES[$i]}")" == "${BYTES[$i]}" && "$(shasum -a 256 "${FILES[$i]}" | awk '{print $1}')" == "${SHAS[$i]}" ]] || fail "Approved derived artifact drifted or is missing; no TOTP or AWS call was made" 65; done
 print -- "PRECHECK passed: exact BC 216-feature and Ontario 188-feature derived artifacts are local; no TOTP or AWS call was made."
 [[ "${1:-}" == "--run" ]] && fail "No derived-key IAM role or artifact-specific owner approval exists; no TOTP or AWS call was made" 77
+exit 0
