@@ -75,9 +75,9 @@
       "name": "National Burned Area Composite and Canadian National Fire Database",
       "purpose": "National historical fire context.",
       "planUse": "production",
-      "evidence": "One official OGL-BC 2026-08-14 current-perimeter snapshot is locally staged, checksummed and profiled. A 216-feature local derived release repairs G70362 within tolerance; V10755 remains quarantined. Neither artifact is archived, admitted, ingested, or production eligible.",
+      "evidence": "The NFDB polygon component is locally checksum-bound and profiled; an official-source audit identifies the dated NBAC 1972–2025 release but did not accept its end-user agreement or download it.",
       "ownerRole": "data lead",
-      "missing": "Dataset editions, licence, retrieval and archive evidence.",
+      "missing": "Owner acceptance of the NBAC end-user agreement, then exact NBAC retrieval, checksum, archive integrity and profile evidence; written consent before redistribution or transfer.",
       "externalDependency": "Canadian Forest Service datamart"
     },
     {
@@ -372,9 +372,9 @@
       "name": "BC, Alberta, Ontario and Québec provincial electoral boundaries",
       "purpose": "Provincial riding boundaries.",
       "planUse": "production",
-      "evidence": "plan names authorities, not editions",
+      "evidence": "BC 2023 and Ontario 2022 are locally checksum-bound and profiled. Alberta is rights-blocked; Québec 2017 is current but access/rights-blocked, while the checksum-bound 2026 map is not effective yet.",
       "ownerRole": "geography data lead",
-      "missing": "Four authoritative editions, licences, effective dates, checksums and archives.",
+      "missing": "Written Alberta permission; accessible current Québec artifact and written adaptation/use authorization; then checksums, effective-date evidence and profiles for those two missing provinces.",
       "externalDependency": "Four provincial elections authorities"
     },
     {
