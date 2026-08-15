@@ -12,6 +12,13 @@ test("canonical production ledger reconciles all 31 plan rows without runtime pr
   assert.equal(ledger.entries.filter((entry) => entry.productionEligible).length, 0);
   assert.equal(ledger.rawEvidenceNumerator, 13);
   assert.equal(ledger.entries.reduce((sum, entry) => sum + entry.rawCredit, 0), ledger.rawEvidenceNumerator);
+  assert.deepEqual(ledger.formalProgress, {
+    baselinePercentagePoints: 25,
+    rawEvidenceWeightPercentagePoints: 30,
+    completeLedgerWeightPercentagePoints: 45,
+    percentage: 37.5806,
+    notice: "This is an evidence-tracking score only. It does not grant source-ledger admission, transformation, analysis, ingestion, public release, production admission, or production eligibility."
+  });
   const bcWildfire = ledger.entries.find((entry) => entry.id === "bc-wildfire");
   assert.equal(bcWildfire.evidenceState, "local-verified-profiled");
   assert.equal(bcWildfire.rawCredit, 0.75);
@@ -42,6 +49,8 @@ test("ledger fails closed for omission, credit inflation, a missing proof, or in
   assert.throws(() => validatePhase1ProductionSourceLedger(admitted, inventory), /cannot be inferred/i);
   const staleTotal = structuredClone(ledger); staleTotal.rawEvidenceNumerator = 7.5;
   assert.throws(() => validatePhase1ProductionSourceLedger(staleTotal, inventory), /computed from its row states/i);
+  const staleProgress = structuredClone(ledger); staleProgress.formalProgress.percentage = 30;
+  assert.throws(() => validatePhase1ProductionSourceLedger(staleProgress, inventory), /Formal progress must be recomputed/i);
 });
 
 test("Ontario FRI is explicitly access-blocked by its official Term 2 record", () => {

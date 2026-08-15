@@ -38,6 +38,10 @@ export function validatePhase1ProductionSourceLedger(ledger, inventory, root = p
   }
   const totalRawCredit = ledger.entries.reduce((sum, entry) => sum + STATES.get(entry.evidenceState), 0);
   if (ledger.rawEvidenceNumerator !== totalRawCredit) throw new Error("Ledger raw-evidence numerator must be computed from its row states.");
+  const progress = ledger.formalProgress;
+  if (!progress || progress.baselinePercentagePoints !== 25 || progress.rawEvidenceWeightPercentagePoints !== 30 || progress.completeLedgerWeightPercentagePoints !== 45 || progress.completeLedgerWeightPercentagePoints + progress.rawEvidenceWeightPercentagePoints + progress.baselinePercentagePoints !== 100 || typeof progress.notice !== "string" || !/does not grant.*production eligibility/i.test(progress.notice)) throw new Error("Formal progress must retain its bounded 25/30/45 non-production contract.");
+  const expectedProgress = progress.baselinePercentagePoints + progress.rawEvidenceWeightPercentagePoints * totalRawCredit / ledger.entries.length;
+  if (progress.percentage !== Number(expectedProgress.toFixed(4))) throw new Error("Formal progress must be recomputed from the fixed baseline and raw-evidence numerator.");
   return ledger;
 }
 
@@ -52,5 +56,5 @@ export async function checkPhase1ProductionSourceLedger(file = new URL("../data/
 if (import.meta.url === `file://${process.argv[1]}`) {
   const ledger = await checkPhase1ProductionSourceLedger(path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../data/phase1-production-source-ledger.json"));
   const counts = Object.groupBy(ledger.entries, ({ evidenceState }) => evidenceState);
-  console.log(`Phase 1 production-source ledger is blocked: ${ledger.entries.length} rows, ${ledger.rawEvidenceNumerator.toFixed(2)} raw-evidence credits; ${Object.entries(counts).map(([state, entries]) => `${state}=${entries.length}`).join(", ")}.`);
+  console.log(`Phase 1 production-source ledger is blocked: ${ledger.entries.length} rows, ${ledger.rawEvidenceNumerator.toFixed(2)} raw-evidence credits, formal evidence-tracking score ${ledger.formalProgress.percentage.toFixed(4)}%; ${Object.entries(counts).map(([state, entries]) => `${state}=${entries.length}`).join(", ")}.`);
 }

@@ -633,5 +633,12 @@
       "blocker": "CIRNAC's official map is informal, approximate, subject to revision, and expressly cannot be relied on for consultation. It is not legal or precision boundary geometry; no admissible legal artifact, rights, checksum/archive recovery, or engagement route is verified."
     }
   ],
-  "rawEvidenceNumerator": 13
+  "rawEvidenceNumerator": 13,
+  "formalProgress": {
+    "baselinePercentagePoints": 25,
+    "rawEvidenceWeightPercentagePoints": 30,
+    "completeLedgerWeightPercentagePoints": 45,
+    "percentage": 37.5806,
+    "notice": "This is an evidence-tracking score only. It does not grant source-ledger admission, transformation, analysis, ingestion, public release, production admission, or production eligibility."
+  }
 }
