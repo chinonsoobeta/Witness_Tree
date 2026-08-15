@@ -8,6 +8,7 @@
     "owner-decision-recorded": "All source-evidence proofs and a narrowly scoped owner source-ledger decision are recorded; it remains non-production.",
     "immutable-archive-then-owner-decision": "The local evidence contract is complete except immutable archive; obtain immutable payload/sidecar readbacks first, then request a named source-ledger-only decision.",
     "owner-scope-decision-after-archive": "The local evidence contract is complete except immutable archive, and the later decision must also resolve the stated operational or geometry scope.",
+    "owner-scope-decision-recorded-awaiting-archive": "The owner has resolved operational or geometry scope and approved downstream use, but production proof and eligibility remain blocked until every named immutable readback is integrated.",
     "owner-scope-decision-ready": "Immutable archive evidence is recorded, but a separately named owner decision must still resolve the stated operational or geometry scope.",
     "external-evidence-blocked": "The named production source lacks required source evidence or has an external authority, rights, completeness, or engagement block; an owner decision cannot cure it."
   },
@@ -16,11 +17,11 @@
     {"id":"ntems-forest-harvest","readiness":"immutable-archive-then-owner-decision","decisionBundle":"national-baselines"},
     {"id":"ntems-canopy-cover","readiness":"owner-decision-recorded","decisionBundle":"remote-source-evidence-recorded"},
     {"id":"ntems-canopy-height","readiness":"immutable-archive-then-owner-decision","decisionBundle":"national-baselines"},
-    {"id":"cwfis-current","readiness":"owner-scope-decision-after-archive","decisionBundle":"wildfire-operational-scope","scope":"Specify fixed-snapshot refresh cadence and provincial-agency precedence; do not treat the 586-point snapshot as real-time, complete perimeter, or provincial-authoritative data."},
+    {"id":"cwfis-current","readiness":"owner-scope-decision-recorded-awaiting-archive","decisionBundle":"wildfire-operational-scope","scope":"Approved as a fixed-time 586-point national fallback snapshot: not real-time, complete perimeter, or provincial-authoritative data; provincial agencies prevail."},
     {"id":"cwfis-historical","readiness":"external-evidence-blocked","decisionBundle":"none","blocker":"The named combined source lacks its burned-area component and normal source evidence."},
-    {"id":"bc-wildfire","readiness":"owner-scope-decision-after-archive","decisionBundle":"wildfire-geometry-scope","scope":"Decide whether to admit the unchanged 217-feature raw artifact and separately the 216-feature derived artifact: G70362 repaired within tolerance; V10755 quarantined from geometry-dependent use."},
-    {"id":"ab-wildfire","readiness":"owner-scope-decision-after-archive","decisionBundle":"wildfire-operational-scope","scope":"Specify whether this 751-point status snapshot satisfies the required operational-current scope and its refresh/precedence policy."},
-    {"id":"on-fire-disturbance","readiness":"owner-scope-decision-after-archive","decisionBundle":"wildfire-geometry-scope","scope":"Decide whether to admit the unchanged raw artifact and separately the 188-feature closed-join derived artifact with nine bounded repairs and no quarantine."},
+    {"id":"bc-wildfire","readiness":"owner-scope-decision-recorded-awaiting-archive","decisionBundle":"wildfire-geometry-scope","scope":"Approved unchanged 217-feature raw retention plus the 216-feature derived geometry release: 215 unchanged, G70362 repaired within tolerance, V10755 permanently quarantined; no 217-feature geometry coverage claim."},
+    {"id":"ab-wildfire","readiness":"owner-scope-decision-recorded-awaiting-archive","decisionBundle":"wildfire-operational-scope","scope":"Approved as an as-of 751-point provincial location snapshot, not real-time or a complete perimeter dataset; Alberta Wildfire remains authoritative."},
+    {"id":"on-fire-disturbance","readiness":"owner-scope-decision-recorded-awaiting-archive","decisionBundle":"wildfire-geometry-scope","scope":"Approved unchanged 188-feature raw retention plus the 188-feature closed-join derived artifact with 179 unchanged, nine bounded repairs and zero quarantine."},
     {"id":"sopfeu","readiness":"external-evidence-blocked","decisionBundle":"none","blocker":"Written reusable terms are unresolved."},
     {"id":"bc-fta-cutblocks","readiness":"external-evidence-blocked","decisionBundle":"none","blocker":"A coherent publisher export with declared edition, checksum, and profile is absent."},
     {"id":"bc-harvesting-authorities","readiness":"external-evidence-blocked","decisionBundle":"none","blocker":"A publisher-authorized snapshot and normal source evidence are absent."},
@@ -44,14 +45,14 @@
     {"id":"historic-treaties","readiness":"external-evidence-blocked","decisionBundle":"none","blocker":"Reviewed federal mapping is informational and non-legal, not admissible precision geometry; rights and engagement route are also unverified."},
     {"id":"modern-treaties","readiness":"external-evidence-blocked","decisionBundle":"none","blocker":"Reviewed federal map is informal, approximate, revisable, and not for consultation reliance; rights and engagement route are also unverified."}
   ],
-  "counts": {"owner-decision-recorded":4,"immutable-archive-then-owner-decision":7,"owner-scope-decision-after-archive":4,"owner-scope-decision-ready":1,"external-evidence-blocked":15},
+  "counts": {"owner-decision-recorded":4,"immutable-archive-then-owner-decision":7,"owner-scope-decision-after-archive":0,"owner-scope-decision-recorded-awaiting-archive":4,"owner-scope-decision-ready":1,"external-evidence-blocked":15},
   "minimalOwnerDecisionBundles": [
     {"id":"national-baselines","rows":["ntems-forest-harvest","ntems-canopy-height"],"precondition":"Each named payload has immutable archive/recovery readbacks."},
     {"id":"quebec-ecoforest","rows":["qc-current-ecoforest","qc-original-current-inventory","qc-fourth-inventory"],"precondition":"Each named payload and any named derivative has immutable archive/recovery readbacks; the fourth-inventory source also requires separately scoped semantic transformation and join selection."},
     {"id":"elections-canada-2025-shared-artifact","rows":["fed-2023-ridings","elections-canada-45th-files"],"physicalArtifactGroup":"elections-canada-2025-shp","precondition":"One immutable archive/recovery proof for the shared exact Elections Canada 2025 SHP artifact, followed by two named ledger-row decisions."},
-    {"id":"wildfire-operational-scope","rows":["cwfis-current","ab-wildfire"],"precondition":"Each named payload has immutable archive/recovery readbacks; decide operational scope separately per row."},
-    {"id":"wildfire-geometry-scope","rows":["bc-wildfire","on-fire-disturbance"],"precondition":"Each raw and separately named derived artifact has immutable archive/recovery readbacks; decide raw/derived scope and listed repair/quarantine disposition per row."},
+    {"id":"wildfire-operational-scope","rows":["cwfis-current","ab-wildfire"],"precondition":"Scope is owner-approved; integrate each exact raw payload's immutable archive/recovery readbacks before activation."},
+    {"id":"wildfire-geometry-scope","rows":["bc-wildfire","on-fire-disturbance"],"precondition":"Raw/derived scope and dispositions are owner-approved; integrate exact immutable archive/recovery readbacks for both raw and derived artifacts before activation."},
     {"id":"alberta-plvi-geometry-scope","rows":["ab-primary-land-vegetation"],"precondition":"Immutable archive evidence for the approved raw ZIP and closed-join derived payload plus canonical sidecars is recorded; decide raw/derived scope and all 12 repair dispositions."}
   ],
-  "nonProduction": {"productionAdmissionChanged":false,"productionEligibleChanged":false,"transformationAuthorized":false,"ingestionAuthorized":false,"releaseAuthorized":false}
+  "nonProduction": {"productionProofChanged":false,"productionEligibleChanged":false,"transformationAuthorized":true,"ingestionAuthorized":true,"releaseAuthorized":true,"activationBlockedOnImmutableReadbacks":true}
 }
