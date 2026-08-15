@@ -8,7 +8,7 @@ import test from "node:test";
 const runner = readFileSync(new URL("../scripts/run-phase1-approved-promotion.sh", import.meta.url), "utf8");
 
 test("the three-artifact runner is preflight-first and binds every approved checksum and canonical key", () => {
-  assert.match(runner, /--preflight\|--run\|--resume/);
+  for (const mode of ["--preflight", "--run", "--resume", "--validate-resume-state"]) assert.match(runner, new RegExp(mode));
   for (const value of ["c6f41dff46d91812874672edb53233dac4126952132ad6d1131ad47b11ad7aad", "86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124", "4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93", "ca_forest_harvest_1985-2022.zip", "ca_canopy_height_2022.zip", "federalelectoraldistricts_2025_shp.zip"]) assert.match(runner, new RegExp(value));
   assert.match(runner, /2033-08-12T00:00:00Z/);
   assert.match(runner, /aws configure get mfa_serial --profile/);
@@ -154,6 +154,41 @@ esac
     assert.doesNotMatch(`${run.stdout}${run.stderr}`, /Current MFA TOTP/);
     assert.equal(existsSync(marker), false);
     assert.equal(readFileSync(state, "utf8"), "+{not-json}\n");
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("the explicit resume-state validator is no-TOTP and no-AWS after exact local preflight", () => {
+  const dir = mkdtempSync(join(tmpdir(), "phase1-approved-resume-validation-"));
+  const marker = join(dir, "calls");
+  const state = join(dir, "resume.json");
+  const payloadKey = "raw/nrcan-forest-canopy-height-2022/undeclared/2026-08-14T18-57-22Z/86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124/payload/ca_canopy_height_2022.zip";
+  const parts = Array.from({ length: 49 }, (_, index) => ({ PartNumber: index + 1, ETag: `"${String(index + 1).padStart(32, "0")}"`, ChecksumCRC64NVME: "AAAAAAAAAAA=", Size: 67_108_864 }));
+  writeFileSync(state, `${JSON.stringify({ schemaVersion: 1, bucket: "witness-tree-raw-archive-ca-central-1", region: "ca-central-1", key: payloadKey, uploadId: "private-upload-id-that-is-never-printed", partSize: 67_108_864, parts })}\n`, { mode: 0o600 });
+  writeFileSync(join(dir, "aws"), `#!/bin/zsh\nprint -- called >> ${JSON.stringify(marker)}\nexit 99\n`, { mode: 0o700 });
+  writeFileSync(join(dir, "stat"), `#!/bin/zsh
+case "$3" in
+  *CA_Forest_Harvest_1985-2022.zip) print -- 247945479 ;;
+  *CA_canopy_height_2022.zip) print -- 10347564066 ;;
+  *FederalElectoralDistricts_2025_SHP.zip) print -- 10301648 ;;
+  *.json) print -- 600 ;;
+  *) exit 99 ;;
+esac
+`, { mode: 0o700 });
+  writeFileSync(join(dir, "shasum"), `#!/bin/zsh
+case "$3" in
+  *CA_Forest_Harvest_1985-2022.zip) print -- "c6f41dff46d91812874672edb53233dac4126952132ad6d1131ad47b11ad7aad  $3" ;;
+  *CA_canopy_height_2022.zip) print -- "86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124  $3" ;;
+  *FederalElectoralDistricts_2025_SHP.zip) print -- "4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93  $3" ;;
+  *) exit 99 ;;
+esac
+`, { mode: 0o700 });
+  const executable = new URL("../scripts/run-phase1-approved-promotion.sh", import.meta.url).pathname;
+  try {
+    const run = spawnSync("zsh", [executable, "--validate-resume-state", state], { encoding: "utf8", env: { ...process.env, PATH: `${dir}:${process.env.PATH}` } });
+    assert.equal(run.status, 0, `${run.stdout}\n${run.stderr}`);
+    assert.match(run.stdout, /Private canopy resume state validation passed; no TOTP or AWS call was made/);
+    assert.equal(existsSync(marker), false);
+    assert.doesNotMatch(`${run.stdout}${run.stderr}`, /private-upload-id/);
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
