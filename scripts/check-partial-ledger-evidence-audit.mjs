@@ -22,14 +22,14 @@ export function validatePartialLedgerEvidenceAudit(audit, ledger) {
 
   const partialRows = ledger.entries.filter((row) => row.evidenceState === "partial-component");
   assert.deepEqual(partialRows.map((row) => row.id).sort(), ["cwfis-historical", "provincial-electoral-boundaries"]);
-  assert.equal(ledger.entries.reduce((sum, row) => sum + row.rawCredit, 0), 13.75);
+  assert.equal(ledger.entries.reduce((sum, row) => sum + row.rawCredit, 0), 14.75);
   assert.deepEqual(audit.numerator, {
-    before: 13.75,
-    after: 13.75,
+    before: 14.75,
+    after: 14.75,
     denominator: 31,
     impact: 0,
-    formalEvidenceTrackingScoreBefore: 38.3064516,
-    formalEvidenceTrackingScoreAfter: 38.3064516,
+    formalEvidenceTrackingScoreBefore: 39.2741935,
+    formalEvidenceTrackingScoreAfter: 39.2741935,
   });
 
   assert.deepEqual(audit.rows.map((row) => row.id).sort(), partialRows.map((row) => row.id).sort());

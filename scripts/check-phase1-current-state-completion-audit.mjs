@@ -20,9 +20,9 @@ export function validatePhase1CurrentStateCompletionAudit(audit, ledger, readine
   assert.equal(audit.ledger.productionEligibleRows, ledger.entries.filter(({ productionEligible }) => productionEligible).length);
   assert.equal(audit.ledger.ownerSourceDecisionRecordedRows, readiness.counts["owner-decision-recorded"]);
   assert.equal(audit.ledger.ownerDownstreamScopeRecordedAwaitingArchiveRows, readiness.counts["owner-scope-decision-recorded-awaiting-archive"]);
-  assert.deepEqual(audit.globalGates.immutableArchives, {status:"blocked", completeRows:5, localRowsAwaitingArchive:11, sourceEvidenceBlockedRows:15, currentWildfireRequiredObjects:6, currentWildfireVerifiedObjects:0});
+  assert.deepEqual(audit.globalGates.immutableArchives, {status:"blocked", completeRows:9, localRowsAwaitingArchive:7, sourceEvidenceBlockedRows:15, currentWildfireRequiredObjects:6, currentWildfireVerifiedObjects:4});
   assert.equal(wildfire.archiveGate.requiredObjectCount, 6);
-  assert.equal(wildfire.archiveGate.verifiedObjectCount, 0);
+  assert.equal(wildfire.archiveGate.verifiedObjectCount, 4);
   assert.equal(immutable.physicalArtifactGroups.find(({ id }) => id === "current-wildfire-six-release-inputs").physicalArtifactCount, 6);
   const exercise = audit.globalGates.normalArchiveExercise;
   assert.equal(exercise.status, "not-integrated"); assert.equal(exercise.evidenceRef, null); assert.equal(exercise.complete, false);

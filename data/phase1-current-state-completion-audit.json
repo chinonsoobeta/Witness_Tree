@@ -5,18 +5,18 @@
   "notice": "Strict local audit only. It records no new archive, reply, permission, owner decision, transformation, ingestion, release, production admission, or production eligibility.",
   "ledger": {
     "totalRows": 31,
-    "evidenceStateCounts": {"remote-verified-archived-profiled": 5, "local-verified-profiled": 11, "partial-component": 2, "access-blocked": 13},
-    "rawEvidenceNumerator": 13.75,
+    "evidenceStateCounts": {"remote-verified-archived-profiled": 9, "local-verified-profiled": 7, "partial-component": 2, "access-blocked": 13},
+    "rawEvidenceNumerator": 14.75,
     "rawEvidenceDenominator": 31,
-    "formalEvidenceTrackingPercentage": 38.3064516,
-    "immutableArchiveCompleteRows": 5,
+    "formalEvidenceTrackingPercentage": 39.2741935,
+    "immutableArchiveCompleteRows": 9,
     "ownerSourceDecisionRecordedRows": 4,
     "ownerDownstreamScopeRecordedAwaitingArchiveRows": 4,
     "productionAdmissionCompleteRows": 0,
     "productionEligibleRows": 0
   },
   "globalGates": {
-    "immutableArchives": {"status":"blocked","completeRows":5,"localRowsAwaitingArchive":11,"sourceEvidenceBlockedRows":15,"currentWildfireRequiredObjects":6,"currentWildfireVerifiedObjects":0},
+    "immutableArchives": {"status":"blocked","completeRows":9,"localRowsAwaitingArchive":7,"sourceEvidenceBlockedRows":15,"currentWildfireRequiredObjects":6,"currentWildfireVerifiedObjects":4},
     "normalArchiveExercise": {
       "status": "not-integrated",
       "evidenceRef": null,
