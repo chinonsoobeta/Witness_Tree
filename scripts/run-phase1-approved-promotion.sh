@@ -28,12 +28,13 @@ cleanup() {
 }
 trap cleanup EXIT
 
-if [[ "${1:-}" == "--resume" && $# -eq 2 ]]; then
-  MODE="resume"; RESUME_STATE="$2"
+if [[ ( "${1:-}" == "--resume" || "${1:-}" == "--validate-resume-state" ) && $# -eq 2 ]]; then
+  [[ "${1:-}" == "--resume" ]] && MODE="resume" || MODE="validate-resume"
+  RESUME_STATE="$2"
 elif [[ ( "${1:-}" == "--preflight" || "${1:-}" == "--run" ) && $# -eq 1 ]]; then
   MODE="${1#--}"
 else
-  fail "Usage: $0 --preflight|--run|--resume /absolute/private-state.json" 64
+  fail "Usage: $0 --preflight|--run|--resume /absolute/private-state.json|--validate-resume-state /absolute/private-state.json" 64
 fi
 command -v shasum >/dev/null || fail "shasum is required" 69
 
@@ -141,10 +142,14 @@ resume_canopy() {
   print -- "Canopy multipart resume completed with required read-backs; do not infer source admission."
 }
 
-if [[ "$MODE" == "resume" ]]; then
+if [[ "$MODE" == "resume" || "$MODE" == "validate-resume" ]]; then
   # Validate the private recovery record before prompting for an MFA code or
   # opening any AWS session. It is never repaired or normalized in place.
   prepare_resume_state
+fi
+if [[ "$MODE" == "validate-resume" ]]; then
+  print -- "Private canopy resume state validation passed; no TOTP or AWS call was made."
+  exit 0
 fi
 command -v aws >/dev/null || fail "aws CLI is required" 69
 [[ -t 0 && -t 1 ]] || fail "MFA TOTP prompt requires an interactive terminal; no AWS call was made" 64
