@@ -66,7 +66,7 @@
       "planUse": "production",
       "evidence": "checksum-bound local fixed-time WFS snapshot (586 valid point features at 2026-08-14T20:22:42Z), official CWFIF migration/metadata and read-only profile; not production",
       "ownerRole": "wildfire operations lead",
-      "missing": "Immutable archive/retention decision, operational refresh contract, ingestion approval, and a decision on provincial-agency precedence.",
+      "missing": "Integrated exact-version immutable readback and COMPLIANCE-retention evidence for the raw snapshot. Owner-approved use is as-of national fallback point context; provincial agencies prevail.",
       "externalDependency": "Canadian Forest Service operational feed and Canadian storage/owner approvals"
     },
     {
@@ -86,9 +86,9 @@
       "name": "BC Wildfire Service current incidents and perimeters",
       "purpose": "BC operational fire context.",
       "planUse": "production",
-      "evidence": "plan URL only",
+      "evidence": "Checksum-bound 217-feature raw snapshot plus checksum-bound 216-feature derived release; owner approves 215 unchanged geometries plus bounded repair G70362 and permanently quarantines V10755 from geometry-dependent use",
       "ownerRole": "wildfire operations lead",
-      "missing": "Immutable archive and owner admission for raw and derived artifacts; operational refresh contract, transformation, ingestion and release approval. One of 217 raw features remains excluded from geometry-dependent use.",
+      "missing": "Integrated exact-version immutable readback and COMPLIANCE-retention evidence for both raw and derived artifacts. One of 217 raw features remains permanently excluded from geometry-dependent use; never claim 217-feature coverage.",
       "externalDependency": "BC Wildfire Service"
     },
     {
@@ -97,9 +97,9 @@
       "name": "Alberta Wildfire",
       "purpose": "Alberta operational fire context.",
       "planUse": "production",
-      "evidence": "Official 2006–2025 historical CSV staged and profiled under OGL Alberta; not current feed or production",
+      "evidence": "Checksum-bound 751-point current wildfire-location snapshot locally staged/profiled under OGL Alberta; owner approves conservative as-of point use, not real-time or perimeter coverage",
       "ownerRole": "wildfire operations lead",
-      "missing": "Select and verify a current operational feed, refresh contract, immutable archive, ingestion and release approval.",
+      "missing": "Integrated exact-version immutable readback and COMPLIANCE-retention evidence for the raw snapshot.",
       "externalDependency": "Alberta Wildfire"
     },
     {
@@ -110,7 +110,7 @@
       "planUse": "production",
       "evidence": "Official daily in-year perimeter snapshot locally staged/profiled under OGL Ontario; nine bounded raw self-intersections have a separate local-only closed-join derived release, not production",
       "ownerRole": "wildfire operations lead",
-      "missing": "Immutable archive, owner admission, operational refresh contract, ingestion and release approval.",
+      "missing": "Integrated exact-version immutable readback and COMPLIANCE-retention evidence for both the unchanged 188-feature raw snapshot and the 188-feature derived release.",
       "externalDependency": "Ontario GeoHub"
     },
     {

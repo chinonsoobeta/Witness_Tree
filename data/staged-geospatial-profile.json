@@ -10,8 +10,8 @@
     {
       "sourceId": "bc-wildfire",
       "inputSha256": "46ee3a97ff83128630a030b5cfcc7f3c389fc94e3ca95d463595ab6f4fb57e83",
-      "decision": "local-derived-release-pending-immutable-archive-and-owner-admission",
-      "requiredAction": "Archive the unchanged raw snapshot and separately checksummed derived release, then obtain owner admission. V10755 remains excluded from geometry-dependent use; neither raw nor derived data is admitted for transformation, ingestion, release, or production.",
+      "decision": "owner-approved-derived-release-pending-immutable-readbacks",
+      "requiredAction": "Integrate exact immutable readbacks for the unchanged raw snapshot and separately checksummed derived release. V10755 remains permanently excluded from geometry-dependent use and production stays blocked until the archive gate passes.",
       "profiledWith": {
         "gdal": "3.13.2"
       },
@@ -203,7 +203,7 @@
       "profiledWith": {
         "gdal": "3.13.2"
       },
-      "decision": "ready-for-transformation-design",
+      "decision": "owner-approved-scope-pending-immutable-readback",
       "productionEligible": false,
       "layers": [
         {
@@ -234,8 +234,8 @@
         "gdal": "3.13.2",
         "geos": "3.14.1"
       },
-      "decision": "blocked-pending-geometry-policy",
-      "requiredAction": "Define and test an Ontario-specific deterministic repair-or-quarantine rule before transformation or ingestion.",
+      "decision": "owner-approved-derived-release-pending-immutable-readbacks",
+      "requiredAction": "Integrate exact immutable readbacks for the unchanged raw snapshot and the checksum-bound 188-feature derived release; owner scope is approved but production remains blocked.",
       "productionEligible": false,
       "layers": [
         {

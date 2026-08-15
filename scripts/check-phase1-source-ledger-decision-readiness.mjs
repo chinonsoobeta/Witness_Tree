@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 
-const READINESS = new Set(["owner-decision-recorded", "immutable-archive-then-owner-decision", "owner-scope-decision-after-archive", "owner-scope-decision-ready", "external-evidence-blocked"]);
+const READINESS = new Set(["owner-decision-recorded", "immutable-archive-then-owner-decision", "owner-scope-decision-after-archive", "owner-scope-decision-recorded-awaiting-archive", "owner-scope-decision-ready", "external-evidence-blocked"]);
 
 export function validatePhase1SourceLedgerDecisionReadiness(audit, ledger, decisions) {
   assert.equal(audit.schemaVersion, 1);
@@ -12,7 +12,7 @@ export function validatePhase1SourceLedgerDecisionReadiness(audit, ledger, decis
   const ledgerIds = new Set(ledger.entries.map(({ id }) => id));
   assert.deepEqual(new Set(audit.entries.map(({ id }) => id)), ledgerIds);
   const counts = Object.groupBy(audit.entries, ({ readiness }) => readiness);
-  for (const [readiness, expected] of Object.entries(audit.counts)) assert.equal(counts[readiness]?.length, expected, `Wrong ${readiness} count.`);
+  for (const [readiness, expected] of Object.entries(audit.counts)) assert.equal(counts[readiness]?.length ?? 0, expected, `Wrong ${readiness} count.`);
   assert.equal(Object.values(audit.counts).reduce((sum, count) => sum + count, 0), 31);
   for (const entry of audit.entries) {
     assert.ok(READINESS.has(entry.readiness));
@@ -29,7 +29,13 @@ export function validatePhase1SourceLedgerDecisionReadiness(audit, ledger, decis
       assert.equal(row.proof.immutableArchive, false);
       assert.equal(row.proof.productionAdmission, false);
     }
-    if (entry.readiness === "owner-scope-decision-after-archive" || entry.readiness === "owner-scope-decision-ready") assert.match(entry.scope, /.+/);
+    if (entry.readiness === "owner-scope-decision-recorded-awaiting-archive") {
+      assert.equal(row.evidenceState, "local-verified-profiled");
+      assert.equal(row.proof.immutableArchive, false);
+      assert.equal(row.proof.productionAdmission, false);
+      assert.ok(row.evidenceRefs.includes("data/current-wildfire-owner-admission.json"));
+    }
+    if (entry.readiness === "owner-scope-decision-after-archive" || entry.readiness === "owner-scope-decision-recorded-awaiting-archive" || entry.readiness === "owner-scope-decision-ready") assert.match(entry.scope, /.+/);
     if (entry.readiness === "owner-scope-decision-ready") {
       assert.equal(row.evidenceState, "remote-verified-archived-profiled");
       assert.equal(row.proof.immutableArchive, true);
@@ -38,7 +44,7 @@ export function validatePhase1SourceLedgerDecisionReadiness(audit, ledger, decis
     }
     if (entry.readiness === "external-evidence-blocked") assert.match(entry.blocker, /.+/);
   }
-  assert.deepEqual(audit.nonProduction, { productionAdmissionChanged: false, productionEligibleChanged: false, transformationAuthorized: false, ingestionAuthorized: false, releaseAuthorized: false });
+  assert.deepEqual(audit.nonProduction, { productionProofChanged: false, productionEligibleChanged: false, transformationAuthorized: true, ingestionAuthorized: true, releaseAuthorized: true, activationBlockedOnImmutableReadbacks: true });
   const elections = audit.entries.filter((entry) => entry.physicalArtifactGroup === "elections-canada-2025-shp");
   assert.deepEqual(elections.map(({ id }) => id), ["fed-2023-ridings", "elections-canada-45th-files"]);
   const shared = audit.minimalOwnerDecisionBundles.find((bundle) => bundle.id === "elections-canada-2025-shared-artifact");

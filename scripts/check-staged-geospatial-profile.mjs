@@ -21,21 +21,21 @@ const EXPECTED = new Map([
   }],
   ["bc-wildfire", {
     sha256: "46ee3a97ff83128630a030b5cfcc7f3c389fc94e3ca95d463595ab6f4fb57e83",
-    decision: "local-derived-release-pending-immutable-archive-and-owner-admission",
+    decision: "owner-approved-derived-release-pending-immutable-readbacks",
     layers: new Map([
       ["bc-wildfire-perimeters-2026-08-14", ["Polygon/MultiPolygon", 217, "EPSG:4326", 16, 2]],
     ]),
   }],
   ["ab-wildfire", {
     sha256: "f0e86ea34a7624c365349b3a8fbb77967bb45ab73c507cf441efb8f6a8736ee0",
-    decision: "ready-for-transformation-design",
+    decision: "owner-approved-scope-pending-immutable-readback",
     layers: new Map([
       ["alberta-wildfire-locations_2026-08-14", ["Point", 751, "EPSG:4326", 17, 0]],
     ]),
   }],
   ["on-fire-disturbance", {
     sha256: "99881f19a32068b5d66b244955f7b088e873ffe76eafebf1740f03e16f042f11",
-    decision: "blocked-pending-geometry-policy",
+    decision: "owner-approved-derived-release-pending-immutable-readbacks",
     layers: new Map([
       ["ontario-in-year-fire-perimeters_2026-08-14", ["Polygon/MultiPolygon", 188, "EPSG:4326", 7, 9]],
     ]),
