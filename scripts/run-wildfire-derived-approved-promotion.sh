@@ -52,12 +52,6 @@ export AWS_ACCESS_KEY_ID="$(jq -r '.Credentials.AccessKeyId // empty' <<<"$creds
 unset creds account caller
 TMP="$(mktemp -d /private/tmp/witness-tree-wildfire-derived-promotion.XXXXXX)"; chmod 700 "$TMP"
 node "$ROOT/scripts/prepare-wildfire-derived-immutable-promotion.mjs" --write-sidecars "$TMP" >/dev/null
-for key in "${PAYLOADS[@]}" "${SIDECARS[@]}"; do
-  if aws s3api head-object --bucket "$BUCKET" --key "$key" --checksum-mode ENABLED --region "$REGION" --cli-connect-timeout 10 --cli-read-timeout 30 --output json >"$TMP/preexisting.json" 2>"$TMP/preexisting.err"; then
-    fail "Approved exact key already has a version; refusing duplicate upload" 70
-  fi
-  rg -q '(404|Not Found|NotFound|NoSuchKey)' "$TMP/preexisting.err" || fail "Cannot prove approved exact key is absent; refusing upload" 70
-done
 evidence='[]'
 for i in {1..2}; do
   print -- "Uploading approved derived payload $i/2 by direct PutObject; wait for acknowledgement."

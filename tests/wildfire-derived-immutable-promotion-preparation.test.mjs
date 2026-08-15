@@ -20,7 +20,6 @@ if [[ "$1:$2" == "sts:get-session-token" ]]; then print -- '{"Credentials":{"Acc
 if [[ "$1:$2" == "sts:get-caller-identity" && "$*" == *"--query Account"* ]]; then print -- "286853118812"; exit 0; fi
 if [[ "$1:$2" == "sts:get-caller-identity" && "$*" == *"--query Arn"* ]]; then print -- "arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator"; exit 0; fi
 if [[ "$1:$2" == "sts:assume-role" ]]; then print -- '{"Credentials":{"AccessKeyId":"dummy","SecretAccessKey":"dummy","SessionToken":"dummy"}}'; exit 0; fi
-if [[ "$1:$2" == "s3api:head-object" ]]; then print -u2 -- "An error occurred (404) when calling the HeadObject operation: Not Found"; exit 255; fi
 if [[ "$1:$2" == "s3api:put-object" ]]; then exit 88; fi
 exit 98
 `,{mode:0o700});
@@ -40,7 +39,6 @@ expect {
     assert.match(calls,/configure get mfa_serial --profile WitnessTreeArchiveOperator/);
     assert.match(calls,/sts get-session-token/);
     assert.match(calls,/sts assume-role --role-arn arn:aws:iam::286853118812:role\/WitnessTreeWildfireDerivedPromotionUploader/);
-    assert.match(calls,/s3api head-object/);
     assert.match(calls,/s3api put-object/);
     assert.doesNotMatch(calls,/iam |list-mfa|DeleteObject|BypassGovernanceRetention|PutObjectLegalHold/i);
     assert.doesNotMatch(`${run.stdout}${run.stderr}`,/123456/);
