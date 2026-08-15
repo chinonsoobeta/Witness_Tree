@@ -1,0 +1,1317 @@
+{
+  "schemaVersion": 1,
+  "status": "blocked-preparation-only",
+  "asOf": "2026-08-14",
+  "notice": "Preparation only. Dry run makes no AWS or IAM call and creates no remote object. Execution is forbidden without separate exact-artifact, IAM, MFA-session and irreversible COMPLIANCE-retention approvals.",
+  "sourceCommit": "43905d0b47b60c005b26d4ad5b65e0f5a020d0da",
+  "productionRowId": "qc-fourth-inventory",
+  "bucket": "witness-tree-raw-archive-ca-central-1",
+  "region": "ca-central-1",
+  "retention": {
+    "mode": "COMPLIANCE",
+    "retainUntil": "2033-08-12T00:00:00Z"
+  },
+  "upload": {
+    "multipartThresholdBytes": 536870912,
+    "partSizeBytes": 134217728,
+    "singlePutMaximumBytes": 5368709120,
+    "checksumAlgorithm": "SHA256",
+    "resumeState": "caller-supplied controlled local directory; no credentials are persisted"
+  },
+  "dataset": {
+    "id": "77ec9009-b733-4f09-ade3-99d7b2156ad4",
+    "title": "Carte écoforestière originale et résultats du quatrième inventaire",
+    "publisher": "Ministère des Ressources naturelles et des Forêts du Québec, Direction des inventaires forestiers",
+    "catalogueUrl": "https://www.donneesquebec.ca/recherche/dataset/resultats-d-inventaire-et-carte-ecoforestiere_4eme",
+    "edition": "Fourth inventory, 2001–2018; complete since 2018; resources updated 2026-06-19",
+    "licence": {
+      "id": "cc-by-4.0",
+      "url": "https://www.donneesquebec.ca/licence/#cc-by"
+    },
+    "attribution": "Source : Ministère des Ressources naturelles et des Forêts du Québec, Secteur des forêts, Direction des inventaires forestiers. Sous licence CC BY 4.0."
+  },
+  "archiveSet": {
+    "count": 56,
+    "byteLength": 16177306782,
+    "digest": "394f05f984b164b7524e77b00fc73246a791d6c4112f7cc080c43fb3d8a2c0e0",
+    "payloads": [
+      {
+        "sheet": "11M",
+        "originalFilename": "PRODUITS_IEQM_4_11M_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_11M_GPKG.zip",
+        "byteLength": 675140,
+        "sha256": "a30725db19106bac9612fc7e49d32e8f07eddc76e69c584b3c6281be5742ac2a",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/11M/PRODUITS_IEQM_4_11M_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 675140,
+          "lastModified": "Wed, 17 Jun 2026 14:53:41 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/11M/PRODUITS_IEQM_4_11M_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_11M.gpkg",
+          "byteLength": 4800512,
+          "crc32": "9da320e5"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/a30725db19106bac9612fc7e49d32e8f07eddc76e69c584b3c6281be5742ac2a/payload/produits_ieqm_4_11m_gpkg.zip"
+      },
+      {
+        "sheet": "11N",
+        "originalFilename": "PRODUITS_IEQM_4_11N_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_11N_GPKG.zip",
+        "byteLength": 4936187,
+        "sha256": "798c88fcc16fafa15b854a1a896afe405249b11dd10fa3fcdce8083b6c97fdf7",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/11N/PRODUITS_IEQM_4_11N_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 4936187,
+          "lastModified": "Wed, 17 Jun 2026 14:53:42 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/11N/PRODUITS_IEQM_4_11N_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_11N.gpkg",
+          "byteLength": 18321408,
+          "crc32": "0088d8ba"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/798c88fcc16fafa15b854a1a896afe405249b11dd10fa3fcdce8083b6c97fdf7/payload/produits_ieqm_4_11n_gpkg.zip"
+      },
+      {
+        "sheet": "12E",
+        "originalFilename": "PRODUITS_IEQM_4_12E_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_12E_GPKG.zip",
+        "byteLength": 219824382,
+        "sha256": "e3d1a6205331f889be86fecb8753e528ebec73d480c49369478f5373d166610f",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/12E/PRODUITS_IEQM_4_12E_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 219824382,
+          "lastModified": "Wed, 17 Jun 2026 14:54:17 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/12E/PRODUITS_IEQM_4_12E_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_12E.gpkg",
+          "byteLength": 746897408,
+          "crc32": "ed982992"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/e3d1a6205331f889be86fecb8753e528ebec73d480c49369478f5373d166610f/payload/produits_ieqm_4_12e_gpkg.zip"
+      },
+      {
+        "sheet": "12F",
+        "originalFilename": "PRODUITS_IEQM_4_12F_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_12F_GPKG.zip",
+        "byteLength": 16364380,
+        "sha256": "2358987916e58f4c1f814d79bbe9fc198202e61367fccfd67a1f4de262b22193",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/12F/PRODUITS_IEQM_4_12F_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 16364380,
+          "lastModified": "Wed, 17 Jun 2026 14:54:20 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/12F/PRODUITS_IEQM_4_12F_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_12F.gpkg",
+          "byteLength": 55660544,
+          "crc32": "255992b4"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/2358987916e58f4c1f814d79bbe9fc198202e61367fccfd67a1f4de262b22193/payload/produits_ieqm_4_12f_gpkg.zip"
+      },
+      {
+        "sheet": "12L",
+        "originalFilename": "PRODUITS_IEQM_4_12L_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_12L_GPKG.zip",
+        "byteLength": 434159,
+        "sha256": "9e12e75f97e3bd34bbefd23566450b6090fdc4bd2442cc239ae9467d196c431b",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/12L/PRODUITS_IEQM_4_12L_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 434159,
+          "lastModified": "Wed, 17 Jun 2026 14:54:20 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/12L/PRODUITS_IEQM_4_12L_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_12L.gpkg",
+          "byteLength": 4034560,
+          "crc32": "b0b06f36"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/9e12e75f97e3bd34bbefd23566450b6090fdc4bd2442cc239ae9467d196c431b/payload/produits_ieqm_4_12l_gpkg.zip"
+      },
+      {
+        "sheet": "21E",
+        "originalFilename": "PRODUITS_IEQM_4_21E_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_21E_GPKG.zip",
+        "byteLength": 312305373,
+        "sha256": "4ef331b0a813350c97fd41b5bef28ce448419b337d02217d23c5c8bd08b1965e",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/21E/PRODUITS_IEQM_4_21E_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 312305373,
+          "lastModified": "Wed, 17 Jun 2026 14:55:13 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/21E/PRODUITS_IEQM_4_21E_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_21E.gpkg",
+          "byteLength": 1074786304,
+          "crc32": "d3b2baf3"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/4ef331b0a813350c97fd41b5bef28ce448419b337d02217d23c5c8bd08b1965e/payload/produits_ieqm_4_21e_gpkg.zip"
+      },
+      {
+        "sheet": "21K",
+        "originalFilename": "PRODUITS_IEQM_4_21K_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_21K_GPKG.zip",
+        "byteLength": 10355048,
+        "sha256": "dd871622c44508eb77f459c0941077ee07e5d47df0a72ec49a0644acea91762c",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/21K/PRODUITS_IEQM_4_21K_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 10355048,
+          "lastModified": "Wed, 17 Jun 2026 14:55:15 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/21K/PRODUITS_IEQM_4_21K_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_21K.gpkg",
+          "byteLength": 40816640,
+          "crc32": "a4d42107"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/dd871622c44508eb77f459c0941077ee07e5d47df0a72ec49a0644acea91762c/payload/produits_ieqm_4_21k_gpkg.zip"
+      },
+      {
+        "sheet": "21L",
+        "originalFilename": "PRODUITS_IEQM_4_21L_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_21L_GPKG.zip",
+        "byteLength": 253236985,
+        "sha256": "72e2ac5f661d2b974a6c75d0b0d75ca8e82258c2376c1c82c424618a92ca8e61",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/21L/PRODUITS_IEQM_4_21L_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 253236985,
+          "lastModified": "Wed, 17 Jun 2026 14:55:56 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/21L/PRODUITS_IEQM_4_21L_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_21L.gpkg",
+          "byteLength": 852078592,
+          "crc32": "12b4d4c7"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/72e2ac5f661d2b974a6c75d0b0d75ca8e82258c2376c1c82c424618a92ca8e61/payload/produits_ieqm_4_21l_gpkg.zip"
+      },
+      {
+        "sheet": "21M",
+        "originalFilename": "PRODUITS_IEQM_4_21M_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_21M_GPKG.zip",
+        "byteLength": 308423213,
+        "sha256": "65e4e573acb6fb98c948a23830e69e34caa32d9862f7271c39c7c698146ea8a1",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/21M/PRODUITS_IEQM_4_21M_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 308423213,
+          "lastModified": "Wed, 17 Jun 2026 14:56:47 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/21M/PRODUITS_IEQM_4_21M_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_21M.gpkg",
+          "byteLength": 987815936,
+          "crc32": "28da3c83"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/65e4e573acb6fb98c948a23830e69e34caa32d9862f7271c39c7c698146ea8a1/payload/produits_ieqm_4_21m_gpkg.zip"
+      },
+      {
+        "sheet": "21N",
+        "originalFilename": "PRODUITS_IEQM_4_21N_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_21N_GPKG.zip",
+        "byteLength": 242287402,
+        "sha256": "2193bb6c95385e3b7682d2217c30893f1e329d551084e8c2ec0967d6d16ac430",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/21N/PRODUITS_IEQM_4_21N_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 242287402,
+          "lastModified": "Wed, 17 Jun 2026 14:57:24 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/21N/PRODUITS_IEQM_4_21N_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_21N.gpkg",
+          "byteLength": 802869248,
+          "crc32": "4325dc58"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/2193bb6c95385e3b7682d2217c30893f1e329d551084e8c2ec0967d6d16ac430/payload/produits_ieqm_4_21n_gpkg.zip"
+      },
+      {
+        "sheet": "21O",
+        "originalFilename": "PRODUITS_IEQM_4_21O_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_21O_GPKG.zip",
+        "byteLength": 15092565,
+        "sha256": "61e3ff386525783bfdb36d048d4a37031b92fc5ffeb4b0f4a8950511911163b4",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/21O/PRODUITS_IEQM_4_21O_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 15092565,
+          "lastModified": "Wed, 17 Jun 2026 14:57:26 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/21O/PRODUITS_IEQM_4_21O_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_21O.gpkg",
+          "byteLength": 61247488,
+          "crc32": "2d949c17"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/61e3ff386525783bfdb36d048d4a37031b92fc5ffeb4b0f4a8950511911163b4/payload/produits_ieqm_4_21o_gpkg.zip"
+      },
+      {
+        "sheet": "22A",
+        "originalFilename": "PRODUITS_IEQM_4_22A_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_22A_GPKG.zip",
+        "byteLength": 214758966,
+        "sha256": "f689f9e2dacbb7f2de3303acd21136212297057b2b58f7afa6eff7e110ab4391",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/22A/PRODUITS_IEQM_4_22A_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 214758966,
+          "lastModified": "Wed, 17 Jun 2026 14:58:00 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/22A/PRODUITS_IEQM_4_22A_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_22A.gpkg",
+          "byteLength": 707735552,
+          "crc32": "da7ae324"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/f689f9e2dacbb7f2de3303acd21136212297057b2b58f7afa6eff7e110ab4391/payload/produits_ieqm_4_22a_gpkg.zip"
+      },
+      {
+        "sheet": "22B",
+        "originalFilename": "PRODUITS_IEQM_4_22B_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_22B_GPKG.zip",
+        "byteLength": 281916900,
+        "sha256": "fdb80deae977ba2c6e6cf3429eca8b7d8cfecfbbf9affb25a1d649529d37a112",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/22B/PRODUITS_IEQM_4_22B_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 281916900,
+          "lastModified": "Wed, 17 Jun 2026 14:58:44 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/22B/PRODUITS_IEQM_4_22B_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_22B.gpkg",
+          "byteLength": 879480832,
+          "crc32": "778ab985"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/fdb80deae977ba2c6e6cf3429eca8b7d8cfecfbbf9affb25a1d649529d37a112/payload/produits_ieqm_4_22b_gpkg.zip"
+      },
+      {
+        "sheet": "22C",
+        "originalFilename": "PRODUITS_IEQM_4_22C_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_22C_GPKG.zip",
+        "byteLength": 282354624,
+        "sha256": "6334cd835a3f3b8ed4c2962ee80108b11d3e9b88a4abddbc60ec3048b9376394",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/22C/PRODUITS_IEQM_4_22C_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 282354624,
+          "lastModified": "Wed, 17 Jun 2026 14:59:29 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/22C/PRODUITS_IEQM_4_22C_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_22C.gpkg",
+          "byteLength": 918405120,
+          "crc32": "2e8d55c1"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/6334cd835a3f3b8ed4c2962ee80108b11d3e9b88a4abddbc60ec3048b9376394/payload/produits_ieqm_4_22c_gpkg.zip"
+      },
+      {
+        "sheet": "22D",
+        "originalFilename": "PRODUITS_IEQM_4_22D_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_22D_GPKG.zip",
+        "byteLength": 399401794,
+        "sha256": "99b116d636ef1928f95b3a549bfbf6453c41fc6a611c8bc81647ffc2de429c41",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/22D/PRODUITS_IEQM_4_22D_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 399401794,
+          "lastModified": "Wed, 17 Jun 2026 15:00:33 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/22D/PRODUITS_IEQM_4_22D_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_22D.gpkg",
+          "byteLength": 1337131008,
+          "crc32": "04ac454c"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/99b116d636ef1928f95b3a549bfbf6453c41fc6a611c8bc81647ffc2de429c41/payload/produits_ieqm_4_22d_gpkg.zip"
+      },
+      {
+        "sheet": "22E",
+        "originalFilename": "PRODUITS_IEQM_4_22E_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_22E_GPKG.zip",
+        "byteLength": 459354852,
+        "sha256": "66fe11b25c78253f226c77584460c00c02d579bc95ee554a88a4ed448aa1a293",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/22E/PRODUITS_IEQM_4_22E_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 459354852,
+          "lastModified": "Wed, 17 Jun 2026 15:01:48 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/22E/PRODUITS_IEQM_4_22E_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_22E.gpkg",
+          "byteLength": 1453473792,
+          "crc32": "7699fd55"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/66fe11b25c78253f226c77584460c00c02d579bc95ee554a88a4ed448aa1a293/payload/produits_ieqm_4_22e_gpkg.zip"
+      },
+      {
+        "sheet": "22F",
+        "originalFilename": "PRODUITS_IEQM_4_22F_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_22F_GPKG.zip",
+        "byteLength": 569922696,
+        "sha256": "b77adaadb8ca7e8bbce4f7b4c62204a6510cf2db4895ab49016df18379e692e3",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/22F/PRODUITS_IEQM_4_22F_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 569922696,
+          "lastModified": "Wed, 17 Jun 2026 15:03:18 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/22F/PRODUITS_IEQM_4_22F_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_22F.gpkg",
+          "byteLength": 1783181312,
+          "crc32": "f176b19c"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/b77adaadb8ca7e8bbce4f7b4c62204a6510cf2db4895ab49016df18379e692e3/payload/produits_ieqm_4_22f_gpkg.zip"
+      },
+      {
+        "sheet": "22G",
+        "originalFilename": "PRODUITS_IEQM_4_22G_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_22G_GPKG.zip",
+        "byteLength": 232409112,
+        "sha256": "75f56e41f6d58ebddad087cdc60641a59f9070e4d7f5814f9de5d1025b56acd6",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/22G/PRODUITS_IEQM_4_22G_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 232409112,
+          "lastModified": "Wed, 17 Jun 2026 15:03:53 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/22G/PRODUITS_IEQM_4_22G_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_22G.gpkg",
+          "byteLength": 786915328,
+          "crc32": "d2c3215b"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/75f56e41f6d58ebddad087cdc60641a59f9070e4d7f5814f9de5d1025b56acd6/payload/produits_ieqm_4_22g_gpkg.zip"
+      },
+      {
+        "sheet": "22H",
+        "originalFilename": "PRODUITS_IEQM_4_22H_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_22H_GPKG.zip",
+        "byteLength": 86840140,
+        "sha256": "ea30978c67d3ed2bc787a5e03b4930e064b9a4493e50d7945afe582b2b84f49d",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/22H/PRODUITS_IEQM_4_22H_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 86840140,
+          "lastModified": "Wed, 17 Jun 2026 15:04:07 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/22H/PRODUITS_IEQM_4_22H_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_22H.gpkg",
+          "byteLength": 320962560,
+          "crc32": "e09b7dcb"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/ea30978c67d3ed2bc787a5e03b4930e064b9a4493e50d7945afe582b2b84f49d/payload/produits_ieqm_4_22h_gpkg.zip"
+      },
+      {
+        "sheet": "22I",
+        "originalFilename": "PRODUITS_IEQM_4_22I_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_22I_GPKG.zip",
+        "byteLength": 128287002,
+        "sha256": "945a768f91a761e724e4753e281e155e0e59090d71e97786575e787c6c88ea4a",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/22I/PRODUITS_IEQM_4_22I_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 128287002,
+          "lastModified": "Wed, 17 Jun 2026 15:04:27 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/22I/PRODUITS_IEQM_4_22I_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_22I.gpkg",
+          "byteLength": 440532992,
+          "crc32": "4796c5e4"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/945a768f91a761e724e4753e281e155e0e59090d71e97786575e787c6c88ea4a/payload/produits_ieqm_4_22i_gpkg.zip"
+      },
+      {
+        "sheet": "22J",
+        "originalFilename": "PRODUITS_IEQM_4_22J_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_22J_GPKG.zip",
+        "byteLength": 464600595,
+        "sha256": "f9e193e8782cbb1af18472dd495935221b4f747a0350aa4ff76a2d525a177dda",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/22J/PRODUITS_IEQM_4_22J_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 464600595,
+          "lastModified": "Wed, 17 Jun 2026 15:05:38 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/22J/PRODUITS_IEQM_4_22J_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_22J.gpkg",
+          "byteLength": 1468055552,
+          "crc32": "3c6ecaab"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/f9e193e8782cbb1af18472dd495935221b4f747a0350aa4ff76a2d525a177dda/payload/produits_ieqm_4_22j_gpkg.zip"
+      },
+      {
+        "sheet": "22K",
+        "originalFilename": "PRODUITS_IEQM_4_22K_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_22K_GPKG.zip",
+        "byteLength": 554851276,
+        "sha256": "d10bca5002a6381f22051de1a02e5c24ee4d5027642b3d399d294cabdf3707ac",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/22K/PRODUITS_IEQM_4_22K_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 554851276,
+          "lastModified": "Wed, 17 Jun 2026 15:07:05 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/22K/PRODUITS_IEQM_4_22K_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_22K.gpkg",
+          "byteLength": 1744142336,
+          "crc32": "8630d13f"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/d10bca5002a6381f22051de1a02e5c24ee4d5027642b3d399d294cabdf3707ac/payload/produits_ieqm_4_22k_gpkg.zip"
+      },
+      {
+        "sheet": "22L",
+        "originalFilename": "PRODUITS_IEQM_4_22L_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_22L_GPKG.zip",
+        "byteLength": 533260668,
+        "sha256": "bdb5a178027bff9a5acffa04577ee81338c9dd7f8edbb6351313ed4c37783194",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/22L/PRODUITS_IEQM_4_22L_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 533260668,
+          "lastModified": "Wed, 17 Jun 2026 15:08:25 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/22L/PRODUITS_IEQM_4_22L_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_22L.gpkg",
+          "byteLength": 1762693120,
+          "crc32": "d2ff0f3c"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/bdb5a178027bff9a5acffa04577ee81338c9dd7f8edbb6351313ed4c37783194/payload/produits_ieqm_4_22l_gpkg.zip"
+      },
+      {
+        "sheet": "22M",
+        "originalFilename": "PRODUITS_IEQM_4_22M_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_22M_GPKG.zip",
+        "byteLength": 159555689,
+        "sha256": "43f6bb954c8b116c2f7fcb9ae58b8ab880e8e4b7a0b94780e1eea5f5f161abe5",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/22M/PRODUITS_IEQM_4_22M_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 159555689,
+          "lastModified": "Wed, 17 Jun 2026 15:08:50 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/22M/PRODUITS_IEQM_4_22M_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_22M.gpkg",
+          "byteLength": 515407872,
+          "crc32": "4b178d75"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/43f6bb954c8b116c2f7fcb9ae58b8ab880e8e4b7a0b94780e1eea5f5f161abe5/payload/produits_ieqm_4_22m_gpkg.zip"
+      },
+      {
+        "sheet": "22N",
+        "originalFilename": "PRODUITS_IEQM_4_22N_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_22N_GPKG.zip",
+        "byteLength": 303165572,
+        "sha256": "1e031b614eb6ca89e1d35afeb407c2712ee2139fa779b1efd7dff79a97969dce",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/22N/PRODUITS_IEQM_4_22N_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 303165572,
+          "lastModified": "Wed, 17 Jun 2026 15:09:37 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/22N/PRODUITS_IEQM_4_22N_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_22N.gpkg",
+          "byteLength": 913203200,
+          "crc32": "e54c95bb"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/1e031b614eb6ca89e1d35afeb407c2712ee2139fa779b1efd7dff79a97969dce/payload/produits_ieqm_4_22n_gpkg.zip"
+      },
+      {
+        "sheet": "22O",
+        "originalFilename": "PRODUITS_IEQM_4_22O_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_22O_GPKG.zip",
+        "byteLength": 209230675,
+        "sha256": "dfed25117f0c2551cabda1accd032d141723f1a1d240eb5761bb23a1137b933b",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/22O/PRODUITS_IEQM_4_22O_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 209230675,
+          "lastModified": "Wed, 17 Jun 2026 15:10:08 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/22O/PRODUITS_IEQM_4_22O_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_22O.gpkg",
+          "byteLength": 717791232,
+          "crc32": "68350787"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/dfed25117f0c2551cabda1accd032d141723f1a1d240eb5761bb23a1137b933b/payload/produits_ieqm_4_22o_gpkg.zip"
+      },
+      {
+        "sheet": "23B",
+        "originalFilename": "PRODUITS_IEQM_4_23B_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_23B_GPKG.zip",
+        "byteLength": 3480169,
+        "sha256": "d3d49b4b474fdd23bb3998ca07705ad78cfd537ed9bc0fed0782577dfe8c4d79",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/23B/PRODUITS_IEQM_4_23B_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 3480169,
+          "lastModified": "Wed, 17 Jun 2026 15:10:09 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/23B/PRODUITS_IEQM_4_23B_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_23B.gpkg",
+          "byteLength": 13791232,
+          "crc32": "2c4ae7e6"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/d3d49b4b474fdd23bb3998ca07705ad78cfd537ed9bc0fed0782577dfe8c4d79/payload/produits_ieqm_4_23b_gpkg.zip"
+      },
+      {
+        "sheet": "23C",
+        "originalFilename": "PRODUITS_IEQM_4_23C_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_23C_GPKG.zip",
+        "byteLength": 4325291,
+        "sha256": "cd80bc5eefd820546ddd8e0a83871a6706220d355a3af70095dc47cf2b138a12",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/23C/PRODUITS_IEQM_4_23C_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 4325291,
+          "lastModified": "Wed, 17 Jun 2026 15:10:10 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/23C/PRODUITS_IEQM_4_23C_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_23C.gpkg",
+          "byteLength": 16130048,
+          "crc32": "f031e509"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/cd80bc5eefd820546ddd8e0a83871a6706220d355a3af70095dc47cf2b138a12/payload/produits_ieqm_4_23c_gpkg.zip"
+      },
+      {
+        "sheet": "31A",
+        "originalFilename": "PRODUITS_IEQM_4_31A_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_31A_GPKG.zip",
+        "byteLength": 718419,
+        "sha256": "56a2991b3fbf9175332da1f48ead3fe3145082351b3b77d64b2fa004d1793db7",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/31A/PRODUITS_IEQM_4_31A_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 718419,
+          "lastModified": "Wed, 17 Jun 2026 15:10:10 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/31A/PRODUITS_IEQM_4_31A_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_31A.gpkg",
+          "byteLength": 5169152,
+          "crc32": "4f64e07e"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/56a2991b3fbf9175332da1f48ead3fe3145082351b3b77d64b2fa004d1793db7/payload/produits_ieqm_4_31a_gpkg.zip"
+      },
+      {
+        "sheet": "31B",
+        "originalFilename": "PRODUITS_IEQM_4_31B_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_31B_GPKG.zip",
+        "byteLength": 3051693,
+        "sha256": "a3df1a722522664c5a9d15e2889d63da51d41076ac4445d8acd1ff569675ddad",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/31B/PRODUITS_IEQM_4_31B_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 3051693,
+          "lastModified": "Wed, 17 Jun 2026 15:10:10 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/31B/PRODUITS_IEQM_4_31B_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_31B.gpkg",
+          "byteLength": 13438976,
+          "crc32": "ab6734b5"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/a3df1a722522664c5a9d15e2889d63da51d41076ac4445d8acd1ff569675ddad/payload/produits_ieqm_4_31b_gpkg.zip"
+      },
+      {
+        "sheet": "31F",
+        "originalFilename": "PRODUITS_IEQM_4_31F_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_31F_GPKG.zip",
+        "byteLength": 123605796,
+        "sha256": "4f646bf8c6450c644cc6b221547b23c8f3ce3df202d8b4e9b0062a5b82742d51",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/31F/PRODUITS_IEQM_4_31F_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 123605796,
+          "lastModified": "Wed, 17 Jun 2026 15:10:29 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/31F/PRODUITS_IEQM_4_31F_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_31F.gpkg",
+          "byteLength": 476532736,
+          "crc32": "c5000a27"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/4f646bf8c6450c644cc6b221547b23c8f3ce3df202d8b4e9b0062a5b82742d51/payload/produits_ieqm_4_31f_gpkg.zip"
+      },
+      {
+        "sheet": "31G",
+        "originalFilename": "PRODUITS_IEQM_4_31G_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_31G_GPKG.zip",
+        "byteLength": 197987526,
+        "sha256": "6466de84cb6b56c2323789c82f7cb518b1902561359ab9cfd6b78c946f7fb721",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/31G/PRODUITS_IEQM_4_31G_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 197987526,
+          "lastModified": "Wed, 17 Jun 2026 15:11:03 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/31G/PRODUITS_IEQM_4_31G_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_31G.gpkg",
+          "byteLength": 662392832,
+          "crc32": "f0c7719b"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/6466de84cb6b56c2323789c82f7cb518b1902561359ab9cfd6b78c946f7fb721/payload/produits_ieqm_4_31g_gpkg.zip"
+      },
+      {
+        "sheet": "31H",
+        "originalFilename": "PRODUITS_IEQM_4_31H_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_31H_GPKG.zip",
+        "byteLength": 268402525,
+        "sha256": "81afa435d150132af47f8df3ad13269a7c45bf204fb6aba60b083a73c89e7338",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/31H/PRODUITS_IEQM_4_31H_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 268402525,
+          "lastModified": "Wed, 17 Jun 2026 15:11:48 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/31H/PRODUITS_IEQM_4_31H_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_31H.gpkg",
+          "byteLength": 920985600,
+          "crc32": "c59dcb18"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/81afa435d150132af47f8df3ad13269a7c45bf204fb6aba60b083a73c89e7338/payload/produits_ieqm_4_31h_gpkg.zip"
+      },
+      {
+        "sheet": "31I",
+        "originalFilename": "PRODUITS_IEQM_4_31I_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_31I_GPKG.zip",
+        "byteLength": 521060009,
+        "sha256": "e89606eb0ba9228f9beef5999aabeb7864a8a1cdec9321d8347efb75e4d605db",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/31I/PRODUITS_IEQM_4_31I_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 521060009,
+          "lastModified": "Wed, 17 Jun 2026 15:13:13 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/31I/PRODUITS_IEQM_4_31I_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_31I.gpkg",
+          "byteLength": 1930006528,
+          "crc32": "8156286f"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/e89606eb0ba9228f9beef5999aabeb7864a8a1cdec9321d8347efb75e4d605db/payload/produits_ieqm_4_31i_gpkg.zip"
+      },
+      {
+        "sheet": "31J",
+        "originalFilename": "PRODUITS_IEQM_4_31J_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_31J_GPKG.zip",
+        "byteLength": 876084262,
+        "sha256": "3a96ccb1e3c1b898481b0d694ac4983b431af6d6fd5788426026f17d03a049da",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/31J/PRODUITS_IEQM_4_31J_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 876084262,
+          "lastModified": "Wed, 17 Jun 2026 15:15:32 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/31J/PRODUITS_IEQM_4_31J_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_31J.gpkg",
+          "byteLength": 3286224896,
+          "crc32": "96cef15e"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/3a96ccb1e3c1b898481b0d694ac4983b431af6d6fd5788426026f17d03a049da/payload/produits_ieqm_4_31j_gpkg.zip"
+      },
+      {
+        "sheet": "31K",
+        "originalFilename": "PRODUITS_IEQM_4_31K_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_31K_GPKG.zip",
+        "byteLength": 810754268,
+        "sha256": "82baef7dc7e977c35c6674ac01b318907bcc627c27d67c39fef718f8dc38a50e",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/31K/PRODUITS_IEQM_4_31K_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 810754268,
+          "lastModified": "Wed, 17 Jun 2026 15:17:39 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/31K/PRODUITS_IEQM_4_31K_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_31K.gpkg",
+          "byteLength": 3096895488,
+          "crc32": "252bbf98"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/82baef7dc7e977c35c6674ac01b318907bcc627c27d67c39fef718f8dc38a50e/payload/produits_ieqm_4_31k_gpkg.zip"
+      },
+      {
+        "sheet": "31L",
+        "originalFilename": "PRODUITS_IEQM_4_31L_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_31L_GPKG.zip",
+        "byteLength": 164798953,
+        "sha256": "28b287d3cb8c97c6085cf478ea1f4c45c8eb2ee1243898543ae0ac75d9c855e6",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/31L/PRODUITS_IEQM_4_31L_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 164798953,
+          "lastModified": "Wed, 17 Jun 2026 15:18:08 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/31L/PRODUITS_IEQM_4_31L_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_31L.gpkg",
+          "byteLength": 571002880,
+          "crc32": "45f71dbf"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/28b287d3cb8c97c6085cf478ea1f4c45c8eb2ee1243898543ae0ac75d9c855e6/payload/produits_ieqm_4_31l_gpkg.zip"
+      },
+      {
+        "sheet": "31M",
+        "originalFilename": "PRODUITS_IEQM_4_31M_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_31M_GPKG.zip",
+        "byteLength": 386589342,
+        "sha256": "debbf9f8d6a3e1c87be417986aaf66acad86c3ad11cbec7b2762defaf6afce14",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/31M/PRODUITS_IEQM_4_31M_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 386589342,
+          "lastModified": "Wed, 17 Jun 2026 15:19:07 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/31M/PRODUITS_IEQM_4_31M_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_31M.gpkg",
+          "byteLength": 1383464960,
+          "crc32": "ee4b5b82"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/debbf9f8d6a3e1c87be417986aaf66acad86c3ad11cbec7b2762defaf6afce14/payload/produits_ieqm_4_31m_gpkg.zip"
+      },
+      {
+        "sheet": "31N",
+        "originalFilename": "PRODUITS_IEQM_4_31N_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_31N_GPKG.zip",
+        "byteLength": 366860017,
+        "sha256": "8f4f3ac08f70a620bad4b0ed427bccb58954ba901926c9f9faf588cdbebe7011",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/31N/PRODUITS_IEQM_4_31N_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 366860017,
+          "lastModified": "Wed, 17 Jun 2026 15:20:08 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/31N/PRODUITS_IEQM_4_31N_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_31N.gpkg",
+          "byteLength": 1237413888,
+          "crc32": "82805cea"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/8f4f3ac08f70a620bad4b0ed427bccb58954ba901926c9f9faf588cdbebe7011/payload/produits_ieqm_4_31n_gpkg.zip"
+      },
+      {
+        "sheet": "31O",
+        "originalFilename": "PRODUITS_IEQM_4_31O_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_31O_GPKG.zip",
+        "byteLength": 633765996,
+        "sha256": "7f7a03c3a68a7f867852d6c743a08f1367b94d7821289def13b976cb977d1b4b",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/31O/PRODUITS_IEQM_4_31O_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 633765996,
+          "lastModified": "Wed, 17 Jun 2026 15:21:49 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/31O/PRODUITS_IEQM_4_31O_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_31O.gpkg",
+          "byteLength": 2340802560,
+          "crc32": "cbc59a3b"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/7f7a03c3a68a7f867852d6c743a08f1367b94d7821289def13b976cb977d1b4b/payload/produits_ieqm_4_31o_gpkg.zip"
+      },
+      {
+        "sheet": "31P",
+        "originalFilename": "PRODUITS_IEQM_4_31P_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_31P_GPKG.zip",
+        "byteLength": 637514545,
+        "sha256": "5acb74f2292329fbf6b81dbaa188f31b8eb84ed95783cdedfc803df98492d2e1",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/31P/PRODUITS_IEQM_4_31P_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 637514545,
+          "lastModified": "Wed, 17 Jun 2026 15:23:32 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/31P/PRODUITS_IEQM_4_31P_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_31P.gpkg",
+          "byteLength": 2411630592,
+          "crc32": "2b5b2d76"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/5acb74f2292329fbf6b81dbaa188f31b8eb84ed95783cdedfc803df98492d2e1/payload/produits_ieqm_4_31p_gpkg.zip"
+      },
+      {
+        "sheet": "32A",
+        "originalFilename": "PRODUITS_IEQM_4_32A_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_32A_GPKG.zip",
+        "byteLength": 489890173,
+        "sha256": "336cc2a7d0ee624da2f22d30f25e6d6badca0a7bd3ba9b34a20bad0594b37cb0",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/32A/PRODUITS_IEQM_4_32A_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 489890173,
+          "lastModified": "Wed, 17 Jun 2026 15:24:48 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/32A/PRODUITS_IEQM_4_32A_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_32A.gpkg",
+          "byteLength": 1710551040,
+          "crc32": "c08e2e13"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/336cc2a7d0ee624da2f22d30f25e6d6badca0a7bd3ba9b34a20bad0594b37cb0/payload/produits_ieqm_4_32a_gpkg.zip"
+      },
+      {
+        "sheet": "32B",
+        "originalFilename": "PRODUITS_IEQM_4_32B_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_32B_GPKG.zip",
+        "byteLength": 516819658,
+        "sha256": "273f7a58abcae4e7d8d1be647a7f1e1ab4904facd39fdd16393db4709dd6e796",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/32B/PRODUITS_IEQM_4_32B_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 516819658,
+          "lastModified": "Wed, 17 Jun 2026 15:26:13 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/32B/PRODUITS_IEQM_4_32B_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_32B.gpkg",
+          "byteLength": 1830150144,
+          "crc32": "e8cf58c0"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/273f7a58abcae4e7d8d1be647a7f1e1ab4904facd39fdd16393db4709dd6e796/payload/produits_ieqm_4_32b_gpkg.zip"
+      },
+      {
+        "sheet": "32C",
+        "originalFilename": "PRODUITS_IEQM_4_32C_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_32C_GPKG.zip",
+        "byteLength": 463005858,
+        "sha256": "744bdbca599be16fbb78de9d9db98b3a09943e1677d7896993acc844289fe4d3",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/32C/PRODUITS_IEQM_4_32C_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 463005858,
+          "lastModified": "Wed, 17 Jun 2026 15:27:29 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/32C/PRODUITS_IEQM_4_32C_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_32C.gpkg",
+          "byteLength": 1566814208,
+          "crc32": "c89ac0a0"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/744bdbca599be16fbb78de9d9db98b3a09943e1677d7896993acc844289fe4d3/payload/produits_ieqm_4_32c_gpkg.zip"
+      },
+      {
+        "sheet": "32D",
+        "originalFilename": "PRODUITS_IEQM_4_32D_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_32D_GPKG.zip",
+        "byteLength": 326130629,
+        "sha256": "3b19f7a332d4beedfee7dfc958f4d45613732f044f214a53fe0d511ff24845d7",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/32D/PRODUITS_IEQM_4_32D_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 326130629,
+          "lastModified": "Wed, 17 Jun 2026 15:28:22 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/32D/PRODUITS_IEQM_4_32D_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_32D.gpkg",
+          "byteLength": 1142960128,
+          "crc32": "34242985"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/3b19f7a332d4beedfee7dfc958f4d45613732f044f214a53fe0d511ff24845d7/payload/produits_ieqm_4_32d_gpkg.zip"
+      },
+      {
+        "sheet": "32E",
+        "originalFilename": "PRODUITS_IEQM_4_32E_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_32E_GPKG.zip",
+        "byteLength": 332000085,
+        "sha256": "86a46ae106d36eb105ea76ed29396e6108106084de759b0c1c095ad815a56f6b",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/32E/PRODUITS_IEQM_4_32E_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 332000085,
+          "lastModified": "Wed, 17 Jun 2026 15:29:20 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/32E/PRODUITS_IEQM_4_32E_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_32E.gpkg",
+          "byteLength": 1150885888,
+          "crc32": "4ba39d83"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/86a46ae106d36eb105ea76ed29396e6108106084de759b0c1c095ad815a56f6b/payload/produits_ieqm_4_32e_gpkg.zip"
+      },
+      {
+        "sheet": "32F",
+        "originalFilename": "PRODUITS_IEQM_4_32F_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_32F_GPKG.zip",
+        "byteLength": 511556453,
+        "sha256": "81150110ad6ff4680f5ef19431282029d01e3f5a599797ce6530426e8f31a1ee",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/32F/PRODUITS_IEQM_4_32F_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 511556453,
+          "lastModified": "Wed, 17 Jun 2026 15:30:46 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/32F/PRODUITS_IEQM_4_32F_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_32F.gpkg",
+          "byteLength": 1698119680,
+          "crc32": "5ae69c4b"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/81150110ad6ff4680f5ef19431282029d01e3f5a599797ce6530426e8f31a1ee/payload/produits_ieqm_4_32f_gpkg.zip"
+      },
+      {
+        "sheet": "32G",
+        "originalFilename": "PRODUITS_IEQM_4_32G_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_32G_GPKG.zip",
+        "byteLength": 483062136,
+        "sha256": "66d899554cae6f6931a1aa5c83c310b3f755fd9fde1f72180c4b390c671bced9",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/32G/PRODUITS_IEQM_4_32G_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 483062136,
+          "lastModified": "Wed, 17 Jun 2026 15:32:03 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/32G/PRODUITS_IEQM_4_32G_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_32G.gpkg",
+          "byteLength": 1575800832,
+          "crc32": "ccc57c9d"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/66d899554cae6f6931a1aa5c83c310b3f755fd9fde1f72180c4b390c671bced9/payload/produits_ieqm_4_32g_gpkg.zip"
+      },
+      {
+        "sheet": "32H",
+        "originalFilename": "PRODUITS_IEQM_4_32H_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_32H_GPKG.zip",
+        "byteLength": 442790960,
+        "sha256": "f9278f443482931cce3b6098c6cee55911f98a32c6bcbd627e047657e922c774",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/32H/PRODUITS_IEQM_4_32H_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 442790960,
+          "lastModified": "Wed, 17 Jun 2026 15:33:13 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/32H/PRODUITS_IEQM_4_32H_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_32H.gpkg",
+          "byteLength": 1483546624,
+          "crc32": "8c65b97c"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/f9278f443482931cce3b6098c6cee55911f98a32c6bcbd627e047657e922c774/payload/produits_ieqm_4_32h_gpkg.zip"
+      },
+      {
+        "sheet": "32I",
+        "originalFilename": "PRODUITS_IEQM_4_32I_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_32I_GPKG.zip",
+        "byteLength": 397235454,
+        "sha256": "355c5fa962d32a99ec68b31c249be26d8c72c7ab3abbc3607e58ed07a0d61d39",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/32I/PRODUITS_IEQM_4_32I_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 397235454,
+          "lastModified": "Wed, 17 Jun 2026 15:34:15 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/32I/PRODUITS_IEQM_4_32I_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_32I.gpkg",
+          "byteLength": 1255374848,
+          "crc32": "37ee56f3"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/355c5fa962d32a99ec68b31c249be26d8c72c7ab3abbc3607e58ed07a0d61d39/payload/produits_ieqm_4_32i_gpkg.zip"
+      },
+      {
+        "sheet": "32J",
+        "originalFilename": "PRODUITS_IEQM_4_32J_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_32J_GPKG.zip",
+        "byteLength": 426348072,
+        "sha256": "1afa440d221a81b4254ca71cfaaf41b8bc9e04e4a86ccc6b47503fe5f3ed49cc",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/32J/PRODUITS_IEQM_4_32J_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 426348072,
+          "lastModified": "Wed, 17 Jun 2026 15:35:24 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/32J/PRODUITS_IEQM_4_32J_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_32J.gpkg",
+          "byteLength": 1370882048,
+          "crc32": "75c9c672"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/1afa440d221a81b4254ca71cfaaf41b8bc9e04e4a86ccc6b47503fe5f3ed49cc/payload/produits_ieqm_4_32j_gpkg.zip"
+      },
+      {
+        "sheet": "32K",
+        "originalFilename": "PRODUITS_IEQM_4_32K_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_32K_GPKG.zip",
+        "byteLength": 372011631,
+        "sha256": "92c8c4e79f55a419b45dc8757fcd218ee8060bba705afcf6dd496417ece22be2",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/32K/PRODUITS_IEQM_4_32K_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 372011631,
+          "lastModified": "Wed, 17 Jun 2026 15:36:28 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/32K/PRODUITS_IEQM_4_32K_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_32K.gpkg",
+          "byteLength": 1221890048,
+          "crc32": "7964fc55"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/92c8c4e79f55a419b45dc8757fcd218ee8060bba705afcf6dd496417ece22be2/payload/produits_ieqm_4_32k_gpkg.zip"
+      },
+      {
+        "sheet": "32L",
+        "originalFilename": "PRODUITS_IEQM_4_32L_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_32L_GPKG.zip",
+        "byteLength": 37982736,
+        "sha256": "8064ce5198e584fb0341b3aed46500a48dd937eca98745cfeabba3642a743062",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/32L/PRODUITS_IEQM_4_32L_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 37982736,
+          "lastModified": "Wed, 17 Jun 2026 15:36:34 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/32L/PRODUITS_IEQM_4_32L_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_32L.gpkg",
+          "byteLength": 131223552,
+          "crc32": "ab5784fd"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/8064ce5198e584fb0341b3aed46500a48dd937eca98745cfeabba3642a743062/payload/produits_ieqm_4_32l_gpkg.zip"
+      },
+      {
+        "sheet": "32N",
+        "originalFilename": "PRODUITS_IEQM_4_32N_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_32N_GPKG.zip",
+        "byteLength": 11660862,
+        "sha256": "7eec71caec4d34c8eea2f6349b60528518c9cb2c923dda511f6c11baa80dc4de",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/32N/PRODUITS_IEQM_4_32N_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 11660862,
+          "lastModified": "Wed, 17 Jun 2026 15:36:36 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/32N/PRODUITS_IEQM_4_32N_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_32N.gpkg",
+          "byteLength": 40275968,
+          "crc32": "146c24e7"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/7eec71caec4d34c8eea2f6349b60528518c9cb2c923dda511f6c11baa80dc4de/payload/produits_ieqm_4_32n_gpkg.zip"
+      },
+      {
+        "sheet": "32O",
+        "originalFilename": "PRODUITS_IEQM_4_32O_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_32O_GPKG.zip",
+        "byteLength": 9757639,
+        "sha256": "d8a4fac724056dbf33ef521e5c1c2a333b095dadc0aa3f2ad6d854323f251b52",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/32O/PRODUITS_IEQM_4_32O_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 9757639,
+          "lastModified": "Wed, 17 Jun 2026 15:36:38 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/32O/PRODUITS_IEQM_4_32O_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_32O.gpkg",
+          "byteLength": 34172928,
+          "crc32": "f230708b"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/d8a4fac724056dbf33ef521e5c1c2a333b095dadc0aa3f2ad6d854323f251b52/payload/produits_ieqm_4_32o_gpkg.zip"
+      },
+      {
+        "sheet": "32P",
+        "originalFilename": "PRODUITS_IEQM_4_32P_GPKG.zip",
+        "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_32P_GPKG.zip",
+        "byteLength": 94210230,
+        "sha256": "f95dcb82465dcd404ad19aff268eee8bdcd5e3bca4fd6ca6c0f1c8a8aa0f51e9",
+        "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/32P/PRODUITS_IEQM_4_32P_GPKG.zip",
+        "head": {
+          "status": 200,
+          "contentLength": 94210230,
+          "lastModified": "Wed, 17 Jun 2026 15:36:53 GMT",
+          "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/02-Donnees/Decoupage250K/32P/PRODUITS_IEQM_4_32P_GPKG.zip"
+        },
+        "zipIntegrity": "passed",
+        "member": {
+          "name": "PRODUITS_IEQM_4_32P.gpkg",
+          "byteLength": 303124480,
+          "crc32": "c548d8b6"
+        },
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/f95dcb82465dcd404ad19aff268eee8bdcd5e3bca4fd6ca6c0f1c8a8aa0f51e9/payload/produits_ieqm_4_32p_gpkg.zip"
+      }
+    ]
+  },
+  "evidenceArtifacts": [
+    {
+      "id": "publisher-metadata",
+      "role": "Données Québec catalogue API snapshot binding publisher identity, edition, licence and resource URLs.",
+      "originalFilename": "donnees-quebec-package-show.json",
+      "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/donnees-quebec-package-show.json",
+      "byteLength": 26567,
+      "sha256": "eb78b91cb0c8ec05ad0b25e13a0a2569663e04abc6a6f42432f51b66e1676e60",
+      "sourceUrl": "https://www.donneesquebec.ca/recherche/api/3/action/package_show?id=77ec9009-b733-4f09-ade3-99d7b2156ad4",
+      "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/collection-394f05f984b164b7524e77b00fc73246a791d6c4112f7cc080c43fb3d8a2c0e0/evidence/eb78b91cb0c8ec05ad0b25e13a0a2569663e04abc6a6f42432f51b66e1676e60/donnees-quebec-package-show.json"
+    },
+    {
+      "id": "publisher-documentation",
+      "role": "Official June 2026 product documentation and scope statement.",
+      "originalFilename": "LISEZ-MOI_carteco-ori-res-4_DQ.pdf",
+      "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/LISEZ-MOI_carteco-ori-res-4_DQ.pdf",
+      "byteLength": 612203,
+      "sha256": "ffeacd42c75c27b019f4ea46e2bfd73e9b23a04b55be236259ecf6a2147e456c",
+      "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/01-Documentation/LISEZ-MOI_carteco-ori-res-4_DQ.pdf",
+      "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/collection-394f05f984b164b7524e77b00fc73246a791d6c4112f7cc080c43fb3d8a2c0e0/evidence/ffeacd42c75c27b019f4ea46e2bfd73e9b23a04b55be236259ecf6a2147e456c/lisez-moi_carteco-ori-res-4_dq.pdf"
+    },
+    {
+      "id": "publisher-download-index",
+      "role": "Official 56-sheet download index as published, including the documented broken filenames.",
+      "originalFilename": "URL_4e.csv",
+      "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/URL_4e.csv",
+      "byteLength": 29104,
+      "sha256": "8525f3153f2e4ea30b6be78f0c93019e80fb9f4570db53221badea4c4a4abadd",
+      "sourceUrl": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/03-Telechargement/URL_4e.csv",
+      "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/collection-394f05f984b164b7524e77b00fc73246a791d6c4112f7cc080c43fb3d8a2c0e0/evidence/8525f3153f2e4ea30b6be78f0c93019e80fb9f4570db53221badea4c4a4abadd/url_4e.csv"
+    },
+    {
+      "id": "corrected-url-head-evidence",
+      "role": "Exact HTTP status, Content-Length, Last-Modified and official corrected URL for every acquired sheet.",
+      "originalFilename": "official-sheet-heads.tsv",
+      "dataRootRelativePath": "raw/qc-fourth-inventory/2026-08-14/official-sheet-heads.tsv",
+      "byteLength": 12661,
+      "sha256": "cf8b068eb3164fd3d195ce6c84edd1057ff93dae3e844f50fbea54ceda700539",
+      "sourceUrl": null,
+      "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/collection-394f05f984b164b7524e77b00fc73246a791d6c4112f7cc080c43fb3d8a2c0e0/evidence/cf8b068eb3164fd3d195ce6c84edd1057ff93dae3e844f50fbea54ceda700539/official-sheet-heads.tsv"
+    },
+    {
+      "id": "exhaustive-profile",
+      "role": "All-sheet checksum, ZIP CRC, layer, CRS, extent, field, view-lineage and exhaustive base-geometry profile.",
+      "originalFilename": "qc-fourth-inventory-profile.json",
+      "dataRootRelativePath": "work/qc-fourth-inventory/2026-08-14/qc-fourth-inventory-profile.json",
+      "byteLength": 1027637,
+      "sha256": "5450a1beade6f8dbbf73320a8751a3131bede150d95bb8847d9522b10ad985f9",
+      "sourceUrl": null,
+      "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/collection-394f05f984b164b7524e77b00fc73246a791d6c4112f7cc080c43fb3d8a2c0e0/evidence/5450a1beade6f8dbbf73320a8751a3131bede150d95bb8847d9522b10ad985f9/qc-fourth-inventory-profile.json"
+    }
+  ],
+  "profileSummary": {
+    "sha256": "5450a1beade6f8dbbf73320a8751a3131bede150d95bb8847d9522b10ad985f9",
+    "crs": "EPSG:32198",
+    "standFeatureCount": 7489195,
+    "standMissing": 0,
+    "standEmpty": 0,
+    "standInvalid": 0
+  },
+  "canonicalManifest": {
+    "id": "canonical-collection-manifest",
+    "originalFilename": "collection-manifest.json",
+    "byteLength": 76127,
+    "sha256": "b3d85d1da40d68d79742c77ec418713f2ef968f74845c43e011df274d559616c",
+    "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/collection-394f05f984b164b7524e77b00fc73246a791d6c4112f7cc080c43fb3d8a2c0e0/manifest/b3d85d1da40d68d79742c77ec418713f2ef968f74845c43e011df274d559616c/collection-manifest.json",
+    "generatorSchemaVersion": "witness-tree/qc-fourth-inventory-immutable-collection/1"
+  },
+  "exclusionDecision": {
+    "originalFilename": "CARTE_ECO_ORI_4_PROV_gpkg.zip",
+    "byteLength": 8096656664,
+    "sha256": "62f61998be33d1e3d2f23f6c77e90ca946a40bda0d5d86b00c976c339877d25b",
+    "decision": "excluded-map-only-redundant-component",
+    "reason": "The 56 publisher-defined sheet products are the complete named product and contain both the original map and result tables. The provincial archive contains only the map component, was not used to derive the complete product profile, and adds no required raw input for reproducing this row. Its local checksum and official refetch URL remain recorded as supporting evidence."
+  },
+  "requiredApprovals": {
+    "exactArtifactSet": false,
+    "irreversibleComplianceRetention": false,
+    "leastPrivilegeIamPolicy": false,
+    "mfaSessionExecution": false
+  },
+  "forbiddenActions": [
+    "DeleteObject",
+    "DeleteObjectVersion",
+    "AbortMultipartUpload",
+    "BypassGovernanceRetention",
+    "PutObjectLegalHold",
+    "PutBucketObjectLockConfiguration",
+    "PutBucketVersioning",
+    "PutLifecycleConfiguration",
+    "replication",
+    "any object key not enumerated by this preparation"
+  ],
+  "claims": {
+    "remoteObjectsExist": false,
+    "retentionApplied": false,
+    "immutableObjectStorage": false,
+    "transformed": false,
+    "ingested": false,
+    "productionEligible": false
+  }
+}
