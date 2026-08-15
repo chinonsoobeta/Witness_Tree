@@ -17,12 +17,16 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 usage() {
   cat <<'EOF'
 Usage:
+  scripts/run-phase1-archive-owner-exercise.sh --preflight [--profile WitnessTreeArchiveOperator]
   scripts/run-phase1-archive-owner-exercise.sh --run [--profile WitnessTreeArchiveOperator]
   scripts/run-phase1-archive-owner-exercise.sh --recover-latest [--profile WitnessTreeArchiveOperator]
 
 This owner-local command securely prompts for the current virtual-MFA TOTP. It never
 prints or writes the TOTP, access-key secret, STS credentials, account ID, ARNs, or
 object version ID. AWS diagnostics are retained locally in a 0700 temporary directory.
+
+--preflight makes only a read-only GetCallerIdentity call and reads this profile's
+locally configured MFA serial. It asks for no TOTP and attempts no AWS mutation.
 
 --recover-latest only locates the newest version under the dedicated legal-hold
 exercise prefix through the read-only verifier role, reads its hold and retention,
@@ -34,7 +38,7 @@ phase() { printf 'Phase: %s\n' "$1"; }
 fail() { printf 'Stopped: %s\n' "$1" >&2; exit "${2:-1}"; }
 
 mode="${1:-}"
-[[ "$mode" == "--run" || "$mode" == "--recover-latest" ]] || { usage; exit 64; }
+[[ "$mode" == "--preflight" || "$mode" == "--run" || "$mode" == "--recover-latest" ]] || { usage; exit 64; }
 shift
 if [[ "${1:-}" == "--profile" ]]; then PROFILE="${2:?--profile requires a value}"; shift 2; fi
 [[ $# -eq 0 ]] || { usage; exit 64; }
@@ -72,19 +76,23 @@ cleanup_legal_hold() {
   exit "$status"
 }
 
-# Prompt before any AWS call, so invalid/empty input cannot mutate AWS state.
-phase "enter the current virtual-MFA TOTP; it is not saved"
-read -r -s -p "Current WitnessTreeArchiveOperator TOTP (not saved): " totp
-printf '\n'
-[[ "$totp" =~ ^[0-9]{6,8}$ ]] || fail "TOTP must contain 6–8 digits." 64
+# Prompt before any AWS call on a mutating or recovery run, so invalid/empty input
+# cannot reach AWS. Preflight is intentionally the sole no-TOTP read-only path.
+if [[ "$mode" != "--preflight" ]]; then
+  phase "enter the current virtual-MFA TOTP; it is not saved"
+  read -r -s -p "Current WitnessTreeArchiveOperator TOTP (not saved): " totp
+  printf '\n'
+  [[ "$totp" =~ ^[0-9]{6,8}$ ]] || fail "TOTP must contain 6–8 digits." 64
+fi
 
 phase "verify the configured no-console operator identity"
 identity="$(run_aws identity --profile "$PROFILE" sts get-caller-identity --output json)"
 account_id="$(jq -er '.Account | select(test("^[0-9]{12}$"))' <<<"$identity")"
-jq -er '.Arn | select(endswith(":user/WitnessTreeArchiveOperator"))' <<<"$identity" >/dev/null
+operator_user="$(jq -er --arg account "$account_id" '.Arn | capture("^arn:aws:iam::" + $account + ":user/(?<name>[^/]+)$").name' <<<"$identity")" || fail "Configured profile must resolve to an IAM user in its own account."
 unset identity
 mfa_serial="$(aws configure get mfa_serial --profile "$PROFILE" 2>"$evidence_dir/mfa-serial.stderr" || true)"
-[[ "$mfa_serial" == "arn:aws:iam::${account_id}:mfa/WitnessTreeArchiveOperator" ]] || fail "Set this profile's exact assigned virtual-MFA serial locally, then retry."
+[[ "$mfa_serial" == "arn:aws:iam::${account_id}:mfa/${operator_user}" ]] || fail "Set this profile's exact account-scoped virtual-MFA serial locally, then retry."
+[[ "$mode" == "--preflight" ]] && { printf 'PRECHECK passed: configured profile identity and account-scoped MFA serial match; no TOTP was requested and no AWS mutation was attempted.\n'; exit 0; }
 
 phase "obtain a short-lived MFA session"
 bootstrap="$(run_aws get-session-token --profile "$PROFILE" sts get-session-token --serial-number "$mfa_serial" --token-code "$totp" --duration-seconds 3600 --output json)"

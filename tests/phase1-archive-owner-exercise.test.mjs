@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import test from "node:test";
 
 const helperPath = new URL("../scripts/run-phase1-archive-owner-exercise.sh", import.meta.url).pathname;
@@ -28,9 +30,11 @@ test("owner-local archive exercise has bounded, redacted MFA and control flow", 
   assert.match(helper, /sts get-session-token/);
   assert.match(helper, /Date\.parse\(wanted\) !== Date\.parse\(actual\)/);
   assert.doesNotMatch(helper, /Retention\.RetainUntilDate == \$until/);
-  assert.match(helper, /Set this profile's exact assigned virtual-MFA serial locally, then retry\./);
-  assert.match(helper, /arn:aws:iam::\$\{account_id\}:mfa\/WitnessTreeArchiveOperator/);
-  assert.doesNotMatch(helper, /mfa_serial="arn:aws:iam::\$\{account_id\}:mfa\/WitnessTreeArchiveOperator"/);
+  assert.match(helper, /Set this profile's exact account-scoped virtual-MFA serial locally, then retry\./);
+  assert.match(helper, /arn:aws:iam::\$\{account_id\}:mfa\/\$\{operator_user\}/);
+  assert.match(helper, /capture\("\^arn:aws:iam::" \+ \$account \+ ":user/);
+  assert.doesNotMatch(helper, /mfa_serial="arn:aws:iam::\$\{account_id\}:mfa\/WitnessTreeArchiveOperator"|ListMFADevices|list-mfa-devices/);
+  assert.match(helper, /--preflight/);
   assert.match(helper, /sts assume-role/);
   assert.match(helper, /VERIFIER_ROLE="WitnessTreeArchiveVerifier"/);
   assert.match(helper, /--recover-latest/);
@@ -57,4 +61,22 @@ test("interactive PTY shows prompt and rejects invalid or empty input before AWS
   invalidTotpPty("--run", "abc");
   invalidTotpPty("--run", "");
   invalidTotpPty("--recover-latest", "abc");
+});
+
+test("preflight validates only the configured account-scoped MFA serial without prompting or mutating", () => {
+  const dir = mkdtempSync(join(tmpdir(), "archive-exercise-preflight-"));
+  const marker = join(dir, "calls"); const aws = join(dir, "aws");
+  writeFileSync(aws, `#!/usr/bin/env bash
+printf '%s\\n' "$*" >> ${JSON.stringify(marker)}
+if [[ "$*" == *"configure get mfa_serial"* ]]; then printf '%s\\n' 'arn:aws:iam::286853118812:mfa/WitnessTreeArchiveOperator'; exit 0; fi
+if [[ "$*" == *"sts get-caller-identity"* ]]; then printf '%s\\n' '{"Account":"286853118812","Arn":"arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator"}'; exit 0; fi
+exit 97
+`, {mode: 0o700});
+  try {
+    const result = spawnSync("bash", [helperPath, "--preflight"], {encoding: "utf8", env: {...process.env, PATH: `${dir}:${process.env.PATH}`}});
+    assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`);
+    assert.match(result.stdout, /PRECHECK passed: configured profile identity and account-scoped MFA serial match; no TOTP was requested and no AWS mutation was attempted\./);
+    assert.doesNotMatch(`${result.stdout}${result.stderr}`, /TOTP \(not saved\):/);
+    assert.deepEqual(readFileSync(marker, "utf8").trim().split("\n").map((line) => line.includes("sts get-caller-identity") ? "identity" : line.includes("configure get mfa_serial") ? "mfa-serial" : "unexpected"), ["identity", "mfa-serial"]);
+  } finally { rmSync(dir, {recursive: true, force: true}); }
 });
