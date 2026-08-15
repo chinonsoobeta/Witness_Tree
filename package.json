@@ -42,6 +42,7 @@
     "check:bc-forest-operations-map-access": "node scripts/check-bc-forest-operations-map-access.mjs",
     "check:phase1-source-inventory": "node scripts/check-phase1-source-inventory.mjs",
     "check:phase1-production-source-ledger": "node scripts/check-phase1-production-source-ledger.mjs",
+    "check:partial-ledger-evidence-audit": "node scripts/check-partial-ledger-evidence-audit.mjs",
     "check:phase1-immutable-promotion-readiness": "node scripts/check-phase1-immutable-promotion-readiness.mjs",
     "check:phase1-access-blocker-resolution": "node scripts/check-phase1-access-blocker-resolution.mjs",
     "check:phase1-permission-outreach-package": "node scripts/check-phase1-permission-outreach-package.mjs",

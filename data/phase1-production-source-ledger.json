@@ -112,7 +112,8 @@
       "id": "cwfis-historical",
       "evidenceState": "partial-component",
       "evidenceRefs": [
-        "data/nfdb-poly-current-profile.json"
+        "data/nfdb-poly-current-profile.json",
+        "data/partial-ledger-evidence-audit.json"
       ],
       "proof": {
         "licence": false,
@@ -126,7 +127,7 @@
       },
       "rawCredit": 0.25,
       "productionEligible": false,
-      "blocker": "Acquire the missing burned-area component; NFDB alone is not the named combined source."
+      "blocker": "NBAC is the missing component. Its affirmative end-user agreement limits use to the licensee's own internal use and bars distribution or transfer without Canada's prior written consent; the accountable owner has not accepted it. NFDB alone is not the named combined source."
     },
     {
       "id": "bc-wildfire",
@@ -539,7 +540,8 @@
         "data/bc-provincial-electoral-2023-profile.json",
         "data/on-electoral-2022-profile.json",
         "data/alberta-electoral-boundary-block.json",
-        "data/qc-electoral-editions.json"
+        "data/qc-electoral-editions.json",
+        "data/partial-ledger-evidence-audit.json"
       ],
       "proof": {
         "licence": false,
@@ -553,7 +555,7 @@
       },
       "rawCredit": 0.25,
       "productionEligible": false,
-      "blocker": "Four current authoritative editions with licences, dates, archives and profiles are required."
+      "blocker": "BC and Ontario are locally checksum-bound and profiled. Alberta still requires written permission for the intended use, and Québec still requires an accessible current-edition artifact plus written authorization for adaptation and any use beyond nonprofit reproduction."
     },
     {
       "id": "indian-reserves",
