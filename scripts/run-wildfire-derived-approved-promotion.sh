@@ -30,7 +30,6 @@ print -- "PRECHECK passed: exact BC 216-feature and Ontario 188-feature derived 
 [[ "${1:-}" == "--run" ]] || exit 0
 command -v aws >/dev/null || fail "aws CLI is required" 69
 command -v jq >/dev/null || fail "jq is required" 69
-command -v rg >/dev/null || fail "rg is required" 69
 mfa_serial="$(aws configure get mfa_serial --profile "$PROFILE")" || fail "Cannot read local configured MFA serial" 69
 [[ "$mfa_serial" =~ '^arn:aws:iam::286853118812:mfa/[A-Za-z0-9+=,.@_/-]+$' ]] || fail "Configured MFA serial is absent or outside the approved account; no STS or storage call was made" 69
 [[ -t 0 && -t 1 ]] || fail "MFA TOTP prompt requires an interactive terminal; no AWS call was made" 64
