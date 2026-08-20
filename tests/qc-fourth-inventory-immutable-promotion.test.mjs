@@ -1,12 +1,11 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
-import { canonicalManifestBytes, validateQcFourthInventoryIamDesiredState, validateQcFourthInventoryPromotionPreparation } from "../scripts/check-qc-fourth-inventory-immutable-promotion.mjs";
+import { canonicalManifestBytes, validateQcFourthInventoryPromotionPreparation } from "../scripts/check-qc-fourth-inventory-immutable-promotion.mjs";
 import { dryRunLines, validateExecutionOptions, verifyRemoteObject } from "../scripts/qc-fourth-inventory-immutable-promotion.mjs";
 
 const plan = JSON.parse(readFileSync(new URL("../data/qc-fourth-inventory-immutable-promotion-preparation.json", import.meta.url), "utf8"));
 const iam = JSON.parse(readFileSync(new URL("../data/qc-fourth-inventory-immutable-promotion-iam-policy.json", import.meta.url), "utf8"));
-const desired = JSON.parse(readFileSync(new URL("../data/qc-fourth-inventory-immutable-promotion-iam-desired-state.json", import.meta.url), "utf8"));
 
 test("Québec fourth-inventory preparation binds the exact complete collection without remote claims", () => {
   assert.equal(validateQcFourthInventoryPromotionPreparation(plan, iam), plan);
@@ -16,14 +15,6 @@ test("Québec fourth-inventory preparation binds the exact complete collection w
   assert.equal(plan.canonicalManifest.byteLength, canonicalManifestBytes(plan).length);
   assert.equal(plan.exclusionDecision.decision, "excluded-map-only-redundant-component");
   assert.equal(plan.claims.immutableObjectStorage, false);
-});
-
-test("fourth-inventory IAM desired state is MFA-only, exact-role scoped, and unapplied", () => {
-  assert.equal(validateQcFourthInventoryIamDesiredState(desired), desired);
-  const widened = structuredClone(desired); widened.operator.assumeRolePolicy.Statement[0].Resource = "*";
-  assert.throws(() => validateQcFourthInventoryIamDesiredState(widened));
-  const claimed = structuredClone(desired); claimed.execution.awsExecutionEnabled = true;
-  assert.throws(() => validateQcFourthInventoryIamDesiredState(claimed));
 });
 
 test("dry run names all 62 exact objects, selects six resumable multipart uploads, and never calls AWS", () => {

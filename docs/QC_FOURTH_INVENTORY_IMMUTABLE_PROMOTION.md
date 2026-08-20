@@ -7,14 +7,11 @@ no retention was applied, no IAM policy was created or attached, and no remote
 object is claimed. The exact plan is
 `data/qc-fourth-inventory-immutable-promotion-preparation.json`; its SHA-256 at
 commit preparation is
-`1bcb8c1d44b15c7cd5176012acc87c8893b31e8d0e420fa6d4d720f113239eb9`.
+`fce3e053e68cbed57bf612476235361c37108d911609c82bc5d5a3cdeb82d258`.
 
-`data/qc-fourth-inventory-immutable-promotion-iam-desired-state.json` records
-concrete **non-applied** desired state only: account `286853118812`, profile
-and user `WitnessTreeArchiveOperator`, and role
-`WitnessTreeQcFourthArchivePromotionUploader`. Its MFA-only trust and
-operator-assume policy bind only that relationship; it is not evidence that
-the role or policy exists in AWS.
+No live IAM desired-state record is committed. The exact object-only policy in
+`data/qc-fourth-inventory-immutable-promotion-iam-policy.json` is a review
+input, not evidence that any role, policy, MFA session, or remote object exists.
 
 The target is pinned to bucket `witness-tree-raw-archive-ca-central-1` in
 `ca-central-1`. Every object would receive `COMPLIANCE` retention at creation
@@ -120,7 +117,7 @@ controlled directory paths must not be guessed or stored in Git.
 
 ## Exact IAM policy and separate approval wording
 
-The proposed role policy is
+The proposed object policy is
 `data/qc-fourth-inventory-immutable-promotion-iam-policy.json`, SHA-256
 `9259e120095f87da7420ff545aea55175ccdefa0be04687d4a9b4626880118d1`.
 It allows only the minimum read/upload/retention/multipart-read
@@ -141,7 +138,7 @@ controlled values:
 
 > I approve uploading exactly the 62 objects enumerated by
 > `data/qc-fourth-inventory-immutable-promotion-preparation.json` at SHA-256
-> `1bcb8c1d44b15c7cd5176012acc87c8893b31e8d0e420fa6d4d720f113239eb9`
+> `fce3e053e68cbed57bf612476235361c37108d911609c82bc5d5a3cdeb82d258`
 > to their enumerated keys in `witness-tree-raw-archive-ca-central-1`,
 > `ca-central-1`, and applying irreversible S3 Object Lock `COMPLIANCE`
 > retention through `2033-08-12T00:00:00Z`. I approve excluding the separately

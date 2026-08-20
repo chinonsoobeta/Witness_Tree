@@ -1,6 +1,6 @@
 # Current-wildfire owner admission
 
-The owner has approved the exact Phase 1 transformation, ingestion, public-release and production-admission scope for the four checksum-bound current-wildfire snapshots. This clears the BC and Ontario geometry decisions and resolves the CWFIS and Alberta operational semantics. It does **not** make any source production eligible: the machine record has zero of six required immutable object readbacks, so ingestion, release and runtime activation remain blocked.
+The owner has approved the exact Phase 1 transformation, ingestion, public-release and production-admission scope for the four checksum-bound current-wildfire snapshots. This clears the BC and Ontario geometry decisions and resolves the CWFIS and Alberta operational semantics. It does **not** make any source production eligible: the machine record has four of six required immutable object readbacks, so ingestion, release and runtime activation remain blocked.
 
 The binding record is [`data/current-wildfire-owner-admission.json`](../data/current-wildfire-owner-admission.json). Its gate requires exact object keys, version IDs, byte lengths, full-object checksum verification, exact-version readbacks, Canadian `ca-central-1` storage and active COMPLIANCE retention through at least `2033-08-12T00:00:00Z` for four raw objects and the two required derived objects.
 
@@ -21,31 +21,12 @@ No AWS operation is part of this decision. Production eligibility remains `false
 
 ## Derived archive recovery
 
-The first derived promotion stopped after the BC 216-feature payload was created,
-before its exact-version read-back and before retention. A root **read-only**
-audit found that payload version with the approved byte length and a
-`FULL_OBJECT` CRC64NVME, while its sidecar and both Ontario keys were absent.
-The retention query found no Object Lock configuration, consistent with the
-stop before retention. A private, mode-600 local recovery state holds the
-opaque BC version identifier; it is not committed or published.
-
-The least possible IAM correction is an additional `s3:GetObjectVersion` allow
-on the same four already-approved derived keys in
-`WitnessTreeWildfireDerivedPromotionUploader`. No key, bucket, retention scope,
-or other action is broadened. Recovery must first exact-version-read the saved
-BC payload, apply and read back COMPLIANCE retention through
-`2033-08-12T00:00:00Z`, then upload/read back the BC sidecar and only then the
-Ontario payload, its retention, and its sidecar. It must never upload the BC
-payload again.
-
-Copy-paste authorization for that correction only:
-
-> In AWS account `286853118812`, I authorize updating only the existing role
-> `WitnessTreeWildfireDerivedPromotionUploader` to add only
-> `s3:GetObjectVersion` on the exact four already-approved derived object keys
-> in `witness-tree-raw-archive-ca-central-1` / `ca-central-1`. Preserve the
-> existing exact two-payload/four-key scope and all exclusions. This permits
-> exact-version HeadObject recovery read-backs only; it does not authorize any
-> delete, retention bypass, legal hold, abort, replication, bucket
-> administration, wildcard scope, other key/bucket, other IAM change, or a
-> duplicate BC payload upload.
+The redacted read-only archive record found one BC derived orphan payload with
+the approved 216-feature byte length and full-object CRC64NVME, but no
+retention, manifest or recovery replica; the Ontario derived prefix is empty.
+The fail-closed recovery guard is recorded in
+[`data/current-wildfire-derived-live-recovery-guard-2026-08-20.json`](../data/current-wildfire-derived-live-recovery-guard-2026-08-20.json).
+It records no version identifier, permission change, retention write, upload,
+delete, or owner admission. The derived objects remain unverified until a
+separately approved exact-key promotion and redacted version/checksum/
+retention/recovery readback are integrated.

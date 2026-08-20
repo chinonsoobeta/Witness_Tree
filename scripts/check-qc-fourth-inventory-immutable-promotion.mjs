@@ -64,14 +64,6 @@ export function validateQcFourthInventoryPromotionPreparation(plan, iam) {
   assert.equal(plan.bucket, BUCKET);
   assert.equal(plan.region, REGION);
   assert.deepEqual(plan.retention, { mode: "COMPLIANCE", retainUntil: RETAIN_UNTIL });
-  assert.deepEqual(plan.mfaGatedExecution, {
-    accountId: "286853118812",
-    operatorProfile: "WitnessTreeArchiveOperator",
-    operatorArn: "arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator",
-    promotionRole: "WitnessTreeQcFourthArchivePromotionUploader",
-    mfaSerialSource: "local aws configure get mfa_serial only; safe account-scoped virtual-MFA ARN; never stored or printed",
-    liveIamClaim: false
-  });
   assert.deepEqual(plan.requiredApprovals, { exactArtifactSet: false, irreversibleComplianceRetention: false, leastPrivilegeIamPolicy: false, mfaSessionExecution: false });
   assert.deepEqual(plan.claims, CLAIMS);
   assert.equal(plan.dataset.id, "77ec9009-b733-4f09-ade3-99d7b2156ad4");
@@ -177,27 +169,6 @@ function validateIam(iam, keys) {
   assert.equal(destructive.Effect, "Deny");
   assert.deepEqual(destructive.Action, ["s3:DeleteObject", "s3:DeleteObjectVersion", "s3:AbortMultipartUpload", "s3:BypassGovernanceRetention", "s3:PutObjectLegalHold", "s3:PutBucketObjectLockConfiguration", "s3:PutBucketVersioning", "s3:PutLifecycleConfiguration", "s3:DeleteBucket", "s3:ReplicateObject", "s3:ReplicateDelete"]);
   assert.deepEqual(destructive.Resource, [`arn:aws:s3:::${BUCKET}`, `arn:aws:s3:::${BUCKET}/*`]);
-}
-
-export function validateQcFourthInventoryIamDesiredState(desired) {
-  const account = "286853118812";
-  const operator = `arn:aws:iam::${account}:user/WitnessTreeArchiveOperator`;
-  const role = `arn:aws:iam::${account}:role/WitnessTreeQcFourthArchivePromotionUploader`;
-  assert.equal(desired.schemaVersion, 1);
-  assert.equal(desired.status, "desired-state-only-not-applied");
-  assert.equal(desired.accountId, account);
-  assert.deepEqual(desired.operator.assumeRolePolicy, { Version: "2012-10-17", Statement: [{ Effect: "Allow", Action: "sts:AssumeRole", Resource: role, Condition: { Bool: { "aws:MultiFactorAuthPresent": "true" } } }] });
-  assert.equal(desired.operator.profile, "WitnessTreeArchiveOperator");
-  assert.equal(desired.operator.arn, operator);
-  assert.equal(desired.role.name, "WitnessTreeQcFourthArchivePromotionUploader");
-  assert.deepEqual(desired.role.trustPolicy, { Version: "2012-10-17", Statement: [{ Effect: "Allow", Principal: { AWS: operator }, Action: "sts:AssumeRole", Condition: { Bool: { "aws:MultiFactorAuthPresent": "true" } } }] });
-  assert.equal(desired.role.permissionsPolicyFile, "data/qc-fourth-inventory-immutable-promotion-iam-policy.json");
-  assert.equal(desired.role.permissionsPolicySha256, sha256(readFileSync(new URL("../data/qc-fourth-inventory-immutable-promotion-iam-policy.json", import.meta.url))));
-  assert.equal(desired.execution.liveIamClaim, false);
-  assert.equal(desired.execution.awsExecutionEnabled, false);
-  assert.match(desired.execution.mfaSerial, /local aws configure get mfa_serial only.*286853118812.*never stored, printed.*IAM/i);
-  assert.deepEqual(desired.excluded, ["delete", "abort multipart", "retention bypass", "legal hold", "replication", "bucket administration", "wildcard object access", "other keys", "other buckets", "other IAM changes"]);
-  return desired;
 }
 
 export function loadQcFourthInventoryPromotionPreparation() {

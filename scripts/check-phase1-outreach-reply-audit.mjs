@@ -13,6 +13,7 @@ const REPLY_STATUSES = new Set([
   "reply-received-foi-route-no-export",
   "reply-received-catalogue-deferral-no-package",
   "replies-received-service-route-and-permission-process-no-resolution",
+  "replies-received-service-route-custom-download-and-permission-process-no-resolution",
   "reply-received-use-details-clarified-no-authorization",
   "reply-received-permission-process-no-authorization",
   "custom-download-route-no-acquisition",
