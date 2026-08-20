@@ -9,6 +9,8 @@ export function validatePartialLedgerEvidenceAudit(audit, ledger) {
   assert.equal(audit.schemaVersion, 1);
   assert.equal(audit.status, "official-source-audit-complete-evidence-still-partial");
   assert.deepEqual(audit.baseEvidenceHeads, ["e42777e", "626a1ef"]);
+  assert.equal(audit.currentRouteExhaustionRef, "data/phase1-partial-source-route-exhaustion.json");
+  assert.equal(audit.currentReplyAuditRef, "data/phase1-outreach-reply-audit.json");
   assert.deepEqual(audit.claims, {
     downloadedNewArtifact: false,
     acceptedPublisherAgreement: false,

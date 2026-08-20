@@ -3,6 +3,8 @@
   "status": "official-source-audit-complete-evidence-still-partial",
   "asOf": "2026-08-14",
   "baseEvidenceHeads": ["e42777e", "626a1ef"],
+  "currentRouteExhaustionRef": "data/phase1-partial-source-route-exhaustion.json",
+  "currentReplyAuditRef": "data/phase1-outreach-reply-audit.json",
   "claims": {
     "downloadedNewArtifact": false,
     "acceptedPublisherAgreement": false,

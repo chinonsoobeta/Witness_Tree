@@ -44,15 +44,51 @@ them would add no missing evidence. Alberta and Québec remain outstanding:
   use need written authorization. The locally checksum-bound 2026 map is not
   current until the 43rd legislature ends and cannot substitute early.
 
-The shortest lawful route is to secure both publishers' permissions and an
-accessible current Québec artifact, then acquire and profile only the two
-missing provincial editions. Do not mix the future Québec edition into the
-current four-province set.
+The shortest lawful route is to secure Alberta's permission, obtain Québec's
+written authorization and confirmation that the public 2017 atlas ZIP is the
+accepted current artifact, then acquire and profile only the two missing
+provincial editions. Do not mix the future Québec edition into the current
+four-province set.
+
+## Current route exhaustion (2026-08-20)
+
+The machine-checked route record in
+[`data/phase1-partial-source-route-exhaustion.json`](../data/phase1-partial-source-route-exhaustion.json)
+rechecked the two partial rows on authoritative head `650a7da`. Read-only HTTP
+HEAD inspection established that the exact NBAC ZIP is publicly listed and
+returns 1,257,052,370 bytes, the Alberta 2019 ZIP returns 2,852,757 bytes, and
+the Québec 2017 atlas ZIP returns 30,007,395 bytes. None was downloaded.
+
+The Québec atlas ZIP is a newly recorded public alternative to the blocked
+direct 2017 GeoJSON route. Its official page describes 2017 provincial
+divisions and municipalities in Shapefile format. That page permits
+non-commercial reproduction with attribution, but the official Québec
+conditions require written authorization for adaptation or other use and note
+additional Statistics Canada restrictions. It therefore does not clear the
+intended transformed public-service scope. The Alberta ZIP is likewise
+published, but Elections Alberta's terms require unchanged reproduction for
+the public non-commercial/educational exception; the intended transformation,
+derived outputs and redistribution still need written permission.
+
+The NBAC index also exposes annual fragments, raster/summary products and
+public services. The fragments do not establish the named single 1972–2025
+release; the raster/summary products are not the required polygon source; and
+the service routes do not provide a checksum-bound immutable release. The
+dated vector ZIP remains governed by the affirmative NBAC End-User Agreement,
+which limits use to the licensee's internal use and requires Canada's prior
+written consent before transfer or distribution.
+
+The bounded Gmail searches found no message or substantive reply for either
+partial row. The prepared NBAC, Alberta and Québec owner requests remain
+unsent, and the route record preserves zero acquisition, permission, checksum,
+profile, archive and score credit.
 
 ## Numerator impact
 
-The raw-evidence numerator remains exactly **14.75/31**. This audit adds **0**
-credit, so the formal evidence-tracking score stays **39.2741935%**. Resolving
-either entire row would move that row from `0.25` to `0.75`, a `+0.50` raw
-credit change; partial resolution of one missing component earns no additional
+The older component audit records a **14.75/31** baseline. On authoritative
+head `650a7da`, the canonical ledger is **15/31** with **10/31** immutable
+archive proofs and a **39.516129%** evidence-tracking score. This current route
+audit adds **0** credit and does not change those counts. Resolving either
+entire row would move that row from `0.25` to `0.75`, a `+0.50` raw-credit
+change; partial resolution of one missing component earns no additional
 credit.
