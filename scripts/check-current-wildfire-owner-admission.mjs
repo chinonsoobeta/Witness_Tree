@@ -55,10 +55,10 @@ export function validateCurrentWildfireOwnerAdmission(record, ledger, profiles, 
     productionAdmissionApproved: true,
     condition: "Every exact raw payload and each required derived payload must first have repository-integrated immutable archive readback evidence. Approval does not itself satisfy that condition."
   });
-  assert.equal(record.archiveGate.status, "blocked-missing-remote-readbacks");
-  assert.equal(record.archiveGate.evidenceRef, null);
+  assert.equal(record.archiveGate.status, "blocked-two-derived-remote-readbacks-missing");
+  assert.equal(record.archiveGate.evidenceRef, "data/current-wildfire-raw-archive-evidence.json");
   assert.equal(record.archiveGate.requiredObjectCount, 6);
-  assert.equal(record.archiveGate.verifiedObjectCount, 0);
+  assert.equal(record.archiveGate.verifiedObjectCount, 4);
   assert.equal(record.archiveGate.productionEligible, false);
   assert.match(record.refreshAndAuthority.representation, /as-of snapshot.*never label.*real-time/i);
   assert.match(record.refreshAndAuthority.precedence, /provincial.*prevails over CWFIS/i);
@@ -75,7 +75,7 @@ export function validateCurrentWildfireOwnerAdmission(record, ledger, profiles, 
     assert.equal(source.raw.sha256, profile.artifact.sha256);
     const row = ledger.entries.find(({id}) => id === source.id);
     assert.ok(row.evidenceRefs.includes("data/current-wildfire-owner-admission.json"));
-    assert.equal(row.proof.immutableArchive, false);
+    assert.equal(row.proof.immutableArchive, true);
     assert.equal(row.proof.productionAdmission, false);
     assert.equal(row.productionEligible, false);
   }
@@ -118,5 +118,5 @@ export function checkCurrentWildfireOwnerAdmission() {
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   checkCurrentWildfireOwnerAdmission();
-  console.log("Current-wildfire owner scope is approved for four sources; production remains blocked on 0/6 immutable object readbacks.");
+  console.log("Current-wildfire owner scope is approved for four sources; production remains blocked on 4/6 immutable object readbacks.");
 }

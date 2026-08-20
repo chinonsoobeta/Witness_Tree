@@ -17,7 +17,7 @@ export function validatePhase1GeometryPolicies({ ledger, bc, ontario, admission 
   assert.equal(ontario.ingested, false);
   assert.equal(ontario.productionEligible, false);
   assert.equal(admission.ownerDecision.geometryApproved, true);
-  assert.equal(admission.archiveGate.verifiedObjectCount, 0);
+  assert.equal(admission.archiveGate.verifiedObjectCount, 4);
   assert.equal(admission.pipeline.productionEligible, false);
   const bcAdmission = admission.sources.find(({id}) => id === "bc-wildfire");
   assert.equal(bcAdmission.derived.featureCount, 216);
@@ -30,7 +30,7 @@ export function validatePhase1GeometryPolicies({ ledger, bc, ontario, admission 
     const entry = ledger.entries.find((candidate) => candidate.id === sourceId);
     assert.ok(entry, `Missing canonical ledger row for ${sourceId}.`);
     assert.equal(entry.productionEligible, false);
-    assert.equal(entry.proof.immutableArchive, false);
+    assert.equal(entry.proof.immutableArchive, true);
     assert.equal(entry.proof.productionAdmission, false);
     assert.ok(entry.evidenceRefs.includes(reference), `Ledger must cite ${reference}.`);
   }

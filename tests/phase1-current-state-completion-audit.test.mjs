@@ -22,6 +22,22 @@ test("current-state audit rejects invented eligibility, outreach, or archive evi
   assert.throws(() => validatePhase1CurrentStateCompletionAudit(archive, ...args.slice(1)));
 });
 
+test("merged audit rejects stale evidence from either divergent Phase 1 head", () => {
+  const staleArchive = structuredClone(args[0]);
+  staleArchive.ledger.rawEvidenceNumerator = 13.75;
+  staleArchive.ledger.formalEvidenceTrackingPercentage = 38.3064516;
+  staleArchive.ledger.immutableArchiveCompleteRows = 5;
+  staleArchive.globalGates.immutableArchives.completeRows = 5;
+  staleArchive.globalGates.immutableArchives.localRowsAwaitingArchive = 11;
+  staleArchive.globalGates.immutableArchives.currentWildfireVerifiedObjects = 0;
+  assert.throws(() => validatePhase1CurrentStateCompletionAudit(staleArchive, ...args.slice(1)));
+
+  const staleReplies = structuredClone(args[0]);
+  staleReplies.globalGates.outreach.repliesRecorded = 0;
+  staleReplies.globalGates.outreach.accessBlockedRowsWithSubstantiveReply = 0;
+  assert.throws(() => validatePhase1CurrentStateCompletionAudit(staleReplies, ...args.slice(1)));
+});
+
 test("every blocked row maps to its real outreach or owner-review request", () => {
   const missing = structuredClone(args[0]);
   missing.rows.find(({ id }) => id === "modern-treaties").outreachMessageIds = [];

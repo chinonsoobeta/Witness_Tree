@@ -11,6 +11,14 @@
     "mode": "COMPLIANCE",
     "retainUntil": "2033-08-12T00:00:00Z"
   },
+  "mfaGatedExecution": {
+    "accountId": "286853118812",
+    "operatorProfile": "WitnessTreeArchiveOperator",
+    "operatorArn": "arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator",
+    "promotionRole": "WitnessTreeQcFourthArchivePromotionUploader",
+    "mfaSerialSource": "local aws configure get mfa_serial only; safe account-scoped virtual-MFA ARN; never stored or printed",
+    "liveIamClaim": false
+  },
   "upload": {
     "multipartThresholdBytes": 536870912,
     "partSizeBytes": 134217728,

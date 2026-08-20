@@ -7,8 +7,6 @@ import path from "node:path";
 import { canonicalManifestBytes, exactPromotionObjects, loadQcFourthInventoryPromotionPreparation } from "./check-qc-fourth-inventory-immutable-promotion.mjs";
 
 const RETAIN_UNTIL = "2033-08-12T00:00:00Z";
-const MFA_SERIAL = /^arn:aws:iam::\d{12}:mfa\/[A-Za-z0-9+=,.@_-]+$/;
-const MFA_CODE = /^\d{6}$/;
 
 function sha256Bytes(bytes) {
   return createHash("sha256").update(bytes).digest("hex");
@@ -40,9 +38,7 @@ export function validateExecutionOptions(plan, options) {
   assert.equal(options.approveRetention, true, "Execution requires --approve-compliance-retention.");
   assert.equal(options.approveMfa, true, "Execution requires --approve-mfa-session.");
   assert.equal(options.retentionUntil, RETAIN_UNTIL, `Retention is pinned to ${RETAIN_UNTIL}.`);
-  assert.match(options.mfaSerial || "", MFA_SERIAL, "Execution requires an exact IAM MFA device ARN.");
-  assert.match(options.mfaCode || "", MFA_CODE, "Execution requires a fresh six-digit MFA code.");
-  assert.match(options.awsProfile || "", /^[A-Za-z0-9+=,.@_-]+$/, "Execution requires an exact configured --aws-profile.");
+  assert.equal(options.sessionReady, true, "Execution requires the owner-local MFA role-session runner.");
   for (const name of ["dataRoot", "stateDir", "sidecarDir"]) {
     assert.ok(path.isAbsolute(options[name] || ""), `Execution requires an absolute --${name.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)}.`);
     assert.ok(statSync(options[name]).isDirectory(), `${name} must already be a controlled directory.`);
@@ -110,14 +106,9 @@ function invokeJson(args, env = process.env) {
   return output.trim() ? JSON.parse(output) : {};
 }
 
-function mfaEnvironment(options, invoke = invokeJson) {
-  const response = invoke(["sts", "get-session-token", "--serial-number", options.mfaSerial, "--token-code", options.mfaCode, "--duration-seconds", "3600", "--profile", options.awsProfile, "--output", "json"]);
-  const credentials = response.Credentials;
-  assert.ok(credentials?.AccessKeyId && credentials?.SecretAccessKey && credentials?.SessionToken && credentials?.Expiration, "STS did not return complete temporary MFA credentials.");
-  assert.ok(new Date(credentials.Expiration) > new Date(), "STS returned expired MFA credentials.");
-  const env = { ...process.env, AWS_ACCESS_KEY_ID: credentials.AccessKeyId, AWS_SECRET_ACCESS_KEY: credentials.SecretAccessKey, AWS_SESSION_TOKEN: credentials.SessionToken, AWS_REGION: "ca-central-1", AWS_DEFAULT_REGION: "ca-central-1" };
-  delete env.AWS_PROFILE;
-  return env;
+function roleEnvironment() {
+  assert.ok(process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY && process.env.AWS_SESSION_TOKEN, "The MFA role-session runner did not provide temporary credentials.");
+  return { ...process.env, AWS_REGION: "ca-central-1", AWS_DEFAULT_REGION: "ca-central-1" };
 }
 
 function stateFile(options) {
@@ -222,7 +213,7 @@ export function executePromotion(plan, options, dependencies = {}) {
   const objects = localObjects(plan, options);
   preflight(objects); // Every local byte and SHA passes before the first AWS call.
   const invoke = dependencies.invoke || invokeJson;
-  const env = dependencies.mfaEnv || mfaEnvironment(options, invoke);
+  const env = dependencies.mfaEnv || roleEnvironment();
   const state = loadState(plan, options);
   const evidence = [];
   for (const entry of objects) evidence.push(entry.byteLength > plan.upload.multipartThresholdBytes ? multipartPut(plan, entry, state, options, invoke, env) : singlePut(plan, entry, state, options, invoke, env));
@@ -234,7 +225,7 @@ function cliOptions(argv) {
   const value = (name) => { const index = argv.indexOf(name); return index === -1 ? undefined : argv[index + 1]; };
   return {
     execute: argv.includes("--execute"), approveExactArtifacts: argv.includes("--approve-exact-artifact-set"), approveIam: argv.includes("--approve-iam-policy"), approveRetention: argv.includes("--approve-compliance-retention"), approveMfa: argv.includes("--approve-mfa-session"),
-    retentionUntil: value("--retention-until"), mfaSerial: value("--mfa-serial"), mfaCode: value("--mfa-code"), awsProfile: value("--aws-profile"), dataRoot: value("--data-root"), stateDir: value("--state-dir"), sidecarDir: value("--sidecar-dir")
+    retentionUntil: value("--retention-until"), sessionReady: argv.includes("--session-ready"), dataRoot: value("--data-root"), stateDir: value("--state-dir"), sidecarDir: value("--sidecar-dir")
   };
 }
 

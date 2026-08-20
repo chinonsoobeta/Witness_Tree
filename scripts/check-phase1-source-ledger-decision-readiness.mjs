@@ -30,8 +30,8 @@ export function validatePhase1SourceLedgerDecisionReadiness(audit, ledger, decis
       assert.equal(row.proof.productionAdmission, false);
     }
     if (entry.readiness === "owner-scope-decision-recorded-awaiting-archive") {
-      assert.equal(row.evidenceState, "local-verified-profiled");
-      assert.equal(row.proof.immutableArchive, false);
+      assert.ok(["local-verified-profiled", "remote-verified-archived-profiled"].includes(row.evidenceState));
+      assert.equal(row.proof.immutableArchive, row.evidenceState === "remote-verified-archived-profiled");
       assert.equal(row.proof.productionAdmission, false);
       assert.ok(row.evidenceRefs.includes("data/current-wildfire-owner-admission.json"));
     }
