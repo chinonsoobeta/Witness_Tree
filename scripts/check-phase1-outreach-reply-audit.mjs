@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
+import { validatePhase1BecCustomDownloadRouteAudit } from "./check-phase1-bec-custom-download-route-audit.mjs";
 
 const ACCESS_ROWS = [
   "bc-fta-cutblocks", "bc-harvesting-authorities", "on-fri", "on-fri-term-2",
@@ -12,8 +13,10 @@ const REPLY_STATUSES = new Set([
   "reply-received-foi-route-no-export",
   "reply-received-catalogue-deferral-no-package",
   "replies-received-service-route-and-permission-process-no-resolution",
+  "replies-received-service-route-custom-download-and-permission-process-no-resolution",
   "reply-received-use-details-clarified-no-authorization",
   "reply-received-permission-process-no-authorization",
+  "custom-download-route-no-acquisition",
   "no-substantive-reply",
   "automatic-reply-only-no-substantive-guidance",
   "owner-review-draft-not-sent",
@@ -25,18 +28,19 @@ function noMailboxIdentifiers(value) {
   assert.doesNotMatch(serialized, /mail\.google\.com/i, "Reply evidence must not retain Gmail mailbox links.");
   assert.doesNotMatch(serialized, /\b(?:message|thread)[ _-]?id\b/i, "Reply evidence must not retain Gmail message or thread identifiers.");
 }
-
-export function validatePhase1OutreachReplyAudit(audit, matrix, pkg) {
+export function validatePhase1OutreachReplyAudit(audit, matrix, pkg, routeAudit) {
   assert.equal(audit?.schemaVersion, 1);
   assert.equal(audit.status, "read-only-reply-audit-complete-no-resolution");
   assert.match(audit.auditedAt ?? "", /^2026-08-20T\d{2}:\d{2}:\d{2}Z$/);
   assert.match(audit.source ?? "", /Gmail read-only searches and bounded thread reads/i);
   assert.match(audit.nonClaimNotice ?? "", /not permission.*not an acquisition.*production eligibility/i);
+  assert.equal(audit.officialRouteAuditFile, "data/phase1-bec-custom-download-route-audit.json");
+  validatePhase1BecCustomDownloadRouteAudit(routeAudit);
   noMailboxIdentifiers(audit);
   assert.deepEqual(audit.counts, {
     canonicalAccessBlockedRows: 13,
     canonicalPartialRows: 2,
-    substantiveReplyRecords: 5,
+    substantiveReplyRecords: 6,
     accessBlockedRowsWithSubstantiveReply: 8,
     accessBlockedRowsWithoutSubstantiveReply: 5,
     partialRowsWithSubstantiveReply: 0,
@@ -46,7 +50,7 @@ export function validatePhase1OutreachReplyAudit(audit, matrix, pkg) {
     rawEvidenceCreditImpact: 0,
     productionEligibilityImpact: 0
   });
-  assert.equal(audit.substantiveReplies.length, 5);
+  assert.equal(audit.substantiveReplies.length, 6);
   assert.equal(audit.automaticOrAcknowledgementOnly.length, 3);
   assert.equal(audit.ownerFollowUpsObserved.length, 3);
   assert.equal(audit.rows.length, 15);
@@ -55,7 +59,7 @@ export function validatePhase1OutreachReplyAudit(audit, matrix, pkg) {
   const rowIds = audit.rows.map(({ id }) => id);
   assert.deepEqual(rowIds, [...ACCESS_ROWS, ...PARTIAL_ROWS]);
   const replyIds = new Set(audit.substantiveReplies.map(({ id }) => id));
-  assert.equal(replyIds.size, 5);
+  assert.equal(replyIds.size, 6);
   const packageIds = new Set(pkg?.messages?.map(({ id }) => id) ?? []);
   for (const reply of audit.substantiveReplies) {
     assert.ok(packageIds.has(reply.outreachMessageId), `Reply ${reply.id} must map to an outreach message.`);
@@ -78,15 +82,16 @@ export function validatePhase1OutreachReplyAudit(audit, matrix, pkg) {
 
 export async function checkPhase1OutreachReplyAudit() {
   const base = new URL("../", import.meta.url);
-  const [audit, matrix, pkg] = await Promise.all([
+  const [audit, matrix, pkg, routeAudit] = await Promise.all([
     readFile(new URL("data/phase1-outreach-reply-audit.json", base), "utf8").then(JSON.parse),
     readFile(new URL("data/phase1-access-blocker-resolution.json", base), "utf8").then(JSON.parse),
-    readFile(new URL("data/phase1-permission-outreach-package.json", base), "utf8").then(JSON.parse)
+    readFile(new URL("data/phase1-permission-outreach-package.json", base), "utf8").then(JSON.parse),
+    readFile(new URL("data/phase1-bec-custom-download-route-audit.json", base), "utf8").then(JSON.parse)
   ]);
-  return validatePhase1OutreachReplyAudit(audit, matrix, pkg);
+  return validatePhase1OutreachReplyAudit(audit, matrix, pkg, routeAudit);
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const audit = await checkPhase1OutreachReplyAudit();
-  console.log(`Phase 1 reply audit passed: ${audit.counts.substantiveReplyRecords} substantive replies; ${audit.counts.accessBlockedRowsWithSubstantiveReply}/13 blocked rows touched; no acquisition or permission.`);
+  console.log(`Phase 1 reply audit passed: ${audit.counts.substantiveReplyRecords} substantive replies; ${audit.counts.accessBlockedRowsWithSubstantiveReply}/13 blocked rows touched; BEC route remains blocked before order; no acquisition or permission.`);
 }

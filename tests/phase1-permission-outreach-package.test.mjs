@@ -13,6 +13,7 @@ test("verified outreach sends cover every access-blocked row without claiming a 
   assert.equal(pkg.messages.filter((message) => typeof message.verifiedSentAt === "string").every((message) => message.verifiedSentAt && message.sentVerification), true);
   assert.equal(pkg.messages.filter((message) => message.status === "reply-received-awaiting-resolution").length, 4);
   assert.equal(pkg.messages.filter((message) => message.status === "automatic-reply-only-awaiting-substantive-response").length, 1);
+  assert.equal(pkg.officialRouteAuditFile, "data/phase1-bec-custom-download-route-audit.json");
   assert.match(pkg.scope, /not an acquisition.*production eligibility/i);
   assert.deepEqual(new Set(pkg.messages.flatMap((message) => message.canonicalRowIds)), new Set(matrix.rankedRows.map((row) => row.id)));
 });

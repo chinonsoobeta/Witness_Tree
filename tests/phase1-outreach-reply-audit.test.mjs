@@ -7,21 +7,22 @@ const read = (name) => JSON.parse(readFileSync(new URL(`../data/${name}.json`, i
 const audit = read("phase1-outreach-reply-audit");
 const matrix = read("phase1-access-blocker-resolution");
 const pkg = read("phase1-permission-outreach-package");
+const routeAudit = read("phase1-bec-custom-download-route-audit");
 
-test("reply audit maps bounded substantive replies to eight blocked rows and no partial rows", () => {
-  assert.equal(validatePhase1OutreachReplyAudit(audit, matrix, pkg), audit);
-  assert.equal(audit.counts.substantiveReplyRecords, 5);
+test("reply audit maps six substantive replies to eight blocked rows and no partial rows", () => {
+  assert.equal(validatePhase1OutreachReplyAudit(audit, matrix, pkg, routeAudit), audit);
+  assert.equal(audit.counts.substantiveReplyRecords, 6);
   assert.equal(audit.counts.accessBlockedRowsWithSubstantiveReply, 8);
   assert.equal(audit.rows.filter(({ kind, replyRecordIds }) => kind === "access-blocked" && replyRecordIds.length > 0).length, 8);
   assert.equal(audit.rows.filter(({ kind, replyRecordIds }) => kind === "partial-component" && replyRecordIds.length > 0).length, 0);
   assert.equal(audit.rows.every(({ lawfulAcquisitionNow }) => lawfulAcquisitionNow !== true), true);
+  assert.equal(audit.officialRouteAuditFile, "data/phase1-bec-custom-download-route-audit.json");
 });
-
 test("reply audit rejects invented resolution or retained Gmail identifiers", () => {
   const resolved = structuredClone(audit);
   resolved.rows.find(({ id }) => id === "bc-vri").lawfulAcquisitionNow = true;
-  assert.throws(() => validatePhase1OutreachReplyAudit(resolved, matrix, pkg), /strictly equal|false/);
+  assert.throws(() => validatePhase1OutreachReplyAudit(resolved, matrix, pkg, routeAudit), /strictly equal|false/);
   const identifier = structuredClone(audit);
   identifier.substantiveReplies[0].threadId = "forbidden";
-  assert.throws(() => validatePhase1OutreachReplyAudit(identifier, matrix, pkg), /Gmail message or thread identifiers/i);
+  assert.throws(() => validatePhase1OutreachReplyAudit(identifier, matrix, pkg, routeAudit), /Gmail message or thread identifiers/i);
 });

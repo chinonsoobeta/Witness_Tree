@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "status": "non-admitting-audit",
-  "asOf": "2026-08-14",
+  "asOf": "2026-08-20",
   "notice": "Decision-readiness audit of the canonical 31-row Phase 1 production-source ledger. It neither changes a ledger proof nor grants archival admission, transformation, ingestion, release, production admission, or production eligibility.",
   "contract": ["licence", "attribution", "retrievalVersion", "checksum", "rawArchiveRefetch", "profile", "immutableArchive", "ownerSourceLedgerDecision"],
   "readinessDefinitions": {
@@ -27,7 +27,7 @@
     {"id":"bc-harvesting-authorities","readiness":"external-evidence-blocked","decisionBundle":"none","blocker":"A publisher-authorized snapshot and normal source evidence are absent."},
     {"id":"bc-vri","readiness":"external-evidence-blocked","decisionBundle":"none","blocker":"An authorized complete export, terms, checksum, and profile are absent."},
     {"id":"bc-consolidated-cutblocks","readiness":"external-evidence-blocked","decisionBundle":"none","blocker":"Access Only terms require a redistributable licence or publisher authorization."},
-    {"id":"bc-old-growth-bec","readiness":"external-evidence-blocked","decisionBundle":"none","blocker":"Complete BEC snapshot semantics and TAP rights/implemented-deferral source are unresolved."},
+    {"id":"bc-old-growth-bec","readiness":"external-evidence-blocked","decisionBundle":"none","blocker":"The official BEC custom-download route requires an email, Terms and Conditions acceptance and an eligible authorized account before an order can be submitted; no package, checksum or archive is recorded. TAP rights and the implemented-deferral source remain unresolved."},
     {"id":"bc-forest-operations-map","readiness":"external-evidence-blocked","decisionBundle":"none","blocker":"Access Only rights prohibit raw acquisition and downstream use."},
     {"id":"qc-current-ecoforest","readiness":"immutable-archive-then-owner-decision","decisionBundle":"quebec-ecoforest"},
     {"id":"qc-original-current-inventory","readiness":"immutable-archive-then-owner-decision","decisionBundle":"quebec-ecoforest"},
