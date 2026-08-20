@@ -1,8 +1,8 @@
 # Phase 1 permission and export outreach package
 
-Status: **seven owner-reviewed messages sent; awaiting responses.** On 2026-08-14, Gmail's Sent label was read-only searched for each exact sender, recipient, and subject. The resulting package records only the verified sent timestamp and non-sensitive verification method; it intentionally retains no Gmail message ID, thread ID, body, or Gmail link. A send does not authorize acquisition, downloading, archival, transformation, ingestion, release, source-ledger admission, or production use. The package consolidates the genuine external blockers in the [access-block matrix](../data/phase1-access-blocker-resolution.json), rather than treating a public service, web explorer, or approximate map as a released source.
+Status: **seven owner-reviewed messages sent; six substantive replies recorded; blockers remain.** On 2026-08-20, Gmail was read-only searched and matching threads were bounded-read. The resulting package records only verified sent timestamps and non-sensitive reply summaries; it intentionally retains no Gmail message ID, thread ID, body, attachment, or Gmail link. A send, reply, routing instruction, or follow-up does not authorize acquisition, downloading, archival, transformation, ingestion, release, source-ledger admission, or production use. The package consolidates the genuine external blockers in the [access-block matrix](../data/phase1-access-blocker-resolution.json), rather than treating a public service, web explorer, or approximate map as a released source. The official BEC custom-download route is separately audited in [`data/phase1-bec-custom-download-route-audit.json`](../data/phase1-bec-custom-download-route-audit.json).
 
-One earlier request to FAIB is already recorded as sent and awaiting a response. It is tracked below only to prevent a duplicate message. The package now records **seven verified sends**, which together cover the other 12 canonical access-blocked rows. The exact machine-readable mapping and send timestamps are in [`data/phase1-permission-outreach-package.json`](../data/phase1-permission-outreach-package.json).
+One earlier request to FAIB is already recorded as sent and awaiting a response. It is tracked below only to prevent a duplicate message. The package records **seven verified sends**, which together cover the other 12 canonical access-blocked rows, plus that earlier request. Six substantive replies touch eight unique blocked rows; no reply provides an artifact, checksum, permission, or production evidence. The exact machine-readable mapping, reply audit, and send timestamps are in [`data/phase1-permission-outreach-package.json`](../data/phase1-permission-outreach-package.json) and [`data/phase1-outreach-reply-audit.json`](../data/phase1-outreach-reply-audit.json).
 
 ## 1. BC Forest Tenures Branch — FTA cutblocks and harvesting authorities
 
@@ -71,6 +71,10 @@ Witness Tree<br>
 chinonso8@gmail.com
 
 **Can unblock:** the BEC snapshot component of `bc-old-growth-bec`.
+
+### Official custom-download route audit
+
+The BEC Map catalogue record identifies version 13.1 (released 2026-07-08), the `WHSE_FOREST_VEGETATION.BEC_BIOGEOCLIMATIC_POLY` resource in EPSG:3005, SDO_GEOMETRY, and OGL-BC. The resource has **indirect access** and no direct file URL. The publisher's distribution workflow requires coordinate system, extent/AOI, clipping, format, included layers, a notification email, a Terms and Conditions acceptance, and order submission/confirmation. The linked BCGW access policy limits warehouse applicants to a Province employee, contractor, agent, or representative and adds account-use, retention, non-distribution, and security restrictions. No order, terms acceptance, payment, or download was performed. The prepared owner action is recorded in [`data/phase1-bec-custom-download-route-audit.json`](../data/phase1-bec-custom-download-route-audit.json); the row remains access-blocked with no raw-credit or immutable-proof change.
 
 ## 4. BC Intellectual Property Program — Access Only forest layers
 

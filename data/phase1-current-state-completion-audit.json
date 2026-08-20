@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "status": "blocked-zero-of-31-production-complete",
-  "asOf": "2026-08-14",
-  "notice": "Strict local audit only. It records no new archive, reply, permission, owner decision, transformation, ingestion, release, production admission, or production eligibility.",
+  "asOf": "2026-08-20",
+  "notice": "Strict local audit only. It records bounded read-only reply and official-route evidence but no new archive, permission, owner decision, transformation, ingestion, release, production admission, or production eligibility.",
   "ledger": {
     "totalRows": 31,
     "evidenceStateCounts": {"remote-verified-archived-profiled": 9, "local-verified-profiled": 7, "partial-component": 2, "access-blocked": 13},
@@ -25,7 +25,7 @@
       "requiredEvidence": ["legal-hold ON and OFF readbacks", "unchanged COMPLIANCE retention readback", "denied exact-version delete", "authorized recovery replica readback"],
       "complete": false
     },
-    "outreach": {"accessBlockedRows":13,"accessRowsCoveredBySentOutreach":13,"verifiedNewSends":7,"preExistingRequests":1,"repliesRecorded":0,"partialComponentDrafts":3,"partialComponentDraftsSent":0}
+    "outreach": {"accessBlockedRows":13,"accessRowsCoveredBySentOutreach":13,"verifiedNewSends":7,"preExistingRequests":1,"repliesRecorded":6,"accessBlockedRowsWithSubstantiveReply":8,"partialComponentDrafts":3,"partialComponentDraftsSent":0}
   },
   "actionPlans": {
     "remote-source-decision-recorded": ["execute the named deterministic transformation with checksum-bound lineage", "record ingestion validation", "obtain and record release and production-admission approval", "set production eligibility only after every gate passes"],

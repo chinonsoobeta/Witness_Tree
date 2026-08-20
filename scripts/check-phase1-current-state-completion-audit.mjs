@@ -1,12 +1,13 @@
 import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
+import { validatePhase1OutreachReplyAudit } from "./check-phase1-outreach-reply-audit.mjs";
 
 const read = (file) => JSON.parse(readFileSync(new URL(`../${file}`, import.meta.url), "utf8"));
 
-export function validatePhase1CurrentStateCompletionAudit(audit, ledger, readiness, immutable, wildfire, outreach, partialOutreach, access) {
+export function validatePhase1CurrentStateCompletionAudit(audit, ledger, readiness, immutable, wildfire, outreach, partialOutreach, access, replyAudit, routeAudit) {
   assert.equal(audit.schemaVersion, 1);
   assert.equal(audit.status, "blocked-zero-of-31-production-complete");
-  assert.match(audit.notice, /records no new archive.*production eligibility/i);
+  assert.match(audit.notice, /records .*no new archive.*production eligibility/i);
   assert.equal(ledger.entries.length, 31);
   assert.equal(audit.rows.length, 31);
   assert.deepEqual(audit.rows.map(({ id }) => id), ledger.entries.map(({ id }) => id));
@@ -28,10 +29,11 @@ export function validatePhase1CurrentStateCompletionAudit(audit, ledger, readine
   assert.equal(exercise.status, "not-integrated"); assert.equal(exercise.evidenceRef, null); assert.equal(exercise.complete, false);
   assert.equal(exercise.requiredEvidence.length, 4);
   assert.ok(existsSync(new URL(`../${exercise.runner}`, import.meta.url))); assert.ok(existsSync(new URL(`../${exercise.checker}`, import.meta.url)));
-  const sent = outreach.messages.filter(({ status }) => status === "sent-awaiting-response");
-  const existing = outreach.messages.filter(({ status }) => status === "already-sent-awaiting-response-no-new-message");
+  validatePhase1OutreachReplyAudit(replyAudit, access, outreach, routeAudit);
+  const sent = outreach.messages.filter(({ verifiedSentAt }) => typeof verifiedSentAt === "string");
+  const existing = outreach.messages.filter(({ verifiedSentAt }) => typeof verifiedSentAt !== "string");
   const covered = new Set(outreach.messages.flatMap(({ canonicalRowIds }) => canonicalRowIds));
-  assert.deepEqual(audit.globalGates.outreach, {accessBlockedRows:13, accessRowsCoveredBySentOutreach:13, verifiedNewSends:sent.length, preExistingRequests:existing.length, repliesRecorded:0, partialComponentDrafts:partialOutreach.requests.length, partialComponentDraftsSent:0});
+  assert.deepEqual(audit.globalGates.outreach, {accessBlockedRows:13, accessRowsCoveredBySentOutreach:13, verifiedNewSends:sent.length, preExistingRequests:existing.length, repliesRecorded:replyAudit.counts.substantiveReplyRecords, accessBlockedRowsWithSubstantiveReply:replyAudit.counts.accessBlockedRowsWithSubstantiveReply, partialComponentDrafts:partialOutreach.requests.length, partialComponentDraftsSent:0});
   assert.equal(partialOutreach.status, "owner-review-only-not-sent");
   assert.equal(access.status, "all-13-access-blocked-no-lawful-acquisition");
   const readinessById = new Map(readiness.entries.map((entry) => [entry.id, entry]));
@@ -56,7 +58,7 @@ export function validatePhase1CurrentStateCompletionAudit(audit, ledger, readine
 }
 
 export function checkPhase1CurrentStateCompletionAudit() {
-  return validatePhase1CurrentStateCompletionAudit(read("data/phase1-current-state-completion-audit.json"), read("data/phase1-production-source-ledger.json"), read("data/phase1-source-ledger-decision-readiness.json"), read("data/phase1-immutable-promotion-readiness.json"), read("data/current-wildfire-owner-admission.json"), read("data/phase1-permission-outreach-package.json"), read("data/partial-ledger-owner-review-outreach-package.json"), read("data/phase1-access-blocker-resolution.json"));
+  return validatePhase1CurrentStateCompletionAudit(read("data/phase1-current-state-completion-audit.json"), read("data/phase1-production-source-ledger.json"), read("data/phase1-source-ledger-decision-readiness.json"), read("data/phase1-immutable-promotion-readiness.json"), read("data/current-wildfire-owner-admission.json"), read("data/phase1-permission-outreach-package.json"), read("data/partial-ledger-owner-review-outreach-package.json"), read("data/phase1-access-blocker-resolution.json"), read("data/phase1-outreach-reply-audit.json"), read("data/phase1-bec-custom-download-route-audit.json"));
 }
 
 if (process.argv[1]?.endsWith("check-phase1-current-state-completion-audit.mjs")) {

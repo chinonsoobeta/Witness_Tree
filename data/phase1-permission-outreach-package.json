@@ -1,13 +1,15 @@
 {
   "schemaVersion": 1,
-  "status": "sent-awaiting-response",
+  "status": "reply-audit-recorded-blockers-remain",
   "preparedAt": "2026-08-14T23:55:00Z",
   "sender": "Chinonso Obeta <chinonso8@gmail.com>",
-  "scope": "A consolidated record of owner-reviewed outreach sends for the genuine external export, permission, rights, authority, and engagement blockers in the Phase 1 access-block matrix. Gmail Sent-label searches verified the exact sender, recipient, subject, and sent timestamp for the seven named messages without retaining message IDs, thread IDs, body content, or links. A send is not an acquisition, a response, an archive, a transformation, an ingestion, an owner source-ledger decision, a production-admission decision, or production eligibility.",
+  "scope": "A consolidated record of owner-reviewed outreach sends and the bounded read-only reply audit for the genuine external export, permission, rights, authority, and engagement blockers in the Phase 1 access-block matrix. Gmail Sent-label searches verified the exact sender, recipient, subject, and sent timestamp for the seven named messages; the separate reply audit records six substantive replies and three acknowledgement-only records without retaining message IDs, thread IDs, body content, attachments or mailbox links. A send, reply, routing instruction or follow-up is not an acquisition, permission, archive, transformation, ingestion, owner source-ledger decision, production-admission decision or production eligibility.",
+  "replyAuditFile": "data/phase1-outreach-reply-audit.json",
+  "officialRouteAuditFile": "data/phase1-bec-custom-download-route-audit.json",
   "messages": [
     {
       "id": "bc-forest-tenures-export",
-      "status": "sent-awaiting-response",
+      "status": "reply-received-awaiting-resolution",
       "verifiedSentAt": "2026-08-14T18:52:07-05:00",
       "sentVerification": "Gmail Sent-label read-only search matched this exact sender, recipient, and subject; message and thread identifiers are intentionally omitted.",
       "recipient": "ForestTenuresBranch@gov.bc.ca",
@@ -19,7 +21,7 @@
     },
     {
       "id": "ontario-fri-term2-package-and-rights",
-      "status": "sent-awaiting-response",
+      "status": "reply-received-awaiting-resolution",
       "verifiedSentAt": "2026-08-14T18:51:59-05:00",
       "sentVerification": "Gmail Sent-label read-only search matched this exact sender, recipient, and subject; message and thread identifiers are intentionally omitted.",
       "recipient": "info.mnrfscience@ontario.ca",
@@ -31,7 +33,7 @@
     },
     {
       "id": "bc-bec-v13-1-snapshot",
-      "status": "sent-awaiting-response",
+      "status": "reply-received-awaiting-resolution",
       "verifiedSentAt": "2026-08-14T18:52:03-05:00",
       "sentVerification": "Gmail Sent-label read-only search matched this exact sender, recipient, and subject; message and thread identifiers are intentionally omitted.",
       "recipient": "datamaps@gov.bc.ca",
@@ -43,7 +45,7 @@
     },
     {
       "id": "bc-copyright-access-only-forest-layers",
-      "status": "sent-awaiting-response",
+      "status": "reply-received-awaiting-resolution",
       "verifiedSentAt": "2026-08-14T18:52:11-05:00",
       "sentVerification": "Gmail Sent-label read-only search matched this exact sender, recipient, and subject; message and thread identifiers are intentionally omitted.",
       "recipient": "QPIPPCopyright@gov.bc.ca",
@@ -79,7 +81,7 @@
     },
     {
       "id": "cirnac-treaty-geometry-authority-and-engagement",
-      "status": "sent-awaiting-response",
+      "status": "automatic-reply-only-awaiting-substantive-response",
       "verifiedSentAt": "2026-08-14T18:52:18-05:00",
       "sentVerification": "Gmail Sent-label read-only search matched this exact sender, recipient, and subject; message and thread identifiers are intentionally omitted.",
       "recipient": "infopubs@sac-isc.gc.ca",
@@ -91,7 +93,7 @@
     },
     {
       "id": "bc-consolidated-cutblocks-existing-request",
-      "status": "already-sent-awaiting-response-no-new-message",
+      "status": "already-sent-reply-received-awaiting-resolution",
       "recipient": "FAIB.Data.Management@gov.bc.ca",
       "recipientEvidence": "data/bc-consolidated-cutblocks-access.json",
       "subject": "Permission request — Harvested Areas of BC (Consolidated Cutblocks)",
