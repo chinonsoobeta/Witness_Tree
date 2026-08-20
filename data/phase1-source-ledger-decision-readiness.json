@@ -6,7 +6,7 @@
   "contract": ["licence", "attribution", "retrievalVersion", "checksum", "rawArchiveRefetch", "profile", "immutableArchive", "ownerSourceLedgerDecision"],
   "readinessDefinitions": {
     "owner-decision-recorded": "All source-evidence proofs and a narrowly scoped owner source-ledger decision are recorded; it remains non-production.",
-    "immutable-archive-then-owner-decision": "The local evidence contract is complete except immutable archive; obtain immutable payload/sidecar readbacks first, then request a named source-ledger-only decision.",
+    "immutable-archive-then-owner-decision": "The source has no named owner source-ledger decision: a local row still awaits immutable archive, or a newly archived row now awaits the same named decision.",
     "owner-scope-decision-after-archive": "The local evidence contract is complete except immutable archive, and the later decision must also resolve the stated operational or geometry scope.",
     "owner-scope-decision-recorded-awaiting-archive": "The owner has resolved operational or geometry scope and approved downstream use, but production proof and eligibility remain blocked until every named immutable readback is integrated.",
     "owner-scope-decision-ready": "Immutable archive evidence is recorded, but a separately named owner decision must still resolve the stated operational or geometry scope.",

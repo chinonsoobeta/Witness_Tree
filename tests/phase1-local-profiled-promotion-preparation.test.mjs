@@ -8,11 +8,11 @@ const plan = read("../data/phase1-local-profiled-promotion-preparation.json");
 const staged = read("../data/staged-acquisitions.json");
 const ledger = read("../data/phase1-production-source-ledger.json");
 
-test("one dry-run preparation binds the four local-profiled rows to three exact artifacts", () => {
+test("one dry-run preparation binds the remaining national local-profiled rows to two exact artifacts", () => {
   assert.equal(validateLocalProfiledPromotionPreparation(plan, staged, ledger), plan);
-  assert.equal(plan.artifacts.length, 3);
+  assert.equal(plan.artifacts.length, 2);
   assert.deepEqual(plan.artifacts.at(-1).productionRowIds, ["fed-2023-ridings", "elections-canada-45th-files"]);
-  assert.deepEqual([...plan.plannedProductionRowIds].sort(), ["elections-canada-45th-files", "fed-2023-ridings", "ntems-canopy-height", "ntems-forest-harvest"]);
+  assert.deepEqual([...plan.plannedProductionRowIds].sort(), ["elections-canada-45th-files", "fed-2023-ridings", "ntems-canopy-height"]);
 });
 
 test("preparation rejects missing local rows, mutable aliases, invented archive claims, and duplicated uploads", () => {

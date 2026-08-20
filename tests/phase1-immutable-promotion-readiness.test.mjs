@@ -8,8 +8,8 @@ const args = [read("data/phase1-immutable-promotion-readiness.json"), read("data
 
 test("immutable-promotion readiness accounts for every local-profiled row without duplicate work", () => {
   assert.equal(validatePhase1ImmutablePromotionReadiness(...args), args[0]);
-  assert.equal(args[0].coveredProductionRowIds.length, 7);
-  assert.equal(args[0].physicalArtifactGroups.find((group) => group.id === "national-three-artifacts").physicalArtifactCount, 3);
+  assert.equal(args[0].coveredProductionRowIds.length, 6);
+  assert.equal(args[0].physicalArtifactGroups.find((group) => group.id === "national-two-artifacts").physicalArtifactCount, 2);
   assert.equal(args[0].physicalArtifactGroups.find((group) => group.id === "current-wildfire-six-release-inputs").physicalArtifactCount, 6);
 });
 

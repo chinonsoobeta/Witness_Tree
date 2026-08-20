@@ -24,7 +24,12 @@ export function validatePhase1SourceLedgerDecisionReadiness(audit, ledger, decis
       assert.equal(row.evidenceState, "remote-verified-archived-profiled");
       assert.ok(decisions.decisions.some((decision) => decision.id === entry.id && decision.ownerAdmission === "approved-source-ledger-only"));
     }
-    if (entry.readiness === "immutable-archive-then-owner-decision" || entry.readiness === "owner-scope-decision-after-archive") {
+    if (entry.readiness === "immutable-archive-then-owner-decision") {
+      assert.ok(["local-verified-profiled", "remote-verified-archived-profiled"].includes(row.evidenceState));
+      assert.equal(row.proof.immutableArchive, row.evidenceState === "remote-verified-archived-profiled");
+      assert.equal(row.proof.productionAdmission, false);
+    }
+    if (entry.readiness === "owner-scope-decision-after-archive") {
       assert.equal(row.evidenceState, "local-verified-profiled");
       assert.equal(row.proof.immutableArchive, false);
       assert.equal(row.proof.productionAdmission, false);
