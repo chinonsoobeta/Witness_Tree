@@ -58,6 +58,7 @@
     "check:phase1-current-state-completion-audit": "node scripts/check-phase1-current-state-completion-audit.mjs",
     "check:phase1-remaining-actions-audit": "node scripts/check-phase1-remaining-actions-audit.mjs",
     "check:phase1-national-archive-finalization-audit": "node scripts/check-phase1-national-archive-finalization-audit.mjs",
+    "check:phase1-canopy-completion-recovery": "node --test tests/phase1-canopy-completion-recovery.test.mjs",
     "prepare:phase1-local-profiled-immutable-promotion": "tsx scripts/prepare-phase1-local-profiled-immutable-promotion.mjs",
     "check:current-wildfire-immutable-promotion-preparation": "node scripts/prepare-current-wildfire-immutable-promotion.mjs",
     "check:current-wildfire-owner-admission": "node scripts/check-current-wildfire-owner-admission.mjs",
