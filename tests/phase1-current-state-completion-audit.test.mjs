@@ -12,7 +12,7 @@ test("current-state audit accounts for all 31 rows and remains fail closed", () 
   assert.equal(audit.ledger.productionEligibleRows, 0);
   assert.equal(audit.ledger.rawEvidenceNumerator, 14.75);
   assert.equal(audit.ledger.immutableArchiveCompleteRows, 9);
-  assert.equal(audit.globalGates.outreach.repliesRecorded, 6);
+  assert.equal(audit.globalGates.outreach.repliesRecorded, 7);
   assert.equal(audit.globalGates.normalArchiveExercise.complete, false);
 });
 

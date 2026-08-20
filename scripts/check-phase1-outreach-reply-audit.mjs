@@ -41,7 +41,7 @@ export function validatePhase1OutreachReplyAudit(audit, matrix, pkg, routeAudit)
   assert.deepEqual(audit.counts, {
     canonicalAccessBlockedRows: 13,
     canonicalPartialRows: 2,
-    substantiveReplyRecords: 6,
+    substantiveReplyRecords: 7,
     accessBlockedRowsWithSubstantiveReply: 8,
     accessBlockedRowsWithoutSubstantiveReply: 5,
     partialRowsWithSubstantiveReply: 0,
@@ -51,7 +51,7 @@ export function validatePhase1OutreachReplyAudit(audit, matrix, pkg, routeAudit)
     rawEvidenceCreditImpact: 0,
     productionEligibilityImpact: 0
   });
-  assert.equal(audit.substantiveReplies.length, 6);
+  assert.equal(audit.substantiveReplies.length, 7);
   assert.equal(audit.automaticOrAcknowledgementOnly.length, 3);
   assert.equal(audit.ownerFollowUpsObserved.length, 3);
   assert.equal(audit.rows.length, 15);
@@ -60,7 +60,7 @@ export function validatePhase1OutreachReplyAudit(audit, matrix, pkg, routeAudit)
   const rowIds = audit.rows.map(({ id }) => id);
   assert.deepEqual(rowIds, [...ACCESS_ROWS, ...PARTIAL_ROWS]);
   const replyIds = new Set(audit.substantiveReplies.map(({ id }) => id));
-  assert.equal(replyIds.size, 6);
+  assert.equal(replyIds.size, 7);
   const packageIds = new Set(pkg?.messages?.map(({ id }) => id) ?? []);
   for (const reply of audit.substantiveReplies) {
     assert.ok(packageIds.has(reply.outreachMessageId), `Reply ${reply.id} must map to an outreach message.`);
