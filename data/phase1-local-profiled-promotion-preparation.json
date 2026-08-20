@@ -6,19 +6,6 @@
   "artifacts": [
     {
       "productionRowIds": [
-        "ntems-forest-harvest"
-      ],
-      "stagedAcquisitionId": "nrcan-ca-forest-harvest-1985-2022-2026-08-14",
-      "localPath": "../Witness_Tree-data/raw/nrcan-ca-forest-harvest-1985-2022/2026-08-14/CA_Forest_Harvest_1985-2022.zip",
-      "byteLength": 247945479,
-      "sha256": "c6f41dff46d91812874672edb53233dac4126952132ad6d1131ad47b11ad7aad",
-      "profile": "data/nrcan-harvest-profile.json",
-      "archiveKeyVersion": "undeclared",
-      "sourceVersion": "undeclared",
-      "predecessorPayloadKey": null
-    },
-    {
-      "productionRowIds": [
         "ntems-canopy-height"
       ],
       "stagedAcquisitionId": "nrcan-forest-canopy-height-2022-2026-08-14",
@@ -55,7 +42,6 @@
     "productionEligible": false
   },
   "plannedProductionRowIds": [
-    "ntems-forest-harvest",
     "ntems-canopy-height",
     "fed-2023-ridings",
     "elections-canada-45th-files"

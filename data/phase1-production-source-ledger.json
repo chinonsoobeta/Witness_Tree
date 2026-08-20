@@ -26,10 +26,11 @@
     },
     {
       "id": "ntems-forest-harvest",
-      "evidenceState": "local-verified-profiled",
+      "evidenceState": "remote-verified-archived-profiled",
       "evidenceRefs": [
         "data/nrcan-harvest-profile.json",
-        "data/staged-acquisitions.json"
+        "data/staged-acquisitions.json",
+        "data/nrcan-harvest-remote-archive-evidence.json"
       ],
       "proof": {
         "licence": true,
@@ -38,12 +39,12 @@
         "checksum": true,
         "rawArchiveRefetch": true,
         "profile": true,
-        "immutableArchive": false,
+        "immutableArchive": true,
         "productionAdmission": false
       },
-      "rawCredit": 0.75,
+      "rawCredit": 1,
       "productionEligible": false,
-      "blocker": "Immutable archive/recovery evidence and explicit ingestion and release approval."
+      "blocker": "Owner source-ledger decision, transformation, ingestion, release, and production eligibility remain separately blocked; the exact raw payload and recovery evidence are now archived and redacted read back."
     },
     {
       "id": "ntems-canopy-cover",
@@ -645,12 +646,12 @@
       "blocker": "CIRNAC's official map is informal, approximate, subject to revision, and expressly cannot be relied on for consultation. It is not legal or precision boundary geometry; no admissible legal artifact, rights, checksum/archive recovery, or engagement route is verified."
     }
   ],
-  "rawEvidenceNumerator": 14.75,
+  "rawEvidenceNumerator": 15,
   "formalProgress": {
     "baselinePercentagePoints": 25,
     "rawEvidenceWeightPercentagePoints": 30,
     "completeLedgerWeightPercentagePoints": 45,
-    "percentage": 39.2741935,
+    "percentage": 39.516129,
     "notice": "This is an evidence-tracking score only. It does not grant source-ledger admission, transformation, analysis, ingestion, public release, production admission, or production eligibility."
   }
 }

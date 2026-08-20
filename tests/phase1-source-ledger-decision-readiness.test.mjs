@@ -11,6 +11,9 @@ const decisions = read("../data/phase1-remote-source-admission-decisions.json");
 test("decision-readiness matrix reconciles all rows and stays strictly non-admitting", () => {
   assert.equal(validatePhase1SourceLedgerDecisionReadiness(audit, ledger, decisions), audit);
   assert.deepEqual(audit.counts, { "owner-decision-recorded": 4, "immutable-archive-then-owner-decision": 7, "owner-scope-decision-after-archive": 0, "owner-scope-decision-recorded-awaiting-archive": 4, "owner-scope-decision-ready": 1, "external-evidence-blocked": 15 });
+  const harvest = audit.entries.find(({ id }) => id === "ntems-forest-harvest");
+  assert.equal(harvest.readiness, "immutable-archive-then-owner-decision");
+  assert.equal(ledger.entries.find(({ id }) => id === "ntems-forest-harvest").proof.immutableArchive, true);
   assert.equal(audit.nonProduction.productionProofChanged, false);
   assert.equal(audit.nonProduction.productionEligibleChanged, false);
 });

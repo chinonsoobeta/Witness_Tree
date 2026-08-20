@@ -5,18 +5,18 @@
   "notice": "Strict local audit only. It records bounded read-only reply and official-route evidence but no new archive, permission, owner decision, transformation, ingestion, release, production admission, or production eligibility.",
   "ledger": {
     "totalRows": 31,
-    "evidenceStateCounts": {"remote-verified-archived-profiled": 9, "local-verified-profiled": 7, "partial-component": 2, "access-blocked": 13},
-    "rawEvidenceNumerator": 14.75,
+    "evidenceStateCounts": {"remote-verified-archived-profiled": 10, "local-verified-profiled": 6, "partial-component": 2, "access-blocked": 13},
+    "rawEvidenceNumerator": 15,
     "rawEvidenceDenominator": 31,
-    "formalEvidenceTrackingPercentage": 39.2741935,
-    "immutableArchiveCompleteRows": 9,
+    "formalEvidenceTrackingPercentage": 39.516129,
+    "immutableArchiveCompleteRows": 10,
     "ownerSourceDecisionRecordedRows": 4,
     "ownerDownstreamScopeRecordedAwaitingArchiveRows": 4,
     "productionAdmissionCompleteRows": 0,
     "productionEligibleRows": 0
   },
   "globalGates": {
-    "immutableArchives": {"status":"blocked","completeRows":9,"localRowsAwaitingArchive":7,"sourceEvidenceBlockedRows":15,"currentWildfireRequiredObjects":6,"currentWildfireVerifiedObjects":4},
+    "immutableArchives": {"status":"blocked","completeRows":10,"localRowsAwaitingArchive":6,"sourceEvidenceBlockedRows":15,"currentWildfireRequiredObjects":6,"currentWildfireVerifiedObjects":4},
     "normalArchiveExercise": {
       "status": "not-integrated",
       "evidenceRef": null,
@@ -29,6 +29,7 @@
   },
   "actionPlans": {
     "remote-source-decision-recorded": ["execute the named deterministic transformation with checksum-bound lineage", "record ingestion validation", "obtain and record release and production-admission approval", "set production eligibility only after every gate passes"],
+    "owner-decision-after-archive": ["request a named owner source-ledger decision for the exact archived raw source", "record the decision without inferring transformation, ingestion, release, or production admission", "execute and validate only a separately approved transformation and ingestion", "record release and production admission", "set production eligibility only after every gate passes"],
     "plvi-owner-scope": ["record the owner decision for the exact raw and 179087-feature derived scope and all 12 bounded repairs", "record ingestion validation and release approval", "record production admission", "set production eligibility only after every gate passes"],
     "local-archive-then-decision": ["promote the exact payload and sidecar set to the Canadian immutable archive and integrate version/checksum/retention/readback/recovery evidence", "record the named owner source and transformation decision", "execute and validate transformation and ingestion", "record release and production admission", "set production eligibility only after every gate passes"],
     "wildfire-owner-approved": ["prepare any missing exact-key promotion inputs and promote every owner-required raw and derived object", "integrate exact version/checksum/retention/readback/recovery evidence", "execute the already approved transformation and ingestion scope", "record release activation and production admission evidence", "set production eligibility only after the six-object archive gate and every source gate pass"],
@@ -38,7 +39,7 @@
   },
   "rows": [
     {"id":"ntems-annual-land-cover","actionPlan":"remote-source-decision-recorded"},
-    {"id":"ntems-forest-harvest","actionPlan":"local-archive-then-decision"},
+    {"id":"ntems-forest-harvest","actionPlan":"owner-decision-after-archive"},
     {"id":"ntems-canopy-cover","actionPlan":"remote-source-decision-recorded"},
     {"id":"ntems-canopy-height","actionPlan":"local-archive-then-decision"},
     {"id":"cwfis-current","actionPlan":"wildfire-owner-approved"},
