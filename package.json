@@ -24,6 +24,7 @@
     "check:nfdb-poly-current": "node scripts/check-nfdb-poly-current.mjs",
     "check:bc-harvesting-authority-access": "node scripts/check-bc-harvesting-authority-access.mjs",
     "check:ontario-fri-term2-access": "node scripts/check-ontario-fri-term2-access.mjs",
+    "check:phase1-ontario-fri-term2-route-exhaustion": "node scripts/check-phase1-ontario-fri-term2-route-exhaustion.mjs",
     "check:indian-reserves-authority-access": "node scripts/check-indian-reserves-authority-access-block.mjs",
     "check:first-nation-reserves-authority-access": "node scripts/check-first-nation-reserves-authority-access-block.mjs",
     "check:historic-treaties-authority-access": "node scripts/check-historic-treaties-authority-access-block.mjs",
