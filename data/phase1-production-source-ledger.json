@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "status": "blocked",
-  "asOf": "2026-08-14",
+  "asOf": "2026-08-20",
   "notice": "Canonical Phase 1 production-source ledger. It reconciles every planUse: production row with evidence already recorded in this repository. A source remains blocked unless every listed proof is explicit and production admission is separately approved; no entry below is production eligible.",
   "entries": [
     {
@@ -299,7 +299,9 @@
     {
       "id": "bc-old-growth-bec",
       "evidenceState": "access-blocked",
-      "evidenceRefs": [],
+      "evidenceRefs": [
+        "data/phase1-bec-custom-download-route-audit.json"
+      ],
       "proof": {
         "licence": false,
         "attribution": false,
@@ -312,7 +314,7 @@
       },
       "rawCredit": 0,
       "productionEligible": false,
-      "blocker": "Obtain complete publisher snapshots, terms, version and profile."
+      "blocker": "The official BEC custom-download route is an indirect order requiring an email, Terms and Conditions acceptance and an eligible authorized account; no complete package, checksum, archive or owner admission is recorded. TAP rights and the implemented-deferral source remain unresolved."
     },
     {
       "id": "bc-forest-operations-map",

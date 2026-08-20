@@ -3,11 +3,12 @@
   "status": "read-only-reply-audit-complete-no-resolution",
   "auditedAt": "2026-08-20T17:15:19Z",
   "source": "Gmail read-only searches and bounded thread reads through 2026-08-20T17:15:19Z. Message IDs, thread IDs, mailbox URLs, bodies and attachments are not retained here.",
+  "officialRouteAuditFile": "data/phase1-bec-custom-download-route-audit.json",
   "nonClaimNotice": "A reply, routing instruction, follow-up, or acknowledgement is not permission, a source-owner decision, an artifact, not an acquisition, a checksum, an archive, a transformation, an ingestion, a release, or production eligibility. No form was submitted and no external system was changed by this audit.",
   "counts": {
     "canonicalAccessBlockedRows": 13,
     "canonicalPartialRows": 2,
-    "substantiveReplyRecords": 5,
+    "substantiveReplyRecords": 6,
     "accessBlockedRowsWithSubstantiveReply": 8,
     "accessBlockedRowsWithoutSubstantiveReply": 5,
     "partialRowsWithSubstantiveReply": 0,
@@ -50,6 +51,17 @@
       "status": "service-portal-route-no-snapshot",
       "summary": "BC Data Maps encouraged clients to submit a service-portal ticket. It supplied no complete BEC v13.1 export, transaction-consistent snapshot method, checksum, or reuse decision. A later Sent message stated an intention to submit the request; this audit found no evidence that a service-portal form was submitted.",
       "remainingBlockers": ["No complete coherent BEC v13.1 artifact or snapshot semantics", "No edition/effective date, full count, schema, CRS or checksum", "No transaction-safe acquisition path", "The TAP component still needs an implemented-deferral source and written Access Only permission"]
+    },
+    {
+      "id": "reply-bc-bec-custom-download-route",
+      "outreachMessageId": "bc-bec-v13-1-snapshot",
+      "canonicalRowIds": ["bc-old-growth-bec"],
+      "receivedAt": "2026-08-20T16:10:17Z",
+      "sender": "Qinghua Yi <jira@dpdd.atlassian.net>",
+      "subject": "DATABC-7005 BEC Map v13.1 — request for complete coherent export and reuse terms",
+      "status": "custom-download-route-no-acquisition",
+      "summary": "Qinghua Yi said a full copy can be obtained through the BC Geographic Warehouse Custom Download option listed for the BEC Map, with supporting information on the resource page and related Attribute Catalogue and Historic Versions records. The ticket was closed. No download was performed by this audit and no file, checksum, versioned snapshot, reuse licence or permission decision was supplied. The official route audit records the publisher metadata and the order/terms gate separately.",
+      "remainingBlockers": ["No acquired BEC artifact or exact export selection", "No version/as-of, feature count, schema, CRS or checksum for an acquired package", "No explicit reuse licence or permission decision for this requested use", "The indirect order requires an email address, Terms and Conditions acceptance and submission", "BCGW policy eligibility and authorized account holder are unconfirmed", "No immutable archive, owner admission or production evidence"]
     },
     {
       "id": "reply-bc-copyright-permission-process",
@@ -160,10 +172,10 @@
     {
       "id": "bc-old-growth-bec",
       "kind": "access-blocked",
-      "replyStatus": "replies-received-service-route-and-permission-process-no-resolution",
-      "replyRecordIds": ["reply-bc-bec-service-portal", "reply-bc-copyright-permission-process"],
+      "replyStatus": "replies-received-service-route-custom-download-and-permission-process-no-resolution",
+      "replyRecordIds": ["reply-bc-bec-service-portal", "reply-bc-bec-custom-download-route", "reply-bc-copyright-permission-process"],
       "lawfulAcquisitionNow": false,
-      "remainingBlockers": ["No coherent BEC snapshot", "No TAP implemented-deferral artifact", "No TAP permission or licence", "No checksum, archive or owner admission"]
+      "remainingBlockers": ["No coherent BEC snapshot", "The custom-download route is blocked before order submission by the email/terms/eligibility gate", "No TAP implemented-deferral artifact", "No TAP permission or licence", "No checksum, archive or owner admission"]
     },
     {
       "id": "bc-consolidated-cutblocks",

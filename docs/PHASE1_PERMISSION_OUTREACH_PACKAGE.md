@@ -1,22 +1,22 @@
 # Phase 1 permission and export outreach package
 
-Status: **seven owner-reviewed messages sent; five substantive replies recorded; blockers remain.** On 2026-08-20, Gmail was read-only searched and the matching threads were read without retaining Gmail message IDs, thread IDs, body content, attachments or mailbox links. The exact machine-readable reply record is [`data/phase1-outreach-reply-audit.json`](../data/phase1-outreach-reply-audit.json). A send, reply, routing instruction or follow-up does not authorize acquisition, downloading, archival, transformation, ingestion, release, source-ledger admission or production use. The package consolidates the genuine external blockers in the [access-block matrix](../data/phase1-access-blocker-resolution.json), rather than treating a public service, web explorer or approximate map as a released source.
+Status: **seven owner-reviewed messages sent; six substantive replies recorded; blockers remain.** On 2026-08-20, Gmail was read-only searched and matching threads were bounded-read. The resulting package records only verified sent timestamps and non-sensitive reply summaries; it intentionally retains no Gmail message ID, thread ID, body, attachment, or Gmail link. A send, reply, routing instruction, or follow-up does not authorize acquisition, downloading, archival, transformation, ingestion, release, source-ledger admission, or production use. The package consolidates the genuine external blockers in the [access-block matrix](../data/phase1-access-blocker-resolution.json), rather than treating a public service, web explorer, or approximate map as a released source. The official BEC custom-download route is separately audited in [`data/phase1-bec-custom-download-route-audit.json`](../data/phase1-bec-custom-download-route-audit.json).
 
-One earlier request to FAIB is already recorded as sent and now has a substantive follow-up exchange; it is tracked below only to prevent a duplicate initial request. The package records **seven verified sends**, which together cover the other 12 canonical access-blocked rows. Five substantive replies touch **eight unique blocked rows**; none resolves an artifact, right, authority, precision, snapshot or engagement gate. The exact machine-readable mapping and send timestamps are in [`data/phase1-permission-outreach-package.json`](../data/phase1-permission-outreach-package.json).
+One earlier request to FAIB is already recorded as sent and awaiting a response. It is tracked below only to prevent a duplicate message. The package records **seven verified sends**, which together cover the other 12 canonical access-blocked rows, plus that earlier request. Six substantive replies touch eight unique blocked rows; no reply provides an artifact, checksum, permission, or production evidence. The exact machine-readable mapping, reply audit, and send timestamps are in [`data/phase1-permission-outreach-package.json`](../data/phase1-permission-outreach-package.json) and [`data/phase1-outreach-reply-audit.json`](../data/phase1-outreach-reply-audit.json).
 
 ## Read-only reply audit — 2026-08-20
 
-The five substantive replies and their current meaning are:
+The six substantive replies include the BEC custom-download route, which remains blocked before any order or terms acceptance:
 
 | Route | Rows | Current evidence | Still blocked by |
 | --- | --- | --- | --- |
 | BC Forest Tenures Branch | `bc-fta-cutblocks`, `bc-harvesting-authorities` | The request was directed to the Province's FOI records route under FIPPA. | No coherent export, edition, checksum, reuse authorization or lifecycle decision; no FOI request was submitted by this audit. |
 | Ontario FRI team | `on-fri`, `on-fri-term-2` | The team pointed to Ontario GeoHub and said T2 directions will be uploaded when available for public use. | No stable T2 package, exact-package rights confirmation, checksum or archive evidence. |
-| BC Data Maps | BEC component of `bc-old-growth-bec` | The team directed clients to its service portal. A later Sent message stated intent to use that route; no portal submission was recorded. | No complete BEC snapshot, transaction semantics, checksum or edition. |
+| BC Data Maps | BEC component of `bc-old-growth-bec` | The team directed clients to its service portal. A later reply identified the indirect BCGW Custom Download route and its order/eligibility requirements; no order or portal submission was recorded. | No complete BEC snapshot, transaction semantics, checksum or edition; email/Terms acceptance/order submission and eligible account requirements remain unresolved. |
 | BC Intellectual Property Program | VRI, FOM and TAP components of `bc-old-growth-bec` | The program described its permission form, exact catalogue-name/URL requirement, intended-use details, custodian review, possible licensing vehicle and fee. | No form submission, custodian decision, licence, artifact, fee decision or TAP implementation layer. |
 | BC FAIB | `bc-consolidated-cutblocks` | FAIB asked for proposed derived, aggregate, map-tile and public outputs; a follow-up supplied those details. | No authorization, attribution wording, review decision or new artifact; no raw download occurred. |
 
-The CIRNAC thread and two FAIB acknowledgements are acknowledgement-only. No substantive reply was found for SOPFEU, ISC, or the reserve/treaty rows beyond the CIRNAC automatic reply. The two partial rows remain owner-review drafts and have no external reply. No form was submitted, attachment was downloaded, link was opened, message was sent, or external system was changed by this audit.
+The CIRNAC thread and two FAIB acknowledgements are acknowledgement-only. No substantive reply was found for SOPFEU, ISC, or the reserve/treaty rows beyond the CIRNAC automatic reply. The two partial rows remain owner-review drafts and have no external reply. No form was submitted, no terms were accepted, no order was placed, no attachment was downloaded, and no external system was changed by this audit.
 
 ## 1. BC Forest Tenures Branch — FTA cutblocks and harvesting authorities
 
@@ -85,6 +85,10 @@ Witness Tree<br>
 chinonso8@gmail.com
 
 **Can unblock:** the BEC snapshot component of `bc-old-growth-bec`.
+
+### Official custom-download route audit
+
+The BEC Map catalogue record identifies version 13.1 (released 2026-07-08), the `WHSE_FOREST_VEGETATION.BEC_BIOGEOCLIMATIC_POLY` resource in EPSG:3005, SDO_GEOMETRY, and OGL-BC. The resource has **indirect access** and no direct file URL. The publisher's distribution workflow requires coordinate system, extent/AOI, clipping, format, included layers, a notification email, a Terms and Conditions acceptance, and order submission/confirmation. The linked BCGW access policy limits warehouse applicants to a Province employee, contractor, agent, or representative and adds account-use, retention, non-distribution, and security restrictions. No order, terms acceptance, payment, or download was performed. The prepared owner action is recorded in [`data/phase1-bec-custom-download-route-audit.json`](../data/phase1-bec-custom-download-route-audit.json); the row remains access-blocked with no raw-credit or immutable-proof change.
 
 ## 4. BC Intellectual Property Program — Access Only forest layers
 

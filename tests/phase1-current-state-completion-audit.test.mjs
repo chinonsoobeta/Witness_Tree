@@ -4,12 +4,15 @@ import test from "node:test";
 import { validatePhase1CurrentStateCompletionAudit } from "../scripts/check-phase1-current-state-completion-audit.mjs";
 
 const read = (file) => JSON.parse(readFileSync(new URL(`../${file}`, import.meta.url), "utf8"));
-const args = ["phase1-current-state-completion-audit", "phase1-production-source-ledger", "phase1-source-ledger-decision-readiness", "phase1-immutable-promotion-readiness", "current-wildfire-owner-admission", "phase1-permission-outreach-package", "partial-ledger-owner-review-outreach-package", "phase1-access-blocker-resolution", "phase1-outreach-reply-audit"].map((name) => read(`data/${name}.json`));
+const args = ["phase1-current-state-completion-audit", "phase1-production-source-ledger", "phase1-source-ledger-decision-readiness", "phase1-immutable-promotion-readiness", "current-wildfire-owner-admission", "phase1-permission-outreach-package", "partial-ledger-owner-review-outreach-package", "phase1-access-blocker-resolution", "phase1-outreach-reply-audit", "phase1-bec-custom-download-route-audit"].map((name) => read(`data/${name}.json`));
 
 test("current-state audit accounts for all 31 rows and remains fail closed", () => {
   const audit = validatePhase1CurrentStateCompletionAudit(...args);
   assert.equal(audit.rows.length, 31);
   assert.equal(audit.ledger.productionEligibleRows, 0);
+  assert.equal(audit.ledger.rawEvidenceNumerator, 14.75);
+  assert.equal(audit.ledger.immutableArchiveCompleteRows, 9);
+  assert.equal(audit.globalGates.outreach.repliesRecorded, 6);
   assert.equal(audit.globalGates.normalArchiveExercise.complete, false);
 });
 

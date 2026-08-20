@@ -46,6 +46,8 @@
     "check:partial-ledger-owner-review-outreach": "node scripts/check-partial-ledger-owner-review-outreach.mjs",
     "check:phase1-immutable-promotion-readiness": "node scripts/check-phase1-immutable-promotion-readiness.mjs",
     "check:phase1-access-blocker-resolution": "node scripts/check-phase1-access-blocker-resolution.mjs",
+    "check:phase1-bec-custom-download-route-audit": "node scripts/check-phase1-bec-custom-download-route-audit.mjs",
+    "check:phase1-outreach-reply-audit": "node scripts/check-phase1-outreach-reply-audit.mjs",
     "check:phase1-permission-outreach-package": "node scripts/check-phase1-permission-outreach-package.mjs",
     "check:phase1-outreach-reply-audit": "node scripts/check-phase1-outreach-reply-audit.mjs",
     "check:phase1-source-ledger-decision-readiness": "node scripts/check-phase1-source-ledger-decision-readiness.mjs",
