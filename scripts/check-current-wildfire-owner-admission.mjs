@@ -118,5 +118,5 @@ export function checkCurrentWildfireOwnerAdmission() {
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   checkCurrentWildfireOwnerAdmission();
-  console.log("Current-wildfire owner scope is approved for four sources; production remains blocked on 0/6 immutable object readbacks.");
+  console.log("Current-wildfire owner scope is approved for four sources; production remains blocked on 4/6 immutable object readbacks.");
 }

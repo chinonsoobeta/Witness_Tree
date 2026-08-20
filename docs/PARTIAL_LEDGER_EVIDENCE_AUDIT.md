@@ -51,8 +51,8 @@ current four-province set.
 
 ## Numerator impact
 
-The raw-evidence numerator remains exactly **13.75/31**. This audit adds **0**
-credit, so the formal evidence-tracking score stays **38.3064516%**. Resolving
+The raw-evidence numerator remains exactly **14.75/31**. This audit adds **0**
+credit, so the formal evidence-tracking score stays **39.2741935%**. Resolving
 either entire row would move that row from `0.25` to `0.75`, a `+0.50` raw
 credit change; partial resolution of one missing component earns no additional
 credit.
