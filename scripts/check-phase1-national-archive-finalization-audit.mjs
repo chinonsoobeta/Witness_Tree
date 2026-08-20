@@ -35,7 +35,13 @@ export function validatePhase1NationalArchiveFinalizationAudit(audit = read("dat
     requiredReadbacks: ["payload-exact-version", "payload-bytes", "payload-FULL_OBJECT-checksum", "COMPLIANCE-retention", "sidecar-exact-version", "sidecar-bytes", "sidecar-FULL_OBJECT-checksum"],
     exitStatus: 0
   });
-  assert.deepEqual(audit.privateResumeState, { matchingMode600RecordFoundInControlledRoots: false, recordContentsReadOrRetained: false, recordIdentifiersRecorded: false });
+  assert.deepEqual(audit.privateResumeState, {
+    matchingMode600RecordFoundInControlledRoots: true,
+    offlineValidationPassed: true,
+    recordContentsReadOrRetained: true,
+    recordContentsRetainedInRepository: false,
+    recordIdentifiersRecorded: false
+  });
   assert.equal(audit.ownerRun.safeCommandAvailable, false);
   assert.equal(audit.ownerRun.command, null);
   assert.equal(audit.ownerRun.blockers.length, 3);

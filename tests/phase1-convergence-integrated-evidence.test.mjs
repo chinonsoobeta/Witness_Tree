@@ -33,7 +33,10 @@ test("integrated Phase 1 evidence remains additive and fail-closed across conver
   assert.equal(harvest.claims.productionEligible, false);
 
   assert.equal(national.liveReadOnly.multipart.canopy.partCount, 155);
-  assert.equal(national.privateResumeState.matchingMode600RecordFoundInControlledRoots, false);
+  assert.equal(national.privateResumeState.matchingMode600RecordFoundInControlledRoots, true);
+  assert.equal(national.privateResumeState.offlineValidationPassed, true);
+  assert.equal(national.privateResumeState.recordContentsRetainedInRepository, false);
+  assert.equal(national.privateResumeState.recordIdentifiersRecorded, false);
   assert.equal(national.ownerRun.safeCommandAvailable, false);
   assert.equal(national.ownerRun.command, null);
   assert.deepEqual(national.claims, {

@@ -53,16 +53,18 @@
     }
   },
   "privateResumeState": {
-    "matchingMode600RecordFoundInControlledRoots": false,
-    "recordContentsReadOrRetained": false,
+    "matchingMode600RecordFoundInControlledRoots": true,
+    "offlineValidationPassed": true,
+    "recordContentsReadOrRetained": true,
+    "recordContentsRetainedInRepository": false,
     "recordIdentifiersRecorded": false
   },
   "ownerRun": {
     "safeCommandAvailable": false,
     "command": null,
     "blockers":[
-      "No matching mode-600 private canopy resume record was found in the controlled workspace roots; an exact resume path cannot be supplied safely.",
-      "Any owner run still requires fresh exact-artifact/retention approval and an interactive MFA session.",
+      "The owner-local mode-600 canopy resume record passed offline validation, but its exact path, contents, upload identifier and provider part identifiers are intentionally not recorded in repository evidence; no owner-run command is authorized by this audit.",
+      "Any owner run still requires fresh exact-artifact/retention approval, an interactive MFA session, and live list-parts, completion, exact-version checksum, retention and sidecar read-backs.",
       "The federal prefix has no open multipart upload and therefore needs its separate owner-approved federal-only promotion path."
     ]
   },
