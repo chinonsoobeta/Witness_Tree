@@ -34,6 +34,23 @@ function assertExistingReferences(audit) {
   }
 }
 
+function validateLocalPreflight(group, expected) {
+  const receipt = group.localPreflight;
+  assert.ok(receipt, `${group.id} is missing its local preflight receipt.`);
+  assert.equal(receipt.status, "passed-no-write");
+  assert.match(receipt.command, /--preflight/);
+  assert.doesNotMatch(receipt.command, /--run|--execute/);
+  assert.equal(receipt.dataRoot, "/Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data");
+  assert.equal(receipt.sourceFiles, expected.sourceFiles);
+  assert.equal(receipt.sourceBytes, expected.sourceBytes);
+  assert.equal(receipt.remoteCalls, 0);
+  assert.equal(receipt.totpPrompted, false);
+  assert.equal(receipt.writePerformed, false);
+  for (const reference of expected.references || []) assert.ok(fileExists(reference), `${group.id} references missing ${reference}`);
+  if (expected.artifacts) assert.deepEqual(receipt.verifiedArtifacts, expected.artifacts);
+  if (expected.manifest) assert.deepEqual(receipt.deterministicManifest, expected.manifest);
+}
+
 function validatePhysicalArtifactGroups(audit, immutable) {
   assert.deepEqual(audit.physicalArtifactGroups.map(({ id }) => id), [...EXPECTED_GROUPS.keys()]);
   const seenRows = new Set();
@@ -51,13 +68,40 @@ function validatePhysicalArtifactGroups(audit, immutable) {
   assert.equal(seenRows.size, 10);
   const national = audit.physicalArtifactGroups.find(({ id }) => id === "national-two-artifacts");
   assert.equal(national.runner, "scripts/run-phase1-approved-promotion.sh");
+  validateLocalPreflight(national, {
+    sourceFiles: 3,
+    sourceBytes: 10605811193,
+    artifacts: [
+      { id: "nrcan-ca-forest-harvest-1985-2022-2026-08-14", relativePath: "raw/nrcan-ca-forest-harvest-1985-2022/2026-08-14/CA_Forest_Harvest_1985-2022.zip", byteLength: 247945479, sha256: "c6f41dff46d91812874672edb53233dac4126952132ad6d1131ad47b11ad7aad", remoteCreditAlreadyPresent: true },
+      { id: "nrcan-forest-canopy-height-2022-2026-08-14", relativePath: "raw/nrcan-forest-canopy-height-2022/2026-08-14/CA_canopy_height_2022.zip", byteLength: 10347564066, sha256: "86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124", remoteCreditAlreadyPresent: false },
+      { id: "elections-canada-federal-electoral-districts-45th-general-election-2025-shp", relativePath: "raw/elections-canada-federal-electoral-districts/2026-08-14/FederalElectoralDistricts_2025_SHP.zip", byteLength: 10301648, sha256: "4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93", remoteCreditAlreadyPresent: false }
+    ]
+  });
+  assert.equal(national.localPreflight.plannedSidecarKeys.length, 3);
+  assert.ok(national.localPreflight.plannedSidecarKeys.every((key) => key.endsWith("/manifest.json")));
   const wildfire = audit.physicalArtifactGroups.find(({ id }) => id === "current-wildfire-six-release-inputs");
   assert.equal(wildfire.runner, "scripts/run-current-wildfire-approved-promotion.sh");
   assert.equal(wildfire.currentStatus.includes("four-of-six"), true);
   const qc = audit.physicalArtifactGroups.find(({ id }) => id === "quebec-provincial-current-and-original");
   assert.equal(qc.runner, "scripts/run-qc-approved-multipart-promotion.sh");
+  validateLocalPreflight(qc, {
+    sourceFiles: 2,
+    sourceBytes: 23644142702,
+    artifacts: [
+      { id: "qc-ecoforest-map-2026-08-14", relativePath: "raw/qc-current-ecoforest/2026-08-14/CARTE_ECO_MAJ_PROV_GPKG.zip", byteLength: 12399475076, sha256: "c67c56b0c101e95bef4fbca53a06e2f1578fe38293961017f70d815209740cf1", payloadKey: "raw/qc-ecoforest-map/undeclared/2026-08-14T09-00-15Z/c67c56b0c101e95bef4fbca53a06e2f1578fe38293961017f70d815209740cf1/payload/carte_eco_maj_prov_gpkg.zip", manifestKey: "raw/qc-ecoforest-map/undeclared/2026-08-14T09-00-15Z/c67c56b0c101e95bef4fbca53a06e2f1578fe38293961017f70d815209740cf1/manifest.json" },
+      { id: "qc-original-current-inventory-2026-08-14", relativePath: "raw/qc-original-current-inventory/2026-08-14/CARTE_ECO_ORI_PROV_GPKG.zip", byteLength: 11244667626, sha256: "c10d691516569de76642dc1fc64e662f2569b5b58ab5d945b58b8b7834ba9c61", payloadKey: "raw/qc-original-inventory/undeclared/2026-08-14T15-15-58Z/c10d691516569de76642dc1fc64e662f2569b5b58ab5d945b58b8b7834ba9c61/payload/carte_eco_ori_prov_gpkg.zip", manifestKey: "raw/qc-original-inventory/undeclared/2026-08-14T15-15-58Z/c10d691516569de76642dc1fc64e662f2569b5b58ab5d945b58b8b7834ba9c61/manifest.json" }
+    ]
+  });
   const fourth = audit.physicalArtifactGroups.find(({ id }) => id === "quebec-fourth-inventory-56-sheet-product");
   assert.equal(fourth.runner, "scripts/qc-fourth-inventory-immutable-promotion.mjs");
+  validateLocalPreflight(fourth, {
+    sourceFiles: 61,
+    sourceBytes: 16179014954,
+    references: ["data/qc-fourth-inventory-immutable-promotion-preparation.json", "data/qc-fourth-inventory-immutable-promotion-iam-policy.json"],
+    manifest: { byteLength: 76127, sha256: "b3d85d1da40d68d79742c77ec418713f2ef968f74845c43e011df274d559616c", generatedInMemory: true }
+  });
+  assert.equal(fourth.localPreflight.exactObjectKeys, 62);
+  assert.equal(fourth.localPreflight.multipartPayloads, 6);
 }
 
 export function validatePhase1RemainingActionsAudit(audit, ledger, currentState, readiness, immutable, wildfire, replyAudit, partialOutreach, accessBlocker) {
@@ -66,7 +110,7 @@ export function validatePhase1RemainingActionsAudit(audit, ledger, currentState,
   assert.match(audit.notice, /no AWS call.*email.*form submission.*production-eligibility change/i);
   assert.match(audit.selectionRule, /immutable remote proof is absent OR production admission is absent/i);
   assert.match(audit.scoreFormula, /30 \* raw-credit delta \/ 31/);
-  assert.equal(audit.derivedFromHead, "650a7dae46211d7f86883b84575b6957fdb8fcd1");
+  assert.equal(audit.derivedFromHead, "c1f72febf3de89dbf94421ebde14f52aa5403871");
   assert.deepEqual(audit.claims, CLAIMS);
 
   const entries = ledger.entries;

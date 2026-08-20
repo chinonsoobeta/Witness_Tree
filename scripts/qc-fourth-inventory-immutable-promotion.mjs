@@ -68,8 +68,15 @@ export function dryRunLines(plan) {
   ];
 }
 
-function localObjects(plan, options) {
-  const dataRoot = realpathSync(options.dataRoot);
+function exactDataRoot(dataRoot) {
+  assert.ok(path.isAbsolute(dataRoot || ""), "A read-only preflight requires an absolute --data-root.");
+  const resolved = realpathSync(dataRoot);
+  assert.notEqual(resolved, path.parse(resolved).root, "The data root cannot be a filesystem root.");
+  assert.equal(path.basename(resolved), "Witness_Tree-data", "--data-root must resolve to the exact Witness_Tree-data directory.");
+  return resolved;
+}
+
+function sourceObjects(plan, dataRoot) {
   const withinDataRoot = (relative) => {
     const candidate = path.resolve(dataRoot, relative);
     const info = lstatSync(candidate);
@@ -78,6 +85,15 @@ function localObjects(plan, options) {
     assert.ok(resolved.startsWith(`${dataRoot}${path.sep}`), `${relative} escapes the data root.`);
     return resolved;
   };
+  return [
+    ...plan.archiveSet.payloads.map((entry) => ({ ...entry, id: `sheet-${entry.sheet}`, file: withinDataRoot(entry.dataRootRelativePath) })),
+    ...plan.evidenceArtifacts.map((entry) => ({ ...entry, file: withinDataRoot(entry.dataRootRelativePath) }))
+  ];
+}
+
+function localObjects(plan, options) {
+  const dataRoot = exactDataRoot(options.dataRoot);
+  const sources = sourceObjects(plan, dataRoot);
   const manifestBytes = canonicalManifestBytes(plan);
   assert.equal(manifestBytes.length, plan.canonicalManifest.byteLength);
   assert.equal(sha256Bytes(manifestBytes), plan.canonicalManifest.sha256);
@@ -88,8 +104,7 @@ function localObjects(plan, options) {
     writeFileSync(manifestPath, manifestBytes, { flag: "wx", mode: 0o600 });
   }
   return [
-    ...plan.archiveSet.payloads.map((entry) => ({ ...entry, id: `sheet-${entry.sheet}`, file: withinDataRoot(entry.dataRootRelativePath) })),
-    ...plan.evidenceArtifacts.map((entry) => ({ ...entry, file: withinDataRoot(entry.dataRootRelativePath) })),
+    ...sources,
     { ...plan.canonicalManifest, id: "canonical-collection-manifest", file: manifestPath }
   ];
 }
@@ -99,6 +114,18 @@ function preflight(objects) {
     assert.equal(statSync(entry.file).size, entry.byteLength, `${entry.id} local byte length drifted.`);
     assert.equal(sha256File(entry.file), entry.sha256, `${entry.id} local SHA-256 drifted.`);
   }
+}
+
+export function preflightLocal(plan, options) {
+  assert.equal(options.execute, false, "A read-only preflight cannot be combined with --execute.");
+  const dataRoot = exactDataRoot(options.dataRoot);
+  const sources = sourceObjects(plan, dataRoot);
+  assert.equal(sources.length, plan.archiveSet.count + plan.evidenceArtifacts.length, "The local source set is incomplete.");
+  preflight(sources);
+  const manifestBytes = canonicalManifestBytes(plan);
+  assert.equal(manifestBytes.length, plan.canonicalManifest.byteLength);
+  assert.equal(sha256Bytes(manifestBytes), plan.canonicalManifest.sha256);
+  return { dataRoot, sources, manifestBytes };
 }
 
 function invokeJson(args, env = process.env) {
@@ -224,7 +251,7 @@ export function executePromotion(plan, options, dependencies = {}) {
 function cliOptions(argv) {
   const value = (name) => { const index = argv.indexOf(name); return index === -1 ? undefined : argv[index + 1]; };
   return {
-    execute: argv.includes("--execute"), approveExactArtifacts: argv.includes("--approve-exact-artifact-set"), approveIam: argv.includes("--approve-iam-policy"), approveRetention: argv.includes("--approve-compliance-retention"), approveMfa: argv.includes("--approve-mfa-session"),
+    preflight: argv.includes("--preflight"), execute: argv.includes("--execute"), approveExactArtifacts: argv.includes("--approve-exact-artifact-set"), approveIam: argv.includes("--approve-iam-policy"), approveRetention: argv.includes("--approve-compliance-retention"), approveMfa: argv.includes("--approve-mfa-session"),
     retentionUntil: value("--retention-until"), sessionReady: argv.includes("--session-ready"), dataRoot: value("--data-root"), stateDir: value("--state-dir"), sidecarDir: value("--sidecar-dir")
   };
 }
@@ -232,6 +259,11 @@ function cliOptions(argv) {
 if (import.meta.url === `file://${process.argv[1]}`) {
   const plan = loadQcFourthInventoryPromotionPreparation();
   const options = cliOptions(process.argv.slice(2));
-  if (!options.execute) console.log(dryRunLines(plan).join("\n"));
+  if (options.preflight) {
+    const result = preflightLocal(plan, options);
+    console.log(`PRECHECK passed: ${result.sources.length} local payload/evidence files have exact bytes and SHA-256; canonical manifest is deterministic and matches its pinned sidecar bytes; 62 exact keys and least-privilege IAM preparation were validated; no AWS or IAM call was made.`);
+    for (const entry of result.sources) console.log(`LOCAL id=${entry.id} bytes=${entry.byteLength} sha256=${entry.sha256} path=${entry.file} key=${entry.objectKey}`);
+    console.log(`SIDECAR bytes=${result.manifestBytes.length} sha256=${sha256Bytes(result.manifestBytes)} key=${plan.canonicalManifest.objectKey} generated-in-memory=true`);
+  } else if (!options.execute) console.log(dryRunLines(plan).join("\n"));
   else console.log(JSON.stringify(executePromotion(plan, options), null, 2));
 }

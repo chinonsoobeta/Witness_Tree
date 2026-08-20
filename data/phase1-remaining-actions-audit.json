@@ -2,7 +2,7 @@
   "schemaVersion": "witness-tree/phase1-remaining-actions-audit/1",
   "status": "blocked-read-only",
   "asOf": "2026-08-20",
-  "derivedFromHead": "650a7dae46211d7f86883b84575b6957fdb8fcd1",
+  "derivedFromHead": "c1f72febf3de89dbf94421ebde14f52aa5403871",
   "notice": "Fresh local Phase 1 remaining-action audit. It reconciles the canonical 31-row ledger, immutable-promotion preparation, owner-decision readiness, reply, and access-block records. It performs no AWS call, email, form submission, archive mutation, permission grant, transformation, ingestion, release, production admission, or production-eligibility change.",
   "selectionRule": "Audit every production row where immutable remote proof is absent OR production admission is absent. The union is all 31 rows because production admission is absent for every row.",
   "baseline": {
@@ -57,7 +57,27 @@
       "readiness": "data/phase1-immutable-promotion-readiness.json",
       "ownerReconciliation": "data/phase1-archive-owner-command-reconciliation-2026-08-20.json",
       "runner": "scripts/run-phase1-approved-promotion.sh",
-      "currentStatus": "canopy MPU completed; redacted primary/recovery payload and sidecar heads have exact bytes and FULL_OBJECT checksums, but exact-version readback is blocked by unavailable s3:GetObjectVersion, retention is absent, and no immutable credit is claimed"
+      "currentStatus": "no-write preflight passed for the three bound local artifacts (harvest revalidated; canopy and federal remain unarchived); canopy MPU completed with redacted primary/recovery payload and sidecar heads having exact bytes and FULL_OBJECT checksums, but exact-version readback is blocked by unavailable s3:GetObjectVersion, retention is absent, and no immutable credit is claimed",
+      "localPreflight": {
+        "status": "passed-no-write",
+        "command": "zsh scripts/run-phase1-approved-promotion.sh --preflight",
+        "dataRoot": "/Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data",
+        "sourceFiles": 3,
+        "sourceBytes": 10605811193,
+        "verifiedArtifacts": [
+          {"id": "nrcan-ca-forest-harvest-1985-2022-2026-08-14", "relativePath": "raw/nrcan-ca-forest-harvest-1985-2022/2026-08-14/CA_Forest_Harvest_1985-2022.zip", "byteLength": 247945479, "sha256": "c6f41dff46d91812874672edb53233dac4126952132ad6d1131ad47b11ad7aad", "remoteCreditAlreadyPresent": true},
+          {"id": "nrcan-forest-canopy-height-2022-2026-08-14", "relativePath": "raw/nrcan-forest-canopy-height-2022/2026-08-14/CA_canopy_height_2022.zip", "byteLength": 10347564066, "sha256": "86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124", "remoteCreditAlreadyPresent": false},
+          {"id": "elections-canada-federal-electoral-districts-45th-general-election-2025-shp", "relativePath": "raw/elections-canada-federal-electoral-districts/2026-08-14/FederalElectoralDistricts_2025_SHP.zip", "byteLength": 10301648, "sha256": "4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93", "remoteCreditAlreadyPresent": false}
+        ],
+        "plannedSidecarKeys": [
+          "raw/nrcan-ca-forest-harvest-1985-2022/undeclared/2026-08-14T09-27-41Z/c6f41dff46d91812874672edb53233dac4126952132ad6d1131ad47b11ad7aad/manifest.json",
+          "raw/nrcan-forest-canopy-height-2022/undeclared/2026-08-14T18-57-22Z/86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124/manifest.json",
+          "raw/elections-canada-federal-electoral-districts-45th-general-election-2025-shp/federal-electoral-districts-2025-shp/2026-08-14T17-42-35Z/4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93/manifest.json"
+        ],
+        "remoteCalls": 0,
+        "totpPrompted": false,
+        "writePerformed": false
+      }
     },
     {
       "id": "current-wildfire-six-release-inputs",
@@ -78,7 +98,21 @@
       "readiness": "data/phase1-immutable-promotion-readiness.json",
       "ownerReconciliation": "data/phase1-archive-owner-command-reconciliation-2026-08-20.json",
       "runner": "scripts/run-qc-approved-multipart-promotion.sh",
-      "currentStatus": "prepared-local-only; no remote object or sidecar completion/readback is recorded"
+      "currentStatus": "no-write preflight passed for both exact local Québec archives; no remote object or sidecar completion/readback is recorded",
+      "localPreflight": {
+        "status": "passed-no-write",
+        "command": "zsh scripts/run-qc-approved-multipart-promotion.sh --preflight",
+        "dataRoot": "/Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data",
+        "sourceFiles": 2,
+        "sourceBytes": 23644142702,
+        "verifiedArtifacts": [
+          {"id": "qc-ecoforest-map-2026-08-14", "relativePath": "raw/qc-current-ecoforest/2026-08-14/CARTE_ECO_MAJ_PROV_GPKG.zip", "byteLength": 12399475076, "sha256": "c67c56b0c101e95bef4fbca53a06e2f1578fe38293961017f70d815209740cf1", "payloadKey": "raw/qc-ecoforest-map/undeclared/2026-08-14T09-00-15Z/c67c56b0c101e95bef4fbca53a06e2f1578fe38293961017f70d815209740cf1/payload/carte_eco_maj_prov_gpkg.zip", "manifestKey": "raw/qc-ecoforest-map/undeclared/2026-08-14T09-00-15Z/c67c56b0c101e95bef4fbca53a06e2f1578fe38293961017f70d815209740cf1/manifest.json"},
+          {"id": "qc-original-current-inventory-2026-08-14", "relativePath": "raw/qc-original-current-inventory/2026-08-14/CARTE_ECO_ORI_PROV_GPKG.zip", "byteLength": 11244667626, "sha256": "c10d691516569de76642dc1fc64e662f2569b5b58ab5d945b58b8b7834ba9c61", "payloadKey": "raw/qc-original-inventory/undeclared/2026-08-14T15-15-58Z/c10d691516569de76642dc1fc64e662f2569b5b58ab5d945b58b8b7834ba9c61/payload/carte_eco_ori_prov_gpkg.zip", "manifestKey": "raw/qc-original-inventory/undeclared/2026-08-14T15-15-58Z/c10d691516569de76642dc1fc64e662f2569b5b58ab5d945b58b8b7834ba9c61/manifest.json"}
+        ],
+        "remoteCalls": 0,
+        "totpPrompted": false,
+        "writePerformed": false
+      }
     },
     {
       "id": "quebec-fourth-inventory-56-sheet-product",
@@ -88,7 +122,22 @@
       "preparation": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
       "readiness": "data/phase1-immutable-promotion-readiness.json",
       "runner": "scripts/qc-fourth-inventory-immutable-promotion.mjs",
-      "currentStatus": "prepared dry-run only; separate artifact-set, COMPLIANCE-retention, least-privilege-IAM, and MFA approvals are absent"
+      "currentStatus": "no-write local preflight passed for 61 source payload/evidence files and the deterministic 62nd manifest; separate artifact-set, COMPLIANCE-retention, least-privilege-IAM, and MFA approvals are absent, and no immutable credit is claimed",
+      "localPreflight": {
+        "status": "passed-no-write",
+        "command": "node scripts/qc-fourth-inventory-immutable-promotion.mjs --preflight --data-root /Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data",
+        "dataRoot": "/Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data",
+        "sourceManifest": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+        "sourceFiles": 61,
+        "sourceBytes": 16179014954,
+        "deterministicManifest": {"byteLength": 76127, "sha256": "b3d85d1da40d68d79742c77ec418713f2ef968f74845c43e011df274d559616c", "generatedInMemory": true},
+        "exactObjectKeys": 62,
+        "multipartPayloads": 6,
+        "iamDesiredState": "data/qc-fourth-inventory-immutable-promotion-iam-policy.json",
+        "remoteCalls": 0,
+        "totpPrompted": false,
+        "writePerformed": false
+      }
     }
   ],
   "actions": [
@@ -113,12 +162,13 @@
       ],
       "runnerOrPreflight": {
         "safeNow": "zsh scripts/run-phase1-approved-promotion.sh --preflight",
+        "preflightResult": "passed-no-write; three exact local artifacts revalidated, including the already-archived harvest artifact; no TOTP/AWS call",
         "ownerExecution": "BLOCKED: the three-artifact --run path includes already-archived harvest; use only a freshly approved canopy/federal-only path after reconciliation."
       },
       "prerequisites": [
         "Owner resolves the unavailable s3:GetObjectVersion permission and supplies redacted exact-version, byte, FULL_OBJECT checksum, and recovery readbacks for the completed canopy payload and sidecar.",
         "Owner confirms or applies COMPLIANCE retention for the primary and recovery payloads; retention is currently absent.",
-        "The controlled local federal payload and sidecar preflight passes without AWS or TOTP.",
+        "The controlled local three-artifact preflight passed exact bytes/SHA without AWS or TOTP; the federal payload remains local-only and its sidecar is only a planned exact key until owner execution.",
         "Owner confirms a separate federal-only execution path that does not revisit harvest or re-complete canopy.",
         "Do not update the ledger until redacted primary and recovery immutable readbacks are integrated."
       ],
@@ -146,11 +196,12 @@
       ],
       "runnerOrPreflight": {
         "safeNow": "zsh scripts/run-qc-approved-multipart-promotion.sh --preflight",
+        "preflightResult": "passed-no-write; both exact local archives revalidated with their planned payload/manifest keys; no TOTP/AWS call",
         "ownerExecution": "BLOCKED: zsh scripts/run-qc-approved-multipart-promotion.sh --run"
       },
       "prerequisites": [
         "Fresh owner approval for both exact payloads, four exact keys, ca-central-1, sequential multipart execution, and COMPLIANCE retention.",
-        "Both controlled local archives pass exact byte-length and SHA-256 preflight.",
+        "Both controlled local archives passed exact byte-length and SHA-256 preflight; deterministic sidecars remain planned only and no local or remote sidecar was written.",
         "Owner confirms the existing authorized execution and version-specific payload, sidecar, retention, and recovery readbacks.",
         "Integrate redacted readbacks before changing either ledger row."
       ],
@@ -161,11 +212,11 @@
     {
       "id": "quebec-fourth-archive-preflight-and-owner-approvals",
       "rank": 3,
-      "priorityBasis": "The exact 62-key product can be dry-run locally now, but four separately named approvals are still required before any owner execution.",
+      "priorityBasis": "The exact 62-key product passed a read-only local byte/SHA preflight now, but four separately named approvals are still required before any owner execution.",
       "lawfulImmediacy": "delegate-preflight-now",
       "actor": "delegate-and-owner",
       "executableNow": true,
-      "executionBoundary": "Only the dry-run/local checksum validation is executable; no execute command is authorized.",
+      "executionBoundary": "Only the no-write local checksum preflight is executable; it generated the manifest in memory and made no AWS/IAM call; no execute command is authorized.",
       "requiresOwnerInput": true,
       "requiresExternalReply": false,
       "ownerRunAuthorized": false,
@@ -179,16 +230,17 @@
         "data/phase1-archive-owner-command-reconciliation-2026-08-20.json"
       ],
       "runnerOrPreflight": {
-        "safeNow": "node scripts/qc-fourth-inventory-immutable-promotion.mjs",
+        "safeNow": "node scripts/qc-fourth-inventory-immutable-promotion.mjs --preflight --data-root /Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data",
+        "preflightResult": "passed-no-write; 61 source payload/evidence files plus deterministic 62nd manifest checked; exact keys and IAM desired state validated; no AWS/IAM call",
         "ownerExecution": "BLOCKED: execution requires exact-artifact, irreversible COMPLIANCE-retention, least-privilege-IAM, and MFA-session approvals."
       },
       "prerequisites": [
-        "All 62 exact keys and local SHA-256 values pass the dry-run/local preflight.",
+        "All 61 local source files passed exact byte-length and SHA-256 checks; the deterministic 62nd manifest passed its pinned bytes/SHA check; all 62 exact keys and IAM desired state passed validation.",
         "Owner approves the exact artifact set, least-privilege policy, irreversible COMPLIANCE retention, and MFA session separately.",
         "Owner confirms the authorized execution path and exact payload/sidecar version, retention, and recovery readbacks.",
         "Review independent redacted readback and recovery evidence before any ledger or production decision."
       ],
-      "remainingSteps": ["run the safe dry-run", "obtain the four approvals", "owner performs the separately authorized 62-key promotion", "integrate immutable and recovery readbacks", "record named source decision and downstream gates"],
+      "remainingSteps": ["retain the no-write preflight receipt", "obtain the four approvals", "owner performs the separately authorized 62-key promotion", "integrate immutable and recovery readbacks", "record named source decision and downstream gates"],
       "scoreImpact": {"currentRawCreditDelta": 0, "maximumRawCreditDelta": 0.25, "maximumFormalPercentagePointDelta": 0.2419355, "productionAdmissionDelta": 0},
       "blockers": ["No remote object or readback is recorded.", "The 62 keys are one physical product, not 62 ledger credits."]
     },
