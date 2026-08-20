@@ -8,9 +8,11 @@ const matrix = JSON.parse(readFileSync(new URL("../data/phase1-access-blocker-re
 
 test("verified outreach sends cover every access-blocked row without claiming a response or admission", () => {
   assert.equal(validatePhase1PermissionOutreachPackage(pkg, matrix), pkg);
-  assert.equal(pkg.messages.filter((message) => message.status === "sent-awaiting-response").length, 7);
+  assert.equal(pkg.messages.filter((message) => typeof message.verifiedSentAt === "string").length, 7);
   assert.equal(pkg.messages.filter((message) => message.status.includes("already-sent")).length, 1);
-  assert.equal(pkg.messages.filter((message) => message.status === "sent-awaiting-response").every((message) => message.verifiedSentAt && message.sentVerification), true);
+  assert.equal(pkg.messages.filter((message) => typeof message.verifiedSentAt === "string").every((message) => message.verifiedSentAt && message.sentVerification), true);
+  assert.equal(pkg.messages.filter((message) => message.status === "reply-received-awaiting-resolution").length, 4);
+  assert.equal(pkg.messages.filter((message) => message.status === "automatic-reply-only-awaiting-substantive-response").length, 1);
   assert.match(pkg.scope, /not an acquisition.*production eligibility/i);
   assert.deepEqual(new Set(pkg.messages.flatMap((message) => message.canonicalRowIds)), new Set(matrix.rankedRows.map((row) => row.id)));
 });

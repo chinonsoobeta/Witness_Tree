@@ -1,8 +1,22 @@
 # Phase 1 permission and export outreach package
 
-Status: **seven owner-reviewed messages sent; awaiting responses.** On 2026-08-14, Gmail's Sent label was read-only searched for each exact sender, recipient, and subject. The resulting package records only the verified sent timestamp and non-sensitive verification method; it intentionally retains no Gmail message ID, thread ID, body, or Gmail link. A send does not authorize acquisition, downloading, archival, transformation, ingestion, release, source-ledger admission, or production use. The package consolidates the genuine external blockers in the [access-block matrix](../data/phase1-access-blocker-resolution.json), rather than treating a public service, web explorer, or approximate map as a released source.
+Status: **seven owner-reviewed messages sent; five substantive replies recorded; blockers remain.** On 2026-08-20, Gmail was read-only searched and the matching threads were read without retaining Gmail message IDs, thread IDs, body content, attachments or mailbox links. The exact machine-readable reply record is [`data/phase1-outreach-reply-audit.json`](../data/phase1-outreach-reply-audit.json). A send, reply, routing instruction or follow-up does not authorize acquisition, downloading, archival, transformation, ingestion, release, source-ledger admission or production use. The package consolidates the genuine external blockers in the [access-block matrix](../data/phase1-access-blocker-resolution.json), rather than treating a public service, web explorer or approximate map as a released source.
 
-One earlier request to FAIB is already recorded as sent and awaiting a response. It is tracked below only to prevent a duplicate message. The package now records **seven verified sends**, which together cover the other 12 canonical access-blocked rows. The exact machine-readable mapping and send timestamps are in [`data/phase1-permission-outreach-package.json`](../data/phase1-permission-outreach-package.json).
+One earlier request to FAIB is already recorded as sent and now has a substantive follow-up exchange; it is tracked below only to prevent a duplicate initial request. The package records **seven verified sends**, which together cover the other 12 canonical access-blocked rows. Five substantive replies touch **eight unique blocked rows**; none resolves an artifact, right, authority, precision, snapshot or engagement gate. The exact machine-readable mapping and send timestamps are in [`data/phase1-permission-outreach-package.json`](../data/phase1-permission-outreach-package.json).
+
+## Read-only reply audit — 2026-08-20
+
+The five substantive replies and their current meaning are:
+
+| Route | Rows | Current evidence | Still blocked by |
+| --- | --- | --- | --- |
+| BC Forest Tenures Branch | `bc-fta-cutblocks`, `bc-harvesting-authorities` | The request was directed to the Province's FOI records route under FIPPA. | No coherent export, edition, checksum, reuse authorization or lifecycle decision; no FOI request was submitted by this audit. |
+| Ontario FRI team | `on-fri`, `on-fri-term-2` | The team pointed to Ontario GeoHub and said T2 directions will be uploaded when available for public use. | No stable T2 package, exact-package rights confirmation, checksum or archive evidence. |
+| BC Data Maps | BEC component of `bc-old-growth-bec` | The team directed clients to its service portal. A later Sent message stated intent to use that route; no portal submission was recorded. | No complete BEC snapshot, transaction semantics, checksum or edition. |
+| BC Intellectual Property Program | VRI, FOM and TAP components of `bc-old-growth-bec` | The program described its permission form, exact catalogue-name/URL requirement, intended-use details, custodian review, possible licensing vehicle and fee. | No form submission, custodian decision, licence, artifact, fee decision or TAP implementation layer. |
+| BC FAIB | `bc-consolidated-cutblocks` | FAIB asked for proposed derived, aggregate, map-tile and public outputs; a follow-up supplied those details. | No authorization, attribution wording, review decision or new artifact; no raw download occurred. |
+
+The CIRNAC thread and two FAIB acknowledgements are acknowledgement-only. No substantive reply was found for SOPFEU, ISC, or the reserve/treaty rows beyond the CIRNAC automatic reply. The two partial rows remain owner-review drafts and have no external reply. No form was submitted, attachment was downloaded, link was opened, message was sent, or external system was changed by this audit.
 
 ## 1. BC Forest Tenures Branch — FTA cutblocks and harvesting authorities
 
@@ -181,7 +195,7 @@ Pour toute publication appropriée, veuillez fournir l’artefact stable ou l’
 **To:** FAIB.Data.Management@gov.bc.ca<br>
 **Subject:** Permission request — Harvested Areas of BC (Consolidated Cutblocks)
 
-This request was recorded as sent on 2026-08-14 at 17:17:15 UTC and is awaiting a response. Do not send a second request. Its existing wording already asks for the exact-resource licence, attribution, immutable Canadian archival, transformation, derived/public reuse, refresh, and correction terms. It can unblock `bc-consolidated-cutblocks` only if the publisher replies with a sufficient written authorization or redistributable licence.
+This request was recorded as sent on 2026-08-14 at 17:17:15 UTC. FAIB replied on 2026-08-18 at 18:28:15 UTC asking for the proposed derived, aggregate, map-tile and public-output products; a follow-up supplied those details on 2026-08-19. Do not send a duplicate initial request. No written authorization, licence, attribution decision or exact artifact has been supplied, so `bc-consolidated-cutblocks` remains blocked.
 
 ## Review boundary
 
