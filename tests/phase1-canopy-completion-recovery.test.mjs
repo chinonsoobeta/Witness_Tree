@@ -1,21 +1,26 @@
 import assert from "node:assert/strict";
-import { chmodSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { chmodSync, existsSync, mkdtempSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
 import {
+  canopyRecoveryIamAttestation,
   canopyRecovery,
   desiredIamDelta,
+  desiredRecoveryRetentionDelta,
   validateCanopyRecoveryApproval,
   validateCanopyRecoveryHeads,
   validateCanopyRecoveryIam,
+  validateCanopyRecoveryIamAttestation,
   validateCanopyRecoveryRetention,
+  validateCanopyRecoveryRetentionProvisioningPolicy,
   validateCanopyRecoveryState,
   validateCanopyRecoveryVersionReferences
 } from "../scripts/check-phase1-canopy-completion-recovery.mjs";
 
 const runnerPath = new URL("../scripts/run-phase1-canopy-completion-recovery.sh", import.meta.url).pathname;
+const provisionerPath = new URL("../scripts/provision-phase1-canopy-recovery-iam.mjs", import.meta.url).pathname;
 
 function state(versionRefs) {
   const parts = Array.from({ length: canopyRecovery.partCount }, (_, index) => ({
@@ -54,17 +59,49 @@ function approval() {
   };
 }
 
-function policy(includeDelta = true) {
+function policy(includeDelta = true, includeRecoveryRetention = true) {
   const statements = [
     {
       Sid: "PayloadRetentionOnly",
       Effect: "Allow",
       Action: ["s3:GetObjectRetention", "s3:PutObjectRetention"],
-      Resource: [...desiredIamDelta.requiredExistingRetention.resources]
+      Resource: [desiredIamDelta.requiredExistingRetention.resources[0]]
     }
   ];
   if (includeDelta) statements.push({ Sid: desiredIamDelta.delta.sid, Effect: desiredIamDelta.delta.effect, Action: [...desiredIamDelta.delta.actions], Resource: [...desiredIamDelta.delta.resources], Condition: structuredClone(desiredIamDelta.delta.condition) });
+  if (includeRecoveryRetention) statements.push({
+    Sid: desiredRecoveryRetentionDelta.delta.sid,
+    Effect: desiredRecoveryRetentionDelta.delta.effect,
+    Action: [...desiredRecoveryRetentionDelta.delta.actions],
+    Resource: [desiredRecoveryRetentionDelta.delta.resource]
+  });
   return { Version: "2012-10-17", Statement: statements };
+}
+
+function attestation({ applied = true } = {}) {
+  return {
+    schemaVersion: canopyRecoveryIamAttestation.schemaVersion,
+    status: applied ? "applied" : "planned",
+    applied,
+    account: canopyRecovery.account,
+    role: canopyRecovery.role,
+    profile: canopyRecovery.profile,
+    region: canopyRecovery.region,
+    policyName: canopyRecoveryIamAttestation.policyName,
+    basePolicySha256: "a".repeat(64),
+    desiredPolicySha256: "b".repeat(64),
+    readbackPolicySha256: applied ? "b".repeat(64) : null,
+    preservation: "passed",
+    noCredentials: true,
+    noObjectVersionIds: true,
+    noUploadIds: true,
+    delta: structuredClone(canopyRecoveryIamAttestation.delta),
+    accessAnalyzer: { status: applied ? "passed" : "unavailable", findings: 0 },
+    simulations: desiredRecoveryRetentionDelta.simulations.map((simulation) => ({
+      ...simulation,
+      decision: applied ? simulation.decision : "unavailable"
+    }))
+  };
 }
 
 function heads() {
@@ -85,6 +122,8 @@ test("approval, complete private state, exact heads, version refs, and retention
   validateCanopyRecoveryApproval(approval());
   validateCanopyRecoveryState(state(refs));
   validateCanopyRecoveryIam(policy());
+  validateCanopyRecoveryRetentionProvisioningPolicy(policy());
+  validateCanopyRecoveryIamAttestation(attestation());
   validateCanopyRecoveryHeads(heads(), { payloadBytes: canopyRecovery.payloadBytes, sidecarBytes: canopyRecovery.sidecarBytes });
   validateCanopyRecoveryVersionReferences(heads(), refs);
   validateCanopyRecoveryRetention({ primary: retention(), recovery: retention() });
@@ -92,6 +131,53 @@ test("approval, complete private state, exact heads, version refs, and retention
 
 test("missing GetObjectVersion is rejected by the exact IAM checker", () => {
   assert.throws(() => validateCanopyRecoveryIam(policy(false)), /recovery-readback statement is absent/);
+});
+
+test("planned or altered IAM attestation is rejected for recovery", () => {
+  assert.throws(() => validateCanopyRecoveryIamAttestation(attestation({ applied: false })), /applied IAM attestation/);
+  const altered = attestation();
+  altered.delta.resource += ".other";
+  assert.throws(() => validateCanopyRecoveryIamAttestation(altered), /delta is not exact/);
+});
+
+test("root provisioning dry run validates one additive statement and writes only a planned redacted attestation", () => {
+  const dir = mkdtempSync(join(tmpdir(), "canopy-recovery-provision-dry-run-"));
+  try {
+    const marker = join(dir, "calls");
+    const basePolicy = policy(true, false);
+    const awsPath = join(dir, "aws");
+    const fake = [
+      "#!/bin/zsh",
+      `print -r -- "$*" >> ${JSON.stringify(marker)}`,
+      "case \"$1:$2\" in",
+      `  sts:get-caller-identity) print -r -- ${JSON.stringify(JSON.stringify({ Account: canopyRecovery.account, Arn: `arn:aws:iam::${canopyRecovery.account}:root` }))} ;;`,
+      `  iam:get-role-policy) print -r -- ${JSON.stringify(JSON.stringify({ RoleName: canopyRecovery.role, PolicyName: desiredRecoveryRetentionDelta.policyName, PolicyDocument: basePolicy }))} ;;`,
+      "  accessanalyzer:validate-policy) print -r -- '{\"findings\":[]}' ;;",
+      "  iam:simulate-principal-policy)",
+      "    if [[ \"$*\" == *s3:DeleteObject* || \"$*\" == *raw/not-approved/payload.zip* ]]; then decision=implicitDeny; else decision=allowed; fi",
+      "    print -r -- \"{\\\"EvaluationResults\\\":[{\\\"EvalDecision\\\":\\\"$decision\\\"}]}\"",
+      "    ;;",
+      "  *) print -u2 -- 'unexpected AWS call'; exit 99 ;;",
+      "esac",
+      ""
+    ].join("\n");
+    writeFileSync(awsPath, fake, { mode: 0o700 });
+    chmodSync(awsPath, 0o700);
+    const attestationPath = join(dir, "attestation.json");
+    const run = spawnSync(process.execPath, [provisionerPath, "--profile", "default", "--attestation", attestationPath], {
+      encoding: "utf8",
+      env: { ...process.env, PATH: `${dir}:${process.env.PATH}` }
+    });
+    assert.equal(run.status, 0, run.stdout + run.stderr);
+    const planned = JSON.parse(readFileSync(attestationPath, "utf8"));
+    validateCanopyRecoveryIamAttestation(planned, { requireApplied: false });
+    assert.equal(planned.applied, false);
+    assert.equal(statSync(attestationPath).mode & 0o777, 0o600);
+    const calls = readFileSync(marker, "utf8");
+    assert.doesNotMatch(calls, /put-role-policy/);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
 });
 
 test("wrong saved version reference is rejected without exposing the reference", () => {
@@ -113,11 +199,14 @@ test("retention absence is rejected as an unproven postcondition", () => {
 function writeFixture(dir) {
   const approvalPath = join(dir, "approval.json");
   const statePath = join(dir, "state.json");
+  const attestationPath = join(dir, "attestation.json");
   writeFileSync(approvalPath, JSON.stringify(approval()) + "\n", { mode: 0o600 });
   writeFileSync(statePath, JSON.stringify(state()) + "\n", { mode: 0o600 });
+  writeFileSync(attestationPath, JSON.stringify(attestation()) + "\n", { mode: 0o600 });
   chmodSync(approvalPath, 0o600);
   chmodSync(statePath, 0o600);
-  return { approvalPath, statePath };
+  chmodSync(attestationPath, 0o600);
+  return { approvalPath, statePath, attestationPath };
 }
 
 function writeFakeAws(dir, policyDocument, { retentionNever = false } = {}) {
@@ -183,18 +272,17 @@ function runPty(args, dir) {
   });
 }
 
-test("PTY preflight stops before TOTP when GetObjectVersion is missing", () => {
+test("preflight accepts only an applied attestation and makes no AWS call", () => {
   const dir = mkdtempSync(join(tmpdir(), "canopy-recovery-iam-negative-"));
   try {
     const fixture = writeFixture(dir);
-    const fake = writeFakeAws(dir, policy(false));
-    const run = spawnSync("zsh", [runnerPath, "--preflight", fixture.approvalPath, fixture.statePath], { encoding: "utf8", env: { ...process.env, PATH: dir + ":" + process.env.PATH } });
+    const fake = writeFakeAws(dir, policy());
+    writeFileSync(fixture.attestationPath, JSON.stringify(attestation({ applied: false })) + "\n", { mode: 0o600 });
+    const run = spawnSync("zsh", [runnerPath, "--preflight", fixture.approvalPath, fixture.statePath, fixture.attestationPath], { encoding: "utf8", env: { ...process.env, PATH: dir + ":" + process.env.PATH } });
     assert.equal(run.status, 65, run.stderr);
-    assert.match(run.stderr, /live IAM policy does not exactly match/i);
+    assert.match(run.stderr, /attestation failed closed/i);
     assert.doesNotMatch(run.stdout + run.stderr, /Current MFA TOTP|123456/);
-    const calls = readFileSync(fake.marker, "utf8").trim().split("\n");
-    assert.equal(calls.length, 2);
-    assert.ok(calls.every((call) => call.startsWith("iam ")));
+    assert.equal(existsSync(fake.marker), false);
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
@@ -205,13 +293,14 @@ test("PTY recovery succeeds with exact heads and retention while making no unrel
   try {
     const fixture = writeFixture(dir);
     const fake = writeFakeAws(dir, policy());
-    const run = runPty(["--recover-canopy", fixture.approvalPath, fixture.statePath], dir);
+    const run = runPty(["--recover-canopy", fixture.approvalPath, fixture.statePath, fixture.attestationPath], dir);
     assert.equal(run.status, 0, run.stdout + run.stderr);
     assert.match(run.stdout, /Canopy post-completion recovery completed/);
     assert.doesNotMatch(run.stdout + run.stderr, /123456|payload-version|sidecar-version/);
     const calls = readFileSync(fake.marker, "utf8").trim().split("\n");
     assert.equal(calls.filter((call) => call.includes("put-object-retention")).length, 2);
-    assert.equal(calls.filter((call) => call.includes("head-object")).length, 8);
+    assert.equal(calls.filter((call) => call.includes("head-object")).length, 12);
+    assert.ok(calls.every((call) => !call.startsWith("iam ")));
     assert.ok(calls.every((call) => !/complete-multipart|upload-part|put-object --|delete-object|legal-hold|bypass-governance/i.test(call)));
   } finally {
     rmSync(dir, { recursive: true, force: true });
@@ -223,7 +312,7 @@ test("PTY recovery fails closed when retention remains absent after the attempte
   try {
     const fixture = writeFixture(dir);
     const fake = writeFakeAws(dir, policy(), { retentionNever: true });
-    const run = runPty(["--recover-canopy", fixture.approvalPath, fixture.statePath], dir);
+    const run = runPty(["--recover-canopy", fixture.approvalPath, fixture.statePath, fixture.attestationPath], dir);
     assert.equal(run.status, 70, run.stdout + run.stderr);
     assert.match(run.stdout + run.stderr, /retention readback failed/i);
     assert.doesNotMatch(run.stdout + run.stderr, /123456|payload-version|sidecar-version/);

@@ -18,6 +18,7 @@ CHECKER="$SCRIPT_DIR/check-phase1-canopy-completion-recovery.mjs"
 MODE=""
 APPROVAL=""
 STATE=""
+ATTESTATION=""
 TMP=""
 
 PRIMARY_PAYLOAD="raw/nrcan-forest-canopy-height-2022/undeclared/2026-08-14T18-57-22Z/86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124/payload/ca_canopy_height_2022.zip"
@@ -39,42 +40,34 @@ cleanup() {
 }
 trap cleanup EXIT
 
-if [[ $# -eq 3 && "$1" == "--preflight" ]]; then
+if [[ $# -eq 4 && "$1" == "--preflight" ]]; then
   MODE="preflight"
-elif [[ $# -eq 3 && ( "$1" == "--recover-canopy" || "$1" == "--run" ) ]]; then
+elif [[ $# -eq 4 && ( "$1" == "--recover-canopy" || "$1" == "--run" ) ]]; then
   MODE="run"
 else
-  fail "Usage: $0 --preflight|--recover-canopy /absolute/approval.json /absolute/private-canopy-state.json" 64
+  fail "Usage: $0 --preflight|--recover-canopy /absolute/approval.json /absolute/private-canopy-state.json /absolute/applied-iam-attestation.json" 64
 fi
 APPROVAL="$2"
 STATE="$3"
-[[ "$APPROVAL" == /* && "$STATE" == /* ]] || fail "Approval and private state paths must be absolute; no TOTP or AWS call was made" 65
+ATTESTATION="$4"
+[[ "$APPROVAL" == /* && "$STATE" == /* && "$ATTESTATION" == /* ]] || fail "Approval, private state, and attestation paths must be absolute; no TOTP or AWS call was made" 65
 command -v node >/dev/null || fail "node is required; no TOTP or AWS call was made" 69
 command -v jq >/dev/null || fail "jq is required; no TOTP or AWS call was made" 69
 command -v aws >/dev/null || fail "aws CLI is required; no TOTP or AWS call was made" 69
 [[ -f "$APPROVAL" && -O "$APPROVAL" && "$(stat -f %Lp "$APPROVAL" 2>/dev/null)" == 600 ]] || fail "Approval file must be owner-owned mode-600; no TOTP or AWS call was made" 65
 [[ -f "$STATE" && -O "$STATE" && "$(stat -f %Lp "$STATE" 2>/dev/null)" == 600 ]] || fail "Private state must be owner-owned mode-600; no TOTP or AWS call was made" 65
+[[ -f "$ATTESTATION" && -O "$ATTESTATION" && "$(stat -f %Lp "$ATTESTATION" 2>/dev/null)" == 600 ]] || fail "Applied IAM attestation must be owner-owned mode-600; no TOTP or AWS call was made" 65
 TMP="$(mktemp -d /private/tmp/witness-tree-canopy-recovery.XXXXXX)" || fail "Could not create a private diagnostic directory" 69
 chmod 700 "$TMP"
 
 if ! node "$CHECKER" --approval-state "$APPROVAL" "$STATE" >"$TMP/local-check.stdout" 2>"$TMP/local-check.stderr"; then
   fail "Approval or private state failed closed; no TOTP or storage mutation was authorized" 65
 fi
-
-if ! aws iam list-role-policies --profile "$PROFILE" --role-name "$ROLE" --output json >"$TMP/role-policies.json" 2>"$TMP/iam-list.stderr"; then
-  fail "Live IAM policy could not be read; no TOTP or storage mutation was authorized" 77
-fi
-policy_count="$(jq -er '.PolicyNames | if type == "array" then length else 0 end' "$TMP/role-policies.json" 2>/dev/null)" || fail "Live IAM policy listing was malformed; no TOTP or storage mutation was authorized" 77
-[[ "$policy_count" == 1 ]] || fail "Live IAM role must have exactly one inline policy; no TOTP or storage mutation was authorized" 65
-policy_name="$(jq -er '.PolicyNames[0] | select(type == "string" and test("^[A-Za-z0-9+=,.@_-]{1,128}$"))' "$TMP/role-policies.json" 2>/dev/null)" || fail "Live IAM policy name was malformed; no TOTP or storage mutation was authorized" 65
-if ! aws iam get-role-policy --profile "$PROFILE" --role-name "$ROLE" --policy-name "$policy_name" --output json >"$TMP/role-policy.json" 2>"$TMP/iam-get.stderr"; then
-  fail "Live IAM role policy could not be read; no TOTP or storage mutation was authorized" 77
-fi
-if ! node "$CHECKER" --policy-stdin <"$TMP/role-policy.json" >"$TMP/iam-check.stdout" 2>"$TMP/iam-check.stderr"; then
-  fail "Live IAM policy does not exactly match the approved recovery state; no TOTP or storage mutation was authorized" 65
+if ! node "$CHECKER" --attestation-state "$ATTESTATION" >"$TMP/attestation-check.stdout" 2>"$TMP/attestation-check.stderr"; then
+  fail "Applied IAM attestation failed closed; no TOTP or AWS call was made" 65
 fi
 if [[ "$MODE" == "preflight" ]]; then
-  print -- "PRECHECK passed: explicit approval, private 155-part state, and live IAM desired state verified; no TOTP or storage mutation was attempted."
+  print -- "PRECHECK passed: explicit approval, private 155-part state, and applied root IAM attestation verified; no TOTP or AWS call was made."
   exit 0
 fi
 
@@ -109,10 +102,21 @@ head_object() {
   fi
 }
 
-head_object primary-payload "$PRIMARY_BUCKET" "$PRIMARY_PAYLOAD" "$(state_ref primaryPayload)"
-head_object recovery-payload "$RECOVERY_BUCKET" "$RECOVERY_PAYLOAD" "$(state_ref recoveryPayload)"
-head_object primary-sidecar "$PRIMARY_BUCKET" "$PRIMARY_SIDECAR" "$(state_ref primarySidecar)"
-head_object recovery-sidecar "$RECOVERY_BUCKET" "$RECOVERY_SIDECAR" "$(state_ref recoverySidecar)"
+resolve_head() {
+  local label="$1" bucket="$2" key="$3" saved_version="$4" discovered_version
+  if [[ -n "$saved_version" ]]; then
+    head_object "$label" "$bucket" "$key" "$saved_version"
+    return
+  fi
+  head_object "$label-current" "$bucket" "$key" ""
+  discovered_version="$(jq -er '.VersionId | select(type == "string" and length > 0)' "$TMP/$label-current.json" 2>/dev/null)" || fail "A required current object version was absent; no retention write was attempted" 70
+  head_object "$label" "$bucket" "$key" "$discovered_version"
+}
+
+resolve_head primary-payload "$PRIMARY_BUCKET" "$PRIMARY_PAYLOAD" "$(state_ref primaryPayload)"
+resolve_head recovery-payload "$RECOVERY_BUCKET" "$RECOVERY_PAYLOAD" "$(state_ref recoveryPayload)"
+resolve_head primary-sidecar "$PRIMARY_BUCKET" "$PRIMARY_SIDECAR" "$(state_ref primarySidecar)"
+resolve_head recovery-sidecar "$RECOVERY_BUCKET" "$RECOVERY_SIDECAR" "$(state_ref recoverySidecar)"
 if ! node "$CHECKER" --heads "$TMP/primary-payload.json" "$TMP/recovery-payload.json" "$TMP/primary-sidecar.json" "$TMP/recovery-sidecar.json" "$STATE" >"$TMP/head-check.stdout" 2>"$TMP/head-check.stderr"; then
   fail "Exact primary/recovery bytes, FULL_OBJECT checksums, or saved version references failed closed" 70
 fi

@@ -3,6 +3,20 @@ import { readFileSync } from "node:fs";
 
 const desiredPath = new URL("../data/phase1-canopy-completion-recovery-iam-delta.json", import.meta.url);
 export const desiredIamDelta = JSON.parse(readFileSync(desiredPath, "utf8"));
+const retentionDeltaPath = new URL("../data/phase1-canopy-recovery-retention-iam-delta.json", import.meta.url);
+export const desiredRecoveryRetentionDelta = JSON.parse(readFileSync(retentionDeltaPath, "utf8"));
+
+export const canopyRecoveryIamAttestation = Object.freeze({
+  schemaVersion: "witness-tree/phase1-canopy-recovery-iam-attestation/1",
+  policyName: desiredRecoveryRetentionDelta.policyName,
+  delta: Object.freeze({
+    sid: desiredRecoveryRetentionDelta.delta.sid,
+    effect: desiredRecoveryRetentionDelta.delta.effect,
+    actions: Object.freeze([...desiredRecoveryRetentionDelta.delta.actions]),
+    resource: desiredRecoveryRetentionDelta.delta.resource
+  }),
+  simulations: Object.freeze(desiredRecoveryRetentionDelta.simulations.map((simulation) => Object.freeze({ ...simulation })))
+});
 
 export const canopyRecovery = Object.freeze({
   schemaVersion: "witness-tree/phase1-canopy-completion-recovery/1",
@@ -94,6 +108,71 @@ export function validateCanopyRecoveryIam(policyEnvelope, desired = desiredIamDe
     for (const resource of desired.requiredExistingRetention.resources) {
       assert.equal(exactAllow(statements, action, resource), true, `required retention capability is absent for ${action}`);
     }
+  }
+  return true;
+}
+
+/** Validate the exact final policy after appending the recovery retention statement. */
+export function validateCanopyRecoveryRetentionProvisioningPolicy(policyEnvelope, desired = desiredRecoveryRetentionDelta) {
+  const policy = decodePolicyDocument(policyEnvelope?.PolicyDocument ?? policyEnvelope);
+  validateCanopyRecoveryIam(policy);
+  const statements = policy.Statement;
+  const matches = statements.filter((statement) => statement.Sid === desired.delta.sid);
+  assert.equal(matches.length, 1, "the exact recovery-retention statement is absent or duplicated");
+  const retention = matches[0];
+  assert.equal(retention.Effect, desired.delta.effect, "the recovery-retention statement must allow the exact actions");
+  assert.deepEqual(sorted(statementActions(retention)), sorted(desired.delta.actions), "the recovery-retention statement grants an unexpected action");
+  assert.deepEqual(statementResources(retention), [desired.delta.resource], "the recovery-retention statement has an unexpected resource scope");
+  assert.deepEqual(Object.keys(retention).sort(), ["Action", "Effect", "Resource", "Sid"].sort(), "the recovery-retention statement has an unexpected policy field");
+  return true;
+}
+
+const sha256 = (value) => typeof value === "string" && /^[0-9a-f]{64}$/.test(value);
+
+/** Validate the redacted owner/root-generated IAM attestation. */
+export function validateCanopyRecoveryIamAttestation(attestation, { requireApplied = true } = {}) {
+  assert.ok(attestation && typeof attestation === "object" && !Array.isArray(attestation), "IAM attestation is malformed");
+  assert.deepEqual(Object.keys(attestation).sort(), [
+    "accessAnalyzer", "account", "applied", "basePolicySha256", "delta", "desiredPolicySha256",
+    "noCredentials", "noObjectVersionIds", "noUploadIds", "policyName", "preservation", "profile",
+    "readbackPolicySha256", "region", "role", "schemaVersion", "simulations", "status"
+  ].sort(), "IAM attestation contains an unexpected field");
+  assert.equal(attestation.schemaVersion, canopyRecoveryIamAttestation.schemaVersion, "IAM attestation schema is not recognized");
+  assert.equal(attestation.account, desiredRecoveryRetentionDelta.account, "IAM attestation account is outside the approved account");
+  assert.equal(attestation.role, desiredRecoveryRetentionDelta.role, "IAM attestation role is not the approved promotion role");
+  assert.equal(attestation.profile, desiredRecoveryRetentionDelta.profile, "IAM attestation profile is not the approved operator profile");
+  assert.equal(attestation.region, desiredRecoveryRetentionDelta.region, "IAM attestation region is not approved");
+  assert.equal(attestation.policyName, canopyRecoveryIamAttestation.policyName, "IAM attestation policy name is not exact");
+  assert.equal(attestation.status === "planned" || attestation.status === "applied", true, "IAM attestation status is not recognized");
+  assert.equal(attestation.applied, attestation.status === "applied", "IAM attestation applied status is inconsistent");
+  if (requireApplied) assert.equal(attestation.applied, true, "an applied IAM attestation is required");
+  assert.equal(sha256(attestation.basePolicySha256), true, "IAM attestation base policy hash is malformed");
+  assert.equal(sha256(attestation.desiredPolicySha256), true, "IAM attestation desired policy hash is malformed");
+  if (attestation.applied) {
+    assert.equal(sha256(attestation.readbackPolicySha256), true, "IAM attestation readback policy hash is malformed");
+    assert.equal(attestation.readbackPolicySha256, attestation.desiredPolicySha256, "IAM attestation readback hash does not match the desired policy hash");
+  } else {
+    assert.equal(attestation.readbackPolicySha256, null, "a planned IAM attestation may not claim a readback hash");
+  }
+  assert.equal(attestation.preservation, "passed", "IAM attestation does not prove additive preservation");
+  assert.equal(attestation.noCredentials, true, "IAM attestation is not redacted of credentials");
+  assert.equal(attestation.noObjectVersionIds, true, "IAM attestation is not redacted of object version IDs");
+  assert.equal(attestation.noUploadIds, true, "IAM attestation is not redacted of upload IDs");
+  assert.deepEqual(attestation.delta, canopyRecoveryIamAttestation.delta, "IAM attestation delta is not exact");
+  assert.deepEqual(Object.keys(attestation.delta).sort(), ["actions", "effect", "resource", "sid"].sort(), "IAM attestation delta contains an unexpected field");
+  assert.deepEqual(Object.keys(attestation.accessAnalyzer).sort(), ["findings", "status"].sort(), "IAM attestation Access Analyzer result contains an unexpected field");
+  assert.equal(Number.isInteger(attestation.accessAnalyzer.findings) && attestation.accessAnalyzer.findings === 0, true, "IAM attestation Access Analyzer findings are not zero");
+  assert.equal(attestation.accessAnalyzer.status === "passed" || (!attestation.applied && attestation.accessAnalyzer.status === "unavailable"), true, "IAM attestation Access Analyzer result is not recognized");
+  if (attestation.applied) assert.equal(attestation.accessAnalyzer.status, "passed", "an applied IAM attestation requires Access Analyzer validation");
+  assert.ok(Array.isArray(attestation.simulations), "IAM attestation simulations are malformed");
+  assert.deepEqual(attestation.simulations.map(({ case: name }) => name).sort(), desiredRecoveryRetentionDelta.simulations.map(({ case: name }) => name).sort(), "IAM attestation simulation cases are incomplete or changed");
+  for (const simulation of attestation.simulations) {
+    assert.deepEqual(Object.keys(simulation).sort(), ["action", "case", "decision"].sort(), "IAM attestation simulation contains an unexpected field");
+    const expected = desiredRecoveryRetentionDelta.simulations.find(({ case: name }) => name === simulation.case);
+    assert.ok(expected, "IAM attestation contains an unknown simulation case");
+    assert.equal(simulation.action, expected.action, "IAM attestation simulation action is not exact");
+    if (attestation.applied) assert.equal(simulation.decision, expected.decision, "IAM attestation simulation decision is not the required result");
+    else assert.equal(simulation.decision === expected.decision || simulation.decision === "unavailable", true, "planned IAM attestation simulation decision is malformed");
   }
   return true;
 }
@@ -220,6 +299,9 @@ if (process.argv[1]?.endsWith("check-phase1-canopy-completion-recovery.mjs")) {
     } else if (mode === "--retention-one") {
       validateCanopyRecoverySingleRetention(JSON.parse(readFileSync(process.argv[3], "utf8")), canopyRecovery.retainUntil);
       console.log("Canopy recovery retention passed.");
+    } else if (mode === "--attestation-state") {
+      validateCanopyRecoveryIamAttestation(JSON.parse(readFileSync(process.argv[3], "utf8")), { requireApplied: process.argv[4] !== "--planned" });
+      console.log("Canopy recovery IAM attestation passed.");
     } else {
       throw new Error("usage");
     }

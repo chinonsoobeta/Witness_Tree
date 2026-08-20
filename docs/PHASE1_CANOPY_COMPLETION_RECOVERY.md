@@ -44,16 +44,36 @@ one allow statement:
 
 The checker rejects a versioned-read permission outside this statement,
 wildcard S3 or IAM scope, forbidden mutation actions, and a missing exact
-retention baseline. The retention baseline must already allow
+retention baseline. The retention baseline must allow
 's3:GetObjectRetention' and 's3:PutObjectRetention' on both exact payload
-resources (primary and recovery); any existing unrelated approved scope is
-preserved. The current live role evidence does not
-meet either precondition: it lacks 's3:GetObjectVersion', and its existing
-retention statement does not include the recovery payload. Therefore no owner
-command is currently safe. The delta file intentionally does not broaden
-retention permissions; an owner must provision an exact separately approved
-recovery-retention scope or use an already-approved role whose live policy
-passes the checker.
+resources (primary and recovery). The separately authorized recovery-only
+retention statement is bound by
+'data/phase1-canopy-recovery-retention-iam-delta.json'.
+
+The owner/root provisioner is dry-run by default:
+
+~~~sh
+node scripts/provision-phase1-canopy-recovery-iam.mjs \
+  --profile default \
+  --attestation /private/tmp/witness-tree-canopy-recovery-iam-attestation.json
+~~~
+
+It requires the exact account root identity, reads only role
+'WitnessTreeArchivePromotionUploader' and inline policy
+'ExactApprovedPromotionOnly', proves the change is one appended statement
+without changing or reordering any existing statement, validates the policy,
+runs Access Analyzer and exact allow/deny simulations, and writes a redacted
+owner-owned mode-600 planned attestation. Only when every check passes may the
+same command be run with '--apply'. The apply path re-reads the policy to catch
+a race, writes only the exact candidate, requires a canonical policy SHA
+readback, and replaces the planned attestation with an applied attestation.
+
+As of the latest live root dry run, the prerequisite
+'CanopyVersionedRecoveryReadback' statement is absent. Therefore the dry run
+fails before the recovery-retention delta, no IAM mutation occurs, and no
+applied attestation or recovery command is currently valid. The narrowly
+scoped recovery-retention authorization does not authorize adding the missing
+versioned-read statement.
 
 ## Copy-paste authorization text
 
@@ -69,10 +89,13 @@ passes the checker.
 > bucket 'witness-tree-raw-recovery-ca-central-1', at the four exact resources
 > in 'data/phase1-canopy-completion-recovery-iam-delta.json'.
 >
-> The only added IAM action authorized is 's3:GetObjectVersion' on those four
-> resources, with 'aws:MultiFactorAuthPresent=true' and
-> 'aws:MultiFactorAuthAge < 3600'. Existing exact retention capability must
-> cover both payload resources; this package does not add retention scope.
+> The existing 'CanopyVersionedRecoveryReadback' statement must already allow
+> only 's3:GetObjectVersion' on those four exact resources with its existing
+> MFA conditions and must remain unchanged. The only permitted IAM change is
+> the exact 'CanopyRecoveryPayloadRetentionOnly' statement from
+> 'data/phase1-canopy-recovery-retention-iam-delta.json', adding only
+> 's3:GetObjectRetention' and 's3:PutObjectRetention' on the one exact recovery
+> payload resource. No IAM read permission is added to the promotion operator.
 >
 > The approved recovery steps are: read the exact primary and recovery payload
 > and sidecar heads with checksum mode enabled; use saved private version
@@ -89,10 +112,20 @@ passes the checker.
 > any approval, private-state, IAM, head, checksum, version, or retention
 > precondition fails.
 
-The owner approval file consumed by the runner must be owner-owned mode 600
+The owner approval file, private 155-part state, and applied IAM attestation
+consumed by the runner must each be owner-owned mode 600
 and must contain the exact fields and values checked by
 'check-phase1-canopy-completion-recovery.mjs'; no private upload or object
 version identifiers belong in this document or in Git.
+
+The runner validates the root-generated applied attestation locally and never
+calls IAM with the promotion operator. Only after all three local files pass
+does it request MFA. Before either retention write it reads all four exact
+objects with checksum mode, resolves every concrete version through an exact
+versioned head, validates exact bytes and FULL_OBJECT CRC64NVME checksums, and
+reads retention on both exact payload versions. It then writes only absent
+payload retention, reads both retentions back, and re-reads all four exact
+versions.
 
 ## Conditional owner command
 
@@ -102,16 +135,22 @@ first:
 
 ~~~sh
 cd /path/to/authoritative-phase1-checkout
-zsh scripts/run-phase1-canopy-completion-recovery.sh --preflight /absolute/path/to/approval.json /private/tmp/witness-tree-canopy-resume-155-20260820.json
+zsh scripts/run-phase1-canopy-completion-recovery.sh --preflight \
+  /private/tmp/witness-tree-canopy-recovery-approval-20260820.json \
+  /private/tmp/witness-tree-canopy-resume-155-20260820.json \
+  /private/tmp/witness-tree-canopy-recovery-iam-attestation.json
 ~~~
 
 Only if that preflight passes, the owner may run the interactive recovery:
 
 ~~~sh
 cd /path/to/authoritative-phase1-checkout
-zsh scripts/run-phase1-canopy-completion-recovery.sh --recover-canopy /absolute/path/to/approval.json /private/tmp/witness-tree-canopy-resume-155-20260820.json
+zsh scripts/run-phase1-canopy-completion-recovery.sh --recover-canopy \
+  /private/tmp/witness-tree-canopy-recovery-approval-20260820.json \
+  /private/tmp/witness-tree-canopy-resume-155-20260820.json \
+  /private/tmp/witness-tree-canopy-recovery-iam-attestation.json
 ~~~
 
-These commands are conditional, not currently safe: the current live policy is
-known to fail before TOTP. Repository code never provisions IAM and this task
-does not run either command.
+These commands remain conditional and currently stop before TOTP because no
+applied attestation can be produced while the required versioned-read
+statement is absent.
