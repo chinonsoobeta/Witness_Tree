@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "status": "read-only-reply-audit-complete-no-resolution",
-  "auditedAt": "2026-08-20T18:30:57Z",
-  "source": "Gmail read-only searches and bounded thread reads through 2026-08-20T18:30:57Z. Message IDs, thread IDs, mailbox URLs, bodies and attachments are not retained here.",
+  "auditedAt": "2026-08-20T19:09:59Z",
+  "source": "Gmail read-only searches and bounded thread reads through 2026-08-20T19:09:59Z, including exact NBAC, Elections Alberta and Élections Québec sender/subject searches for the two partial rows. Message IDs, thread IDs, mailbox URLs, bodies and attachments are not retained here.",
   "officialRouteAuditFile": "data/phase1-bec-custom-download-route-audit.json",
   "nonClaimNotice": "A reply, routing instruction, follow-up, or acknowledgement is not permission, a source-owner decision, an artifact, not an acquisition, a checksum, an archive, a transformation, an ingestion, a release, or production eligibility. No form was submitted and no external system was changed by this audit.",
   "counts": {
