@@ -8,11 +8,18 @@ import test from "node:test";
 const runner = readFileSync(new URL("../scripts/run-phase1-approved-promotion.sh", import.meta.url), "utf8");
 
 test("the three-artifact runner is preflight-first and binds every approved checksum and canonical key", () => {
-  for (const mode of ["--preflight", "--run", "--resume", "--validate-resume-state"]) assert.match(runner, new RegExp(mode));
+  for (const mode of ["--preflight", "--run", "--run-federal", "--resume", "--validate-resume-state"]) assert.match(runner, new RegExp(mode));
   for (const value of ["c6f41dff46d91812874672edb53233dac4126952132ad6d1131ad47b11ad7aad", "86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124", "4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93", "ca_forest_harvest_1985-2022.zip", "ca_canopy_height_2022.zip", "federalelectoraldistricts_2025_shp.zip"]) assert.match(runner, new RegExp(value));
   assert.match(runner, /2033-08-12T00:00:00Z/);
   assert.match(runner, /aws configure get mfa_serial --profile/);
   assert.doesNotMatch(runner, /list-mfa-devices|aws iam |DeleteObject|BypassGovernanceRetention/i);
+});
+
+test("federal-only mode cannot revisit the archived harvest or preserved canopy prefix", () => {
+  assert.match(runner, /MODE.*run-federal/);
+  assert.match(runner, /PROMOTION_INDICES=\(3\)/);
+  assert.match(runner, /for i in \$PROMOTION_INDICES/);
+  assert.match(runner, /Harvest is already archived and the canopy prefix is resumed separately/);
 });
 
 test("the canopy archive uses explicit checked multipart calls and never aborts an unfinished upload", () => {
