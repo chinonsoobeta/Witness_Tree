@@ -76,6 +76,7 @@ export function validatePhase1BecCustomDownloadRouteAudit(audit) {
   assert.equal(audit.artifact.sha256, null);
   assert.equal(audit.artifact.archiveIntegrity, null);
   assert.deepEqual(audit.artifact.contents, {schemaVerified:false, crsVerified:false, featureCount:null, geometryValidityVerified:false});
+  assert.equal(audit.officialAlternativeExhaustionFile, "data/phase1-bec-public-alternative-exhaustion.json");
   assert.equal(audit.ownerAction.status, "prepared-awaiting-owner-authorization");
   assert.equal(audit.ownerAction.steps.length, 5);
   return audit;

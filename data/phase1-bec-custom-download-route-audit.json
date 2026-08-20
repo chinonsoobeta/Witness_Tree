@@ -228,6 +228,7 @@
       "geometryValidityVerified": false
     }
   },
+  "officialAlternativeExhaustionFile": "data/phase1-bec-public-alternative-exhaustion.json",
   "ownerAction": {
     "status": "prepared-awaiting-owner-authorization",
     "steps": [

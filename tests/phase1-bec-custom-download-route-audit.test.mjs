@@ -11,6 +11,7 @@ test("BEC custom-download route records official metadata and remains blocked be
   assert.equal(audit.official.resource.projection, "epsg3005");
   assert.equal(audit.artifact.acquired, false);
   assert.equal(audit.terms.accepted, false);
+  assert.equal(audit.officialAlternativeExhaustionFile, "data/phase1-bec-public-alternative-exhaustion.json");
 });
 test("BEC route audit rejects invented package evidence or terms acceptance", () => {
   const packageEvidence = structuredClone(audit);
