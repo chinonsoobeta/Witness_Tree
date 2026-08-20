@@ -128,7 +128,10 @@ prepare_resume_state() {
     )
   ' <<<"$state_json" >/dev/null || fail "Private resume state does not bind the exact approved canopy upload; no storage call was made" 65
   RESUME_UPLOAD_ID="$(jq -er '.uploadId' <<<"$state_json")"
-  RESUME_PARTS="$(jq -c '.parts' <<<"$state_json")"
+  # ListParts may include provider-only metadata such as LastModified. It is
+  # not part of the resumable binding or a valid completion member; compare
+  # the same four acknowledged fields that the remote projection uses.
+  RESUME_PARTS="$(jq -c '[.parts[] | {PartNumber,ETag,ChecksumCRC64NVME,Size}]' <<<"$state_json")"
 }
 resume_canopy() {
   local listed state_parts="$RESUME_PARTS" remote_parts bytes="${BYTES[2]}" part_size=67108864 part_count first_missing part_number part_file result etag checksum parts_file complete version payload_crc sidecar sidecar_bytes sidecar_put sidecar_version sidecar_crc payload_head retention sidecar_head

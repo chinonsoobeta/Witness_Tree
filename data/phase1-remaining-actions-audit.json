@@ -57,7 +57,7 @@
       "readiness": "data/phase1-immutable-promotion-readiness.json",
       "ownerReconciliation": "data/phase1-archive-owner-command-reconciliation-2026-08-20.json",
       "runner": "scripts/run-phase1-approved-promotion.sh",
-      "currentStatus": "prepared-local-only; no remote object or sidecar completion/readback is recorded"
+      "currentStatus": "canopy MPU completed; redacted primary/recovery payload and sidecar heads have exact bytes and FULL_OBJECT checksums, but exact-version readback is blocked by unavailable s3:GetObjectVersion, retention is absent, and no immutable credit is claimed"
     },
     {
       "id": "current-wildfire-six-release-inputs",
@@ -95,11 +95,11 @@
     {
       "id": "national-local-archive-preflight-and-owner-promotion",
       "rank": 1,
-      "priorityBasis": "Safe local preflight is available now and this is the highest-impact prepared group; owner-run promotion remains separately gated.",
+      "priorityBasis": "Canopy MPU heads are present but immutable proof remains blocked; a safe local preflight is available for the separate federal artifact, while canopy readback and any owner-run action remain separately gated.",
       "lawfulImmediacy": "delegate-preflight-now",
       "actor": "delegate-and-owner",
       "executableNow": true,
-      "executionBoundary": "Only the no-write local preflight is executable without owner input; no owner upload command is authorized by this audit.",
+      "executionBoundary": "Only redacted readback inspection and the no-write local preflight are executable without owner input; no canopy upload or completion command is authorized by this audit.",
       "requiresOwnerInput": true,
       "requiresExternalReply": false,
       "ownerRunAuthorized": false,
@@ -116,14 +116,15 @@
         "ownerExecution": "BLOCKED: the three-artifact --run path includes already-archived harvest; use only a freshly approved canopy/federal-only path after reconciliation."
       },
       "prerequisites": [
-        "Fresh owner approval for the exact two payloads, Canadian ca-central-1 destination, COMPLIANCE retention, and readback procedure.",
-        "The controlled local payload and sidecar preflight passes without AWS or TOTP.",
-        "Owner confirms an append-only execution path that does not revisit harvest and has interactive MFA plus exact-version, checksum, retention, sidecar, and recovery readbacks.",
-        "Do not update the ledger until redacted primary and recovery readbacks are integrated."
+        "Owner resolves the unavailable s3:GetObjectVersion permission and supplies redacted exact-version, byte, FULL_OBJECT checksum, and recovery readbacks for the completed canopy payload and sidecar.",
+        "Owner confirms or applies COMPLIANCE retention for the primary and recovery payloads; retention is currently absent.",
+        "The controlled local federal payload and sidecar preflight passes without AWS or TOTP.",
+        "Owner confirms a separate federal-only execution path that does not revisit harvest or re-complete canopy.",
+        "Do not update the ledger until redacted primary and recovery immutable readbacks are integrated."
       ],
-      "remainingSteps": ["run the safe local preflight", "obtain fresh owner approval", "owner performs the separately authorized promotion", "integrate exact immutable and recovery readbacks", "record named source decisions and downstream gates"],
+      "remainingSteps": ["resolve canopy readback permission", "capture canopy retention and exact immutable primary/recovery readbacks", "run the safe federal-only local preflight", "obtain fresh federal owner approval", "owner performs only the separately authorized federal promotion", "integrate exact immutable and recovery readbacks", "record named source decisions and downstream gates"],
       "scoreImpact": {"currentRawCreditDelta": 0, "maximumRawCreditDelta": 0.75, "maximumFormalPercentagePointDelta": 0.7258065, "productionAdmissionDelta": 0},
-      "blockers": ["No live canopy or federal object/sidecar completion and readback is recorded.", "The owner-local canopy resume state is validated offline but its path and opaque identifiers are intentionally not retained in repository evidence."]
+      "blockers": ["Canopy exact-version readback is blocked because s3:GetObjectVersion is unavailable; primary and recovery retention are absent, so no immutable credit is allowed.", "The federal artifact and its sidecar are not present and still require a separate owner-approved path.", "The owner-local canopy resume state is validated offline but its path and opaque identifiers are intentionally not retained in repository evidence."]
     },
     {
       "id": "quebec-current-original-archive-preflight-and-owner-promotion",

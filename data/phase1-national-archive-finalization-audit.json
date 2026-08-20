@@ -3,7 +3,7 @@
   "status": "blocked-read-only",
   "observedAt": "2026-08-20",
   "lineage": {"integratedBase": "eca44dd", "runnerFix": "62d008f"},
-  "notice": "Redacted local, offline-mock, and read-only multipart observations only. No AWS, IAM, upload, completion, retention, delete, recovery-state write, TOTP, email, deployment, or production action was performed by this audit.",
+  "notice": "Redacted local, offline-mock, read-only, and owner-supplied operational observations only. No AWS, IAM, upload, completion, retention, delete, recovery-state write, TOTP, email, deployment, or production action was performed by this audit.",
   "localArtifacts": [
     {"sourceId":"ntems-forest-harvest","byteLength":247945479,"sha256Match":true},
     {"sourceId":"ntems-canopy-height","byteLength":10347564066,"sha256Match":true},
@@ -16,7 +16,8 @@
       "canopy": {
         "prefix": "raw/nrcan-forest-canopy-height-2022/",
         "exactKey": "raw/nrcan-forest-canopy-height-2022/undeclared/2026-08-14T18-57-22Z/86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124/payload/ca_canopy_height_2022.zip",
-        "openUploadCount": 1,
+        "openUploadCount": 0,
+        "completionStatus": "completed",
         "partCount": 155,
         "isTruncated": false,
         "allPartsHaveProviderChecksum": true
@@ -25,7 +26,30 @@
       "harvest": {"prefix":"raw/nrcan-ca-forest-harvest-1985-2022/","openUploadCount":0}
     },
     "exactHeads": {
-      "canopy": {"payloadExists": false, "manifestExists": false},
+      "canopy": {
+        "payloadExists": true,
+        "manifestExists": true,
+        "payloadBytes": 10347564066,
+        "manifestBytes": 459,
+        "payloadChecksumType": "FULL_OBJECT",
+        "manifestChecksumType": "FULL_OBJECT",
+        "payloadChecksumPresent": true,
+        "manifestChecksumPresent": true,
+        "exactVersionReadback": false,
+        "retentionPresent": false,
+        "recoveryPayloadExists": true,
+        "recoveryManifestExists": true,
+        "recoveryPayloadBytes": 10347564066,
+        "recoveryManifestBytes": 459,
+        "recoveryPayloadChecksumType": "FULL_OBJECT",
+        "recoveryManifestChecksumType": "FULL_OBJECT",
+        "recoveryPayloadChecksumPresent": true,
+        "recoveryManifestChecksumPresent": true,
+        "recoveryExactVersionReadback": false,
+        "recoveryRetentionPresent": false,
+        "versionedReadbackBlocker": "s3:GetObjectVersion is unavailable to the current approved role; exact-version readback is not proven.",
+        "archiveCredit": false
+      },
       "federal": {"payloadExists": false, "manifestExists": false}
     },
     "mutationsPerformed": []
@@ -67,6 +91,18 @@
       "Any owner run still requires fresh exact-artifact/retention approval, an interactive MFA session, and live list-parts, completion, exact-version checksum, retention and sidecar read-backs.",
       "The federal prefix has no open multipart upload and therefore needs its separate owner-approved federal-only promotion path."
     ]
+  },
+  "postCompletionOperationalTruth": {
+    "status": "multipart-complete-heads-present-retention-and-versioned-readback-blocked",
+    "multipartCompleted": true,
+    "primaryAndRecovery": {
+      "payload": {"present": true, "bytes": 10347564066, "checksumType": "FULL_OBJECT", "checksumPresent": true},
+      "sidecar": {"present": true, "bytes": 459, "checksumType": "FULL_OBJECT", "checksumPresent": true}
+    },
+    "retention": {"primaryPayload": "absent", "recoveryPayload": "absent"},
+    "versionedReadback": {"status": "blocked", "permission": "s3:GetObjectVersion unavailable", "performed": false},
+    "archiveCredit": false,
+    "productionEligible": false
   },
   "claims": {
     "canopyMultipartFinalized": false,

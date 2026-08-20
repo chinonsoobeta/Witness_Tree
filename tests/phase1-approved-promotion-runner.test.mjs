@@ -233,19 +233,19 @@ case "$3" in *CA_Forest_Harvest_1985-2022.zip) print -- "c6f41dff46d91812874672e
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
-test("PTY resume preserves verified prefixes and a complete 155-part state finishes without re-upload", () => {
+test("PTY resume canonicalizes provider-only LastModified metadata and completes without re-upload", () => {
  for (const initialCount of [49, 102, 155]) {
   const dir = mkdtempSync(join(tmpdir(), "phase1-approved-resume-"));
   const marker = join(dir, "calls");
   const state = join(dir, "resume.json");
   const payloadKey = "raw/nrcan-forest-canopy-height-2022/undeclared/2026-08-14T18-57-22Z/86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124/payload/ca_canopy_height_2022.zip";
-  const initialParts = Array.from({ length: initialCount }, (_, index) => ({ PartNumber: index + 1, ETag: `"${String(index + 1).padStart(32, "0")}"`, ChecksumCRC64NVME: "AAAAAAAAAAA=", Size: index === 154 ? 12_799_010 : 67_108_864 }));
+  const initialParts = Array.from({ length: initialCount }, (_, index) => ({ PartNumber: index + 1, ETag: `"${String(index + 1).padStart(32, "0")}"`, ChecksumCRC64NVME: "AAAAAAAAAAA=", Size: index === 154 ? 12_799_010 : 67_108_864, LastModified: "2026-08-20T18:00:00Z" }));
   writeFileSync(state, `${JSON.stringify({ schemaVersion: 1, bucket: "witness-tree-raw-archive-ca-central-1", region: "ca-central-1", key: payloadKey, uploadId: "private-upload-id-that-is-never-printed", partSize: 67_108_864, parts: initialParts })}\n`, { mode: 0o600 });
   const aws = join(dir, "aws");
   const stat = join(dir, "stat");
   const shasum = join(dir, "shasum");
   const dd = join(dir, "dd");
-  const listResponse = JSON.stringify({ Parts: initialParts });
+  const listResponse = JSON.stringify({ Parts: initialParts.map(({ PartNumber, ETag, ChecksumCRC64NVME, Size }) => ({ PartNumber, ETag, ChecksumCRC64NVME, Size })) });
   writeFileSync(aws, `#!/bin/zsh
 print -- "$1:$2" >> ${JSON.stringify(marker)}
 case "$1:$2" in
