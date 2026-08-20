@@ -31,14 +31,14 @@ trap cleanup EXIT
 if [[ ( "${1:-}" == "--resume" || "${1:-}" == "--validate-resume-state" ) && $# -eq 2 ]]; then
   [[ "${1:-}" == "--resume" ]] && MODE="resume" || MODE="validate-resume"
   RESUME_STATE="$2"
-elif [[ ( "${1:-}" == "--preflight" || "${1:-}" == "--run" ) && $# -eq 1 ]]; then
+elif [[ ( "${1:-}" == "--preflight" || "${1:-}" == "--run" || "${1:-}" == "--run-federal" ) && $# -eq 1 ]]; then
   MODE="${1#--}"
 else
-  fail "Usage: $0 --preflight|--run|--resume /absolute/private-state.json|--validate-resume-state /absolute/private-state.json" 64
+  fail "Usage: $0 --preflight|--run|--run-federal|--resume /absolute/private-state.json|--validate-resume-state /absolute/private-state.json" 64
 fi
 command -v shasum >/dev/null || fail "shasum is required" 69
 
-typeset -a IDS FILES BYTES SHAS PAYLOADS SIDECARS
+typeset -a IDS FILES BYTES SHAS PAYLOADS SIDECARS PROMOTION_INDICES
 IDS=(nrcan-ca-forest-harvest-1985-2022-2026-08-14 nrcan-forest-canopy-height-2022-2026-08-14 elections-canada-federal-electoral-districts-45th-general-election-2025-shp)
 FILES=(
   "$DATA_ROOT/raw/nrcan-ca-forest-harvest-1985-2022/2026-08-14/CA_Forest_Harvest_1985-2022.zip"
@@ -65,6 +65,13 @@ for i in {1..3}; do
 done
 print -- "PRECHECK passed: all three approved artifacts exist at the controlled workspace-data path with exact bytes and SHA-256; no TOTP or AWS call was made."
 [[ "$MODE" == "preflight" ]] && exit 0
+if [[ "$MODE" == "run-federal" ]]; then
+  # Harvest is already archived and the canopy prefix is resumed separately;
+  # this explicit mode cannot revisit either completed/preserved artifact.
+  PROMOTION_INDICES=(3)
+else
+  PROMOTION_INDICES=(1 2 3)
+fi
 
 command -v jq >/dev/null || fail "jq is required" 69
 SESSION_EXPIRES_EPOCH=0
@@ -200,7 +207,7 @@ upload_multipart() {
   jq -e '.VersionId != null and (.ChecksumCRC64NVME // empty) != ""' <<<"$complete" >/dev/null || fail "Multipart completion acknowledgement incomplete" 70
 }
 
-for i in {1..3}; do
+for i in $PROMOTION_INDICES; do
   # GetObject is granted on every exact approved key. A successful read means
   # a version already exists, which this append-only runner refuses to replace.
   if aws s3api head-object --bucket "$BUCKET" --key "${PAYLOADS[$i]}" --checksum-mode ENABLED --region "$REGION" --output json >"$TMP/preexisting-${i}.json" 2>"$TMP/preexisting-${i}.stderr"; then

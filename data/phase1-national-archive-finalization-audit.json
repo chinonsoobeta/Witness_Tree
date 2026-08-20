@@ -63,7 +63,7 @@
     "blockers":[
       "No matching mode-600 private canopy resume record was found in the controlled workspace roots; an exact resume path cannot be supplied safely.",
       "Any owner run still requires fresh exact-artifact/retention approval and an interactive MFA session.",
-      "The federal prefix has no open multipart upload and therefore needs its separate owner-approved promotion path."
+      "The federal prefix has no open multipart upload and therefore needs its separate owner-approved federal-only promotion path."
     ]
   },
   "claims": {
