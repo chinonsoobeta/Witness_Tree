@@ -33,6 +33,8 @@ test('live archive controls and national readback remain explicit', () => {
   assert.equal(record.national.annualVlce2.manifestObjectCount, 39);
   assert.equal(record.national.annualVlce2.payloadRetention.observedOnEveryPayload, true);
   assert.equal(record.national.annualVlce2.recoveryPayloadObjectCount, 0);
+  assert.equal(record.national.annualVlce2.repositoryContradiction.recordedState, 'remote-verified; 39 retained payload versions');
+  assert.equal(record.national.annualVlce2.repositoryContradiction.reconciliation, 'no ledger change required');
   assert.equal(record.national.canopyHeight.primaryObjectCount, 0);
   assert.equal(record.national.federalElectoralDistricts.primaryObjectCount, 0);
 });

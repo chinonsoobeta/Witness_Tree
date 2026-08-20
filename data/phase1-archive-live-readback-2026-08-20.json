@@ -65,8 +65,9 @@
       "repositoryContradiction": {
         "record": "data/vlce2-remote-promotion-evidence.json",
         "recordAsOf": "2026-08-14",
-        "recordedState": "not-retained",
-        "liveState": "all-payloads-retained"
+        "recordedState": "remote-verified; 39 retained payload versions",
+        "liveState": "all-payloads-retained; current readback agrees",
+        "reconciliation": "no ledger change required"
       }
     },
     "forestHarvest": {

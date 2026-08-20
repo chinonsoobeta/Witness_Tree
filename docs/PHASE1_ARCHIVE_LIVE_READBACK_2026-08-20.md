@@ -5,7 +5,7 @@ This is a read-only live audit of the Phase 1 archive groups. The machine-readab
 ## Confirmed live facts
 
 - The primary archive is versioned and Object Lock-enabled. Public access is blocked, ownership is `BucketOwnerEnforced`, encryption is AES256, raw incomplete multipart uploads are aborted after seven days, and enabled replication covers `raw/` to a same-region recovery bucket.
-- All 39 annual VLCE2 payloads have `CRC64NVME` `FULL_OBJECT` checksums and COMPLIANCE retention through 2033-08-12. The recovery bucket has no annual VLCE2 payloads. This contradicts the older repository record that said the payloads were not retained; the score remains unchanged until the record is reconciled.
+- All 39 annual VLCE2 payloads have `CRC64NVME` `FULL_OBJECT` checksums and COMPLIANCE retention through 2033-08-12. The recovery bucket has no annual VLCE2 payloads. The latest convergence record already reports the same 39 retained payload versions, so this live cross-check requires no ledger change.
 - The forest-harvest payload and manifest are present on the primary and recovery buckets. The payload is COMPLIANCE-retained through 2033-08-12, with completed primary replication and a recovery replica.
 - The canonical canopy-cover payload is COMPLIANCE-retained through 2033-08-12, but it has no recovery replica. Two superseded payload copies remain unlocked. Canopy-height and federal-electoral prefixes are empty on both buckets.
 - All four current-wildfire raw payloads have `CRC64NVME` `FULL_OBJECT` checksums, COMPLIANCE retention through 2033-08-12, completed primary replication, and recovery payload/manifest replicas. Their primary manifests are present and unlocked.
