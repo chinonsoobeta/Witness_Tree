@@ -10,7 +10,7 @@ const REQUIRED_TERMS = [
 export function validatePhase1PermissionOutreachPackage(pkg, matrix) {
   if (pkg?.schemaVersion !== 1 || pkg.status !== "reply-audit-recorded-blockers-remain" || pkg.sender !== "Chinonso Obeta <chinonso8@gmail.com>") throw new Error("Outreach package identity and bounded reply-audit status must be explicit.");
   if (!/Gmail Sent-label searches verified.*reply audit.*not an acquisition.*production eligibility/i.test(pkg.scope ?? "")) throw new Error("Outreach package must state bounded send/reply evidence and retain non-production boundaries.");
-  if (pkg.replyAuditFile !== "data/phase1-outreach-reply-audit.json" || pkg.officialRouteAuditFile !== "data/phase1-bec-custom-download-route-audit.json") throw new Error("Outreach package must point to the bounded reply and official route audits.");
+  if (pkg.replyAuditFile !== "data/phase1-outreach-reply-audit.json" || pkg.officialRouteAuditFile !== "data/phase1-bec-custom-download-route-audit.json" || pkg.copyrightPermissionFormPackageFile !== "data/phase1-bc-copyright-permission-form-package.json") throw new Error("Outreach package must point to the bounded reply, official route and copyright form audits.");
   if (!Array.isArray(pkg.messages) || pkg.messages.length !== 8) throw new Error("Outreach package must have seven verified sends and one existing-request record.");
   const ids = new Set();
   const rows = new Set();

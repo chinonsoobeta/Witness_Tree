@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
   "status": "read-only-reply-audit-complete-no-resolution",
-  "auditedAt": "2026-08-20T17:15:19Z",
-  "source": "Gmail read-only searches and bounded thread reads through 2026-08-20T17:15:19Z. Message IDs, thread IDs, mailbox URLs, bodies and attachments are not retained here.",
+  "auditedAt": "2026-08-20T18:30:57Z",
+  "source": "Gmail read-only searches and bounded thread reads through 2026-08-20T18:30:57Z. Message IDs, thread IDs, mailbox URLs, bodies and attachments are not retained here.",
   "officialRouteAuditFile": "data/phase1-bec-custom-download-route-audit.json",
   "nonClaimNotice": "A reply, routing instruction, follow-up, or acknowledgement is not permission, a source-owner decision, an artifact, not an acquisition, a checksum, an archive, a transformation, an ingestion, a release, or production eligibility. No form was submitted and no external system was changed by this audit.",
   "counts": {
     "canonicalAccessBlockedRows": 13,
     "canonicalPartialRows": 2,
-    "substantiveReplyRecords": 6,
+    "substantiveReplyRecords": 7,
     "accessBlockedRowsWithSubstantiveReply": 8,
     "accessBlockedRowsWithoutSubstantiveReply": 5,
     "partialRowsWithSubstantiveReply": 0,
@@ -73,6 +73,17 @@
       "status": "permission-form-required-awaiting-decision",
       "summary": "BC's Intellectual Property Program instructed the requester to use its Copyright Permission Request Form, name each dataset exactly as in the BC Data Catalogue, provide each catalogue URL, describe intended use, audience and distribution channels, and await custodian ownership/concern checks. It said a licensing vehicle and a permission/licence fee would be determined if permission can be granted. No permission, licence, artifact, attribution wording or fee decision was supplied.",
       "remainingBlockers": ["The permission form has not been submitted by this audit", "No custodian confirmation or licensing vehicle", "No fee decision", "No functioning complete 2025 VRI artifact", "No implemented TAP layer or written rights", "No exact artifact edition, count, schema, CRS, checksum or archive terms"]
+    },
+    {
+      "id": "reply-bc-copyright-single-form-followup",
+      "outreachMessageId": "bc-copyright-access-only-forest-layers",
+      "canonicalRowIds": ["bc-old-growth-bec", "bc-vri", "bc-forest-operations-map"],
+      "receivedAt": "2026-08-20T17:39:18Z",
+      "sender": "QPIPPCopyright@gov.bc.ca",
+      "subject": "RE: Permission and authoritative-export request — VRI 2025, FOM Cutblocks, and TAP deferral layer",
+      "status": "permission-form-guidance-no-authorization",
+      "summary": "The BC copyright office confirmed that all three datasets may be included in one Copyright Permission Request Form and asked that the requested details be included in the form. This confirms a procedural submission route only; it supplies no permission, licence, artifact, custodian decision or fee amount. The owner package maps the official form fields without entering personal data or submitting the form.",
+      "remainingBlockers": ["The permission form has not been submitted by this audit", "No custodian ownership/concern review", "No permission or licensing vehicle", "No fee amount or fee agreement", "No functioning complete 2025 VRI artifact", "No implemented TAP layer or written rights", "No exact artifact edition, count, schema, CRS, checksum or archive terms"]
     },
     {
       "id": "reply-faib-output-details",
@@ -173,7 +184,7 @@
       "id": "bc-old-growth-bec",
       "kind": "access-blocked",
       "replyStatus": "replies-received-service-route-custom-download-and-permission-process-no-resolution",
-      "replyRecordIds": ["reply-bc-bec-service-portal", "reply-bc-bec-custom-download-route", "reply-bc-copyright-permission-process"],
+      "replyRecordIds": ["reply-bc-bec-service-portal", "reply-bc-bec-custom-download-route", "reply-bc-copyright-permission-process", "reply-bc-copyright-single-form-followup"],
       "lawfulAcquisitionNow": false,
       "remainingBlockers": ["No coherent BEC snapshot", "The custom-download route is blocked before order submission by the email/terms/eligibility gate", "No TAP implemented-deferral artifact", "No TAP permission or licence", "No checksum, archive or owner admission"]
     },
@@ -189,7 +200,7 @@
       "id": "bc-vri",
       "kind": "access-blocked",
       "replyStatus": "reply-received-permission-process-no-authorization",
-      "replyRecordIds": ["reply-bc-copyright-permission-process"],
+      "replyRecordIds": ["reply-bc-copyright-permission-process", "reply-bc-copyright-single-form-followup"],
       "lawfulAcquisitionNow": false,
       "remainingBlockers": ["Permission form and custodian review remain outstanding", "No functioning complete 2025 artifact", "No licence, fee, checksum or archive decision"]
     },
@@ -197,7 +208,7 @@
       "id": "bc-forest-operations-map",
       "kind": "access-blocked",
       "replyStatus": "reply-received-permission-process-no-authorization",
-      "replyRecordIds": ["reply-bc-copyright-permission-process"],
+      "replyRecordIds": ["reply-bc-copyright-permission-process", "reply-bc-copyright-single-form-followup"],
       "lawfulAcquisitionNow": false,
       "remainingBlockers": ["Permission form and custodian review remain outstanding", "No exact-layer authorization or attribution", "No checksum or archive decision"]
     },

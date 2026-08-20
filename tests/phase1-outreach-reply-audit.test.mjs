@@ -9,9 +9,9 @@ const matrix = read("phase1-access-blocker-resolution");
 const pkg = read("phase1-permission-outreach-package");
 const routeAudit = read("phase1-bec-custom-download-route-audit");
 
-test("reply audit maps six substantive replies to eight blocked rows and no partial rows", () => {
+test("reply audit maps seven substantive replies to eight blocked rows and no partial rows", () => {
   assert.equal(validatePhase1OutreachReplyAudit(audit, matrix, pkg, routeAudit), audit);
-  assert.equal(audit.counts.substantiveReplyRecords, 6);
+  assert.equal(audit.counts.substantiveReplyRecords, 7);
   assert.equal(audit.counts.accessBlockedRowsWithSubstantiveReply, 8);
   assert.equal(audit.rows.filter(({ kind, replyRecordIds }) => kind === "access-blocked" && replyRecordIds.length > 0).length, 8);
   assert.equal(audit.rows.filter(({ kind, replyRecordIds }) => kind === "partial-component" && replyRecordIds.length > 0).length, 0);
