@@ -111,6 +111,7 @@
     "check:phase2-synthetic-readback": "tsx --test tests/synthetic-output-readback.test.ts",
     "check:phase2-method-parameters": "tsx scripts/check-phase2-method-parameters.mts && tsx --test tests/method-manifest.test.ts tests/matching-precedence.test.ts",
     "check:phase2-real-data-owner-decision": "node scripts/check-phase2-real-data-owner-decision.mjs && node --test tests/phase2-real-data-owner-decision.test.mjs",
+    "check:phase2-real-national-preflight": "node scripts/check-phase2-real-national-preflight.mjs && node --test tests/phase2-real-national-preflight.test.mjs",
     "run:phase2-national-baseline-batch": "tsx scripts/run-national-baseline-batch.mts",
     "readback:phase2-synthetic-output": "tsx scripts/check-phase2-synthetic-output.mts",
     "check:local-staging-admission": "tsx scripts/check-local-staging-admission.mjs",

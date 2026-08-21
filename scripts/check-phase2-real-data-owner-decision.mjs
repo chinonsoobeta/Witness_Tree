@@ -13,6 +13,7 @@ const BOUNDARY_OPTIONS = {
 export function validatePhase2RealDataOwnerDecision(record, { requireApproval = false } = {}) {
   assert.equal(record.schemaVersion, SCHEMA);
   assert.equal(record.derivedFromHead, "a651924250dfd224262df61633e603712012f0cb");
+  assert.match(record.notice, /no execution until.*gates pass.*never authorizes production use.*external compute\/storage/i);
   assert.deepEqual(record.maturity, {
     phase: 2,
     fixedRubricPercentBefore: 43,

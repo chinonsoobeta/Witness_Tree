@@ -1,7 +1,7 @@
 {
   "schemaVersion": "witness-tree/phase2-real-data-owner-decision/1",
-  "status": "owner-decision-required",
-  "notice": "This package records evidence and proposed choices only. It authorizes no transformation, ingestion, release, production use, external call, or claim until the exact owner decision is recorded and the remaining input gates pass.",
+  "status": "owner-decision-recorded",
+  "notice": "This package records the exact owner decision for a bounded local non-production run. It authorizes no execution until the remaining source, method, adapter, boundary, capacity, and output gates pass, and never authorizes production use, release, external compute/storage, or broader claims.",
   "derivedFromHead": "a651924250dfd224262df61633e603712012f0cb",
   "maturity": {
     "phase": 2,
@@ -157,23 +157,23 @@
     "forbidden": ["external compute or storage", "full-series in-memory loading", "implicit raster reprojection", "overwrite of an existing output directory", "public or production release"]
   },
   "ownerDecision": {
-    "status": "pending",
-    "ownerName": null,
-    "recordedAt": null,
-    "forestCrosswalkOption": null,
-    "approveExactHarvestScope": null,
-    "approveExactWildfireScope": null,
-    "approveComputeCaps": null,
-    "approveNationalMaskAndChangeNonProductionRun": null,
-    "provinceBoundaryDecision": null,
-    "municipalityBoundaryDecision": null,
-    "federalRidingBoundaryDecision": null,
-    "acknowledgeAllEightAggregatesRemainBlocked": null,
-    "acknowledgeNonProductionOutputs": null,
-    "acknowledgeNoExternalActionOrRelease": null
+    "status": "approved-for-versioned-nonproduction-processing",
+    "ownerName": "Chinonso Obeta",
+    "recordedAt": "2026-08-21T21:51:54Z",
+    "forestCrosswalkOption": "conservative-treed-upland-v1",
+    "approveExactHarvestScope": true,
+    "approveExactWildfireScope": true,
+    "approveComputeCaps": true,
+    "approveNationalMaskAndChangeNonProductionRun": true,
+    "provinceBoundaryDecision": "accept-statcan-2021",
+    "municipalityBoundaryDecision": "accept-statcan-2021-csd",
+    "federalRidingBoundaryDecision": "accept-elections-canada-2025-2023-order",
+    "acknowledgeAllEightAggregatesRemainBlocked": true,
+    "acknowledgeNonProductionOutputs": true,
+    "acknowledgeNoExternalActionOrRelease": true
   },
   "claims": {
-    "approvalRecorded": false,
+    "approvalRecorded": true,
     "realTransformationRun": false,
     "allEightBoundaryEditionsReady": false,
     "productionEligible": false
