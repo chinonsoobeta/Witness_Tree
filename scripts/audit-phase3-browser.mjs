@@ -16,9 +16,31 @@ const ROUTES = [
   ["search", "en", "/en/search?q=British%20Columbia"], ["search", "fr", "/fr/recherche?q=Colombie-Britannique"],
 ];
 const NETWORK = Object.freeze({ name: "declared-simulated-4g", latencyMs: 150, downloadBitsPerSecond: 1_600_000, uploadBitsPerSecond: 750_000, cpuThrottling: false });
-const LCP_LIMIT_MS = 2_500;
+const LCP_LIMIT_MS = 2_000;
+const REFLOW_WIDTH_CSS_PX = 320;
 
 const delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
+
+export function validateBrowserEvidence(evidence) {
+  if (evidence.schemaVersion !== "witness-tree/phase3-browser-audit/2" || evidence.status !== "example" || evidence.reviewStatus !== "unapproved" || evidence.productionEligible !== false) throw new Error("Browser evidence boundary is invalid.");
+  if (JSON.stringify(evidence.profile) !== JSON.stringify(NETWORK)) throw new Error("Browser evidence network profile does not match the declared simulated-4G profile.");
+  if (evidence.thresholds?.lcpMsExclusive !== LCP_LIMIT_MS || evidence.thresholds?.reflowWidthCssPixels !== REFLOW_WIDTH_CSS_PX || evidence.thresholds?.axeViolations !== 0 || evidence.thresholds?.horizontalOverflowPixels !== 0) throw new Error("Browser evidence thresholds do not match the normative gate.");
+  const expectedRoutes = ROUTES.map(([, , route]) => route);
+  if (JSON.stringify(evidence.routes?.map(({ route }) => route)) !== JSON.stringify(expectedRoutes) || new Set(expectedRoutes).size !== expectedRoutes.length) throw new Error("Browser evidence route set is incomplete or reordered.");
+  let evidenceCues = 0; let confidenceCues = 0;
+  for (const row of evidence.routes) {
+    if (row.landmarks?.documentLang !== row.locale || row.landmarks?.contentLang !== row.locale) throw new Error(`${row.route}: document/content language mismatch.`);
+    if (!Array.isArray(row.lcpRuns) || row.lcpRuns.length !== (row.template === "place" ? 2 : 1) || row.lcpRuns.some((value) => !Number.isFinite(value) || value <= 0 || value >= LCP_LIMIT_MS) || row.lcpMs !== Math.max(...row.lcpRuns)) throw new Error(`${row.route}: LCP runs do not meet the strict normative limit.`);
+    if (row.axe?.violations?.length !== 0) throw new Error(`${row.route}: axe violations are present.`);
+    if (row.keyboard?.firstTab !== "skip-link" || row.keyboard?.skipTarget !== "main" || row.keyboard?.order !== "complete-dom-order" || row.keyboard?.wrappedOnce !== true || row.keyboard?.totalTabStops < 1 || row.keyboard?.traversedTabStops !== row.keyboard.totalTabStops || !Number.isInteger(row.keyboard?.unfocusedWrapTransitions) || row.keyboard.unfocusedWrapTransitions < 0 || row.keyboard.unfocusedWrapTransitions > 1 || row.keyboard?.unnamed !== 0) throw new Error(`${row.route}: complete keyboard traversal evidence is invalid.`);
+    if (row.forcedColors?.active !== true || row.forcedColors?.blocked !== 0 || row.forcedColors?.contentCharacters < 1 || row.forcedColors?.textDistinguishable !== true || row.forcedColors?.links < 1 || row.forcedColors?.linkFailures !== 0 || !Number.isInteger(row.forcedColors?.evidenceCues) || row.forcedColors.evidenceCues < 0 || row.forcedColors?.evidenceFailures !== 0 || !Number.isInteger(row.forcedColors?.confidenceCues) || row.forcedColors.confidenceCues < 0 || row.forcedColors?.confidenceFailures !== 0) throw new Error(`${row.route}: forced-colors semantic evidence is invalid.`);
+    evidenceCues += row.forcedColors.evidenceCues; confidenceCues += row.forcedColors.confidenceCues;
+    if (row.reflow?.viewportWidth !== REFLOW_WIDTH_CSS_PX || row.reflow?.visualScale !== 1 || row.reflow?.overflowPixels !== 0) throw new Error(`${row.route}: true 320 CSS-pixel reflow evidence is invalid.`);
+  }
+  if (evidenceCues < 1 || confidenceCues < 1) throw new Error("Browser evidence does not exercise non-colour evidence and confidence cues.");
+  if (evidence.summary?.routes !== ROUTES.length || evidence.summary?.placeLcpRuns !== 4 || evidence.summary?.maxLcpMs !== Math.max(...evidence.routes.map(({ lcpMs }) => lcpMs)) || [evidence.summary.axeViolations, evidence.summary.forcedColorsFailures, evidence.summary.reflowFailures, evidence.summary.keyboardFailures].some((value) => value !== 0)) throw new Error("Browser evidence summary is inconsistent.");
+  return evidence;
+}
 
 function argument(name) {
   const index = process.argv.indexOf(name);
@@ -104,23 +126,28 @@ async function auditRoute(cdp, baseUrl, [template, locale, route], axeSource) {
   await cdp.command("Emulation.setDeviceMetricsOverride", { width: 1280, height: 900, deviceScaleFactor: 1, mobile: false });
   await cdp.command("Emulation.setPageScaleFactor", { pageScaleFactor: 1 });
   await cdp.command("Emulation.setEmulatedMedia", { media: "screen", features: [{ name: "forced-colors", value: "none" }] });
-  await cdp.command("Network.clearBrowserCache");
-  const loaded = cdp.event("Page.loadEventFired");
-  const navigation = await cdp.command("Page.navigate", { url: `${baseUrl}${route}` });
-  if (navigation.errorText) throw new Error(`${route}: navigation failed: ${navigation.errorText}.`);
-  await loaded;
-  await delay(1_000);
-  const status = await evaluate(cdp, "document.readyState === 'complete' ? 200 : 0");
-  if (status !== 200) throw new Error(`${route}: built page did not finish loading.`);
-  const lcp = await evaluate(cdp, `(() => { const entry = window.__phase3Lcp?.at(-1); return entry ? { milliseconds: Number(entry.startTime.toFixed(2)), element: entry.element?.tagName?.toLowerCase() ?? null } : null; })()`);
-  if (!lcp || lcp.milliseconds <= 0 || lcp.milliseconds > LCP_LIMIT_MS) throw new Error(`${route}: LCP ${lcp?.milliseconds ?? "unavailable"}/${LCP_LIMIT_MS} ms under the declared simulated-4G profile.`);
+  const lcpRuns = [];
+  for (let run = 0; run < (template === "place" ? 2 : 1); run++) {
+    await cdp.command("Network.clearBrowserCache");
+    const loaded = cdp.event("Page.loadEventFired");
+    const navigation = await cdp.command("Page.navigate", { url: `${baseUrl}${route}` });
+    if (navigation.errorText) throw new Error(`${route}: navigation failed: ${navigation.errorText}.`);
+    await loaded;
+    await delay(1_000);
+    const status = await evaluate(cdp, "document.readyState === 'complete' ? 200 : 0");
+    if (status !== 200) throw new Error(`${route}: built page did not finish loading.`);
+    const lcp = await evaluate(cdp, `(() => { const entry = window.__phase3Lcp?.at(-1); return entry ? { milliseconds: Number(entry.startTime.toFixed(2)), element: entry.element?.tagName?.toLowerCase() ?? null } : null; })()`);
+    if (!lcp || lcp.milliseconds <= 0 || lcp.milliseconds >= LCP_LIMIT_MS) throw new Error(`${route}: LCP ${lcp?.milliseconds ?? "unavailable"} ms is not strictly under ${LCP_LIMIT_MS} ms under the declared simulated-4G profile.`);
+    lcpRuns.push(lcp);
+  }
+  const lcp = lcpRuns.reduce((slowest, result) => result.milliseconds > slowest.milliseconds ? result : slowest);
 
   await evaluate(cdp, `${axeSource}\n//# sourceURL=axe.min.js`);
   const axe = await evaluate(cdp, `axe.run(document, { runOnly: { type: "tag", values: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"] } }).then(result => ({ version: axe.version, violations: result.violations.map(({ id, impact, nodes }) => ({ id, impact, nodes: nodes.length })) }))`, { awaitPromise: true });
   if (axe.violations.length) throw new Error(`${route}: axe violations: ${axe.violations.map(({ id, nodes }) => `${id}(${nodes})`).join(", ")}.`);
 
   const structure = await evaluate(cdp, `(() => { const visible = element => { const style = getComputedStyle(element); return style.display !== "none" && style.visibility !== "hidden"; }; const name = element => element.getAttribute("aria-label") || (element.getAttribute("aria-labelledby") ? document.getElementById(element.getAttribute("aria-labelledby"))?.textContent : "") || element.labels?.[0]?.textContent || element.textContent || element.getAttribute("title") || ""; const interactive = [...document.querySelectorAll("a[href],button,input,select,textarea,[tabindex]:not([tabindex='-1'])")].filter(visible); const main = document.querySelector("main"); return { documentLang: document.documentElement.lang, contentLang: main?.closest("[lang]")?.lang ?? "", main: document.querySelectorAll("main").length, banner: document.querySelectorAll("body header").length > 0, contentinfo: document.querySelectorAll("body footer").length > 0, navigations: document.querySelectorAll("nav").length, headings: document.querySelectorAll("h1").length, interactive: interactive.length, unnamed: interactive.filter(element => !name(element).trim()).length }; })()`);
-  if (structure.contentLang !== locale || structure.main !== 1 || !structure.banner || !structure.contentinfo || structure.navigations < 2 || structure.headings !== 1 || structure.interactive < 1 || structure.unnamed !== 0) throw new Error(`${route}: accessible names or landmark structure failed: ${JSON.stringify(structure)}.`);
+  if (structure.documentLang !== locale || structure.contentLang !== locale || structure.main !== 1 || !structure.banner || !structure.contentinfo || structure.navigations < 2 || structure.headings !== 1 || structure.interactive < 1 || structure.unnamed !== 0) throw new Error(`${route}: localized language, accessible names or landmark structure failed: ${JSON.stringify(structure)}.`);
 
   await evaluate(cdp, `document.activeElement?.blur(); scrollTo(0, 0); history.replaceState(null, "", location.pathname + location.search);`);
   await press(cdp, "Tab", "Tab", 9);
@@ -130,20 +157,36 @@ async function auditRoute(cdp, baseUrl, [template, locale, route], axeSource) {
   await delay(50);
   const skipTarget = await evaluate(cdp, `({ hash: location.hash, activeId: document.activeElement?.id ?? "" })`);
   if (skipTarget.hash !== "#main" || skipTarget.activeId !== "main") throw new Error(`${route}: skip link does not move focus to #main.`);
+  const focusPlan = await evaluate(cdp, `(() => { const visible = element => { const style = getComputedStyle(element); return style.display !== "none" && style.visibility !== "hidden" && !element.hidden; }; const focusables = [...document.querySelectorAll("a[href],button,input,select,textarea,[tabindex]:not([tabindex='-1'])")].filter(element => visible(element) && !element.disabled); const main = document.querySelector("main"); const following = focusables.map((element, index) => ({ element, index })).filter(({ element }) => Boolean(main.compareDocumentPosition(element) & Node.DOCUMENT_POSITION_FOLLOWING)); const preceding = focusables.map((element, index) => ({ element, index })).filter(({ element }) => !Boolean(main.compareDocumentPosition(element) & Node.DOCUMENT_POSITION_FOLLOWING)); return { total: focusables.length, positiveTabIndex: focusables.filter(element => Number(element.getAttribute("tabindex")) > 0).length, expected: [...following, ...preceding].map(({ index }) => index) }; })()`);
+  if (!focusPlan.total || focusPlan.positiveTabIndex !== 0 || focusPlan.expected.length !== focusPlan.total) throw new Error(`${route}: complete keyboard focus plan is invalid: ${JSON.stringify(focusPlan)}.`);
+  const visited = [];
   const tabNames = [];
-  for (let index = 0; index < 10; index++) { await press(cdp, "Tab", "Tab", 9); tabNames.push(await evaluate(cdp, `document.activeElement?.getAttribute("aria-label") || document.activeElement?.textContent?.trim() || document.activeElement?.getAttribute("title") || ""`)); }
-  if (tabNames.some((name) => !name)) throw new Error(`${route}: keyboard tab order reached an unnamed control.`);
+  let unfocusedTransitions = 0;
+  for (let attempts = 0; visited.length < focusPlan.total && attempts <= focusPlan.total + 1; attempts++) {
+    await press(cdp, "Tab", "Tab", 9);
+    const stop = await evaluate(cdp, `(() => { const visible = element => { const style = getComputedStyle(element); return style.display !== "none" && style.visibility !== "hidden" && !element.hidden; }; const focusables = [...document.querySelectorAll("a[href],button,input,select,textarea,[tabindex]:not([tabindex='-1'])")].filter(element => visible(element) && !element.disabled); const element = document.activeElement; return { index: focusables.indexOf(element), name: element?.getAttribute("aria-label") || element?.labels?.[0]?.textContent || element?.textContent?.trim() || element?.getAttribute("title") || "" }; })()`);
+    if (stop.index === -1) { unfocusedTransitions++; continue; }
+    visited.push(stop.index); tabNames.push(stop.name);
+  }
+  if (unfocusedTransitions > 1 || tabNames.some((name) => !name) || JSON.stringify(visited) !== JSON.stringify(focusPlan.expected)) throw new Error(`${route}: complete keyboard traversal diverges from DOM order or reaches an unnamed control: ${JSON.stringify({ expected: focusPlan.expected, visited, unfocusedTransitions, unnamedAt: tabNames.findIndex((name) => !name) })}.`);
+  await press(cdp, "Tab", "Tab", 9);
+  const wrappedIndex = await evaluate(cdp, `(() => { const visible = element => { const style = getComputedStyle(element); return style.display !== "none" && style.visibility !== "hidden" && !element.hidden; }; const focusables = [...document.querySelectorAll("a[href],button,input,select,textarea,[tabindex]:not([tabindex='-1'])")].filter(element => visible(element) && !element.disabled); return focusables.indexOf(document.activeElement); })()`);
+  if (wrappedIndex !== focusPlan.expected[0]) throw new Error(`${route}: complete keyboard traversal does not wrap once to its first expected stop.`);
 
   await cdp.command("Emulation.setEmulatedMedia", { media: "screen", features: [{ name: "forced-colors", value: "active" }] });
-  const forcedColors = await evaluate(cdp, `({ active: matchMedia("(forced-colors: active)").matches, blocked: [...document.querySelectorAll("*")].filter(element => getComputedStyle(element).forcedColorAdjust === "none").length })`);
-  if (!forcedColors.active || forcedColors.blocked !== 0) throw new Error(`${route}: forced-colors emulation is blocked.`);
+  const forcedColors = await evaluate(cdp, `(() => { const visible = element => { const style = getComputedStyle(element); return style.display !== "none" && style.visibility !== "hidden" && !element.hidden; }; const main = document.querySelector("main"); const bodyStyle = getComputedStyle(document.body); const mainStyle = getComputedStyle(main); const links = [...document.querySelectorAll("a[href]")].filter(visible); const evidence = [...document.querySelectorAll("[data-evidence]")].filter(visible); const confidence = [...document.querySelectorAll("[data-confidence]")].filter(visible); const evidenceFailures = evidence.filter(element => !element.querySelector("[data-evidence-shape]")?.textContent?.trim() || !element.querySelector("[data-evidence-label]")?.textContent?.trim()).length; const confidenceFailures = confidence.filter(element => !element.querySelector("[data-confidence-label]")?.textContent?.trim() || !element.querySelector("[data-confidence-bars]")?.textContent?.trim()).length; const linkFailures = links.filter(element => { const style = getComputedStyle(element); return !element.textContent?.trim() || (style.color === bodyStyle.backgroundColor && style.textDecorationLine === "none"); }).length; return { active: matchMedia("(forced-colors: active)").matches, blocked: [...document.querySelectorAll("*")].filter(element => getComputedStyle(element).forcedColorAdjust === "none").length, contentCharacters: main?.innerText.trim().length ?? 0, textDistinguishable: mainStyle.color !== bodyStyle.backgroundColor, links: links.length, linkFailures, evidenceCues: evidence.length, evidenceFailures, confidenceCues: confidence.length, confidenceFailures }; })()`);
+  if (!forcedColors.active || forcedColors.blocked !== 0 || forcedColors.contentCharacters < 1 || !forcedColors.textDistinguishable || forcedColors.links < 1 || forcedColors.linkFailures !== 0 || forcedColors.evidenceFailures !== 0 || forcedColors.confidenceFailures !== 0) throw new Error(`${route}: forced-colors content or non-colour semantics failed: ${JSON.stringify(forcedColors)}.`);
 
-  await cdp.command("Emulation.setDeviceMetricsOverride", { width: 640, height: 900, deviceScaleFactor: 1, mobile: false });
-  await cdp.command("Emulation.setPageScaleFactor", { pageScaleFactor: 2 });
-  const reflow = await evaluate(cdp, `(() => { const width = document.documentElement.clientWidth; return { viewportWidth: innerWidth, visualScale: visualViewport?.scale ?? 1, overflowPixels: Math.max(0, document.documentElement.scrollWidth - width), offenders: [...document.querySelectorAll("body *")].filter(element => element.getBoundingClientRect().right > width + 1).slice(0, 5).map(element => ({ tag: element.tagName.toLowerCase(), className: String(element.className), right: Math.round(element.getBoundingClientRect().right), text: element.textContent?.trim().slice(0, 40) })) }; })()`);
-  if (reflow.visualScale < 1.99 || reflow.overflowPixels !== 0) throw new Error(`${route}: 200% zoom/reflow has ${reflow.overflowPixels}px horizontal overflow: ${JSON.stringify(reflow.offenders)}.`);
+  await cdp.command("Emulation.setPageScaleFactor", { pageScaleFactor: 1 });
+  await cdp.command("Emulation.setDeviceMetricsOverride", { width: REFLOW_WIDTH_CSS_PX, height: 900, deviceScaleFactor: 1, mobile: false });
+  await delay(50);
+  const reflow = await evaluate(cdp, `(() => { const width = document.documentElement.clientWidth; const localScrollRegions = [...document.querySelectorAll("body *")].filter(element => element.scrollWidth > element.clientWidth + 1 && ["auto", "scroll"].includes(getComputedStyle(element).overflowX)).length; return { viewportWidth: innerWidth, visualScale: visualViewport?.scale ?? 1, overflowPixels: Math.max(0, document.documentElement.scrollWidth - width), localScrollRegions }; })()`);
+  if (reflow.viewportWidth !== REFLOW_WIDTH_CSS_PX || reflow.visualScale !== 1 || reflow.overflowPixels !== 0) {
+    const diagnostics = await evaluate(cdp, `(() => { const width = document.documentElement.clientWidth; return [...document.querySelectorAll("body *")].filter(element => element.getBoundingClientRect().right > width + 1).slice(0, 8).map(element => ({ tag: element.tagName.toLowerCase(), className: String(element.className), right: Math.round(element.getBoundingClientRect().right), overflowX: getComputedStyle(element).overflowX, text: element.textContent?.trim().slice(0, 40) })); })()`);
+    throw new Error(`${route}: 320 CSS-pixel reflow has ${reflow.overflowPixels}px page overflow: ${JSON.stringify(diagnostics)}.`);
+  }
 
-  return { template, locale, route, lcpMs: lcp.milliseconds, lcpElement: lcp.element, axe, keyboard: { firstTab: "skip-link", skipTarget: "main", sampledTabStops: tabNames.length, unnamed: 0 }, landmarks: structure, forcedColors, reflow };
+  return { template, locale, route, lcpMs: lcp.milliseconds, lcpElement: lcp.element, lcpRuns: lcpRuns.map(({ milliseconds }) => milliseconds), axe, keyboard: { firstTab: "skip-link", skipTarget: "main", totalTabStops: focusPlan.total, traversedTabStops: visited.length, order: "complete-dom-order", wrappedOnce: true, unfocusedWrapTransitions: unfocusedTransitions, unnamed: 0 }, landmarks: structure, forcedColors, reflow };
 }
 
 export async function auditPhase3Browser({ outputPath = argument("--output"), port = Number(argument("--port") ?? 4174) } = {}) {
@@ -169,7 +212,8 @@ export async function auditPhase3Browser({ outputPath = argument("--output"), po
     const axeSource = await readFile(require.resolve("axe-core/axe.min.js"), "utf8");
     const routes = [];
     for (const route of ROUTES) routes.push(await auditRoute(cdp, baseUrl, route, axeSource));
-    const evidence = { schemaVersion: "witness-tree/phase3-browser-audit/1", status: "example", reviewStatus: "unapproved", productionEligible: false, browser: { product: version.Browser, protocolVersion: version["Protocol-Version"] }, axeVersion: routes[0]?.axe.version, profile: NETWORK, thresholds: { lcpMs: LCP_LIMIT_MS, axeViolations: 0, horizontalOverflowPixels: 0 }, routes, summary: { routes: routes.length, maxLcpMs: Math.max(...routes.map(({ lcpMs }) => lcpMs)), axeViolations: 0, forcedColorsFailures: 0, reflowFailures: 0, keyboardFailures: 0 }, excluded: ["screen-reader output", "human visual review", "field performance", "user-specific browser extensions"] };
+    const evidence = { schemaVersion: "witness-tree/phase3-browser-audit/2", status: "example", reviewStatus: "unapproved", productionEligible: false, browser: { product: version.Browser, protocolVersion: version["Protocol-Version"] }, axeVersion: routes[0]?.axe.version, profile: NETWORK, thresholds: { lcpMsExclusive: LCP_LIMIT_MS, axeViolations: 0, horizontalOverflowPixels: 0, reflowWidthCssPixels: REFLOW_WIDTH_CSS_PX }, routes, summary: { routes: routes.length, placeLcpRuns: routes.filter(({ template }) => template === "place").reduce((count, route) => count + route.lcpRuns.length, 0), maxLcpMs: Math.max(...routes.map(({ lcpMs }) => lcpMs)), axeViolations: 0, forcedColorsFailures: 0, reflowFailures: 0, keyboardFailures: 0 }, excluded: ["screen-reader output", "human visual review", "human forced-colours and CVD review", "field performance", "user-specific browser extensions"] };
+    validateBrowserEvidence(evidence);
     if (outputPath) await writeFile(path.resolve(root, outputPath), `${JSON.stringify(evidence, null, 2)}\n`);
     return evidence;
   } finally {
@@ -182,5 +226,5 @@ export async function auditPhase3Browser({ outputPath = argument("--output"), po
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   const evidence = await auditPhase3Browser();
-  console.log(`Phase 3 browser audit passed: ${evidence.summary.routes} routes, max simulated-4G LCP ${evidence.summary.maxLcpMs} ms, zero axe/keyboard/forced-colors/reflow failures.`);
+  console.log(`Phase 3 browser audit passed: ${evidence.summary.routes} routes, max simulated-4G LCP ${evidence.summary.maxLcpMs} ms strictly under 2000 ms, complete keyboard traversal, localized document language, forced-colors semantics and 320 CSS-pixel reflow.`);
 }

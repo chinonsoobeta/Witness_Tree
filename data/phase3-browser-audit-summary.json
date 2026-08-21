@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "witness-tree/phase3-browser-audit/1",
+  "schemaVersion": "witness-tree/phase3-browser-audit/2",
   "status": "example",
   "reviewStatus": "unapproved",
   "productionEligible": false,
@@ -16,17 +16,22 @@
     "cpuThrottling": false
   },
   "thresholds": {
-    "lcpMs": 2500,
+    "lcpMsExclusive": 2000,
     "axeViolations": 0,
-    "horizontalOverflowPixels": 0
+    "horizontalOverflowPixels": 0,
+    "reflowWidthCssPixels": 320
   },
   "routes": [
     {
       "template": "place",
       "locale": "en",
       "route": "/en/places/bc-province?view=table",
-      "lcpMs": 2176,
-      "lcpElement": "p",
+      "lcpMs": 752,
+      "lcpElement": "section",
+      "lcpRuns": [
+        752,
+        720
+      ],
       "axe": {
         "version": "4.11.4",
         "violations": []
@@ -34,7 +39,11 @@
       "keyboard": {
         "firstTab": "skip-link",
         "skipTarget": "main",
-        "sampledTabStops": 10,
+        "totalTabStops": 42,
+        "traversedTabStops": 42,
+        "order": "complete-dom-order",
+        "wrappedOnce": true,
+        "unfocusedWrapTransitions": 0,
         "unnamed": 0
       },
       "landmarks": {
@@ -50,21 +59,33 @@
       },
       "forcedColors": {
         "active": true,
-        "blocked": 0
+        "blocked": 0,
+        "contentCharacters": 4045,
+        "textDistinguishable": true,
+        "links": 32,
+        "linkFailures": 0,
+        "evidenceCues": 11,
+        "evidenceFailures": 0,
+        "confidenceCues": 10,
+        "confidenceFailures": 0
       },
       "reflow": {
-        "viewportWidth": 640,
-        "visualScale": 2,
+        "viewportWidth": 320,
+        "visualScale": 1,
         "overflowPixels": 0,
-        "offenders": []
+        "localScrollRegions": 2
       }
     },
     {
       "template": "place",
       "locale": "fr",
       "route": "/fr/lieux/bc-province?view=table",
-      "lcpMs": 1928,
-      "lcpElement": "p",
+      "lcpMs": 736,
+      "lcpElement": "section",
+      "lcpRuns": [
+        716,
+        736
+      ],
       "axe": {
         "version": "4.11.4",
         "violations": []
@@ -72,11 +93,15 @@
       "keyboard": {
         "firstTab": "skip-link",
         "skipTarget": "main",
-        "sampledTabStops": 10,
+        "totalTabStops": 42,
+        "traversedTabStops": 42,
+        "order": "complete-dom-order",
+        "wrappedOnce": true,
+        "unfocusedWrapTransitions": 1,
         "unnamed": 0
       },
       "landmarks": {
-        "documentLang": "en",
+        "documentLang": "fr",
         "contentLang": "fr",
         "main": 1,
         "banner": true,
@@ -88,21 +113,32 @@
       },
       "forcedColors": {
         "active": true,
-        "blocked": 0
+        "blocked": 0,
+        "contentCharacters": 4485,
+        "textDistinguishable": true,
+        "links": 32,
+        "linkFailures": 0,
+        "evidenceCues": 11,
+        "evidenceFailures": 0,
+        "confidenceCues": 10,
+        "confidenceFailures": 0
       },
       "reflow": {
-        "viewportWidth": 640,
-        "visualScale": 2,
+        "viewportWidth": 320,
+        "visualScale": 1,
         "overflowPixels": 0,
-        "offenders": []
+        "localScrollRegions": 2
       }
     },
     {
       "template": "location",
       "locale": "en",
       "route": "/en/location/lat-p48d000000-lon-n124d000000",
-      "lcpMs": 2148,
+      "lcpMs": 716,
       "lcpElement": "section",
+      "lcpRuns": [
+        716
+      ],
       "axe": {
         "version": "4.11.4",
         "violations": []
@@ -110,7 +146,11 @@
       "keyboard": {
         "firstTab": "skip-link",
         "skipTarget": "main",
-        "sampledTabStops": 10,
+        "totalTabStops": 41,
+        "traversedTabStops": 41,
+        "order": "complete-dom-order",
+        "wrappedOnce": true,
+        "unfocusedWrapTransitions": 0,
         "unnamed": 0
       },
       "landmarks": {
@@ -126,21 +166,32 @@
       },
       "forcedColors": {
         "active": true,
-        "blocked": 0
+        "blocked": 0,
+        "contentCharacters": 2758,
+        "textDistinguishable": true,
+        "links": 34,
+        "linkFailures": 0,
+        "evidenceCues": 7,
+        "evidenceFailures": 0,
+        "confidenceCues": 7,
+        "confidenceFailures": 0
       },
       "reflow": {
-        "viewportWidth": 640,
-        "visualScale": 2,
+        "viewportWidth": 320,
+        "visualScale": 1,
         "overflowPixels": 0,
-        "offenders": []
+        "localScrollRegions": 1
       }
     },
     {
       "template": "location",
       "locale": "fr",
       "route": "/fr/emplacement/lat-p48d000000-lon-n124d000000",
-      "lcpMs": 2152,
+      "lcpMs": 712,
       "lcpElement": "section",
+      "lcpRuns": [
+        712
+      ],
       "axe": {
         "version": "4.11.4",
         "violations": []
@@ -148,11 +199,15 @@
       "keyboard": {
         "firstTab": "skip-link",
         "skipTarget": "main",
-        "sampledTabStops": 10,
+        "totalTabStops": 41,
+        "traversedTabStops": 41,
+        "order": "complete-dom-order",
+        "wrappedOnce": true,
+        "unfocusedWrapTransitions": 1,
         "unnamed": 0
       },
       "landmarks": {
-        "documentLang": "en",
+        "documentLang": "fr",
         "contentLang": "fr",
         "main": 1,
         "banner": true,
@@ -164,21 +219,32 @@
       },
       "forcedColors": {
         "active": true,
-        "blocked": 0
+        "blocked": 0,
+        "contentCharacters": 3092,
+        "textDistinguishable": true,
+        "links": 34,
+        "linkFailures": 0,
+        "evidenceCues": 7,
+        "evidenceFailures": 0,
+        "confidenceCues": 7,
+        "confidenceFailures": 0
       },
       "reflow": {
-        "viewportWidth": 640,
-        "visualScale": 2,
+        "viewportWidth": 320,
+        "visualScale": 1,
         "overflowPixels": 0,
-        "offenders": []
+        "localScrollRegions": 1
       }
     },
     {
       "template": "methods",
       "locale": "en",
       "route": "/en/methods",
-      "lcpMs": 2132,
+      "lcpMs": 696,
       "lcpElement": "p",
+      "lcpRuns": [
+        696
+      ],
       "axe": {
         "version": "4.11.4",
         "violations": []
@@ -186,7 +252,11 @@
       "keyboard": {
         "firstTab": "skip-link",
         "skipTarget": "main",
-        "sampledTabStops": 10,
+        "totalTabStops": 19,
+        "traversedTabStops": 19,
+        "order": "complete-dom-order",
+        "wrappedOnce": true,
+        "unfocusedWrapTransitions": 0,
         "unnamed": 0
       },
       "landmarks": {
@@ -202,21 +272,32 @@
       },
       "forcedColors": {
         "active": true,
-        "blocked": 0
+        "blocked": 0,
+        "contentCharacters": 1625,
+        "textDistinguishable": true,
+        "links": 19,
+        "linkFailures": 0,
+        "evidenceCues": 0,
+        "evidenceFailures": 0,
+        "confidenceCues": 0,
+        "confidenceFailures": 0
       },
       "reflow": {
-        "viewportWidth": 640,
-        "visualScale": 2,
+        "viewportWidth": 320,
+        "visualScale": 1,
         "overflowPixels": 0,
-        "offenders": []
+        "localScrollRegions": 1
       }
     },
     {
       "template": "methods",
       "locale": "fr",
       "route": "/fr/methodes",
-      "lcpMs": 2152,
+      "lcpMs": 692,
       "lcpElement": "p",
+      "lcpRuns": [
+        692
+      ],
       "axe": {
         "version": "4.11.4",
         "violations": []
@@ -224,11 +305,15 @@
       "keyboard": {
         "firstTab": "skip-link",
         "skipTarget": "main",
-        "sampledTabStops": 10,
+        "totalTabStops": 19,
+        "traversedTabStops": 19,
+        "order": "complete-dom-order",
+        "wrappedOnce": true,
+        "unfocusedWrapTransitions": 1,
         "unnamed": 0
       },
       "landmarks": {
-        "documentLang": "en",
+        "documentLang": "fr",
         "contentLang": "fr",
         "main": 1,
         "banner": true,
@@ -240,21 +325,32 @@
       },
       "forcedColors": {
         "active": true,
-        "blocked": 0
+        "blocked": 0,
+        "contentCharacters": 1943,
+        "textDistinguishable": true,
+        "links": 19,
+        "linkFailures": 0,
+        "evidenceCues": 0,
+        "evidenceFailures": 0,
+        "confidenceCues": 0,
+        "confidenceFailures": 0
       },
       "reflow": {
-        "viewportWidth": 640,
-        "visualScale": 2,
+        "viewportWidth": 320,
+        "visualScale": 1,
         "overflowPixels": 0,
-        "offenders": []
+        "localScrollRegions": 1
       }
     },
     {
       "template": "data",
       "locale": "en",
       "route": "/en/data",
-      "lcpMs": 2176,
+      "lcpMs": 704,
       "lcpElement": "p",
+      "lcpRuns": [
+        704
+      ],
       "axe": {
         "version": "4.11.4",
         "violations": []
@@ -262,7 +358,11 @@
       "keyboard": {
         "firstTab": "skip-link",
         "skipTarget": "main",
-        "sampledTabStops": 10,
+        "totalTabStops": 23,
+        "traversedTabStops": 23,
+        "order": "complete-dom-order",
+        "wrappedOnce": true,
+        "unfocusedWrapTransitions": 0,
         "unnamed": 0
       },
       "landmarks": {
@@ -278,21 +378,32 @@
       },
       "forcedColors": {
         "active": true,
-        "blocked": 0
+        "blocked": 0,
+        "contentCharacters": 6252,
+        "textDistinguishable": true,
+        "links": 23,
+        "linkFailures": 0,
+        "evidenceCues": 0,
+        "evidenceFailures": 0,
+        "confidenceCues": 0,
+        "confidenceFailures": 0
       },
       "reflow": {
-        "viewportWidth": 640,
-        "visualScale": 2,
+        "viewportWidth": 320,
+        "visualScale": 1,
         "overflowPixels": 0,
-        "offenders": []
+        "localScrollRegions": 1
       }
     },
     {
       "template": "data",
       "locale": "fr",
       "route": "/fr/donnees",
-      "lcpMs": 2148,
+      "lcpMs": 708,
       "lcpElement": "p",
+      "lcpRuns": [
+        708
+      ],
       "axe": {
         "version": "4.11.4",
         "violations": []
@@ -300,11 +411,15 @@
       "keyboard": {
         "firstTab": "skip-link",
         "skipTarget": "main",
-        "sampledTabStops": 10,
+        "totalTabStops": 23,
+        "traversedTabStops": 23,
+        "order": "complete-dom-order",
+        "wrappedOnce": true,
+        "unfocusedWrapTransitions": 1,
         "unnamed": 0
       },
       "landmarks": {
-        "documentLang": "en",
+        "documentLang": "fr",
         "contentLang": "fr",
         "main": 1,
         "banner": true,
@@ -316,21 +431,32 @@
       },
       "forcedColors": {
         "active": true,
-        "blocked": 0
+        "blocked": 0,
+        "contentCharacters": 7199,
+        "textDistinguishable": true,
+        "links": 23,
+        "linkFailures": 0,
+        "evidenceCues": 0,
+        "evidenceFailures": 0,
+        "confidenceCues": 0,
+        "confidenceFailures": 0
       },
       "reflow": {
-        "viewportWidth": 640,
-        "visualScale": 2,
+        "viewportWidth": 320,
+        "visualScale": 1,
         "overflowPixels": 0,
-        "offenders": []
+        "localScrollRegions": 1
       }
     },
     {
       "template": "glossary",
       "locale": "en",
       "route": "/en/glossary",
-      "lcpMs": 2124,
+      "lcpMs": 696,
       "lcpElement": "p",
+      "lcpRuns": [
+        696
+      ],
       "axe": {
         "version": "4.11.4",
         "violations": []
@@ -338,7 +464,11 @@
       "keyboard": {
         "firstTab": "skip-link",
         "skipTarget": "main",
-        "sampledTabStops": 10,
+        "totalTabStops": 19,
+        "traversedTabStops": 19,
+        "order": "complete-dom-order",
+        "wrappedOnce": true,
+        "unfocusedWrapTransitions": 0,
         "unnamed": 0
       },
       "landmarks": {
@@ -354,21 +484,32 @@
       },
       "forcedColors": {
         "active": true,
-        "blocked": 0
+        "blocked": 0,
+        "contentCharacters": 681,
+        "textDistinguishable": true,
+        "links": 19,
+        "linkFailures": 0,
+        "evidenceCues": 0,
+        "evidenceFailures": 0,
+        "confidenceCues": 0,
+        "confidenceFailures": 0
       },
       "reflow": {
-        "viewportWidth": 640,
-        "visualScale": 2,
+        "viewportWidth": 320,
+        "visualScale": 1,
         "overflowPixels": 0,
-        "offenders": []
+        "localScrollRegions": 1
       }
     },
     {
       "template": "glossary",
       "locale": "fr",
       "route": "/fr/glossaire",
-      "lcpMs": 2132,
+      "lcpMs": 696,
       "lcpElement": "p",
+      "lcpRuns": [
+        696
+      ],
       "axe": {
         "version": "4.11.4",
         "violations": []
@@ -376,11 +517,15 @@
       "keyboard": {
         "firstTab": "skip-link",
         "skipTarget": "main",
-        "sampledTabStops": 10,
+        "totalTabStops": 19,
+        "traversedTabStops": 19,
+        "order": "complete-dom-order",
+        "wrappedOnce": true,
+        "unfocusedWrapTransitions": 1,
         "unnamed": 0
       },
       "landmarks": {
-        "documentLang": "en",
+        "documentLang": "fr",
         "contentLang": "fr",
         "main": 1,
         "banner": true,
@@ -392,21 +537,32 @@
       },
       "forcedColors": {
         "active": true,
-        "blocked": 0
+        "blocked": 0,
+        "contentCharacters": 850,
+        "textDistinguishable": true,
+        "links": 19,
+        "linkFailures": 0,
+        "evidenceCues": 0,
+        "evidenceFailures": 0,
+        "confidenceCues": 0,
+        "confidenceFailures": 0
       },
       "reflow": {
-        "viewportWidth": 640,
-        "visualScale": 2,
+        "viewportWidth": 320,
+        "visualScale": 1,
         "overflowPixels": 0,
-        "offenders": []
+        "localScrollRegions": 1
       }
     },
     {
       "template": "corrections",
       "locale": "en",
       "route": "/en/corrections",
-      "lcpMs": 2004,
+      "lcpMs": 704,
       "lcpElement": "p",
+      "lcpRuns": [
+        704
+      ],
       "axe": {
         "version": "4.11.4",
         "violations": []
@@ -414,7 +570,11 @@
       "keyboard": {
         "firstTab": "skip-link",
         "skipTarget": "main",
-        "sampledTabStops": 10,
+        "totalTabStops": 19,
+        "traversedTabStops": 19,
+        "order": "complete-dom-order",
+        "wrappedOnce": true,
+        "unfocusedWrapTransitions": 0,
         "unnamed": 0
       },
       "landmarks": {
@@ -430,21 +590,32 @@
       },
       "forcedColors": {
         "active": true,
-        "blocked": 0
+        "blocked": 0,
+        "contentCharacters": 558,
+        "textDistinguishable": true,
+        "links": 19,
+        "linkFailures": 0,
+        "evidenceCues": 0,
+        "evidenceFailures": 0,
+        "confidenceCues": 0,
+        "confidenceFailures": 0
       },
       "reflow": {
-        "viewportWidth": 640,
-        "visualScale": 2,
+        "viewportWidth": 320,
+        "visualScale": 1,
         "overflowPixels": 0,
-        "offenders": []
+        "localScrollRegions": 1
       }
     },
     {
       "template": "corrections",
       "locale": "fr",
       "route": "/fr/corrections",
-      "lcpMs": 2128,
+      "lcpMs": 696,
       "lcpElement": "p",
+      "lcpRuns": [
+        696
+      ],
       "axe": {
         "version": "4.11.4",
         "violations": []
@@ -452,11 +623,15 @@
       "keyboard": {
         "firstTab": "skip-link",
         "skipTarget": "main",
-        "sampledTabStops": 10,
+        "totalTabStops": 19,
+        "traversedTabStops": 19,
+        "order": "complete-dom-order",
+        "wrappedOnce": true,
+        "unfocusedWrapTransitions": 1,
         "unnamed": 0
       },
       "landmarks": {
-        "documentLang": "en",
+        "documentLang": "fr",
         "contentLang": "fr",
         "main": 1,
         "banner": true,
@@ -468,21 +643,32 @@
       },
       "forcedColors": {
         "active": true,
-        "blocked": 0
+        "blocked": 0,
+        "contentCharacters": 648,
+        "textDistinguishable": true,
+        "links": 19,
+        "linkFailures": 0,
+        "evidenceCues": 0,
+        "evidenceFailures": 0,
+        "confidenceCues": 0,
+        "confidenceFailures": 0
       },
       "reflow": {
-        "viewportWidth": 640,
-        "visualScale": 2,
+        "viewportWidth": 320,
+        "visualScale": 1,
         "overflowPixels": 0,
-        "offenders": []
+        "localScrollRegions": 1
       }
     },
     {
       "template": "search",
       "locale": "en",
       "route": "/en/search?q=British%20Columbia",
-      "lcpMs": 2136,
+      "lcpMs": 704,
       "lcpElement": "li",
+      "lcpRuns": [
+        704
+      ],
       "axe": {
         "version": "4.11.4",
         "violations": []
@@ -490,7 +676,11 @@
       "keyboard": {
         "firstTab": "skip-link",
         "skipTarget": "main",
-        "sampledTabStops": 10,
+        "totalTabStops": 29,
+        "traversedTabStops": 29,
+        "order": "complete-dom-order",
+        "wrappedOnce": true,
+        "unfocusedWrapTransitions": 0,
         "unnamed": 0
       },
       "landmarks": {
@@ -506,21 +696,32 @@
       },
       "forcedColors": {
         "active": true,
-        "blocked": 0
+        "blocked": 0,
+        "contentCharacters": 410,
+        "textDistinguishable": true,
+        "links": 27,
+        "linkFailures": 0,
+        "evidenceCues": 0,
+        "evidenceFailures": 0,
+        "confidenceCues": 0,
+        "confidenceFailures": 0
       },
       "reflow": {
-        "viewportWidth": 640,
-        "visualScale": 2,
+        "viewportWidth": 320,
+        "visualScale": 1,
         "overflowPixels": 0,
-        "offenders": []
+        "localScrollRegions": 1
       }
     },
     {
       "template": "search",
       "locale": "fr",
       "route": "/fr/recherche?q=Colombie-Britannique",
-      "lcpMs": 2132,
+      "lcpMs": 716,
       "lcpElement": "li",
+      "lcpRuns": [
+        716
+      ],
       "axe": {
         "version": "4.11.4",
         "violations": []
@@ -528,11 +729,15 @@
       "keyboard": {
         "firstTab": "skip-link",
         "skipTarget": "main",
-        "sampledTabStops": 10,
+        "totalTabStops": 29,
+        "traversedTabStops": 29,
+        "order": "complete-dom-order",
+        "wrappedOnce": true,
+        "unfocusedWrapTransitions": 1,
         "unnamed": 0
       },
       "landmarks": {
-        "documentLang": "en",
+        "documentLang": "fr",
         "contentLang": "fr",
         "main": 1,
         "banner": true,
@@ -544,19 +749,28 @@
       },
       "forcedColors": {
         "active": true,
-        "blocked": 0
+        "blocked": 0,
+        "contentCharacters": 527,
+        "textDistinguishable": true,
+        "links": 27,
+        "linkFailures": 0,
+        "evidenceCues": 0,
+        "evidenceFailures": 0,
+        "confidenceCues": 0,
+        "confidenceFailures": 0
       },
       "reflow": {
-        "viewportWidth": 640,
-        "visualScale": 2,
+        "viewportWidth": 320,
+        "visualScale": 1,
         "overflowPixels": 0,
-        "offenders": []
+        "localScrollRegions": 1
       }
     }
   ],
   "summary": {
     "routes": 14,
-    "maxLcpMs": 2176,
+    "placeLcpRuns": 4,
+    "maxLcpMs": 752,
     "axeViolations": 0,
     "forcedColorsFailures": 0,
     "reflowFailures": 0,
@@ -565,6 +779,7 @@
   "excluded": [
     "screen-reader output",
     "human visual review",
+    "human forced-colours and CVD review",
     "field performance",
     "user-specific browser extensions"
   ]

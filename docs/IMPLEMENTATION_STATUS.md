@@ -25,7 +25,7 @@ The plan is normative. The visual reference may guide layout, spacing, and compo
 - Treat every fixture, example ledger entry, sample archive, release, wildfire snapshot, and account status as example-only unless a verified source and its approvals are actually present.
 - Render insufficient evidence as `Unknown` with an em dash and a reason. Do not substitute `0`, including in summaries, exports, tables, or tests.
 - Retain evidence class, visible provenance, confidence rule/reason, coverage, source licence, version, time range, denominator, boundary edition, and limitation with a published value.
-- BC Sans is installed as `@bcgov/bc-sans` and imported once at the root through `@bcgov/bc-sans/css/BC_Sans.css`. It is the primary UI/body/heading family with documented fallbacks. Keep the SIL Open Font License 1.1 and Apache-2.0 notices in [`docs/THIRD_PARTY.md`](THIRD_PARTY.md).
+- BC Sans is installed as `@bcgov/bc-sans`. Locale-specific static root layouts import the shared bounded font declaration: regular and bold WOFF2 only, with `font-display: optional`. It is the primary UI/body/heading family with documented fallbacks. Keep the SIL Open Font License 1.1 and Apache-2.0 notices in [`docs/THIRD_PARTY.md`](THIRD_PARTY.md).
 - Prefer a small server-rendered and typed solution over speculative infrastructure. Do not add dependencies, background jobs, persistence, real feeds, or data claims merely to resemble the visual reference.
 - Preserve English/French parity and semantic no-JS equivalents for map/chart interactions.
 

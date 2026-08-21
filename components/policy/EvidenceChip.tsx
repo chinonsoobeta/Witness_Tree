@@ -14,9 +14,9 @@ export type EvidenceChipProps = Readonly<{
 
 export function EvidenceChip({ evidence, locale }: EvidenceChipProps) {
   return (
-    <span aria-label={EVIDENCE_DEFINITIONS[evidence].label[locale]}>
-      <span aria-hidden="true">{EVIDENCE_SHAPES[evidence]} </span>
-      {EVIDENCE_DEFINITIONS[evidence].label[locale]}
+    <span data-evidence={evidence} aria-label={EVIDENCE_DEFINITIONS[evidence].label[locale]}>
+      <span data-evidence-shape aria-hidden="true">{EVIDENCE_SHAPES[evidence]} </span>
+      <span data-evidence-label>{EVIDENCE_DEFINITIONS[evidence].label[locale]}</span>
     </span>
   );
 }

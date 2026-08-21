@@ -52,13 +52,13 @@ test("renders localized place and location records with semantic content and pro
     assert.match(html, /<dl>|<table>/);
   }
 
-  assert.match(englishPlace, /<div lang="en">/);
-  assert.match(englishPlace, /<meta name="content-language" content="en"/);
+  assert.match(englishPlace, /^<!DOCTYPE html><html lang="en">/);
+  assert.match(englishLocation, /^<!DOCTYPE html><html lang="en">/);
   assert.match(englishPlace, /Illustrative British Columbia/);
   assert.match(englishPlace, /<table/);
   assert.match(englishPlace, /Illustrative source-ledger entries/);
-  assert.match(frenchPlace, /<div lang="fr">/);
-  assert.match(frenchPlace, /<meta name="content-language" content="fr"/);
+  assert.match(frenchPlace, /^<!DOCTYPE html><html lang="fr">/);
+  assert.match(frenchLocation, /^<!DOCTYPE html><html lang="fr">/);
   assert.match(frenchPlace, /Colombie-Britannique illustrative/);
   assert.match(frenchPlace, /<table/);
   assert.match(frenchPlace, /Entrées illustratives du registre des sources/);

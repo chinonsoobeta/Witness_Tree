@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import type { Locale } from "@/lib/domain";
 import { EXPLORE_MAP_COLOURS, type ExploreEvent } from "@/lib/explore";
+import "maplibre-gl/dist/maplibre-gl.css";
 
 const text = {
   en: { label: "Illustrative interactive map", unavailable: "Verified PMTiles are not yet published." },

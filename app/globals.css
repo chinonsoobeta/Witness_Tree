@@ -80,6 +80,7 @@ h1, h2, h3, h4 { font-family: var(--ui); }
 .generated-record th { font-family: var(--ui); }
 
 .generated-record code { overflow-wrap: anywhere; }
+.generated-record table { position: relative; display: block; width: 100%; max-width: 100%; overflow-x: auto; }
 
 .skip-link {
   position: fixed;
