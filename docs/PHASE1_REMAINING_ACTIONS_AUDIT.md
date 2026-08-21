@@ -16,7 +16,7 @@ The machine record now classifies all 13 remaining actions by requirement: archi
 
 - The federal, Québec, fourth-inventory, current-wildfire, and derived-wildfire paths expose no-write preflights. The current-wildfire records are placeholder-only attestations: they do not durably prove versions, provider checksums, exact-version readback, retention, transformation, or ingestion.
 - Alberta AVI repair/quarantine, Alberta PLVI closed-join validation, and Québec historical-wildfire lossless-copy evidence are locally checked outputs. They do not authorize downstream ingestion or release.
-- NTEMS annual and canopy-cover processing remains blocked because no approved named target transformation specification and checksum-bound output exists. The fail-closed processing gate records this boundary explicitly.
+- NTEMS processing remains blocked because no Phase 1 production-admission target transformation specification and checksum-bound output exists. The separately approved Phase 2 nonproduction method does not close or imply those Phase 1 gates.
 - Partial and access-blocked rows have route-exhaustion, outreach, and rights validators, but no local implementation can manufacture a publisher artifact, permission, owner decision, or external reply.
 
 The local audit reports zero immediate raw-credit or formal-score delta. The remaining six gap groups require owner input or external evidence; production admission and eligibility remain false for all 31 rows.

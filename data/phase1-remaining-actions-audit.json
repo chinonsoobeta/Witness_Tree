@@ -104,7 +104,7 @@
           "data/phase1-alberta-transform-ingestion-audit.json"
         ],
         "scoreImpact": {"rawCreditDelta": 0, "formalPercentagePointDelta": 0},
-        "blocker": "Existing local outputs and repair/quarantine evidence remain non-ingested. NTEMS harvest/canopy-height source scope is recorded but has no target transformation specification; annual/canopy-cover still lack named methods; AVI requires downstream scope; PLVI scope-bound output validation found ordered-schema drift and still requires correction or an explicit mapping plus separate transformation and ingestion decisions; historical wildfire lacks the NBAC component and permission."
+        "blocker": "Existing local outputs and repair/quarantine evidence remain non-ingested. NTEMS rows still lack Phase 1 production-admission target methods and checksum-bound outputs; the separately approved Phase 2 nonproduction method does not close those gates. AVI requires downstream scope; PLVI scope-bound output validation found ordered-schema drift and still requires correction or an explicit mapping plus separate transformation and ingestion decisions; historical wildfire lacks the NBAC component and permission."
       },
       {
         "id": "owner-and-external-boundaries",
@@ -144,9 +144,9 @@
         "rows": ["ntems-annual-land-cover", "ntems-forest-harvest", "ntems-canopy-cover", "ntems-canopy-height"],
         "actionIds": ["archived-remote-transform-ingest-release", "production-admission-and-release-gate"],
         "category": "transformation",
-        "status": "blocked-no-approved-named-specification",
+        "status": "blocked-no-phase1-production-named-specification-and-output",
         "localBoundary": "Raw/profile gates and fail-closed processing gate are complete; harvest and canopy-height source decisions are recorded, but no target output is created for any of the four rows.",
-        "missing": ["approved annual forest-mask method/crosswalk and full-resolution output", "approved harvest and canopy-height target transformation methods and checksum-bound outputs", "approved canopy-cover semantics/derivative specification and checksum-bound output", "validated ingestion batches and release proof"],
+        "missing": ["Phase 1 production-admission annual forest-mask method/crosswalk and full-resolution output", "Phase 1 production-admission harvest and canopy-height target transformation methods and checksum-bound outputs", "Phase 1 production-admission canopy-cover semantics/derivative specification and checksum-bound output", "validated ingestion batches and release proof; do not substitute the separately approved Phase 2 nonproduction method"],
         "safeLocalImplementation": false,
         "ownerOrExternalPrerequisite": true,
         "scoreImpact": {"rawCreditDelta": 0, "formalPercentagePointDelta": 0}

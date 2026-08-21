@@ -3,7 +3,7 @@
   "status": "blocked-read-only",
   "auditedAt": "2026-08-21T15:45:00Z",
   "derivedFromHead": "71925af03fc08b052d12077de2ba4acb9239006b",
-  "notice": "This gate reconciles the locally supported NTEMS annual land-cover and canopy-cover evidence. It records passed raw/profile validation and the absence of an approved target transformation, ingestion batch, release approval, or production admission. It performs no AWS call, archive mutation, external contact, transformation, ingestion, release, or production-eligibility change.",
+  "notice": "This gate reconciles the locally supported NTEMS annual land-cover and canopy-cover evidence. It records passed raw/profile validation and the absence of a Phase 1 production-admission target transformation, checksum-bound output, ingestion batch, release approval, or production admission. A separately approved Phase 2 nonproduction method does not close these Phase 1 gates. It performs no AWS call, archive mutation, external contact, transformation, ingestion, release, or production-eligibility change.",
   "baseline": {
     "productionRows": 31,
     "rawEvidenceNumerator": 14.25,
@@ -67,17 +67,17 @@
       ],
       "namedTransformations": [],
       "transformation": {
-        "status": "blocked-no-approved-named-specification",
+        "status": "blocked-no-phase1-production-named-specification-and-output",
         "specification": null,
         "run": null,
         "output": null,
         "requiredBeforeExecution": [
-          "Record and approve a versioned forest-mask method and exact Canada National Forest Inventory crosswalk for the 13 VLCE2 classes.",
+          "Record and approve a Phase 1 production-admission versioned forest-mask method and exact Canada National Forest Inventory crosswalk for the 13 VLCE2 classes; the separate Phase 2 nonproduction method is insufficient.",
           "Execute the deterministic vector-to-raster-grid boundary operation; never reproject or resample the categorical raster.",
           "Validate full-resolution class values, preserve Unknown sidecar-derived statistics for 1991 and 2005, and record an exact output manifest and checksum."
         ],
         "blockers": [
-          "No repository-controlled target specification names a VLCE2 forest-mask operation or derived output checksum.",
+          "No repository-controlled Phase 1 production-admission target specification names a VLCE2 forest-mask operation or derived output checksum; the separate Phase 2 nonproduction method is not this gate.",
           "The forest-mask definition/crosswalk and actual boundary intersection are unresolved; the existing profile records only the required reprojection direction.",
           "Full-resolution class distribution and the reprojection/intersection run have not been executed."
         ]
@@ -138,17 +138,17 @@
       ],
       "namedTransformations": [],
       "transformation": {
-        "status": "blocked-no-approved-named-specification",
+        "status": "blocked-no-phase1-production-named-specification-and-output",
         "specification": null,
         "run": null,
         "output": null,
         "requiredBeforeExecution": [
-          "Record and approve the exact intended canopy-cover operation, including 2022 mask semantics and whether any boundary clipping is allowed.",
+          "Record and approve the exact Phase 1 production-admission canopy-cover operation, including 2022 mask semantics and whether any boundary clipping is allowed; the separate Phase 2 nonproduction method is insufficient.",
           "Run the named operation against the checksum-bound raw archive without changing values, reprojection, or resampling semantics unless the approved specification requires it.",
           "Validate full-resolution range, extent, nodata handling, and output checksum before any ingestion decision."
         ],
         "blockers": [
-          "No repository-controlled target specification names a canopy-cover derivative, clipping, masking, or output checksum.",
+          "No repository-controlled Phase 1 production-admission target specification names a canopy-cover derivative, clipping, masking, or output checksum; the separate Phase 2 nonproduction method is not this gate.",
           "The source README bounds the product to strategic-level assessment and supplies no Witness Tree transformation semantics.",
           "No exact derived output, independent full-resolution validation, or target ingestion record exists."
         ]
@@ -171,5 +171,5 @@
       }
     }
   ],
-  "nextLawfulAction": "Obtain the missing owner/technical method decision for each target row, record a named checksum-bound specification, then run and validate a derived output before considering ingestion or release."
+  "nextLawfulAction": "Obtain the missing Phase 1 production-admission owner/technical method decision for each target row, record a named checksum-bound specification, then run and validate a derived output before considering ingestion or release; do not substitute the separately approved Phase 2 nonproduction method."
 }

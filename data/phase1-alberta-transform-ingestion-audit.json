@@ -180,7 +180,7 @@
           "featureCountPreserved": true,
           "validNonEmptyGeometry": true,
           "declaredCrs": "EPSG:3400",
-          "declaredFieldCount": 63,
+          "declaredAttributeFieldCount": 60,
           "exactSchemaNameParity": false,
           "exactSchemaNameTypeParity": false,
           "duplicatePolygonId41405Preserved": true,

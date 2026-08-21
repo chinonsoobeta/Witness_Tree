@@ -90,8 +90,9 @@ function validatePlviRow(row, ledgerRow, decisionReadiness, repair, fullRelease,
   assert.equal(decision.ownerAdmission, "approved-source-ledger-only");
   assert.equal(decision.scopeDecision, "approved-raw-and-derived-scope-only");
   assert.match(decision.scope, /scope-bound validation and ingestion preparation only/i);
-  assert.equal(fullRelease.ownerAdmission.status, "not-authorized");
-  assert.equal(fullRelease.ownerAdmission.admitted, false);
+  assert.equal(fullRelease.ownerScope.status, "approved-source-ledger-and-exact-raw-derived-scope-only");
+  assert.equal(fullRelease.ownerScope.transformationAdmission, false);
+  assert.equal(fullRelease.ownerScope.ingestionAuthorized, false);
   assert.equal(row.localArtifacts.raw.sha256, PLVI_RAW_SHA256);
   assert.equal(row.localArtifacts.derivedOutput.sha256, PLVI_DERIVED_SHA256);
   validateAlbertaPlviGeometryRepair(repair);
@@ -117,7 +118,7 @@ function validatePlviRow(row, ledgerRow, decisionReadiness, repair, fullRelease,
     featureCountPreserved: true,
     validNonEmptyGeometry: true,
     declaredCrs: "EPSG:3400",
-    declaredFieldCount: 63,
+    declaredAttributeFieldCount: 60,
     exactSchemaNameParity: false,
     exactSchemaNameTypeParity: false,
     duplicatePolygonId41405Preserved: true,

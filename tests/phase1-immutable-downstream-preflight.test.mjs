@@ -12,6 +12,8 @@ const record = read("data/phase1-immutable-downstream-preflight.json");
 const context = {
   root: new URL("..", import.meta.url).pathname,
   ledger: read("data/phase1-production-source-ledger.json"),
+  decisions: read("data/phase1-remote-source-admission-decisions.json"),
+  queue: read("data/phase1-owner-decision-queue.json"),
   runRecord: read(record.selectedBatch.methodContract.runRecord),
   readiness: read("data/alberta-plvi-full-release-readiness.json"),
 };
@@ -35,9 +37,18 @@ test("rejects output, method, schema, row-set, and downstream claim drift", () =
     (copy) => { copy.selectedBatch.methodContract.runRecordSha256 = "0".repeat(64); },
     (copy) => { copy.selectedBatch.observedOutputSchema.nameDrift = []; },
     (copy) => { copy.selectedBatch.observedOutputSchema.integerToInteger64WideningCount = 0; },
+    (copy) => { copy.selectedBatch.sourceSchemaContract.relativePath = "raw/plausible.zip"; },
+    (copy) => { copy.selectedBatch.sourceSchemaContract.datasetPath = "plausible.gdb"; },
+    (copy) => { copy.selectedBatch.sourceSchemaContract.layer = "PlausibleLayer"; },
+    (copy) => { copy.selectedBatch.sourceSchemaContract.orderedNameTypeSha256 = "1".repeat(64); },
+    (copy) => { copy.selectedBatch.preflight.contractCommand = "node scripts/check-phase1-immutable-downstream-preflight.mjs"; },
+    (copy) => { copy.selectedBatch.preflight.localReadOnlyCommand += " --plausible"; },
+    (copy) => { copy.selectedBatch.preflight.requiredBeforeReady[0] = "Create some plausible output."; },
     (copy) => { copy.selectedBatch.validationGates.exactSchemaNameParity = true; },
     (copy) => { copy.selectedBatch.validationGates.preflightResult = "ready"; },
     (copy) => { copy.auditedRows.pop(); },
+    (copy) => { copy.auditedRows[0].preparationStatus = "blocked-plausible-prefix"; },
+    (copy) => { copy.auditedRows[4].reason = "Plausible but non-canonical blocker."; },
     (copy) => { copy.claims.ingestionAuthorized = true; },
     (copy) => { copy.claims.productionEligible = true; },
   ];
@@ -45,6 +56,22 @@ test("rejects output, method, schema, row-set, and downstream claim drift", () =
     const copy = structuredClone(record);
     corrupt(copy);
     assert.throws(() => validatePhase1ImmutableDownstreamPreflight(copy, context));
+  }
+});
+
+test("rejects canonical ledger and owner-decision drift for every audited row", () => {
+  for (const id of record.auditedRows.map(({ id }) => id)) {
+    const ledgerContext = structuredClone(context);
+    ledgerContext.ledger.entries.find((row) => row.id === id).blocker = "Plausible non-canonical blocker meaning.";
+    assert.throws(() => validatePhase1ImmutableDownstreamPreflight(record, ledgerContext));
+
+    const decisionContext = structuredClone(context);
+    decisionContext.decisions.decisions.find((row) => row.id === id).scope = "Plausible non-canonical owner scope.";
+    assert.throws(() => validatePhase1ImmutableDownstreamPreflight(record, decisionContext));
+
+    const queueContext = structuredClone(context);
+    queueContext.queue.queueRows.find((row) => row.id === id).ownerDecisionStatus.ingestion = "ready";
+    assert.throws(() => validatePhase1ImmutableDownstreamPreflight(record, queueContext));
   }
 });
 

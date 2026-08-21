@@ -28,12 +28,14 @@ function existingReferences(refs) {
 function validateNoTransformClaim(row) {
   assert.deepEqual(row.namedTransformations, []);
   const transform = row.transformation;
-  assert.equal(transform.status, "blocked-no-approved-named-specification");
+  assert.equal(transform.status, "blocked-no-phase1-production-named-specification-and-output");
   assert.equal(transform.specification, null);
   assert.equal(transform.run, null);
   assert.equal(transform.output, null);
   assert.ok(transform.requiredBeforeExecution.length >= 3);
   assert.ok(transform.blockers.length >= 3);
+  assert.match(transform.requiredBeforeExecution[0], /Phase 1 production-admission.*separate Phase 2 nonproduction method is insufficient/i);
+  assert.match(transform.blockers[0], /Phase 1 production-admission.*separate Phase 2 nonproduction method/i);
   assert.equal(row.ingestion.status, "blocked-no-transformation-output");
   assert.equal(row.release.status, "blocked");
   assert.equal(row.release.productionAdmission, false);
@@ -47,6 +49,7 @@ export function validatePhase1NrcanCoverProcessingGate(audit, ledger = read("dat
   assert.equal(audit.schemaVersion, "witness-tree/phase1-nrcan-cover-processing-gate/1");
   assert.equal(audit.status, "blocked-read-only");
   assert.match(audit.notice, /no AWS call.*archive mutation.*transformation.*production-eligibility change/i);
+  assert.match(audit.notice, /absence of a Phase 1 production-admission target transformation.*separately approved Phase 2 nonproduction method does not close/i);
   assert.equal(audit.derivedFromHead, "71925af03fc08b052d12077de2ba4acb9239006b");
   assert.deepEqual(audit.baseline, { ...BASELINE, scoreDelta: { rawCredit: 0, formalPercentagePoints: 0 } });
   assert.deepEqual(audit.claims, {
@@ -105,7 +108,7 @@ export function validatePhase1NrcanCoverProcessingGate(audit, ledger = read("dat
 
   assert.equal(audit.baseline.scoreDelta.rawCredit, 0);
   assert.equal(audit.baseline.scoreDelta.formalPercentagePoints, 0);
-  assert.match(audit.nextLawfulAction, /named checksum-bound specification/i);
+  assert.match(audit.nextLawfulAction, /Phase 1 production-admission.*named checksum-bound specification.*do not substitute.*Phase 2 nonproduction method/i);
   const serialized = JSON.stringify(audit);
   assert.doesNotMatch(serialized, /"(?:transformed|ingested|released|productionAdmission|productionEligible)":true/);
   return audit;

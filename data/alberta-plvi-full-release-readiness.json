@@ -1,8 +1,8 @@
 {
-  "status": "blocked-pending-owner-and-immutable-approval",
+  "status": "immutable-archived-schema-preflight-blocked",
   "sourceId": "ab-primary-land-vegetation",
   "derivedReleaseId": "alberta-plvi-full-repair-v1-2026-08-14",
-  "notice": "Prepared local lineage and readiness evidence only. This record does not authorize owner admission, object-storage upload, retention, immutable promotion, ingestion, or production use.",
+  "notice": "The exact raw and derived payloads are remotely verified in immutable storage and the owner recorded source-ledger plus exact raw/derived scope approval. Ordered attribute-schema drift still blocks ingestion preparation. This record does not authorize transformation admission, ingestion, release, production admission, or production use.",
   "rawInput": {
     "externalPath": "../Witness_Tree-data/raw/alberta-primary-land-vegetation/2026-08-14/PrimaryLandAndVegetationInventoryPLVI.zip",
     "byteLength": 675544895,
@@ -24,7 +24,7 @@
     "layer": "alberta_plvi_full_repaired",
     "featureCount": 179087,
     "crs": "EPSG:3400",
-    "fieldCount": 63,
+    "attributeFieldCount": 60,
     "emptyOrNullGeometryCount": 0,
     "invalidGeometryCount": 0,
     "nonPolygonalGeometryCount": 0,
@@ -42,16 +42,21 @@
     "outputFeatureCount": 179087,
     "silentLossOrDuplication": false
   },
-  "immutablePromotionPreparation": {
-    "status": "not-authorized",
-    "requiredBeforePromotion": ["Exact user approval for this derived GeoPackage", "Verified Canadian object-storage destination and version identifier", "Verified Object Lock compliance-retention read-back", "Remote byte-length and SHA-256 verification"],
-    "remoteClaim": false
+  "immutableArchive": {
+    "status": "remote-verified-archived-profiled",
+    "evidenceRef": "data/alberta-plvi-immutable-promotion-evidence.json",
+    "rawAndDerivedPayloadsVerified": true
   },
-  "ownerAdmission": {
-    "status": "not-authorized",
-    "requiredBeforeAdmission": ["Named data owner approval of the repair policy and full derived release", "Approved intended-use, attribution, and refresh policy", "A separate production admission decision"],
-    "admitted": false
+  "ownerScope": {
+    "status": "approved-source-ledger-and-exact-raw-derived-scope-only",
+    "decisionRef": "data/phase1-remote-source-admission-decisions.json",
+    "scopeBoundValidationAuthorized": true,
+    "transformationAdmission": false,
+    "ingestionAuthorized": false,
+    "releaseApproved": false,
+    "productionAdmission": false
   },
-  "immutableObjectStorage": false,
+  "immutableObjectStorage": true,
+  "ingestionReady": false,
   "productionEligible": false
 }

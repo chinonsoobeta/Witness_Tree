@@ -388,9 +388,9 @@
         "sidecarCount": 39,
         "retentionMode": "COMPLIANCE",
         "retentionUntil": "2033-08-12T00:00:00+00:00",
-        "transformationStatus": "blocked-no-approved-named-specification",
+        "transformationStatus": "blocked-no-phase1-production-named-specification-and-output",
         "requiredBeforeExecution": [
-          "Record and approve a versioned forest-mask method and exact Canada National Forest Inventory crosswalk for the 13 VLCE2 classes.",
+          "Record and approve a Phase 1 production-admission versioned forest-mask method and exact Canada National Forest Inventory crosswalk for the 13 VLCE2 classes; the separate Phase 2 nonproduction method is insufficient.",
           "Execute the deterministic vector-to-raster-grid boundary operation; never reproject or resample the categorical raster.",
           "Validate full-resolution class values, preserve Unknown sidecar-derived statistics for 1991 and 2005, and record an exact output manifest and checksum."
         ]
@@ -404,9 +404,9 @@
         "payloadKey": "raw/nrcan-forest-canopy-cover-2022/undeclared/2026-08-12T07-24-32Z/80c37461f4deccfdfffc26124e9064d53a94dde660b9f96194445870393af130/payload/ca_canopy_cover_2022.zip",
         "manifestKey": "raw/nrcan-forest-canopy-cover-2022/undeclared/2026-08-12T07-24-32Z/80c37461f4deccfdfffc26124e9064d53a94dde660b9f96194445870393af130/manifest.json",
         "retention": {"mode": "COMPLIANCE", "retainUntil": "2033-08-12T00:00:00Z"},
-        "transformationStatus": "blocked-no-approved-named-specification",
+        "transformationStatus": "blocked-no-phase1-production-named-specification-and-output",
         "requiredBeforeExecution": [
-          "Record and approve the exact intended canopy-cover operation, including 2022 mask semantics and whether any boundary clipping is allowed.",
+          "Record and approve the exact Phase 1 production-admission canopy-cover operation, including 2022 mask semantics and whether any boundary clipping is allowed; the separate Phase 2 nonproduction method is insufficient.",
           "Run the named operation against the checksum-bound raw archive without changing values, reprojection, or resampling semantics unless the approved specification requires it.",
           "Validate full-resolution range, extent, nodata handling, and output checksum before any ingestion decision."
         ]

@@ -12,13 +12,13 @@
     "productionEligibleRows": 0
   },
   "auditedRows": [
-    {"id":"ntems-annual-land-cover","preparationStatus":"blocked-no-approved-target-method","reason":"No approved annual forest-mask method, crosswalk, or checksum-bound full-resolution output."},
-    {"id":"ntems-forest-harvest","preparationStatus":"blocked-source-ledger-scope-only","reason":"The accepted source-ledger scope has no named target transformation, output, or ingestion decision."},
-    {"id":"ntems-canopy-cover","preparationStatus":"blocked-no-approved-target-method","reason":"No approved canopy-cover derivative semantics or checksum-bound output."},
-    {"id":"ntems-canopy-height","preparationStatus":"blocked-source-ledger-scope-only","reason":"The accepted source-ledger scope has no named target transformation, output, or ingestion decision."},
-    {"id":"ab-avi-crown","preparationStatus":"blocked-no-derived-payload-or-downstream-scope","reason":"The repair/quarantine audit wrote no derived AVI payload and the owner decision is source-ledger-only."},
-    {"id":"ab-avi-post-harvest","preparationStatus":"blocked-no-derived-payload-or-downstream-scope","reason":"No approved derived post-inventory-harvest payload or ingestion scope exists."},
-    {"id":"ab-primary-land-vegetation","preparationStatus":"selected-preflight-blocked-schema-drift-and-decisions","reason":"The exact derived output exists under approved scope, but schema parity fails and transformation admission plus ingestion decisions remain separate."}
+    {"id":"ntems-annual-land-cover","preparationStatus":"blocked-phase1-production-method-output-and-downstream-decisions","reason":"The separately approved Phase 2 nonproduction method does not supply a Phase 1 production-admission target method, crosswalk, checksum-bound full-resolution output, or downstream decisions."},
+    {"id":"ntems-forest-harvest","preparationStatus":"blocked-phase1-source-ledger-scope-only-no-production-method-output","reason":"The recorded Phase 1 source-ledger-only decision supplies no Phase 1 production-admission target transformation, checksum-bound output, or ingestion decision; the separate Phase 2 nonproduction method does not close those gates."},
+    {"id":"ntems-canopy-cover","preparationStatus":"blocked-phase1-production-method-output-and-downstream-decisions","reason":"The separately approved Phase 2 nonproduction method does not supply Phase 1 production-admission canopy-cover semantics, a checksum-bound output, or downstream decisions."},
+    {"id":"ntems-canopy-height","preparationStatus":"blocked-phase1-source-ledger-scope-only-no-production-method-output","reason":"The recorded Phase 1 source-ledger-only decision supplies no Phase 1 production-admission target transformation, checksum-bound output, or ingestion decision; the separate Phase 2 nonproduction method does not close those gates."},
+    {"id":"ab-avi-crown","preparationStatus":"blocked-source-ledger-only-no-derived-payload-or-downstream-scope","reason":"The source-ledger-only decision preserves the exact FID 1 exclusion, but the repair/quarantine audit wrote no derived AVI payload and no downstream transformation or ingestion scope is approved."},
+    {"id":"ab-avi-post-harvest","preparationStatus":"blocked-source-ledger-only-no-derived-payload-or-downstream-scope","reason":"The source-ledger-only decision supplies no approved derived post-inventory-harvest payload, downstream transformation scope, or ingestion decision."},
+    {"id":"ab-primary-land-vegetation","preparationStatus":"selected-exact-scope-schema-preflight-blocked-downstream-decisions","reason":"The owner-approved exact raw/derived scope and immutable output support read-only validation, but ordered schema parity fails and transformation admission plus ingestion decisions remain separate."}
   ],
   "selectedBatch": {
     "rows": ["ab-primary-land-vegetation"],
