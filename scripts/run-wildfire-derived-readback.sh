@@ -73,13 +73,13 @@ mfa_serial="$(aws configure get mfa_serial --profile "$PROFILE" 2>"$TMP/mfa-seri
 if ! aws sts get-session-token --serial-number "$mfa_serial" --token-code "$totp" --profile "$PROFILE" --duration-seconds 3600 --output json >"$TMP/bootstrap.json" 2>"$TMP/sts-session.stderr"; then
   fail "MFA session failed; no S3 readback was authorized" 77
 fi
-unset totp mfa_serial
 export AWS_ACCESS_KEY_ID="$(jq -er '.Credentials.AccessKeyId' "$TMP/bootstrap.json")" AWS_SECRET_ACCESS_KEY="$(jq -er '.Credentials.SecretAccessKey' "$TMP/bootstrap.json")" AWS_SESSION_TOKEN="$(jq -er '.Credentials.SessionToken' "$TMP/bootstrap.json")"
 account="$(aws sts get-caller-identity --query Account --output text 2>"$TMP/caller.stderr")" || fail "MFA session identity could not be verified; no S3 readback was authorized" 77
 [[ "$account" == "$ACCOUNT" ]] || fail "MFA session is outside the approved account; no S3 readback was authorized" 77
-if ! aws sts assume-role --role-arn "arn:aws:iam::${ACCOUNT}:role/${ROLE}" --role-session-name witness-tree-derived-readback --duration-seconds 3600 --output json >"$TMP/role-session.json" 2>"$TMP/sts-role.stderr"; then
+if ! aws sts assume-role --role-arn "arn:aws:iam::${ACCOUNT}:role/${ROLE}" --role-session-name witness-tree-derived-readback --serial-number "$mfa_serial" --token-code "$totp" --duration-seconds 3600 --output json >"$TMP/role-session.json" 2>"$TMP/sts-role.stderr"; then
   fail "Approved derived readback role assumption failed; no S3 readback was authorized" 77
 fi
+unset totp mfa_serial
 export AWS_ACCESS_KEY_ID="$(jq -er '.Credentials.AccessKeyId' "$TMP/role-session.json")" AWS_SECRET_ACCESS_KEY="$(jq -er '.Credentials.SecretAccessKey' "$TMP/role-session.json")" AWS_SESSION_TOKEN="$(jq -er '.Credentials.SessionToken' "$TMP/role-session.json")"
 
 head_exact() {

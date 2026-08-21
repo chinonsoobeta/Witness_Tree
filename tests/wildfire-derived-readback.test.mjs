@@ -55,7 +55,7 @@ function writeApproval(dir) {
   return path;
 }
 
-function writeFakeAws(dir, { retentionFailure = false } = {}) {
+function writeFakeAws(dir, { retentionFailure = false, headFailure = false } = {}) {
   const marker = join(dir, "aws-calls");
   const script = [
     "#!/bin/zsh",
@@ -65,16 +65,20 @@ function writeFakeAws(dir, { retentionFailure = false } = {}) {
     "  sts:get-session-token|sts:assume-role) print -r -- \"{\\\"Credentials\\\":{\\\"AccessKeyId\\\":\\\"test-access\\\",\\\"SecretAccessKey\\\":\\\"test-secret\\\",\\\"SessionToken\\\":\\\"test-session\\\"}}\" ;;",
     "  sts:get-caller-identity) print -r -- \"286853118812\" ;;",
     "  s3api:head-object)",
-    "    if [[ \"$*\" == *manifest.json* && \"$*\" == *bc-wildfire* ]]; then",
-    "      print -r -- \"{\\\"VersionId\\\":\\\"bc-sidecar-version\\\",\\\"ContentLength\\\":831,\\\"ChecksumType\\\":\\\"FULL_OBJECT\\\",\\\"ChecksumCRC64NVME\\\":\\\"AAAAAAAAAAA=\\\"}\"",
-    "    elif [[ \"$*\" == *manifest.json* ]]; then",
-    "      print -r -- \"{\\\"VersionId\\\":\\\"ontario-sidecar-version\\\",\\\"ContentLength\\\":885,\\\"ChecksumType\\\":\\\"FULL_OBJECT\\\",\\\"ChecksumCRC64NVME\\\":\\\"AAAAAAAAAAA=\\\"}\"",
-    "    elif [[ \"$*\" == *bc-wildfire-216-feature-release.gpkg* ]]; then",
-    "      print -r -- \"{\\\"VersionId\\\":\\\"bc-payload-version\\\",\\\"ContentLength\\\":2162688,\\\"ChecksumType\\\":\\\"FULL_OBJECT\\\",\\\"ChecksumCRC64NVME\\\":\\\"AAAAAAAAAAA=\\\"}\"",
-    "    else",
-    "      print -r -- \"{\\\"VersionId\\\":\\\"ontario-payload-version\\\",\\\"ContentLength\\\":7913472,\\\"ChecksumType\\\":\\\"FULL_OBJECT\\\",\\\"ChecksumCRC64NVME\\\":\\\"AAAAAAAAAAA=\\\"}\"",
-    "    fi",
-    "    ;;",
+    headFailure
+      ? "    print -u2 -- \"head unavailable\"; exit 1 ;;"
+      : [
+        "    if [[ \"$*\" == *manifest.json* && \"$*\" == *bc-wildfire* ]]; then",
+        "      print -r -- \"{\\\"VersionId\\\":\\\"bc-sidecar-version\\\",\\\"ContentLength\\\":831,\\\"ChecksumType\\\":\\\"FULL_OBJECT\\\",\\\"ChecksumCRC64NVME\\\":\\\"AAAAAAAAAAA=\\\"}\"",
+        "    elif [[ \"$*\" == *manifest.json* ]]; then",
+        "      print -r -- \"{\\\"VersionId\\\":\\\"ontario-sidecar-version\\\",\\\"ContentLength\\\":885,\\\"ChecksumType\\\":\\\"FULL_OBJECT\\\",\\\"ChecksumCRC64NVME\\\":\\\"AAAAAAAAAAA=\\\"}\"",
+        "    elif [[ \"$*\" == *bc-wildfire-216-feature-release.gpkg* ]]; then",
+        "      print -r -- \"{\\\"VersionId\\\":\\\"bc-payload-version\\\",\\\"ContentLength\\\":2162688,\\\"ChecksumType\\\":\\\"FULL_OBJECT\\\",\\\"ChecksumCRC64NVME\\\":\\\"AAAAAAAAAAA=\\\"}\"",
+        "    else",
+        "      print -r -- \"{\\\"VersionId\\\":\\\"ontario-payload-version\\\",\\\"ContentLength\\\":7913472,\\\"ChecksumType\\\":\\\"FULL_OBJECT\\\",\\\"ChecksumCRC64NVME\\\":\\\"AAAAAAAAAAA=\\\"}\"",
+        "    fi",
+        "    ;;"
+      ].join("\n"),
     "  s3api:get-object-retention)",
     retentionFailure ? "    print -u2 -- \"retention unavailable\"; exit 1 ;;" : "    print -r -- \"{\\\"Retention\\\":{\\\"Mode\\\":\\\"COMPLIANCE\\\",\\\"RetainUntilDate\\\":\\\"2033-08-12T00:00:00Z\\\"}}\" ;;",
     "  *) print -u2 -- \"unexpected AWS operation\"; exit 99 ;;",
@@ -130,10 +134,31 @@ test("interactive readback uses only exact versioned heads and retention reads",
     assert.doesNotMatch(run.stdout + run.stderr, /123456|payload-version|sidecar-version/);
     const calls = readFileSync(fake.marker, "utf8").trim().split("\n");
     assert.equal(calls.filter((call) => call.includes("head-object")).length, 8);
+    const roleCall = calls.find((call) => call.includes("sts assume-role"));
+    assert.match(roleCall, /--serial-number arn:aws:iam::286853118812:mfa\/witness-tree\/archive-operator\.device/);
+    assert.match(roleCall, /--token-code 123456/);
     assert.equal(calls.filter((call) => call.includes("get-object-retention")).length, 2);
     const heads = calls.filter((call) => call.includes("head-object"));
     assert.ok(heads.length === 8 && heads.every((call, index) => index % 2 === 0 || call.includes("--version-id")));
     assert.ok(calls.every((call) => !/^s3api (list-objects|put-object|upload-part|complete-multipart|delete-object|put-object-retention|put-object-legal-hold|put-object-retention|bypass-governance)/i.test(call)));
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("an exact-head failure stops before versioned heads or retention", () => {
+  const dir = mkdtempSync(join(tmpdir(), "wildfire-derived-readback-head-negative-"));
+  try {
+    const approval = writeApproval(dir);
+    const fake = writeFakeAws(dir, { headFailure: true });
+    const run = runPty(["--readback", approval], dir);
+    assert.equal(run.status, 70, run.stdout + run.stderr);
+    assert.match(run.stdout + run.stderr, /Exact derived object head failed/);
+    const calls = readFileSync(fake.marker, "utf8").trim().split("\n");
+    assert.equal(calls.filter((call) => call.includes("head-object")).length, 1);
+    assert.equal(calls.filter((call) => call.includes("--version-id")).length, 0);
+    assert.equal(calls.filter((call) => call.includes("get-object-retention")).length, 0);
+    assert.ok(calls.every((call) => !/^s3api (put-object|upload-part|complete-multipart|delete-object|put-object-retention|put-object-legal-hold|bypass-governance)/i.test(call)));
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
