@@ -2,7 +2,7 @@
   "schemaVersion": "witness-tree/phase1-owner-approval-packet/1",
   "status": "template-not-approved",
   "asOf": "2026-08-21",
-  "derivedFromHead": "71925af03fc08b052d12077de2ba4acb9239006b",
+  "derivedFromHead": "4466a14dd1462d09692db869523df713a6db2291",
   "sourceQueue": "data/phase1-owner-decision-queue.json",
   "recordedDecisions": {
     "source": "data/phase1-remote-source-admission-decisions.json",
@@ -171,16 +171,16 @@
         "prompt": "Review the existing conservative snapshot, authority, geometry, transformation, and ingestion boundaries; this packet does not create a new approval."
       },
       "irreversibleArchiveRetention": {
-        "status": "blocked-two-derived-readbacks-missing",
+        "status": "primary-six-object-readbacks-verified-recovery-provenance-pending",
         "preflightCommand": "zsh scripts/run-wildfire-derived-readback.sh --preflight <mode-600-owner-approval-file>",
-        "gate": {"requiredObjects": 6, "verifiedObjects": 4, "missing": ["bc-wildfire", "on-fire-disturbance"]},
+        "gate": {"requiredObjects": 6, "verifiedObjects": 6, "primaryReadbacksVerified": true, "recoveryReplicaVerified": false, "mutationProvenance": false},
         "requiredRetention": "COMPLIANCE payload versions only through 2033-08-12T00:00:00Z"
       },
       "releaseProductionAdmission": {
         "status": "deferred-until-six-object-gate",
         "requiredSeparateDecisions": ["transformation", "ingestion", "release", "productionAdmission"]
       },
-      "copyPasteBlock": "PHASE1 OWNER INPUT — CURRENT WILDFIRE ARCHIVE GATE\nstatus=template-not-approved\nrows=cwfis-current,bc-wildfire,ab-wildfire,on-fire-disturbance\nsource_scope=<existing conditional record; no new approval inferred>\narchive_approval=<OWNER: exact four payloads, four sidecars, bucket, region, MFA path, payload-only retention>\npreflight=zsh scripts/run-wildfire-derived-readback.sh --preflight <mode-600-owner-approval-file>\ngate=4/6 verified; missing derived readbacks bc-wildfire,on-fire-disturbance\nrelease_and_production_admission=<OWNER: blocked until six-object gate>"
+      "copyPasteBlock": "PHASE1 OWNER INPUT — CURRENT WILDFIRE ARCHIVE GATE\nstatus=template-not-approved\nrows=cwfis-current,bc-wildfire,ab-wildfire,on-fire-disturbance\nsource_scope=<existing conditional record; no new approval inferred>\nprimary_readbacks=redacted exact six-object primary gate verified; recovery_replica_and_mutation_provenance=<OWNER: separately review/provide if required>\nrelease_and_production_admission=<OWNER: separate decisions required; remain false>"
     },
     {
       "step": 7,

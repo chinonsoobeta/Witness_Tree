@@ -4,7 +4,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const SCHEMA = "witness-tree/phase1-owner-approval-packet/1";
-const HEAD = "71925af03fc08b052d12077de2ba4acb9239006b";
+const HEAD = "4466a14dd1462d09692db869523df713a6db2291";
 const QUEUE_SCHEMA = "witness-tree/phase1-owner-decision-queue/1";
 const PHASES = ["reversibleSourceScope", "irreversibleArchiveRetention", "releaseProductionAdmission"];
 const QUEUE_ROWS = [

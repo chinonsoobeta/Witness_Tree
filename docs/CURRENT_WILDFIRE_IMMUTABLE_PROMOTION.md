@@ -2,11 +2,16 @@
 
 This is an owner-local, dry-run-by-default preparation for the four raw current-wildfire snapshots already identified in [`data/current-wildfire-immutable-promotion-preparation.json`](../data/current-wildfire-immutable-promotion-preparation.json). It is not authorization to run AWS, create IAM, archive a different object, transform data, clear the BC or Ontario geometry blocks, ingest, release, admit, or make a source eligible.
 
+The canonical redacted raw archive record now contains the independently
+verified primary and recovery readbacks for these four snapshots and their
+sidecars. This preparation remains a bounded historical/owner-local command
+package; do not rerun it or infer new credit from the existing readbacks.
+
 ## Exact approval wording
 
 > I approve, for this one operation only, MFA-gated direct `s3:PutObject` upload and payload-version `s3:PutObjectRetention` in `witness-tree-raw-archive-ca-central-1` / `ca-central-1` for exactly the four raw current-wildfire payloads and four deterministic `manifest.json` sidecars below. Apply COMPLIANCE retention to each payload version through `2033-08-12T00:00:00Z`. Require returned version ID and CRC64NVME acknowledgement, payload version/byte-length/FULL_OBJECT CRC64NVME read-back, payload retention read-back, and sidecar version/FULL_OBJECT CRC64NVME read-back. This does not approve transformation, geometry admission, ingestion, release, production admission, production eligibility, deletion, legal holds, retention bypass, replication, bucket administration, wildcard access, or any other key.
 
-That wording records the earlier archive-operation boundary. A later [owner scope decision](CURRENT_WILDFIRE_OWNER_ADMISSION.md) separately approves the exact geometry, transformation, ingestion, release and production-admission scope, conditional on immutable readbacks for four raw and two derived objects. It does not broaden this AWS runner or claim those readbacks exist.
+That wording records the earlier archive-operation boundary. A later [owner scope decision](CURRENT_WILDFIRE_OWNER_ADMISSION.md) separately approves the exact geometry, transformation, ingestion, release and production-admission scope, conditional on immutable readbacks for four raw and two derived objects. This preparation does not itself grant those readbacks or broaden the AWS runner; the current redacted readbacks are recorded separately in the canonical evidence records.
 
 > I authorize creation or update of only `WitnessTreeCurrentWildfirePromotionUploader`, trusted only by MFA-authenticated `arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator`, and only an identity policy granting that user `sts:AssumeRole` on this role. The role may allow only `s3:PutObject`, `s3:GetObject`, `s3:AbortMultipartUpload`, `s3:ListMultipartUploadParts`, `s3:PutObjectRetention`, and `s3:GetObjectRetention` on the eight exact keys in `data/current-wildfire-immutable-promotion-preparation.json`; it has no delete, legal-hold, bypass, replication, bucket, wildcard, other-key, or `iam:*` permission.
 

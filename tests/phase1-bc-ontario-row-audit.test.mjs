@@ -10,6 +10,7 @@ const context = {
   access: read("data/phase1-access-blocker-resolution.json"),
   replies: read("data/phase1-outreach-reply-audit.json"),
   raw: read("data/current-wildfire-raw-archive-evidence.json"),
+  derived: read("data/current-wildfire-derived-archive-evidence.json"),
   owner: read("data/current-wildfire-owner-admission.json"),
   liveGuard: read("data/current-wildfire-derived-live-recovery-guard-2026-08-20.json"),
   becCustom: read("data/phase1-bec-custom-download-route-audit.json"),
@@ -44,7 +45,7 @@ test("BC/ON audit rejects invented permission, archive, reply, or production cla
   assert.throws(() => validatePhase1BcOntarioRowAudit(permission, ledger, context), /Expected values|fail-closed|permissionGranted/i);
 
   const archive = structuredClone(audit);
-  archive.groups[0].currentWildfireArchiveGate.derivedObjectsVerified = true;
+  archive.groups[0].currentWildfireArchiveGate.derivedObjectsVerified = false;
   assert.throws(() => validatePhase1BcOntarioRowAudit(archive, ledger, context), /Expected values|derivedObjectsVerified|deepStrictEqual/i);
 
   const reply = structuredClone(audit);

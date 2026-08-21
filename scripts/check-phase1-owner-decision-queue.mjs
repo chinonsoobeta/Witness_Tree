@@ -4,7 +4,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const SCHEMA = "witness-tree/phase1-owner-decision-queue/1";
-const HEAD = "71925af03fc08b052d12077de2ba4acb9239006b";
+const HEAD = "4466a14dd1462d09692db869523df713a6db2291";
 const INCLUDED = [
   "ntems-annual-land-cover",
   "ntems-forest-harvest",
@@ -124,10 +124,13 @@ function validateQueueRows(queue, context) {
     });
     assert.deepEqual(row.archiveGate, {
       requiredObjects: 6,
-      verifiedObjects: 4,
-      missingDerivedReadbacks: ["bc-wildfire", "on-fire-disturbance"],
+      verifiedObjects: 6,
+      primaryReadbacksVerified: true,
+      recoveryReplicaVerified: false,
+      mutationProvenance: false,
       productionEligible: false,
     });
+    assert.ok(row.evidenceRefs.includes("data/current-wildfire-derived-archive-evidence.json"));
     assert.deepEqual(row.localReadbackPreflight, {
       status: "available-no-write-owner-approval-file-required",
       checker: "scripts/check-wildfire-derived-readback.mjs",
@@ -163,7 +166,7 @@ function validateQueueRows(queue, context) {
   assert.equal(context.wildfire.ownerDecision.publicReleaseApproved, true);
   assert.equal(context.wildfire.ownerDecision.productionAdmissionApproved, true);
   assert.equal(context.wildfire.archiveGate.requiredObjectCount, 6);
-  assert.equal(context.wildfire.archiveGate.verifiedObjectCount, 4);
+  assert.equal(context.wildfire.archiveGate.verifiedObjectCount, 6);
   assert.equal(context.wildfire.archiveGate.productionEligible, false);
 }
 

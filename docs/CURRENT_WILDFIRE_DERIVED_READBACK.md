@@ -6,6 +6,14 @@ completes an MPU, writes retention, rewrites a sidecar, deletes, changes IAM,
 uses a governance bypass, or uses a legal hold. It does not admit either source
 or derived data to production.
 
+The repository now contains a separately checked redacted primary readback
+record for both payload/manifest pairs in
+[`data/current-wildfire-derived-archive-evidence.json`](../data/current-wildfire-derived-archive-evidence.json).
+That record closes the derived portion of the six-object primary gate without
+claiming recovery, mutation provenance, transformation, ingestion, release or
+production. Do not rerun this owner-local procedure solely to reproduce that
+record.
+
 The exact contract is machine-checked by
 `scripts/check-wildfire-derived-readback.mjs`. It binds account
 `286853118812`, profile `WitnessTreeArchiveOperator`, proposed MFA role

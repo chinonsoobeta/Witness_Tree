@@ -1,6 +1,6 @@
 # Phase 1 owner-approval packet
 
-[`data/phase1-owner-approval-packet.json`](../data/phase1-owner-approval-packet.json) is a machine-checked, copy/paste owner-input packet for the 16 `local-verified-profiled` or `remote-verified-archived-profiled` rows in [`data/phase1-owner-decision-queue.json`](../data/phase1-owner-decision-queue.json). It is derived from parent `71925af` and remains `template-not-approved` for unresolved decisions, while recording two supplied non-admitting decisions: national source-ledger-only acceptance and the exact PLVI raw/derived scope.
+[`data/phase1-owner-approval-packet.json`](../data/phase1-owner-approval-packet.json) is a machine-checked, copy/paste owner-input packet for the 16 `local-verified-profiled` or `remote-verified-archived-profiled` rows in [`data/phase1-owner-decision-queue.json`](../data/phase1-owner-decision-queue.json). It is derived from parent `4466a14` and remains `template-not-approved` for unresolved decisions, while recording two supplied non-admitting decisions: national source-ledger-only acceptance and the exact PLVI raw/derived scope.
 
 The packet separates every dependency step into three independent decisions:
 
@@ -105,8 +105,8 @@ rows=cwfis-current,bc-wildfire,ab-wildfire,on-fire-disturbance
 source_scope=<existing conditional record; no new approval inferred>
 archive_approval=<OWNER: exact four payloads, four sidecars, bucket, region, MFA path, payload-only retention>
 preflight=zsh scripts/run-wildfire-derived-readback.sh --preflight <mode-600-owner-approval-file>
-gate=4/6 verified; missing derived readbacks bc-wildfire,on-fire-disturbance
-release_and_production_admission=<OWNER: blocked until six-object gate>
+gate=6/6 primary verified; derived recovery/mutation provenance and downstream admission remain blocked
+release_and_production_admission=<OWNER: blocked until recovery/provenance and separate downstream decisions>
 ```
 
 The packet binds all eight exact object keys, all four raw SHA-256 values and bytes, BC's 216-feature derived release with permanently quarantined `V10755`, Ontario's 188-feature closed join with zero exclusions, exact transformation strings, `ca-central-1`, recovery bucket, and payload-only `COMPLIANCE` retention through `2033-08-12T00:00:00Z`.

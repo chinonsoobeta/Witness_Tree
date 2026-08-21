@@ -117,7 +117,7 @@
       },
       "rawCredit": 1,
       "productionEligible": false,
-      "blocker": "Owner scope, transformation, ingestion, public release and production admission are approved with conservative snapshot/authority semantics, but cannot activate until the exact raw object has integrated immutable version, checksum, readback and COMPLIANCE-retention evidence."
+      "blocker": "Owner scope, transformation, ingestion, public release and production admission are approved with conservative snapshot/authority semantics. All six current-wildfire primary payloads now have redacted exact-key readback and payload-retention evidence, but recovery or mutation provenance and a separate production-admission proof remain absent."
     },
     {
       "id": "cwfis-historical",
@@ -148,7 +148,8 @@
         "data/bc-wildfire-current-perimeters-profile.json",
         "data/bc-wildfire-geometry-policy-2026-08-14.json",
         "data/current-wildfire-owner-admission.json",
-        "data/current-wildfire-raw-archive-evidence.json"
+        "data/current-wildfire-raw-archive-evidence.json",
+        "data/current-wildfire-derived-archive-evidence.json"
       ],
       "proof": {
         "licence": true,
@@ -162,7 +163,7 @@
       },
       "rawCredit": 1,
       "productionEligible": false,
-      "blocker": "Owner approved the unchanged 217-feature raw archive and only the 216-feature geometry release: 215 unchanged plus bounded repair G70362, with V10755 permanently quarantined at 3.167100456% area delta and no 217-feature coverage claim. Activation remains blocked until exact raw and derived immutable readbacks are integrated."
+      "blocker": "Owner approved the unchanged 217-feature raw archive and only the 216-feature geometry release: 215 unchanged plus bounded repair G70362, with V10755 permanently quarantined at 3.167100456% area delta and no 217-feature coverage claim. The derived primary payload and manifest now have redacted exact-key readback and payload-retention evidence; recovery or mutation provenance and a separate production-admission proof remain absent."
     },
     {
       "id": "ab-wildfire",
@@ -185,7 +186,7 @@
       },
       "rawCredit": 1,
       "productionEligible": false,
-      "blocker": "Owner scope, transformation, ingestion, public release and production admission are approved for an as-of point snapshot that is neither real-time nor a complete perimeter dataset. Activation remains blocked until the exact raw immutable readback is integrated."
+      "blocker": "Owner scope, transformation, ingestion, public release and production admission are approved for an as-of point snapshot that is neither real-time nor a complete perimeter dataset. The six current-wildfire primary payloads now have redacted exact-key readback and payload-retention evidence, but recovery or mutation provenance and a separate production-admission proof remain absent."
     },
     {
       "id": "on-fire-disturbance",
@@ -195,7 +196,8 @@
         "data/ontario-in-year-fire-perimeters-profile.json",
         "data/ontario-in-year-fire-geometry-policy-2026-08-14.json",
         "data/current-wildfire-owner-admission.json",
-        "data/current-wildfire-raw-archive-evidence.json"
+        "data/current-wildfire-raw-archive-evidence.json",
+        "data/current-wildfire-derived-archive-evidence.json"
       ],
       "proof": {
         "licence": true,
@@ -209,7 +211,7 @@
       },
       "rawCredit": 1,
       "productionEligible": false,
-      "blocker": "Owner approved the unchanged 188-feature raw archive and full 188-feature derived release: 179 unchanged plus all nine bounded repairs with zero exclusion. Activation remains blocked until exact raw and derived immutable readbacks are integrated."
+      "blocker": "Owner approved the unchanged 188-feature raw archive and full 188-feature derived release: 179 unchanged plus all nine bounded repairs with zero exclusion. The derived primary payload and manifest now have redacted exact-key readback and payload-retention evidence; recovery or mutation provenance and a separate production-admission proof remain absent."
     },
     {
       "id": "sopfeu",

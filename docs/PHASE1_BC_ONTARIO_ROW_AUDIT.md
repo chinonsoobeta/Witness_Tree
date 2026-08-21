@@ -1,13 +1,13 @@
 # Phase 1 BC/ON row audit
 
-The machine-checked record [`data/phase1-bc-ontario-row-audit.json`](../data/phase1-bc-ontario-row-audit.json) reconciles all eleven BC/ON production rows from the canonical ledger at `1749b50` (`1749b501f17b5cb55a686178232dc6ac191d3e81`). It joins the existing geometry, archive, route, access, reply and permission records without acquiring a new artifact or changing an admission decision.
+The machine-checked record [`data/phase1-bc-ontario-row-audit.json`](../data/phase1-bc-ontario-row-audit.json) reconciles all eleven BC/ON production rows from the canonical ledger at `4466a14` (`4466a14dd1462d09692db869523df713a6db2291`). It joins the existing geometry, archive, route, access, reply and permission records without acquiring a new artifact or changing an admission decision.
 
 The canonical Phase 1 baseline is unchanged:
 
 - **15.25/31 raw-evidence credits** and **39.7580645%** bounded evidence-tracking score;
 - **11 remote / 5 local / 2 partial / 13 access-blocked** rows;
 - **11 immutable archive proofs**, **0/31 production-admission proofs**, and **0/31 production-eligible rows**;
-- current-wildfire gate **4/6** required objects;
+- current-wildfire primary gate **6/6** required objects, with recovery/provenance still blocked;
 - BC/ON scope: **2.25 raw credits**, **0 raw-credit change**, and **0 production/admission change**.
 
 Run the check with:
@@ -20,7 +20,7 @@ npm run check:phase1-bc-ontario-row-audit
 
 | Rows | Current state | Evidence-backed finding | Immediate blocker | Current raw-credit change |
 | --- | --- | --- | ---: | ---: |
-| `bc-wildfire`, `on-fire-disturbance` | Remote-verified, archived, profiled | Both raw snapshots have exact primary/recovery immutable evidence. BC derived live storage is unretained and unrecovered; Ontario derived storage is empty. | Exact derived version/checksum/retention/recovery readbacks and owner disposition | 0 |
+| `bc-wildfire`, `on-fire-disturbance` | Remote-verified, archived, profiled | Both raw snapshots and both checksum-bound derived payload/manifest pairs have redacted exact-key primary readback and payload-retention evidence. | Recovery or mutation provenance and separate transformation, ingestion, release and production-admission records | 0 |
 | `bc-fta-cutblocks`, `bc-harvesting-authorities` | Access-blocked | OGL-BC service routes are mutable or custom-order; the FOI reply supplied a route, not a coherent export. | Publisher-bounded export with edition, checksum, profile and lifecycle review | 0 |
 | `bc-vri`, `bc-forest-operations-map` | Access-blocked | VRI remains Access Only with its advertised current artifact unavailable; FOM is Access Only planned-activity data. The one copyright form is unsent. | Written permission and a complete exact artifact | 0 |
 | `bc-consolidated-cutblocks` | Access-blocked | A public ZIP is still Access Only; the FAIB reply clarified output details but granted no rights. | Written FAIB authorization or redistributable licence | 0 |
@@ -28,6 +28,6 @@ npm run check:phase1-bc-ontario-row-audit
 | `on-fri`, `on-fri-term-2` | Access-blocked | Term 2 exposes mutable WEB explorers and pilot/index material, not a complete package; the catalogue reply supplied no package or rights decision. | Complete FMU package/API, checksum/profile and written intended-use confirmation | 0 |
 | `provincial-electoral-boundaries` | Partial-component (0.25) | BC and Ontario are locally checksum-bound/profiled. Alberta and Québec remain unacquired; permission/current-edition gates remain unresolved. | Owner-approved Alberta/Québec requests, permissions and missing artifacts | 0 |
 
-The conditional maximum raw-credit increase for the six BC access rows, two Ontario FRI rows and the missing boundary components is **+8.75**; it is not current credit and does not affect production eligibility. The wildfire rows have no further raw-credit capacity, but their derived archive and production gates remain blocked.
+The conditional maximum raw-credit increase for the six BC access rows, two Ontario FRI rows and the missing boundary components is **+8.75**; it is not current credit and does not affect production eligibility. The wildfire rows have no further raw-credit capacity; their primary derived archive gate is complete, but recovery/provenance and production gates remain blocked.
 
 The audit records no permission, archive mutation, external reply resolution, transformation, ingestion, release or production admission. It intentionally retains owner identity/contact/fee choices blank and does not submit the BEC or copyright routes.

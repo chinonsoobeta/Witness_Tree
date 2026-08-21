@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { validate as validateRawArchiveEvidence } from "./check-current-wildfire-raw-archive-evidence.mjs";
+import { validateCurrentWildfireDerivedArchiveEvidence } from "./check-current-wildfire-derived-archive-evidence.mjs";
 import { validate as validateDerivedPromotionPlan } from "./prepare-wildfire-derived-immutable-promotion.mjs";
 
 const read = (path) => JSON.parse(readFileSync(new URL(`../${path}`, import.meta.url), "utf8"));
@@ -22,6 +24,55 @@ export const requiredCurrentWildfireObjects = [
   {id:"on-fire-disturbance-raw",key:"raw/on-fire-disturbance/undeclared/2026-08-14T13-49-36Z/99881f19a32068b5d66b244955f7b088e873ffe76eafebf1740f03e16f042f11/payload/ontario-in-year-fire-perimeters_2026-08-14.geojson",bytes:19510504,sha256:"99881f19a32068b5d66b244955f7b088e873ffe76eafebf1740f03e16f042f11"},
   requiredDerivedObject("on-fire-disturbance-derived", "on-fire-disturbance")
 ];
+
+const PRIMARY_CHECKSUM = { type: "FULL_OBJECT", algorithm: "CRC64NVME", providerValue: "redacted-present" };
+
+function validPrimaryRetention(value) {
+  return value?.mode === "COMPLIANCE"
+    && (value.until ?? value.retainUntil) === "2033-08-12T00:00:00Z"
+    && value.readbackVerified !== false;
+}
+
+/**
+ * The redacted archive records prove the six primary payloads without
+ * retaining provider identifiers. That is enough to close the six-object
+ * archive gate, but it is deliberately not the activation contract below:
+ * production activation still requires the separate non-redacted exact
+ * evidence shape and an explicit downstream decision.
+ */
+export function primaryEvidenceSatisfiesCurrentWildfireGate(rawEvidence, derivedEvidence) {
+  try {
+    validateRawArchiveEvidence(rawEvidence);
+    validateCurrentWildfireDerivedArchiveEvidence(derivedEvidence);
+  } catch {
+    return false;
+  }
+
+  const rawBySource = new Map(rawEvidence.entries.map((entry) => [entry.sourceId, entry]));
+  const derivedById = new Map(derivedEvidence.objects.filter(({ kind }) => kind === "payload").map((object) => [object.id, object]));
+  return requiredCurrentWildfireObjects.every((expected) => {
+    if (expected.id.endsWith("-raw")) {
+      const sourceId = expected.id.replace(/-raw$/, "");
+      const entry = rawBySource.get(sourceId);
+      return entry?.payloadKey === expected.key
+        && entry.bytes === expected.bytes
+        && entry.sha256 === expected.sha256
+        && entry.payloadVersionPresent === true
+        && JSON.stringify(entry.payloadChecksum) === JSON.stringify(PRIMARY_CHECKSUM)
+        && entry.payloadRetention?.mode === "COMPLIANCE"
+        && entry.payloadRetention.until === "2033-08-12T00:00:00Z";
+    }
+    const object = derivedById.get(`${expected.id}-payload`);
+    return object?.key === expected.key
+      && object.bytes === expected.bytes
+      && object.sha256 === expected.sha256
+      && object.versionPresent === true
+      && object.fullObjectChecksumVerified === true
+      && object.exactVersionReadback === true
+      && JSON.stringify(object.checksum) === JSON.stringify(PRIMARY_CHECKSUM)
+      && validPrimaryRetention(object.retention);
+  });
+}
 
 export function remoteEvidenceSatisfiesCurrentWildfireGate(evidence) {
   if (!evidence || evidence.schemaVersion !== "witness-tree/current-wildfire-immutable-readbacks/1" || evidence.region !== "ca-central-1" || !Array.isArray(evidence.objects) || evidence.objects.length !== requiredCurrentWildfireObjects.length) return false;
@@ -52,9 +103,9 @@ export function evaluateCurrentWildfireProductionEligibility(record, evidence) {
     && remoteEvidenceSatisfiesCurrentWildfireGate(evidence);
 }
 
-export function validateCurrentWildfireOwnerAdmission(record, ledger, profiles, policies, remoteEvidence = null) {
+export function validateCurrentWildfireOwnerAdmission(record, ledger, profiles, policies, remoteEvidence = null, rawEvidence = read("data/current-wildfire-raw-archive-evidence.json"), derivedEvidence = read("data/current-wildfire-derived-archive-evidence.json")) {
   assert.equal(record.schemaVersion, "witness-tree/current-wildfire-owner-admission/1");
-  assert.equal(record.status, "owner-approved-pipeline-blocked-on-immutable-readbacks");
+  assert.equal(record.status, "owner-approved-pipeline-blocked-on-recovery-and-production-proof");
   assert.deepEqual(record.ownerDecision, {
     scopeApproved: true,
     geometryApproved: true,
@@ -64,10 +115,14 @@ export function validateCurrentWildfireOwnerAdmission(record, ledger, profiles, 
     productionAdmissionApproved: true,
     condition: "Every exact raw payload and each required derived payload must first have repository-integrated immutable archive readback evidence. Approval does not itself satisfy that condition."
   });
-  assert.equal(record.archiveGate.status, "blocked-two-derived-remote-readbacks-missing");
+  assert.equal(record.archiveGate.status, "primary-six-object-readbacks-verified-production-blocked");
   assert.equal(record.archiveGate.evidenceRef, "data/current-wildfire-raw-archive-evidence.json");
+  assert.equal(record.archiveGate.derivedEvidenceRef, "data/current-wildfire-derived-archive-evidence.json");
   assert.equal(record.archiveGate.requiredObjectCount, 6);
-  assert.equal(record.archiveGate.verifiedObjectCount, 4);
+  assert.equal(record.archiveGate.verifiedObjectCount, 6);
+  assert.equal(record.archiveGate.primaryReadbacksVerified, true);
+  assert.equal(record.archiveGate.recoveryReplicaVerified, false);
+  assert.equal(record.archiveGate.mutationProvenance, false);
   assert.equal(record.archiveGate.productionEligible, false);
   assert.match(record.refreshAndAuthority.representation, /as-of snapshot.*never label.*real-time/i);
   assert.match(record.refreshAndAuthority.precedence, /provincial.*prevails over CWFIS/i);
@@ -105,13 +160,16 @@ export function validateCurrentWildfireOwnerAdmission(record, ledger, profiles, 
   assert.match(ontario.transformation, /zero exclusion|no exclusion/i);
 
   assert.deepEqual(record.pipeline, {
-    transformation: "approved-scope-defined-local-artifacts-not-remotely-verified",
-    ingestion: "approved-blocked-on-archive-gate",
-    release: "approved-blocked-on-archive-gate",
-    productionAdmission: "approved-blocked-on-archive-gate",
+    transformation: "approved-scope-defined-local-artifacts-remotely-verified",
+    ingestion: "approved-blocked-on-recovery-and-production-proof",
+    release: "approved-blocked-on-recovery-and-production-proof",
+    productionAdmission: "approved-blocked-on-recovery-and-production-proof",
     productionEligible: false,
-    activationRule: "The machine gate may return productionEligible=true only when one integrated remote-evidence record proves all six exact raw/derived objects and every required readback/retention field."
+    activationRule: "The machine gate may return productionEligible=true only when one integrated remote-evidence record proves all six exact raw/derived objects and every required readback/retention field, recovery/mutation provenance is recorded, and a separate production-admission decision is present."
   });
+  assert.equal(primaryEvidenceSatisfiesCurrentWildfireGate(rawEvidence, derivedEvidence), true, "The six-object primary archive gate must consume both redacted raw and derived records.");
+  assert.equal(derivedEvidence.claims.recoveryReplicaVerified, false);
+  assert.equal(derivedEvidence.claims.mutationProvenance, false);
   assert.equal(evaluateCurrentWildfireProductionEligibility(record, remoteEvidence), false, "No unintegrated or incomplete remote evidence may activate production.");
   return record;
 }
@@ -121,11 +179,14 @@ export function checkCurrentWildfireOwnerAdmission() {
     read("data/current-wildfire-owner-admission.json"),
     read("data/phase1-production-source-ledger.json"),
     {"cwfis-current":read("data/cwfis-current-active-fires-profile.json"),"bc-wildfire":read("data/bc-wildfire-current-perimeters-profile.json"),"ab-wildfire":read("data/alberta-wildfire-locations-profile.json"),"on-fire-disturbance":read("data/ontario-in-year-fire-perimeters-profile.json")},
-    {bc:read("data/bc-wildfire-geometry-policy-2026-08-14.json"),ontario:read("data/ontario-in-year-fire-geometry-policy-2026-08-14.json")}
+    {bc:read("data/bc-wildfire-geometry-policy-2026-08-14.json"),ontario:read("data/ontario-in-year-fire-geometry-policy-2026-08-14.json")},
+    null,
+    read("data/current-wildfire-raw-archive-evidence.json"),
+    read("data/current-wildfire-derived-archive-evidence.json")
   );
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   checkCurrentWildfireOwnerAdmission();
-  console.log("Current-wildfire owner scope is approved for four sources; production remains blocked on 4/6 immutable object readbacks.");
+  console.log("Current-wildfire owner scope is approved for four sources; six primary objects are verified, while recovery/mutation provenance and production remain blocked.");
 }

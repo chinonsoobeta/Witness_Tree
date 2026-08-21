@@ -1,6 +1,6 @@
 {
   "schemaVersion": "witness-tree/current-wildfire-owner-admission/1",
-  "status": "owner-approved-pipeline-blocked-on-immutable-readbacks",
+  "status": "owner-approved-pipeline-blocked-on-recovery-and-production-proof",
   "approvedAt": "2026-08-14",
   "ownerDecision": {
     "scopeApproved": true,
@@ -12,10 +12,14 @@
     "condition": "Every exact raw payload and each required derived payload must first have repository-integrated immutable archive readback evidence. Approval does not itself satisfy that condition."
   },
   "archiveGate": {
-    "status": "blocked-two-derived-remote-readbacks-missing",
+    "status": "primary-six-object-readbacks-verified-production-blocked",
     "evidenceRef": "data/current-wildfire-raw-archive-evidence.json",
+    "derivedEvidenceRef": "data/current-wildfire-derived-archive-evidence.json",
     "requiredObjectCount": 6,
-    "verifiedObjectCount": 4,
+    "verifiedObjectCount": 6,
+    "primaryReadbacksVerified": true,
+    "recoveryReplicaVerified": false,
+    "mutationProvenance": false,
     "requirements": [
       "exact immutable object key",
       "exact object version ID",
@@ -79,11 +83,11 @@
     }
   ],
   "pipeline": {
-    "transformation": "approved-scope-defined-local-artifacts-not-remotely-verified",
-    "ingestion": "approved-blocked-on-archive-gate",
-    "release": "approved-blocked-on-archive-gate",
-    "productionAdmission": "approved-blocked-on-archive-gate",
+    "transformation": "approved-scope-defined-local-artifacts-remotely-verified",
+    "ingestion": "approved-blocked-on-recovery-and-production-proof",
+    "release": "approved-blocked-on-recovery-and-production-proof",
+    "productionAdmission": "approved-blocked-on-recovery-and-production-proof",
     "productionEligible": false,
-    "activationRule": "The machine gate may return productionEligible=true only when one integrated remote-evidence record proves all six exact raw/derived objects and every required readback/retention field."
+    "activationRule": "The machine gate may return productionEligible=true only when one integrated remote-evidence record proves all six exact raw/derived objects and every required readback/retention field, recovery/mutation provenance is recorded, and a separate production-admission decision is present."
   }
 }

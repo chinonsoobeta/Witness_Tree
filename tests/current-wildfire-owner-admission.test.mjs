@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
-import { evaluateCurrentWildfireProductionEligibility, remoteEvidenceSatisfiesCurrentWildfireGate, requiredCurrentWildfireObjects, validateCurrentWildfireOwnerAdmission } from "../scripts/check-current-wildfire-owner-admission.mjs";
+import { evaluateCurrentWildfireProductionEligibility, primaryEvidenceSatisfiesCurrentWildfireGate, remoteEvidenceSatisfiesCurrentWildfireGate, requiredCurrentWildfireObjects, validateCurrentWildfireOwnerAdmission } from "../scripts/check-current-wildfire-owner-admission.mjs";
 import { validate as validateDerivedPromotionPlan } from "../scripts/prepare-wildfire-derived-immutable-promotion.mjs";
 
 const read = (path) => JSON.parse(readFileSync(new URL(path, import.meta.url), "utf8"));
@@ -12,8 +12,40 @@ const policies = {bc:read("../data/bc-wildfire-geometry-policy-2026-08-14.json")
 
 test("owner approves the exact four-source scope while immutable evidence keeps production blocked", () => {
   assert.equal(validateCurrentWildfireOwnerAdmission(record, ledger, profiles, policies), record);
-  assert.equal(record.archiveGate.verifiedObjectCount, 4);
+  assert.equal(record.archiveGate.verifiedObjectCount, 6);
+  assert.equal(record.archiveGate.primaryReadbacksVerified, true);
+  assert.equal(record.archiveGate.recoveryReplicaVerified, false);
   assert.equal(record.pipeline.productionEligible, false);
+});
+
+test("redacted raw plus derived readbacks close the six-object primary gate without activating production", () => {
+  const raw = read("../data/current-wildfire-raw-archive-evidence.json");
+  const derived = read("../data/current-wildfire-derived-archive-evidence.json");
+  assert.equal(primaryEvidenceSatisfiesCurrentWildfireGate(raw, derived), true);
+  assert.equal(derived.claims.mutationProvenance, false);
+  assert.equal(derived.claims.recoveryReplicaVerified, false);
+  assert.equal(record.pipeline.productionEligible, false);
+});
+
+test("the redacted six-object gate rejects any raw or derived evidence drift", () => {
+  const raw = read("../data/current-wildfire-raw-archive-evidence.json");
+  const derived = read("../data/current-wildfire-derived-archive-evidence.json");
+  for (const mutate of [
+    (candidate) => { candidate.entries[0].bytes += 1; },
+    (candidate) => { candidate.entries[1].payloadRetention.until = "2033-08-11T23:59:59Z"; },
+  ]) {
+    const changed = structuredClone(raw);
+    mutate(changed);
+    assert.equal(primaryEvidenceSatisfiesCurrentWildfireGate(changed, derived), false);
+  }
+  for (const mutate of [
+    (candidate) => { candidate.objects.find(({ id }) => id === "bc-wildfire-derived-payload").key = "derived/bc-wildfire/geometry-policy-v1/legacy.gpkg"; },
+    (candidate) => { candidate.objects.find(({ id }) => id === "on-fire-disturbance-derived-payload").checksum.providerValue = "drifted"; },
+  ]) {
+    const changed = structuredClone(derived);
+    mutate(changed);
+    assert.equal(primaryEvidenceSatisfiesCurrentWildfireGate(raw, changed), false);
+  }
 });
 
 test("BC admits 216 geometries, permanently quarantines V10755 and never claims 217 coverage", () => {

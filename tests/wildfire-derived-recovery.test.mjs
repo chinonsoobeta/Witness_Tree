@@ -197,6 +197,7 @@ test("recovery approval, private state, IAM attestation, and evidence are exact"
   const runner = readFileSync(runnerPath, "utf8");
   assert.match(runner, /--if-none-match '\*'/);
   assert.match(runner, /--validate-fresh-state "\$STATE"/);
+  assert.match(runner, /unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN AWS_PROFILE AWS_DEFAULT_PROFILE/);
   assert.match(runner, /Partial recovery evidence requires owner review/);
   assert.doesNotMatch(runner, /ListBucket|upload-part|complete-multipart|delete-object/);
   validateState(s);

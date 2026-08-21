@@ -58,6 +58,6 @@ test("keeps the dependency order and current-wildfire archive condition fail-clo
   assert.throws(() => validatePhase1OwnerDecisionQueue(orderDrift, context), /later or missing/);
 
   const wildfireDrift = structuredClone(queue);
-  wildfireDrift.queueRows.find((row) => row.id === "bc-wildfire").archiveGate.verifiedObjects = 6;
+  wildfireDrift.queueRows.find((row) => row.id === "bc-wildfire").archiveGate.verifiedObjects = 5;
   assert.throws(() => validatePhase1OwnerDecisionQueue(wildfireDrift, context), /deep-equal|verifiedObjects/);
 });

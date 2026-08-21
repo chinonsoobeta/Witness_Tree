@@ -2,7 +2,7 @@
   "schemaVersion": "witness-tree/phase1-owner-decision-queue/1",
   "status": "owner-action-queue-read-only",
   "asOf": "2026-08-21",
-  "derivedFromHead": "71925af03fc08b052d12077de2ba4acb9239006b",
+  "derivedFromHead": "4466a14dd1462d09692db869523df713a6db2291",
   "notice": "This consolidated queue restates existing Phase 1 owner boundaries and evidence and points to two supplied non-admitting decisions: national source-ledger-only acceptance and the PLVI raw/derived scope decision. It does not create an approval, authorize AWS or remote storage, submit a form, send email, transform, ingest, release, or make any row production eligible.",
   "selectionRule": "Include every canonical production row whose evidenceState is local-verified-profiled or remote-verified-archived-profiled and whose productionAdmission remains false. These rows have a next owner-controlled source-scope, transformation, ingestion, release, archive-promotion, or production-admission decision. Exclude partial-component and access-blocked rows because their next gate is external artifact, rights, authority, or permission resolution before this owner pipeline.",
   "baseline": {
@@ -155,8 +155,10 @@
       },
       "archiveGate": {
         "requiredObjects": 6,
-        "verifiedObjects": 4,
-        "missingDerivedReadbacks": ["bc-wildfire", "on-fire-disturbance"],
+        "verifiedObjects": 6,
+        "primaryReadbacksVerified": true,
+        "recoveryReplicaVerified": false,
+        "mutationProvenance": false,
         "productionEligible": false
       },
       "localReadbackPreflight": {
@@ -170,15 +172,16 @@
         "productionEligible": false
       },
       "exactNextSteps": [
-        "run the safe preflight",
-        "obtain fresh owner approval",
-        "promote only the two missing derived objects through the approved path",
-        "integrate readbacks",
-        "re-run the six-object gate and downstream release checks"
+        "preserve the six exact primary readback records",
+        "obtain and integrate separately proven recovery or mutation-provenance evidence",
+        "keep transformation, ingestion and release claims blocked until their gates pass",
+        "record separate release and production-admission decisions",
+        "re-run the downstream release checks"
       ],
       "evidenceRefs": [
         "data/current-wildfire-owner-admission.json",
         "data/current-wildfire-raw-archive-evidence.json",
+        "data/current-wildfire-derived-archive-evidence.json",
         "data/current-wildfire-immutable-promotion-preparation.json"
       ],
       "productionEligible": false
@@ -200,8 +203,10 @@
       },
       "archiveGate": {
         "requiredObjects": 6,
-        "verifiedObjects": 4,
-        "missingDerivedReadbacks": ["bc-wildfire", "on-fire-disturbance"],
+        "verifiedObjects": 6,
+        "primaryReadbacksVerified": true,
+        "recoveryReplicaVerified": false,
+        "mutationProvenance": false,
         "productionEligible": false
       },
       "localReadbackPreflight": {
@@ -215,15 +220,16 @@
         "productionEligible": false
       },
       "exactNextSteps": [
-        "run the safe preflight",
-        "obtain fresh owner approval",
-        "promote only the two missing derived objects through the approved path",
-        "integrate readbacks",
-        "re-run the six-object gate and downstream release checks"
+        "preserve the six exact primary readback records",
+        "obtain and integrate separately proven recovery or mutation-provenance evidence",
+        "keep transformation, ingestion and release claims blocked until their gates pass",
+        "record separate release and production-admission decisions",
+        "re-run the downstream release checks"
       ],
       "evidenceRefs": [
         "data/current-wildfire-owner-admission.json",
         "data/current-wildfire-raw-archive-evidence.json",
+        "data/current-wildfire-derived-archive-evidence.json",
         "data/current-wildfire-immutable-promotion-preparation.json"
       ],
       "productionEligible": false
@@ -245,8 +251,10 @@
       },
       "archiveGate": {
         "requiredObjects": 6,
-        "verifiedObjects": 4,
-        "missingDerivedReadbacks": ["bc-wildfire", "on-fire-disturbance"],
+        "verifiedObjects": 6,
+        "primaryReadbacksVerified": true,
+        "recoveryReplicaVerified": false,
+        "mutationProvenance": false,
         "productionEligible": false
       },
       "localReadbackPreflight": {
@@ -260,15 +268,16 @@
         "productionEligible": false
       },
       "exactNextSteps": [
-        "run the safe preflight",
-        "obtain fresh owner approval",
-        "promote only the two missing derived objects through the approved path",
-        "integrate readbacks",
-        "re-run the six-object gate and downstream release checks"
+        "preserve the six exact primary readback records",
+        "obtain and integrate separately proven recovery or mutation-provenance evidence",
+        "keep transformation, ingestion and release claims blocked until their gates pass",
+        "record separate release and production-admission decisions",
+        "re-run the downstream release checks"
       ],
       "evidenceRefs": [
         "data/current-wildfire-owner-admission.json",
         "data/current-wildfire-raw-archive-evidence.json",
+        "data/current-wildfire-derived-archive-evidence.json",
         "data/current-wildfire-immutable-promotion-preparation.json"
       ],
       "productionEligible": false
@@ -290,8 +299,10 @@
       },
       "archiveGate": {
         "requiredObjects": 6,
-        "verifiedObjects": 4,
-        "missingDerivedReadbacks": ["bc-wildfire", "on-fire-disturbance"],
+        "verifiedObjects": 6,
+        "primaryReadbacksVerified": true,
+        "recoveryReplicaVerified": false,
+        "mutationProvenance": false,
         "productionEligible": false
       },
       "localReadbackPreflight": {
@@ -305,15 +316,16 @@
         "productionEligible": false
       },
       "exactNextSteps": [
-        "run the safe preflight",
-        "obtain fresh owner approval",
-        "promote only the two missing derived objects through the approved path",
-        "integrate readbacks",
-        "re-run the six-object gate and downstream release checks"
+        "preserve the six exact primary readback records",
+        "obtain and integrate separately proven recovery or mutation-provenance evidence",
+        "keep transformation, ingestion and release claims blocked until their gates pass",
+        "record separate release and production-admission decisions",
+        "re-run the downstream release checks"
       ],
       "evidenceRefs": [
         "data/current-wildfire-owner-admission.json",
         "data/current-wildfire-raw-archive-evidence.json",
+        "data/current-wildfire-derived-archive-evidence.json",
         "data/current-wildfire-immutable-promotion-preparation.json"
       ],
       "productionEligible": false
@@ -612,7 +624,7 @@
       "dependsOn": [],
       "ownerAction": "Before any remote action, the owner must freshly approve the four exact payloads and four deterministic sidecars derived by this record, bucket witness-tree-raw-archive-ca-central-1 in ca-central-1, COMPLIANCE retention through 2033-08-12T00:00:00Z on payload versions only, and the named MFA-gated direct-PutObject/read-back procedure.",
       "source": "data/current-wildfire-immutable-promotion-preparation.json",
-      "afterArchive": "The current owner admission is conditional: integrate exact readbacks for all six objects, then re-run the archive gate and downstream release checks."
+      "afterArchive": "All six primary object readbacks are now integrated in redacted form; recovery or mutation provenance and separate release/production decisions remain required, and no downstream claim is activated."
     },
     {
       "step": 7,
@@ -630,7 +642,7 @@
       "dependsOn": ["current-wildfire-archive-gate"],
       "ownerAction": "Re-run the archive gate, validate approved transformations and ingestion, record release and production admission, and set eligibility only after every source gate passes.",
       "source": "data/phase1-remaining-actions-audit.json",
-      "afterDecision": "The machine activation rule requires one integrated record proving all six exact objects and every required readback."
+      "afterDecision": "The machine activation rule additionally requires recovery or mutation provenance and a separate production-admission decision; the current redacted evidence does not activate those claims."
     },
     {
       "step": 9,

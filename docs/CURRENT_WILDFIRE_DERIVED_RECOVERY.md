@@ -143,5 +143,6 @@ It records primary readback and payload-retention facts only; it does not claim
 mutation provenance, a recovery replica, source-ledger admission,
 transformation, ingestion, release, production eligibility, or Phase 2. The
 older dated live-recovery guard remains historical evidence and is not
-overwritten. The six-object owner gate remains fail-closed until its own
-required repository-integrated evidence contract is satisfied.
+overwritten. The integrated raw and derived records now satisfy the primary
+six-object gate; activation remains fail-closed until derived recovery or
+mutation provenance and separate downstream decisions are proven.

@@ -2,7 +2,7 @@
   "schemaVersion": "witness-tree/phase1-remaining-actions-audit/1",
   "status": "blocked-read-only",
   "asOf": "2026-08-21",
-  "derivedFromHead": "71925af03fc08b052d12077de2ba4acb9239006b",
+  "derivedFromHead": "4466a14dd1462d09692db869523df713a6db2291",
   "notice": "Fresh local Phase 1 remaining-action audit. It reconciles the canonical 31-row ledger, immutable-promotion preparation, owner-decision readiness, reply, and access-block records. It performs no AWS call, email, form submission, archive mutation, permission grant, transformation, ingestion, release, production admission, or production-eligibility change.",
   "selectionRule": "Audit every production row where immutable remote proof is absent OR production admission is absent. The union is all 31 rows because production admission is absent for every row.",
   "baseline": {
@@ -23,7 +23,7 @@
     "accessBlockedRowsWithSubstantiveReply": 8,
     "currentWildfireArchiveGate": {
       "requiredObjects": 6,
-      "verifiedObjects": 4,
+      "verifiedObjects": 6,
       "productionEligible": false
     }
   },
@@ -48,7 +48,7 @@
   },
   "localImplementationAudit": {
     "status": "local-gates-complete-owner-or-external-blockers-remain",
-    "derivedFromHead": "71925af03fc08b052d12077de2ba4acb9239006b",
+    "derivedFromHead": "4466a14dd1462d09692db869523df713a6db2291",
     "notice": "Requirement-by-requirement local implementation audit. Existing profiles, validators, transformation evidence, no-write preflights, and conditional recovery/readback paths are recorded without granting owner approval, permission, archive credit, ingestion, release, production admission, or Phase 2 authority.",
     "requirementCategories": [
       {
@@ -179,9 +179,9 @@
         "rows": ["cwfis-current", "bc-wildfire", "ab-wildfire", "on-fire-disturbance"],
         "actionIds": ["current-wildfire-derived-archive-preflight-and-owner-promotion", "wildfire-transform-ingest-release"],
         "category": "recovery-readback",
-        "status": "local-path-complete-live-proof-missing",
-        "localBoundary": "The exact derived readback checker and no-write preflight are implemented and bound to the owner queue; no version, checksum, retention, or recovery evidence is invented.",
-        "missing": ["owner-approved MFA execution", "four exact derived heads and versions", "two payload COMPLIANCE-retention readbacks", "integrated six-object gate"],
+        "status": "primary-live-proof-integrated-recovery-provenance-missing",
+        "localBoundary": "The redacted exact derived primary readback and payload-retention evidence is integrated; no recovery replica, mutation provenance, downstream admission, or production claim is invented.",
+        "missing": ["recovery replica or mutation-provenance evidence", "separate transformation, ingestion, release and production-admission records"],
         "safeLocalImplementation": true,
         "ownerOrExternalPrerequisite": true,
         "scoreImpact": {"rawCreditDelta": 0, "formalPercentagePointDelta": 0}
@@ -254,11 +254,11 @@
       "id": "current-wildfire-six-release-inputs",
       "rows": ["cwfis-current", "bc-wildfire", "ab-wildfire", "on-fire-disturbance"],
       "physicalArtifactCount": 6,
-      "deduplication": "Four raw snapshots and two checksum-bound derived releases are one six-object owner-admission gate; the four raw snapshots are already credited and the two derived readbacks are missing.",
+      "deduplication": "Four raw snapshots and two checksum-bound derived releases are one six-object owner-admission gate; all six primary readbacks are now verified, while recovery provenance and downstream admission remain separate blockers.",
       "preparation": "data/current-wildfire-immutable-promotion-preparation.json",
       "ownerAdmission": "data/current-wildfire-owner-admission.json",
       "runner": "scripts/run-current-wildfire-approved-promotion.sh",
-      "currentStatus": "four-of-six exact objects remotely verified; BC and Ontario derived readbacks remain missing"
+      "currentStatus": "six-primary exact objects remotely verified; recovery provenance and downstream admission remain blocked"
     },
     {
       "id": "quebec-provincial-current-and-original",
@@ -486,11 +486,11 @@
     {
       "id": "current-wildfire-derived-archive-preflight-and-owner-promotion",
       "rank": 6,
-      "priorityBasis": "The safe preflight exists and would close the 4/6 archive gate, but owner MFA execution and two exact derived readbacks are required; raw score cannot increase.",
+      "priorityBasis": "The six-object primary gate is now closed by redacted exact readbacks, but recovery or mutation provenance and a separate production decision remain required; raw score cannot increase.",
       "lawfulImmediacy": "delegate-preflight-now-owner-run-later",
       "actor": "delegate-and-owner",
       "executableNow": true,
-      "executionBoundary": "Only the no-write local preflight is executable now; owner promotion is conditional and no derived completion is claimed.",
+      "executionBoundary": "Only the no-write local evidence/preflight checks are executable now; recovery or mutation provenance and downstream production claims remain conditional.",
       "requiresOwnerInput": true,
       "requiresExternalReply": false,
       "ownerRunAuthorized": false,
@@ -500,20 +500,21 @@
         "data/current-wildfire-immutable-promotion-preparation.json",
         "data/current-wildfire-owner-admission.json",
         "data/current-wildfire-raw-archive-evidence.json",
+        "data/current-wildfire-derived-archive-evidence.json",
         "data/phase1-immutable-promotion-readiness.json",
         "data/phase1-owner-decision-queue.json"
       ],
       "runnerOrPreflight": {
         "safeNow": "zsh scripts/run-current-wildfire-approved-promotion.sh --preflight",
         "derivedReadbackPreflight": "zsh scripts/run-wildfire-derived-readback.sh --preflight <mode-600-owner-approval-file>",
-        "derivedReadbackChecker": "scripts/check-wildfire-derived-readback.mjs",
-        "ownerExecution": "BLOCKED: --run requires fresh exact-scope approval, interactive MFA, and exact raw/derived immutable readbacks."
+        "derivedReadbackChecker": "scripts/check-current-wildfire-derived-archive-evidence.mjs",
+        "ownerExecution": "BLOCKED: recovery or mutation provenance and separate release/production admission remain unproven; no owner run is authorized by this audit."
       },
-      "prerequisites": ["Keep the verified four raw objects unchanged.", "Prepare and owner-approve the BC and Ontario checksum-bound derived objects.", "Owner performs the six-object promotion with MFA and approved retention.", "Integrate exact version, bytes, checksum, COMPLIANCE retention, recovery, and Canadian-region readbacks."],
-      "remainingSteps": ["run the safe preflight", "obtain fresh owner approval", "promote only the two missing derived objects through the approved path", "integrate readbacks", "re-run the six-object gate and downstream release checks"],
+      "prerequisites": ["Keep the six exact primary payload/sidecar readbacks and approved as-of semantics unchanged.", "Obtain and independently verify any recovery-replica or mutation-provenance evidence required by the release contract.", "Record separate transformation, ingestion, release and production-admission decisions.", "Keep production eligibility false until every downstream proof is integrated."],
+      "remainingSteps": ["validate the six-object primary gate", "review recovery or mutation-provenance evidence", "record separate transformation, ingestion and release decisions", "record production admission", "re-run the downstream release checks"],
       "scoreImpact": {"currentRawCreditDelta": 0, "maximumRawCreditDelta": 0, "maximumFormalPercentagePointDelta": 0, "productionAdmissionDelta": 0},
-      "gateImpact": {"currentVerifiedObjects": 4, "requiredObjects": 6, "potentialVerifiedObjectsAfterAction": 6},
-      "blockers": ["BC and Ontario derived readbacks remain absent; production remains false even though owner scope and downstream approvals are conditional-approved."]
+      "gateImpact": {"currentVerifiedObjects": 6, "requiredObjects": 6, "potentialVerifiedObjectsAfterAction": 6},
+      "blockers": ["Primary readbacks are complete, but recovery or mutation provenance and a separate production-admission proof remain absent; production remains false."]
     },
     {
       "id": "archived-remote-transform-ingest-release",
@@ -538,22 +539,22 @@
     {
       "id": "wildfire-transform-ingest-release",
       "rank": 8,
-      "priorityBasis": "Owner-approved wildfire scope is usable only after all six immutable objects read back; this is downstream of action 6.",
+      "priorityBasis": "Owner-approved wildfire scope has all six primary objects read back, but recovery or mutation provenance and separate release/production decisions remain downstream of action 6.",
       "lawfulImmediacy": "owner-and-delegate-after-archive-gate",
       "actor": "owner-and-delegate",
       "executableNow": false,
-      "executionBoundary": "Do not transform, ingest, release, or activate any wildfire row while the six-object gate is 4/6.",
+      "executionBoundary": "Do not transform, ingest, release, or activate any wildfire row from primary readbacks alone; recovery/provenance and separate downstream decisions remain required.",
       "requiresOwnerInput": true,
       "requiresExternalReply": false,
       "ownerRunAuthorized": false,
       "rows": ["cwfis-current", "bc-wildfire", "ab-wildfire", "on-fire-disturbance"],
       "physicalArtifactGroup": "current-wildfire-six-release-inputs",
-      "evidenceRefs": ["data/current-wildfire-owner-admission.json", "data/current-wildfire-raw-archive-evidence.json", "data/phase1-current-state-completion-audit.json", "data/phase1-owner-decision-queue.json"],
+      "evidenceRefs": ["data/current-wildfire-owner-admission.json", "data/current-wildfire-raw-archive-evidence.json", "data/current-wildfire-derived-archive-evidence.json", "data/phase1-current-state-completion-audit.json", "data/phase1-owner-decision-queue.json"],
       "runnerOrPreflight": {"evidence": "data/current-wildfire-owner-admission.json pipeline.activationRule"},
-      "prerequisites": ["All six exact raw/derived objects pass immutable archive and recovery readbacks.", "Preserve each approved as-of, provincial-precedence, geometry-repair, quarantine, and no-completeness semantics.", "Record release activation and production admission separately."],
-      "remainingSteps": ["re-run the archive gate", "validate approved transformations", "validate ingestion", "record release and production admission", "set eligibility only after every source gate passes"],
+      "prerequisites": ["All six exact raw/derived primary objects remain bound to the redacted readback records.", "Recovery or mutation provenance is separately proven where required by the release contract.", "Preserve each approved as-of, provincial-precedence, geometry-repair, quarantine, and no-completeness semantics.", "Record release activation and production admission separately."],
+      "remainingSteps": ["preserve and re-run the primary archive gate", "validate recovery/provenance evidence", "validate approved transformations", "validate ingestion and release", "record production admission and set eligibility only after every source gate passes"],
       "scoreImpact": {"currentRawCreditDelta": 0, "maximumRawCreditDelta": 0, "maximumFormalPercentagePointDelta": 0, "productionAdmissionDelta": 0},
-      "blockers": ["The machine activation rule explicitly requires one integrated record proving all six objects and every required readback."]
+      "blockers": ["The machine activation rule additionally requires recovery or mutation provenance and a separate production-admission decision."]
     },
     {
       "id": "partial-historical-owner-review-and-external-evidence",

@@ -17,7 +17,7 @@ export function validatePhase1GeometryPolicies({ ledger, bc, ontario, admission 
   assert.equal(ontario.ingested, false);
   assert.equal(ontario.productionEligible, false);
   assert.equal(admission.ownerDecision.geometryApproved, true);
-  assert.equal(admission.archiveGate.verifiedObjectCount, 4);
+  assert.equal(admission.archiveGate.verifiedObjectCount, 6);
   assert.equal(admission.pipeline.productionEligible, false);
   const bcAdmission = admission.sources.find(({id}) => id === "bc-wildfire");
   assert.equal(bcAdmission.derived.featureCount, 216);
@@ -52,5 +52,5 @@ export function checkPhase1GeometryPolicies() {
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   checkPhase1GeometryPolicies();
-  console.log("Phase 1 BC and Ontario geometry scope is owner-approved; activation remains blocked on immutable readbacks.");
+  console.log("Phase 1 BC and Ontario geometry scope is owner-approved; primary wildfire readbacks are complete, while recovery/provenance and activation remain blocked.");
 }

@@ -1,6 +1,6 @@
 # Current-wildfire owner admission
 
-The owner has approved the exact Phase 1 transformation, ingestion, public-release and production-admission scope for the four checksum-bound current-wildfire snapshots. This clears the BC and Ontario geometry decisions and resolves the CWFIS and Alberta operational semantics. It does **not** make any source production eligible: the machine record has four of six required immutable object readbacks, so ingestion, release and runtime activation remain blocked.
+The owner has approved the exact Phase 1 transformation, ingestion, public-release and production-admission scope for the four checksum-bound current-wildfire snapshots. This clears the BC and Ontario geometry decisions and resolves the CWFIS and Alberta operational semantics. It does **not** make any source production eligible: the machine record now has redacted primary readbacks for all six required payloads, but recovery or mutation provenance and separate downstream admission records remain absent.
 
 The binding record is [`data/current-wildfire-owner-admission.json`](../data/current-wildfire-owner-admission.json). Its gate requires exact object keys, version IDs, byte lengths, full-object checksum verification, exact-version readbacks, Canadian `ca-central-1` storage and active COMPLIANCE retention through at least `2033-08-12T00:00:00Z` for four raw objects and the two required derived objects.
 
@@ -19,16 +19,14 @@ Within a province, the responsible provincial wildfire agency source prevails ov
 
 ## Remaining activation gate
 
-No AWS operation is part of this decision. Production eligibility remains `false` until one repository-integrated readback record satisfies all six exact-object requirements. Owner approval cannot substitute for storage evidence, and the existing raw provenance and geometry policies remain unchanged.
+No AWS operation is part of this decision. The six-object primary archive gate is now `6/6` from the integrated raw and derived redacted records. Production eligibility remains `false` until recovery or mutation provenance and separate transformation, ingestion, release and production-admission records are proven. Owner approval cannot substitute for those downstream records, and the existing raw provenance and geometry policies remain unchanged.
 
 ## Derived archive recovery
 
-The redacted read-only archive record found one BC derived orphan payload with
-the approved 216-feature byte length and full-object CRC64NVME, but no
-retention, manifest or recovery replica; the Ontario derived prefix is empty.
-The fail-closed recovery guard is recorded in
+The older fail-closed recovery guard remains historical evidence in
 [`data/current-wildfire-derived-live-recovery-guard-2026-08-20.json`](../data/current-wildfire-derived-live-recovery-guard-2026-08-20.json).
-It records no version identifier, permission change, retention write, upload,
-delete, or owner admission. The derived objects remain unverified until a
-separately approved exact-key promotion and redacted version/checksum/
-retention/recovery readback are integrated.
+The newer redacted primary record
+[`data/current-wildfire-derived-archive-evidence.json`](../data/current-wildfire-derived-archive-evidence.json)
+proves the exact BC and Ontario payload/manifest heads and payload retention,
+but intentionally claims no recovery replica, mutation provenance, owner
+admission, transformation, ingestion, release or production eligibility.

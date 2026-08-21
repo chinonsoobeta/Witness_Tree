@@ -2,7 +2,7 @@
   "schemaVersion": "witness-tree/phase1-bc-ontario-row-audit/1",
   "status": "blocked-read-only",
   "auditedAt": "2026-08-21T00:00:00Z",
-  "derivedFromHead": "1749b501f17b5cb55a686178232dc6ac191d3e81",
+  "derivedFromHead": "4466a14dd1462d09692db869523df713a6db2291",
   "jurisdictions": ["BC", "ON"],
   "notice": "This audit reconciles the eleven BC/ON production rows against the canonical ledger and existing local or independently verified route, reply, geometry, and archive records. It performs no AWS call, email, form submission, permission acceptance, archive mutation, transformation, ingestion, release, production admission, or production-eligibility change.",
   "canonicalRowIds": [
@@ -37,7 +37,7 @@
     "bcOntarioRawCreditDelta": 0,
     "currentWildfireArchiveGate": {
       "requiredObjects": 6,
-      "verifiedObjects": 4,
+      "verifiedObjects": 6,
       "productionEligible": false
     }
   },
@@ -54,9 +54,10 @@
       "id": "bc-ontario-current-wildfire-derived-gate",
       "rows": ["bc-wildfire", "on-fire-disturbance"],
       "category": "remote-raw-archive-derived-readback-blocked",
-      "currentStatus": "Both BC and Ontario raw snapshots have exact primary/recovery immutable evidence. The required derived archive readbacks remain incomplete: the observed BC derived payload has no retention, sidecar or recovery object, and the Ontario derived prefix is empty.",
+      "currentStatus": "Both BC and Ontario raw snapshots and both checksum-bound derived payload/manifest pairs have redacted exact-key primary readback and payload-retention evidence. Recovery or mutation provenance and separate production admission remain unproven.",
       "evidenceRefs": [
         "data/current-wildfire-raw-archive-evidence.json",
+        "data/current-wildfire-derived-archive-evidence.json",
         "data/current-wildfire-owner-admission.json",
         "data/current-wildfire-derived-live-recovery-guard-2026-08-20.json",
         "data/bc-wildfire-geometry-policy-2026-08-14.json",
@@ -64,17 +65,17 @@
       ],
       "currentWildfireArchiveGate": {
         "requiredObjects": 6,
-        "verifiedObjects": 4,
-        "derivedObjectsVerified": false,
+        "verifiedObjects": 6,
+        "derivedObjectsVerified": true,
         "productionEligible": false
       },
       "currentRawCreditDelta": 0,
       "maximumRawCreditDelta": 0,
       "maximumFormalPercentagePointDelta": 0,
-      "nextLawfulAction": "Obtain fresh owner authorization for the exact derived payloads and sidecars, resolve the observed BC live object by owner disposition, then integrate exact-version, checksum, retention and recovery readbacks before changing the six-object gate.",
+      "nextLawfulAction": "Preserve the six primary readbacks, obtain any separately required recovery or mutation-provenance evidence, and record production admission only after every downstream gate passes.",
       "blockers": [
-        "BC derived live payload is not an immutable archive proof: retention, manifest and recovery are absent.",
-        "Ontario derived archive readback is absent.",
+        "Recovery-replica or mutation provenance for the derived pair is absent from the redacted evidence.",
+        "Separate transformation, ingestion, release and production-admission records remain absent.",
         "Production remains blocked even though the raw rows already carry one raw-evidence credit each."
       ]
     },
@@ -173,14 +174,15 @@
         "data/bc-wildfire-current-perimeters-profile.json",
         "data/bc-wildfire-geometry-policy-2026-08-14.json",
         "data/current-wildfire-owner-admission.json",
-        "data/current-wildfire-raw-archive-evidence.json"
+        "data/current-wildfire-raw-archive-evidence.json",
+        "data/current-wildfire-derived-archive-evidence.json"
       ],
       "replyRecordIds": [],
       "currentRawCreditDelta": 0,
       "maximumRawCreditDelta": 0,
       "maximumFormalPercentagePointDelta": 0,
-      "nextAction": "Complete the derived six-object archive gate and then record the separate production admission evidence.",
-      "blockers": ["BC derived immutable readback, retention, sidecar and recovery evidence are missing."],
+      "nextAction": "Review any separately required recovery or mutation-provenance evidence, then record the separate transformation, release and production-admission decisions.",
+      "blockers": ["Derived primary readback and payload retention are verified; recovery or mutation provenance and separate downstream admission records remain absent."],
       "claims": {"archiveMutation": false, "permissionGranted": false, "externalReplyResolved": false, "productionAdmission": false, "productionEligible": false}
     },
     {
@@ -196,14 +198,15 @@
         "data/ontario-in-year-fire-perimeters-profile.json",
         "data/ontario-in-year-fire-geometry-policy-2026-08-14.json",
         "data/current-wildfire-owner-admission.json",
-        "data/current-wildfire-raw-archive-evidence.json"
+        "data/current-wildfire-raw-archive-evidence.json",
+        "data/current-wildfire-derived-archive-evidence.json"
       ],
       "replyRecordIds": [],
       "currentRawCreditDelta": 0,
       "maximumRawCreditDelta": 0,
       "maximumFormalPercentagePointDelta": 0,
-      "nextAction": "Complete the derived six-object archive gate and then record the separate production admission evidence.",
-      "blockers": ["Ontario derived immutable readback, retention, sidecar and recovery evidence are missing."],
+      "nextAction": "Review any separately required recovery or mutation-provenance evidence, then record the separate transformation, release and production-admission decisions.",
+      "blockers": ["Derived primary readback and payload retention are verified; recovery or mutation provenance and separate downstream admission records remain absent."],
       "claims": {"archiveMutation": false, "permissionGranted": false, "externalReplyResolved": false, "productionAdmission": false, "productionEligible": false}
     },
     {

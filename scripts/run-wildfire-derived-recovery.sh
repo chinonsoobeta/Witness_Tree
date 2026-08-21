@@ -101,6 +101,11 @@ fi
 read -r -s 'totp?Current MFA TOTP (not stored): '
 print
 [[ "$totp" =~ '^[0-9]{6}$' ]] || fail "TOTP must be exactly six digits; no AWS call was made" 64
+# Do not let credentials or profile selectors inherited by the owner wrapper
+# influence the operator-profile MFA exchange. The explicit --profile below
+# must be the only source of bootstrap credentials; temporary role credentials
+# are installed only after the account-bound AssumeRole response is checked.
+unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN AWS_PROFILE AWS_DEFAULT_PROFILE AWS_WEB_IDENTITY_TOKEN_FILE AWS_ROLE_ARN AWS_ROLE_SESSION_NAME AWS_CONTAINER_CREDENTIALS_RELATIVE_URI AWS_CONTAINER_CREDENTIALS_FULL_URI
 mfa_serial="$(aws configure get mfa_serial --profile "$PROFILE" 2>"$TMP/mfa-serial.stderr")" || fail "Configured MFA serial could not be read; no storage mutation was authorized" 69
 [[ "$mfa_serial" =~ '^arn:aws:iam::286853118812:mfa/[A-Za-z0-9+=,.@_/-]+$' ]] || fail "Configured MFA serial is absent or outside the approved account; no storage mutation was authorized" 69
 if ! aws sts assume-role --profile "$PROFILE" --role-arn "arn:aws:iam::${ACCOUNT}:role/$ROLE" --role-session-name witness-tree-derived-recovery --serial-number "$mfa_serial" --token-code "$totp" --duration-seconds 3600 --output json >"$TMP/role-session.json" 2>"$TMP/sts-role.stderr"; then

@@ -24,7 +24,7 @@ const EXPECTED_GROUPS = new Map([
   ["quebec-fourth-inventory-56-sheet-product", { rows: ["qc-fourth-inventory"], physicalArtifactCount: 62 }]
 ]);
 
-const LOCAL_AUDIT_HEAD = "71925af03fc08b052d12077de2ba4acb9239006b";
+const LOCAL_AUDIT_HEAD = "4466a14dd1462d09692db869523df713a6db2291";
 const LOCAL_AUDIT_CATEGORIES = new Map([
   ["archive-preflight-and-readback", ["national-local-archive-preflight-and-owner-promotion", "quebec-current-original-archive-preflight-and-owner-promotion", "quebec-fourth-archive-preflight-and-owner-approvals", "current-wildfire-derived-archive-preflight-and-owner-promotion", "normal-archive-control-exercise"]],
   ["profiles-and-validators", ["national-archived-owner-source-ledger-decisions", "plvi-owner-scope-decision", "archived-remote-transform-ingest-release", "wildfire-transform-ingest-release", "partial-historical-owner-review-and-external-evidence", "partial-boundaries-owner-review-and-external-evidence", "access-blocked-owner-and-external-resolution", "production-admission-and-release-gate"]],
@@ -96,7 +96,7 @@ function validatePhysicalArtifactGroups(audit, immutable) {
   assert.ok(national.localPreflight.plannedSidecarKeys.every((key) => key.endsWith("/manifest.json")));
   const wildfire = audit.physicalArtifactGroups.find(({ id }) => id === "current-wildfire-six-release-inputs");
   assert.equal(wildfire.runner, "scripts/run-current-wildfire-approved-promotion.sh");
-  assert.equal(wildfire.currentStatus.includes("four-of-six"), true);
+  assert.equal(wildfire.currentStatus.includes("six-primary"), true);
   const qc = audit.physicalArtifactGroups.find(({ id }) => id === "quebec-provincial-current-and-original");
   assert.equal(qc.runner, "scripts/run-qc-approved-multipart-promotion.sh");
   validateLocalPreflight(qc, {
@@ -169,7 +169,7 @@ export function validatePhase1RemainingActionsAudit(audit, ledger, currentState,
   assert.match(audit.notice, /no AWS call.*email.*form submission.*production-eligibility change/i);
   assert.match(audit.selectionRule, /immutable remote proof is absent OR production admission is absent/i);
   assert.match(audit.scoreFormula, /30 \* raw-credit delta \/ 31/);
-  assert.equal(audit.derivedFromHead, "71925af03fc08b052d12077de2ba4acb9239006b");
+  assert.equal(audit.derivedFromHead, "4466a14dd1462d09692db869523df713a6db2291");
   assert.deepEqual(audit.claims, CLAIMS);
 
   const entries = ledger.entries;
@@ -198,7 +198,7 @@ export function validatePhase1RemainingActionsAudit(audit, ledger, currentState,
   assert.equal(currentState.ledger.immutableArchiveCompleteRows, audit.baseline.immutableArchiveCompleteRows);
   assert.equal(currentState.ledger.productionAdmissionCompleteRows, 0);
   assert.equal(currentState.ledger.productionEligibleRows, 0);
-  assert.deepEqual(currentState.globalGates.immutableArchives, { status: "blocked", completeRows: 11, localRowsAwaitingArchive: 5, sourceEvidenceBlockedRows: 15, currentWildfireRequiredObjects: 6, currentWildfireVerifiedObjects: 4 });
+  assert.deepEqual(currentState.globalGates.immutableArchives, { status: "blocked", completeRows: 11, localRowsAwaitingArchive: 5, sourceEvidenceBlockedRows: 15, currentWildfireRequiredObjects: 6, currentWildfireVerifiedObjects: 6 });
   assert.equal(currentState.globalGates.outreach.repliesRecorded, replyAudit.counts.substantiveReplyRecords);
   assert.equal(currentState.globalGates.outreach.accessBlockedRowsWithSubstantiveReply, replyAudit.counts.accessBlockedRowsWithSubstantiveReply);
   assert.equal(partialOutreach.status, "owner-review-only-not-sent");
@@ -234,7 +234,7 @@ export function validatePhase1RemainingActionsAudit(audit, ledger, currentState,
   validateLocalImplementationAudit(audit.localImplementationAudit, audit.actions, ledger);
 
   const wildfireReadbackAction = actionsById.get("current-wildfire-derived-archive-preflight-and-owner-promotion");
-  assert.equal(wildfireReadbackAction.runnerOrPreflight.derivedReadbackChecker, "scripts/check-wildfire-derived-readback.mjs");
+  assert.equal(wildfireReadbackAction.runnerOrPreflight.derivedReadbackChecker, "scripts/check-current-wildfire-derived-archive-evidence.mjs");
   assert.match(wildfireReadbackAction.runnerOrPreflight.derivedReadbackPreflight, /run-wildfire-derived-readback\.sh --preflight <mode-600-owner-approval-file>/);
 
   assert.equal(audit.nextFive.length, 5);

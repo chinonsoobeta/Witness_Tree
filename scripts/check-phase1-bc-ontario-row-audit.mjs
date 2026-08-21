@@ -82,12 +82,12 @@ function assertReferences(references, label) {
   for (const reference of references) assert.equal(exists(reference), true, `${label} cites missing ${reference}`);
 }
 
-function validateWildfireEvidence(audit, raw, owner, liveGuard) {
+function validateWildfireEvidence(audit, raw, owner, liveGuard, derived) {
   const group = audit.groups.find(({ id }) => id === "bc-ontario-current-wildfire-derived-gate");
   assert.deepEqual(group.currentWildfireArchiveGate, {
     requiredObjects: 6,
-    verifiedObjects: 4,
-    derivedObjectsVerified: false,
+    verifiedObjects: 6,
+    derivedObjectsVerified: true,
     productionEligible: false
   });
   assert.deepEqual(owner.archiveGate, {
@@ -95,11 +95,15 @@ function validateWildfireEvidence(audit, raw, owner, liveGuard) {
     productionEligible: false
   });
   assert.equal(owner.archiveGate.requiredObjectCount, 6);
-  assert.equal(owner.archiveGate.verifiedObjectCount, 4);
+  assert.equal(owner.archiveGate.verifiedObjectCount, 6);
   assert.equal(raw.claims.derivedObjectsVerified, false);
   assert.equal(raw.claims.recoveryObjectsVerified, true);
   assert.equal(raw.claims.ownerAdmission, false);
   assert.equal(raw.claims.productionEligible, false);
+  assert.equal(derived.claims.derivedObjectsVerified, true);
+  assert.equal(derived.claims.primaryObjectsVerified, true);
+  assert.equal(derived.claims.recoveryReplicaVerified, false);
+  assert.equal(derived.claims.mutationProvenance, false);
   for (const sourceId of ["bc-wildfire", "on-fire-disturbance"]) {
     const entry = raw.entries.find(({ sourceId: id }) => id === sourceId);
     assert.ok(entry, `${sourceId} raw archive record is missing.`);
@@ -185,7 +189,7 @@ export function validatePhase1BcOntarioRowAudit(audit, ledger, context) {
   assert.equal(audit.schemaVersion, "witness-tree/phase1-bc-ontario-row-audit/1");
   assert.equal(audit.status, "blocked-read-only");
   assert.match(audit.auditedAt, /^2026-08-21T/);
-  assert.equal(audit.derivedFromHead, "1749b501f17b5cb55a686178232dc6ac191d3e81");
+  assert.equal(audit.derivedFromHead, "4466a14dd1462d09692db869523df713a6db2291");
   assert.deepEqual(audit.jurisdictions, ["BC", "ON"]);
   assert.deepEqual(audit.canonicalRowIds, ROW_IDS);
   assert.deepEqual(audit.claims, CLAIMS);
@@ -217,7 +221,7 @@ export function validatePhase1BcOntarioRowAudit(audit, ledger, context) {
   assert.equal(audit.baseline.bcOntarioRows, ROW_IDS.length);
   assert.equal(audit.baseline.bcOntarioRawCredit, ledger.entries.filter(({ id }) => ROW_IDS.includes(id)).reduce((sum, row) => sum + row.rawCredit, 0));
   assert.equal(audit.baseline.bcOntarioRawCreditDelta, 0);
-  assert.deepEqual(audit.baseline.currentWildfireArchiveGate, { requiredObjects: 6, verifiedObjects: 4, productionEligible: false });
+  assert.deepEqual(audit.baseline.currentWildfireArchiveGate, { requiredObjects: 6, verifiedObjects: 6, productionEligible: false });
 
   assert.deepEqual(audit.groups.map(({ id }) => id), Object.keys(GROUPS));
   const groupRows = new Set();
@@ -258,7 +262,7 @@ export function validatePhase1BcOntarioRowAudit(audit, ledger, context) {
     assert.ok(relevantGroup);
   }
 
-  validateWildfireEvidence(audit, raw, owner, liveGuard);
+  validateWildfireEvidence(audit, raw, owner, liveGuard, context.derived);
   validateBcAccessEvidence(access, replies, becCustom, becPublic, copyright);
   validateOntarioEvidence(access, replies, friRoute);
   validatePartialEvidence(partial);
@@ -270,6 +274,7 @@ export function loadPhase1BcOntarioRowAudit() {
     access: read("data/phase1-access-blocker-resolution.json"),
     replies: read("data/phase1-outreach-reply-audit.json"),
     raw: read("data/current-wildfire-raw-archive-evidence.json"),
+    derived: read("data/current-wildfire-derived-archive-evidence.json"),
     owner: read("data/current-wildfire-owner-admission.json"),
     liveGuard: read("data/current-wildfire-derived-live-recovery-guard-2026-08-20.json"),
     becCustom: read("data/phase1-bec-custom-download-route-audit.json"),

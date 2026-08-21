@@ -7,6 +7,7 @@ const read = (file) => JSON.parse(readFileSync(new URL(`../${file}`, import.meta
 export function validatePhase1CurrentStateCompletionAudit(audit, ledger, readiness, immutable, wildfire, outreach, partialOutreach, access, replyAudit, routeAudit) {
   assert.equal(audit.schemaVersion, 1);
   assert.equal(audit.status, "blocked-zero-of-31-production-complete");
+  assert.equal(audit.asOf, "2026-08-21");
   assert.match(audit.notice, /seven named source\/scope decisions.*two national source-ledger-only decisions.*PLVI raw\/derived scope decision.*no transformation admission.*production eligibility/i);
   assert.equal(ledger.entries.length, 31);
   assert.equal(audit.rows.length, 31);
@@ -21,9 +22,9 @@ export function validatePhase1CurrentStateCompletionAudit(audit, ledger, readine
   assert.equal(audit.ledger.productionEligibleRows, ledger.entries.filter(({ productionEligible }) => productionEligible).length);
   assert.equal(audit.ledger.ownerSourceDecisionRecordedRows, readiness.counts["owner-decision-recorded"]);
   assert.equal(audit.ledger.ownerDownstreamScopeRecordedAwaitingArchiveRows, readiness.counts["owner-scope-decision-recorded-awaiting-archive"]);
-  assert.deepEqual(audit.globalGates.immutableArchives, {status:"blocked", completeRows:11, localRowsAwaitingArchive:5, sourceEvidenceBlockedRows:15, currentWildfireRequiredObjects:6, currentWildfireVerifiedObjects:4});
+  assert.deepEqual(audit.globalGates.immutableArchives, {status:"blocked", completeRows:11, localRowsAwaitingArchive:5, sourceEvidenceBlockedRows:15, currentWildfireRequiredObjects:6, currentWildfireVerifiedObjects:6});
   assert.equal(wildfire.archiveGate.requiredObjectCount, 6);
-  assert.equal(wildfire.archiveGate.verifiedObjectCount, 4);
+  assert.equal(wildfire.archiveGate.verifiedObjectCount, 6);
   assert.equal(immutable.physicalArtifactGroups.find(({ id }) => id === "current-wildfire-six-release-inputs").physicalArtifactCount, 6);
   const exercise = audit.globalGates.normalArchiveExercise;
   assert.equal(exercise.status, "not-integrated"); assert.equal(exercise.evidenceRef, null); assert.equal(exercise.complete, false);
