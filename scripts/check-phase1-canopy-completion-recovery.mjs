@@ -7,13 +7,19 @@ const retentionDeltaPath = new URL("../data/phase1-canopy-recovery-retention-iam
 export const desiredRecoveryRetentionDelta = JSON.parse(readFileSync(retentionDeltaPath, "utf8"));
 
 export const canopyRecoveryIamAttestation = Object.freeze({
-  schemaVersion: "witness-tree/phase1-canopy-recovery-iam-attestation/1",
+  schemaVersion: "witness-tree/phase1-canopy-recovery-iam-attestation/2",
   policyName: desiredRecoveryRetentionDelta.policyName,
   delta: Object.freeze({
     sid: desiredRecoveryRetentionDelta.delta.sid,
     effect: desiredRecoveryRetentionDelta.delta.effect,
     actions: Object.freeze([...desiredRecoveryRetentionDelta.delta.actions]),
     resource: desiredRecoveryRetentionDelta.delta.resource
+  }),
+  readbackCorrection: Object.freeze({
+    sid: desiredIamDelta.delta.sid,
+    actions: Object.freeze([...desiredIamDelta.delta.actions]),
+    resources: Object.freeze([...desiredIamDelta.delta.resources]),
+    removedCondition: Object.freeze(structuredClone(desiredIamDelta.authorizedConditionRemoval))
   }),
   simulations: Object.freeze(desiredRecoveryRetentionDelta.simulations.map((simulation) => Object.freeze({ ...simulation })))
 });
@@ -82,11 +88,11 @@ export function validateCanopyRecoveryIam(policyEnvelope, desired = desiredIamDe
   assert.equal(delta.Effect, desired.delta.effect, "the recovery-readback statement must allow the exact action");
   assert.deepEqual(sorted(statementActions(delta)), sorted(desired.delta.actions), "the recovery delta grants an unexpected action");
   assert.deepEqual(sorted(statementResources(delta)), sorted(desired.delta.resources), "the recovery delta has an unexpected resource scope");
-  assert.deepEqual(delta.Condition, desired.delta.condition, "the recovery delta must retain the MFA conditions");
+  assert.equal(delta.Condition, undefined, "the recovery readback statement may not retain an S3-call MFA condition");
   assert.equal(delta.NotAction, undefined, "the recovery delta may not use NotAction");
   assert.equal(delta.NotResource, undefined, "the recovery delta may not use NotResource");
   assert.equal(delta.Principal, undefined, "the recovery delta may not introduce a principal");
-  assert.deepEqual(Object.keys(delta).sort(), ["Action", "Condition", "Effect", "Resource", "Sid"].sort(), "the recovery delta has an unexpected policy field");
+  assert.deepEqual(Object.keys(delta).sort(), ["Action", "Effect", "Resource", "Sid"].sort(), "the recovery delta has an unexpected policy field");
 
   for (const statement of statements) {
     assert.equal(statement.NotAction, undefined, "role policy may not hide actions behind NotAction");
@@ -142,7 +148,7 @@ export function validateCanopyRecoveryIamAttestation(attestation, { requireAppli
   assert.deepEqual(Object.keys(attestation).sort(), [
     "accessAnalyzer", "account", "applied", "basePolicySha256", "delta", "desiredPolicySha256",
     "noCredentials", "noObjectVersionIds", "noUploadIds", "policyName", "preservation", "profile",
-    "readbackPolicySha256", "region", "role", "schemaVersion", "simulations", "status"
+    "readbackCorrection", "readbackPolicySha256", "region", "role", "schemaVersion", "simulations", "status"
   ].sort(), "IAM attestation contains an unexpected field");
   assert.equal(attestation.schemaVersion, canopyRecoveryIamAttestation.schemaVersion, "IAM attestation schema is not recognized");
   assert.equal(attestation.account, desiredRecoveryRetentionDelta.account, "IAM attestation account is outside the approved account");
@@ -167,6 +173,8 @@ export function validateCanopyRecoveryIamAttestation(attestation, { requireAppli
   assert.equal(attestation.noUploadIds, true, "IAM attestation is not redacted of upload IDs");
   assert.deepEqual(attestation.delta, canopyRecoveryIamAttestation.delta, "IAM attestation delta is not exact");
   assert.deepEqual(Object.keys(attestation.delta).sort(), ["actions", "effect", "resource", "sid"].sort(), "IAM attestation delta contains an unexpected field");
+  assert.deepEqual(attestation.readbackCorrection, canopyRecoveryIamAttestation.readbackCorrection, "IAM attestation readback correction is not exact");
+  assert.deepEqual(Object.keys(attestation.readbackCorrection).sort(), ["actions", "removedCondition", "resources", "sid"].sort(), "IAM attestation readback correction contains an unexpected field");
   assert.deepEqual(Object.keys(attestation.accessAnalyzer).sort(), ["findings", "status"].sort(), "IAM attestation Access Analyzer result contains an unexpected field");
   assert.equal(Number.isInteger(attestation.accessAnalyzer.findings) && attestation.accessAnalyzer.findings === 0, true, "IAM attestation Access Analyzer findings are not zero");
   assert.equal(attestation.accessAnalyzer.status === "passed" || (!attestation.applied && attestation.accessAnalyzer.status === "unavailable"), true, "IAM attestation Access Analyzer result is not recognized");

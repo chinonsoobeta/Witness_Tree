@@ -69,7 +69,7 @@ function policy(includeDelta = true, includeRecoveryRetention = true) {
       Resource: [desiredIamDelta.requiredExistingRetention.resources[0]]
     }
   ];
-  if (includeDelta) statements.push({ Sid: desiredIamDelta.delta.sid, Effect: desiredIamDelta.delta.effect, Action: [...desiredIamDelta.delta.actions], Resource: [...desiredIamDelta.delta.resources], Condition: structuredClone(desiredIamDelta.delta.condition) });
+  if (includeDelta) statements.push({ Sid: desiredIamDelta.delta.sid, Effect: desiredIamDelta.delta.effect, Action: [...desiredIamDelta.delta.actions], Resource: [...desiredIamDelta.delta.resources] });
   if (includeRecoveryRetention) statements.push({
     Sid: desiredRecoveryRetentionDelta.delta.sid,
     Effect: desiredRecoveryRetentionDelta.delta.effect,
@@ -97,6 +97,7 @@ function attestation({ applied = true } = {}) {
     noObjectVersionIds: true,
     noUploadIds: true,
     delta: structuredClone(canopyRecoveryIamAttestation.delta),
+    readbackCorrection: structuredClone(canopyRecoveryIamAttestation.readbackCorrection),
     accessAnalyzer: { status: applied ? "passed" : "unavailable", findings: 0 },
     simulations: desiredRecoveryRetentionDelta.simulations.map((simulation) => ({
       ...simulation,
@@ -192,6 +193,47 @@ test("root provisioning dry run validates two sequential additive statements and
     const applied = JSON.parse(readFileSync(attestationPath, "utf8"));
     validateCanopyRecoveryIamAttestation(applied);
     assert.equal(readFileSync(marker, "utf8").match(/put-role-policy/g)?.length, 2);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("root provisioning removes only the legacy readback MFA condition in place", () => {
+  const dir = mkdtempSync(join(tmpdir(), "canopy-recovery-condition-removal-"));
+  try {
+    const marker = join(dir, "calls");
+    const livePolicyState = join(dir, "live-policy.json");
+    const legacy = policy();
+    legacy.Statement.find(({ Sid }) => Sid === desiredIamDelta.delta.sid).Condition = structuredClone(desiredIamDelta.authorizedConditionRemoval);
+    writeFileSync(livePolicyState, JSON.stringify({ RoleName: canopyRecovery.role, PolicyName: desiredRecoveryRetentionDelta.policyName, PolicyDocument: legacy }));
+    const awsPath = join(dir, "aws");
+    const fake = [
+      "#!/bin/zsh",
+      `print -r -- "$*" >> ${JSON.stringify(marker)}`,
+      "case \"$1:$2\" in",
+      `  sts:get-caller-identity) print -r -- ${JSON.stringify(JSON.stringify({ Account: canopyRecovery.account, Arn: `arn:aws:iam::${canopyRecovery.account}:root` }))} ;;`,
+      `  iam:get-role-policy) command cat ${JSON.stringify(livePolicyState)} ;;`,
+      "  iam:put-role-policy)",
+      "    for ((index=1; index <= $#; index++)); do if [[ \"${@[$index]}\" == '--policy-document' ]]; then next=$((index + 1)); policy_uri=\"${@[$next]}\"; fi; done",
+      `    jq -n --arg role ${JSON.stringify(canopyRecovery.role)} --arg policy ${JSON.stringify(desiredRecoveryRetentionDelta.policyName)} --argjson document "$(<"\${policy_uri#file://}")" '{RoleName:$role,PolicyName:$policy,PolicyDocument:$document}' > ${JSON.stringify(livePolicyState)}`,
+      "    ;;",
+      "  accessanalyzer:validate-policy) print -r -- '{\"findings\":[]}' ;;",
+      "  iam:simulate-principal-policy)",
+      "    if [[ \"$*\" == *s3:DeleteObject* || \"$*\" == *raw/not-approved/payload.zip* ]]; then decision=implicitDeny; else decision=allowed; fi",
+      "    print -r -- \"{\\\"EvaluationResults\\\":[{\\\"EvalDecision\\\":\\\"$decision\\\"}]}\"",
+      "    ;;",
+      "  *) exit 99 ;;",
+      "esac"
+    ].join("\n");
+    writeFileSync(awsPath, fake, { mode: 0o700 });
+    chmodSync(awsPath, 0o700);
+    const attestationPath = join(dir, "attestation.json");
+    const run = spawnSync(process.execPath, [provisionerPath, "--profile", "default", "--attestation", attestationPath, "--apply"], { encoding: "utf8", env: { ...process.env, PATH: `${dir}:${process.env.PATH}` } });
+    assert.equal(run.status, 0, run.stdout + run.stderr);
+    const finalPolicy = JSON.parse(readFileSync(livePolicyState, "utf8")).PolicyDocument;
+    validateCanopyRecoveryIam(finalPolicy);
+    assert.equal(finalPolicy.Statement.find(({ Sid }) => Sid === desiredIamDelta.delta.sid).Condition, undefined);
+    assert.equal(readFileSync(marker, "utf8").match(/put-role-policy/g)?.length, 1);
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }

@@ -98,14 +98,27 @@ function recoveryReadbackStatement() {
     Sid: desiredIamDelta.delta.sid,
     Effect: desiredIamDelta.delta.effect,
     Action: [...desiredIamDelta.delta.actions],
-    Resource: [...desiredIamDelta.delta.resources],
-    Condition: structuredClone(desiredIamDelta.delta.condition)
+    Resource: [...desiredIamDelta.delta.resources]
   };
+}
+
+function legacyRecoveryReadbackStatement() {
+  return { ...recoveryReadbackStatement(), Condition: structuredClone(desiredIamDelta.authorizedConditionRemoval) };
 }
 
 function assertPreserved(current, candidate, change, label) {
   if (change === "already-present") {
     if (!equalJson(current, candidate)) fail(`an idempotent ${label} step would rewrite the live policy; no IAM mutation was attempted`);
+    return;
+  }
+  if (change === "remove-readback-mfa-condition") {
+    if (candidate.Statement.length !== current.Statement.length) fail(`proposed ${label} condition removal changed the statement count; no IAM mutation was attempted`);
+    const target = current.Statement.findIndex((statement) => statement.Sid === desiredIamDelta.delta.sid);
+    current.Statement.forEach((statement, index) => {
+      if (index === target) {
+        if (!equalJson(statement, legacyRecoveryReadbackStatement()) || !equalJson(candidate.Statement[index], recoveryReadbackStatement())) fail(`proposed ${label} change is not the exact approved condition removal; no IAM mutation was attempted`);
+      } else if (!equalJson(statement, candidate.Statement[index])) fail(`proposed ${label} change does not preserve statement order and content; no IAM mutation was attempted`);
+    });
     return;
   }
   if (candidate.Statement.length !== current.Statement.length + 1) fail(`proposed ${label} change is not one additive statement; no IAM mutation was attempted`);
@@ -120,7 +133,13 @@ function buildReadbackCandidate(current) {
   const candidate = structuredClone(current);
   let change = "already-present";
   if (existing.length === 1) {
-    if (!equalJson(existing[0], recoveryReadbackStatement())) fail("live recovery-readback statement is not exact; no IAM mutation was attempted");
+    if (equalJson(existing[0], recoveryReadbackStatement())) {
+      // Already corrected.
+    } else if (equalJson(existing[0], legacyRecoveryReadbackStatement())) {
+      const index = candidate.Statement.findIndex((statement) => statement.Sid === desiredIamDelta.delta.sid);
+      candidate.Statement[index] = recoveryReadbackStatement();
+      change = "remove-readback-mfa-condition";
+    } else fail("live recovery-readback statement is not the exact approved legacy or corrected form; no IAM mutation was attempted");
   } else {
     candidate.Statement.push(recoveryReadbackStatement());
     change = "append-recovery-readback-statement";
@@ -214,9 +233,7 @@ function runSimulations(profile, candidate) {
     const result = rawAws([
       "iam", "simulate-principal-policy", "--profile", profile, "--policy-source-arn", ROLE_ARN,
       "--policy-input-list", JSON.stringify(candidate), "--action-names", expected.action,
-      "--resource-arns", simulationResource(expected.case), "--context-entries",
-      "ContextKeyName=aws:MultiFactorAuthPresent,ContextKeyValues=true,ContextKeyType=boolean",
-      "ContextKeyName=aws:MultiFactorAuthAge,ContextKeyValues=100,ContextKeyType=numeric",
+      "--resource-arns", simulationResource(expected.case),
       "--output", "json"
     ]);
     if (!result.ok) return { ...expected, decision: "unavailable" };
@@ -275,7 +292,7 @@ function main() {
     if (options.apply) {
       const latest = getLivePolicy(options.profile);
       if (policyHash(latest) !== basePolicySha256) fail("live policy changed during preflight; no IAM mutation was attempted", 77);
-      if (readbackChange === "append-recovery-readback-statement") putPolicy(options.profile, readbackPolicyPath, "recovery-readback");
+      if (readbackChange !== "already-present") putPolicy(options.profile, readbackPolicyPath, "recovery-readback");
       const readback = getLivePolicy(options.profile);
       if (policyHash(readback) !== prerequisitePolicySha256) fail("recovery-readback policy SHA does not match the exact prerequisite SHA; retention was not attempted", 77);
       try { validateCanopyRecoveryReadbackProvisioningPolicy(readback); }
@@ -293,7 +310,7 @@ function main() {
     if (readbackPolicySha256 !== desiredPolicySha256) fail("IAM policy readback SHA does not match the exact desired SHA; recovery remains blocked", 77);
   }
   const attestation = {
-    schemaVersion: "witness-tree/phase1-canopy-recovery-iam-attestation/1",
+    schemaVersion: "witness-tree/phase1-canopy-recovery-iam-attestation/2",
     status: options.apply ? "applied" : "planned",
     applied: options.apply,
     account: ACCOUNT,
@@ -313,6 +330,12 @@ function main() {
       effect: desiredRecoveryRetentionDelta.delta.effect,
       actions: [...desiredRecoveryRetentionDelta.delta.actions],
       resource: desiredRecoveryRetentionDelta.delta.resource
+    },
+    readbackCorrection: {
+      sid: desiredIamDelta.delta.sid,
+      actions: [...desiredIamDelta.delta.actions],
+      resources: [...desiredIamDelta.delta.resources],
+      removedCondition: structuredClone(desiredIamDelta.authorizedConditionRemoval)
     },
     accessAnalyzer: analyzer,
     simulations
