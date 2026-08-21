@@ -1,0 +1,656 @@
+{
+  "schemaVersion": "witness-tree/phase1-owner-decision-queue/1",
+  "status": "owner-action-queue-read-only",
+  "asOf": "2026-08-21",
+  "derivedFromHead": "88695058dddbc2a50997de6e18fe01838c146e03",
+  "notice": "This consolidated queue restates existing Phase 1 owner boundaries and evidence. It does not create an approval, authorize AWS or remote storage, submit a form, send email, transform, ingest, release, admit, or make any row production eligible.",
+  "selectionRule": "Include every canonical production row whose evidenceState is local-verified-profiled or remote-verified-archived-profiled and whose productionAdmission remains false. These rows have a next owner-controlled source-scope, transformation, ingestion, release, archive-promotion, or production-admission decision. Exclude partial-component and access-blocked rows because their next gate is external artifact, rights, authority, or permission resolution before this owner pipeline.",
+  "baseline": {
+    "productionRows": 31,
+    "rawEvidenceNumerator": 15.25,
+    "rawEvidenceDenominator": 31,
+    "formalEvidenceTrackingPercentage": 39.7580645,
+    "evidenceStateCounts": {
+      "remote-verified-archived-profiled": 11,
+      "local-verified-profiled": 5,
+      "partial-component": 2,
+      "access-blocked": 13
+    },
+    "immutableArchiveCompleteRows": 11,
+    "productionAdmissionCompleteRows": 0,
+    "productionEligibleRows": 0,
+    "queueRowCount": 16
+  },
+  "queueRows": [
+    {
+      "id": "ntems-annual-land-cover",
+      "evidenceState": "remote-verified-archived-profiled",
+      "rawCredit": 1,
+      "decisionBundle": "archived-remote-downstream",
+      "primaryActionId": "archived-remote-transform-ingest-release",
+      "ownerDecisionStatus": {
+        "sourceLedger": "recorded-approved-source-ledger-only",
+        "scope": "pending-downstream-scope",
+        "transformation": "pending",
+        "ingestion": "pending",
+        "release": "pending",
+        "productionAdmission": "pending"
+      },
+      "exactNextSteps": [
+        "execute the named transformation",
+        "validate ingestion",
+        "record release approval",
+        "record production admission",
+        "recompute eligibility fail-closed"
+      ],
+      "evidenceRefs": [
+        "data/phase1-production-source-ledger.json",
+        "data/phase1-remote-source-admission-decisions.json",
+        "data/phase1-current-state-completion-audit.json"
+      ],
+      "productionEligible": false
+    },
+    {
+      "id": "ntems-forest-harvest",
+      "evidenceState": "remote-verified-archived-profiled",
+      "rawCredit": 1,
+      "decisionBundle": "national-archived-source-ledger",
+      "primaryActionId": "national-archived-owner-source-ledger-decisions",
+      "ownerDecisionStatus": {
+        "sourceLedger": "pending",
+        "scope": "pending",
+        "transformation": "pending",
+        "ingestion": "pending",
+        "release": "pending",
+        "productionAdmission": "pending"
+      },
+      "exactNextSteps": [
+        "owner reviews the evidence",
+        "owner records the source-ledger decision",
+        "separately approve and validate transformation and ingestion",
+        "record release and production admission"
+      ],
+      "evidenceRefs": [
+        "data/nrcan-harvest-profile.json",
+        "data/nrcan-harvest-remote-archive-evidence.json",
+        "data/phase1-production-source-ledger.json",
+        "data/phase1-source-ledger-decision-readiness.json"
+      ],
+      "productionEligible": false
+    },
+    {
+      "id": "ntems-canopy-cover",
+      "evidenceState": "remote-verified-archived-profiled",
+      "rawCredit": 1,
+      "decisionBundle": "archived-remote-downstream",
+      "primaryActionId": "archived-remote-transform-ingest-release",
+      "ownerDecisionStatus": {
+        "sourceLedger": "recorded-approved-source-ledger-only",
+        "scope": "pending-downstream-scope",
+        "transformation": "pending",
+        "ingestion": "pending",
+        "release": "pending",
+        "productionAdmission": "pending"
+      },
+      "exactNextSteps": [
+        "execute the named transformation",
+        "validate ingestion",
+        "record release approval",
+        "record production admission",
+        "recompute eligibility fail-closed"
+      ],
+      "evidenceRefs": [
+        "data/phase1-production-source-ledger.json",
+        "data/phase1-remote-source-admission-decisions.json",
+        "data/phase1-current-state-completion-audit.json"
+      ],
+      "productionEligible": false
+    },
+    {
+      "id": "ntems-canopy-height",
+      "evidenceState": "remote-verified-archived-profiled",
+      "rawCredit": 1,
+      "decisionBundle": "national-archived-source-ledger",
+      "primaryActionId": "national-archived-owner-source-ledger-decisions",
+      "ownerDecisionStatus": {
+        "sourceLedger": "pending",
+        "scope": "pending",
+        "transformation": "pending",
+        "ingestion": "pending",
+        "release": "pending",
+        "productionAdmission": "pending"
+      },
+      "exactNextSteps": [
+        "owner reviews the evidence",
+        "owner records the source-ledger decision",
+        "separately approve and validate transformation and ingestion",
+        "record release and production admission"
+      ],
+      "evidenceRefs": [
+        "data/nrcan-canopy-height-profile.json",
+        "data/nrcan-canopy-height-remote-archive-evidence.json",
+        "data/phase1-production-source-ledger.json",
+        "data/phase1-source-ledger-decision-readiness.json"
+      ],
+      "productionEligible": false
+    },
+    {
+      "id": "cwfis-current",
+      "evidenceState": "remote-verified-archived-profiled",
+      "rawCredit": 1,
+      "decisionBundle": "current-wildfire-archive-gate",
+      "primaryActionId": "current-wildfire-derived-archive-preflight-and-owner-promotion",
+      "dependentActionIds": ["wildfire-transform-ingest-release"],
+      "ownerDecisionStatus": {
+        "sourceLedger": "recorded-conditional",
+        "scope": "recorded-conditional",
+        "transformation": "recorded-conditional",
+        "ingestion": "recorded-conditional",
+        "release": "recorded-conditional",
+        "productionAdmission": "recorded-conditional"
+      },
+      "archiveGate": {
+        "requiredObjects": 6,
+        "verifiedObjects": 4,
+        "missingDerivedReadbacks": ["bc-wildfire", "on-fire-disturbance"],
+        "productionEligible": false
+      },
+      "exactNextSteps": [
+        "run the safe preflight",
+        "obtain fresh owner approval",
+        "promote only the two missing derived objects through the approved path",
+        "integrate readbacks",
+        "re-run the six-object gate and downstream release checks"
+      ],
+      "evidenceRefs": [
+        "data/current-wildfire-owner-admission.json",
+        "data/current-wildfire-raw-archive-evidence.json",
+        "data/current-wildfire-immutable-promotion-preparation.json"
+      ],
+      "productionEligible": false
+    },
+    {
+      "id": "bc-wildfire",
+      "evidenceState": "remote-verified-archived-profiled",
+      "rawCredit": 1,
+      "decisionBundle": "current-wildfire-archive-gate",
+      "primaryActionId": "current-wildfire-derived-archive-preflight-and-owner-promotion",
+      "dependentActionIds": ["wildfire-transform-ingest-release"],
+      "ownerDecisionStatus": {
+        "sourceLedger": "recorded-conditional",
+        "scope": "recorded-conditional",
+        "transformation": "recorded-conditional",
+        "ingestion": "recorded-conditional",
+        "release": "recorded-conditional",
+        "productionAdmission": "recorded-conditional"
+      },
+      "archiveGate": {
+        "requiredObjects": 6,
+        "verifiedObjects": 4,
+        "missingDerivedReadbacks": ["bc-wildfire", "on-fire-disturbance"],
+        "productionEligible": false
+      },
+      "exactNextSteps": [
+        "run the safe preflight",
+        "obtain fresh owner approval",
+        "promote only the two missing derived objects through the approved path",
+        "integrate readbacks",
+        "re-run the six-object gate and downstream release checks"
+      ],
+      "evidenceRefs": [
+        "data/current-wildfire-owner-admission.json",
+        "data/current-wildfire-raw-archive-evidence.json",
+        "data/current-wildfire-immutable-promotion-preparation.json"
+      ],
+      "productionEligible": false
+    },
+    {
+      "id": "ab-wildfire",
+      "evidenceState": "remote-verified-archived-profiled",
+      "rawCredit": 1,
+      "decisionBundle": "current-wildfire-archive-gate",
+      "primaryActionId": "current-wildfire-derived-archive-preflight-and-owner-promotion",
+      "dependentActionIds": ["wildfire-transform-ingest-release"],
+      "ownerDecisionStatus": {
+        "sourceLedger": "recorded-conditional",
+        "scope": "recorded-conditional",
+        "transformation": "recorded-conditional",
+        "ingestion": "recorded-conditional",
+        "release": "recorded-conditional",
+        "productionAdmission": "recorded-conditional"
+      },
+      "archiveGate": {
+        "requiredObjects": 6,
+        "verifiedObjects": 4,
+        "missingDerivedReadbacks": ["bc-wildfire", "on-fire-disturbance"],
+        "productionEligible": false
+      },
+      "exactNextSteps": [
+        "run the safe preflight",
+        "obtain fresh owner approval",
+        "promote only the two missing derived objects through the approved path",
+        "integrate readbacks",
+        "re-run the six-object gate and downstream release checks"
+      ],
+      "evidenceRefs": [
+        "data/current-wildfire-owner-admission.json",
+        "data/current-wildfire-raw-archive-evidence.json",
+        "data/current-wildfire-immutable-promotion-preparation.json"
+      ],
+      "productionEligible": false
+    },
+    {
+      "id": "on-fire-disturbance",
+      "evidenceState": "remote-verified-archived-profiled",
+      "rawCredit": 1,
+      "decisionBundle": "current-wildfire-archive-gate",
+      "primaryActionId": "current-wildfire-derived-archive-preflight-and-owner-promotion",
+      "dependentActionIds": ["wildfire-transform-ingest-release"],
+      "ownerDecisionStatus": {
+        "sourceLedger": "recorded-conditional",
+        "scope": "recorded-conditional",
+        "transformation": "recorded-conditional",
+        "ingestion": "recorded-conditional",
+        "release": "recorded-conditional",
+        "productionAdmission": "recorded-conditional"
+      },
+      "archiveGate": {
+        "requiredObjects": 6,
+        "verifiedObjects": 4,
+        "missingDerivedReadbacks": ["bc-wildfire", "on-fire-disturbance"],
+        "productionEligible": false
+      },
+      "exactNextSteps": [
+        "run the safe preflight",
+        "obtain fresh owner approval",
+        "promote only the two missing derived objects through the approved path",
+        "integrate readbacks",
+        "re-run the six-object gate and downstream release checks"
+      ],
+      "evidenceRefs": [
+        "data/current-wildfire-owner-admission.json",
+        "data/current-wildfire-raw-archive-evidence.json",
+        "data/current-wildfire-immutable-promotion-preparation.json"
+      ],
+      "productionEligible": false
+    },
+    {
+      "id": "qc-current-ecoforest",
+      "evidenceState": "local-verified-profiled",
+      "rawCredit": 0.75,
+      "decisionBundle": "quebec-current-original-archive",
+      "primaryActionId": "quebec-current-original-archive-preflight-and-owner-promotion",
+      "ownerDecisionStatus": {
+        "archivePromotion": "pending-owner-approval",
+        "sourceLedger": "pending-after-archive",
+        "scope": "pending-after-archive",
+        "transformation": "pending-after-archive",
+        "ingestion": "pending-after-archive",
+        "release": "pending-after-archive",
+        "productionAdmission": "pending"
+      },
+      "exactNextSteps": [
+        "run the safe local preflight",
+        "obtain fresh owner approval",
+        "owner performs the separately authorized promotion",
+        "integrate immutable and recovery readbacks",
+        "record two named owner decisions and downstream gates"
+      ],
+      "evidenceRefs": [
+        "data/qc-immutable-promotion-preparation.json",
+        "data/phase1-immutable-promotion-readiness.json",
+        "data/phase1-archive-owner-command-reconciliation-2026-08-20.json"
+      ],
+      "productionEligible": false
+    },
+    {
+      "id": "qc-original-current-inventory",
+      "evidenceState": "local-verified-profiled",
+      "rawCredit": 0.75,
+      "decisionBundle": "quebec-current-original-archive",
+      "primaryActionId": "quebec-current-original-archive-preflight-and-owner-promotion",
+      "ownerDecisionStatus": {
+        "archivePromotion": "pending-owner-approval",
+        "sourceLedger": "pending-after-archive",
+        "scope": "pending-after-archive",
+        "transformation": "pending-after-archive",
+        "ingestion": "pending-after-archive",
+        "release": "pending-after-archive",
+        "productionAdmission": "pending"
+      },
+      "exactNextSteps": [
+        "run the safe local preflight",
+        "obtain fresh owner approval",
+        "owner performs the separately authorized promotion",
+        "integrate immutable and recovery readbacks",
+        "record two named owner decisions and downstream gates"
+      ],
+      "evidenceRefs": [
+        "data/qc-immutable-promotion-preparation.json",
+        "data/phase1-immutable-promotion-readiness.json",
+        "data/phase1-archive-owner-command-reconciliation-2026-08-20.json"
+      ],
+      "productionEligible": false
+    },
+    {
+      "id": "qc-fourth-inventory",
+      "evidenceState": "local-verified-profiled",
+      "rawCredit": 0.75,
+      "decisionBundle": "quebec-fourth-inventory-archive",
+      "primaryActionId": "quebec-fourth-archive-preflight-and-owner-approvals",
+      "ownerDecisionStatus": {
+        "archivePromotion": "pending-four-separate-approvals",
+        "sourceLedger": "pending-after-archive",
+        "scope": "pending-semantic-transformation-and-join-selection",
+        "transformation": "pending-after-archive",
+        "ingestion": "pending-after-archive",
+        "release": "pending-after-archive",
+        "productionAdmission": "pending"
+      },
+      "exactNextSteps": [
+        "retain the no-write preflight receipt",
+        "obtain the four approvals",
+        "owner performs the separately authorized 62-key promotion",
+        "integrate immutable and recovery readbacks",
+        "record named source decision and downstream gates"
+      ],
+      "requiredApprovalNames": [
+        "exact-artifact",
+        "IAM",
+        "MFA-session",
+        "irreversible COMPLIANCE-retention"
+      ],
+      "evidenceRefs": [
+        "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+        "data/qc-fourth-inventory-immutable-promotion-iam-policy.json",
+        "data/qc-fourth-inventory-evidence.json",
+        "data/phase1-immutable-promotion-readiness.json"
+      ],
+      "productionEligible": false
+    },
+    {
+      "id": "ab-avi-crown",
+      "evidenceState": "remote-verified-archived-profiled",
+      "rawCredit": 1,
+      "decisionBundle": "archived-remote-downstream",
+      "primaryActionId": "archived-remote-transform-ingest-release",
+      "ownerDecisionStatus": {
+        "sourceLedger": "recorded-approved-source-ledger-only",
+        "scope": "pending-downstream-scope",
+        "transformation": "pending",
+        "ingestion": "pending",
+        "release": "pending",
+        "productionAdmission": "pending"
+      },
+      "exactNextSteps": [
+        "execute the named transformation",
+        "validate ingestion",
+        "record release approval",
+        "record production admission",
+        "recompute eligibility fail-closed"
+      ],
+      "evidenceRefs": [
+        "data/phase1-remote-source-admission-decisions.json",
+        "data/phase1-alberta-transform-ingestion-audit.json",
+        "data/phase1-production-source-ledger.json"
+      ],
+      "productionEligible": false
+    },
+    {
+      "id": "ab-avi-post-harvest",
+      "evidenceState": "remote-verified-archived-profiled",
+      "rawCredit": 1,
+      "decisionBundle": "archived-remote-downstream",
+      "primaryActionId": "archived-remote-transform-ingest-release",
+      "ownerDecisionStatus": {
+        "sourceLedger": "recorded-approved-source-ledger-only",
+        "scope": "pending-downstream-scope",
+        "transformation": "pending",
+        "ingestion": "pending",
+        "release": "pending",
+        "productionAdmission": "pending"
+      },
+      "exactNextSteps": [
+        "execute the named transformation",
+        "validate ingestion",
+        "record release approval",
+        "record production admission",
+        "recompute eligibility fail-closed"
+      ],
+      "evidenceRefs": [
+        "data/phase1-remote-source-admission-decisions.json",
+        "data/phase1-alberta-transform-ingestion-audit.json",
+        "data/phase1-production-source-ledger.json"
+      ],
+      "productionEligible": false
+    },
+    {
+      "id": "ab-primary-land-vegetation",
+      "evidenceState": "remote-verified-archived-profiled",
+      "rawCredit": 1,
+      "decisionBundle": "alberta-plvi-scope",
+      "primaryActionId": "plvi-owner-scope-decision",
+      "ownerDecisionStatus": {
+        "sourceLedger": "pending-scope-decision",
+        "scope": "pending",
+        "transformation": "pending-under-owner-scope",
+        "ingestion": "pending-under-owner-scope",
+        "release": "pending",
+        "productionAdmission": "pending"
+      },
+      "exactNextSteps": [
+        "owner records the exact scope decision",
+        "validate transformation and ingestion under that decision",
+        "record release and production admission"
+      ],
+      "exactScopeDecision": "Decide whether to admit the unchanged raw ZIP and separately the 179,087-feature closed-join derived artifact with 12 bounded repairs, preserved duplicate POLYGON_ID 41405, and no feature loss or deduplication.",
+      "evidenceRefs": [
+        "data/alberta-plvi-immutable-promotion-evidence.json",
+        "data/alberta-plvi-full-release-readiness.json",
+        "data/phase1-source-ledger-decision-readiness.json",
+        "data/phase1-alberta-transform-ingestion-audit.json"
+      ],
+      "productionEligible": false
+    },
+    {
+      "id": "fed-2023-ridings",
+      "evidenceState": "local-verified-profiled",
+      "rawCredit": 0.75,
+      "decisionBundle": "federal-electoral-archive",
+      "primaryActionId": "national-local-archive-preflight-and-owner-promotion",
+      "ownerDecisionStatus": {
+        "archivePromotion": "pending-owner-approval",
+        "sourceLedger": "pending-after-archive",
+        "scope": "pending-after-archive",
+        "transformation": "pending-after-archive",
+        "ingestion": "pending-after-archive",
+        "release": "pending-after-archive",
+        "productionAdmission": "pending"
+      },
+      "exactNextSteps": [
+        "run the safe federal-only local preflight",
+        "obtain fresh federal owner approval",
+        "owner performs only the separately authorized federal promotion",
+        "integrate exact federal immutable and recovery readbacks",
+        "record named federal source decisions and downstream gates"
+      ],
+      "evidenceRefs": [
+        "data/phase1-local-profiled-promotion-preparation.json",
+        "data/elections-canada-fed-2025-profile.json",
+        "data/elections-canada-fed-2025-source-ledger.json",
+        "data/phase1-immutable-promotion-readiness.json"
+      ],
+      "productionEligible": false
+    },
+    {
+      "id": "elections-canada-45th-files",
+      "evidenceState": "local-verified-profiled",
+      "rawCredit": 0.75,
+      "decisionBundle": "federal-electoral-archive",
+      "primaryActionId": "national-local-archive-preflight-and-owner-promotion",
+      "ownerDecisionStatus": {
+        "archivePromotion": "pending-owner-approval",
+        "sourceLedger": "pending-after-archive",
+        "scope": "pending-after-archive",
+        "transformation": "pending-after-archive",
+        "ingestion": "pending-after-archive",
+        "release": "pending-after-archive",
+        "productionAdmission": "pending"
+      },
+      "exactNextSteps": [
+        "run the safe federal-only local preflight",
+        "obtain fresh federal owner approval",
+        "owner performs only the separately authorized federal promotion",
+        "integrate exact federal immutable and recovery readbacks",
+        "record named federal source decisions and downstream gates"
+      ],
+      "evidenceRefs": [
+        "data/phase1-local-profiled-promotion-preparation.json",
+        "data/elections-canada-fed-2025-profile.json",
+        "data/elections-canada-fed-2025-source-ledger.json",
+        "data/phase1-immutable-promotion-readiness.json"
+      ],
+      "productionEligible": false
+    }
+  ],
+  "decisionOrder": [
+    {
+      "step": 1,
+      "id": "federal-electoral-archive",
+      "rows": ["fed-2023-ridings", "elections-canada-45th-files"],
+      "dependsOn": [],
+      "ownerAction": "Before any remote action, the owner must freshly approve these exact artifacts, the exact Canadian bucket and region, an exact COMPLIANCE retain-until instant, and the named execution/read-back procedure.",
+      "source": "data/phase1-local-profiled-promotion-preparation.json",
+      "afterArchive": "Record named federal source decisions and downstream gates; the shared federal artifact remains local-only until exact immutable and recovery readbacks are integrated."
+    },
+    {
+      "step": 2,
+      "id": "quebec-current-original-archive",
+      "rows": ["qc-current-ecoforest", "qc-original-current-inventory"],
+      "dependsOn": [],
+      "ownerAction": "Before any remote action, the owner must freshly approve both exact artifacts below, their four exact keys, the exact Canadian bucket and region, MFA-gated sequential multipart execution, COMPLIANCE retention until 2033-08-12T00:00:00Z, and version, byte-length, provider-checksum, and retention read-backs.",
+      "source": "data/qc-immutable-promotion-preparation.json",
+      "afterArchive": "Record two named owner decisions and downstream gates; no archive or production admission is implied by local preparation."
+    },
+    {
+      "step": 3,
+      "id": "quebec-fourth-inventory-archive",
+      "rows": ["qc-fourth-inventory"],
+      "dependsOn": [],
+      "ownerAction": "Execution is forbidden without separate exact-artifact, IAM, MFA-session and irreversible COMPLIANCE-retention approvals.",
+      "source": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+      "afterArchive": "Record the named source decision and separately scoped semantic transformation and join selection before downstream gates. The exact 62-key plan is one physical product, not 62 ledger credits."
+    },
+    {
+      "step": 4,
+      "id": "national-archived-source-ledger",
+      "rows": ["ntems-forest-harvest", "ntems-canopy-height"],
+      "dependsOn": [],
+      "ownerAction": "Owner reviews the evidence and records the source-ledger decision; separately approve and validate transformation and ingestion, then record release and production admission.",
+      "source": "data/phase1-remaining-actions-audit.json",
+      "afterDecision": "Keep production admission and eligibility false until every downstream proof is separately recorded."
+    },
+    {
+      "step": 5,
+      "id": "alberta-plvi-scope",
+      "rows": ["ab-primary-land-vegetation"],
+      "dependsOn": [],
+      "ownerAction": "Decide whether to admit the unchanged raw ZIP and separately the 179,087-feature closed-join derived artifact with 12 bounded repairs, preserved duplicate POLYGON_ID 41405, and no feature loss or deduplication.",
+      "source": "data/phase1-source-ledger-decision-readiness.json",
+      "afterDecision": "Validate transformation and ingestion under that decision, then record release and production admission."
+    },
+    {
+      "step": 6,
+      "id": "current-wildfire-archive-gate",
+      "rows": ["cwfis-current", "bc-wildfire", "ab-wildfire", "on-fire-disturbance"],
+      "dependsOn": [],
+      "ownerAction": "Before any remote action, the owner must freshly approve the four exact payloads and four deterministic sidecars derived by this record, bucket witness-tree-raw-archive-ca-central-1 in ca-central-1, COMPLIANCE retention through 2033-08-12T00:00:00Z on payload versions only, and the named MFA-gated direct-PutObject/read-back procedure.",
+      "source": "data/current-wildfire-immutable-promotion-preparation.json",
+      "afterArchive": "The current owner admission is conditional: integrate exact readbacks for all six objects, then re-run the archive gate and downstream release checks."
+    },
+    {
+      "step": 7,
+      "id": "archived-remote-downstream",
+      "rows": ["ntems-annual-land-cover", "ntems-canopy-cover", "ab-avi-crown", "ab-avi-post-harvest"],
+      "dependsOn": ["national-archived-source-ledger"],
+      "ownerAction": "Execute the named transformation, validate ingestion, record release approval, record production admission, and recompute eligibility fail-closed. For AVI, obtain a separately named owner transformation and ingestion scope before any derived payload is admitted.",
+      "source": "data/phase1-remaining-actions-audit.json",
+      "afterDecision": "Existing source-ledger-only approvals do not authorize transformation, ingestion, release, runtime production eligibility, or any other source."
+    },
+    {
+      "step": 8,
+      "id": "wildfire-downstream",
+      "rows": ["cwfis-current", "bc-wildfire", "ab-wildfire", "on-fire-disturbance"],
+      "dependsOn": ["current-wildfire-archive-gate"],
+      "ownerAction": "Re-run the archive gate, validate approved transformations and ingestion, record release and production admission, and set eligibility only after every source gate passes.",
+      "source": "data/phase1-remaining-actions-audit.json",
+      "afterDecision": "The machine activation rule requires one integrated record proving all six exact objects and every required readback."
+    },
+    {
+      "step": 9,
+      "id": "local-row-downstream",
+      "rows": ["fed-2023-ridings", "elections-canada-45th-files", "qc-current-ecoforest", "qc-original-current-inventory", "qc-fourth-inventory"],
+      "dependsOn": ["federal-electoral-archive", "quebec-current-original-archive", "quebec-fourth-inventory-archive"],
+      "ownerAction": "After exact immutable and recovery readbacks, record the named source, transformation, ingestion, release, and production-admission decisions separately for each row.",
+      "source": "data/phase1-current-state-completion-audit.json",
+      "afterDecision": "Local preparation and no-write preflight do not imply archive, transformation, ingestion, release, or production admission."
+    },
+    {
+      "step": 10,
+      "id": "queue-production-admission",
+      "rows": [
+        "ntems-annual-land-cover",
+        "ntems-forest-harvest",
+        "ntems-canopy-cover",
+        "ntems-canopy-height",
+        "cwfis-current",
+        "bc-wildfire",
+        "ab-wildfire",
+        "on-fire-disturbance",
+        "qc-current-ecoforest",
+        "qc-original-current-inventory",
+        "qc-fourth-inventory",
+        "ab-avi-crown",
+        "ab-avi-post-harvest",
+        "ab-primary-land-vegetation",
+        "fed-2023-ridings",
+        "elections-canada-45th-files"
+      ],
+      "dependsOn": ["archived-remote-downstream", "wildfire-downstream", "local-row-downstream", "alberta-plvi-scope"],
+      "ownerAction": "Record release and production admission separately; set production eligibility only after every required proof is true.",
+      "source": "data/phase1-current-state-completion-audit.json",
+      "afterDecision": "No row may be marked production eligible from this queue, preparation, reply, or archive evidence alone."
+    }
+  ],
+  "excludedRows": {
+    "partial-component": ["cwfis-historical", "provincial-electoral-boundaries"],
+    "access-blocked": [
+      "sopfeu",
+      "bc-fta-cutblocks",
+      "bc-harvesting-authorities",
+      "bc-vri",
+      "bc-consolidated-cutblocks",
+      "bc-old-growth-bec",
+      "bc-forest-operations-map",
+      "on-fri",
+      "on-fri-term-2",
+      "indian-reserves",
+      "first-nation-reserves",
+      "historic-treaties",
+      "modern-treaties"
+    ]
+  },
+  "claims": {
+    "ownerDecisionsCreated": false,
+    "ownerApprovalsGranted": false,
+    "remoteMutationPerformed": false,
+    "externalMutationPerformed": false,
+    "transformed": false,
+    "ingested": false,
+    "released": false,
+    "productionAdmission": false,
+    "productionEligible": false,
+    "rawEvidenceDelta": 0,
+    "formalEvidenceTrackingPercentagePointDelta": 0
+  }
+}

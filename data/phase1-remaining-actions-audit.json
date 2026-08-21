@@ -155,7 +155,8 @@
         "data/phase1-immutable-promotion-readiness.json",
         "data/phase1-national-archive-finalization-audit.json",
         "data/nrcan-canopy-height-remote-archive-evidence.json",
-        "data/phase1-archive-owner-command-reconciliation-2026-08-20.json"
+        "data/phase1-archive-owner-command-reconciliation-2026-08-20.json",
+        "data/phase1-owner-decision-queue.json"
       ],
       "runnerOrPreflight": {
         "safeNow": "zsh scripts/run-phase1-approved-promotion.sh --preflight",
@@ -187,7 +188,8 @@
       "evidenceRefs": [
         "data/qc-immutable-promotion-preparation.json",
         "data/phase1-immutable-promotion-readiness.json",
-        "data/phase1-archive-owner-command-reconciliation-2026-08-20.json"
+        "data/phase1-archive-owner-command-reconciliation-2026-08-20.json",
+        "data/phase1-owner-decision-queue.json"
       ],
       "runnerOrPreflight": {
         "safeNow": "zsh scripts/run-qc-approved-multipart-promotion.sh --preflight",
@@ -222,7 +224,8 @@
         "data/qc-fourth-inventory-immutable-promotion-iam-policy.json",
         "data/qc-fourth-inventory-evidence.json",
         "data/phase1-immutable-promotion-readiness.json",
-        "data/phase1-archive-owner-command-reconciliation-2026-08-20.json"
+        "data/phase1-archive-owner-command-reconciliation-2026-08-20.json",
+        "data/phase1-owner-decision-queue.json"
       ],
       "runnerOrPreflight": {
         "safeNow": "node scripts/qc-fourth-inventory-immutable-promotion.mjs --preflight --data-root /Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data",
@@ -259,7 +262,8 @@
         "data/nrcan-canopy-height-remote-archive-evidence.json",
         "data/phase1-production-source-ledger.json",
         "data/phase1-source-ledger-decision-readiness.json",
-        "data/phase1-national-archive-finalization-audit.json"
+        "data/phase1-national-archive-finalization-audit.json",
+        "data/phase1-owner-decision-queue.json"
       ],
       "runnerOrPreflight": {
         "evidenceChecker": "npm run check:nrcan-harvest-remote-archive-evidence",
@@ -288,7 +292,9 @@
         "data/alberta-plvi-full-release-readiness.json",
         "data/alberta-plvi-immutable-promotion-preparation.json",
         "data/transformation-runs/alberta-plvi-geometry-repair-v1-2026-08-14.json",
-        "data/phase1-source-ledger-decision-readiness.json"
+        "data/phase1-source-ledger-decision-readiness.json",
+        "data/phase1-alberta-transform-ingestion-audit.json",
+        "data/phase1-owner-decision-queue.json"
       ],
       "runnerOrPreflight": {
         "evidenceCheckers": ["npm run check:alberta-plvi-immutable-promotion-evidence", "npm run check:alberta-plvi-full-release-readiness", "npm run check:alberta-plvi-geometry-repair"]
@@ -315,7 +321,8 @@
         "data/current-wildfire-immutable-promotion-preparation.json",
         "data/current-wildfire-owner-admission.json",
         "data/current-wildfire-raw-archive-evidence.json",
-        "data/phase1-immutable-promotion-readiness.json"
+        "data/phase1-immutable-promotion-readiness.json",
+        "data/phase1-owner-decision-queue.json"
       ],
       "runnerOrPreflight": {
         "safeNow": "zsh scripts/run-current-wildfire-approved-promotion.sh --preflight",
@@ -340,7 +347,7 @@
       "ownerRunAuthorized": false,
       "rows": ["ntems-annual-land-cover", "ntems-canopy-cover", "ab-avi-crown", "ab-avi-post-harvest"],
       "physicalArtifactGroup": null,
-      "evidenceRefs": ["data/phase1-production-source-ledger.json", "data/phase1-remote-source-admission-decisions.json", "data/phase1-source-ledger-decision-readiness.json", "data/phase1-current-state-completion-audit.json"],
+      "evidenceRefs": ["data/phase1-production-source-ledger.json", "data/phase1-remote-source-admission-decisions.json", "data/phase1-source-ledger-decision-readiness.json", "data/phase1-current-state-completion-audit.json", "data/phase1-alberta-transform-ingestion-audit.json", "data/phase1-owner-decision-queue.json"],
       "runnerOrPreflight": {"evidence": "data/phase1-current-state-completion-audit.json actionPlans.remote-source-decision-recorded"},
       "prerequisites": ["Use the exact already approved source-ledger rows and checksum-bound lineage.", "Record transformation and ingestion validation.", "Obtain and record release and production-admission approval before eligibility."],
       "remainingSteps": ["execute the named transformation", "validate ingestion", "record release approval", "record production admission", "recompute eligibility fail-closed"],
@@ -360,7 +367,7 @@
       "ownerRunAuthorized": false,
       "rows": ["cwfis-current", "bc-wildfire", "ab-wildfire", "on-fire-disturbance"],
       "physicalArtifactGroup": "current-wildfire-six-release-inputs",
-      "evidenceRefs": ["data/current-wildfire-owner-admission.json", "data/current-wildfire-raw-archive-evidence.json", "data/phase1-current-state-completion-audit.json"],
+      "evidenceRefs": ["data/current-wildfire-owner-admission.json", "data/current-wildfire-raw-archive-evidence.json", "data/phase1-current-state-completion-audit.json", "data/phase1-owner-decision-queue.json"],
       "runnerOrPreflight": {"evidence": "data/current-wildfire-owner-admission.json pipeline.activationRule"},
       "prerequisites": ["All six exact raw/derived objects pass immutable archive and recovery readbacks.", "Preserve each approved as-of, provincial-precedence, geometry-repair, quarantine, and no-completeness semantics.", "Record release activation and production admission separately."],
       "remainingSteps": ["re-run the archive gate", "validate approved transformations", "validate ingestion", "record release and production admission", "set eligibility only after every source gate passes"],

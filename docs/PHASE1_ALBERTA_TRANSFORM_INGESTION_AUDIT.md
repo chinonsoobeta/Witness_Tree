@@ -1,0 +1,39 @@
+# Phase 1 Alberta transformation and ingestion audit
+
+The machine record in [`data/phase1-alberta-transform-ingestion-audit.json`](../data/phase1-alberta-transform-ingestion-audit.json) reconciles the exact existing local evidence for:
+
+- `ab-avi-crown`;
+- `ab-avi-post-harvest`; and
+- `ab-primary-land-vegetation`.
+
+It is a read-only evidence audit. It does not call AWS, write remote storage, send email, submit a form, accept terms, modify a source archive, or start Phase 2.
+
+## AVI rows
+
+The owner decisions for both AVI rows are explicitly `approved-source-ledger-only`. The existing `alberta-avi-geometry-repair-v1` run is therefore validated as a checksum-bound local repair/quarantine policy run, not as an admitted production transformation:
+
+- 792,443 input features;
+- 608 invalid geometries;
+- 607 bounded in-memory repairs; and
+- one quarantined `AVI_PostInventoryHarvestIndex` FID 1 whose area change exceeds the one-part-per-million tolerance.
+
+For the Crown row, the quarantine decision separately records that the excluded index footprint contains zero Crown observations and has no Crown denominator impact. For the post-inventory-harvest row, the observation layer contains 3,631 features and 19 accepted in-memory repairs; the quarantined index footprint is not silently treated as an observation.
+
+No derived AVI payload is present in the controlled evidence set. The audit therefore keeps both rows blocked before ingestion, with `transformed`, `ingested`, release, production-admission, and production-eligibility claims false.
+
+## PLVI row
+
+The existing PLVI repair and closed-join records are validated against the exact raw checksum and derived checksum:
+
+- 179,087 input and output features;
+- 12 bounded geometry replacements;
+- zero invalid, empty, or non-polygonal output geometries;
+- EPSG:3400 and 63 fields;
+- the existing duplicate `POLYGON_ID` 41405 preserved; and
+- no silent loss or deduplication.
+
+This is a local output preflight only. The decision-readiness record says the owner scope decision is ready but not recorded, and the full-release record says owner admission is not authorized. Accordingly, the audit does not treat the output as an admitted transformation or ingestion input. It records `local-output-preflight-passed-not-ingested`, while release, production admission, and eligibility remain false.
+
+## Progress impact
+
+The audit adds no raw-evidence credit and no formal-score points. The ledger remains `15.25/31` and `39.7580645%`; immutable archive remains 11 rows, production admission remains 0/31, and production eligibility remains 0/31. The exact owner actions are to record downstream transformation/ingestion scope for AVI and the PLVI raw/derived scope, then record release and production admission separately.

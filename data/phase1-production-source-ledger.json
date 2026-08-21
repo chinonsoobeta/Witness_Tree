@@ -410,7 +410,8 @@
       "evidenceState": "remote-verified-archived-profiled",
       "evidenceRefs": [
         "data/staged-geospatial-profile.json",
-        "data/immutable-promotions.json"
+        "data/immutable-promotions.json",
+        "data/phase1-alberta-transform-ingestion-audit.json"
       ],
       "proof": {
         "licence": true,
@@ -424,14 +425,15 @@
       },
       "rawCredit": 1,
       "productionEligible": false,
-      "blocker": "Owner approved this named source-ledger evidence row with only AVI_PostInventoryHarvestIndex FID 1 excluded; no transform, ingestion, release, or production eligibility is approved."
+      "blocker": "Owner approved this named source-ledger evidence row with only AVI_PostInventoryHarvestIndex FID 1 excluded. The existing repair/quarantine policy run is locally validated, but no downstream transformation scope, ingestion authorization, release approval, or production eligibility is approved."
     },
     {
       "id": "ab-avi-post-harvest",
       "evidenceState": "remote-verified-archived-profiled",
       "evidenceRefs": [
         "data/staged-geospatial-profile.json",
-        "data/immutable-promotions.json"
+        "data/immutable-promotions.json",
+        "data/phase1-alberta-transform-ingestion-audit.json"
       ],
       "proof": {
         "licence": true,
@@ -445,7 +447,7 @@
       },
       "rawCredit": 1,
       "productionEligible": false,
-      "blocker": "Owner approved this named source-ledger evidence row only; transform, ingestion, release, and production eligibility remain separately blocked."
+      "blocker": "Owner approved this named source-ledger evidence row only. The existing repair/quarantine policy run is locally validated, but no downstream transformation scope, ingestion authorization, release approval, or production eligibility is recorded."
     },
     {
       "id": "ab-primary-land-vegetation",
@@ -456,7 +458,8 @@
         "data/transformation-runs/alberta-plvi-geometry-repair-v1-2026-08-14.json",
         "data/alberta-plvi-full-release-readiness.json",
         "data/alberta-plvi-immutable-promotion-preparation.json",
-        "data/alberta-plvi-immutable-promotion-evidence.json"
+        "data/alberta-plvi-immutable-promotion-evidence.json",
+        "data/phase1-alberta-transform-ingestion-audit.json"
       ],
       "proof": {
         "licence": true,
@@ -470,7 +473,7 @@
       },
       "rawCredit": 1,
       "productionEligible": false,
-      "blocker": "Exact raw and derived payload versions and deterministic sidecar versions are remotely verified; both payload versions carry COMPLIANCE retention through 2033-08-12. This is immutable-archive evidence only. Owner source-ledger admission, transformation, analysis, ingestion, public release, production admission, and production eligibility remain separately blocked."
+      "blocker": "Exact raw and derived payload versions and deterministic sidecar versions are remotely verified; both payload versions carry COMPLIANCE retention through 2033-08-12. The existing repair and closed-join output pass local structural validation, but the owner scope/admission decision is not recorded; transformation, ingestion, release, production admission, and production eligibility remain separately blocked."
     },
     {
       "id": "on-fri",
