@@ -237,7 +237,7 @@ function writeFakeAws(dir, policyDocument, { retentionNever = false } = {}) {
     "  configure:get) print -r -- \"arn:aws:iam::286853118812:mfa/witness-tree/archive-operator.device\" ;;",
     "  iam:list-role-policies) print -r -- \"{\\\"PolicyNames\\\":[\\\"CanopyRecoveryPolicy\\\"]}\" ;;",
     "  iam:get-role-policy) print -r -- __POLICY__ ;;",
-    "  sts:get-session-token|sts:assume-role) print -r -- \"{\\\"Credentials\\\":{\\\"AccessKeyId\\\":\\\"test-access\\\",\\\"SecretAccessKey\\\":\\\"test-secret\\\",\\\"SessionToken\\\":\\\"test-session\\\",\\\"Expiration\\\":\\\"2099-01-01T00:00:00Z\\\"}}\" ;;",
+    "  sts:assume-role) print -r -- \"{\\\"Credentials\\\":{\\\"AccessKeyId\\\":\\\"test-access\\\",\\\"SecretAccessKey\\\":\\\"test-secret\\\",\\\"SessionToken\\\":\\\"test-session\\\",\\\"Expiration\\\":\\\"2099-01-01T00:00:00Z\\\"}}\" ;;",
     "  sts:get-caller-identity) print -r -- \"286853118812\" ;;",
     "  s3api:head-object)",
     "    if [[ \"$*\" == *manifest.json* ]]; then",
@@ -315,6 +315,8 @@ test("PTY recovery succeeds with exact heads and retention while making no unrel
     assert.match(run.stdout, /Canopy post-completion recovery completed/);
     assert.doesNotMatch(run.stdout + run.stderr, /123456|payload-version|sidecar-version/);
     const calls = readFileSync(fake.marker, "utf8").trim().split("\n");
+    assert.equal(calls.filter((call) => call.includes("sts get-session-token")).length, 0);
+    assert.equal(calls.filter((call) => call.includes("sts assume-role") && call.includes("--serial-number") && call.includes("--token-code")).length, 1);
     assert.equal(calls.filter((call) => call.includes("put-object-retention")).length, 2);
     assert.equal(calls.filter((call) => call.includes("head-object")).length, 12);
     assert.ok(calls.every((call) => !call.startsWith("iam ")));
