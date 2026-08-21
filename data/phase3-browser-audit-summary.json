@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "witness-tree/phase3-browser-audit/2",
+  "schemaVersion": "witness-tree/phase3-browser-audit/3",
   "status": "example",
   "reviewStatus": "unapproved",
   "productionEligible": false,
@@ -26,11 +26,11 @@
       "template": "place",
       "locale": "en",
       "route": "/en/places/bc-province?view=table",
-      "lcpMs": 752,
+      "lcpMs": 732,
       "lcpElement": "section",
       "lcpRuns": [
-        752,
-        720
+        696,
+        732
       ],
       "axe": {
         "version": "4.11.4",
@@ -66,8 +66,24 @@
         "linkFailures": 0,
         "evidenceCues": 11,
         "evidenceFailures": 0,
+        "evidenceVariants": [
+          "derived-estimate",
+          "unknown"
+        ],
+        "evidenceVariantGlyphs": [
+          "▲",
+          "○"
+        ],
+        "evidenceVariantFailures": 0,
         "confidenceCues": 10,
-        "confidenceFailures": 0
+        "confidenceFailures": 0,
+        "confidenceVariants": [
+          "high"
+        ],
+        "confidenceVariantPatterns": [
+          "▮▮▮"
+        ],
+        "confidenceVariantFailures": 0
       },
       "reflow": {
         "viewportWidth": 320,
@@ -83,7 +99,7 @@
       "lcpMs": 736,
       "lcpElement": "section",
       "lcpRuns": [
-        716,
+        684,
         736
       ],
       "axe": {
@@ -120,8 +136,24 @@
         "linkFailures": 0,
         "evidenceCues": 11,
         "evidenceFailures": 0,
+        "evidenceVariants": [
+          "derived-estimate",
+          "unknown"
+        ],
+        "evidenceVariantGlyphs": [
+          "▲",
+          "○"
+        ],
+        "evidenceVariantFailures": 0,
         "confidenceCues": 10,
-        "confidenceFailures": 0
+        "confidenceFailures": 0,
+        "confidenceVariants": [
+          "high"
+        ],
+        "confidenceVariantPatterns": [
+          "▮▮▮"
+        ],
+        "confidenceVariantFailures": 0
       },
       "reflow": {
         "viewportWidth": 320,
@@ -173,8 +205,28 @@
         "linkFailures": 0,
         "evidenceCues": 7,
         "evidenceFailures": 0,
+        "evidenceVariants": [
+          "derived-estimate",
+          "official-record",
+          "satellite-observation"
+        ],
+        "evidenceVariantGlyphs": [
+          "▲",
+          "■",
+          "●"
+        ],
+        "evidenceVariantFailures": 0,
         "confidenceCues": 7,
-        "confidenceFailures": 0
+        "confidenceFailures": 0,
+        "confidenceVariants": [
+          "high",
+          "limited"
+        ],
+        "confidenceVariantPatterns": [
+          "▮▮▮",
+          "▮▯▯"
+        ],
+        "confidenceVariantFailures": 0
       },
       "reflow": {
         "viewportWidth": 320,
@@ -187,10 +239,10 @@
       "template": "location",
       "locale": "fr",
       "route": "/fr/emplacement/lat-p48d000000-lon-n124d000000",
-      "lcpMs": 712,
+      "lcpMs": 736,
       "lcpElement": "section",
       "lcpRuns": [
-        712
+        736
       ],
       "axe": {
         "version": "4.11.4",
@@ -226,8 +278,28 @@
         "linkFailures": 0,
         "evidenceCues": 7,
         "evidenceFailures": 0,
+        "evidenceVariants": [
+          "derived-estimate",
+          "official-record",
+          "satellite-observation"
+        ],
+        "evidenceVariantGlyphs": [
+          "▲",
+          "■",
+          "●"
+        ],
+        "evidenceVariantFailures": 0,
         "confidenceCues": 7,
-        "confidenceFailures": 0
+        "confidenceFailures": 0,
+        "confidenceVariants": [
+          "high",
+          "limited"
+        ],
+        "confidenceVariantPatterns": [
+          "▮▮▮",
+          "▮▯▯"
+        ],
+        "confidenceVariantFailures": 0
       },
       "reflow": {
         "viewportWidth": 320,
@@ -240,10 +312,10 @@
       "template": "methods",
       "locale": "en",
       "route": "/en/methods",
-      "lcpMs": 696,
+      "lcpMs": 700,
       "lcpElement": "p",
       "lcpRuns": [
-        696
+        700
       ],
       "axe": {
         "version": "4.11.4",
@@ -279,8 +351,14 @@
         "linkFailures": 0,
         "evidenceCues": 0,
         "evidenceFailures": 0,
+        "evidenceVariants": [],
+        "evidenceVariantGlyphs": [],
+        "evidenceVariantFailures": 0,
         "confidenceCues": 0,
-        "confidenceFailures": 0
+        "confidenceFailures": 0,
+        "confidenceVariants": [],
+        "confidenceVariantPatterns": [],
+        "confidenceVariantFailures": 0
       },
       "reflow": {
         "viewportWidth": 320,
@@ -293,10 +371,10 @@
       "template": "methods",
       "locale": "fr",
       "route": "/fr/methodes",
-      "lcpMs": 692,
+      "lcpMs": 712,
       "lcpElement": "p",
       "lcpRuns": [
-        692
+        712
       ],
       "axe": {
         "version": "4.11.4",
@@ -332,8 +410,14 @@
         "linkFailures": 0,
         "evidenceCues": 0,
         "evidenceFailures": 0,
+        "evidenceVariants": [],
+        "evidenceVariantGlyphs": [],
+        "evidenceVariantFailures": 0,
         "confidenceCues": 0,
-        "confidenceFailures": 0
+        "confidenceFailures": 0,
+        "confidenceVariants": [],
+        "confidenceVariantPatterns": [],
+        "confidenceVariantFailures": 0
       },
       "reflow": {
         "viewportWidth": 320,
@@ -346,10 +430,10 @@
       "template": "data",
       "locale": "en",
       "route": "/en/data",
-      "lcpMs": 704,
+      "lcpMs": 712,
       "lcpElement": "p",
       "lcpRuns": [
-        704
+        712
       ],
       "axe": {
         "version": "4.11.4",
@@ -385,8 +469,14 @@
         "linkFailures": 0,
         "evidenceCues": 0,
         "evidenceFailures": 0,
+        "evidenceVariants": [],
+        "evidenceVariantGlyphs": [],
+        "evidenceVariantFailures": 0,
         "confidenceCues": 0,
-        "confidenceFailures": 0
+        "confidenceFailures": 0,
+        "confidenceVariants": [],
+        "confidenceVariantPatterns": [],
+        "confidenceVariantFailures": 0
       },
       "reflow": {
         "viewportWidth": 320,
@@ -399,10 +489,10 @@
       "template": "data",
       "locale": "fr",
       "route": "/fr/donnees",
-      "lcpMs": 708,
+      "lcpMs": 724,
       "lcpElement": "p",
       "lcpRuns": [
-        708
+        724
       ],
       "axe": {
         "version": "4.11.4",
@@ -438,8 +528,14 @@
         "linkFailures": 0,
         "evidenceCues": 0,
         "evidenceFailures": 0,
+        "evidenceVariants": [],
+        "evidenceVariantGlyphs": [],
+        "evidenceVariantFailures": 0,
         "confidenceCues": 0,
-        "confidenceFailures": 0
+        "confidenceFailures": 0,
+        "confidenceVariants": [],
+        "confidenceVariantPatterns": [],
+        "confidenceVariantFailures": 0
       },
       "reflow": {
         "viewportWidth": 320,
@@ -452,10 +548,10 @@
       "template": "glossary",
       "locale": "en",
       "route": "/en/glossary",
-      "lcpMs": 696,
+      "lcpMs": 716,
       "lcpElement": "p",
       "lcpRuns": [
-        696
+        716
       ],
       "axe": {
         "version": "4.11.4",
@@ -491,8 +587,14 @@
         "linkFailures": 0,
         "evidenceCues": 0,
         "evidenceFailures": 0,
+        "evidenceVariants": [],
+        "evidenceVariantGlyphs": [],
+        "evidenceVariantFailures": 0,
         "confidenceCues": 0,
-        "confidenceFailures": 0
+        "confidenceFailures": 0,
+        "confidenceVariants": [],
+        "confidenceVariantPatterns": [],
+        "confidenceVariantFailures": 0
       },
       "reflow": {
         "viewportWidth": 320,
@@ -505,10 +607,10 @@
       "template": "glossary",
       "locale": "fr",
       "route": "/fr/glossaire",
-      "lcpMs": 696,
+      "lcpMs": 716,
       "lcpElement": "p",
       "lcpRuns": [
-        696
+        716
       ],
       "axe": {
         "version": "4.11.4",
@@ -544,8 +646,14 @@
         "linkFailures": 0,
         "evidenceCues": 0,
         "evidenceFailures": 0,
+        "evidenceVariants": [],
+        "evidenceVariantGlyphs": [],
+        "evidenceVariantFailures": 0,
         "confidenceCues": 0,
-        "confidenceFailures": 0
+        "confidenceFailures": 0,
+        "confidenceVariants": [],
+        "confidenceVariantPatterns": [],
+        "confidenceVariantFailures": 0
       },
       "reflow": {
         "viewportWidth": 320,
@@ -558,10 +666,10 @@
       "template": "corrections",
       "locale": "en",
       "route": "/en/corrections",
-      "lcpMs": 704,
+      "lcpMs": 708,
       "lcpElement": "p",
       "lcpRuns": [
-        704
+        708
       ],
       "axe": {
         "version": "4.11.4",
@@ -597,8 +705,14 @@
         "linkFailures": 0,
         "evidenceCues": 0,
         "evidenceFailures": 0,
+        "evidenceVariants": [],
+        "evidenceVariantGlyphs": [],
+        "evidenceVariantFailures": 0,
         "confidenceCues": 0,
-        "confidenceFailures": 0
+        "confidenceFailures": 0,
+        "confidenceVariants": [],
+        "confidenceVariantPatterns": [],
+        "confidenceVariantFailures": 0
       },
       "reflow": {
         "viewportWidth": 320,
@@ -611,10 +725,10 @@
       "template": "corrections",
       "locale": "fr",
       "route": "/fr/corrections",
-      "lcpMs": 696,
+      "lcpMs": 704,
       "lcpElement": "p",
       "lcpRuns": [
-        696
+        704
       ],
       "axe": {
         "version": "4.11.4",
@@ -650,8 +764,14 @@
         "linkFailures": 0,
         "evidenceCues": 0,
         "evidenceFailures": 0,
+        "evidenceVariants": [],
+        "evidenceVariantGlyphs": [],
+        "evidenceVariantFailures": 0,
         "confidenceCues": 0,
-        "confidenceFailures": 0
+        "confidenceFailures": 0,
+        "confidenceVariants": [],
+        "confidenceVariantPatterns": [],
+        "confidenceVariantFailures": 0
       },
       "reflow": {
         "viewportWidth": 320,
@@ -664,10 +784,10 @@
       "template": "search",
       "locale": "en",
       "route": "/en/search?q=British%20Columbia",
-      "lcpMs": 704,
+      "lcpMs": 696,
       "lcpElement": "li",
       "lcpRuns": [
-        704
+        696
       ],
       "axe": {
         "version": "4.11.4",
@@ -703,8 +823,14 @@
         "linkFailures": 0,
         "evidenceCues": 0,
         "evidenceFailures": 0,
+        "evidenceVariants": [],
+        "evidenceVariantGlyphs": [],
+        "evidenceVariantFailures": 0,
         "confidenceCues": 0,
-        "confidenceFailures": 0
+        "confidenceFailures": 0,
+        "confidenceVariants": [],
+        "confidenceVariantPatterns": [],
+        "confidenceVariantFailures": 0
       },
       "reflow": {
         "viewportWidth": 320,
@@ -717,10 +843,10 @@
       "template": "search",
       "locale": "fr",
       "route": "/fr/recherche?q=Colombie-Britannique",
-      "lcpMs": 716,
+      "lcpMs": 704,
       "lcpElement": "li",
       "lcpRuns": [
-        716
+        704
       ],
       "axe": {
         "version": "4.11.4",
@@ -756,8 +882,14 @@
         "linkFailures": 0,
         "evidenceCues": 0,
         "evidenceFailures": 0,
+        "evidenceVariants": [],
+        "evidenceVariantGlyphs": [],
+        "evidenceVariantFailures": 0,
         "confidenceCues": 0,
-        "confidenceFailures": 0
+        "confidenceFailures": 0,
+        "confidenceVariants": [],
+        "confidenceVariantPatterns": [],
+        "confidenceVariantFailures": 0
       },
       "reflow": {
         "viewportWidth": 320,
@@ -770,7 +902,7 @@
   "summary": {
     "routes": 14,
     "placeLcpRuns": 4,
-    "maxLcpMs": 752,
+    "maxLcpMs": 736,
     "axeViolations": 0,
     "forcedColorsFailures": 0,
     "reflowFailures": 0,
