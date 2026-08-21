@@ -95,15 +95,22 @@ function validateQueueRows(queue, context) {
 
   for (const id of ["ntems-forest-harvest", "ntems-canopy-height"]) {
     const row = queue.queueRows.find((candidate) => candidate.id === id);
-    assert.equal(row.ownerDecisionStatus.sourceLedger, "pending");
+    assert.equal(row.ownerDecisionStatus.sourceLedger, "recorded-approved-source-ledger-only");
+    assert.equal(row.ownerDecisionStatus.scope, "recorded-source-ledger-only");
     assert.equal(row.primaryActionId, "national-archived-owner-source-ledger-decisions");
+    assert.ok(row.evidenceRefs.includes("data/phase1-remote-source-admission-decisions.json"));
+    assert.ok(row.evidenceRefs.includes("data/phase1-scope-bound-validation-preparation.json"));
   }
 
   const plvi = queue.queueRows.find((row) => row.id === "ab-primary-land-vegetation");
-  assert.equal(plvi.ownerDecisionStatus.sourceLedger, "pending-scope-decision");
-  assert.equal(plvi.ownerDecisionStatus.scope, "pending");
+  assert.equal(plvi.ownerDecisionStatus.sourceLedger, "recorded-approved-source-ledger-only");
+  assert.equal(plvi.ownerDecisionStatus.scope, "recorded-approved-raw-and-derived-scope-only");
+  assert.equal(plvi.ownerDecisionStatus.transformation, "pending-under-approved-scope");
+  assert.equal(plvi.ownerDecisionStatus.ingestion, "pending-under-approved-scope");
   assert.match(plvi.exactScopeDecision, /179,087-feature closed-join derived artifact with 12 bounded repairs/);
   assert.match(plvi.exactScopeDecision, /POLYGON_ID 41405/);
+  assert.ok(plvi.evidenceRefs.includes("data/phase1-remote-source-admission-decisions.json"));
+  assert.ok(plvi.evidenceRefs.includes("data/phase1-scope-bound-validation-preparation.json"));
 
   for (const id of CURRENT_WILDFIRE) {
     const row = queue.queueRows.find((candidate) => candidate.id === id);
@@ -142,10 +149,13 @@ function validateQueueRows(queue, context) {
   }
 
   assert.deepEqual(context.remoteDecisions.decisions.map((decision) => decision.id), [
+    "ntems-forest-harvest",
     "ntems-annual-land-cover",
+    "ntems-canopy-height",
     "ntems-canopy-cover",
     "ab-avi-crown",
     "ab-avi-post-harvest",
+    "ab-primary-land-vegetation",
   ]);
   assert.equal(context.wildfire.ownerDecision.scopeApproved, true);
   assert.equal(context.wildfire.ownerDecision.transformationApproved, true);

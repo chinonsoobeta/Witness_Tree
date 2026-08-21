@@ -50,7 +50,7 @@ function validateOrder(packet, queue) {
       assert.ok(step[phase], `${step.id} is missing ${phase}.`);
       assertPendingBlock(step[phase], `${step.id}.${phase}`);
     }
-    assert.match(step.copyPasteBlock, /status=template-not-approved/);
+    assert.match(step.copyPasteBlock, /status=(?:template-not-approved|recorded-nonadmitting)/);
     assert.match(step.copyPasteBlock, /OWNER|DO_NOT_RUN|productionAdmission=false/);
     assert.doesNotMatch(step.copyPasteBlock, /owner_(?:approval|decision)=true|productionEligible=true|productionAdmission=true/i);
   }
@@ -283,7 +283,12 @@ export async function checkPhase1OwnerApprovalPacket(root = path.resolve(path.di
   assert.equal(packet.status, "template-not-approved");
   assert.equal(packet.derivedFromHead, HEAD);
   assert.equal(packet.sourceQueue, "data/phase1-owner-decision-queue.json");
-  assert.match(packet.notice, /does not create or infer approval.*AWS.*production eligibility/i);
+  assert.match(packet.notice, /two reconciled non-admitting owner decisions.*does not create or infer.*AWS.*production eligibility/i);
+  assert.deepEqual(packet.recordedDecisions, {
+    source: "data/phase1-remote-source-admission-decisions.json",
+    rows: ["ntems-forest-harvest", "ntems-canopy-height", "ab-primary-land-vegetation"],
+    scope: "The two national rows are accepted source-ledger-only; PLVI is admitted only as the exact raw/derived scope for scope-bound validation and ingestion preparation.",
+  });
   same(packet.phaseOrder, ["reversible-source-scope", "irreversible-archive-retention", "release-production-admission"]);
   same(packet.baseline, queue.baseline, "Packet baseline must reuse the owner queue baseline.");
   same(packet.rows, QUEUE_ROWS, "Packet must cover the authoritative 16-row queue once.");
@@ -306,6 +311,12 @@ export async function checkPhase1OwnerApprovalPacket(root = path.resolve(path.di
   same(ledger.entries.filter((entry) => packet.rows.includes(entry.id)).map((entry) => entry.id), packet.rows, "Every packet row must remain a canonical ledger row.");
   for (const row of queue.queueRows) assert.equal(row.productionEligible, false);
   validateOrder(packet, queue);
+  const nationalStep = packet.decisionOrder.find(({ id }) => id === "national-archived-source-ledger");
+  assert.equal(nationalStep.reversibleSourceScope.status, "recorded-source-ledger-only");
+  assert.match(nationalStep.copyPasteBlock, /source_ledger_decision=OWNER: accepted existing named source-ledger evidence/);
+  const plviStep = packet.decisionOrder.find(({ id }) => id === "alberta-plvi-scope");
+  assert.equal(plviStep.reversibleSourceScope.status, "recorded-approved-raw-and-derived-scope-only");
+  assert.match(plviStep.copyPasteBlock, /scope_bound_preparation=OWNER: allowed for validation and ingestion preparation only/);
   validateFederal(packet, prepFederal, federalProfile, federalLedger, runner);
   validateQuebecCurrentOriginal(packet, qc);
   validateQuebecFourth(packet, qcFourth);

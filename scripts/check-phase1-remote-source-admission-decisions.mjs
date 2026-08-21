@@ -2,13 +2,22 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 
 const APPROVED = "approved-source-ledger-only";
+const EXPECTED_IDS = [
+  "ntems-forest-harvest",
+  "ntems-annual-land-cover",
+  "ntems-canopy-height",
+  "ntems-canopy-cover",
+  "ab-avi-crown",
+  "ab-avi-post-harvest",
+  "ab-primary-land-vegetation",
+];
 
 export function validateRemoteAdmissionDecisions(decisions, ledger) {
   assert.equal(decisions.schemaVersion, 1);
   assert.equal(decisions.status, "owner-decisions-recorded");
-  assert.match(decisions.notice, /neither transformation nor ingestion, release, runtime production eligibility, or any unlisted source/i);
+  assert.match(decisions.notice, /Seven named.*source-ledger decisions.*PLVI.*scope-bound validation/i);
   const remote = ledger.entries.filter((entry) => entry.evidenceState === "remote-verified-archived-profiled");
-  assert.equal(decisions.decisions.length, 4);
+  assert.deepEqual(decisions.decisions.map(({ id }) => id), EXPECTED_IDS);
   for (const decision of decisions.decisions) {
     const row = remote.find((entry) => entry.id === decision.id);
     assert.ok(row);
@@ -18,12 +27,38 @@ export function validateRemoteAdmissionDecisions(decisions, ledger) {
     assert.equal(decision.sourceEvidenceComplete, true);
     assert.equal(decision.profileIssueResolved, true);
     assert.equal(decision.ownerAdmission, APPROVED);
-    assert.match(decision.scope, /does not authorize transformation, ingestion, release, runtime production eligibility, or any other source/i);
+    assert.match(decision.scope, /does not authorize (?:transformation admission|transformation), ingestion, release, runtime production eligibility, or any other source/i);
   }
-  assert.ok(remote.some((entry) => entry.id === "ab-primary-land-vegetation" && entry.proof.immutableArchive && !entry.proof.productionAdmission), "Immutable evidence alone must not be mistaken for an owner decision.");
+  for (const id of ["ntems-forest-harvest", "ntems-canopy-height"]) {
+    const decision = decisions.decisions.find(({ id: candidate }) => candidate === id);
+    assert.equal(decision.scopeDecision, "accepted-named-source-ledger-only");
+  }
+  const plvi = decisions.decisions.find(({ id }) => id === "ab-primary-land-vegetation");
+  assert.equal(plvi.scopeDecision, "approved-raw-and-derived-scope-only");
+  assert.match(plvi.scope, /179,087-feature closed-join derived artifact.*12 bounded repairs.*POLYGON_ID 41405.*no feature loss/i);
+  assert.match(plvi.scope, /scope-bound validation and ingestion preparation only/i);
+  assert.deepEqual(plvi.evidenceRefs, [
+    "data/alberta-plvi-immutable-promotion-evidence.json",
+    "data/alberta-plvi-full-release-readiness.json",
+    "data/phase1-alberta-transform-ingestion-audit.json",
+  ]);
   const crown = decisions.decisions.find((decision) => decision.id === "ab-avi-crown");
   assert.equal(crown.evidenceRef, "data/alberta-avi-crown-quarantine-decision.json");
   assert.match(crown.scope, /AVI_PostInventoryHarvestIndex FID 1.*zero AVI_Crown observations.*no Crown denominator impact/i);
+  assert.deepEqual(decisions.nonProduction, {
+    sourceLedgerDecisionsRecorded: true,
+    scopeDecisionRecorded: true,
+    rawEvidenceDelta: 0,
+    formalEvidenceTrackingPercentagePointDelta: 0,
+    transformationAdmission: false,
+    ingestionAdmission: false,
+    ingested: false,
+    releaseApproval: false,
+    productionAdmission: false,
+    productionEligible: false,
+    remoteMutationPerformed: false,
+    externalMutationPerformed: false,
+  });
   return decisions;
 }
 

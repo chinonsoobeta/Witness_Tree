@@ -4,7 +4,16 @@
   "asOf": "2026-08-21",
   "derivedFromHead": "71925af03fc08b052d12077de2ba4acb9239006b",
   "sourceQueue": "data/phase1-owner-decision-queue.json",
-  "notice": "Copy/paste owner-input blocks only. This packet does not create or infer approval, permission, IAM state, an AWS or remote-storage action, a transformation, ingestion, release, production admission, or production eligibility. Every owner field remains pending until the owner records a separate decision.",
+  "recordedDecisions": {
+    "source": "data/phase1-remote-source-admission-decisions.json",
+    "rows": [
+      "ntems-forest-harvest",
+      "ntems-canopy-height",
+      "ab-primary-land-vegetation"
+    ],
+    "scope": "The two national rows are accepted source-ledger-only; PLVI is admitted only as the exact raw/derived scope for scope-bound validation and ingestion preparation."
+  },
+  "notice": "Copy/paste owner-input blocks plus two reconciled non-admitting owner decisions. This packet does not create or infer permission, IAM state, an AWS or remote-storage action, transformation admission, ingestion, release, production admission, or production eligibility. Remaining owner fields stay pending until separately recorded.",
   "phaseOrder": [
     "reversible-source-scope",
     "irreversible-archive-retention",
@@ -115,8 +124,8 @@
       "dependsOn": [],
       "binding": "national-archived-source-ledger",
       "reversibleSourceScope": {
-        "status": "pending-owner-input",
-        "prompt": "Review the exact archived raw evidence and record one named source-ledger decision for each row."
+        "status": "recorded-source-ledger-only",
+        "prompt": "The owner accepted the exact archived raw evidence for each named row as source-ledger-only; no transformation, ingestion, release, or production decision is implied."
       },
       "irreversibleArchiveRetention": {
         "status": "evidence-existing-not-an-approval",
@@ -127,7 +136,7 @@
         "status": "deferred-until-separate-transformation-ingestion-release-decisions",
         "requiredSeparateDecisions": ["transformation", "ingestion", "release", "productionAdmission"]
       },
-      "copyPasteBlock": "PHASE1 OWNER INPUT — ARCHIVED NATIONAL SOURCE LEDGER\nstatus=template-not-approved\nrows=ntems-forest-harvest,ntems-canopy-height\nsource_ledger_decision=<OWNER: accept|reject|defer each row>\narchive_readback=<existing evidence only; no new archive approval is inferred>\ntransformation_and_ingestion=<OWNER: separate decision required>\nrelease_and_production_admission=<OWNER: separate decision required>"
+      "copyPasteBlock": "PHASE1 OWNER INPUT — ARCHIVED NATIONAL SOURCE LEDGER\nstatus=recorded-nonadmitting\nrows=ntems-forest-harvest,ntems-canopy-height\nsource_ledger_decision=OWNER: accepted existing named source-ledger evidence for each row only\narchive_readback=<existing evidence only; no new archive approval is inferred>\ntransformation_and_ingestion=<OWNER: separate decision required>\nrelease_and_production_admission=<OWNER: separate decision required>"
     },
     {
       "step": 5,
@@ -136,8 +145,8 @@
       "dependsOn": [],
       "binding": "alberta-plvi-scope",
       "reversibleSourceScope": {
-        "status": "pending-owner-input",
-        "prompt": "Decide separately whether to admit the unchanged raw ZIP and the exact 179087-feature closed-join derived artifact with 12 bounded repairs, preserved duplicate POLYGON_ID 41405, and no feature loss or deduplication."
+        "status": "recorded-approved-raw-and-derived-scope-only",
+        "prompt": "The owner admitted only the unchanged raw ZIP and exact 179087-feature closed-join derived artifact with the named repair policy; scope-bound validation and ingestion preparation are allowed, while transformation admission and ingestion remain separate."
       },
       "irreversibleArchiveRetention": {
         "status": "evidence-existing-not-an-approval",
@@ -148,7 +157,7 @@
         "status": "deferred-until-owner-scope-and-downstream-proof",
         "requiredSeparateDecisions": ["transformation under owner scope", "ingestion", "release", "productionAdmission"]
       },
-      "copyPasteBlock": "PHASE1 OWNER INPUT — ALBERTA PLVI SCOPE\nstatus=template-not-approved\nrow=ab-primary-land-vegetation\nraw_scope=<OWNER: admit|reject|defer unchanged raw ZIP>\nderived_scope=<OWNER: admit|reject|defer 179087-feature closed-join artifact>\nrepair_policy=alberta-plvi-geometry-repair-v1; 12 bounded repairs; preserve duplicate POLYGON_ID 41405; no loss or deduplication\ntransformation_ingestion_release_production=<OWNER: separate decisions required>"
+      "copyPasteBlock": "PHASE1 OWNER INPUT — ALBERTA PLVI SCOPE\nstatus=recorded-nonadmitting\nrow=ab-primary-land-vegetation\nraw_scope=OWNER: admit unchanged raw ZIP\nderived_scope=OWNER: admit exact 179087-feature closed-join artifact\nrepair_policy=alberta-plvi-geometry-repair-v1; 12 bounded repairs; preserve duplicate POLYGON_ID 41405; no loss or deduplication\nscope_bound_preparation=OWNER: allowed for validation and ingestion preparation only\ntransformation_ingestion_release_production=<OWNER: separate decisions required>"
     },
     {
       "step": 6,

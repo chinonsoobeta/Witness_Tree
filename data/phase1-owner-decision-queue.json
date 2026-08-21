@@ -3,7 +3,7 @@
   "status": "owner-action-queue-read-only",
   "asOf": "2026-08-21",
   "derivedFromHead": "71925af03fc08b052d12077de2ba4acb9239006b",
-  "notice": "This consolidated queue restates existing Phase 1 owner boundaries and evidence. It does not create an approval, authorize AWS or remote storage, submit a form, send email, transform, ingest, release, admit, or make any row production eligible.",
+  "notice": "This consolidated queue restates existing Phase 1 owner boundaries and evidence and points to two supplied non-admitting decisions: national source-ledger-only acceptance and the PLVI raw/derived scope decision. It does not create an approval, authorize AWS or remote storage, submit a form, send email, transform, ingest, release, or make any row production eligible.",
   "selectionRule": "Include every canonical production row whose evidenceState is local-verified-profiled or remote-verified-archived-profiled and whose productionAdmission remains false. These rows have a next owner-controlled source-scope, transformation, ingestion, release, archive-promotion, or production-admission decision. Exclude partial-component and access-blocked rows because their next gate is external artifact, rights, authority, or permission resolution before this owner pipeline.",
   "baseline": {
     "productionRows": 31,
@@ -57,16 +57,16 @@
       "decisionBundle": "national-archived-source-ledger",
       "primaryActionId": "national-archived-owner-source-ledger-decisions",
       "ownerDecisionStatus": {
-        "sourceLedger": "pending",
-        "scope": "pending",
+        "sourceLedger": "recorded-approved-source-ledger-only",
+        "scope": "recorded-source-ledger-only",
         "transformation": "pending",
         "ingestion": "pending",
         "release": "pending",
         "productionAdmission": "pending"
       },
       "exactNextSteps": [
-        "owner reviews the evidence",
-        "owner records the source-ledger decision",
+        "scope-bound source/profile/archive validation is recorded",
+        "separately name and approve any transformation specification",
         "separately approve and validate transformation and ingestion",
         "record release and production admission"
       ],
@@ -74,7 +74,9 @@
         "data/nrcan-harvest-profile.json",
         "data/nrcan-harvest-remote-archive-evidence.json",
         "data/phase1-production-source-ledger.json",
-        "data/phase1-source-ledger-decision-readiness.json"
+        "data/phase1-source-ledger-decision-readiness.json",
+        "data/phase1-remote-source-admission-decisions.json",
+        "data/phase1-scope-bound-validation-preparation.json"
       ],
       "productionEligible": false
     },
@@ -113,16 +115,16 @@
       "decisionBundle": "national-archived-source-ledger",
       "primaryActionId": "national-archived-owner-source-ledger-decisions",
       "ownerDecisionStatus": {
-        "sourceLedger": "pending",
-        "scope": "pending",
+        "sourceLedger": "recorded-approved-source-ledger-only",
+        "scope": "recorded-source-ledger-only",
         "transformation": "pending",
         "ingestion": "pending",
         "release": "pending",
         "productionAdmission": "pending"
       },
       "exactNextSteps": [
-        "owner reviews the evidence",
-        "owner records the source-ledger decision",
+        "scope-bound source/profile/archive validation is recorded",
+        "separately name and approve any transformation specification",
         "separately approve and validate transformation and ingestion",
         "record release and production admission"
       ],
@@ -130,7 +132,9 @@
         "data/nrcan-canopy-height-profile.json",
         "data/nrcan-canopy-height-remote-archive-evidence.json",
         "data/phase1-production-source-ledger.json",
-        "data/phase1-source-ledger-decision-readiness.json"
+        "data/phase1-source-ledger-decision-readiness.json",
+        "data/phase1-remote-source-admission-decisions.json",
+        "data/phase1-scope-bound-validation-preparation.json"
       ],
       "productionEligible": false
     },
@@ -471,16 +475,16 @@
       "decisionBundle": "alberta-plvi-scope",
       "primaryActionId": "plvi-owner-scope-decision",
       "ownerDecisionStatus": {
-        "sourceLedger": "pending-scope-decision",
-        "scope": "pending",
-        "transformation": "pending-under-owner-scope",
-        "ingestion": "pending-under-owner-scope",
+        "sourceLedger": "recorded-approved-source-ledger-only",
+        "scope": "recorded-approved-raw-and-derived-scope-only",
+        "transformation": "pending-under-approved-scope",
+        "ingestion": "pending-under-approved-scope",
         "release": "pending",
         "productionAdmission": "pending"
       },
       "exactNextSteps": [
-        "owner records the exact scope decision",
-        "validate transformation and ingestion under that decision",
+        "scope-bound validation and ingestion preparation are recorded",
+        "separately approve transformation admission and ingestion",
         "record release and production admission"
       ],
       "exactScopeDecision": "Decide whether to admit the unchanged raw ZIP and separately the 179,087-feature closed-join derived artifact with 12 bounded repairs, preserved duplicate POLYGON_ID 41405, and no feature loss or deduplication.",
@@ -488,7 +492,9 @@
         "data/alberta-plvi-immutable-promotion-evidence.json",
         "data/alberta-plvi-full-release-readiness.json",
         "data/phase1-source-ledger-decision-readiness.json",
-        "data/phase1-alberta-transform-ingestion-audit.json"
+        "data/phase1-alberta-transform-ingestion-audit.json",
+        "data/phase1-remote-source-admission-decisions.json",
+        "data/phase1-scope-bound-validation-preparation.json"
       ],
       "productionEligible": false
     },
@@ -586,18 +592,18 @@
       "id": "national-archived-source-ledger",
       "rows": ["ntems-forest-harvest", "ntems-canopy-height"],
       "dependsOn": [],
-      "ownerAction": "Owner reviews the evidence and records the source-ledger decision; separately approve and validate transformation and ingestion, then record release and production admission.",
+      "ownerAction": "The owner source-ledger-only decisions are recorded; separately name, approve and validate any transformation and ingestion, then record release and production admission.",
       "source": "data/phase1-remaining-actions-audit.json",
-      "afterDecision": "Keep production admission and eligibility false until every downstream proof is separately recorded."
+      "afterDecision": "The supplied source-ledger decisions unlock scope-bound validation preparation only; keep transformation, ingestion, release, production admission and eligibility false until separately recorded."
     },
     {
       "step": 5,
       "id": "alberta-plvi-scope",
       "rows": ["ab-primary-land-vegetation"],
       "dependsOn": [],
-      "ownerAction": "Decide whether to admit the unchanged raw ZIP and separately the 179,087-feature closed-join derived artifact with 12 bounded repairs, preserved duplicate POLYGON_ID 41405, and no feature loss or deduplication.",
+      "ownerAction": "The owner has admitted only the unchanged raw ZIP and exact 179,087-feature closed-join derived scope with 12 bounded repairs, preserved duplicate POLYGON_ID 41405, and no feature loss or deduplication; scope-bound validation preparation is allowed.",
       "source": "data/phase1-source-ledger-decision-readiness.json",
-      "afterDecision": "Validate transformation and ingestion under that decision, then record release and production admission."
+      "afterDecision": "Keep transformation admission, ingestion, release, production admission and eligibility false; separately record each downstream decision after the scope-bound preflight."
     },
     {
       "step": 6,

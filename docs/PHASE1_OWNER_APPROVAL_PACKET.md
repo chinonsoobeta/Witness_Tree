@@ -1,6 +1,6 @@
 # Phase 1 owner-approval packet
 
-[`data/phase1-owner-approval-packet.json`](../data/phase1-owner-approval-packet.json) is a machine-checked, copy/paste owner-input template for the 16 `local-verified-profiled` or `remote-verified-archived-profiled` rows in [`data/phase1-owner-decision-queue.json`](../data/phase1-owner-decision-queue.json). It is derived from parent `71925af` and is deliberately `template-not-approved`.
+[`data/phase1-owner-approval-packet.json`](../data/phase1-owner-approval-packet.json) is a machine-checked, copy/paste owner-input packet for the 16 `local-verified-profiled` or `remote-verified-archived-profiled` rows in [`data/phase1-owner-decision-queue.json`](../data/phase1-owner-decision-queue.json). It is derived from parent `71925af` and remains `template-not-approved` for unresolved decisions, while recording two supplied non-admitting decisions: national source-ledger-only acceptance and the exact PLVI raw/derived scope.
 
 The packet separates every dependency step into three independent decisions:
 
@@ -8,7 +8,7 @@ The packet separates every dependency step into three independent decisions:
 2. irreversible archive and COMPLIANCE-retention approval; and
 3. release and production-admission decision.
 
-An owner may copy a block below as an input template, but no placeholder is an approval. The packet carries no owner identity, contact, MFA code, version secret, permission grant, or completed decision. It does not send email, submit a form, call AWS, write remote storage, transform, ingest, release, or make a row production eligible.
+An owner may copy a block below as an input template, but no placeholder is an approval. The packet carries no owner identity, contact, MFA code, version secret, permission grant, or downstream/production approval. It does not send email, submit a form, call AWS, write remote storage, admit transformation, ingest, release, or make a row production eligible.
 
 Current baseline remains **15.25/31 raw evidence credits**, **39.7580645% formal evidence tracking**, **11 immutable rows**, and **0/31 production-admitted or production-eligible**. Partial and access-blocked rows remain explicit exclusions: `cwfis-historical`, `provincial-electoral-boundaries`, and the 13 access-blocked rows in the machine record. They are not silently moved into this owner packet.
 
@@ -71,29 +71,30 @@ The 56 publisher-defined sheet payload names, hashes, and object keys remain bou
 
 ```text
 PHASE1 OWNER INPUT — ARCHIVED NATIONAL SOURCE LEDGER
-status=template-not-approved
+status=recorded-nonadmitting
 rows=ntems-forest-harvest,ntems-canopy-height
-source_ledger_decision=<OWNER: accept|reject|defer each row>
+source_ledger_decision=OWNER: accepted existing named source-ledger evidence for each row only
 archive_readback=<existing evidence only; no new archive approval is inferred>
 transformation_and_ingestion=<OWNER: separate decision required>
 release_and_production_admission=<OWNER: separate decision required>
 ```
 
-The packet binds the exact harvest and canopy-height paths, bytes, SHA-256 values, payload keys, manifest keys, and `COMPLIANCE` retain-until `2033-08-12T00:00:00Z`. Existing archive readbacks are evidence, not a new owner decision.
+The packet binds the exact harvest and canopy-height paths, bytes, SHA-256 values, payload keys, manifest keys, and `COMPLIANCE` retain-until `2033-08-12T00:00:00Z`. The supplied source-ledger decisions are limited to those existing records; they do not authorize downstream work.
 
 ### 5. Alberta PLVI scope
 
 ```text
 PHASE1 OWNER INPUT — ALBERTA PLVI SCOPE
-status=template-not-approved
+status=recorded-nonadmitting
 row=ab-primary-land-vegetation
-raw_scope=<OWNER: admit|reject|defer unchanged raw ZIP>
-derived_scope=<OWNER: admit|reject|defer 179087-feature closed-join artifact>
+raw_scope=OWNER: admit unchanged raw ZIP
+derived_scope=OWNER: admit exact 179087-feature closed-join artifact
 repair_policy=alberta-plvi-geometry-repair-v1; 12 bounded repairs; preserve duplicate POLYGON_ID 41405; no loss or deduplication
+scope_bound_preparation=OWNER: allowed for validation and ingestion preparation only
 transformation_ingestion_release_production=<OWNER: separate decisions required>
 ```
 
-The raw ZIP, 12-feature repair patch, 179087-feature derived output, exact keys, checksums, CRS, `ST_MakeValid` rule, tolerance, duplicate-preservation rule, retention date, and explicit scope exclusions are machine-bound. Existing PLVI readbacks do not grant a new scope decision.
+The raw ZIP, 12-feature repair patch, 179087-feature derived output, exact keys, checksums, CRS, `ST_MakeValid` rule, tolerance, duplicate-preservation rule, retention date, and explicit scope exclusions are machine-bound. The supplied PLVI decision admits only this exact raw/derived scope for validation and ingestion preparation; transformation admission and ingestion remain separate.
 
 ### 6. Current wildfire archive gate
 

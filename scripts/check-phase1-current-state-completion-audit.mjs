@@ -7,7 +7,7 @@ const read = (file) => JSON.parse(readFileSync(new URL(`../${file}`, import.meta
 export function validatePhase1CurrentStateCompletionAudit(audit, ledger, readiness, immutable, wildfire, outreach, partialOutreach, access, replyAudit, routeAudit) {
   assert.equal(audit.schemaVersion, 1);
   assert.equal(audit.status, "blocked-zero-of-31-production-complete");
-  assert.match(audit.notice, /records .*canopy raw archive.*no owner source decision.*production eligibility/i);
+  assert.match(audit.notice, /seven named source\/scope decisions.*two national source-ledger-only decisions.*PLVI raw\/derived scope decision.*no transformation admission.*production eligibility/i);
   assert.equal(ledger.entries.length, 31);
   assert.equal(audit.rows.length, 31);
   assert.deepEqual(audit.rows.map(({ id }) => id), ledger.entries.map(({ id }) => id));

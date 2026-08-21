@@ -77,6 +77,7 @@
         "paths": [
           "scripts/check-phase1-source-ledger-decision-readiness.mjs",
           "scripts/check-phase1-alberta-transform-ingestion-audit.mjs",
+          "scripts/check-phase1-scope-bound-validation-preparation.mjs",
           "scripts/check-phase1-nrcan-cover-processing-gate.mjs",
           "scripts/check-current-wildfire-owner-admission.mjs",
           "scripts/check-phase1-partial-source-route-exhaustion.mjs",
@@ -102,7 +103,7 @@
           "data/phase1-alberta-transform-ingestion-audit.json"
         ],
         "scoreImpact": {"rawCreditDelta": 0, "formalPercentagePointDelta": 0},
-        "blocker": "Existing local outputs and repair/quarantine evidence remain non-ingested. NTEMS has no approved named target specification; AVI requires downstream owner scope; PLVI requires its exact scope decision; historical wildfire lacks the NBAC component and permission."
+        "blocker": "Existing local outputs and repair/quarantine evidence remain non-ingested. NTEMS harvest/canopy-height source scope is recorded but has no target transformation specification; annual/canopy-cover still lack named methods; AVI requires downstream scope; PLVI scope-bound preparation is complete but transformation admission and ingestion remain separate; historical wildfire lacks the NBAC component and permission."
       },
       {
         "id": "owner-and-external-boundaries",
@@ -166,9 +167,9 @@
         "rows": ["ab-primary-land-vegetation"],
         "actionIds": ["plvi-owner-scope-decision", "production-admission-and-release-gate"],
         "category": "owner-scope",
-        "status": "blocked-owner-scope-decision",
-        "localBoundary": "The 179087-feature closed-join output, 12 repairs, checksum, geometry, duplicate preservation, and no-loss checks are already validated locally.",
-        "missing": ["named owner decision for raw and derived scope", "ingestion validation under that decision", "release and production admission"],
+        "status": "scope-recorded-preparation-complete-downstream-blocked",
+        "localBoundary": "The exact raw/derived scope is recorded and the 179087-feature closed-join output, 12 repairs, checksum, geometry, duplicate preservation, and no-loss checks are validated under a scope-bound preparation record.",
+        "missing": ["separate transformation admission", "separate ingestion decision and proof", "release and production admission"],
         "safeLocalImplementation": false,
         "ownerOrExternalPrerequisite": true,
         "scoreImpact": {"rawCreditDelta": 0, "formalPercentagePointDelta": 0}
@@ -419,11 +420,11 @@
     {
       "id": "national-archived-owner-source-ledger-decisions",
       "rank": 4,
-      "priorityBasis": "A named owner decision is the immediate remaining source gate after exact archive evidence; no external reply is needed and no new raw credit is possible.",
-      "lawfulImmediacy": "owner-input-now",
+      "priorityBasis": "The named source-ledger decisions are now recorded and existing scope-bound validation has passed; the remaining immediate gate is a separately named downstream method and ingestion decision, with no new raw credit possible.",
+      "lawfulImmediacy": "owner-input-for-downstream-decision",
       "actor": "owner",
       "executableNow": false,
-      "executionBoundary": "A delegate may prepare the decision packet, but may not create or infer the owner's source-ledger decision.",
+      "executionBoundary": "A delegate may run the existing profile/archive and scope-bound preparation checkers, but may not create a transformation specification or infer downstream admission.",
       "requiresOwnerInput": true,
       "requiresExternalReply": false,
       "ownerRunAuthorized": false,
@@ -437,25 +438,27 @@
         "data/phase1-production-source-ledger.json",
         "data/phase1-source-ledger-decision-readiness.json",
         "data/phase1-national-archive-finalization-audit.json",
-        "data/phase1-owner-decision-queue.json"
+        "data/phase1-owner-decision-queue.json",
+        "data/phase1-remote-source-admission-decisions.json",
+        "data/phase1-scope-bound-validation-preparation.json"
       ],
       "runnerOrPreflight": {
         "evidenceChecker": "npm run check:nrcan-harvest-remote-archive-evidence",
         "readinessChecker": "npm run check:phase1-source-ledger-decision-readiness"
       },
-      "prerequisites": ["Review the exact redacted primary/recovery archive evidence and source terms.", "Record a narrowly scoped named owner source-ledger decision; do not infer transformation, ingestion, release, or production admission.", "Keep the already archived harvest payload out of any new promotion command."],
-      "remainingSteps": ["owner reviews the evidence", "owner records the source-ledger decision", "separately approve and validate transformation and ingestion", "record release and production admission"],
+      "prerequisites": ["The exact redacted primary/recovery archive evidence and source terms are reviewed and recorded.", "Keep the accepted decision limited to the named source-ledger row.", "Name and separately approve any target transformation and ingestion; keep the already archived payload out of promotion commands."],
+      "remainingSteps": ["retain the passed scope-bound profile/archive validation", "name and approve a target transformation specification", "validate ingestion only after that decision", "record release and production admission"],
       "scoreImpact": {"currentRawCreditDelta": 0, "maximumRawCreditDelta": 0, "maximumFormalPercentagePointDelta": 0, "productionAdmissionDelta": 0},
-      "blockers": ["The row is already raw-credit complete, but its owner source-ledger decision and all downstream gates remain absent."]
+      "blockers": ["Source-ledger scope is recorded and raw credit is complete, but no target transformation, ingestion, release, or production decision is recorded."]
     },
     {
       "id": "plvi-owner-scope-decision",
       "rank": 5,
-      "priorityBasis": "Immutable raw and derived evidence is present and the exact scope decision is the immediate remaining owner gate; it adds no raw credit.",
-      "lawfulImmediacy": "owner-input-now",
+      "priorityBasis": "Immutable raw and derived evidence and the exact raw/derived scope decision are recorded; the remaining immediate gates are separate transformation admission and ingestion decisions, with no new raw credit possible.",
+      "lawfulImmediacy": "owner-input-for-downstream-decision",
       "actor": "owner",
       "executableNow": false,
-      "executionBoundary": "A delegate may present the prepared lineage; only the accountable owner may admit the stated raw/derived scope.",
+      "executionBoundary": "A delegate may run the exact scope-bound validation and ingestion-preparation checkers, but may not infer transformation admission or ingestion from them.",
       "requiresOwnerInput": true,
       "requiresExternalReply": false,
       "ownerRunAuthorized": false,
@@ -468,15 +471,17 @@
         "data/transformation-runs/alberta-plvi-geometry-repair-v1-2026-08-14.json",
         "data/phase1-source-ledger-decision-readiness.json",
         "data/phase1-alberta-transform-ingestion-audit.json",
-        "data/phase1-owner-decision-queue.json"
+        "data/phase1-owner-decision-queue.json",
+        "data/phase1-remote-source-admission-decisions.json",
+        "data/phase1-scope-bound-validation-preparation.json"
       ],
       "runnerOrPreflight": {
-        "evidenceCheckers": ["npm run check:alberta-plvi-immutable-promotion-evidence", "npm run check:alberta-plvi-full-release-readiness", "npm run check:alberta-plvi-geometry-repair"]
+        "evidenceCheckers": ["npm run check:alberta-plvi-immutable-promotion-evidence", "npm run check:alberta-plvi-full-release-readiness", "npm run check:alberta-plvi-geometry-repair", "npm run check:phase1-scope-bound-validation-preparation"]
       },
-      "prerequisites": ["Review the immutable raw ZIP and closed-join derived evidence.", "Decide explicitly on the raw source and the 179087-feature derived release with all 12 bounded repairs.", "Preserve duplicate POLYGON_ID 41405 and no-deduplication semantics.", "Record owner intended-use, attribution, refresh, transformation, ingestion, release, and production decisions separately."],
-      "remainingSteps": ["owner records the exact scope decision", "validate transformation and ingestion under that decision", "record release and production admission"],
+      "prerequisites": ["The immutable raw ZIP and closed-join derived evidence are reviewed.", "The exact raw/derived scope and all 12 bounded repairs are recorded as scope-only.", "Preserve duplicate POLYGON_ID 41405 and no-deduplication semantics.", "Record transformation admission, ingestion, release, and production decisions separately."],
+      "remainingSteps": ["retain the passed scope-bound validation and ingestion-preparation receipt", "record separate transformation admission and ingestion decisions", "record release and production admission"],
       "scoreImpact": {"currentRawCreditDelta": 0, "maximumRawCreditDelta": 0, "maximumFormalPercentagePointDelta": 0, "productionAdmissionDelta": 0},
-      "blockers": ["The archived evidence explicitly excludes owner source-ledger admission, transformation, ingestion, release, production admission, and eligibility."]
+      "blockers": ["Scope-only admission is recorded, but transformation admission, ingestion, release, production admission, and eligibility remain false."]
     },
     {
       "id": "current-wildfire-derived-archive-preflight-and-owner-promotion",

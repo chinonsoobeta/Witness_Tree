@@ -7,9 +7,11 @@ const read = (file) => JSON.parse(readFileSync(new URL(file, import.meta.url), "
 const decisions = read("../data/phase1-remote-source-admission-decisions.json");
 const ledger = read("../data/phase1-production-source-ledger.json");
 
-test("four named remote rows have narrowly scoped owner source-ledger approvals only", () => {
+test("seven named rows have narrowly scoped owner source-ledger or PLVI scope decisions only", () => {
   assert.doesNotThrow(() => validateRemoteAdmissionDecisions(decisions, ledger));
-  assert.equal(decisions.decisions.filter((decision) => decision.ownerAdmission === "approved-source-ledger-only").length, 4);
+  assert.equal(decisions.decisions.filter((decision) => decision.ownerAdmission === "approved-source-ledger-only").length, 7);
+  assert.equal(decisions.decisions.filter((decision) => decision.scopeDecision === "accepted-named-source-ledger-only").length, 2);
+  assert.equal(decisions.decisions.filter((decision) => decision.scopeDecision === "approved-raw-and-derived-scope-only").length, 1);
   assert.equal(ledger.entries.filter((entry) => entry.proof.productionAdmission).length, 0);
   assert.equal(ledger.entries.filter((entry) => entry.productionEligible).length, 0);
 });
@@ -21,4 +23,7 @@ test("remote decision rejects broader authority or a changed Crown exclusion", (
   const crown = structuredClone(decisions);
   crown.decisions.find((decision) => decision.id === "ab-avi-crown").scope = "AVI_PostInventoryHarvestIndex FID 2 is excluded; zero AVI_Crown observations and no Crown denominator impact.";
   assert.throws(() => validateRemoteAdmissionDecisions(crown, ledger));
+  const plvi = structuredClone(decisions);
+  plvi.decisions.find((decision) => decision.id === "ab-primary-land-vegetation").scope = "The owner admitted the derived artifact for transformation and production.";
+  assert.throws(() => validateRemoteAdmissionDecisions(plvi, ledger));
 });

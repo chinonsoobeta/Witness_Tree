@@ -14,9 +14,9 @@
   },
   "entries": [
     {"id":"ntems-annual-land-cover","readiness":"owner-decision-recorded","decisionBundle":"remote-source-evidence-recorded"},
-    {"id":"ntems-forest-harvest","readiness":"immutable-archive-then-owner-decision","decisionBundle":"national-baselines"},
+    {"id":"ntems-forest-harvest","readiness":"owner-decision-recorded","decisionBundle":"national-baselines","scope":"Accepted named existing immutable source-ledger evidence only; transformation admission, ingestion, release and production remain separate decisions."},
     {"id":"ntems-canopy-cover","readiness":"owner-decision-recorded","decisionBundle":"remote-source-evidence-recorded"},
-    {"id":"ntems-canopy-height","readiness":"immutable-archive-then-owner-decision","decisionBundle":"national-baselines"},
+    {"id":"ntems-canopy-height","readiness":"owner-decision-recorded","decisionBundle":"national-baselines","scope":"Accepted named existing immutable source-ledger evidence only; transformation admission, ingestion, release and production remain separate decisions."},
     {"id":"cwfis-current","readiness":"owner-scope-decision-recorded-awaiting-archive","decisionBundle":"wildfire-operational-scope","scope":"Approved as a fixed-time 586-point national fallback snapshot: not real-time, complete perimeter, or provincial-authoritative data; provincial agencies prevail."},
     {"id":"cwfis-historical","readiness":"external-evidence-blocked","decisionBundle":"none","blocker":"The named combined source lacks its burned-area component and normal source evidence."},
     {"id":"bc-wildfire","readiness":"owner-scope-decision-recorded-awaiting-archive","decisionBundle":"wildfire-geometry-scope","scope":"Approved unchanged 217-feature raw retention plus the 216-feature derived geometry release: 215 unchanged, G70362 repaired within tolerance, V10755 permanently quarantined; no 217-feature geometry coverage claim."},
@@ -34,7 +34,7 @@
     {"id":"qc-fourth-inventory","readiness":"immutable-archive-then-owner-decision","decisionBundle":"quebec-ecoforest"},
     {"id":"ab-avi-crown","readiness":"owner-decision-recorded","decisionBundle":"remote-source-evidence-recorded"},
     {"id":"ab-avi-post-harvest","readiness":"owner-decision-recorded","decisionBundle":"remote-source-evidence-recorded"},
-    {"id":"ab-primary-land-vegetation","readiness":"owner-scope-decision-ready","decisionBundle":"alberta-plvi-geometry-scope","scope":"Immutable archive evidence is complete only. Decide whether to admit the unchanged raw ZIP and separately the 179,087-feature closed-join derived artifact with 12 bounded repairs, preserved duplicate POLYGON_ID 41405, and no feature loss or deduplication."},
+    {"id":"ab-primary-land-vegetation","readiness":"owner-decision-recorded","decisionBundle":"alberta-plvi-geometry-scope","scope":"Accepted only the unchanged raw ZIP and exact 179,087-feature closed-join derived artifact under alberta-plvi-geometry-repair-v1 with 12 bounded repairs, preserved duplicate POLYGON_ID 41405 and no feature loss or deduplication; scope-bound validation and ingestion preparation only, with transformation admission, ingestion, release and production remaining separate decisions."},
     {"id":"on-fri","readiness":"external-evidence-blocked","decisionBundle":"none","blocker":"Only mutable explorer resources are verified; no stable complete package or exact-package reuse confirmation exists."},
     {"id":"on-fri-term-2","readiness":"external-evidence-blocked","decisionBundle":"none","blocker":"Request-based access and rights remain unresolved."},
     {"id":"fed-2023-ridings","readiness":"immutable-archive-then-owner-decision","decisionBundle":"elections-canada-2025-shared-artifact","physicalArtifactGroup":"elections-canada-2025-shp"},
@@ -45,14 +45,14 @@
     {"id":"historic-treaties","readiness":"external-evidence-blocked","decisionBundle":"none","blocker":"Reviewed federal mapping is informational and non-legal, not admissible precision geometry; rights and engagement route are also unverified."},
     {"id":"modern-treaties","readiness":"external-evidence-blocked","decisionBundle":"none","blocker":"Reviewed federal map is informal, approximate, revisable, and not for consultation reliance; rights and engagement route are also unverified."}
   ],
-  "counts": {"owner-decision-recorded":4,"immutable-archive-then-owner-decision":7,"owner-scope-decision-after-archive":0,"owner-scope-decision-recorded-awaiting-archive":4,"owner-scope-decision-ready":1,"external-evidence-blocked":15},
+  "counts": {"owner-decision-recorded":7,"immutable-archive-then-owner-decision":5,"owner-scope-decision-after-archive":0,"owner-scope-decision-recorded-awaiting-archive":4,"owner-scope-decision-ready":0,"external-evidence-blocked":15},
   "minimalOwnerDecisionBundles": [
-    {"id":"national-baselines","rows":["ntems-forest-harvest","ntems-canopy-height"],"precondition":"Each named payload has immutable archive/recovery readbacks."},
+    {"id":"national-baselines","rows":["ntems-forest-harvest","ntems-canopy-height"],"precondition":"Existing immutable archive/recovery readbacks are integrated and the named source-ledger-only decisions are recorded; any downstream method decision remains separate."},
     {"id":"quebec-ecoforest","rows":["qc-current-ecoforest","qc-original-current-inventory","qc-fourth-inventory"],"precondition":"Each named payload and any named derivative has immutable archive/recovery readbacks; the fourth-inventory source also requires separately scoped semantic transformation and join selection."},
     {"id":"elections-canada-2025-shared-artifact","rows":["fed-2023-ridings","elections-canada-45th-files"],"physicalArtifactGroup":"elections-canada-2025-shp","precondition":"One immutable archive/recovery proof for the shared exact Elections Canada 2025 SHP artifact, followed by two named ledger-row decisions."},
     {"id":"wildfire-operational-scope","rows":["cwfis-current","ab-wildfire"],"precondition":"Scope is owner-approved; integrate each exact raw payload's immutable archive/recovery readbacks before activation."},
     {"id":"wildfire-geometry-scope","rows":["bc-wildfire","on-fire-disturbance"],"precondition":"Raw/derived scope and dispositions are owner-approved; integrate exact immutable archive/recovery readbacks for both raw and derived artifacts before activation."},
-    {"id":"alberta-plvi-geometry-scope","rows":["ab-primary-land-vegetation"],"precondition":"Immutable archive evidence for the approved raw ZIP and closed-join derived payload plus canonical sidecars is recorded; decide raw/derived scope and all 12 repair dispositions."}
+    {"id":"alberta-plvi-geometry-scope","rows":["ab-primary-land-vegetation"],"precondition":"Immutable archive evidence and the exact raw/derived scope decision are recorded; scope-bound validation and ingestion preparation are allowed, while transformation admission and ingestion remain separate."}
   ],
-  "nonProduction": {"productionProofChanged":false,"productionEligibleChanged":false,"transformationAuthorized":true,"ingestionAuthorized":true,"releaseAuthorized":true,"activationBlockedOnImmutableReadbacks":true}
+  "nonProduction": {"productionProofChanged":false,"productionEligibleChanged":false,"transformationAuthorized":false,"ingestionAuthorized":false,"releaseAuthorized":false,"activationBlockedOnImmutableReadbacks":true}
 }

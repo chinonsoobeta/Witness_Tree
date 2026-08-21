@@ -75,13 +75,21 @@ function validatePlviRow(row, ledgerRow, decisionReadiness, repair, fullRelease,
   assert.equal(ledgerRow.evidenceState, row.evidenceState);
   assert.equal(ledgerRow.rawCredit, 1);
   assert.equal(ledgerRow.productionEligible, false);
-  assert.equal(row.ownerScope.status, "owner-scope-decision-not-recorded");
+  assert.equal(row.ownerScope.status, "approved-raw-and-derived-scope-only");
+  assert.equal(row.ownerScope.decisionRef, "data/phase1-remote-source-admission-decisions.json");
+  assert.equal(row.ownerScope.decisionId, "ab-primary-land-vegetation");
   const readinessEntry = decisionReadiness.entries.find((entry) => entry.id === "ab-primary-land-vegetation");
   assert.ok(readinessEntry, "Missing PLVI decision-readiness entry.");
-  assert.equal(readinessEntry.readiness, "owner-scope-decision-ready");
+  assert.equal(readinessEntry.readiness, "owner-decision-recorded");
   assert.equal(row.ownerScope.readiness, readinessEntry.readiness);
+  assert.equal(row.ownerScope.scopeDecision, "approved-raw-and-derived-scope-only");
+  assert.equal(row.ownerScope.scopeBoundPreparation, "data/phase1-scope-bound-validation-preparation.json");
   assert.equal(row.ownerScope.downstreamAuthorized, false);
-  assert.equal(decisions.decisions.some((candidate) => candidate.id === "ab-primary-land-vegetation"), false);
+  const decision = decisions.decisions.find((candidate) => candidate.id === "ab-primary-land-vegetation");
+  assert.ok(decision);
+  assert.equal(decision.ownerAdmission, "approved-source-ledger-only");
+  assert.equal(decision.scopeDecision, "approved-raw-and-derived-scope-only");
+  assert.match(decision.scope, /scope-bound validation and ingestion preparation only/i);
   assert.equal(fullRelease.ownerAdmission.status, "not-authorized");
   assert.equal(fullRelease.ownerAdmission.admitted, false);
   assert.equal(row.localArtifacts.raw.sha256, PLVI_RAW_SHA256);
@@ -100,7 +108,8 @@ function validatePlviRow(row, ledgerRow, decisionReadiness, repair, fullRelease,
   assert.equal(row.transformationValidation.derivedDatasetWrittenByThisAudit, false);
   assert.equal(row.transformationValidation.transformedClaim, false);
   expectFailClosed(row);
-  assert.equal(row.ingestionPreflight.status, "local-output-preflight-passed-not-ingested");
+  assert.equal(row.ingestionPreflight.status, "scope-bound-ingestion-preflight-passed-not-ingested");
+  assert.equal(row.ingestionPreflight.scopeBound, true);
   assert.deepEqual(row.ingestionPreflight.checks, {
     rawChecksumBound: true,
     derivedChecksumBound: true,

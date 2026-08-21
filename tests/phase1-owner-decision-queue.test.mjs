@@ -22,6 +22,8 @@ test("consolidates every local/remote Phase 1 row into an owner-decision queue",
     "on-fire-disturbance",
   ]);
   assert.deepEqual(queue.excludedRows["partial-component"], ["cwfis-historical", "provincial-electoral-boundaries"]);
+  assert.equal(queue.queueRows.find(({ id }) => id === "ntems-forest-harvest").ownerDecisionStatus.scope, "recorded-source-ledger-only");
+  assert.equal(queue.queueRows.find(({ id }) => id === "ab-primary-land-vegetation").ownerDecisionStatus.scope, "recorded-approved-raw-and-derived-scope-only");
 });
 
 test("rejects fabricated approvals, production claims, or omission of a required row", () => {

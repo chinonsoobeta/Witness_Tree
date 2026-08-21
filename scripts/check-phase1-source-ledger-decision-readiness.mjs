@@ -49,7 +49,16 @@ export function validatePhase1SourceLedgerDecisionReadiness(audit, ledger, decis
     }
     if (entry.readiness === "external-evidence-blocked") assert.match(entry.blocker, /.+/);
   }
-  assert.deepEqual(audit.nonProduction, { productionProofChanged: false, productionEligibleChanged: false, transformationAuthorized: true, ingestionAuthorized: true, releaseAuthorized: true, activationBlockedOnImmutableReadbacks: true });
+  assert.deepEqual(audit.nonProduction, { productionProofChanged: false, productionEligibleChanged: false, transformationAuthorized: false, ingestionAuthorized: false, releaseAuthorized: false, activationBlockedOnImmutableReadbacks: true });
+  const nationalIds = ["ntems-forest-harvest", "ntems-canopy-height"];
+  for (const id of nationalIds) {
+    const entry = audit.entries.find((candidate) => candidate.id === id);
+    assert.equal(entry.readiness, "owner-decision-recorded");
+    assert.match(entry.scope, /source-ledger evidence only.*transformation admission, ingestion, release and production remain separate/i);
+  }
+  const plvi = audit.entries.find((candidate) => candidate.id === "ab-primary-land-vegetation");
+  assert.equal(plvi.readiness, "owner-decision-recorded");
+  assert.match(plvi.scope, /179,087-feature closed-join derived artifact.*12 bounded repairs.*POLYGON_ID 41405.*scope-bound validation and ingestion preparation only/i);
   const elections = audit.entries.filter((entry) => entry.physicalArtifactGroup === "elections-canada-2025-shp");
   assert.deepEqual(elections.map(({ id }) => id), ["fed-2023-ridings", "elections-canada-45th-files"]);
   const shared = audit.minimalOwnerDecisionBundles.find((bundle) => bundle.id === "elections-canada-2025-shared-artifact");

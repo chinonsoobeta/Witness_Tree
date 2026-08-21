@@ -123,11 +123,15 @@
       "id": "ab-primary-land-vegetation",
       "evidenceState": "remote-verified-archived-profiled",
       "ownerScope": {
-        "status": "owner-scope-decision-not-recorded",
+        "status": "approved-raw-and-derived-scope-only",
+        "decisionRef": "data/phase1-remote-source-admission-decisions.json",
+        "decisionId": "ab-primary-land-vegetation",
         "readinessRef": "data/phase1-source-ledger-decision-readiness.json",
-        "readiness": "owner-scope-decision-ready",
-        "readinessScope": "Admit the unchanged raw ZIP and separately the 179087-feature closed-join derived artifact with 12 bounded repairs, preserved duplicate POLYGON_ID 41405, and no feature loss or deduplication.",
+        "readiness": "owner-decision-recorded",
+        "readinessScope": "Accepted only the unchanged raw ZIP and exact 179087-feature closed-join derived artifact under alberta-plvi-geometry-repair-v1 with 12 bounded repairs, preserved duplicate POLYGON_ID 41405 and no feature loss or deduplication; scope-bound validation and ingestion preparation only.",
         "admissionRef": "data/alberta-plvi-full-release-readiness.json",
+        "scopeDecision": "approved-raw-and-derived-scope-only",
+        "scopeBoundPreparation": "data/phase1-scope-bound-validation-preparation.json",
         "downstreamAuthorized": false
       },
       "localArtifacts": {
@@ -148,7 +152,7 @@
         }
       },
       "transformationValidation": {
-        "status": "existing-local-readiness-validated-scope-pending-owner",
+        "status": "existing-local-readiness-validated-under-approved-scope-not-admitted",
         "specification": "alberta-plvi-geometry-repair-v1",
         "runRecord": "data/transformation-runs/alberta-plvi-geometry-repair-v1-2026-08-14.json",
         "fullReleaseReadiness": "data/alberta-plvi-full-release-readiness.json",
@@ -165,9 +169,10 @@
         "transformedClaim": false
       },
       "ingestionPreflight": {
-        "status": "local-output-preflight-passed-not-ingested",
+        "status": "scope-bound-ingestion-preflight-passed-not-ingested",
         "authorized": false,
         "ingested": false,
+        "scopeBound": true,
         "checks": {
           "rawChecksumBound": true,
           "derivedChecksumBound": true,
@@ -178,7 +183,7 @@
           "duplicatePolygonId41405Preserved": true,
           "silentLossOrDeduplication": false
         },
-        "reason": "The existing closed-join output passes its local structural checks, but owner admission of the exact raw/derived scope is not recorded; therefore this is a preflight validation, not ingestion."
+        "reason": "The owner admitted the exact raw/derived scope for scope-bound preparation only. The existing closed-join output passes its local structural checks, but transformation admission and ingestion remain separate decisions; therefore this is a preflight validation, not ingestion."
       },
       "downstream": {
         "releaseApproval": false,
@@ -201,7 +206,7 @@
   },
   "remainingActions": [
     "For AVI, obtain a separately named owner transformation and ingestion scope before any derived payload is admitted.",
-    "For PLVI, obtain the named owner decision for the exact raw and 179087-feature closed-join scope before treating the local output as an approved transform or ingestion input.",
-    "For all three rows, record release approval and production admission separately; never infer them from local validation or immutable archive evidence."
+    "For PLVI, retain the scope-bound validation and ingestion-preparation receipt, then obtain separate transformation admission and ingestion decisions before treating the local output as an admitted transform or ingestion input.",
+    "For all three rows, record transformation, ingestion, release approval and production admission separately; never infer them from local validation or immutable archive evidence."
   ]
 }

@@ -32,7 +32,9 @@
       "evidenceRefs": [
         "data/nrcan-harvest-profile.json",
         "data/staged-acquisitions.json",
-        "data/nrcan-harvest-remote-archive-evidence.json"
+        "data/nrcan-harvest-remote-archive-evidence.json",
+        "data/phase1-remote-source-admission-decisions.json",
+        "data/phase1-scope-bound-validation-preparation.json"
       ],
       "proof": {
         "licence": true,
@@ -46,7 +48,7 @@
       },
       "rawCredit": 1,
       "productionEligible": false,
-      "blocker": "Owner source-ledger decision, transformation, ingestion, release, and production eligibility remain separately blocked; the exact raw payload and recovery evidence are now archived and redacted read back."
+      "blocker": "Owner accepted this named source-ledger evidence row only; transformation admission, ingestion, release, and production eligibility remain separately blocked. The exact raw payload and recovery evidence are archived and redacted read back."
     },
     {
       "id": "ntems-canopy-cover",
@@ -76,7 +78,9 @@
       "evidenceRefs": [
         "data/nrcan-canopy-height-profile.json",
         "data/staged-acquisitions.json",
-        "data/nrcan-canopy-height-remote-archive-evidence.json"
+        "data/nrcan-canopy-height-remote-archive-evidence.json",
+        "data/phase1-remote-source-admission-decisions.json",
+        "data/phase1-scope-bound-validation-preparation.json"
       ],
       "proof": {
         "licence": true,
@@ -90,7 +94,7 @@
       },
       "rawCredit": 1,
       "productionEligible": false,
-      "blocker": "A named owner source-ledger decision, transformation, ingestion, release, and production admission remain separately required."
+      "blocker": "Owner accepted this named source-ledger evidence row only; transformation admission, ingestion, release, and production admission remain separately required."
     },
     {
       "id": "cwfis-current",
@@ -459,7 +463,9 @@
         "data/alberta-plvi-full-release-readiness.json",
         "data/alberta-plvi-immutable-promotion-preparation.json",
         "data/alberta-plvi-immutable-promotion-evidence.json",
-        "data/phase1-alberta-transform-ingestion-audit.json"
+        "data/phase1-alberta-transform-ingestion-audit.json",
+        "data/phase1-remote-source-admission-decisions.json",
+        "data/phase1-scope-bound-validation-preparation.json"
       ],
       "proof": {
         "licence": true,
@@ -473,7 +479,7 @@
       },
       "rawCredit": 1,
       "productionEligible": false,
-      "blocker": "Exact raw and derived payload versions and deterministic sidecar versions are remotely verified; both payload versions carry COMPLIANCE retention through 2033-08-12. The existing repair and closed-join output pass local structural validation, but the owner scope/admission decision is not recorded; transformation, ingestion, release, production admission, and production eligibility remain separately blocked."
+      "blocker": "Exact raw and derived payload versions and deterministic sidecar versions are remotely verified; both payload versions carry COMPLIANCE retention through 2033-08-12. The owner admitted the exact raw/derived scope for scope-bound validation and ingestion preparation only; transformation admission, ingestion, release, production admission, and production eligibility remain separately blocked."
     },
     {
       "id": "on-fri",
