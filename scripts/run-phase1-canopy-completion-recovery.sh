@@ -79,6 +79,9 @@ mfa_serial="$(aws configure get mfa_serial --profile "$PROFILE" 2>"$TMP/mfa-seri
 [[ "$mfa_serial" =~ '^arn:aws:iam::286853118812:mfa/[A-Za-z0-9+=,.@_/-]+$' ]] || fail "Configured MFA serial is absent or outside the approved account; no STS or storage mutation was authorized" 69
 if ! aws sts assume-role --profile "$PROFILE" --role-arn "arn:aws:iam::$ACCOUNT:role/$ROLE" --role-session-name witness-tree-canopy-recovery --serial-number "$mfa_serial" --token-code "$totp" --duration-seconds 3600 --output json >"$TMP/role-session.json" 2>"$TMP/sts-role.stderr"; then
   unset totp mfa_serial
+  sts_error="$(sed -nE 's/^.*An error occurred \(([^)]+)\).*: (.*)$/AWS STS \1: \2/p' "$TMP/sts-role.stderr" | head -n 1)"
+  [[ -n "$sts_error" ]] && print -u2 -r -- "$sts_error"
+  unset sts_error
   fail "Approved recovery role assumption failed; no storage mutation was authorized" 77
 fi
 unset totp mfa_serial

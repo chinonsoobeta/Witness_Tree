@@ -226,7 +226,7 @@ function writeFixture(dir) {
   return { approvalPath, statePath, attestationPath };
 }
 
-function writeFakeAws(dir, policyDocument, { retentionNever = false } = {}) {
+function writeFakeAws(dir, policyDocument, { retentionNever = false, assumeRoleFails = false } = {}) {
   const marker = join(dir, "aws-calls");
   const ready = join(dir, "retention-ready");
   const policyEnvelope = JSON.stringify({ PolicyDocument: policyDocument });
@@ -237,7 +237,13 @@ function writeFakeAws(dir, policyDocument, { retentionNever = false } = {}) {
     "  configure:get) print -r -- \"arn:aws:iam::286853118812:mfa/witness-tree/archive-operator.device\" ;;",
     "  iam:list-role-policies) print -r -- \"{\\\"PolicyNames\\\":[\\\"CanopyRecoveryPolicy\\\"]}\" ;;",
     "  iam:get-role-policy) print -r -- __POLICY__ ;;",
-    "  sts:assume-role) print -r -- \"{\\\"Credentials\\\":{\\\"AccessKeyId\\\":\\\"test-access\\\",\\\"SecretAccessKey\\\":\\\"test-secret\\\",\\\"SessionToken\\\":\\\"test-session\\\",\\\"Expiration\\\":\\\"2099-01-01T00:00:00Z\\\"}}\" ;;",
+    "  sts:assume-role)",
+    "    if [[ \"__ASSUME_ROLE_FAILS__\" == \"true\" ]]; then",
+    "      print -u2 -- \"An error occurred (AccessDenied) when calling the AssumeRole operation: exact safe diagnostic\"",
+    "      exit 1",
+    "    fi",
+    "    print -r -- \"{\\\"Credentials\\\":{\\\"AccessKeyId\\\":\\\"test-access\\\",\\\"SecretAccessKey\\\":\\\"test-secret\\\",\\\"SessionToken\\\":\\\"test-session\\\",\\\"Expiration\\\":\\\"2099-01-01T00:00:00Z\\\"}}\"",
+    "    ;;",
     "  sts:get-caller-identity) print -r -- \"286853118812\" ;;",
     "  s3api:head-object)",
     "    if [[ \"$*\" == *manifest.json* ]]; then",
@@ -265,6 +271,7 @@ function writeFakeAws(dir, policyDocument, { retentionNever = false } = {}) {
     .replaceAll("__MARKER__", JSON.stringify(marker))
     .replaceAll("__READY__", JSON.stringify(ready))
     .replaceAll("__RETENTION_NEVER__", JSON.stringify(retentionNever ? "true" : "false"))
+    .replaceAll("__ASSUME_ROLE_FAILS__", JSON.stringify(assumeRoleFails ? "true" : "false"))
     .replaceAll("__POLICY__", JSON.stringify(policyEnvelope));
   const awsPath = join(dir, "aws");
   writeFileSync(awsPath, rendered, { mode: 0o700 });
@@ -338,6 +345,22 @@ test("PTY recovery fails closed when retention remains absent after the attempte
     const calls = readFileSync(fake.marker, "utf8").trim().split("\n");
     assert.equal(calls.filter((call) => call.includes("put-object-retention")).length, 2);
     assert.ok(calls.every((call) => !/complete-multipart|upload-part|put-object --|delete-object|legal-hold|bypass-governance/i.test(call)));
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("role assumption failure exposes only the sanitized AWS error and makes no storage call", () => {
+  const dir = mkdtempSync(join(tmpdir(), "canopy-recovery-sts-negative-"));
+  try {
+    const fixture = writeFixture(dir);
+    const fake = writeFakeAws(dir, policy(), { assumeRoleFails: true });
+    const run = runPty(["--recover-canopy", fixture.approvalPath, fixture.statePath, fixture.attestationPath], dir);
+    assert.equal(run.status, 77, run.stdout + run.stderr);
+    assert.match(run.stdout + run.stderr, /AWS STS AccessDenied: exact safe diagnostic/);
+    assert.doesNotMatch(run.stdout + run.stderr, /123456|test-access|test-secret|test-session/);
+    const calls = readFileSync(fake.marker, "utf8").trim().split("\n");
+    assert.equal(calls.filter((call) => call.startsWith("s3api ")).length, 0);
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
