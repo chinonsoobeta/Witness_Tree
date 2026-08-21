@@ -30,11 +30,11 @@ The live audit on 2026-08-21 used the configured `default` and
 The role `WitnessTreeWildfireDerivedPromotionUploader` exists with no attached
 role policies and one inline policy, `WitnessTreeWildfireDerivedExactObjects`.
 Its trust policy allows only the operator user when
-`aws:MultiFactorAuthPresent` is true. The inline policy currently allows
-`s3:PutObject` and `s3:GetObject` on the four exact derived payload/sidecar
-resources, and `s3:PutObjectRetention` plus `s3:GetObjectRetention` on the two
-exact payload resources. It is missing `s3:GetObjectVersion`, so the runner's
-exact versioned `HeadObject` readback remains blocked.
+`aws:MultiFactorAuthPresent` is true. The inline policy allows `s3:PutObject`
+and `s3:GetObject` on the four exact derived payload/sidecar resources,
+`s3:GetObjectVersion` on those same four resources, and
+`s3:PutObjectRetention` plus `s3:GetObjectRetention` on the two exact payload
+resources. The exact versioned `HeadObject` permission is already present.
 
 The operator has an attached policy named
 `WitnessTreeWildfireDerivedPromotionAssumeOnly` whose only statement allows
@@ -42,8 +42,8 @@ The operator has an attached policy named
 broader operator statement, enforces MFA for the role session. No live IAM
 change was made.
 
-The minimal delta is one appended statement, preserving every existing policy
-byte and existing promotion capability:
+The canonical minimal delta, when absent, is one statement preserving every
+existing policy byte, statement order, and promotion capability:
 
 ~~~json
 {
@@ -94,10 +94,14 @@ silent rewrite of this promotion role.
 > retention, delete, use a legal hold or bypass, infer production, or start
 > Phase 2.
 
-The live role currently fails the versioned-readback preflight because the
-required statement is absent. Until an owner separately provisions and
-read-backs that exact delta, the safe command is the offline desired-state
-check only; the interactive S3 readback command remains blocked.
+The live role passes the versioned-readback preflight because the required
+statement is already present exactly. The earlier dry-run failure came from a
+local bug: the already-present branch removed the required statement and then
+compared that reduced list to the full live list. The corrected comparison
+excludes the required Sid from both lists before checking that every other
+statement remains byte-equivalent and in order. No IAM mutation was performed
+or needed. The owner-local interactive S3 readback still requires a current
+MFA TOTP and remains the next evidence step.
 
 ## Owner-local additive provisioner
 
@@ -111,8 +115,9 @@ node scripts/provision-wildfire-derived-readback-iam.mjs \
 ~~~
 
 The provisioner reads the exact account, role, MFA trust, and inline policy
-`WitnessTreeWildfireDerivedExactObjects`; it proposes only the
-`ExactDerivedVersionedReadbacks` statement from the desired-state record. It
+`WitnessTreeWildfireDerivedExactObjects`; it accepts the exact
+`ExactDerivedVersionedReadbacks` statement when already present or proposes
+only that statement when absent. It
 preserves all existing statement order and content, refuses the operator
 profile, does not grant or require operator IAM-read permission, and writes a
 mode-600 redacted owner attestation. Access Analyzer and exact allow/deny

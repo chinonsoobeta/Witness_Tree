@@ -28,8 +28,14 @@ test("desired readback IAM state is exact and non-admitting", () => {
   assert.equal(DESIRED.claims.productionEligible, false);
 });
 
-test("live preflight rejects the current missing versioned-readback statement", () => {
+test("live preflight rejects a missing versioned-readback statement", () => {
   assert.throws(() => validateLiveState(liveFromDesired()), /missing the exact versioned readback delta or has broader scope/);
+});
+
+test("live preflight accepts the exact desired trust, operator path and role policy", () => {
+  const live = liveFromDesired();
+  live.rolePolicy = structuredClone(DESIRED.rolePolicy);
+  assert.equal(validateLiveState(live), true);
 });
 
 test("live preflight rejects any extra action, resource, or wrong operator path", () => {

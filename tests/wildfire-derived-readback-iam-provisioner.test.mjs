@@ -13,12 +13,12 @@ const basePolicy = {
   Statement: DESIRED.rolePolicy.Statement.filter(({ Sid }) => Sid !== DESIRED.requiredDelta.Sid)
 };
 
-function writeFakeAws(dir, { race = false } = {}) {
+function writeFakeAws(dir, { race = false, alreadyPresent = false } = {}) {
   const marker = join(dir, "aws-calls");
   const state = join(dir, "live-policy.json");
   const raceState = join(dir, "race-policy.json");
   const raceMarker = join(dir, "race-seen");
-  writeFileSync(state, `${JSON.stringify(basePolicy)}\n`, { mode: 0o600 });
+  writeFileSync(state, `${JSON.stringify(alreadyPresent ? DESIRED.rolePolicy : basePolicy)}\n`, { mode: 0o600 });
   writeFileSync(raceState, `${JSON.stringify({ ...basePolicy, Statement: [...basePolicy.Statement, { Sid: "Unexpected", Effect: "Allow", Action: ["s3:GetObject"], Resource: ["arn:aws:s3:::witness-tree-raw-archive-ca-central-1/derived/not-approved/payload.gpkg"] }] })}\n`, { mode: 0o600 });
   const fake = [
     "#!/bin/zsh",
@@ -75,6 +75,25 @@ test("dry-run is default, appends only the exact versioned-readback statement, a
     assert.equal(statSync(attestation).mode & 0o777, 0o600);
     assert.doesNotMatch(readFileSync(fake.marker, "utf8"), /put-role-policy/);
     assert.doesNotMatch(run.stdout + run.stderr, /secret|version-id|upload-id/i);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("dry-run accepts the exact statement when already present without rewriting IAM", () => {
+  const dir = mkdtempSync(join(tmpdir(), "wildfire-derived-iam-provision-present-"));
+  try {
+    const fake = writeFakeAws(dir, { alreadyPresent: true });
+    const attestation = join(dir, "attestation.json");
+    const run = runProvisioner(dir, attestation);
+    assert.equal(run.status, 0, run.stdout + run.stderr);
+    const planned = JSON.parse(readFileSync(attestation, "utf8"));
+    assert.equal(planned.status, "planned");
+    assert.equal(planned.applied, false);
+    assert.equal(planned.change, "already-present");
+    assert.equal(planned.basePolicySha256, planned.desiredPolicySha256);
+    assert.equal(planned.readbackPolicySha256, null);
+    assert.doesNotMatch(readFileSync(fake.marker, "utf8"), /put-role-policy/);
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }

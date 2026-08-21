@@ -16,7 +16,7 @@ DATA_ROOT="/Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data"
 STATE_ROOT="/private/tmp/witness-tree-qc-archive-promotion-state"
 TMP=""
 
-cleanup() { unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN bootstrap creds totp; [[ -n "$TMP" && -d "$TMP" ]] && rm -rf "$TMP"; }
+cleanup() { unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN bootstrap creds identity mfa_serial totp; [[ -n "$TMP" && -d "$TMP" ]] && rm -rf "$TMP"; }
 trap cleanup EXIT
 fail() { print -u2 -- "Stopped: $1"; exit "${2:-1}"; }
 need() { command -v "$1" >/dev/null || fail "$1 is required" 69; }
@@ -44,15 +44,16 @@ for tool in aws openssl; do need "$tool"; done
 read -r -s 'totp?Current MFA TOTP (not stored): '
 print
 [[ "${totp:-}" =~ '^[0-9]{6}$' ]] || fail "TOTP must be exactly six digits; no AWS call was made" 64
-mfa_serial="$(aws configure get mfa_serial --profile "$PROFILE")" || fail "Cannot read local configured MFA serial" 69
-[[ "$mfa_serial" =~ '^arn:aws:iam::286853118812:mfa/WitnessTreeArchiveOperator$' ]] || fail "Configured MFA serial is absent, malformed, or does not name the approved operator; no STS or AWS storage call was made" 69
+mfa_serial="$(aws configure get mfa_serial --profile "$PROFILE" 2>/dev/null || true)"
+[[ "$mfa_serial" =~ '^arn:aws:iam::286853118812:mfa/[A-Za-z0-9+=,.@_/-]+$' ]] || fail "Configured MFA serial is absent, malformed, or outside the approved account; no STS or AWS storage call was made" 69
 bootstrap="$(aws sts get-session-token --serial-number "$mfa_serial" --token-code "$totp" --profile "$PROFILE" --duration-seconds 3600 --output json)" || fail "MFA session failed" 77
 unset totp
 export AWS_ACCESS_KEY_ID="$(jq -r '.Credentials.AccessKeyId' <<<"$bootstrap")" AWS_SECRET_ACCESS_KEY="$(jq -r '.Credentials.SecretAccessKey' <<<"$bootstrap")" AWS_SESSION_TOKEN="$(jq -r '.Credentials.SessionToken' <<<"$bootstrap")"; unset bootstrap
-account="$(aws sts get-caller-identity --query Account --output text)" || fail "Cannot identify MFA session" 77
-[[ "$account" == "286853118812" ]] || fail "MFA session is outside the approved account" 77
-creds="$(aws sts assume-role --role-arn "arn:aws:iam::${account}:role/${ROLE}" --role-session-name witness-tree-qc-approved-promotion --duration-seconds 3600 --output json)" || fail "Promotion role assumption failed" 77
-export AWS_ACCESS_KEY_ID="$(jq -r '.Credentials.AccessKeyId' <<<"$creds")" AWS_SECRET_ACCESS_KEY="$(jq -r '.Credentials.SecretAccessKey' <<<"$creds")" AWS_SESSION_TOKEN="$(jq -r '.Credentials.SessionToken' <<<"$creds")"; unset creds account
+identity="$(aws sts get-caller-identity --output json)" || fail "Cannot identify MFA session" 77
+jq -e '.Account=="286853118812" and .Arn=="arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator"' <<<"$identity" >/dev/null || fail "MFA session is not the exact approved operator identity" 77
+unset identity mfa_serial
+creds="$(aws sts assume-role --role-arn "arn:aws:iam::286853118812:role/${ROLE}" --role-session-name witness-tree-qc-approved-promotion --duration-seconds 3600 --output json)" || fail "Promotion role assumption failed" 77
+export AWS_ACCESS_KEY_ID="$(jq -r '.Credentials.AccessKeyId' <<<"$creds")" AWS_SECRET_ACCESS_KEY="$(jq -r '.Credentials.SecretAccessKey' <<<"$creds")" AWS_SESSION_TOKEN="$(jq -r '.Credentials.SessionToken' <<<"$creds")"; unset creds
 
 TMP="$(mktemp -d /private/tmp/witness-tree-qc-approved-promotion.XXXXXX)"; chmod 700 "$TMP"
 mkdir -p "$STATE_ROOT"; chmod 700 "$STATE_ROOT"

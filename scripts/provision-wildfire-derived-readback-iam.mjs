@@ -133,7 +133,8 @@ function buildCandidate(current) {
   }
   if (candidate.Statement.length !== current.Statement.length + (change === "already-present" ? 0 : 1)) fail("candidate policy is not one additive statement; no IAM mutation was attempted");
   const preserved = candidate.Statement.filter(({ Sid }) => Sid !== DESIRED.requiredDelta.Sid);
-  if (!equalJson(preserved, current.Statement)) fail("candidate policy does not preserve existing statement order and content; no IAM mutation was attempted");
+  const previouslyPresent = current.Statement.filter(({ Sid }) => Sid !== DESIRED.requiredDelta.Sid);
+  if (!equalJson(preserved, previouslyPresent)) fail("candidate policy does not preserve existing statement order and content; no IAM mutation was attempted");
   validateCandidate(candidate);
   return { candidate, change };
 }
@@ -161,6 +162,7 @@ function simulationResource(name) {
   if (name === "exact-on-versioned-read") return DESIRED.requiredDelta.Resource[2];
   if (name === "exact-on-manifest-versioned-read") return DESIRED.requiredDelta.Resource[3];
   if (name === "exact-bc-retention-read") return DESIRED.rolePolicy.Statement.find(({ Sid }) => Sid === "PayloadComplianceRetentionOnly").Resource[0];
+  if (name === "exact-on-retention-read") return DESIRED.rolePolicy.Statement.find(({ Sid }) => Sid === "PayloadComplianceRetentionOnly").Resource[1];
   if (name === "out-of-scope-versioned-read" || name === "delete-exact-bc") return name === "out-of-scope-versioned-read" ? OUT_OF_SCOPE_RESOURCE : DESIRED.requiredDelta.Resource[0];
   fail("unknown simulation case; no IAM mutation was attempted");
 }
@@ -171,6 +173,7 @@ const SIMULATIONS = Object.freeze([
   { case: "exact-on-versioned-read", action: "s3:GetObjectVersion", decision: "allowed" },
   { case: "exact-on-manifest-versioned-read", action: "s3:GetObjectVersion", decision: "allowed" },
   { case: "exact-bc-retention-read", action: "s3:GetObjectRetention", decision: "allowed" },
+  { case: "exact-on-retention-read", action: "s3:GetObjectRetention", decision: "allowed" },
   { case: "out-of-scope-versioned-read", action: "s3:GetObjectVersion", decision: "implicitDeny" },
   { case: "delete-exact-bc", action: "s3:DeleteObject", decision: "implicitDeny" }
 ]);

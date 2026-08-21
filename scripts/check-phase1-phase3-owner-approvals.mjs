@@ -18,7 +18,7 @@ export function validate(record = read("data/phase1-phase3-owner-approvals-2026-
   assert.equal(record.phase1.archiveApprovals[0].sourceScopeDecision, "accept");
   assert.deepEqual(record.phase1.archiveApprovals[1].sourceScopeDecision, {"qc-current-ecoforest":"accept","qc-original-current-inventory":"accept"});
   assert.deepEqual(record.phase1.archiveApprovals[2].approvedControls, ["exact-artifact-set","IAM","MFA-session","irreversible-COMPLIANCE-retention"]);
-  assert.deepEqual(record.phase1.archiveApprovals[3].iamDesiredState, {staticValidation:"passed",liveDryRun:"failed-closed",failure:"candidate policy does not preserve existing statement order and content",mutationPerformed:false});
+  assert.deepEqual(record.phase1.archiveApprovals[3].iamDesiredState, {staticValidation:"passed",liveDryRun:"passed",change:"already-present",baseAndDesiredPolicySha256:"1b2f75726e3d3e97107e8cceca2d491048592e8cf571c24e419979c480cb65e3",accessAnalyzerFindings:0,exactAllowSimulations:6,negativeImplicitDenySimulations:2,mutationPerformed:false,noObjectVersionIdsRecorded:true});
   validateApproval(wildfire);
   validateLocalArtifacts(undefined);
   assert.deepEqual(record.phase1.partialOutreach.requests.map(({id}) => id), partial.requests.map(({id}) => id));

@@ -18,6 +18,8 @@ zsh scripts/run-qc-approved-multipart-promotion.sh --run
 node scripts/qc-fourth-inventory-immutable-promotion.mjs --preflight --data-root /Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data
 ```
 
+The configured Québec-runner MFA serial is present, has the safe account-scoped form `arn:aws:iam::286853118812:mfa/<path>`, and belongs to the profile whose read-only caller identity is exactly `arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator`. Its path is intentionally not recorded. The earlier runner required the literal terminal path `mfa/WitnessTreeArchiveOperator` and therefore rejected this valid alternate device path before STS. The corrected runner accepts any nonempty syntactically safe MFA path in account `286853118812`, never prints or enumerates it, and then requires the post-MFA caller to be exactly `WitnessTreeArchiveOperator` before assuming the exact Québec promotion role. Empty, malformed, wrong-account, and wrong-principal cases stop before role assumption or storage.
+
 For Québec fourth inventory, use the canonical execute template only after replacing all three controlled-directory placeholders with existing absolute owner-controlled paths and beginning a real MFA session. Do not store a TOTP or credentials in the repository.
 
 For wildfire readback, copy `data/current-wildfire-derived-readback-owner-approval.json` to a private owner-controlled path, set it to mode `0600`, and run:
@@ -27,7 +29,7 @@ zsh scripts/run-wildfire-derived-readback.sh --preflight /absolute/private/appro
 zsh scripts/run-wildfire-derived-readback.sh --readback /absolute/private/approval.json
 ```
 
-The local artifact/readback-approval preflight and static IAM desired-state check pass. The live read-only IAM dry run fails closed because the candidate policy does not preserve the existing statement order and content. No IAM mutation occurred. Reconcile that exact live-policy drift before running the live readback command; do not apply the current candidate.
+The local artifact/readback-approval preflight and static IAM desired-state check pass. A root-side live read-only comparison also passes: the trust remains MFA-gated to the exact operator, the exact operator AssumeRole policy is unchanged, and the role policy already contains the exact four-resource `s3:GetObjectVersion` statement in the approved order. The earlier failure was a local comparison bug in the provisioner's already-present branch, not live-policy drift. The corrected dry run records identical base and desired policy SHA-256 `1b2f75726e3d3e97107e8cceca2d491048592e8cf571c24e419979c480cb65e3`, zero Access Analyzer findings, six exact allows, and two negative implicit denies. No IAM mutation occurred or is needed. The live readback remains owner-local because it requires a current MFA TOTP; it may not record version IDs in repository evidence.
 
 The normal archive exercise remains owner-local:
 
