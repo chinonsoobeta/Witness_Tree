@@ -48,13 +48,13 @@ function assertNoProviderIdentifiers(record) {
 }
 
 export function validateCurrentWildfireDerivedArchiveEvidence(record = read()) {
-  assert.deepEqual(Object.keys(record).sort(), ["auditOperationsPerformed", "claims", "notice", "objects", "ownerEvidenceCheckerPassed", "sourceOfTruth", "status", "storage", "schemaVersion", "verifiedAt"].sort());
+  assert.deepEqual(Object.keys(record).sort(), ["attestedAt", "auditOperationsPerformed", "claims", "notice", "objects", "ownerEvidenceCheckerPassed", "sourceOfTruth", "status", "storage", "schemaVersion"].sort());
   assert.equal(record.schemaVersion, "witness-tree/current-wildfire-derived-archive-evidence/1");
   assert.equal(record.status, "attestation-only-not-machine-verifiable");
-  assert.match(record.verifiedAt, /^2026-08-21$/);
+  assert.match(record.attestedAt, /^2026-08-21$/);
   assert.deepEqual(record.storage, { bucket: "witness-tree-raw-archive-ca-central-1", region: "ca-central-1", countryCode: "CA" });
   assert.deepEqual(record.auditOperationsPerformed, []);
-  assert.equal(record.ownerEvidenceCheckerPassed, true);
+  assert.equal(record.ownerEvidenceCheckerPassed, false);
   assert.ok(/cannot machine-verifiably prove exact-version readback or immutable archive/i.test(record.notice));
   assert.deepEqual(record.claims, CLAIMS);
   assert.equal(Array.isArray(record.objects), true);
@@ -69,11 +69,11 @@ export function validateCurrentWildfireDerivedArchiveEvidence(record = read()) {
     assert.ok(wanted, "derived evidence contains an unexpected object");
     for (const field of ["sourceId", "kind", "key", "bytes", "sha256", "featureCount", "retentionRequired"]) assert.deepEqual(object[field], wanted[field], `${object.id} ${field} drifted`);
     assert.equal(SHA.test(object.sha256), true);
-    assert.equal(object.versionPresent, true);
-    assert.equal(object.fullObjectChecksumVerified, true);
-    assert.equal(object.exactVersionReadback, true);
+    assert.equal(object.versionPresent, false);
+    assert.equal(object.fullObjectChecksumVerified, false);
+    assert.equal(object.exactVersionReadback, false);
     assert.deepEqual(object.checksum, CRC);
-    if (object.retentionRequired) assert.deepEqual(object.retention, { mode: "COMPLIANCE", retainUntil: RETAIN_UNTIL, readbackVerified: true });
+    if (object.retentionRequired) assert.deepEqual(object.retention, { mode: "COMPLIANCE", retainUntil: RETAIN_UNTIL, readbackVerified: false });
     else assert.equal(object.retention, null);
   }
   assert.deepEqual([...seen].sort(), expected.map(({ id }) => id).sort());

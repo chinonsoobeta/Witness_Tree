@@ -5,7 +5,6 @@ import { validateCurrentWildfireDerivedArchiveEvidence } from "./check-current-w
 import { validate as validateDerivedPromotionPlan } from "./prepare-wildfire-derived-immutable-promotion.mjs";
 
 const read = (path) => JSON.parse(readFileSync(new URL(`../${path}`, import.meta.url), "utf8"));
-const SHA = /^[a-f0-9]{64}$/;
 const VERSION = /^[A-Za-z0-9._-]{6,}$/;
 const DERIVED_PLAN = validateDerivedPromotionPlan();
 const DERIVED_ARTIFACT_BY_SOURCE = new Map(DERIVED_PLAN.artifacts.map((artifact) => [artifact.sourceId, artifact]));
@@ -77,26 +76,11 @@ export function primaryEvidenceSatisfiesCurrentWildfireGate(rawEvidence, derived
 }
 
 export function remoteEvidenceSatisfiesCurrentWildfireGate(evidence) {
-  if (!evidence || evidence.schemaVersion !== "witness-tree/current-wildfire-immutable-readbacks/1" || evidence.region !== "ca-central-1" || !Array.isArray(evidence.objects) || evidence.objects.length !== requiredCurrentWildfireObjects.length) return false;
-  const byId = new Map(evidence.objects.map((object) => [object.id, object]));
-  if (byId.size !== requiredCurrentWildfireObjects.length) return false;
-  return requiredCurrentWildfireObjects.every((expected) => {
-    const object = byId.get(expected.id);
-    return object?.key === expected.key
-      && object.bytes === expected.bytes
-      && object.sha256 === expected.sha256
-      && SHA.test(object.sha256)
-      && VERSION.test(object.versionId ?? "")
-      && object.fullObjectChecksumVerified === true
-      && object.checksum?.type === "FULL_OBJECT"
-      && object.checksum?.algorithm === "CRC64NVME"
-      && typeof object.checksum?.providerValue === "string"
-      && object.checksum.providerValue !== PLACEHOLDER
-      && object.exactVersionReadback === true
-      && object.retention?.mode === "COMPLIANCE"
-      && Date.parse(object.retention.retainUntil) >= Date.parse("2033-08-12T00:00:00Z")
-      && object.retention.readbackVerified === true;
-  });
+  // No durable signed or digest-bound attestation schema is integrated. Shape,
+  // plausible opaque identifiers, arbitrary checksum strings, and booleans are
+  // all fabricable, so no caller-supplied object can activate this gate.
+  void evidence;
+  return false;
 }
 
 export function evaluateCurrentWildfireProductionEligibility(record, evidence) {
@@ -172,7 +156,7 @@ export function validateCurrentWildfireOwnerAdmission(record, ledger, profiles, 
     release: "approved-blocked-on-machine-verifiable-archive-gate",
     productionAdmission: "approved-blocked-on-machine-verifiable-archive-gate",
     productionEligible: false,
-    activationRule: "The machine gate may return productionEligible=true only when integrated evidence cryptographically binds each of the six exact raw/derived payloads to a concrete object version and non-placeholder full-object checksum value, and proves exact-version readback, retention, Canadian storage, and the approved downstream decision."
+    activationRule: "Production eligibility is fail-closed because no durable signed or digest-bound archive attestation verifier is integrated. It may change only after such a verifier cryptographically binds each exact payload to its concrete version, provider checksum, exact-version readback, retention and Canadian storage, and separate transformation, ingestion, release and production-admission evidence is validated."
   });
   assert.equal(primaryEvidenceSatisfiesCurrentWildfireGate(rawEvidence, derivedEvidence), false, "Placeholder-only booleans and redacted checksum markers cannot close the six-object archive gate.");
   assert.equal(derivedEvidence.claims.recoveryReplicaVerified, false);

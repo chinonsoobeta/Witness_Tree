@@ -88,7 +88,7 @@
       "planUse": "production",
       "evidence": "Checksum-bound 217-feature raw snapshot plus checksum-bound 216-feature derived release; owner approves 215 unchanged geometries plus bounded repair G70362 and permanently quarantines V10755 from geometry-dependent use",
       "ownerRole": "wildfire operations lead",
-      "missing": "Derived recovery or mutation-provenance evidence and separate transformation, ingestion, release and production-admission records. The integrated redacted primary record covers exact-version readback and COMPLIANCE-retention evidence for the raw and derived artifacts; one of 217 raw features remains permanently excluded from geometry-dependent use; never claim 217-feature coverage.",
+      "missing": "Durable signed or digest-bound exact-version archive proof and separate transformation, ingestion, release and production-admission evidence. Placeholder-only records do not prove concrete versions, provider checksums, readback or retention; one of 217 raw features remains permanently excluded from geometry-dependent use; never claim 217-feature coverage.",
       "externalDependency": "BC Wildfire Service"
     },
     {

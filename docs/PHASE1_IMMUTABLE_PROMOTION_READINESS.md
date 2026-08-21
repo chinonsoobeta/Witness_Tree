@@ -1,6 +1,6 @@
 # Phase 1 immutable-promotion readiness
 
-This audit covers every one of the 5 current `local-verified-profiled` production rows and separately tracks the remotely verified canopy-height and current-wildfire raw archive evidence. It is a preparation map, not an admission decision.
+This audit covers all 9 current `local-verified-profiled` production rows, including the four current-wildfire rows. Their six archive records are attested-only and supply zero durable machine-verifiable object proofs. This is a preparation map, not an admission decision.
 
 | Physical group | Rows | Prepared state | Owner action still required |
 | --- | --- | --- | --- |

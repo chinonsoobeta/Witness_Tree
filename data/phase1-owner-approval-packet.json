@@ -171,7 +171,7 @@
         "prompt": "Review the existing conservative snapshot, authority, geometry, transformation, and ingestion boundaries; this packet does not create a new approval."
       },
       "irreversibleArchiveRetention": {
-        "status": "primary-six-object-readbacks-verified-recovery-provenance-pending",
+        "status": "zero-machine-verifiable-six-attested-durable-proof-pending",
         "preflightCommand": "zsh scripts/run-wildfire-derived-readback.sh --preflight <mode-600-owner-approval-file>",
         "gate": {"requiredObjects": 6, "verifiedObjects": 0, "attestedObjects": 6, "primaryReadbacksVerified": false, "recoveryReplicaVerified": false, "mutationProvenance": false},
         "requiredRetention": "COMPLIANCE payload versions only through 2033-08-12T00:00:00Z"
@@ -220,7 +220,7 @@
         "status": "deferred-until-gate-and-downstream-validation",
         "requiredSeparateDecisions": ["approved transformation validation", "ingestion", "release", "productionAdmission"]
       },
-      "copyPasteBlock": "PHASE1 OWNER INPUT — CURRENT WILDFIRE DOWNSTREAM\nstatus=template-not-approved\nrows=cwfis-current,bc-wildfire,ab-wildfire,on-fire-disturbance\ndepends_on=current-wildfire-archive-gate\ntransformation_ingestion=<OWNER: validate only after all six exact objects and readbacks pass>\nrelease_and_production_admission=<OWNER: separate decisions required; remain false>\nprohibited=real-time claim, complete-perimeter claim, source substitution, or geometry quarantine removal"
+      "copyPasteBlock": "PHASE1 OWNER INPUT — CURRENT WILDFIRE DOWNSTREAM\nstatus=template-not-approved\nrows=cwfis-current,bc-wildfire,ab-wildfire,on-fire-disturbance\ndepends_on=current-wildfire-archive-gate\narchive_gate=<0/6 machine-verifiable; durable signed or digest-bound verification required>\ntransformation_ingestion=<separate machine evidence required after archive proof>\nrelease_and_production_admission=<separate decisions required; remain false>\nprohibited=real-time claim, complete-perimeter claim, source substitution, or geometry quarantine removal"
     },
     {
       "step": 9,

@@ -259,7 +259,7 @@
       "preparation": "data/current-wildfire-immutable-promotion-preparation.json",
       "ownerAdmission": "data/current-wildfire-owner-admission.json",
       "runner": "scripts/run-current-wildfire-approved-promotion.sh",
-      "currentStatus": "six-primary exact objects remotely verified; recovery provenance and downstream admission remain blocked"
+      "currentStatus": "zero of six objects are machine-verifiably proven; six placeholder-only attestations exist, while durable exact-version proof and downstream transformation, ingestion, release and admission remain blocked"
     },
     {
       "id": "quebec-provincial-current-and-original",
@@ -509,13 +509,13 @@
         "safeNow": "zsh scripts/run-current-wildfire-approved-promotion.sh --preflight",
         "derivedReadbackPreflight": "zsh scripts/run-wildfire-derived-readback.sh --preflight <mode-600-owner-approval-file>",
         "derivedReadbackChecker": "scripts/check-current-wildfire-derived-archive-evidence.mjs",
-        "ownerExecution": "BLOCKED: recovery or mutation provenance and separate release/production admission remain unproven; no owner run is authorized by this audit."
+        "ownerExecution": "BLOCKED: no durable signed or digest-bound exact-version archive proof, transformation/ingestion evidence, release or production admission is integrated; no owner run is authorized by this audit."
       },
-      "prerequisites": ["Keep the six exact primary payload/sidecar readbacks and approved as-of semantics unchanged.", "Obtain and independently verify any recovery-replica or mutation-provenance evidence required by the release contract.", "Record separate transformation, ingestion, release and production-admission decisions.", "Keep production eligibility false until every downstream proof is integrated."],
-      "remainingSteps": ["validate the six-object primary gate", "review recovery or mutation-provenance evidence", "record separate transformation, ingestion and release decisions", "record production admission", "re-run the downstream release checks"],
-      "scoreImpact": {"currentRawCreditDelta": 0, "maximumRawCreditDelta": 0, "maximumFormalPercentagePointDelta": 0, "productionAdmissionDelta": 0},
-      "gateImpact": {"currentVerifiedObjects": 6, "requiredObjects": 6, "potentialVerifiedObjectsAfterAction": 6},
-      "blockers": ["Primary readbacks are complete, but recovery or mutation provenance and a separate production-admission proof remain absent; production remains false."]
+      "prerequisites": ["Preserve the six exact local payload identities and approved as-of semantics without treating placeholder attestations as readbacks.", "Implement and validate a durable signed or digest-bound attestation verifier for concrete version, provider checksum, exact-version readback, retention and Canadian storage evidence.", "Record separate transformation, ingestion, release and production-admission evidence.", "Keep production eligibility false until every proof is integrated."],
+      "remainingSteps": ["implement and validate durable archive attestation verification", "prove all six exact objects", "validate transformation and ingestion evidence", "record release and production admission", "re-run the fail-closed gate"],
+      "scoreImpact": {"currentRawCreditDelta": 0, "maximumRawCreditDelta": 1, "maximumFormalPercentagePointDelta": 0.9677419, "productionAdmissionDelta": 0},
+      "gateImpact": {"currentVerifiedObjects": 0, "currentAttestedObjects": 6, "requiredObjects": 6, "potentialVerifiedObjectsAfterAction": 6},
+      "blockers": ["Zero primary objects have durable machine-verifiable exact-version proof; transformation, ingestion, release and production-admission evidence also remain absent."]
     },
     {
       "id": "archived-remote-transform-ingest-release",
@@ -540,11 +540,11 @@
     {
       "id": "wildfire-transform-ingest-release",
       "rank": 8,
-      "priorityBasis": "Owner-approved wildfire scope has all six primary objects read back, but recovery or mutation provenance and separate release/production decisions remain downstream of action 6.",
+      "priorityBasis": "Owner-approved wildfire scope has zero of six machine-verifiable archive proofs; six placeholder-only attestations cannot authorize transformation, ingestion, release or production.",
       "lawfulImmediacy": "owner-and-delegate-after-archive-gate",
       "actor": "owner-and-delegate",
       "executableNow": false,
-      "executionBoundary": "Do not transform, ingest, release, or activate any wildfire row from primary readbacks alone; recovery/provenance and separate downstream decisions remain required.",
+      "executionBoundary": "Do not transform, ingest, release, or activate any wildfire row from placeholder attestations. Durable archive proof plus separate transformation, ingestion, release and production decisions are required.",
       "requiresOwnerInput": true,
       "requiresExternalReply": false,
       "ownerRunAuthorized": false,
@@ -552,10 +552,10 @@
       "physicalArtifactGroup": "current-wildfire-six-release-inputs",
       "evidenceRefs": ["data/current-wildfire-owner-admission.json", "data/current-wildfire-raw-archive-evidence.json", "data/current-wildfire-derived-archive-evidence.json", "data/phase1-current-state-completion-audit.json", "data/phase1-owner-decision-queue.json"],
       "runnerOrPreflight": {"evidence": "data/current-wildfire-owner-admission.json pipeline.activationRule"},
-      "prerequisites": ["All six exact raw/derived primary objects remain bound to the redacted readback records.", "Recovery or mutation provenance is separately proven where required by the release contract.", "Preserve each approved as-of, provincial-precedence, geometry-repair, quarantine, and no-completeness semantics.", "Record release activation and production admission separately."],
-      "remainingSteps": ["preserve and re-run the primary archive gate", "validate recovery/provenance evidence", "validate approved transformations", "validate ingestion and release", "record production admission and set eligibility only after every source gate passes"],
+      "prerequisites": ["Durably prove all six exact raw/derived objects through a signed or digest-bound verifier.", "Validate concrete version, provider checksum, exact-version readback, retention and Canadian storage evidence.", "Preserve each approved as-of, provincial-precedence, geometry-repair, quarantine, and no-completeness semantic.", "Validate transformation and ingestion, then record release activation and production admission separately."],
+      "remainingSteps": ["implement durable archive attestation verification", "prove the six-object archive gate", "validate transformations and ingestion", "validate release", "record production admission and set eligibility only after every source gate passes"],
       "scoreImpact": {"currentRawCreditDelta": 0, "maximumRawCreditDelta": 0, "maximumFormalPercentagePointDelta": 0, "productionAdmissionDelta": 0},
-      "blockers": ["The machine activation rule additionally requires recovery or mutation provenance and a separate production-admission decision."]
+      "blockers": ["No durable archive attestation verifier or transformation/ingestion evidence is integrated; release and production admission remain absent."]
     },
     {
       "id": "partial-historical-owner-review-and-external-evidence",

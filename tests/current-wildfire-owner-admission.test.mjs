@@ -71,14 +71,14 @@ test("operational semantics keep point sources snapshot-only and provincial sour
   assert.match(record.refreshAndAuthority.precedence, /provincial.*prevails over CWFIS/i);
 });
 
-test("only six exact immutable readbacks can satisfy the archive prerequisite", () => {
+test("syntactically plausible fabricated identifiers and checksums cannot satisfy the archive prerequisite", () => {
   const evidence = {
     schemaVersion: "witness-tree/current-wildfire-immutable-readbacks/1",
     region: "ca-central-1",
     objects: requiredCurrentWildfireObjects.map((object, index) => ({...object,versionId:`version-${index}-exact`,fullObjectChecksumVerified:true,checksum:{type:"FULL_OBJECT",algorithm:"CRC64NVME",providerValue:`provider-checksum-${index}`},exactVersionReadback:true,retention:{mode:"COMPLIANCE",retainUntil:"2033-08-12T00:00:00Z",readbackVerified:true}}))
   };
-  assert.equal(remoteEvidenceSatisfiesCurrentWildfireGate(evidence), true);
-  assert.equal(evaluateCurrentWildfireProductionEligibility(record, evidence), true);
+  assert.equal(remoteEvidenceSatisfiesCurrentWildfireGate(evidence), false);
+  assert.equal(evaluateCurrentWildfireProductionEligibility(record, evidence), false);
   for (const mutation of [
     (candidate) => { candidate.objects[0].bytes += 1; },
     (candidate) => { candidate.objects[1].sha256 = "0".repeat(64); },
@@ -94,7 +94,7 @@ test("only six exact immutable readbacks can satisfy the archive prerequisite", 
   }
 });
 
-test("the six-object gate recognizes only the timestamped derived promotion keys", () => {
+test("the promotion plan pins timestamped derived keys but cannot activate the archive gate", () => {
   const plan = validateDerivedPromotionPlan();
   const expectedKeys = new Map(plan.artifacts.map(({sourceId, payloadKey}) => [sourceId, payloadKey]));
   const derived = requiredCurrentWildfireObjects.filter(({id}) => id.endsWith("-derived"));
@@ -105,7 +105,7 @@ test("the six-object gate recognizes only the timestamped derived promotion keys
     region: "ca-central-1",
     objects: requiredCurrentWildfireObjects.map((object, index) => ({...object,versionId:`version-${index}-exact`,fullObjectChecksumVerified:true,checksum:{type:"FULL_OBJECT",algorithm:"CRC64NVME",providerValue:`provider-checksum-${index}`},exactVersionReadback:true,retention:{mode:"COMPLIANCE",retainUntil:"2033-08-12T00:00:00Z",readbackVerified:true}}))
   };
-  assert.equal(remoteEvidenceSatisfiesCurrentWildfireGate(evidence), true);
+  assert.equal(remoteEvidenceSatisfiesCurrentWildfireGate(evidence), false);
 
   for (const [id, key] of [
     ["bc-wildfire-derived", "derived/bc-wildfire/geometry-policy-v1/2026-08-14/8ee36cc6bdfb5ef267340537e4cf822df7cc886873c7fcf65a1b2b12006d34ce/payload/bc-wildfire-216-feature-release.gpkg"],

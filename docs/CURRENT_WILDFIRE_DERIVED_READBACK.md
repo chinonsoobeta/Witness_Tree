@@ -6,12 +6,11 @@ completes an MPU, writes retention, rewrites a sidecar, deletes, changes IAM,
 uses a governance bypass, or uses a legal hold. It does not admit either source
 or derived data to production.
 
-The repository now contains a separately checked redacted primary readback
-record for both payload/manifest pairs in
+The repository contains an attestation-only record for both payload/manifest pairs in
 [`data/current-wildfire-derived-archive-evidence.json`](../data/current-wildfire-derived-archive-evidence.json).
-That record closes the derived portion of the six-object primary gate without
-claiming recovery, mutation provenance, transformation, ingestion, release or
-production. Do not rerun this owner-local procedure solely to reproduce that
+It omits concrete provider identifiers, uses checksum placeholders, records no
+audit operations, and closes none of the six-object gate. Do not treat it as a
+readback, retention proof, transformation, ingestion, release, or production
 record.
 
 The exact contract is machine-checked by
@@ -73,8 +72,7 @@ no live-role evidence and does not include a version-specific read permission;
 the existing direct operator session also cannot head the derived keys. Thus
 the conditional command is not currently safe to execute.
 
-Successful output must be the exact generic pass line from the runner, with
-private evidence proving four exact heads, four concrete versions, four
-FULL_OBJECT CRC64NVME acknowledgements, and two exact payload retention
-readbacks. Provider version identifiers remain private and are never printed,
-committed, or added to canonical ledger evidence by this path.
+Even a successful private run cannot change the canonical gate by itself. The
+repository has no durable signed or digest-bound verifier that can authenticate
+private version identifiers and provider checksum values. Until such a verifier
+is implemented and its output integrated, the machine gate remains 0/6.

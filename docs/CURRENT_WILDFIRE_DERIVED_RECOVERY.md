@@ -124,25 +124,15 @@ exact `404` absence. The runner rechecks the 15-minute private-state expiry
 after MFA role assumption and never treats a `403` as proof of absence or adds
 `ListBucket` permission.
 
-## Post-completion redacted readback
+## Repository evidence boundary
 
-The owner-only recovery evidence was independently checked after completion.
-The default/account-root read-only audit also verified the exact latest and
-concrete-version heads for the BC payload and manifest and the Ontario payload
-and manifest, including exact bytes and `FULL_OBJECT` `CRC64NVME` fields. It
-verified `COMPLIANCE` retention through `2033-08-12T00:00:00Z` on the BC and
-Ontario payload versions. The local owner evidence checker passed with status
-`completed`, all four object names, and both payload-retention entries.
-
-The repository-integrated, redacted summary is
+The repository-integrated summary is
 [`data/current-wildfire-derived-archive-evidence.json`](../data/current-wildfire-derived-archive-evidence.json),
 validated by `npm run check:current-wildfire-derived-archive-evidence` and
-`scripts/check-current-wildfire-derived-archive-evidence.mjs`. It intentionally
-contains no provider version IDs, ETags, upload IDs, credentials, or raw bytes.
-It records primary readback and payload-retention facts only; it does not claim
-mutation provenance, a recovery replica, source-ledger admission,
-transformation, ingestion, release, production eligibility, or Phase 2. The
-older dated live-recovery guard remains historical evidence and is not
-overwritten. The integrated raw and derived records now satisfy the primary
-six-object gate; activation remains fail-closed until derived recovery or
-mutation provenance and separate downstream decisions are proven.
+`scripts/check-current-wildfire-derived-archive-evidence.mjs`. It contains no
+concrete provider version/checksum binding and lists no audit operations. It is
+therefore an attestation-only historical record, not exact-version readback,
+retention, recovery, transformation, ingestion, release, or production proof.
+The integrated raw and derived records leave the gate at 0/6 machine-verifiable
+and 6/6 attested-only. A durable signed or digest-bound verifier and separate
+downstream evidence are required before that state can change.

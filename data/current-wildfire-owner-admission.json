@@ -89,6 +89,6 @@
     "release": "approved-blocked-on-machine-verifiable-archive-gate",
     "productionAdmission": "approved-blocked-on-machine-verifiable-archive-gate",
     "productionEligible": false,
-    "activationRule": "The machine gate may return productionEligible=true only when integrated evidence cryptographically binds each of the six exact raw/derived payloads to a concrete object version and non-placeholder full-object checksum value, and proves exact-version readback, retention, Canadian storage, and the approved downstream decision."
+    "activationRule": "Production eligibility is fail-closed because no durable signed or digest-bound archive attestation verifier is integrated. It may change only after such a verifier cryptographically binds each exact payload to its concrete version, provider checksum, exact-version readback, retention and Canadian storage, and separate transformation, ingestion, release and production-admission evidence is validated."
   }
 }

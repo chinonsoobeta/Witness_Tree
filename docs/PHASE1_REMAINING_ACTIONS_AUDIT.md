@@ -14,7 +14,7 @@ npm run check:phase1-remaining-actions-audit
 
 The machine record now classifies all 13 remaining actions by requirement: archive and recovery preflights, profiles and validators, existing local transformations and derived outputs, owner/external boundaries, and the production-admission boundary. The local paths are complete for the evidence that exists. They remain deliberately non-admitting:
 
-- The federal, Québec, fourth-inventory, current-wildfire, and derived-wildfire paths expose no-write preflights. The integrated derived-wildfire record now proves the two primary payload/manifest pairs' exact keys, bytes, checksums, versions and payload retention in redacted form; recovery provenance and downstream decisions remain separate fail-closed gates.
+- The federal, Québec, fourth-inventory, current-wildfire, and derived-wildfire paths expose no-write preflights. The current-wildfire records are placeholder-only attestations: they do not durably prove versions, provider checksums, exact-version readback, retention, transformation, or ingestion.
 - Alberta AVI repair/quarantine, Alberta PLVI closed-join validation, and Québec historical-wildfire lossless-copy evidence are locally checked outputs. They do not authorize downstream ingestion or release.
 - NTEMS annual and canopy-cover processing remains blocked because no approved named target transformation specification and checksum-bound output exists. The fail-closed processing gate records this boundary explicitly.
 - Partial and access-blocked rows have route-exhaustion, outreach, and rights validators, but no local implementation can manufacture a publisher artifact, permission, owner decision, or external reply.

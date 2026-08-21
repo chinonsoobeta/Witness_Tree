@@ -111,10 +111,10 @@ function validateWildfireEvidence(audit, raw, owner, liveGuard, derived) {
   for (const sourceId of ["bc-wildfire", "on-fire-disturbance"]) {
     const entry = raw.entries.find(({ sourceId: id }) => id === sourceId);
     assert.ok(entry, `${sourceId} raw archive record is missing.`);
-    assert.equal(entry.payloadVersionPresent, true);
-    assert.equal(entry.manifestVersionPresent, true);
+    assert.equal(entry.payloadVersionPresent, false);
+    assert.equal(entry.manifestVersionPresent, false);
     assert.equal(entry.payloadRetention.mode, "COMPLIANCE");
-    assert.equal(entry.recoveryPayload.matchesPrimary, true);
+    assert.equal(entry.recoveryPayload.matchesPrimary, false);
     assert.equal(entry.recoveryPayload.replication, "REPLICA");
   }
   assert.equal(liveGuard.mutationsPerformed.length, 0);

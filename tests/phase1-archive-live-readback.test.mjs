@@ -77,5 +77,5 @@ test('archive-control exercise is present but does not satisfy required proofs',
   assert.equal(record.percentageImpact.canonicalRawReconciliation.formalPercentagePointDelta, 0);
   assert.equal(record.percentageImpact.productionPercentagePointDelta, 0);
   assert.equal(record.percentageImpact.repositoryPercentagePointDelta, 0);
-  assert.match(record.percentageImpact.canonicalRawReconciliation.basis, /already represented.*14\.75\/31.*adds no credit/i);
+  assert.match(record.percentageImpact.canonicalRawReconciliation.basis, /historical operator observations.*no durable concrete version\/checksum binding.*zero of the six/i);
 });

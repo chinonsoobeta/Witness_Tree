@@ -624,7 +624,7 @@
       "dependsOn": [],
       "ownerAction": "Before any remote action, the owner must freshly approve the four exact payloads and four deterministic sidecars derived by this record, bucket witness-tree-raw-archive-ca-central-1 in ca-central-1, COMPLIANCE retention through 2033-08-12T00:00:00Z on payload versions only, and the named MFA-gated direct-PutObject/read-back procedure.",
       "source": "data/current-wildfire-immutable-promotion-preparation.json",
-      "afterArchive": "All six primary object readbacks are now integrated in redacted form; recovery or mutation provenance and separate release/production decisions remain required, and no downstream claim is activated."
+      "afterArchive": "The repository has six placeholder-only attestations and zero machine-verifiable object proofs. Durable signed or digest-bound exact-version evidence, transformation and ingestion validation, release and production admission remain required."
     },
     {
       "step": 7,
@@ -642,7 +642,7 @@
       "dependsOn": ["current-wildfire-archive-gate"],
       "ownerAction": "Re-run the archive gate, validate approved transformations and ingestion, record release and production admission, and set eligibility only after every source gate passes.",
       "source": "data/phase1-remaining-actions-audit.json",
-      "afterDecision": "The machine activation rule additionally requires recovery or mutation provenance and a separate production-admission decision; the current redacted evidence does not activate those claims."
+      "afterDecision": "No durable signed or digest-bound archive verifier is integrated, so caller-supplied identifiers, checksums or booleans cannot activate the gate. Transformation, ingestion, release and production-admission evidence also remain absent."
     },
     {
       "step": 9,

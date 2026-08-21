@@ -59,7 +59,7 @@
     "Confirm the existing authorized execution path has the required version-specific readback and retention capabilities; do not change IAM as part of this guard.",
     "Record an explicit disposition for the existing unlocked BC payload before any separate owner-authorized action; this audit does not delete or overwrite it.",
     "Promote the exact Ontario artifact only after the local bytes and checksum pass the preparation preflight and the owner-authorized execution path is confirmed.",
-    "Integrate redacted exact readback and recovery evidence for both derived objects before changing the six-object owner gate or source-ledger state."
+    "Integrate durable signed or digest-bound concrete-version, provider-checksum, exact-version readback, retention and Canadian-storage proof before changing the six-object owner gate or source-ledger state."
   ],
   "failClosedRules": [
     "Any duplicate, unexpected, or checksum-mismatched key stops the path.",

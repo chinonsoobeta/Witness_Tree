@@ -203,11 +203,11 @@
       "rows": ["cwfis-current", "bc-wildfire", "ab-wildfire", "on-fire-disturbance"],
       "rawEvidenceNumeratorDelta": 0,
       "formalPercentagePointDelta": 0,
-      "basis": "The four raw payload/sidecar pairs have live retention, checksum, and recovery-replica readbacks already represented by the canonical 14.75/31 record; this readback adds no credit and the two derived objects remain excluded from the six-object owner gate."
+      "basis": "Historical operator observations asserted retention, checksum and recovery state for four raw pairs, but retain no durable concrete version/checksum binding. They add no current credit and prove zero of the six owner-gate objects."
     },
     "productionEligibleRows": 0,
     "productionPercentagePointDelta": 0,
     "repositoryPercentagePointDelta": 0,
-    "rawEvidenceUplift": "No further credit is claimed here; the live readback reconciles existing evidence only, and derived and production gates remain blocked."
+    "rawEvidenceUplift": "No current credit is claimed. This historical observation is not durable machine-verifiable archive proof; transformation, ingestion, release and production gates remain blocked."
   }
 }

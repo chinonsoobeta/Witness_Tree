@@ -96,7 +96,7 @@ function validatePhysicalArtifactGroups(audit, immutable) {
   assert.ok(national.localPreflight.plannedSidecarKeys.every((key) => key.endsWith("/manifest.json")));
   const wildfire = audit.physicalArtifactGroups.find(({ id }) => id === "current-wildfire-six-release-inputs");
   assert.equal(wildfire.runner, "scripts/run-current-wildfire-approved-promotion.sh");
-  assert.equal(wildfire.currentStatus.includes("six-primary"), true);
+  assert.match(wildfire.currentStatus, /zero of six.*machine-verifiably proven/i);
   const qc = audit.physicalArtifactGroups.find(({ id }) => id === "quebec-provincial-current-and-original");
   assert.equal(qc.runner, "scripts/run-qc-approved-multipart-promotion.sh");
   validateLocalPreflight(qc, {

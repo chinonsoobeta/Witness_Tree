@@ -1,6 +1,6 @@
 # Current-wildfire owner admission
 
-The owner has approved the exact Phase 1 transformation, ingestion, public-release and production-admission scope for the four checksum-bound current-wildfire snapshots. This clears the BC and Ontario geometry decisions and resolves the CWFIS and Alberta operational semantics. It does **not** make any source production eligible: the machine record now has redacted primary readbacks for all six required payloads, but recovery or mutation provenance and separate downstream admission records remain absent.
+The owner has approved the conditional Phase 1 scope for the four checksum-bound current-wildfire snapshots. This clears the BC and Ontario geometry decisions and resolves the CWFIS and Alberta operational semantics. It does **not** prove transformation, ingestion, release, production admission, or immutable storage: zero of six payloads have durable machine-verifiable archive proof, while six placeholder-only attestations are recorded.
 
 The binding record is [`data/current-wildfire-owner-admission.json`](../data/current-wildfire-owner-admission.json). Its gate requires exact object keys, version IDs, byte lengths, full-object checksum verification, exact-version readbacks, Canadian `ca-central-1` storage and active COMPLIANCE retention through at least `2033-08-12T00:00:00Z` for four raw objects and the two required derived objects.
 

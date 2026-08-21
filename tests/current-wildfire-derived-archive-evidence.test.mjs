@@ -5,11 +5,13 @@ import { validateCurrentWildfireDerivedArchiveEvidence } from "../scripts/check-
 
 const read = () => JSON.parse(readFileSync(new URL("../data/current-wildfire-derived-archive-evidence.json", import.meta.url), "utf8"));
 
-test("derived wildfire evidence validates all four exact primary objects and both payload retentions", () => {
+test("derived wildfire attestation validates its local identities while proving no remote object or retention", () => {
   const evidence = read();
   assert.equal(validateCurrentWildfireDerivedArchiveEvidence(evidence), evidence);
   assert.equal(evidence.objects.length, 4);
   assert.equal(evidence.objects.filter(({ kind }) => kind === "payload").every(({ retention }) => retention?.mode === "COMPLIANCE"), true);
+  assert.equal(evidence.objects.every(({ versionPresent, fullObjectChecksumVerified, exactVersionReadback }) => !versionPresent && !fullObjectChecksumVerified && !exactVersionReadback), true);
+  assert.equal(evidence.objects.filter(({ kind }) => kind === "payload").every(({ retention }) => retention.readbackVerified === false), true);
   assert.equal(evidence.claims.productionEligible, false);
   assert.equal(evidence.claims.phase2, false);
 });
