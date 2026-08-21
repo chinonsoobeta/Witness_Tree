@@ -54,7 +54,8 @@ four-province set.
 
 The machine-checked route record in
 [`data/phase1-partial-source-route-exhaustion.json`](../data/phase1-partial-source-route-exhaustion.json)
-rechecked the two partial rows on authoritative head `650a7da`. Read-only HTTP
+captured the two partial-row routes against evidence head `650a7da`; its impact
+fields are reconciled against the current integrated head `1749b50`. Read-only HTTP
 HEAD inspection established that the exact NBAC ZIP is publicly listed and
 returns 1,257,052,370 bytes, the Alberta 2019 ZIP returns 2,852,757 bytes, and
 the Québec 2017 atlas ZIP returns 30,007,395 bytes. None was downloaded.
@@ -85,10 +86,10 @@ profile, archive and score credit.
 
 ## Numerator impact
 
-The older component audit records a **14.75/31** baseline. On authoritative
-head `650a7da`, the canonical ledger is **15/31** with **10/31** immutable
-archive proofs and a **39.516129%** evidence-tracking score. This current route
-audit adds **0** credit and does not change those counts. Resolving either
+The older component audit records a **14.75/31** baseline. On the current
+integrated head `1749b50`, the canonical ledger is **15.25/31** with **11/31**
+immutable archive proofs and a **39.7580645%** evidence-tracking score. This
+current route audit adds **0** credit and does not change those counts. Resolving either
 entire row would move that row from `0.25` to `0.75`, a `+0.50` raw-credit
 change; partial resolution of one missing component earns no additional
 credit.

@@ -108,7 +108,7 @@ export function validatePhase1RemainingActionsAudit(audit, ledger, currentState,
   assert.match(audit.notice, /no AWS call.*email.*form submission.*production-eligibility change/i);
   assert.match(audit.selectionRule, /immutable remote proof is absent OR production admission is absent/i);
   assert.match(audit.scoreFormula, /30 \* raw-credit delta \/ 31/);
-  assert.equal(audit.derivedFromHead, "c1f72febf3de89dbf94421ebde14f52aa5403871");
+  assert.equal(audit.derivedFromHead, "1749b501f17b5cb55a686178232dc6ac191d3e81");
   assert.deepEqual(audit.claims, CLAIMS);
 
   const entries = ledger.entries;

@@ -245,7 +245,9 @@
     {
       "id": "bc-harvesting-authorities",
       "evidenceState": "access-blocked",
-      "evidenceRefs": [],
+      "evidenceRefs": [
+        "data/bc-harvesting-authority-access-block.json"
+      ],
       "proof": {
         "licence": false,
         "attribution": false,
@@ -263,7 +265,9 @@
     {
       "id": "bc-vri",
       "evidenceState": "access-blocked",
-      "evidenceRefs": [],
+      "evidenceRefs": [
+        "data/bc-vri-access-block.json"
+      ],
       "proof": {
         "licence": false,
         "attribution": false,
@@ -488,7 +492,9 @@
     {
       "id": "on-fri-term-2",
       "evidenceState": "access-blocked",
-      "evidenceRefs": [],
+      "evidenceRefs": [
+        "data/ontario-fri-term2-access-block.json"
+      ],
       "proof": {
         "licence": false,
         "attribution": false,

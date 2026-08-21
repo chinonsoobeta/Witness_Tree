@@ -2,7 +2,7 @@
   "schemaVersion": "witness-tree/phase1-remaining-actions-audit/1",
   "status": "blocked-read-only",
   "asOf": "2026-08-20",
-  "derivedFromHead": "c1f72febf3de89dbf94421ebde14f52aa5403871",
+  "derivedFromHead": "1749b501f17b5cb55a686178232dc6ac191d3e81",
   "notice": "Fresh local Phase 1 remaining-action audit. It reconciles the canonical 31-row ledger, immutable-promotion preparation, owner-decision readiness, reply, and access-block records. It performs no AWS call, email, form submission, archive mutation, permission grant, transformation, ingestion, release, production admission, or production-eligibility change.",
   "selectionRule": "Audit every production row where immutable remote proof is absent OR production admission is absent. The union is all 31 rows because production admission is absent for every row.",
   "baseline": {

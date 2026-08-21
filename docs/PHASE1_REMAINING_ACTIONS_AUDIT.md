@@ -1,6 +1,6 @@
 # Phase 1 remaining-action audit
 
-This is the fresh, machine-checked remaining-action audit derived from the authoritative Phase 1 convergence records at `c1f72fe` on 2026-08-20. The machine record is [`data/phase1-remaining-actions-audit.json`](../data/phase1-remaining-actions-audit.json), and its checker is [`scripts/check-phase1-remaining-actions-audit.mjs`](../scripts/check-phase1-remaining-actions-audit.mjs).
+This is the fresh, machine-checked remaining-action audit derived from the authoritative Phase 1 convergence records at `1749b50` on 2026-08-20. The machine record is [`data/phase1-remaining-actions-audit.json`](../data/phase1-remaining-actions-audit.json), and its checker is [`scripts/check-phase1-remaining-actions-audit.mjs`](../scripts/check-phase1-remaining-actions-audit.mjs).
 
 The audit selects every production row where immutable remote proof is absent **or** production admission is absent. That is all 31 rows: 20 lack immutable remote proof, and all 31 remain non-admitted and non-eligible. The current evidence-tracking baseline is **15.25/31 raw credits and 39.7580645%**. This percentage is not a readiness or production percentage. The audit does not add credit for a prepared payload, dry run, owner-local resume state, reply, permission request, owner decision, or archive plan.
 

@@ -17,6 +17,7 @@ export function validatePhase1PartialSourceRouteExhaustion(record, ledger) {
   assert.equal(record.schemaVersion, 1);
   assert.equal(record.status, "official-route-exhaustion-complete-no-lawful-intended-scope-acquisition");
   assert.equal(record.authoritativeHead, "650a7da");
+  assert.equal(record.reconciledAtHead, "1749b501f17b5cb55a686178232dc6ac191d3e81");
   assert.deepEqual(record.scope, expectedRows);
   assert.match(record.boundary, /read-only/i);
   assert.match(record.boundary, /No agreement.*form.*message.*download/i);

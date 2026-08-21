@@ -3,6 +3,7 @@
   "status": "official-route-exhaustion-complete-no-lawful-intended-scope-acquisition",
   "auditedAt": "2026-08-20T19:09:59Z",
   "authoritativeHead": "650a7da",
+  "reconciledAtHead": "1749b501f17b5cb55a686178232dc6ac191d3e81",
   "scope": ["cwfis-historical", "provincial-electoral-boundaries"],
   "boundary": "Read-only official-page, catalogue and HTTP HEAD inspection plus bounded mailbox searches. No agreement, form, message, authentication, payment, attachment or package download was performed.",
   "mailbox": {
