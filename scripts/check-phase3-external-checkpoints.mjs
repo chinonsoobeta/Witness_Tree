@@ -1,0 +1,184 @@
+import { readFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const protocolPath = path.join(root, "data/phase3-external-checkpoint-protocol.json");
+const evidencePath = path.join(root, "data/phase3-external-checkpoint-evidence.json");
+
+export const LOCALES = Object.freeze(["en", "fr"]);
+export const TASK_IDS = Object.freeze(["find-place-coverage", "read-annual-table", "interpret-location-event", "follow-containing-place", "trace-provenance-limit"]);
+export const TEMPLATES = Object.freeze(["location", "place", "explore", "bilingual-parity"]);
+export const SCREEN_READER_TEMPLATES = Object.freeze(["location", "place"]);
+export const CVD_MODES = Object.freeze(["forced-colors", "grayscale", "protanopia", "deuteranopia", "tritanopia"]);
+export const SEVERITIES = Object.freeze(["critical", "high", "medium", "low"]);
+const PENDING_RESULTS = Object.freeze({ usability: "not-run", keyboard: "not-run", screenReader: "not-run", forcedColorsAndCvd: "not-run", fieldPerformance: "not-run", outsideAccessibilityReview: "not-started" });
+const PROTOCOL_SHA256 = "cf0b8711113871035b181a317904355723351c1ce3fbbb0dd566a93b859a5e6d";
+const FORBIDDEN_KEYS = /^(name|email|phone|postalAddress|ipAddress|age|dateOfBirth|rawAudio|rawVideo|screenRecording|recruitmentSource)$/i;
+
+const exact = (actual, expected, message) => {
+  if (JSON.stringify(actual) !== JSON.stringify(expected)) throw new Error(message);
+};
+
+const nonempty = (value) => typeof value === "string" && value.trim().length > 0;
+const iso = (value) => nonempty(value) && Number.isFinite(Date.parse(value));
+const opaque = (value) => /^[a-f0-9]{16}$/.test(value ?? "");
+
+function rejectParticipantPii(value, trail = "evidence") {
+  if (Array.isArray(value)) return value.forEach((item, index) => rejectParticipantPii(item, `${trail}[${index}]`));
+  if (!value || typeof value !== "object") return;
+  for (const [key, child] of Object.entries(value)) {
+    if (FORBIDDEN_KEYS.test(key)) throw new Error(`${trail}.${key}: participant PII field is forbidden.`);
+    rejectParticipantPii(child, `${trail}.${key}`);
+  }
+}
+
+export function validateProtocol(protocol) {
+  if (createHash("sha256").update(JSON.stringify(protocol)).digest("hex") !== PROTOCOL_SHA256) throw new Error("External-checkpoint protocol differs from the reviewed canonical protocol.");
+  if (protocol.schemaVersion !== "witness-tree/phase3-external-checkpoint-protocol/1" || protocol.status !== "execution-ready-protocol" || protocol.resultsStatus !== "pending-real-human-and-external-evidence" || protocol.productionEligible !== false) throw new Error("External-checkpoint protocol boundary is invalid.");
+  const usability = protocol.usability;
+  exact(usability?.locales, LOCALES, "Usability locales must be exact.");
+  if (usability.separatePanels !== true || usability.participantsPerLocale !== 10 || usability.tasksPerParticipant !== 5 || usability.secondsPerTaskExclusive !== 180 || usability.participantPassTasks !== 4 || usability.languagePassParticipants !== 8 || usability.assistanceAllowed !== false) throw new Error("Normative usability arithmetic is invalid.");
+  exact(usability.tasks?.map(({ id }) => id), TASK_IDS, "Exactly five ordered usability tasks are required.");
+  for (const task of usability.tasks) if (!nonempty(task.prompt?.en) || !nonempty(task.prompt?.fr) || !nonempty(task.completion) || !task.startPath?.startsWith("/en/") || !task.startPathFr?.startsWith("/fr/")) throw new Error(`${task.id}: bilingual task protocol is incomplete.`);
+  for (const locale of LOCALES) if (usability.participantEligibility?.[locale]?.length !== 6 || usability.participantExclusion?.[locale]?.length !== 2) throw new Error(`${locale}: eligibility/exclusion protocol is incomplete.`);
+  if (!usability.privacy?.participantIdentifier?.includes("never encode") || usability.privacy.store?.length !== 6 || usability.privacy.neverStore?.length !== 12 || !usability.privacy.retention?.includes("must approve")) throw new Error("Privacy-minimizing protocol is incomplete.");
+  exact(protocol.manualAccessibility?.keyboard?.templates, TEMPLATES, "Keyboard template scope is incomplete.");
+  exact(protocol.manualAccessibility?.keyboard?.locales, LOCALES, "Keyboard locale scope is incomplete.");
+  exact(protocol.manualAccessibility?.screenReader?.templates, SCREEN_READER_TEMPLATES, "Screen-reader template scope is incomplete.");
+  exact(protocol.manualAccessibility?.screenReader?.locales, LOCALES, "Screen-reader locale scope is incomplete.");
+  exact(protocol.manualAccessibility?.forcedColorsAndCvd?.templates, TEMPLATES, "Forced-colors/CVD template scope is incomplete.");
+  exact(protocol.manualAccessibility?.forcedColorsAndCvd?.locales, LOCALES, "Forced-colors/CVD locale scope is incomplete.");
+  exact(protocol.manualAccessibility?.forcedColorsAndCvd?.modes, CVD_MODES, "Forced-colors/CVD mode scope is incomplete.");
+  if (protocol.fieldPerformance?.surface !== "place" || protocol.fieldPerformance?.metric !== "LCP" || protocol.fieldPerformance?.statistic !== "p75" || protocol.fieldPerformance?.thresholdMsExclusive !== 2000) throw new Error("Field-performance protocol is invalid.");
+  exact(protocol.fieldPerformance?.locales, LOCALES, "Field-performance locale scope is incomplete.");
+  exact(protocol.outsideAccessibilityReview?.standards, ["WCAG 2.2 AA", "EN 301 549"], "Outside-review standards are incomplete.");
+  exact(protocol.outsideAccessibilityReview?.templates, TEMPLATES, "Outside-review template scope is incomplete.");
+  exact(protocol.outsideAccessibilityReview?.locales, LOCALES, "Outside-review locale scope is incomplete.");
+  exact(protocol.outsideAccessibilityReview?.severity, SEVERITIES, "Issue severity vocabulary is incomplete.");
+  return protocol;
+}
+
+function taskPassed(task, protocol) {
+  const duration = (Date.parse(task.endedAt) - Date.parse(task.startedAt)) / 1000;
+  return task.completedUnassisted === true && task.assistanceProvided === false && duration > 0 && duration < protocol.usability.secondsPerTaskExclusive;
+}
+
+function validateParticipant(participant, protocol) {
+  exact(Object.keys(participant), ["participantId", "panelId", "locale", "eligibility", "consent", "sessionStartedAt", "sessionEndedAt", "tasks", "moderation"], "Participant evidence contains missing or unapproved fields.");
+  if (!opaque(participant.participantId) || !opaque(participant.panelId) || !LOCALES.includes(participant.locale)) throw new Error("Participant identity or locale is invalid.");
+  const eligibility = participant.eligibility;
+  exact(Object.keys(eligibility ?? {}), ["age18Plus", "languageComfortable", "noWitnessTreeExposure", "nonGis24Months", "noOtherPanel", "consentBeforeTasks"], `${participant.participantId}: eligibility attestations are incomplete or altered.`);
+  if (Object.values(eligibility).some((value) => value !== true)) throw new Error(`${participant.participantId}: every eligibility attestation must be explicit true.`);
+  if (participant.consent?.status !== "explicit-recorded" || !nonempty(participant.consent?.receiptReference) || participant.consent?.protocolVersion !== protocol.schemaVersion || !iso(participant.consent?.recordedAt)) throw new Error(`${participant.participantId}: explicit consent evidence is missing.`);
+  exact(Object.keys(participant.consent), ["status", "receiptReference", "protocolVersion", "recordedAt"], `${participant.participantId}: consent evidence contains missing or unapproved fields.`);
+  if (!iso(participant.sessionStartedAt) || !iso(participant.sessionEndedAt) || Date.parse(participant.sessionEndedAt) <= Date.parse(participant.sessionStartedAt)) throw new Error(`${participant.participantId}: session timestamps are invalid.`);
+  if (Date.parse(participant.consent.recordedAt) > Date.parse(participant.sessionStartedAt)) throw new Error(`${participant.participantId}: consent must be recorded before the session starts.`);
+  exact(participant.tasks?.map(({ taskId }) => taskId), TASK_IDS, `${participant.participantId}: all five ordered tasks are required.`);
+  for (const task of participant.tasks) {
+    exact(Object.keys(task), ["taskId", "startedAt", "endedAt", "completedUnassisted", "assistanceProvided"], `${participant.participantId}/${task.taskId}: task evidence contains missing or unapproved fields.`);
+    if (!iso(task.startedAt) || !iso(task.endedAt) || typeof task.completedUnassisted !== "boolean" || typeof task.assistanceProvided !== "boolean") throw new Error(`${participant.participantId}/${task.taskId}: task evidence is incomplete.`);
+    if (Date.parse(task.startedAt) < Date.parse(participant.sessionStartedAt) || Date.parse(task.endedAt) > Date.parse(participant.sessionEndedAt)) throw new Error(`${participant.participantId}/${task.taskId}: task timestamps fall outside the session.`);
+  }
+  exact(Object.keys(participant.moderation ?? {}), ["evidenceOrigin", "automationGenerated", "attestationReference"], `${participant.participantId}: moderation evidence contains missing or unapproved fields.`);
+  if (participant.moderation?.evidenceOrigin !== "human-moderated" || participant.moderation?.automationGenerated !== false || !nonempty(participant.moderation?.attestationReference)) throw new Error(`${participant.participantId}: human moderation attestation is missing or self-generated.`);
+  const passedTasks = participant.tasks.filter((task) => taskPassed(task, protocol)).length;
+  return { participantId: participant.participantId, locale: participant.locale, panelId: participant.panelId, passedTasks, passed: passedTasks >= protocol.usability.participantPassTasks };
+}
+
+export function evaluateUsability(participants, protocol) {
+  if (!Array.isArray(participants)) throw new Error("Usability participant evidence must be an array.");
+  const evaluated = participants.map((participant) => validateParticipant(participant, protocol));
+  if (new Set(evaluated.map(({ participantId }) => participantId)).size !== evaluated.length) throw new Error("Participant IDs must be unique.");
+  const summary = {};
+  const panelIds = [];
+  for (const locale of LOCALES) {
+    const rows = evaluated.filter((row) => row.locale === locale);
+    if (rows.length !== protocol.usability.participantsPerLocale) throw new Error(`${locale}: exactly 10 eligible participants are required.`);
+    const localePanels = [...new Set(rows.map(({ panelId }) => panelId))];
+    if (localePanels.length !== 1) throw new Error(`${locale}: exactly one locale-specific panel is required.`);
+    panelIds.push(localePanels[0]);
+    const passingParticipants = rows.filter(({ passed }) => passed).length;
+    summary[locale] = { participants: rows.length, passingParticipants, passed: passingParticipants >= protocol.usability.languagePassParticipants };
+  }
+  if (panelIds[0] === panelIds[1]) throw new Error("English and French panels must be separate.");
+  return { ...summary, passed: LOCALES.every((locale) => summary[locale].passed) };
+}
+
+function expectedScope(templates, locales, modes = [null]) {
+  return templates.flatMap((template) => locales.flatMap((locale) => modes.map((mode) => ({ template, locale, ...(mode ? { mode } : {}) }))));
+}
+
+function validateManualRows(rows, expected, kind) {
+  if (!Array.isArray(rows) || rows.length !== expected.length) throw new Error(`${kind}: exact manual scope is required.`);
+  exact(rows.map(({ template, locale, mode }) => ({ template, locale, ...(mode ? { mode } : {}) })), expected, `${kind}: manual scope is missing or reordered.`);
+  for (const row of rows) {
+    exact(Object.keys(row), ["template", "locale", ...(row.mode ? ["mode"] : []), "evidenceOrigin", "automationGenerated", "testerAttestationReference", "startedAt", "endedAt", "passed", "blockedTasks", "issueIds", "environment"], `${kind}/${row.locale}/${row.template}: manual evidence contains missing or unapproved fields.`);
+    if (row.evidenceOrigin !== "human-manual" || row.automationGenerated !== false || !nonempty(row.testerAttestationReference) || !iso(row.startedAt) || !iso(row.endedAt) || row.passed !== true || row.blockedTasks !== 0 || !Array.isArray(row.issueIds) || !nonempty(row.environment)) throw new Error(`${kind}/${row.locale}/${row.template}: real manual evidence is incomplete.`);
+  }
+}
+
+function validateIssues(issues) {
+  if (!Array.isArray(issues)) throw new Error("Issue evidence must be an array.");
+  for (const issue of issues) {
+    exact(Object.keys(issue), ["issueId", "severity", "observationCode", "observedAt", "status"], "Issue evidence contains missing or unapproved fields.");
+    if (!/^issue-[a-f0-9]{12}$/.test(issue.issueId ?? "") || !SEVERITIES.includes(issue.severity) || !nonempty(issue.observationCode) || !iso(issue.observedAt) || !["open", "resolved", "accepted"].includes(issue.status)) throw new Error("Issue evidence is incomplete or invalid.");
+  }
+}
+
+export function validateEvidence(evidence, protocol) {
+  rejectParticipantPii(evidence);
+  if (evidence.schemaVersion !== "witness-tree/phase3-external-checkpoint-evidence/1" || evidence.protocolVersion !== protocol.schemaVersion || evidence.productionEligible !== false) throw new Error("External-checkpoint evidence boundary is invalid.");
+  if (evidence.status === "pending-real-evidence") {
+    if (evidence.completionClaimed !== false || evidence.completionEvidenceOrigin !== "none") throw new Error("Pending evidence cannot claim completion or an evidence origin.");
+    if (Object.values(evidence.ownerInputs ?? {}).some((value) => value !== null) || Object.values(evidence.usability?.excludedCandidateCounts ?? {}).some((value) => value !== null) || evidence.usability?.participants?.length !== 0 || evidence.usability?.issues?.length !== 0 || evidence.usability?.summary !== null || evidence.manualAccessibility?.keyboard?.length !== 0 || evidence.manualAccessibility?.screenReader?.length !== 0 || evidence.manualAccessibility?.forcedColorsAndCvd?.length !== 0 || evidence.manualAccessibility?.issues?.length !== 0 || evidence.fieldPerformance?.length !== 0 || evidence.outsideAccessibilityReview?.status !== "not-started" || [evidence.outsideAccessibilityReview?.reviewerName, evidence.outsideAccessibilityReview?.organisation, evidence.outsideAccessibilityReview?.independenceAttestation, evidence.outsideAccessibilityReview?.signedReportReference].some((value) => value !== null) || evidence.outsideAccessibilityReview?.scopeResults?.length !== 0 || evidence.outsideAccessibilityReview?.issues?.length !== 0) throw new Error("Pending evidence must not contain inferred or fabricated results.");
+    exact(evidence.currentResult, PENDING_RESULTS, "Pending checkpoint statuses must remain fail-closed.");
+    return { status: evidence.status, passed: false, usability: null };
+  }
+  if (evidence.status !== "complete" || evidence.completionClaimed !== true || evidence.completionEvidenceOrigin !== "human-and-external") throw new Error("Completion must be supported by human and external evidence.");
+  const owner = evidence.ownerInputs;
+  exact(Object.keys(owner ?? {}), ["releaseId", "studyOwnerName", "approvedRetentionDays", "consentFormVersion", "recruitmentApprovalReference", "privacyReviewReference", "fieldPerformanceSamplingDecisionReference", "fieldPerformanceMinimumSamplesPerLocale", "fieldPerformanceUrlOrigin"], "Owner inputs contain missing or unapproved fields.");
+  if (!nonempty(owner?.releaseId) || !nonempty(owner?.studyOwnerName) || !Number.isInteger(owner?.approvedRetentionDays) || owner.approvedRetentionDays < 1 || !nonempty(owner?.consentFormVersion) || !nonempty(owner?.recruitmentApprovalReference) || !nonempty(owner?.privacyReviewReference) || !nonempty(owner?.fieldPerformanceSamplingDecisionReference) || !Number.isInteger(owner?.fieldPerformanceMinimumSamplesPerLocale) || owner.fieldPerformanceMinimumSamplesPerLocale < 1 || !/^https:\/\/[^/?#]+$/.test(owner?.fieldPerformanceUrlOrigin ?? "")) throw new Error("Required owner-provided execution inputs are incomplete.");
+  validateIssues(evidence.usability.issues);
+  if (LOCALES.some((locale) => !Number.isInteger(evidence.usability.excludedCandidateCounts?.[locale]) || evidence.usability.excludedCandidateCounts[locale] < 0)) throw new Error("Excluded-candidate counts must be de-identified locale aggregates.");
+  const usability = evaluateUsability(evidence.usability.participants, protocol);
+  exact(evidence.usability.summary, usability, "Usability summary must be recomputed exactly.");
+  if (!usability.passed) throw new Error("Both language panels must independently meet the 8-of-10 rule.");
+  validateManualRows(evidence.manualAccessibility.keyboard, expectedScope(TEMPLATES, LOCALES), "keyboard");
+  validateManualRows(evidence.manualAccessibility.screenReader, expectedScope(SCREEN_READER_TEMPLATES, LOCALES), "screen-reader");
+  validateManualRows(evidence.manualAccessibility.forcedColorsAndCvd, expectedScope(TEMPLATES, LOCALES, CVD_MODES), "forced-colors/CVD");
+  validateIssues(evidence.manualAccessibility.issues);
+  const fieldExpected = LOCALES.map((locale) => ({ locale }));
+  if (evidence.fieldPerformance.length !== 2) throw new Error("Field-performance evidence is required separately for both locales.");
+  exact(evidence.fieldPerformance.map(({ locale }) => ({ locale })), fieldExpected, "Field-performance locale scope is incomplete.");
+  for (const row of evidence.fieldPerformance) {
+    exact(Object.keys(row), ["locale", "metric", "statistic", "valueMs", "eligibleSamples", "windowStartedAt", "windowEndedAt", "aggregateReportReference", "containsParticipantIdentifiers"], `${row.locale}: field-performance evidence contains missing or unapproved fields.`);
+    if (row.metric !== "LCP" || row.statistic !== "p75" || !Number.isFinite(row.valueMs) || row.valueMs >= 2000 || !Number.isInteger(row.eligibleSamples) || row.eligibleSamples < owner.fieldPerformanceMinimumSamplesPerLocale || !iso(row.windowStartedAt) || !iso(row.windowEndedAt) || !nonempty(row.aggregateReportReference) || row.containsParticipantIdentifiers !== false) throw new Error(`${row.locale}: field-performance evidence is incomplete or over threshold.`);
+  }
+  const review = evidence.outsideAccessibilityReview;
+  if (review.status !== "complete" || !nonempty(review.reviewerName) || !nonempty(review.organisation) || !nonempty(review.independenceAttestation) || !nonempty(review.signedReportReference)) throw new Error("Outside accessibility review attestation is incomplete.");
+  validateIssues(review.issues);
+  const reviewExpected = expectedScope(TEMPLATES, LOCALES);
+  if (review.scopeResults.length !== reviewExpected.length) throw new Error("Outside accessibility review scope is incomplete.");
+  exact(review.scopeResults.map(({ template, locale }) => ({ template, locale })), reviewExpected, "Outside accessibility review scope is missing or reordered.");
+  for (const row of review.scopeResults) {
+    exact(Object.keys(row), ["template", "locale", "wcag22aaReviewed", "en301549Reviewed", "unresolvedCritical", "reportSectionReference"], "Outside accessibility scope result contains missing or unapproved fields.");
+    if (row.wcag22aaReviewed !== true || row.en301549Reviewed !== true || row.unresolvedCritical !== 0 || !nonempty(row.reportSectionReference)) throw new Error("Outside accessibility scope result is incomplete or has an unresolved critical defect.");
+  }
+  if (review.issues.some((issue) => issue.severity === "critical" && issue.status !== "resolved")) throw new Error("Outside review has an unresolved critical defect.");
+  exact(evidence.currentResult, { usability: "passed", keyboard: "passed", screenReader: "passed", forcedColorsAndCvd: "passed", fieldPerformance: "passed", outsideAccessibilityReview: "passed" }, "Completed checkpoint statuses must match validated evidence.");
+  return { status: evidence.status, passed: true, usability };
+}
+
+export async function checkPhase3ExternalCheckpoints({ protocol = null, evidence = null } = {}) {
+  const loadedProtocol = protocol ?? JSON.parse(await readFile(protocolPath, "utf8"));
+  const loadedEvidence = evidence ?? JSON.parse(await readFile(evidencePath, "utf8"));
+  validateProtocol(loadedProtocol);
+  return validateEvidence(loadedEvidence, loadedProtocol);
+}
+
+if (import.meta.url === `file://${process.argv[1]}`) {
+  const result = await checkPhase3ExternalCheckpoints();
+  console.log(`Phase 3 external checkpoints remain fail-closed: ${result.status}; no usability, human accessibility, field-performance, or outside-review completion is claimed.`);
+}

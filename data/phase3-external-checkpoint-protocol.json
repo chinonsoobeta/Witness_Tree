@@ -1,0 +1,137 @@
+{
+  "schemaVersion": "witness-tree/phase3-external-checkpoint-protocol/1",
+  "status": "execution-ready-protocol",
+  "resultsStatus": "pending-real-human-and-external-evidence",
+  "productionEligible": false,
+  "usability": {
+    "locales": ["en", "fr"],
+    "separatePanels": true,
+    "participantsPerLocale": 10,
+    "tasksPerParticipant": 5,
+    "secondsPerTaskExclusive": 180,
+    "participantPassTasks": 4,
+    "languagePassParticipants": 8,
+    "assistanceAllowed": false,
+    "participantEligibility": {
+      "en": [
+        "Is 18 years of age or older; store only the yes/no attestation, never age or date of birth.",
+        "Can comfortably complete the session in the assigned language.",
+        "Has not worked on, advised, or previously tested Witness Tree.",
+        "Has not used GIS or geospatial software as a material part of paid work or formal study during the previous 24 months.",
+        "Has not joined the other-language panel or an earlier pilot for this release.",
+        "Gives explicit, recorded consent before any task begins."
+      ],
+      "fr": [
+        "A 18 ans ou plus; conserver uniquement l’attestation oui/non, jamais l’âge ni la date de naissance.",
+        "Peut réaliser aisément la séance dans la langue attribuée.",
+        "N’a pas travaillé sur Witness Tree, ne l’a pas conseillé et ne l’a pas déjà testé.",
+        "N’a pas utilisé un SIG ou un logiciel géospatial comme élément important d’un emploi rémunéré ou d’études formelles au cours des 24 derniers mois.",
+        "N’a pas participé au panel de l’autre langue ni à un essai antérieur pour cette version.",
+        "Donne un consentement explicite et consigné avant le début de toute tâche."
+      ]
+    },
+    "participantExclusion": {
+      "en": [
+        "Under 18, unable or unwilling to consent, duplicate participant, wrong-language panel, prior Witness Tree exposure, or GIS eligibility rule not met.",
+        "Do not exclude a participant because of disability, assistive-technology use, device preference, education, location, or task outcome."
+      ],
+      "fr": [
+        "Moins de 18 ans, incapacité ou refus de consentir, participation en double, mauvais panel linguistique, exposition antérieure à Witness Tree ou critère d’admissibilité SIG non respecté.",
+        "Ne pas exclure une personne en raison d’un handicap, de l’usage d’une technologie d’assistance, d’une préférence d’appareil, de sa scolarité, de son lieu de résidence ou du résultat d’une tâche."
+      ]
+    },
+    "tasks": [
+      {
+        "id": "find-place-coverage",
+        "startPath": "/en/search",
+        "startPathFr": "/fr/recherche",
+        "prompt": {
+          "en": "Find the illustrative British Columbia place page. Tell the moderator its coverage grade and whether the page uses illustrative or production data.",
+          "fr": "Trouvez la page de lieu illustrative de la Colombie-Britannique. Indiquez à la personne modératrice sa cote de couverture et si la page utilise des données illustratives ou de production."
+        },
+        "completion": "Participant reaches the paired place page and correctly identifies both the visible coverage grade and illustrative-data boundary without help."
+      },
+      {
+        "id": "read-annual-table",
+        "startPath": "/en/places/bc-province?view=table",
+        "startPathFr": "/fr/lieux/bc-province?view=table",
+        "prompt": {
+          "en": "Using the table view, identify the newest annual row and say whether its reported value is a figure or Unknown.",
+          "fr": "À l’aide du tableau, repérez la ligne annuelle la plus récente et dites si la valeur indiquée est un chiffre ou Inconnue."
+        },
+        "completion": "Participant uses the same-URL table path and correctly reports the newest row and Figure/Unknown state without help."
+      },
+      {
+        "id": "interpret-location-event",
+        "startPath": "/en/location/lat-p48d000000-lon-n124d000000",
+        "startPathFr": "/fr/emplacement/lat-p48d000000-lon-n124d000000",
+        "prompt": {
+          "en": "On this location record, identify the newest event, its year, its evidence class, and its stated confidence.",
+          "fr": "Dans cette fiche d’emplacement, repérez l’événement le plus récent, son année, sa catégorie de preuve et le niveau de confiance indiqué."
+        },
+        "completion": "Participant correctly reports all four visible fields from the newest event without help."
+      },
+      {
+        "id": "follow-containing-place",
+        "startPath": "/en/location/lat-p48d000000-lon-n124d000000",
+        "startPathFr": "/fr/emplacement/lat-p48d000000-lon-n124d000000",
+        "prompt": {
+          "en": "Find the containing province and follow its link to the province page. Tell the moderator where you arrived.",
+          "fr": "Trouvez la province qui contient cet emplacement et suivez son lien vers la page provinciale. Indiquez à la personne modératrice où vous êtes arrivé."
+        },
+        "completion": "Participant identifies the containing province and reaches its locale-matched place page without help."
+      },
+      {
+        "id": "trace-provenance-limit",
+        "startPath": "/en/places/bc-province?view=table",
+        "startPathFr": "/fr/lieux/bc-province?view=table",
+        "prompt": {
+          "en": "Choose one displayed result. Find its dataset, version, retrieval date and licence, then state one visible limitation or Unknown reason.",
+          "fr": "Choisissez un résultat affiché. Trouvez son jeu de données, sa version, sa date de récupération et sa licence, puis indiquez une limite visible ou une raison pour Inconnue."
+        },
+        "completion": "Participant finds all four provenance fields plus one visible limitation/Unknown reason without help."
+      }
+    ],
+    "privacy": {
+      "participantIdentifier": "Random opaque identifier generated outside the application; never encode locale, initials, contact details, recruitment source, or session order.",
+      "store": ["opaque participant ID", "assigned locale", "eligibility attestations", "consent receipt reference", "task timestamps and outcomes", "issue codes and severities"],
+      "neverStore": ["name", "email", "phone", "postal address", "IP address", "exact age", "date of birth", "free-form demographics", "raw audio", "raw video", "screen recording", "verbatim quote containing identifying details"],
+      "retention": "The accountable owner must approve a retention period before recruitment; no participant evidence may be collected while it is unset."
+    }
+  },
+  "manualAccessibility": {
+    "keyboard": {
+      "templates": ["location", "place", "explore", "bilingual-parity"],
+      "locales": ["en", "fr"],
+      "passRule": "Every task completes with keyboard only, visible focus, correct order, no trap, and no blocked task."
+    },
+    "screenReader": {
+      "templates": ["location", "place"],
+      "locales": ["en", "fr"],
+      "passRule": "Each locale/template combination has a named human tester, assistive-technology/browser/OS versions, task transcript without PII, issues, and no blocked critical task."
+    },
+    "forcedColorsAndCvd": {
+      "templates": ["location", "place", "explore", "bilingual-parity"],
+      "locales": ["en", "fr"],
+      "modes": ["forced-colors", "grayscale", "protanopia", "deuteranopia", "tritanopia"],
+      "passRule": "A human verifies readable content, focus, links, evidence shapes, confidence bars, Unknown treatment, charts and legends without colour-only loss."
+    }
+  },
+  "fieldPerformance": {
+    "surface": "place",
+    "locales": ["en", "fr"],
+    "metric": "LCP",
+    "statistic": "p75",
+    "thresholdMsExclusive": 2000,
+    "privacy": "Aggregate locale-level measurements only; strip query strings and do not retain IP, user ID, precise location, full URL, or raw event records.",
+    "ownerInputsRequired": ["approved production-like URL", "release/build identifier", "measurement window", "minimum eligible sample count per locale", "privacy review reference", "measurement provider/configuration"]
+  },
+  "outsideAccessibilityReview": {
+    "standards": ["WCAG 2.2 AA", "EN 301 549"],
+    "templates": ["location", "place", "explore", "bilingual-parity"],
+    "locales": ["en", "fr"],
+    "reviewerRule": "Reviewer and organisation are outside the build team and attest independence and conflicts.",
+    "severity": ["critical", "high", "medium", "low"],
+    "passRule": "All scope combinations reviewed and zero unresolved critical defects; the signed report remains externally attributable."
+  }
+}

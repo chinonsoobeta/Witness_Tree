@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "witness-tree/phase3-external-checkpoint-evidence/1",
+  "protocolVersion": "witness-tree/phase3-external-checkpoint-protocol/1",
+  "status": "pending-real-evidence",
+  "completionClaimed": false,
+  "completionEvidenceOrigin": "none",
+  "productionEligible": false,
+  "ownerInputs": {
+    "releaseId": null,
+    "studyOwnerName": null,
+    "approvedRetentionDays": null,
+    "consentFormVersion": null,
+    "recruitmentApprovalReference": null,
+    "privacyReviewReference": null,
+    "fieldPerformanceSamplingDecisionReference": null,
+    "fieldPerformanceMinimumSamplesPerLocale": null,
+    "fieldPerformanceUrlOrigin": null
+  },
+  "usability": {
+    "participants": [],
+    "excludedCandidateCounts": { "en": null, "fr": null },
+    "issues": [],
+    "summary": null
+  },
+  "manualAccessibility": {
+    "keyboard": [],
+    "screenReader": [],
+    "forcedColorsAndCvd": [],
+    "issues": []
+  },
+  "fieldPerformance": [],
+  "outsideAccessibilityReview": {
+    "status": "not-started",
+    "reviewerName": null,
+    "organisation": null,
+    "independenceAttestation": null,
+    "signedReportReference": null,
+    "scopeResults": [],
+    "issues": []
+  },
+  "currentResult": {
+    "usability": "not-run",
+    "keyboard": "not-run",
+    "screenReader": "not-run",
+    "forcedColorsAndCvd": "not-run",
+    "fieldPerformance": "not-run",
+    "outsideAccessibilityReview": "not-started"
+  }
+}

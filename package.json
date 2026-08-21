@@ -23,6 +23,7 @@
     "check:accessibility": "node scripts/check-accessibility-contracts.mjs",
     "check:visual-accessibility": "node scripts/check-visual-accessibility.mjs",
     "check:phase3-downloads": "node scripts/check-phase3-downloads.mjs",
+    "check:phase3-external-checkpoints": "node scripts/check-phase3-external-checkpoints.mjs",
     "check:budgets": "node scripts/check-budgets.mjs",
     "measure:phase3-static": "node scripts/measure-phase3-static-performance.mjs",
     "audit:phase3-browser": "node scripts/audit-phase3-browser.mjs",
