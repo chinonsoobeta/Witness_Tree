@@ -8,7 +8,9 @@
       "id": "ntems-annual-land-cover",
       "evidenceState": "remote-verified-archived-profiled",
       "evidenceRefs": [
-        "data/vlce2-remote-promotion-evidence.json"
+        "data/vlce2-remote-promotion-evidence.json",
+        "data/raster-grid.json",
+        "data/raster-defects.json"
       ],
       "proof": {
         "licence": true,
@@ -50,7 +52,8 @@
       "id": "ntems-canopy-cover",
       "evidenceState": "remote-verified-archived-profiled",
       "evidenceRefs": [
-        "data/staged-geospatial-profile.json",
+        "data/staged-acquisitions.json",
+        "data/nrcan-canopy-cover-profile.json",
         "data/immutable-promotions.json"
       ],
       "proof": {

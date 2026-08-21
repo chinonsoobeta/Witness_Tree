@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "1.0",
+  "status": "read-only-staging-profile",
+  "notice": "This records a read-only profile of the checksum-bound raw archive. It is not a transformation, ingestion, immutable archive, or production dataset.",
+  "sourceId": "nrcan-forest-canopy-cover-2022",
+  "stagedAcquisitionId": "nrcan-forest-canopy-cover-2022-2026-08-11",
+  "profiledAt": "2026-08-21T15:40:35Z",
+  "raw": {
+    "localPath": "../Witness_Tree-data/raw/nrcan-forest-canopy-cover-2022/2026-08-11/CA_canopy_cover_2022.zip",
+    "byteLength": 9954395939,
+    "sha256": "80c37461f4deccfdfffc26124e9064d53a94dde660b9f96194445870393af130",
+    "zipIntegrity": "passed",
+    "memberCount": 8
+  },
+  "raster": {
+    "member": "CA_canopy_cover_2022.tif",
+    "driver": "GTiff",
+    "geometryKind": "raster",
+    "bandCount": 1,
+    "dataType": "Float32",
+    "pixelWidth": 193936,
+    "pixelHeight": 128340,
+    "pixelSizeMetres": 30,
+    "crs": "NAD83 Lambert Conformal Conic (no EPSG authority asserted)",
+    "geoTransform": [-2660910.524, 30, 0, 2998848.1105, 0, -30],
+    "noDataValue": -3.402823e+38,
+    "statistics": {
+      "minimum": 0,
+      "maximum": 100,
+      "mean": 8.708,
+      "stdDev": 23.252,
+      "evidence": "GDAL read-only metadata/statistics; no values were rewritten"
+    },
+    "valueEvidence": {
+      "zeroMeaning": "Areas with no tree cover as defined by the annual forest land cover map in 2022.",
+      "range": "0–100 percent canopy cover",
+      "categoricalValueTable": "not-present; this Float32 continuous raster has no VAT DBF member"
+    },
+    "geometryValidity": "not-applicable-raster"
+  },
+  "gridConformance": {
+    "profile": "data/raster-grid.json",
+    "pixelWidth": 193936,
+    "pixelHeight": 128340,
+    "pixelSizeMetres": 30,
+    "geoTransform": [-2660910.524, 30, 0, 2998848.1105, 0, -30],
+    "crsWktSha256": "551d75abf82e92e1e1ce144f31f5934ad0bc2b8a2fa279316ac72a812e03656f",
+    "authorityCode": null
+  },
+  "limitations": [
+    "The source is strategic-level forest monitoring and assessment, not operational forest management.",
+    "The source represents canopy cover in 2022; it is not current coverage after 2022.",
+    "The source is a continuous Float32 metric; no categorical class counts are claimed.",
+    "No source pixels, classes, coordinates, attributes, or supporting files were changed, reprojected, clipped, masked, or resampled.",
+    "No target transformation specification, derived output checksum, ingestion record, release approval, or production admission is present."
+  ],
+  "productionEligible": false
+}
