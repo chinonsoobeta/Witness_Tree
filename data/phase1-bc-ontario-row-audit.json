@@ -92,7 +92,7 @@
         "bc-forest-operations-map"
       ],
       "category": "access-and-rights-blocked",
-      "currentStatus": "All six BC rows remain access-blocked with zero raw credit. Public service visibility, a procedural FOI route, a prepared copyright form, BEC route replies, and a downloadable Access Only ZIP do not establish a lawful reusable artifact, permission, immutable archive, or production admission.",
+      "currentStatus": "All six BC rows remain access-blocked with zero raw credit. Public service visibility, a procedural FOI route, the FOM-only submitted copyright form and clarification reply, BEC route replies, and a downloadable Access Only ZIP do not establish a lawful reusable artifact, permission, immutable archive, or production admission.",
       "evidenceRefs": [
         "data/phase1-access-blocker-resolution.json",
         "data/phase1-outreach-reply-audit.json",
@@ -112,7 +112,7 @@
       "nextLawfulAction": "For each source, obtain the publisher-authorized export or written permission for the exact intended use, then capture edition, checksum, profile and immutable readbacks. BEC additionally requires owner eligibility, terms/order authorization and an identified implemented TAP deferral layer.",
       "blockers": [
         "FTA and harvesting-authority services are mutable/non-transaction-safe or custom-order routes without a coherent publisher export.",
-        "VRI and FOM are Access Only or have no functioning complete current artifact; the shared copyright form is unsent and grants no rights.",
+        "VRI and FOM are Access Only or have no functioning complete current artifact; the FOM-only form and clarification reply grant no rights or access, while VRI remains unsubmitted.",
         "Consolidated cutblocks is Access Only despite a public ZIP; FAIB authorization and output terms remain unresolved.",
         "BEC public alternatives are incomplete and the custom-download order is blocked before submission; TAP rights and implemented-deferral source remain unresolved."
       ]
@@ -259,7 +259,7 @@
       "maximumRawCreditDelta": 1,
       "maximumFormalPercentagePointDelta": 0.9677419,
       "nextAction": "Obtain a working complete 2025 export and written permission for retention, transformation and public derived results.",
-      "blockers": ["The advertised current artifact returned 404; Access Only rights and the unsent shared form remain unresolved."],
+      "blockers": ["The advertised current artifact returned 404; Access Only rights remain unresolved, and the FOM-only submission does not cover VRI."],
       "claims": {"archiveMutation": false, "permissionGranted": false, "externalReplyResolved": false, "productionAdmission": false, "productionEligible": false}
     },
     {
@@ -305,12 +305,12 @@
       "productionAdmission": false,
       "productionEligible": false,
       "evidenceRefs": ["data/bc-forest-operations-map-access.json"],
-      "replyRecordIds": ["reply-bc-copyright-permission-process", "reply-bc-copyright-single-form-followup"],
+      "replyRecordIds": ["reply-bc-copyright-permission-process", "reply-bc-copyright-single-form-followup", "reply-bc-fom-view-only-clarification"],
       "currentRawCreditDelta": 0,
       "maximumRawCreditDelta": 1,
       "maximumFormalPercentagePointDelta": 0.9677419,
-      "nextAction": "Obtain written permission for the exact FOM layer and intended retention, transformation and redistribution.",
-      "blockers": ["The public service is Access Only and planned activity cannot be treated as completed harvest; the shared form remains unsent."],
+      "nextAction": "Await written permission and a Province-authorized export or service for the exact FOM layer; do not scrape or redistribute the public viewer.",
+      "blockers": ["The FOM-only form and clarification reply are submitted, but the public service remains Access Only, no authorized access path exists, and planned activity cannot be treated as completed harvest."],
       "claims": {"archiveMutation": false, "permissionGranted": false, "externalReplyResolved": false, "productionAdmission": false, "productionEligible": false}
     },
     {

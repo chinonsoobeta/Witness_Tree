@@ -13,6 +13,10 @@ test("rejects fabricated execution, outreach, Phase 2, or production claims", ()
   }
   assert.throws(() => validate({...structuredClone(record),claims:{...record.claims,iamMutationPerformed:false}}));
   assert.throws(() => validate({...structuredClone(record),claims:{...record.claims,remoteMutationPerformed:false}}));
+  const permission = structuredClone(record); permission.phase1.accessBlockerEngagements.claims.permissionReceived = true;
+  assert.throws(() => validate(permission));
+  const broaderForm = structuredClone(record); broaderForm.phase1.accessBlockerEngagements.bcCopyrightForm.submittedRows.push("bc-vri");
+  assert.throws(() => validate(broaderForm));
 });
 
 test("rejects fabricated Mistik authorization or a changed accountable owner", () => {

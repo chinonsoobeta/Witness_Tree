@@ -33,12 +33,17 @@
     "This is planned-activity context, distinct from a completed-harvest record, and must not be used to infer completed harvest."
   ],
   "permissionRequest": {
-    "status": "draft-not-sent",
+    "status": "form-submitted-clarification-replied-permission-pending",
     "proposedSender": "Chinonso Obeta <chinonso8@gmail.com>",
     "recipientRoute": "https://forms.gov.bc.ca/copyright-permission-request/",
     "copyrightContact": "QPIPPCopyright@gov.bc.ca",
-    "subject": "Permission request — Forest Operations Map (FOM) - Cutblocks",
-    "authorizationOutcome": "not-requested"
+    "subject": "Copyright Permission Request",
+    "submittedAt": "2026-08-21T13:48-07:00",
+    "clarificationReceivedAt": "2026-08-21T21:21:55Z",
+    "clarificationReplySentAt": "2026-08-21T22:34:39Z",
+    "submittedCatalogueUrl": "https://catalogue.data.gov.bc.ca/dataset/7dda4615-5d32-427e-a303-1dcdb90a6fea",
+    "clarificationBoundary": "No scraping, bypass, raw redistribution or bulk download; use only through a Province-authorized export/service, otherwise link the official viewer or use expressly permitted static excerpts.",
+    "authorizationOutcome": "pending-no-permission-or-access"
   },
   "blocker": {
     "reason": "The authoritative BC Data Catalogue assigns the dataset the licence title Access Only. The Province's copyright notice states that Access Only catalogue material cannot be reproduced without written permission.",

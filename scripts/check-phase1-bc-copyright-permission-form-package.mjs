@@ -29,9 +29,9 @@ function https(value, field) {
 
 export function validatePhase1BcCopyrightPermissionFormPackage(record) {
   assert.equal(record?.schemaVersion, 1);
-  assert.equal(record.status, "owner-prepared-unsent");
+  assert.equal(record.status, "fom-form-submitted-clarification-replied-permission-pending");
   required(record.nonClaimNotice, "nonClaimNotice");
-  assert.match(record.nonClaimNotice, /not a submitted form.*not.*permission.*not.*licence/i);
+  assert.match(record.nonClaimNotice, /actually submitted.*only.*FOM.*not permission.*not a licence/i);
   assert.deepEqual(record.canonicalRowIds, ["bc-vri", "bc-forest-operations-map", "bc-old-growth-bec"]);
 
   const reply = record.sourceEvidence;
@@ -50,6 +50,21 @@ export function validatePhase1BcCopyrightPermissionFormPackage(record) {
   assert.equal(reply.fee.paid, false);
   assert.equal(reply.fee.disclosureRequestedBeforeCharge, true);
   assert.equal(reply.formUrl, FORM_URL);
+
+  const outcome = record.submissionOutcome;
+  assert.equal(outcome.status, "fom-form-submitted-clarification-replied-permission-pending");
+  assert.deepEqual(outcome.submittedCanonicalRowIds, ["bc-forest-operations-map"]);
+  assert.deepEqual(outcome.unsubmittedCanonicalRowIds, ["bc-vri", "bc-old-growth-bec"]);
+  assert.equal(outcome.submittedAt, "2026-08-21T13:48-07:00");
+  assert.equal(outcome.clarificationReceivedAt, "2026-08-21T21:21:55Z");
+  assert.equal(outcome.clarificationReplySentAt, "2026-08-21T22:34:39Z");
+  assert.match(outcome.submissionEvidence, /FOM catalogue URL/i);
+  assert.match(outcome.submissionEvidence, /Personal contact fields.*not retained/i);
+  assert.match(outcome.clarificationFinding, /view-only.*(?:not|rather than) downloadable/i);
+  assert.ok(outcome.clarificationReplyBoundary.some((value) => /No scraping/i.test(value)));
+  assert.ok(outcome.clarificationReplyBoundary.some((value) => /Province-authorized export or service/i.test(value)));
+  assert.ok(outcome.clarificationReplyBoundary.some((value) => /No raw redistribution or bulk download/i.test(value)));
+  for (const field of ["permissionGranted", "licenceGranted", "authorizedAccessSupplied", "artifactSupplied", "feeAccepted", "termsAccepted"]) assert.equal(outcome[field], false);
 
   const form = record.officialFormInspection;
   assert.equal(form.url, FORM_URL);
@@ -113,14 +128,15 @@ export function validatePhase1BcCopyrightPermissionFormPackage(record) {
   assert.deepEqual(map.get("websiteSourceUrl").preparedSupportingValues, DATASETS.map(([, , url]) => url));
   assert.equal(map.get("intendedUseDetails").preparedValueRef, "preparedIntendedUse");
 
-  assert.equal(record.ownerAction.status, "prepared-unsent");
+  assert.equal(record.ownerAction.status, "fom-awaiting-permission-and-access-response-vri-tap-unsubmitted");
   assert.ok(record.ownerAction.steps.length >= 5);
-  assert.ok(record.ownerAction.doNotUnderThisAudit.some((value) => /Do not submit/i.test(value)));
+  assert.ok(record.ownerAction.doNotUnderThisAudit.some((value) => /Do not submit a duplicate FOM form/i.test(value)));
   assert.ok(record.ownerAction.doNotUnderThisAudit.some((value) => /Do not enter personal/i.test(value)));
   assert.ok(record.ownerAction.doNotUnderThisAudit.some((value) => /Do not accept or agree to a fee/i.test(value)));
   assert.equal(record.impact.permissionGranted, false);
   assert.equal(record.impact.licenceGranted, false);
-  assert.equal(record.impact.formsSubmitted, false);
+  assert.equal(record.impact.formsSubmitted, true);
+  assert.deepEqual(record.impact.submittedCanonicalRowIds, ["bc-forest-operations-map"]);
   assert.equal(record.impact.feePaid, false);
   assert.equal(record.impact.termsAccepted, false);
   assert.equal(record.impact.artifactAcquired, false);
@@ -135,6 +151,6 @@ export async function checkPhase1BcCopyrightPermissionFormPackage(file = new URL
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  const record = await checkPhase1BcCopyrightPermissionFormPackage(path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../data/phase1-bc-copyright-permission-form-package.json"));
-  console.log(`BC copyright form package passed: one unsent form maps ${record.datasets.length} Access Only datasets; permission and fee remain unresolved.`);
+  await checkPhase1BcCopyrightPermissionFormPackage(path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../data/phase1-bc-copyright-permission-form-package.json"));
+  console.log(`BC copyright form package passed: the FOM-only form and clarification reply are recorded; VRI/TAP remain unsubmitted and permission, access, and fee remain unresolved.`);
 }

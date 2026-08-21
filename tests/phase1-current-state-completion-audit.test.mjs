@@ -15,7 +15,7 @@ test("current-state audit accounts for all 31 rows and remains fail closed", () 
   assert.equal(audit.rows.find(({ id }) => id === "ntems-canopy-height").actionPlan, "national-source-ledger-recorded");
   assert.equal(audit.rows.find(({ id }) => id === "ntems-forest-harvest").actionPlan, "national-source-ledger-recorded");
   assert.equal(audit.rows.find(({ id }) => id === "ab-primary-land-vegetation").actionPlan, "plvi-scope-approved");
-  assert.equal(audit.globalGates.outreach.repliesRecorded, 7);
+  assert.equal(audit.globalGates.outreach.repliesRecorded, 8);
   assert.equal(audit.globalGates.normalArchiveExercise.complete, false);
 });
 

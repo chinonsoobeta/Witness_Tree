@@ -45,7 +45,7 @@ scripts/run-phase1-archive-owner-exercise.sh --run
 - The exact NBAC bilingual email was deduplicated against Sent mail, but the connector rejected the send as an irreversible disclosure of non-public project and archive plans. It remains unsent pending a fresh explicit send instruction after that risk is disclosed. The NBAC agreement remains unaccepted.
 - The Alberta electoral request needs Chinonso Obeta's return address and physical signature before posting.
 - The Québec electoral secure form needs a reply email and personal review and acceptance of its declaration and consent.
-- The BC copyright form needs the missing address, phone, email confirmation, prior-permission answer, singular-URL handling, website copy-count, and fee ceiling. None was invented.
+- The FOM-only copyright form was submitted and its view-only-use clarification was answered with the owner's authorization. Permission and authorized access remain pending. VRI and TAP remain unsubmitted; no contact details are retained here.
 - Eight access-blocker messages are already recorded. Never resend them. Follow up only in the existing thread after reading the full reply.
 
 ## Phase 3 governance

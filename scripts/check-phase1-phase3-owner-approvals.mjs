@@ -28,7 +28,8 @@ export function validate(record = read("data/phase1-phase3-owner-approvals-2026-
   const messageKeys = access.messages.map(({recipient,subject}) => `${recipient}\n${subject}`.toLowerCase());
   assert.equal(new Set(messageKeys).size, messageKeys.length, "recorded access engagement contains a duplicate recipient/subject");
   assert.equal(record.phase1.accessBlockerEngagements.alreadyRecordedMessages, access.messages.length);
-  assert.equal(record.phase1.accessBlockerEngagements.claims.newMessageSent, false);
+  assert.deepEqual(record.phase1.accessBlockerEngagements.bcCopyrightForm, {status:"fom-only-submitted-clarification-replied-permission-and-access-pending",submittedRows:["bc-forest-operations-map"],unsubmittedRows:["bc-vri","bc-old-growth-bec"],evidence:"data/phase1-bc-copyright-permission-form-package.json"});
+  assert.deepEqual(record.phase1.accessBlockerEngagements.claims, {newInitialMessageSent:false,followUpSent:true,formSubmitted:true,permissionReceived:false,authorizedAccessReceived:false,feeAccepted:false,creditChanged:false});
   assert.deepEqual(record.phase3Governance.accountableRoles, {publishedContentOwner:"Chinonso Obeta",dataQualityOwner:"Chinonso Obeta",disputeEscalationOwner:"Chinonso Obeta"});
   assert.equal(record.phase3Governance.productName.approvedWorkingName, "Witness Tree");
   assert.equal(record.phase3Governance.productName.mistikAuthorized, false);

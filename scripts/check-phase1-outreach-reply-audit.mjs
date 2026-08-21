@@ -16,6 +16,7 @@ const REPLY_STATUSES = new Set([
   "replies-received-service-route-custom-download-and-permission-process-no-resolution",
   "reply-received-use-details-clarified-no-authorization",
   "reply-received-permission-process-no-authorization",
+  "clarification-received-and-replied-permission-pending",
   "custom-download-route-no-acquisition",
   "replies-received-service-route-custom-download-and-permission-process-no-resolution",
   "no-substantive-reply",
@@ -32,7 +33,7 @@ function noMailboxIdentifiers(value) {
 export function validatePhase1OutreachReplyAudit(audit, matrix, pkg, routeAudit) {
   assert.equal(audit?.schemaVersion, 1);
   assert.equal(audit.status, "read-only-reply-audit-complete-no-resolution");
-  assert.match(audit.auditedAt ?? "", /^2026-08-20T\d{2}:\d{2}:\d{2}Z$/);
+  assert.equal(audit.auditedAt, "2026-08-21T22:34:39Z");
   assert.match(audit.source ?? "", /Gmail read-only searches and bounded thread reads/i);
   assert.match(audit.nonClaimNotice ?? "", /not permission.*not an acquisition.*production eligibility/i);
   assert.equal(audit.officialRouteAuditFile, "data/phase1-bec-custom-download-route-audit.json");
@@ -41,19 +42,19 @@ export function validatePhase1OutreachReplyAudit(audit, matrix, pkg, routeAudit)
   assert.deepEqual(audit.counts, {
     canonicalAccessBlockedRows: 13,
     canonicalPartialRows: 2,
-    substantiveReplyRecords: 7,
+    substantiveReplyRecords: 8,
     accessBlockedRowsWithSubstantiveReply: 8,
     accessBlockedRowsWithoutSubstantiveReply: 5,
     partialRowsWithSubstantiveReply: 0,
     partialRowsWithoutSubstantiveReply: 2,
     automaticOrAcknowledgementOnlyRecords: 4,
-    ownerFollowUpsObserved: 3,
+    ownerFollowUpsObserved: 4,
     rawEvidenceCreditImpact: 0,
     productionEligibilityImpact: 0
   });
-  assert.equal(audit.substantiveReplies.length, 7);
+  assert.equal(audit.substantiveReplies.length, 8);
   assert.equal(audit.automaticOrAcknowledgementOnly.length, 4);
-  assert.equal(audit.ownerFollowUpsObserved.length, 3);
+  assert.equal(audit.ownerFollowUpsObserved.length, 4);
   const becTicketReceipt = audit.automaticOrAcknowledgementOnly.find(({ outreachMessageId, status }) => outreachMessageId === "bc-bec-v13-1-snapshot" && status === "service-portal-ticket-received-and-queued");
   assert.deepEqual(becTicketReceipt?.canonicalRowIds, ["bc-old-growth-bec"]);
   assert.equal(becTicketReceipt?.receivedAt, "2026-08-19T17:27:33Z");
@@ -62,13 +63,21 @@ export function validatePhase1OutreachReplyAudit(audit, matrix, pkg, routeAudit)
   assert.doesNotMatch(becPortalReply?.summary ?? "", /no evidence that a service-portal form was submitted/i);
   const becPortalFollowUp = audit.ownerFollowUpsObserved.find(({ outreachMessageId }) => outreachMessageId === "bc-bec-v13-1-snapshot");
   assert.doesNotMatch(becPortalFollowUp?.nonClaim ?? "", /no service-portal submission/i);
+  const fomReply = audit.substantiveReplies.find(({ id }) => id === "reply-bc-fom-view-only-clarification");
+  assert.deepEqual(fomReply?.canonicalRowIds, ["bc-forest-operations-map"]);
+  assert.equal(fomReply?.receivedAt, "2026-08-21T21:21:55Z");
+  assert.match(fomReply?.summary ?? "", /view-only.*Province-authorized export or service/i);
+  assert.match(fomReply?.summary ?? "", /No permission, licence, access method, artifact or fee decision/i);
+  const fomFollowUp = audit.ownerFollowUpsObserved.find(({ status }) => status === "sent-fom-view-only-use-clarification");
+  assert.equal(fomFollowUp?.sentAt, "2026-08-21T22:34:39Z");
+  assert.match(fomFollowUp?.nonClaim ?? "", /does not claim permission, access, acquisition, archive evidence or production use/i);
   assert.equal(audit.rows.length, 15);
   const matrixRows = matrix?.rankedRows?.map(({ id }) => id) ?? [];
   assert.deepEqual(matrixRows, ACCESS_ROWS);
   const rowIds = audit.rows.map(({ id }) => id);
   assert.deepEqual(rowIds, [...ACCESS_ROWS, ...PARTIAL_ROWS]);
   const replyIds = new Set(audit.substantiveReplies.map(({ id }) => id));
-  assert.equal(replyIds.size, 7);
+  assert.equal(replyIds.size, 8);
   const packageIds = new Set(pkg?.messages?.map(({ id }) => id) ?? []);
   for (const reply of audit.substantiveReplies) {
     assert.ok(packageIds.has(reply.outreachMessageId), `Reply ${reply.id} must map to an outreach message.`);
@@ -102,5 +111,5 @@ export async function checkPhase1OutreachReplyAudit() {
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const audit = await checkPhase1OutreachReplyAudit();
-  console.log(`Phase 1 reply audit passed: ${audit.counts.substantiveReplyRecords} substantive replies; ${audit.counts.accessBlockedRowsWithSubstantiveReply}/13 blocked rows touched; BEC route remains blocked before order; no acquisition or permission.`);
+  console.log(`Phase 1 reply audit passed: ${audit.counts.substantiveReplyRecords} substantive replies; ${audit.counts.accessBlockedRowsWithSubstantiveReply}/13 blocked rows touched; FOM clarification replied but permission/access remain pending; no acquisition or score change.`);
 }

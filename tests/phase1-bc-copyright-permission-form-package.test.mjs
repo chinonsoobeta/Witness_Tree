@@ -5,7 +5,7 @@ import { validatePhase1BcCopyrightPermissionFormPackage } from "../scripts/check
 
 const record = JSON.parse(readFileSync(new URL("../data/phase1-bc-copyright-permission-form-package.json", import.meta.url), "utf8"));
 
-test("BC copyright package maps the official unsent form for all three exact datasets", () => {
+test("BC copyright package records the FOM-only submission and reply without broadening permission", () => {
   assert.equal(validatePhase1BcCopyrightPermissionFormPackage(record), record);
   assert.equal(record.sourceEvidence.oneFormForAllThree, true);
   assert.deepEqual(record.formFieldMap.find(({ field }) => field === "websiteSourceUrl").preparedSupportingValues, [
@@ -15,12 +15,19 @@ test("BC copyright package maps the official unsent form for all three exact dat
   ]);
   assert.equal(record.impact.rawEvidenceCreditImpact, 0);
   assert.equal(record.impact.permissionGranted, false);
+  assert.equal(record.impact.formsSubmitted, true);
+  assert.deepEqual(record.submissionOutcome.submittedCanonicalRowIds, ["bc-forest-operations-map"]);
+  assert.deepEqual(record.submissionOutcome.unsubmittedCanonicalRowIds, ["bc-vri", "bc-old-growth-bec"]);
 });
 
-test("BC copyright package fails closed on submission, personal-data entry, fee payment, or TAP conflation", () => {
-  const submitted = structuredClone(record);
-  submitted.status = "submitted";
-  assert.throws(() => validatePhase1BcCopyrightPermissionFormPackage(submitted), /owner-prepared-unsent/);
+test("BC copyright package fails closed on broader submission, permission, personal data, fee, or TAP conflation", () => {
+  const broader = structuredClone(record);
+  broader.submissionOutcome.submittedCanonicalRowIds.push("bc-vri");
+  assert.throws(() => validatePhase1BcCopyrightPermissionFormPackage(broader));
+
+  const noSubmission = structuredClone(record);
+  noSubmission.impact.formsSubmitted = false;
+  assert.throws(() => validatePhase1BcCopyrightPermissionFormPackage(noSubmission));
 
   const permission = structuredClone(record);
   permission.impact.permissionGranted = true;

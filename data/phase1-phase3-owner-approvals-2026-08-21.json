@@ -26,8 +26,8 @@
     "accessBlockerEngagements": {
       "status":"approved-strict-dedup-external-resolution-pending","package":"data/phase1-permission-outreach-package.json","rows":["sopfeu","bc-fta-cutblocks","bc-harvesting-authorities","bc-vri","bc-consolidated-cutblocks","bc-old-growth-bec","bc-forest-operations-map","on-fri","on-fri-term-2","indian-reserves","first-nation-reserves","historic-treaties","modern-treaties"],
       "alreadyRecordedMessages":8,"dedupRule":"Never resend any exact sender-recipient-subject request already recorded in the package. Follow up only in its existing thread after inspecting the complete reply.",
-      "unsentBcCopyrightForm":{"status":"blocked-required-owner-fields-incomplete","missing":["street/city/region/postal-code/country","email confirmation","phone","prior-permission confirmation","singular Source URL handling","website copy-count","fee acceptance ceiling","signature/declaration if presented"]},
-      "claims":{"newMessageSent":false,"formSubmitted":false,"feeAccepted":false,"permissionReceived":false,"creditChanged":false}
+      "bcCopyrightForm":{"status":"fom-only-submitted-clarification-replied-permission-and-access-pending","submittedRows":["bc-forest-operations-map"],"unsubmittedRows":["bc-vri","bc-old-growth-bec"],"evidence":"data/phase1-bc-copyright-permission-form-package.json"},
+      "claims":{"newInitialMessageSent":false,"followUpSent":true,"formSubmitted":true,"permissionReceived":false,"authorizedAccessReceived":false,"feeAccepted":false,"creditChanged":false}
     }
   },
   "phase3Governance": {

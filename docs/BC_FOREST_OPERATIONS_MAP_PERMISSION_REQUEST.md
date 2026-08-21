@@ -1,9 +1,8 @@
-# Draft permission request — Forest Operations Map (FOM) - Cutblocks
+# FOM copyright request and clarification
 
-**Status: draft only — not sent.** No permission, download, checksum, archive,
-profile, or production use is claimed by this document.
+**Status: FOM-only form submitted; clarification answered; permission and access pending.** No permission, download, checksum, archive, profile, or production use is claimed by this document.
 
-Use the Province of British Columbia's [Copyright Permission Request Form](https://forms.gov.bc.ca/copyright-permission-request/) (or the official contact listed on the copyright page, `QPIPPCopyright@gov.bc.ca`) only after an authorized sender chooses to submit it.
+The owner submitted the official form with the FOM catalogue URL on 2026-08-21. The copyright officer asked how view-only data would be used. The owner-authorized reply rejected scraping, bypass, raw redistribution and bulk download; limited any data use to a Province-authorized export or service; otherwise limited the project to an official-viewer link or expressly permitted static excerpt; and asked which office can authorize access. No permission or access method has been supplied.
 
 ## Proposed message
 
@@ -29,4 +28,4 @@ Chinonso Obeta
 
 ## Evidence boundary
 
-The machine-readable fail-closed record is [`data/bc-forest-operations-map-access.json`](../data/bc-forest-operations-map-access.json). It records the official catalogue, Access Only licence, public service observation, and an unsent request route. It intentionally stores no email message or thread identifier and makes no contact or authorization claim.
+The machine-readable fail-closed record is [`data/bc-forest-operations-map-access.json`](../data/bc-forest-operations-map-access.json). It records the official catalogue, Access Only licence, public service observation, and bounded submission/clarification facts. It stores no mailbox identifiers and makes no permission or access claim.

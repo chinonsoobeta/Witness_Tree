@@ -135,7 +135,7 @@ function validateBcAccessEvidence(access, replies, becCustom, becPublic, copyrig
     assert.ok(row, `${id} is missing from the access resolution matrix.`);
     assert.equal(row.lawfulAcquisitionNow, false);
   }
-  assert.equal(replies.counts.substantiveReplyRecords, 7);
+  assert.equal(replies.counts.substantiveReplyRecords, 8);
   assert.equal(replies.counts.accessBlockedRowsWithSubstantiveReply, 8);
   assert.equal(replies.counts.partialRowsWithSubstantiveReply, 0);
   assert.equal(becCustom.status, "blocked-before-custom-download-order");
@@ -147,7 +147,8 @@ function validateBcAccessEvidence(access, replies, becCustom, becPublic, copyrig
   assert.equal(becPublic.exhaustion.productionEligibilityImpact, 0);
   assert.ok(becPublic.routes.every(({ completeArtifact }) => completeArtifact === false));
   assert.deepEqual(copyright.canonicalRowIds, ["bc-vri", "bc-forest-operations-map", "bc-old-growth-bec"]);
-  assert.equal(copyright.impact.formsSubmitted, false);
+  assert.equal(copyright.impact.formsSubmitted, true);
+  assert.deepEqual(copyright.impact.submittedCanonicalRowIds, ["bc-forest-operations-map"]);
   assert.equal(copyright.impact.permissionGranted, false);
   assert.equal(copyright.impact.licenceGranted, false);
   assert.equal(copyright.impact.artifactAcquired, false);

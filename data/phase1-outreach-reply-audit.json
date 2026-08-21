@@ -1,20 +1,20 @@
 {
   "schemaVersion": 1,
   "status": "read-only-reply-audit-complete-no-resolution",
-  "auditedAt": "2026-08-20T19:09:59Z",
-  "source": "Gmail read-only searches and bounded thread reads through 2026-08-20T19:09:59Z, including exact NBAC, Elections Alberta and Élections Québec sender/subject searches for the two partial rows. Message IDs, thread IDs, mailbox URLs, bodies and attachments are not retained here.",
+  "auditedAt": "2026-08-21T22:34:39Z",
+  "source": "Gmail read-only searches and bounded thread reads through 2026-08-21T22:34:39Z, including the FOM copyright clarification and its owner-authorized sent reply plus exact NBAC, Elections Alberta and Élections Québec sender/subject searches for the two partial rows. Message IDs, thread IDs, mailbox URLs, bodies, personal contact fields and attachments are not retained here.",
   "officialRouteAuditFile": "data/phase1-bec-custom-download-route-audit.json",
-  "nonClaimNotice": "A reply, routing instruction, follow-up, or acknowledgement is not permission, a source-owner decision, an artifact, not an acquisition, a checksum, an archive, a transformation, an ingestion, a release, or production eligibility. No form was submitted and no external system was changed by this audit.",
+  "nonClaimNotice": "A submitted form, reply, routing instruction, follow-up, or acknowledgement is not permission and is not an acquisition, checksum, archive, transformation, ingestion, release, or production eligibility decision. The FOM-only form and clarification reply changed outreach state but supplied no permission, authorized data access, or score evidence.",
   "counts": {
     "canonicalAccessBlockedRows": 13,
     "canonicalPartialRows": 2,
-    "substantiveReplyRecords": 7,
+    "substantiveReplyRecords": 8,
     "accessBlockedRowsWithSubstantiveReply": 8,
     "accessBlockedRowsWithoutSubstantiveReply": 5,
     "partialRowsWithSubstantiveReply": 0,
     "partialRowsWithoutSubstantiveReply": 2,
     "automaticOrAcknowledgementOnlyRecords": 4,
-    "ownerFollowUpsObserved": 3,
+    "ownerFollowUpsObserved": 4,
     "rawEvidenceCreditImpact": 0,
     "productionEligibilityImpact": 0
   },
@@ -72,7 +72,7 @@
       "subject": "RE: Permission and authoritative-export request — VRI 2025, FOM Cutblocks, and TAP deferral layer",
       "status": "permission-form-required-awaiting-decision",
       "summary": "BC's Intellectual Property Program instructed the requester to use its Copyright Permission Request Form, name each dataset exactly as in the BC Data Catalogue, provide each catalogue URL, describe intended use, audience and distribution channels, and await custodian ownership/concern checks. It said a licensing vehicle and a permission/licence fee would be determined if permission can be granted. No permission, licence, artifact, attribution wording or fee decision was supplied.",
-      "remainingBlockers": ["The permission form has not been submitted by this audit", "No custodian confirmation or licensing vehicle", "No fee decision", "No functioning complete 2025 VRI artifact", "No implemented TAP layer or written rights", "No exact artifact edition, count, schema, CRS, checksum or archive terms"]
+      "remainingBlockers": ["No VRI or TAP form submission; the later FOM-only submission does not cover those rows", "No custodian confirmation or licensing vehicle", "No fee decision", "No functioning complete 2025 VRI artifact", "No implemented TAP layer or written rights", "No exact artifact edition, count, schema, CRS, checksum or archive terms"]
     },
     {
       "id": "reply-bc-copyright-single-form-followup",
@@ -83,7 +83,7 @@
       "subject": "RE: Permission and authoritative-export request — VRI 2025, FOM Cutblocks, and TAP deferral layer",
       "status": "permission-form-guidance-no-authorization",
       "summary": "The BC copyright office confirmed that all three datasets may be included in one Copyright Permission Request Form and asked that the requested details be included in the form. This confirms a procedural submission route only; it supplies no permission, licence, artifact, custodian decision or fee amount. The owner package maps the official form fields without entering personal data or submitting the form.",
-      "remainingBlockers": ["The permission form has not been submitted by this audit", "No custodian ownership/concern review", "No permission or licensing vehicle", "No fee amount or fee agreement", "No functioning complete 2025 VRI artifact", "No implemented TAP layer or written rights", "No exact artifact edition, count, schema, CRS, checksum or archive terms"]
+      "remainingBlockers": ["No VRI or TAP form submission; the later FOM-only submission does not cover those rows", "No custodian ownership/concern review", "No permission or licensing vehicle", "No fee amount or fee agreement", "No functioning complete 2025 VRI artifact", "No implemented TAP layer or written rights", "No exact artifact edition, count, schema, CRS, checksum or archive terms"]
     },
     {
       "id": "reply-faib-output-details",
@@ -95,6 +95,17 @@
       "status": "use-details-clarified-awaiting-authorization",
       "summary": "FAIB asked for the derived, aggregate, map-tile and public-output products proposed for publication. A Sent follow-up on 2026-08-19 described those products and requested attribution, excluded attributes, review, edition/refresh and correction guidance. No authorization, licence, attribution wording, review decision or new artifact was supplied.",
       "remainingBlockers": ["Written authorization or redistributable licence for the exact Access Only resource", "Publisher decision on proposed output categories and restricted detail", "Attribution and disclaimer wording", "Edition/as-of and refresh guidance", "No raw download or checksum/profile under this audit"]
+    },
+    {
+      "id": "reply-bc-fom-view-only-clarification",
+      "outreachMessageId": "bc-copyright-access-only-forest-layers",
+      "canonicalRowIds": ["bc-forest-operations-map"],
+      "receivedAt": "2026-08-21T21:21:55Z",
+      "sender": "QPIPPCopyright@gov.bc.ca",
+      "subject": "RE: Copyright Permission Request",
+      "status": "view-only-use-clarification-permission-pending",
+      "summary": "After the owner submitted a form containing the FOM Cutblocks catalogue URL, the copyright officer noted that the dataset is view-only rather than downloadable and asked how it would be used on the website. The owner-authorized reply rejected scraping, bypass and raw redistribution; limited any data use to a Province-authorized export or service; otherwise limited the project to linking the official viewer or expressly permitted static excerpts; and asked which office can authorize access. No permission, licence, access method, artifact or fee decision was supplied.",
+      "remainingBlockers": ["No copyright permission or licensing vehicle", "No Province-authorized export or service", "No exact artifact, edition, checksum or archive evidence", "No permission for screenshots or static excerpts", "No fee or custodian decision"]
     }
   ],
   "automaticOrAcknowledgementOnly": [
@@ -154,6 +165,14 @@
       "subject": "RE: Permission and authoritative-export request — VRI 2025, FOM Cutblocks, and TAP deferral layer",
       "status": "sent-dataset-use-details-follow-up",
       "nonClaim": "The follow-up supplies dataset names, catalogue URLs and intended public outputs; no permission form submission, fee payment or licence decision is recorded."
+    },
+    {
+      "outreachMessageId": "bc-copyright-access-only-forest-layers",
+      "sentAt": "2026-08-21T22:34:39Z",
+      "recipient": "QPIPPCopyright@gov.bc.ca",
+      "subject": "RE: Copyright Permission Request",
+      "status": "sent-fom-view-only-use-clarification",
+      "nonClaim": "The reply requests a lawful access path and limits use to Province-authorized access, official-viewer links, or expressly permitted static excerpts. It does not claim permission, access, acquisition, archive evidence or production use."
     }
   ],
   "rows": [
@@ -216,10 +235,10 @@
     {
       "id": "bc-forest-operations-map",
       "kind": "access-blocked",
-      "replyStatus": "reply-received-permission-process-no-authorization",
-      "replyRecordIds": ["reply-bc-copyright-permission-process", "reply-bc-copyright-single-form-followup"],
+      "replyStatus": "clarification-received-and-replied-permission-pending",
+      "replyRecordIds": ["reply-bc-copyright-permission-process", "reply-bc-copyright-single-form-followup", "reply-bc-fom-view-only-clarification"],
       "lawfulAcquisitionNow": false,
-      "remainingBlockers": ["Permission form and custodian review remain outstanding", "No exact-layer authorization or attribution", "No checksum or archive decision"]
+      "remainingBlockers": ["The FOM-only form and clarification reply are submitted, but permission and custodian review remain pending", "No Province-authorized export or service", "No exact-layer authorization, attribution or static-excerpt permission", "No checksum or archive decision"]
     },
     {
       "id": "sopfeu",

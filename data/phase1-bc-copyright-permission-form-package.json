@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
-  "status": "owner-prepared-unsent",
+  "status": "fom-form-submitted-clarification-replied-permission-pending",
   "preparedAt": "2026-08-20T18:30:57Z",
   "canonicalRowIds": [
     "bc-vri",
     "bc-forest-operations-map",
     "bc-old-growth-bec"
   ],
-  "nonClaimNotice": "This is an owner-only preparation record. It is not a submitted form, not permission, not a licence, not a fee agreement, not a source-owner decision, artifact, acquisition, archive, transformation, ingestion, release, or production authorization. The TAP Current View is kept distinct from the authoritative implemented-deferral layer, which has not been identified.",
+  "nonClaimNotice": "The prepared package covered three Access Only datasets, but the form actually submitted on 2026-08-21 covered only the FOM Cutblocks catalogue URL. Submission and the later clarification reply are not permission, not a licence, not a fee agreement, and not an artifact, acquisition, archive, transformation, ingestion, release, or production authorization. VRI and TAP remain unsubmitted. The TAP Current View is kept distinct from the authoritative implemented-deferral layer, which has not been identified.",
   "sourceEvidence": {
     "replyAuditFile": "data/phase1-outreach-reply-audit.json",
     "replyRecordId": "reply-bc-copyright-single-form-followup",
@@ -30,6 +30,31 @@
       "paid": false
     },
     "formUrl": "https://forms.gov.bc.ca/copyright-permission-request/"
+  },
+  "submissionOutcome": {
+    "status": "fom-form-submitted-clarification-replied-permission-pending",
+    "submittedCanonicalRowIds": ["bc-forest-operations-map"],
+    "unsubmittedCanonicalRowIds": ["bc-vri", "bc-old-growth-bec"],
+    "submittedAt": "2026-08-21T13:48-07:00",
+    "submissionEvidence": "A copyright-office reply quoted the new form submission and its FOM catalogue URL. Personal contact fields and mailbox identifiers are intentionally not retained.",
+    "clarificationReceivedAt": "2026-08-21T21:21:55Z",
+    "clarificationFinding": "The copyright officer noted that FOM is view-only rather than downloadable and asked how it would be used on the website.",
+    "clarificationReplySentAt": "2026-08-21T22:34:39Z",
+    "clarificationReplyBoundary": [
+      "No scraping or access-control bypass",
+      "Use only through a Province-authorized export or service",
+      "Preserve provincial source, status and date fields and planned/proposed semantics",
+      "No raw redistribution or bulk download",
+      "If authorized access is unavailable, link to the official viewer",
+      "Use screenshots or static excerpts only if expressly permitted",
+      "Ask whether copyright permission can authorize access or a program-area request is required"
+    ],
+    "permissionGranted": false,
+    "licenceGranted": false,
+    "authorizedAccessSupplied": false,
+    "artifactSupplied": false,
+    "feeAccepted": false,
+    "termsAccepted": false
   },
   "officialFormInspection": {
     "url": "https://forms.gov.bc.ca/copyright-permission-request/",
@@ -191,17 +216,18 @@
     {"field": "hiddenValidationName", "required": false, "preparedValue": null, "ownerAction": "Leave the hidden validation field unchanged."}
   ],
   "ownerAction": {
-    "status": "prepared-unsent",
+    "status": "fom-awaiting-permission-and-access-response-vri-tap-unsubmitted",
     "steps": [
       "Review the three exact dataset names, catalogue URLs, source-specific purposes and non-conflation limitations.",
       "Supply the owner's identity, mailing address, email confirmation and phone directly in the official form; this audit did not collect or enter personal data.",
       "Confirm the prior-permission answer, Source Ministry select option, singular Source URL handling and website copy-count field before submission.",
       "Review the intended-use details, free-public-access statement, voluntary-donation/no-preferential-access statement, raw Access Only non-redistribution boundary, Canadian controlled-archive request, attribution, limitations and correction/right-of-reply request.",
       "Request the applicable licensing vehicle and fee amount in writing before any charge or commitment.",
-      "Submit only after the owner separately authorizes the form submission; submission would trigger custodian review and would not itself grant permission."
+      "Do not duplicate the submitted FOM request; await the copyright office's permission and access-path response.",
+      "Submit VRI or TAP only after separate owner review; the FOM submission did not cover those rows."
     ],
     "doNotUnderThisAudit": [
-      "Do not submit the form.",
+      "Do not submit a duplicate FOM form or imply that the FOM form covered VRI or TAP.",
       "Do not enter personal identity, address, email or phone information into the live form.",
       "Do not accept or agree to a fee, licence, terms or permission condition.",
       "Do not claim that permission or a licence has been granted.",
@@ -215,7 +241,8 @@
     "productionEligibilityImpact": 0,
     "permissionGranted": false,
     "licenceGranted": false,
-    "formsSubmitted": false,
+    "formsSubmitted": true,
+    "submittedCanonicalRowIds": ["bc-forest-operations-map"],
     "feePaid": false,
     "termsAccepted": false,
     "artifactAcquired": false,

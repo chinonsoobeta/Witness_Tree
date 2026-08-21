@@ -69,7 +69,8 @@ test("integrated Phase 1 evidence remains additive and fail-closed across conver
   assert.equal(alternatives.routes.every(({ completeArtifact }) => completeArtifact === false), true);
 
   assert.deepEqual(copyright.canonicalRowIds, ["bc-vri", "bc-forest-operations-map", "bc-old-growth-bec"]);
-  assert.equal(copyright.impact.formsSubmitted, false);
+  assert.equal(copyright.impact.formsSubmitted, true);
+  assert.deepEqual(copyright.impact.submittedCanonicalRowIds, ["bc-forest-operations-map"]);
   assert.equal(copyright.impact.permissionGranted, false);
   assert.equal(copyright.impact.rawEvidenceCreditImpact, 0);
   assert.equal(copyright.formFieldMap.find(({ field }) => field === "websiteSourceUrl").preparedValue, null);
@@ -77,7 +78,7 @@ test("integrated Phase 1 evidence remains additive and fail-closed across conver
   assert.equal(copyright.sourceEvidence.fee.amount, null);
   assert.equal(copyright.sourceEvidence.fee.paid, false);
 
-  assert.equal(replies.counts.substantiveReplyRecords, 7);
+  assert.equal(replies.counts.substantiveReplyRecords, 8);
   const affectedRows = new Set(replies.substantiveReplies.flatMap(({ canonicalRowIds }) => canonicalRowIds));
   assert.equal(affectedRows.size, 8);
   assert.equal(replies.counts.accessBlockedRowsWithSubstantiveReply, 8);
@@ -120,6 +121,19 @@ test("all canonical summaries label superseded Phase 1 totals as historical", ()
       assert.match(context, /\b(historical|older|prior|preceding|at the time)\b/i, `${file}:${index + 1} must label superseded totals as historical`);
     }
   }
+});
+
+test("canonical summaries retain the FOM-only submitted state without implying permission", () => {
+  const combined = canonicalSummaryFiles.map((file) => readFileSync(new URL(`../${file}`, import.meta.url), "utf8")).join("\n");
+  for (const stale of [
+    /copyright form is unsent/i,
+    /shared copyright form is unsent/i,
+    /unsent BC copyright form package/i,
+    /seven substantive replies/i,
+    /FOM[^\n]{0,80}draft[^\n]{0,40}not sent/i,
+  ]) assert.doesNotMatch(combined, stale);
+  assert.match(combined, /FOM-only form[^\n]{0,120}(?:submitted|submission)/i);
+  assert.match(combined, /permission and (?:authorized )?access remain pending/i);
 });
 
 test("partial-ledger outreach checker reports only the current canonical totals", () => {
