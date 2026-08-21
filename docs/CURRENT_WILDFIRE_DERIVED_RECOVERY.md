@@ -93,6 +93,19 @@ zsh scripts/run-wildfire-derived-recovery.sh --recover \
   /private/tmp/witness-tree-wildfire-derived-recovery-evidence.json
 ```
 
+For a future owner-local run, the wrapper combines the fresh root/default
+state capture and local preflight before it reaches the existing MFA-gated
+runner. It refuses a preexisting state or evidence path, including partial or
+completed evidence, and does not handle or store the TOTP:
+
+```sh
+zsh scripts/run-wildfire-derived-recovery-owner.sh --recover \
+  /private/tmp/witness-tree-wildfire-derived-recovery-approval.json \
+  /private/tmp/witness-tree-wildfire-derived-recovery-state.json \
+  /private/tmp/witness-tree-wildfire-derived-readback-iam-attestation.json \
+  /private/tmp/witness-tree-wildfire-derived-recovery-evidence.json
+```
+
 The runner refuses completed evidence, a preexisting BC manifest or Ontario
 key, any mismatch, and any missing exact readback. It has no command
 path for BC payload upload, multipart operations, deletion, governance bypass,
@@ -110,3 +123,25 @@ fresh root/default capture is valid only when all three target keys still prove
 exact `404` absence. The runner rechecks the 15-minute private-state expiry
 after MFA role assumption and never treats a `403` as proof of absence or adds
 `ListBucket` permission.
+
+## Post-completion redacted readback
+
+The owner-only recovery evidence was independently checked after completion.
+The default/account-root read-only audit also verified the exact latest and
+concrete-version heads for the BC payload and manifest and the Ontario payload
+and manifest, including exact bytes and `FULL_OBJECT` `CRC64NVME` fields. It
+verified `COMPLIANCE` retention through `2033-08-12T00:00:00Z` on the BC and
+Ontario payload versions. The local owner evidence checker passed with status
+`completed`, all four object names, and both payload-retention entries.
+
+The repository-integrated, redacted summary is
+[`data/current-wildfire-derived-archive-evidence.json`](../data/current-wildfire-derived-archive-evidence.json),
+validated by `npm run check:current-wildfire-derived-archive-evidence` and
+`scripts/check-current-wildfire-derived-archive-evidence.mjs`. It intentionally
+contains no provider version IDs, ETags, upload IDs, credentials, or raw bytes.
+It records primary readback and payload-retention facts only; it does not claim
+mutation provenance, a recovery replica, source-ledger admission,
+transformation, ingestion, release, production eligibility, or Phase 2. The
+older dated live-recovery guard remains historical evidence and is not
+overwritten. The six-object owner gate remains fail-closed until its own
+required repository-integrated evidence contract is satisfied.

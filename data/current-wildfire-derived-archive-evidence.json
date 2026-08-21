@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "witness-tree/current-wildfire-derived-archive-evidence/1",
+  "status": "redacted-primary-readback-verified",
+  "verifiedAt": "2026-08-21",
+  "sourceOfTruth": "Independent default/account-root read-only latest and concrete-version heads, exact bytes, FULL_OBJECT CRC64NVME fields and payload retention readbacks, cross-checked against owner-only evidence.",
+  "storage": {
+    "bucket": "witness-tree-raw-archive-ca-central-1",
+    "region": "ca-central-1",
+    "countryCode": "CA"
+  },
+  "notice": "Redacted exact-key primary readback evidence for the two approved derived payload/manifest pairs. Provider version identifiers, ETags, upload IDs, credentials and raw bytes are intentionally not retained. This record does not assert mutation provenance, grant source-ledger admission, authorize transformation, ingestion, release, production admission or production eligibility, and does not claim a recovery replica.",
+  "auditOperationsPerformed": [],
+  "ownerEvidenceCheckerPassed": true,
+  "objects": [
+    {
+      "id": "bc-wildfire-derived-payload",
+      "sourceId": "bc-wildfire",
+      "kind": "payload",
+      "key": "derived/bc-wildfire/bc-wildfire-geometry-policy-v1-2026-08-14/2026-08-14T20-31-39Z/8ee36cc6bdfb5ef267340537e4cf822df7cc886873c7fcf65a1b2b12006d34ce/payload/bc-wildfire-216-feature-release.gpkg",
+      "bytes": 2162688,
+      "sha256": "8ee36cc6bdfb5ef267340537e4cf822df7cc886873c7fcf65a1b2b12006d34ce",
+      "featureCount": 216,
+      "versionPresent": true,
+      "fullObjectChecksumVerified": true,
+      "exactVersionReadback": true,
+      "checksum": {"type": "FULL_OBJECT", "algorithm": "CRC64NVME", "providerValue": "redacted-present"},
+      "retentionRequired": true,
+      "retention": {"mode": "COMPLIANCE", "retainUntil": "2033-08-12T00:00:00Z", "readbackVerified": true}
+    },
+    {
+      "id": "bc-wildfire-derived-manifest",
+      "sourceId": "bc-wildfire",
+      "kind": "manifest",
+      "key": "derived/bc-wildfire/bc-wildfire-geometry-policy-v1-2026-08-14/2026-08-14T20-31-39Z/8ee36cc6bdfb5ef267340537e4cf822df7cc886873c7fcf65a1b2b12006d34ce/manifest.json",
+      "bytes": 831,
+      "sha256": "c9c9ca2361e715693ee2d669280b40d5fe2ef028a33d06d507749c96e0c9e167",
+      "featureCount": null,
+      "versionPresent": true,
+      "fullObjectChecksumVerified": true,
+      "exactVersionReadback": true,
+      "checksum": {"type": "FULL_OBJECT", "algorithm": "CRC64NVME", "providerValue": "redacted-present"},
+      "retentionRequired": false,
+      "retention": null
+    },
+    {
+      "id": "on-fire-disturbance-derived-payload",
+      "sourceId": "on-fire-disturbance",
+      "kind": "payload",
+      "key": "derived/on-fire-disturbance/ontario-in-year-fire-geometry-policy-v1-2026-08-14/2026-08-14T13-49-36Z/5e55c5d47559c350d9b31ffeda6bd39cfce64a3c57169098fff66341cd8ead31/payload/ontario-in-year-fire-perimeters-188-feature-derived.gpkg",
+      "bytes": 7913472,
+      "sha256": "5e55c5d47559c350d9b31ffeda6bd39cfce64a3c57169098fff66341cd8ead31",
+      "featureCount": 188,
+      "versionPresent": true,
+      "fullObjectChecksumVerified": true,
+      "exactVersionReadback": true,
+      "checksum": {"type": "FULL_OBJECT", "algorithm": "CRC64NVME", "providerValue": "redacted-present"},
+      "retentionRequired": true,
+      "retention": {"mode": "COMPLIANCE", "retainUntil": "2033-08-12T00:00:00Z", "readbackVerified": true}
+    },
+    {
+      "id": "on-fire-disturbance-derived-manifest",
+      "sourceId": "on-fire-disturbance",
+      "kind": "manifest",
+      "key": "derived/on-fire-disturbance/ontario-in-year-fire-geometry-policy-v1-2026-08-14/2026-08-14T13-49-36Z/5e55c5d47559c350d9b31ffeda6bd39cfce64a3c57169098fff66341cd8ead31/manifest.json",
+      "bytes": 885,
+      "sha256": "e81285a479cf46d521929c233e9185c3ded28429bc985c45e9ff74235910bf79",
+      "featureCount": null,
+      "versionPresent": true,
+      "fullObjectChecksumVerified": true,
+      "exactVersionReadback": true,
+      "checksum": {"type": "FULL_OBJECT", "algorithm": "CRC64NVME", "providerValue": "redacted-present"},
+      "retentionRequired": false,
+      "retention": null
+    }
+  ],
+  "claims": {
+    "derivedObjectsVerified": true,
+    "primaryObjectsVerified": true,
+    "payloadRetentionVerified": true,
+    "recoveryObjectsVerified": false,
+    "recoveryReplicaVerified": false,
+    "mutationProvenance": false,
+    "ownerAdmission": false,
+    "transformed": false,
+    "ingested": false,
+    "released": false,
+    "productionAdmission": false,
+    "productionEligible": false,
+    "phase2": false
+  }
+}
