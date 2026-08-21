@@ -2,7 +2,7 @@
   "schemaVersion": "witness-tree/phase1-owner-decision-queue/1",
   "status": "owner-action-queue-read-only",
   "asOf": "2026-08-21",
-  "derivedFromHead": "88695058dddbc2a50997de6e18fe01838c146e03",
+  "derivedFromHead": "71925af03fc08b052d12077de2ba4acb9239006b",
   "notice": "This consolidated queue restates existing Phase 1 owner boundaries and evidence. It does not create an approval, authorize AWS or remote storage, submit a form, send email, transform, ingest, release, admit, or make any row production eligible.",
   "selectionRule": "Include every canonical production row whose evidenceState is local-verified-profiled or remote-verified-archived-profiled and whose productionAdmission remains false. These rows have a next owner-controlled source-scope, transformation, ingestion, release, archive-promotion, or production-admission decision. Exclude partial-component and access-blocked rows because their next gate is external artifact, rights, authority, or permission resolution before this owner pipeline.",
   "baseline": {
@@ -155,6 +155,16 @@
         "missingDerivedReadbacks": ["bc-wildfire", "on-fire-disturbance"],
         "productionEligible": false
       },
+      "localReadbackPreflight": {
+        "status": "available-no-write-owner-approval-file-required",
+        "checker": "scripts/check-wildfire-derived-readback.mjs",
+        "runner": "scripts/run-wildfire-derived-readback.sh",
+        "safeCommand": "zsh scripts/run-wildfire-derived-readback.sh --preflight <mode-600-owner-approval-file>",
+        "remoteCalls": 0,
+        "totpPrompted": false,
+        "writePerformed": false,
+        "productionEligible": false
+      },
       "exactNextSteps": [
         "run the safe preflight",
         "obtain fresh owner approval",
@@ -188,6 +198,16 @@
         "requiredObjects": 6,
         "verifiedObjects": 4,
         "missingDerivedReadbacks": ["bc-wildfire", "on-fire-disturbance"],
+        "productionEligible": false
+      },
+      "localReadbackPreflight": {
+        "status": "available-no-write-owner-approval-file-required",
+        "checker": "scripts/check-wildfire-derived-readback.mjs",
+        "runner": "scripts/run-wildfire-derived-readback.sh",
+        "safeCommand": "zsh scripts/run-wildfire-derived-readback.sh --preflight <mode-600-owner-approval-file>",
+        "remoteCalls": 0,
+        "totpPrompted": false,
+        "writePerformed": false,
         "productionEligible": false
       },
       "exactNextSteps": [
@@ -225,6 +245,16 @@
         "missingDerivedReadbacks": ["bc-wildfire", "on-fire-disturbance"],
         "productionEligible": false
       },
+      "localReadbackPreflight": {
+        "status": "available-no-write-owner-approval-file-required",
+        "checker": "scripts/check-wildfire-derived-readback.mjs",
+        "runner": "scripts/run-wildfire-derived-readback.sh",
+        "safeCommand": "zsh scripts/run-wildfire-derived-readback.sh --preflight <mode-600-owner-approval-file>",
+        "remoteCalls": 0,
+        "totpPrompted": false,
+        "writePerformed": false,
+        "productionEligible": false
+      },
       "exactNextSteps": [
         "run the safe preflight",
         "obtain fresh owner approval",
@@ -258,6 +288,16 @@
         "requiredObjects": 6,
         "verifiedObjects": 4,
         "missingDerivedReadbacks": ["bc-wildfire", "on-fire-disturbance"],
+        "productionEligible": false
+      },
+      "localReadbackPreflight": {
+        "status": "available-no-write-owner-approval-file-required",
+        "checker": "scripts/check-wildfire-derived-readback.mjs",
+        "runner": "scripts/run-wildfire-derived-readback.sh",
+        "safeCommand": "zsh scripts/run-wildfire-derived-readback.sh --preflight <mode-600-owner-approval-file>",
+        "remoteCalls": 0,
+        "totpPrompted": false,
+        "writePerformed": false,
         "productionEligible": false
       },
       "exactNextSteps": [

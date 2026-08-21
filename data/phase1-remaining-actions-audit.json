@@ -2,7 +2,7 @@
   "schemaVersion": "witness-tree/phase1-remaining-actions-audit/1",
   "status": "blocked-read-only",
   "asOf": "2026-08-21",
-  "derivedFromHead": "ffe949e9a426b3276339cb3fb4e975455f0d2f13",
+  "derivedFromHead": "71925af03fc08b052d12077de2ba4acb9239006b",
   "notice": "Fresh local Phase 1 remaining-action audit. It reconciles the canonical 31-row ledger, immutable-promotion preparation, owner-decision readiness, reply, and access-block records. It performs no AWS call, email, form submission, archive mutation, permission grant, transformation, ingestion, release, production admission, or production-eligibility change.",
   "selectionRule": "Audit every production row where immutable remote proof is absent OR production admission is absent. The union is all 31 rows because production admission is absent for every row.",
   "baseline": {
@@ -45,6 +45,180 @@
     "released": false,
     "productionAdmission": false,
     "productionEligible": false
+  },
+  "localImplementationAudit": {
+    "status": "local-gates-complete-owner-or-external-blockers-remain",
+    "derivedFromHead": "71925af03fc08b052d12077de2ba4acb9239006b",
+    "notice": "Requirement-by-requirement local implementation audit. Existing profiles, validators, transformation evidence, no-write preflights, and conditional recovery/readback paths are recorded without granting owner approval, permission, archive credit, ingestion, release, production admission, or Phase 2 authority.",
+    "requirementCategories": [
+      {
+        "id": "archive-preflight-and-readback",
+        "actionIds": ["national-local-archive-preflight-and-owner-promotion", "quebec-current-original-archive-preflight-and-owner-promotion", "quebec-fourth-archive-preflight-and-owner-approvals", "current-wildfire-derived-archive-preflight-and-owner-promotion", "normal-archive-control-exercise"],
+        "status": "complete-local-no-write-paths",
+        "ownerIndependent": true,
+        "safeNow": true,
+        "paths": [
+          "scripts/run-phase1-approved-promotion.sh",
+          "scripts/run-qc-approved-multipart-promotion.sh",
+          "scripts/qc-fourth-inventory-immutable-promotion.mjs",
+          "scripts/run-current-wildfire-approved-promotion.sh",
+          "scripts/run-wildfire-derived-readback.sh",
+          "scripts/run-phase1-archive-owner-exercise.sh"
+        ],
+        "scoreImpact": {"rawCreditDelta": 0, "formalPercentagePointDelta": 0},
+        "blocker": "Every live archive or readback result still requires owner-approved MFA execution and exact remote evidence; the local paths make no remote call in preflight mode."
+      },
+      {
+        "id": "profiles-and-validators",
+        "actionIds": ["national-archived-owner-source-ledger-decisions", "plvi-owner-scope-decision", "archived-remote-transform-ingest-release", "wildfire-transform-ingest-release", "partial-historical-owner-review-and-external-evidence", "partial-boundaries-owner-review-and-external-evidence", "access-blocked-owner-and-external-resolution", "production-admission-and-release-gate"],
+        "status": "complete-for-existing-evidence-boundaries",
+        "ownerIndependent": true,
+        "safeNow": true,
+        "paths": [
+          "scripts/check-phase1-source-ledger-decision-readiness.mjs",
+          "scripts/check-phase1-alberta-transform-ingestion-audit.mjs",
+          "scripts/check-phase1-nrcan-cover-processing-gate.mjs",
+          "scripts/check-current-wildfire-owner-admission.mjs",
+          "scripts/check-phase1-partial-source-route-exhaustion.mjs",
+          "scripts/check-phase1-access-blocker-resolution.mjs",
+          "scripts/check-phase1-production-source-ledger.mjs"
+        ],
+        "scoreImpact": {"rawCreditDelta": 0, "formalPercentagePointDelta": 0},
+        "blocker": "Validators prove present evidence and reject invented completion; they cannot create owner decisions, rights, publisher artifacts, or production proofs."
+      },
+      {
+        "id": "local-transformations-and-derived-outputs",
+        "actionIds": ["plvi-owner-scope-decision", "archived-remote-transform-ingest-release", "wildfire-transform-ingest-release", "partial-historical-owner-review-and-external-evidence"],
+        "status": "existing-runs-validated-no-ingestion",
+        "ownerIndependent": true,
+        "safeNow": true,
+        "paths": [
+          "scripts/repair-alberta-geometry.py",
+          "scripts/transform-quebec-wildfire.py",
+          "data/transformation-runs/alberta-avi-geometry-repair-v1-2026-08-12.json",
+          "data/transformation-runs/alberta-plvi-geometry-repair-v1-2026-08-14.json",
+          "data/transformation-runs/qc-historic-wildfire-v1-2026-08-12.json",
+          "data/alberta-plvi-full-release-readiness.json",
+          "data/phase1-alberta-transform-ingestion-audit.json"
+        ],
+        "scoreImpact": {"rawCreditDelta": 0, "formalPercentagePointDelta": 0},
+        "blocker": "Existing local outputs and repair/quarantine evidence remain non-ingested. NTEMS has no approved named target specification; AVI requires downstream owner scope; PLVI requires its exact scope decision; historical wildfire lacks the NBAC component and permission."
+      },
+      {
+        "id": "owner-and-external-boundaries",
+        "actionIds": ["national-archived-owner-source-ledger-decisions", "plvi-owner-scope-decision", "partial-historical-owner-review-and-external-evidence", "partial-boundaries-owner-review-and-external-evidence", "access-blocked-owner-and-external-resolution"],
+        "status": "no-local-substitute-permitted",
+        "ownerIndependent": false,
+        "safeNow": false,
+        "paths": [
+          "data/phase1-owner-decision-queue.json",
+          "data/phase1-alberta-transform-ingestion-audit.json",
+          "data/partial-ledger-owner-review-outreach-package.json",
+          "data/phase1-access-blocker-resolution.json",
+          "data/phase1-outreach-reply-audit.json"
+        ],
+        "scoreImpact": {"rawCreditDelta": 0, "formalPercentagePointDelta": 0},
+        "blocker": "Owner identity, scope decisions, publisher/rightsholder replies, permissions, stable artifacts, and terms cannot be inferred or implemented locally."
+      },
+      {
+        "id": "production-admission-boundary",
+        "actionIds": ["archived-remote-transform-ingest-release", "wildfire-transform-ingest-release", "production-admission-and-release-gate"],
+        "status": "fail-closed",
+        "ownerIndependent": true,
+        "safeNow": true,
+        "paths": [
+          "scripts/check-phase1-production-source-ledger.mjs",
+          "scripts/check-local-staging-admission.mjs",
+          "scripts/check-phase1-current-state-completion-audit.mjs",
+          "data/phase1-current-state-completion-audit.json"
+        ],
+        "scoreImpact": {"rawCreditDelta": 0, "formalPercentagePointDelta": 0},
+        "blocker": "No local preparation, profile, transformation run, archive evidence, reply, or preflight can set productionAdmission or productionEligible true."
+      }
+    ],
+    "gaps": [
+      {
+        "id": "ntems-target-transformation-and-ingestion",
+        "rows": ["ntems-annual-land-cover", "ntems-canopy-cover"],
+        "actionIds": ["archived-remote-transform-ingest-release", "production-admission-and-release-gate"],
+        "category": "transformation",
+        "status": "blocked-no-approved-named-specification",
+        "localBoundary": "Raw/profile gates and fail-closed processing gate are complete; no target output is created.",
+        "missing": ["approved annual forest-mask method/crosswalk and full-resolution output", "approved canopy semantics/derivative specification and checksum-bound output", "validated ingestion batch and release proof"],
+        "safeLocalImplementation": false,
+        "ownerOrExternalPrerequisite": true,
+        "scoreImpact": {"rawCreditDelta": 0, "formalPercentagePointDelta": 0}
+      },
+      {
+        "id": "avi-downstream-scope",
+        "rows": ["ab-avi-crown", "ab-avi-post-harvest"],
+        "actionIds": ["archived-remote-transform-ingest-release", "production-admission-and-release-gate"],
+        "category": "transformation-and-ingestion",
+        "status": "blocked-owner-downstream-scope",
+        "localBoundary": "Repair/quarantine run is validated locally; no derived AVI payload is authorized or written.",
+        "missing": ["named downstream transformation scope", "derived payload and ingestion validation", "release and production admission"],
+        "safeLocalImplementation": false,
+        "ownerOrExternalPrerequisite": true,
+        "scoreImpact": {"rawCreditDelta": 0, "formalPercentagePointDelta": 0}
+      },
+      {
+        "id": "plvi-scope-and-ingestion",
+        "rows": ["ab-primary-land-vegetation"],
+        "actionIds": ["plvi-owner-scope-decision", "production-admission-and-release-gate"],
+        "category": "owner-scope",
+        "status": "blocked-owner-scope-decision",
+        "localBoundary": "The 179087-feature closed-join output, 12 repairs, checksum, geometry, duplicate preservation, and no-loss checks are already validated locally.",
+        "missing": ["named owner decision for raw and derived scope", "ingestion validation under that decision", "release and production admission"],
+        "safeLocalImplementation": false,
+        "ownerOrExternalPrerequisite": true,
+        "scoreImpact": {"rawCreditDelta": 0, "formalPercentagePointDelta": 0}
+      },
+      {
+        "id": "wildfire-derived-live-readbacks",
+        "rows": ["cwfis-current", "bc-wildfire", "ab-wildfire", "on-fire-disturbance"],
+        "actionIds": ["current-wildfire-derived-archive-preflight-and-owner-promotion", "wildfire-transform-ingest-release"],
+        "category": "recovery-readback",
+        "status": "local-path-complete-live-proof-missing",
+        "localBoundary": "The exact derived readback checker and no-write preflight are implemented and bound to the owner queue; no version, checksum, retention, or recovery evidence is invented.",
+        "missing": ["owner-approved MFA execution", "four exact derived heads and versions", "two payload COMPLIANCE-retention readbacks", "integrated six-object gate"],
+        "safeLocalImplementation": true,
+        "ownerOrExternalPrerequisite": true,
+        "scoreImpact": {"rawCreditDelta": 0, "formalPercentagePointDelta": 0}
+      },
+      {
+        "id": "local-archive-groups-live-evidence",
+        "rows": ["fed-2023-ridings", "elections-canada-45th-files", "qc-current-ecoforest", "qc-original-current-inventory", "qc-fourth-inventory"],
+        "actionIds": ["national-local-archive-preflight-and-owner-promotion", "quebec-current-original-archive-preflight-and-owner-promotion", "quebec-fourth-archive-preflight-and-owner-approvals"],
+        "category": "archive-and-recovery",
+        "status": "local-preflight-complete-live-proof-missing",
+        "localBoundary": "Exact local bytes/SHA, deterministic sidecars, 62-key planning, and no-write preflights are complete.",
+        "missing": ["fresh owner artifact/retention/MFA approvals", "remote payload and sidecar versions/checksums", "COMPLIANCE retention and recovery readbacks"],
+        "safeLocalImplementation": true,
+        "ownerOrExternalPrerequisite": true,
+        "scoreImpact": {"rawCreditDelta": 0, "formalPercentagePointDelta": 0.0}
+      },
+      {
+        "id": "partial-and-access-artifact-resolution",
+        "rows": ["cwfis-historical", "provincial-electoral-boundaries", "sopfeu", "bc-fta-cutblocks", "bc-harvesting-authorities", "bc-vri", "bc-consolidated-cutblocks", "bc-old-growth-bec", "bc-forest-operations-map", "on-fri", "on-fri-term-2", "indian-reserves", "first-nation-reserves", "historic-treaties", "modern-treaties"],
+        "actionIds": ["partial-historical-owner-review-and-external-evidence", "partial-boundaries-owner-review-and-external-evidence", "access-blocked-owner-and-external-resolution"],
+        "category": "rights-and-external-evidence",
+        "status": "blocked-external-resolution",
+        "localBoundary": "Route exhaustion, unsent drafts, replies, and access matrices are validated without acquiring a substitute artifact or asserting permission.",
+        "missing": ["publisher/rightsholder response", "lawful exact artifact and rights", "checksum/profile/archive/recovery evidence"],
+        "safeLocalImplementation": false,
+        "ownerOrExternalPrerequisite": true,
+        "scoreImpact": {"rawCreditDelta": 0, "formalPercentagePointDelta": 13.0}
+      }
+    ],
+    "coverage": {
+      "remainingActionCount": 13,
+      "ownerIndependentGapsRemaining": 0,
+      "localGatesIncomplete": 0,
+      "deferredOwnerOrExternalGaps": 6,
+      "scoreDelta": {"rawCreditDelta": 0, "formalPercentagePointDelta": 0},
+      "allProductionAdmissionFalse": true,
+      "allProductionEligibleFalse": true
+    }
   },
   "scoreFormula": "formal percentage-point delta = 30 * raw-credit delta / 31; this audit reports potential deltas only and does not change the 39.7580645 baseline.",
   "physicalArtifactGroups": [
@@ -326,6 +500,8 @@
       ],
       "runnerOrPreflight": {
         "safeNow": "zsh scripts/run-current-wildfire-approved-promotion.sh --preflight",
+        "derivedReadbackPreflight": "zsh scripts/run-wildfire-derived-readback.sh --preflight <mode-600-owner-approval-file>",
+        "derivedReadbackChecker": "scripts/check-wildfire-derived-readback.mjs",
         "ownerExecution": "BLOCKED: --run requires fresh exact-scope approval, interactive MFA, and exact raw/derived immutable readbacks."
       },
       "prerequisites": ["Keep the verified four raw objects unchanged.", "Prepare and owner-approve the BC and Ontario checksum-bound derived objects.", "Owner performs the six-object promotion with MFA and approved retention.", "Integrate exact version, bytes, checksum, COMPLIANCE retention, recovery, and Canadian-region readbacks."],

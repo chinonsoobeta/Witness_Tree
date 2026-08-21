@@ -1,6 +1,6 @@
 # Phase 1 remaining-action audit
 
-This is the fresh, machine-checked remaining-action audit derived from the authoritative Phase 1 convergence records at `ffe949e` on 2026-08-21. The machine record is [`data/phase1-remaining-actions-audit.json`](../data/phase1-remaining-actions-audit.json), and its checker is [`scripts/check-phase1-remaining-actions-audit.mjs`](../scripts/check-phase1-remaining-actions-audit.mjs). The exact local processing boundary for the two remotely archived NRCan cover rows is recorded separately in [`PHASE1_NRCAN_COVER_PROCESSING_GATE.md`](PHASE1_NRCAN_COVER_PROCESSING_GATE.md); it adds no score or downstream admission.
+This is the fresh, machine-checked remaining-action audit derived from the authoritative Phase 1 convergence records at `71925af` on 2026-08-21. The machine record is [`data/phase1-remaining-actions-audit.json`](../data/phase1-remaining-actions-audit.json), and its checker is [`scripts/check-phase1-remaining-actions-audit.mjs`](../scripts/check-phase1-remaining-actions-audit.mjs). The exact local processing boundary for the two remotely archived NRCan cover rows is recorded separately in [`PHASE1_NRCAN_COVER_PROCESSING_GATE.md`](PHASE1_NRCAN_COVER_PROCESSING_GATE.md); it adds no score or downstream admission.
 
 The audit selects every production row where immutable remote proof is absent **or** production admission is absent. That is all 31 rows: 20 lack immutable remote proof, and all 31 remain non-admitted and non-eligible. The current evidence-tracking baseline is **15.25/31 raw credits and 39.7580645%**. This percentage is not a readiness or production percentage. The audit does not add credit for a prepared payload, dry run, owner-local resume state, reply, permission request, owner decision, or archive plan.
 
@@ -9,6 +9,17 @@ Run the check with:
 ```sh
 npm run check:phase1-remaining-actions-audit
 ```
+
+## Local implementation audit
+
+The machine record now classifies all 13 remaining actions by requirement: archive and recovery preflights, profiles and validators, existing local transformations and derived outputs, owner/external boundaries, and the production-admission boundary. The local paths are complete for the evidence that exists. They remain deliberately non-admitting:
+
+- The federal, Québec, fourth-inventory, current-wildfire, and derived-wildfire paths expose no-write preflights. The derived-wildfire readback path requires a mode-600 owner approval file and records no live version, checksum, retention, or recovery result until the owner performs the exact conditional operation.
+- Alberta AVI repair/quarantine, Alberta PLVI closed-join validation, and Québec historical-wildfire lossless-copy evidence are locally checked outputs. They do not authorize downstream ingestion or release.
+- NTEMS annual and canopy-cover processing remains blocked because no approved named target transformation specification and checksum-bound output exists. The fail-closed processing gate records this boundary explicitly.
+- Partial and access-blocked rows have route-exhaustion, outreach, and rights validators, but no local implementation can manufacture a publisher artifact, permission, owner decision, or external reply.
+
+The local audit reports zero immediate raw-credit or formal-score delta. The remaining six gap groups require owner input or external evidence; production admission and eligibility remain false for all 31 rows.
 
 ## Exact next five owner/delegate actions
 

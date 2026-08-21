@@ -4,7 +4,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const SCHEMA = "witness-tree/phase1-owner-decision-queue/1";
-const HEAD = "88695058dddbc2a50997de6e18fe01838c146e03";
+const HEAD = "71925af03fc08b052d12077de2ba4acb9239006b";
 const INCLUDED = [
   "ntems-annual-land-cover",
   "ntems-forest-harvest",
@@ -119,6 +119,16 @@ function validateQueueRows(queue, context) {
       requiredObjects: 6,
       verifiedObjects: 4,
       missingDerivedReadbacks: ["bc-wildfire", "on-fire-disturbance"],
+      productionEligible: false,
+    });
+    assert.deepEqual(row.localReadbackPreflight, {
+      status: "available-no-write-owner-approval-file-required",
+      checker: "scripts/check-wildfire-derived-readback.mjs",
+      runner: "scripts/run-wildfire-derived-readback.sh",
+      safeCommand: "zsh scripts/run-wildfire-derived-readback.sh --preflight <mode-600-owner-approval-file>",
+      remoteCalls: 0,
+      totpPrompted: false,
+      writePerformed: false,
       productionEligible: false,
     });
   }

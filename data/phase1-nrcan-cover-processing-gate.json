@@ -2,7 +2,7 @@
   "schemaVersion": "witness-tree/phase1-nrcan-cover-processing-gate/1",
   "status": "blocked-read-only",
   "auditedAt": "2026-08-21T15:45:00Z",
-  "derivedFromHead": "ffe949e9a426b3276339cb3fb4e975455f0d2f13",
+  "derivedFromHead": "71925af03fc08b052d12077de2ba4acb9239006b",
   "notice": "This gate reconciles the locally supported NTEMS annual land-cover and canopy-cover evidence. It records passed raw/profile validation and the absence of an approved target transformation, ingestion batch, release approval, or production admission. It performs no AWS call, archive mutation, external contact, transformation, ingestion, release, or production-eligibility change.",
   "baseline": {
     "productionRows": 31,

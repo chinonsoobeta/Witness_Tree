@@ -43,6 +43,14 @@ test("rejects fabricated approvals, production claims, or omission of a required
 test("keeps the dependency order and current-wildfire archive condition fail-closed", () => {
   const queue = read("data/phase1-owner-decision-queue.json");
 
+  for (const id of ["cwfis-current", "bc-wildfire", "ab-wildfire", "on-fire-disturbance"]) {
+    const preflight = queue.queueRows.find((row) => row.id === id).localReadbackPreflight;
+    assert.equal(preflight.status, "available-no-write-owner-approval-file-required");
+    assert.equal(preflight.remoteCalls, 0);
+    assert.equal(preflight.totpPrompted, false);
+    assert.equal(preflight.writePerformed, false);
+  }
+
   const orderDrift = structuredClone(queue);
   orderDrift.decisionOrder[6].dependsOn = ["queue-production-admission"];
   assert.throws(() => validatePhase1OwnerDecisionQueue(orderDrift, context), /later or missing/);

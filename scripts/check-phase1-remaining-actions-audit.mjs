@@ -24,6 +24,23 @@ const EXPECTED_GROUPS = new Map([
   ["quebec-fourth-inventory-56-sheet-product", { rows: ["qc-fourth-inventory"], physicalArtifactCount: 62 }]
 ]);
 
+const LOCAL_AUDIT_HEAD = "71925af03fc08b052d12077de2ba4acb9239006b";
+const LOCAL_AUDIT_CATEGORIES = new Map([
+  ["archive-preflight-and-readback", ["national-local-archive-preflight-and-owner-promotion", "quebec-current-original-archive-preflight-and-owner-promotion", "quebec-fourth-archive-preflight-and-owner-approvals", "current-wildfire-derived-archive-preflight-and-owner-promotion", "normal-archive-control-exercise"]],
+  ["profiles-and-validators", ["national-archived-owner-source-ledger-decisions", "plvi-owner-scope-decision", "archived-remote-transform-ingest-release", "wildfire-transform-ingest-release", "partial-historical-owner-review-and-external-evidence", "partial-boundaries-owner-review-and-external-evidence", "access-blocked-owner-and-external-resolution", "production-admission-and-release-gate"]],
+  ["local-transformations-and-derived-outputs", ["plvi-owner-scope-decision", "archived-remote-transform-ingest-release", "wildfire-transform-ingest-release", "partial-historical-owner-review-and-external-evidence"]],
+  ["owner-and-external-boundaries", ["national-archived-owner-source-ledger-decisions", "plvi-owner-scope-decision", "partial-historical-owner-review-and-external-evidence", "partial-boundaries-owner-review-and-external-evidence", "access-blocked-owner-and-external-resolution"]],
+  ["production-admission-boundary", ["archived-remote-transform-ingest-release", "wildfire-transform-ingest-release", "production-admission-and-release-gate"]]
+]);
+const LOCAL_AUDIT_GAPS = new Set([
+  "ntems-target-transformation-and-ingestion",
+  "avi-downstream-scope",
+  "plvi-scope-and-ingestion",
+  "wildfire-derived-live-readbacks",
+  "local-archive-groups-live-evidence",
+  "partial-and-access-artifact-resolution"
+]);
+
 function assertExistingReferences(audit) {
   for (const action of audit.actions) {
     for (const reference of action.evidenceRefs) assert.ok(fileExists(reference), `${action.id} references missing ${reference}`);
@@ -102,13 +119,57 @@ function validatePhysicalArtifactGroups(audit, immutable) {
   assert.equal(fourth.localPreflight.multipartPayloads, 6);
 }
 
+function validateLocalImplementationAudit(local, actions, ledger) {
+  assert.equal(local.status, "local-gates-complete-owner-or-external-blockers-remain");
+  assert.equal(local.derivedFromHead, LOCAL_AUDIT_HEAD);
+  assert.match(local.notice, /without granting.*production admission.*Phase 2/i);
+  const actionById = new Map(actions.map((action) => [action.id, action]));
+  assert.equal(local.requirementCategories.length, LOCAL_AUDIT_CATEGORIES.size);
+  const coveredActions = new Set();
+  for (const category of local.requirementCategories) {
+    const expected = LOCAL_AUDIT_CATEGORIES.get(category.id);
+    assert.ok(expected, `Unknown local implementation category ${category.id}.`);
+    assert.deepEqual(category.actionIds, expected, `${category.id} action coverage drifted.`);
+    assert.equal(category.ownerIndependent, category.id !== "owner-and-external-boundaries");
+    assert.equal(category.scoreImpact.rawCreditDelta, 0);
+    assert.equal(category.scoreImpact.formalPercentagePointDelta, 0);
+    for (const actionId of category.actionIds) {
+      assert.ok(actionById.has(actionId), `${category.id} references an unknown action ${actionId}.`);
+      coveredActions.add(actionId);
+    }
+    for (const path of category.paths) assert.ok(fileExists(path), `${category.id} references missing local path ${path}.`);
+  }
+  assert.deepEqual([...coveredActions].sort(), actions.map(({ id }) => id).sort(), "Local implementation categories must cover every remaining action.");
+  assert.deepEqual(new Set(local.gaps.map(({ id }) => id)), LOCAL_AUDIT_GAPS);
+  for (const gap of local.gaps) {
+    assert.ok(gap.rows.length > 0, `${gap.id} must identify affected rows.`);
+    assert.ok(gap.actionIds.length > 0, `${gap.id} must identify remaining actions.`);
+    for (const actionId of gap.actionIds) {
+      const action = actionById.get(actionId);
+      assert.ok(action, `${gap.id} references an unknown action ${actionId}.`);
+    }
+    for (const row of gap.rows) assert.equal(gap.actionIds.some((actionId) => actionById.get(actionId).rows.includes(row)), true, `${gap.id} maps ${row} outside its remaining actions.`);
+    assert.equal(gap.scoreImpact.rawCreditDelta, 0, `${gap.id} must claim no immediate credit.`);
+    assert.equal(gap.safeLocalImplementation, gap.id === "wildfire-derived-live-readbacks" || gap.id === "local-archive-groups-live-evidence", `${gap.id} safeLocalImplementation drifted.`);
+    assert.equal(gap.ownerOrExternalPrerequisite, true);
+  }
+  assert.equal(local.coverage.remainingActionCount, actions.length);
+  assert.equal(local.coverage.ownerIndependentGapsRemaining, 0);
+  assert.equal(local.coverage.localGatesIncomplete, 0);
+  assert.equal(local.coverage.deferredOwnerOrExternalGaps, local.gaps.length);
+  assert.deepEqual(local.coverage.scoreDelta, { rawCreditDelta: 0, formalPercentagePointDelta: 0 });
+  assert.equal(local.coverage.allProductionAdmissionFalse, true);
+  assert.equal(local.coverage.allProductionEligibleFalse, true);
+  assert.equal(ledger.entries.every((entry) => entry.proof.productionAdmission === false && entry.productionEligible === false), true);
+}
+
 export function validatePhase1RemainingActionsAudit(audit, ledger, currentState, readiness, immutable, wildfire, replyAudit, partialOutreach, accessBlocker) {
   assert.equal(audit.schemaVersion, "witness-tree/phase1-remaining-actions-audit/1");
   assert.equal(audit.status, "blocked-read-only");
   assert.match(audit.notice, /no AWS call.*email.*form submission.*production-eligibility change/i);
   assert.match(audit.selectionRule, /immutable remote proof is absent OR production admission is absent/i);
   assert.match(audit.scoreFormula, /30 \* raw-credit delta \/ 31/);
-  assert.equal(audit.derivedFromHead, "ffe949e9a426b3276339cb3fb4e975455f0d2f13");
+  assert.equal(audit.derivedFromHead, "71925af03fc08b052d12077de2ba4acb9239006b");
   assert.deepEqual(audit.claims, CLAIMS);
 
   const entries = ledger.entries;
@@ -169,6 +230,12 @@ export function validatePhase1RemainingActionsAudit(audit, ledger, currentState,
       assert.match(action.executionBoundary, /preflight|dry-run|no-write/i);
     }
   }
+
+  validateLocalImplementationAudit(audit.localImplementationAudit, audit.actions, ledger);
+
+  const wildfireReadbackAction = actionsById.get("current-wildfire-derived-archive-preflight-and-owner-promotion");
+  assert.equal(wildfireReadbackAction.runnerOrPreflight.derivedReadbackChecker, "scripts/check-wildfire-derived-readback.mjs");
+  assert.match(wildfireReadbackAction.runnerOrPreflight.derivedReadbackPreflight, /run-wildfire-derived-readback\.sh --preflight <mode-600-owner-approval-file>/);
 
   assert.equal(audit.nextFive.length, 5);
   assert.deepEqual(audit.nextFive, audit.actions.slice(0, 5).map(({ id }) => id));

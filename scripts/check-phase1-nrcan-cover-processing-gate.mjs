@@ -47,7 +47,7 @@ export function validatePhase1NrcanCoverProcessingGate(audit, ledger = read("dat
   assert.equal(audit.schemaVersion, "witness-tree/phase1-nrcan-cover-processing-gate/1");
   assert.equal(audit.status, "blocked-read-only");
   assert.match(audit.notice, /no AWS call.*archive mutation.*transformation.*production-eligibility change/i);
-  assert.equal(audit.derivedFromHead, "ffe949e9a426b3276339cb3fb4e975455f0d2f13");
+  assert.equal(audit.derivedFromHead, "71925af03fc08b052d12077de2ba4acb9239006b");
   assert.deepEqual(audit.baseline, { ...BASELINE, scoreDelta: { rawCredit: 0, formalPercentagePoints: 0 } });
   assert.deepEqual(audit.claims, {
     rawArchiveMutation: false,

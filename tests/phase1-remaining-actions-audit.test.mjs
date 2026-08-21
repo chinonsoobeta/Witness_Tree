@@ -67,3 +67,18 @@ test("shared artifacts, action bindings, and owner boundaries reject divergence"
   missingRow.rowCoverage.pop();
   assert.throws(() => validatePhase1RemainingActionsAudit(missingRow, ...args.slice(1)));
 });
+
+test("local implementation audit covers every action and stays fail-closed", () => {
+  const audit = validatePhase1RemainingActionsAudit(...args);
+  assert.equal(audit.localImplementationAudit.coverage.remainingActionCount, 13);
+  assert.equal(audit.localImplementationAudit.coverage.ownerIndependentGapsRemaining, 0);
+  assert.equal(audit.localImplementationAudit.coverage.scoreDelta.rawCreditDelta, 0);
+
+  const omitted = structuredClone(args[0]);
+  omitted.localImplementationAudit.requirementCategories[0].actionIds.pop();
+  assert.throws(() => validatePhase1RemainingActionsAudit(omitted, ...args.slice(1)), /action coverage drifted|cover every remaining action/);
+
+  const invented = structuredClone(args[0]);
+  invented.localImplementationAudit.gaps[0].safeLocalImplementation = true;
+  assert.throws(() => validatePhase1RemainingActionsAudit(invented, ...args.slice(1)), /safeLocalImplementation/);
+});

@@ -8,7 +8,7 @@ import { validateAlbertaPlviGeometryRepair } from "./check-alberta-plvi-geometry
 import { validateAlbertaPlviImmutablePromotionEvidence } from "./check-alberta-plvi-immutable-promotion-evidence.mjs";
 
 const AUDIT_SCHEMA = "witness-tree/phase1-alberta-transform-ingestion-audit/1";
-const HEAD = "ffe949e9a426b3276339cb3fb4e975455f0d2f13";
+const HEAD = "71925af03fc08b052d12077de2ba4acb9239006b";
 const AVI_RAW_SHA256 = "e93572129f25c83911b73eadfacff12624ff6b08f2db4b311c1662196b665093";
 const PLVI_RAW_SHA256 = "017a0a835c680ca1b6c1eb790322a28e1b4c0c64e36924da46d8bb99cb1571d3";
 const PLVI_DERIVED_SHA256 = "5633e7d49982ee1232b415f362654744c1f1dab11d7c3c7ef8a7928dac20825b";
