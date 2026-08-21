@@ -1,8 +1,14 @@
 import assert from "node:assert/strict";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import test from "node:test";
 
 const read = (file) => JSON.parse(readFileSync(new URL(`../${file}`, import.meta.url), "utf8"));
+
+const canonicalSummaryFiles = ["data", "docs"].flatMap((root) =>
+  readdirSync(new URL(`../${root}`, import.meta.url), { recursive: true })
+    .map((file) => `${root}/${file}`)
+    .filter((file) => /\.(json|md)$/.test(file)),
+);
 
 test("integrated Phase 1 evidence remains additive and fail-closed across convergence records", () => {
   const state = read("data/phase1-current-state-completion-audit.json");
@@ -96,4 +102,24 @@ test("canonical wildfire summaries reject superseded readback and score claims",
   assert.match(combined, /38\.7903226% formal evidence tracking/i);
   assert.match(combined, /7 immutable rows/i);
   assert.match(combined, /0\/6 machine-verifiable and 6\/6 attested-only/i);
+});
+
+test("all canonical summaries label superseded Phase 1 totals as historical", () => {
+  const stale = /14\.75\/31|15\.00\/31|39\.516129%|(?:11\/31.{0,50}immutable|immutable.{0,50}11\/31)|10 immutable rows|owner gate is 4\/6/i;
+  for (const file of canonicalSummaryFiles) {
+    const lines = readFileSync(new URL(`../${file}`, import.meta.url), "utf8").split("\n");
+    for (let index = 0; index < lines.length; index += 1) {
+      if (!stale.test(lines[index])) continue;
+      const context = lines.slice(Math.max(0, index - 2), index + 3).join(" ");
+      assert.match(context, /\b(historical|older|prior|preceding|at the time)\b/i, `${file}:${index + 1} must label superseded totals as historical`);
+    }
+  }
+});
+
+test("remaining implementation gaps cover the exact production ledger", () => {
+  const ledger = read("data/phase1-production-source-ledger.json");
+  const audit = read("data/phase1-remaining-actions-audit.json");
+  const gapRows = [...new Set(audit.localImplementationAudit.gaps.flatMap(({ rows }) => rows))].sort();
+  assert.equal(gapRows.length, 31);
+  assert.deepEqual(gapRows, ledger.entries.map(({ id }) => id).sort());
 });

@@ -154,6 +154,9 @@ function validateLocalImplementationAudit(local, actions, ledger) {
     assert.equal(gap.safeLocalImplementation, gap.id === "local-archive-groups-live-evidence", `${gap.id} safeLocalImplementation drifted.`);
     assert.equal(gap.ownerOrExternalPrerequisite, true);
   }
+  const gapRows = [...new Set(local.gaps.flatMap(({ rows }) => rows))].sort();
+  const ledgerRows = ledger.entries.map(({ id }) => id).sort();
+  assert.deepEqual(gapRows, ledgerRows, "Local implementation gap rows must cover the exact 31-row production ledger.");
   assert.equal(local.coverage.remainingActionCount, actions.length);
   assert.equal(local.coverage.ownerIndependentGapsRemaining, 0);
   assert.equal(local.coverage.localGatesIncomplete, 0);

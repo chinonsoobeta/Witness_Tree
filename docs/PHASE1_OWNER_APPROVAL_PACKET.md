@@ -12,6 +12,22 @@ An owner may copy a block below as an input template, but no placeholder is an a
 
 Current baseline remains **14.25/31 raw evidence credits**, **38.7903226% formal evidence tracking**, **7 immutable rows**, and **0/31 production-admitted or production-eligible**. Partial and access-blocked rows remain explicit exclusions: `cwfis-historical`, `provincial-electoral-boundaries`, and the 13 access-blocked rows in the machine record. They are not silently moved into this owner packet.
 
+## Simplest owner action order
+
+This order prioritizes the fewest unresolved dependencies, then the bounded percentage gain already recorded in the remaining-actions audit. It is not a probability forecast: external response rates are unknown, so no expected gain is invented. Every action remains unexecuted.
+
+| Rank | Exact owner decision or action | Dependency | Maximum bounded Phase 1 gain |
+| ---: | --- | --- | ---: |
+| 1 | Approve only the exact shared federal ZIP archive, `ca-central-1`, COMPLIANCE retention, MFA execution and version-specific payload/sidecar readbacks. Do not revisit harvest or canopy-height. | One prepared physical artifact shared by two rows; no external reply. | `+0.50` raw, `+0.483871` formal points, `+2/31` immutable coverage |
+| 2 | Approve the two exact Québec current/original payloads, four keys, sequential multipart path, COMPLIANCE retention and exact recovery readbacks. | Two prepared physical artifacts; no external reply. | `+0.50` raw, `+0.483871` formal points, `+2/31` immutable coverage |
+| 3 | Approve the Québec fourth-inventory 62-key artifact set, least-privilege IAM, MFA session, irreversible retention and exact readbacks. | 61 prepared files plus one deterministic manifest; six multipart payloads. | `+0.25` raw, `+0.2419355` formal points, `+1/31` immutable coverage |
+| 4 | Approve a durable signed or digest-bound wildfire attestation trust contract, then independently execute and preserve concrete version/checksum/readbacks for all six exact objects. | The six-object gate must become `6/6` machine-verifiable; placeholder attestations cannot activate it. | `+1.00` raw, `+0.9677419` formal points, `+4/31` immutable coverage |
+| 5 | Approve the prepared NBAC agreement/consent request and the Alberta/Québec boundary permission requests, then retain complete publisher replies and exact artifacts. | External agreement, consent, permission and artifact delivery; no send is authorized by this packet. | Each partial row: at most `+0.75` raw and `+0.7258065` formal points |
+| 6 | Approve the relevant prepared publisher/rightsholder engagement for the 13 access-blocked rows, then require lawful exact artifacts, rights, checksum, profile and archive proof. | External responses and lawful artifacts; no local substitute or inferred permission. | Combined ceiling: `+13.00` raw and `+12.5806452` formal points |
+| 7 | After each row's prerequisites pass, separately decide its named transformation, ingestion, release and production admission. This includes harvest and canopy-height despite their recorded source decisions. | Complete immutable/evidence chain and row-specific downstream output proof. | Immediate current gain `0`; each later admitted row would change admission coverage by `1/31` (`3.2258065` percentage points) |
+
+The normal archive-control exercise—legal hold, retention, delete denial and recovery—must also be owner-run and evidenced. It is a global exit dependency, not row credit and not authorization for any archive or production action.
+
 Exact artifact names, local paths, byte lengths, SHA-256 values, payload and manifest keys, bucket and region, retention dates, proposed role scopes, transformation policies, quarantines, and exclusion decisions are bound in the packet's `exactBindings` and checked against their authoritative records. Shared physical artifacts are listed once and mapped to every applicable row.
 
 Run the checker with:
