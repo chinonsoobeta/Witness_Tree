@@ -13,7 +13,7 @@ export const REQUIRED_ROUTE_PAIRS = [
   { en: '/en/explore', fr: '/fr/explorer' },
   { en: '/en/search', fr: '/fr/recherche' },
   { en: '/en/places/[placeId]', fr: '/fr/lieux/[placeId]' },
-  { en: '/en/location/[locationId]', fr: '/fr/emplacement/[locationId]' },
+  { en: '/en/location/[coordinates]', fr: '/fr/emplacement/[coordinates]' },
   { en: '/en/glossary', fr: '/fr/glossaire' },
   { en: '/en/corrections', fr: '/fr/corrections' },
   { en: '/en/decisions', fr: '/fr/decisions' },

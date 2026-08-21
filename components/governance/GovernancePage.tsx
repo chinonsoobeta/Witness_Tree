@@ -1,6 +1,6 @@
 import { PRODUCT_NAME, type Locale } from "@/lib/domain";
 
-export type GovernancePageKind = "glossary" | "corrections" | "decisions" | "engagement" | "privacy" | "terms" | "releases";
+export type GovernancePageKind = "decisions" | "engagement" | "privacy" | "terms" | "releases";
 
 type Section = Readonly<{ heading: string; paragraphs: readonly string[] }>;
 type PageCopy = Readonly<{ title: string; status: string; sections: readonly Section[] }>;
@@ -9,32 +9,6 @@ const enBrand = PRODUCT_NAME.en;
 const frBrand = PRODUCT_NAME.fr;
 
 const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
-  glossary: {
-    en: { title: "Glossary", status: "Draft terminology; professional forestry terminology review is pending.", sections: [
-      { heading: "Forest", paragraphs: ["Land of at least 1 hectare, with at least 10% crown closure, carrying trees capable of reaching 5 metres at maturity. Percentages use forested hectares inside the stated boundary edition, not total land area."] },
-      { heading: "Evidence", paragraphs: ["Official record: an authoritative public record. Satellite observation: change visible in imagery without, by itself, establishing cause. Derived estimate: a documented calculation. Unknown: no authoritative public record has been integrated for the question."] },
-      { heading: "Coverage", paragraphs: ["National baseline, extended record with sparse official matching, or national baseline plus local context. Coverage is a property of mapped area and time, not a province-wide promise."] },
-      { heading: "Detected change", paragraphs: ["A satellite-observed change in tree cover. It is not, by itself, a claim of logging, deforestation, illegality or responsibility."] },
-    ] },
-    fr: { title: "Glossaire", status: "Terminologie provisoire; la révision professionnelle de la terminologie forestière reste à faire.", sections: [
-      { heading: "Forêt", paragraphs: ["Terre d’au moins 1 hectare, présentant un couvert de cimes d’au moins 10 %, avec des arbres capables d’atteindre 5 mètres à maturité. Les pourcentages utilisent les hectares forestiers dans l’édition de limite indiquée, et non la superficie terrestre totale."] },
-      { heading: "Preuves", paragraphs: ["Registre officiel : registre public faisant autorité. Observation satellitaire : changement visible dans les images qui, à lui seul, n’en établit pas la cause. Estimation dérivée : calcul documenté. Inconnu : aucun registre public faisant autorité n’a été intégré pour la question."] },
-      { heading: "Couverture", paragraphs: ["Référence nationale, registre étendu avec appariement officiel limité, ou référence nationale avec contexte local. La couverture est une propriété de la zone cartographiée et de la période, et non une promesse à l’échelle provinciale."] },
-      { heading: "Changement détecté", paragraphs: ["Changement du couvert arboré observé par satellite. À lui seul, il ne constitue pas une affirmation d’exploitation, de déforestation, d’illégalité ou de responsabilité."] },
-    ] },
-  },
-  corrections: {
-    en: { title: "Corrections", status: "No production correction has been filed because no production data has been published.", sections: [
-      { heading: "Service levels", paragraphs: ["Critical: acknowledge within 1 business day and resolve within 5. Indigenous geography content: 1 and 10. Material: 3 and 15. Minor: 5 and 30."] },
-      { heading: "Public record", paragraphs: ["Every correction will state what was wrong, what it is now and why it changed, in English and French on the same day. Previous figures will remain addressable, and people previously notified will receive a correction alert."] },
-      { heading: "Contact status", paragraphs: ["A named accountable recipient and tested intake channel have not yet been appointed. The route will not claim to accept cases until that external governance gate is complete."] },
-    ] },
-    fr: { title: "Corrections", status: "Aucune correction de production n’a été déposée, car aucune donnée de production n’a été publiée.", sections: [
-      { heading: "Délais de service", paragraphs: ["Critique : accusé de réception dans un jour ouvrable et résolution dans cinq. Contenu de géographie autochtone : un et dix. Important : trois et quinze. Mineur : cinq et trente."] },
-      { heading: "Registre public", paragraphs: ["Chaque correction indiquera ce qui était erroné, la nouvelle information et la raison du changement, en français et en anglais le même jour. Les anciennes valeurs resteront accessibles et les personnes déjà avisées recevront une alerte de correction."] },
-      { heading: "État du contact", paragraphs: ["Un destinataire responsable désigné et un canal de réception testé n’ont pas encore été établis. Cette route ne prétendra pas accepter des dossiers avant la réalisation de cette condition de gouvernance externe."] },
-    ] },
-  },
   decisions: {
     en: { title: "Decision log", status: "Decisions transcribed from implementation plan version 2, dated 11 August 2026.", sections: [
       { heading: "Product", paragraphs: [`Working name: ${enBrand}. Record starts in 1984; the default view starts in 2000. Scope is British Columbia, Alberta, Ontario and Quebec.`, "NTEMS is the satellite spine. Live wildfire, riding comparison, accounts and alerts, reserve and treaty pages are in version 1. Advanced layer controls and asserted traditional territories are excluded."] },

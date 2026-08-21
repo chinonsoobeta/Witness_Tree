@@ -34,8 +34,8 @@ export type AnnualSummary = Readonly<{ year: PublicNumber; hectares: PublicNumbe
 
 type ExampleBoundary = Readonly<{ status: "example"; reviewStatus: "unapproved"; productionEligible: false }>;
 export type SourceRecord = ExampleBoundary & Readonly<{ id: string; title: LocalizedString; provenance: Provenance }>;
-export type CitationRecord = ExampleBoundary & Readonly<{ id: string; timeRange: Readonly<{ from: PublicNumber; to: PublicNumber }>; dataVersion: string; method: string }>;
-export type DownloadRecord = ExampleBoundary & Readonly<{ id: string; label: LocalizedString; mediaType: "text/csv"; href: string }>;
+export type CitationRecord = ExampleBoundary & Readonly<{ id: string; sourceIds: readonly string[]; timeRange: Readonly<{ from: PublicNumber; to: PublicNumber }>; dataVersion: string; method: string }>;
+export type DownloadRecord = ExampleBoundary & Readonly<{ id: string; label: LocalizedString; mediaType: "text/csv"; href: string; bytes: number; sha256: string }>;
 export type SearchRecord = ExampleBoundary & Readonly<{ id: string; placeId: string; name: LocalizedString; aliases: LocalizedString }>;
 
 export type Place = ExampleBoundary & Readonly<{
@@ -46,7 +46,7 @@ export type Place = ExampleBoundary & Readonly<{
 }>;
 
 export type Location = ExampleBoundary & Readonly<{
-  id: string; summary: LocalizedString; latitude: PublicNumber; longitude: PublicNumber; accuracyMetres: PublicNumber;
+  coordinateId: string; summary: LocalizedString; latitude: PublicNumber; longitude: PublicNumber; accuracyMetres: PublicNumber;
   containingPlaceIds: readonly string[]; events: readonly PlaceEvent[];
 }>;
 

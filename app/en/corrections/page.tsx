@@ -1,2 +1,2 @@
-import { GovernancePage } from "@/components/governance"; import { SiteShell } from "@/components/site";
-export default function Page() { return <SiteShell locale="en"><GovernancePage kind="corrections" locale="en" /></SiteShell>; }
+import { PublicContentPage } from "@/components/transparency"; import { SiteShell } from "@/components/site";
+export default function Page() { return <SiteShell locale="en"><PublicContentPage kind="corrections" locale="en" /></SiteShell>; }

@@ -19,11 +19,11 @@ test("preserves only safe query parameters on locale changes", () => {
 test("shared navigation exposes localized search and dynamic pages publish record-specific alternates", () => {
   const header = readFileSync(new URL("../components/site/SiteHeader.tsx", import.meta.url), "utf8");
   const placeRoute = readFileSync(new URL("../app/en/places/[placeId]/page.tsx", import.meta.url), "utf8");
-  const locationRoute = readFileSync(new URL("../app/fr/emplacement/[locationId]/page.tsx", import.meta.url), "utf8");
+  const locationRoute = readFileSync(new URL("../app/fr/emplacement/[coordinates]/page.tsx", import.meta.url), "utf8");
   assert.match(header, /\["Search", "\/en\/search"\]/);
   assert.match(header, /\["Recherche", "\/fr\/recherche"\]/);
   assert.match(placeRoute, /localizedRecord\("place", placeId, "en"\)/);
   assert.match(placeRoute, /languages: \{ en: record\.route, fr: record\.alternate\.href \}/);
-  assert.match(locationRoute, /localizedRecord\("location", locationId, "fr"\)/);
+  assert.match(locationRoute, /localizedRecord\("location", coordinates, "fr"\)/);
   assert.match(locationRoute, /languages: \{ en: record\.alternate\.href, fr: record\.route \}/);
 });

@@ -4,8 +4,16 @@ import { performance } from "node:perf_hooks";
 const ROUTES = [
   "/en/places/bc-province?view=table",
   "/fr/lieux/bc-province?view=table",
-  "/en/location/location-bc-province",
-  "/fr/emplacement/location-bc-province",
+  "/en/location/lat-p48d000000-lon-n124d000000",
+  "/fr/emplacement/lat-p48d000000-lon-n124d000000",
+  "/en/methods",
+  "/fr/methodes",
+  "/en/data",
+  "/fr/donnees",
+  "/en/glossary",
+  "/fr/glossaire",
+  "/en/corrections",
+  "/fr/corrections",
 ];
 const SIMULATED_4G = Object.freeze({ roundTripMs: 150, downstreamBitsPerSecond: 1_600_000 });
 const HTML_GZIP_LIMIT = 100 * 1024;

@@ -38,8 +38,8 @@ test("renders localized place and location records with semantic content and pro
   const [englishPlace, frenchPlace, englishLocation, frenchLocation] = await Promise.all([
     render("/en/places/bc-province?view=table").then((response) => response.text()),
     render("/fr/lieux/bc-province?view=table").then((response) => response.text()),
-    render("/en/location/location-bc-province").then((response) => response.text()),
-    render("/fr/emplacement/location-bc-province").then((response) => response.text()),
+    render("/en/location/lat-p48d000000-lon-n124d000000").then((response) => response.text()),
+    render("/fr/emplacement/lat-p48d000000-lon-n124d000000").then((response) => response.text()),
   ]);
 
   for (const html of [englishPlace, frenchPlace, englishLocation, frenchLocation]) {
@@ -97,4 +97,16 @@ test("renders localized search results and Explore list/table alternatives witho
   assert.match(frenchExplore, /Périmètre d’incendie déclaré/);
   assert.match(frenchExplore, /<table/);
   assert.match(frenchExplore, /Attribution de la source/);
+});
+
+test("renders all four registry-driven bilingual public-content templates without browser JavaScript", async () => {
+  const routes = ["/en/methods", "/fr/methodes", "/en/data", "/fr/donnees", "/en/glossary", "/fr/glossaire", "/en/corrections", "/fr/corrections"];
+  const pages = await Promise.all(routes.map((route) => render(route).then((response) => { assert.equal(response.status, 200); return response.text(); })));
+  for (const html of pages) {
+    assert.match(html, /<main\b[^>]*id="main"/);
+    assert.match(html, /Illustrative content · unapproved · nonproduction|Contenu illustratif · non approuvé · hors production/);
+    assert.doesNotMatch(html, /loading skeleton|taking shape/i);
+  }
+  assert.match(pages[2], /id="source-bc-province-source"/);
+  assert.match(pages[3], /id="source-bc-province-source"/);
 });

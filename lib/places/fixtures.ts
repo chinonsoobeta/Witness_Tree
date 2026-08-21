@@ -1,5 +1,7 @@
 import type { ConfidenceResult, CoverageGrade, LocalizedString, Provenance } from "@/lib/domain";
+import downloadManifest from "@/data/phase3-example-download-manifest.json";
 import { GENERATED_RECORD_KINDS, PLACE_PROVINCES, PLACE_TYPES, type GeneratedLocalizedRecord, type GeneratedPageManifest, type GeneratedRecordKind, type Location, type Place, type PlaceProvince, type PlaceType, type PublicFigure, type PublicNumber, type RegistryEntry } from "./types";
+import { coordinatePermalinkId } from "./coordinate-identity";
 
 const local = (en: string, fr: string): LocalizedString => ({ en, fr });
 const provenance: Provenance = { dataset: "Synthetic Phase 3 registry", version: "example-unapproved-1.0", retrievedDate: "2026-08-21", licence: "ogl-canada-2.0", recordUrl: "https://example.local/phase3-registry" };
@@ -28,6 +30,12 @@ function publicValue(value: PublicNumber): number {
   return value.kind === "figure" ? value.value : Number.NEGATIVE_INFINITY;
 }
 
+function downloadFor(placeId: string) {
+  const entry = downloadManifest.entries.find((candidate) => candidate.placeId === placeId);
+  if (!entry || entry.status !== "example" || entry.reviewStatus !== "unapproved" || entry.productionEligible !== false) throw new Error(`Missing bounded download manifest entry for ${placeId}.`);
+  return entry;
+}
+
 function route(kind: GeneratedRecordKind, entityId: string, locale: "en" | "fr"): string | null {
   if (kind === "place") return locale === "en" ? `/en/places/${entityId}` : `/fr/lieux/${entityId}`;
   if (kind === "location") return locale === "en" ? `/en/location/${entityId}` : `/fr/emplacement/${entityId}`;
@@ -35,7 +43,7 @@ function route(kind: GeneratedRecordKind, entityId: string, locale: "en" | "fr")
 }
 
 function entityId(entry: RegistryEntry, kind: GeneratedRecordKind): string {
-  return entry[kind].id;
+  return kind === "location" ? entry.location.coordinateId : entry[kind].id;
 }
 
 function recordStrings(entry: RegistryEntry, kind: GeneratedRecordKind, locale: "en" | "fr"): Readonly<Record<string, string>> {
@@ -48,7 +56,8 @@ function mdxFor(strings: Readonly<Record<string, string>>, kind: GeneratedRecord
   return `---\nkind: ${kind}\nid: ${id}\nstatus: example\nreviewStatus: unapproved\nproductionEligible: false\n---\n\n# ${strings.title}\n\n${strings.status}\n`;
 }
 
-function makeEntry(type: PlaceType, province: PlaceProvince, index: number): RegistryEntry {
+function makeEntry(type: PlaceType, province: PlaceProvince, provinceIndex: number, typeIndex: number): RegistryEntry {
+  const index = provinceIndex * PLACE_TYPES.length + typeIndex;
   const id = `${province.toLowerCase()}-${type}`;
   const name = local(`Illustrative ${provinceNames[province].en} ${typeNames[type].en}`, `${provinceNames[province].fr} illustrative — ${typeNames[type].fr}`);
   const coverageGrade: CoverageGrade = province === "QC" && index % 2 === 1 ? "national-baseline-plus-local-context" : "national-baseline";
@@ -69,20 +78,25 @@ function makeEntry(type: PlaceType, province: PlaceProvince, index: number): Reg
     events, stats: [figure(13 + (index % 8), "ha", coverageGrade), unknown(coverageGrade)], sourceIds: [sourceId], citationId, downloadId,
     ...(type === "reserve" || type === "treaty-area" ? { safeguard: local("Synthetic geography only. This example does not speak for rights holders and is not approved for production.", "Géographie synthétique seulement. Cet exemple ne parle pas au nom des titulaires de droits et n’est pas approuvé pour la production.") } : {}),
   };
-  const locationId = `location-${id}`;
+  const latitude = 48 + provinceIndex * 2 + typeIndex * .05;
+  const longitude = -124 + provinceIndex * 4 + typeIndex * .05;
+  const coordinateId = coordinatePermalinkId(latitude, longitude);
+  const containingPlaceIds = PLACE_TYPES.map((placeType) => `${province.toLowerCase()}-${placeType}`);
+  const downloadEntry = downloadFor(id);
   return {
     place,
-    location: { status: "example", reviewStatus: "unapproved", productionEligible: false, id: locationId, summary: local(`Illustrative location in ${name.en}.`, `Emplacement illustratif dans ${name.fr}.`), latitude: figure(48 + (index % 8) * 0.25, "degrees-latitude", coverageGrade), longitude: figure(-124 + (index % 8) * 0.5, "degrees-longitude", coverageGrade), accuracyMetres: figure(100, "m", coverageGrade), containingPlaceIds: [id], events: [...events].sort((a, b) => publicValue(b.year) - publicValue(a.year)) },
+    location: { status: "example", reviewStatus: "unapproved", productionEligible: false, coordinateId, summary: local(`Illustrative location in ${name.en}.`, `Emplacement illustratif dans ${name.fr}.`), latitude: figure(latitude, "degrees-latitude", coverageGrade), longitude: figure(longitude, "degrees-longitude", coverageGrade), accuracyMetres: figure(100, "m", coverageGrade), containingPlaceIds, events: [...events].sort((a, b) => publicValue(b.year) - publicValue(a.year)) },
     search: { id: `${id}-search`, placeId: id, name, aliases: place.aliases, status: "example", reviewStatus: "unapproved", productionEligible: false },
     source: { id: sourceId, title: local("Synthetic registry source", "Source synthétique du registre"), provenance, status: "example", reviewStatus: "unapproved", productionEligible: false },
-    citation: { id: citationId, timeRange: { from: figure(1984, "year", coverageGrade), to: figure(2025, "year", coverageGrade) }, dataVersion: "example-unapproved-1.0", method: "synthetic-page-generator-1", status: "example", reviewStatus: "unapproved", productionEligible: false },
-    download: { id: downloadId, label: local("Download synthetic example CSV", "Télécharger l’exemple CSV synthétique"), mediaType: "text/csv", href: `data:text/csv;charset=utf-8,status%2CplaceId%0Aexample%2C${id}`, status: "example", reviewStatus: "unapproved", productionEligible: false },
+    citation: { id: citationId, sourceIds: [sourceId], timeRange: { from: figure(1984, "year", coverageGrade), to: figure(2025, "year", coverageGrade) }, dataVersion: "example-unapproved-1.0", method: "synthetic-page-generator-1", status: "example", reviewStatus: "unapproved", productionEligible: false },
+    download: { id: downloadId, label: local("Download synthetic example CSV", "Télécharger l’exemple CSV synthétique"), mediaType: "text/csv", href: downloadEntry.href, bytes: downloadEntry.bytes, sha256: downloadEntry.sha256, status: "example", reviewStatus: "unapproved", productionEligible: false },
   };
 }
 
-export const PLACE_REGISTRY: readonly RegistryEntry[] = Object.freeze(PLACE_PROVINCES.flatMap((province, provinceIndex) => PLACE_TYPES.map((type, typeIndex) => makeEntry(type, province, provinceIndex * PLACE_TYPES.length + typeIndex))));
+export const PLACE_REGISTRY: readonly RegistryEntry[] = Object.freeze(PLACE_PROVINCES.flatMap((province, provinceIndex) => PLACE_TYPES.map((type, typeIndex) => makeEntry(type, province, provinceIndex, typeIndex))));
 export const PLACES: readonly Place[] = Object.freeze(PLACE_REGISTRY.map(({ place }) => place));
 export const LOCATIONS: readonly Location[] = Object.freeze(PLACE_REGISTRY.map(({ location }) => location));
+export const SOURCE_RECORDS = Object.freeze(PLACE_REGISTRY.map(({ source }) => source));
 
 export const GENERATED_RECORDS: readonly GeneratedLocalizedRecord[] = Object.freeze(PLACE_REGISTRY.flatMap((entry) => GENERATED_RECORD_KINDS.flatMap((kind) => (["en", "fr"] as const).map((locale) => {
   const id = entityId(entry, kind);
@@ -106,7 +120,7 @@ export const PAGE_COUNT_MANIFEST: GeneratedPageManifest = Object.freeze({
 });
 
 export const placeById = (id: string) => PLACES.find((place) => place.id === id);
-export const locationById = (id: string) => LOCATIONS.find((location) => location.id === id);
+export const locationByCoordinateId = (coordinateId: string) => LOCATIONS.find((location) => location.coordinateId === coordinateId);
 export const registryEntryByPlaceId = (id: string) => PLACE_REGISTRY.find(({ place }) => place.id === id);
-export const registryEntryByLocationId = (id: string) => PLACE_REGISTRY.find(({ location }) => location.id === id);
+export const registryEntryByCoordinateId = (coordinateId: string) => PLACE_REGISTRY.find(({ location }) => location.coordinateId === coordinateId);
 export const localizedRecord = (kind: GeneratedRecordKind, id: string, locale: "en" | "fr") => GENERATED_RECORDS.find((record) => record.kind === kind && record.entityId === id && record.locale === locale);

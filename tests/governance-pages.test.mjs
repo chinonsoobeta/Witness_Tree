@@ -5,7 +5,7 @@ import test from "node:test";
 const read = (path) => readFile(new URL(path, import.meta.url), "utf8");
 
 test("governance content is bilingual and truthful about unfinished external gates", async () => {
-  const content = await read("../components/governance/GovernancePage.tsx");
+  const content = `${await read("../components/governance/GovernancePage.tsx")}\n${await read("../lib/content/public-content.ts")}`;
   for (const phrase of ["No production correction", "Aucune correction de production", "No engagement contact", "Aucun contact de dialogue", "stores no account", "ne conserve actuellement aucune donnée", "Mistik is not an approved", "Mistik n’est pas un nom"]) assert.match(content, new RegExp(phrase));
   assert.doesNotMatch(content, /permission (?:was|has been) granted|contacted on \d|legally approved/i);
 });
@@ -27,7 +27,7 @@ test("all seven governance surfaces have independently citable locale routes", a
 });
 
 test("required correction service levels and Indigenous safeguards are present", async () => {
-  const content = await read("../components/governance/GovernancePage.tsx");
+  const content = `${await read("../components/governance/GovernancePage.tsx")}\n${await read("../lib/content/public-content.ts")}`;
   assert.match(content, /Critical: acknowledge within 1 business day and resolve within 5/);
   assert.match(content, /Indigenous geography content: 1 and 10/);
   assert.match(content, /do not describe the full extent of Indigenous lands, rights, title or relationships/);

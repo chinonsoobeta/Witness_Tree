@@ -70,7 +70,7 @@ test("generated MDX byte manifest has exact deterministic EN/FR parity", () => {
 });
 
 test("localized dynamic routes are exhaustively static and metadata comes from paired records", () => {
-  const routePaths = ["../app/en/places/[placeId]/page.tsx", "../app/fr/lieux/[placeId]/page.tsx", "../app/en/location/[locationId]/page.tsx", "../app/fr/emplacement/[locationId]/page.tsx"];
+  const routePaths = ["../app/en/places/[placeId]/page.tsx", "../app/fr/lieux/[placeId]/page.tsx", "../app/en/location/[coordinates]/page.tsx", "../app/fr/emplacement/[coordinates]/page.tsx"];
   for (const path of routePaths) {
     const route = readFileSync(new URL(path, import.meta.url), "utf8");
     assert.match(route, /export const dynamic = "force-static"/);
@@ -98,7 +98,8 @@ test("annual table has a caption and scoped column headers", () => {
 
 test("all generated Figure and Unknown markup keeps localized evidence, coverage, reason and provenance without JavaScript", () => {
   for (const entry of PLACE_REGISTRY) for (const locale of ["en", "fr"] as const) {
-    const html = `${renderToStaticMarkup(<PlacePage locale={locale} entry={entry} view="table" />)}${renderToStaticMarkup(<LocationResult locale={locale} location={entry.location} places={PLACES} />)}`;
+    const containingPlaces = entry.location.containingPlaceIds.map((id) => PLACES.find((place) => place.id === id)).filter((place) => place !== undefined);
+    const html = `${renderToStaticMarkup(<PlacePage locale={locale} entry={entry} view="table" />)}${renderToStaticMarkup(<LocationResult locale={locale} location={entry.location} places={containingPlaces} />)}`;
     const values = [...html.matchAll(/<section class="public-number" data-public-number="(figure|unknown)" data-locale="(en|fr)">([\s\S]*?)<\/section>/g)];
     assert.ok(values.length > 0);
     for (const [, kind, renderedLocale, value] of values) {
