@@ -47,6 +47,7 @@ jobs:
       - run: npm run check:phase2-method-parameters
       - run: npm run check:phase2-national-baseline-batch
       - run: npm run check:phase2-synthetic-integration
+      - run: npm run check:phase2-synthetic-readback
       - run: npm run check:accessibility
       - run: npm run build
       - run: npm run check:claims

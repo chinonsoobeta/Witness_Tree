@@ -8,4 +8,6 @@ Time-range aggregates use forested hectares in the first requested year as their
 
 The existing baseline runner optionally accepts a synthetic overlay and inclusive year range. It persists integrated events, aggregates and precedence evidence beside the baseline files in a newly created write-once directory. The same lineage manifest records every output checksum plus overlay identity and range. Repeating the run against that directory fails rather than overwriting it.
 
+`npm run readback:phase2-synthetic-output -- <output-directory>` is the persisted-output replay gate. It requires the exact declared seven-file inventory, recomputes every output checksum, parses all baseline and integration files, and reruns event references, precedence mappings, contribution arithmetic, first-year denominators, unique boundary/range identities and all-eight geography coverage. Deterministic helpers query an emitted event by ID, retrieve boundary/year lineage, and replay a boundary/range aggregate with a stable checksum. Missing, extra, altered, production-labelled or cross-file-inconsistent outputs fail closed.
+
 This is synthetic grid-cell evidence only. It does not transform NTEMS, approve the unresolved forest crosswalk, ingest CA Forest Harvest or fire data, create a production event table, publish statistics, generate tiles, or close a Phase 2 exit criterion.

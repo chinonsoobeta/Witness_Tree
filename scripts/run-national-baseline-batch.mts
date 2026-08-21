@@ -39,9 +39,10 @@ const landCover = await checkedInput<LandCoverInput>(manifest.inputs.landCover);
 const crosswalk = await checkedInput<BoundaryCrosswalkInput>(manifest.inputs.boundaryCrosswalk, boundaryCrosswalkSha256);
 const methodParameters = await checkedInput<MethodParameterManifest>(manifest.inputs.methodParameters);
 const result = runBaselineBatch(manifest, methodParameters, landCover, crosswalk);
-const maskBytes = stableJson({ schemaVersion: 1, batchId: manifest.batchId, years: result.masks });
-const aggregateBytes = stableJson({ schemaVersion: 1, batchId: manifest.batchId, aggregates: result.aggregates });
-const detectedChangeBytes = stableJson({ schemaVersion: 1, batchId: manifest.batchId, years: result.detectedChange });
+const outputLabels = { status: "example", reviewStatus: "unapproved", productionEligible: false } as const;
+const maskBytes = stableJson({ schemaVersion: 1, batchId: manifest.batchId, ...outputLabels, years: result.masks });
+const aggregateBytes = stableJson({ schemaVersion: 1, batchId: manifest.batchId, ...outputLabels, aggregates: result.aggregates });
+const detectedChangeBytes = stableJson({ schemaVersion: 1, batchId: manifest.batchId, ...outputLabels, years: result.detectedChange });
 const outputs: Record<string, string> = {
   "forest-mask.json": maskBytes,
   "forest-aggregates.json": aggregateBytes,
@@ -55,9 +56,9 @@ if (overlayArgument && fromYearArgument && toYearArgument) {
   const fromYear = Number(fromYearArgument);
   const toYear = Number(toYearArgument);
   const integrated = integrateSyntheticEvents({ manifest, method: methodParameters, grid: landCover.grid, baseline: result, crosswalk, overlay, fromYear, toYear });
-  outputs["synthetic-integrated-events.json"] = stableJson({ schemaVersion: 1, batchId: manifest.batchId, reviewStatus: "unapproved", productionEligible: false, events: integrated.events });
-  outputs["synthetic-integrated-aggregates.json"] = stableJson({ schemaVersion: 1, batchId: manifest.batchId, reviewStatus: "unapproved", productionEligible: false, aggregates: integrated.aggregates });
-  outputs["synthetic-precedence.json"] = stableJson({ schemaVersion: 1, batchId: manifest.batchId, reviewStatus: "unapproved", productionEligible: false, precedence: integrated.precedence, precedenceEventMap: integrated.precedenceEventMap });
+  outputs["synthetic-integrated-events.json"] = stableJson({ schemaVersion: 1, batchId: manifest.batchId, ...outputLabels, events: integrated.events });
+  outputs["synthetic-integrated-aggregates.json"] = stableJson({ schemaVersion: 1, batchId: manifest.batchId, ...outputLabels, aggregates: integrated.aggregates });
+  outputs["synthetic-precedence.json"] = stableJson({ schemaVersion: 1, batchId: manifest.batchId, ...outputLabels, precedence: integrated.precedence, precedenceEventMap: integrated.precedenceEventMap });
   syntheticLineage = Object.freeze({ overlayId: overlay.overlayId, overlaySha256: overlay.overlaySha256, fromYear, toYear, reviewStatus: "unapproved", productionEligible: false });
 }
 const lineageBytes = stableJson({
