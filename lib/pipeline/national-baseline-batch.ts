@@ -42,6 +42,46 @@ export type BaselineBatchManifest = Readonly<{
 
 export type ForestMaskYear = Readonly<{ year: number; cells: readonly (0 | 1 | 255)[] }>;
 
+export type DetectedChangeGeometry = Readonly<{
+  type: "MultiPolygon";
+  crsId: string;
+  coordinates: readonly (readonly (readonly (readonly [number, number])[])[])[];
+}>;
+
+export type DetectedChangeEvent = Readonly<{
+  status: "example";
+  eventId: string;
+  category: "detected-change";
+  evidence: "satellite-observation";
+  observationYear: number;
+  eventStart: string;
+  eventEnd: string;
+  geometry: DetectedChangeGeometry;
+  areaHectares: number;
+  cellIndices: readonly number[];
+  lineage: Readonly<{
+    batchId: string;
+    fromYear: number;
+    toYear: number;
+    fromMaskSha256: string;
+    toMaskSha256: string;
+    fromMaskValue: 1;
+    toMaskValue: 0;
+  }>;
+  methodVersion: string;
+  dataVersion: string;
+  coverageGrade: "national-baseline";
+  patchChecksumSha256: string;
+  productionEligible: false;
+}>;
+
+export type DetectedChangeYear = Readonly<{
+  fromYear: number;
+  toYear: number;
+  events: readonly DetectedChangeEvent[];
+  unresolvedNodataCellIndices: readonly number[];
+}>;
+
 export type ForestAggregate = Readonly<{
   boundaryId: string;
   geographyType: string;
@@ -59,6 +99,7 @@ export type ForestAggregate = Readonly<{
 export type BaselineBatchResult = Readonly<{
   masks: readonly ForestMaskYear[];
   aggregates: readonly ForestAggregate[];
+  detectedChange: readonly DetectedChangeYear[];
 }>;
 
 function finite(value: number, label: string): void {
@@ -140,6 +181,152 @@ function roundHectares(value: number): number {
   return Math.round(value * 1_000_000) / 1_000_000;
 }
 
+function coordinate(value: number): number {
+  return Object.is(value, -0) ? 0 : value;
+}
+
+function cellPolygon(grid: BaselineGrid, cellIndex: number): readonly (readonly [number, number])[] {
+  const row = Math.floor(cellIndex / grid.width);
+  const column = cellIndex % grid.width;
+  const [originX, pixelWidth, , originY, , pixelHeight] = grid.geotransform;
+  const left = coordinate(originX + column * pixelWidth);
+  const right = coordinate(left + pixelWidth);
+  const top = coordinate(originY + row * pixelHeight);
+  const bottom = coordinate(top + pixelHeight);
+  return Object.freeze([
+    Object.freeze([left, top] as const),
+    Object.freeze([right, top] as const),
+    Object.freeze([right, bottom] as const),
+    Object.freeze([left, bottom] as const),
+    Object.freeze([left, top] as const),
+  ]);
+}
+
+function connectedPatches(lossCells: ReadonlySet<number>, width: number, height: number): readonly (readonly number[])[] {
+  const remaining = new Set(lossCells);
+  const patches: number[][] = [];
+  while (remaining.size > 0) {
+    let start = Number.POSITIVE_INFINITY;
+    for (const cell of remaining) if (cell < start) start = cell;
+    remaining.delete(start);
+    const queue = [start];
+    const patch: number[] = [];
+    for (let cursor = 0; cursor < queue.length; cursor += 1) {
+      const cell = queue[cursor]!;
+      patch.push(cell);
+      const row = Math.floor(cell / width);
+      const column = cell % width;
+      const neighbours = [
+        column > 0 ? cell - 1 : -1,
+        column + 1 < width ? cell + 1 : -1,
+        row > 0 ? cell - width : -1,
+        row + 1 < height ? cell + width : -1,
+      ];
+      for (const neighbour of neighbours) {
+        if (neighbour >= 0 && remaining.delete(neighbour)) queue.push(neighbour);
+      }
+    }
+    patches.push(patch.sort((a, b) => a - b));
+  }
+  return Object.freeze(patches.map((patch) => Object.freeze(patch)));
+}
+
+export function validateDetectedChangeGeometry(geometry: DetectedChangeGeometry, expectedCells: number): void {
+  if (geometry.type !== "MultiPolygon" || !geometry.crsId.trim() || geometry.coordinates.length !== expectedCells || expectedCells <= 0) {
+    throw new Error("Detected-change geometry requires one polygon per source mask cell.");
+  }
+  for (const polygon of geometry.coordinates) {
+    if (polygon.length !== 1 || polygon[0]!.length !== 5) throw new Error("Detected-change geometry cell polygon is invalid.");
+    const ring = polygon[0]!;
+    if (ring.some((position) => position.length !== 2 || !position.every(Number.isFinite)) || ring[0]![0] !== ring[4]![0] || ring[0]![1] !== ring[4]![1]) {
+      throw new Error("Detected-change geometry cell ring must be finite and closed.");
+    }
+    if (ring[0]![1] !== ring[1]![1] || ring[1]![0] !== ring[2]![0] || ring[2]![1] !== ring[3]![1] || ring[3]![0] !== ring[0]![0] || ring[0]![0] === ring[1]![0] || ring[1]![1] === ring[2]![1]) {
+      throw new Error("Detected-change geometry cell ring must be a non-degenerate grid rectangle.");
+    }
+    const twiceArea = ring.slice(0, -1).reduce((sum, point, index) => {
+      const next = ring[(index + 1) % 4]!;
+      return sum + point[0] * next[1] - next[0] * point[1];
+    }, 0);
+    if (!Number.isFinite(twiceArea) || twiceArea === 0) throw new Error("Detected-change geometry cell ring must have non-zero area.");
+  }
+}
+
+export function buildDetectedChangeSpine(manifest: BaselineBatchManifest, grid: BaselineGrid, masks: readonly ForestMaskYear[]): readonly DetectedChangeYear[] {
+  validateBaselineManifest(manifest);
+  validateGrid(grid, "Detected-change grid");
+  const cellCount = grid.width * grid.height;
+  const ordered = [...masks].sort((a, b) => a.year - b.year);
+  const seenYears = new Set<number>();
+  for (const mask of ordered) {
+    if (!Number.isSafeInteger(mask.year) || seenYears.has(mask.year) || mask.cells.length !== cellCount || mask.cells.some((value) => value !== 0 && value !== 1 && value !== 255)) {
+      throw new Error("Detected-change masks require unique integer years and exactly one valid value per grid cell.");
+    }
+    seenYears.add(mask.year);
+  }
+  const pixelHectares = Math.abs(grid.geotransform[1] * grid.geotransform[5]) / 10_000;
+  const result: DetectedChangeYear[] = [];
+  for (let index = 1; index < ordered.length; index += 1) {
+    const previous = ordered[index - 1]!;
+    const current = ordered[index]!;
+    if (current.year !== previous.year + 1) throw new Error("Detected-change masks must form a continuous annual series.");
+    const lossCells = new Set<number>();
+    const nodataCells: number[] = [];
+    const fromMaskSha256 = sha256(stableJson(previous));
+    const toMaskSha256 = sha256(stableJson(current));
+    for (let cellIndex = 0; cellIndex < cellCount; cellIndex += 1) {
+      const from = previous.cells[cellIndex]!;
+      const to = current.cells[cellIndex]!;
+      if (from === 255 || to === 255) nodataCells.push(cellIndex);
+      else if (from === 1 && to === 0) lossCells.add(cellIndex);
+    }
+    const events = connectedPatches(lossCells, grid.width, grid.height).map((cellIndices): DetectedChangeEvent => {
+      const geometry = Object.freeze({
+        type: "MultiPolygon" as const,
+        crsId: grid.crsId,
+        coordinates: Object.freeze(cellIndices.map((cellIndex) => Object.freeze([cellPolygon(grid, cellIndex)]))),
+      });
+      validateDetectedChangeGeometry(geometry, cellIndices.length);
+      const core = {
+        batchId: manifest.batchId,
+        methodVersion: manifest.methodVersion,
+        dataVersion: manifest.dataVersion,
+        fromYear: previous.year,
+        toYear: current.year,
+        grid,
+        cellIndices,
+        geometry,
+      };
+      const patchChecksumSha256 = sha256(stableJson(core));
+      return Object.freeze({
+        status: "example",
+        eventId: `detected-change-${current.year}-${patchChecksumSha256.slice(0, 24)}`,
+        category: "detected-change",
+        evidence: "satellite-observation",
+        observationYear: current.year,
+        eventStart: `${current.year}-01-01`,
+        eventEnd: `${current.year}-12-31`,
+        geometry,
+        areaHectares: roundHectares(cellIndices.length * pixelHectares),
+        cellIndices,
+        lineage: Object.freeze({ batchId: manifest.batchId, fromYear: previous.year, toYear: current.year, fromMaskSha256, toMaskSha256, fromMaskValue: 1, toMaskValue: 0 }),
+        methodVersion: manifest.methodVersion,
+        dataVersion: manifest.dataVersion,
+        coverageGrade: manifest.coverageGrade,
+        patchChecksumSha256,
+        productionEligible: false,
+      });
+    });
+    result.push(Object.freeze({
+      fromYear: previous.year,
+      toYear: current.year,
+      events: Object.freeze(events),
+      unresolvedNodataCellIndices: Object.freeze(nodataCells),
+    }));
+  }
+  return Object.freeze(result);
+}
+
 export function runBaselineBatch(manifest: BaselineBatchManifest, landCover: LandCoverInput, crosswalk: BoundaryCrosswalkInput): BaselineBatchResult {
   validateBaselineManifest(manifest);
   validateBaselineInputs(landCover, crosswalk);
@@ -175,7 +362,8 @@ export function runBaselineBatch(manifest: BaselineBatchManifest, landCover: Lan
       }));
     }
   }
-  return Object.freeze({ masks: Object.freeze(masks), aggregates: Object.freeze(aggregates) });
+  const frozenMasks = Object.freeze(masks);
+  return Object.freeze({ masks: frozenMasks, aggregates: Object.freeze(aggregates), detectedChange: buildDetectedChangeSpine(manifest, landCover.grid, frozenMasks) });
 }
 
 export function stableJson(value: unknown): string {

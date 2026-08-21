@@ -34,6 +34,7 @@ const crosswalk = await checkedInput<BoundaryCrosswalkInput>(manifest.inputs.bou
 const result = runBaselineBatch(manifest, landCover, crosswalk);
 const maskBytes = stableJson({ schemaVersion: 1, batchId: manifest.batchId, years: result.masks });
 const aggregateBytes = stableJson({ schemaVersion: 1, batchId: manifest.batchId, aggregates: result.aggregates });
+const detectedChangeBytes = stableJson({ schemaVersion: 1, batchId: manifest.batchId, years: result.detectedChange });
 const lineageBytes = stableJson({
   schemaVersion: 1,
   batchId: manifest.batchId,
@@ -43,6 +44,7 @@ const lineageBytes = stableJson({
   outputs: {
     "forest-mask.json": sha256(maskBytes),
     "forest-aggregates.json": sha256(aggregateBytes),
+    "detected-change-events.json": sha256(detectedChangeBytes),
   },
 });
 
@@ -50,5 +52,6 @@ await mkdir(outputDirectory);
 await Promise.all([
   writeFile(resolve(outputDirectory, "forest-mask.json"), maskBytes, { flag: "wx" }),
   writeFile(resolve(outputDirectory, "forest-aggregates.json"), aggregateBytes, { flag: "wx" }),
+  writeFile(resolve(outputDirectory, "detected-change-events.json"), detectedChangeBytes, { flag: "wx" }),
   writeFile(resolve(outputDirectory, "lineage.json"), lineageBytes, { flag: "wx" }),
 ]);

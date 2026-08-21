@@ -6,9 +6,11 @@ import { resolve } from "node:path";
 import { promisify } from "node:util";
 import test from "node:test";
 import {
+  buildDetectedChangeSpine,
   runBaselineBatch,
   sha256,
   stableJson,
+  validateDetectedChangeGeometry,
   type BaselineBatchManifest,
   type BoundaryCrosswalkInput,
   type LandCoverInput,
@@ -78,6 +80,64 @@ test("builds deterministic forest masks and fractional boundary denominators", (
     { boundaryId: "r", year: 1985, forestedHectares: 0.09 },
   ]);
   assert.ok(result.aggregates.every((row) => row.denominator === "forested-hectares" && row.boundaryEdition === "fixture-boundaries-2026" && row.coverageGrade === "national-baseline"));
+  assert.equal(result.detectedChange.length, 1);
+});
+
+test("vectorizes four-neighbour losses into stable normalized patches with exact cell lineage", () => {
+  const masks = [
+    { year: 1984, cells: [1, 1, 1, 255, 1, 1] as const },
+    { year: 1985, cells: [0, 0, 1, 255, 1, 0] as const },
+  ];
+  const rectangularGrid = { ...grid, width: 3 } as const;
+  const first = buildDetectedChangeSpine(manifest, rectangularGrid, masks);
+  const second = buildDetectedChangeSpine(manifest, rectangularGrid, [...masks].reverse());
+  assert.deepEqual(first, second);
+  assert.deepEqual(first[0]!.events.map((event) => event.cellIndices), [[0, 1], [5]]);
+  assert.deepEqual(first[0]!.events.map((event) => event.areaHectares), [0.18, 0.09]);
+  assert.deepEqual(first[0]!.unresolvedNodataCellIndices, [3]);
+  for (const event of first[0]!.events) {
+    assert.match(event.eventId, new RegExp(`^detected-change-1985-[a-f0-9]{24}$`));
+    assert.match(event.patchChecksumSha256, /^[a-f0-9]{64}$/);
+    assert.equal(event.geometry.coordinates.length, event.cellIndices.length);
+    assert.equal(event.status, "example");
+    assert.equal(event.productionEligible, false);
+    assert.equal(event.lineage.batchId, manifest.batchId);
+    assert.equal(event.lineage.fromYear, 1984);
+    assert.equal(event.lineage.toYear, 1985);
+    assert.match(event.lineage.fromMaskSha256, /^[a-f0-9]{64}$/);
+    assert.match(event.lineage.toMaskSha256, /^[a-f0-9]{64}$/);
+    assert.equal(event.lineage.fromMaskValue, 1);
+    assert.equal(event.lineage.toMaskValue, 0);
+  }
+});
+
+test("change spine rejects corrupt values and year gaps while nodata never becomes loss", () => {
+  assert.throws(() => buildDetectedChangeSpine(manifest, grid, [{ year: 1984, cells: [1, 1, 1, 1] }, { year: 1986, cells: [0, 0, 0, 0] }]), /continuous annual series/);
+  assert.throws(() => buildDetectedChangeSpine(manifest, grid, [{ year: 1984, cells: [1, 2 as 0, 1, 1] }]), /valid value/);
+  assert.throws(() => buildDetectedChangeSpine(manifest, grid, [{ year: 1984, cells: [1, 1, 1] }]), /one valid value per grid cell/);
+  const result = buildDetectedChangeSpine(manifest, grid, [
+    { year: 1984, cells: [1, 255, 1, 0] },
+    { year: 1985, cells: [255, 0, 1, 1] },
+  ]);
+  assert.equal(result[0]!.events.length, 0);
+  assert.deepEqual(result[0]!.unresolvedNodataCellIndices, [0, 1]);
+  assert.throws(() => validateDetectedChangeGeometry({ type: "MultiPolygon", crsId: "fixture", coordinates: [[[[0, 0], [1, 1], [1, 0], [0, 1], [0, 0]]]] }, 1), /grid rectangle/);
+});
+
+test("all 2x2 mask pairs assign every valid loss cell to exactly one patch", () => {
+  const values = (bits: number) => Array.from({ length: 4 }, (_, index) => ((bits >> index) & 1) as 0 | 1);
+  for (let fromBits = 0; fromBits < 16; fromBits += 1) {
+    for (let toBits = 0; toBits < 16; toBits += 1) {
+      const from = values(fromBits);
+      const to = values(toBits);
+      const result = buildDetectedChangeSpine(manifest, grid, [{ year: 1984, cells: from }, { year: 1985, cells: to }]);
+      const observed = result[0]!.events.flatMap((event) => event.cellIndices).sort((a, b) => a - b);
+      const expected = from.flatMap((value, index) => value === 1 && to[index] === 0 ? [index] : []);
+      assert.deepEqual(observed, expected);
+      assert.equal(new Set(observed).size, observed.length);
+      assert.equal(result[0]!.events.reduce((sum, event) => sum + event.areaHectares, 0), expected.length * 0.09);
+    }
+  }
 });
 
 test("rejects grid drift, unsafe crosswalks, and production claims", () => {
@@ -108,15 +168,17 @@ test("runner binds exact inputs, writes immutable deterministic outputs, and rec
     ]);
     const output = resolve(directory, "output");
     await execute(resolve("node_modules/.bin/tsx"), [resolve("scripts/run-national-baseline-batch.mts"), resolve(directory, "manifest.json"), output]);
-    const [maskBytes, aggregateBytes, lineageBytes] = await Promise.all([
+    const [maskBytes, aggregateBytes, detectedChangeBytes, lineageBytes] = await Promise.all([
       readFile(resolve(output, "forest-mask.json"), "utf8"),
       readFile(resolve(output, "forest-aggregates.json"), "utf8"),
+      readFile(resolve(output, "detected-change-events.json"), "utf8"),
       readFile(resolve(output, "lineage.json"), "utf8"),
     ]);
     const lineage = JSON.parse(lineageBytes) as { outputs: Record<string, string>; productionEligible: boolean };
     assert.equal(lineage.productionEligible, false);
     assert.equal(lineage.outputs["forest-mask.json"], sha256(maskBytes));
     assert.equal(lineage.outputs["forest-aggregates.json"], sha256(aggregateBytes));
+    assert.equal(lineage.outputs["detected-change-events.json"], sha256(detectedChangeBytes));
     await assert.rejects(execute(resolve("node_modules/.bin/tsx"), [resolve("scripts/run-national-baseline-batch.mts"), resolve(directory, "manifest.json"), output]), /EEXIST/);
 
     await writeFile(resolve(directory, "land-cover.json"), `${landCoverBytes} `);
