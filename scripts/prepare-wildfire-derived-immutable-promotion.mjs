@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { readFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 const read = (p) => JSON.parse(readFileSync(new URL(`../${p}`, import.meta.url), "utf8"));
 const sha = /^[a-f0-9]{64}$/;
 export const manifestKey = (a) => a.payloadKey.replace(/\/payload\/[^/]+$/, "/manifest.json");
@@ -31,4 +32,18 @@ export function validateIamDesiredState(desired = read("data/wildfire-derived-im
   return desired;
 }
 export function dryRunLines(plan=validate()) { return plan.artifacts.flatMap(a => [`VERIFY ${a.id} bytes=${a.byteLength} sha256=${a.sha256}`,`UPLOAD-PENDING s3://${plan.destination.bucket}/${a.payloadKey}`,`SIDECAR-PENDING s3://${plan.destination.bucket}/${manifestKey(a)} sha256=${createHash("sha256").update(sidecarFor(a)).digest("hex")}`,`RETAIN-PENDING ${a.id} mode=COMPLIANCE until=${plan.mfaGatedExecution.recommendedRetainUntil}`,`ADMISSION-BLOCK ${a.sourceId}`]); }
-if (import.meta.url === `file://${process.argv[1]}`) console.log(dryRunLines().join("\n"));
+export function writeSidecars(plan = validate(), directory) {
+  assert.ok(directory, "sidecar directory is required");
+  mkdirSync(directory, { recursive: true, mode: 0o700 });
+  return plan.artifacts.map((artifact) => {
+    const file = join(directory, `${artifact.id}.manifest.json`);
+    const content = sidecarFor(artifact);
+    writeFileSync(file, content, { encoding: "utf8", flag: "wx", mode: 0o600 });
+    return { artifactId: artifact.id, file, byteLength: Buffer.byteLength(content), sha256: createHash("sha256").update(content).digest("hex") };
+  });
+}
+if (import.meta.url === `file://${process.argv[1]}`) {
+  const index = process.argv.indexOf("--write-sidecars");
+  if (index !== -1) console.log(JSON.stringify(writeSidecars(validate(), process.argv[index + 1])));
+  else console.log(dryRunLines().join("\n"));
+}
