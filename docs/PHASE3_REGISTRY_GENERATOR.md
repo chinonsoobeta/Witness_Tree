@@ -43,3 +43,7 @@ The conservative implementation self-assessment is **+6 points, 47% → 53%**, s
 - checkpoint/exit evidence `+1`: deterministic page-count/byte manifest and this explicit nonproduction boundary record.
 
 No additional point is claimed for fixture volume, real-data readiness, production quality, external review, deployment, or Phase 3 exit completion.
+
+## Subsequent deterministic validation batch
+
+The accessibility and local-performance batch is assessed separately so it does not count the registry batch twice. Against the same independently pending 47-point baseline, this batch alone conservatively contributes **+2 points (47% → 49% if considered in isolation)**: `+1` to bilingual/performance/accessibility/CI for palette/CVD/non-colour, keyboard/source-order, full-registry static-markup, and representative route performance gates; and `+1` to checkpoint/exit evidence for explicit automated results plus fail-closed browser/human exclusions. This is not a revised independent total and does not include the earlier `+6` registry self-assessment.

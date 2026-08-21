@@ -43,6 +43,10 @@ test("renders localized place and location records with semantic content and pro
   ]);
 
   for (const html of [englishPlace, frenchPlace, englishLocation, frenchLocation]) {
+    assert.ok(html.indexOf("<header") < html.indexOf("<main"));
+    assert.ok(html.indexOf("<main") < html.indexOf("<footer"));
+    assert.match(html, /class="skip-link" href="#main"/);
+    assert.equal((html.match(/<main\b/g) ?? []).length, 1);
     assert.match(html, /<main\b[^>]*id="main"/);
     assert.match(html, /Illustrative (fixture|source-ledger entry)|Exemple illustratif|registre des sources/i);
     assert.match(html, /<dl>|<table>/);

@@ -31,3 +31,4 @@ test("table without caption and scoped headers fails", () => rejects({ "componen
 test("unlabelled input fails", () => rejects({ "components/Input.tsx": "<input type=\"text\" />" }, /input requires a label/));
 test("image without alt fails", () => rejects({ "components/Image.tsx": "<img src=\"tree.png\" />" }, /img requires alt/));
 test("button without type fails", () => rejects({ "components/Button.tsx": "<button>Open</button>" }, /button requires an explicit type/));
+test("positive tab order and automatic focus fail", () => rejects({ "components/Trap.tsx": "<><button type=\"button\" tabIndex={2}>Later</button><input aria-label=\"Query\" autoFocus /></>" }, /positive tabIndex|autoFocus/));

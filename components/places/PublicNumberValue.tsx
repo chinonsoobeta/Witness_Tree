@@ -11,5 +11,5 @@ export function PublicNumberValue({ value, locale }: Readonly<{ value: PublicNum
   const output = value.kind === "unknown"
     ? <output aria-label={value.reason[locale]}>— {value.reason[locale]}</output>
     : <output>{new Intl.NumberFormat(locale === "en" ? "en-CA" : "fr-CA", { maximumFractionDigits: 6 }).format(value.value)} {units[value.unit][locale]}</output>;
-  return <section className="public-number">{output}<EvidenceChip evidence={value.evidence} locale={locale} />{value.kind === "figure" ? <ConfidenceBadge confidence={value.confidence} locale={locale} /> : null}<CoverageBand coverageGrade={value.coverageGrade} locale={locale} /><ProvenanceBlock provenance={value.provenance} locale={locale} /></section>;
+  return <section className="public-number" data-public-number={value.kind} data-locale={locale}>{output}<EvidenceChip evidence={value.evidence} locale={locale} />{value.kind === "figure" ? <ConfidenceBadge confidence={value.confidence} locale={locale} /> : null}<CoverageBand coverageGrade={value.coverageGrade} locale={locale} /><ProvenanceBlock provenance={value.provenance} locale={locale} /></section>;
 }

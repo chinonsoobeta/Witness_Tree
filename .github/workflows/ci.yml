@@ -22,9 +22,11 @@ jobs:
       - run: npm run check:staged-acquisitions
       - run: npm run check:staged-geospatial-profile
       - run: npm run check:accessibility
+      - run: npm run check:visual-accessibility
       - run: npm run build
       - run: npm run check:claims
       - run: npm run check:style-tokens
       - run: npm run check:brand-token
       - run: npm run check:budgets
+      - run: npm run measure:phase3-static
       - run: npm run test:unit

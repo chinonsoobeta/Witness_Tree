@@ -1,8 +1,13 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
+import { renderToStaticMarkup } from "react-dom/server";
 // @ts-expect-error -- Node's TypeScript runner requires explicit local extensions.
 import { GENERATED_RECORD_KINDS, GENERATED_RECORDS, LOCATIONS, PAGE_COUNT_MANIFEST, PLACE_PROVINCES, PLACE_REGISTRY, PLACE_TYPES, PLACES } from "../lib/places/index.ts";
+// @ts-expect-error -- Node's TypeScript runner requires explicit local extensions.
+import { PlacePage } from "../components/places/PlacePage.tsx";
+// @ts-expect-error -- Node's TypeScript runner requires explicit local extensions.
+import { LocationResult } from "../components/places/LocationResult.tsx";
 
 const numeric = (value: (typeof LOCATIONS)[number]["events"][number]["year"]): number => value.kind === "figure" ? value.value : Number.NEGATIVE_INFINITY;
 
@@ -89,4 +94,19 @@ test("annual table has a caption and scoped column headers", () => {
   const chart = readFileSync(new URL("../components/places/AnnualChangeChart.tsx", import.meta.url), "utf8");
   assert.match(chart, /<caption>\{title\}<\/caption>/);
   assert.equal((chart.match(/<th scope="col">/g) ?? []).length, 3);
+});
+
+test("all generated Figure and Unknown markup keeps localized evidence, coverage, reason and provenance without JavaScript", () => {
+  for (const entry of PLACE_REGISTRY) for (const locale of ["en", "fr"] as const) {
+    const html = `${renderToStaticMarkup(<PlacePage locale={locale} entry={entry} view="table" />)}${renderToStaticMarkup(<LocationResult locale={locale} location={entry.location} places={PLACES} />)}`;
+    const values = [...html.matchAll(/<section class="public-number" data-public-number="(figure|unknown)" data-locale="(en|fr)">([\s\S]*?)<\/section>/g)];
+    assert.ok(values.length > 0);
+    for (const [, kind, renderedLocale, value] of values) {
+      assert.equal(renderedLocale, locale);
+      assert.match(value, locale === "en" ? /(?:Official record|Satellite observation|Derived estimate|Unknown)/ : /(?:Registre officiel|Observation satellitaire|Estimation dérivée|Inconnu)/);
+      assert.match(value, locale === "en" ? /(?:Enhanced local records|National baseline(?: plus local context)?|Extended record, sparse official matching|Not applicable)/ : /(?:Registres locaux enrichis|Référence nationale(?: avec contexte local)?|Registre prolongé, appariement officiel limité|Sans objet)/);
+      assert.match(value, locale === "en" ? /<dt>Dataset<\/dt>[\s\S]*<dt>Version<\/dt>[\s\S]*<dt>Retrieved<\/dt>[\s\S]*<dt>Licence<\/dt>/ : /<dt>Jeu de données<\/dt>[\s\S]*<dt>Version<\/dt>[\s\S]*<dt>Récupéré<\/dt>[\s\S]*<dt>Licence<\/dt>/);
+      if (kind === "unknown") assert.match(value, /<output aria-label="[^"]+">— [^<]+<\/output>/);
+    }
+  }
 });

@@ -23,6 +23,8 @@ function requiresMain(file, source) {
 function auditFile(file, source) {
   const failures = [];
   if (requiresMain(file, source)) failures.push(`${file}: SiteShell locale route lacks main id=main or an approved main-owning component.`);
+  if (/\btabIndex\s*=\s*\{?["']?[1-9]/.test(source)) failures.push(`${file}: positive tabIndex changes the native source order.`);
+  if (/\bautoFocus\b/.test(source)) failures.push(`${file}: autoFocus moves focus without user intent.`);
 
   for (const svg of source.matchAll(/<svg\b([^>]*)>([\s\S]*?)<\/svg>/gi)) {
     if (!/\baria-label\s*=/.test(svg[1]) && !/<title\b/i.test(svg[2])) failures.push(`${file}: SVG requires a title or aria-label.`);
