@@ -35,6 +35,26 @@ The IAM approval recorded before this recovery audit was incomplete for this run
 
 The fail-closed exact desired state is [`qc-immutable-promotion-iam-desired-state.json`](../data/qc-immutable-promotion-iam-desired-state.json). It narrows multipart actions to the two payload keys, retention actions to the same two payload keys, and versioned readback to the four exact payload/manifest keys. It contains no wildcard resource, IAM-read permission, delete, legal hold, bypass, replication, bucket administration, other role, or other object.
 
+## Safe post-run evidence handoff
+
+After the promotion runner finishes successfully, preserve its private state and run this separate owner-local, read-only capture with a fresh MFA session:
+
+```sh
+zsh scripts/capture-qc-immutable-promotion-attestation.sh --capture \
+  /private/tmp/witness-tree-qc-immutable-promotion-attestation.json \
+  /private/tmp/witness-tree-qc-immutable-promotion-attestation-redacted.json
+```
+
+The first output must remain owner-owned mode 600 outside Git. It contains the four concrete version identifiers and provider checksums, exact-version `HeadObject` evidence, and the two payload retention readbacks. It deliberately omits multipart upload identifiers. The second output contains hashes of the private receipt, versions, checksums, keys and raw readback responses, but no concrete version, checksum or upload identifier. Hand off the redacted output and the private file's SHA-256; provide the private mode-600 path only to the local reviewer running:
+
+```sh
+node scripts/check-qc-immutable-promotion-attestation.mjs --pair \
+  /private/tmp/witness-tree-qc-immutable-promotion-attestation.json \
+  /private/tmp/witness-tree-qc-immutable-promotion-attestation-redacted.json
+```
+
+The repository's current [`qc-immutable-promotion-attestation.json`](../data/qc-immutable-promotion-attestation.json) is intentionally pending. A redacted record, booleans, placeholder values, or plausible identifiers without the exact mode-600 digest-bound pair cannot pass the checker. This operation did not authorize or prove a recovery replica: the preserved multipart state is recovery/resume evidence only. Transformation, ingestion, release, production admission and production eligibility remain separate and false.
+
 ### Exact additional owner authorization — approved 2026-08-21
 
 > In AWS account `286853118812`, I additionally authorize creation of only role `WitnessTreeQcArchivePromotionUploader`, inline policy `WitnessTreeQcArchiveExactObjects`, and dedicated operator policy `WitnessTreeQcArchivePromotionAssumeOnly`, exactly as recorded in `data/qc-immutable-promotion-iam-desired-state.json`.
