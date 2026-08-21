@@ -23,8 +23,8 @@ test("integrated Phase 1 evidence remains additive and fail-closed across conver
   assert.equal(state.ledger.rawEvidenceNumerator, 15.25);
   assert.equal(state.ledger.formalEvidenceTrackingPercentage, 39.7580645);
   assert.equal(state.ledger.immutableArchiveCompleteRows, 11);
-  assert.equal(state.ledger.productionAdmissionCompleteRows, 0);
-  assert.equal(state.ledger.productionEligibleRows, 0);
+  assert.equal(state.ledger.productionAdmissionCompleteRows, 4);
+  assert.equal(state.ledger.productionEligibleRows, 4);
 
   const harvestRow = ledger.entries.find(({ id }) => id === "ntems-forest-harvest");
   assert.equal(harvestRow.evidenceState, "remote-verified-archived-profiled");

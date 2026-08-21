@@ -18,7 +18,7 @@ export function validatePhase1ImmutablePromotionReadiness(audit, ledger, nationa
   assert.equal(new Set(rows).size, rows.length); assert.deepEqual([...rows].sort(), localRows);
   const [nationalGroup, wildfireGroup, quebecGroup, fourthGroup] = audit.physicalArtifactGroups;
   assert.equal(nationalGroup.status, "already-prepared-no-duplicate"); assert.equal(nationalGroup.physicalArtifactCount, national.artifacts.length); assert.deepEqual([...nationalGroup.productionRowIds].sort(), [...national.plannedProductionRowIds].sort());
-  assert.equal(wildfireGroup.status, "six-primary-objects-remotely-verified-recovery-provenance-pending");
+  assert.equal(wildfireGroup.status, "six-primary-objects-remotely-verified-production-admitted");
   assert.equal(wildfireGroup.physicalArtifactCount, wildfireAdmission.archiveGate.requiredObjectCount);
   assert.equal(wildfireGroup.preparedRawArtifactCount, wildfire.artifacts.length);
   assert.equal(wildfireGroup.verifiedDerivedArtifactCount, 2);
@@ -26,7 +26,7 @@ export function validatePhase1ImmutablePromotionReadiness(audit, ledger, nationa
   assert.equal(wildfireGroup.ownerAdmission, "data/current-wildfire-owner-admission.json");
   assert.equal(wildfireGroup.derivedEvidence, "data/current-wildfire-derived-archive-evidence.json");
   assert.equal(wildfireAdmission.archiveGate.verifiedObjectCount, 6);
-  assert.match(wildfireGroup.blocker, /Four exact raw snapshots and both checksum-bound derived payloads now have redacted exact-key primary readback.*Recovery-replica or mutation provenance.*production is false/i);
+  assert.match(wildfireGroup.blocker, /No promotion or admission blocker remains.*Preserve all six exact readbacks.*release boundaries/i);
   assert.equal(wildfireGroup.proposedRole, wildfire.mfaGatedExecution.proposedRole); assert.deepEqual([...wildfireGroup.productionRowIds].sort(), wildfire.artifacts.map((artifact) => read("data/staged-acquisitions.json").entries.find((entry) => entry.id === artifact.id).sourceId).sort());
   assert.equal(quebecGroup.status, "already-prepared"); assert.equal(quebecGroup.physicalArtifactCount, quebec.artifacts.length); assert.equal(quebecGroup.proposedRole, quebec.mfaGatedExecution.proposedRole); assert.deepEqual([...quebecGroup.productionRowIds].sort(), quebec.artifacts.map(({ productionSourceId }) => productionSourceId).sort());
   assert.equal(fourthGroup.status, "already-prepared-blocked-pending-separate-approvals"); assert.equal(fourthGroup.preparation, "data/qc-fourth-inventory-immutable-promotion-preparation.json"); assert.equal(fourthGroup.runner, "node scripts/qc-fourth-inventory-immutable-promotion.mjs"); assert.match(fourthGroup.blocker, /exact 62-key plan.*no AWS or IAM call.*no remote object or read-back/i);
@@ -42,5 +42,5 @@ export function checkPhase1ImmutablePromotionReadiness() {
 
 if (process.argv[1]?.endsWith("check-phase1-immutable-promotion-readiness.mjs")) {
   const audit = checkPhase1ImmutablePromotionReadiness();
-  console.log(`Phase 1 immutable-promotion readiness audit passed: ${audit.coveredProductionRowIds.length} local-profiled rows, ${audit.physicalArtifactGroups.reduce((sum, group) => sum + group.physicalArtifactCount, 0)} required objects; wildfire recovery provenance and QC fourth execution remain blocked.`);
+  console.log(`Phase 1 immutable-promotion readiness audit passed: ${audit.coveredProductionRowIds.length} local-profiled rows, ${audit.physicalArtifactGroups.reduce((sum, group) => sum + group.physicalArtifactCount, 0)} required objects; current wildfire is admitted and QC fourth execution remains blocked.`);
 }

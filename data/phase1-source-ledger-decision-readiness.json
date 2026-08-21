@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "status": "non-admitting-audit",
+  "status": "four-rows-admitted-audit",
   "asOf": "2026-08-20",
-  "notice": "Decision-readiness audit of the canonical 31-row Phase 1 production-source ledger. It neither changes a ledger proof nor grants archival admission, transformation, ingestion, release, production admission, or production eligibility.",
+  "notice": "Decision-readiness audit of the canonical 31-row Phase 1 production-source ledger. Four current-wildfire rows are production admitted by their explicit approval and satisfied 6/6 condition; this audit grants nothing to the other 27 rows.",
   "contract": ["licence", "attribution", "retrievalVersion", "checksum", "rawArchiveRefetch", "profile", "immutableArchive", "ownerSourceLedgerDecision"],
   "readinessDefinitions": {
     "owner-decision-recorded": "All source-evidence proofs and a narrowly scoped owner source-ledger decision are recorded; it remains non-production.",
@@ -10,6 +10,7 @@
     "owner-scope-decision-after-archive": "The local evidence contract is complete except immutable archive, and the later decision must also resolve the stated operational or geometry scope.",
     "owner-scope-decision-recorded-awaiting-archive": "The owner has resolved operational or geometry scope and approved downstream use, but production proof and eligibility remain blocked until every named immutable readback is integrated.",
     "owner-scope-decision-ready": "Immutable archive evidence is recorded, but a separately named owner decision must still resolve the stated operational or geometry scope.",
+    "production-admitted": "The explicit owner downstream approval is recorded and its sole immutable-readback condition is satisfied.",
     "external-evidence-blocked": "The named production source lacks required source evidence or has an external authority, rights, completeness, or engagement block; an owner decision cannot cure it."
   },
   "entries": [
@@ -17,11 +18,11 @@
     {"id":"ntems-forest-harvest","readiness":"owner-decision-recorded","decisionBundle":"national-baselines","scope":"Accepted named existing immutable source-ledger evidence only; transformation admission, ingestion, release and production remain separate decisions."},
     {"id":"ntems-canopy-cover","readiness":"owner-decision-recorded","decisionBundle":"remote-source-evidence-recorded"},
     {"id":"ntems-canopy-height","readiness":"owner-decision-recorded","decisionBundle":"national-baselines","scope":"Accepted named existing immutable source-ledger evidence only; transformation admission, ingestion, release and production remain separate decisions."},
-    {"id":"cwfis-current","readiness":"owner-scope-decision-recorded-awaiting-archive","decisionBundle":"wildfire-operational-scope","scope":"Approved as a fixed-time 586-point national fallback snapshot: not real-time, complete perimeter, or provincial-authoritative data; provincial agencies prevail."},
+    {"id":"cwfis-current","readiness":"production-admitted","decisionBundle":"wildfire-operational-scope","scope":"Approved as a fixed-time 586-point national fallback snapshot: not real-time, complete perimeter, or provincial-authoritative data; provincial agencies prevail."},
     {"id":"cwfis-historical","readiness":"external-evidence-blocked","decisionBundle":"none","blocker":"The named combined source lacks its burned-area component and normal source evidence."},
-    {"id":"bc-wildfire","readiness":"owner-scope-decision-recorded-awaiting-archive","decisionBundle":"wildfire-geometry-scope","scope":"Approved unchanged 217-feature raw retention plus the 216-feature derived geometry release: 215 unchanged, G70362 repaired within tolerance, V10755 permanently quarantined; no 217-feature geometry coverage claim."},
-    {"id":"ab-wildfire","readiness":"owner-scope-decision-recorded-awaiting-archive","decisionBundle":"wildfire-operational-scope","scope":"Approved as an as-of 751-point provincial location snapshot, not real-time or a complete perimeter dataset; Alberta Wildfire remains authoritative."},
-    {"id":"on-fire-disturbance","readiness":"owner-scope-decision-recorded-awaiting-archive","decisionBundle":"wildfire-geometry-scope","scope":"Approved unchanged 188-feature raw retention plus the 188-feature closed-join derived artifact with 179 unchanged, nine bounded repairs and zero quarantine."},
+    {"id":"bc-wildfire","readiness":"production-admitted","decisionBundle":"wildfire-geometry-scope","scope":"Approved unchanged 217-feature raw retention plus the 216-feature derived geometry release: 215 unchanged, G70362 repaired within tolerance, V10755 permanently quarantined; no 217-feature geometry coverage claim."},
+    {"id":"ab-wildfire","readiness":"production-admitted","decisionBundle":"wildfire-operational-scope","scope":"Approved as an as-of 751-point provincial location snapshot, not real-time or a complete perimeter dataset; Alberta Wildfire remains authoritative."},
+    {"id":"on-fire-disturbance","readiness":"production-admitted","decisionBundle":"wildfire-geometry-scope","scope":"Approved unchanged 188-feature raw retention plus the 188-feature closed-join derived artifact with 179 unchanged, nine bounded repairs and zero quarantine."},
     {"id":"sopfeu","readiness":"external-evidence-blocked","decisionBundle":"none","blocker":"Written reusable terms are unresolved."},
     {"id":"bc-fta-cutblocks","readiness":"external-evidence-blocked","decisionBundle":"none","blocker":"A coherent publisher export with declared edition, checksum, and profile is absent."},
     {"id":"bc-harvesting-authorities","readiness":"external-evidence-blocked","decisionBundle":"none","blocker":"A publisher-authorized snapshot and normal source evidence are absent."},
@@ -45,7 +46,7 @@
     {"id":"historic-treaties","readiness":"external-evidence-blocked","decisionBundle":"none","blocker":"Reviewed federal mapping is informational and non-legal, not admissible precision geometry; rights and engagement route are also unverified."},
     {"id":"modern-treaties","readiness":"external-evidence-blocked","decisionBundle":"none","blocker":"Reviewed federal map is informal, approximate, revisable, and not for consultation reliance; rights and engagement route are also unverified."}
   ],
-  "counts": {"owner-decision-recorded":7,"immutable-archive-then-owner-decision":5,"owner-scope-decision-after-archive":0,"owner-scope-decision-recorded-awaiting-archive":4,"owner-scope-decision-ready":0,"external-evidence-blocked":15},
+  "counts": {"owner-decision-recorded":7,"immutable-archive-then-owner-decision":5,"owner-scope-decision-after-archive":0,"owner-scope-decision-recorded-awaiting-archive":0,"owner-scope-decision-ready":0,"production-admitted":4,"external-evidence-blocked":15},
   "minimalOwnerDecisionBundles": [
     {"id":"national-baselines","rows":["ntems-forest-harvest","ntems-canopy-height"],"precondition":"Existing immutable archive/recovery readbacks are integrated and the named source-ledger-only decisions are recorded; any downstream method decision remains separate."},
     {"id":"quebec-ecoforest","rows":["qc-current-ecoforest","qc-original-current-inventory","qc-fourth-inventory"],"precondition":"Each named payload and any named derivative has immutable archive/recovery readbacks; the fourth-inventory source also requires separately scoped semantic transformation and join selection."},
@@ -54,5 +55,5 @@
     {"id":"wildfire-geometry-scope","rows":["bc-wildfire","on-fire-disturbance"],"precondition":"Raw/derived scope and dispositions are owner-approved; integrate exact immutable archive/recovery readbacks for both raw and derived artifacts before activation."},
     {"id":"alberta-plvi-geometry-scope","rows":["ab-primary-land-vegetation"],"precondition":"Immutable archive evidence and the exact raw/derived scope decision are recorded; scope-bound validation and ingestion preparation are allowed, while transformation admission and ingestion remain separate."}
   ],
-  "nonProduction": {"productionProofChanged":false,"productionEligibleChanged":false,"transformationAuthorized":false,"ingestionAuthorized":false,"releaseAuthorized":false,"activationBlockedOnImmutableReadbacks":true}
+  "reconciliation": {"productionProofChangedRows":4,"productionEligibleChangedRows":4,"transformationAuthorizedRows":4,"ingestionAuthorizedRows":4,"releaseAuthorizedRows":4,"activationBlockedOnImmutableReadbacksRows":0}
 }

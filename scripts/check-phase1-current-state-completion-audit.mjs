@@ -6,9 +6,9 @@ const read = (file) => JSON.parse(readFileSync(new URL(`../${file}`, import.meta
 
 export function validatePhase1CurrentStateCompletionAudit(audit, ledger, readiness, immutable, wildfire, outreach, partialOutreach, access, replyAudit, routeAudit) {
   assert.equal(audit.schemaVersion, 1);
-  assert.equal(audit.status, "blocked-zero-of-31-production-complete");
+  assert.equal(audit.status, "blocked-four-of-31-production-complete");
   assert.equal(audit.asOf, "2026-08-21");
-  assert.match(audit.notice, /seven named source\/scope decisions.*two national source-ledger-only decisions.*PLVI raw\/derived scope decision.*no transformation admission.*production eligibility/i);
+  assert.match(audit.notice, /seven named source\/scope decisions.*two national source-ledger-only decisions.*PLVI raw\/derived scope decision.*Exactly four current-wildfire rows.*6\/6 immutable-readback condition/i);
   assert.equal(ledger.entries.length, 31);
   assert.equal(audit.rows.length, 31);
   assert.deepEqual(audit.rows.map(({ id }) => id), ledger.entries.map(({ id }) => id));
@@ -44,7 +44,11 @@ export function validatePhase1CurrentStateCompletionAudit(audit, ledger, readine
   for (const row of audit.rows) {
     const source = ledger.entries.find(({ id }) => id === row.id);
     assert.ok(audit.actionPlans[row.actionPlan]?.length >= 4, `${row.id} must have a complete ordered action plan`);
-    assert.equal(source.productionEligible, false);
+    if (["cwfis-current", "bc-wildfire", "ab-wildfire", "on-fire-disturbance"].includes(row.id)) {
+      assert.equal(row.actionPlan, "wildfire-production-admitted");
+      assert.equal(source.productionEligible, true);
+      assert.equal(source.proof.productionAdmission, true);
+    } else assert.equal(source.productionEligible, false);
     const decision = readinessById.get(row.id);
     if (source.evidenceState === "access-blocked") {
       assert.equal(row.actionPlan, "access-blocked"); assert.ok(covered.has(row.id)); assert.equal(accessById.get(row.id).lawfulAcquisitionNow, false);
@@ -64,5 +68,5 @@ export function checkPhase1CurrentStateCompletionAudit() {
 
 if (process.argv[1]?.endsWith("check-phase1-current-state-completion-audit.mjs")) {
   const audit = checkPhase1CurrentStateCompletionAudit();
-  console.log(`Phase 1 current-state audit passed: ${audit.ledger.rawEvidenceNumerator}/${audit.ledger.rawEvidenceDenominator} raw credits; ${audit.ledger.immutableArchiveCompleteRows}/31 immutable, 0/31 production admitted, 0/31 eligible.`);
+  console.log(`Phase 1 current-state audit passed: ${audit.ledger.rawEvidenceNumerator}/${audit.ledger.rawEvidenceDenominator} raw credits; ${audit.ledger.immutableArchiveCompleteRows}/31 immutable, ${audit.ledger.productionAdmissionCompleteRows}/31 production admitted and eligible.`);
 }

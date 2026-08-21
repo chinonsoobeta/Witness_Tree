@@ -1,12 +1,12 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 
-const READINESS = new Set(["owner-decision-recorded", "immutable-archive-then-owner-decision", "owner-scope-decision-after-archive", "owner-scope-decision-recorded-awaiting-archive", "owner-scope-decision-ready", "external-evidence-blocked"]);
+const READINESS = new Set(["owner-decision-recorded", "immutable-archive-then-owner-decision", "owner-scope-decision-after-archive", "owner-scope-decision-recorded-awaiting-archive", "owner-scope-decision-ready", "production-admitted", "external-evidence-blocked"]);
 
 export function validatePhase1SourceLedgerDecisionReadiness(audit, ledger, decisions) {
   assert.equal(audit.schemaVersion, 1);
-  assert.equal(audit.status, "non-admitting-audit");
-  assert.match(audit.notice, /neither changes a ledger proof nor grants archival admission, transformation, ingestion, release, production admission, or production eligibility/i);
+  assert.equal(audit.status, "four-rows-admitted-audit");
+  assert.match(audit.notice, /Four current-wildfire rows are production admitted.*other 27 rows/i);
   assert.deepEqual(audit.contract, ["licence", "attribution", "retrievalVersion", "checksum", "rawArchiveRefetch", "profile", "immutableArchive", "ownerSourceLedgerDecision"]);
   assert.equal(audit.entries.length, ledger.entries.length);
   const ledgerIds = new Set(ledger.entries.map(({ id }) => id));
@@ -18,8 +18,14 @@ export function validatePhase1SourceLedgerDecisionReadiness(audit, ledger, decis
     assert.ok(READINESS.has(entry.readiness));
     const row = ledger.entries.find((candidate) => candidate.id === entry.id);
     assert.ok(row);
-    assert.equal(row.productionEligible, false);
-    assert.equal(row.proof.productionAdmission, false);
+    if (entry.readiness === "production-admitted") {
+      assert.equal(row.productionEligible, true);
+      assert.equal(row.proof.productionAdmission, true);
+      assert.ok(row.evidenceRefs.includes("data/current-wildfire-downstream-reconciliation.json"));
+    } else {
+      assert.equal(row.productionEligible, false);
+      assert.equal(row.proof.productionAdmission, false);
+    }
     if (entry.readiness === "owner-decision-recorded") {
       assert.equal(row.evidenceState, "remote-verified-archived-profiled");
       assert.ok(decisions.decisions.some((decision) => decision.id === entry.id && decision.ownerAdmission === "approved-source-ledger-only"));
@@ -40,7 +46,7 @@ export function validatePhase1SourceLedgerDecisionReadiness(audit, ledger, decis
       assert.equal(row.proof.productionAdmission, false);
       assert.ok(row.evidenceRefs.includes("data/current-wildfire-owner-admission.json"));
     }
-    if (entry.readiness === "owner-scope-decision-after-archive" || entry.readiness === "owner-scope-decision-recorded-awaiting-archive" || entry.readiness === "owner-scope-decision-ready") assert.match(entry.scope, /.+/);
+    if (["owner-scope-decision-after-archive", "owner-scope-decision-recorded-awaiting-archive", "owner-scope-decision-ready", "production-admitted"].includes(entry.readiness)) assert.match(entry.scope, /.+/);
     if (entry.readiness === "owner-scope-decision-ready") {
       assert.equal(row.evidenceState, "remote-verified-archived-profiled");
       assert.equal(row.proof.immutableArchive, true);
@@ -49,7 +55,7 @@ export function validatePhase1SourceLedgerDecisionReadiness(audit, ledger, decis
     }
     if (entry.readiness === "external-evidence-blocked") assert.match(entry.blocker, /.+/);
   }
-  assert.deepEqual(audit.nonProduction, { productionProofChanged: false, productionEligibleChanged: false, transformationAuthorized: false, ingestionAuthorized: false, releaseAuthorized: false, activationBlockedOnImmutableReadbacks: true });
+  assert.deepEqual(audit.reconciliation, { productionProofChangedRows: 4, productionEligibleChangedRows: 4, transformationAuthorizedRows: 4, ingestionAuthorizedRows: 4, releaseAuthorizedRows: 4, activationBlockedOnImmutableReadbacksRows: 0 });
   const nationalIds = ["ntems-forest-harvest", "ntems-canopy-height"];
   for (const id of nationalIds) {
     const entry = audit.entries.find((candidate) => candidate.id === id);

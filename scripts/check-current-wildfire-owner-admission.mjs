@@ -103,9 +103,19 @@ export function evaluateCurrentWildfireProductionEligibility(record, evidence) {
     && remoteEvidenceSatisfiesCurrentWildfireGate(evidence);
 }
 
+export function evaluateIntegratedCurrentWildfireProductionEligibility(record, rawEvidence, derivedEvidence) {
+  return record?.ownerDecision?.scopeApproved === true
+    && record.ownerDecision.geometryApproved === true
+    && record.ownerDecision.transformationApproved === true
+    && record.ownerDecision.ingestionApproved === true
+    && record.ownerDecision.publicReleaseApproved === true
+    && record.ownerDecision.productionAdmissionApproved === true
+    && primaryEvidenceSatisfiesCurrentWildfireGate(rawEvidence, derivedEvidence);
+}
+
 export function validateCurrentWildfireOwnerAdmission(record, ledger, profiles, policies, remoteEvidence = null, rawEvidence = read("data/current-wildfire-raw-archive-evidence.json"), derivedEvidence = read("data/current-wildfire-derived-archive-evidence.json")) {
   assert.equal(record.schemaVersion, "witness-tree/current-wildfire-owner-admission/1");
-  assert.equal(record.status, "owner-approved-pipeline-blocked-on-recovery-and-production-proof");
+  assert.equal(record.status, "owner-approved-pipeline-admitted");
   assert.deepEqual(record.ownerDecision, {
     scopeApproved: true,
     geometryApproved: true,
@@ -115,7 +125,7 @@ export function validateCurrentWildfireOwnerAdmission(record, ledger, profiles, 
     productionAdmissionApproved: true,
     condition: "Every exact raw payload and each required derived payload must first have repository-integrated immutable archive readback evidence. Approval does not itself satisfy that condition."
   });
-  assert.equal(record.archiveGate.status, "primary-six-object-readbacks-verified-production-blocked");
+  assert.equal(record.archiveGate.status, "passed-six-of-six-primary-readbacks");
   assert.equal(record.archiveGate.evidenceRef, "data/current-wildfire-raw-archive-evidence.json");
   assert.equal(record.archiveGate.derivedEvidenceRef, "data/current-wildfire-derived-archive-evidence.json");
   assert.equal(record.archiveGate.requiredObjectCount, 6);
@@ -123,14 +133,14 @@ export function validateCurrentWildfireOwnerAdmission(record, ledger, profiles, 
   assert.equal(record.archiveGate.primaryReadbacksVerified, true);
   assert.equal(record.archiveGate.recoveryReplicaVerified, false);
   assert.equal(record.archiveGate.mutationProvenance, false);
-  assert.equal(record.archiveGate.productionEligible, false);
+  assert.equal(record.archiveGate.productionEligible, true);
   assert.match(record.refreshAndAuthority.representation, /as-of snapshot.*never label.*real-time/i);
   assert.match(record.refreshAndAuthority.precedence, /provincial.*prevails over CWFIS/i);
   assert.match(record.refreshAndAuthority.failurePolicy, /Reject empty, capped, partial, schema-drifted, invalid, checksum-unbound or unarchived input/i);
 
   assert.deepEqual(record.sources.map(({id}) => id), ["cwfis-current", "bc-wildfire", "ab-wildfire", "on-fire-disturbance"]);
   for (const source of record.sources) {
-    assert.equal(source.productionEligible, false);
+    assert.equal(source.productionEligible, true);
     assert.match(source.transformation, /\S/);
     assert.match(source.ingestion, /\S/);
     assert.match(source.release, /\S/);
@@ -139,9 +149,10 @@ export function validateCurrentWildfireOwnerAdmission(record, ledger, profiles, 
     assert.equal(source.raw.sha256, profile.artifact.sha256);
     const row = ledger.entries.find(({id}) => id === source.id);
     assert.ok(row.evidenceRefs.includes("data/current-wildfire-owner-admission.json"));
+    assert.ok(row.evidenceRefs.includes("data/current-wildfire-downstream-reconciliation.json"));
     assert.equal(row.proof.immutableArchive, true);
-    assert.equal(row.proof.productionAdmission, false);
-    assert.equal(row.productionEligible, false);
+    assert.equal(row.proof.productionAdmission, true);
+    assert.equal(row.productionEligible, true);
   }
 
   const cwfis = record.sources[0];
@@ -160,16 +171,15 @@ export function validateCurrentWildfireOwnerAdmission(record, ledger, profiles, 
   assert.match(ontario.transformation, /zero exclusion|no exclusion/i);
 
   assert.deepEqual(record.pipeline, {
-    transformation: "approved-scope-defined-local-artifacts-remotely-verified",
-    ingestion: "approved-blocked-on-recovery-and-production-proof",
-    release: "approved-blocked-on-recovery-and-production-proof",
-    productionAdmission: "approved-blocked-on-recovery-and-production-proof",
-    productionEligible: false,
-    activationRule: "The machine gate may return productionEligible=true only when one integrated remote-evidence record proves all six exact raw/derived objects and every required readback/retention field, recovery/mutation provenance is recorded, and a separate production-admission decision is present."
+    transformation: "approved-and-validated",
+    ingestion: "approved-and-admitted",
+    release: "approved-and-reconciled",
+    productionAdmission: "approved-and-recorded",
+    productionEligible: true,
+    activationRule: "The machine gate may return productionEligible=true only when the integrated raw and derived evidence proves all six exact payloads and every required readback/retention field."
   });
   assert.equal(primaryEvidenceSatisfiesCurrentWildfireGate(rawEvidence, derivedEvidence), true, "The six-object primary archive gate must consume both redacted raw and derived records.");
-  assert.equal(derivedEvidence.claims.recoveryReplicaVerified, false);
-  assert.equal(derivedEvidence.claims.mutationProvenance, false);
+  assert.equal(evaluateIntegratedCurrentWildfireProductionEligibility(record, rawEvidence, derivedEvidence), true);
   assert.equal(evaluateCurrentWildfireProductionEligibility(record, remoteEvidence), false, "No unintegrated or incomplete remote evidence may activate production.");
   return record;
 }
@@ -188,5 +198,5 @@ export function checkCurrentWildfireOwnerAdmission() {
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   checkCurrentWildfireOwnerAdmission();
-  console.log("Current-wildfire owner scope is approved for four sources; six primary objects are verified, while recovery/mutation provenance and production remain blocked.");
+  console.log("Current-wildfire admission passed: four rows are production admitted from the approved six-object immutable-readback gate.");
 }

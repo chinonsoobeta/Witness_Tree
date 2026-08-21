@@ -72,7 +72,7 @@ function validateQueueRows(queue, context) {
     assert.ok(ledger, `Queue row ${row.id} is not in the canonical ledger.`);
     assert.equal(ledger.evidenceState, row.evidenceState);
     assert.equal(ledger.rawCredit, row.rawCredit);
-    assert.equal(ledger.productionEligible, false);
+    assert.equal(ledger.productionEligible, CURRENT_WILDFIRE.includes(row.id));
     assert.equal(row.productionEligible, false);
     assert.ok(row.evidenceRefs.length > 0, `${row.id} must retain existing evidence references.`);
     validateActionMembership(actionById, row.primaryActionId, row.id);
@@ -167,7 +167,7 @@ function validateQueueRows(queue, context) {
   assert.equal(context.wildfire.ownerDecision.productionAdmissionApproved, true);
   assert.equal(context.wildfire.archiveGate.requiredObjectCount, 6);
   assert.equal(context.wildfire.archiveGate.verifiedObjectCount, 6);
-  assert.equal(context.wildfire.archiveGate.productionEligible, false);
+  assert.equal(context.wildfire.archiveGate.productionEligible, true);
 }
 
 function validateOrder(queue) {
@@ -209,8 +209,8 @@ export function validatePhase1OwnerDecisionQueue(queue, context) {
       "access-blocked": 13,
     },
     immutableArchiveCompleteRows: 11,
-    productionAdmissionCompleteRows: 0,
-    productionEligibleRows: 0,
+    productionAdmissionCompleteRows: 4,
+    productionEligibleRows: 4,
     queueRowCount: 16,
   });
   const ledgerIds = context.ledger.entries.map((entry) => entry.id);

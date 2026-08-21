@@ -18,7 +18,7 @@ export function validatePhase1GeometryPolicies({ ledger, bc, ontario, admission 
   assert.equal(ontario.productionEligible, false);
   assert.equal(admission.ownerDecision.geometryApproved, true);
   assert.equal(admission.archiveGate.verifiedObjectCount, 6);
-  assert.equal(admission.pipeline.productionEligible, false);
+  assert.equal(admission.pipeline.productionEligible, true);
   const bcAdmission = admission.sources.find(({id}) => id === "bc-wildfire");
   assert.equal(bcAdmission.derived.featureCount, 216);
   assert.deepEqual(bcAdmission.derived.excludedAndQuarantined, ["V10755"]);
@@ -29,9 +29,10 @@ export function validatePhase1GeometryPolicies({ ledger, bc, ontario, admission 
   for (const [sourceId, reference] of POLICY_REFS) {
     const entry = ledger.entries.find((candidate) => candidate.id === sourceId);
     assert.ok(entry, `Missing canonical ledger row for ${sourceId}.`);
-    assert.equal(entry.productionEligible, false);
+    assert.equal(entry.productionEligible, true);
     assert.equal(entry.proof.immutableArchive, true);
-    assert.equal(entry.proof.productionAdmission, false);
+    assert.equal(entry.proof.productionAdmission, true);
+    assert.ok(entry.evidenceRefs.includes("data/current-wildfire-downstream-reconciliation.json"));
     assert.ok(entry.evidenceRefs.includes(reference), `Ledger must cite ${reference}.`);
   }
   return { ledger, bc, ontario, admission };
@@ -52,5 +53,5 @@ export function checkPhase1GeometryPolicies() {
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   checkPhase1GeometryPolicies();
-  console.log("Phase 1 BC and Ontario geometry scope is owner-approved; primary wildfire readbacks are complete, while recovery/provenance and activation remain blocked.");
+  console.log("Phase 1 BC and Ontario geometry policy passed: BC 216-feature and Ontario 188-feature releases are admitted.");
 }

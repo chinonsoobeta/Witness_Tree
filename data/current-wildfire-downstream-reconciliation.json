@@ -1,0 +1,63 @@
+{
+  "schemaVersion": "witness-tree/current-wildfire-downstream-reconciliation/1",
+  "status": "four-rows-production-admitted",
+  "reconciledAt": "2026-08-21",
+  "notice": "Repository-local admission reconciliation only. It records the owner's already explicit ingestion, release and production approval after the sole stated six-payload immutable-readback condition passed. It performs no AWS operation, deployment, runtime write, refresh, email or Phase 2 action.",
+  "approvalRef": "data/current-wildfire-owner-admission.json",
+  "rawEvidenceRef": "data/current-wildfire-raw-archive-evidence.json",
+  "derivedEvidenceRef": "data/current-wildfire-derived-archive-evidence.json",
+  "gate": {
+    "requiredPayloads": 6,
+    "verifiedPayloads": 6,
+    "conditionSatisfied": true,
+    "recoveryReplicaRequiredByApproval": false,
+    "mutationProvenanceRequiredByApproval": false,
+    "additionalProductionDecisionRequiredByApproval": false
+  },
+  "rows": [
+    {
+      "id": "cwfis-current",
+      "transformationValidated": true,
+      "ingestionAdmitted": true,
+      "releaseApproved": true,
+      "productionAdmission": true,
+      "productionEligible": true,
+      "releaseBoundary": "586 source-bound points at the fixed as-of instant; national fallback context only; never real-time, complete-perimeter, or provincial-authority context."
+    },
+    {
+      "id": "bc-wildfire",
+      "transformationValidated": true,
+      "ingestionAdmitted": true,
+      "releaseApproved": true,
+      "productionAdmission": true,
+      "productionEligible": true,
+      "releaseBoundary": "216 derived perimeters: 215 unchanged plus repaired G70362; V10755 is permanently quarantined; never claim 217-feature geometry coverage."
+    },
+    {
+      "id": "ab-wildfire",
+      "transformationValidated": true,
+      "ingestionAdmitted": true,
+      "releaseApproved": true,
+      "productionAdmission": true,
+      "productionEligible": true,
+      "releaseBoundary": "751 source-bound points at the fixed as-of instant; never infer perimeter area or claim real-time or complete-perimeter coverage."
+    },
+    {
+      "id": "on-fire-disturbance",
+      "transformationValidated": true,
+      "ingestionAdmitted": true,
+      "releaseApproved": true,
+      "productionAdmission": true,
+      "productionEligible": true,
+      "releaseBoundary": "188 closed-join derived perimeters: 179 unchanged plus nine bounded repairs, with zero exclusions and preserved source object IDs."
+    }
+  ],
+  "impact": {
+    "rowStateChanges": 4,
+    "rawEvidenceCreditDelta": 0,
+    "formalEvidenceTrackingPercentagePointDelta": 0,
+    "productionAdmissionDelta": 4,
+    "productionEligibleDelta": 4,
+    "runtimeDeploymentPerformed": false
+  }
+}

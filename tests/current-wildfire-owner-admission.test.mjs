@@ -10,21 +10,21 @@ const ledger = read("../data/phase1-production-source-ledger.json");
 const profiles = {"cwfis-current":read("../data/cwfis-current-active-fires-profile.json"),"bc-wildfire":read("../data/bc-wildfire-current-perimeters-profile.json"),"ab-wildfire":read("../data/alberta-wildfire-locations-profile.json"),"on-fire-disturbance":read("../data/ontario-in-year-fire-perimeters-profile.json")};
 const policies = {bc:read("../data/bc-wildfire-geometry-policy-2026-08-14.json"),ontario:read("../data/ontario-in-year-fire-geometry-policy-2026-08-14.json")};
 
-test("owner approves the exact four-source scope while immutable evidence keeps production blocked", () => {
+test("owner approval activates the exact four-source scope after immutable evidence passes", () => {
   assert.equal(validateCurrentWildfireOwnerAdmission(record, ledger, profiles, policies), record);
   assert.equal(record.archiveGate.verifiedObjectCount, 6);
   assert.equal(record.archiveGate.primaryReadbacksVerified, true);
   assert.equal(record.archiveGate.recoveryReplicaVerified, false);
-  assert.equal(record.pipeline.productionEligible, false);
+  assert.equal(record.pipeline.productionEligible, true);
 });
 
-test("redacted raw plus derived readbacks close the six-object primary gate without activating production", () => {
+test("redacted raw plus derived readbacks close the sole six-object condition", () => {
   const raw = read("../data/current-wildfire-raw-archive-evidence.json");
   const derived = read("../data/current-wildfire-derived-archive-evidence.json");
   assert.equal(primaryEvidenceSatisfiesCurrentWildfireGate(raw, derived), true);
   assert.equal(derived.claims.mutationProvenance, false);
   assert.equal(derived.claims.recoveryReplicaVerified, false);
-  assert.equal(record.pipeline.productionEligible, false);
+  assert.equal(record.pipeline.productionEligible, true);
 });
 
 test("the redacted six-object gate rejects any raw or derived evidence drift", () => {
@@ -114,9 +114,9 @@ test("the six-object gate recognizes only the timestamped derived promotion keys
   }
 });
 
-test("approval drift or premature eligibility fails closed", () => {
+test("approval or archive-gate drift fails closed", () => {
   const changed = structuredClone(record); changed.ownerDecision.geometryApproved = false;
   assert.throws(() => validateCurrentWildfireOwnerAdmission(changed, ledger, profiles, policies));
-  const eligible = structuredClone(record); eligible.pipeline.productionEligible = true;
-  assert.throws(() => validateCurrentWildfireOwnerAdmission(eligible, ledger, profiles, policies));
+  const blocked = structuredClone(record); blocked.pipeline.productionEligible = false;
+  assert.throws(() => validateCurrentWildfireOwnerAdmission(blocked, ledger, profiles, policies));
 });

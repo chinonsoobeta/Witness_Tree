@@ -6,10 +6,10 @@ import { validatePhase1ProductionSourceLedger } from "../scripts/check-phase1-pr
 const ledger = JSON.parse(readFileSync(new URL("../data/phase1-production-source-ledger.json", import.meta.url), "utf8"));
 const inventory = JSON.parse(readFileSync(new URL("../data/phase1-source-inventory.json", import.meta.url), "utf8"));
 
-test("canonical production ledger reconciles all 31 plan rows without runtime production admission", () => {
+test("canonical production ledger admits exactly the four approved current-wildfire rows", () => {
   assert.equal(validatePhase1ProductionSourceLedger(ledger, inventory), ledger);
   assert.equal(ledger.entries.length, 31);
-  assert.equal(ledger.entries.filter((entry) => entry.productionEligible).length, 0);
+  assert.equal(ledger.entries.filter((entry) => entry.productionEligible).length, 4);
   assert.equal(ledger.rawEvidenceNumerator, 15.25);
   assert.equal(ledger.entries.reduce((sum, entry) => sum + entry.rawCredit, 0), ledger.rawEvidenceNumerator);
   assert.deepEqual(ledger.formalProgress, {
@@ -24,7 +24,9 @@ test("canonical production ledger reconciles all 31 plan rows without runtime pr
   assert.equal(bcWildfire.rawCredit, 1);
   assert.ok(bcWildfire.evidenceRefs.includes("data/bc-wildfire-geometry-policy-2026-08-14.json"));
   assert.equal(bcWildfire.proof.immutableArchive, true);
-  assert.equal(bcWildfire.proof.productionAdmission, false);
+  assert.equal(bcWildfire.proof.productionAdmission, true);
+  assert.equal(bcWildfire.productionEligible, true);
+  assert.ok(bcWildfire.evidenceRefs.includes("data/current-wildfire-downstream-reconciliation.json"));
   const nrcanHarvest = ledger.entries.find((entry) => entry.id === "ntems-forest-harvest");
   assert.equal(nrcanHarvest.evidenceState, "remote-verified-archived-profiled");
   assert.equal(nrcanHarvest.rawCredit, 1);

@@ -31,8 +31,8 @@
       "access-blocked": 13
     },
     "immutableArchiveCompleteRows": 11,
-    "productionAdmissionCompleteRows": 0,
-    "productionEligibleRows": 0,
+    "productionAdmissionCompleteRows": 4,
+    "productionEligibleRows": 4,
     "queueRowCount": 16
   },
   "rows": [

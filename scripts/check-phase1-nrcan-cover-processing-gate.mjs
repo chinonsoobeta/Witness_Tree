@@ -13,8 +13,8 @@ const BASELINE = {
   rawEvidenceDenominator: 31,
   formalEvidenceTrackingPercentage: 39.7580645,
   immutableArchiveCompleteRows: 11,
-  productionAdmissionCompleteRows: 0,
-  productionEligibleRows: 0,
+  productionAdmissionCompleteRows: 4,
+  productionEligibleRows: 4,
 };
 
 function existingReferences(refs) {

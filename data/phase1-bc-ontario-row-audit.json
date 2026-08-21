@@ -4,7 +4,7 @@
   "auditedAt": "2026-08-21T00:00:00Z",
   "derivedFromHead": "4466a14dd1462d09692db869523df713a6db2291",
   "jurisdictions": ["BC", "ON"],
-  "notice": "This audit reconciles the eleven BC/ON production rows against the canonical ledger and existing local or independently verified route, reply, geometry, and archive records. It performs no AWS call, email, form submission, permission acceptance, archive mutation, transformation, ingestion, release, production admission, or production-eligibility change.",
+  "notice": "This audit reconciles the eleven BC/ON production rows against the canonical ledger and existing local or independently verified route, reply, geometry, and archive records. It performs no AWS call, email, form submission, permission acceptance, archive mutation or deployment; BC and Ontario wildfire admission is repository-local reconciliation of the explicit approval after its 6/6 condition passed.",
   "canonicalRowIds": [
     "bc-wildfire",
     "on-fire-disturbance",
@@ -30,15 +30,15 @@
       "access-blocked": 13
     },
     "immutableArchiveCompleteRows": 11,
-    "productionAdmissionCompleteRows": 0,
-    "productionEligibleRows": 0,
+    "productionAdmissionCompleteRows": 4,
+    "productionEligibleRows": 4,
     "bcOntarioRows": 11,
     "bcOntarioRawCredit": 2.25,
     "bcOntarioRawCreditDelta": 0,
     "currentWildfireArchiveGate": {
       "requiredObjects": 6,
       "verifiedObjects": 6,
-      "productionEligible": false
+      "productionEligible": true
     }
   },
   "claims": {
@@ -46,19 +46,20 @@
     "externalReplyResolved": false,
     "permissionGranted": false,
     "archiveEvidenceAdded": false,
-    "productionAdmission": false,
-    "productionEligible": false
+    "productionAdmission": true,
+    "productionEligible": true
   },
   "groups": [
     {
       "id": "bc-ontario-current-wildfire-derived-gate",
       "rows": ["bc-wildfire", "on-fire-disturbance"],
-      "category": "remote-raw-archive-derived-readback-blocked",
-      "currentStatus": "Both BC and Ontario raw snapshots and both checksum-bound derived payload/manifest pairs have redacted exact-key primary readback and payload-retention evidence. Recovery or mutation provenance and separate production admission remain unproven.",
+      "category": "production-admitted-after-six-object-gate",
+      "currentStatus": "Both BC and Ontario raw snapshots and both checksum-bound derived payloads have passed the sole approved six-object immutable-readback condition and are production admitted within their exact geometry boundaries.",
       "evidenceRefs": [
         "data/current-wildfire-raw-archive-evidence.json",
         "data/current-wildfire-derived-archive-evidence.json",
         "data/current-wildfire-owner-admission.json",
+        "data/current-wildfire-downstream-reconciliation.json",
         "data/current-wildfire-derived-live-recovery-guard-2026-08-20.json",
         "data/bc-wildfire-geometry-policy-2026-08-14.json",
         "data/ontario-in-year-fire-geometry-policy-2026-08-14.json"
@@ -67,17 +68,13 @@
         "requiredObjects": 6,
         "verifiedObjects": 6,
         "derivedObjectsVerified": true,
-        "productionEligible": false
+        "productionEligible": true
       },
       "currentRawCreditDelta": 0,
       "maximumRawCreditDelta": 0,
       "maximumFormalPercentagePointDelta": 0,
-      "nextLawfulAction": "Preserve the six primary readbacks, obtain any separately required recovery or mutation-provenance evidence, and record production admission only after every downstream gate passes.",
-      "blockers": [
-        "Recovery-replica or mutation provenance for the derived pair is absent from the redacted evidence.",
-        "Separate transformation, ingestion, release and production-admission records remain absent.",
-        "Production remains blocked even though the raw rows already carry one raw-evidence credit each."
-      ]
+      "nextLawfulAction": "Preserve the six primary readbacks and the admitted BC and Ontario geometry and release boundaries.",
+      "blockers": []
     },
     {
       "id": "bc-access-blocked-routes",
@@ -167,23 +164,24 @@
       "evidenceState": "remote-verified-archived-profiled",
       "rawCredit": 1,
       "immutableArchive": true,
-      "productionAdmission": false,
-      "productionEligible": false,
+      "productionAdmission": true,
+      "productionEligible": true,
       "evidenceRefs": [
         "data/staged-acquisitions.json",
         "data/bc-wildfire-current-perimeters-profile.json",
         "data/bc-wildfire-geometry-policy-2026-08-14.json",
         "data/current-wildfire-owner-admission.json",
         "data/current-wildfire-raw-archive-evidence.json",
-        "data/current-wildfire-derived-archive-evidence.json"
+        "data/current-wildfire-derived-archive-evidence.json",
+        "data/current-wildfire-downstream-reconciliation.json"
       ],
       "replyRecordIds": [],
       "currentRawCreditDelta": 0,
       "maximumRawCreditDelta": 0,
       "maximumFormalPercentagePointDelta": 0,
-      "nextAction": "Review any separately required recovery or mutation-provenance evidence, then record the separate transformation, release and production-admission decisions.",
-      "blockers": ["Derived primary readback and payload retention are verified; recovery or mutation provenance and separate downstream admission records remain absent."],
-      "claims": {"archiveMutation": false, "permissionGranted": false, "externalReplyResolved": false, "productionAdmission": false, "productionEligible": false}
+      "nextAction": "Preserve the 216-feature boundary, repaired G70362 and permanent V10755 quarantine.",
+      "blockers": [],
+      "claims": {"archiveMutation": false, "permissionGranted": false, "externalReplyResolved": false, "productionAdmission": true, "productionEligible": true}
     },
     {
       "id": "on-fire-disturbance",
@@ -191,23 +189,24 @@
       "evidenceState": "remote-verified-archived-profiled",
       "rawCredit": 1,
       "immutableArchive": true,
-      "productionAdmission": false,
-      "productionEligible": false,
+      "productionAdmission": true,
+      "productionEligible": true,
       "evidenceRefs": [
         "data/staged-acquisitions.json",
         "data/ontario-in-year-fire-perimeters-profile.json",
         "data/ontario-in-year-fire-geometry-policy-2026-08-14.json",
         "data/current-wildfire-owner-admission.json",
         "data/current-wildfire-raw-archive-evidence.json",
-        "data/current-wildfire-derived-archive-evidence.json"
+        "data/current-wildfire-derived-archive-evidence.json",
+        "data/current-wildfire-downstream-reconciliation.json"
       ],
       "replyRecordIds": [],
       "currentRawCreditDelta": 0,
       "maximumRawCreditDelta": 0,
       "maximumFormalPercentagePointDelta": 0,
-      "nextAction": "Review any separately required recovery or mutation-provenance evidence, then record the separate transformation, release and production-admission decisions.",
-      "blockers": ["Derived primary readback and payload retention are verified; recovery or mutation provenance and separate downstream admission records remain absent."],
-      "claims": {"archiveMutation": false, "permissionGranted": false, "externalReplyResolved": false, "productionAdmission": false, "productionEligible": false}
+      "nextAction": "Preserve the 188-feature closed join, nine bounded repairs and zero exclusions.",
+      "blockers": [],
+      "claims": {"archiveMutation": false, "permissionGranted": false, "externalReplyResolved": false, "productionAdmission": true, "productionEligible": true}
     },
     {
       "id": "bc-fta-cutblocks",
@@ -370,10 +369,10 @@
     }
   ],
   "reconciliation": {
-    "rowStateChanges": [],
+    "rowStateChanges": ["bc-wildfire", "on-fire-disturbance"],
     "rawCreditChanges": [],
-    "productionAdmissionChanges": [],
-    "unresolvedBlockerCount": 11,
+    "productionAdmissionChanges": ["bc-wildfire", "on-fire-disturbance"],
+    "unresolvedBlockerCount": 9,
     "scoreRemainsBounded": true,
     "scoreChange": 0
   }

@@ -13,8 +13,8 @@ const CLAIMS = {
   transformed: false,
   ingested: false,
   released: false,
-  productionAdmission: false,
-  productionEligible: false
+  productionAdmission: true,
+  productionEligible: true
 };
 
 const EXPECTED_GROUPS = new Map([
@@ -158,9 +158,9 @@ function validateLocalImplementationAudit(local, actions, ledger) {
   assert.equal(local.coverage.localGatesIncomplete, 0);
   assert.equal(local.coverage.deferredOwnerOrExternalGaps, local.gaps.length);
   assert.deepEqual(local.coverage.scoreDelta, { rawCreditDelta: 0, formalPercentagePointDelta: 0 });
-  assert.equal(local.coverage.allProductionAdmissionFalse, true);
-  assert.equal(local.coverage.allProductionEligibleFalse, true);
-  assert.equal(ledger.entries.every((entry) => entry.proof.productionAdmission === false && entry.productionEligible === false), true);
+  assert.equal(local.coverage.allProductionAdmissionFalse, false);
+  assert.equal(local.coverage.allProductionEligibleFalse, false);
+  assert.equal(ledger.entries.filter((entry) => entry.proof.productionAdmission && entry.productionEligible).length, 4);
 }
 
 export function validatePhase1RemainingActionsAudit(audit, ledger, currentState, readiness, immutable, wildfire, replyAudit, partialOutreach, accessBlocker) {
@@ -196,8 +196,8 @@ export function validatePhase1RemainingActionsAudit(audit, ledger, currentState,
   assert.equal(currentState.ledger.rawEvidenceNumerator, audit.baseline.rawEvidenceNumerator);
   assert.equal(currentState.ledger.formalEvidenceTrackingPercentage, audit.baseline.formalEvidenceTrackingPercentage);
   assert.equal(currentState.ledger.immutableArchiveCompleteRows, audit.baseline.immutableArchiveCompleteRows);
-  assert.equal(currentState.ledger.productionAdmissionCompleteRows, 0);
-  assert.equal(currentState.ledger.productionEligibleRows, 0);
+  assert.equal(currentState.ledger.productionAdmissionCompleteRows, 4);
+  assert.equal(currentState.ledger.productionEligibleRows, 4);
   assert.deepEqual(currentState.globalGates.immutableArchives, { status: "blocked", completeRows: 11, localRowsAwaitingArchive: 5, sourceEvidenceBlockedRows: 15, currentWildfireRequiredObjects: 6, currentWildfireVerifiedObjects: 6 });
   assert.equal(currentState.globalGates.outreach.repliesRecorded, replyAudit.counts.substantiveReplyRecords);
   assert.equal(currentState.globalGates.outreach.accessBlockedRowsWithSubstantiveReply, replyAudit.counts.accessBlockedRowsWithSubstantiveReply);
@@ -205,7 +205,7 @@ export function validatePhase1RemainingActionsAudit(audit, ledger, currentState,
   assert.equal(accessBlocker.status, "all-13-access-blocked-no-lawful-acquisition");
   assert.equal(readiness.entries.length, entries.length);
 
-  assert.deepEqual(audit.scope, { auditedRowCount: 31, rowsWithoutImmutableRemoteProof: 20, rowsWithoutProductionAdmission: 31, rowsSelectedByRule: 31, allProductionRowsRemainNonAdmitted: true, allProductionRowsRemainIneligible: true });
+  assert.deepEqual(audit.scope, { auditedRowCount: 31, rowsWithoutImmutableRemoteProof: 20, rowsWithoutProductionAdmission: 27, rowsSelectedByRule: 27, allProductionRowsRemainNonAdmitted: false, allProductionRowsRemainIneligible: false });
   assert.equal(entries.filter(({ proof }) => !proof.immutableArchive).length, audit.scope.rowsWithoutImmutableRemoteProof);
   assert.equal(entries.filter(({ proof }) => !proof.productionAdmission).length, audit.scope.rowsWithoutProductionAdmission);
   validatePhysicalArtifactGroups(audit, immutable);
@@ -253,13 +253,14 @@ export function validatePhase1RemainingActionsAudit(audit, ledger, currentState,
     const maximumRawCreditDelta = 1 - entry.rawCredit;
     assert.equal(coverage.maximumRawCreditDeltaToRemote, maximumRawCreditDelta);
     assert.equal(coverage.maximumFormalPercentagePointDeltaToRemote, formalDelta(maximumRawCreditDelta));
-    assert.ok(coverage.remainingActionIds.length >= 1);
+    if (entry.productionEligible) assert.deepEqual(coverage.remainingActionIds, []);
+    else assert.ok(coverage.remainingActionIds.length >= 1);
     for (const actionId of coverage.remainingActionIds) {
       const action = actionsById.get(actionId);
       assert.ok(action, `${coverage.id} references unknown action ${actionId}`);
       assert.ok(action.rows.includes(coverage.id), `${coverage.id} is not covered by ${actionId}`);
     }
-    assert.ok(coverage.remainingActionIds.includes("production-admission-and-release-gate"));
+    if (!entry.productionEligible) assert.ok(coverage.remainingActionIds.includes("production-admission-and-release-gate"));
   }
   return audit;
 }

@@ -1,6 +1,6 @@
 # Current-wildfire owner admission
 
-The owner has approved the exact Phase 1 transformation, ingestion, public-release and production-admission scope for the four checksum-bound current-wildfire snapshots. This clears the BC and Ontario geometry decisions and resolves the CWFIS and Alberta operational semantics. It does **not** make any source production eligible: the machine record now has redacted primary readbacks for all six required payloads, but recovery or mutation provenance and separate downstream admission records remain absent.
+The owner approved the exact Phase 1 transformation, ingestion, public-release and production-admission scope for the four checksum-bound current-wildfire snapshots. The sole stated condition—repository-integrated immutable readback evidence for the four raw and two required derived payloads—now passes 6/6. Exactly these four rows are production admitted; this is repository-local reconciliation, not deployment.
 
 The binding record is [`data/current-wildfire-owner-admission.json`](../data/current-wildfire-owner-admission.json). Its gate requires exact object keys, version IDs, byte lengths, full-object checksum verification, exact-version readbacks, Canadian `ca-central-1` storage and active COMPLIANCE retention through at least `2033-08-12T00:00:00Z` for four raw objects and the two required derived objects.
 
@@ -19,7 +19,7 @@ Within a province, the responsible provincial wildfire agency source prevails ov
 
 ## Remaining activation gate
 
-No AWS operation is part of this decision. The six-object primary archive gate is now `6/6` from the integrated raw and derived redacted records. Production eligibility remains `false` until recovery or mutation provenance and separate transformation, ingestion, release and production-admission records are proven. Owner approval cannot substitute for those downstream records, and the existing raw provenance and geometry policies remain unchanged.
+No AWS operation is part of this decision. The six-object primary archive gate is `6/6` from the integrated raw and derived redacted records. Recovery replication and mutation provenance were not conditions in the approval and cannot be introduced afterward as additional blockers. The existing raw provenance and geometry policies remain unchanged.
 
 ## Derived archive recovery
 

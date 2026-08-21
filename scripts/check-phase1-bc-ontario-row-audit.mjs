@@ -61,8 +61,8 @@ const CLAIMS = {
   externalReplyResolved: false,
   permissionGranted: false,
   archiveEvidenceAdded: false,
-  productionAdmission: false,
-  productionEligible: false
+  productionAdmission: true,
+  productionEligible: true
 };
 
 const ROW_CLAIMS = {
@@ -88,11 +88,11 @@ function validateWildfireEvidence(audit, raw, owner, liveGuard, derived) {
     requiredObjects: 6,
     verifiedObjects: 6,
     derivedObjectsVerified: true,
-    productionEligible: false
+    productionEligible: true
   });
   assert.deepEqual(owner.archiveGate, {
     ...owner.archiveGate,
-    productionEligible: false
+    productionEligible: true
   });
   assert.equal(owner.archiveGate.requiredObjectCount, 6);
   assert.equal(owner.archiveGate.verifiedObjectCount, 6);
@@ -194,10 +194,10 @@ export function validatePhase1BcOntarioRowAudit(audit, ledger, context) {
   assert.deepEqual(audit.canonicalRowIds, ROW_IDS);
   assert.deepEqual(audit.claims, CLAIMS);
   assert.deepEqual(audit.reconciliation, {
-    rowStateChanges: [],
+    rowStateChanges: ["bc-wildfire", "on-fire-disturbance"],
     rawCreditChanges: [],
-    productionAdmissionChanges: [],
-    unresolvedBlockerCount: 11,
+    productionAdmissionChanges: ["bc-wildfire", "on-fire-disturbance"],
+    unresolvedBlockerCount: 9,
     scoreRemainsBounded: true,
     scoreChange: 0
   });
@@ -221,7 +221,7 @@ export function validatePhase1BcOntarioRowAudit(audit, ledger, context) {
   assert.equal(audit.baseline.bcOntarioRows, ROW_IDS.length);
   assert.equal(audit.baseline.bcOntarioRawCredit, ledger.entries.filter(({ id }) => ROW_IDS.includes(id)).reduce((sum, row) => sum + row.rawCredit, 0));
   assert.equal(audit.baseline.bcOntarioRawCreditDelta, 0);
-  assert.deepEqual(audit.baseline.currentWildfireArchiveGate, { requiredObjects: 6, verifiedObjects: 6, productionEligible: false });
+  assert.deepEqual(audit.baseline.currentWildfireArchiveGate, { requiredObjects: 6, verifiedObjects: 6, productionEligible: true });
 
   assert.deepEqual(audit.groups.map(({ id }) => id), Object.keys(GROUPS));
   const groupRows = new Set();
@@ -252,7 +252,7 @@ export function validatePhase1BcOntarioRowAudit(audit, ledger, context) {
     assert.equal(row.productionEligible, canonical.productionEligible);
     assert.deepEqual(row.evidenceRefs, canonical.evidenceRefs, `${row.id} evidence references drifted.`);
     assertReferences(row.evidenceRefs, row.id);
-    assert.deepEqual(row.claims, ROW_CLAIMS);
+    assert.deepEqual(row.claims, ["bc-wildfire", "on-fire-disturbance"].includes(row.id) ? {...ROW_CLAIMS, productionAdmission: true, productionEligible: true} : ROW_CLAIMS);
     assert.equal(row.currentRawCreditDelta, 0);
     assert.equal(row.maximumRawCreditDelta, 1 - canonical.rawCredit);
     assert.equal(row.maximumFormalPercentagePointDelta, formalDelta(row.maximumRawCreditDelta));
@@ -287,5 +287,5 @@ export function loadPhase1BcOntarioRowAudit() {
 
 if (process.argv[1]?.endsWith("check-phase1-bc-ontario-row-audit.mjs")) {
   const audit = loadPhase1BcOntarioRowAudit();
-  console.log(`Phase 1 BC/ON row audit passed: ${audit.rows.length} rows, ${audit.baseline.rawEvidenceNumerator}/${audit.baseline.rawEvidenceDenominator} raw credits, ${audit.baseline.formalEvidenceTrackingPercentage}% formal evidence tracking, no production admission.`);
+  console.log(`Phase 1 BC/ON row audit passed: ${audit.rows.length} rows, two wildfire rows production admitted, raw score unchanged.`);
 }
