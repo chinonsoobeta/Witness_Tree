@@ -324,6 +324,7 @@ test("PTY recovery succeeds with exact heads and retention while making no unrel
     const calls = readFileSync(fake.marker, "utf8").trim().split("\n");
     assert.equal(calls.filter((call) => call.includes("sts get-session-token")).length, 0);
     assert.equal(calls.filter((call) => call.includes("sts assume-role") && call.includes("--serial-number") && call.includes("--token-code")).length, 1);
+    assert.equal(calls.filter((call) => call.includes("--role-arn arn:aws:iam::286853118812:role/WitnessTreeArchivePromotionUploader")).length, 1);
     assert.equal(calls.filter((call) => call.includes("put-object-retention")).length, 2);
     assert.equal(calls.filter((call) => call.includes("head-object")).length, 12);
     assert.ok(calls.every((call) => !call.startsWith("iam ")));
