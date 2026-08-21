@@ -7,8 +7,8 @@ const ledgerUrl = new URL("../data/phase1-production-source-ledger.json", import
 const read = (url) => JSON.parse(readFileSync(url, "utf8"));
 const expectedRows = ["cwfis-historical", "provincial-electoral-boundaries"];
 const expectedCounts = {
-  "remote-verified-archived-profiled": 11,
-  "local-verified-profiled": 5,
+  "remote-verified-archived-profiled": 7,
+  "local-verified-profiled": 9,
   "partial-component": 2,
   "access-blocked": 13,
 };
@@ -103,7 +103,7 @@ export function validatePhase1PartialSourceRouteExhaustion(record, ledger) {
   assert.equal(record.impact.formalEvidenceTrackingPercentageBefore, ledger.formalProgress.percentage);
   assert.equal(record.impact.formalEvidenceTrackingPercentageAfter, ledger.formalProgress.percentage);
   assert.deepEqual(record.impact.evidenceStateCounts, expectedCounts);
-  assert.equal(record.impact.immutableArchiveCompleteRows, 11);
+  assert.equal(record.impact.immutableArchiveCompleteRows, 7);
   assert.equal(record.impact.productionEligibleRows, 0);
   return record;
 }

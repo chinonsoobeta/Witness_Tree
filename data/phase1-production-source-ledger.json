@@ -98,13 +98,12 @@
     },
     {
       "id": "cwfis-current",
-      "evidenceState": "remote-verified-archived-profiled",
+      "evidenceState": "local-verified-profiled",
       "evidenceRefs": [
         "data/staged-acquisitions.json",
         "data/cwfis-current-active-fires-profile.json",
         "data/current-wildfire-owner-admission.json",
-        "data/current-wildfire-raw-archive-evidence.json",
-        "data/current-wildfire-downstream-reconciliation.json"
+        "data/current-wildfire-raw-archive-evidence.json"
       ],
       "proof": {
         "licence": true,
@@ -113,12 +112,12 @@
         "checksum": true,
         "rawArchiveRefetch": true,
         "profile": true,
-        "immutableArchive": true,
-        "productionAdmission": true
+        "immutableArchive": false,
+        "productionAdmission": false
       },
-      "rawCredit": 1,
-      "productionEligible": true,
-      "blocker": "Admitted only as the approved checksum-bound 586-point as-of national fallback snapshot; provincial sources prevail, and real-time, completeness, incident-perimeter and emergency-direction claims remain prohibited."
+      "rawCredit": 0.75,
+      "productionEligible": false,
+      "blocker": "Owner scope and downstream decisions are conditional. The repository has local checksum/profile evidence and six placeholder-only archive attestations, but no concrete version identifiers or non-placeholder provider checksum values that machine-verifiably bind the exact payloads. Immutable archive proof, exact-version readback, ingestion, release and production admission remain blocked."
     },
     {
       "id": "cwfis-historical",
@@ -143,15 +142,14 @@
     },
     {
       "id": "bc-wildfire",
-      "evidenceState": "remote-verified-archived-profiled",
+      "evidenceState": "local-verified-profiled",
       "evidenceRefs": [
         "data/staged-acquisitions.json",
         "data/bc-wildfire-current-perimeters-profile.json",
         "data/bc-wildfire-geometry-policy-2026-08-14.json",
         "data/current-wildfire-owner-admission.json",
         "data/current-wildfire-raw-archive-evidence.json",
-        "data/current-wildfire-derived-archive-evidence.json",
-        "data/current-wildfire-downstream-reconciliation.json"
+        "data/current-wildfire-derived-archive-evidence.json"
       ],
       "proof": {
         "licence": true,
@@ -160,22 +158,21 @@
         "checksum": true,
         "rawArchiveRefetch": true,
         "profile": true,
-        "immutableArchive": true,
-        "productionAdmission": true
+        "immutableArchive": false,
+        "productionAdmission": false
       },
-      "rawCredit": 1,
-      "productionEligible": true,
-      "blocker": "Admitted only as the approved 216-feature geometry release: 215 unchanged plus repaired G70362; V10755 remains permanently quarantined at 3.167100456% area delta, and 217-feature geometry coverage must never be claimed."
+      "rawCredit": 0.75,
+      "productionEligible": false,
+      "blocker": "Owner approved only the 216-feature geometry policy: 215 unchanged plus bounded repair G70362, with V10755 permanently quarantined and no 217-feature coverage claim. Raw and derived records contain placeholder-only archive attestations without concrete version identifiers or non-placeholder provider checksums, so immutable proof, ingestion, release and production admission remain blocked."
     },
     {
       "id": "ab-wildfire",
-      "evidenceState": "remote-verified-archived-profiled",
+      "evidenceState": "local-verified-profiled",
       "evidenceRefs": [
         "data/staged-acquisitions.json",
         "data/alberta-wildfire-locations-profile.json",
         "data/current-wildfire-owner-admission.json",
-        "data/current-wildfire-raw-archive-evidence.json",
-        "data/current-wildfire-downstream-reconciliation.json"
+        "data/current-wildfire-raw-archive-evidence.json"
       ],
       "proof": {
         "licence": true,
@@ -184,24 +181,23 @@
         "checksum": true,
         "rawArchiveRefetch": true,
         "profile": true,
-        "immutableArchive": true,
-        "productionAdmission": true
+        "immutableArchive": false,
+        "productionAdmission": false
       },
-      "rawCredit": 1,
-      "productionEligible": true,
-      "blocker": "Admitted only as the approved checksum-bound 751-point as-of snapshot; perimeter inference, real-time claims and complete-perimeter claims remain prohibited."
+      "rawCredit": 0.75,
+      "productionEligible": false,
+      "blocker": "Owner scope and downstream decisions are conditional for an as-of point snapshot that is neither real-time nor a complete perimeter dataset. Placeholder-only archive attestations do not supply concrete version identifiers or non-placeholder provider checksums, so immutable proof, ingestion, release and production admission remain blocked."
     },
     {
       "id": "on-fire-disturbance",
-      "evidenceState": "remote-verified-archived-profiled",
+      "evidenceState": "local-verified-profiled",
       "evidenceRefs": [
         "data/staged-acquisitions.json",
         "data/ontario-in-year-fire-perimeters-profile.json",
         "data/ontario-in-year-fire-geometry-policy-2026-08-14.json",
         "data/current-wildfire-owner-admission.json",
         "data/current-wildfire-raw-archive-evidence.json",
-        "data/current-wildfire-derived-archive-evidence.json",
-        "data/current-wildfire-downstream-reconciliation.json"
+        "data/current-wildfire-derived-archive-evidence.json"
       ],
       "proof": {
         "licence": true,
@@ -210,12 +206,12 @@
         "checksum": true,
         "rawArchiveRefetch": true,
         "profile": true,
-        "immutableArchive": true,
-        "productionAdmission": true
+        "immutableArchive": false,
+        "productionAdmission": false
       },
-      "rawCredit": 1,
-      "productionEligible": true,
-      "blocker": "Admitted only as the approved 188-feature closed-join release: 179 unchanged plus nine bounded repairs, zero exclusions, preserved object IDs, and no publisher freshness or completeness guarantee."
+      "rawCredit": 0.75,
+      "productionEligible": false,
+      "blocker": "Owner approved the 188-feature geometry policy: 179 unchanged plus all nine bounded repairs with zero exclusion. Raw and derived records contain placeholder-only archive attestations without concrete version identifiers or non-placeholder provider checksums, so immutable proof, ingestion, release and production admission remain blocked."
     },
     {
       "id": "sopfeu",
@@ -671,12 +667,12 @@
       "blocker": "CIRNAC's official map is informal, approximate, subject to revision, and expressly cannot be relied on for consultation. It is not legal or precision boundary geometry; no admissible legal artifact, rights, checksum/archive recovery, or engagement route is verified."
     }
   ],
-  "rawEvidenceNumerator": 15.25,
+  "rawEvidenceNumerator": 14.25,
   "formalProgress": {
     "baselinePercentagePoints": 25,
     "rawEvidenceWeightPercentagePoints": 30,
     "completeLedgerWeightPercentagePoints": 45,
-    "percentage": 39.7580645,
+    "percentage": 38.7903226,
     "notice": "This is an evidence-tracking score only. It does not grant source-ledger admission, transformation, analysis, ingestion, public release, production admission, or production eligibility."
   }
 }

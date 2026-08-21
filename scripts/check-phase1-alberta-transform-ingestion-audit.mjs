@@ -131,10 +131,10 @@ export function validatePhase1AlbertaTransformIngestionAudit(audit, context) {
   assert.deepEqual(audit.rows.map(({ id }) => id), ROW_IDS);
   assert.deepEqual(audit.baseline, {
     productionRows: 31,
-    rawEvidenceNumerator: 15.25,
+    rawEvidenceNumerator: 14.25,
     rawEvidenceDenominator: 31,
-    formalEvidenceTrackingPercentage: 39.7580645,
-    immutableArchiveCompleteRows: 11,
+    formalEvidenceTrackingPercentage: 38.7903226,
+    immutableArchiveCompleteRows: 7,
     productionAdmissionCompleteRows: 0,
     productionEligibleRows: 0,
   });

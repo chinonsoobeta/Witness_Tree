@@ -8,8 +8,8 @@ const audit = checkPhase1NrcanCoverProcessingGate();
 
 test("the NTEMS cover gate binds both rows to existing local/archive checks", () => {
   assert.equal(audit.rows.length, 2);
-  assert.equal(audit.baseline.rawEvidenceNumerator, 15.25);
-  assert.equal(audit.baseline.formalEvidenceTrackingPercentage, 39.7580645);
+  assert.equal(audit.baseline.rawEvidenceNumerator, 14.25);
+  assert.equal(audit.baseline.formalEvidenceTrackingPercentage, 38.7903226);
   assert.deepEqual(audit.rows.map(({ transformation }) => transformation.status), [
     "blocked-no-approved-named-specification",
     "blocked-no-approved-named-specification",

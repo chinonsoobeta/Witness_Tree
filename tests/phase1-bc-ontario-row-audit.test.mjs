@@ -23,8 +23,8 @@ const context = {
 test("BC/ON row audit reconciles every scoped row to canonical state without credit or admission", () => {
   assert.equal(validatePhase1BcOntarioRowAudit(audit, ledger, context), audit);
   assert.equal(audit.rows.length, 11);
-  assert.equal(audit.baseline.rawEvidenceNumerator, 15.25);
-  assert.equal(audit.baseline.formalEvidenceTrackingPercentage, 39.7580645);
+  assert.equal(audit.baseline.rawEvidenceNumerator, 14.25);
+  assert.equal(audit.baseline.formalEvidenceTrackingPercentage, 38.7903226);
   assert.equal(audit.baseline.bcOntarioRawCreditDelta, 0);
   assert.equal(audit.reconciliation.scoreChange, 0);
 });
@@ -45,7 +45,7 @@ test("BC/ON audit rejects invented permission, archive, reply, or production cla
   assert.throws(() => validatePhase1BcOntarioRowAudit(permission, ledger, context), /Expected values|fail-closed|permissionGranted/i);
 
   const archive = structuredClone(audit);
-  archive.groups[0].currentWildfireArchiveGate.derivedObjectsVerified = false;
+  archive.groups[0].currentWildfireArchiveGate.derivedObjectsVerified = true;
   assert.throws(() => validatePhase1BcOntarioRowAudit(archive, ledger, context), /Expected values|derivedObjectsVerified|deepStrictEqual/i);
 
   const reply = structuredClone(audit);

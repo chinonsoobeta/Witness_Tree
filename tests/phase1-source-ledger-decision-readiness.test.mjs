@@ -8,17 +8,17 @@ const audit = read("../data/phase1-source-ledger-decision-readiness.json");
 const ledger = read("../data/phase1-production-source-ledger.json");
 const decisions = read("../data/phase1-remote-source-admission-decisions.json");
 
-test("decision-readiness matrix reconciles exactly four admitted rows", () => {
+test("decision-readiness matrix reconciles all rows and stays strictly non-admitting", () => {
   assert.equal(validatePhase1SourceLedgerDecisionReadiness(audit, ledger, decisions), audit);
-  assert.deepEqual(audit.counts, { "owner-decision-recorded": 7, "immutable-archive-then-owner-decision": 5, "owner-scope-decision-after-archive": 0, "owner-scope-decision-recorded-awaiting-archive": 0, "owner-scope-decision-ready": 0, "production-admitted": 4, "external-evidence-blocked": 15 });
+  assert.deepEqual(audit.counts, { "owner-decision-recorded": 7, "immutable-archive-then-owner-decision": 5, "owner-scope-decision-after-archive": 0, "owner-scope-decision-recorded-awaiting-archive": 4, "owner-scope-decision-ready": 0, "external-evidence-blocked": 15 });
   const harvest = audit.entries.find(({ id }) => id === "ntems-forest-harvest");
   assert.equal(harvest.readiness, "owner-decision-recorded");
   assert.equal(ledger.entries.find(({ id }) => id === "ntems-forest-harvest").proof.immutableArchive, true);
-  assert.equal(audit.reconciliation.productionProofChangedRows, 4);
-  assert.equal(audit.reconciliation.productionEligibleChangedRows, 4);
-  assert.equal(audit.reconciliation.transformationAuthorizedRows, 4);
-  assert.equal(audit.reconciliation.ingestionAuthorizedRows, 4);
-  assert.equal(audit.reconciliation.releaseAuthorizedRows, 4);
+  assert.equal(audit.nonProduction.productionProofChanged, false);
+  assert.equal(audit.nonProduction.productionEligibleChanged, false);
+  assert.equal(audit.nonProduction.transformationAuthorized, false);
+  assert.equal(audit.nonProduction.ingestionAuthorized, false);
+  assert.equal(audit.nonProduction.releaseAuthorized, false);
 });
 
 test("matrix fails closed for an inferred decision, a missing scope, or duplicate Elections archival work", () => {

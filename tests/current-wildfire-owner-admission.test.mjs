@@ -10,29 +10,31 @@ const ledger = read("../data/phase1-production-source-ledger.json");
 const profiles = {"cwfis-current":read("../data/cwfis-current-active-fires-profile.json"),"bc-wildfire":read("../data/bc-wildfire-current-perimeters-profile.json"),"ab-wildfire":read("../data/alberta-wildfire-locations-profile.json"),"on-fire-disturbance":read("../data/ontario-in-year-fire-perimeters-profile.json")};
 const policies = {bc:read("../data/bc-wildfire-geometry-policy-2026-08-14.json"),ontario:read("../data/ontario-in-year-fire-geometry-policy-2026-08-14.json")};
 
-test("owner approval activates the exact four-source scope after immutable evidence passes", () => {
+test("owner approves the exact four-source scope while immutable evidence keeps production blocked", () => {
   assert.equal(validateCurrentWildfireOwnerAdmission(record, ledger, profiles, policies), record);
-  assert.equal(record.archiveGate.verifiedObjectCount, 6);
-  assert.equal(record.archiveGate.primaryReadbacksVerified, true);
+  assert.equal(record.archiveGate.verifiedObjectCount, 0);
+  assert.equal(record.archiveGate.attestedObjectCount, 6);
+  assert.equal(record.archiveGate.primaryReadbacksVerified, false);
   assert.equal(record.archiveGate.recoveryReplicaVerified, false);
-  assert.equal(record.pipeline.productionEligible, true);
+  assert.equal(record.pipeline.productionEligible, false);
 });
 
-test("redacted raw plus derived readbacks close the sole six-object condition", () => {
+test("redacted booleans and placeholder checksums do not close the six-object primary gate", () => {
   const raw = read("../data/current-wildfire-raw-archive-evidence.json");
   const derived = read("../data/current-wildfire-derived-archive-evidence.json");
-  assert.equal(primaryEvidenceSatisfiesCurrentWildfireGate(raw, derived), true);
+  assert.equal(primaryEvidenceSatisfiesCurrentWildfireGate(raw, derived), false);
   assert.equal(derived.claims.mutationProvenance, false);
   assert.equal(derived.claims.recoveryReplicaVerified, false);
-  assert.equal(record.pipeline.productionEligible, true);
+  assert.equal(record.pipeline.productionEligible, false);
 });
 
-test("the redacted six-object gate rejects any raw or derived evidence drift", () => {
+test("the primary gate rejects fabricated booleans, placeholders, or evidence drift", () => {
   const raw = read("../data/current-wildfire-raw-archive-evidence.json");
   const derived = read("../data/current-wildfire-derived-archive-evidence.json");
   for (const mutate of [
     (candidate) => { candidate.entries[0].bytes += 1; },
     (candidate) => { candidate.entries[1].payloadRetention.until = "2033-08-11T23:59:59Z"; },
+    (candidate) => { candidate.entries[0].payloadVersionPresent = true; candidate.entries[0].payloadChecksum.providerValue = "redacted-present"; },
   ]) {
     const changed = structuredClone(raw);
     mutate(changed);
@@ -40,7 +42,7 @@ test("the redacted six-object gate rejects any raw or derived evidence drift", (
   }
   for (const mutate of [
     (candidate) => { candidate.objects.find(({ id }) => id === "bc-wildfire-derived-payload").key = "derived/bc-wildfire/geometry-policy-v1/legacy.gpkg"; },
-    (candidate) => { candidate.objects.find(({ id }) => id === "on-fire-disturbance-derived-payload").checksum.providerValue = "drifted"; },
+    (candidate) => { candidate.objects.find(({ id }) => id === "on-fire-disturbance-derived-payload").checksum.providerValue = "redacted-present"; },
   ]) {
     const changed = structuredClone(derived);
     mutate(changed);
@@ -73,7 +75,7 @@ test("only six exact immutable readbacks can satisfy the archive prerequisite", 
   const evidence = {
     schemaVersion: "witness-tree/current-wildfire-immutable-readbacks/1",
     region: "ca-central-1",
-    objects: requiredCurrentWildfireObjects.map((object, index) => ({...object,versionId:`version-${index}-exact`,fullObjectChecksumVerified:true,exactVersionReadback:true,retention:{mode:"COMPLIANCE",retainUntil:"2033-08-12T00:00:00Z",readbackVerified:true}}))
+    objects: requiredCurrentWildfireObjects.map((object, index) => ({...object,versionId:`version-${index}-exact`,fullObjectChecksumVerified:true,checksum:{type:"FULL_OBJECT",algorithm:"CRC64NVME",providerValue:`provider-checksum-${index}`},exactVersionReadback:true,retention:{mode:"COMPLIANCE",retainUntil:"2033-08-12T00:00:00Z",readbackVerified:true}}))
   };
   assert.equal(remoteEvidenceSatisfiesCurrentWildfireGate(evidence), true);
   assert.equal(evaluateCurrentWildfireProductionEligibility(record, evidence), true);
@@ -83,6 +85,7 @@ test("only six exact immutable readbacks can satisfy the archive prerequisite", 
     (candidate) => { candidate.objects[2].exactVersionReadback = false; },
     (candidate) => { candidate.objects[3].retention.mode = "GOVERNANCE"; },
     (candidate) => { candidate.objects[4].retention.retainUntil = "2033-08-11T23:59:59Z"; },
+    (candidate) => { candidate.objects[5].checksum.providerValue = "redacted-present"; },
     (candidate) => { candidate.objects.pop(); }
   ]) {
     const changed = structuredClone(evidence); mutation(changed);
@@ -100,7 +103,7 @@ test("the six-object gate recognizes only the timestamped derived promotion keys
   const evidence = {
     schemaVersion: "witness-tree/current-wildfire-immutable-readbacks/1",
     region: "ca-central-1",
-    objects: requiredCurrentWildfireObjects.map((object, index) => ({...object,versionId:`version-${index}-exact`,fullObjectChecksumVerified:true,exactVersionReadback:true,retention:{mode:"COMPLIANCE",retainUntil:"2033-08-12T00:00:00Z",readbackVerified:true}}))
+    objects: requiredCurrentWildfireObjects.map((object, index) => ({...object,versionId:`version-${index}-exact`,fullObjectChecksumVerified:true,checksum:{type:"FULL_OBJECT",algorithm:"CRC64NVME",providerValue:`provider-checksum-${index}`},exactVersionReadback:true,retention:{mode:"COMPLIANCE",retainUntil:"2033-08-12T00:00:00Z",readbackVerified:true}}))
   };
   assert.equal(remoteEvidenceSatisfiesCurrentWildfireGate(evidence), true);
 
@@ -114,9 +117,9 @@ test("the six-object gate recognizes only the timestamped derived promotion keys
   }
 });
 
-test("approval or archive-gate drift fails closed", () => {
+test("approval drift or premature eligibility fails closed", () => {
   const changed = structuredClone(record); changed.ownerDecision.geometryApproved = false;
   assert.throws(() => validateCurrentWildfireOwnerAdmission(changed, ledger, profiles, policies));
-  const blocked = structuredClone(record); blocked.pipeline.productionEligible = false;
-  assert.throws(() => validateCurrentWildfireOwnerAdmission(blocked, ledger, profiles, policies));
+  const eligible = structuredClone(record); eligible.pipeline.productionEligible = true;
+  assert.throws(() => validateCurrentWildfireOwnerAdmission(eligible, ledger, profiles, policies));
 });

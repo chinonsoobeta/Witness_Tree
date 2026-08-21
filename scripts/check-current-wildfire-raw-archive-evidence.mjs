@@ -6,11 +6,12 @@ const CHECKSUM = { type: "FULL_OBJECT", algorithm: "CRC64NVME", providerValue: "
 const MANIFEST_BYTES = { "cwfis-current": 1488, "bc-wildfire": 1502, "ab-wildfire": 1335, "on-fire-disturbance": 1369 };
 
 export function validate(e = read("data/current-wildfire-raw-archive-evidence.json"), p = read("data/current-wildfire-immutable-promotion-preparation.json")) {
-  assert.equal(e.status, "remote-verified-raw-only");
+  assert.equal(e.status, "attestation-only-not-machine-verifiable");
   assert.equal(e.entries.length, 4);
   assert.equal(e.recoveryVerifiedAt, "2026-08-20");
   assert.deepEqual(e.storage, { bucket: "witness-tree-raw-archive-ca-central-1", recoveryBucket: "witness-tree-raw-recovery-ca-central-1", region: "ca-central-1", countryCode: "CA" });
-  assert.deepEqual(e.claims, { derivedObjectsVerified: false, recoveryObjectsVerified: true, ownerAdmission: false, transformed: false, ingested: false, productionEligible: false });
+  assert.deepEqual(e.claims, { derivedObjectsVerified: false, recoveryObjectsVerified: false, machineVerifiableImmutableProof: false, ownerAdmission: false, transformed: false, ingested: false, productionEligible: false });
+  assert.match(e.notice, /concrete provider version identifiers.*checksum values.*cannot prove exact-version immutable archive/i);
   for (const x of e.entries) {
     const key = p.proposedRoleScope.objectKeys.find((candidate) => candidate.startsWith(`raw/${x.sourceId}/`) && candidate.includes("/payload/"));
     assert.equal(x.payloadKey, key);
@@ -33,5 +34,5 @@ export function validate(e = read("data/current-wildfire-raw-archive-evidence.js
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   validate();
-  console.log("Current wildfire raw archive evidence passed: four primary/recovery payloads and sidecars are remotely verified; derived objects remain unverified.");
+  console.log("Current wildfire raw archive attestation passed schema checks but is not machine-verifiable immutable proof.");
 }

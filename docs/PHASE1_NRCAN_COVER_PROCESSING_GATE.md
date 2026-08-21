@@ -14,4 +14,4 @@ npm run check:nrcan-canopy-cover-profile
 npm run check:phase1-nrcan-cover-processing-gate
 ```
 
-The current score remains **15.25/31 raw credits and 39.7580645%**. This profile/gate work adds no raw credit and no production claim. Before a target transformation can run, the owner/technical method decision, exact versioned specification, output checksum, full-resolution validation, ingestion evidence, release approval, and separate production-admission decision must all be recorded.
+The current score remains **14.25/31 raw credits and 38.7903226%**. This profile/gate work adds no raw credit and no production claim. Before a target transformation can run, the owner/technical method decision, exact versioned specification, output checksum, full-resolution validation, ingestion evidence, release approval, and separate production-admission decision must all be recorded.

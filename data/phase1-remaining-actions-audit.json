@@ -7,33 +7,34 @@
   "selectionRule": "Audit every production row where immutable remote proof is absent OR production admission is absent. The union is all 31 rows because production admission is absent for every row.",
   "baseline": {
     "productionRows": 31,
-    "rawEvidenceNumerator": 15.25,
+    "rawEvidenceNumerator": 14.25,
     "rawEvidenceDenominator": 31,
-    "formalEvidenceTrackingPercentage": 39.7580645,
+    "formalEvidenceTrackingPercentage": 38.7903226,
     "evidenceStateCounts": {
-      "remote-verified-archived-profiled": 11,
-      "local-verified-profiled": 5,
+      "remote-verified-archived-profiled": 7,
+      "local-verified-profiled": 9,
       "partial-component": 2,
       "access-blocked": 13
     },
-    "immutableArchiveCompleteRows": 11,
-    "productionAdmissionCompleteRows": 4,
-    "productionEligibleRows": 4,
+    "immutableArchiveCompleteRows": 7,
+    "productionAdmissionCompleteRows": 0,
+    "productionEligibleRows": 0,
     "substantiveReplyRecords": 7,
     "accessBlockedRowsWithSubstantiveReply": 8,
     "currentWildfireArchiveGate": {
       "requiredObjects": 6,
-      "verifiedObjects": 6,
-      "productionEligible": true
+      "verifiedObjects": 0,
+      "attestedObjects": 6,
+      "productionEligible": false
     }
   },
   "scope": {
     "auditedRowCount": 31,
-    "rowsWithoutImmutableRemoteProof": 20,
-    "rowsWithoutProductionAdmission": 27,
-    "rowsSelectedByRule": 27,
-    "allProductionRowsRemainNonAdmitted": false,
-    "allProductionRowsRemainIneligible": false
+    "rowsWithoutImmutableRemoteProof": 24,
+    "rowsWithoutProductionAdmission": 31,
+    "rowsSelectedByRule": 31,
+    "allProductionRowsRemainNonAdmitted": true,
+    "allProductionRowsRemainIneligible": true
   },
   "claims": {
     "remoteMutationPerformed": false,
@@ -43,8 +44,8 @@
     "transformed": false,
     "ingested": false,
     "released": false,
-    "productionAdmission": true,
-    "productionEligible": true
+    "productionAdmission": false,
+    "productionEligible": false
   },
   "localImplementationAudit": {
     "status": "local-gates-complete-owner-or-external-blockers-remain",
@@ -217,11 +218,11 @@
       "localGatesIncomplete": 0,
       "deferredOwnerOrExternalGaps": 6,
       "scoreDelta": {"rawCreditDelta": 0, "formalPercentagePointDelta": 0},
-      "allProductionAdmissionFalse": false,
-      "allProductionEligibleFalse": false
+      "allProductionAdmissionFalse": true,
+      "allProductionEligibleFalse": true
     }
   },
-  "scoreFormula": "formal percentage-point delta = 30 * raw-credit delta / 31; this audit reports potential deltas only and does not change the 39.7580645 baseline.",
+  "scoreFormula": "formal percentage-point delta = 30 * raw-credit delta / 31; this audit reports potential deltas only and does not change the 38.7903226 baseline.",
   "physicalArtifactGroups": [
     {
       "id": "national-two-artifacts",
@@ -254,7 +255,7 @@
       "id": "current-wildfire-six-release-inputs",
       "rows": ["cwfis-current", "bc-wildfire", "ab-wildfire", "on-fire-disturbance"],
       "physicalArtifactCount": 6,
-      "deduplication": "Four raw snapshots and two checksum-bound derived releases are one six-object owner-admission gate; all six primary readbacks are now verified, while recovery provenance and downstream admission remain separate blockers.",
+      "deduplication": "Four raw snapshots and two checksum-bound derived releases are one six-object owner-admission gate; all six have placeholder-only attestations, while concrete version/checksum bindings and downstream admission remain blocked.",
       "preparation": "data/current-wildfire-immutable-promotion-preparation.json",
       "ownerAdmission": "data/current-wildfire-owner-admission.json",
       "runner": "scripts/run-current-wildfire-approved-promotion.sh",
@@ -486,7 +487,7 @@
     {
       "id": "current-wildfire-derived-archive-preflight-and-owner-promotion",
       "rank": 6,
-      "priorityBasis": "The six-object primary gate is now closed by redacted exact readbacks, but recovery or mutation provenance and a separate production decision remain required; raw score cannot increase.",
+      "priorityBasis": "The six-object primary gate remains 0/6 machine-verifiable because redacted placeholders do not bind concrete versions or provider checksums; exact readback, retention, recovery/provenance and downstream decisions remain required.",
       "lawfulImmediacy": "delegate-preflight-now-owner-run-later",
       "actor": "delegate-and-owner",
       "executableNow": true,
@@ -669,11 +670,11 @@
     {"id":"ntems-forest-harvest","evidenceState":"remote-verified-archived-profiled","immutableRemoteProof":true,"currentRawCredit":1,"maximumRawCreditDeltaToRemote":0,"maximumFormalPercentagePointDeltaToRemote":0,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["national-archived-owner-source-ledger-decisions","production-admission-and-release-gate"]},
     {"id":"ntems-canopy-cover","evidenceState":"remote-verified-archived-profiled","immutableRemoteProof":true,"currentRawCredit":1,"maximumRawCreditDeltaToRemote":0,"maximumFormalPercentagePointDeltaToRemote":0,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["archived-remote-transform-ingest-release","production-admission-and-release-gate"]},
     {"id":"ntems-canopy-height","evidenceState":"remote-verified-archived-profiled","immutableRemoteProof":true,"currentRawCredit":1,"maximumRawCreditDeltaToRemote":0,"maximumFormalPercentagePointDeltaToRemote":0,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["national-archived-owner-source-ledger-decisions","production-admission-and-release-gate"]},
-    {"id":"cwfis-current","evidenceState":"remote-verified-archived-profiled","immutableRemoteProof":true,"currentRawCredit":1,"maximumRawCreditDeltaToRemote":0,"maximumFormalPercentagePointDeltaToRemote":0,"productionAdmission":true,"productionEligible":true,"remainingActionIds":[]},
+    {"id":"cwfis-current","evidenceState":"local-verified-profiled","immutableRemoteProof":false,"currentRawCredit":0.75,"maximumRawCreditDeltaToRemote":0.25,"maximumFormalPercentagePointDeltaToRemote":0.2419355,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["current-wildfire-derived-archive-preflight-and-owner-promotion","wildfire-transform-ingest-release","production-admission-and-release-gate"]},
     {"id":"cwfis-historical","evidenceState":"partial-component","immutableRemoteProof":false,"currentRawCredit":0.25,"maximumRawCreditDeltaToRemote":0.75,"maximumFormalPercentagePointDeltaToRemote":0.7258065,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["partial-historical-owner-review-and-external-evidence","production-admission-and-release-gate"]},
-    {"id":"bc-wildfire","evidenceState":"remote-verified-archived-profiled","immutableRemoteProof":true,"currentRawCredit":1,"maximumRawCreditDeltaToRemote":0,"maximumFormalPercentagePointDeltaToRemote":0,"productionAdmission":true,"productionEligible":true,"remainingActionIds":[]},
-    {"id":"ab-wildfire","evidenceState":"remote-verified-archived-profiled","immutableRemoteProof":true,"currentRawCredit":1,"maximumRawCreditDeltaToRemote":0,"maximumFormalPercentagePointDeltaToRemote":0,"productionAdmission":true,"productionEligible":true,"remainingActionIds":[]},
-    {"id":"on-fire-disturbance","evidenceState":"remote-verified-archived-profiled","immutableRemoteProof":true,"currentRawCredit":1,"maximumRawCreditDeltaToRemote":0,"maximumFormalPercentagePointDeltaToRemote":0,"productionAdmission":true,"productionEligible":true,"remainingActionIds":[]},
+    {"id":"bc-wildfire","evidenceState":"local-verified-profiled","immutableRemoteProof":false,"currentRawCredit":0.75,"maximumRawCreditDeltaToRemote":0.25,"maximumFormalPercentagePointDeltaToRemote":0.2419355,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["current-wildfire-derived-archive-preflight-and-owner-promotion","wildfire-transform-ingest-release","production-admission-and-release-gate"]},
+    {"id":"ab-wildfire","evidenceState":"local-verified-profiled","immutableRemoteProof":false,"currentRawCredit":0.75,"maximumRawCreditDeltaToRemote":0.25,"maximumFormalPercentagePointDeltaToRemote":0.2419355,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["current-wildfire-derived-archive-preflight-and-owner-promotion","wildfire-transform-ingest-release","production-admission-and-release-gate"]},
+    {"id":"on-fire-disturbance","evidenceState":"local-verified-profiled","immutableRemoteProof":false,"currentRawCredit":0.75,"maximumRawCreditDeltaToRemote":0.25,"maximumFormalPercentagePointDeltaToRemote":0.2419355,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["current-wildfire-derived-archive-preflight-and-owner-promotion","wildfire-transform-ingest-release","production-admission-and-release-gate"]},
     {"id":"sopfeu","evidenceState":"access-blocked","immutableRemoteProof":false,"currentRawCredit":0,"maximumRawCreditDeltaToRemote":1,"maximumFormalPercentagePointDeltaToRemote":0.9677419,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["access-blocked-owner-and-external-resolution","production-admission-and-release-gate"]},
     {"id":"bc-fta-cutblocks","evidenceState":"access-blocked","immutableRemoteProof":false,"currentRawCredit":0,"maximumRawCreditDeltaToRemote":1,"maximumFormalPercentagePointDeltaToRemote":0.9677419,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["access-blocked-owner-and-external-resolution","production-admission-and-release-gate"]},
     {"id":"bc-harvesting-authorities","evidenceState":"access-blocked","immutableRemoteProof":false,"currentRawCredit":0,"maximumRawCreditDeltaToRemote":1,"maximumFormalPercentagePointDeltaToRemote":0.9677419,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["access-blocked-owner-and-external-resolution","production-admission-and-release-gate"]},

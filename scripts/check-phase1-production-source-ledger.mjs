@@ -13,7 +13,6 @@ const STATES = new Map([
   ["unaddressed", 0]
 ]);
 const PROOFS = ["licence", "attribution", "retrievalVersion", "checksum", "rawArchiveRefetch", "profile", "immutableArchive", "productionAdmission"];
-const ADMITTED_CURRENT_WILDFIRE = new Set(["cwfis-current", "bc-wildfire", "ab-wildfire", "on-fire-disturbance"]);
 
 export function validatePhase1ProductionSourceLedger(ledger, inventory, root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..")) {
   if (!ledger || ledger.schemaVersion !== 1 || ledger.status !== "blocked") throw new Error("Production source ledger must be schema-versioned and blocked.");
@@ -26,16 +25,14 @@ export function validatePhase1ProductionSourceLedger(ledger, inventory, root = p
     if (!requiredIds.includes(entry.id) || ids.has(entry.id)) throw new Error("Ledger must match the authoritative production-row IDs exactly.");
     ids.add(entry.id);
     if (!STATES.has(entry.evidenceState) || entry.rawCredit !== STATES.get(entry.evidenceState)) throw new Error("Every evidence state has one fixed raw-evidence credit.");
-    if (typeof entry.productionEligible !== "boolean" || typeof entry.blocker !== "string" || !entry.blocker.trim()) throw new Error("Each source needs an explicit eligibility value and release boundary or blocker.");
+    if (entry.productionEligible !== false || typeof entry.blocker !== "string" || !entry.blocker.trim()) throw new Error("No current source may be production eligible and each needs an explicit blocker.");
     if (!Array.isArray(entry.evidenceRefs)) throw new Error("Evidence references must be an array.");
     for (const reference of entry.evidenceRefs) {
       if (typeof reference !== "string" || !reference.startsWith("data/") || !existsSync(path.join(root, reference))) throw new Error("Evidence references must name existing repository data records.");
     }
     if (!entry.proof || Object.keys(entry.proof).length !== PROOFS.length) throw new Error("Every production proof must be explicit.");
     for (const proof of PROOFS) if (typeof entry.proof[proof] !== "boolean") throw new Error(`Production proof requires boolean ${proof}.`);
-    if (entry.productionEligible) {
-      if (!ADMITTED_CURRENT_WILDFIRE.has(entry.id) || !entry.proof.productionAdmission || !PROOFS.every((proof) => entry.proof[proof]) || !entry.evidenceRefs.includes("data/current-wildfire-downstream-reconciliation.json")) throw new Error("Production eligibility requires the explicit current-wildfire downstream reconciliation and every proof.");
-    } else if (entry.proof.productionAdmission || PROOFS.every((proof) => entry.proof[proof])) throw new Error("A production admission cannot be inferred from archival or profile evidence.");
+    if (entry.proof.productionAdmission || PROOFS.every((proof) => entry.proof[proof])) throw new Error("A production admission cannot be inferred from archival or profile evidence.");
     if (entry.evidenceState.startsWith("remote-") && (!entry.proof.immutableArchive || !entry.proof.profile || !entry.proof.rawArchiveRefetch)) throw new Error("Remote-verified evidence requires archive, profile, and raw recovery proof.");
     if (entry.evidenceState === "local-verified-profiled" && (!entry.proof.profile || !entry.proof.rawArchiveRefetch || entry.proof.immutableArchive)) throw new Error("Local evidence must remain profile/re-fetch evidence without immutable proof.");
   }

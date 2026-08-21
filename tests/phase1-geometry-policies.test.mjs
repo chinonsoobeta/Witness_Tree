@@ -17,8 +17,8 @@ test("combined geometry-policy gate rejects an implied archive, admission, or mi
   assert.throws(() => validatePhase1GeometryPolicies(archived));
   const admitted = records(); admitted.ontario.ownerAdmission = true;
   assert.throws(() => validatePhase1GeometryPolicies(admitted));
-  const blocked = records(); blocked.admission.pipeline.productionEligible = false;
-  assert.throws(() => validatePhase1GeometryPolicies(blocked));
+  const premature = records(); premature.admission.pipeline.productionEligible = true;
+  assert.throws(() => validatePhase1GeometryPolicies(premature));
   const unlinked = records();
   unlinked.ledger.entries.find((entry) => entry.id === "bc-wildfire").evidenceRefs = [];
   assert.throws(() => validatePhase1GeometryPolicies(unlinked));

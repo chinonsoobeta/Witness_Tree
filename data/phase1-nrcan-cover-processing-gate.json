@@ -6,12 +6,12 @@
   "notice": "This gate reconciles the locally supported NTEMS annual land-cover and canopy-cover evidence. It records passed raw/profile validation and the absence of an approved target transformation, ingestion batch, release approval, or production admission. It performs no AWS call, archive mutation, external contact, transformation, ingestion, release, or production-eligibility change.",
   "baseline": {
     "productionRows": 31,
-    "rawEvidenceNumerator": 15.25,
+    "rawEvidenceNumerator": 14.25,
     "rawEvidenceDenominator": 31,
-    "formalEvidenceTrackingPercentage": 39.7580645,
-    "immutableArchiveCompleteRows": 11,
-    "productionAdmissionCompleteRows": 4,
-    "productionEligibleRows": 4,
+    "formalEvidenceTrackingPercentage": 38.7903226,
+    "immutableArchiveCompleteRows": 7,
+    "productionAdmissionCompleteRows": 0,
+    "productionEligibleRows": 0,
     "scoreDelta": {
       "rawCredit": 0,
       "formalPercentagePoints": 0

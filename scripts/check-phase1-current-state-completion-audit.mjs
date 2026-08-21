@@ -6,9 +6,9 @@ const read = (file) => JSON.parse(readFileSync(new URL(`../${file}`, import.meta
 
 export function validatePhase1CurrentStateCompletionAudit(audit, ledger, readiness, immutable, wildfire, outreach, partialOutreach, access, replyAudit, routeAudit) {
   assert.equal(audit.schemaVersion, 1);
-  assert.equal(audit.status, "blocked-four-of-31-production-complete");
+  assert.equal(audit.status, "blocked-zero-of-31-production-complete");
   assert.equal(audit.asOf, "2026-08-21");
-  assert.match(audit.notice, /seven named source\/scope decisions.*two national source-ledger-only decisions.*PLVI raw\/derived scope decision.*Exactly four current-wildfire rows.*6\/6 immutable-readback condition/i);
+  assert.match(audit.notice, /seven named source\/scope decisions.*two national source-ledger-only decisions.*PLVI raw\/derived scope decision.*no transformation admission.*production eligibility/i);
   assert.equal(ledger.entries.length, 31);
   assert.equal(audit.rows.length, 31);
   assert.deepEqual(audit.rows.map(({ id }) => id), ledger.entries.map(({ id }) => id));
@@ -22,9 +22,10 @@ export function validatePhase1CurrentStateCompletionAudit(audit, ledger, readine
   assert.equal(audit.ledger.productionEligibleRows, ledger.entries.filter(({ productionEligible }) => productionEligible).length);
   assert.equal(audit.ledger.ownerSourceDecisionRecordedRows, readiness.counts["owner-decision-recorded"]);
   assert.equal(audit.ledger.ownerDownstreamScopeRecordedAwaitingArchiveRows, readiness.counts["owner-scope-decision-recorded-awaiting-archive"]);
-  assert.deepEqual(audit.globalGates.immutableArchives, {status:"blocked", completeRows:11, localRowsAwaitingArchive:5, sourceEvidenceBlockedRows:15, currentWildfireRequiredObjects:6, currentWildfireVerifiedObjects:6});
+  assert.deepEqual(audit.globalGates.immutableArchives, {status:"blocked", completeRows:7, localRowsAwaitingArchive:9, sourceEvidenceBlockedRows:15, currentWildfireRequiredObjects:6, currentWildfireVerifiedObjects:0, currentWildfireAttestedObjects:6});
   assert.equal(wildfire.archiveGate.requiredObjectCount, 6);
-  assert.equal(wildfire.archiveGate.verifiedObjectCount, 6);
+  assert.equal(wildfire.archiveGate.verifiedObjectCount, 0);
+  assert.equal(wildfire.archiveGate.attestedObjectCount, 6);
   assert.equal(immutable.physicalArtifactGroups.find(({ id }) => id === "current-wildfire-six-release-inputs").physicalArtifactCount, 6);
   const exercise = audit.globalGates.normalArchiveExercise;
   assert.equal(exercise.status, "not-integrated"); assert.equal(exercise.evidenceRef, null); assert.equal(exercise.complete, false);
@@ -44,11 +45,7 @@ export function validatePhase1CurrentStateCompletionAudit(audit, ledger, readine
   for (const row of audit.rows) {
     const source = ledger.entries.find(({ id }) => id === row.id);
     assert.ok(audit.actionPlans[row.actionPlan]?.length >= 4, `${row.id} must have a complete ordered action plan`);
-    if (["cwfis-current", "bc-wildfire", "ab-wildfire", "on-fire-disturbance"].includes(row.id)) {
-      assert.equal(row.actionPlan, "wildfire-production-admitted");
-      assert.equal(source.productionEligible, true);
-      assert.equal(source.proof.productionAdmission, true);
-    } else assert.equal(source.productionEligible, false);
+    assert.equal(source.productionEligible, false);
     const decision = readinessById.get(row.id);
     if (source.evidenceState === "access-blocked") {
       assert.equal(row.actionPlan, "access-blocked"); assert.ok(covered.has(row.id)); assert.equal(accessById.get(row.id).lawfulAcquisitionNow, false);
@@ -68,5 +65,5 @@ export function checkPhase1CurrentStateCompletionAudit() {
 
 if (process.argv[1]?.endsWith("check-phase1-current-state-completion-audit.mjs")) {
   const audit = checkPhase1CurrentStateCompletionAudit();
-  console.log(`Phase 1 current-state audit passed: ${audit.ledger.rawEvidenceNumerator}/${audit.ledger.rawEvidenceDenominator} raw credits; ${audit.ledger.immutableArchiveCompleteRows}/31 immutable, ${audit.ledger.productionAdmissionCompleteRows}/31 production admitted and eligible.`);
+  console.log(`Phase 1 current-state audit passed: ${audit.ledger.rawEvidenceNumerator}/${audit.ledger.rawEvidenceDenominator} raw credits; ${audit.ledger.immutableArchiveCompleteRows}/31 immutable, 0/31 production admitted, 0/31 eligible.`);
 }

@@ -25,7 +25,7 @@ export const requiredCurrentWildfireObjects = [
   requiredDerivedObject("on-fire-disturbance-derived", "on-fire-disturbance")
 ];
 
-const PRIMARY_CHECKSUM = { type: "FULL_OBJECT", algorithm: "CRC64NVME", providerValue: "redacted-present" };
+const PLACEHOLDER = "redacted-present";
 
 function validPrimaryRetention(value) {
   return value?.mode === "COMPLIANCE"
@@ -33,13 +33,7 @@ function validPrimaryRetention(value) {
     && value.readbackVerified !== false;
 }
 
-/**
- * The redacted archive records prove the six primary payloads without
- * retaining provider identifiers. That is enough to close the six-object
- * archive gate, but it is deliberately not the activation contract below:
- * production activation still requires the separate non-redacted exact
- * evidence shape and an explicit downstream decision.
- */
+/** Redacted booleans and placeholders cannot bind a payload to an exact remote version. */
 export function primaryEvidenceSatisfiesCurrentWildfireGate(rawEvidence, derivedEvidence) {
   try {
     validateRawArchiveEvidence(rawEvidence);
@@ -57,8 +51,12 @@ export function primaryEvidenceSatisfiesCurrentWildfireGate(rawEvidence, derived
       return entry?.payloadKey === expected.key
         && entry.bytes === expected.bytes
         && entry.sha256 === expected.sha256
-        && entry.payloadVersionPresent === true
-        && JSON.stringify(entry.payloadChecksum) === JSON.stringify(PRIMARY_CHECKSUM)
+        && typeof entry.payloadVersionId === "string"
+        && VERSION.test(entry.payloadVersionId)
+        && entry.payloadChecksum?.type === "FULL_OBJECT"
+        && entry.payloadChecksum?.algorithm === "CRC64NVME"
+        && typeof entry.payloadChecksum?.providerValue === "string"
+        && entry.payloadChecksum.providerValue !== PLACEHOLDER
         && entry.payloadRetention?.mode === "COMPLIANCE"
         && entry.payloadRetention.until === "2033-08-12T00:00:00Z";
     }
@@ -66,10 +64,14 @@ export function primaryEvidenceSatisfiesCurrentWildfireGate(rawEvidence, derived
     return object?.key === expected.key
       && object.bytes === expected.bytes
       && object.sha256 === expected.sha256
-      && object.versionPresent === true
+      && typeof object.versionId === "string"
+      && VERSION.test(object.versionId)
       && object.fullObjectChecksumVerified === true
       && object.exactVersionReadback === true
-      && JSON.stringify(object.checksum) === JSON.stringify(PRIMARY_CHECKSUM)
+      && object.checksum?.type === "FULL_OBJECT"
+      && object.checksum?.algorithm === "CRC64NVME"
+      && typeof object.checksum?.providerValue === "string"
+      && object.checksum.providerValue !== PLACEHOLDER
       && validPrimaryRetention(object.retention);
   });
 }
@@ -86,6 +88,10 @@ export function remoteEvidenceSatisfiesCurrentWildfireGate(evidence) {
       && SHA.test(object.sha256)
       && VERSION.test(object.versionId ?? "")
       && object.fullObjectChecksumVerified === true
+      && object.checksum?.type === "FULL_OBJECT"
+      && object.checksum?.algorithm === "CRC64NVME"
+      && typeof object.checksum?.providerValue === "string"
+      && object.checksum.providerValue !== PLACEHOLDER
       && object.exactVersionReadback === true
       && object.retention?.mode === "COMPLIANCE"
       && Date.parse(object.retention.retainUntil) >= Date.parse("2033-08-12T00:00:00Z")
@@ -103,19 +109,9 @@ export function evaluateCurrentWildfireProductionEligibility(record, evidence) {
     && remoteEvidenceSatisfiesCurrentWildfireGate(evidence);
 }
 
-export function evaluateIntegratedCurrentWildfireProductionEligibility(record, rawEvidence, derivedEvidence) {
-  return record?.ownerDecision?.scopeApproved === true
-    && record.ownerDecision.geometryApproved === true
-    && record.ownerDecision.transformationApproved === true
-    && record.ownerDecision.ingestionApproved === true
-    && record.ownerDecision.publicReleaseApproved === true
-    && record.ownerDecision.productionAdmissionApproved === true
-    && primaryEvidenceSatisfiesCurrentWildfireGate(rawEvidence, derivedEvidence);
-}
-
 export function validateCurrentWildfireOwnerAdmission(record, ledger, profiles, policies, remoteEvidence = null, rawEvidence = read("data/current-wildfire-raw-archive-evidence.json"), derivedEvidence = read("data/current-wildfire-derived-archive-evidence.json")) {
   assert.equal(record.schemaVersion, "witness-tree/current-wildfire-owner-admission/1");
-  assert.equal(record.status, "owner-approved-pipeline-admitted");
+  assert.equal(record.status, "owner-approved-pipeline-blocked-on-machine-verifiable-readbacks");
   assert.deepEqual(record.ownerDecision, {
     scopeApproved: true,
     geometryApproved: true,
@@ -125,22 +121,23 @@ export function validateCurrentWildfireOwnerAdmission(record, ledger, profiles, 
     productionAdmissionApproved: true,
     condition: "Every exact raw payload and each required derived payload must first have repository-integrated immutable archive readback evidence. Approval does not itself satisfy that condition."
   });
-  assert.equal(record.archiveGate.status, "passed-six-of-six-primary-readbacks");
+  assert.equal(record.archiveGate.status, "blocked-placeholder-only-version-and-checksum-evidence");
   assert.equal(record.archiveGate.evidenceRef, "data/current-wildfire-raw-archive-evidence.json");
   assert.equal(record.archiveGate.derivedEvidenceRef, "data/current-wildfire-derived-archive-evidence.json");
   assert.equal(record.archiveGate.requiredObjectCount, 6);
-  assert.equal(record.archiveGate.verifiedObjectCount, 6);
-  assert.equal(record.archiveGate.primaryReadbacksVerified, true);
+  assert.equal(record.archiveGate.verifiedObjectCount, 0);
+  assert.equal(record.archiveGate.attestedObjectCount, 6);
+  assert.equal(record.archiveGate.primaryReadbacksVerified, false);
   assert.equal(record.archiveGate.recoveryReplicaVerified, false);
   assert.equal(record.archiveGate.mutationProvenance, false);
-  assert.equal(record.archiveGate.productionEligible, true);
+  assert.equal(record.archiveGate.productionEligible, false);
   assert.match(record.refreshAndAuthority.representation, /as-of snapshot.*never label.*real-time/i);
   assert.match(record.refreshAndAuthority.precedence, /provincial.*prevails over CWFIS/i);
   assert.match(record.refreshAndAuthority.failurePolicy, /Reject empty, capped, partial, schema-drifted, invalid, checksum-unbound or unarchived input/i);
 
   assert.deepEqual(record.sources.map(({id}) => id), ["cwfis-current", "bc-wildfire", "ab-wildfire", "on-fire-disturbance"]);
   for (const source of record.sources) {
-    assert.equal(source.productionEligible, true);
+    assert.equal(source.productionEligible, false);
     assert.match(source.transformation, /\S/);
     assert.match(source.ingestion, /\S/);
     assert.match(source.release, /\S/);
@@ -149,10 +146,9 @@ export function validateCurrentWildfireOwnerAdmission(record, ledger, profiles, 
     assert.equal(source.raw.sha256, profile.artifact.sha256);
     const row = ledger.entries.find(({id}) => id === source.id);
     assert.ok(row.evidenceRefs.includes("data/current-wildfire-owner-admission.json"));
-    assert.ok(row.evidenceRefs.includes("data/current-wildfire-downstream-reconciliation.json"));
-    assert.equal(row.proof.immutableArchive, true);
-    assert.equal(row.proof.productionAdmission, true);
-    assert.equal(row.productionEligible, true);
+    assert.equal(row.proof.immutableArchive, false);
+    assert.equal(row.proof.productionAdmission, false);
+    assert.equal(row.productionEligible, false);
   }
 
   const cwfis = record.sources[0];
@@ -171,15 +167,16 @@ export function validateCurrentWildfireOwnerAdmission(record, ledger, profiles, 
   assert.match(ontario.transformation, /zero exclusion|no exclusion/i);
 
   assert.deepEqual(record.pipeline, {
-    transformation: "approved-and-validated",
-    ingestion: "approved-and-admitted",
-    release: "approved-and-reconciled",
-    productionAdmission: "approved-and-recorded",
-    productionEligible: true,
-    activationRule: "The machine gate may return productionEligible=true only when the integrated raw and derived evidence proves all six exact payloads and every required readback/retention field."
+    transformation: "approved-scope-defined-local-artifacts-not-machine-verifiably-archived",
+    ingestion: "approved-blocked-on-machine-verifiable-archive-gate",
+    release: "approved-blocked-on-machine-verifiable-archive-gate",
+    productionAdmission: "approved-blocked-on-machine-verifiable-archive-gate",
+    productionEligible: false,
+    activationRule: "The machine gate may return productionEligible=true only when integrated evidence cryptographically binds each of the six exact raw/derived payloads to a concrete object version and non-placeholder full-object checksum value, and proves exact-version readback, retention, Canadian storage, and the approved downstream decision."
   });
-  assert.equal(primaryEvidenceSatisfiesCurrentWildfireGate(rawEvidence, derivedEvidence), true, "The six-object primary archive gate must consume both redacted raw and derived records.");
-  assert.equal(evaluateIntegratedCurrentWildfireProductionEligibility(record, rawEvidence, derivedEvidence), true);
+  assert.equal(primaryEvidenceSatisfiesCurrentWildfireGate(rawEvidence, derivedEvidence), false, "Placeholder-only booleans and redacted checksum markers cannot close the six-object archive gate.");
+  assert.equal(derivedEvidence.claims.recoveryReplicaVerified, false);
+  assert.equal(derivedEvidence.claims.mutationProvenance, false);
   assert.equal(evaluateCurrentWildfireProductionEligibility(record, remoteEvidence), false, "No unintegrated or incomplete remote evidence may activate production.");
   return record;
 }
@@ -198,5 +195,5 @@ export function checkCurrentWildfireOwnerAdmission() {
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   checkCurrentWildfireOwnerAdmission();
-  console.log("Current-wildfire admission passed: four rows are production admitted from the approved six-object immutable-readback gate.");
+  console.log("Current-wildfire owner scope is approved, but 0/6 payloads have machine-verifiable version/checksum bindings; production remains blocked.");
 }

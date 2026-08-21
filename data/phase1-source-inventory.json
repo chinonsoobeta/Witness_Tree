@@ -31,7 +31,7 @@
       "name": "CA Forest Harvest, 1985–2022",
       "purpose": "National harvest-attributed change.",
       "planUse": "production",
-      "evidence": "checksum-bound local profile plus redacted exact-version primary/recovery FULL_OBJECT CRC64NVME and COMPLIANCE-retention evidence; not production",
+      "evidence": "checksum-bound local profile plus placeholder-only archive attestations; concrete version identifiers and provider checksum values are absent; not immutable or production evidence",
       "ownerRole": "data lead",
       "missing": "Immutable archival, compute/ingestion approval, and publisher correction of the catalogue resource link.",
       "externalDependency": "NRCan publication correction, Canadian storage, and owner approvals"
@@ -64,9 +64,9 @@
       "name": "Canadian Wildland Fire Information System",
       "purpose": "National active-fire fallback context.",
       "planUse": "production",
-      "evidence": "Production-admitted checksum-bound fixed-time WFS snapshot: 586 valid point features at 2026-08-14T20:22:42Z with exact immutable readback; national fallback context only",
+      "evidence": "checksum-bound local fixed-time WFS snapshot (586 valid point features at 2026-08-14T20:22:42Z), official CWFIF migration/metadata and read-only profile; not production",
       "ownerRole": "wildfire operations lead",
-      "missing": "No admission proof is missing. Preserve the fixed as-of, national-fallback and provincial-precedence release boundary.",
+      "missing": "Separate recovery or mutation-provenance evidence and downstream transformation, ingestion, release and production-admission records. The integrated redacted primary record covers exact-version readback and COMPLIANCE-retention evidence for the raw snapshot. Owner-approved use is as-of national fallback point context; provincial agencies prevail.",
       "externalDependency": "Canadian Forest Service operational feed and Canadian storage/owner approvals"
     },
     {
@@ -88,7 +88,7 @@
       "planUse": "production",
       "evidence": "Checksum-bound 217-feature raw snapshot plus checksum-bound 216-feature derived release; owner approves 215 unchanged geometries plus bounded repair G70362 and permanently quarantines V10755 from geometry-dependent use",
       "ownerRole": "wildfire operations lead",
-      "missing": "No admission proof is missing. Preserve the 216-feature derived boundary: 215 unchanged plus repaired G70362, with V10755 permanently quarantined; never claim 217-feature geometry coverage.",
+      "missing": "Derived recovery or mutation-provenance evidence and separate transformation, ingestion, release and production-admission records. The integrated redacted primary record covers exact-version readback and COMPLIANCE-retention evidence for the raw and derived artifacts; one of 217 raw features remains permanently excluded from geometry-dependent use; never claim 217-feature coverage.",
       "externalDependency": "BC Wildfire Service"
     },
     {
@@ -99,7 +99,7 @@
       "planUse": "production",
       "evidence": "Checksum-bound 751-point current wildfire-location snapshot locally staged/profiled under OGL Alberta; owner approves conservative as-of point use, not real-time or perimeter coverage",
       "ownerRole": "wildfire operations lead",
-      "missing": "No admission proof is missing. Preserve the 751-point fixed as-of boundary and prohibit perimeter inference, real-time and completeness claims.",
+      "missing": "Separate recovery or mutation-provenance evidence and downstream transformation, ingestion, release and production-admission records. The integrated redacted primary record covers exact-version readback and COMPLIANCE-retention evidence for the raw snapshot.",
       "externalDependency": "Alberta Wildfire"
     },
     {
@@ -108,9 +108,9 @@
       "name": "Ontario fire disturbance data",
       "purpose": "Ontario current and historical fire context.",
       "planUse": "production",
-      "evidence": "Production-admitted official daily in-year perimeter snapshot under OGL Ontario; the checksum-bound 188-feature closed-join release contains 179 unchanged geometries and nine bounded repairs with zero exclusions",
+      "evidence": "Official daily in-year perimeter snapshot locally staged/profiled under OGL Ontario; nine bounded raw self-intersections have a separate local-only closed-join derived release, not production",
       "ownerRole": "wildfire operations lead",
-      "missing": "No admission proof is missing. Preserve the 188 distinct source object IDs, nine bounded repairs, zero exclusions and as-of freshness limitation.",
+      "missing": "Derived recovery or mutation-provenance evidence and separate transformation, ingestion, release and production-admission records. The integrated redacted primary record covers exact-version readback and COMPLIANCE-retention evidence for both the unchanged 188-feature raw snapshot and the 188-feature derived release.",
       "externalDependency": "Ontario GeoHub"
     },
     {

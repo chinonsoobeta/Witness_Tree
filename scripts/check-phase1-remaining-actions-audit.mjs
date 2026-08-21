@@ -13,8 +13,8 @@ const CLAIMS = {
   transformed: false,
   ingested: false,
   released: false,
-  productionAdmission: true,
-  productionEligible: true
+  productionAdmission: false,
+  productionEligible: false
 };
 
 const EXPECTED_GROUPS = new Map([
@@ -158,9 +158,9 @@ function validateLocalImplementationAudit(local, actions, ledger) {
   assert.equal(local.coverage.localGatesIncomplete, 0);
   assert.equal(local.coverage.deferredOwnerOrExternalGaps, local.gaps.length);
   assert.deepEqual(local.coverage.scoreDelta, { rawCreditDelta: 0, formalPercentagePointDelta: 0 });
-  assert.equal(local.coverage.allProductionAdmissionFalse, false);
-  assert.equal(local.coverage.allProductionEligibleFalse, false);
-  assert.equal(ledger.entries.filter((entry) => entry.proof.productionAdmission && entry.productionEligible).length, 4);
+  assert.equal(local.coverage.allProductionAdmissionFalse, true);
+  assert.equal(local.coverage.allProductionEligibleFalse, true);
+  assert.equal(ledger.entries.every((entry) => entry.proof.productionAdmission === false && entry.productionEligible === false), true);
 }
 
 export function validatePhase1RemainingActionsAudit(audit, ledger, currentState, readiness, immutable, wildfire, replyAudit, partialOutreach, accessBlocker) {
@@ -177,11 +177,11 @@ export function validatePhase1RemainingActionsAudit(audit, ledger, currentState,
   const stateCounts = Object.fromEntries(Object.entries(Object.groupBy(entries, ({ evidenceState }) => evidenceState)).map(([state, rows]) => [state, rows.length]));
   assert.equal(entries.length, 31);
   assert.deepEqual(audit.baseline.evidenceStateCounts, stateCounts);
-  assert.deepEqual(audit.baseline.evidenceStateCounts, { "remote-verified-archived-profiled": 11, "local-verified-profiled": 5, "partial-component": 2, "access-blocked": 13 });
+  assert.deepEqual(audit.baseline.evidenceStateCounts, { "remote-verified-archived-profiled": 7, "local-verified-profiled": 9, "partial-component": 2, "access-blocked": 13 });
   assert.equal(audit.baseline.rawEvidenceNumerator, ledger.rawEvidenceNumerator);
   assert.equal(audit.baseline.rawEvidenceDenominator, entries.length);
   assert.equal(audit.baseline.formalEvidenceTrackingPercentage, ledger.formalProgress.percentage);
-  assert.equal(audit.baseline.formalEvidenceTrackingPercentage, 39.7580645);
+  assert.equal(audit.baseline.formalEvidenceTrackingPercentage, 38.7903226);
   assert.equal(audit.baseline.immutableArchiveCompleteRows, entries.filter(({ proof }) => proof.immutableArchive).length);
   assert.equal(audit.baseline.productionAdmissionCompleteRows, entries.filter(({ proof }) => proof.productionAdmission).length);
   assert.equal(audit.baseline.productionEligibleRows, entries.filter(({ productionEligible }) => productionEligible).length);
@@ -189,6 +189,7 @@ export function validatePhase1RemainingActionsAudit(audit, ledger, currentState,
   assert.equal(audit.baseline.accessBlockedRowsWithSubstantiveReply, replyAudit.counts.accessBlockedRowsWithSubstantiveReply);
   assert.equal(audit.baseline.currentWildfireArchiveGate.requiredObjects, wildfire.archiveGate.requiredObjectCount);
   assert.equal(audit.baseline.currentWildfireArchiveGate.verifiedObjects, wildfire.archiveGate.verifiedObjectCount);
+  assert.equal(audit.baseline.currentWildfireArchiveGate.attestedObjects, wildfire.archiveGate.attestedObjectCount);
   assert.equal(audit.baseline.currentWildfireArchiveGate.productionEligible, wildfire.archiveGate.productionEligible);
 
   assert.equal(currentState.ledger.totalRows, entries.length);
@@ -196,16 +197,16 @@ export function validatePhase1RemainingActionsAudit(audit, ledger, currentState,
   assert.equal(currentState.ledger.rawEvidenceNumerator, audit.baseline.rawEvidenceNumerator);
   assert.equal(currentState.ledger.formalEvidenceTrackingPercentage, audit.baseline.formalEvidenceTrackingPercentage);
   assert.equal(currentState.ledger.immutableArchiveCompleteRows, audit.baseline.immutableArchiveCompleteRows);
-  assert.equal(currentState.ledger.productionAdmissionCompleteRows, 4);
-  assert.equal(currentState.ledger.productionEligibleRows, 4);
-  assert.deepEqual(currentState.globalGates.immutableArchives, { status: "blocked", completeRows: 11, localRowsAwaitingArchive: 5, sourceEvidenceBlockedRows: 15, currentWildfireRequiredObjects: 6, currentWildfireVerifiedObjects: 6 });
+  assert.equal(currentState.ledger.productionAdmissionCompleteRows, 0);
+  assert.equal(currentState.ledger.productionEligibleRows, 0);
+  assert.deepEqual(currentState.globalGates.immutableArchives, { status: "blocked", completeRows: 7, localRowsAwaitingArchive: 9, sourceEvidenceBlockedRows: 15, currentWildfireRequiredObjects: 6, currentWildfireVerifiedObjects: 0, currentWildfireAttestedObjects: 6 });
   assert.equal(currentState.globalGates.outreach.repliesRecorded, replyAudit.counts.substantiveReplyRecords);
   assert.equal(currentState.globalGates.outreach.accessBlockedRowsWithSubstantiveReply, replyAudit.counts.accessBlockedRowsWithSubstantiveReply);
   assert.equal(partialOutreach.status, "owner-review-only-not-sent");
   assert.equal(accessBlocker.status, "all-13-access-blocked-no-lawful-acquisition");
   assert.equal(readiness.entries.length, entries.length);
 
-  assert.deepEqual(audit.scope, { auditedRowCount: 31, rowsWithoutImmutableRemoteProof: 20, rowsWithoutProductionAdmission: 27, rowsSelectedByRule: 27, allProductionRowsRemainNonAdmitted: false, allProductionRowsRemainIneligible: false });
+  assert.deepEqual(audit.scope, { auditedRowCount: 31, rowsWithoutImmutableRemoteProof: 24, rowsWithoutProductionAdmission: 31, rowsSelectedByRule: 31, allProductionRowsRemainNonAdmitted: true, allProductionRowsRemainIneligible: true });
   assert.equal(entries.filter(({ proof }) => !proof.immutableArchive).length, audit.scope.rowsWithoutImmutableRemoteProof);
   assert.equal(entries.filter(({ proof }) => !proof.productionAdmission).length, audit.scope.rowsWithoutProductionAdmission);
   validatePhysicalArtifactGroups(audit, immutable);
@@ -253,14 +254,13 @@ export function validatePhase1RemainingActionsAudit(audit, ledger, currentState,
     const maximumRawCreditDelta = 1 - entry.rawCredit;
     assert.equal(coverage.maximumRawCreditDeltaToRemote, maximumRawCreditDelta);
     assert.equal(coverage.maximumFormalPercentagePointDeltaToRemote, formalDelta(maximumRawCreditDelta));
-    if (entry.productionEligible) assert.deepEqual(coverage.remainingActionIds, []);
-    else assert.ok(coverage.remainingActionIds.length >= 1);
+    assert.ok(coverage.remainingActionIds.length >= 1);
     for (const actionId of coverage.remainingActionIds) {
       const action = actionsById.get(actionId);
       assert.ok(action, `${coverage.id} references unknown action ${actionId}`);
       assert.ok(action.rows.includes(coverage.id), `${coverage.id} is not covered by ${actionId}`);
     }
-    if (!entry.productionEligible) assert.ok(coverage.remainingActionIds.includes("production-admission-and-release-gate"));
+    assert.ok(coverage.remainingActionIds.includes("production-admission-and-release-gate"));
   }
   return audit;
 }

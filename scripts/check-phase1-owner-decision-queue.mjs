@@ -72,7 +72,7 @@ function validateQueueRows(queue, context) {
     assert.ok(ledger, `Queue row ${row.id} is not in the canonical ledger.`);
     assert.equal(ledger.evidenceState, row.evidenceState);
     assert.equal(ledger.rawCredit, row.rawCredit);
-    assert.equal(ledger.productionEligible, CURRENT_WILDFIRE.includes(row.id));
+    assert.equal(ledger.productionEligible, false);
     assert.equal(row.productionEligible, false);
     assert.ok(row.evidenceRefs.length > 0, `${row.id} must retain existing evidence references.`);
     validateActionMembership(actionById, row.primaryActionId, row.id);
@@ -124,8 +124,8 @@ function validateQueueRows(queue, context) {
     });
     assert.deepEqual(row.archiveGate, {
       requiredObjects: 6,
-      verifiedObjects: 6,
-      primaryReadbacksVerified: true,
+      verifiedObjects: 0,
+      primaryReadbacksVerified: false,
       recoveryReplicaVerified: false,
       mutationProvenance: false,
       productionEligible: false,
@@ -166,8 +166,9 @@ function validateQueueRows(queue, context) {
   assert.equal(context.wildfire.ownerDecision.publicReleaseApproved, true);
   assert.equal(context.wildfire.ownerDecision.productionAdmissionApproved, true);
   assert.equal(context.wildfire.archiveGate.requiredObjectCount, 6);
-  assert.equal(context.wildfire.archiveGate.verifiedObjectCount, 6);
-  assert.equal(context.wildfire.archiveGate.productionEligible, true);
+  assert.equal(context.wildfire.archiveGate.verifiedObjectCount, 0);
+  assert.equal(context.wildfire.archiveGate.attestedObjectCount, 6);
+  assert.equal(context.wildfire.archiveGate.productionEligible, false);
 }
 
 function validateOrder(queue) {
@@ -199,18 +200,18 @@ export function validatePhase1OwnerDecisionQueue(queue, context) {
   assert.match(queue.selectionRule, /local-verified-profiled.*remote-verified-archived-profiled/);
   assert.deepEqual(queue.baseline, {
     productionRows: 31,
-    rawEvidenceNumerator: 15.25,
+    rawEvidenceNumerator: 14.25,
     rawEvidenceDenominator: 31,
-    formalEvidenceTrackingPercentage: 39.7580645,
+    formalEvidenceTrackingPercentage: 38.7903226,
     evidenceStateCounts: {
-      "remote-verified-archived-profiled": 11,
-      "local-verified-profiled": 5,
+      "remote-verified-archived-profiled": 7,
+      "local-verified-profiled": 9,
       "partial-component": 2,
       "access-blocked": 13,
     },
-    immutableArchiveCompleteRows: 11,
-    productionAdmissionCompleteRows: 4,
-    productionEligibleRows: 4,
+    immutableArchiveCompleteRows: 7,
+    productionAdmissionCompleteRows: 0,
+    productionEligibleRows: 0,
     queueRowCount: 16,
   });
   const ledgerIds = context.ledger.entries.map((entry) => entry.id);

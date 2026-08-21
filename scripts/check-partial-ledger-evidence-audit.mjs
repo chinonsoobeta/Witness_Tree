@@ -24,7 +24,7 @@ export function validatePartialLedgerEvidenceAudit(audit, ledger) {
 
   const partialRows = ledger.entries.filter((row) => row.evidenceState === "partial-component");
   assert.deepEqual(partialRows.map((row) => row.id).sort(), ["cwfis-historical", "provincial-electoral-boundaries"]);
-  assert.equal(ledger.entries.reduce((sum, row) => sum + row.rawCredit, 0), 15.25);
+  assert.equal(ledger.entries.reduce((sum, row) => sum + row.rawCredit, 0), 14.25);
   assert.deepEqual(audit.numerator, {
     before: 14.75,
     after: 14.75,

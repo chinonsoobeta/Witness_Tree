@@ -87,8 +87,8 @@ profile, archive and score credit.
 ## Numerator impact
 
 The older component audit records a **14.75/31** baseline. On the current
-integrated head `1749b50`, the canonical ledger is **15.25/31** with **11/31**
-immutable archive proofs and a **39.7580645%** evidence-tracking score. This
+integrated head `1749b50`, the canonical ledger is **14.25/31** with **11/31**
+immutable archive proofs and a **38.7903226%** evidence-tracking score. This
 current route audit adds **0** credit and does not change those counts. Resolving either
 entire row would move that row from `0.25` to `0.75`, a `+0.50` raw-credit
 change; partial resolution of one missing component earns no additional

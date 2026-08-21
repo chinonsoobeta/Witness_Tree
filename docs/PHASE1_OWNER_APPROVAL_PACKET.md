@@ -10,7 +10,7 @@ The packet separates every dependency step into three independent decisions:
 
 An owner may copy a block below as an input template, but no placeholder is an approval. The packet carries no owner identity, contact, MFA code, version secret, permission grant, or downstream/production approval. It does not send email, submit a form, call AWS, write remote storage, admit transformation, ingest, release, or make a row production eligible.
 
-Current baseline remains **15.25/31 raw evidence credits**, **39.7580645% formal evidence tracking**, **11 immutable rows**, and **0/31 production-admitted or production-eligible**. Partial and access-blocked rows remain explicit exclusions: `cwfis-historical`, `provincial-electoral-boundaries`, and the 13 access-blocked rows in the machine record. They are not silently moved into this owner packet.
+Current baseline remains **14.25/31 raw evidence credits**, **38.7903226% formal evidence tracking**, **7 immutable rows**, and **0/31 production-admitted or production-eligible**. Partial and access-blocked rows remain explicit exclusions: `cwfis-historical`, `provincial-electoral-boundaries`, and the 13 access-blocked rows in the machine record. They are not silently moved into this owner packet.
 
 Exact artifact names, local paths, byte lengths, SHA-256 values, payload and manifest keys, bucket and region, retention dates, proposed role scopes, transformation policies, quarantines, and exclusion decisions are bound in the packet's `exactBindings` and checked against their authoritative records. Shared physical artifacts are listed once and mapped to every applicable row.
 
@@ -105,7 +105,7 @@ rows=cwfis-current,bc-wildfire,ab-wildfire,on-fire-disturbance
 source_scope=<existing conditional record; no new approval inferred>
 archive_approval=<OWNER: exact four payloads, four sidecars, bucket, region, MFA path, payload-only retention>
 preflight=zsh scripts/run-wildfire-derived-readback.sh --preflight <mode-600-owner-approval-file>
-gate=6/6 primary verified; derived recovery/mutation provenance and downstream admission remain blocked
+gate=0/6 machine-verifiable, 6/6 placeholder-attested; concrete version/checksum bindings and downstream admission remain blocked
 release_and_production_admission=<OWNER: blocked until recovery/provenance and separate downstream decisions>
 ```
 

@@ -9,9 +9,10 @@ const RETAIN_UNTIL = PLAN.mfaGatedExecution.recommendedRetainUntil;
 const SHA = /^[a-f0-9]{64}$/;
 const CRC = { type: "FULL_OBJECT", algorithm: "CRC64NVME", providerValue: "redacted-present" };
 const CLAIMS = {
-  derivedObjectsVerified: true,
-  primaryObjectsVerified: true,
-  payloadRetentionVerified: true,
+  derivedObjectsVerified: false,
+  primaryObjectsVerified: false,
+  payloadRetentionVerified: false,
+  machineVerifiableImmutableProof: false,
   recoveryObjectsVerified: false,
   recoveryReplicaVerified: false,
   mutationProvenance: false,
@@ -49,12 +50,12 @@ function assertNoProviderIdentifiers(record) {
 export function validateCurrentWildfireDerivedArchiveEvidence(record = read()) {
   assert.deepEqual(Object.keys(record).sort(), ["auditOperationsPerformed", "claims", "notice", "objects", "ownerEvidenceCheckerPassed", "sourceOfTruth", "status", "storage", "schemaVersion", "verifiedAt"].sort());
   assert.equal(record.schemaVersion, "witness-tree/current-wildfire-derived-archive-evidence/1");
-  assert.equal(record.status, "redacted-primary-readback-verified");
+  assert.equal(record.status, "attestation-only-not-machine-verifiable");
   assert.match(record.verifiedAt, /^2026-08-21$/);
   assert.deepEqual(record.storage, { bucket: "witness-tree-raw-archive-ca-central-1", region: "ca-central-1", countryCode: "CA" });
   assert.deepEqual(record.auditOperationsPerformed, []);
   assert.equal(record.ownerEvidenceCheckerPassed, true);
-  assert.ok(/does not assert mutation provenance/i.test(record.notice));
+  assert.ok(/cannot machine-verifiably prove exact-version readback or immutable archive/i.test(record.notice));
   assert.deepEqual(record.claims, CLAIMS);
   assert.equal(Array.isArray(record.objects), true);
   const expected = expectedObjects();
@@ -82,5 +83,5 @@ export function validateCurrentWildfireDerivedArchiveEvidence(record = read()) {
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   validateCurrentWildfireDerivedArchiveEvidence();
-  console.log("Current-wildfire derived archive evidence passed: four exact primary objects and both payload retentions are redacted, non-production readbacks.");
+  console.log("Current-wildfire derived archive attestation passed schema checks but is not machine-verifiable immutable proof.");
 }

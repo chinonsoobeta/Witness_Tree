@@ -9,12 +9,12 @@ const read = (file) => JSON.parse(readFileSync(new URL(`../${file}`, import.meta
 const REQUIRED_IDS = ["ntems-annual-land-cover", "ntems-canopy-cover"];
 const BASELINE = {
   productionRows: 31,
-  rawEvidenceNumerator: 15.25,
+  rawEvidenceNumerator: 14.25,
   rawEvidenceDenominator: 31,
-  formalEvidenceTrackingPercentage: 39.7580645,
-  immutableArchiveCompleteRows: 11,
-  productionAdmissionCompleteRows: 4,
-  productionEligibleRows: 4,
+  formalEvidenceTrackingPercentage: 38.7903226,
+  immutableArchiveCompleteRows: 7,
+  productionAdmissionCompleteRows: 0,
+  productionEligibleRows: 0,
 };
 
 function existingReferences(refs) {

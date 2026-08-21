@@ -12,8 +12,8 @@ test("seven named rows have narrowly scoped owner source-ledger or PLVI scope de
   assert.equal(decisions.decisions.filter((decision) => decision.ownerAdmission === "approved-source-ledger-only").length, 7);
   assert.equal(decisions.decisions.filter((decision) => decision.scopeDecision === "accepted-named-source-ledger-only").length, 2);
   assert.equal(decisions.decisions.filter((decision) => decision.scopeDecision === "approved-raw-and-derived-scope-only").length, 1);
-  assert.equal(ledger.entries.filter((entry) => entry.proof.productionAdmission).length, 4);
-  assert.equal(ledger.entries.filter((entry) => entry.productionEligible).length, 4);
+  assert.equal(ledger.entries.filter((entry) => entry.proof.productionAdmission).length, 0);
+  assert.equal(ledger.entries.filter((entry) => entry.productionEligible).length, 0);
 });
 
 test("remote decision rejects broader authority or a changed Crown exclusion", () => {

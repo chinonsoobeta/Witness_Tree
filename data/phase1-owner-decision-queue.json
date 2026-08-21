@@ -7,18 +7,18 @@
   "selectionRule": "Include every canonical production row whose evidenceState is local-verified-profiled or remote-verified-archived-profiled and whose productionAdmission remains false. These rows have a next owner-controlled source-scope, transformation, ingestion, release, archive-promotion, or production-admission decision. Exclude partial-component and access-blocked rows because their next gate is external artifact, rights, authority, or permission resolution before this owner pipeline.",
   "baseline": {
     "productionRows": 31,
-    "rawEvidenceNumerator": 15.25,
+    "rawEvidenceNumerator": 14.25,
     "rawEvidenceDenominator": 31,
-    "formalEvidenceTrackingPercentage": 39.7580645,
+    "formalEvidenceTrackingPercentage": 38.7903226,
     "evidenceStateCounts": {
-      "remote-verified-archived-profiled": 11,
-      "local-verified-profiled": 5,
+      "remote-verified-archived-profiled": 7,
+      "local-verified-profiled": 9,
       "partial-component": 2,
       "access-blocked": 13
     },
-    "immutableArchiveCompleteRows": 11,
-    "productionAdmissionCompleteRows": 4,
-    "productionEligibleRows": 4,
+    "immutableArchiveCompleteRows": 7,
+    "productionAdmissionCompleteRows": 0,
+    "productionEligibleRows": 0,
     "queueRowCount": 16
   },
   "queueRows": [
@@ -140,8 +140,8 @@
     },
     {
       "id": "cwfis-current",
-      "evidenceState": "remote-verified-archived-profiled",
-      "rawCredit": 1,
+      "evidenceState": "local-verified-profiled",
+      "rawCredit": 0.75,
       "decisionBundle": "current-wildfire-archive-gate",
       "primaryActionId": "current-wildfire-derived-archive-preflight-and-owner-promotion",
       "dependentActionIds": ["wildfire-transform-ingest-release"],
@@ -155,8 +155,8 @@
       },
       "archiveGate": {
         "requiredObjects": 6,
-        "verifiedObjects": 6,
-        "primaryReadbacksVerified": true,
+        "verifiedObjects": 0,
+        "primaryReadbacksVerified": false,
         "recoveryReplicaVerified": false,
         "mutationProvenance": false,
         "productionEligible": false
@@ -172,7 +172,7 @@
         "productionEligible": false
       },
       "exactNextSteps": [
-        "preserve the six exact primary readback records",
+        "replace placeholder attestations with concrete version and checksum bindings",
         "obtain and integrate separately proven recovery or mutation-provenance evidence",
         "keep transformation, ingestion and release claims blocked until their gates pass",
         "record separate release and production-admission decisions",
@@ -188,8 +188,8 @@
     },
     {
       "id": "bc-wildfire",
-      "evidenceState": "remote-verified-archived-profiled",
-      "rawCredit": 1,
+      "evidenceState": "local-verified-profiled",
+      "rawCredit": 0.75,
       "decisionBundle": "current-wildfire-archive-gate",
       "primaryActionId": "current-wildfire-derived-archive-preflight-and-owner-promotion",
       "dependentActionIds": ["wildfire-transform-ingest-release"],
@@ -203,8 +203,8 @@
       },
       "archiveGate": {
         "requiredObjects": 6,
-        "verifiedObjects": 6,
-        "primaryReadbacksVerified": true,
+        "verifiedObjects": 0,
+        "primaryReadbacksVerified": false,
         "recoveryReplicaVerified": false,
         "mutationProvenance": false,
         "productionEligible": false
@@ -220,7 +220,7 @@
         "productionEligible": false
       },
       "exactNextSteps": [
-        "preserve the six exact primary readback records",
+        "replace placeholder attestations with concrete version and checksum bindings",
         "obtain and integrate separately proven recovery or mutation-provenance evidence",
         "keep transformation, ingestion and release claims blocked until their gates pass",
         "record separate release and production-admission decisions",
@@ -236,8 +236,8 @@
     },
     {
       "id": "ab-wildfire",
-      "evidenceState": "remote-verified-archived-profiled",
-      "rawCredit": 1,
+      "evidenceState": "local-verified-profiled",
+      "rawCredit": 0.75,
       "decisionBundle": "current-wildfire-archive-gate",
       "primaryActionId": "current-wildfire-derived-archive-preflight-and-owner-promotion",
       "dependentActionIds": ["wildfire-transform-ingest-release"],
@@ -251,8 +251,8 @@
       },
       "archiveGate": {
         "requiredObjects": 6,
-        "verifiedObjects": 6,
-        "primaryReadbacksVerified": true,
+        "verifiedObjects": 0,
+        "primaryReadbacksVerified": false,
         "recoveryReplicaVerified": false,
         "mutationProvenance": false,
         "productionEligible": false
@@ -268,7 +268,7 @@
         "productionEligible": false
       },
       "exactNextSteps": [
-        "preserve the six exact primary readback records",
+        "replace placeholder attestations with concrete version and checksum bindings",
         "obtain and integrate separately proven recovery or mutation-provenance evidence",
         "keep transformation, ingestion and release claims blocked until their gates pass",
         "record separate release and production-admission decisions",
@@ -284,8 +284,8 @@
     },
     {
       "id": "on-fire-disturbance",
-      "evidenceState": "remote-verified-archived-profiled",
-      "rawCredit": 1,
+      "evidenceState": "local-verified-profiled",
+      "rawCredit": 0.75,
       "decisionBundle": "current-wildfire-archive-gate",
       "primaryActionId": "current-wildfire-derived-archive-preflight-and-owner-promotion",
       "dependentActionIds": ["wildfire-transform-ingest-release"],
@@ -299,8 +299,8 @@
       },
       "archiveGate": {
         "requiredObjects": 6,
-        "verifiedObjects": 6,
-        "primaryReadbacksVerified": true,
+        "verifiedObjects": 0,
+        "primaryReadbacksVerified": false,
         "recoveryReplicaVerified": false,
         "mutationProvenance": false,
         "productionEligible": false
@@ -316,7 +316,7 @@
         "productionEligible": false
       },
       "exactNextSteps": [
-        "preserve the six exact primary readback records",
+        "replace placeholder attestations with concrete version and checksum bindings",
         "obtain and integrate separately proven recovery or mutation-provenance evidence",
         "keep transformation, ingestion and release claims blocked until their gates pass",
         "record separate release and production-admission decisions",

@@ -36,4 +36,4 @@ This is a local output preflight only. The decision-readiness record says the ow
 
 ## Progress impact
 
-The audit adds no raw-evidence credit and no formal-score points. The ledger remains `15.25/31` and `39.7580645%`; immutable archive remains 11 rows, production admission remains 0/31, and production eligibility remains 0/31. The exact owner actions are to record downstream transformation/ingestion scope for AVI and the PLVI raw/derived scope, then record release and production admission separately.
+The audit adds no raw-evidence credit and no formal-score points. The ledger remains `14.25/31` and `38.7903226%`; immutable archive remains 11 rows, production admission remains 0/31, and production eligibility remains 0/31. The exact owner actions are to record downstream transformation/ingestion scope for AVI and the PLVI raw/derived scope, then record release and production admission separately.

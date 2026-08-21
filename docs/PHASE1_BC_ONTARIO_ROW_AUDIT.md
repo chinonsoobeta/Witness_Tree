@@ -4,10 +4,10 @@ The machine-checked record [`data/phase1-bc-ontario-row-audit.json`](../data/pha
 
 The canonical Phase 1 baseline is unchanged:
 
-- **15.25/31 raw-evidence credits** and **39.7580645%** bounded evidence-tracking score;
-- **11 remote / 5 local / 2 partial / 13 access-blocked** rows;
-- **11 immutable archive proofs**, **0/31 production-admission proofs**, and **0/31 production-eligible rows**;
-- current-wildfire primary gate **6/6** required objects, with recovery/provenance still blocked;
+- **14.25/31 raw-evidence credits** and **38.7903226%** bounded evidence-tracking score;
+- **7 remote / 9 local / 2 partial / 13 access-blocked** rows;
+- **7 immutable archive proofs**, **0/31 production-admission proofs**, and **0/31 production-eligible rows**;
+- current-wildfire gate **0/6 machine-verifiable**, **6/6 attested-only**, with exact-version proof and downstream admission blocked;
 - BC/ON scope: **2.25 raw credits**, **0 raw-credit change**, and **0 production/admission change**.
 
 Run the check with:
@@ -20,7 +20,7 @@ npm run check:phase1-bc-ontario-row-audit
 
 | Rows | Current state | Evidence-backed finding | Immediate blocker | Current raw-credit change |
 | --- | --- | --- | ---: | ---: |
-| `bc-wildfire`, `on-fire-disturbance` | Remote-verified, archived, profiled | Both raw snapshots and both checksum-bound derived payload/manifest pairs have redacted exact-key primary readback and payload-retention evidence. | Recovery or mutation provenance and separate transformation, ingestion, release and production-admission records | 0 |
+| `bc-wildfire`, `on-fire-disturbance` | Local-verified, profiled | Raw and derived payloads are locally checksum-bound, but archive records omit concrete version identifiers and use placeholder checksum values. | Machine-verifiable immutable proof plus transformation, ingestion, release and production-admission records | 0.25 each |
 | `bc-fta-cutblocks`, `bc-harvesting-authorities` | Access-blocked | OGL-BC service routes are mutable or custom-order; the FOI reply supplied a route, not a coherent export. | Publisher-bounded export with edition, checksum, profile and lifecycle review | 0 |
 | `bc-vri`, `bc-forest-operations-map` | Access-blocked | VRI remains Access Only with its advertised current artifact unavailable; FOM is Access Only planned-activity data. The one copyright form is unsent. | Written permission and a complete exact artifact | 0 |
 | `bc-consolidated-cutblocks` | Access-blocked | A public ZIP is still Access Only; the FAIB reply clarified output details but granted no rights. | Written FAIB authorization or redistributable licence | 0 |

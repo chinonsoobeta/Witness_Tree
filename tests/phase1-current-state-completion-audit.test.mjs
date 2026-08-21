@@ -9,9 +9,9 @@ const args = ["phase1-current-state-completion-audit", "phase1-production-source
 test("current-state audit accounts for all 31 rows and remains fail closed", () => {
   const audit = validatePhase1CurrentStateCompletionAudit(...args);
   assert.equal(audit.rows.length, 31);
-  assert.equal(audit.ledger.productionEligibleRows, 4);
-  assert.equal(audit.ledger.rawEvidenceNumerator, 15.25);
-  assert.equal(audit.ledger.immutableArchiveCompleteRows, 11);
+  assert.equal(audit.ledger.productionEligibleRows, 0);
+  assert.equal(audit.ledger.rawEvidenceNumerator, 14.25);
+  assert.equal(audit.ledger.immutableArchiveCompleteRows, 7);
   assert.equal(audit.rows.find(({ id }) => id === "ntems-canopy-height").actionPlan, "national-source-ledger-recorded");
   assert.equal(audit.rows.find(({ id }) => id === "ntems-forest-harvest").actionPlan, "national-source-ledger-recorded");
   assert.equal(audit.rows.find(({ id }) => id === "ab-primary-land-vegetation").actionPlan, "plvi-scope-approved");
@@ -20,7 +20,7 @@ test("current-state audit accounts for all 31 rows and remains fail closed", () 
 });
 
 test("current-state audit rejects invented eligibility, outreach, or archive evidence", () => {
-  const eligible = structuredClone(args[0]); eligible.ledger.productionEligibleRows = 3;
+  const eligible = structuredClone(args[0]); eligible.ledger.productionEligibleRows = 1;
   assert.throws(() => validatePhase1CurrentStateCompletionAudit(eligible, ...args.slice(1)));
   const reply = structuredClone(args[0]); reply.globalGates.outreach.repliesRecorded = 1;
   assert.throws(() => validatePhase1CurrentStateCompletionAudit(reply, ...args.slice(1)));

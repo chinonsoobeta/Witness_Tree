@@ -21,18 +21,18 @@
   ],
   "baseline": {
     "productionRows": 31,
-    "rawEvidenceNumerator": 15.25,
+    "rawEvidenceNumerator": 14.25,
     "rawEvidenceDenominator": 31,
-    "formalEvidenceTrackingPercentage": 39.7580645,
+    "formalEvidenceTrackingPercentage": 38.7903226,
     "evidenceStateCounts": {
-      "remote-verified-archived-profiled": 11,
-      "local-verified-profiled": 5,
+      "remote-verified-archived-profiled": 7,
+      "local-verified-profiled": 9,
       "partial-component": 2,
       "access-blocked": 13
     },
-    "immutableArchiveCompleteRows": 11,
-    "productionAdmissionCompleteRows": 4,
-    "productionEligibleRows": 4,
+    "immutableArchiveCompleteRows": 7,
+    "productionAdmissionCompleteRows": 0,
+    "productionEligibleRows": 0,
     "queueRowCount": 16
   },
   "rows": [
@@ -173,14 +173,14 @@
       "irreversibleArchiveRetention": {
         "status": "primary-six-object-readbacks-verified-recovery-provenance-pending",
         "preflightCommand": "zsh scripts/run-wildfire-derived-readback.sh --preflight <mode-600-owner-approval-file>",
-        "gate": {"requiredObjects": 6, "verifiedObjects": 6, "primaryReadbacksVerified": true, "recoveryReplicaVerified": false, "mutationProvenance": false},
+        "gate": {"requiredObjects": 6, "verifiedObjects": 0, "attestedObjects": 6, "primaryReadbacksVerified": false, "recoveryReplicaVerified": false, "mutationProvenance": false},
         "requiredRetention": "COMPLIANCE payload versions only through 2033-08-12T00:00:00Z"
       },
       "releaseProductionAdmission": {
         "status": "deferred-until-six-object-gate",
         "requiredSeparateDecisions": ["transformation", "ingestion", "release", "productionAdmission"]
       },
-      "copyPasteBlock": "PHASE1 OWNER INPUT — CURRENT WILDFIRE ARCHIVE GATE\nstatus=template-not-approved\nrows=cwfis-current,bc-wildfire,ab-wildfire,on-fire-disturbance\nsource_scope=<existing conditional record; no new approval inferred>\nprimary_readbacks=redacted exact six-object primary gate verified; recovery_replica_and_mutation_provenance=<OWNER: separately review/provide if required>\nrelease_and_production_admission=<OWNER: separate decisions required; remain false>"
+      "copyPasteBlock": "PHASE1 OWNER INPUT — CURRENT WILDFIRE ARCHIVE GATE\nstatus=template-not-approved\nrows=cwfis-current,bc-wildfire,ab-wildfire,on-fire-disturbance\nsource_scope=<existing conditional record; no new approval inferred>\nprimary_readbacks=0/6 machine-verifiable; six placeholder-only attestations require concrete version and checksum bindings\nrelease_and_production_admission=<remain false until every archive and downstream gate passes>"
     },
     {
       "step": 7,

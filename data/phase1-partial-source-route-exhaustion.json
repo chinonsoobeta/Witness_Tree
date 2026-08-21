@@ -251,16 +251,16 @@
     }
   ],
   "impact": {
-    "rawEvidenceNumeratorBefore": 15.25,
-    "rawEvidenceNumeratorAfter": 15.25,
+    "rawEvidenceNumeratorBefore": 14.25,
+    "rawEvidenceNumeratorAfter": 14.25,
     "rawEvidenceDenominator": 31,
     "rawCreditDelta": 0,
-    "formalEvidenceTrackingPercentageBefore": 39.7580645,
-    "formalEvidenceTrackingPercentageAfter": 39.7580645,
-    "immutableArchiveCompleteRows": 11,
+    "formalEvidenceTrackingPercentageBefore": 38.7903226,
+    "formalEvidenceTrackingPercentageAfter": 38.7903226,
+    "immutableArchiveCompleteRows": 7,
     "evidenceStateCounts": {
-      "remote-verified-archived-profiled": 11,
-      "local-verified-profiled": 5,
+      "remote-verified-archived-profiled": 7,
+      "local-verified-profiled": 9,
       "partial-component": 2,
       "access-blocked": 13
     },

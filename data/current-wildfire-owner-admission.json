@@ -1,6 +1,6 @@
 {
   "schemaVersion": "witness-tree/current-wildfire-owner-admission/1",
-  "status": "owner-approved-pipeline-admitted",
+  "status": "owner-approved-pipeline-blocked-on-machine-verifiable-readbacks",
   "approvedAt": "2026-08-14",
   "ownerDecision": {
     "scopeApproved": true,
@@ -12,12 +12,13 @@
     "condition": "Every exact raw payload and each required derived payload must first have repository-integrated immutable archive readback evidence. Approval does not itself satisfy that condition."
   },
   "archiveGate": {
-    "status": "passed-six-of-six-primary-readbacks",
+    "status": "blocked-placeholder-only-version-and-checksum-evidence",
     "evidenceRef": "data/current-wildfire-raw-archive-evidence.json",
     "derivedEvidenceRef": "data/current-wildfire-derived-archive-evidence.json",
     "requiredObjectCount": 6,
-    "verifiedObjectCount": 6,
-    "primaryReadbacksVerified": true,
+    "verifiedObjectCount": 0,
+    "attestedObjectCount": 6,
+    "primaryReadbacksVerified": false,
     "recoveryReplicaVerified": false,
     "mutationProvenance": false,
     "requirements": [
@@ -29,7 +30,7 @@
       "active COMPLIANCE retention through at least 2033-08-12T00:00:00Z",
       "Canadian ca-central-1 storage evidence"
     ],
-    "productionEligible": true
+    "productionEligible": false
   },
   "refreshAndAuthority": {
     "representation": "Each publication is a separately archived as-of snapshot; never label it real-time or overwrite an earlier snapshot.",
@@ -47,7 +48,7 @@
       "transformation": "Source-preserving field normalization and EPSG:3978-to-EPSG:4326 reprojection only; retain the raw archive and source identifiers.",
       "ingestion": "Admit only records valid at the fixed query instant with all 586 point geometries and exact source provenance.",
       "release": "Label as an as-of national point snapshot and fallback context; it is not real-time, not a complete incident or perimeter inventory, and not provincial-agency authoritative.",
-      "productionEligible": true
+      "productionEligible": false
     },
     {
       "id": "bc-wildfire",
@@ -58,7 +59,7 @@
       "transformation": "Use only the checksum-bound derived release: copy 215 raw-valid features unchanged, replace G70362 with its bounded valid polygonal repair, and permanently exclude and quarantine V10755 from geometry-dependent use.",
       "ingestion": "Closed join to the 216 admitted derived features; never ingest V10755 geometry and never mutate or substitute the 217-feature raw archive.",
       "release": "Disclose 216 admitted perimeters from a 217-feature snapshot and one permanent geometry exclusion; never claim 217-feature geometry coverage.",
-      "productionEligible": true
+      "productionEligible": false
     },
     {
       "id": "ab-wildfire",
@@ -68,7 +69,7 @@
       "transformation": "Source-preserving field normalization only; retain every raw point and publisher status without inferring a perimeter.",
       "ingestion": "Admit 751 valid points with exact snapshot provenance and status dates; do not derive perimeter area from points.",
       "release": "Label as an as-of wildfire-location snapshot, not real-time and not a complete perimeter dataset; Alberta Wildfire remains authoritative.",
-      "productionEligible": true
+      "productionEligible": false
     },
     {
       "id": "on-fire-disturbance",
@@ -79,15 +80,15 @@
       "transformation": "Use only the checksum-bound closed-join derived release: copy 179 raw-valid features unchanged and use all nine recorded bounded valid polygonal repairs, with no exclusion or deduplication.",
       "ingestion": "Require 188 distinct source object IDs and 188 valid non-empty polygonal derived counterparts with attributes preserved.",
       "release": "Disclose a daily as-of in-year snapshot with nine bounded repairs and zero exclusions; it is not a publisher freshness or completeness guarantee.",
-      "productionEligible": true
+      "productionEligible": false
     }
   ],
   "pipeline": {
-    "transformation": "approved-and-validated",
-    "ingestion": "approved-and-admitted",
-    "release": "approved-and-reconciled",
-    "productionAdmission": "approved-and-recorded",
-    "productionEligible": true,
-    "activationRule": "The machine gate may return productionEligible=true only when the integrated raw and derived evidence proves all six exact payloads and every required readback/retention field."
+    "transformation": "approved-scope-defined-local-artifacts-not-machine-verifiably-archived",
+    "ingestion": "approved-blocked-on-machine-verifiable-archive-gate",
+    "release": "approved-blocked-on-machine-verifiable-archive-gate",
+    "productionAdmission": "approved-blocked-on-machine-verifiable-archive-gate",
+    "productionEligible": false,
+    "activationRule": "The machine gate may return productionEligible=true only when integrated evidence cryptographically binds each of the six exact raw/derived payloads to a concrete object version and non-placeholder full-object checksum value, and proves exact-version readback, retention, Canadian storage, and the approved downstream decision."
   }
 }

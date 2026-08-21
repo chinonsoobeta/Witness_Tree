@@ -1,14 +1,14 @@
 {
   "schemaVersion": "witness-tree/current-wildfire-derived-archive-evidence/1",
-  "status": "redacted-primary-readback-verified",
+  "status": "attestation-only-not-machine-verifiable",
   "verifiedAt": "2026-08-21",
-  "sourceOfTruth": "Independent default/account-root read-only latest and concrete-version heads, exact bytes, FULL_OBJECT CRC64NVME fields and payload retention readbacks, cross-checked against owner-only evidence.",
+  "sourceOfTruth": "Redacted operator attestation only; no audit operations or concrete provider version/checksum values are retained in this record.",
   "storage": {
     "bucket": "witness-tree-raw-archive-ca-central-1",
     "region": "ca-central-1",
     "countryCode": "CA"
   },
-  "notice": "Redacted exact-key primary readback evidence for the two approved derived payload/manifest pairs. Provider version identifiers, ETags, upload IDs, credentials and raw bytes are intentionally not retained. This record does not assert mutation provenance, grant source-ledger admission, authorize transformation, ingestion, release, production admission or production eligibility, and does not claim a recovery replica.",
+  "notice": "Attestation-only record. Provider version identifiers and checksum values are omitted, auditOperationsPerformed is empty, and redacted-present placeholders cannot machine-verifiably prove exact-version readback or immutable archive. This record does not authorize ingestion, release, production admission or production eligibility.",
   "auditOperationsPerformed": [],
   "ownerEvidenceCheckerPassed": true,
   "objects": [
@@ -74,9 +74,10 @@
     }
   ],
   "claims": {
-    "derivedObjectsVerified": true,
-    "primaryObjectsVerified": true,
-    "payloadRetentionVerified": true,
+    "derivedObjectsVerified": false,
+    "primaryObjectsVerified": false,
+    "payloadRetentionVerified": false,
+    "machineVerifiableImmutableProof": false,
     "recoveryObjectsVerified": false,
     "recoveryReplicaVerified": false,
     "mutationProvenance": false,
