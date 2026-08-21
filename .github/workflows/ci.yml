@@ -33,6 +33,7 @@ jobs:
       - run: npm run check:cwfis-current-active-fires
       - run: npm run check:phase1-corruption-corpus
       - run: npm run check:staged-geospatial-profile
+      - run: npm run check:qc-immutable-promotion-iam
       - run: npm run check:alberta-wildfire-locations
       - run: npm run check:ontario-in-year-fire-perimeters
       - run: npm run check:alberta-plvi-full-release-readiness

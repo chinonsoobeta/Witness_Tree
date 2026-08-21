@@ -100,6 +100,7 @@
     "check:phase1-phase3-owner-approvals": "node scripts/check-phase1-phase3-owner-approvals.mjs",
     "dry-run:alberta-plvi-immutable-promotion": "zsh scripts/run-alberta-plvi-approved-promotion.sh",
     "check:qc-immutable-promotion-preparation": "node scripts/prepare-qc-immutable-promotion.mjs",
+    "check:qc-immutable-promotion-iam": "node scripts/check-qc-immutable-promotion-iam.mjs",
     "dry-run:qc-immutable-promotion": "zsh scripts/run-qc-approved-multipart-promotion.sh",
     "check:immutable-promotions": "node scripts/check-immutable-promotions.mjs",
     "check:immutable-restore-drill": "node scripts/check-immutable-restore-drill.mjs",
