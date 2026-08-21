@@ -223,6 +223,16 @@ function cellPolygon(grid: BaselineGrid, cellIndex: number): readonly (readonly 
   ]);
 }
 
+export function geometryForGridCells(grid: BaselineGrid, cellIndices: readonly number[]): DetectedChangeGeometry {
+  const geometry = Object.freeze({
+    type: "MultiPolygon" as const,
+    crsId: grid.crsId,
+    coordinates: Object.freeze(cellIndices.map((cellIndex) => Object.freeze([cellPolygon(grid, cellIndex)]))),
+  });
+  validateDetectedChangeGeometry(geometry, cellIndices.length);
+  return geometry;
+}
+
 function connectedPatches(lossCells: ReadonlySet<number>, width: number, height: number): readonly (readonly number[])[] {
   const remaining = new Set(lossCells);
   const patches: number[][] = [];
@@ -303,12 +313,7 @@ export function buildDetectedChangeSpine(manifest: BaselineBatchManifest, method
       else if (from === 1 && to === 0) lossCells.add(cellIndex);
     }
     const events = connectedPatches(lossCells, grid.width, grid.height).map((cellIndices): DetectedChangeEvent => {
-      const geometry = Object.freeze({
-        type: "MultiPolygon" as const,
-        crsId: grid.crsId,
-        coordinates: Object.freeze(cellIndices.map((cellIndex) => Object.freeze([cellPolygon(grid, cellIndex)]))),
-      });
-      validateDetectedChangeGeometry(geometry, cellIndices.length);
+      const geometry = geometryForGridCells(grid, cellIndices);
       const core = {
         batchId: manifest.batchId,
         methodVersion: manifest.methodVersion,

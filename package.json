@@ -107,6 +107,7 @@
     "check:elections-canada-fed-2025-promotion": "tsx scripts/check-elections-canada-fed-2025-promotion-preparation.mjs",
     "check:raster-grid": "node scripts/check-raster-grid.mjs",
     "check:phase2-national-baseline-batch": "tsx --test tests/national-baseline-batch.test.ts",
+    "check:phase2-synthetic-integration": "tsx --test tests/synthetic-event-integration.test.ts",
     "check:phase2-method-parameters": "tsx scripts/check-phase2-method-parameters.mts && tsx --test tests/method-manifest.test.ts tests/matching-precedence.test.ts",
     "run:phase2-national-baseline-batch": "tsx scripts/run-national-baseline-batch.mts",
     "check:local-staging-admission": "tsx scripts/check-local-staging-admission.mjs",
