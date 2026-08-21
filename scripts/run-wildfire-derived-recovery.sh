@@ -74,12 +74,21 @@ command -v aws >/dev/null || fail "aws CLI is required; no TOTP or AWS call was 
 for input_path in "$APPROVAL" "$STATE" "$ATTESTATION"; do
   [[ -f "$input_path" && -O "$input_path" && "$(stat -f %Lp "$input_path" 2>/dev/null)" == 600 ]] || fail "Approval, private state, and IAM attestation must be owner-owned mode-600 files; no TOTP or AWS call was made" 65
 done
-[[ ! -e "$EVIDENCE" ]] || fail "Recovery evidence path already exists; refusing overwrite and no TOTP or AWS call was made" 65
+if [[ -e "$EVIDENCE" ]]; then
+  [[ -f "$EVIDENCE" && -O "$EVIDENCE" && "$(stat -f %Lp "$EVIDENCE" 2>/dev/null)" == 600 ]] || fail "Existing recovery evidence must be an owner-owned mode-600 file; no TOTP or AWS call was made" 65
+fi
 
 TMP="$(mktemp -d /private/tmp/witness-tree-wildfire-derived-recovery.XXXXXX)" || fail "Could not create a private recovery directory" 69
 chmod 700 "$TMP"
-if ! node "$CHECKER" --preflight "$APPROVAL" "$STATE" "$ATTESTATION" "$DATA_ROOT" >"$TMP/preflight.stdout" 2>"$TMP/preflight.stderr"; then
+if ! node "$CHECKER" --preflight "$APPROVAL" "$STATE" "$ATTESTATION" "$DATA_ROOT" "$EVIDENCE" >"$TMP/preflight.stdout" 2>"$TMP/preflight.stderr"; then
   fail "Approval, private state, IAM attestation, or local derived artifacts failed closed; no TOTP or AWS call was made" 65
+fi
+
+if [[ -e "$EVIDENCE" && "$(jq -er '.status' "$EVIDENCE" 2>/dev/null)" == "completed" ]]; then
+  fail "Recovery evidence is already complete; no TOTP or AWS call was made" 65
+fi
+if [[ "$MODE" == "recover" && -e "$EVIDENCE" && "$(jq -er '.status' "$EVIDENCE" 2>/dev/null)" == "partial" ]]; then
+  fail "Partial recovery evidence requires owner review before any retry; no TOTP or AWS call was made" 65
 fi
 
 if [[ "$MODE" == "preflight" ]]; then
@@ -103,6 +112,8 @@ export AWS_ACCESS_KEY_ID="$(jq -er '.Credentials.AccessKeyId' "$TMP/role-session
 account="$(aws sts get-caller-identity --query Account --output text 2>"$TMP/caller.stderr")" || fail "Assumed recovery role identity could not be verified; no storage mutation was authorized" 77
 [[ "$account" == "$ACCOUNT" ]] || fail "Assumed recovery role is outside the approved account; no storage mutation was authorized" 77
 
+node "$CHECKER" --validate-fresh-state "$STATE" >"$TMP/fresh-state-after-role.stdout" 2>"$TMP/fresh-state-after-role.stderr" || fail "Private recovery state expired during MFA or role assumption; no storage mutation was authorized" 65
+
 state_version="$(jq -er '.bcPayload.versionId' "$STATE")" || fail "Private BC payload version could not be read; no storage mutation was authorized" 65
 
 head_object() {
@@ -117,10 +128,14 @@ head_object() {
 
 guard_absent() {
   local label="$1" key="$2"
-  if aws s3api head-object --bucket "$BUCKET" --key "$key" --checksum-mode ENABLED --region "$REGION" --output json >"$TMP/$label-guard.json" 2>"$TMP/$label-guard.stderr"; then
+  if ! env -u AWS_ACCESS_KEY_ID -u AWS_SECRET_ACCESS_KEY -u AWS_SESSION_TOKEN -u AWS_PROFILE -u AWS_DEFAULT_PROFILE aws s3api head-object --profile default --bucket "$BUCKET" --key "$key" --checksum-mode ENABLED --region "$REGION" --output json >"$TMP/$label-guard.json" 2>"$TMP/$label-guard.stderr"; then
+    grep -Eq '404|NotFound|NoSuchKey|does not exist' "$TMP/$label-guard.stderr" || fail "Root/default preexisting-key guard could not prove absence; no recovery write was attempted" 70
+    return 0
+  fi
+  if [[ -s "$TMP/$label-guard.json" ]]; then
     fail "Preexisting-key guard found an object; refusing overwrite and no recovery write was attempted" 70
   fi
-  grep -Eq '404|NotFound|NoSuchKey|does not exist' "$TMP/$label-guard.stderr" || fail "Preexisting-key guard could not prove absence; no recovery write was attempted" 70
+  fail "Preexisting-key guard returned an unusable response; no recovery write was attempted" 70
 }
 
 head_object bc-payload "$BC_PAYLOAD" "$state_version"
@@ -131,6 +146,14 @@ node "$CHECKER" --validate-bc-head "$TMP/bc-payload.json" "$STATE" >"$TMP/bc-pay
 guard_absent bc-manifest "$BC_MANIFEST"
 guard_absent ontario-payload "$ON_PAYLOAD"
 guard_absent ontario-manifest "$ON_MANIFEST"
+
+# Persist the preexisting BC proof before any new write. If a later conditional
+# operation fails, this owner-only partial checkpoint records that the BC
+# payload was never a candidate for re-upload. A subsequent attempt remains
+# fail-closed unless all live guards and exact readbacks pass again.
+node "$CHECKER" --record-progress "$APPROVAL" "$STATE" "$EVIDENCE" bcPayload "$TMP/bc-payload.json" \
+  >"$TMP/bc-payload-progress.stdout" 2>"$TMP/bc-payload-progress.stderr" \
+  || fail "Private recovery checkpoint could not bind the existing BC payload; no recovery write was attempted" 70
 
 bc_retention_state=""
 if aws s3api get-object-retention --bucket "$BUCKET" --key "$BC_PAYLOAD" --version-id "$state_version" --region "$REGION" --output json >"$TMP/bc-retention-before.json" 2>"$TMP/bc-retention-before.stderr"; then
@@ -159,8 +182,17 @@ put_new() {
 }
 
 put_new bc-manifest bcManifest "$BC_MANIFEST" "$BC_SIDECAR_FILE"
+node "$CHECKER" --record-progress "$APPROVAL" "$STATE" "$EVIDENCE" bcManifest "$TMP/bc-manifest.json" \
+  >"$TMP/bc-manifest-progress.stdout" 2>"$TMP/bc-manifest-progress.stderr" \
+  || fail "BC manifest checkpoint failed after the conditional write; no overwrite or delete was attempted" 70
 put_new ontario-payload ontarioPayload "$ON_PAYLOAD" "$ON_LOCAL"
+node "$CHECKER" --record-progress "$APPROVAL" "$STATE" "$EVIDENCE" ontarioPayload "$TMP/ontario-payload.json" \
+  >"$TMP/ontario-payload-progress.stdout" 2>"$TMP/ontario-payload-progress.stderr" \
+  || fail "Ontario payload checkpoint failed after the conditional write; no overwrite or delete was attempted" 70
 put_new ontario-manifest ontarioManifest "$ON_MANIFEST" "$ON_SIDECAR_FILE"
+node "$CHECKER" --record-progress "$APPROVAL" "$STATE" "$EVIDENCE" ontarioManifest "$TMP/ontario-manifest.json" \
+  >"$TMP/ontario-manifest-progress.stdout" 2>"$TMP/ontario-manifest-progress.stderr" \
+  || fail "Ontario manifest checkpoint failed after the conditional write; no overwrite or delete was attempted" 70
 
 bc_version="$state_version"
 on_version="$(jq -er '.VersionId' "$TMP/ontario-payload-ack.json")" || fail "Ontario payload version was absent; no retention write was attempted" 70
@@ -193,6 +225,19 @@ mv "$TMP/bc-payload-final.json" "$TMP/bc-payload-evidence.json"
 mv "$TMP/bc-manifest-final.json" "$TMP/bc-manifest-evidence.json"
 mv "$TMP/ontario-payload-final.json" "$TMP/ontario-payload-evidence.json"
 mv "$TMP/ontario-manifest-final.json" "$TMP/ontario-manifest-evidence.json"
+
+node "$CHECKER" --record-progress "$APPROVAL" "$STATE" "$EVIDENCE" bcPayload "$TMP/bc-payload-evidence.json" bcPayload "$TMP/bc-retention-after.json" \
+  >"$TMP/bc-payload-final-progress.stdout" 2>"$TMP/bc-payload-final-progress.stderr" \
+  || fail "BC payload final checkpoint failed; no further mutation was attempted" 70
+node "$CHECKER" --record-progress "$APPROVAL" "$STATE" "$EVIDENCE" bcManifest "$TMP/bc-manifest-evidence.json" \
+  >"$TMP/bc-manifest-final-progress.stdout" 2>"$TMP/bc-manifest-final-progress.stderr" \
+  || fail "BC manifest final checkpoint failed; no further mutation was attempted" 70
+node "$CHECKER" --record-progress "$APPROVAL" "$STATE" "$EVIDENCE" ontarioPayload "$TMP/ontario-payload-evidence.json" ontarioPayload "$TMP/ontario-retention-after.json" \
+  >"$TMP/ontario-payload-final-progress.stdout" 2>"$TMP/ontario-payload-final-progress.stderr" \
+  || fail "Ontario payload final checkpoint failed; no further mutation was attempted" 70
+node "$CHECKER" --record-progress "$APPROVAL" "$STATE" "$EVIDENCE" ontarioManifest "$TMP/ontario-manifest-evidence.json" \
+  >"$TMP/ontario-manifest-final-progress.stdout" 2>"$TMP/ontario-manifest-final-progress.stderr" \
+  || fail "Ontario manifest final checkpoint failed; no further mutation was attempted" 70
 
 node "$CHECKER" --write-evidence "$APPROVAL" "$STATE" \
   "$TMP/bc-payload-evidence.json" "$TMP/bc-manifest-evidence.json" \

@@ -16,6 +16,7 @@ export const RETAIN_UNTIL = PLAN.mfaGatedExecution.recommendedRetainUntil;
 export const APPROVAL_SCHEMA = "witness-tree/wildfire-derived-recovery-approval/1";
 export const STATE_SCHEMA = "witness-tree/wildfire-derived-recovery-state/1";
 export const EVIDENCE_SCHEMA = "witness-tree/wildfire-derived-recovery-evidence/1";
+export const RECOVERY_STATE_MAX_AGE_SECONDS = 900;
 
 const EXCLUSIONS = Object.freeze([
   "no-bc-payload-upload",
@@ -51,7 +52,7 @@ function artifacts(plan = PLAN) {
   }));
 }
 
-function expectedObjects(plan = PLAN) {
+export function expectedObjects(plan = PLAN) {
   const [bc, ontario] = artifacts(plan);
   return {
     bcPayload: { key: bc.payloadKey, byteLength: bc.byteLength },
@@ -59,6 +60,15 @@ function expectedObjects(plan = PLAN) {
     ontarioPayload: { key: ontario.payloadKey, byteLength: ontario.byteLength },
     ontarioManifest: { key: ontario.manifestKey, byteLength: ontario.manifestByteLength }
   };
+}
+
+function expectedAbsenceProof(plan = PLAN) {
+  const objects = expectedObjects(plan);
+  return [
+    { key: objects.bcManifest.key, operation: "head-object", profile: "default", status: "absent-head-404" },
+    { key: objects.ontarioPayload.key, operation: "head-object", profile: "default", status: "absent-head-404" },
+    { key: objects.ontarioManifest.key, operation: "head-object", profile: "default", status: "absent-head-404" }
+  ];
 }
 
 export function approvalTemplate(plan = PLAN) {
@@ -106,7 +116,11 @@ export function stateTemplate(plan = PLAN) {
     profile: PROFILE,
     region: REGION,
     bucket: BUCKET,
-    source: "exact owner read-only head; keep this file private",
+    authority: { account: ACCOUNT, profile: "default", identity: "root" },
+    source: "root/default exact read-only head generator; keep this file private",
+    capturedAt: "REPLACE_WITH_GENERATOR_TIMESTAMP",
+    expiresAt: "REPLACE_WITH_GENERATOR_EXPIRY",
+    absenceProof: expectedAbsenceProof(plan),
     bcPayload: {
       key: bc.key,
       versionId: "REPLACE_WITH_PRIVATE_VERSION_ID",
@@ -140,14 +154,30 @@ export function validateState(state, plan = PLAN) {
   const expected = stateTemplate(plan);
   assert.equal(state.schemaVersion, STATE_SCHEMA, "private recovery state schema is not recognized");
   assert.equal(state.status, "owner-private", "private recovery state status is not exact");
-  for (const field of ["account", "role", "profile", "region", "bucket", "source", "reuseExistingBcPayload", "noBcPayloadUpload", "productionEligible", "phase2"]) {
+  for (const field of ["account", "role", "profile", "region", "bucket", "authority", "source", "reuseExistingBcPayload", "noBcPayloadUpload", "productionEligible", "phase2"]) {
     assert.deepEqual(state[field], expected[field], `private recovery state ${field} is not exact`);
   }
+  assert.deepEqual(state.authority, { account: ACCOUNT, profile: "default", identity: "root" }, "private state authority is not exact");
+  assert.match(state.capturedAt ?? "", /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/, "private state capture time is not exact");
+  assert.match(state.expiresAt ?? "", /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/, "private state expiry time is not exact");
+  const capturedAt = Date.parse(state.capturedAt);
+  const expiresAt = Date.parse(state.expiresAt);
+  assert.equal(Number.isFinite(capturedAt) && Number.isFinite(expiresAt), true, "private state timestamps are malformed");
+  assert.equal(expiresAt - capturedAt, RECOVERY_STATE_MAX_AGE_SECONDS * 1000, "private state expiry window is not exact");
+  assert.deepEqual(state.absenceProof, expectedAbsenceProof(plan), "private state absence proof is not the exact three-key root head result");
   assert.deepEqual(state.bcPayload?.key, expected.bcPayload.key, "private state BC payload key is not exact");
   assert.equal(state.bcPayload?.byteLength, expected.bcPayload.byteLength, "private state BC payload bytes are not exact");
   assert.equal(state.bcPayload?.checksumType, "FULL_OBJECT", "private state BC payload checksum type is not exact");
   assert.equal(validVersion(state.bcPayload?.versionId) && !state.bcPayload.versionId.startsWith("REPLACE_WITH_"), true, "private state BC payload version is missing");
   assert.equal(validCrc64(state.bcPayload?.checksumCRC64NVME), true, "private state BC payload CRC64NVME is missing or malformed");
+  return true;
+}
+
+export function validateFreshState(state, plan = PLAN, now = Date.now()) {
+  validateState(state, plan);
+  const capturedAt = Date.parse(state.capturedAt);
+  const expiresAt = Date.parse(state.expiresAt);
+  assert.equal(capturedAt <= now && now <= expiresAt, true, "private recovery state is not fresh enough for owner execution");
   return true;
 }
 
@@ -206,24 +236,25 @@ export function validateRetention(retention, label = "payload") {
   return true;
 }
 
-export function validateRecoveryPreflight(approval, state, attestation, dataRoot = DEFAULT_DATA_ROOT, plan = PLAN) {
+const EVIDENCE_FIELDS = Object.freeze(["schemaVersion", "status", "account", "role", "profile", "region", "bucket", "retainUntil", "existingBcPayloadVersionReused", "noBcPayloadUpload", "objects", "retention", "exclusions", "productionEligible", "phase2"]);
+
+export function validateRecoveryPreflight(approval, state, attestation, dataRoot = DEFAULT_DATA_ROOT, evidence = null, plan = PLAN) {
   validateApproval(approval, plan);
-  validateState(state, plan);
+  validateFreshState(state, plan);
   validateIamAttestation(attestation, plan);
   validateLocalArtifacts(dataRoot);
+  if (evidence) {
+    const value = typeof evidence === "string" ? readJson(evidence) : evidence;
+    if (value?.status === "partial") validateProgressEvidence(value, approval, state, plan);
+    else validateEvidence(value, approval, state, plan);
+  }
   return true;
 }
 
-export function buildEvidence(approval, state, heads, retention, plan = PLAN) {
-  validateApproval(approval, plan);
-  validateState(state, plan);
-  for (const name of ["bcPayload", "bcManifest", "ontarioPayload", "ontarioManifest"]) validateObjectHead(heads[name], name, state, plan);
-  validateRetention(retention.bcPayload, "BC payload");
-  validateRetention(retention.ontarioPayload, "Ontario payload");
-  const expected = expectedObjects(plan);
+function evidenceEnvelope(status) {
   return {
     schemaVersion: EVIDENCE_SCHEMA,
-    status: "completed",
+    status,
     account: ACCOUNT,
     role: ROLE,
     profile: PROFILE,
@@ -232,23 +263,25 @@ export function buildEvidence(approval, state, heads, retention, plan = PLAN) {
     retainUntil: RETAIN_UNTIL,
     existingBcPayloadVersionReused: true,
     noBcPayloadUpload: true,
-    objects: Object.fromEntries(Object.entries(expected).map(([name, object]) => [name, {
-      source: name === "bcPayload" ? "preexisting" : "created-by-exact-recovery",
-      key: object.key,
-      head: heads[name]
-    }])),
-    retention: { bcPayload: retention.bcPayload, ontarioPayload: retention.ontarioPayload },
+    objects: {},
+    retention: {},
     exclusions: [...EXCLUSIONS],
     productionEligible: false,
     phase2: false
   };
 }
 
-export function validateEvidence(evidence, approval, state, plan = PLAN) {
+export function buildProgressEvidence(approval, state, plan = PLAN) {
+  validateApproval(approval, plan);
+  validateState(state, plan);
+  return evidenceEnvelope("partial");
+}
+
+function validateEvidenceEnvelope(evidence) {
   assert.ok(evidence && typeof evidence === "object" && !Array.isArray(evidence), "recovery evidence is malformed");
-  assert.deepEqual(sorted(Object.keys(evidence)), sorted(["schemaVersion", "status", "account", "role", "profile", "region", "bucket", "retainUntil", "existingBcPayloadVersionReused", "noBcPayloadUpload", "objects", "retention", "exclusions", "productionEligible", "phase2"]), "recovery evidence contains an unexpected field");
+  assert.deepEqual(sorted(Object.keys(evidence)), sorted(EVIDENCE_FIELDS), "recovery evidence contains an unexpected field");
   assert.equal(evidence.schemaVersion, EVIDENCE_SCHEMA, "recovery evidence schema is not recognized");
-  assert.equal(evidence.status, "completed", "recovery evidence is not complete");
+  assert.ok(evidence.status === "partial" || evidence.status === "completed", "recovery evidence status is not exact");
   assert.equal(evidence.account, ACCOUNT, "recovery evidence account is outside the approved account");
   assert.equal(evidence.role, ROLE, "recovery evidence role is not exact");
   assert.equal(evidence.profile, PROFILE, "recovery evidence profile is not exact");
@@ -260,29 +293,110 @@ export function validateEvidence(evidence, approval, state, plan = PLAN) {
   assert.deepEqual(evidence.exclusions, [...EXCLUSIONS], "recovery evidence exclusions are incomplete or changed");
   assert.equal(evidence.productionEligible, false, "recovery evidence may not claim production eligibility");
   assert.equal(evidence.phase2, false, "recovery evidence may not claim Phase 2");
+  assert.ok(evidence.objects && typeof evidence.objects === "object" && !Array.isArray(evidence.objects), "recovery evidence objects are malformed");
+  assert.ok(evidence.retention && typeof evidence.retention === "object" && !Array.isArray(evidence.retention), "recovery evidence retention is malformed");
+  return true;
+}
+
+export function validateProgressEvidence(evidence, approval, state, plan = PLAN) {
+  validateApproval(approval, plan);
+  validateState(state, plan);
+  validateEvidenceEnvelope(evidence, plan);
   const expected = expectedObjects(plan);
-  for (const name of Object.keys(expected)) {
-    assert.deepEqual(evidence.objects?.[name]?.key, expected[name].key, `${name} evidence key is not exact`);
-    assert.equal(evidence.objects?.[name]?.source, name === "bcPayload" ? "preexisting" : "created-by-exact-recovery", `${name} evidence source is not exact`);
+  assert.equal(evidence.status, "partial", "recovery evidence is not partial");
+  for (const name of Object.keys(evidence.objects)) {
+    assert.ok(expected[name], `${name} evidence object is outside the exact recovery scope`);
+    assert.deepEqual(evidence.objects[name]?.key, expected[name].key, `${name} evidence key is not exact`);
+    assert.equal(evidence.objects[name]?.source, name === "bcPayload" ? "preexisting" : "created-by-exact-recovery", `${name} evidence source is not exact`);
     validateObjectHead(evidence.objects[name].head, name, state, plan);
   }
-  validateRetention(evidence.retention?.bcPayload, "BC payload");
-  validateRetention(evidence.retention?.ontarioPayload, "Ontario payload");
+  for (const name of Object.keys(evidence.retention)) {
+    assert.ok(["bcPayload", "ontarioPayload"].includes(name), `${name} retention is outside the exact recovery scope`);
+    validateRetention(evidence.retention[name], name === "bcPayload" ? "BC payload" : "Ontario payload");
+  }
+  return true;
+}
+
+export function mergeProgressEvidence(approval, state, current, { objectName, head, retentionName, retention }, plan = PLAN) {
+  const progress = current ? structuredClone(current) : buildProgressEvidence(approval, state, plan);
+  validateProgressEvidence(progress, approval, state, plan);
+  if (objectName) {
+    assert.ok(expectedObjects(plan)[objectName], "progress object is outside the exact recovery scope");
+    validateObjectHead(head, objectName, state, plan);
+    progress.objects[objectName] = {
+      source: objectName === "bcPayload" ? "preexisting" : "created-by-exact-recovery",
+      key: expectedObjects(plan)[objectName].key,
+      head
+    };
+  }
+  if (retentionName) {
+    assert.ok(["bcPayload", "ontarioPayload"].includes(retentionName), "progress retention is outside the exact recovery scope");
+    validateRetention(retention, retentionName === "bcPayload" ? "BC payload" : "Ontario payload");
+    progress.retention[retentionName] = retention;
+  }
+  validateProgressEvidence(progress, approval, state, plan);
+  return progress;
+}
+
+export function buildEvidence(approval, state, heads, retention, plan = PLAN) {
+  let evidence = buildProgressEvidence(approval, state, plan);
+  for (const name of ["bcPayload", "bcManifest", "ontarioPayload", "ontarioManifest"]) {
+    evidence = mergeProgressEvidence(approval, state, evidence, { objectName: name, head: heads[name] }, plan);
+  }
+  evidence = mergeProgressEvidence(approval, state, evidence, { retentionName: "bcPayload", retention: retention.bcPayload }, plan);
+  evidence = mergeProgressEvidence(approval, state, evidence, { retentionName: "ontarioPayload", retention: retention.ontarioPayload }, plan);
+  return completeEvidence(approval, state, evidence, plan);
+}
+
+export function completeEvidence(approval, state, progress, plan = PLAN) {
+  validateProgressEvidence(progress, approval, state, plan);
+  const expected = expectedObjects(plan);
+  assert.deepEqual(sorted(Object.keys(progress.objects)), sorted(Object.keys(expected)), "recovery evidence is missing an exact object proof");
+  assert.deepEqual(sorted(Object.keys(progress.retention)), ["bcPayload", "ontarioPayload"], "recovery evidence is missing exact retention proof");
+  const completed = { ...structuredClone(progress), status: "completed" };
+  validateEvidence(completed, approval, state, plan);
+  return completed;
+}
+
+export function validateEvidence(evidence, approval, state, plan = PLAN) {
+  validateEvidenceEnvelope(evidence, plan);
+  assert.equal(evidence.status, "completed", "recovery evidence is not complete");
+  const partial = { ...evidence, status: "partial" };
+  validateProgressEvidence(partial, approval, state, plan);
+  const expected = expectedObjects(plan);
+  assert.deepEqual(sorted(Object.keys(evidence.objects)), sorted(Object.keys(expected)), "recovery evidence is missing an exact object proof");
+  assert.deepEqual(sorted(Object.keys(evidence.retention)), ["bcPayload", "ontarioPayload"], "recovery evidence is missing exact retention proof");
   assert.equal(evidence.objects.bcPayload.head.VersionId, state.bcPayload.versionId, "evidence BC payload version is not the saved version");
   return true;
 }
 
-export function writeEvidence(path, evidence) {
+function writeRecoveryJson(path, value, { allowReplacePartial = false } = {}) {
   assert.equal(isAbsolute(path), true, "evidence path must be absolute");
-  assert.equal(existsSync(path), false, "evidence path already exists; refusing overwrite");
+  if (existsSync(path)) {
+    assert.equal((statSync(path).mode & 0o777), 0o600, "existing recovery evidence is not mode 600");
+    const existing = readJson(path);
+    assert.equal(allowReplacePartial && existing.status === "partial", true, "recovery evidence path already exists; refusing overwrite");
+  }
   const parent = dirname(path);
   mkdirSync(parent, { recursive: true, mode: 0o700 });
   const temporary = `${path}.tmp-${process.pid}`;
-  writeFileSync(temporary, `${JSON.stringify(evidence, null, 2)}\n`, { encoding: "utf8", flag: "wx", mode: 0o600 });
+  writeFileSync(temporary, `${JSON.stringify(value, null, 2)}\n`, { encoding: "utf8", flag: "wx", mode: 0o600 });
   chmodSync(temporary, 0o600);
   renameSync(temporary, path);
   assert.equal((statSync(path).mode & 0o777), 0o600, "recovery evidence is not mode 600");
   return path;
+}
+
+export function writeProgressEvidence(path, evidence) {
+  validateEvidenceEnvelope(evidence);
+  assert.equal(evidence.status, "partial", "only partial evidence may be written as a checkpoint");
+  return writeRecoveryJson(path, evidence, { allowReplacePartial: true });
+}
+
+export function writeEvidence(path, evidence) {
+  validateEvidenceEnvelope(evidence);
+  assert.equal(evidence.status, "completed", "only completed evidence may be written");
+  return writeRecoveryJson(path, evidence, { allowReplacePartial: true });
 }
 
 function main() {
@@ -296,9 +410,44 @@ function main() {
     return;
   }
   if (mode === "--preflight") {
-    const [approvalPath, statePath, attestationPath, dataRoot = DEFAULT_DATA_ROOT] = process.argv.slice(3);
-    validateRecoveryPreflight(readJson(approvalPath), readJson(statePath), readJson(attestationPath), dataRoot);
+    const [approvalPath, statePath, attestationPath, dataRoot = DEFAULT_DATA_ROOT, evidencePath] = process.argv.slice(3);
+    validateRecoveryPreflight(readJson(approvalPath), readJson(statePath), readJson(attestationPath), dataRoot, evidencePath && existsSync(evidencePath) ? evidencePath : null);
     console.log("Derived wildfire recovery preflight passed: exact owner approval, private BC version state, applied IAM attestation, and local artifacts verified.");
+    return;
+  }
+  if (mode === "--validate-fresh-state") {
+    validateFreshState(readJson(process.argv[3]));
+    console.log("Private wildfire recovery state is fresh and exact.");
+    return;
+  }
+  if (mode === "--validate-progress") {
+    const [approvalPath, statePath, evidencePath] = process.argv.slice(3);
+    validateProgressEvidence(readJson(evidencePath), readJson(approvalPath), readJson(statePath));
+    console.log("Partial wildfire recovery evidence passed: exact resumable checkpoint is owner-only and fail-closed.");
+    return;
+  }
+  if (mode === "--record-progress") {
+    const [approvalPath, statePath, evidencePath, objectName, headPath, retentionName, retentionPath] = process.argv.slice(3);
+    const approval = readJson(approvalPath);
+    const state = readJson(statePath);
+    const current = existsSync(evidencePath) ? readJson(evidencePath) : null;
+    const evidence = mergeProgressEvidence(approval, state, current, {
+      objectName,
+      head: readJson(headPath),
+      retentionName,
+      retention: retentionPath ? readJson(retentionPath) : undefined
+    });
+    writeProgressEvidence(evidencePath, evidence);
+    console.log("Partial wildfire recovery checkpoint written owner-only mode 600.");
+    return;
+  }
+  if (mode === "--complete-evidence") {
+    const [approvalPath, statePath, evidencePath] = process.argv.slice(3);
+    const approval = readJson(approvalPath);
+    const state = readJson(statePath);
+    const completed = completeEvidence(approval, state, readJson(evidencePath));
+    writeEvidence(evidencePath, completed);
+    console.log("Derived wildfire recovery evidence completed owner-only mode 600.");
     return;
   }
   if (mode === "--validate-bc-head") {
