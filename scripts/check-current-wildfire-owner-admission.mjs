@@ -1,17 +1,26 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { validate as validateDerivedPromotionPlan } from "./prepare-wildfire-derived-immutable-promotion.mjs";
 
 const read = (path) => JSON.parse(readFileSync(new URL(`../${path}`, import.meta.url), "utf8"));
 const SHA = /^[a-f0-9]{64}$/;
 const VERSION = /^[A-Za-z0-9._-]{6,}$/;
+const DERIVED_PLAN = validateDerivedPromotionPlan();
+const DERIVED_ARTIFACT_BY_SOURCE = new Map(DERIVED_PLAN.artifacts.map((artifact) => [artifact.sourceId, artifact]));
+
+function requiredDerivedObject(id, sourceId) {
+  const artifact = DERIVED_ARTIFACT_BY_SOURCE.get(sourceId);
+  assert.ok(artifact, `${sourceId} is missing from the canonical derived promotion plan.`);
+  return {id, key: artifact.payloadKey, bytes: artifact.byteLength, sha256: artifact.sha256};
+}
 
 export const requiredCurrentWildfireObjects = [
   {id:"cwfis-current-raw",key:"raw/cwfis-current/undeclared/2026-08-14T20-24-34Z/fc3d4a0730f30d6f12782b16e9459c173dabd6e50d0715b27cddecd954097f86/payload/cwfif_national_activefires_2026-08-14t202242z.zip",bytes:45917,sha256:"fc3d4a0730f30d6f12782b16e9459c173dabd6e50d0715b27cddecd954097f86"},
   {id:"bc-wildfire-raw",key:"raw/bc-wildfire/undeclared/2026-08-14T20-31-39Z/46ee3a97ff83128630a030b5cfcc7f3c389fc94e3ca95d463595ab6f4fb57e83/payload/bc-wildfire-fire-perimeters_2026-08-14.geojson",bytes:4813292,sha256:"46ee3a97ff83128630a030b5cfcc7f3c389fc94e3ca95d463595ab6f4fb57e83"},
-  {id:"bc-wildfire-derived",key:"derived/bc-wildfire/geometry-policy-v1/2026-08-14/8ee36cc6bdfb5ef267340537e4cf822df7cc886873c7fcf65a1b2b12006d34ce/payload/bc-wildfire-216-feature-release.gpkg",bytes:2162688,sha256:"8ee36cc6bdfb5ef267340537e4cf822df7cc886873c7fcf65a1b2b12006d34ce"},
+  requiredDerivedObject("bc-wildfire-derived", "bc-wildfire"),
   {id:"ab-wildfire-raw",key:"raw/ab-wildfire/undeclared/2026-08-14T13-42-09Z/f0e86ea34a7624c365349b3a8fbb77967bb45ab73c507cf441efb8f6a8736ee0/payload/alberta-wildfire-locations_2026-08-14.geojson",bytes:423853,sha256:"f0e86ea34a7624c365349b3a8fbb77967bb45ab73c507cf441efb8f6a8736ee0"},
   {id:"on-fire-disturbance-raw",key:"raw/on-fire-disturbance/undeclared/2026-08-14T13-49-36Z/99881f19a32068b5d66b244955f7b088e873ffe76eafebf1740f03e16f042f11/payload/ontario-in-year-fire-perimeters_2026-08-14.geojson",bytes:19510504,sha256:"99881f19a32068b5d66b244955f7b088e873ffe76eafebf1740f03e16f042f11"},
-  {id:"on-fire-disturbance-derived",key:"derived/on-fire-disturbance/geometry-policy-v1/2026-08-14/5e55c5d47559c350d9b31ffeda6bd39cfce64a3c57169098fff66341cd8ead31/payload/ontario-in-year-fire-perimeters-188-feature-derived.gpkg",bytes:7913472,sha256:"5e55c5d47559c350d9b31ffeda6bd39cfce64a3c57169098fff66341cd8ead31"}
+  requiredDerivedObject("on-fire-disturbance-derived", "on-fire-disturbance")
 ];
 
 export function remoteEvidenceSatisfiesCurrentWildfireGate(evidence) {

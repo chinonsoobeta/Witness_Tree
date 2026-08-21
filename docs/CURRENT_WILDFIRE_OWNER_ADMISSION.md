@@ -4,6 +4,8 @@ The owner has approved the exact Phase 1 transformation, ingestion, public-relea
 
 The binding record is [`data/current-wildfire-owner-admission.json`](../data/current-wildfire-owner-admission.json). Its gate requires exact object keys, version IDs, byte lengths, full-object checksum verification, exact-version readbacks, Canadian `ca-central-1` storage and active COMPLIANCE retention through at least `2033-08-12T00:00:00Z` for four raw objects and the two required derived objects.
 
+The canonical derived payload keys are the exact timestamped keys in [`data/wildfire-derived-immutable-promotion-preparation.json`](../data/wildfire-derived-immutable-promotion-preparation.json), with deterministic `/manifest.json` companions. The shorter legacy `derived/<source>/geometry-policy-v1/2026-08-14/...` variants are not aliases: they must never be uploaded, recognized by the six-object gate, or used for recovery.
+
 ## Geometry decisions
 
 - **British Columbia:** retain the unchanged 217-feature raw snapshot. Geometry-dependent use is limited to the checksum-bound 216-feature release: 215 raw-valid features unchanged plus the bounded repair for `G70362`. `V10755` is permanently excluded and quarantined because its candidate repair changes area by `3.167100456%`. Releases must state that only 216 geometries are admitted and must never claim 217-feature geometry coverage.

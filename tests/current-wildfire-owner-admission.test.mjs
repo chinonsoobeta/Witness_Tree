@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 import { evaluateCurrentWildfireProductionEligibility, remoteEvidenceSatisfiesCurrentWildfireGate, requiredCurrentWildfireObjects, validateCurrentWildfireOwnerAdmission } from "../scripts/check-current-wildfire-owner-admission.mjs";
+import { validate as validateDerivedPromotionPlan } from "../scripts/prepare-wildfire-derived-immutable-promotion.mjs";
 
 const read = (path) => JSON.parse(readFileSync(new URL(path, import.meta.url), "utf8"));
 const record = read("../data/current-wildfire-owner-admission.json");
@@ -55,6 +56,29 @@ test("only six exact immutable readbacks can satisfy the archive prerequisite", 
     const changed = structuredClone(evidence); mutation(changed);
     assert.equal(remoteEvidenceSatisfiesCurrentWildfireGate(changed), false);
     assert.equal(evaluateCurrentWildfireProductionEligibility(record, changed), false);
+  }
+});
+
+test("the six-object gate recognizes only the timestamped derived promotion keys", () => {
+  const plan = validateDerivedPromotionPlan();
+  const expectedKeys = new Map(plan.artifacts.map(({sourceId, payloadKey}) => [sourceId, payloadKey]));
+  const derived = requiredCurrentWildfireObjects.filter(({id}) => id.endsWith("-derived"));
+  assert.deepEqual(derived.map(({id, key}) => [id.replace(/-derived$/, ""), key]), [...expectedKeys.entries()]);
+
+  const evidence = {
+    schemaVersion: "witness-tree/current-wildfire-immutable-readbacks/1",
+    region: "ca-central-1",
+    objects: requiredCurrentWildfireObjects.map((object, index) => ({...object,versionId:`version-${index}-exact`,fullObjectChecksumVerified:true,exactVersionReadback:true,retention:{mode:"COMPLIANCE",retainUntil:"2033-08-12T00:00:00Z",readbackVerified:true}}))
+  };
+  assert.equal(remoteEvidenceSatisfiesCurrentWildfireGate(evidence), true);
+
+  for (const [id, key] of [
+    ["bc-wildfire-derived", "derived/bc-wildfire/geometry-policy-v1/2026-08-14/8ee36cc6bdfb5ef267340537e4cf822df7cc886873c7fcf65a1b2b12006d34ce/payload/bc-wildfire-216-feature-release.gpkg"],
+    ["on-fire-disturbance-derived", "derived/on-fire-disturbance/geometry-policy-v1/2026-08-14/5e55c5d47559c350d9b31ffeda6bd39cfce64a3c57169098fff66341cd8ead31/payload/ontario-in-year-fire-perimeters-188-feature-derived.gpkg"]
+  ]) {
+    const shorterVariant = structuredClone(evidence);
+    shorterVariant.objects.find((object) => object.id === id).key = key;
+    assert.equal(remoteEvidenceSatisfiesCurrentWildfireGate(shorterVariant), false);
   }
 });
 
