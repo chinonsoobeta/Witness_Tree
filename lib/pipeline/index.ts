@@ -1,3 +1,4 @@
+export * from "./batch-output-serialization";
 export * from "./matching";
 export * from "./method-manifest";
 export * from "./national-baseline-batch";

@@ -1,9 +1,11 @@
 import { readdir, readFile } from "node:fs/promises";
-import { resolve } from "node:path";
+import { dirname, resolve, sep } from "node:path";
 
 import { PLACE_TYPES } from "../places/types";
-import { sha256, stableJson, type BaselineBatchResult, type ForestAggregate } from "./national-baseline-batch";
-import { validateSyntheticIntegrationResult, type IntegratedAggregate, type IntegratedEvent, type SyntheticIntegrationResult } from "./synthetic-event-integration";
+import { serializeBaselineOutputs, serializeOutputLineage, serializeSyntheticOutputs } from "./batch-output-serialization";
+import type { MethodParameterManifest } from "./method-manifest";
+import { boundaryCrosswalkSha256, runBaselineBatch, sha256, stableJson, validateBaselineManifest, type BaselineBatchManifest, type BaselineBatchResult, type BoundaryCrosswalkInput, type ForestAggregate, type LandCoverInput } from "./national-baseline-batch";
+import { integrateSyntheticEvents, officialOverlaySha256, validateSyntheticIntegrationResult, type IntegratedAggregate, type IntegratedEvent, type SyntheticIntegrationResult, type SyntheticOfficialOverlay } from "./synthetic-event-integration";
 
 const SHA256 = /^[a-f0-9]{64}$/;
 const OUTPUT_FILES = [
@@ -155,6 +157,64 @@ export async function readbackSyntheticBatchOutput(directoryArgument: string): P
   }
 
   return Object.freeze({ directory, lineage, baseline, integration });
+}
+
+export async function recomputeSyntheticBatchOutput(outputDirectory: string, manifestArgument: string, overlayArgument: string): Promise<SyntheticOutputReadback> {
+  const readback = await readbackSyntheticBatchOutput(outputDirectory);
+  const manifestPath = resolve(manifestArgument);
+  const manifestDirectory = dirname(manifestPath);
+  const manifestBytes = await readFile(manifestPath);
+  if (sha256(manifestBytes) !== readback.lineage.manifestSha256) throw new Error("Source-backed replay manifest checksum does not match persisted lineage.");
+  const manifest = parsed<BaselineBatchManifest>(manifestBytes.toString("utf8"), "source manifest");
+  validateBaselineManifest(manifest);
+  if (manifest.batchId !== readback.lineage.batchId || stableJson(manifest.inputs) !== stableJson(readback.lineage.inputs)) throw new Error("Source-backed replay manifest identity and inputs must match persisted lineage exactly.");
+
+  async function sourceInput<T>(input: Readonly<{ path: string; sha256: string }>, canonicalSha256?: (value: T) => string): Promise<T> {
+    const path = resolve(manifestDirectory, input.path);
+    if (path !== manifestDirectory && !path.startsWith(`${manifestDirectory}${sep}`)) throw new Error("Source-backed replay input path escapes the manifest directory.");
+    const bytes = await readFile(path);
+    const value = parsed<T>(bytes.toString("utf8"), input.path);
+    const observed = canonicalSha256 ? canonicalSha256(value) : sha256(bytes);
+    if (observed !== input.sha256) throw new Error(`Source-backed replay input checksum mismatch for ${input.path}.`);
+    return value;
+  }
+
+  const landCover = await sourceInput<LandCoverInput>(manifest.inputs.landCover);
+  const crosswalk = await sourceInput<BoundaryCrosswalkInput>(manifest.inputs.boundaryCrosswalk, boundaryCrosswalkSha256);
+  const method = await sourceInput<MethodParameterManifest>(manifest.inputs.methodParameters);
+  const overlayBytes = await readFile(resolve(overlayArgument));
+  const overlay = parsed<SyntheticOfficialOverlay>(overlayBytes.toString("utf8"), "synthetic overlay");
+  if (overlay.overlaySha256 !== officialOverlaySha256(overlay.overlayId, overlay.records) || overlay.overlayId !== readback.lineage.syntheticIntegration.overlayId || overlay.overlaySha256 !== readback.lineage.syntheticIntegration.overlaySha256) {
+    throw new Error("Source-backed replay overlay identity and checksum must match canonical content and persisted lineage.");
+  }
+
+  const baseline = runBaselineBatch(manifest, method, landCover, crosswalk);
+  const integration = integrateSyntheticEvents({
+    manifest,
+    method,
+    grid: landCover.grid,
+    baseline,
+    crosswalk,
+    overlay,
+    fromYear: readback.lineage.syntheticIntegration.fromYear,
+    toYear: readback.lineage.syntheticIntegration.toYear,
+  });
+  const expectedOutputs = { ...serializeBaselineOutputs(manifest, baseline), ...serializeSyntheticOutputs(manifest, integration) };
+  for (const name of OUTPUT_FILES) {
+    const actual = await readFile(resolve(readback.directory, name), "utf8");
+    if (actual !== expectedOutputs[name]) throw new Error(`Source-backed replay byte mismatch for ${name}.`);
+  }
+  const expectedLineage = serializeOutputLineage({
+    manifestBytes,
+    manifest,
+    outputs: expectedOutputs,
+    overlay,
+    fromYear: readback.lineage.syntheticIntegration.fromYear,
+    toYear: readback.lineage.syntheticIntegration.toYear,
+  });
+  const actualLineage = await readFile(resolve(readback.directory, "lineage.json"), "utf8");
+  if (actualLineage !== expectedLineage) throw new Error("Source-backed replay lineage manifest does not match exact recomputed sources and outputs.");
+  return readback;
 }
 
 export function queryPersistedEventById(readback: SyntheticOutputReadback, eventId: string): IntegratedEvent | null {

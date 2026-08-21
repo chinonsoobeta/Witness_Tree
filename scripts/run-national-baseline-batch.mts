@@ -4,7 +4,6 @@ import {
   runBaselineBatch,
   boundaryCrosswalkSha256,
   sha256,
-  stableJson,
   validateBaselineManifest,
   type BaselineBatchManifest,
   type BoundaryCrosswalkInput,
@@ -12,6 +11,7 @@ import {
 } from "../lib/pipeline/national-baseline-batch";
 import type { MethodParameterManifest } from "../lib/pipeline/method-manifest";
 import { integrateSyntheticEvents, type SyntheticOfficialOverlay } from "../lib/pipeline/synthetic-event-integration";
+import { serializeBaselineOutputs, serializeOutputLineage, serializeSyntheticOutputs } from "../lib/pipeline/batch-output-serialization";
 
 const [, , manifestArgument, outputArgument, overlayArgument, fromYearArgument, toYearArgument] = process.argv;
 if (!manifestArgument || !outputArgument || ([overlayArgument, fromYearArgument, toYearArgument].some(Boolean) && ![overlayArgument, fromYearArgument, toYearArgument].every(Boolean))) {
@@ -39,39 +39,20 @@ const landCover = await checkedInput<LandCoverInput>(manifest.inputs.landCover);
 const crosswalk = await checkedInput<BoundaryCrosswalkInput>(manifest.inputs.boundaryCrosswalk, boundaryCrosswalkSha256);
 const methodParameters = await checkedInput<MethodParameterManifest>(manifest.inputs.methodParameters);
 const result = runBaselineBatch(manifest, methodParameters, landCover, crosswalk);
-const outputLabels = { status: "example", reviewStatus: "unapproved", productionEligible: false } as const;
-const maskBytes = stableJson({ schemaVersion: 1, batchId: manifest.batchId, ...outputLabels, years: result.masks });
-const aggregateBytes = stableJson({ schemaVersion: 1, batchId: manifest.batchId, ...outputLabels, aggregates: result.aggregates });
-const detectedChangeBytes = stableJson({ schemaVersion: 1, batchId: manifest.batchId, ...outputLabels, years: result.detectedChange });
-const outputs: Record<string, string> = {
-  "forest-mask.json": maskBytes,
-  "forest-aggregates.json": aggregateBytes,
-  "detected-change-events.json": detectedChangeBytes,
-};
-let syntheticLineage: Readonly<Record<string, unknown>> | undefined;
+const outputs: Record<string, string> = { ...serializeBaselineOutputs(manifest, result) };
+let overlay: SyntheticOfficialOverlay | undefined;
+let fromYear: number | undefined;
+let toYear: number | undefined;
 if (overlayArgument && fromYearArgument && toYearArgument) {
   const overlayPath = resolve(overlayArgument);
   if (overlayPath !== baseDirectory && !overlayPath.startsWith(`${baseDirectory}${sep}`)) throw new Error("Synthetic overlay path escapes the manifest directory.");
-  const overlay = JSON.parse((await readFile(overlayPath)).toString("utf8")) as SyntheticOfficialOverlay;
-  const fromYear = Number(fromYearArgument);
-  const toYear = Number(toYearArgument);
+  overlay = JSON.parse((await readFile(overlayPath)).toString("utf8")) as SyntheticOfficialOverlay;
+  fromYear = Number(fromYearArgument);
+  toYear = Number(toYearArgument);
   const integrated = integrateSyntheticEvents({ manifest, method: methodParameters, grid: landCover.grid, baseline: result, crosswalk, overlay, fromYear, toYear });
-  outputs["synthetic-integrated-events.json"] = stableJson({ schemaVersion: 1, batchId: manifest.batchId, ...outputLabels, events: integrated.events });
-  outputs["synthetic-integrated-aggregates.json"] = stableJson({ schemaVersion: 1, batchId: manifest.batchId, ...outputLabels, aggregates: integrated.aggregates });
-  outputs["synthetic-precedence.json"] = stableJson({ schemaVersion: 1, batchId: manifest.batchId, ...outputLabels, precedence: integrated.precedence, precedenceEventMap: integrated.precedenceEventMap });
-  syntheticLineage = Object.freeze({ overlayId: overlay.overlayId, overlaySha256: overlay.overlaySha256, fromYear, toYear, reviewStatus: "unapproved", productionEligible: false });
+  Object.assign(outputs, serializeSyntheticOutputs(manifest, integrated));
 }
-const lineageBytes = stableJson({
-  schemaVersion: 1,
-  batchId: manifest.batchId,
-  status: "example",
-  reviewStatus: "unapproved",
-  productionEligible: false,
-  manifestSha256: sha256(manifestBytes),
-  inputs: manifest.inputs,
-  ...(syntheticLineage ? { syntheticIntegration: syntheticLineage } : {}),
-  outputs: Object.fromEntries(Object.entries(outputs).map(([name, bytes]) => [name, sha256(bytes)])),
-});
+const lineageBytes = serializeOutputLineage({ manifestBytes, manifest, outputs, overlay, fromYear, toYear });
 
 await mkdir(outputDirectory);
 await Promise.all([
