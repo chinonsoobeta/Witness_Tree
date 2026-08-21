@@ -30,8 +30,20 @@ function precedenceRank(event: PrecedenceEvent): number | null {
   return PRECEDENCE_ORDER.indexOf(event.kind);
 }
 
+function validatePrecedenceEvents(events: readonly PrecedenceEvent[]): void {
+  const ids = new Set<string>();
+  for (const event of events) {
+    if (!event.id.trim() || ids.has(event.id)) throw new Error("Precedence events require unique, non-empty IDs.");
+    if (!event.hectareYearId.trim() || !Number.isSafeInteger(event.year) || !Number.isFinite(event.hectares) || event.hectares <= 0 || !PRECEDENCE_ORDER.includes(event.kind)) {
+      throw new Error("Precedence events require a hectare-year, integer year, positive finite hectares, and registered kind.");
+    }
+    ids.add(event.id);
+  }
+}
+
 /** Chooses one displayed/counting event per hectare-year without discarding any evidence. */
 export function resolvePrecedence(events: readonly PrecedenceEvent[]): readonly PrecedenceResolution[] {
+  validatePrecedenceEvents(events);
   const byHectareYear = new Map<string, PrecedenceEvent[]>();
   for (const event of events) {
     const group = byHectareYear.get(event.hectareYearId);

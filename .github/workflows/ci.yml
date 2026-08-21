@@ -44,6 +44,7 @@ jobs:
       - run: npm run check:elections-canada-fed-2025
       - run: npm run check:elections-canada-fed-2025-promotion
       - run: npm run check:raster-grid
+      - run: npm run check:phase2-method-parameters
       - run: npm run check:accessibility
       - run: npm run build
       - run: npm run check:claims
