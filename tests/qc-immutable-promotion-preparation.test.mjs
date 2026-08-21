@@ -8,6 +8,7 @@ import { multipartPlan, partCount, sidecarFor, validateQcImmutablePromotionPrepa
 
 const plan = JSON.parse(readFileSync(new URL("../data/qc-immutable-promotion-preparation.json", import.meta.url), "utf8"));
 const runnerPath = new URL("../scripts/run-qc-approved-multipart-promotion.sh", import.meta.url).pathname;
+const repositoryRoot = new URL("../", import.meta.url).pathname.replace(/\/$/, "");
 
 function writeQcFakeTools(dir, { serial, identity = { Account: "286853118812", Arn: "arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator" } }) {
   const marker = join(dir, "aws-calls");
@@ -39,9 +40,16 @@ esac
 }
 
 function runQcPty(dir) {
+  const source = readFileSync(runnerPath, "utf8");
+  const isolatedRunner = join(dir, "run-qc-approved-multipart-promotion.sh");
+  const isolatedSource = source
+    .replace(/^ROOT=.*$/m, `ROOT=${JSON.stringify(repositoryRoot)}`)
+    .replace(/^STATE_ROOT=.*$/m, `STATE_ROOT=${JSON.stringify(join(dir, "state"))}`);
+  assert.notEqual(isolatedSource, source, "QC runner test must isolate its local resume state.");
+  writeFileSync(isolatedRunner, isolatedSource, { mode: 0o700 });
   const program = `set timeout 120
 set env(PATH) ${JSON.stringify(`${dir}:${process.env.PATH}`)}
-spawn -noecho zsh ${JSON.stringify(runnerPath)} --run
+spawn -noecho zsh ${JSON.stringify(isolatedRunner)} --run
 expect {
   "Current MFA TOTP (not stored):" { send -- "123456\\r"; exp_continue }
   eof { set result [wait]; exit [lindex $result 3] }
