@@ -169,7 +169,8 @@
         "transformedClaim": false
       },
       "ingestionPreflight": {
-        "status": "scope-bound-ingestion-preflight-passed-not-ingested",
+        "status": "scope-bound-ingestion-preflight-blocked-schema-drift-not-ingested",
+        "preflightRef": "data/phase1-immutable-downstream-preflight.json",
         "authorized": false,
         "ingested": false,
         "scopeBound": true,
@@ -180,10 +181,12 @@
           "validNonEmptyGeometry": true,
           "declaredCrs": "EPSG:3400",
           "declaredFieldCount": 63,
+          "exactSchemaNameParity": false,
+          "exactSchemaNameTypeParity": false,
           "duplicatePolygonId41405Preserved": true,
           "silentLossOrDeduplication": false
         },
-        "reason": "The owner admitted the exact raw/derived scope for scope-bound preparation only. The existing closed-join output passes its local structural checks, but transformation admission and ingestion remain separate decisions; therefore this is a preflight validation, not ingestion."
+        "reason": "The exact closed-join output is checksum-bound and passes its geometry/count checks, but its ordered attribute schema does not match the raw source: two names changed and 23 Integer fields widened to Integer64. A corrected checksum-bound output or an explicit field-mapping decision is required before this ingestion preflight can pass; transformation admission and ingestion remain separate decisions."
       },
       "downstream": {
         "releaseApproval": false,

@@ -20,7 +20,7 @@ test("reconciles the three Alberta local transform/preflight records without dow
   const audit = read("data/phase1-alberta-transform-ingestion-audit.json");
   assert.equal(validatePhase1AlbertaTransformIngestionAudit(audit, context), audit);
   assert.deepEqual(audit.rows.map((row) => row.id), ["ab-avi-crown", "ab-avi-post-harvest", "ab-primary-land-vegetation"]);
-  assert.equal(audit.rows[2].ingestionPreflight.status, "scope-bound-ingestion-preflight-passed-not-ingested");
+  assert.equal(audit.rows[2].ingestionPreflight.status, "scope-bound-ingestion-preflight-blocked-schema-drift-not-ingested");
 });
 
 test("rejects an AVI derived-payload claim or a PLVI owner-admission claim", () => {
@@ -43,6 +43,10 @@ test("rejects PLVI output drift, lost duplicate identity, or a nonzero progress 
   const duplicateLoss = structuredClone(audit);
   duplicateLoss.rows[2].ingestionPreflight.checks.duplicatePolygonId41405Preserved = false;
   assert.throws(() => validatePhase1AlbertaTransformIngestionAudit(duplicateLoss, context), /duplicatePolygonId41405Preserved|deep-equal|equal/i);
+
+  const fabricatedSchemaParity = structuredClone(audit);
+  fabricatedSchemaParity.rows[2].ingestionPreflight.checks.exactSchemaNameTypeParity = true;
+  assert.throws(() => validatePhase1AlbertaTransformIngestionAudit(fabricatedSchemaParity, context), /exactSchemaNameTypeParity|deep-equal|equal/i);
 
   const scoreDrift = structuredClone(audit);
   scoreDrift.delta.rawEvidenceNumerator = 1;

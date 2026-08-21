@@ -36,4 +36,6 @@ This is a local output preflight only. The decision-readiness record says the ow
 
 ## Progress impact
 
-The audit adds no raw-evidence credit and no formal-score points. The ledger remains `14.25/31` and `38.7903226%`; immutable archive remains 7 rows, production admission remains 0/31, and production eligibility remains 0/31. The exact owner actions are to record downstream transformation/ingestion scope for AVI and transformation admission/ingestion for the already-recorded PLVI raw/derived scope, then record release and production admission separately.
+The exact PLVI output remains checksum-bound and passes count, geometry, duplicate-preservation, and no-loss checks. A stricter ordered-schema preflight now blocks ingestion preparation: `SUBMISSION_ID` became `SUBMISSION`, `Shape_Length` became `Shape_Leng`, and 23 `Integer` fields widened to `Integer64`. A corrected checksum-bound output or explicit field-mapping decision is required before that preflight can pass.
+
+The audit adds no raw-evidence credit and no formal-score points. The ledger remains `14.25/31` and `38.7903226%`; immutable archive remains 7 rows, production admission remains 0/31, and production eligibility remains 0/31. The exact owner actions are to record downstream transformation/ingestion scope for AVI; resolve the PLVI schema boundary and separately admit its transformation and ingestion; then record release and production admission separately.

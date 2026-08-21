@@ -128,7 +128,8 @@
         "transformed": false
       },
       "ingestionPreparation": {
-        "status": "scope-bound-preflight-passed-not-ingested",
+        "status": "scope-bound-preflight-blocked-schema-drift-not-ingested",
+        "preflightRef": "data/phase1-immutable-downstream-preflight.json",
         "scopeBound": true,
         "authorized": false,
         "ingested": false,
@@ -137,10 +138,12 @@
           "derivedChecksumBound": true,
           "featureCountPreserved": true,
           "validNonEmptyGeometry": true,
+          "exactSchemaNameParity": false,
+          "exactSchemaNameTypeParity": false,
           "duplicatePolygonId41405Preserved": true,
           "silentLossOrDeduplication": false
         },
-        "reason": "The owner decision permits scope-bound preparation only; separate transformation admission and ingestion decisions remain required."
+        "reason": "The exact output is checksum-bound and structurally valid, but its ordered attribute schema does not match the raw source: SUBMISSION_ID became SUBMISSION, Shape_Length became Shape_Leng, and 23 Integer fields widened to Integer64. A corrected checksum-bound output or an explicit field-mapping decision is required before ingestion preparation can pass; separate transformation admission and ingestion decisions remain required."
       },
       "releaseApproval": false,
       "productionAdmission": false,

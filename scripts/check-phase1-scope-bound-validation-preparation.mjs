@@ -129,16 +129,19 @@ function validatePlvi(row, context) {
   });
   assert.equal(row.transformation.status, "scope-bound-policy-validated-not-admitted");
   assert.equal(row.transformation.namedSpecification, "alberta-plvi-geometry-repair-v1");
-  assert.equal(row.ingestionPreparation.status, "scope-bound-preflight-passed-not-ingested");
+  assert.equal(row.ingestionPreparation.status, "scope-bound-preflight-blocked-schema-drift-not-ingested");
+  assert.equal(row.ingestionPreparation.preflightRef, "data/phase1-immutable-downstream-preflight.json");
   assert.deepEqual(row.ingestionPreparation.checks, {
     rawChecksumBound: true,
     derivedChecksumBound: true,
     featureCountPreserved: true,
     validNonEmptyGeometry: true,
+    exactSchemaNameParity: false,
+    exactSchemaNameTypeParity: false,
     duplicatePolygonId41405Preserved: true,
     silentLossOrDeduplication: false,
   });
-  assert.match(row.ingestionPreparation.reason, /scope-bound preparation only.*separate transformation admission and ingestion decisions/i);
+  assert.match(row.ingestionPreparation.reason, /SUBMISSION_ID became SUBMISSION.*Shape_Length became Shape_Leng.*23 Integer fields widened.*separate transformation admission and ingestion decisions/i);
 }
 
 export function validatePhase1ScopeBoundValidationPreparation(record, context) {

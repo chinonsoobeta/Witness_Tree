@@ -104,7 +104,7 @@
           "data/phase1-alberta-transform-ingestion-audit.json"
         ],
         "scoreImpact": {"rawCreditDelta": 0, "formalPercentagePointDelta": 0},
-        "blocker": "Existing local outputs and repair/quarantine evidence remain non-ingested. NTEMS harvest/canopy-height source scope is recorded but has no target transformation specification; annual/canopy-cover still lack named methods; AVI requires downstream scope; PLVI scope-bound preparation is complete but transformation admission and ingestion remain separate; historical wildfire lacks the NBAC component and permission."
+        "blocker": "Existing local outputs and repair/quarantine evidence remain non-ingested. NTEMS harvest/canopy-height source scope is recorded but has no target transformation specification; annual/canopy-cover still lack named methods; AVI requires downstream scope; PLVI scope-bound output validation found ordered-schema drift and still requires correction or an explicit mapping plus separate transformation and ingestion decisions; historical wildfire lacks the NBAC component and permission."
       },
       {
         "id": "owner-and-external-boundaries",
@@ -168,9 +168,9 @@
         "rows": ["ab-primary-land-vegetation"],
         "actionIds": ["plvi-owner-scope-decision", "production-admission-and-release-gate"],
         "category": "owner-scope",
-        "status": "scope-recorded-preparation-complete-downstream-blocked",
-        "localBoundary": "The exact raw/derived scope is recorded and the 179087-feature closed-join output, 12 repairs, checksum, geometry, duplicate preservation, and no-loss checks are validated under a scope-bound preparation record.",
-        "missing": ["separate transformation admission", "separate ingestion decision and proof", "release and production admission"],
+        "status": "scope-recorded-schema-preflight-blocked-downstream-decisions-pending",
+        "localBoundary": "The exact raw/derived scope, 179087-feature count, 12 repairs, checksum, geometry, duplicate preservation, and no-loss checks are validated. Ingestion preparation remains blocked because two attribute names changed and 23 Integer fields widened to Integer64.",
+        "missing": ["corrected checksum-bound output or explicit field-mapping decision", "separate transformation admission", "separate ingestion decision and proof", "release and production admission"],
         "safeLocalImplementation": false,
         "ownerOrExternalPrerequisite": true,
         "scoreImpact": {"rawCreditDelta": 0, "formalPercentagePointDelta": 0}

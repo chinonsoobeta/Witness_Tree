@@ -108,7 +108,8 @@ function validatePlviRow(row, ledgerRow, decisionReadiness, repair, fullRelease,
   assert.equal(row.transformationValidation.derivedDatasetWrittenByThisAudit, false);
   assert.equal(row.transformationValidation.transformedClaim, false);
   expectFailClosed(row);
-  assert.equal(row.ingestionPreflight.status, "scope-bound-ingestion-preflight-passed-not-ingested");
+  assert.equal(row.ingestionPreflight.status, "scope-bound-ingestion-preflight-blocked-schema-drift-not-ingested");
+  assert.equal(row.ingestionPreflight.preflightRef, "data/phase1-immutable-downstream-preflight.json");
   assert.equal(row.ingestionPreflight.scopeBound, true);
   assert.deepEqual(row.ingestionPreflight.checks, {
     rawChecksumBound: true,
@@ -117,6 +118,8 @@ function validatePlviRow(row, ledgerRow, decisionReadiness, repair, fullRelease,
     validNonEmptyGeometry: true,
     declaredCrs: "EPSG:3400",
     declaredFieldCount: 63,
+    exactSchemaNameParity: false,
+    exactSchemaNameTypeParity: false,
     duplicatePolygonId41405Preserved: true,
     silentLossOrDeduplication: false,
   });
