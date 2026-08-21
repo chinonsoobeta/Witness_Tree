@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "methodVersion": "phase2-owner-independent-method-v1",
-  "parameterSha256": "dab68e9f7ce6702c35ef873e0242a9e5bee031a93898dfbf9d974ba402d44d93",
+  "parameterSha256": "6dc7f6b7eefc6f2de5e30dec6d59cfb652e548129e5b559f8fe2eecf4ba2a935",
   "reviewStatus": "unapproved",
   "scope": "owner-independent-phase2-method-contract",
   "productionEligible": false,
@@ -27,10 +27,10 @@
       "implicitReprojection": "forbidden"
     },
     "vectorization": {
-      "connectivity": 8,
+      "connectivity": 4,
       "minimumPatchPixels": 1,
       "simplifyToleranceMetres": 0,
-      "dissolveAdjacentCells": true
+      "dissolveAdjacentCells": false
     },
     "aggregation": {
       "denominatorReference": "first-year-of-range",

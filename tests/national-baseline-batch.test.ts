@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import { promisify } from "node:util";
 import test from "node:test";
+import methodParametersJson from "../data/phase2-method-parameters.json";
 import {
   buildDetectedChangeSpine,
   runBaselineBatch,
@@ -15,8 +16,10 @@ import {
   type BoundaryCrosswalkInput,
   type LandCoverInput,
 } from "../lib/pipeline/national-baseline-batch";
+import type { MethodParameterManifest } from "../lib/pipeline/method-manifest";
 
 const execute = promisify(execFile);
+const methodParameters = methodParametersJson as MethodParameterManifest;
 const grid = {
   crsId: "fixture-lcc",
   linearUnit: "metre",
@@ -53,7 +56,8 @@ const crosswalk: BoundaryCrosswalkInput = {
 const manifest: BaselineBatchManifest = {
   schemaVersion: 1,
   batchId: "fixture-1984-1985",
-  methodVersion: "national-baseline-v1-fixture",
+  methodVersion: methodParameters.methodVersion,
+  methodParameterSha256: methodParameters.parameterSha256,
   forestDefinitionVersion: "nfi-v1-fixture-crosswalk",
   dataVersion: "fixture-v1",
   coverageGrade: "national-baseline",
@@ -62,11 +66,12 @@ const manifest: BaselineBatchManifest = {
   inputs: {
     landCover: { path: "land-cover.json", sha256: "a".repeat(64) },
     boundaryCrosswalk: { path: "boundary-crosswalk.json", sha256: "b".repeat(64) },
+    methodParameters: { path: "method-parameters.json", sha256: "c".repeat(64) },
   },
 };
 
 test("builds deterministic forest masks and fractional boundary denominators", () => {
-  const result = runBaselineBatch(manifest, landCover, crosswalk);
+  const result = runBaselineBatch(manifest, methodParameters, landCover, crosswalk);
   assert.deepEqual(result.masks, [
     { year: 1984, cells: [1, 1, 0, 255] },
     { year: 1985, cells: [1, 0, 1, 255] },
@@ -89,8 +94,8 @@ test("vectorizes four-neighbour losses into stable normalized patches with exact
     { year: 1985, cells: [0, 0, 1, 255, 1, 0] as const },
   ];
   const rectangularGrid = { ...grid, width: 3 } as const;
-  const first = buildDetectedChangeSpine(manifest, rectangularGrid, masks);
-  const second = buildDetectedChangeSpine(manifest, rectangularGrid, [...masks].reverse());
+  const first = buildDetectedChangeSpine(manifest, methodParameters, rectangularGrid, masks);
+  const second = buildDetectedChangeSpine(manifest, methodParameters, rectangularGrid, [...masks].reverse());
   assert.deepEqual(first, second);
   assert.deepEqual(first[0]!.events.map((event) => event.cellIndices), [[0, 1], [5]]);
   assert.deepEqual(first[0]!.events.map((event) => event.areaHectares), [0.18, 0.09]);
@@ -112,10 +117,10 @@ test("vectorizes four-neighbour losses into stable normalized patches with exact
 });
 
 test("change spine rejects corrupt values and year gaps while nodata never becomes loss", () => {
-  assert.throws(() => buildDetectedChangeSpine(manifest, grid, [{ year: 1984, cells: [1, 1, 1, 1] }, { year: 1986, cells: [0, 0, 0, 0] }]), /continuous annual series/);
-  assert.throws(() => buildDetectedChangeSpine(manifest, grid, [{ year: 1984, cells: [1, 2 as 0, 1, 1] }]), /valid value/);
-  assert.throws(() => buildDetectedChangeSpine(manifest, grid, [{ year: 1984, cells: [1, 1, 1] }]), /one valid value per grid cell/);
-  const result = buildDetectedChangeSpine(manifest, grid, [
+  assert.throws(() => buildDetectedChangeSpine(manifest, methodParameters, grid, [{ year: 1984, cells: [1, 1, 1, 1] }, { year: 1986, cells: [0, 0, 0, 0] }]), /continuous annual series/);
+  assert.throws(() => buildDetectedChangeSpine(manifest, methodParameters, grid, [{ year: 1984, cells: [1, 2 as 0, 1, 1] }]), /valid value/);
+  assert.throws(() => buildDetectedChangeSpine(manifest, methodParameters, grid, [{ year: 1984, cells: [1, 1, 1] }]), /one valid value per grid cell/);
+  const result = buildDetectedChangeSpine(manifest, methodParameters, grid, [
     { year: 1984, cells: [1, 255, 1, 0] },
     { year: 1985, cells: [255, 0, 1, 1] },
   ]);
@@ -130,7 +135,7 @@ test("all 2x2 mask pairs assign every valid loss cell to exactly one patch", () 
     for (let toBits = 0; toBits < 16; toBits += 1) {
       const from = values(fromBits);
       const to = values(toBits);
-      const result = buildDetectedChangeSpine(manifest, grid, [{ year: 1984, cells: from }, { year: 1985, cells: to }]);
+      const result = buildDetectedChangeSpine(manifest, methodParameters, grid, [{ year: 1984, cells: from }, { year: 1985, cells: to }]);
       const observed = result[0]!.events.flatMap((event) => event.cellIndices).sort((a, b) => a - b);
       const expected = from.flatMap((value, index) => value === 1 && to[index] === 0 ? [index] : []);
       assert.deepEqual(observed, expected);
@@ -141,12 +146,13 @@ test("all 2x2 mask pairs assign every valid loss cell to exactly one patch", () 
 });
 
 test("rejects grid drift, unsafe crosswalks, and production claims", () => {
-  assert.throws(() => runBaselineBatch({ ...manifest, productionEligible: true as false }, landCover, crosswalk), /non-production/);
-  assert.throws(() => runBaselineBatch(manifest, landCover, { ...crosswalk, grid: { ...grid, width: 3 } }), /exact land-cover grid/);
-  assert.throws(() => runBaselineBatch(manifest, landCover, { ...crosswalk, intersections: [...crosswalk.intersections, crosswalk.intersections[0]!] }), /must be unique/);
-  assert.throws(() => runBaselineBatch(manifest, { ...landCover, years: [landCover.years[0]!, { ...landCover.years[1]!, year: 1983 }] }, crosswalk), /continuous annual series/);
-  assert.throws(() => runBaselineBatch({ ...manifest, forestClassValues: [255] }, landCover, crosswalk), /nodata value/);
-  assert.throws(() => runBaselineBatch({ ...manifest, forestClassValues: [] }, landCover, crosswalk), /forest-class crosswalk/);
+  assert.throws(() => runBaselineBatch({ ...manifest, productionEligible: true as false }, methodParameters, landCover, crosswalk), /non-production/);
+  assert.throws(() => runBaselineBatch(manifest, methodParameters, landCover, { ...crosswalk, grid: { ...grid, width: 3 } }), /exact land-cover grid/);
+  assert.throws(() => runBaselineBatch(manifest, methodParameters, landCover, { ...crosswalk, intersections: [...crosswalk.intersections, crosswalk.intersections[0]!] }), /must be unique/);
+  assert.throws(() => runBaselineBatch(manifest, methodParameters, { ...landCover, years: [landCover.years[0]!, { ...landCover.years[1]!, year: 1983 }] }, crosswalk), /continuous annual series/);
+  assert.throws(() => runBaselineBatch({ ...manifest, forestClassValues: [255] }, methodParameters, landCover, crosswalk), /crosswalk/);
+  assert.throws(() => runBaselineBatch({ ...manifest, forestClassValues: [] }, methodParameters, landCover, crosswalk), /forest-class crosswalk/);
+  assert.throws(() => runBaselineBatch({ ...manifest, methodParameterSha256: "0".repeat(64) }, methodParameters, landCover, crosswalk), /exact validated method/);
 });
 
 test("runner binds exact inputs, writes immutable deterministic outputs, and records lineage", async () => {
@@ -154,16 +160,19 @@ test("runner binds exact inputs, writes immutable deterministic outputs, and rec
   try {
     const landCoverBytes = stableJson(landCover);
     const crosswalkBytes = stableJson(crosswalk);
+    const methodBytes = stableJson(methodParameters);
     const exactManifest: BaselineBatchManifest = {
       ...manifest,
       inputs: {
         landCover: { path: "land-cover.json", sha256: sha256(landCoverBytes) },
         boundaryCrosswalk: { path: "boundary-crosswalk.json", sha256: sha256(crosswalkBytes) },
+        methodParameters: { path: "method-parameters.json", sha256: sha256(methodBytes) },
       },
     };
     await Promise.all([
       writeFile(resolve(directory, "land-cover.json"), landCoverBytes),
       writeFile(resolve(directory, "boundary-crosswalk.json"), crosswalkBytes),
+      writeFile(resolve(directory, "method-parameters.json"), methodBytes),
       writeFile(resolve(directory, "manifest.json"), stableJson(exactManifest)),
     ]);
     const output = resolve(directory, "output");

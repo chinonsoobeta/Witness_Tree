@@ -9,6 +9,7 @@ import {
   type BoundaryCrosswalkInput,
   type LandCoverInput,
 } from "../lib/pipeline/national-baseline-batch";
+import type { MethodParameterManifest } from "../lib/pipeline/method-manifest";
 
 const [, , manifestArgument, outputArgument] = process.argv;
 if (!manifestArgument || !outputArgument) throw new Error("Usage: run-national-baseline-batch <manifest.json> <output-directory>");
@@ -31,7 +32,8 @@ async function checkedInput<T>(input: Readonly<{ path: string; sha256: string }>
 
 const landCover = await checkedInput<LandCoverInput>(manifest.inputs.landCover);
 const crosswalk = await checkedInput<BoundaryCrosswalkInput>(manifest.inputs.boundaryCrosswalk);
-const result = runBaselineBatch(manifest, landCover, crosswalk);
+const methodParameters = await checkedInput<MethodParameterManifest>(manifest.inputs.methodParameters);
+const result = runBaselineBatch(manifest, methodParameters, landCover, crosswalk);
 const maskBytes = stableJson({ schemaVersion: 1, batchId: manifest.batchId, years: result.masks });
 const aggregateBytes = stableJson({ schemaVersion: 1, batchId: manifest.batchId, aggregates: result.aggregates });
 const detectedChangeBytes = stableJson({ schemaVersion: 1, batchId: manifest.batchId, years: result.detectedChange });

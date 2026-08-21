@@ -8,7 +8,7 @@ Run it with:
 npm run run:phase2-national-baseline-batch -- manifest.json new-output-directory
 ```
 
-The manifest must name the method, forest-definition version, data version, exact input SHA-256 values, and the explicit land-cover classes used as forest. The batch does not invent that class crosswalk. It requires one metre-based, north-up grid for both inputs, a continuous annual series, one cell value per pixel, safe fractional intersections, and a boundary edition. It never reprojects a categorical raster. Outputs are sorted, stable JSON written only to a new directory, with a lineage file binding the manifest, both inputs, and both output checksums.
+The manifest must bind the exact method-parameter file, method version and canonical parameter SHA-256, plus the forest-definition version, data version, exact input SHA-256 values, and the explicit land-cover classes used as forest. The batch refuses a method/class mismatch. It requires one metre-based, north-up grid for both spatial inputs, a continuous annual series, one cell value per pixel, safe fractional intersections, and a boundary edition. It never reprojects a categorical raster. Outputs are sorted, stable JSON written only to a new directory, with a lineage file binding the manifest, all three inputs, and every output checksum.
 
 The output aggregate carries the forested-hectare denominator, year, boundary edition, method version, forest-definition version, data version, and national-baseline coverage grade. Nodata remains nodata in the mask and never becomes non-forest.
 

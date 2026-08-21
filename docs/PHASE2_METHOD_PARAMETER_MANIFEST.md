@@ -4,4 +4,6 @@
 
 The contract is deliberately unapproved and non-production. Its forest classes are labelled `synthetic-test-only`; they do not approve the unresolved production forest-class crosswalk. The manifest cannot authorize processing or close a Phase 2 gate. A changed canonical parameter hash requires a new method version plus a marker that binds the old and new hashes and requires both recomputation and a release note. An unchanged parameter set cannot be relabelled with a new method version or carry a change marker.
 
+The executable fixture batch binds this exact file checksum, method version, and parameter hash. Its current vectorization capability is four-neighbour grouping with a one-pixel minimum, no simplification, and non-dissolved cell polygons; the checked parameters state exactly those limits.
+
 The focused checks also lock the exact 50 percent matching boundary, deterministic input-order tie behavior, and fail-closed precedence inputs. These are pure policy checks; they do not process the national change spine, acquire data, create a release, or make a production claim.

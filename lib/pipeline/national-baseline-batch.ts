@@ -1,5 +1,7 @@
 import { createHash } from "node:crypto";
 
+import { validateMethodManifest, type MethodParameterManifest } from "./method-manifest";
+
 const SHA256 = /^[a-f0-9]{64}$/;
 
 export type BaselineGrid = Readonly<{
@@ -29,6 +31,7 @@ export type BaselineBatchManifest = Readonly<{
   schemaVersion: 1;
   batchId: string;
   methodVersion: string;
+  methodParameterSha256: string;
   forestDefinitionVersion: string;
   dataVersion: string;
   coverageGrade: "national-baseline";
@@ -37,6 +40,7 @@ export type BaselineBatchManifest = Readonly<{
   inputs: Readonly<{
     landCover: Readonly<{ path: string; sha256: string }>;
     boundaryCrosswalk: Readonly<{ path: string; sha256: string }>;
+    methodParameters: Readonly<{ path: string; sha256: string }>;
   }>;
 }>;
 
@@ -69,6 +73,7 @@ export type DetectedChangeEvent = Readonly<{
     toMaskValue: 0;
   }>;
   methodVersion: string;
+  methodParameterSha256: string;
   dataVersion: string;
   coverageGrade: "national-baseline";
   patchChecksumSha256: string;
@@ -92,6 +97,7 @@ export type ForestAggregate = Readonly<{
   denominator: "forested-hectares";
   forestDefinitionVersion: string;
   methodVersion: string;
+  methodParameterSha256: string;
   dataVersion: string;
   coverageGrade: "national-baseline";
 }>;
@@ -124,7 +130,7 @@ function sameGrid(first: BaselineGrid, second: BaselineGrid): boolean {
 }
 
 export function validateBaselineManifest(manifest: BaselineBatchManifest): void {
-  if (manifest.schemaVersion !== 1 || !manifest.batchId.trim() || !manifest.methodVersion.trim() || !manifest.forestDefinitionVersion.trim() || !manifest.dataVersion.trim()) {
+  if (manifest.schemaVersion !== 1 || !manifest.batchId.trim() || !manifest.methodVersion.trim() || !SHA256.test(manifest.methodParameterSha256) || !manifest.forestDefinitionVersion.trim() || !manifest.dataVersion.trim()) {
     throw new Error("Baseline manifest requires versioned batch, method, forest definition, and data identity.");
   }
   if (manifest.coverageGrade !== "national-baseline" || manifest.productionEligible !== false) {
@@ -138,7 +144,22 @@ export function validateBaselineManifest(manifest: BaselineBatchManifest): void 
       throw new Error(`${name} input requires a safe relative path and lowercase SHA-256.`);
     }
   }
-  if (Object.keys(manifest.inputs).length !== 2) throw new Error("Baseline manifest accepts exactly the land-cover and boundary-crosswalk inputs.");
+  if (Object.keys(manifest.inputs).length !== 3) throw new Error("Baseline manifest accepts exactly the land-cover, boundary-crosswalk, and method-parameter inputs.");
+}
+
+export function validateBatchMethodBinding(manifest: BaselineBatchManifest, methodManifest: MethodParameterManifest): void {
+  const identity = validateMethodManifest(methodManifest);
+  const methodClasses = methodManifest.parameters.mask.forestClassValues;
+  if (manifest.methodVersion !== identity.methodVersion || manifest.methodParameterSha256 !== identity.parameterSha256) {
+    throw new Error("Baseline batch must bind the exact validated method version and parameter SHA-256.");
+  }
+  if (manifest.forestClassValues.length !== methodClasses.length || manifest.forestClassValues.some((value, index) => value !== methodClasses[index])) {
+    throw new Error("Baseline forest classes must match the exact ordered method crosswalk.");
+  }
+  const vectorization = methodManifest.parameters.vectorization;
+  if (vectorization.connectivity !== 4 || vectorization.minimumPatchPixels !== 1 || vectorization.simplifyToleranceMetres !== 0 || vectorization.dissolveAdjacentCells !== false) {
+    throw new Error("The executable batch currently requires four-neighbour, one-pixel, unsimplified, non-dissolved patch parameters.");
+  }
 }
 
 export function validateBaselineInputs(landCover: LandCoverInput, crosswalk: BoundaryCrosswalkInput): void {
@@ -252,8 +273,9 @@ export function validateDetectedChangeGeometry(geometry: DetectedChangeGeometry,
   }
 }
 
-export function buildDetectedChangeSpine(manifest: BaselineBatchManifest, grid: BaselineGrid, masks: readonly ForestMaskYear[]): readonly DetectedChangeYear[] {
+export function buildDetectedChangeSpine(manifest: BaselineBatchManifest, methodManifest: MethodParameterManifest, grid: BaselineGrid, masks: readonly ForestMaskYear[]): readonly DetectedChangeYear[] {
   validateBaselineManifest(manifest);
+  validateBatchMethodBinding(manifest, methodManifest);
   validateGrid(grid, "Detected-change grid");
   const cellCount = grid.width * grid.height;
   const ordered = [...masks].sort((a, b) => a.year - b.year);
@@ -290,6 +312,7 @@ export function buildDetectedChangeSpine(manifest: BaselineBatchManifest, grid: 
       const core = {
         batchId: manifest.batchId,
         methodVersion: manifest.methodVersion,
+        methodParameterSha256: manifest.methodParameterSha256,
         dataVersion: manifest.dataVersion,
         fromYear: previous.year,
         toYear: current.year,
@@ -311,6 +334,7 @@ export function buildDetectedChangeSpine(manifest: BaselineBatchManifest, grid: 
         cellIndices,
         lineage: Object.freeze({ batchId: manifest.batchId, fromYear: previous.year, toYear: current.year, fromMaskSha256, toMaskSha256, fromMaskValue: 1, toMaskValue: 0 }),
         methodVersion: manifest.methodVersion,
+        methodParameterSha256: manifest.methodParameterSha256,
         dataVersion: manifest.dataVersion,
         coverageGrade: manifest.coverageGrade,
         patchChecksumSha256,
@@ -327,8 +351,9 @@ export function buildDetectedChangeSpine(manifest: BaselineBatchManifest, grid: 
   return Object.freeze(result);
 }
 
-export function runBaselineBatch(manifest: BaselineBatchManifest, landCover: LandCoverInput, crosswalk: BoundaryCrosswalkInput): BaselineBatchResult {
+export function runBaselineBatch(manifest: BaselineBatchManifest, methodManifest: MethodParameterManifest, landCover: LandCoverInput, crosswalk: BoundaryCrosswalkInput): BaselineBatchResult {
   validateBaselineManifest(manifest);
+  validateBatchMethodBinding(manifest, methodManifest);
   validateBaselineInputs(landCover, crosswalk);
 
   const forestClasses = new Set(manifest.forestClassValues);
@@ -357,13 +382,14 @@ export function runBaselineBatch(manifest: BaselineBatchManifest, landCover: Lan
         denominator: "forested-hectares",
         forestDefinitionVersion: manifest.forestDefinitionVersion,
         methodVersion: manifest.methodVersion,
+        methodParameterSha256: manifest.methodParameterSha256,
         dataVersion: manifest.dataVersion,
         coverageGrade: manifest.coverageGrade,
       }));
     }
   }
   const frozenMasks = Object.freeze(masks);
-  return Object.freeze({ masks: frozenMasks, aggregates: Object.freeze(aggregates), detectedChange: buildDetectedChangeSpine(manifest, landCover.grid, frozenMasks) });
+  return Object.freeze({ masks: frozenMasks, aggregates: Object.freeze(aggregates), detectedChange: buildDetectedChangeSpine(manifest, methodManifest, landCover.grid, frozenMasks) });
 }
 
 export function stableJson(value: unknown): string {
