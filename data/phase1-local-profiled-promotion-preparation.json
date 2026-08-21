@@ -6,19 +6,6 @@
   "artifacts": [
     {
       "productionRowIds": [
-        "ntems-canopy-height"
-      ],
-      "stagedAcquisitionId": "nrcan-forest-canopy-height-2022-2026-08-14",
-      "localPath": "../Witness_Tree-data/raw/nrcan-forest-canopy-height-2022/2026-08-14/CA_canopy_height_2022.zip",
-      "byteLength": 10347564066,
-      "sha256": "86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124",
-      "profile": "data/nrcan-canopy-height-profile.json",
-      "archiveKeyVersion": "undeclared",
-      "sourceVersion": "undeclared",
-      "predecessorPayloadKey": null
-    },
-    {
-      "productionRowIds": [
         "fed-2023-ridings",
         "elections-canada-45th-files"
       ],
@@ -42,7 +29,6 @@
     "productionEligible": false
   },
   "plannedProductionRowIds": [
-    "ntems-canopy-height",
     "fed-2023-ridings",
     "elections-canada-45th-files"
   ]

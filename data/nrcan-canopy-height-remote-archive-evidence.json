@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "witness-tree/nrcan-canopy-height-remote-archive-evidence/1",
+  "status": "remote-verified-raw-only",
+  "verifiedAt": "2026-08-20",
+  "storage": {"bucket":"witness-tree-raw-archive-ca-central-1","recoveryBucket":"witness-tree-raw-recovery-ca-central-1","region":"ca-central-1","countryCode":"CA"},
+  "notice": "Redacted exact-version primary and recovery raw archive evidence only. No provider version identifier is retained. This is not source admission, transformation, ingestion, release, production admission, or production eligibility.",
+  "entry": {
+    "sourceId": "ntems-canopy-height",
+    "payloadKey": "raw/nrcan-forest-canopy-height-2022/undeclared/2026-08-14T18-57-22Z/86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124/payload/ca_canopy_height_2022.zip",
+    "manifestKey": "raw/nrcan-forest-canopy-height-2022/undeclared/2026-08-14T18-57-22Z/86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124/manifest.json",
+    "bytes": 10347564066,
+    "manifestBytes": 459,
+    "sha256": "86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124",
+    "primary": {"payloadVersionPresent":true,"manifestVersionPresent":true,"payloadChecksum":{"type":"FULL_OBJECT","algorithm":"CRC64NVME","providerValue":"redacted-present"},"manifestChecksum":{"type":"FULL_OBJECT","algorithm":"CRC64NVME","providerValue":"redacted-present"},"payloadRetention":{"mode":"COMPLIANCE","until":"2033-08-12T00:00:00Z"}},
+    "recovery": {"payloadVersionPresent":true,"manifestVersionPresent":true,"payloadBytes":10347564066,"manifestBytes":459,"payloadChecksum":{"type":"FULL_OBJECT","algorithm":"CRC64NVME","providerValue":"redacted-present"},"manifestChecksum":{"type":"FULL_OBJECT","algorithm":"CRC64NVME","providerValue":"redacted-present"},"payloadMatchesPrimary":true,"manifestMatchesPrimary":true,"payloadRetention":{"mode":"COMPLIANCE","until":"2033-08-12T00:00:00Z"}}
+  },
+  "claims": {"immutableArchive":true,"ownerSourceAdmission":false,"transformed":false,"ingested":false,"released":false,"productionAdmission":false,"productionEligible":false,"phase2":false}
+}

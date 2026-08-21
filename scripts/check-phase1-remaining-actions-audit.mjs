@@ -18,7 +18,7 @@ const CLAIMS = {
 };
 
 const EXPECTED_GROUPS = new Map([
-  ["national-two-artifacts", { rows: ["ntems-canopy-height", "fed-2023-ridings", "elections-canada-45th-files"], physicalArtifactCount: 2 }],
+  ["national-two-artifacts", { rows: ["fed-2023-ridings", "elections-canada-45th-files"], physicalArtifactCount: 1 }],
   ["current-wildfire-six-release-inputs", { rows: ["cwfis-current", "bc-wildfire", "ab-wildfire", "on-fire-disturbance"], physicalArtifactCount: 6 }],
   ["quebec-provincial-current-and-original", { rows: ["qc-current-ecoforest", "qc-original-current-inventory"], physicalArtifactCount: 2 }],
   ["quebec-fourth-inventory-56-sheet-product", { rows: ["qc-fourth-inventory"], physicalArtifactCount: 62 }]
@@ -65,19 +65,17 @@ function validatePhysicalArtifactGroups(audit, immutable) {
     assert.equal(canonical.physicalArtifactCount, group.physicalArtifactCount);
     assert.deepEqual([...canonical.productionRowIds], group.rows);
   }
-  assert.equal(seenRows.size, 10);
+  assert.equal(seenRows.size, 9);
   const national = audit.physicalArtifactGroups.find(({ id }) => id === "national-two-artifacts");
   assert.equal(national.runner, "scripts/run-phase1-approved-promotion.sh");
   validateLocalPreflight(national, {
-    sourceFiles: 3,
-    sourceBytes: 10605811193,
+    sourceFiles: 1,
+    sourceBytes: 10301648,
     artifacts: [
-      { id: "nrcan-ca-forest-harvest-1985-2022-2026-08-14", relativePath: "raw/nrcan-ca-forest-harvest-1985-2022/2026-08-14/CA_Forest_Harvest_1985-2022.zip", byteLength: 247945479, sha256: "c6f41dff46d91812874672edb53233dac4126952132ad6d1131ad47b11ad7aad", remoteCreditAlreadyPresent: true },
-      { id: "nrcan-forest-canopy-height-2022-2026-08-14", relativePath: "raw/nrcan-forest-canopy-height-2022/2026-08-14/CA_canopy_height_2022.zip", byteLength: 10347564066, sha256: "86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124", remoteCreditAlreadyPresent: false },
       { id: "elections-canada-federal-electoral-districts-45th-general-election-2025-shp", relativePath: "raw/elections-canada-federal-electoral-districts/2026-08-14/FederalElectoralDistricts_2025_SHP.zip", byteLength: 10301648, sha256: "4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93", remoteCreditAlreadyPresent: false }
     ]
   });
-  assert.equal(national.localPreflight.plannedSidecarKeys.length, 3);
+  assert.equal(national.localPreflight.plannedSidecarKeys.length, 1);
   assert.ok(national.localPreflight.plannedSidecarKeys.every((key) => key.endsWith("/manifest.json")));
   const wildfire = audit.physicalArtifactGroups.find(({ id }) => id === "current-wildfire-six-release-inputs");
   assert.equal(wildfire.runner, "scripts/run-current-wildfire-approved-promotion.sh");
@@ -118,11 +116,11 @@ export function validatePhase1RemainingActionsAudit(audit, ledger, currentState,
   const stateCounts = Object.fromEntries(Object.entries(Object.groupBy(entries, ({ evidenceState }) => evidenceState)).map(([state, rows]) => [state, rows.length]));
   assert.equal(entries.length, 31);
   assert.deepEqual(audit.baseline.evidenceStateCounts, stateCounts);
-  assert.deepEqual(audit.baseline.evidenceStateCounts, { "remote-verified-archived-profiled": 10, "local-verified-profiled": 6, "partial-component": 2, "access-blocked": 13 });
+  assert.deepEqual(audit.baseline.evidenceStateCounts, { "remote-verified-archived-profiled": 11, "local-verified-profiled": 5, "partial-component": 2, "access-blocked": 13 });
   assert.equal(audit.baseline.rawEvidenceNumerator, ledger.rawEvidenceNumerator);
   assert.equal(audit.baseline.rawEvidenceDenominator, entries.length);
   assert.equal(audit.baseline.formalEvidenceTrackingPercentage, ledger.formalProgress.percentage);
-  assert.equal(audit.baseline.formalEvidenceTrackingPercentage, 39.516129);
+  assert.equal(audit.baseline.formalEvidenceTrackingPercentage, 39.7580645);
   assert.equal(audit.baseline.immutableArchiveCompleteRows, entries.filter(({ proof }) => proof.immutableArchive).length);
   assert.equal(audit.baseline.productionAdmissionCompleteRows, entries.filter(({ proof }) => proof.productionAdmission).length);
   assert.equal(audit.baseline.productionEligibleRows, entries.filter(({ productionEligible }) => productionEligible).length);
@@ -139,14 +137,14 @@ export function validatePhase1RemainingActionsAudit(audit, ledger, currentState,
   assert.equal(currentState.ledger.immutableArchiveCompleteRows, audit.baseline.immutableArchiveCompleteRows);
   assert.equal(currentState.ledger.productionAdmissionCompleteRows, 0);
   assert.equal(currentState.ledger.productionEligibleRows, 0);
-  assert.deepEqual(currentState.globalGates.immutableArchives, { status: "blocked", completeRows: 10, localRowsAwaitingArchive: 6, sourceEvidenceBlockedRows: 15, currentWildfireRequiredObjects: 6, currentWildfireVerifiedObjects: 4 });
+  assert.deepEqual(currentState.globalGates.immutableArchives, { status: "blocked", completeRows: 11, localRowsAwaitingArchive: 5, sourceEvidenceBlockedRows: 15, currentWildfireRequiredObjects: 6, currentWildfireVerifiedObjects: 4 });
   assert.equal(currentState.globalGates.outreach.repliesRecorded, replyAudit.counts.substantiveReplyRecords);
   assert.equal(currentState.globalGates.outreach.accessBlockedRowsWithSubstantiveReply, replyAudit.counts.accessBlockedRowsWithSubstantiveReply);
   assert.equal(partialOutreach.status, "owner-review-only-not-sent");
   assert.equal(accessBlocker.status, "all-13-access-blocked-no-lawful-acquisition");
   assert.equal(readiness.entries.length, entries.length);
 
-  assert.deepEqual(audit.scope, { auditedRowCount: 31, rowsWithoutImmutableRemoteProof: 21, rowsWithoutProductionAdmission: 31, rowsSelectedByRule: 31, allProductionRowsRemainNonAdmitted: true, allProductionRowsRemainIneligible: true });
+  assert.deepEqual(audit.scope, { auditedRowCount: 31, rowsWithoutImmutableRemoteProof: 20, rowsWithoutProductionAdmission: 31, rowsSelectedByRule: 31, allProductionRowsRemainNonAdmitted: true, allProductionRowsRemainIneligible: true });
   assert.equal(entries.filter(({ proof }) => !proof.immutableArchive).length, audit.scope.rowsWithoutImmutableRemoteProof);
   assert.equal(entries.filter(({ proof }) => !proof.productionAdmission).length, audit.scope.rowsWithoutProductionAdmission);
   validatePhysicalArtifactGroups(audit, immutable);

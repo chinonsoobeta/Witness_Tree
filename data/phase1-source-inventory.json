@@ -31,7 +31,7 @@
       "name": "CA Forest Harvest, 1985–2022",
       "purpose": "National harvest-attributed change.",
       "planUse": "production",
-      "evidence": "checksum-bound verified local staging and read-only raster profile; not production",
+      "evidence": "checksum-bound local profile plus redacted exact-version primary/recovery FULL_OBJECT CRC64NVME and COMPLIANCE-retention evidence; not production",
       "ownerRole": "data lead",
       "missing": "Immutable archival, compute/ingestion approval, and publisher correction of the catalogue resource link.",
       "externalDependency": "NRCan publication correction, Canadian storage, and owner approvals"
@@ -55,7 +55,7 @@
       "planUse": "production",
       "evidence": "checksum-bound verified local staging and read-only raster profile; not production",
       "ownerRole": "data lead",
-      "missing": "Immutable archival, compute/ingestion approval and release approval.",
+      "missing": "Named owner source-ledger decision, compute/transformation and ingestion approval, release approval and production admission.",
       "externalDependency": "Canadian storage and owner approvals"
     },
     {

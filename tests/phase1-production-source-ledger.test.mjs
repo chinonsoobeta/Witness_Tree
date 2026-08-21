@@ -10,13 +10,13 @@ test("canonical production ledger reconciles all 31 plan rows without runtime pr
   assert.equal(validatePhase1ProductionSourceLedger(ledger, inventory), ledger);
   assert.equal(ledger.entries.length, 31);
   assert.equal(ledger.entries.filter((entry) => entry.productionEligible).length, 0);
-  assert.equal(ledger.rawEvidenceNumerator, 15);
+  assert.equal(ledger.rawEvidenceNumerator, 15.25);
   assert.equal(ledger.entries.reduce((sum, entry) => sum + entry.rawCredit, 0), ledger.rawEvidenceNumerator);
   assert.deepEqual(ledger.formalProgress, {
     baselinePercentagePoints: 25,
     rawEvidenceWeightPercentagePoints: 30,
     completeLedgerWeightPercentagePoints: 45,
-    percentage: 39.516129,
+    percentage: 39.7580645,
     notice: "This is an evidence-tracking score only. It does not grant source-ledger admission, transformation, analysis, ingestion, public release, production admission, or production eligibility."
   });
   const bcWildfire = ledger.entries.find((entry) => entry.id === "bc-wildfire");
@@ -31,6 +31,12 @@ test("canonical production ledger reconciles all 31 plan rows without runtime pr
   assert.ok(nrcanHarvest.evidenceRefs.includes("data/nrcan-harvest-remote-archive-evidence.json"));
   assert.equal(nrcanHarvest.proof.immutableArchive, true);
   assert.equal(nrcanHarvest.productionEligible, false);
+  const canopy = ledger.entries.find((entry) => entry.id === "ntems-canopy-height");
+  assert.equal(canopy.evidenceState, "remote-verified-archived-profiled");
+  assert.equal(canopy.rawCredit, 1);
+  assert.ok(canopy.evidenceRefs.includes("data/nrcan-canopy-height-remote-archive-evidence.json"));
+  assert.equal(canopy.proof.immutableArchive, true);
+  assert.equal(canopy.productionEligible, false);
   const plvi = ledger.entries.find((entry) => entry.id === "ab-primary-land-vegetation");
   assert.equal(plvi.evidenceState, "remote-verified-archived-profiled");
   assert.equal(plvi.rawCredit, 1);

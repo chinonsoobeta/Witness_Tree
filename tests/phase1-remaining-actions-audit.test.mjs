@@ -19,16 +19,16 @@ const args = [
 test("remaining-action audit covers every non-admitted row and preserves the baseline", () => {
   const audit = validatePhase1RemainingActionsAudit(...args);
   assert.equal(audit.rowCoverage.length, 31);
-  assert.equal(audit.scope.rowsWithoutImmutableRemoteProof, 21);
-  assert.equal(audit.baseline.formalEvidenceTrackingPercentage, 39.516129);
+  assert.equal(audit.scope.rowsWithoutImmutableRemoteProof, 20);
+  assert.equal(audit.baseline.formalEvidenceTrackingPercentage, 39.7580645);
   assert.deepEqual(audit.nextFive, [
     "national-local-archive-preflight-and-owner-promotion",
     "quebec-current-original-archive-preflight-and-owner-promotion",
     "quebec-fourth-archive-preflight-and-owner-approvals",
-    "harvest-owner-source-ledger-decision",
+    "national-archived-owner-source-ledger-decisions",
     "plvi-owner-scope-decision"
   ]);
-  assert.equal(audit.physicalArtifactGroups.find(({ id }) => id === "national-two-artifacts").physicalArtifactCount, 2);
+  assert.equal(audit.physicalArtifactGroups.find(({ id }) => id === "national-two-artifacts").physicalArtifactCount, 1);
   assert.equal(audit.physicalArtifactGroups.find(({ id }) => id === "quebec-fourth-inventory-56-sheet-product").physicalArtifactCount, 62);
 });
 

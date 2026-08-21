@@ -7,16 +7,16 @@
   "selectionRule": "Audit every production row where immutable remote proof is absent OR production admission is absent. The union is all 31 rows because production admission is absent for every row.",
   "baseline": {
     "productionRows": 31,
-    "rawEvidenceNumerator": 15,
+    "rawEvidenceNumerator": 15.25,
     "rawEvidenceDenominator": 31,
-    "formalEvidenceTrackingPercentage": 39.516129,
+    "formalEvidenceTrackingPercentage": 39.7580645,
     "evidenceStateCounts": {
-      "remote-verified-archived-profiled": 10,
-      "local-verified-profiled": 6,
+      "remote-verified-archived-profiled": 11,
+      "local-verified-profiled": 5,
       "partial-component": 2,
       "access-blocked": 13
     },
-    "immutableArchiveCompleteRows": 10,
+    "immutableArchiveCompleteRows": 11,
     "productionAdmissionCompleteRows": 0,
     "productionEligibleRows": 0,
     "substantiveReplyRecords": 7,
@@ -29,7 +29,7 @@
   },
   "scope": {
     "auditedRowCount": 31,
-    "rowsWithoutImmutableRemoteProof": 21,
+    "rowsWithoutImmutableRemoteProof": 20,
     "rowsWithoutProductionAdmission": 31,
     "rowsSelectedByRule": 31,
     "allProductionRowsRemainNonAdmitted": true,
@@ -46,32 +46,28 @@
     "productionAdmission": false,
     "productionEligible": false
   },
-  "scoreFormula": "formal percentage-point delta = 30 * raw-credit delta / 31; this audit reports potential deltas only and does not change the 39.516129 baseline.",
+  "scoreFormula": "formal percentage-point delta = 30 * raw-credit delta / 31; this audit reports potential deltas only and does not change the 39.7580645 baseline.",
   "physicalArtifactGroups": [
     {
       "id": "national-two-artifacts",
-      "rows": ["ntems-canopy-height", "fed-2023-ridings", "elections-canada-45th-files"],
-      "physicalArtifactCount": 2,
-      "deduplication": "The federal ZIP is one physical artifact shared by the two Elections Canada rows; canopy height is the second artifact. Harvest is already represented by its separate remote archive evidence and is not re-uploaded.",
+      "rows": ["fed-2023-ridings", "elections-canada-45th-files"],
+      "physicalArtifactCount": 1,
+      "deduplication": "The federal ZIP is one physical artifact shared by the two Elections Canada rows. Harvest and canopy height are already represented by separate remote archive evidence and are not re-uploaded.",
       "preparation": "data/phase1-local-profiled-promotion-preparation.json",
       "readiness": "data/phase1-immutable-promotion-readiness.json",
       "ownerReconciliation": "data/phase1-archive-owner-command-reconciliation-2026-08-20.json",
       "runner": "scripts/run-phase1-approved-promotion.sh",
-      "currentStatus": "no-write preflight passed for the three bound local artifacts (harvest revalidated; canopy and federal remain unarchived); canopy MPU completed with redacted primary/recovery payload and sidecar heads having exact bytes and FULL_OBJECT checksums, but exact-version readback is blocked by unavailable s3:GetObjectVersion, retention is absent, and no immutable credit is claimed",
+      "currentStatus": "canopy exact primary/recovery payload and sidecar versions, bytes and FULL_OBJECT checksums are remotely verified and both payloads are COMPLIANCE-retained; the shared federal artifact remains local-only",
       "localPreflight": {
         "status": "passed-no-write",
         "command": "zsh scripts/run-phase1-approved-promotion.sh --preflight",
         "dataRoot": "/Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data",
-        "sourceFiles": 3,
-        "sourceBytes": 10605811193,
+        "sourceFiles": 1,
+        "sourceBytes": 10301648,
         "verifiedArtifacts": [
-          {"id": "nrcan-ca-forest-harvest-1985-2022-2026-08-14", "relativePath": "raw/nrcan-ca-forest-harvest-1985-2022/2026-08-14/CA_Forest_Harvest_1985-2022.zip", "byteLength": 247945479, "sha256": "c6f41dff46d91812874672edb53233dac4126952132ad6d1131ad47b11ad7aad", "remoteCreditAlreadyPresent": true},
-          {"id": "nrcan-forest-canopy-height-2022-2026-08-14", "relativePath": "raw/nrcan-forest-canopy-height-2022/2026-08-14/CA_canopy_height_2022.zip", "byteLength": 10347564066, "sha256": "86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124", "remoteCreditAlreadyPresent": false},
           {"id": "elections-canada-federal-electoral-districts-45th-general-election-2025-shp", "relativePath": "raw/elections-canada-federal-electoral-districts/2026-08-14/FederalElectoralDistricts_2025_SHP.zip", "byteLength": 10301648, "sha256": "4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93", "remoteCreditAlreadyPresent": false}
         ],
         "plannedSidecarKeys": [
-          "raw/nrcan-ca-forest-harvest-1985-2022/undeclared/2026-08-14T09-27-41Z/c6f41dff46d91812874672edb53233dac4126952132ad6d1131ad47b11ad7aad/manifest.json",
-          "raw/nrcan-forest-canopy-height-2022/undeclared/2026-08-14T18-57-22Z/86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124/manifest.json",
           "raw/elections-canada-federal-electoral-districts-45th-general-election-2025-shp/federal-electoral-districts-2025-shp/2026-08-14T17-42-35Z/4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93/manifest.json"
         ],
         "remoteCalls": 0,
@@ -144,7 +140,7 @@
     {
       "id": "national-local-archive-preflight-and-owner-promotion",
       "rank": 1,
-      "priorityBasis": "Canopy MPU heads are present but immutable proof remains blocked; a safe local preflight is available for the separate federal artifact, while canopy readback and any owner-run action remain separately gated.",
+      "priorityBasis": "Canopy immutable raw archive evidence is complete; the separate shared federal artifact remains the only archive task in this physical group.",
       "lawfulImmediacy": "delegate-preflight-now",
       "actor": "delegate-and-owner",
       "executableNow": true,
@@ -152,29 +148,28 @@
       "requiresOwnerInput": true,
       "requiresExternalReply": false,
       "ownerRunAuthorized": false,
-      "rows": ["ntems-canopy-height", "fed-2023-ridings", "elections-canada-45th-files"],
+      "rows": ["fed-2023-ridings", "elections-canada-45th-files"],
       "physicalArtifactGroup": "national-two-artifacts",
       "evidenceRefs": [
         "data/phase1-local-profiled-promotion-preparation.json",
         "data/phase1-immutable-promotion-readiness.json",
         "data/phase1-national-archive-finalization-audit.json",
+        "data/nrcan-canopy-height-remote-archive-evidence.json",
         "data/phase1-archive-owner-command-reconciliation-2026-08-20.json"
       ],
       "runnerOrPreflight": {
         "safeNow": "zsh scripts/run-phase1-approved-promotion.sh --preflight",
-        "preflightResult": "passed-no-write; three exact local artifacts revalidated, including the already-archived harvest artifact; no TOTP/AWS call",
-        "ownerExecution": "BLOCKED: the three-artifact --run path includes already-archived harvest; use only a freshly approved canopy/federal-only path after reconciliation."
+        "preflightResult": "passed-no-write for the exact shared federal artifact; no TOTP/AWS call",
+        "ownerExecution": "BLOCKED: use only a freshly approved federal-only path that does not revisit the already-archived harvest or canopy artifacts."
       },
       "prerequisites": [
-        "Owner resolves the unavailable s3:GetObjectVersion permission and supplies redacted exact-version, byte, FULL_OBJECT checksum, and recovery readbacks for the completed canopy payload and sidecar.",
-        "Owner confirms or applies COMPLIANCE retention for the primary and recovery payloads; retention is currently absent.",
-        "The controlled local three-artifact preflight passed exact bytes/SHA without AWS or TOTP; the federal payload remains local-only and its sidecar is only a planned exact key until owner execution.",
-        "Owner confirms a separate federal-only execution path that does not revisit harvest or re-complete canopy.",
-        "Do not update the ledger until redacted primary and recovery immutable readbacks are integrated."
+        "Canopy and harvest raw archive evidence is complete; do not re-upload, re-complete, or re-retain either artifact.",
+        "The federal payload remains local-only and its sidecar is only a planned exact key until owner execution.",
+        "Owner confirms a separate federal-only execution path that does not revisit harvest or canopy."
       ],
-      "remainingSteps": ["resolve canopy readback permission", "capture canopy retention and exact immutable primary/recovery readbacks", "run the safe federal-only local preflight", "obtain fresh federal owner approval", "owner performs only the separately authorized federal promotion", "integrate exact immutable and recovery readbacks", "record named source decisions and downstream gates"],
-      "scoreImpact": {"currentRawCreditDelta": 0, "maximumRawCreditDelta": 0.75, "maximumFormalPercentagePointDelta": 0.7258065, "productionAdmissionDelta": 0},
-      "blockers": ["Canopy exact-version readback is blocked because s3:GetObjectVersion is unavailable; primary and recovery retention are absent, so no immutable credit is allowed.", "The federal artifact and its sidecar are not present and still require a separate owner-approved path.", "The owner-local canopy resume state is validated offline but its path and opaque identifiers are intentionally not retained in repository evidence."]
+      "remainingSteps": ["run the safe federal-only local preflight", "obtain fresh federal owner approval", "owner performs only the separately authorized federal promotion", "integrate exact federal immutable and recovery readbacks", "record named federal source decisions and downstream gates"],
+      "scoreImpact": {"currentRawCreditDelta": 0, "maximumRawCreditDelta": 0.5, "maximumFormalPercentagePointDelta": 0.483871, "productionAdmissionDelta": 0},
+      "blockers": ["The federal artifact and its sidecar are not present and still require a separate owner-approved path."]
     },
     {
       "id": "quebec-current-original-archive-preflight-and-owner-promotion",
@@ -245,7 +240,7 @@
       "blockers": ["No remote object or readback is recorded.", "The 62 keys are one physical product, not 62 ledger credits."]
     },
     {
-      "id": "harvest-owner-source-ledger-decision",
+      "id": "national-archived-owner-source-ledger-decisions",
       "rank": 4,
       "priorityBasis": "A named owner decision is the immediate remaining source gate after exact archive evidence; no external reply is needed and no new raw credit is possible.",
       "lawfulImmediacy": "owner-input-now",
@@ -255,11 +250,13 @@
       "requiresOwnerInput": true,
       "requiresExternalReply": false,
       "ownerRunAuthorized": false,
-      "rows": ["ntems-forest-harvest"],
+      "rows": ["ntems-forest-harvest", "ntems-canopy-height"],
       "physicalArtifactGroup": null,
       "evidenceRefs": [
         "data/nrcan-harvest-profile.json",
         "data/nrcan-harvest-remote-archive-evidence.json",
+        "data/nrcan-canopy-height-profile.json",
+        "data/nrcan-canopy-height-remote-archive-evidence.json",
         "data/phase1-production-source-ledger.json",
         "data/phase1-source-ledger-decision-readiness.json",
         "data/phase1-national-archive-finalization-audit.json"
@@ -475,14 +472,14 @@
     "national-local-archive-preflight-and-owner-promotion",
     "quebec-current-original-archive-preflight-and-owner-promotion",
     "quebec-fourth-archive-preflight-and-owner-approvals",
-    "harvest-owner-source-ledger-decision",
+    "national-archived-owner-source-ledger-decisions",
     "plvi-owner-scope-decision"
   ],
   "rowCoverage": [
     {"id":"ntems-annual-land-cover","evidenceState":"remote-verified-archived-profiled","immutableRemoteProof":true,"currentRawCredit":1,"maximumRawCreditDeltaToRemote":0,"maximumFormalPercentagePointDeltaToRemote":0,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["archived-remote-transform-ingest-release","production-admission-and-release-gate"]},
-    {"id":"ntems-forest-harvest","evidenceState":"remote-verified-archived-profiled","immutableRemoteProof":true,"currentRawCredit":1,"maximumRawCreditDeltaToRemote":0,"maximumFormalPercentagePointDeltaToRemote":0,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["harvest-owner-source-ledger-decision","production-admission-and-release-gate"]},
+    {"id":"ntems-forest-harvest","evidenceState":"remote-verified-archived-profiled","immutableRemoteProof":true,"currentRawCredit":1,"maximumRawCreditDeltaToRemote":0,"maximumFormalPercentagePointDeltaToRemote":0,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["national-archived-owner-source-ledger-decisions","production-admission-and-release-gate"]},
     {"id":"ntems-canopy-cover","evidenceState":"remote-verified-archived-profiled","immutableRemoteProof":true,"currentRawCredit":1,"maximumRawCreditDeltaToRemote":0,"maximumFormalPercentagePointDeltaToRemote":0,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["archived-remote-transform-ingest-release","production-admission-and-release-gate"]},
-    {"id":"ntems-canopy-height","evidenceState":"local-verified-profiled","immutableRemoteProof":false,"currentRawCredit":0.75,"maximumRawCreditDeltaToRemote":0.25,"maximumFormalPercentagePointDeltaToRemote":0.2419355,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["national-local-archive-preflight-and-owner-promotion","production-admission-and-release-gate"]},
+    {"id":"ntems-canopy-height","evidenceState":"remote-verified-archived-profiled","immutableRemoteProof":true,"currentRawCredit":1,"maximumRawCreditDeltaToRemote":0,"maximumFormalPercentagePointDeltaToRemote":0,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["national-archived-owner-source-ledger-decisions","production-admission-and-release-gate"]},
     {"id":"cwfis-current","evidenceState":"remote-verified-archived-profiled","immutableRemoteProof":true,"currentRawCredit":1,"maximumRawCreditDeltaToRemote":0,"maximumFormalPercentagePointDeltaToRemote":0,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["current-wildfire-derived-archive-preflight-and-owner-promotion","wildfire-transform-ingest-release","production-admission-and-release-gate"]},
     {"id":"cwfis-historical","evidenceState":"partial-component","immutableRemoteProof":false,"currentRawCredit":0.25,"maximumRawCreditDeltaToRemote":0.75,"maximumFormalPercentagePointDeltaToRemote":0.7258065,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["partial-historical-owner-review-and-external-evidence","production-admission-and-release-gate"]},
     {"id":"bc-wildfire","evidenceState":"remote-verified-archived-profiled","immutableRemoteProof":true,"currentRawCredit":1,"maximumRawCreditDeltaToRemote":0,"maximumFormalPercentagePointDeltaToRemote":0,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["current-wildfire-derived-archive-preflight-and-owner-promotion","wildfire-transform-ingest-release","production-admission-and-release-gate"]},

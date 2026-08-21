@@ -8,20 +8,21 @@ test("integrated Phase 1 evidence remains additive and fail-closed across conver
   const state = read("data/phase1-current-state-completion-audit.json");
   const ledger = read("data/phase1-production-source-ledger.json");
   const harvest = read("data/nrcan-harvest-remote-archive-evidence.json");
+  const canopy = read("data/nrcan-canopy-height-remote-archive-evidence.json");
   const national = read("data/phase1-national-archive-finalization-audit.json");
   const alternatives = read("data/phase1-bec-public-alternative-exhaustion.json");
   const copyright = read("data/phase1-bc-copyright-permission-form-package.json");
   const replies = read("data/phase1-outreach-reply-audit.json");
 
   assert.deepEqual(state.ledger.evidenceStateCounts, {
-    "remote-verified-archived-profiled": 10,
-    "local-verified-profiled": 6,
+    "remote-verified-archived-profiled": 11,
+    "local-verified-profiled": 5,
     "partial-component": 2,
     "access-blocked": 13,
   });
-  assert.equal(state.ledger.rawEvidenceNumerator, 15);
-  assert.equal(state.ledger.formalEvidenceTrackingPercentage, 39.516129);
-  assert.equal(state.ledger.immutableArchiveCompleteRows, 10);
+  assert.equal(state.ledger.rawEvidenceNumerator, 15.25);
+  assert.equal(state.ledger.formalEvidenceTrackingPercentage, 39.7580645);
+  assert.equal(state.ledger.immutableArchiveCompleteRows, 11);
   assert.equal(state.ledger.productionAdmissionCompleteRows, 0);
   assert.equal(state.ledger.productionEligibleRows, 0);
 
@@ -31,6 +32,9 @@ test("integrated Phase 1 evidence remains additive and fail-closed across conver
   assert.equal(harvestRow.productionEligible, false);
   assert.equal(harvest.claims.ownerSourceLedgerDecision, false);
   assert.equal(harvest.claims.productionEligible, false);
+  assert.equal(canopy.claims.immutableArchive, true);
+  assert.equal(canopy.claims.ownerSourceAdmission, false);
+  assert.equal(canopy.claims.productionEligible, false);
 
   assert.equal(national.liveReadOnly.multipart.canopy.partCount, 155);
   assert.equal(national.privateResumeState.matchingMode600RecordFoundInControlledRoots, true);

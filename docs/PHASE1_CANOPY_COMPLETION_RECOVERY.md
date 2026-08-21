@@ -8,11 +8,11 @@ or Phase 2 claim.
 
 The current redacted operational record is
 [`data/phase1-national-archive-finalization-audit.json`](../data/phase1-national-archive-finalization-audit.json).
-It records the completed 155-part MPU and exact-byte `FULL_OBJECT` payload and
-sidecar heads in primary and recovery, while retention and exact-version
-readback remain blocked. This package does not change that record or grant
-archive credit; the ledger remains 15/31 raw credit, 10 immutable rows, and
-zero production-eligible rows until the required readbacks pass.
+It records the completed 155-part MPU. The later redacted evidence record
+[`data/nrcan-canopy-height-remote-archive-evidence.json`](../data/nrcan-canopy-height-remote-archive-evidence.json)
+now proves exact-version primary/recovery bytes, matching `FULL_OBJECT`
+CRC64NVME checksums, and COMPLIANCE retention through `2033-08-12T00:00:00Z`.
+This grants raw archive evidence only; production eligibility remains false.
 
 The exact approved scope is account '286853118812', role
 'WitnessTreeArchivePromotionUploader', operator profile
@@ -21,8 +21,8 @@ The exact approved scope is account '286853118812', role
 ## IAM delta to provision out of band
 
 The machine-checked desired delta is
-'data/phase1-canopy-completion-recovery-iam-delta.json'. It adds one and only
-one allow statement:
+'data/phase1-canopy-completion-recovery-iam-delta.json'. It retains one exact
+allow statement:
 
 ~~~json
 {
@@ -34,11 +34,7 @@ one allow statement:
     "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/nrcan-forest-canopy-height-2022/undeclared/2026-08-14T18-57-22Z/86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124/manifest.json",
     "arn:aws:s3:::witness-tree-raw-recovery-ca-central-1/raw/nrcan-forest-canopy-height-2022/undeclared/2026-08-14T18-57-22Z/86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124/payload/ca_canopy_height_2022.zip",
     "arn:aws:s3:::witness-tree-raw-recovery-ca-central-1/raw/nrcan-forest-canopy-height-2022/undeclared/2026-08-14T18-57-22Z/86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124/manifest.json"
-  ],
-  "Condition": {
-    "Bool": {"aws:MultiFactorAuthPresent": "true"},
-    "NumericLessThan": {"aws:MultiFactorAuthAge": "3600"}
-  }
+  ]
 }
 ~~~
 
@@ -71,14 +67,11 @@ appends 'CanopyRecoveryPayloadRetentionOnly', and requires the final canonical
 policy SHA readback before replacing the planned attestation with an applied
 attestation.
 
-The authorized apply completed with both exact statements appended after the
-two original statements. The applied attestation is owner-owned mode 600 and
-passes the repository checker. A subsequent read-only audit verified the four
-exact object versions, byte lengths, and FULL_OBJECT CRC64NVME checksums; both
-payload retention reads succeeded and reported no retention. This establishes
-recovery readiness only. It is not immutable archive evidence or ledger
-credit until the interactive recovery applies and reads back the exact
-COMPLIANCE retention.
+The authorized apply and recovery completed. The applied attestation and
+private version-reference state are owner-owned mode 600. Independent read-only
+verification confirmed all four exact versions and both payload retentions.
+No multipart completion, upload, sidecar rewrite, delete, governance bypass,
+or legal-hold operation was part of the recovery.
 
 ## Copy-paste authorization text
 

@@ -71,6 +71,7 @@
     "check:phase1-corruption-corpus": "tsx --test tests/phase1-corruption-gate.test.ts",
     "check:staged-geospatial-profile": "node scripts/check-staged-geospatial-profile.mjs",
     "check:nrcan-canopy-height-profile": "node scripts/check-nrcan-canopy-height-profile.mjs",
+    "check:nrcan-canopy-height-remote-archive-evidence": "node scripts/check-nrcan-canopy-height-remote-archive-evidence.mjs",
     "check:alberta-historical-wildfire-profile": "node scripts/check-alberta-historical-wildfire-profile.mjs",
     "check:nrcan-harvest-profile": "node scripts/check-nrcan-harvest-profile.mjs",
     "check:nrcan-harvest-remote-archive-evidence": "node scripts/check-nrcan-harvest-remote-archive-evidence.mjs",
