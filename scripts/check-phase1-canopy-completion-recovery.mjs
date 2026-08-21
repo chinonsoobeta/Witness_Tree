@@ -71,8 +71,8 @@ function decodePolicyDocument(value) {
   return value;
 }
 
-/** Validate the live role policy against the exact additive delta and baseline retention scope. */
-export function validateCanopyRecoveryIam(policyEnvelope, desired = desiredIamDelta) {
+/** Validate the exact readback delta and the retention capabilities required at this stage. */
+export function validateCanopyRecoveryIam(policyEnvelope, desired = desiredIamDelta, { requireRecoveryRetention = true } = {}) {
   const policy = decodePolicyDocument(policyEnvelope?.PolicyDocument ?? policyEnvelope);
   assert.ok(policy && typeof policy === "object" && Array.isArray(policy.Statement), "policy document is malformed");
   const statements = policy.Statement;
@@ -104,12 +104,19 @@ export function validateCanopyRecoveryIam(policyEnvelope, desired = desiredIamDe
       assert.equal(statementActions(statement).includes(forbidden), false, `forbidden action ${forbidden} is present`);
     }
   }
+  const requiredRetentionResources = requireRecoveryRetention
+    ? desired.requiredExistingRetention.resources
+    : [desired.requiredExistingRetention.resources[0]];
   for (const action of desired.requiredExistingRetention.actions) {
-    for (const resource of desired.requiredExistingRetention.resources) {
+    for (const resource of requiredRetentionResources) {
       assert.equal(exactAllow(statements, action, resource), true, `required retention capability is absent for ${action}`);
     }
   }
   return true;
+}
+
+export function validateCanopyRecoveryReadbackProvisioningPolicy(policyEnvelope) {
+  return validateCanopyRecoveryIam(policyEnvelope, desiredIamDelta, { requireRecoveryRetention: false });
 }
 
 /** Validate the exact final policy after appending the recovery retention statement. */

@@ -13,6 +13,7 @@ import {
   validateCanopyRecoveryHeads,
   validateCanopyRecoveryIam,
   validateCanopyRecoveryIamAttestation,
+  validateCanopyRecoveryReadbackProvisioningPolicy,
   validateCanopyRecoveryRetention,
   validateCanopyRecoveryRetentionProvisioningPolicy,
   validateCanopyRecoveryState,
@@ -122,6 +123,7 @@ test("approval, complete private state, exact heads, version refs, and retention
   validateCanopyRecoveryApproval(approval());
   validateCanopyRecoveryState(state(refs));
   validateCanopyRecoveryIam(policy());
+  validateCanopyRecoveryReadbackProvisioningPolicy(policy(true, false));
   validateCanopyRecoveryRetentionProvisioningPolicy(policy());
   validateCanopyRecoveryIamAttestation(attestation());
   validateCanopyRecoveryHeads(heads(), { payloadBytes: canopyRecovery.payloadBytes, sidecarBytes: canopyRecovery.sidecarBytes });
@@ -140,18 +142,25 @@ test("planned or altered IAM attestation is rejected for recovery", () => {
   assert.throws(() => validateCanopyRecoveryIamAttestation(altered), /delta is not exact/);
 });
 
-test("root provisioning dry run validates one additive statement and writes only a planned redacted attestation", () => {
+test("root provisioning dry run validates two sequential additive statements and writes only a planned redacted attestation", () => {
   const dir = mkdtempSync(join(tmpdir(), "canopy-recovery-provision-dry-run-"));
   try {
     const marker = join(dir, "calls");
-    const basePolicy = policy(true, false);
+    const livePolicyState = join(dir, "live-policy.json");
+    const basePolicy = policy(false, false);
     const awsPath = join(dir, "aws");
     const fake = [
       "#!/bin/zsh",
       `print -r -- "$*" >> ${JSON.stringify(marker)}`,
       "case \"$1:$2\" in",
       `  sts:get-caller-identity) print -r -- ${JSON.stringify(JSON.stringify({ Account: canopyRecovery.account, Arn: `arn:aws:iam::${canopyRecovery.account}:root` }))} ;;`,
-      `  iam:get-role-policy) print -r -- ${JSON.stringify(JSON.stringify({ RoleName: canopyRecovery.role, PolicyName: desiredRecoveryRetentionDelta.policyName, PolicyDocument: basePolicy }))} ;;`,
+      `  iam:get-role-policy) if [[ -f ${JSON.stringify(livePolicyState)} ]]; then command cat ${JSON.stringify(livePolicyState)}; else print -r -- ${JSON.stringify(JSON.stringify({ RoleName: canopyRecovery.role, PolicyName: desiredRecoveryRetentionDelta.policyName, PolicyDocument: basePolicy }))}; fi ;;`,
+      "  iam:put-role-policy)",
+      "    policy_uri=''",
+      "    for ((index=1; index <= $#; index++)); do if [[ \"${@[$index]}\" == '--policy-document' ]]; then next=$((index + 1)); policy_uri=\"${@[$next]}\"; fi; done",
+      "    [[ \"$policy_uri\" == file://* ]] || exit 98",
+      `    jq -n --arg role ${JSON.stringify(canopyRecovery.role)} --arg policy ${JSON.stringify(desiredRecoveryRetentionDelta.policyName)} --argjson document "$(<"\${policy_uri#file://}")" '{RoleName:$role,PolicyName:$policy,PolicyDocument:$document}' > ${JSON.stringify(livePolicyState)}`,
+      "    ;;",
       "  accessanalyzer:validate-policy) print -r -- '{\"findings\":[]}' ;;",
       "  iam:simulate-principal-policy)",
       "    if [[ \"$*\" == *s3:DeleteObject* || \"$*\" == *raw/not-approved/payload.zip* ]]; then decision=implicitDeny; else decision=allowed; fi",
@@ -175,6 +184,14 @@ test("root provisioning dry run validates one additive statement and writes only
     assert.equal(statSync(attestationPath).mode & 0o777, 0o600);
     const calls = readFileSync(marker, "utf8");
     assert.doesNotMatch(calls, /put-role-policy/);
+    const appliedRun = spawnSync(process.execPath, [provisionerPath, "--profile", "default", "--attestation", attestationPath, "--apply"], {
+      encoding: "utf8",
+      env: { ...process.env, PATH: `${dir}:${process.env.PATH}` }
+    });
+    assert.equal(appliedRun.status, 0, appliedRun.stdout + appliedRun.stderr);
+    const applied = JSON.parse(readFileSync(attestationPath, "utf8"));
+    validateCanopyRecoveryIamAttestation(applied);
+    assert.equal(readFileSync(marker, "utf8").match(/put-role-policy/g)?.length, 2);
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }

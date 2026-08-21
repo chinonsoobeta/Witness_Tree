@@ -60,20 +60,25 @@ node scripts/provision-phase1-canopy-recovery-iam.mjs \
 
 It requires the exact account root identity, reads only role
 'WitnessTreeArchivePromotionUploader' and inline policy
-'ExactApprovedPromotionOnly', proves the change is one appended statement
-without changing or reordering any existing statement, validates the policy,
-runs Access Analyzer and exact allow/deny simulations, and writes a redacted
-owner-owned mode-600 planned attestation. Only when every check passes may the
-same command be run with '--apply'. The apply path re-reads the policy to catch
-a race, writes only the exact candidate, requires a canonical policy SHA
-readback, and replaces the planned attestation with an applied attestation.
+'ExactApprovedPromotionOnly', proves both proposed changes are sequential
+single-statement appends without changing or reordering any existing
+statement, validates the final policy, runs Access Analyzer and exact
+allow/deny simulations, and writes a redacted owner-owned mode-600 planned
+attestation. Only when every check passes may the same command be run with
+'--apply'. The apply path re-reads the policy to catch a race, appends and
+reads back 'CanopyVersionedRecoveryReadback', re-checks for another race,
+appends 'CanopyRecoveryPayloadRetentionOnly', and requires the final canonical
+policy SHA readback before replacing the planned attestation with an applied
+attestation.
 
-As of the latest live root dry run, the prerequisite
-'CanopyVersionedRecoveryReadback' statement is absent. Therefore the dry run
-fails before the recovery-retention delta, no IAM mutation occurs, and no
-applied attestation or recovery command is currently valid. The narrowly
-scoped recovery-retention authorization does not authorize adding the missing
-versioned-read statement.
+The authorized apply completed with both exact statements appended after the
+two original statements. The applied attestation is owner-owned mode 600 and
+passes the repository checker. A subsequent read-only audit verified the four
+exact object versions, byte lengths, and FULL_OBJECT CRC64NVME checksums; both
+payload retention reads succeeded and reported no retention. This establishes
+recovery readiness only. It is not immutable archive evidence or ledger
+credit until the interactive recovery applies and reads back the exact
+COMPLIANCE retention.
 
 ## Copy-paste authorization text
 
@@ -151,6 +156,6 @@ zsh scripts/run-phase1-canopy-completion-recovery.sh --recover-canopy \
   /private/tmp/witness-tree-canopy-recovery-iam-attestation.json
 ~~~
 
-These commands remain conditional and currently stop before TOTP because no
-applied attestation can be produced while the required versioned-read
-statement is absent.
+The preflight command now passes without TOTP or AWS calls. The recovery
+command is ready for the owner to run interactively; it must still stop if any
+fresh exact head, version, checksum, or retention read differs.

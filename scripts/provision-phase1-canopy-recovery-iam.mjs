@@ -6,6 +6,7 @@ import { dirname, isAbsolute } from "node:path";
 import {
   desiredIamDelta,
   desiredRecoveryRetentionDelta,
+  validateCanopyRecoveryReadbackProvisioningPolicy,
   validateCanopyRecoveryRetentionProvisioningPolicy
 } from "./check-phase1-canopy-completion-recovery.mjs";
 
@@ -92,7 +93,45 @@ function recoveryRetentionStatement() {
   };
 }
 
-function buildCandidate(current) {
+function recoveryReadbackStatement() {
+  return {
+    Sid: desiredIamDelta.delta.sid,
+    Effect: desiredIamDelta.delta.effect,
+    Action: [...desiredIamDelta.delta.actions],
+    Resource: [...desiredIamDelta.delta.resources],
+    Condition: structuredClone(desiredIamDelta.delta.condition)
+  };
+}
+
+function assertPreserved(current, candidate, change, label) {
+  if (change === "already-present") {
+    if (!equalJson(current, candidate)) fail(`an idempotent ${label} step would rewrite the live policy; no IAM mutation was attempted`);
+    return;
+  }
+  if (candidate.Statement.length !== current.Statement.length + 1) fail(`proposed ${label} change is not one additive statement; no IAM mutation was attempted`);
+  current.Statement.forEach((statement, index) => {
+    if (!equalJson(statement, candidate.Statement[index])) fail(`proposed ${label} change does not preserve statement order and content; no IAM mutation was attempted`);
+  });
+}
+
+function buildReadbackCandidate(current) {
+  const existing = current.Statement.filter((statement) => statement.Sid === desiredIamDelta.delta.sid);
+  if (existing.length > 1) fail("live policy has duplicate recovery-readback statements; no IAM mutation was attempted");
+  const candidate = structuredClone(current);
+  let change = "already-present";
+  if (existing.length === 1) {
+    if (!equalJson(existing[0], recoveryReadbackStatement())) fail("live recovery-readback statement is not exact; no IAM mutation was attempted");
+  } else {
+    candidate.Statement.push(recoveryReadbackStatement());
+    change = "append-recovery-readback-statement";
+  }
+  try { validateCanopyRecoveryReadbackProvisioningPolicy(candidate); }
+  catch (error) { fail(`live policy is not the validated base plus the exact readback delta (${error.message}); no IAM mutation was attempted`); }
+  assertPreserved(current, candidate, change, "recovery-readback");
+  return { candidate, change };
+}
+
+function buildRetentionCandidate(current) {
   const existing = current.Statement.filter((statement) => statement.Sid === desiredRecoveryRetentionDelta.delta.sid);
   if (existing.length > 1) fail("live policy has duplicate recovery-retention statements; no IAM mutation was attempted");
   const candidate = structuredClone(current);
@@ -108,13 +147,19 @@ function buildCandidate(current) {
   }
   try { validateCanopyRecoveryRetentionProvisioningPolicy(candidate); }
   catch (error) { fail(`live policy is not the validated canopy base plus the exact retention delta (${error.message}); no IAM mutation was attempted`); }
-  if (change === "append-recovery-retention-statement") {
-    if (candidate.Statement.length !== current.Statement.length + 1) fail("proposed IAM change is not one additive statement; no IAM mutation was attempted");
-    current.Statement.forEach((statement, index) => {
-      if (!equalJson(statement, candidate.Statement[index])) fail("proposed IAM change does not preserve statement order and content; no IAM mutation was attempted");
-    });
-  } else if (!equalJson(current, candidate)) fail("an idempotent run would rewrite the live policy; no IAM mutation was attempted");
+  assertPreserved(current, candidate, change, "recovery-retention");
   return { candidate, change };
+}
+
+function buildCandidates(current) {
+  const readback = buildReadbackCandidate(current);
+  const retention = buildRetentionCandidate(readback.candidate);
+  return {
+    readbackCandidate: readback.candidate,
+    readbackChange: readback.change,
+    candidate: retention.candidate,
+    retentionChange: retention.change
+  };
 }
 
 function getLivePolicy(profile) {
@@ -129,6 +174,14 @@ function getLivePolicy(profile) {
 function verifyRootCaller(profile) {
   const identity = awsJson(["sts", "get-caller-identity", "--profile", profile, "--output", "json"], "administrator caller identity read");
   if (identity.Account !== ACCOUNT || identity.Arn !== `arn:aws:iam::${ACCOUNT}:root`) fail("provisioning requires the exact approved account root identity; no IAM mutation was attempted", 77);
+}
+
+function putPolicy(profile, policyPath, label) {
+  const put = rawAws([
+    "iam", "put-role-policy", "--profile", profile, "--role-name", ROLE,
+    "--policy-name", POLICY_NAME, "--policy-document", `file://${policyPath}`
+  ]);
+  if (!put.ok) fail(`${label} IAM policy update failed; recovery remains blocked`, 77);
 }
 
 function accessAnalyzer(profile, policyPath, applying) {
@@ -205,13 +258,16 @@ function main() {
   verifyRootCaller(options.profile);
   const live = getLivePolicy(options.profile);
   const basePolicySha256 = policyHash(live);
-  const { candidate, change } = buildCandidate(live);
+  const { readbackCandidate, readbackChange, candidate, retentionChange } = buildCandidates(live);
+  const prerequisitePolicySha256 = policyHash(readbackCandidate);
   const desiredPolicySha256 = policyHash(candidate);
   const tempDir = mkdtempSync("/private/tmp/witness-tree-canopy-iam-provisioning.");
   let analyzer;
   let simulations;
   try {
     const desiredPolicyPath = `${tempDir}/desired-policy.json`;
+    const readbackPolicyPath = `${tempDir}/readback-policy.json`;
+    writeFileSync(readbackPolicyPath, `${JSON.stringify(readbackCandidate, null, 2)}\n`, { mode: 0o600 });
     writeFileSync(desiredPolicyPath, `${JSON.stringify(candidate, null, 2)}\n`, { mode: 0o600 });
     analyzer = accessAnalyzer(options.profile, desiredPolicyPath, options.apply);
     simulations = runSimulations(options.profile, candidate);
@@ -219,13 +275,14 @@ function main() {
     if (options.apply) {
       const latest = getLivePolicy(options.profile);
       if (policyHash(latest) !== basePolicySha256) fail("live policy changed during preflight; no IAM mutation was attempted", 77);
-      if (change === "append-recovery-retention-statement") {
-        const put = rawAws([
-          "iam", "put-role-policy", "--profile", options.profile, "--role-name", ROLE,
-          "--policy-name", POLICY_NAME, "--policy-document", `file://${desiredPolicyPath}`
-        ]);
-        if (!put.ok) fail("IAM policy update failed; recovery remains blocked", 77);
-      }
+      if (readbackChange === "append-recovery-readback-statement") putPolicy(options.profile, readbackPolicyPath, "recovery-readback");
+      const readback = getLivePolicy(options.profile);
+      if (policyHash(readback) !== prerequisitePolicySha256) fail("recovery-readback policy SHA does not match the exact prerequisite SHA; retention was not attempted", 77);
+      try { validateCanopyRecoveryReadbackProvisioningPolicy(readback); }
+      catch { fail("recovery-readback policy readback failed exact validation; retention was not attempted", 77); }
+      const latestBeforeRetention = getLivePolicy(options.profile);
+      if (policyHash(latestBeforeRetention) !== prerequisitePolicySha256) fail("live policy changed before retention provisioning; retention was not attempted", 77);
+      if (retentionChange === "append-recovery-retention-statement") putPolicy(options.profile, desiredPolicyPath, "recovery-retention");
     }
   } finally {
     rmSync(tempDir, { recursive: true, force: true });
@@ -261,7 +318,7 @@ function main() {
     simulations
   };
   writeOwnerAttestation(options.attestation, attestation);
-  console.log(`${options.apply ? "Applied" : "Dry-run"} exact recovery-retention IAM provisioning (${change}); owner-only attestation written.`);
+  console.log(`${options.apply ? "Applied" : "Dry-run"} exact canopy IAM provisioning (${readbackChange}; ${retentionChange}); owner-only attestation written.`);
   console.log(`policy-sha256=${options.apply ? readbackPolicySha256 : desiredPolicySha256}`);
 }
 
