@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
 import { validateNrcanCanopyCoverProfile } from "./check-nrcan-canopy-cover-profile.mjs";
+import { validateImmutablePromotions } from "./check-immutable-promotions.mjs";
+import { validateRasterDefects, validateRasterGrid } from "./check-raster-grid.mjs";
+import { validateVlce2RemotePromotionEvidence } from "./check-vlce2-remote-promotion-evidence.mjs";
 
 const read = (file) => JSON.parse(readFileSync(new URL(`../${file}`, import.meta.url), "utf8"));
 const REQUIRED_IDS = ["ntems-annual-land-cover", "ntems-canopy-cover"];
@@ -62,6 +65,13 @@ export function validatePhase1NrcanCoverProcessingGate(audit, ledger = read("dat
   assert.equal(ledger.entries.filter(({ proof }) => proof.immutableArchive).length, BASELINE.immutableArchiveCompleteRows);
   assert.equal(ledger.entries.filter(({ proof }) => proof.productionAdmission).length, BASELINE.productionAdmissionCompleteRows);
   assert.equal(ledger.entries.filter(({ productionEligible }) => productionEligible).length, BASELINE.productionEligibleRows);
+  const annualPlan = read("data/vlce2-promotion-preparation.json");
+  const annualRemote = read("data/vlce2-remote-promotion-evidence.json");
+  const grid = read("data/raster-grid.json");
+  validateVlce2RemotePromotionEvidence(annualRemote, annualPlan);
+  validateRasterGrid(grid);
+  validateRasterDefects(read("data/raster-defects.json"), grid);
+  validateImmutablePromotions(read("data/immutable-promotions.json"));
 
   const annual = audit.rows[0];
   assert.equal(annual.evidenceState, "remote-verified-archived-profiled");
@@ -79,6 +89,13 @@ export function validatePhase1NrcanCoverProcessingGate(audit, ledger = read("dat
   assert.equal(canopy.rawCredit, 1);
   assert.deepEqual(canopy.evidenceRefs, ["data/staged-acquisitions.json", "data/nrcan-canopy-cover-profile.json", "data/immutable-promotions.json"]);
   existingReferences(canopy.evidenceRefs);
+  const stagedCanopy = read("data/staged-acquisitions.json").entries.find(({ id }) => id === "nrcan-forest-canopy-cover-2022-2026-08-11");
+  assert.ok(stagedCanopy);
+  assert.equal(stagedCanopy.sourceId, "nrcan-forest-canopy-cover-2022");
+  assert.equal(stagedCanopy.byteLength, canopyProfile.raw.byteLength);
+  assert.equal(stagedCanopy.sha256, canopyProfile.raw.sha256);
+  assert.equal(stagedCanopy.immutableObjectStorage, false);
+  assert.equal(stagedCanopy.productionEligible, false);
   assert.deepEqual(canopy.namedValidationGates.map(({ id, status }) => [id, status]), [
     ["canopy-cover-staging-profile", "passed"],
     ["canopy-cover-immutable-archive", "passed"],
