@@ -61,7 +61,7 @@ The following are accepted foundations, primarily with illustrative fixtures and
 
 - Bilingual shared shell, navigation, policy gallery, methodology/data/governance pages, accessible static place/location/search routes, and responsive semantic markup.
 - Strict Figure/Unknown reporting components; exact evidence word-and-shape mapping; required coverage, provenance, and generated confidence reasons.
-- Bilingual fixtures across eight place types and four provinces, location histories, annual chart/table alternatives, source/citation/download metadata, search aliases, compare and Explore route foundations.
+- One deterministic, registry-driven synthetic page spine covers all eight place types across each of four provinces, with paired location histories, typed annual chart/table alternatives, source/citation/download/search records, exact EN/FR hreflang pairs, and a page-count/byte manifest. It remains example, unapproved, nonproduction, and is documented in [`PHASE3_REGISTRY_GENERATOR.md`](PHASE3_REGISTRY_GENERATOR.md).
 - Source ledger, source/release/download, archive-manifest, normalized-record, ingestion, matching/precedence, coverage, fire-impact, and corrections contracts with negative tests.
 - Real-staging admission contracts bind exact source checksums, attribution and geometry profiles. Québec and Alberta are both admitted to transformation design only; neither is admitted to ingestion. A provider-neutral immutable-promotion contract requires Canadian-region, remote checksum, provider-version and active compliance-retention evidence before `remote-verified` is valid.
 - Illustration-only wildfire snapshot/refresh policy and public status surfaces; account/alert policy and evaluator without managed storage or delivery.

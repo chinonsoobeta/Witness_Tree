@@ -22,8 +22,8 @@ test("shared navigation exposes localized search and dynamic pages publish recor
   const locationRoute = readFileSync(new URL("../app/fr/emplacement/[locationId]/page.tsx", import.meta.url), "utf8");
   assert.match(header, /\["Search", "\/en\/search"\]/);
   assert.match(header, /\["Recherche", "\/fr\/recherche"\]/);
-  assert.match(placeRoute, /\/en\/places\/\$\{placeId\}/);
-  assert.match(placeRoute, /\/fr\/lieux\/\$\{placeId\}/);
-  assert.match(locationRoute, /\/en\/location\/\$\{locationId\}/);
-  assert.match(locationRoute, /\/fr\/emplacement\/\$\{locationId\}/);
+  assert.match(placeRoute, /localizedRecord\("place", placeId, "en"\)/);
+  assert.match(placeRoute, /languages: \{ en: record\.route, fr: record\.alternate\.href \}/);
+  assert.match(locationRoute, /localizedRecord\("location", locationId, "fr"\)/);
+  assert.match(locationRoute, /languages: \{ en: record\.alternate\.href, fr: record\.route \}/);
 });

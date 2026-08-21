@@ -18,6 +18,7 @@
   --unknown: #6b7670;
   --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, "DejaVu Sans Mono", monospace;
   --ui: "BC Sans", "Noto Sans", Verdana, Arial, sans-serif;
+  --record-serif: Georgia, "Times New Roman", Times, serif;
   --measure: 68ch;
   --plate: 1180px;
   --drawer: 420px;
@@ -64,6 +65,19 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 button, input, select { font: inherit; }
 
 h1, h2, h3, h4 { font-family: var(--ui); }
+
+.generated-record h1,
+.generated-record h2,
+.generated-record h3,
+.generated-record h4,
+.generated-record p,
+.generated-record dd,
+.generated-record li { font-family: var(--record-serif); }
+
+.generated-record output,
+.generated-record a,
+.generated-record dt,
+.generated-record th { font-family: var(--ui); }
 
 .skip-link {
   position: fixed;
