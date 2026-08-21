@@ -53,7 +53,9 @@ node scripts/check-qc-immutable-promotion-attestation.mjs --pair \
   /private/tmp/witness-tree-qc-immutable-promotion-attestation-redacted.json
 ```
 
-The repository's current [`qc-immutable-promotion-attestation.json`](../data/qc-immutable-promotion-attestation.json) is intentionally pending. A redacted record, booleans, placeholder values, or plausible identifiers without the exact mode-600 digest-bound pair cannot pass the checker. This operation did not authorize or prove a recovery replica: the preserved multipart state is recovery/resume evidence only. Transformation, ingestion, release, production admission and production eligibility remain separate and false.
+The repository's current [`qc-immutable-promotion-attestation.json`](../data/qc-immutable-promotion-attestation.json) is intentionally pending. Its schema rejects undeclared fields, including concrete upload, version or provider-checksum fields. A redacted record, booleans, placeholder values, or plausible identifiers without the exact mode-600 digest-bound pair cannot pass the checker.
+
+A passing pair is owner-attested, internally consistent evidence produced by the reviewed owner-local capture path. It is not an independently signed AWS receipt and must not be described as provider-signed proof. The digest proves that the reviewed private and redacted records are the same pair; it does not create an independent provider signature. Pair validation remains required before any canonical evidence change. This operation did not authorize or prove a recovery replica: the preserved multipart state is recovery/resume evidence only. Transformation, ingestion, release, production admission and production eligibility remain separate and false.
 
 ### Exact additional owner authorization — approved 2026-08-21
 

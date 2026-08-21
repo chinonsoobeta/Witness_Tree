@@ -1,7 +1,7 @@
 {
   "schemaVersion": "witness-tree/qc-immutable-promotion-attestation-redacted/1",
   "status": "awaiting-owner-generated-private-attestation",
-  "notice": "This public record alone does not prove an upload, exact version, provider checksum, readback or retention. It remains pending until the owner-local capture command produces a mode-600 private attestation and its exact digest-bound redaction.",
+  "notice": "This public record alone does not prove an upload, exact version, provider checksum, readback or retention. A future passing pair would be owner-attested internally consistent evidence, not independently signed AWS proof. This record remains pending until the owner-local capture command produces a mode-600 private attestation and its exact digest-bound redaction.",
   "privateAttestationSha256": null,
   "objects": [],
   "claims": {

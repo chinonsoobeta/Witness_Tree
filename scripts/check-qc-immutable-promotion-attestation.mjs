@@ -23,9 +23,11 @@ const exactUtc = (value) => typeof value === "string" && UTC.test(value) && new 
 
 export function validatePendingQcAttestation(record, plan = readJson(PLAN_PATH)) {
   validateQcImmutablePromotionPreparation(plan);
+  exactKeys(record, ["schemaVersion", "status", "notice", "privateAttestationSha256", "objects", "claims"], "pending public attestation");
   assert.equal(record.schemaVersion, "witness-tree/qc-immutable-promotion-attestation-redacted/1");
   assert.equal(record.status, "awaiting-owner-generated-private-attestation");
   assert.match(record.notice, /public record alone.*does not prove/i);
+  assert.match(record.notice, /owner-attested internally consistent evidence.*not independently signed AWS proof/i);
   assert.equal(record.privateAttestationSha256, null);
   assert.deepEqual(record.objects, []);
   assert.deepEqual(record.claims, { exactReadbacksVerified: false, retentionVerified: false, immutableObjectStorage: false, sourceLedgerCreditChanged: false, transformed: false, ingested: false, productionEligible: false });
@@ -102,7 +104,7 @@ export function redactQcAttestation(privateRecord, privateBytes, plan = readJson
   return {
     schemaVersion: "witness-tree/qc-immutable-promotion-attestation-redacted/1",
     status: "owner-private-pair-required-for-verification",
-    notice: "This redacted record exposes no version or upload identifier and cannot prove remote state by itself. Verification requires the exact owner-owned mode-600 private attestation whose SHA-256 is bound below.",
+    notice: "This redacted record exposes no version or upload identifier and cannot prove remote state by itself. Verification requires the exact owner-owned mode-600 private attestation whose SHA-256 is bound below. A passing pair is owner-attested internally consistent evidence, not independently signed AWS proof.",
     privateAttestationSha256: hash(privateBytes),
     provenance: { createdAt: privateRecord.provenance.createdAt, runnerSha256: privateRecord.provenance.runnerSha256, captureScriptSha256: privateRecord.provenance.captureScriptSha256, planSha256: privateRecord.provenance.planSha256, operation: privateRecord.provenance.operation },
     objects: privateRecord.objects.map((object) => ({ artifactId: object.artifactId, productionSourceId: object.productionSourceId, objectKind: object.objectKind, keySha256: hash(object.key), versionIdSha256: hash(object.versionId), contentLength: object.contentLength, providerChecksumSha256: hash(object.checksum.providerValue), headResponseSha256: object.headResponseSha256, retention: object.objectKind === "payload" ? { mode: object.retention.mode, retainUntil: object.retention.retainUntil, responseSha256: object.retention.responseSha256 } : object.retention })),

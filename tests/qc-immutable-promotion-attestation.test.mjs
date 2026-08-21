@@ -32,8 +32,18 @@ async function fixture() {
 
 test("canonical QC attestation is explicitly pending and changes no credit", () => {
   assert.equal(validatePendingQcAttestation(pending, plan), pending);
+  assert.match(pending.notice, /owner-attested internally consistent evidence.*not independently signed AWS proof/i);
   assert.equal(pending.claims.exactReadbacksVerified, false);
   assert.equal(pending.claims.sourceLedgerCreditChanged, false);
+});
+
+test("pending public evidence rejects undeclared fields and identifier or checksum leak shapes", () => {
+  for (const mutation of [
+    { arbitrary: "not-canonical" },
+    { uploadId: "private-upload-identifier" },
+    { versionId: "plausible-concrete-version" },
+    { providerChecksum: "plausible-provider-checksum" }
+  ]) assert.throws(() => validatePendingQcAttestation({ ...pending, ...mutation }, plan), /fields drifted/);
 });
 
 test("owner-run transcript assembles four exact objects into a mode-600 digest-bound pair", async () => {
@@ -44,6 +54,7 @@ test("owner-run transcript assembles four exact objects into a mode-600 digest-b
     assert.equal(pair.privateRecord.objects.length, 4);
     assert.equal(pair.publicRecord.claims.exactReadbacksVerified, false);
     assert.equal(pair.publicRecord.claims.immutableObjectStorage, false);
+    assert.match(pair.publicRecord.notice, /owner-attested internally consistent evidence.*not independently signed AWS proof/i);
     assert.equal(JSON.stringify(pair.publicRecord).includes("private-upload"), false);
     assert.equal(pair.publicRecord.objects.some((object) => "versionId" in object || "providerValue" in object), false);
     assert.deepEqual(pair.privateRecord.recoveryBoundary, { multipartResumeStatePreserved: true, replicaCreated: false, replicaAuthorized: false, meaning: "Private multipart state supports interrupted-run diagnosis/resume only; no recovery replica was approved or proved." });
