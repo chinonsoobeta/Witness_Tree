@@ -11,6 +11,7 @@ function liveFromDesired() {
   return {
     account: live.account,
     roleName: live.roleName,
+    policyName: live.policyName,
     operatorPolicyName: live.operatorPolicyName,
     trustPolicy: live.trustPolicy,
     operatorAssumeRolePolicy: live.operatorAssumeRolePolicy,

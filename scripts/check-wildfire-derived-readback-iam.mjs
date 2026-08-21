@@ -7,6 +7,7 @@ const PLAN = validatePlan();
 export const DESIRED = read("data/wildfire-derived-readback-iam-desired-state.json");
 export const ACCOUNT = "286853118812";
 export const ROLE = "WitnessTreeWildfireDerivedPromotionUploader";
+export const POLICY_NAME = "WitnessTreeWildfireDerivedExactObjects";
 export const OPERATOR = "WitnessTreeArchiveOperator";
 export const OPERATOR_POLICY = "WitnessTreeWildfireDerivedPromotionAssumeOnly";
 export const BUCKET = "witness-tree-raw-archive-ca-central-1";
@@ -69,7 +70,7 @@ function assertNoWildcardScope(policy) {
 
 export function validateDesiredState(desired = DESIRED, plan = PLAN) {
   assert.deepEqual(sorted(Object.keys(desired)), sorted([
-    "account", "bucket", "claims", "excluded", "notice", "operatorAssumeRolePolicy", "operatorPolicyName",
+    "account", "bucket", "claims", "excluded", "notice", "operatorAssumeRolePolicy", "operatorPolicyName", "policyName",
     "operatorUser", "preservedExisting", "region", "requiredDelta", "roleName", "rolePolicy", "schemaVersion", "status", "trustPolicy"
   ]), "desired IAM state contains an unexpected field");
   assert.equal(desired.schemaVersion, "witness-tree/wildfire-derived-readback-iam-desired-state/1", "desired IAM schema is not recognized");
@@ -78,6 +79,7 @@ export function validateDesiredState(desired = DESIRED, plan = PLAN) {
   assert.equal(desired.region, "ca-central-1", "desired IAM region is not exact");
   assert.equal(desired.bucket, BUCKET, "desired IAM bucket is not exact");
   assert.equal(desired.roleName, ROLE, "desired IAM role is not exact");
+  assert.equal(desired.policyName, POLICY_NAME, "desired IAM policy is not exact");
   assert.equal(desired.operatorUser, OPERATOR, "desired IAM operator is not exact");
   assert.equal(desired.operatorPolicyName, OPERATOR_POLICY, "desired IAM operator policy is not exact");
   assert.deepEqual(desired.excluded, EXCLUDED, "desired IAM exclusions are incomplete or changed");
@@ -136,6 +138,7 @@ export function validateLiveState(live, desired = DESIRED, plan = PLAN) {
   assert.ok(live && typeof live === "object" && !Array.isArray(live), "live IAM preflight snapshot is malformed");
   assert.equal(live.account, ACCOUNT, "live IAM snapshot account is outside the approved account");
   assert.equal(live.roleName, ROLE, "live IAM snapshot role is not exact");
+  assert.equal(live.policyName, POLICY_NAME, "live IAM snapshot policy is not exact");
   assert.equal(live.operatorPolicyName, OPERATOR_POLICY, "live IAM snapshot operator policy is not exact");
   assert.deepEqual(live.trustPolicy, desired.trustPolicy, "live trust policy is not exact MFA-gated operator trust");
   assert.deepEqual(canonicalPolicy(documentOf(live.operatorAssumeRolePolicy)), canonicalPolicy(desired.operatorAssumeRolePolicy), "live operator AssumeRole path is not exact");

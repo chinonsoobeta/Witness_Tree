@@ -6,6 +6,7 @@
   "region": "ca-central-1",
   "bucket": "witness-tree-raw-archive-ca-central-1",
   "roleName": "WitnessTreeWildfireDerivedPromotionUploader",
+  "policyName": "WitnessTreeWildfireDerivedExactObjects",
   "operatorUser": "WitnessTreeArchiveOperator",
   "operatorPolicyName": "WitnessTreeWildfireDerivedPromotionAssumeOnly",
   "trustPolicy": {

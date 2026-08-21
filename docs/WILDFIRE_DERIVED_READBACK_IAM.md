@@ -98,3 +98,69 @@ The live role currently fails the versioned-readback preflight because the
 required statement is absent. Until an owner separately provisions and
 read-backs that exact delta, the safe command is the offline desired-state
 check only; the interactive S3 readback command remains blocked.
+
+## Owner-local additive provisioner
+
+There was no derived-readback IAM provisioner on the authoritative Phase 1
+head. The repository now includes a dry-run-default, root-only provisioner:
+
+~~~sh
+node scripts/provision-wildfire-derived-readback-iam.mjs \
+  --profile default \
+  --attestation /private/tmp/witness-tree-wildfire-derived-readback-iam-attestation.json
+~~~
+
+The provisioner reads the exact account, role, MFA trust, and inline policy
+`WitnessTreeWildfireDerivedExactObjects`; it proposes only the
+`ExactDerivedVersionedReadbacks` statement from the desired-state record. It
+preserves all existing statement order and content, refuses the operator
+profile, does not grant or require operator IAM-read permission, and writes a
+mode-600 redacted owner attestation. Access Analyzer and exact allow/deny
+simulations are recorded when available. An unavailable analyzer or
+simulation is tolerated for dry-run planning but refuses `--apply`; the
+pre-apply policy/trust re-read must also match the original SHA, and an apply
+must read the inline policy back to the exact desired SHA.
+
+After a separately reviewed owner authorization and a successful dry-run, the
+conditional command is:
+
+~~~sh
+node scripts/provision-wildfire-derived-readback-iam.mjs \
+  --profile default \
+  --attestation /private/tmp/witness-tree-wildfire-derived-readback-iam-attestation.json \
+  --apply
+~~~
+
+That command was not run in this audit. Authorization for it is limited to
+AWS account `286853118812`, role
+`WitnessTreeWildfireDerivedPromotionUploader`, and inline policy
+`WitnessTreeWildfireDerivedExactObjects`. It may add only one exact
+`s3:GetObjectVersion` statement on the four recorded BC/Ontario payload and
+manifest ARNs. It may not change trust, the operator AssumeRole policy,
+existing promotion or payload-retention statements, or add any IAM/S3
+write, delete, legal-hold, governance-bypass, MPU, upload, TOTP, production,
+or Phase 2 capability.
+
+### Copy-paste authorization for the optional IAM apply
+
+> I authorize the owner/root-local provisioner to run only in AWS account
+> `286853118812` with the exact root identity, and only against role
+> `WitnessTreeWildfireDerivedPromotionUploader` and inline policy
+> `WitnessTreeWildfireDerivedExactObjects` in `ca-central-1`.
+>
+> The provisioner must first complete its dry-run and write the mode-600
+> redacted attestation. If and only if that plan is reviewed, the live caller
+> and MFA-gated trust are exact, the current policy is re-read unchanged, the
+> Access Analyzer result has zero findings, and every exact allow/deny
+> simulation passes, it may add one statement only:
+> `Sid=ExactDerivedVersionedReadbacks`, `Effect=Allow`,
+> `Action=s3:GetObjectVersion`, with the four exact payload/manifest
+> resources in `data/wildfire-derived-readback-iam-desired-state.json`.
+> It must read the policy back and require the exact desired SHA before
+> recording an applied attestation.
+>
+> Preserve every existing role-policy statement and the operator's exact
+> AssumeRole policy. Do not grant operator IAM-read permission. Exclude all
+> other IAM changes, uploads, MPU completion or abort, S3 writes, retention
+> writes, deletes, legal holds, governance bypass, TOTP requests, production
+> admission, email, push, and Phase 2.
