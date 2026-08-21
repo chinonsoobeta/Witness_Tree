@@ -179,11 +179,11 @@
         "id": "wildfire-derived-live-readbacks",
         "rows": ["cwfis-current", "bc-wildfire", "ab-wildfire", "on-fire-disturbance"],
         "actionIds": ["current-wildfire-derived-archive-preflight-and-owner-promotion", "wildfire-transform-ingest-release"],
-        "category": "recovery-readback",
-        "status": "primary-live-proof-integrated-recovery-provenance-missing",
-        "localBoundary": "The redacted exact derived primary readback and payload-retention evidence is integrated; no recovery replica, mutation provenance, downstream admission, or production claim is invented.",
-        "missing": ["recovery replica or mutation-provenance evidence", "separate transformation, ingestion, release and production-admission records"],
-        "safeLocalImplementation": true,
+        "category": "durable-archive-attestation-and-downstream-evidence",
+        "status": "zero-of-six-machine-verifiable-owner-trust-contract-required",
+        "localBoundary": "Exact local bytes and SHA-256 pass the no-write preflight, but six placeholder-only attestations prove no remote version, provider checksum, exact-version readback, retention or recovery state.",
+        "missing": ["owner-approved durable signed or digest-bound attestation trust contract and six verified object proofs", "separate transformation, ingestion, release and production-admission evidence"],
+        "safeLocalImplementation": false,
         "ownerOrExternalPrerequisite": true,
         "scoreImpact": {"rawCreditDelta": 0, "formalPercentagePointDelta": 0}
       },
@@ -209,7 +209,7 @@
         "missing": ["publisher/rightsholder response", "lawful exact artifact and rights", "checksum/profile/archive/recovery evidence"],
         "safeLocalImplementation": false,
         "ownerOrExternalPrerequisite": true,
-        "scoreImpact": {"rawCreditDelta": 0, "formalPercentagePointDelta": 13.0}
+        "scoreImpact": {"rawCreditDelta": 0, "formalPercentagePointDelta": 0}
       }
     ],
     "coverage": {
@@ -259,7 +259,17 @@
       "preparation": "data/current-wildfire-immutable-promotion-preparation.json",
       "ownerAdmission": "data/current-wildfire-owner-admission.json",
       "runner": "scripts/run-current-wildfire-approved-promotion.sh",
-      "currentStatus": "zero of six objects are machine-verifiably proven; six placeholder-only attestations exist, while durable exact-version proof and downstream transformation, ingestion, release and admission remain blocked"
+      "currentStatus": "zero of six objects are machine-verifiably proven; six placeholder-only attestations exist, while durable exact-version proof and downstream transformation, ingestion, release and admission remain blocked",
+      "localPreflight": {
+        "status": "passed-no-write",
+        "command": "zsh scripts/run-current-wildfire-approved-promotion.sh --preflight",
+        "dataRoot": "/Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data",
+        "sourceFiles": 4,
+        "sourceBytes": 24783566,
+        "remoteCalls": 0,
+        "totpPrompted": false,
+        "writePerformed": false
+      }
     },
     {
       "id": "quebec-provincial-current-and-original",

@@ -97,6 +97,7 @@ function validatePhysicalArtifactGroups(audit, immutable) {
   const wildfire = audit.physicalArtifactGroups.find(({ id }) => id === "current-wildfire-six-release-inputs");
   assert.equal(wildfire.runner, "scripts/run-current-wildfire-approved-promotion.sh");
   assert.match(wildfire.currentStatus, /zero of six.*machine-verifiably proven/i);
+  validateLocalPreflight(wildfire, { sourceFiles: 4, sourceBytes: 24783566 });
   const qc = audit.physicalArtifactGroups.find(({ id }) => id === "quebec-provincial-current-and-original");
   assert.equal(qc.runner, "scripts/run-qc-approved-multipart-promotion.sh");
   validateLocalPreflight(qc, {
@@ -150,7 +151,7 @@ function validateLocalImplementationAudit(local, actions, ledger) {
     }
     for (const row of gap.rows) assert.equal(gap.actionIds.some((actionId) => actionById.get(actionId).rows.includes(row)), true, `${gap.id} maps ${row} outside its remaining actions.`);
     assert.equal(gap.scoreImpact.rawCreditDelta, 0, `${gap.id} must claim no immediate credit.`);
-    assert.equal(gap.safeLocalImplementation, gap.id === "wildfire-derived-live-readbacks" || gap.id === "local-archive-groups-live-evidence", `${gap.id} safeLocalImplementation drifted.`);
+    assert.equal(gap.safeLocalImplementation, gap.id === "local-archive-groups-live-evidence", `${gap.id} safeLocalImplementation drifted.`);
     assert.equal(gap.ownerOrExternalPrerequisite, true);
   }
   assert.equal(local.coverage.remainingActionCount, actions.length);

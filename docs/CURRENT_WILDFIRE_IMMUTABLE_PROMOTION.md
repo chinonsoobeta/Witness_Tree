@@ -2,10 +2,10 @@
 
 This is an owner-local, dry-run-by-default preparation for the four raw current-wildfire snapshots already identified in [`data/current-wildfire-immutable-promotion-preparation.json`](../data/current-wildfire-immutable-promotion-preparation.json). It is not authorization to run AWS, create IAM, archive a different object, transform data, clear the BC or Ontario geometry blocks, ingest, release, admit, or make a source eligible.
 
-The canonical redacted raw archive record now contains the independently
-verified primary and recovery readbacks for these four snapshots and their
-sidecars. This preparation remains a bounded historical/owner-local command
-package; do not rerun it or infer new credit from the existing readbacks.
+The canonical raw archive record is a placeholder-only attestation for these
+four snapshots and sidecars. It proves no concrete version, provider checksum,
+exact-version readback, retention, or recovery state. This preparation remains
+a bounded owner-local command package and grants no credit.
 
 ## Exact approval wording
 

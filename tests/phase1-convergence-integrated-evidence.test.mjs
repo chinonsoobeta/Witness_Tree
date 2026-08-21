@@ -77,3 +77,23 @@ test("integrated Phase 1 evidence remains additive and fail-closed across conver
     "data/current-wildfire-derived-live-recovery-guard-2026-08-20.json",
   ]) assert.equal(existsSync(new URL(`../${file}`, import.meta.url)), true, `${file} must remain integrated`);
 });
+
+test("canonical wildfire summaries reject superseded readback and score claims", () => {
+  const files = [
+    "data/phase1-source-inventory.json",
+    "data/phase1-remaining-actions-audit.json",
+    "docs/CURRENT_WILDFIRE_IMMUTABLE_PROMOTION.md",
+    "docs/PHASE1_ARCHIVE_LIVE_READBACK_2026-08-20.md",
+  ];
+  const combined = files.map((file) => readFileSync(new URL(`../${file}`, import.meta.url), "utf8")).join("\n");
+  for (const stale of [
+    /primary-live-proof-integrated/i,
+    /covers exact-version readback/i,
+    /verified primary and recovery readbacks for these four/i,
+    /15\.00\/31|39\.516129%|10 immutable rows|owner gate is 4\/6/i,
+  ]) assert.doesNotMatch(combined, stale);
+  assert.match(combined, /14\.25\/31 raw credits/i);
+  assert.match(combined, /38\.7903226% formal evidence tracking/i);
+  assert.match(combined, /7 immutable rows/i);
+  assert.match(combined, /0\/6 machine-verifiable and 6\/6 attested-only/i);
+});
