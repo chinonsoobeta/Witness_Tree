@@ -13,6 +13,8 @@ test("PLVI promotion preparation binds the raw archive and derived release to di
   assert.equal(plan.artifacts.length, 2);
   assert.match(dryRunLines(plan).join("\n"), /RETAIN-PENDING.*2033-08-12T00:00:00Z/);
   assert.notEqual(plan.artifacts[0].payloadKey, plan.artifacts[1].payloadKey);
+  assert.equal(plan.artifacts[0].sourceEvidence.attributeFieldCount, 60);
+  assert.equal(plan.artifacts[1].derivedLineage.attributeFieldCount, 60);
   assert.match(sidecarFor(plan, plan.artifacts[1]), /repairPatchSha256/);
 });
 
@@ -23,6 +25,8 @@ test("sidecars are deterministic and the preparation rejects drift or remote cla
   assert.throws(() => validateAlbertaPlviImmutablePromotionPreparation({...plan, claims: {...plan.claims, immutableObjectStorage: true}}));
   assert.throws(() => validateAlbertaPlviImmutablePromotionPreparation({...plan, artifacts: [{...plan.artifacts[0], sha256: "0".repeat(64)}, plan.artifacts[1]]}));
   assert.throws(() => validateAlbertaPlviImmutablePromotionPreparation({...plan, proposedRoleScope: {...plan.proposedRoleScope, objectKeys: plan.proposedRoleScope.objectKeys.slice(1)}}));
+  assert.throws(() => validateAlbertaPlviImmutablePromotionPreparation({...plan, artifacts: [{...plan.artifacts[0], sourceEvidence: {...plan.artifacts[0].sourceEvidence, attributeFieldCount: 63}}, plan.artifacts[1]]}));
+  assert.throws(() => validateAlbertaPlviImmutablePromotionPreparation({...plan, artifacts: [plan.artifacts[0], {...plan.artifacts[1], derivedLineage: {...plan.artifacts[1].derivedLineage, fieldCount: 63}}]}));
 });
 
 test("MFA runner has a dry-run default and excludes deletion, IAM mutation, and retention bypass", () => {

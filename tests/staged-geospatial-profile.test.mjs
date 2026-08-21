@@ -17,6 +17,7 @@ test("real staged schemas and geometry findings remain reproducible", () => {
   assert.deepEqual(bcWildfire.geometryPolicy.quarantinedFeatureIds, ["V10755"]);
   assert.equal(bcWildfire.geometryPolicy.immutablePromotionReady, false);
   assert.equal(plvi.layers[0].invalidGeometryCount, 12);
+  assert.equal(plvi.layers[0].attributeFieldCount, 60);
   assert.equal(profile.sources.every((source) => source.productionEligible === false), true);
 });
 
@@ -32,4 +33,7 @@ test("profile gate rejects schema drift, hidden defects, and production claims",
   const replaceBc = (replacement) => profile.sources.map((source) => source.sourceId === bcWildfire.sourceId ? replacement : source);
   assert.throws(() => validateStagedGeospatialProfile({ ...profile, sources: replaceBc({ ...bcWildfire, geometryPolicy: { ...bcWildfire.geometryPolicy, derivedReleaseFeatureCount: 217 } }) }), /derived-release and quarantine evidence/);
   assert.throws(() => validateStagedGeospatialProfile({ ...profile, sources: replaceBc({ ...bcWildfire, geometryPolicy: { ...bcWildfire.geometryPolicy, ownerAdmissionReady: true } }) }), /derived-release and quarantine evidence/);
+  const replacePlvi = (replacement) => profile.sources.map((source) => source.sourceId === plvi.sourceId ? replacement : source);
+  assert.throws(() => validateStagedGeospatialProfile({ ...profile, sources: replacePlvi({ ...plvi, layers: [{ ...plvi.layers[0], attributeFieldCount: 63 }] }) }), /schema invariant/);
+  assert.throws(() => validateStagedGeospatialProfile({ ...profile, sources: replacePlvi({ ...plvi, layers: [{ ...plvi.layers[0], fieldCount: 63 }] }) }), /attribute-field count semantics/);
 });

@@ -75,6 +75,23 @@ test("rejects canonical ledger and owner-decision drift for every audited row", 
   }
 });
 
+test("rejects PLVI credit, evidence-reference, queue-decision, and readiness drift", () => {
+  const mutations = [
+    (copy) => { copy.ledger.entries.find((row) => row.id === "ab-primary-land-vegetation").rawCredit = 0.75; },
+    (copy) => { copy.decisions.decisions.find((row) => row.id === "ab-primary-land-vegetation").evidenceRefs.pop(); },
+    (copy) => { copy.queue.queueRows.find((row) => row.id === "ab-primary-land-vegetation").primaryActionId = "plvi-owner-scope-decision"; },
+    (copy) => { copy.queue.queueRows.find((row) => row.id === "ab-primary-land-vegetation").exactScopeDecision = "Plausible stale scope decision."; },
+    (copy) => { copy.queue.queueRows.find((row) => row.id === "ab-primary-land-vegetation").exactNextSteps.pop(); },
+    (copy) => { copy.readiness.derivedOutput.attributeFieldCount = 63; },
+    (copy) => { copy.readiness.ownerScope.scopeBoundValidationAuthorized = false; },
+  ];
+  for (const mutate of mutations) {
+    const drift = structuredClone(context);
+    mutate(drift);
+    assert.throws(() => validatePhase1ImmutableDownstreamPreflight(record, drift));
+  }
+});
+
 test("local observation contract rejects checksum, schema, and field-mapping drift", () => {
   const valid = {
     sourceArchiveByteLength: 675544895,

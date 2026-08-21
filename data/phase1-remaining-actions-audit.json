@@ -71,7 +71,7 @@
       },
       {
         "id": "profiles-and-validators",
-        "actionIds": ["national-archived-owner-source-ledger-decisions", "plvi-owner-scope-decision", "archived-remote-transform-ingest-release", "wildfire-transform-ingest-release", "partial-historical-owner-review-and-external-evidence", "partial-boundaries-owner-review-and-external-evidence", "access-blocked-owner-and-external-resolution", "production-admission-and-release-gate"],
+        "actionIds": ["national-archived-owner-source-ledger-decisions", "plvi-transformation-ingestion-decisions", "archived-remote-transform-ingest-release", "wildfire-transform-ingest-release", "partial-historical-owner-review-and-external-evidence", "partial-boundaries-owner-review-and-external-evidence", "access-blocked-owner-and-external-resolution", "production-admission-and-release-gate"],
         "status": "complete-for-existing-evidence-boundaries",
         "ownerIndependent": true,
         "safeNow": true,
@@ -90,7 +90,7 @@
       },
       {
         "id": "local-transformations-and-derived-outputs",
-        "actionIds": ["plvi-owner-scope-decision", "archived-remote-transform-ingest-release", "wildfire-transform-ingest-release", "partial-historical-owner-review-and-external-evidence"],
+        "actionIds": ["plvi-transformation-ingestion-decisions", "archived-remote-transform-ingest-release", "wildfire-transform-ingest-release", "partial-historical-owner-review-and-external-evidence"],
         "status": "existing-runs-validated-no-ingestion",
         "ownerIndependent": true,
         "safeNow": true,
@@ -108,7 +108,7 @@
       },
       {
         "id": "owner-and-external-boundaries",
-        "actionIds": ["national-archived-owner-source-ledger-decisions", "plvi-owner-scope-decision", "partial-historical-owner-review-and-external-evidence", "partial-boundaries-owner-review-and-external-evidence", "access-blocked-owner-and-external-resolution"],
+        "actionIds": ["national-archived-owner-source-ledger-decisions", "plvi-transformation-ingestion-decisions", "partial-historical-owner-review-and-external-evidence", "partial-boundaries-owner-review-and-external-evidence", "access-blocked-owner-and-external-resolution"],
         "status": "no-local-substitute-permitted",
         "ownerIndependent": false,
         "safeNow": false,
@@ -166,7 +166,7 @@
       {
         "id": "plvi-scope-and-ingestion",
         "rows": ["ab-primary-land-vegetation"],
-        "actionIds": ["plvi-owner-scope-decision", "production-admission-and-release-gate"],
+        "actionIds": ["plvi-transformation-ingestion-decisions", "production-admission-and-release-gate"],
         "category": "owner-scope",
         "status": "scope-recorded-schema-preflight-blocked-downstream-decisions-pending",
         "localBoundary": "The exact raw/derived scope, 179087-feature count, 12 repairs, checksum, geometry, duplicate preservation, and no-loss checks are validated. Ingestion preparation remains blocked because two attribute names changed and 23 Integer fields widened to Integer64.",
@@ -463,7 +463,7 @@
       "blockers": ["Source-ledger scope is recorded and raw credit is complete, but no target transformation, ingestion, release, or production decision is recorded."]
     },
     {
-      "id": "plvi-owner-scope-decision",
+      "id": "plvi-transformation-ingestion-decisions",
       "rank": 5,
       "priorityBasis": "Immutable raw and derived evidence and the exact raw/derived scope decision are recorded; the remaining immediate gates are separate transformation admission and ingestion decisions, with no new raw credit possible.",
       "lawfulImmediacy": "owner-input-for-downstream-decision",
@@ -490,9 +490,9 @@
         "evidenceCheckers": ["npm run check:alberta-plvi-immutable-promotion-evidence", "npm run check:alberta-plvi-full-release-readiness", "npm run check:alberta-plvi-geometry-repair", "npm run check:phase1-scope-bound-validation-preparation"]
       },
       "prerequisites": ["The immutable raw ZIP and closed-join derived evidence are reviewed.", "The exact raw/derived scope and all 12 bounded repairs are recorded as scope-only.", "Preserve duplicate POLYGON_ID 41405 and no-deduplication semantics.", "Record transformation admission, ingestion, release, and production decisions separately."],
-      "remainingSteps": ["retain the passed scope-bound validation and ingestion-preparation receipt", "record separate transformation admission and ingestion decisions", "record release and production admission"],
+      "remainingSteps": ["retain the already-approved exact raw/derived scope and immutable evidence", "resolve ordered-schema drift with a corrected checksum-bound output or explicit field-mapping decision", "after the schema preflight passes, record separate transformation admission and ingestion decisions", "record release and production admission"],
       "scoreImpact": {"currentRawCreditDelta": 0, "maximumRawCreditDelta": 0, "maximumFormalPercentagePointDelta": 0, "productionAdmissionDelta": 0},
-      "blockers": ["Scope-only admission is recorded, but transformation admission, ingestion, release, production admission, and eligibility remain false."]
+      "blockers": ["Scope-only admission is recorded, ordered-schema preflight is blocked, and transformation admission, ingestion, release, production admission, and eligibility remain false."]
     },
     {
       "id": "current-wildfire-derived-archive-preflight-and-owner-promotion",
@@ -673,7 +673,7 @@
     "quebec-current-original-archive-preflight-and-owner-promotion",
     "quebec-fourth-archive-preflight-and-owner-approvals",
     "national-archived-owner-source-ledger-decisions",
-    "plvi-owner-scope-decision"
+    "plvi-transformation-ingestion-decisions"
   ],
   "rowCoverage": [
     {"id":"ntems-annual-land-cover","evidenceState":"remote-verified-archived-profiled","immutableRemoteProof":true,"currentRawCredit":1,"maximumRawCreditDeltaToRemote":0,"maximumFormalPercentagePointDeltaToRemote":0,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["archived-remote-transform-ingest-release","production-admission-and-release-gate"]},
@@ -697,7 +697,7 @@
     {"id":"qc-fourth-inventory","evidenceState":"local-verified-profiled","immutableRemoteProof":false,"currentRawCredit":0.75,"maximumRawCreditDeltaToRemote":0.25,"maximumFormalPercentagePointDeltaToRemote":0.2419355,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["quebec-fourth-archive-preflight-and-owner-approvals","production-admission-and-release-gate"]},
     {"id":"ab-avi-crown","evidenceState":"remote-verified-archived-profiled","immutableRemoteProof":true,"currentRawCredit":1,"maximumRawCreditDeltaToRemote":0,"maximumFormalPercentagePointDeltaToRemote":0,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["archived-remote-transform-ingest-release","production-admission-and-release-gate"]},
     {"id":"ab-avi-post-harvest","evidenceState":"remote-verified-archived-profiled","immutableRemoteProof":true,"currentRawCredit":1,"maximumRawCreditDeltaToRemote":0,"maximumFormalPercentagePointDeltaToRemote":0,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["archived-remote-transform-ingest-release","production-admission-and-release-gate"]},
-    {"id":"ab-primary-land-vegetation","evidenceState":"remote-verified-archived-profiled","immutableRemoteProof":true,"currentRawCredit":1,"maximumRawCreditDeltaToRemote":0,"maximumFormalPercentagePointDeltaToRemote":0,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["plvi-owner-scope-decision","production-admission-and-release-gate"]},
+    {"id":"ab-primary-land-vegetation","evidenceState":"remote-verified-archived-profiled","immutableRemoteProof":true,"currentRawCredit":1,"maximumRawCreditDeltaToRemote":0,"maximumFormalPercentagePointDeltaToRemote":0,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["plvi-transformation-ingestion-decisions","production-admission-and-release-gate"]},
     {"id":"on-fri","evidenceState":"access-blocked","immutableRemoteProof":false,"currentRawCredit":0,"maximumRawCreditDeltaToRemote":1,"maximumFormalPercentagePointDeltaToRemote":0.9677419,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["access-blocked-owner-and-external-resolution","production-admission-and-release-gate"]},
     {"id":"on-fri-term-2","evidenceState":"access-blocked","immutableRemoteProof":false,"currentRawCredit":0,"maximumRawCreditDeltaToRemote":1,"maximumFormalPercentagePointDeltaToRemote":0.9677419,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["access-blocked-owner-and-external-resolution","production-admission-and-release-gate"]},
     {"id":"fed-2023-ridings","evidenceState":"local-verified-profiled","immutableRemoteProof":false,"currentRawCredit":0.75,"maximumRawCreditDeltaToRemote":0.25,"maximumFormalPercentagePointDeltaToRemote":0.2419355,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["national-local-archive-preflight-and-owner-promotion","production-admission-and-release-gate"]},

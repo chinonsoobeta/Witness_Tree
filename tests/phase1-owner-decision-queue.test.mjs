@@ -24,6 +24,7 @@ test("consolidates every local/remote Phase 1 row into an owner-decision queue",
   assert.deepEqual(queue.excludedRows["partial-component"], ["cwfis-historical", "provincial-electoral-boundaries"]);
   assert.equal(queue.queueRows.find(({ id }) => id === "ntems-forest-harvest").ownerDecisionStatus.scope, "recorded-source-ledger-only");
   assert.equal(queue.queueRows.find(({ id }) => id === "ab-primary-land-vegetation").ownerDecisionStatus.scope, "recorded-approved-raw-and-derived-scope-only");
+  assert.equal(queue.queueRows.find(({ id }) => id === "ab-primary-land-vegetation").primaryActionId, "plvi-transformation-ingestion-decisions");
 });
 
 test("rejects fabricated approvals, production claims, or omission of a required row", () => {
@@ -40,6 +41,16 @@ test("rejects fabricated approvals, production claims, or omission of a required
   const omission = structuredClone(queue);
   omission.queueRows = omission.queueRows.filter((row) => row.id !== "ntems-canopy-height");
   assert.throws(() => validatePhase1OwnerDecisionQueue(omission, context), /canonical order|ntems-canopy-height/);
+
+  for (const mutate of [
+    (row) => { row.primaryActionId = "plvi-owner-scope-decision"; },
+    (row) => { row.exactScopeDecision = "Decide the already-approved source scope again."; },
+    (row) => { row.exactNextSteps[0] = "Scope approval is pending."; },
+  ]) {
+    const drift = structuredClone(queue);
+    mutate(drift.queueRows.find((row) => row.id === "ab-primary-land-vegetation"));
+    assert.throws(() => validatePhase1OwnerDecisionQueue(drift, context));
+  }
 });
 
 test("keeps the dependency order and current-wildfire archive condition fail-closed", () => {

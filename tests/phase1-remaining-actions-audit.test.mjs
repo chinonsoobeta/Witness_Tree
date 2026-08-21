@@ -26,7 +26,7 @@ test("remaining-action audit covers every non-admitted row and preserves the bas
     "quebec-current-original-archive-preflight-and-owner-promotion",
     "quebec-fourth-archive-preflight-and-owner-approvals",
     "national-archived-owner-source-ledger-decisions",
-    "plvi-owner-scope-decision"
+    "plvi-transformation-ingestion-decisions"
   ]);
   assert.equal(audit.physicalArtifactGroups.find(({ id }) => id === "national-two-artifacts").physicalArtifactCount, 1);
   assert.equal(audit.physicalArtifactGroups.find(({ id }) => id === "quebec-fourth-inventory-56-sheet-product").physicalArtifactCount, 62);

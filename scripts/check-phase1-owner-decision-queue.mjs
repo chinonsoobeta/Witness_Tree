@@ -107,8 +107,15 @@ function validateQueueRows(queue, context) {
   assert.equal(plvi.ownerDecisionStatus.scope, "recorded-approved-raw-and-derived-scope-only");
   assert.equal(plvi.ownerDecisionStatus.transformation, "pending-under-approved-scope");
   assert.equal(plvi.ownerDecisionStatus.ingestion, "pending-under-approved-scope");
-  assert.match(plvi.exactScopeDecision, /179,087-feature closed-join derived artifact with 12 bounded repairs/);
-  assert.match(plvi.exactScopeDecision, /POLYGON_ID 41405/);
+  assert.equal(plvi.decisionBundle, "alberta-plvi-downstream-decisions");
+  assert.equal(plvi.primaryActionId, "plvi-transformation-ingestion-decisions");
+  assert.deepEqual(plvi.exactNextSteps, [
+    "retain the already-approved exact raw/derived scope and immutable evidence; ingestion preflight remains schema-blocked",
+    "resolve the ordered-schema drift with a corrected checksum-bound output or an explicit field-mapping decision",
+    "after the schema preflight passes, separately decide transformation admission and ingestion",
+    "record release and production admission",
+  ]);
+  assert.equal(plvi.exactScopeDecision, "The unchanged raw ZIP and exact 179,087-feature closed-join derived scope with 12 bounded repairs, preserved duplicate POLYGON_ID 41405, and no loss or deduplication are already approved. Decide the schema mapping or corrected output, then decide transformation admission and ingestion separately; release and production admission remain later gates.");
   assert.ok(plvi.evidenceRefs.includes("data/phase1-remote-source-admission-decisions.json"));
   assert.ok(plvi.evidenceRefs.includes("data/phase1-scope-bound-validation-preparation.json"));
 

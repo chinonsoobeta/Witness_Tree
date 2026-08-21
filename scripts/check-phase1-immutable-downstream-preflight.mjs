@@ -84,6 +84,7 @@ export function validatePhase1ImmutableDownstreamPreflight(record, context) {
     const queue = context.queue.queueRows.find(({ id }) => id === expected.id);
     assert.ok(ledger && decision && queue, `${expected.id} must exist in ledger, owner decisions, and owner queue.`);
     assert.equal(ledger.evidenceState, "remote-verified-archived-profiled");
+    assert.equal(ledger.rawCredit, 1);
     assert.equal(ledger.proof.immutableArchive, true);
     assert.equal(ledger.proof.productionAdmission, false);
     assert.equal(ledger.productionEligible, false);
@@ -95,7 +96,21 @@ export function validatePhase1ImmutableDownstreamPreflight(record, context) {
     assert.equal(queue.ownerDecisionStatus.ingestion, expected.id === "ab-primary-land-vegetation" ? "pending-under-approved-scope" : "pending");
   }
   assert.equal(context.decisions.decisions.find(({ id }) => id === "ab-primary-land-vegetation").scopeDecision, "approved-raw-and-derived-scope-only");
+  assert.deepEqual(context.decisions.decisions.find(({ id }) => id === "ab-primary-land-vegetation").evidenceRefs, [
+    "data/alberta-plvi-immutable-promotion-evidence.json",
+    "data/alberta-plvi-full-release-readiness.json",
+    "data/phase1-alberta-transform-ingestion-audit.json",
+  ]);
   assert.equal(context.decisions.decisions.find(({ id }) => id === "ab-avi-crown").evidenceRef, "data/alberta-avi-crown-quarantine-decision.json");
+  const plviQueue = context.queue.queueRows.find(({ id }) => id === "ab-primary-land-vegetation");
+  assert.equal(plviQueue.primaryActionId, "plvi-transformation-ingestion-decisions");
+  assert.equal(plviQueue.exactScopeDecision, "The unchanged raw ZIP and exact 179,087-feature closed-join derived scope with 12 bounded repairs, preserved duplicate POLYGON_ID 41405, and no loss or deduplication are already approved. Decide the schema mapping or corrected output, then decide transformation admission and ingestion separately; release and production admission remain later gates.");
+  assert.deepEqual(plviQueue.exactNextSteps, [
+    "retain the already-approved exact raw/derived scope and immutable evidence; ingestion preflight remains schema-blocked",
+    "resolve the ordered-schema drift with a corrected checksum-bound output or an explicit field-mapping decision",
+    "after the schema preflight passes, separately decide transformation admission and ingestion",
+    "record release and production admission",
+  ]);
 
   const selected = record.selectedBatch;
   assert.deepEqual(selected.rows, ["ab-primary-land-vegetation"]);
@@ -127,6 +142,8 @@ export function validatePhase1ImmutableDownstreamPreflight(record, context) {
   assert.equal(context.readiness.derivedOutput.layer, output.layer);
   assert.equal(context.readiness.derivedOutput.featureCount, output.featureCount);
   assert.equal(context.readiness.derivedOutput.crs, output.crs);
+  assert.equal(context.readiness.derivedOutput.attributeFieldCount, output.attributeFieldCount);
+  assert.equal(context.readiness.ownerScope.scopeBoundValidationAuthorized, true);
 
   const source = selected.sourceSchemaContract;
   assert.deepEqual(source, {

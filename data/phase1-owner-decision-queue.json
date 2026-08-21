@@ -484,8 +484,8 @@
       "id": "ab-primary-land-vegetation",
       "evidenceState": "remote-verified-archived-profiled",
       "rawCredit": 1,
-      "decisionBundle": "alberta-plvi-scope",
-      "primaryActionId": "plvi-owner-scope-decision",
+      "decisionBundle": "alberta-plvi-downstream-decisions",
+      "primaryActionId": "plvi-transformation-ingestion-decisions",
       "ownerDecisionStatus": {
         "sourceLedger": "recorded-approved-source-ledger-only",
         "scope": "recorded-approved-raw-and-derived-scope-only",
@@ -495,11 +495,12 @@
         "productionAdmission": "pending"
       },
       "exactNextSteps": [
-        "scope-bound validation and ingestion preparation are recorded",
-        "separately approve transformation admission and ingestion",
+        "retain the already-approved exact raw/derived scope and immutable evidence; ingestion preflight remains schema-blocked",
+        "resolve the ordered-schema drift with a corrected checksum-bound output or an explicit field-mapping decision",
+        "after the schema preflight passes, separately decide transformation admission and ingestion",
         "record release and production admission"
       ],
-      "exactScopeDecision": "Decide whether to admit the unchanged raw ZIP and separately the 179,087-feature closed-join derived artifact with 12 bounded repairs, preserved duplicate POLYGON_ID 41405, and no feature loss or deduplication.",
+      "exactScopeDecision": "The unchanged raw ZIP and exact 179,087-feature closed-join derived scope with 12 bounded repairs, preserved duplicate POLYGON_ID 41405, and no loss or deduplication are already approved. Decide the schema mapping or corrected output, then decide transformation admission and ingestion separately; release and production admission remain later gates.",
       "evidenceRefs": [
         "data/alberta-plvi-immutable-promotion-evidence.json",
         "data/alberta-plvi-full-release-readiness.json",

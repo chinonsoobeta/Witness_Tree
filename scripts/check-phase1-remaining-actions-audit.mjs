@@ -27,9 +27,9 @@ const EXPECTED_GROUPS = new Map([
 const LOCAL_AUDIT_HEAD = "4466a14dd1462d09692db869523df713a6db2291";
 const LOCAL_AUDIT_CATEGORIES = new Map([
   ["archive-preflight-and-readback", ["national-local-archive-preflight-and-owner-promotion", "quebec-current-original-archive-preflight-and-owner-promotion", "quebec-fourth-archive-preflight-and-owner-approvals", "current-wildfire-derived-archive-preflight-and-owner-promotion", "normal-archive-control-exercise"]],
-  ["profiles-and-validators", ["national-archived-owner-source-ledger-decisions", "plvi-owner-scope-decision", "archived-remote-transform-ingest-release", "wildfire-transform-ingest-release", "partial-historical-owner-review-and-external-evidence", "partial-boundaries-owner-review-and-external-evidence", "access-blocked-owner-and-external-resolution", "production-admission-and-release-gate"]],
-  ["local-transformations-and-derived-outputs", ["plvi-owner-scope-decision", "archived-remote-transform-ingest-release", "wildfire-transform-ingest-release", "partial-historical-owner-review-and-external-evidence"]],
-  ["owner-and-external-boundaries", ["national-archived-owner-source-ledger-decisions", "plvi-owner-scope-decision", "partial-historical-owner-review-and-external-evidence", "partial-boundaries-owner-review-and-external-evidence", "access-blocked-owner-and-external-resolution"]],
+  ["profiles-and-validators", ["national-archived-owner-source-ledger-decisions", "plvi-transformation-ingestion-decisions", "archived-remote-transform-ingest-release", "wildfire-transform-ingest-release", "partial-historical-owner-review-and-external-evidence", "partial-boundaries-owner-review-and-external-evidence", "access-blocked-owner-and-external-resolution", "production-admission-and-release-gate"]],
+  ["local-transformations-and-derived-outputs", ["plvi-transformation-ingestion-decisions", "archived-remote-transform-ingest-release", "wildfire-transform-ingest-release", "partial-historical-owner-review-and-external-evidence"]],
+  ["owner-and-external-boundaries", ["national-archived-owner-source-ledger-decisions", "plvi-transformation-ingestion-decisions", "partial-historical-owner-review-and-external-evidence", "partial-boundaries-owner-review-and-external-evidence", "access-blocked-owner-and-external-resolution"]],
   ["production-admission-boundary", ["archived-remote-transform-ingest-release", "wildfire-transform-ingest-release", "production-admission-and-release-gate"]]
 ]);
 const LOCAL_AUDIT_GAPS = new Set([

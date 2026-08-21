@@ -108,7 +108,7 @@
           "geometryType": "Polygon",
           "featureCount": 179087,
           "crs": "EPSG:3400",
-          "fieldCount": 63,
+          "attributeFieldCount": 60,
           "requiredFields": ["POLYGON_ID", "NSR", "LAND_CLS1", "ECO_PHASE1", "IMAGE_YR", "Shape_Area"],
           "missingGeometryCount": 0,
           "emptyGeometryCount": 0,

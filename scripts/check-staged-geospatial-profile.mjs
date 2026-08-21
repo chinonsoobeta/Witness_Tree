@@ -44,7 +44,7 @@ const EXPECTED = new Map([
     sha256: "017a0a835c680ca1b6c1eb790322a28e1b4c0c64e36924da46d8bb99cb1571d3",
     decision: "blocked-pending-geometry-policy",
     layers: new Map([
-      ["PrimaryLandAndVegetationInventory", ["Polygon", 179087, "EPSG:3400", 63, 12]],
+      ["PrimaryLandAndVegetationInventory", ["Polygon", 179087, "EPSG:3400", 60, 12]],
     ]),
   }],
 ]);
@@ -86,7 +86,9 @@ export function validateStagedGeospatialProfile(profile) {
       if (layerNames.has(layer.name)) throw new Error(`${source.sourceId} layer names must be unique.`);
       layerNames.add(layer.name);
       const [geometryType, featureCount, crs, fieldCount, invalidCount] = invariant;
-      if (layer.geometryType !== geometryType || layer.featureCount !== featureCount || layer.crs !== crs || layer.fieldCount !== fieldCount) throw new Error(`${layer.name} schema invariant changed.`);
+      const observedFieldCount = source.sourceId === "ab-primary-land-vegetation" ? layer.attributeFieldCount : layer.fieldCount;
+      if (source.sourceId === "ab-primary-land-vegetation" && "fieldCount" in layer) throw new Error("PLVI schema must use the exact live attribute-field count semantics.");
+      if (layer.geometryType !== geometryType || layer.featureCount !== featureCount || layer.crs !== crs || observedFieldCount !== fieldCount) throw new Error(`${layer.name} schema invariant changed.`);
       if (layer.invalidGeometryCount !== invalidCount) throw new Error(`${layer.name} geometry evidence changed.`);
       const reasons = layer.invalidGeometryReasons;
       if (!reasons || typeof reasons !== "object" || Array.isArray(reasons)) throw new Error(`${layer.name} geometry reasons are required.`);
