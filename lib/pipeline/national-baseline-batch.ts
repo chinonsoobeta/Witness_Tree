@@ -404,3 +404,26 @@ export function stableJson(value: unknown): string {
 export function sha256(bytes: string | Uint8Array): string {
   return createHash("sha256").update(bytes).digest("hex");
 }
+
+function canonicalValue(value: unknown): string {
+  if (value === null) return "null";
+  if (typeof value === "string" || typeof value === "boolean") return JSON.stringify(value);
+  if (typeof value === "number") {
+    if (!Number.isFinite(value)) throw new Error("Canonical pipeline inputs cannot contain non-finite numbers.");
+    return JSON.stringify(value);
+  }
+  if (Array.isArray(value)) return `[${value.map(canonicalValue).join(",")}]`;
+  if (typeof value === "object") {
+    const record = value as Record<string, unknown>;
+    return `{${Object.keys(record).sort().map((key) => `${JSON.stringify(key)}:${canonicalValue(record[key])}`).join(",")}}`;
+  }
+  throw new Error("Canonical pipeline inputs must contain JSON values only.");
+}
+
+export function canonicalJson(value: unknown): string {
+  return `${canonicalValue(value)}\n`;
+}
+
+export function boundaryCrosswalkSha256(crosswalk: BoundaryCrosswalkInput): string {
+  return sha256(canonicalJson(crosswalk));
+}

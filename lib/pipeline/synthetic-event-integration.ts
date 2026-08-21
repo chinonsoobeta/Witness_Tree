@@ -1,11 +1,11 @@
 import { PLACE_TYPES, type PlaceType } from "../places/types";
 import { MATCHING_PARAMETERS, matchDetectedChange, type MatchingResult, type OfficialRecordCandidate } from "./matching";
 import type { MethodParameterManifest } from "./method-manifest";
-import { geometryForGridCells, sha256, stableJson, validateBatchMethodBinding, type BaselineBatchManifest, type BaselineBatchResult, type BaselineGrid, type BoundaryCrosswalkInput, type DetectedChangeGeometry } from "./national-baseline-batch";
+import { boundaryCrosswalkSha256, canonicalJson, geometryForGridCells, sha256, stableJson, validateBatchMethodBinding, type BaselineBatchManifest, type BaselineBatchResult, type BaselineGrid, type BoundaryCrosswalkInput, type DetectedChangeGeometry } from "./national-baseline-batch";
 import { PRECEDENCE_ORDER, resolvePrecedence, type PrecedenceEvent } from "./precedence";
 
 const SHA256 = /^[a-f0-9]{64}$/;
-const OFFICIAL_KINDS = ["fire", "recorded-harvest"] as const;
+const OFFICIAL_KINDS = ["fire", "recorded-harvest", "insect-disease", "other-intervention"] as const;
 type OfficialKind = (typeof OFFICIAL_KINDS)[number];
 
 export type SyntheticOfficialRecord = Readonly<{
@@ -47,6 +47,7 @@ export type IntegratedEvent = Readonly<{
     dataVersion: string;
     boundaryEdition: string;
     boundaryCrosswalkSha256: string;
+    officialOverlayId: string;
     officialOverlaySha256: string;
     sourcePatchChecksumSha256: string | null;
   }>;
@@ -64,6 +65,15 @@ export type IntegratedAggregate = Readonly<{
   denominator: Readonly<{ kind: "forested-hectares"; hectares: number; referenceYear: number; forestDefinitionVersion: string }>;
   eventHectares: number;
   shareOfFirstYearForest: Readonly<{ kind: "figure"; percent: number }> | Readonly<{ kind: "unknown"; reason: string }>;
+  contributions: readonly Readonly<{
+    hectareYearId: string;
+    year: number;
+    cellIndex: number;
+    cellFraction: number;
+    intersectedHectares: number;
+    winningEventId: string;
+    retainedEventIds: readonly string[];
+  }>[];
   winningEventIds: readonly string[];
   retainedEvidenceIds: readonly string[];
   methodVersion: string;
@@ -76,12 +86,14 @@ export type IntegratedAggregate = Readonly<{
     boundaryId: string;
     boundaryEdition: string;
     boundaryCrosswalkSha256: string;
+    officialOverlayId: string;
     officialOverlaySha256: string;
     methodParameterSha256: string;
     dataVersion: string;
     fromYear: number;
     toYear: number;
     firstYearForestedHectares: number;
+    contributions: IntegratedAggregate["contributions"];
     winningEventIds: readonly string[];
     retainedEvidenceIds: readonly string[];
   }>;
@@ -94,6 +106,7 @@ export type SyntheticIntegrationResult = Readonly<{
   events: readonly IntegratedEvent[];
   aggregates: readonly IntegratedAggregate[];
   precedence: ReturnType<typeof resolvePrecedence>;
+  precedenceEventMap: readonly Readonly<{ precedenceEventId: string; eventId: string }>[];
 }>;
 
 function round(value: number): number {
@@ -134,7 +147,11 @@ function validateExecutableMethod(manifest: BaselineBatchManifest, method: Metho
 }
 
 function validateIntegrationLineage(manifest: BaselineBatchManifest, grid: BaselineGrid, baseline: BaselineBatchResult, crosswalk: BoundaryCrosswalkInput): void {
-  if (stableJson(crosswalk.grid) !== stableJson(grid)) throw new Error("Synthetic integration requires the exact baseline grid and forbids implicit reprojection.");
+  if (canonicalJson(crosswalk.grid) !== canonicalJson(grid)) throw new Error("Synthetic integration requires the exact baseline grid and forbids implicit reprojection.");
+  const observedCrosswalkSha256 = boundaryCrosswalkSha256(crosswalk);
+  if (manifest.inputs.boundaryCrosswalk.sha256 !== observedCrosswalkSha256) {
+    throw new Error(`Synthetic integration boundary crosswalk checksum mismatch: expected ${manifest.inputs.boundaryCrosswalk.sha256}, observed ${observedCrosswalkSha256}.`);
+  }
   const boundaryIds = new Set<string>();
   for (const boundary of crosswalk.boundaries) {
     if (!boundary.boundaryId.trim() || boundaryIds.has(boundary.boundaryId)) throw new Error("Synthetic integration boundaries require unique non-empty identity.");
@@ -158,12 +175,12 @@ function validateIntegrationLineage(manifest: BaselineBatchManifest, grid: Basel
   }
 }
 
-export function officialOverlaySha256(records: readonly SyntheticOfficialRecord[]): string {
-  return sha256(stableJson({ records }));
+export function officialOverlaySha256(overlayId: string, records: readonly SyntheticOfficialRecord[]): string {
+  return sha256(canonicalJson({ schemaVersion: 1, overlayId, productionEligible: false, records }));
 }
 
 function validateOverlay(overlay: SyntheticOfficialOverlay, cellCount: number, firstYear: number, lastYear: number): void {
-  if (overlay.schemaVersion !== 1 || !overlay.overlayId.trim() || overlay.productionEligible !== false || !SHA256.test(overlay.overlaySha256) || overlay.overlaySha256 !== officialOverlaySha256(overlay.records)) {
+  if (overlay.schemaVersion !== 1 || !overlay.overlayId.trim() || overlay.productionEligible !== false || !SHA256.test(overlay.overlaySha256) || overlay.overlaySha256 !== officialOverlaySha256(overlay.overlayId, overlay.records)) {
     throw new Error("Synthetic official overlay requires exact identity, checksum, and non-production status.");
   }
   const ids = new Set<string>();
@@ -172,7 +189,7 @@ function validateOverlay(overlay: SyntheticOfficialOverlay, cellCount: number, f
       throw new Error("Synthetic official records require unique identity, valid year, source version, and unique in-grid cells.");
     }
     if (record.kind === "recorded-harvest" && record.qualifyingRecordedHarvest !== true) throw new Error("Synthetic recorded harvest must be explicitly qualified before precedence.");
-    if (record.kind === "fire" && record.qualifyingRecordedHarvest !== undefined) throw new Error("Fire records cannot carry a harvest qualification.");
+    if (record.kind !== "recorded-harvest" && record.qualifyingRecordedHarvest !== undefined) throw new Error("Only recorded-harvest records can carry a harvest qualification.");
     ids.add(record.id);
   }
 }
@@ -212,13 +229,24 @@ export function integrateSyntheticEvents(args: Readonly<{
   validateIntegrationLineage(manifest, grid, baseline, crosswalk);
   const maskYears = baseline.masks.map((mask) => mask.year);
   if (maskYears.length === 0) throw new Error("Synthetic integration requires baseline masks.");
-  validateOverlay(overlay, grid.width * grid.height, Math.min(...maskYears), Math.max(...maskYears));
+  const orderedMaskYears = [...maskYears].sort((a, b) => a - b);
+  if (new Set(orderedMaskYears).size !== orderedMaskYears.length || orderedMaskYears.some((year, index) => index > 0 && year !== orderedMaskYears[index - 1]! + 1)) throw new Error("Synthetic integration requires continuous unique annual mask coverage.");
+  const firstMaskYear = orderedMaskYears[0]!;
+  const lastMaskYear = orderedMaskYears.at(-1)!;
+  if (fromYear < firstMaskYear || toYear > lastMaskYear) throw new Error(`Synthetic integration range must stay within mask coverage ${firstMaskYear}-${lastMaskYear}.`);
+  validateOverlay(overlay, grid.width * grid.height, firstMaskYear, lastMaskYear);
   const pixelHectares = Math.abs(grid.geotransform[1] * grid.geotransform[5]) / 10_000;
   const officialById = new Map(overlay.records.map((record) => [record.id, record]));
   const matchedChangesByOfficial = new Map<string, string[]>();
   const integratedEvents: IntegratedEvent[] = [];
   const precedenceEvents: PrecedenceEvent[] = [];
+  const sourceEventIdByPrecedenceId = new Map<string, string>();
   const usedOfficialCells = new Set<string>();
+  const addPrecedence = (precedenceEvent: PrecedenceEvent, sourceEventId: string): void => {
+    if (sourceEventIdByPrecedenceId.has(precedenceEvent.id)) throw new Error(`Duplicate precedence evidence identity ${precedenceEvent.id}.`);
+    precedenceEvents.push(precedenceEvent);
+    sourceEventIdByPrecedenceId.set(precedenceEvent.id, sourceEventId);
+  };
 
   const detected = baseline.detectedChange.flatMap((year) => year.events);
   for (const event of detected) {
@@ -238,16 +266,16 @@ export function integrateSyntheticEvents(args: Readonly<{
     integratedEvents.push(Object.freeze({
       status: "example", reviewStatus: "unapproved", productionEligible: false, eventId: event.eventId, kind: "detected-change", evidence: "satellite-observation", year: event.observationYear,
       sourceVersion: manifest.dataVersion, areaHectares: event.areaHectares, geometry: event.geometry, cellIndices: event.cellIndices, boundaryIntersections: boundaryIntersections(crosswalk, event.cellIndices, pixelHectares), matching, matchedDetectedChangeIds: Object.freeze([]),
-      lineage: Object.freeze({ baselineBatchId: manifest.batchId, methodVersion: manifest.methodVersion, methodParameterSha256: manifest.methodParameterSha256, dataVersion: manifest.dataVersion, boundaryEdition: crosswalk.boundaryEdition, boundaryCrosswalkSha256: manifest.inputs.boundaryCrosswalk.sha256, officialOverlaySha256: overlay.overlaySha256, sourcePatchChecksumSha256: event.patchChecksumSha256 }),
+      lineage: Object.freeze({ baselineBatchId: manifest.batchId, methodVersion: manifest.methodVersion, methodParameterSha256: manifest.methodParameterSha256, dataVersion: manifest.dataVersion, boundaryEdition: crosswalk.boundaryEdition, boundaryCrosswalkSha256: manifest.inputs.boundaryCrosswalk.sha256, officialOverlayId: overlay.overlayId, officialOverlaySha256: overlay.overlaySha256, sourcePatchChecksumSha256: event.patchChecksumSha256 }),
     }));
     for (const cellIndex of event.cellIndices) {
       const covering = [...qualifying].map((id) => officialById.get(id)!).filter((record) => record.cellIndices.includes(cellIndex));
       if (covering.length === 0) {
-        precedenceEvents.push({ id: `${event.eventId}:unmatched:${cellIndex}`, hectareYearId: `${event.observationYear}:${cellIndex}`, year: event.observationYear, hectares: pixelHectares, kind: "unmatched-detected-change" });
+        addPrecedence({ id: `${event.eventId}:unmatched:${cellIndex}`, hectareYearId: `${event.observationYear}:${cellIndex}`, year: event.observationYear, hectares: pixelHectares, kind: "unmatched-detected-change" }, event.eventId);
       } else {
         for (const record of covering) {
           usedOfficialCells.add(`${record.id}:${cellIndex}`);
-          precedenceEvents.push({ id: `${record.id}:matched:${event.observationYear}:${cellIndex}`, hectareYearId: `${event.observationYear}:${cellIndex}`, year: event.observationYear, hectares: pixelHectares, kind: record.kind, ...(record.kind === "recorded-harvest" ? { qualifyingRecordedHarvest: true } : {}) });
+          addPrecedence({ id: `${record.id}:matched:${event.observationYear}:${cellIndex}`, hectareYearId: `${event.observationYear}:${cellIndex}`, year: event.observationYear, hectares: pixelHectares, kind: record.kind, ...(record.kind === "recorded-harvest" ? { qualifyingRecordedHarvest: true } : {}) }, record.id);
         }
       }
     }
@@ -258,11 +286,11 @@ export function integrateSyntheticEvents(args: Readonly<{
       status: "example", reviewStatus: "unapproved", productionEligible: false, eventId: record.id, kind: record.kind, evidence: "official-record", year: record.year,
       sourceVersion: record.sourceVersion, areaHectares: round(record.cellIndices.length * pixelHectares), geometry: geometryForGridCells(grid, record.cellIndices), cellIndices: Object.freeze([...record.cellIndices].sort((a, b) => a - b)), boundaryIntersections: boundaryIntersections(crosswalk, record.cellIndices, pixelHectares), matching: null,
       matchedDetectedChangeIds: Object.freeze([...(matchedChangesByOfficial.get(record.id) ?? [])].sort()),
-      lineage: Object.freeze({ baselineBatchId: manifest.batchId, methodVersion: manifest.methodVersion, methodParameterSha256: manifest.methodParameterSha256, dataVersion: manifest.dataVersion, boundaryEdition: crosswalk.boundaryEdition, boundaryCrosswalkSha256: manifest.inputs.boundaryCrosswalk.sha256, officialOverlaySha256: overlay.overlaySha256, sourcePatchChecksumSha256: null }),
+      lineage: Object.freeze({ baselineBatchId: manifest.batchId, methodVersion: manifest.methodVersion, methodParameterSha256: manifest.methodParameterSha256, dataVersion: manifest.dataVersion, boundaryEdition: crosswalk.boundaryEdition, boundaryCrosswalkSha256: manifest.inputs.boundaryCrosswalk.sha256, officialOverlayId: overlay.overlayId, officialOverlaySha256: overlay.overlaySha256, sourcePatchChecksumSha256: null }),
     }));
     for (const cellIndex of record.cellIndices) {
       if (usedOfficialCells.has(`${record.id}:${cellIndex}`)) continue;
-      precedenceEvents.push({ id: `${record.id}:official:${record.year}:${cellIndex}`, hectareYearId: `${record.year}:${cellIndex}`, year: record.year, hectares: pixelHectares, kind: record.kind, ...(record.kind === "recorded-harvest" ? { qualifyingRecordedHarvest: true } : {}) });
+      addPrecedence({ id: `${record.id}:official:${record.year}:${cellIndex}`, hectareYearId: `${record.year}:${cellIndex}`, year: record.year, hectares: pixelHectares, kind: record.kind, ...(record.kind === "recorded-harvest" ? { qualifyingRecordedHarvest: true } : {}) }, record.id);
     }
   }
 
@@ -273,21 +301,35 @@ export function integrateSyntheticEvents(args: Readonly<{
     if (!denominator) throw new Error(`Boundary ${boundary.boundaryId} lacks its first-year forest denominator.`);
     const fractions = new Map(crosswalk.intersections.filter((row) => row.boundaryId === boundary.boundaryId).map((row) => [row.cellIndex, row.cellFraction]));
     const included = precedence.filter((resolution) => resolution.winner && resolution.year >= fromYear && resolution.year <= toYear && fractions.has(Number(resolution.hectareYearId.split(":").at(-1))));
-    const hectares = round(included.reduce((sum, resolution) => sum + pixelHectares * (fractions.get(Number(resolution.hectareYearId.split(":").at(-1))) ?? 0), 0));
-    const winningEventIds = Object.freeze(included.map((resolution) => resolution.winner!.id));
-    const retainedEvidenceIds = Object.freeze(included.flatMap((resolution) => resolution.retainedEvidence.map((event) => event.id)));
+    const contributions = Object.freeze(included.map((resolution) => {
+      const cellIndex = Number(resolution.hectareYearId.split(":").at(-1));
+      return Object.freeze({
+        hectareYearId: resolution.hectareYearId,
+        year: resolution.year,
+        cellIndex,
+        cellFraction: fractions.get(cellIndex)!,
+        intersectedHectares: round(pixelHectares * (fractions.get(cellIndex) ?? 0)),
+        winningEventId: sourceEventIdByPrecedenceId.get(resolution.winner!.id)!,
+        retainedEventIds: Object.freeze([...new Set(resolution.retainedEvidence.map((event) => sourceEventIdByPrecedenceId.get(event.id)!))].sort()),
+      });
+    }));
+    const hectares = round(contributions.reduce((sum, contribution) => sum + contribution.intersectedHectares, 0));
+    const winningEventIds = Object.freeze([...new Set(contributions.map((contribution) => contribution.winningEventId))].sort());
+    const retainedEvidenceIds = Object.freeze([...new Set(contributions.flatMap((contribution) => contribution.retainedEventIds))].sort());
     const lineage = Object.freeze({
       baselineBatchId: manifest.batchId,
       landCoverSha256: manifest.inputs.landCover.sha256,
       boundaryId: boundary.boundaryId,
       boundaryEdition: crosswalk.boundaryEdition,
       boundaryCrosswalkSha256: manifest.inputs.boundaryCrosswalk.sha256,
+      officialOverlayId: overlay.overlayId,
       officialOverlaySha256: overlay.overlaySha256,
       methodParameterSha256: manifest.methodParameterSha256,
       dataVersion: manifest.dataVersion,
       fromYear,
       toYear,
       firstYearForestedHectares: denominator.forestedHectares,
+      contributions,
       winningEventIds,
       retainedEvidenceIds,
     });
@@ -296,8 +338,51 @@ export function integrateSyntheticEvents(args: Readonly<{
       timeRange: Object.freeze({ fromYear, toYear }), denominator: Object.freeze({ kind: "forested-hectares", hectares: denominator.forestedHectares, referenceYear: fromYear, forestDefinitionVersion: manifest.forestDefinitionVersion }),
       eventHectares: hectares,
       shareOfFirstYearForest: denominator.forestedHectares > 0 ? Object.freeze({ kind: "figure", percent: round((hectares / denominator.forestedHectares) * 100) }) : Object.freeze({ kind: "unknown", reason: "The first-year forest denominator is zero; no rate is computed." }),
-      winningEventIds, retainedEvidenceIds, methodVersion: manifest.methodVersion, methodParameterSha256: manifest.methodParameterSha256, dataVersion: manifest.dataVersion, coverageGrade: manifest.coverageGrade, lineage, lineageSha256: sha256(stableJson(lineage)),
+      contributions, winningEventIds, retainedEvidenceIds, methodVersion: manifest.methodVersion, methodParameterSha256: manifest.methodParameterSha256, dataVersion: manifest.dataVersion, coverageGrade: manifest.coverageGrade, lineage, lineageSha256: sha256(stableJson(lineage)),
     }));
   }
-  return Object.freeze({ reviewStatus: "unapproved", productionEligible: false, events: Object.freeze(integratedEvents.sort((a, b) => a.year - b.year || a.eventId.localeCompare(b.eventId))), aggregates: Object.freeze(aggregates), precedence: Object.freeze(precedence) });
+  const precedenceEventMap = Object.freeze([...sourceEventIdByPrecedenceId].sort(([left], [right]) => left.localeCompare(right)).map(([precedenceEventId, eventId]) => Object.freeze({ precedenceEventId, eventId })));
+  const result = Object.freeze({ reviewStatus: "unapproved" as const, productionEligible: false as const, events: Object.freeze(integratedEvents.sort((a, b) => a.year - b.year || a.eventId.localeCompare(b.eventId))), aggregates: Object.freeze(aggregates), precedence: Object.freeze(precedence), precedenceEventMap });
+  validateSyntheticIntegrationResult(result);
+  return result;
+}
+
+export function validateSyntheticIntegrationResult(result: SyntheticIntegrationResult): SyntheticIntegrationResult {
+  if (result.reviewStatus !== "unapproved" || result.productionEligible !== false) throw new Error("Synthetic integration output must remain unapproved and non-production.");
+  const eventIds = new Set(result.events.map((event) => event.eventId));
+  if (eventIds.size !== result.events.length || result.events.some((event) => event.status !== "example" || event.reviewStatus !== "unapproved" || event.productionEligible !== false)) {
+    throw new Error("Synthetic integration output events require unique identity and example-only status.");
+  }
+  const precedenceEvents = result.precedence.flatMap((resolution) => resolution.retainedEvidence);
+  const precedenceEventIds = new Set(precedenceEvents.map((event) => event.id));
+  const precedenceEventMap = new Map(result.precedenceEventMap.map((entry) => [entry.precedenceEventId, entry.eventId]));
+  if (precedenceEventIds.size !== precedenceEvents.length || precedenceEventMap.size !== result.precedenceEventMap.length || precedenceEventMap.size !== precedenceEventIds.size || [...precedenceEventMap].some(([precedenceEventId, eventId]) => !precedenceEventIds.has(precedenceEventId) || !eventIds.has(eventId))) {
+    throw new Error("Synthetic precedence evidence requires a complete deterministic mapping to emitted events.");
+  }
+  for (const aggregate of result.aggregates) {
+    if (aggregate.status !== "example" || aggregate.reviewStatus !== "unapproved" || aggregate.productionEligible !== false || aggregate.winningEventIds.some((id) => !eventIds.has(id)) || aggregate.retainedEvidenceIds.some((id) => !eventIds.has(id))) {
+      throw new Error("Synthetic aggregate contributing event IDs must resolve to emitted example events.");
+    }
+    if (aggregate.lineageSha256 !== sha256(stableJson(aggregate.lineage)) || stableJson(aggregate.winningEventIds) !== stableJson(aggregate.lineage.winningEventIds) || stableJson(aggregate.retainedEvidenceIds) !== stableJson(aggregate.lineage.retainedEvidenceIds)) {
+      throw new Error("Synthetic aggregate lineage checksum and contributing IDs must match its exact lineage.");
+    }
+    const hectareYears = new Set<string>();
+    for (const contribution of aggregate.contributions) {
+      const resolution = result.precedence.find((candidate) => candidate.hectareYearId === contribution.hectareYearId);
+      const expectedRetainedEventIds = resolution ? [...new Set(resolution.retainedEvidence.map((event) => precedenceEventMap.get(event.id)!))].sort() : [];
+      if (!contribution.hectareYearId.trim() || contribution.hectareYearId !== `${contribution.year}:${contribution.cellIndex}` || hectareYears.has(contribution.hectareYearId) || contribution.year < aggregate.timeRange.fromYear || contribution.year > aggregate.timeRange.toYear || !Number.isSafeInteger(contribution.cellIndex) || !Number.isFinite(contribution.cellFraction) || contribution.cellFraction <= 0 || contribution.cellFraction > 1 || contribution.intersectedHectares <= 0 || !Number.isFinite(contribution.intersectedHectares) || !eventIds.has(contribution.winningEventId) || contribution.retainedEventIds.some((id) => !eventIds.has(id)) || !resolution?.winner || precedenceEventMap.get(resolution.winner.id) !== contribution.winningEventId || stableJson(expectedRetainedEventIds) !== stableJson(contribution.retainedEventIds) || round(resolution.winner.hectares * contribution.cellFraction) !== contribution.intersectedHectares) {
+        throw new Error("Synthetic aggregate contributions require unique in-range hectare-years and resolvable emitted events.");
+      }
+      hectareYears.add(contribution.hectareYearId);
+    }
+    if (stableJson(aggregate.contributions) !== stableJson(aggregate.lineage.contributions) || round(aggregate.contributions.reduce((sum, contribution) => sum + contribution.intersectedHectares, 0)) !== aggregate.eventHectares) {
+      throw new Error("Synthetic aggregate hectares must reconstruct exactly from checksum-bound contributions.");
+    }
+    const reconstructedWinningEventIds = [...new Set(aggregate.contributions.map((contribution) => contribution.winningEventId))].sort();
+    const reconstructedRetainedEventIds = [...new Set(aggregate.contributions.flatMap((contribution) => contribution.retainedEventIds))].sort();
+    if (stableJson(reconstructedWinningEventIds) !== stableJson(aggregate.winningEventIds) || stableJson(reconstructedRetainedEventIds) !== stableJson(aggregate.retainedEvidenceIds) || aggregate.lineage.boundaryId !== aggregate.boundaryId || aggregate.lineage.boundaryEdition !== aggregate.boundaryEdition || aggregate.lineage.fromYear !== aggregate.timeRange.fromYear || aggregate.lineage.toYear !== aggregate.timeRange.toYear || aggregate.lineage.firstYearForestedHectares !== aggregate.denominator.hectares || aggregate.lineage.methodParameterSha256 !== aggregate.methodParameterSha256 || aggregate.lineage.dataVersion !== aggregate.dataVersion) {
+      throw new Error("Synthetic aggregate context and contributor sets must reconstruct exactly from its lineage.");
+    }
+  }
+  return result;
 }

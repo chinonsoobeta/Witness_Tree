@@ -8,6 +8,7 @@ import test from "node:test";
 import methodParametersJson from "../data/phase2-method-parameters.json";
 import {
   buildDetectedChangeSpine,
+  boundaryCrosswalkSha256,
   runBaselineBatch,
   sha256,
   stableJson,
@@ -165,7 +166,7 @@ test("runner binds exact inputs, writes immutable deterministic outputs, and rec
       ...manifest,
       inputs: {
         landCover: { path: "land-cover.json", sha256: sha256(landCoverBytes) },
-        boundaryCrosswalk: { path: "boundary-crosswalk.json", sha256: sha256(crosswalkBytes) },
+        boundaryCrosswalk: { path: "boundary-crosswalk.json", sha256: boundaryCrosswalkSha256(crosswalk) },
         methodParameters: { path: "method-parameters.json", sha256: sha256(methodBytes) },
       },
     };
