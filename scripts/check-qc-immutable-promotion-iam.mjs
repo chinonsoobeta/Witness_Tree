@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 
 const read = (path) => JSON.parse(readFileSync(new URL(`../${path}`, import.meta.url), "utf8"));
@@ -9,10 +10,19 @@ const BUCKET_ARN = "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/";
 const ROLE_ARN = `arn:aws:iam::${ACCOUNT}:role/WitnessTreeQcArchivePromotionUploader`;
 const OPERATOR_ARN = `arn:aws:iam::${ACCOUNT}:user/WitnessTreeArchiveOperator`;
 const array = (value) => Array.isArray(value) ? value : [value];
+const canonical = (value) => {
+  if (Array.isArray(value)) return `[${value.map(canonical).join(",")}]`;
+  if (value && typeof value === "object") return `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${canonical(value[key])}`).join(",")}}`;
+  return JSON.stringify(value);
+};
+export const canonicalPolicySha256 = (value) => {
+  const document = typeof value === "string" ? JSON.parse(value) : value;
+  return createHash("sha256").update(`${canonical(document)}\n`).digest("hex");
+};
 
 export function validateQcImmutablePromotionIam(desired = DESIRED, plan = PLAN) {
   assert.equal(desired.schemaVersion, "witness-tree/qc-immutable-promotion-iam-desired-state/1");
-  assert.equal(desired.status, "approved-pending-privileged-provisioning");
+  assert.equal(desired.status, "applied-and-exactly-verified-storage-not-run");
   assert.equal(desired.account, ACCOUNT); assert.equal(desired.region, "ca-central-1");
   assert.equal(desired.roleName, plan.mfaGatedExecution.proposedRole);
   assert.equal(desired.operatorUser, "WitnessTreeArchiveOperator");
@@ -38,14 +48,28 @@ export function validateQcImmutablePromotionIam(desired = DESIRED, plan = PLAN) 
       exactPayloadDeleteObject:"implicitDeny",
       exactPayloadIamGetRole:"implicitDeny",
       otherObjectPutAndReadback:"implicitDeny"
-    }
+    },
+    localArtifactPreflight:"passed-no-totp-no-aws"
   });
-  assert.deepEqual(desired.liveAudit, {roleExists:false,dedicatedOperatorPolicyExists:false,iamMutationPerformed:false,s3MutationPerformed:false});
-  assert.deepEqual(desired.claims, {iamReady:false,archiveComplete:false,productionAdmission:false,productionEligible:false});
+  assert.deepEqual(desired.appliedAttestation, {
+    roleExists:true,dedicatedOperatorPolicyExists:true,dedicatedOperatorPolicyAttachedOnlyTo:"WitnessTreeArchiveOperator",
+    roleInlinePolicies:["WitnessTreeQcArchiveExactObjects"],roleAttachedPolicies:[],
+    trustPolicyCanonicalSha256:"d500f965cea406ab82e55f3985eee035ce07649977d474a399bd6b9fd42960da",
+    rolePolicyCanonicalSha256:"a06181bb6034076dd0bb79731a1141e597293a7ad3e084cda5bd92995e7f7173",
+    operatorPolicyCanonicalSha256:"81947e11bcf89ae0679afd220ff6ab78e5bf49ddb8245fba0cb0587001791375",
+    operatorInlinePoliciesNormalizedEqualPrestate:true,operatorAttachedPoliciesNormalizedEqualPrestatePlusDedicatedPolicy:true,
+    initialHarnessExit:{occurredAfterAuthorizedAttachment:true,cause:"raw-pretty-versus-compact-json-comparison",policyMismatch:false,normalizedReadbackPassed:true},
+    containsPrivateIdentifiers:false
+  });
+  assert.equal(canonicalPolicySha256(desired.trustPolicy), desired.appliedAttestation.trustPolicyCanonicalSha256);
+  assert.equal(canonicalPolicySha256(desired.rolePolicy), desired.appliedAttestation.rolePolicyCanonicalSha256);
+  assert.equal(canonicalPolicySha256(desired.operatorPolicy), desired.appliedAttestation.operatorPolicyCanonicalSha256);
+  assert.deepEqual(desired.liveAudit, {roleExists:true,dedicatedOperatorPolicyExists:true,iamMutationPerformed:true,s3MutationPerformed:false});
+  assert.deepEqual(desired.claims, {iamReady:true,archiveComplete:false,productionAdmission:false,productionEligible:false});
   return { roleStatements: desired.rolePolicy.Statement.length, exactObjectKeys: allKeys.length, payloadKeys: payloadKeys.length };
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   validateQcImmutablePromotionIam();
-  console.log("Québec current/original IAM desired state passed; exact provisioning is approved but has not occurred.");
+  console.log("Québec current/original IAM is applied and exactly verified; no storage operation or archive claim exists.");
 }

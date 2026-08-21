@@ -17,7 +17,7 @@ export function validate(record = read("data/phase1-phase3-owner-approvals-2026-
   for (const approval of record.phase1.archiveApprovals) assert.match(approval.status, /^approved-owner-local-/);
   assert.equal(record.phase1.archiveApprovals[0].sourceScopeDecision, "accept");
   assert.deepEqual(record.phase1.archiveApprovals[1].sourceScopeDecision, {"qc-current-ecoforest":"accept","qc-original-current-inventory":"accept"});
-  assert.deepEqual(record.phase1.archiveApprovals[1].iamAudit, {roleExists:false,dedicatedOperatorPolicyExists:false,getObjectVersionExplicitlyApproved:true,accessAnalyzerFindings:0,iamMutationPerformed:false,s3MutationPerformed:false});
+  assert.deepEqual(record.phase1.archiveApprovals[1].iamAudit, {roleExists:true,dedicatedOperatorPolicyExists:true,getObjectVersionExplicitlyApproved:true,accessAnalyzerFindings:0,exactReadbackHashesPassed:true,normalizedOperatorPrestatePreserved:true,iamMutationPerformed:true,s3MutationPerformed:false});
   assert.deepEqual(record.phase1.archiveApprovals[2].approvedControls, ["exact-artifact-set","IAM","MFA-session","irreversible-COMPLIANCE-retention"]);
   assert.deepEqual(record.phase1.archiveApprovals[3].iamDesiredState, {staticValidation:"passed",liveDryRun:"passed",change:"already-present",baseAndDesiredPolicySha256:"1b2f75726e3d3e97107e8cceca2d491048592e8cf571c24e419979c480cb65e3",accessAnalyzerFindings:0,exactAllowSimulations:6,negativeImplicitDenySimulations:2,mutationPerformed:false,noObjectVersionIdsRecorded:true});
   validateApproval(wildfire);
@@ -33,7 +33,8 @@ export function validate(record = read("data/phase1-phase3-owner-approvals-2026-
   assert.equal(record.phase3Governance.productName.approvedWorkingName, "Witness Tree");
   assert.equal(record.phase3Governance.productName.mistikAuthorized, false);
   assert.deepEqual(record.phase3Governance.phase3FixedMaturity, {before:47,after:47,deltaPercentagePoints:0,reason:"Owner governance approval does not supply real Phase 2 data, external review, or human checkpoint evidence."});
-  assert.deepEqual(record.claims, {remoteMutationPerformed:false,iamMutationPerformed:false,irreversibleRetentionApplied:false,outreachSentByThisRecord:false,phase2Authorized:false,productionAdmission:false,productionEligible:false,phase1RawCreditDelta:0,phase1FormalPercentagePointDelta:0});
+  assert.equal(Object.hasOwn(record.claims, "remoteMutationPerformed"), false, "ambiguous remote-mutation claim is prohibited");
+  assert.deepEqual(record.claims, {storageMutationPerformed:false,s3MutationPerformed:false,iamMutationPerformed:true,irreversibleRetentionApplied:false,outreachSentByThisRecord:false,phase2Authorized:false,productionAdmission:false,productionEligible:false,phase1RawCreditDelta:0,phase1FormalPercentagePointDelta:0});
   return record;
 }
 

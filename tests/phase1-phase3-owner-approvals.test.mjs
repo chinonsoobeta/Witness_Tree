@@ -8,9 +8,11 @@ test("records exact owner approvals without evidence or production overclaim", (
 });
 
 test("rejects fabricated execution, outreach, Phase 2, or production claims", () => {
-  for (const field of ["remoteMutationPerformed","iamMutationPerformed","irreversibleRetentionApplied","outreachSentByThisRecord","phase2Authorized","productionAdmission","productionEligible"]) {
+  for (const field of ["storageMutationPerformed","s3MutationPerformed","irreversibleRetentionApplied","outreachSentByThisRecord","phase2Authorized","productionAdmission","productionEligible"]) {
     assert.throws(() => validate({...structuredClone(record),claims:{...record.claims,[field]:true}}));
   }
+  assert.throws(() => validate({...structuredClone(record),claims:{...record.claims,iamMutationPerformed:false}}));
+  assert.throws(() => validate({...structuredClone(record),claims:{...record.claims,remoteMutationPerformed:false}}));
 });
 
 test("rejects fabricated Mistik authorization or a changed accountable owner", () => {
