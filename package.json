@@ -62,6 +62,7 @@
     "check:phase1-nrcan-cover-processing-gate": "node scripts/check-phase1-nrcan-cover-processing-gate.mjs",
     "check:phase1-canopy-completion-recovery": "node --test tests/phase1-canopy-completion-recovery.test.mjs",
     "check:wildfire-derived-readback": "node --test tests/wildfire-derived-readback.test.mjs",
+    "check:wildfire-derived-readback-iam": "node scripts/check-wildfire-derived-readback-iam.mjs",
     "prepare:phase1-local-profiled-immutable-promotion": "tsx scripts/prepare-phase1-local-profiled-immutable-promotion.mjs",
     "check:current-wildfire-immutable-promotion-preparation": "node scripts/prepare-current-wildfire-immutable-promotion.mjs",
     "check:current-wildfire-owner-admission": "node scripts/check-current-wildfire-owner-admission.mjs",
