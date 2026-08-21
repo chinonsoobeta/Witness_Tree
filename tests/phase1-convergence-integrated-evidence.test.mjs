@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import test from "node:test";
 
@@ -8,6 +9,11 @@ const canonicalSummaryFiles = ["data", "docs"].flatMap((root) =>
   readdirSync(new URL(`../${root}`, import.meta.url), { recursive: true })
     .map((file) => `${root}/${file}`)
     .filter((file) => /\.(json|md)$/.test(file)),
+);
+const currentFacingCodeFiles = ["app", "components", "lib", "scripts"].flatMap((root) =>
+  readdirSync(new URL(`../${root}`, import.meta.url), { recursive: true })
+    .map((file) => `${root}/${file}`)
+    .filter((file) => /\.(mjs|js|ts|tsx)$/.test(file)),
 );
 
 test("integrated Phase 1 evidence remains additive and fail-closed across convergence records", () => {
@@ -106,7 +112,7 @@ test("canonical wildfire summaries reject superseded readback and score claims",
 
 test("all canonical summaries label superseded Phase 1 totals as historical", () => {
   const stale = /14\.75\/31|15\.00\/31|39\.516129%|(?:11\/31.{0,50}immutable|immutable.{0,50}11\/31)|10 immutable rows|owner gate is 4\/6/i;
-  for (const file of canonicalSummaryFiles) {
+  for (const file of [...canonicalSummaryFiles, ...currentFacingCodeFiles]) {
     const lines = readFileSync(new URL(`../${file}`, import.meta.url), "utf8").split("\n");
     for (let index = 0; index < lines.length; index += 1) {
       if (!stale.test(lines[index])) continue;
@@ -114,6 +120,15 @@ test("all canonical summaries label superseded Phase 1 totals as historical", ()
       assert.match(context, /\b(historical|older|prior|preceding|at the time)\b/i, `${file}:${index + 1} must label superseded totals as historical`);
     }
   }
+});
+
+test("partial-ledger outreach checker reports only the current canonical totals", () => {
+  const output = execFileSync(process.execPath, [new URL("../scripts/check-partial-ledger-owner-review-outreach.mjs", import.meta.url).pathname], { encoding: "utf8" });
+  assert.doesNotMatch(output, /remains 14\.75\/31/i);
+  assert.match(output, /14\.25\/31 raw credits/);
+  assert.match(output, /38\.7903226% formal evidence tracking/);
+  assert.match(output, /7\/31 immutable/);
+  assert.match(output, /0\/31 production admitted or eligible/);
 });
 
 test("remaining implementation gaps cover the exact production ledger", () => {
