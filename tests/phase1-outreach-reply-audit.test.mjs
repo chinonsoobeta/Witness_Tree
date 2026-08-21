@@ -9,9 +9,14 @@ const matrix = read("phase1-access-blocker-resolution");
 const pkg = read("phase1-permission-outreach-package");
 const routeAudit = read("phase1-bec-custom-download-route-audit");
 
-test("reply audit maps seven substantive replies to eight blocked rows and no partial rows", () => {
+test("reply audit maps seven substantive replies and records the BEC ticket receipt without resolution", () => {
   assert.equal(validatePhase1OutreachReplyAudit(audit, matrix, pkg, routeAudit), audit);
   assert.equal(audit.counts.substantiveReplyRecords, 7);
+  assert.equal(audit.counts.automaticOrAcknowledgementOnlyRecords, 4);
+  assert.equal(audit.automaticOrAcknowledgementOnly.length, 4);
+  const becTicketReceipt = audit.automaticOrAcknowledgementOnly.find(({ outreachMessageId }) => outreachMessageId === "bc-bec-v13-1-snapshot");
+  assert.equal(becTicketReceipt?.status, "service-portal-ticket-received-and-queued");
+  assert.deepEqual(becTicketReceipt?.canonicalRowIds, ["bc-old-growth-bec"]);
   assert.equal(audit.counts.accessBlockedRowsWithSubstantiveReply, 8);
   assert.equal(audit.rows.filter(({ kind, replyRecordIds }) => kind === "access-blocked" && replyRecordIds.length > 0).length, 8);
   assert.equal(audit.rows.filter(({ kind, replyRecordIds }) => kind === "partial-component" && replyRecordIds.length > 0).length, 0);

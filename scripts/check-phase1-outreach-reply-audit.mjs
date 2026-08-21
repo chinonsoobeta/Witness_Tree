@@ -46,14 +46,22 @@ export function validatePhase1OutreachReplyAudit(audit, matrix, pkg, routeAudit)
     accessBlockedRowsWithoutSubstantiveReply: 5,
     partialRowsWithSubstantiveReply: 0,
     partialRowsWithoutSubstantiveReply: 2,
-    automaticOrAcknowledgementOnlyRecords: 3,
+    automaticOrAcknowledgementOnlyRecords: 4,
     ownerFollowUpsObserved: 3,
     rawEvidenceCreditImpact: 0,
     productionEligibilityImpact: 0
   });
   assert.equal(audit.substantiveReplies.length, 7);
-  assert.equal(audit.automaticOrAcknowledgementOnly.length, 3);
+  assert.equal(audit.automaticOrAcknowledgementOnly.length, 4);
   assert.equal(audit.ownerFollowUpsObserved.length, 3);
+  const becTicketReceipt = audit.automaticOrAcknowledgementOnly.find(({ outreachMessageId, status }) => outreachMessageId === "bc-bec-v13-1-snapshot" && status === "service-portal-ticket-received-and-queued");
+  assert.deepEqual(becTicketReceipt?.canonicalRowIds, ["bc-old-growth-bec"]);
+  assert.equal(becTicketReceipt?.receivedAt, "2026-08-19T17:27:33Z");
+  assert.match(becTicketReceipt?.summary ?? "", /received and added to the queue/i);
+  const becPortalReply = audit.substantiveReplies.find(({ id }) => id === "reply-bc-bec-service-portal");
+  assert.doesNotMatch(becPortalReply?.summary ?? "", /no evidence that a service-portal form was submitted/i);
+  const becPortalFollowUp = audit.ownerFollowUpsObserved.find(({ outreachMessageId }) => outreachMessageId === "bc-bec-v13-1-snapshot");
+  assert.doesNotMatch(becPortalFollowUp?.nonClaim ?? "", /no service-portal submission/i);
   assert.equal(audit.rows.length, 15);
   const matrixRows = matrix?.rankedRows?.map(({ id }) => id) ?? [];
   assert.deepEqual(matrixRows, ACCESS_ROWS);

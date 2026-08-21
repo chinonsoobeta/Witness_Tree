@@ -13,7 +13,7 @@
     "accessBlockedRowsWithoutSubstantiveReply": 5,
     "partialRowsWithSubstantiveReply": 0,
     "partialRowsWithoutSubstantiveReply": 2,
-    "automaticOrAcknowledgementOnlyRecords": 3,
+    "automaticOrAcknowledgementOnlyRecords": 4,
     "ownerFollowUpsObserved": 3,
     "rawEvidenceCreditImpact": 0,
     "productionEligibilityImpact": 0
@@ -49,7 +49,7 @@
       "sender": "Sahej.Mundi@gov.bc.ca",
       "subject": "RE: Request for complete immutable BEC Map v13.1 export or snapshot semantics",
       "status": "service-portal-route-no-snapshot",
-      "summary": "BC Data Maps encouraged clients to submit a service-portal ticket. It supplied no complete BEC v13.1 export, transaction-consistent snapshot method, checksum, or reuse decision. A later Sent message stated an intention to submit the request; this audit found no evidence that a service-portal form was submitted.",
+      "summary": "BC Data Maps encouraged clients to submit a service-portal ticket. A Data Systems & Services acknowledgement later confirmed that DATABC-7005 was received and added to the queue. Neither message supplied a complete BEC v13.1 export, transaction-consistent snapshot method, checksum, or reuse decision.",
       "remainingBlockers": ["No complete coherent BEC v13.1 artifact or snapshot semantics", "No edition/effective date, full count, schema, CRS or checksum", "No transaction-safe acquisition path", "The TAP component still needs an implemented-deferral source and written Access Only permission"]
     },
     {
@@ -119,6 +119,15 @@
       "sender": "infopubs@sac-isc.gc.ca",
       "subject": "Automatic reply: Request for suitable treaty-boundary source, reuse terms, and appropriate engagement route / Demande de source appropriée, de conditions de réutilisation et de voie de dialogue",
       "status": "automatic-reply-only"
+    },
+    {
+      "outreachMessageId": "bc-bec-v13-1-snapshot",
+      "canonicalRowIds": ["bc-old-growth-bec"],
+      "receivedAt": "2026-08-19T17:27:33Z",
+      "sender": "Data Systems & Services <jira@dpdd.atlassian.net>",
+      "subject": "DATABC-7005 BEC Map v13.1 — request for complete coherent export and reuse terms",
+      "status": "service-portal-ticket-received-and-queued",
+      "summary": "The automated service-portal notice confirmed that the BEC request was received and added to the queue. This proves portal submission and queueing only; it supplied no complete BEC artifact, snapshot semantics, checksum, terms decision or permission."
     }
   ],
   "ownerFollowUpsObserved": [
@@ -127,8 +136,8 @@
       "sentAt": "2026-08-19T17:15:28Z",
       "recipient": "Sahej.Mundi@gov.bc.ca",
       "subject": "RE: Request for complete immutable BEC Map v13.1 export or snapshot semantics",
-      "status": "sent-stated-intent-to-use-service-portal",
-      "nonClaim": "No service-portal submission or new source evidence was observed."
+      "status": "sent-service-portal-ticket-received-and-queued",
+      "nonClaim": "The ticket-created acknowledgement confirms service-portal submission and queueing; it does not supply a complete source artifact, snapshot semantics, permission or acquisition."
     },
     {
       "outreachMessageId": "bc-consolidated-cutblocks-existing-request",
