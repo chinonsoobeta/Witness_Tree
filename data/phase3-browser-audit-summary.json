@@ -1,0 +1,571 @@
+{
+  "schemaVersion": "witness-tree/phase3-browser-audit/1",
+  "status": "example",
+  "reviewStatus": "unapproved",
+  "productionEligible": false,
+  "browser": {
+    "product": "Chrome/151.0.7922.109",
+    "protocolVersion": "1.3"
+  },
+  "axeVersion": "4.11.4",
+  "profile": {
+    "name": "declared-simulated-4g",
+    "latencyMs": 150,
+    "downloadBitsPerSecond": 1600000,
+    "uploadBitsPerSecond": 750000,
+    "cpuThrottling": false
+  },
+  "thresholds": {
+    "lcpMs": 2500,
+    "axeViolations": 0,
+    "horizontalOverflowPixels": 0
+  },
+  "routes": [
+    {
+      "template": "place",
+      "locale": "en",
+      "route": "/en/places/bc-province?view=table",
+      "lcpMs": 2176,
+      "lcpElement": "p",
+      "axe": {
+        "version": "4.11.4",
+        "violations": []
+      },
+      "keyboard": {
+        "firstTab": "skip-link",
+        "skipTarget": "main",
+        "sampledTabStops": 10,
+        "unnamed": 0
+      },
+      "landmarks": {
+        "documentLang": "en",
+        "contentLang": "en",
+        "main": 1,
+        "banner": true,
+        "contentinfo": true,
+        "navigations": 2,
+        "headings": 1,
+        "interactive": 42,
+        "unnamed": 0
+      },
+      "forcedColors": {
+        "active": true,
+        "blocked": 0
+      },
+      "reflow": {
+        "viewportWidth": 640,
+        "visualScale": 2,
+        "overflowPixels": 0,
+        "offenders": []
+      }
+    },
+    {
+      "template": "place",
+      "locale": "fr",
+      "route": "/fr/lieux/bc-province?view=table",
+      "lcpMs": 1928,
+      "lcpElement": "p",
+      "axe": {
+        "version": "4.11.4",
+        "violations": []
+      },
+      "keyboard": {
+        "firstTab": "skip-link",
+        "skipTarget": "main",
+        "sampledTabStops": 10,
+        "unnamed": 0
+      },
+      "landmarks": {
+        "documentLang": "en",
+        "contentLang": "fr",
+        "main": 1,
+        "banner": true,
+        "contentinfo": true,
+        "navigations": 2,
+        "headings": 1,
+        "interactive": 42,
+        "unnamed": 0
+      },
+      "forcedColors": {
+        "active": true,
+        "blocked": 0
+      },
+      "reflow": {
+        "viewportWidth": 640,
+        "visualScale": 2,
+        "overflowPixels": 0,
+        "offenders": []
+      }
+    },
+    {
+      "template": "location",
+      "locale": "en",
+      "route": "/en/location/lat-p48d000000-lon-n124d000000",
+      "lcpMs": 2148,
+      "lcpElement": "section",
+      "axe": {
+        "version": "4.11.4",
+        "violations": []
+      },
+      "keyboard": {
+        "firstTab": "skip-link",
+        "skipTarget": "main",
+        "sampledTabStops": 10,
+        "unnamed": 0
+      },
+      "landmarks": {
+        "documentLang": "en",
+        "contentLang": "en",
+        "main": 1,
+        "banner": true,
+        "contentinfo": true,
+        "navigations": 2,
+        "headings": 1,
+        "interactive": 41,
+        "unnamed": 0
+      },
+      "forcedColors": {
+        "active": true,
+        "blocked": 0
+      },
+      "reflow": {
+        "viewportWidth": 640,
+        "visualScale": 2,
+        "overflowPixels": 0,
+        "offenders": []
+      }
+    },
+    {
+      "template": "location",
+      "locale": "fr",
+      "route": "/fr/emplacement/lat-p48d000000-lon-n124d000000",
+      "lcpMs": 2152,
+      "lcpElement": "section",
+      "axe": {
+        "version": "4.11.4",
+        "violations": []
+      },
+      "keyboard": {
+        "firstTab": "skip-link",
+        "skipTarget": "main",
+        "sampledTabStops": 10,
+        "unnamed": 0
+      },
+      "landmarks": {
+        "documentLang": "en",
+        "contentLang": "fr",
+        "main": 1,
+        "banner": true,
+        "contentinfo": true,
+        "navigations": 2,
+        "headings": 1,
+        "interactive": 41,
+        "unnamed": 0
+      },
+      "forcedColors": {
+        "active": true,
+        "blocked": 0
+      },
+      "reflow": {
+        "viewportWidth": 640,
+        "visualScale": 2,
+        "overflowPixels": 0,
+        "offenders": []
+      }
+    },
+    {
+      "template": "methods",
+      "locale": "en",
+      "route": "/en/methods",
+      "lcpMs": 2132,
+      "lcpElement": "p",
+      "axe": {
+        "version": "4.11.4",
+        "violations": []
+      },
+      "keyboard": {
+        "firstTab": "skip-link",
+        "skipTarget": "main",
+        "sampledTabStops": 10,
+        "unnamed": 0
+      },
+      "landmarks": {
+        "documentLang": "en",
+        "contentLang": "en",
+        "main": 1,
+        "banner": true,
+        "contentinfo": true,
+        "navigations": 2,
+        "headings": 1,
+        "interactive": 19,
+        "unnamed": 0
+      },
+      "forcedColors": {
+        "active": true,
+        "blocked": 0
+      },
+      "reflow": {
+        "viewportWidth": 640,
+        "visualScale": 2,
+        "overflowPixels": 0,
+        "offenders": []
+      }
+    },
+    {
+      "template": "methods",
+      "locale": "fr",
+      "route": "/fr/methodes",
+      "lcpMs": 2152,
+      "lcpElement": "p",
+      "axe": {
+        "version": "4.11.4",
+        "violations": []
+      },
+      "keyboard": {
+        "firstTab": "skip-link",
+        "skipTarget": "main",
+        "sampledTabStops": 10,
+        "unnamed": 0
+      },
+      "landmarks": {
+        "documentLang": "en",
+        "contentLang": "fr",
+        "main": 1,
+        "banner": true,
+        "contentinfo": true,
+        "navigations": 2,
+        "headings": 1,
+        "interactive": 19,
+        "unnamed": 0
+      },
+      "forcedColors": {
+        "active": true,
+        "blocked": 0
+      },
+      "reflow": {
+        "viewportWidth": 640,
+        "visualScale": 2,
+        "overflowPixels": 0,
+        "offenders": []
+      }
+    },
+    {
+      "template": "data",
+      "locale": "en",
+      "route": "/en/data",
+      "lcpMs": 2176,
+      "lcpElement": "p",
+      "axe": {
+        "version": "4.11.4",
+        "violations": []
+      },
+      "keyboard": {
+        "firstTab": "skip-link",
+        "skipTarget": "main",
+        "sampledTabStops": 10,
+        "unnamed": 0
+      },
+      "landmarks": {
+        "documentLang": "en",
+        "contentLang": "en",
+        "main": 1,
+        "banner": true,
+        "contentinfo": true,
+        "navigations": 2,
+        "headings": 1,
+        "interactive": 23,
+        "unnamed": 0
+      },
+      "forcedColors": {
+        "active": true,
+        "blocked": 0
+      },
+      "reflow": {
+        "viewportWidth": 640,
+        "visualScale": 2,
+        "overflowPixels": 0,
+        "offenders": []
+      }
+    },
+    {
+      "template": "data",
+      "locale": "fr",
+      "route": "/fr/donnees",
+      "lcpMs": 2148,
+      "lcpElement": "p",
+      "axe": {
+        "version": "4.11.4",
+        "violations": []
+      },
+      "keyboard": {
+        "firstTab": "skip-link",
+        "skipTarget": "main",
+        "sampledTabStops": 10,
+        "unnamed": 0
+      },
+      "landmarks": {
+        "documentLang": "en",
+        "contentLang": "fr",
+        "main": 1,
+        "banner": true,
+        "contentinfo": true,
+        "navigations": 2,
+        "headings": 1,
+        "interactive": 23,
+        "unnamed": 0
+      },
+      "forcedColors": {
+        "active": true,
+        "blocked": 0
+      },
+      "reflow": {
+        "viewportWidth": 640,
+        "visualScale": 2,
+        "overflowPixels": 0,
+        "offenders": []
+      }
+    },
+    {
+      "template": "glossary",
+      "locale": "en",
+      "route": "/en/glossary",
+      "lcpMs": 2124,
+      "lcpElement": "p",
+      "axe": {
+        "version": "4.11.4",
+        "violations": []
+      },
+      "keyboard": {
+        "firstTab": "skip-link",
+        "skipTarget": "main",
+        "sampledTabStops": 10,
+        "unnamed": 0
+      },
+      "landmarks": {
+        "documentLang": "en",
+        "contentLang": "en",
+        "main": 1,
+        "banner": true,
+        "contentinfo": true,
+        "navigations": 2,
+        "headings": 1,
+        "interactive": 19,
+        "unnamed": 0
+      },
+      "forcedColors": {
+        "active": true,
+        "blocked": 0
+      },
+      "reflow": {
+        "viewportWidth": 640,
+        "visualScale": 2,
+        "overflowPixels": 0,
+        "offenders": []
+      }
+    },
+    {
+      "template": "glossary",
+      "locale": "fr",
+      "route": "/fr/glossaire",
+      "lcpMs": 2132,
+      "lcpElement": "p",
+      "axe": {
+        "version": "4.11.4",
+        "violations": []
+      },
+      "keyboard": {
+        "firstTab": "skip-link",
+        "skipTarget": "main",
+        "sampledTabStops": 10,
+        "unnamed": 0
+      },
+      "landmarks": {
+        "documentLang": "en",
+        "contentLang": "fr",
+        "main": 1,
+        "banner": true,
+        "contentinfo": true,
+        "navigations": 2,
+        "headings": 1,
+        "interactive": 19,
+        "unnamed": 0
+      },
+      "forcedColors": {
+        "active": true,
+        "blocked": 0
+      },
+      "reflow": {
+        "viewportWidth": 640,
+        "visualScale": 2,
+        "overflowPixels": 0,
+        "offenders": []
+      }
+    },
+    {
+      "template": "corrections",
+      "locale": "en",
+      "route": "/en/corrections",
+      "lcpMs": 2004,
+      "lcpElement": "p",
+      "axe": {
+        "version": "4.11.4",
+        "violations": []
+      },
+      "keyboard": {
+        "firstTab": "skip-link",
+        "skipTarget": "main",
+        "sampledTabStops": 10,
+        "unnamed": 0
+      },
+      "landmarks": {
+        "documentLang": "en",
+        "contentLang": "en",
+        "main": 1,
+        "banner": true,
+        "contentinfo": true,
+        "navigations": 2,
+        "headings": 1,
+        "interactive": 19,
+        "unnamed": 0
+      },
+      "forcedColors": {
+        "active": true,
+        "blocked": 0
+      },
+      "reflow": {
+        "viewportWidth": 640,
+        "visualScale": 2,
+        "overflowPixels": 0,
+        "offenders": []
+      }
+    },
+    {
+      "template": "corrections",
+      "locale": "fr",
+      "route": "/fr/corrections",
+      "lcpMs": 2128,
+      "lcpElement": "p",
+      "axe": {
+        "version": "4.11.4",
+        "violations": []
+      },
+      "keyboard": {
+        "firstTab": "skip-link",
+        "skipTarget": "main",
+        "sampledTabStops": 10,
+        "unnamed": 0
+      },
+      "landmarks": {
+        "documentLang": "en",
+        "contentLang": "fr",
+        "main": 1,
+        "banner": true,
+        "contentinfo": true,
+        "navigations": 2,
+        "headings": 1,
+        "interactive": 19,
+        "unnamed": 0
+      },
+      "forcedColors": {
+        "active": true,
+        "blocked": 0
+      },
+      "reflow": {
+        "viewportWidth": 640,
+        "visualScale": 2,
+        "overflowPixels": 0,
+        "offenders": []
+      }
+    },
+    {
+      "template": "search",
+      "locale": "en",
+      "route": "/en/search?q=British%20Columbia",
+      "lcpMs": 2136,
+      "lcpElement": "li",
+      "axe": {
+        "version": "4.11.4",
+        "violations": []
+      },
+      "keyboard": {
+        "firstTab": "skip-link",
+        "skipTarget": "main",
+        "sampledTabStops": 10,
+        "unnamed": 0
+      },
+      "landmarks": {
+        "documentLang": "en",
+        "contentLang": "en",
+        "main": 1,
+        "banner": true,
+        "contentinfo": true,
+        "navigations": 2,
+        "headings": 1,
+        "interactive": 29,
+        "unnamed": 0
+      },
+      "forcedColors": {
+        "active": true,
+        "blocked": 0
+      },
+      "reflow": {
+        "viewportWidth": 640,
+        "visualScale": 2,
+        "overflowPixels": 0,
+        "offenders": []
+      }
+    },
+    {
+      "template": "search",
+      "locale": "fr",
+      "route": "/fr/recherche?q=Colombie-Britannique",
+      "lcpMs": 2132,
+      "lcpElement": "li",
+      "axe": {
+        "version": "4.11.4",
+        "violations": []
+      },
+      "keyboard": {
+        "firstTab": "skip-link",
+        "skipTarget": "main",
+        "sampledTabStops": 10,
+        "unnamed": 0
+      },
+      "landmarks": {
+        "documentLang": "en",
+        "contentLang": "fr",
+        "main": 1,
+        "banner": true,
+        "contentinfo": true,
+        "navigations": 2,
+        "headings": 1,
+        "interactive": 29,
+        "unnamed": 0
+      },
+      "forcedColors": {
+        "active": true,
+        "blocked": 0
+      },
+      "reflow": {
+        "viewportWidth": 640,
+        "visualScale": 2,
+        "overflowPixels": 0,
+        "offenders": []
+      }
+    }
+  ],
+  "summary": {
+    "routes": 14,
+    "maxLcpMs": 2176,
+    "axeViolations": 0,
+    "forcedColorsFailures": 0,
+    "reflowFailures": 0,
+    "keyboardFailures": 0
+  },
+  "excluded": [
+    "screen-reader output",
+    "human visual review",
+    "field performance",
+    "user-specific browser extensions"
+  ]
+}

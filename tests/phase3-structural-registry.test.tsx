@@ -34,7 +34,9 @@ test("bilingual generated record and MDX completeness accepts injected records a
   assert.throws(() => validateGeneratedRecordCompleteness(GENERATED_RECORDS.slice(1)), /incomplete/);
   const first = GENERATED_RECORDS[0]!;
   assert.throws(() => validateGeneratedRecordCompleteness([{ ...first, strings: { ...first.strings, title: "" } }, ...GENERATED_RECORDS.slice(1)]), /localized strings/);
-  assert.throws(() => validateGeneratedRecordCompleteness([{ ...first, mdx: first.mdx.replace("productionEligible: false", "") }, ...GENERATED_RECORDS.slice(1)]), /MDX boundary/);
+  assert.throws(() => validateGeneratedRecordCompleteness([{ ...first, mdx: first.mdx.replace("productionEligible: false", "") }, ...GENERATED_RECORDS.slice(1)]), /MDX (front matter|boundary)/);
+  assert.throws(() => validateGeneratedRecordCompleteness([{ ...first, mdx: first.mdx.replace("status: example", "status: example\nstatus: production") }, ...GENERATED_RECORDS.slice(1)]), /duplicate MDX front matter key/);
+  assert.throws(() => validateGeneratedRecordCompleteness([{ ...first, mdx: first.mdx.replace("status: example", "status: production") }, ...GENERATED_RECORDS.slice(1)]), /contradictory/);
   assert.throws(() => validateGeneratedRecordCompleteness([{ ...first, alternate: { ...first.alternate, href: "/fabricated" } }, ...GENERATED_RECORDS.slice(1)]), /hreflang/);
 });
 
@@ -58,6 +60,10 @@ test("untranslated content and unregistered citation sources fail closed", () =>
   const first = PLACE_REGISTRY[0]!;
   const unregistered = [{ ...first, citation: { ...first.citation, sourceIds: ["fabricated-source"] } }, ...PLACE_REGISTRY.slice(1)];
   assert.throws(() => validatePublicContentRegistry(PUBLIC_CONTENT_REGISTRY, SOURCE_RECORDS, unregistered), /Unregistered source/);
+  assert.throws(() => validatePublicContentRegistry([...PUBLIC_CONTENT_REGISTRY, firstPage]), /exactly once/);
+  assert.throws(() => validatePlaceRegistry([{ ...first, place: { ...first.place, citationId: "fabricated-citation" } }, ...PLACE_REGISTRY.slice(1)]), /citation identity/);
+  assert.throws(() => validatePlaceRegistry([{ ...first, place: { ...first.place, sourceIds: [PLACE_REGISTRY[1]!.source.id] } }, ...PLACE_REGISTRY.slice(1)]), /source identifiers/);
+  assert.throws(() => validatePlaceRegistry([{ ...first, citation: { ...first.citation, status: "production" as never } }, ...PLACE_REGISTRY.slice(1)]), /example boundary/);
 });
 
 test("all deterministic example downloads match their checksum manifest", async () => {
@@ -68,4 +74,6 @@ test("all deterministic example downloads match their checksum manifest", async 
 test("download checksum drift fails closed", async () => {
   const drifted = { ...downloadManifest, entries: downloadManifest.entries.map((entry, index) => index ? entry : { ...entry, sha256: "a".repeat(64) }) };
   await assert.rejects(checkPhase3Downloads({ manifest: drifted }), /checksum or byte-length drift/);
+  const substituted = { ...downloadManifest, entries: downloadManifest.entries.map((entry, index) => index ? entry : { ...entry, id: "fabricated-place-download", placeId: "fabricated-place", href: "/examples/downloads/fabricated-place.csv" }) };
+  await assert.rejects(checkPhase3Downloads({ manifest: substituted }), /registry place-ID set/);
 });

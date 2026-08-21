@@ -25,6 +25,7 @@ jobs:
       - run: npm run check:visual-accessibility
       - run: npm run check:phase3-downloads
       - run: npm run build
+      - run: npm run audit:phase3-browser
       - run: npm run check:claims
       - run: npm run check:style-tokens
       - run: npm run check:brand-token

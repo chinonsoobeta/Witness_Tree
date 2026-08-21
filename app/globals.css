@@ -79,6 +79,8 @@ h1, h2, h3, h4 { font-family: var(--ui); }
 .generated-record dt,
 .generated-record th { font-family: var(--ui); }
 
+.generated-record code { overflow-wrap: anywhere; }
+
 .skip-link {
   position: fixed;
   z-index: 100;

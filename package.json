@@ -25,6 +25,7 @@
     "check:phase3-downloads": "node scripts/check-phase3-downloads.mjs",
     "check:budgets": "node scripts/check-budgets.mjs",
     "measure:phase3-static": "node scripts/measure-phase3-static-performance.mjs",
+    "audit:phase3-browser": "node scripts/audit-phase3-browser.mjs",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "db:generate": "drizzle-kit generate"
   },

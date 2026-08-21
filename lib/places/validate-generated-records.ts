@@ -4,6 +4,24 @@ import { GENERATED_RECORD_KINDS, type GeneratedLocalizedRecord, type GeneratedRe
 const locales = ["en", "fr"] as const;
 const idFor = (entry: RegistryEntry, kind: GeneratedRecordKind) => kind === "location" ? entry.location.coordinateId : entry[kind].id;
 
+function parseFrontMatter(mdx: string, key: string): Readonly<Record<string, string>> {
+  const lines = mdx.split("\n");
+  if (lines[0] !== "---") throw new Error(`${key}: MDX front matter is missing.`);
+  const end = lines.indexOf("---", 1);
+  if (end < 2) throw new Error(`${key}: MDX front matter is incomplete.`);
+  const metadata: Record<string, string> = {};
+  for (const line of lines.slice(1, end)) {
+    const match = /^([A-Za-z][A-Za-z0-9]*):\s*(.*?)\s*$/.exec(line);
+    if (!match || !match[2]) throw new Error(`${key}: MDX front matter contains an invalid field.`);
+    const [, name, value] = match;
+    if (Object.hasOwn(metadata, name)) throw new Error(`${key}: duplicate MDX front matter key ${name}.`);
+    metadata[name] = value;
+  }
+  const required = ["id", "kind", "productionEligible", "reviewStatus", "status"];
+  if (JSON.stringify(Object.keys(metadata).sort()) !== JSON.stringify(required)) throw new Error(`${key}: MDX boundary metadata is incomplete or contains unsupported fields.`);
+  return metadata;
+}
+
 export function validateGeneratedRecordCompleteness(records: readonly GeneratedLocalizedRecord[] = GENERATED_RECORDS, registry: readonly RegistryEntry[] = PLACE_REGISTRY) {
   const expectedCount = registry.length * GENERATED_RECORD_KINDS.length * locales.length;
   if (records.length !== expectedCount) throw new Error(`Generated record set is incomplete: ${records.length}/${expectedCount}.`);
@@ -12,7 +30,8 @@ export function validateGeneratedRecordCompleteness(records: readonly GeneratedL
     const key = `${record.kind}:${record.entityId}:${record.locale}`;
     if (keys.has(key)) throw new Error(`Duplicate generated record: ${key}.`);
     keys.add(key);
-    if (!record.mdx.includes(`kind: ${record.kind}`) || !record.mdx.includes(`id: ${record.entityId}`) || !/status: example[\s\S]*reviewStatus: unapproved[\s\S]*productionEligible: false/.test(record.mdx)) throw new Error(`${key}: MDX boundary metadata is incomplete.`);
+    const metadata = parseFrontMatter(record.mdx, key);
+    if (metadata.kind !== record.kind || metadata.id !== record.entityId || metadata.status !== "example" || metadata.reviewStatus !== "unapproved" || metadata.productionEligible !== "false") throw new Error(`${key}: MDX boundary metadata is contradictory.`);
     if (!Object.keys(record.strings).length || Object.values(record.strings).some((value) => typeof value !== "string" || !value.trim()) || !record.mdx.includes(`# ${record.strings.title}`) || !record.mdx.includes(record.strings.status)) throw new Error(`${key}: localized strings or MDX body are incomplete.`);
   }
   for (const entry of registry) for (const kind of GENERATED_RECORD_KINDS) {

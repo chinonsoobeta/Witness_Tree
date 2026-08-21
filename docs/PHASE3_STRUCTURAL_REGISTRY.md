@@ -20,8 +20,8 @@ The versioned synthetic Phase 2 adapter now preserves `lineageSha256`. It requir
 
 The bilingual record/MDX validator accepts an injected record set. It rejects missing or duplicate records, untranslated strings, incomplete boundary front matter/body, mismatched bilingual keys, and inconsistent hreflang. Built no-JavaScript and local performance coverage includes paired place, coordinate-location, methods, source-ledger, glossary, and corrections route templates.
 
-Browser focus traversal, assistive-technology behaviour, visual review, field performance, and measured LCP remain open; none is inferred from these deterministic gates.
+Automated built-browser focus traversal, axe checks, forced-colours emulation, 200% zoom/reflow and measured local LCP are now recorded separately in [`PHASE3_BROWSER_AUDIT.md`](PHASE3_BROWSER_AUDIT.md). Screen-reader output, human visual review and field performance remain open; none is inferred from the deterministic registry gates.
 
 ## Incremental fixed-rubric self-assessment
 
-The independent baseline after commit `0db0d04` is **55%**. This structural batch alone is conservatively assessed at **+4 points, 55% → 59%**, subject to independent audit: `+1` foundation/policy for the strengthened lineage and arithmetic adapter; `+2` public surfaces/generation for coordinate identity, full containment, registered citations/content and checksum-bound files; and `+1` bilingual/performance/accessibility/CI for injectable completeness plus broader built-route coverage. Earlier commits and their self-scores are not counted again.
+The independent audit after commit `525f849` records **57%**. The synthetic public-surface fixtures remain capped at 15/30 maturity; this document makes no additional public-surface score claim. Earlier commits and their self-scores are not counted again.

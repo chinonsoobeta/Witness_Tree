@@ -60,7 +60,7 @@ function requireLocalized(value: unknown, context: string): asserts value is Loc
 }
 
 export function validatePublicContentRegistry(pages: readonly PublicContentRecord[] = PUBLIC_INFORMATION_REGISTRY.pages, sources: readonly SourceRecord[] = PUBLIC_INFORMATION_REGISTRY.sources, entries: readonly RegistryEntry[] = PLACE_REGISTRY) {
-  if (new Set(pages.map(({ kind }) => kind)).size !== PUBLIC_CONTENT_KINDS.length || PUBLIC_CONTENT_KINDS.some((kind) => !pages.some((page) => page.kind === kind))) throw new Error("Public content registry must contain each required surface exactly once.");
+  if (pages.length !== PUBLIC_CONTENT_KINDS.length || new Set(pages.map(({ kind }) => kind)).size !== PUBLIC_CONTENT_KINDS.length || PUBLIC_CONTENT_KINDS.some((kind) => !pages.some((page) => page.kind === kind))) throw new Error("Public content registry must contain each required surface exactly once.");
   for (const page of pages) {
     if (page.recordStatus !== "example" || page.reviewStatus !== "unapproved" || page.productionEligible !== false) throw new Error(`${page.kind} must remain example, unapproved and nonproduction.`);
     requireLocalized(page.title, `${page.kind} title`); requireLocalized(page.status, `${page.kind} status`);

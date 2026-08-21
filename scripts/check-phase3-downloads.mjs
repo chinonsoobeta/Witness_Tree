@@ -2,9 +2,15 @@ import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import canonicalManifest from "../data/phase3-example-download-manifest.json" with { type: "json" };
+import { PLACE_PROVINCES, PLACE_TYPES } from "../lib/places/types.ts";
+
+const canonicalPlaceIds = PLACE_PROVINCES.flatMap((province) => PLACE_TYPES.map((type) => `${province.toLowerCase()}-${type}`)).sort();
 
 export async function checkPhase3Downloads({ manifest = canonicalManifest, publicRoot = path.resolve("public") } = {}) {
   if (manifest.schemaVersion !== "witness-tree/phase3-example-download-manifest/1" || manifest.status !== "example" || manifest.reviewStatus !== "unapproved" || manifest.productionEligible !== false || manifest.entries.length !== 32) throw new Error("Download manifest must contain exactly 32 bounded example entries.");
+  const manifestPlaceIds = manifest.entries.map(({ placeId }) => placeId);
+  if (new Set(manifestPlaceIds).size !== manifestPlaceIds.length) throw new Error("Download manifest place IDs must be unique.");
+  if (JSON.stringify([...manifestPlaceIds].sort()) !== JSON.stringify(canonicalPlaceIds)) throw new Error("Download manifest place IDs must exactly match the registry place-ID set.");
   const ids = new Set();
   const placeIds = new Set();
   for (const entry of manifest.entries) {

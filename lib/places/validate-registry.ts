@@ -11,6 +11,13 @@ export function validatePlaceRegistry(registry: readonly RegistryEntry[] = PLACE
   const placeIds = new Set(registry.map(({ place }) => place.id));
   const coordinateIds = new Set<string>();
   for (const entry of registry) {
+    const boundaryRecords = [entry.source, entry.citation];
+    if (boundaryRecords.some((record) => record.status !== "example" || record.reviewStatus !== "unapproved" || record.productionEligible !== false)) throw new Error(`${entry.place.id}: citation/source record escaped the example boundary.`);
+    if (entry.place.citationId !== entry.citation.id) throw new Error(`${entry.place.id}: citation identity is inconsistent.`);
+    if (entry.place.downloadId !== entry.download.id) throw new Error(`${entry.place.id}: download identity is inconsistent.`);
+    const placeSources = [...new Set(entry.place.sourceIds)].sort();
+    const citationSources = [...new Set(entry.citation.sourceIds)].sort();
+    if (placeSources.length !== entry.place.sourceIds.length || citationSources.length !== entry.citation.sourceIds.length || JSON.stringify(placeSources) !== JSON.stringify([entry.source.id]) || JSON.stringify(citationSources) !== JSON.stringify(placeSources)) throw new Error(`${entry.place.id}: place, citation and source identifiers are inconsistent.`);
     const expectedCoordinateId = coordinatePermalinkId(figureValue(entry.location.latitude, "Latitude"), figureValue(entry.location.longitude, "Longitude"));
     if (entry.location.coordinateId !== expectedCoordinateId) throw new Error(`${entry.place.id}: coordinate permalink identity drift.`);
     if (coordinateIds.has(expectedCoordinateId)) throw new Error(`${entry.place.id}: duplicate coordinate permalink identity.`);
