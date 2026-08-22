@@ -94,7 +94,7 @@ mkdir -p "$STATE_ROOT"; chmod 700 "$STATE_ROOT"
 node "$ROOT/scripts/prepare-qc-immutable-promotion.mjs" --write-sidecars "$TMP" >/dev/null
 
 promote_one() {
-  local artifact="$1" id relative file bytes sha payload sidecar sidecar_file state state_dir expected_state sidecar_sha sidecar_b64 sidecar_put sidecar_version sidecar_head upload_id list list_error no_such_upload=false part_number offset part_bytes part_file part_b64 part_result parts_file composite_file composite composite_b64 complete version latest_head exact_head
+  local artifact="$1" id relative file bytes sha payload sidecar sidecar_file state state_dir expected_state sidecar_sha sidecar_b64 sidecar_put sidecar_version sidecar_head upload_id list list_error no_such_upload=false start_new_upload=false part_number offset part_bytes part_file part_b64 part_result parts_file composite_file composite composite_b64 complete version latest_head exact_head
   id="$(jq -r '.id' <<<"$artifact")"; relative="$(jq -r '.localPath' <<<"$artifact")"; file="$DATA_ROOT/$relative"; bytes="$(jq -r '.byteLength' <<<"$artifact")"; sha="$(jq -r '.sha256' <<<"$artifact")"; payload="$(jq -r '.payloadKey' <<<"$artifact")"; sidecar="$(jq -r '.manifestKey' <<<"$artifact")"; sidecar_file="$TMP/${id}.manifest.json"
   state_dir="$STATE_ROOT/${id}-${sha}"; state="$state_dir/state.json"; mkdir -p "$state_dir"; chmod 700 "$state_dir"
   expected_state="$(jq -n --arg id "$id" --arg payload "$payload" --arg sidecar "$sidecar" --arg sha "$sha" --argjson bytes "$bytes" --argjson partSize "$PART_SIZE" '{artifactId:$id,payloadKey:$payload,manifestKey:$sidecar,sha256:$sha,byteLength:$bytes,partSizeBytes:$partSize,initiation:"not-started",uploadId:null,payloadVersionId:null,compositeChecksumSha256:null,sidecarVersionId:null}')"
@@ -110,13 +110,22 @@ promote_one() {
       no_such_upload=true
     fi
   else
-    # A new sidecar is allowed only before the first MPU initiation. Saved MPU
-    # recovery above can never upload or overwrite a sidecar.
     [[ "$(jq -r '.initiation' "$state")" == "not-started" ]] || fail "Multipart initiation is indeterminate; preserve this state directory and obtain a read-only recovery audit before any new upload" 70
-    print -- "Uploading deterministic sidecar for $id."
-    sidecar_put="$(aws s3api put-object --bucket "$BUCKET" --key "$sidecar" --body "$sidecar_file" --checksum-algorithm SHA256 --checksum-sha256 "$sidecar_b64" --region "$REGION" --output json)" || fail "Sidecar upload failed" 70
-    sidecar_version="$(jq -r '.VersionId // empty' <<<"$sidecar_put")"; [[ -n "$sidecar_version" ]] || fail "Sidecar upload acknowledgement lacks a version ID" 70
-    state_update "$state" '.sidecarVersionId=$version' --arg version "$sidecar_version"
+    # A sidecar put is allowed only when no accepted exact version exists. An
+    # interrupted not-started state reuses its saved version by exact head.
+    if [[ -z "$sidecar_version" ]]; then
+      print -- "Uploading deterministic sidecar for $id."
+      sidecar_put="$(aws s3api put-object --bucket "$BUCKET" --key "$sidecar" --body "$sidecar_file" --checksum-algorithm SHA256 --checksum-sha256 "$sidecar_b64" --region "$REGION" --output json)" || fail "Sidecar upload failed" 70
+      sidecar_version="$(jq -r '.VersionId // empty' <<<"$sidecar_put")"; [[ -n "$sidecar_version" ]] || fail "Sidecar upload acknowledgement lacks a version ID" 70
+      state_update "$state" '.sidecarVersionId=$version' --arg version "$sidecar_version"
+    fi
+    start_new_upload=true
+  fi
+
+  sidecar_head="$(aws s3api head-object --bucket "$BUCKET" --key "$sidecar" --version-id "$sidecar_version" --checksum-mode ENABLED --region "$REGION" --output json)" || fail "Sidecar read-back failed" 70
+  jq -e --arg version "$sidecar_version" --arg checksum "$sidecar_b64" --argjson bytes "$(file_size "$sidecar_file")" '.VersionId==$version and .ContentLength==$bytes and .ChecksumSHA256==$checksum' <<<"$sidecar_head" >/dev/null || fail "Sidecar exact-version read-back mismatch" 70
+
+  if [[ "$start_new_upload" == true ]]; then
     state_update "$state" '.initiation="requested"'
     print -- "Initiating sequential multipart upload for $id."
     local initiated; initiated="$(aws s3api create-multipart-upload --bucket "$BUCKET" --key "$payload" --checksum-algorithm SHA256 --region "$REGION" --output json)" || fail "Multipart initiation failed; state records that no retry may start a second upload" 70
@@ -125,9 +134,6 @@ promote_one() {
     list_error="$TMP/${id}.list-parts.stderr"
     list="$(aws s3api list-parts --bucket "$BUCKET" --key "$payload" --upload-id "$upload_id" --region "$REGION" --output json 2>"$list_error")" || fail "Cannot read newly accepted multipart state; no part was sent" 70
   fi
-
-  sidecar_head="$(aws s3api head-object --bucket "$BUCKET" --key "$sidecar" --version-id "$sidecar_version" --checksum-mode ENABLED --region "$REGION" --output json)" || fail "Sidecar read-back failed" 70
-  jq -e --arg version "$sidecar_version" --arg checksum "$sidecar_b64" --argjson bytes "$(file_size "$sidecar_file")" '.VersionId==$version and .ContentLength==$bytes and .ChecksumSHA256==$checksum' <<<"$sidecar_head" >/dev/null || fail "Sidecar exact-version read-back mismatch" 70
 
   if [[ "$no_such_upload" == true ]]; then
     print -- "Saved multipart upload is no longer active; checking only the exact payload key for a completed matching object."

@@ -103,6 +103,51 @@ test("owner-local runner is multipart-only and excludes high-level copies, delet
   assert.match(runner, /NoSuchUpload[\s\S]*head-object[\s\S]*--version-id[\s\S]*state was preserved and no new upload was started/);
 });
 
+test("an interrupted not-started state reuses its exact saved sidecar before multipart initiation", () => {
+  const dir = mkdtempSync(join(tmpdir(), "qc-promotion-saved-sidecar-"));
+  try {
+    const dataRoot = join(dir, "data"); const stateRoot = join(dir, "state"); mkdirSync(dataRoot, { recursive: true }); mkdirSync(stateRoot, { recursive: true, mode: 0o700 });
+    const fixture = structuredClone(plan);
+    for (const [index, artifact] of fixture.artifacts.entries()) {
+      const content = Buffer.from(index ? "second-payload" : "first-payload"); const relative = `raw/qc-test/${artifact.id}.bin`; mkdirSync(join(dataRoot, "raw/qc-test"), { recursive: true }); writeFileSync(join(dataRoot, relative), content);
+      artifact.localPath = relative; artifact.byteLength = content.length; artifact.sha256 = createHash("sha256").update(content).digest("hex");
+    }
+    const artifact = fixture.artifacts[0]; const sidecarVersion = "saved-sidecar-version"; const sidecar = sidecarFor(plan, plan.artifacts[0]);
+    const sidecarHead = { VersionId: sidecarVersion, ContentLength: Buffer.byteLength(sidecar), ChecksumSHA256: createHash("sha256").update(sidecar).digest("base64") };
+    const stateDir = join(stateRoot, `${artifact.id}-${artifact.sha256}`); mkdirSync(stateDir, { recursive: true, mode: 0o700 });
+    const statePath = join(stateDir, "state.json"); writeFileSync(statePath, `${JSON.stringify({ artifactId: artifact.id, payloadKey: artifact.payloadKey, manifestKey: artifact.manifestKey, sha256: artifact.sha256, byteLength: artifact.byteLength, partSizeBytes: 4, initiation: "not-started", uploadId: null, payloadVersionId: null, compositeChecksumSha256: null, sidecarVersionId: sidecarVersion })}\n`, { mode: 0o600 });
+    const fixturePlan = join(dir, "plan.json"); writeFileSync(fixturePlan, `${JSON.stringify(fixture)}\n`);
+    const marker = join(dir, "aws-calls");
+    writeFileSync(join(dir, "aws"), `#!/bin/zsh
+print -- "$1:$2 $*" >> ${JSON.stringify(marker)}
+case "$1:$2" in
+  configure:get) print -- 'arn:aws:iam::286853118812:mfa/test-device' ;;
+  sts:get-session-token|sts:assume-role) print -- '{"Credentials":{"AccessKeyId":"dummy","SecretAccessKey":"dummy","SessionToken":"dummy"}}' ;;
+  sts:get-caller-identity) print -- '{"Account":"286853118812","Arn":"arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator"}' ;;
+  s3api:head-object)
+    [[ "$*" == *"--key ${artifact.manifestKey}"* && "$*" == *"--version-id ${sidecarVersion}"* ]] || exit 89
+    print -- ${JSON.stringify(JSON.stringify(sidecarHead))} ;;
+  s3api:create-multipart-upload) exit 86 ;;
+  s3api:put-object) exit 87 ;;
+  *) exit 99 ;;
+esac
+`, { mode: 0o700 });
+    const source = readFileSync(runnerPath, "utf8")
+      .replace(/^ROOT=.*$/m, `ROOT=${JSON.stringify(repositoryRoot)}`)
+      .replace(/^PLAN=.*$/m, `PLAN=${JSON.stringify(fixturePlan)}`)
+      .replace(/^DATA_ROOT=.*$/m, `DATA_ROOT=${JSON.stringify(dataRoot)}`)
+      .replace(/^STATE_ROOT=.*$/m, `STATE_ROOT=${JSON.stringify(stateRoot)}`)
+      .replace(/^PART_SIZE=.*$/m, "PART_SIZE=4");
+    const runner = join(dir, "runner.sh"); writeFileSync(runner, source, { mode: 0o700 });
+    const program = `set timeout 30\nset env(PATH) ${JSON.stringify(`${dir}:${process.env.PATH}`)}\nspawn -noecho zsh ${JSON.stringify(runner)} --run\nexpect {\n  "Current MFA TOTP (not stored):" { send -- "123456\\r"; exp_continue }\n  eof { set result [wait]; exit [lindex $result 3] }\n  timeout { exit 2 }\n}`;
+    const run = spawnSync("expect", ["-c", program], { encoding: "utf8", timeout: 30_000, env: { ...process.env, PATH: `${dir}:${process.env.PATH}` } });
+    assert.equal(run.status, 70, `${run.stdout}\n${run.stderr}`); assert.match(`${run.stdout}${run.stderr}`, /Multipart initiation failed/);
+    const calls = readFileSync(marker, "utf8"); const headIndex = calls.indexOf("s3api:head-object"); const createIndex = calls.indexOf("s3api:create-multipart-upload");
+    assert.ok(headIndex >= 0 && createIndex > headIndex, calls); assert.match(calls, new RegExp(`--version-id ${sidecarVersion}`)); assert.doesNotMatch(calls, /s3api:put-object(?:\s|$)/);
+    const resultingState = JSON.parse(readFileSync(statePath, "utf8")); assert.equal(resultingState.sidecarVersionId, sidecarVersion); assert.equal(resultingState.uploadId, null);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
 test("NoSuchUpload adopts only an exact completed version, preserves a mismatch, and never starts a replacement upload", () => {
   const dir = mkdtempSync(join(tmpdir(), "qc-promotion-nosuchupload-"));
   try {
