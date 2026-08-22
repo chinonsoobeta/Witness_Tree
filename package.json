@@ -104,6 +104,7 @@
     "check:qc-immutable-promotion-iam": "node scripts/check-qc-immutable-promotion-iam.mjs",
     "check:qc-immutable-promotion-attestation": "node scripts/check-qc-immutable-promotion-attestation.mjs",
     "dry-run:qc-immutable-promotion": "zsh scripts/run-qc-approved-multipart-promotion.sh",
+    "reconcile:qc-ecoforest-completed-object": "zsh scripts/reconcile-qc-ecoforest-completed-object.sh --run",
     "check:immutable-promotions": "node scripts/check-immutable-promotions.mjs",
     "check:immutable-restore-drill": "node scripts/check-immutable-restore-drill.mjs",
     "check:boundary-editions": "node scripts/check-boundary-editions.mjs",
