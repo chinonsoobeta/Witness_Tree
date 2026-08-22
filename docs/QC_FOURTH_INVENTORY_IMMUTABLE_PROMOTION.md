@@ -68,11 +68,19 @@ set. It performs a full local byte-length and SHA-256 preflight before obtaining
 an MFA session or making the first S3 call. Objects at or below 512 MiB use
 low-level `PutObject`; six larger sheets use low-level multipart uploads with
 128 MiB parts. Multipart progress, part ETags and SHA-256 checksums are stored
-in a caller-supplied controlled state directory. A rerun verifies `ListParts`
-against that state and uploads only missing parts. Single-PUT objects resume at
-the object boundary. The state file contains no credentials. The temporary MFA
-session lasts one hour; if it expires, the run stops safely and a later run with
-a fresh MFA code resumes from the saved exact-part or object boundary.
+in a caller-supplied owner-controlled mode-700 state directory. The data root
+must be an owner-controlled, non-symlink `Witness_Tree-data` directory that is
+not group- or other-writable. The state and sidecar directories must be
+existing owner-controlled, non-symlink mode-700 directories, separate from one
+another and from the data root. Generated state, multipart scratch, and
+collection-manifest files are owner-controlled, non-symlink mode-600 files with
+no hard-link aliases. A rerun validates the state record's exact key, byte
+length, SHA-256, upload method, contiguous local part checksums, and provider
+`ListParts` result before it uploads or completes anything. Single-PUT objects
+resume only at the object boundary. The state file contains no credentials. The
+temporary MFA session lasts one hour; if it expires, the run stops safely and a
+later run with a fresh MFA code resumes from the saved exact-part or object
+boundary.
 
 Object Lock is applied during `PutObject` or `CreateMultipartUpload`, so no
 completed object has an unlocked interval. Each completed version is read back
@@ -113,7 +121,26 @@ node scripts/qc-fourth-inventory-immutable-promotion.mjs --execute \
 
 `--session-ready` is intentionally unavailable in this repository. It cannot
 be supplied with long-lived credentials or manually passed MFA values. The
-controlled directory paths must not be guessed or stored in Git.
+controlled directory paths must not be guessed or stored in Git. The owner must
+provide the real absolute paths only after checking the mode, ownership and
+non-symlink requirements above; the command below is a shape, not a completion
+record.
+
+## Post-run evidence boundary
+
+The runner's JSON result and private state file are operational evidence only;
+they do not update the Phase 1 ledger or prove an independently reviewed
+archive. This repository currently has no fourth-inventory-specific
+redacted-attestation capture/checker. The existing
+`scripts/capture-qc-immutable-promotion-attestation.sh` is scoped to the two
+Québec current/original artifacts and must not be reused for this 62-object
+collection. After an owner run, preserve the mode-700 state directory and
+mode-600 state files and obtain a separately reviewed, digest-bound private and
+redacted record containing exact-version `HeadObject` checksum/length and
+`COMPLIANCE` retention readbacks for all 62 keys (plus any approved recovery
+readback). Until that record is independently validated and integrated, the
+fourth-inventory row remains local verified/profiled only and no immutable
+credit, transformation, ingestion, release, or production claim is permitted.
 
 ## Exact IAM policy and separate approval wording
 

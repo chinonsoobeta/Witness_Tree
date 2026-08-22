@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { tmpdir } from "node:os";
 import test from "node:test";
@@ -51,7 +51,26 @@ test("execution remains fail-closed pending the owner-local MFA role-session run
   assert.throws(() => validateExecutionOptions(plan, { execute: true }), /exact-artifact-set/);
   const approvals = { execute: true, approveExactArtifacts: true, approveIam: true, approveRetention: true, approveMfa: true, retentionUntil: "2033-08-12T00:00:00Z" };
   assert.throws(() => validateExecutionOptions(plan, approvals), /owner-local MFA role-session runner/);
-  assert.throws(() => validateExecutionOptions(plan, { ...approvals, sessionReady: true, dataRoot: "/", stateDir: "/", sidecarDir: "/" }), /Witness_Tree-data/);
+  assert.throws(() => validateExecutionOptions(plan, { ...approvals, sessionReady: true, dataRoot: "/", stateDir: "/", sidecarDir: "/" }), /owner-owned|Witness_Tree-data/);
+});
+
+test("execution requires owner-owned mode-700 non-symlink state and sidecar directories", () => {
+  const workspace = mkdtempSync(path.join(tmpdir(), "qc-fourth-private-paths-"));
+  const dataRoot = path.join(workspace, "Witness_Tree-data");
+  const stateDir = path.join(workspace, "state");
+  const sidecarDir = path.join(workspace, "sidecars");
+  const approvals = { execute: true, approveExactArtifacts: true, approveIam: true, approveRetention: true, approveMfa: true, retentionUntil: "2033-08-12T00:00:00Z", sessionReady: true, dataRoot, stateDir, sidecarDir };
+  mkdirSync(dataRoot, { mode: 0o755 }); mkdirSync(stateDir, { mode: 0o700 }); mkdirSync(sidecarDir, { mode: 0o700 });
+  try {
+    assert.deepEqual(validateExecutionOptions(plan, approvals), { mode: "execute" });
+    chmodSync(stateDir, 0o755);
+    assert.throws(() => validateExecutionOptions(plan, approvals), /state-dir.*mode 700/i);
+    chmodSync(stateDir, 0o700);
+    const stateAlias = path.join(workspace, "state-alias"); symlinkSync(stateDir, stateAlias);
+    assert.throws(() => validateExecutionOptions(plan, { ...approvals, stateDir: stateAlias }), /state-dir.*non-symlink/i);
+  } finally {
+    rmSync(workspace, { recursive: true, force: true });
+  }
 });
 
 test("read-only local preflight hashes every source file without creating a sidecar", () => {
@@ -100,4 +119,10 @@ test("a successful upload without exact COMPLIANCE read-back is rejected", () =>
   const remote = { versionId: "version-1", checksumType: "FULL_OBJECT", checksumSha256: Buffer.from(entry.sha256, "hex").toString("base64") };
   const invoke = (args) => args[1] === "head-object" ? { ContentLength: entry.byteLength, VersionId: remote.versionId, ChecksumType: remote.checksumType, ChecksumSHA256: remote.checksumSha256 } : { Retention: { Mode: "GOVERNANCE", RetainUntilDate: "2033-08-12T00:00:00Z" } };
   assert.throws(() => verifyRemoteObject(plan, entry, remote, invoke, {}), /not COMPLIANCE/);
+});
+
+test("completed state cannot substitute a remote checksum for the approved local bytes", () => {
+  const entry = { id: "sheet-11M", ...plan.archiveSet.payloads[0] };
+  const remote = { versionId: "version-1", checksumType: "FULL_OBJECT", checksumSha256: Buffer.from("not-the-approved-checksum").toString("base64") };
+  assert.throws(() => verifyRemoteObject(plan, entry, remote, () => { throw new Error("AWS must not be called"); }, {}), /state checksum is not bound/);
 });
