@@ -30,6 +30,10 @@ function sameInode(left, right) {
   return left?.dev === right?.dev && left?.ino === right?.ino;
 }
 
+// nlink===1 bounds hard-link aliasing at each observation. A same-owner
+// concurrent mutation after an observation cannot be globally excluded;
+// mode 0600 still keeps the attestation bytes owner-only.
+
 export function normalizeQcOperatorIdentity(rawIdentity) {
   if (rawIdentity === null || typeof rawIdentity !== "object" || Array.isArray(rawIdentity)) {
     failSafe("capture identity response must be a JSON object");
@@ -127,11 +131,13 @@ function syncParentDirectory(path, hooks = {}) {
 
 function rollbackExclusivePublication(publication, hooks = {}) {
   if (!publication || resolve(publication.path) !== publication.path) return false;
+  // This is a bounded observation, not a filesystem-wide lock: a same-owner
+  // mutation after the nlink check, including before unlink, cannot be globally excluded.
   let current;
   try {
     invokeHook(hooks, "beforeRollback", publication.path, publication);
     current = lstatSync(publication.path);
-    if (!current.isFile() || current.isSymbolicLink() || !sameInode(current, publication)) return false;
+    if (!current.isFile() || current.isSymbolicLink() || current.nlink !== 1 || !sameInode(current, publication)) return false;
     unlinkSync(publication.path);
     invokeHook(hooks, "beforeRollbackFsync", publication.path);
     syncParentDirectory(publication.path, hooks);
@@ -185,7 +191,7 @@ export function writeExclusiveMode600(path, value, hooks = {}) {
     openedFd = true;
     fdState = "open";
     opened = fstatSync(fd);
-    if (!opened.isFile() || opened.uid !== process.getuid() || (opened.mode & 0o777) !== 0o600) failSafe("attestation output identity or metadata check failed");
+    if (!opened.isFile() || opened.nlink !== 1 || opened.uid !== process.getuid() || (opened.mode & 0o777) !== 0o600) failSafe("attestation output identity or metadata check failed");
     invokeHook(hooks, "afterOpen", outputPath, opened);
     invokeHook(hooks, "beforeWrite", outputPath, opened);
     writeFileSync(fd, bytes);
@@ -195,17 +201,17 @@ export function writeExclusiveMode600(path, value, hooks = {}) {
     fsyncSync(fd);
     invokeHook(hooks, "afterFileFsync", outputPath, opened);
     const written = fstatSync(fd);
-    if (!sameInode(written, opened) || written.size !== bytes.length || written.uid !== opened.uid || (written.mode & 0o777) !== (opened.mode & 0o777)) failSafe("attestation output changed before verification");
+    if (!sameInode(written, opened) || written.nlink !== 1 || written.size !== bytes.length || written.uid !== opened.uid || (written.mode & 0o777) !== (opened.mode & 0o777)) failSafe("attestation output changed before verification");
     invokeHook(hooks, "beforeVerify", outputPath, written);
     const created = lstatSync(outputPath);
-    if (!created.isFile() || created.isSymbolicLink() || !sameInode(created, opened) || created.size !== bytes.length || created.uid !== opened.uid || (created.mode & 0o777) !== (opened.mode & 0o777)) failSafe("attestation output identity or metadata check failed");
+    if (!created.isFile() || created.isSymbolicLink() || created.nlink !== 1 || !sameInode(created, opened) || created.size !== bytes.length || created.uid !== opened.uid || (created.mode & 0o777) !== (opened.mode & 0o777)) failSafe("attestation output identity or metadata check failed");
     invokeHook(hooks, "afterVerify", outputPath, created);
     syncParentDirectory(outputPath, hooks);
     const published = lstatSync(outputPath);
-    if (!published.isFile() || published.isSymbolicLink() || !sameInode(published, opened) || published.size !== bytes.length || published.uid !== opened.uid || (published.mode & 0o777) !== (opened.mode & 0o777)) failSafe("attestation output changed after synchronization");
+    if (!published.isFile() || published.isSymbolicLink() || published.nlink !== 1 || !sameInode(published, opened) || published.size !== bytes.length || published.uid !== opened.uid || (published.mode & 0o777) !== (opened.mode & 0o777)) failSafe("attestation output changed after synchronization");
     closeOutput();
     const closed = lstatSync(outputPath);
-    if (!closed.isFile() || closed.isSymbolicLink() || !sameInode(closed, opened) || closed.size !== bytes.length || closed.uid !== opened.uid || (closed.mode & 0o777) !== (opened.mode & 0o777)) failSafe("attestation output changed after descriptor close");
+    if (!closed.isFile() || closed.isSymbolicLink() || closed.nlink !== 1 || !sameInode(closed, opened) || closed.size !== bytes.length || closed.uid !== opened.uid || (closed.mode & 0o777) !== (opened.mode & 0o777)) failSafe("attestation output changed after descriptor close");
     return { path: outputPath, dev: closed.dev, ino: closed.ino, size: closed.size, uid: closed.uid, mode: closed.mode & 0o777 };
   } catch (error) {
     let closeError = error?.closeAttempted ? error : null;

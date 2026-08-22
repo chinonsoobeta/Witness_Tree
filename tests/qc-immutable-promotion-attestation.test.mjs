@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { chmodSync, existsSync, mkdtempSync, readFileSync, readdirSync, renameSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import { chmodSync, existsSync, linkSync, mkdtempSync, readFileSync, readdirSync, renameSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
@@ -188,6 +188,16 @@ test("opened destination swap before verification fails without deleting the rac
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
+test("hard-link alias before verification fails closed without claiming rollback", () => {
+  const dir = mkdtempSync(join(tmpdir(), "qc-attestation-alias-verification-")); const output = join(dir, "attestation.json"); const alias = join(dir, "attestation.alias");
+  try {
+    assert.throws(() => writeExclusiveMode600(output, { claims: { exactReadbacksVerified: true } }, { beforeVerify: () => linkSync(output, alias) }), /rollback was not proved; inspect output state/);
+    assert.equal(readFileSync(output, "utf8").length > 0, true);
+    assert.equal(readFileSync(alias, "utf8").length > 0, true);
+    assert.deepEqual(readdirSync(dir).sort(), ["attestation.alias", "attestation.json"]);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
 test("destination swap after directory fsync fails without deleting the racing path", () => {
   const dir = mkdtempSync(join(tmpdir(), "qc-attestation-post-fsync-swap-")); const output = join(dir, "attestation.json"); const moved = `${output}.moved`; let raced = false;
   try {
@@ -259,6 +269,19 @@ test("public publication race rolls back only this invocation's private inode", 
     assert.equal(existsSync(paths.privatePath), false);
     assert.equal(readFileSync(paths.publicPath, "utf8"), "RACING_PUBLIC_TARGET_MUST_REMAIN");
     assert.deepEqual(readdirSync(paths.dir).sort(), ["capture", "public.json"]);
+  } finally { rmSync(paths.dir, { recursive: true, force: true }); }
+});
+
+test("hard-link alias before public failure prevents a private rollback claim", async () => {
+  const paths = await fixture(); const alias = `${paths.privatePath}.alias`;
+  try {
+    assert.throws(() => assembleQcAttestation({ root, captureDirectory: paths.capture, privatePath: paths.privatePath, publicPath: paths.publicPath, beforePublicOpen: () => {
+      linkSync(paths.privatePath, alias);
+      writeFileSync(paths.publicPath, "RACING_PUBLIC_TARGET_MUST_REMAIN", { mode: 0o600, flag: "wx" });
+    } }), /private rollback was not proved; inspect output state/);
+    assert.equal(readFileSync(paths.privatePath, "utf8").length > 0, true);
+    assert.equal(readFileSync(alias, "utf8").length > 0, true);
+    assert.equal(readFileSync(paths.publicPath, "utf8"), "RACING_PUBLIC_TARGET_MUST_REMAIN");
   } finally { rmSync(paths.dir, { recursive: true, force: true }); }
 });
 
