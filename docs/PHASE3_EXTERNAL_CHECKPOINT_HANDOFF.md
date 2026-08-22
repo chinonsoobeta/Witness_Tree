@@ -42,7 +42,7 @@ French:
 
 > Nous vous invitons à tester une interface illustrative et non destinée à la production sur l’information forestière. La participation est volontaire. Vous pouvez sauter une tâche ou arrêter en tout temps. Nous consignons uniquement un code aléatoire, la langue attribuée, six confirmations d’admissibilité, les heures de début et de fin des tâches, les résultats et des problèmes codés. Nous ne consignons ni votre nom, ni vos coordonnées, ni votre adresse IP, ni votre âge exact, ni des données démographiques, ni l’audio, ni la vidéo, ni l’écran, ni des citations permettant de vous identifier. La période de conservation approuvée est de **[REQUIS — NOMBRE DE JOURS FOURNI PAR LA PERSONNE RESPONSABLE]**. Consentez-vous explicitement à participer selon le formulaire **[REQUIS — VERSION APPROUVÉE]**?
 
-If the answer is not an explicit yes, stop. A moderator must create the consent receipt reference and timestamp before the session. The build team and validator cannot infer them.
+If the answer is not an explicit yes, stop. A moderator must create the consent receipt reference and timestamp strictly before the first task starts; an equal timestamp is invalid. The build team and validator cannot infer them.
 
 ### Participant evidence fields
 
@@ -57,6 +57,8 @@ For each eligible session, record only:
 - a human moderator attestation reference.
 
 Do not record names, email, phone, address, IP address, age, date of birth, recruitment source, raw media, demographics, or identifying quotations. Candidate exclusions are aggregate counts by language only.
+
+Every de-identified evidence reference uses exactly `ref-` followed by 32 lowercase hexadecimal characters. This applies to consent receipts, moderator and tester attestations, owner approval/review/decision/configuration references, aggregate field reports, outside-review attestations and reports, and report sections. Release IDs use exactly `release-` followed by 16 lowercase hexadecimal characters; consent-form versions use `consent-form-v` followed by a positive integer. These fields must never contain a name, email, phone number, URL, contact label, address, or free text. Keep the private mapping, if one is required, outside this evidence envelope under the approved privacy and retention controls.
 
 ## Manual accessibility evidence
 
@@ -81,7 +83,7 @@ Engage a reviewer and organisation outside the build team. Their signed report m
 - `medium`: material friction or ambiguity that does not block the flow.
 - `low`: minor defect with limited task impact.
 
-Use opaque issue IDs and coded, de-identified observations. Do not fabricate an issue-free result: an empty issue list is valid only when a real reviewer attests that none were observed.
+Use opaque issue IDs and coded, de-identified observations. Each observation code is exactly `obs-` followed by 12 lowercase hexadecimal characters and is never free text; any separate taxonomy mapping remains outside this evidence envelope under approved controls. Do not fabricate an issue-free result: an empty issue list is valid only when a real reviewer attests that none were observed.
 
 ## Safe execution order
 

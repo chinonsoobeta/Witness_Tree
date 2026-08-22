@@ -5,6 +5,8 @@ import pendingEvidence from "../data/phase3-external-checkpoint-evidence.json" w
 import { CVD_MODES, LOCALES, SCREEN_READER_TEMPLATES, TASK_IDS, TEMPLATES, evaluateUsability, validateEvidence, validateProtocol } from "../scripts/check-phase3-external-checkpoints.mjs";
 
 const clone = (value) => structuredClone(value);
+const reference = (value) => `ref-${value.toString(16).padStart(32, "0")}`;
+const release = (value) => `release-${value.toString(16).padStart(16, "0")}`;
 
 function participant(locale, index) {
   const base = Date.parse(`2026-09-${String(index + 1).padStart(2, "0")}T16:00:00.000Z`);
@@ -14,15 +16,15 @@ function participant(locale, index) {
     panelId: locale === "en" ? "eeeeeeeeeeeeeeee" : "ffffffffffffffff",
     locale,
     eligibility: { age18Plus: true, languageComfortable: true, noWitnessTreeExposure: true, nonGis24Months: true, noOtherPanel: true, consentBeforeTasks: true },
-    consent: { status: "explicit-recorded", receiptReference: `consent-${locale}-${index}`, protocolVersion: protocol.schemaVersion, recordedAt: new Date(base - 60_000).toISOString() },
+    consent: { status: "explicit-recorded", receiptReference: reference((locale === "en" ? 1000 : 1100) + index), protocolVersion: protocol.schemaVersion, recordedAt: new Date(base - 60_000).toISOString() },
     sessionStartedAt: new Date(base).toISOString(),
     sessionEndedAt: new Date(base + 10 * 60_000).toISOString(),
     tasks: TASK_IDS.map((taskId, taskIndex) => ({ taskId, startedAt: new Date(base + taskIndex * 100_000).toISOString(), endedAt: new Date(base + taskIndex * 100_000 + 60_000).toISOString(), completedUnassisted: passing || taskIndex < 3, assistanceProvided: false })),
-    moderation: { evidenceOrigin: "human-moderated", automationGenerated: false, attestationReference: `moderator-attestation-${locale}-${index}` },
+    moderation: { evidenceOrigin: "human-moderated", automationGenerated: false, attestationReference: reference((locale === "en" ? 2000 : 2100) + index) },
   };
 }
 
-const scopes = (templates, locales, modes = [null], screenReader = false) => templates.flatMap((template) => locales.flatMap((locale) => modes.map((mode) => ({ template, locale, ...(mode ? { mode } : {}), evidenceOrigin: "human-manual", automationGenerated: false, testerAttestationReference: `attestation-${template}-${locale}-${mode ?? "default"}`, startedAt: "2026-09-20T16:00:00.000Z", endedAt: "2026-09-20T16:30:00.000Z", passed: true, blockedTasks: 0, issueIds: [], environment: screenReader ? { assistiveTechnology: "VoiceOver", assistiveTechnologyVersion: "15.6", browser: "Safari", browserVersion: "18.6", operatingSystem: "macOS", operatingSystemVersion: "15.6" } : "Chrome 151 on macOS 15.6" }))));
+const scopes = (templates, locales, modes = [null], screenReader = false) => templates.flatMap((template, templateIndex) => locales.flatMap((locale, localeIndex) => modes.map((mode, modeIndex) => ({ template, locale, ...(mode ? { mode } : {}), evidenceOrigin: "human-manual", automationGenerated: false, testerAttestationReference: reference(3000 + templateIndex * 100 + localeIndex * 10 + modeIndex), startedAt: "2026-09-20T16:00:00.000Z", endedAt: "2026-09-20T16:30:00.000Z", passed: true, blockedTasks: 0, issueIds: [], environment: screenReader ? { assistiveTechnology: "VoiceOver", assistiveTechnologyVersion: "15.6", browser: "Safari", browserVersion: "18.6", operatingSystem: "macOS", operatingSystemVersion: "15.6" } : "Chrome 151 on macOS 15.6" }))));
 
 function completeEvidence() {
   const participants = LOCALES.flatMap((locale) => Array.from({ length: 10 }, (_, index) => participant(locale, index)));
@@ -35,19 +37,19 @@ function completeEvidence() {
     completionEvidenceOrigin: "human-and-external",
     productionEligible: false,
     ownerInputs: {
-      releaseId: "test-only-release",
+      releaseId: release(1),
       studyOwnerName: "Test-only accountable owner",
       approvedRetentionDays: 30,
-      consentFormVersion: "test-only-consent-v1",
-      recruitmentApprovalReference: "test-only-recruitment-approval",
-      privacyReviewReference: "test-only-privacy-review",
-      fieldPerformanceSamplingDecisionReference: "test-only-sampling-decision",
+      consentFormVersion: "consent-form-v1",
+      recruitmentApprovalReference: reference(4001),
+      privacyReviewReference: reference(4002),
+      fieldPerformanceSamplingDecisionReference: reference(4003),
       fieldPerformanceMinimumSamplesPerLocale: 100,
       fieldPerformanceUrlOrigin: "https://example.invalid",
       fieldPerformanceWindowStartedAt: "2026-09-01T00:00:00.000Z",
       fieldPerformanceWindowEndedAt: "2026-09-29T00:00:00.000Z",
       fieldPerformanceProvider: "ApprovedAggregateRUM",
-      fieldPerformanceConfigurationReference: "test-only-field-config"
+      fieldPerformanceConfigurationReference: reference(4004)
     },
     usability: { participants, excludedCandidateCounts: { en: 0, fr: 0 }, issues: [], summary: usability },
     manualAccessibility: {
@@ -56,14 +58,14 @@ function completeEvidence() {
       forcedColorsAndCvd: scopes(TEMPLATES, LOCALES, CVD_MODES),
       issues: []
     },
-    fieldPerformance: LOCALES.map((locale) => ({ locale, metric: "LCP", statistic: "p75", valueMs: 1500, eligibleSamples: 100, windowStartedAt: "2026-09-01T00:00:00.000Z", windowEndedAt: "2026-09-29T00:00:00.000Z", urlOrigin: "https://example.invalid", provider: "ApprovedAggregateRUM", configurationReference: "test-only-field-config", samplingDecisionReference: "test-only-sampling-decision", privacyReviewReference: "test-only-privacy-review", aggregateReportReference: `test-only-field-report-${locale}`, containsParticipantIdentifiers: false })),
+    fieldPerformance: LOCALES.map((locale, index) => ({ locale, metric: "LCP", statistic: "p75", valueMs: 1500, eligibleSamples: 100, windowStartedAt: "2026-09-01T00:00:00.000Z", windowEndedAt: "2026-09-29T00:00:00.000Z", urlOrigin: "https://example.invalid", provider: "ApprovedAggregateRUM", configurationReference: reference(4004), samplingDecisionReference: reference(4003), privacyReviewReference: reference(4002), aggregateReportReference: reference(5000 + index), containsParticipantIdentifiers: false })),
     outsideAccessibilityReview: {
       status: "complete",
       reviewerName: "Test-only outside reviewer",
       organisation: "Test-only outside organisation",
-      independenceAttestation: "test-only-independence-attestation",
-      signedReportReference: "test-only-signed-report",
-      scopeResults: scopes(TEMPLATES, LOCALES).map(({ template, locale }) => ({ template, locale, wcag22aaReviewed: true, en301549Reviewed: true, unresolvedCritical: 0, reportSectionReference: `test-only-${template}-${locale}` })),
+      independenceAttestation: reference(6001),
+      signedReportReference: reference(6002),
+      scopeResults: scopes(TEMPLATES, LOCALES).map(({ template, locale }, index) => ({ template, locale, wcag22aaReviewed: true, en301549Reviewed: true, unresolvedCritical: 0, reportSectionReference: reference(7000 + index) })),
       issues: []
     },
     currentResult: { usability: "passed", keyboard: "passed", screenReader: "passed", forcedColorsAndCvd: "passed", fieldPerformance: "passed", outsideAccessibilityReview: "passed" }
@@ -130,6 +132,61 @@ test("completion rejects participant, task, locale, threshold, consent and self-
   }
 });
 
+test("consent receipt and observation values accept only bounded opaque codes", () => {
+  const cases = [
+    ["receipt email", (copy) => { copy.usability.participants[0].consent.receiptReference = "participant@example.com"; }],
+    ["receipt phone", (copy) => { copy.usability.participants[0].consent.receiptReference = "+1 604 555 1212"; }],
+    ["receipt full name", (copy) => { copy.usability.participants[0].consent.receiptReference = "Jordan Example"; }],
+    ["receipt URL", (copy) => { copy.usability.participants[0].consent.receiptReference = "https://example.invalid/receipt/1"; }],
+    ["receipt address", (copy) => { copy.usability.participants[0].consent.receiptReference = "123 Main Street"; }],
+    ["receipt contact alias", (copy) => { copy.usability.participants[0].consent.receiptReference = "participant-contact-1"; }],
+    ["receipt uppercase token", (copy) => { copy.usability.participants[0].consent.receiptReference = `ref-${"A".repeat(32)}`; }],
+    ["free-text observation", (copy) => { copy.usability.issues.push({ issueId: "issue-000000000001", severity: "low", observationCode: "navigation label missing", observedAt: "2026-09-20T16:00:00.000Z", status: "resolved" }); }],
+    ["observation email", (copy) => { copy.usability.issues.push({ issueId: "issue-000000000001", severity: "low", observationCode: "participant@example.com", observedAt: "2026-09-20T16:00:00.000Z", status: "resolved" }); }],
+    ["observation phone", (copy) => { copy.usability.issues.push({ issueId: "issue-000000000001", severity: "low", observationCode: "+1 604 555 1212", observedAt: "2026-09-20T16:00:00.000Z", status: "resolved" }); }],
+    ["observation full name", (copy) => { copy.usability.issues.push({ issueId: "issue-000000000001", severity: "low", observationCode: "Jordan Example", observedAt: "2026-09-20T16:00:00.000Z", status: "resolved" }); }],
+    ["observation URL", (copy) => { copy.usability.issues.push({ issueId: "issue-000000000001", severity: "low", observationCode: "https://example.invalid/observation/1", observedAt: "2026-09-20T16:00:00.000Z", status: "resolved" }); }],
+    ["observation contact alias", (copy) => { copy.usability.issues.push({ issueId: "issue-000000000001", severity: "low", observationCode: "contact-1", observedAt: "2026-09-20T16:00:00.000Z", status: "resolved" }); }],
+    ["observation wrong prefix", (copy) => { copy.usability.issues.push({ issueId: "issue-000000000001", severity: "low", observationCode: "code-000000000001", observedAt: "2026-09-20T16:00:00.000Z", status: "resolved" }); }]
+  ];
+  for (const [name, mutate] of cases) {
+    const copy = completeEvidence(); mutate(copy);
+    assert.throws(() => validateEvidence(copy, protocol), name);
+  }
+});
+
+test("every de-identified evidence reference rejects PII-shaped and free-text values", () => {
+  const cases = [
+    ["moderator email", (copy) => { copy.usability.participants[0].moderation.attestationReference = "moderator@example.com"; }],
+    ["tester phone", (copy) => { copy.manualAccessibility.keyboard[0].testerAttestationReference = "+1 604 555 1212"; }],
+    ["recruitment full name", (copy) => { copy.ownerInputs.recruitmentApprovalReference = "Jordan Example"; }],
+    ["privacy URL", (copy) => { copy.ownerInputs.privacyReviewReference = "https://example.invalid/privacy"; }],
+    ["sampling address", (copy) => { copy.ownerInputs.fieldPerformanceSamplingDecisionReference = "123 Main Street"; }],
+    ["configuration contact alias", (copy) => { copy.ownerInputs.fieldPerformanceConfigurationReference = "contact-config-1"; }],
+    ["aggregate report email", (copy) => { copy.fieldPerformance[0].aggregateReportReference = "report@example.com"; }],
+    ["independence phone", (copy) => { copy.outsideAccessibilityReview.independenceAttestation = "+1 604 555 1212"; }],
+    ["signed report full name", (copy) => { copy.outsideAccessibilityReview.signedReportReference = "Jordan Example"; }],
+    ["report section URL", (copy) => { copy.outsideAccessibilityReview.scopeResults[0].reportSectionReference = "https://example.invalid/report#section"; }],
+    ["release free text", (copy) => { copy.ownerInputs.releaseId = "production release by Jordan"; }],
+    ["consent version free text", (copy) => { copy.ownerInputs.consentFormVersion = "approved by Jordan"; }]
+  ];
+  for (const [name, mutate] of cases) {
+    const copy = completeEvidence(); mutate(copy);
+    assert.throws(() => validateEvidence(copy, protocol), name);
+  }
+});
+
+test("consent must be recorded strictly before the earliest task", () => {
+  for (const [name, timestamp] of [
+    ["equal first-task timestamp", (copy) => copy.usability.participants[0].tasks[0].startedAt],
+    ["after first-task timestamp", (copy) => copy.usability.participants[0].tasks[0].endedAt]
+  ]) {
+    const copy = completeEvidence();
+    copy.usability.participants[0].consent.recordedAt = timestamp(copy);
+    assert.throws(() => validateEvidence(copy, protocol), name);
+  }
+});
+
 test("recursive completed schema rejects arbitrary fields, fabricated results, and PII aliases", () => {
   const cases = [
     ["top-level field", (copy) => { copy.arbitrary = true; }],
@@ -150,7 +207,7 @@ test("recursive completed schema rejects arbitrary fields, fabricated results, a
     ["screen-reader environment field", (copy) => { copy.manualAccessibility.screenReader[0].environment.device = "laptop"; }],
     ["field-row field", (copy) => { copy.fieldPerformance[0].result = "passed"; }],
     ["outside-scope field", (copy) => { copy.outsideAccessibilityReview.scopeResults[0].result = "passed"; }],
-    ["issue field", (copy) => { copy.usability.issues.push({ issueId: "issue-000000000001", severity: "low", observationCode: "coded-observation", observedAt: "2026-09-20T16:00:00.000Z", status: "resolved", extra: true }); }],
+    ["issue field", (copy) => { copy.usability.issues.push({ issueId: "issue-000000000001", severity: "low", observationCode: "obs-000000000001", observedAt: "2026-09-20T16:00:00.000Z", status: "resolved", extra: true }); }],
     ["participantContact", (copy) => { copy.usability.participants[0].participantContact = "forbidden"; }],
     ["participant_contact_details", (copy) => { copy.usability.participants[0].participant_contact_details = "forbidden"; }],
     ["fullName", (copy) => { copy.usability.participants[0].fullName = "forbidden"; }],
