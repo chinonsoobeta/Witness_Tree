@@ -21,7 +21,8 @@ The accountable owner must supply, rather than the build team infer:
 3. Approved retention period in days.
 4. Approved bilingual consent-form version.
 5. Recruitment approval reference and privacy-review reference.
-6. Field-performance sampling decision: measurement window, minimum eligible aggregate samples per locale, provider/configuration and privacy approval.
+6. Field-performance sampling decision and exact reference.
+7. Exact UTC measurement-window start and end, minimum eligible aggregate samples per locale, HTTPS origin, provider name, immutable configuration reference and privacy-review reference.
 
 Keep every corresponding field `null` until that decision exists. Do not recruit or contact anyone from this package.
 
@@ -62,12 +63,12 @@ Do not record names, email, phone, address, IP address, age, date of birth, recr
 Use a human tester and record environment, start/end timestamps, issue IDs and an attestation reference.
 
 - Keyboard: location, place, Explore and bilingual-parity templates in English and French. Verify keyboard-only completion, visible focus, DOM order, no trap and no blocked task.
-- Screen reader: place and location in both languages. Record screen reader, browser and operating-system versions in the environment field; verify headings, landmarks, link/control names, event order, figures, Unknown reasons, provenance and table alternatives.
+- Screen reader: place and location in both languages. The environment is structured, not free text, and requires nonblank `assistiveTechnology`, `assistiveTechnologyVersion`, `browser`, `browserVersion`, `operatingSystem` and `operatingSystemVersion`; placeholders such as “test”, “unknown” or “generic” fail. Verify headings, landmarks, link/control names, event order, figures, Unknown reasons, provenance and table alternatives.
 - Forced colours/CVD: all four templates, both languages, in forced-colours, grayscale, protanopia, deuteranopia and tritanopia modes. A person must inspect content, focus, links, evidence shapes, confidence bars, Unknown treatment, charts and legends. Automated emulation does not fill this evidence.
 
 ## Field performance
 
-Collect only aggregate place-page LCP by locale. The result is eligible only when p75 is strictly below 2,000 ms for both English and French, each locale meets the owner-approved sample minimum, and the report carries its exact time window and configuration reference. Strip query strings and retain no IP, user ID, precise location, full URL or raw event. Until the owner and privacy reviewer approve the origin, provider, window and sample minimum, do not enable collection.
+Collect only aggregate place-page LCP by locale. The result is eligible only when p75 is strictly below 2,000 ms for both English and French, each locale meets the owner-approved sample minimum, and every row exactly repeats the approved UTC window, HTTPS origin, provider, configuration reference, sampling-decision reference and privacy-review reference. Strip query strings and retain no IP, user ID, precise location, full URL or raw event. Until the owner and privacy reviewer approve every one of those inputs, do not enable collection.
 
 ## Outside accessibility review
 

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "witness-tree/phase3-external-checkpoint-evidence/1",
+  "schemaVersion": "witness-tree/phase3-external-checkpoint-evidence/2",
   "protocolVersion": "witness-tree/phase3-external-checkpoint-protocol/1",
   "status": "pending-real-evidence",
   "completionClaimed": false,
@@ -14,7 +14,11 @@
     "privacyReviewReference": null,
     "fieldPerformanceSamplingDecisionReference": null,
     "fieldPerformanceMinimumSamplesPerLocale": null,
-    "fieldPerformanceUrlOrigin": null
+    "fieldPerformanceUrlOrigin": null,
+    "fieldPerformanceWindowStartedAt": null,
+    "fieldPerformanceWindowEndedAt": null,
+    "fieldPerformanceProvider": null,
+    "fieldPerformanceConfigurationReference": null
   },
   "usability": {
     "participants": [],
