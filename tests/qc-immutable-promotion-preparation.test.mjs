@@ -96,6 +96,8 @@ test("owner-local runner is multipart-only and excludes high-level copies, delet
   assert.match(runner, /PRECHECK passed[\s\S]*read -r -s/);
   assert.match(runner, /create-multipart-upload[\s\S]*upload-part[\s\S]*complete-multipart-upload/);
   assert.match(runner, /list-parts[\s\S]*Previously uploaded part does not match/);
+  assert.match(runner, /local artifact=.* observed/);
+  assert.doesNotMatch(runner, /local observed;/, "Repeated zsh local declarations must not print prior provider metadata.");
   assert.equal((runner.match(/list-parts[^\n]*--cli-error-format legacy/g) ?? []).length, 2);
   assert.equal((runner.match(/list_error_code="\$\(sanitized_list_parts_error_code "\$list_error"\)"/g) ?? []).length, 2);
   assert.equal((runner.match(/list_error_category="\$\(sanitized_list_parts_diagnostic_category "\$list_error"\)"/g) ?? []).length, 2);

@@ -143,7 +143,7 @@ mkdir -p "$STATE_ROOT"; chmod 700 "$STATE_ROOT"
 node "$ROOT/scripts/prepare-qc-immutable-promotion.mjs" --write-sidecars "$TMP" >/dev/null
 
 promote_one() {
-  local artifact="$1" id relative file bytes sha payload sidecar sidecar_file state state_dir expected_state sidecar_sha sidecar_b64 sidecar_put sidecar_version sidecar_head upload_id list list_error list_error_code list_error_category list_status list_exit_class no_such_upload=false start_new_upload=false part_number offset part_bytes part_file part_b64 part_result parts_file composite_file composite composite_b64 complete version latest_head exact_head
+  local artifact="$1" id relative file bytes sha payload sidecar sidecar_file state state_dir expected_state sidecar_sha sidecar_b64 sidecar_put sidecar_version sidecar_head upload_id list list_error list_error_code list_error_category list_status list_exit_class no_such_upload=false start_new_upload=false part_number offset part_bytes part_file part_b64 part_result parts_file composite_file composite composite_b64 complete version latest_head exact_head observed
   id="$(jq -r '.id' <<<"$artifact")"; relative="$(jq -r '.localPath' <<<"$artifact")"; file="$DATA_ROOT/$relative"; bytes="$(jq -r '.byteLength' <<<"$artifact")"; sha="$(jq -r '.sha256' <<<"$artifact")"; payload="$(jq -r '.payloadKey' <<<"$artifact")"; sidecar="$(jq -r '.manifestKey' <<<"$artifact")"; sidecar_file="$TMP/${id}.manifest.json"
   state_dir="$STATE_ROOT/${id}-${sha}"; state="$state_dir/state.json"; mkdir -p "$state_dir"; chmod 700 "$state_dir"
   expected_state="$(jq -n --arg id "$id" --arg payload "$payload" --arg sidecar "$sidecar" --arg sha "$sha" --argjson bytes "$bytes" --argjson partSize "$PART_SIZE" '{artifactId:$id,payloadKey:$payload,manifestKey:$sidecar,sha256:$sha,byteLength:$bytes,partSizeBytes:$partSize,initiation:"not-started",uploadId:null,payloadVersionId:null,compositeChecksumSha256:null,sidecarVersionId:null}')"
@@ -223,7 +223,7 @@ promote_one() {
     part_file="$TMP/${id}.part"; dd if="$file" of="$part_file" bs="$PART_SIZE" skip=$((part_number - 1)) count=1 2>/dev/null
     [[ "$(file_size "$part_file")" == "$part_bytes" ]] || fail "Local multipart part extraction mismatched the approved byte range" 70
     part_b64="$(sha256_b64 "$part_file")"; print -n -- "$(sha256_hex "$part_file")" | xxd -r -p >> "$composite_file"
-    local observed; observed="$(jq -c --argjson n "$part_number" '.Parts[]? | select(.PartNumber==$n)' <<<"$list")"
+    observed="$(jq -c --argjson n "$part_number" '.Parts[]? | select(.PartNumber==$n)' <<<"$list")"
     if [[ -n "$observed" ]]; then
       jq -e --arg checksum "$part_b64" --argjson size "$part_bytes" '.Size==$size and .ChecksumSHA256==$checksum and (.ETag // "") != ""' <<<"$observed" >/dev/null || fail "Previously uploaded part does not match the approved local bytes; no completion was attempted" 70
       print -- "Resuming verified part $part_number."
