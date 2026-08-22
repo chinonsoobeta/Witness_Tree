@@ -1,17 +1,17 @@
 # Phase 1 archive owner-command reconciliation — 2026-08-20
 
-The machine-readable record is [data/phase1-archive-owner-command-reconciliation-2026-08-20.json](../data/phase1-archive-owner-command-reconciliation-2026-08-20.json). It reconciles the existing local commands with current live prefix state. It does not add permissions, apply retention, upload, delete, or make a production decision.
+The machine-readable record is [data/phase1-archive-owner-command-reconciliation-2026-08-20.json](../data/phase1-archive-owner-command-reconciliation-2026-08-20.json). Its prefix observations are explicitly historical. It now reconciles those observations with the later recorded approvals without claiming execution, readback, retention, upload, deletion, or a production decision.
 
 ## National promotion
 
-The read-only checks show the canopy-height and federal-electoral prefixes empty on both buckets. Forest harvest is already present on the primary and recovery buckets, so the existing three-artifact runner is not a safe direct execution path: its append-only duplicate guard will encounter the existing harvest target. The owner may run `zsh scripts/run-phase1-approved-promotion.sh --preflight` for local validation, but `--run` remains blocked until a freshly approved canopy-height/federal-only path or explicit harvest reconciliation exists.
+The 2026-08-20 read-only checks historically showed the canopy-height and federal-electoral prefixes empty. Later evidence records canopy-height as archived. The generic three-artifact `--run` remains prohibited because it includes archived harvest/canopy targets. The later approval authorizes only `zsh scripts/run-phase1-approved-promotion.sh --run-federal`, after the no-write `--preflight`; federal execution and readbacks remain absent.
 
-Required preconditions are fresh exact-artifact approval, exact local byte/SHA validation, confirmation of the existing authorized version-specific readback/retention capabilities, and repository-integrated redacted readback/recovery evidence. No IAM change is assumed.
+The exact federal artifact and COMPLIANCE-retention approval is recorded. Remaining preconditions are exact local byte/SHA validation, owner-local fresh MFA execution, version-specific readback/retention capabilities, and repository-integrated redacted readback/recovery evidence. No IAM change is assumed.
 
 ## Quebec current/original promotion
 
-The exact planned prefixes `raw/qc-ecoforest-map/` and `raw/qc-original-inventory/` are empty on both buckets. The safe local command is `zsh scripts/run-qc-approved-multipart-promotion.sh --preflight`; `--run` remains blocked pending fresh approval of both exact archives, four keys, sequential multipart handling, retention, and readbacks.
+The 2026-08-20 observation found both exact planned prefixes empty. The later exact approval authorizes owner-local `zsh scripts/run-qc-approved-multipart-promotion.sh --run` after the no-write `--preflight`. Execution and the validated private/redacted attestation pair remain pending, so completion stays false.
 
 ## Quebec fourth inventory
 
-The `raw/qc-fourth-inventory/` prefix is empty on both buckets. `node scripts/qc-fourth-inventory-immutable-promotion.mjs` is dry-run only. The execute form remains blocked until all four independent approvals are true: exact artifact set, least-privilege IAM policy, irreversible COMPLIANCE retention, and MFA session. Its `--session-ready` and controlled-directory placeholders are not authority or credentials; the command was not run.
+The 2026-08-20 observation found the `raw/qc-fourth-inventory/` prefix empty. All four independent approvals are now recorded: exact artifact set, least-privilege IAM policy, irreversible COMPLIANCE retention, and MFA session. The exact execute template remains owner-local and fail-closed until controlled paths and a fresh MFA session are supplied. It has not been run and no remote readback is recorded.

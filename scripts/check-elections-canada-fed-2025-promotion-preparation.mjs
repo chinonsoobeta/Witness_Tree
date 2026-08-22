@@ -57,7 +57,7 @@ export function validateElectionsCanadaFed2025PromotionPreparation(plan, ledger,
   assert.equal(plan.workflowAudit.safeUploadPathAvailable, false);
   assert.match(plan.workflowAudit.existingExecutable, /combines sidecar upload with compliance-retention execution/i);
   assert.match(plan.workflowAudit.conclusion, /No existing generic reversible upload-and-sidecar workflow/i);
-  assert.equal(plan.retentionDecision.state, "separate-owner-approval-required");
+  assert.equal(plan.retentionDecision.state, "separate-owner-approval-recorded-execution-evidence-pending");
   assert.equal(plan.retentionDecision.requiredBeforeAnyRemoteAction.length, 3);
   assert.match(plan.retentionDecision.prohibitedInference, /not remote, immutable, or production evidence/i);
   assert.deepEqual(plan.claims, { remoteObjectExists: false, sidecarUploaded: false, retentionApplied: false, immutableObjectStorage: false, transformed: false, ingested: false, productionEligible: false });

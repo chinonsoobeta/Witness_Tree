@@ -123,6 +123,20 @@ test("all canonical summaries label superseded Phase 1 totals as historical", ()
   }
 });
 
+test("repository-wide current-facing records do not request superseded archive approvals", () => {
+  const staleApproval = /fresh owner approval for (?:the exact canopy-height|both exact payloads)|already-prepared-blocked-pending-separate-approvals|ownerRunCommand"\s*:\s*"BLOCKED|remain blocked pending their separate owner approvals|execution remains blocked pending separate exact-artifact|runs remain blocked behind exact preconditions|blocked until all four independent approvals/i;
+  for (const file of [...canonicalSummaryFiles, ...currentFacingCodeFiles]) {
+    const contents = readFileSync(new URL(`../${file}`, import.meta.url), "utf8");
+    const templateSuperseded = file === "data/phase1-owner-approval-packet.json" && /supersededArchiveApprovalState[\s\S]*phase1-phase3-owner-approvals/.test(contents);
+    const lines = contents.split("\n");
+    for (let index = 0; index < lines.length; index += 1) {
+      if (!staleApproval.test(lines[index])) continue;
+      const context = lines.slice(Math.max(0, index - 2), index + 3).join(" ");
+      assert.ok(templateSuperseded || /\b(historical|older|prior|preceding|at the time|supersed)/i.test(context), `${file}:${index + 1} has a stale current approval requirement`);
+    }
+  }
+});
+
 test("canonical summaries retain the FOM-only submitted state without implying permission", () => {
   const combined = canonicalSummaryFiles.map((file) => readFileSync(new URL(`../${file}`, import.meta.url), "utf8")).join("\n");
   for (const stale of [

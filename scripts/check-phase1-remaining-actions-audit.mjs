@@ -47,6 +47,13 @@ const OWNER_RUN_APPROVALS = new Map([
   ["current-wildfire-derived-archive-preflight-and-owner-promotion", "current-wildfire-exact-archive-proof"],
   ["normal-archive-control-exercise", "archive-control"]
 ]);
+const RETAIN_UNTIL = "2033-08-12T00:00:00Z";
+const EXACT_APPROVALS = {
+  "federal-electoral-archive": { rows: ["fed-2023-ridings", "elections-canada-45th-files"], preflight: "zsh scripts/run-phase1-approved-promotion.sh --preflight", commandKey: "ownerCommand", command: "zsh scripts/run-phase1-approved-promotion.sh --run-federal", payloadsOnly: false },
+  "quebec-current-original-archive": { rows: ["qc-current-ecoforest", "qc-original-current-inventory"], preflight: "zsh scripts/run-qc-approved-multipart-promotion.sh --preflight", commandKey: "ownerCommand", command: "zsh scripts/run-qc-approved-multipart-promotion.sh --run", payloadsOnly: false },
+  "quebec-fourth-inventory-archive": { rows: ["qc-fourth-inventory"], preflight: "node scripts/qc-fourth-inventory-immutable-promotion.mjs --preflight --data-root /Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data", commandKey: "ownerCommandTemplate", command: "node scripts/qc-fourth-inventory-immutable-promotion.mjs --execute --approve-exact-artifact-set --approve-iam-policy --approve-compliance-retention --approve-mfa-session --retention-until 2033-08-12T00:00:00Z --session-ready --data-root <controlled-absolute-path> --state-dir <controlled-absolute-path> --sidecar-dir <controlled-absolute-path>", payloadsOnly: false },
+  "current-wildfire-exact-archive-proof": { rows: ["cwfis-current", "bc-wildfire", "ab-wildfire", "on-fire-disturbance"], preflight: "zsh scripts/run-wildfire-derived-readback.sh --preflight <owner-owned-mode-600-copy-of-readback-approval>", commandKey: null, command: null, payloadsOnly: true },
+};
 
 function assertExistingReferences(audit) {
   for (const action of audit.actions) {
@@ -227,6 +234,15 @@ export function validatePhase1RemainingActionsAudit(audit, ledger, currentState,
   assert.deepEqual(audit.actions.map(({ rank }) => rank), Array.from({ length: audit.actions.length }, (_, index) => index + 1));
   assert.equal(audit.actions.length, 13);
   assertExistingReferences(audit);
+  assert.deepEqual(approvals.phase1.archiveApprovals.map(({ id }) => id), Object.keys(EXACT_APPROVALS));
+  for (const approval of approvals.phase1.archiveApprovals) {
+    const expected = EXACT_APPROVALS[approval.id];
+    assert.deepEqual(approval.rows, expected.rows); assert.equal(approval.preflight, expected.preflight);
+    assert.deepEqual(approval.retention, { mode: "COMPLIANCE", retainUntil: RETAIN_UNTIL, ...(expected.payloadsOnly ? { payloadsOnly: true } : {}) });
+    if (expected.commandKey) assert.equal(approval[expected.commandKey], expected.command);
+  }
+  assert.equal(approvals.phase1.archiveControlExercise.preflight, "scripts/run-phase1-archive-owner-exercise.sh --preflight");
+  assert.equal(approvals.phase1.archiveControlExercise.ownerCommand, "scripts/run-phase1-archive-owner-exercise.sh --run");
   for (const action of audit.actions) {
     assert.ok(action.id);
     const approvalId = OWNER_RUN_APPROVALS.get(action.id);

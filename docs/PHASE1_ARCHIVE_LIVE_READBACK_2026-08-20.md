@@ -15,7 +15,7 @@ This is a read-only live audit of the Phase 1 archive groups. The machine-readab
 
 ## Remaining owner actions and blockers
 
-Promotion is not authorized by this audit. The national missing objects, Quebec promotion sets, and current-wildfire derived outputs require the applicable owner approvals and version-specific dry-run/readback workflow. The BC derived orphan needs an explicit disposition before it can be considered an archive proof.
+This historical audit did not authorize promotion. Later canonical records contain the federal, Québec and current-wildfire approvals, but do not prove execution or completion. Version-specific readback evidence remains required. The BC derived orphan needs an explicit disposition before it can be considered an archive proof.
 
 The derived-specific stop conditions are captured in [data/current-wildfire-derived-live-recovery-guard-2026-08-20.json](../data/current-wildfire-derived-live-recovery-guard-2026-08-20.json), and the exact national/Quebec preflight commands and owner preconditions are reconciled in [docs/PHASE1_ARCHIVE_OWNER_COMMAND_RECONCILIATION_2026-08-20.md](PHASE1_ARCHIVE_OWNER_COMMAND_RECONCILIATION_2026-08-20.md).
 

@@ -1,5 +1,7 @@
 # Phase 1 owner-approval packet
 
+The copy/paste blocks below are historical input templates. Their federal, Québec current/original, Québec fourth, and current-wildfire archive decisions were later recorded in `data/phase1-phase3-owner-approvals-2026-08-21.json`. That later approval does not prove execution or readback completion.
+
 [`data/phase1-owner-approval-packet.json`](../data/phase1-owner-approval-packet.json) is a machine-checked, copy/paste owner-input packet for the 16 `local-verified-profiled` or `remote-verified-archived-profiled` rows in [`data/phase1-owner-decision-queue.json`](../data/phase1-owner-decision-queue.json). It is derived from parent `4466a14` and remains `template-not-approved` for unresolved decisions, while recording two supplied non-admitting decisions: national source-ledger-only acceptance and the exact PLVI raw/derived scope.
 
 The packet separates every dependency step into three independent decisions:

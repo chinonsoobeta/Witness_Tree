@@ -193,8 +193,8 @@
         "actionIds": ["national-local-archive-preflight-and-owner-promotion", "quebec-current-original-archive-preflight-and-owner-promotion", "quebec-fourth-archive-preflight-and-owner-approvals"],
         "category": "archive-and-recovery",
         "status": "local-preflight-complete-live-proof-missing",
-        "localBoundary": "Exact local bytes/SHA, deterministic sidecars, 62-key planning, and no-write preflights are complete.",
-        "missing": ["fresh owner artifact/retention/MFA approvals", "remote payload and sidecar versions/checksums", "COMPLIANCE retention and recovery readbacks"],
+        "localBoundary": "Exact local bytes/SHA, deterministic sidecars, 62-key planning, no-write preflights, and the applicable owner artifact/retention/MFA approvals are recorded.",
+        "missing": ["owner-local execution evidence", "remote payload and sidecar versions/checksums", "COMPLIANCE retention and recovery readbacks"],
         "safeLocalImplementation": true,
         "ownerOrExternalPrerequisite": true,
         "scoreImpact": {"rawCreditDelta": 0, "formalPercentagePointDelta": 0.0}

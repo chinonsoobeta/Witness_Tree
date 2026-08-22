@@ -188,9 +188,9 @@
   },
   "ownerActions": [
     "Reconcile the annual VLCE2 repository record with the current live COMPLIANCE retention readback before any score is changed.",
-    "Obtain owner approval and complete national canopy-height and federal-electoral promotions; neither has a live object.",
+    "Historical 2026-08-20 next action: obtain owner approval and complete national canopy-height and federal-electoral promotions; later records supersede the approval state and canopy observation.",
     "Resolve the BC derived orphan and create the Ontario derived archive only through an approved, version-specific promotion run with sidecars, retention, and readback.",
-    "Obtain owner approval and execute the Quebec current, original, and fourth-inventory promotion plans; all three remote prefixes are empty.",
+    "Historical 2026-08-20 next action: obtain owner approval and execute the Quebec current, original, and fourth-inventory promotion plans; later records supersede the approval state, while completion evidence remains pending.",
     "Run the normal archive-control exercise with approved authority and capture every required transition, denied delete, and recovery-readback proof.",
     "Close control gaps in recovery coverage, access logging, and archive identity evidence before production admission."
   ],

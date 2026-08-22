@@ -2,7 +2,8 @@
 set -euo pipefail
 umask 077
 
-# Owner-local only. No argument is a dry run. --run needs a separate fresh approval.
+# Owner-local only. No argument is a dry run. --run is limited to the exact
+# recorded approval and still requires fresh MFA plus exact readback evidence.
 PROFILE="WitnessTreeArchiveOperator"
 ROLE="WitnessTreeCurrentWildfirePromotionUploader"
 BUCKET="witness-tree-raw-archive-ca-central-1"

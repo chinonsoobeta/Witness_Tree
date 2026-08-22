@@ -4,6 +4,7 @@
   "asOf": "2026-08-21",
   "derivedFromHead": "4466a14dd1462d09692db869523df713a6db2291",
   "sourceQueue": "data/phase1-owner-decision-queue.json",
+  "supersededArchiveApprovalState": "The template fields in this packet are historical inputs. Federal, Quebec current/original, Quebec fourth, and current-wildfire archive approvals are separately recorded in data/phase1-phase3-owner-approvals-2026-08-21.json; execution and readback evidence remain pending.",
   "recordedDecisions": {
     "source": "data/phase1-remote-source-admission-decisions.json",
     "rows": [

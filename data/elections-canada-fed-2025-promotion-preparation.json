@@ -27,7 +27,7 @@
     "conclusion": "No existing generic reversible upload-and-sidecar workflow can be executed safely for this archive. No remote action has been attempted."
   },
   "retentionDecision": {
-    "state": "separate-owner-approval-required",
+    "state": "separate-owner-approval-recorded-execution-evidence-pending",
     "requiredBeforeAnyRemoteAction": [
       "Archive-operations readiness must be unblocked with the required access, logging, lifecycle, legal-hold, and recovery evidence.",
       "An owner must separately approve a named Canadian destination and an upload identity limited to this exact payload and rebuildable sidecar.",

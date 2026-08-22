@@ -4,8 +4,14 @@ import { exactPromotionObjects, validateQcFourthInventoryPromotionPreparation } 
 
 const read = (file) => JSON.parse(readFileSync(new URL(`../${file}`, import.meta.url), "utf8"));
 const CLAIMS = { remoteObjectExists: false, sidecarUploaded: false, retentionApplied: false, immutableObjectStorage: false, transformed: false, ingested: false, productionAdmission: false, productionEligible: false };
+const RETENTION = { mode: "COMPLIANCE", retainUntil: "2033-08-12T00:00:00Z" };
+const EXPECTED = [
+  { id: "federal-electoral-archive", rows: ["fed-2023-ridings", "elections-canada-45th-files"], preflight: "zsh scripts/run-phase1-approved-promotion.sh --preflight", commandKey: "ownerCommand", command: "zsh scripts/run-phase1-approved-promotion.sh --run-federal" },
+  { id: "quebec-current-original-archive", rows: ["qc-current-ecoforest", "qc-original-current-inventory"], preflight: "zsh scripts/run-qc-approved-multipart-promotion.sh --preflight", commandKey: "ownerCommand", command: "zsh scripts/run-qc-approved-multipart-promotion.sh --run" },
+  { id: "quebec-fourth-inventory-archive", rows: ["qc-fourth-inventory"], preflight: "node scripts/qc-fourth-inventory-immutable-promotion.mjs --preflight --data-root /Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data", commandKey: "ownerCommandTemplate", command: "node scripts/qc-fourth-inventory-immutable-promotion.mjs --execute --approve-exact-artifact-set --approve-iam-policy --approve-compliance-retention --approve-mfa-session --retention-until 2033-08-12T00:00:00Z --session-ready --data-root <controlled-absolute-path> --state-dir <controlled-absolute-path> --sidecar-dir <controlled-absolute-path>" },
+];
 
-export function validatePhase1ImmutablePromotionReadiness(audit, ledger, national, wildfire, wildfireAdmission, quebec, fourthEvidence, fourthPlan, fourthIam) {
+export function validatePhase1ImmutablePromotionReadiness(audit, ledger, national, wildfire, wildfireAdmission, quebec, fourthEvidence, fourthPlan, fourthIam, approvals) {
   assert.equal(audit.schemaVersion, 1); assert.equal(audit.status, "preparation-audit-only");
   assert.equal(audit.asOf, "2026-08-21");
   assert.match(audit.notice, /does not call AWS.*alter IAM.*production eligible/i);
@@ -17,20 +23,32 @@ export function validatePhase1ImmutablePromotionReadiness(audit, ledger, nationa
   const rows = audit.physicalArtifactGroups.flatMap((group) => group.productionRowIds);
   assert.equal(new Set(rows).size, rows.length); assert.deepEqual([...rows].sort(), localRows);
   const [nationalGroup, wildfireGroup, quebecGroup, fourthGroup] = audit.physicalArtifactGroups;
-  assert.equal(nationalGroup.status, "already-prepared-no-duplicate"); assert.equal(nationalGroup.physicalArtifactCount, national.artifacts.length); assert.deepEqual([...nationalGroup.productionRowIds].sort(), [...national.plannedProductionRowIds].sort());
+  const approved = approvals.phase1.archiveApprovals;
+  assert.equal(approved.length, 4);
+  for (const expected of EXPECTED) {
+    const actual = approved.find(({ id }) => id === expected.id);
+    assert.ok(actual); assert.deepEqual(actual.rows, expected.rows); assert.deepEqual(actual.retention, RETENTION);
+    assert.equal(actual.preflight, expected.preflight); assert.equal(actual[expected.commandKey], expected.command);
+  }
+  const wildfireApproval = approved.find(({ id }) => id === "current-wildfire-exact-archive-proof");
+  assert.deepEqual(wildfireApproval.rows, ["cwfis-current", "bc-wildfire", "ab-wildfire", "on-fire-disturbance"]);
+  assert.deepEqual(wildfireApproval.retention, { ...RETENTION, payloadsOnly: true });
+  assert.equal(wildfireApproval.preflight, "zsh scripts/run-wildfire-derived-readback.sh --preflight <owner-owned-mode-600-copy-of-readback-approval>");
+  assert.equal(nationalGroup.status, "approved-owner-local-federal-execution-evidence-pending"); assert.equal(nationalGroup.preflight, EXPECTED[0].preflight); assert.equal(nationalGroup.ownerCommand, EXPECTED[0].command); assert.equal(nationalGroup.physicalArtifactCount, national.artifacts.length); assert.deepEqual(nationalGroup.productionRowIds, EXPECTED[0].rows);
   assert.equal(wildfireGroup.status, "placeholder-attestations-not-machine-verifiable");
   assert.equal(wildfireGroup.physicalArtifactCount, wildfireAdmission.archiveGate.requiredObjectCount);
   assert.equal(wildfireGroup.preparedRawArtifactCount, wildfire.artifacts.length);
   assert.equal(wildfireGroup.verifiedDerivedArtifactCount, 0);
   assert.equal(wildfireGroup.unpreparedDerivedArtifactCount, 2);
+  assert.equal(wildfireGroup.preflight, wildfireApproval.preflight);
   assert.equal(wildfireGroup.ownerAdmission, "data/current-wildfire-owner-admission.json");
   assert.equal(wildfireGroup.derivedEvidence, "data/current-wildfire-derived-archive-evidence.json");
   assert.equal(wildfireAdmission.archiveGate.verifiedObjectCount, 0);
   assert.equal(wildfireAdmission.archiveGate.attestedObjectCount, 6);
   assert.match(wildfireGroup.blocker, /omit concrete version identifiers.*redacted-present checksum placeholders.*production is false/i);
   assert.equal(wildfireGroup.proposedRole, wildfire.mfaGatedExecution.proposedRole); assert.deepEqual([...wildfireGroup.productionRowIds].sort(), wildfire.artifacts.map((artifact) => read("data/staged-acquisitions.json").entries.find((entry) => entry.id === artifact.id).sourceId).sort());
-  assert.equal(quebecGroup.status, "already-prepared"); assert.equal(quebecGroup.physicalArtifactCount, quebec.artifacts.length); assert.equal(quebecGroup.proposedRole, quebec.mfaGatedExecution.proposedRole); assert.deepEqual([...quebecGroup.productionRowIds].sort(), quebec.artifacts.map(({ productionSourceId }) => productionSourceId).sort());
-  assert.equal(fourthGroup.status, "already-prepared-blocked-pending-separate-approvals"); assert.equal(fourthGroup.preparation, "data/qc-fourth-inventory-immutable-promotion-preparation.json"); assert.equal(fourthGroup.runner, "node scripts/qc-fourth-inventory-immutable-promotion.mjs"); assert.match(fourthGroup.blocker, /exact 62-key plan.*no AWS or IAM call.*no remote object or read-back/i);
+  assert.equal(quebecGroup.status, "approved-owner-local-execution-attestation-pending"); assert.equal(quebecGroup.preflight, EXPECTED[1].preflight); assert.equal(quebecGroup.ownerCommand, EXPECTED[1].command); assert.equal(quebecGroup.physicalArtifactCount, quebec.artifacts.length); assert.equal(quebecGroup.proposedRole, quebec.mfaGatedExecution.proposedRole); assert.deepEqual(quebecGroup.productionRowIds, EXPECTED[1].rows);
+  assert.equal(fourthGroup.status, "approved-owner-local-controlled-execution-evidence-pending"); assert.equal(fourthGroup.preflight, EXPECTED[2].preflight); assert.equal(fourthGroup.ownerCommandTemplate, EXPECTED[2].command); assert.equal(fourthGroup.preparation, "data/qc-fourth-inventory-immutable-promotion-preparation.json"); assert.equal(fourthGroup.runner, "node scripts/qc-fourth-inventory-immutable-promotion.mjs"); assert.match(fourthGroup.blocker, /four owner approvals.*execution.*readbacks remain absent/i);
   assert.equal(fourthGroup.physicalArtifactCount, exactPromotionObjects(validateQcFourthInventoryPromotionPreparation(fourthPlan, fourthIam)).length);
   assert.equal(fourthEvidence.fullProductAcquisition.archiveCount, fourthPlan.archiveSet.count);
   for (const field of ["remoteObjectsExist", "retentionApplied", "immutableObjectStorage", "transformed", "ingested", "productionEligible"]) assert.equal(fourthPlan.claims[field], false);
@@ -38,7 +56,7 @@ export function validatePhase1ImmutablePromotionReadiness(audit, ledger, nationa
 }
 
 export function checkPhase1ImmutablePromotionReadiness() {
-  return validatePhase1ImmutablePromotionReadiness(read("data/phase1-immutable-promotion-readiness.json"), read("data/phase1-production-source-ledger.json"), read("data/phase1-local-profiled-promotion-preparation.json"), read("data/current-wildfire-immutable-promotion-preparation.json"), read("data/current-wildfire-owner-admission.json"), read("data/qc-immutable-promotion-preparation.json"), read("data/qc-fourth-inventory-evidence.json"), read("data/qc-fourth-inventory-immutable-promotion-preparation.json"), read("data/qc-fourth-inventory-immutable-promotion-iam-policy.json"));
+  return validatePhase1ImmutablePromotionReadiness(read("data/phase1-immutable-promotion-readiness.json"), read("data/phase1-production-source-ledger.json"), read("data/phase1-local-profiled-promotion-preparation.json"), read("data/current-wildfire-immutable-promotion-preparation.json"), read("data/current-wildfire-owner-admission.json"), read("data/qc-immutable-promotion-preparation.json"), read("data/qc-fourth-inventory-evidence.json"), read("data/qc-fourth-inventory-immutable-promotion-preparation.json"), read("data/qc-fourth-inventory-immutable-promotion-iam-policy.json"), read("data/phase1-phase3-owner-approvals-2026-08-21.json"));
 }
 
 if (process.argv[1]?.endsWith("check-phase1-immutable-promotion-readiness.mjs")) {
