@@ -52,5 +52,5 @@ export function validatePhase1ArchiveOwnerCommandReconciliation(record = read("p
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   validatePhase1ArchiveOwnerCommandReconciliation();
-  console.log("Archive owner-command reconciliation passed: exact approvals are recorded; owner-local execution and readbacks remain pending.");
+  console.log("Historical archive owner-command reconciliation passed; current completion state is determined by the canonical promotion evidence records.");
 }

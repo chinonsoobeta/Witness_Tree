@@ -2,7 +2,7 @@
 
 This is the fresh, machine-checked remaining-action audit derived from the authoritative Phase 1 convergence records at `4466a14` on 2026-08-21. The machine record is [`data/phase1-remaining-actions-audit.json`](../data/phase1-remaining-actions-audit.json), and its checker is [`scripts/check-phase1-remaining-actions-audit.mjs`](../scripts/check-phase1-remaining-actions-audit.mjs). The exact local processing boundary for the two remotely archived NRCan cover rows is recorded separately in [`PHASE1_NRCAN_COVER_PROCESSING_GATE.md`](PHASE1_NRCAN_COVER_PROCESSING_GATE.md); it adds no score or downstream admission.
 
-The audit selects every production row where immutable remote proof is absent **or** production admission is absent. That is all 31 rows: 24 lack immutable remote proof, and all 31 remain non-admitted and non-eligible. The current evidence-tracking baseline is **14.25/31 raw credits and 38.7903226%**. This percentage is not a readiness or production percentage. The audit does not add credit for a prepared payload, dry run, owner-local resume state, reply, permission request, owner decision, or archive plan.
+The audit selects every production row where immutable remote proof is absent **or** production admission is absent. That is all 31 rows: 22 lack immutable remote proof, and all 31 remain non-admitted and non-eligible. The current evidence-tracking baseline is **14.75/31 raw credits and 39.2741935%**. This percentage is not a readiness or production percentage. The two Québec current/original archive steps are complete; their remaining actions start at transformation and ingestion scope.
 
 Run the check with:
 
@@ -41,7 +41,7 @@ The three ranked local groups were checked against the controlled workspace-data
 
 - National: canopy is now remotely verified and must not be revisited. The federal artifact remains local-only and must use a separate federal-only path.
 - Current wildfire: `zsh scripts/run-current-wildfire-approved-promotion.sh --preflight` passed all four exact local payloads (24,783,566 bytes total) by pinned SHA-256. It made no TOTP or AWS call and adds no immutable or production credit.
-- Québec current/original: `zsh scripts/run-qc-approved-multipart-promotion.sh --preflight` passed both exact archives (12,399,475,076 and 11,244,667,626 bytes; total 23,644,142,702 bytes) with the preparation's exact payload and manifest keys. The exact owner approval is recorded. The canonical public attestation remains pending, so no remote completion/readback is inferred.
+- Québec current/original: the validated redacted immutable attestation is integrated for both exact archives. Their staging profiles remain local-artifact evidence, while the ledger separately records immutable remote evidence. Transformation, ingestion, release, and production admission remain pending.
 - Québec fourth set: `node scripts/qc-fourth-inventory-immutable-promotion.mjs --preflight --data-root /Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data` passed 61 local payload/evidence files (16,179,014,954 bytes) and the deterministic in-memory manifest (76,127 bytes, SHA-256 `b3d85d1da40d68d79742c77ec418713f2ef968f74845c43e011df274d559616c`). The preparation and IAM checker simultaneously validated all 62 exact keys, including six multipart payloads. No collection manifest was written locally, and no immutable credit was added.
 
 ## Remaining categories and blockers
@@ -53,4 +53,4 @@ The three ranked local groups were checked against the controlled workspace-data
 - The normal archive control exercise is still not integrated. Its legal-hold, unchanged COMPLIANCE-retention, denied exact-version-delete, and recovery-replica readbacks are an operational gate and do not change the row score.
 - Every row still requires its own transformation, ingestion, release, and production-admission evidence. `productionEligible` remains false for all 31 rows.
 
-The current-wildfire records supply placeholder-only attestations without concrete provider identifiers or checksum values. The canonical baseline is **14.25/31 (38.7903226%)**, with **7 remote / 9 local / 2 partial / 13 access-blocked** rows, **7 immutable rows**, **0/31 production admission**, and a **0/6 machine-verifiable current-wildfire gate**; exact-version proof and downstream admission remain blocked.
+The current-wildfire records supply placeholder-only attestations without concrete provider identifiers or checksum values. The canonical baseline is **14.75/31 (39.2741935%)**, with **9 remote / 7 local / 2 partial / 13 access-blocked** rows, **9 immutable rows**, **0/31 production admission**, and a **0/6 machine-verifiable current-wildfire gate**; exact-version proof and downstream admission remain blocked.

@@ -27,14 +27,14 @@ test("integrated Phase 1 evidence remains additive and fail-closed across conver
   const replies = read("data/phase1-outreach-reply-audit.json");
 
   assert.deepEqual(state.ledger.evidenceStateCounts, {
-    "remote-verified-archived-profiled": 7,
-    "local-verified-profiled": 9,
+    "remote-verified-archived-profiled": 9,
+    "local-verified-profiled": 7,
     "partial-component": 2,
     "access-blocked": 13,
   });
-  assert.equal(state.ledger.rawEvidenceNumerator, 14.25);
-  assert.equal(state.ledger.formalEvidenceTrackingPercentage, 38.7903226);
-  assert.equal(state.ledger.immutableArchiveCompleteRows, 7);
+  assert.equal(state.ledger.rawEvidenceNumerator, 14.75);
+  assert.equal(state.ledger.formalEvidenceTrackingPercentage, 39.2741935);
+  assert.equal(state.ledger.immutableArchiveCompleteRows, 9);
   assert.equal(state.ledger.productionAdmissionCompleteRows, 0);
   assert.equal(state.ledger.productionEligibleRows, 0);
 
@@ -105,14 +105,14 @@ test("canonical wildfire summaries reject superseded readback and score claims",
     /verified primary and recovery readbacks for these four/i,
     /15\.00\/31|39\.516129%|10 immutable rows|owner gate is 4\/6/i,
   ]) assert.doesNotMatch(combined, stale);
-  assert.match(combined, /14\.25\/31 raw credits/i);
-  assert.match(combined, /38\.7903226% formal evidence tracking/i);
-  assert.match(combined, /7 immutable rows/i);
+  assert.match(combined, /14\.75\/31 raw credits/i);
+  assert.match(combined, /39\.2741935% formal evidence tracking/i);
+  assert.match(combined, /9 immutable rows/i);
   assert.match(combined, /0\/6 machine-verifiable and 6\/6 attested-only/i);
 });
 
 test("all canonical summaries label superseded Phase 1 totals as historical", () => {
-  const stale = /14\.75\/31|15\.00\/31|39\.516129%|(?:11\/31.{0,50}immutable|immutable.{0,50}11\/31)|10 immutable rows|owner gate is 4\/6/i;
+  const stale = /15\.00\/31|39\.516129%|(?:11\/31.{0,50}immutable|immutable.{0,50}11\/31)|10 immutable rows|owner gate is 4\/6/i;
   for (const file of [...canonicalSummaryFiles, ...currentFacingCodeFiles]) {
     const lines = readFileSync(new URL(`../${file}`, import.meta.url), "utf8").split("\n");
     for (let index = 0; index < lines.length; index += 1) {
@@ -162,10 +162,9 @@ test("canonical summaries retain the FOM-only submitted state without implying p
 
 test("partial-ledger outreach checker reports only the current canonical totals", () => {
   const output = execFileSync(process.execPath, [new URL("../scripts/check-partial-ledger-owner-review-outreach.mjs", import.meta.url).pathname], { encoding: "utf8" });
-  assert.doesNotMatch(output, /remains 14\.75\/31/i);
-  assert.match(output, /14\.25\/31 raw credits/);
-  assert.match(output, /38\.7903226% formal evidence tracking/);
-  assert.match(output, /7\/31 immutable/);
+  assert.match(output, /14\.75\/31 raw credits/);
+  assert.match(output, /39\.2741935% formal evidence tracking/);
+  assert.match(output, /9\/31 immutable/);
   assert.match(output, /0\/31 production admitted or eligible/);
 });
 

@@ -10,13 +10,13 @@ test("canonical production ledger reconciles all 31 plan rows without runtime pr
   assert.equal(validatePhase1ProductionSourceLedger(ledger, inventory), ledger);
   assert.equal(ledger.entries.length, 31);
   assert.equal(ledger.entries.filter((entry) => entry.productionEligible).length, 0);
-  assert.equal(ledger.rawEvidenceNumerator, 14.25);
+  assert.equal(ledger.rawEvidenceNumerator, 14.75);
   assert.equal(ledger.entries.reduce((sum, entry) => sum + entry.rawCredit, 0), ledger.rawEvidenceNumerator);
   assert.deepEqual(ledger.formalProgress, {
     baselinePercentagePoints: 25,
     rawEvidenceWeightPercentagePoints: 30,
     completeLedgerWeightPercentagePoints: 45,
-    percentage: 38.7903226,
+    percentage: 39.2741935,
     notice: "This is an evidence-tracking score only. It does not grant source-ledger admission, transformation, analysis, ingestion, public release, production admission, or production eligibility."
   });
   const bcWildfire = ledger.entries.find((entry) => entry.id === "bc-wildfire");
@@ -45,10 +45,15 @@ test("canonical production ledger reconciles all 31 plan rows without runtime pr
   assert.ok(plvi.evidenceRefs.includes("data/alberta-plvi-immutable-promotion-preparation.json"));
   assert.ok(plvi.evidenceRefs.includes("data/alberta-plvi-immutable-promotion-evidence.json"));
   const qcOriginalCurrent = ledger.entries.find((entry) => entry.id === "qc-original-current-inventory");
-  assert.equal(qcOriginalCurrent.evidenceState, "local-verified-profiled");
-  assert.equal(qcOriginalCurrent.rawCredit, 0.75);
-  assert.deepEqual(qcOriginalCurrent.evidenceRefs, ["data/qc-original-current-inventory-profile.json", "data/staged-acquisitions.json"]);
-  assert.equal(qcOriginalCurrent.proof.immutableArchive, false);
+  assert.equal(qcOriginalCurrent.evidenceState, "remote-verified-archived-profiled");
+  assert.equal(qcOriginalCurrent.rawCredit, 1);
+  assert.deepEqual(qcOriginalCurrent.evidenceRefs, ["data/qc-original-current-inventory-profile.json", "data/staged-acquisitions.json", "data/qc-immutable-promotion-attestation.json"]);
+  assert.equal(qcOriginalCurrent.proof.immutableArchive, true);
+  const qcCurrent = ledger.entries.find((entry) => entry.id === "qc-current-ecoforest");
+  assert.equal(qcCurrent.evidenceState, "remote-verified-archived-profiled");
+  assert.equal(qcCurrent.rawCredit, 1);
+  assert.ok(qcCurrent.evidenceRefs.includes("data/qc-immutable-promotion-attestation.json"));
+  assert.equal(qcCurrent.proof.immutableArchive, true);
   const qcFourthInventory = ledger.entries.find((entry) => entry.id === "qc-fourth-inventory");
   assert.equal(qcFourthInventory.evidenceState, "local-verified-profiled");
   assert.equal(qcFourthInventory.rawCredit, 0.75);

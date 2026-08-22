@@ -20,11 +20,11 @@ const args = [
 test("remaining-action audit covers every non-admitted row and preserves the baseline", () => {
   const audit = validatePhase1RemainingActionsAudit(...args);
   assert.equal(audit.rowCoverage.length, 31);
-  assert.equal(audit.scope.rowsWithoutImmutableRemoteProof, 24);
-  assert.equal(audit.baseline.formalEvidenceTrackingPercentage, 38.7903226);
+  assert.equal(audit.scope.rowsWithoutImmutableRemoteProof, 22);
+  assert.equal(audit.baseline.formalEvidenceTrackingPercentage, 39.2741935);
   assert.deepEqual(audit.nextFive, [
     "national-local-archive-preflight-and-owner-promotion",
-    "quebec-current-original-archive-preflight-and-owner-promotion",
+    "quebec-current-original-transform-ingest-release",
     "quebec-fourth-archive-preflight-and-owner-approvals",
     "national-archived-owner-source-ledger-decisions",
     "plvi-transformation-ingestion-decisions"

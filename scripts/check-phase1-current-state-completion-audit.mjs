@@ -7,8 +7,8 @@ const read = (file) => JSON.parse(readFileSync(new URL(`../${file}`, import.meta
 export function validatePhase1CurrentStateCompletionAudit(audit, ledger, readiness, immutable, wildfire, outreach, partialOutreach, access, replyAudit, routeAudit) {
   assert.equal(audit.schemaVersion, 1);
   assert.equal(audit.status, "blocked-zero-of-31-production-complete");
-  assert.equal(audit.asOf, "2026-08-21");
-  assert.match(audit.notice, /seven named source\/scope decisions.*two national source-ledger-only decisions.*PLVI raw\/derived scope decision.*no transformation admission.*production eligibility/i);
+  assert.equal(audit.asOf, "2026-08-22");
+  assert.match(audit.notice, /nine named source\/scope decisions.*two national source-ledger-only decisions.*two Quebec source-ledger-only decisions.*PLVI raw\/derived scope decision.*no transformation admission.*production eligibility/i);
   assert.equal(ledger.entries.length, 31);
   assert.equal(audit.rows.length, 31);
   assert.deepEqual(audit.rows.map(({ id }) => id), ledger.entries.map(({ id }) => id));
@@ -22,7 +22,7 @@ export function validatePhase1CurrentStateCompletionAudit(audit, ledger, readine
   assert.equal(audit.ledger.productionEligibleRows, ledger.entries.filter(({ productionEligible }) => productionEligible).length);
   assert.equal(audit.ledger.ownerSourceDecisionRecordedRows, readiness.counts["owner-decision-recorded"]);
   assert.equal(audit.ledger.ownerDownstreamScopeRecordedAwaitingArchiveRows, readiness.counts["owner-scope-decision-recorded-awaiting-archive"]);
-  assert.deepEqual(audit.globalGates.immutableArchives, {status:"blocked", completeRows:7, localRowsAwaitingArchive:9, sourceEvidenceBlockedRows:15, currentWildfireRequiredObjects:6, currentWildfireVerifiedObjects:0, currentWildfireAttestedObjects:6});
+  assert.deepEqual(audit.globalGates.immutableArchives, {status:"blocked", completeRows:9, localRowsAwaitingArchive:7, sourceEvidenceBlockedRows:15, currentWildfireRequiredObjects:6, currentWildfireVerifiedObjects:0, currentWildfireAttestedObjects:6});
   assert.equal(wildfire.archiveGate.requiredObjectCount, 6);
   assert.equal(wildfire.archiveGate.verifiedObjectCount, 0);
   assert.equal(wildfire.archiveGate.attestedObjectCount, 6);

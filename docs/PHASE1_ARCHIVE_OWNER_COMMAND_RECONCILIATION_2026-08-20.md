@@ -10,7 +10,7 @@ The exact federal artifact and COMPLIANCE-retention approval is recorded. Remain
 
 ## Quebec current/original promotion
 
-The 2026-08-20 observation found both exact planned prefixes empty. The later exact approval authorizes owner-local `zsh scripts/run-qc-approved-multipart-promotion.sh --run` after the no-write `--preflight`. Execution and the validated private/redacted attestation pair remain pending, so completion stays false.
+The 2026-08-20 observation found both exact planned prefixes empty. That statement is historical: later owner-local execution completed and the validated redacted immutable attestation is now integrated. This dated record itself remains non-completion evidence.
 
 ## Quebec fourth inventory
 

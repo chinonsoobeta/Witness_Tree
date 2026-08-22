@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 import { validate as validateRecordedApprovals } from "./check-phase1-phase3-owner-approvals.mjs";
 
 const SCHEMA = "witness-tree/phase1-owner-decision-queue/1";
-const HEAD = "4466a14dd1462d09692db869523df713a6db2291";
+const HEAD = "9bf5baa2ecc51ce4c039531e798bfb6418e3baaf";
 const INCLUDED = [
   "ntems-annual-land-cover",
   "ntems-forest-harvest",
@@ -44,8 +44,6 @@ const CURRENT_WILDFIRE = ["cwfis-current", "bc-wildfire", "ab-wildfire", "on-fir
 const LOCAL_ARCHIVE = [
   "fed-2023-ridings",
   "elections-canada-45th-files",
-  "qc-current-ecoforest",
-  "qc-original-current-inventory",
   "qc-fourth-inventory",
 ];
 const APPROVED_LOCAL_ARCHIVE = new Set(LOCAL_ARCHIVE);
@@ -161,8 +159,18 @@ function validateQueueRows(queue, context) {
     assert.equal(row.ownerDecisionStatus.ingestion, "pending-after-archive");
     assert.ok(row.evidenceRefs.includes("data/phase1-phase3-owner-approvals-2026-08-21.json"));
   }
+  for (const id of ["qc-current-ecoforest", "qc-original-current-inventory"]) {
+    const row = queue.queueRows.find((candidate) => candidate.id === id);
+    assert.equal(row.ownerDecisionStatus.archivePromotion, "completed-evidence-integrated");
+    assert.equal(row.ownerDecisionStatus.sourceLedger, "recorded-approved-source-ledger-only");
+    assert.equal(row.ownerDecisionStatus.scope, "recorded-source-ledger-only");
+    assert.equal(row.ownerDecisionStatus.transformation, "pending");
+    assert.equal(row.ownerDecisionStatus.ingestion, "pending");
+    assert.equal(row.primaryActionId, "archived-remote-transform-ingest-release");
+    assert.ok(row.evidenceRefs.includes("data/qc-immutable-promotion-attestation.json"));
+  }
   assert.equal(context.approvals.phase1.archiveApprovals.length, 4);
-  for (const approval of context.approvals.phase1.archiveApprovals.slice(0, 3)) {
+  for (const approval of context.approvals.phase1.archiveApprovals.filter(({ id }) => id !== "quebec-current-original-archive").slice(0, 2)) {
     assert.match(approval.status, /^approved-owner-local-execution/);
     for (const id of approval.rows) assert.equal(queue.queueRows.find((row) => row.id === id).ownerDecisionStatus.archivePromotion, "approved-owner-local-execution-evidence-pending");
   }
@@ -175,6 +183,8 @@ function validateQueueRows(queue, context) {
     "ab-avi-crown",
     "ab-avi-post-harvest",
     "ab-primary-land-vegetation",
+    "qc-current-ecoforest",
+    "qc-original-current-inventory",
   ]);
   assert.equal(context.wildfire.ownerDecision.scopeApproved, true);
   assert.equal(context.wildfire.ownerDecision.transformationApproved, true);
@@ -217,16 +227,16 @@ export function validatePhase1OwnerDecisionQueue(queue, context) {
   assert.match(queue.selectionRule, /local-verified-profiled.*remote-verified-archived-profiled/);
   assert.deepEqual(queue.baseline, {
     productionRows: 31,
-    rawEvidenceNumerator: 14.25,
+    rawEvidenceNumerator: 14.75,
     rawEvidenceDenominator: 31,
-    formalEvidenceTrackingPercentage: 38.7903226,
+    formalEvidenceTrackingPercentage: 39.2741935,
     evidenceStateCounts: {
-      "remote-verified-archived-profiled": 7,
-      "local-verified-profiled": 9,
+      "remote-verified-archived-profiled": 9,
+      "local-verified-profiled": 7,
       "partial-component": 2,
       "access-blocked": 13,
     },
-    immutableArchiveCompleteRows: 7,
+    immutableArchiveCompleteRows: 9,
     productionAdmissionCompleteRows: 0,
     productionEligibleRows: 0,
     queueRowCount: 16,

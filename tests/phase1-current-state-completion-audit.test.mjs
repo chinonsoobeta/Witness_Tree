@@ -10,11 +10,12 @@ test("current-state audit accounts for all 31 rows and remains fail closed", () 
   const audit = validatePhase1CurrentStateCompletionAudit(...args);
   assert.equal(audit.rows.length, 31);
   assert.equal(audit.ledger.productionEligibleRows, 0);
-  assert.equal(audit.ledger.rawEvidenceNumerator, 14.25);
-  assert.equal(audit.ledger.immutableArchiveCompleteRows, 7);
+  assert.equal(audit.ledger.rawEvidenceNumerator, 14.75);
+  assert.equal(audit.ledger.immutableArchiveCompleteRows, 9);
   assert.equal(audit.rows.find(({ id }) => id === "ntems-canopy-height").actionPlan, "national-source-ledger-recorded");
   assert.equal(audit.rows.find(({ id }) => id === "ntems-forest-harvest").actionPlan, "national-source-ledger-recorded");
   assert.equal(audit.rows.find(({ id }) => id === "ab-primary-land-vegetation").actionPlan, "plvi-scope-approved");
+  assert.equal(audit.rows.find(({ id }) => id === "qc-current-ecoforest").actionPlan, "quebec-source-ledger-recorded");
   assert.equal(audit.globalGates.outreach.repliesRecorded, 8);
   assert.equal(audit.globalGates.normalArchiveExercise.complete, false);
 });

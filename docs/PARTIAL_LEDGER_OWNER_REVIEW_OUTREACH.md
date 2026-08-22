@@ -1,6 +1,6 @@
 # Partial-ledger owner-review outreach
 
-The machine-readable package in [`data/partial-ledger-owner-review-outreach-package.json`](../data/partial-ledger-owner-review-outreach-package.json) contains three drafts for the exact unresolved components recorded by the partial-ledger audit. It is **review material only**: no agreement was accepted, no message or form was sent, no permission was received, no artifact was acquired, and the current canonical state remains **14.25/31 raw-evidence credits**, **38.7903226% formal evidence tracking**, **7/31 immutable archive proofs**, and **0/31 production admitted or eligible**.
+The machine-readable package in [`data/partial-ledger-owner-review-outreach-package.json`](../data/partial-ledger-owner-review-outreach-package.json) contains three drafts for the exact unresolved components recorded by the partial-ledger audit. It is **review material only**: no agreement was accepted, no message or form was sent, no permission was received, no artifact was acquired, and the current canonical state is **14.75/31 raw-evidence credits**, **39.2741935% formal evidence tracking**, **9/31 immutable archive proofs**, and **0/31 production admitted or eligible**.
 
 ## Exact routes requiring owner approval
 

@@ -4,9 +4,9 @@ The machine-checked record [`data/phase1-bc-ontario-row-audit.json`](../data/pha
 
 The canonical Phase 1 baseline is unchanged:
 
-- **14.25/31 raw-evidence credits** and **38.7903226%** bounded evidence-tracking score;
+- historical-at-the-time **14.25/31 raw-evidence credits** and **38.7903226%** bounded evidence-tracking score;
 - **7 remote / 9 local / 2 partial / 13 access-blocked** rows;
-- **7 immutable archive proofs**, **0/31 production-admission proofs**, and **0/31 production-eligible rows**;
+- historical-at-the-time **7 immutable archive proofs**, **0/31 production-admission proofs**, and **0/31 production-eligible rows**;
 - current-wildfire gate **0/6 machine-verifiable**, **6/6 attested-only**, with exact-version proof and downstream admission blocked;
 - BC/ON scope: **2.25 raw credits**, **0 raw-credit change**, and **0 production/admission change**.
 

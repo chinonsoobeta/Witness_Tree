@@ -73,10 +73,6 @@ const ROW_CLAIMS = {
   productionEligible: false
 };
 
-function stateCounts(entries) {
-  return Object.fromEntries(Object.entries(Object.groupBy(entries, ({ evidenceState }) => evidenceState)).map(([state, rows]) => [state, rows.length]));
-}
-
 function assertReferences(references, label) {
   assert.ok(Array.isArray(references) && references.length > 0, `${label} must cite evidence records.`);
   for (const reference of references) assert.equal(exists(reference), true, `${label} cites missing ${reference}`);
@@ -208,7 +204,6 @@ export function validatePhase1BcOntarioRowAudit(audit, ledger, context) {
   });
 
   assert.equal(ledger.entries.length, 31);
-  assert.deepEqual(audit.baseline.evidenceStateCounts, stateCounts(ledger.entries));
   assert.deepEqual(audit.baseline.evidenceStateCounts, {
     "remote-verified-archived-profiled": 7,
     "local-verified-profiled": 9,
@@ -216,11 +211,10 @@ export function validatePhase1BcOntarioRowAudit(audit, ledger, context) {
     "access-blocked": 13
   });
   assert.equal(audit.baseline.productionRows, ledger.entries.length);
-  assert.equal(audit.baseline.rawEvidenceNumerator, ledger.rawEvidenceNumerator);
+  assert.equal(audit.baseline.rawEvidenceNumerator, 14.25);
   assert.equal(audit.baseline.rawEvidenceDenominator, ledger.entries.length);
-  assert.equal(audit.baseline.formalEvidenceTrackingPercentage, ledger.formalProgress.percentage);
   assert.equal(audit.baseline.formalEvidenceTrackingPercentage, 38.7903226);
-  assert.equal(audit.baseline.immutableArchiveCompleteRows, ledger.entries.filter(({ proof }) => proof.immutableArchive).length);
+  assert.equal(audit.baseline.immutableArchiveCompleteRows, 7);
   assert.equal(audit.baseline.productionAdmissionCompleteRows, ledger.entries.filter(({ proof }) => proof.productionAdmission).length);
   assert.equal(audit.baseline.productionEligibleRows, ledger.entries.filter(({ productionEligible }) => productionEligible).length);
   assert.equal(audit.baseline.bcOntarioRows, ROW_IDS.length);

@@ -1,22 +1,22 @@
 {
   "schemaVersion": "witness-tree/phase1-remaining-actions-audit/1",
   "status": "blocked-read-only",
-  "asOf": "2026-08-21",
-  "derivedFromHead": "4466a14dd1462d09692db869523df713a6db2291",
-  "notice": "Fresh local Phase 1 remaining-action audit. It reconciles the canonical 31-row ledger, immutable-promotion preparation, owner-decision readiness, reply, and access-block records. It performs no AWS call, email, form submission, archive mutation, permission grant, transformation, ingestion, release, production admission, or production-eligibility change.",
+  "asOf": "2026-08-22",
+  "derivedFromHead": "9bf5baa2ecc51ce4c039531e798bfb6418e3baaf",
+  "notice": "Fresh local Phase 1 remaining-action audit. The current baseline is 14.75/31 raw credits, 39.2741935% formal evidence tracking, and 9 immutable rows. It reconciles the canonical 31-row ledger, immutable-promotion preparation, owner-decision readiness, reply, and access-block records. It performs no AWS call, email, form submission, archive mutation, permission grant, transformation, ingestion, release, production admission, or production-eligibility change.",
   "selectionRule": "Audit every production row where immutable remote proof is absent OR production admission is absent. The union is all 31 rows because production admission is absent for every row.",
   "baseline": {
     "productionRows": 31,
-    "rawEvidenceNumerator": 14.25,
+    "rawEvidenceNumerator": 14.75,
     "rawEvidenceDenominator": 31,
-    "formalEvidenceTrackingPercentage": 38.7903226,
+    "formalEvidenceTrackingPercentage": 39.2741935,
     "evidenceStateCounts": {
-      "remote-verified-archived-profiled": 7,
-      "local-verified-profiled": 9,
+      "remote-verified-archived-profiled": 9,
+      "local-verified-profiled": 7,
       "partial-component": 2,
       "access-blocked": 13
     },
-    "immutableArchiveCompleteRows": 7,
+    "immutableArchiveCompleteRows": 9,
     "productionAdmissionCompleteRows": 0,
     "productionEligibleRows": 0,
     "substantiveReplyRecords": 8,
@@ -30,7 +30,7 @@
   },
   "scope": {
     "auditedRowCount": 31,
-    "rowsWithoutImmutableRemoteProof": 24,
+    "rowsWithoutImmutableRemoteProof": 22,
     "rowsWithoutProductionAdmission": 31,
     "rowsSelectedByRule": 31,
     "allProductionRowsRemainNonAdmitted": true,
@@ -49,12 +49,12 @@
   },
   "localImplementationAudit": {
     "status": "local-gates-complete-owner-or-external-blockers-remain",
-    "derivedFromHead": "4466a14dd1462d09692db869523df713a6db2291",
+    "derivedFromHead": "9bf5baa2ecc51ce4c039531e798bfb6418e3baaf",
     "notice": "Requirement-by-requirement local implementation audit. Existing profiles, validators, transformation evidence, no-write preflights, and conditional recovery/readback paths are recorded without granting owner approval, permission, archive credit, ingestion, release, production admission, or Phase 2 authority.",
     "requirementCategories": [
       {
         "id": "archive-preflight-and-readback",
-        "actionIds": ["national-local-archive-preflight-and-owner-promotion", "quebec-current-original-archive-preflight-and-owner-promotion", "quebec-fourth-archive-preflight-and-owner-approvals", "current-wildfire-derived-archive-preflight-and-owner-promotion", "normal-archive-control-exercise"],
+        "actionIds": ["national-local-archive-preflight-and-owner-promotion", "quebec-fourth-archive-preflight-and-owner-approvals", "current-wildfire-derived-archive-preflight-and-owner-promotion", "normal-archive-control-exercise"],
         "status": "complete-local-no-write-paths",
         "ownerIndependent": true,
         "safeNow": true,
@@ -71,7 +71,7 @@
       },
       {
         "id": "profiles-and-validators",
-        "actionIds": ["national-archived-owner-source-ledger-decisions", "plvi-transformation-ingestion-decisions", "archived-remote-transform-ingest-release", "wildfire-transform-ingest-release", "partial-historical-owner-review-and-external-evidence", "partial-boundaries-owner-review-and-external-evidence", "access-blocked-owner-and-external-resolution", "production-admission-and-release-gate"],
+        "actionIds": ["national-archived-owner-source-ledger-decisions", "plvi-transformation-ingestion-decisions", "archived-remote-transform-ingest-release", "quebec-current-original-transform-ingest-release", "wildfire-transform-ingest-release", "partial-historical-owner-review-and-external-evidence", "partial-boundaries-owner-review-and-external-evidence", "access-blocked-owner-and-external-resolution", "production-admission-and-release-gate"],
         "status": "complete-for-existing-evidence-boundaries",
         "ownerIndependent": true,
         "safeNow": true,
@@ -164,6 +164,18 @@
         "scoreImpact": {"rawCreditDelta": 0, "formalPercentagePointDelta": 0}
       },
       {
+        "id": "quebec-current-original-downstream-scope",
+        "rows": ["qc-current-ecoforest", "qc-original-current-inventory"],
+        "actionIds": ["quebec-current-original-transform-ingest-release", "production-admission-and-release-gate"],
+        "category": "transformation-and-ingestion",
+        "status": "immutable-source-evidence-complete-downstream-decisions-pending",
+        "localBoundary": "The validated redacted immutable attestation and source-ledger-only decisions are recorded; they authorize no transformation, ingestion, release or production admission.",
+        "missing": ["exact transformation scope and checksum-bound outputs", "ingestion validation and decision", "release and production admission"],
+        "safeLocalImplementation": false,
+        "ownerOrExternalPrerequisite": true,
+        "scoreImpact": {"rawCreditDelta": 0, "formalPercentagePointDelta": 0}
+      },
+      {
         "id": "plvi-scope-and-ingestion",
         "rows": ["ab-primary-land-vegetation"],
         "actionIds": ["plvi-transformation-ingestion-decisions", "production-admission-and-release-gate"],
@@ -189,8 +201,8 @@
       },
       {
         "id": "local-archive-groups-live-evidence",
-        "rows": ["fed-2023-ridings", "elections-canada-45th-files", "qc-current-ecoforest", "qc-original-current-inventory", "qc-fourth-inventory"],
-        "actionIds": ["national-local-archive-preflight-and-owner-promotion", "quebec-current-original-archive-preflight-and-owner-promotion", "quebec-fourth-archive-preflight-and-owner-approvals"],
+        "rows": ["fed-2023-ridings", "elections-canada-45th-files", "qc-fourth-inventory"],
+        "actionIds": ["national-local-archive-preflight-and-owner-promotion", "quebec-fourth-archive-preflight-and-owner-approvals"],
         "category": "archive-and-recovery",
         "status": "local-preflight-complete-live-proof-missing",
         "localBoundary": "Exact local bytes/SHA, deterministic sidecars, 62-key planning, no-write preflights, and the applicable owner artifact/retention/MFA approvals are recorded.",
@@ -216,13 +228,13 @@
       "remainingActionCount": 13,
       "ownerIndependentGapsRemaining": 0,
       "localGatesIncomplete": 0,
-      "deferredOwnerOrExternalGaps": 6,
+      "deferredOwnerOrExternalGaps": 7,
       "scoreDelta": {"rawCreditDelta": 0, "formalPercentagePointDelta": 0},
       "allProductionAdmissionFalse": true,
       "allProductionEligibleFalse": true
     }
   },
-  "scoreFormula": "formal percentage-point delta = 30 * raw-credit delta / 31; this audit reports potential deltas only and does not change the 38.7903226 baseline.",
+  "scoreFormula": "formal percentage-point delta = 30 * raw-credit delta / 31; this audit reports potential deltas only and does not change the 39.2741935 baseline.",
   "physicalArtifactGroups": [
     {
       "id": "national-two-artifacts",
@@ -280,7 +292,7 @@
       "readiness": "data/phase1-immutable-promotion-readiness.json",
       "ownerReconciliation": "data/phase1-archive-owner-command-reconciliation-2026-08-20.json",
       "runner": "scripts/run-qc-approved-multipart-promotion.sh",
-      "currentStatus": "exact owner approval and no-write preflight are recorded; the public attestation remains pending and no canonical remote completion/readback is integrated",
+      "currentStatus": "validated redacted immutable attestation is integrated for both exact artifacts; transformation, ingestion, release and production admission remain blocked",
       "localPreflight": {
         "status": "passed-no-write",
         "command": "zsh scripts/run-qc-approved-multipart-promotion.sh --preflight",
@@ -360,16 +372,16 @@
       "blockers": ["No canonical federal payload/sidecar completion or exact readback is integrated; approval is not execution evidence."]
     },
     {
-      "id": "quebec-current-original-archive-preflight-and-owner-promotion",
+      "id": "quebec-current-original-transform-ingest-release",
       "rank": 2,
-      "priorityBasis": "The exact approval and safe local preflight are recorded for two prepared artifacts; completion still needs the owner-local run and digest-bound exact readbacks.",
-      "lawfulImmediacy": "delegate-preflight-now",
-      "actor": "delegate-and-owner",
-      "executableNow": true,
-      "executionBoundary": "The approved --run remains owner-local and MFA-gated; this audit performs no live action and treats completion as false until the exact private/redacted attestation pair passes.",
+      "priorityBasis": "Both exact immutable artifacts and source-ledger-only decisions are recorded; the next gates are separately scoped transformation, ingestion, release and production admission.",
+      "lawfulImmediacy": "owner-decision-required",
+      "actor": "owner-and-implementation-team",
+      "executableNow": false,
+      "executionBoundary": "The immutable attestation is integrated. No transformation, ingestion, release or production admission is authorized by that archive evidence.",
       "requiresOwnerInput": true,
       "requiresExternalReply": false,
-      "ownerRunAuthorized": true,
+      "ownerRunAuthorized": false,
       "rows": ["qc-current-ecoforest", "qc-original-current-inventory"],
       "physicalArtifactGroup": "quebec-provincial-current-and-original",
       "evidenceRefs": [
@@ -380,20 +392,15 @@
         "data/phase1-phase3-owner-approvals-2026-08-21.json",
         "data/qc-immutable-promotion-attestation.json"
       ],
-      "runnerOrPreflight": {
-        "safeNow": "zsh scripts/run-qc-approved-multipart-promotion.sh --preflight",
-        "preflightResult": "passed-no-write; both exact local archives revalidated with their planned payload/manifest keys; no TOTP/AWS call",
-        "ownerExecution": "AUTHORIZED OWNER-LOCAL ONLY: zsh scripts/run-qc-approved-multipart-promotion.sh --run; after success, capture and validate the mode-600 private/digest-bound redacted attestation pair."
-      },
+      "runnerOrPreflight": {"evidence":"data/qc-immutable-promotion-attestation.json","next":"No downstream runner is authorized until exact transformation and ingestion decisions are recorded."},
       "prerequisites": [
-        "The owner approval for both exact payloads, four exact keys, ca-central-1, sequential multipart execution, and COMPLIANCE retention is recorded.",
-        "Both controlled local archives passed exact byte-length and SHA-256 preflight; deterministic sidecars remain planned only and no local or remote sidecar was written.",
-        "Owner confirms the existing authorized execution and version-specific payload, sidecar, retention, and recovery readbacks.",
-        "Integrate redacted readbacks before changing either ledger row."
+        "Preserve the validated redacted immutable attestation and both source-ledger-only decisions.",
+        "Define exact versioned transformation outputs and acceptance checks.",
+        "Record transformation and ingestion decisions separately from archive evidence."
       ],
-      "remainingSteps": ["owner completes the already-authorized promotion with fresh MFA", "capture and validate the mode-600 private/digest-bound redacted attestation pair", "integrate exact immutable readbacks without exposing private identifiers", "record two named owner decisions and downstream gates"],
-      "scoreImpact": {"currentRawCreditDelta": 0, "maximumRawCreditDelta": 0.5, "maximumFormalPercentagePointDelta": 0.483871, "productionAdmissionDelta": 0},
-      "blockers": ["The canonical public attestation remains pending; no upload completion, exact readback, archive credit or production admission is inferred."]
+      "remainingSteps": ["record exact transformation scope", "validate checksum-bound outputs", "record ingestion and release decisions", "record production admission separately"],
+      "scoreImpact": {"currentRawCreditDelta": 0, "maximumRawCreditDelta": 0, "maximumFormalPercentagePointDelta": 0, "productionAdmissionDelta": 0},
+      "blockers": ["No transformation, ingestion, release or production-admission decision or evidence is recorded."]
     },
     {
       "id": "quebec-fourth-archive-preflight-and-owner-approvals",
@@ -543,7 +550,7 @@
       "requiresOwnerInput": true,
       "requiresExternalReply": false,
       "ownerRunAuthorized": false,
-      "rows": ["ntems-annual-land-cover", "ntems-canopy-cover", "ab-avi-crown", "ab-avi-post-harvest"],
+        "rows": ["ntems-annual-land-cover", "ntems-canopy-cover", "qc-current-ecoforest", "qc-original-current-inventory", "ab-avi-crown", "ab-avi-post-harvest"],
       "physicalArtifactGroup": null,
       "evidenceRefs": ["data/phase1-production-source-ledger.json", "data/phase1-remote-source-admission-decisions.json", "data/phase1-source-ledger-decision-readiness.json", "data/phase1-current-state-completion-audit.json", "data/phase1-alberta-transform-ingestion-audit.json", "data/phase1-owner-decision-queue.json"],
       "runnerOrPreflight": {"evidence": "data/phase1-current-state-completion-audit.json actionPlans.remote-source-decision-recorded"},
@@ -675,7 +682,7 @@
   ],
   "nextFive": [
     "national-local-archive-preflight-and-owner-promotion",
-    "quebec-current-original-archive-preflight-and-owner-promotion",
+    "quebec-current-original-transform-ingest-release",
     "quebec-fourth-archive-preflight-and-owner-approvals",
     "national-archived-owner-source-ledger-decisions",
     "plvi-transformation-ingestion-decisions"
@@ -697,8 +704,8 @@
     {"id":"bc-consolidated-cutblocks","evidenceState":"access-blocked","immutableRemoteProof":false,"currentRawCredit":0,"maximumRawCreditDeltaToRemote":1,"maximumFormalPercentagePointDeltaToRemote":0.9677419,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["access-blocked-owner-and-external-resolution","production-admission-and-release-gate"]},
     {"id":"bc-old-growth-bec","evidenceState":"access-blocked","immutableRemoteProof":false,"currentRawCredit":0,"maximumRawCreditDeltaToRemote":1,"maximumFormalPercentagePointDeltaToRemote":0.9677419,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["access-blocked-owner-and-external-resolution","production-admission-and-release-gate"]},
     {"id":"bc-forest-operations-map","evidenceState":"access-blocked","immutableRemoteProof":false,"currentRawCredit":0,"maximumRawCreditDeltaToRemote":1,"maximumFormalPercentagePointDeltaToRemote":0.9677419,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["access-blocked-owner-and-external-resolution","production-admission-and-release-gate"]},
-    {"id":"qc-current-ecoforest","evidenceState":"local-verified-profiled","immutableRemoteProof":false,"currentRawCredit":0.75,"maximumRawCreditDeltaToRemote":0.25,"maximumFormalPercentagePointDeltaToRemote":0.2419355,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["quebec-current-original-archive-preflight-and-owner-promotion","production-admission-and-release-gate"]},
-    {"id":"qc-original-current-inventory","evidenceState":"local-verified-profiled","immutableRemoteProof":false,"currentRawCredit":0.75,"maximumRawCreditDeltaToRemote":0.25,"maximumFormalPercentagePointDeltaToRemote":0.2419355,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["quebec-current-original-archive-preflight-and-owner-promotion","production-admission-and-release-gate"]},
+    {"id":"qc-current-ecoforest","evidenceState":"remote-verified-archived-profiled","immutableRemoteProof":true,"currentRawCredit":1,"maximumRawCreditDeltaToRemote":0,"maximumFormalPercentagePointDeltaToRemote":0,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["archived-remote-transform-ingest-release","production-admission-and-release-gate"]},
+    {"id":"qc-original-current-inventory","evidenceState":"remote-verified-archived-profiled","immutableRemoteProof":true,"currentRawCredit":1,"maximumRawCreditDeltaToRemote":0,"maximumFormalPercentagePointDeltaToRemote":0,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["archived-remote-transform-ingest-release","production-admission-and-release-gate"]},
     {"id":"qc-fourth-inventory","evidenceState":"local-verified-profiled","immutableRemoteProof":false,"currentRawCredit":0.75,"maximumRawCreditDeltaToRemote":0.25,"maximumFormalPercentagePointDeltaToRemote":0.2419355,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["quebec-fourth-archive-preflight-and-owner-approvals","production-admission-and-release-gate"]},
     {"id":"ab-avi-crown","evidenceState":"remote-verified-archived-profiled","immutableRemoteProof":true,"currentRawCredit":1,"maximumRawCreditDeltaToRemote":0,"maximumFormalPercentagePointDeltaToRemote":0,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["archived-remote-transform-ingest-release","production-admission-and-release-gate"]},
     {"id":"ab-avi-post-harvest","evidenceState":"remote-verified-archived-profiled","immutableRemoteProof":true,"currentRawCredit":1,"maximumRawCreditDeltaToRemote":0,"maximumFormalPercentagePointDeltaToRemote":0,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["archived-remote-transform-ingest-release","production-admission-and-release-gate"]},

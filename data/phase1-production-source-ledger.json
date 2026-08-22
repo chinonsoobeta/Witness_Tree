@@ -353,10 +353,11 @@
     },
     {
       "id": "qc-current-ecoforest",
-      "evidenceState": "local-verified-profiled",
+      "evidenceState": "remote-verified-archived-profiled",
       "evidenceRefs": [
         "data/acquisition-readiness.json",
-        "data/coverage-geometry-admission.json"
+        "data/coverage-geometry-admission.json",
+        "data/qc-immutable-promotion-attestation.json"
       ],
       "proof": {
         "licence": true,
@@ -365,19 +366,20 @@
         "checksum": true,
         "rawArchiveRefetch": true,
         "profile": true,
-        "immutableArchive": false,
+        "immutableArchive": true,
         "productionAdmission": false
       },
-      "rawCredit": 0.75,
+      "rawCredit": 1,
       "productionEligible": false,
-      "blocker": "Promote the verified raw archive and derivative evidence to immutable object storage, then complete separate production admission and ingestion."
+      "blocker": "Separate owner decisions and evidence for transformation, ingestion, release, and production admission remain required."
     },
     {
       "id": "qc-original-current-inventory",
-      "evidenceState": "local-verified-profiled",
+      "evidenceState": "remote-verified-archived-profiled",
       "evidenceRefs": [
         "data/qc-original-current-inventory-profile.json",
-        "data/staged-acquisitions.json"
+        "data/staged-acquisitions.json",
+        "data/qc-immutable-promotion-attestation.json"
       ],
       "proof": {
         "licence": true,
@@ -386,12 +388,12 @@
         "checksum": true,
         "rawArchiveRefetch": true,
         "profile": true,
-        "immutableArchive": false,
+        "immutableArchive": true,
         "productionAdmission": false
       },
-      "rawCredit": 0.75,
+      "rawCredit": 1,
       "productionEligible": false,
-      "blocker": "Immutable archive/recovery evidence and a separate owner admission for transformation, ingestion, release, and production eligibility."
+      "blocker": "Separate owner decisions and evidence for transformation, ingestion, release, and production admission remain required."
     },
     {
       "id": "qc-fourth-inventory",
@@ -667,12 +669,12 @@
       "blocker": "CIRNAC's official map is informal, approximate, subject to revision, and expressly cannot be relied on for consultation. It is not legal or precision boundary geometry; no admissible legal artifact, rights, checksum/archive recovery, or engagement route is verified."
     }
   ],
-  "rawEvidenceNumerator": 14.25,
+  "rawEvidenceNumerator": 14.75,
   "formalProgress": {
     "baselinePercentagePoints": 25,
     "rawEvidenceWeightPercentagePoints": 30,
     "completeLedgerWeightPercentagePoints": 45,
-    "percentage": 38.7903226,
+    "percentage": 39.2741935,
     "notice": "This is an evidence-tracking score only. It does not grant source-ledger admission, transformation, analysis, ingestion, public release, production admission, or production eligibility."
   }
 }

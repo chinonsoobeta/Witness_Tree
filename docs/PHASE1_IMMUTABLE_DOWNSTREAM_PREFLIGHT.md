@@ -18,4 +18,4 @@ The optional controlled-data check is read-only and verifies the exact local byt
 node scripts/check-phase1-immutable-downstream-preflight.mjs --verify-local --data-root <controlled-absolute-Witness_Tree-data-path>
 ```
 
-This work changes no Phase 1 score or completion state. The formal evidence score remains `14.25/31` and `38.7903226%`; immutable archive remains 7 rows; production admission and eligibility remain 0/31.
+This work changes no Phase 1 score or completion state. The current formal evidence score is `14.75/31` and `39.2741935%`; immutable archive is 9 rows; production admission and eligibility remain 0/31. The two Québec rows are immutable source evidence only and add no downstream authorization.

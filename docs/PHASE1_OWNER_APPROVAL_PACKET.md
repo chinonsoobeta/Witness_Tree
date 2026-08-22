@@ -12,7 +12,7 @@ The packet separates every dependency step into three independent decisions:
 
 An owner may copy a block below as an input template, but no placeholder is an approval. The packet carries no owner identity, contact, MFA code, version secret, permission grant, or downstream/production approval. It does not send email, submit a form, call AWS, write remote storage, admit transformation, ingest, release, or make a row production eligible.
 
-Current baseline remains **14.25/31 raw evidence credits**, **38.7903226% formal evidence tracking**, **7 immutable rows**, and **0/31 production-admitted or production-eligible**. Partial and access-blocked rows remain explicit exclusions: `cwfis-historical`, `provincial-electoral-boundaries`, and the 13 access-blocked rows in the machine record. They are not silently moved into this owner packet.
+Current baseline is **14.75/31 raw evidence credits**, **39.2741935% formal evidence tracking**, **9 immutable rows**, and **0/31 production-admitted or production-eligible**. Partial and access-blocked rows remain explicit exclusions: `cwfis-historical`, `provincial-electoral-boundaries`, and the 13 access-blocked rows in the machine record. They are not silently moved into this owner packet.
 
 ## Current owner execution and readback order
 

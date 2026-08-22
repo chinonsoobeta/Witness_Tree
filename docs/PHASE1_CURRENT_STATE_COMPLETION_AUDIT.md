@@ -1,6 +1,6 @@
 # Phase 1 current-state completion audit
 
-As of 2026-08-21, Phase 1 has **14.25/31 raw-evidence credits**, **7/31 immutable archive proofs**, **0/31 production-admission proofs**, and **0/31 production-eligible sources**. The bounded evidence-tracking score is **38.7903226%**. It is not a production-completion percentage. The four current-wildfire raw plus two derived payloads have placeholder-only attestations and remain 0/6 machine-verifiable; no archive, ingestion, release, or production inference is added.
+As of 2026-08-22, Phase 1 has **14.75/31 raw-evidence credits**, **9/31 immutable archive proofs**, **0/31 production-admission proofs**, and **0/31 production-eligible sources**. The bounded evidence-tracking score is **39.2741935%**. It is not a production-completion percentage. The two Québec current/original rows have validated redacted immutable evidence but no downstream admission. The four current-wildfire raw plus two derived payloads remain 0/6 machine-verifiable; no archive, ingestion, release, or production inference is added for them.
 
 The canonical machine records are `data/phase1-current-state-completion-audit.json` and `data/phase1-outreach-reply-audit.json`. They map every production row to its remaining ordered actions and current reply status and are checked against the production ledger, decision-readiness record, immutable-promotion readiness, current-wildfire admission, access-block resolution, both outreach packages, and the BC copyright form package.
 

@@ -76,11 +76,16 @@ test("keeps the dependency order and current-wildfire archive condition fail-clo
 
 test("recorded archive approvals remove duplicate approval requests without implying completion", () => {
   const queue = read("data/phase1-owner-decision-queue.json");
-  for (const id of ["fed-2023-ridings", "elections-canada-45th-files", "qc-current-ecoforest", "qc-original-current-inventory", "qc-fourth-inventory"]) {
+  for (const id of ["fed-2023-ridings", "elections-canada-45th-files", "qc-fourth-inventory"]) {
     const row = queue.queueRows.find((candidate) => candidate.id === id);
     assert.equal(row.ownerDecisionStatus.archivePromotion, "approved-owner-local-execution-evidence-pending");
     assert.equal(row.productionEligible, false);
     assert.equal(row.exactNextSteps.some((step) => /obtain.*approval/i.test(step)), false);
+  }
+  for (const id of ["qc-current-ecoforest", "qc-original-current-inventory"]) {
+    const row = queue.queueRows.find((candidate) => candidate.id === id);
+    assert.equal(row.ownerDecisionStatus.archivePromotion, "completed-evidence-integrated");
+    assert.equal(row.productionEligible, false);
   }
 });
 

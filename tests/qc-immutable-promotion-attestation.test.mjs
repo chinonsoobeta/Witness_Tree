@@ -4,12 +4,12 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
 import { assembleQcAttestation, normalizeQcOperatorIdentity, writeExclusiveMode600 } from "../scripts/assemble-qc-immutable-promotion-attestation.mjs";
-import { redactQcAttestation, validatePendingQcAttestation, validateQcAttestationPair } from "../scripts/check-qc-immutable-promotion-attestation.mjs";
+import { redactQcAttestation, validateCapturedQcAttestation, validateQcAttestationPair } from "../scripts/check-qc-immutable-promotion-attestation.mjs";
 import { sidecarFor } from "../scripts/prepare-qc-immutable-promotion.mjs";
 
 const root = new URL("../", import.meta.url).pathname.replace(/\/$/, "");
 const plan = JSON.parse(readFileSync(new URL("../data/qc-immutable-promotion-preparation.json", import.meta.url), "utf8"));
-const pending = JSON.parse(readFileSync(new URL("../data/qc-immutable-promotion-attestation.json", import.meta.url), "utf8"));
+const canonical = JSON.parse(readFileSync(new URL("../data/qc-immutable-promotion-attestation.json", import.meta.url), "utf8"));
 const sha = (value) => import("node:crypto").then(({ createHash }) => createHash("sha256").update(value).digest("hex"));
 const descriptorCount = () => readdirSync("/dev/fd").filter((name) => /^\d+$/.test(name)).length;
 
@@ -31,20 +31,20 @@ async function fixture() {
   return { dir, capture, privatePath: join(dir, "private.json"), publicPath: join(dir, "public.json") };
 }
 
-test("canonical QC attestation is explicitly pending and changes no credit", () => {
-  assert.equal(validatePendingQcAttestation(pending, plan), pending);
-  assert.match(pending.notice, /owner-attested internally consistent evidence.*not independently signed AWS proof/i);
-  assert.equal(pending.claims.exactReadbacksVerified, false);
-  assert.equal(pending.claims.sourceLedgerCreditChanged, false);
+test("canonical QC attestation is the captured redaction and requires the private pair for full verification", () => {
+  assert.equal(validateCapturedQcAttestation(canonical, plan), canonical);
+  assert.match(canonical.notice, /owner-attested internally consistent evidence.*not independently signed AWS proof/i);
+  assert.equal(canonical.claims.exactReadbacksVerified, false);
+  assert.equal(canonical.claims.sourceLedgerCreditChanged, false);
 });
 
-test("pending public evidence rejects undeclared fields and identifier or checksum leak shapes", () => {
+test("captured public evidence rejects undeclared fields and identifier or checksum leak shapes", () => {
   for (const mutation of [
     { arbitrary: "not-canonical" },
     { uploadId: "private-upload-identifier" },
     { versionId: "plausible-concrete-version" },
     { providerChecksum: "plausible-provider-checksum" }
-  ]) assert.throws(() => validatePendingQcAttestation({ ...pending, ...mutation }, plan), /fields drifted/);
+  ]) assert.throws(() => validateCapturedQcAttestation({ ...canonical, ...mutation }, plan), /fields drifted/);
 });
 
 test("owner-run transcript assembles four exact objects into a mode-600 digest-bound pair", async () => {

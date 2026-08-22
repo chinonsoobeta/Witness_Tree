@@ -34,6 +34,49 @@ export function validatePendingQcAttestation(record, plan = readJson(PLAN_PATH))
   return record;
 }
 
+export function validateCapturedQcAttestation(record, plan = readJson(PLAN_PATH), expected = {}) {
+  validateQcImmutablePromotionPreparation(plan);
+  exactKeys(record, ["schemaVersion", "status", "notice", "privateAttestationSha256", "provenance", "objects", "recoveryBoundary", "claims"], "captured public attestation");
+  assert.equal(record.schemaVersion, "witness-tree/qc-immutable-promotion-attestation-redacted/1");
+  assert.equal(record.status, "owner-private-pair-required-for-verification");
+  assert.match(record.notice, /exposes no version or upload identifier/i);
+  assert.match(record.notice, /owner-attested internally consistent evidence.*not independently signed AWS proof/i);
+  assert.match(record.privateAttestationSha256, SHA256);
+  exactKeys(record.provenance, ["createdAt", "runnerSha256", "captureScriptSha256", "planSha256", "operation"], "captured public provenance");
+  assert.ok(exactUtc(record.provenance.createdAt));
+  assert.equal(record.provenance.runnerSha256, expected.runnerSha256 ?? hash(readFileSync(RUNNER_PATH)));
+  assert.equal(record.provenance.captureScriptSha256, expected.captureScriptSha256 ?? hash(readFileSync(CAPTURE_PATH)));
+  assert.equal(record.provenance.planSha256, expected.planSha256 ?? hash(readFileSync(PLAN_PATH)));
+  assert.equal(record.provenance.operation, "read-only-exact-version-head-and-payload-retention-capture");
+  assert.equal(record.objects.length, plan.artifacts.length * 2);
+  assert.deepEqual(record.objects.map(({ artifactId, objectKind }) => [artifactId, objectKind]), plan.artifacts.flatMap(({ id }) => [[id, "payload"], [id, "manifest"]]));
+  for (const artifact of plan.artifacts) {
+    for (const object of record.objects.filter(({ artifactId }) => artifactId === artifact.id)) {
+      exactKeys(object, ["artifactId", "productionSourceId", "objectKind", "keySha256", "versionIdSha256", "contentLength", "providerChecksumSha256", "headResponseSha256", "retention"], "captured public object");
+      assert.equal(object.productionSourceId, artifact.productionSourceId);
+      assert.ok(["payload", "manifest"].includes(object.objectKind));
+      assert.equal(object.keySha256, hash(object.objectKind === "payload" ? artifact.payloadKey : artifact.manifestKey));
+      assert.match(object.versionIdSha256, SHA256);
+      assert.match(object.providerChecksumSha256, SHA256);
+      assert.match(object.headResponseSha256, SHA256);
+      if (object.objectKind === "payload") {
+        assert.equal(object.contentLength, artifact.byteLength);
+        exactKeys(object.retention, ["mode", "retainUntil", "responseSha256"], "captured payload retention");
+        assert.equal(object.retention.mode, plan.mfaGatedExecution.retentionMode);
+        assert.equal(object.retention.retainUntil, plan.mfaGatedExecution.recommendedRetainUntil);
+        assert.match(object.retention.responseSha256, SHA256);
+      } else {
+        assert.equal(object.contentLength, Buffer.byteLength(sidecarFor(plan, artifact)));
+        assert.equal(object.retention, "not-authorized-rebuildable-sidecar");
+      }
+    }
+  }
+  assert.equal(new Set(record.objects.map(({ versionIdSha256 }) => versionIdSha256)).size, record.objects.length);
+  assert.deepEqual(record.recoveryBoundary, { multipartResumeStatePreserved: true, replicaCreated: false, replicaAuthorized: false, meaning: "Private multipart state supports interrupted-run diagnosis/resume only; no recovery replica was approved or proved." });
+  assert.deepEqual(record.claims, { exactReadbacksVerified: false, retentionVerified: false, immutableObjectStorage: false, sourceLedgerCreditChanged: false, transformed: false, ingested: false, productionEligible: false });
+  return record;
+}
+
 function validatePrivateObject(object, artifact, plan) {
   exactKeys(object, ["artifactId", "productionSourceId", "objectKind", "key", "versionId", "contentLength", "checksum", "headObjectReadAt", "headResponseSha256", "retention"], `private ${object.objectKind}`);
   assert.equal(object.artifactId, artifact.id);
@@ -133,7 +176,13 @@ if (process.argv[1]?.endsWith(basename(import.meta.url))) {
     console.log("QC private/public attestation pair passed exact fail-closed validation; this does not prove recovery replication, transformation, ingestion, release, or production admission.");
   } else {
     assert.equal(args.length, 0, "Usage: checker [--pair private public]");
-    validatePendingQcAttestation(readJson(PUBLIC_PATH));
-    console.log("QC post-run attestation remains pending; no immutable credit or downstream state changed.");
+    const record = readJson(PUBLIC_PATH);
+    if (record.status === "awaiting-owner-generated-private-attestation") {
+      validatePendingQcAttestation(record);
+      console.log("QC post-run attestation remains pending; no immutable credit or downstream state changed.");
+    } else {
+      validateCapturedQcAttestation(record);
+      console.log("QC redacted attestation passed public schema and exact-plan binding; only --pair performs full private/public verification, and no production admission is implied.");
+    }
   }
 }

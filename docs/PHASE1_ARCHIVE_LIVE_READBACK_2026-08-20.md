@@ -25,4 +25,4 @@ Recovery coverage and control evidence also remain incomplete: annual VLCE2, can
 
 ## Phase 1 impact
 
-This is historical operator-observation context only. The current canonical state is **14.25/31 raw credits**, **38.7903226% formal evidence tracking**, **7 immutable rows**, and **0/31 production-admitted or eligible**. Current wildfire remains **0/6 machine-verifiable and 6/6 attested-only**; this record adds no credit. No Phase 2 work, deployment, push, email, or AWS/IAM/S3 mutation was performed.
+This is historical operator-observation context only. The current canonical state is **14.75/31 raw credits**, **39.2741935% formal evidence tracking**, **9 immutable rows**, and **0/31 production-admitted or eligible**. Current wildfire remains **0/6 machine-verifiable and 6/6 attested-only**; this historical record adds no credit. No Phase 2 work, deployment, push, email, or AWS/IAM/S3 mutation was performed by this audit.

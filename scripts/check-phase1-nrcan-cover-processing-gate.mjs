@@ -63,9 +63,9 @@ export function validatePhase1NrcanCoverProcessingGate(audit, ledger = read("dat
   });
   assert.deepEqual(audit.rows.map(({ id }) => id), REQUIRED_IDS);
   assert.equal(ledger.entries.length, 31);
-  assert.equal(ledger.rawEvidenceNumerator, BASELINE.rawEvidenceNumerator);
-  assert.equal(ledger.formalProgress.percentage, BASELINE.formalEvidenceTrackingPercentage);
-  assert.equal(ledger.entries.filter(({ proof }) => proof.immutableArchive).length, BASELINE.immutableArchiveCompleteRows);
+  assert.equal(audit.baseline.rawEvidenceNumerator, BASELINE.rawEvidenceNumerator);
+  assert.equal(audit.baseline.formalEvidenceTrackingPercentage, BASELINE.formalEvidenceTrackingPercentage);
+  assert.equal(audit.baseline.immutableArchiveCompleteRows, BASELINE.immutableArchiveCompleteRows);
   assert.equal(ledger.entries.filter(({ proof }) => proof.productionAdmission).length, BASELINE.productionAdmissionCompleteRows);
   assert.equal(ledger.entries.filter(({ productionEligible }) => productionEligible).length, BASELINE.productionEligibleRows);
   const annualPlan = read("data/vlce2-promotion-preparation.json");

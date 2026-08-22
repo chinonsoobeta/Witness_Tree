@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const IDS = [
   "ntems-annual-land-cover", "ntems-forest-harvest", "ntems-canopy-cover", "ntems-canopy-height",
+  "qc-current-ecoforest", "qc-original-current-inventory",
   "ab-avi-crown", "ab-avi-post-harvest", "ab-primary-land-vegetation",
 ];
 const SHA256 = /^[a-f0-9]{64}$/;
@@ -19,6 +20,8 @@ const EXPECTED_ROWS = [
   { id: "ab-avi-crown", preparationStatus: "blocked-source-ledger-only-no-derived-payload-or-downstream-scope", reason: "The source-ledger-only decision preserves the exact FID 1 exclusion, but the repair/quarantine audit wrote no derived AVI payload and no downstream transformation or ingestion scope is approved." },
   { id: "ab-avi-post-harvest", preparationStatus: "blocked-source-ledger-only-no-derived-payload-or-downstream-scope", reason: "The source-ledger-only decision supplies no approved derived post-inventory-harvest payload, downstream transformation scope, or ingestion decision." },
   { id: "ab-primary-land-vegetation", preparationStatus: "selected-exact-scope-schema-preflight-blocked-downstream-decisions", reason: "The owner-approved exact raw/derived scope and immutable output support read-only validation, but ordered schema parity fails and transformation admission plus ingestion decisions remain separate." },
+  { id: "qc-current-ecoforest", preparationStatus: "blocked-source-ledger-only-no-production-method-output", reason: "The recorded immutable archive attestation and source-ledger-only decision supply no approved production transformation, checksum-bound output, ingestion decision, release, or production admission." },
+  { id: "qc-original-current-inventory", preparationStatus: "blocked-source-ledger-only-no-production-method-output", reason: "The recorded immutable archive attestation and source-ledger-only decision supply no approved production transformation, checksum-bound output, ingestion decision, release, or production admission." },
 ];
 const EXPECTED_LEDGER_BLOCKERS = new Map([
   ["ntems-annual-land-cover", "Owner approved this named source-ledger evidence row only; transform, ingestion, release, and production eligibility remain separately blocked."],
@@ -28,6 +31,8 @@ const EXPECTED_LEDGER_BLOCKERS = new Map([
   ["ab-avi-crown", "Owner approved this named source-ledger evidence row with only AVI_PostInventoryHarvestIndex FID 1 excluded. The existing repair/quarantine policy run is locally validated, but no downstream transformation scope, ingestion authorization, release approval, or production eligibility is approved."],
   ["ab-avi-post-harvest", "Owner approved this named source-ledger evidence row only. The existing repair/quarantine policy run is locally validated, but no downstream transformation scope, ingestion authorization, release approval, or production eligibility is recorded."],
   ["ab-primary-land-vegetation", "Exact raw and derived payload versions and deterministic sidecar versions are remotely verified; both payload versions carry COMPLIANCE retention through 2033-08-12. The owner admitted the exact raw/derived scope for scope-bound validation and ingestion preparation only; transformation admission, ingestion, release, production admission, and production eligibility remain separately blocked."],
+  ["qc-current-ecoforest", "Separate owner decisions and evidence for transformation, ingestion, release, and production admission remain required."],
+  ["qc-original-current-inventory", "Separate owner decisions and evidence for transformation, ingestion, release, and production admission remain required."],
 ]);
 const EXPECTED_DECISION_SCOPES = new Map([
   ["ntems-annual-land-cover", "This approval is limited to this named source-ledger evidence row and does not authorize transformation, ingestion, release, runtime production eligibility, or any other source."],
@@ -37,6 +42,8 @@ const EXPECTED_DECISION_SCOPES = new Map([
   ["ab-avi-crown", "Only AVI_PostInventoryHarvestIndex FID 1 is excluded; it has zero AVI_Crown observations and no Crown denominator impact. This does not authorize transformation, ingestion, release, runtime production eligibility, or any other source."],
   ["ab-avi-post-harvest", "This approval is limited to this named source-ledger evidence row and does not authorize transformation, ingestion, release, runtime production eligibility, or any other source."],
   ["ab-primary-land-vegetation", "The owner admitted only the unchanged raw ZIP and the exact 179,087-feature closed-join derived artifact under alberta-plvi-geometry-repair-v1 with 12 bounded repairs, preserving duplicate POLYGON_ID 41405 and no feature loss or deduplication. This authorizes scope-bound validation and ingestion preparation only; it does not authorize transformation admission, ingestion, release, runtime production eligibility, or any other source."],
+  ["qc-current-ecoforest", "The owner accepted this named existing immutable source-ledger evidence row only, including its validated redacted archive attestation. This does not authorize transformation admission, ingestion, release, runtime production eligibility, or any other source."],
+  ["qc-original-current-inventory", "The owner accepted this named existing immutable source-ledger evidence row only, including its validated redacted archive attestation. This does not authorize transformation admission, ingestion, release, runtime production eligibility, or any other source."],
 ]);
 
 const read = (root, file) => JSON.parse(readFileSync(path.join(root, file), "utf8"));
@@ -66,10 +73,10 @@ export function validatePhase1ImmutableDownstreamPreflight(record, context) {
   assert.equal(record.status, "owner-independent-audit-complete-plvi-schema-blocked");
   assert.match(record.notice, /read-only preparation contract.*does not transform.*ingest.*production source/i);
   assert.deepEqual(record.baseline, {
-    immutableRows: 7,
-    rawEvidenceNumerator: 14.25,
+    immutableRows: 9,
+    rawEvidenceNumerator: 14.75,
     rawEvidenceDenominator: 31,
-    formalEvidenceTrackingPercentage: 38.7903226,
+    formalEvidenceTrackingPercentage: 39.2741935,
     productionAdmissionRows: 0,
     productionEligibleRows: 0,
   });

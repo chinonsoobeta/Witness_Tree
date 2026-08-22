@@ -18,9 +18,9 @@ const context = {
   readiness: read("data/alberta-plvi-full-release-readiness.json"),
 };
 
-test("audits all seven immutable rows and keeps the PLVI schema preflight blocked", () => {
+test("audits all nine immutable rows and keeps the PLVI schema preflight blocked", () => {
   assert.equal(validatePhase1ImmutableDownstreamPreflight(record, context), record);
-  assert.equal(record.auditedRows.length, 7);
+  assert.equal(record.auditedRows.length, 9);
   assert.deepEqual(record.selectedBatch.rows, ["ab-primary-land-vegetation"]);
   assert.equal(record.selectedBatch.validationGates.preflightResult, "blocked");
   assert.deepEqual(record.selectedBatch.observedOutputSchema.nameDrift, [

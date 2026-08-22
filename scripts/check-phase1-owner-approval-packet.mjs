@@ -4,7 +4,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const SCHEMA = "witness-tree/phase1-owner-approval-packet/1";
-const HEAD = "4466a14dd1462d09692db869523df713a6db2291";
+const HEAD = "9bf5baa2ecc51ce4c039531e798bfb6418e3baaf";
 const QUEUE_SCHEMA = "witness-tree/phase1-owner-decision-queue/1";
 const PHASES = ["reversibleSourceScope", "irreversibleArchiveRetention", "releaseProductionAdmission"];
 const QUEUE_ROWS = [
@@ -283,11 +283,11 @@ export async function checkPhase1OwnerApprovalPacket(root = path.resolve(path.di
   assert.equal(packet.status, "template-not-approved");
   assert.equal(packet.derivedFromHead, HEAD);
   assert.equal(packet.sourceQueue, "data/phase1-owner-decision-queue.json");
-  assert.match(packet.notice, /two reconciled non-admitting owner decisions.*does not create or infer.*AWS.*production eligibility/i);
+  assert.match(packet.notice, /reconciled non-admitting owner decisions.*does not create or infer.*AWS.*production eligibility/i);
   assert.deepEqual(packet.recordedDecisions, {
     source: "data/phase1-remote-source-admission-decisions.json",
-    rows: ["ntems-forest-harvest", "ntems-canopy-height", "ab-primary-land-vegetation"],
-    scope: "The two national rows are accepted source-ledger-only; PLVI is admitted only as the exact raw/derived scope for scope-bound validation and ingestion preparation.",
+    rows: ["ntems-forest-harvest", "ntems-canopy-height", "ab-primary-land-vegetation", "qc-current-ecoforest", "qc-original-current-inventory"],
+    scope: "The two national and two Quebec rows are accepted source-ledger-only; PLVI is admitted only as the exact raw/derived scope for scope-bound validation and ingestion preparation.",
   });
   same(packet.phaseOrder, ["reversible-source-scope", "irreversible-archive-retention", "release-production-admission"]);
   same(packet.baseline, queue.baseline, "Packet baseline must reuse the owner queue baseline.");

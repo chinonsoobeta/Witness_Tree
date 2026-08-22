@@ -124,5 +124,5 @@ export function loadPartialLedgerOwnerReviewOutreach() {
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   const pkg = loadPartialLedgerOwnerReviewOutreach();
-  console.log(`Owner-review outreach package passed for ${pkg.requests.length} unsent requests; current canonical state remains 14.25/31 raw credits, 38.7903226% formal evidence tracking, 7/31 immutable, and 0/31 production admitted or eligible.`);
+  console.log(`Owner-review outreach package passed for ${pkg.requests.length} unsent requests; current canonical state is 14.75/31 raw credits, 39.2741935% formal evidence tracking, 9/31 immutable, and 0/31 production admitted or eligible.`);
 }

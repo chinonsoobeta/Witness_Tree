@@ -1,6 +1,6 @@
 # Phase 1 owner approvals and Phase 3 governance
 
-Chinonso Obeta approved the complete cross-phase A-list on 2026-08-21. The exact machine record is [`data/phase1-phase3-owner-approvals-2026-08-21.json`](../data/phase1-phase3-owner-approvals-2026-08-21.json). Approval alone changes no evidence score: Phase 1 remains **14.25/31**, **38.7903226%**, **7 immutable**, and **0 admitted or eligible**; Phase 3 remains **47%**.
+Chinonso Obeta approved the complete cross-phase A-list on 2026-08-21. The exact machine record is [`data/phase1-phase3-owner-approvals-2026-08-21.json`](../data/phase1-phase3-owner-approvals-2026-08-21.json). At the time, approval alone changed no evidence score: the historical Phase 1 baseline was **14.25/31**, **38.7903226%**, **7 immutable**, and **0 admitted or eligible**; Phase 3 remained **47%**.
 
 The federal, Québec current/original, Québec fourth-inventory, current-wildfire, and archive-control approvals are recorded. Their canonical artifact names, bytes, checksums, keys, IAM boundaries and retention dates remain those in the owner packet and linked preparations. No MFA prompt, upload, IAM mutation, retention write, legal-hold change, delete attempt, recovery operation, release or production admission occurred.
 

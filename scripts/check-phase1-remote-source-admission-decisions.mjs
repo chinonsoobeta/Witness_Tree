@@ -10,12 +10,14 @@ const EXPECTED_IDS = [
   "ab-avi-crown",
   "ab-avi-post-harvest",
   "ab-primary-land-vegetation",
+  "qc-current-ecoforest",
+  "qc-original-current-inventory",
 ];
 
 export function validateRemoteAdmissionDecisions(decisions, ledger) {
   assert.equal(decisions.schemaVersion, 1);
   assert.equal(decisions.status, "owner-decisions-recorded");
-  assert.match(decisions.notice, /Seven named.*source-ledger decisions.*PLVI.*scope-bound validation/i);
+  assert.match(decisions.notice, /Nine named.*source-ledger decisions.*Quebec.*PLVI.*scope-bound validation/i);
   const remote = ledger.entries.filter((entry) => entry.evidenceState === "remote-verified-archived-profiled");
   assert.deepEqual(decisions.decisions.map(({ id }) => id), EXPECTED_IDS);
   for (const decision of decisions.decisions) {
@@ -29,9 +31,13 @@ export function validateRemoteAdmissionDecisions(decisions, ledger) {
     assert.equal(decision.ownerAdmission, APPROVED);
     assert.match(decision.scope, /does not authorize (?:transformation admission|transformation), ingestion, release, runtime production eligibility, or any other source/i);
   }
-  for (const id of ["ntems-forest-harvest", "ntems-canopy-height"]) {
+  for (const id of ["ntems-forest-harvest", "ntems-canopy-height", "qc-current-ecoforest", "qc-original-current-inventory"]) {
     const decision = decisions.decisions.find(({ id: candidate }) => candidate === id);
     assert.equal(decision.scopeDecision, "accepted-named-source-ledger-only");
+  }
+  for (const id of ["qc-current-ecoforest", "qc-original-current-inventory"]) {
+    const decision = decisions.decisions.find(({ id: candidate }) => candidate === id);
+    assert.equal(decision.evidenceRef, "data/qc-immutable-promotion-attestation.json");
   }
   const plvi = decisions.decisions.find(({ id }) => id === "ab-primary-land-vegetation");
   assert.equal(plvi.scopeDecision, "approved-raw-and-derived-scope-only");

@@ -1,20 +1,22 @@
 {
   "schemaVersion": "witness-tree/phase1-owner-approval-packet/1",
   "status": "template-not-approved",
-  "asOf": "2026-08-21",
-  "derivedFromHead": "4466a14dd1462d09692db869523df713a6db2291",
+  "asOf": "2026-08-22",
+  "derivedFromHead": "9bf5baa2ecc51ce4c039531e798bfb6418e3baaf",
   "sourceQueue": "data/phase1-owner-decision-queue.json",
-  "supersededArchiveApprovalState": "The template fields in this packet are historical inputs. Federal, Quebec current/original, Quebec fourth, and current-wildfire archive approvals are separately recorded in data/phase1-phase3-owner-approvals-2026-08-21.json; execution and readback evidence remain pending.",
+  "supersededArchiveApprovalState": "The template fields in this packet are historical inputs. Federal, Quebec current/original, Quebec fourth, and current-wildfire archive approvals are separately recorded in data/phase1-phase3-owner-approvals-2026-08-21.json. Quebec current/original immutable evidence is now integrated; the other archive executions/readbacks remain pending.",
   "recordedDecisions": {
     "source": "data/phase1-remote-source-admission-decisions.json",
     "rows": [
       "ntems-forest-harvest",
       "ntems-canopy-height",
-      "ab-primary-land-vegetation"
+      "ab-primary-land-vegetation",
+      "qc-current-ecoforest",
+      "qc-original-current-inventory"
     ],
-    "scope": "The two national rows are accepted source-ledger-only; PLVI is admitted only as the exact raw/derived scope for scope-bound validation and ingestion preparation."
+    "scope": "The two national and two Quebec rows are accepted source-ledger-only; PLVI is admitted only as the exact raw/derived scope for scope-bound validation and ingestion preparation."
   },
-  "notice": "Copy/paste owner-input blocks plus two reconciled non-admitting owner decisions. This packet does not create or infer permission, IAM state, an AWS or remote-storage action, transformation admission, ingestion, release, production admission, or production eligibility. Remaining owner fields stay pending until separately recorded.",
+  "notice": "Copy/paste owner-input blocks plus reconciled non-admitting owner decisions. This packet does not create or infer permission, IAM state, an AWS or remote-storage action, transformation admission, ingestion, release, production admission, or production eligibility. Remaining owner fields stay pending until separately recorded.",
   "phaseOrder": [
     "reversible-source-scope",
     "irreversible-archive-retention",
@@ -22,16 +24,16 @@
   ],
   "baseline": {
     "productionRows": 31,
-    "rawEvidenceNumerator": 14.25,
+    "rawEvidenceNumerator": 14.75,
     "rawEvidenceDenominator": 31,
-    "formalEvidenceTrackingPercentage": 38.7903226,
+    "formalEvidenceTrackingPercentage": 39.2741935,
     "evidenceStateCounts": {
-      "remote-verified-archived-profiled": 7,
-      "local-verified-profiled": 9,
+      "remote-verified-archived-profiled": 9,
+      "local-verified-profiled": 7,
       "partial-component": 2,
       "access-blocked": 13
     },
-    "immutableArchiveCompleteRows": 7,
+    "immutableArchiveCompleteRows": 9,
     "productionAdmissionCompleteRows": 0,
     "productionEligibleRows": 0,
     "queueRowCount": 16

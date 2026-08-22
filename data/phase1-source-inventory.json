@@ -196,10 +196,10 @@
       "name": "Carte écoforestière à jour",
       "purpose": "Southern Québec forest context and disturbances.",
       "planUse": "production",
-      "evidence": "Official provincial archive retrieved locally with exact byte count and SHA-256, exhaustive source geometry profile, and checksum-bound publisher-footprint derivative evidence; not yet in immutable object storage or admitted to production ingestion.",
+      "evidence": "The local profile remains local-artifact evidence. Separately, the exact official provincial archive and manifest have validated redacted immutable-storage attestation; no transformation, ingestion, release, or production admission is recorded.",
       "ownerRole": "provincial data lead",
-      "missing": "Immutable object-storage promotion and separate production ingestion admission.",
-      "externalDependency": "Immutable storage and production admission"
+      "missing": "Separate transformation, ingestion, release, and production-admission decisions and evidence.",
+      "externalDependency": "Downstream owner decisions and production admission"
     },
     {
       "id": "qc-original-current-inventory",
@@ -207,10 +207,10 @@
       "name": "Carte écoforestière originale et résultats d’inventaire courants",
       "purpose": "Original mapping and inventory tables.",
       "planUse": "production",
-      "evidence": "Official original/current provincial archive locally staged with exact byte count and SHA-256, ZIP and SQLite integrity receipts, exhaustive spatial geometry validation, and complete GEOCODE-linked table profile; not immutable, ingested, released, or production.",
+      "evidence": "The local profile remains local-artifact evidence with ZIP, SQLite, geometry, and GEOCODE validation. Separately, the exact official archive and manifest have validated redacted immutable-storage attestation; no transformation, ingestion, release, or production admission is recorded.",
       "ownerRole": "provincial data lead",
-      "missing": "Immutable object-storage promotion/recovery evidence and separate owner admission for transformation, ingestion, release, and production eligibility.",
-      "externalDependency": "Immutable storage and owner admission"
+      "missing": "Separate transformation, ingestion, release, and production-admission decisions and evidence.",
+      "externalDependency": "Downstream owner decisions and production admission"
     },
     {
       "id": "qc-fourth-inventory",

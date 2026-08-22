@@ -1,22 +1,22 @@
 {
   "schemaVersion": "witness-tree/phase1-owner-decision-queue/1",
   "status": "owner-action-queue-read-only",
-  "asOf": "2026-08-21",
-  "derivedFromHead": "4466a14dd1462d09692db869523df713a6db2291",
+  "asOf": "2026-08-22",
+  "derivedFromHead": "9bf5baa2ecc51ce4c039531e798bfb6418e3baaf",
   "notice": "This consolidated queue restates existing Phase 1 owner boundaries, including the separately recorded archive approvals in data/phase1-phase3-owner-approvals-2026-08-21.json. This queue creates no new approval, performs no AWS or remote-storage action, submits no form, sends no email, and does not transform, ingest, release, admit, or make any row production eligible.",
   "selectionRule": "Include every canonical production row whose evidenceState is local-verified-profiled or remote-verified-archived-profiled and whose productionAdmission remains false. These rows have a next owner-controlled source-scope, transformation, ingestion, release, archive-promotion, or production-admission decision. Exclude partial-component and access-blocked rows because their next gate is external artifact, rights, authority, or permission resolution before this owner pipeline.",
   "baseline": {
     "productionRows": 31,
-    "rawEvidenceNumerator": 14.25,
+    "rawEvidenceNumerator": 14.75,
     "rawEvidenceDenominator": 31,
-    "formalEvidenceTrackingPercentage": 38.7903226,
+    "formalEvidenceTrackingPercentage": 39.2741935,
     "evidenceStateCounts": {
-      "remote-verified-archived-profiled": 7,
-      "local-verified-profiled": 9,
+      "remote-verified-archived-profiled": 9,
+      "local-verified-profiled": 7,
       "partial-component": 2,
       "access-blocked": 13
     },
-    "immutableArchiveCompleteRows": 7,
+    "immutableArchiveCompleteRows": 9,
     "productionAdmissionCompleteRows": 0,
     "productionEligibleRows": 0,
     "queueRowCount": 16
@@ -332,24 +332,24 @@
     },
     {
       "id": "qc-current-ecoforest",
-      "evidenceState": "local-verified-profiled",
-      "rawCredit": 0.75,
-      "decisionBundle": "quebec-current-original-archive",
-      "primaryActionId": "quebec-current-original-archive-preflight-and-owner-promotion",
+      "evidenceState": "remote-verified-archived-profiled",
+      "rawCredit": 1,
+      "decisionBundle": "archived-remote-downstream",
+      "primaryActionId": "archived-remote-transform-ingest-release",
       "ownerDecisionStatus": {
-        "archivePromotion": "approved-owner-local-execution-evidence-pending",
-        "sourceLedger": "recorded-approved-source-scope-awaiting-archive-evidence",
-        "scope": "recorded-approved-source-scope-awaiting-archive-evidence",
-        "transformation": "pending-after-archive",
-        "ingestion": "pending-after-archive",
-        "release": "pending-after-archive",
+        "archivePromotion": "completed-evidence-integrated",
+        "sourceLedger": "recorded-approved-source-ledger-only",
+        "scope": "recorded-source-ledger-only",
+        "transformation": "pending",
+        "ingestion": "pending",
+        "release": "pending",
         "productionAdmission": "pending"
       },
       "exactNextSteps": [
-        "owner completes the already-authorized promotion with fresh MFA",
-        "capture the mode-600 private attestation and digest-bound redaction",
-        "validate and integrate exact immutable readbacks without exposing private identifiers",
-        "record two named owner decisions and downstream gates"
+        "retain the validated redacted immutable attestation and source-ledger-only decision",
+        "define and approve the exact production transformation",
+        "validate the checksum-bound output and separately decide ingestion",
+        "record release and production admission"
       ],
       "evidenceRefs": [
         "data/qc-immutable-promotion-preparation.json",
@@ -362,24 +362,24 @@
     },
     {
       "id": "qc-original-current-inventory",
-      "evidenceState": "local-verified-profiled",
-      "rawCredit": 0.75,
-      "decisionBundle": "quebec-current-original-archive",
-      "primaryActionId": "quebec-current-original-archive-preflight-and-owner-promotion",
+      "evidenceState": "remote-verified-archived-profiled",
+      "rawCredit": 1,
+      "decisionBundle": "archived-remote-downstream",
+      "primaryActionId": "archived-remote-transform-ingest-release",
       "ownerDecisionStatus": {
-        "archivePromotion": "approved-owner-local-execution-evidence-pending",
-        "sourceLedger": "recorded-approved-source-scope-awaiting-archive-evidence",
-        "scope": "recorded-approved-source-scope-awaiting-archive-evidence",
-        "transformation": "pending-after-archive",
-        "ingestion": "pending-after-archive",
-        "release": "pending-after-archive",
+        "archivePromotion": "completed-evidence-integrated",
+        "sourceLedger": "recorded-approved-source-ledger-only",
+        "scope": "recorded-source-ledger-only",
+        "transformation": "pending",
+        "ingestion": "pending",
+        "release": "pending",
         "productionAdmission": "pending"
       },
       "exactNextSteps": [
-        "owner completes the already-authorized promotion with fresh MFA",
-        "capture the mode-600 private attestation and digest-bound redaction",
-        "validate and integrate exact immutable readbacks without exposing private identifiers",
-        "record two named owner decisions and downstream gates"
+        "retain the validated redacted immutable attestation and source-ledger-only decision",
+        "define and approve the exact production transformation",
+        "validate the checksum-bound output and separately decide ingestion",
+        "record release and production admission"
       ],
       "evidenceRefs": [
         "data/qc-immutable-promotion-preparation.json",

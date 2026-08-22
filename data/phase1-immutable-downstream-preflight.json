@@ -1,13 +1,13 @@
 {
   "schemaVersion": "witness-tree/phase1-immutable-downstream-preflight/1",
   "status": "owner-independent-audit-complete-plvi-schema-blocked",
-  "asOf": "2026-08-21",
-  "notice": "This is a read-only preparation contract for the seven immutable Phase 1 rows. It does not transform data, authorize transformation or ingestion, ingest, release, admit a production source, change eligibility, or perform an external mutation.",
+  "asOf": "2026-08-22",
+  "notice": "This is a read-only preparation contract for the nine immutable Phase 1 rows. It does not transform data, authorize transformation or ingestion, ingest, release, admit a production source, change eligibility, or perform an external mutation.",
   "baseline": {
-    "immutableRows": 7,
-    "rawEvidenceNumerator": 14.25,
+    "immutableRows": 9,
+    "rawEvidenceNumerator": 14.75,
     "rawEvidenceDenominator": 31,
-    "formalEvidenceTrackingPercentage": 38.7903226,
+    "formalEvidenceTrackingPercentage": 39.2741935,
     "productionAdmissionRows": 0,
     "productionEligibleRows": 0
   },
@@ -18,7 +18,9 @@
     {"id":"ntems-canopy-height","preparationStatus":"blocked-phase1-source-ledger-scope-only-no-production-method-output","reason":"The recorded Phase 1 source-ledger-only decision supplies no Phase 1 production-admission target transformation, checksum-bound output, or ingestion decision; the separate Phase 2 nonproduction method does not close those gates."},
     {"id":"ab-avi-crown","preparationStatus":"blocked-source-ledger-only-no-derived-payload-or-downstream-scope","reason":"The source-ledger-only decision preserves the exact FID 1 exclusion, but the repair/quarantine audit wrote no derived AVI payload and no downstream transformation or ingestion scope is approved."},
     {"id":"ab-avi-post-harvest","preparationStatus":"blocked-source-ledger-only-no-derived-payload-or-downstream-scope","reason":"The source-ledger-only decision supplies no approved derived post-inventory-harvest payload, downstream transformation scope, or ingestion decision."},
-    {"id":"ab-primary-land-vegetation","preparationStatus":"selected-exact-scope-schema-preflight-blocked-downstream-decisions","reason":"The owner-approved exact raw/derived scope and immutable output support read-only validation, but ordered schema parity fails and transformation admission plus ingestion decisions remain separate."}
+    {"id":"ab-primary-land-vegetation","preparationStatus":"selected-exact-scope-schema-preflight-blocked-downstream-decisions","reason":"The owner-approved exact raw/derived scope and immutable output support read-only validation, but ordered schema parity fails and transformation admission plus ingestion decisions remain separate."},
+    {"id":"qc-current-ecoforest","preparationStatus":"blocked-source-ledger-only-no-production-method-output","reason":"The recorded immutable archive attestation and source-ledger-only decision supply no approved production transformation, checksum-bound output, ingestion decision, release, or production admission."},
+    {"id":"qc-original-current-inventory","preparationStatus":"blocked-source-ledger-only-no-production-method-output","reason":"The recorded immutable archive attestation and source-ledger-only decision supply no approved production transformation, checksum-bound output, ingestion decision, release, or production admission."}
   ],
   "selectedBatch": {
     "rows": ["ab-primary-land-vegetation"],

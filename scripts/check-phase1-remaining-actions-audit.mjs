@@ -24,10 +24,10 @@ const EXPECTED_GROUPS = new Map([
   ["quebec-fourth-inventory-56-sheet-product", { rows: ["qc-fourth-inventory"], physicalArtifactCount: 62 }]
 ]);
 
-const LOCAL_AUDIT_HEAD = "4466a14dd1462d09692db869523df713a6db2291";
+const LOCAL_AUDIT_HEAD = "9bf5baa2ecc51ce4c039531e798bfb6418e3baaf";
 const LOCAL_AUDIT_CATEGORIES = new Map([
-  ["archive-preflight-and-readback", ["national-local-archive-preflight-and-owner-promotion", "quebec-current-original-archive-preflight-and-owner-promotion", "quebec-fourth-archive-preflight-and-owner-approvals", "current-wildfire-derived-archive-preflight-and-owner-promotion", "normal-archive-control-exercise"]],
-  ["profiles-and-validators", ["national-archived-owner-source-ledger-decisions", "plvi-transformation-ingestion-decisions", "archived-remote-transform-ingest-release", "wildfire-transform-ingest-release", "partial-historical-owner-review-and-external-evidence", "partial-boundaries-owner-review-and-external-evidence", "access-blocked-owner-and-external-resolution", "production-admission-and-release-gate"]],
+  ["archive-preflight-and-readback", ["national-local-archive-preflight-and-owner-promotion", "quebec-fourth-archive-preflight-and-owner-approvals", "current-wildfire-derived-archive-preflight-and-owner-promotion", "normal-archive-control-exercise"]],
+  ["profiles-and-validators", ["national-archived-owner-source-ledger-decisions", "plvi-transformation-ingestion-decisions", "archived-remote-transform-ingest-release", "quebec-current-original-transform-ingest-release", "wildfire-transform-ingest-release", "partial-historical-owner-review-and-external-evidence", "partial-boundaries-owner-review-and-external-evidence", "access-blocked-owner-and-external-resolution", "production-admission-and-release-gate"]],
   ["local-transformations-and-derived-outputs", ["plvi-transformation-ingestion-decisions", "archived-remote-transform-ingest-release", "wildfire-transform-ingest-release", "partial-historical-owner-review-and-external-evidence"]],
   ["owner-and-external-boundaries", ["national-archived-owner-source-ledger-decisions", "plvi-transformation-ingestion-decisions", "partial-historical-owner-review-and-external-evidence", "partial-boundaries-owner-review-and-external-evidence", "access-blocked-owner-and-external-resolution"]],
   ["production-admission-boundary", ["archived-remote-transform-ingest-release", "wildfire-transform-ingest-release", "production-admission-and-release-gate"]]
@@ -35,6 +35,7 @@ const LOCAL_AUDIT_CATEGORIES = new Map([
 const LOCAL_AUDIT_GAPS = new Set([
   "ntems-target-transformation-and-ingestion",
   "avi-downstream-scope",
+  "quebec-current-original-downstream-scope",
   "plvi-scope-and-ingestion",
   "wildfire-derived-live-readbacks",
   "local-archive-groups-live-evidence",
@@ -42,7 +43,6 @@ const LOCAL_AUDIT_GAPS = new Set([
 ]);
 const OWNER_RUN_APPROVALS = new Map([
   ["national-local-archive-preflight-and-owner-promotion", "federal-electoral-archive"],
-  ["quebec-current-original-archive-preflight-and-owner-promotion", "quebec-current-original-archive"],
   ["quebec-fourth-archive-preflight-and-owner-approvals", "quebec-fourth-inventory-archive"],
   ["current-wildfire-derived-archive-preflight-and-owner-promotion", "current-wildfire-exact-archive-proof"],
   ["normal-archive-control-exercise", "archive-control"]
@@ -187,7 +187,7 @@ export function validatePhase1RemainingActionsAudit(audit, ledger, currentState,
   assert.match(audit.notice, /no AWS call.*email.*form submission.*production-eligibility change/i);
   assert.match(audit.selectionRule, /immutable remote proof is absent OR production admission is absent/i);
   assert.match(audit.scoreFormula, /30 \* raw-credit delta \/ 31/);
-  assert.equal(audit.derivedFromHead, "4466a14dd1462d09692db869523df713a6db2291");
+  assert.equal(audit.derivedFromHead, "9bf5baa2ecc51ce4c039531e798bfb6418e3baaf");
   assert.deepEqual(audit.claims, CLAIMS);
 
   const entries = ledger.entries;
@@ -195,11 +195,11 @@ export function validatePhase1RemainingActionsAudit(audit, ledger, currentState,
   const stateCounts = Object.fromEntries(Object.entries(Object.groupBy(entries, ({ evidenceState }) => evidenceState)).map(([state, rows]) => [state, rows.length]));
   assert.equal(entries.length, 31);
   assert.deepEqual(audit.baseline.evidenceStateCounts, stateCounts);
-  assert.deepEqual(audit.baseline.evidenceStateCounts, { "remote-verified-archived-profiled": 7, "local-verified-profiled": 9, "partial-component": 2, "access-blocked": 13 });
+  assert.deepEqual(audit.baseline.evidenceStateCounts, { "remote-verified-archived-profiled": 9, "local-verified-profiled": 7, "partial-component": 2, "access-blocked": 13 });
   assert.equal(audit.baseline.rawEvidenceNumerator, ledger.rawEvidenceNumerator);
   assert.equal(audit.baseline.rawEvidenceDenominator, entries.length);
   assert.equal(audit.baseline.formalEvidenceTrackingPercentage, ledger.formalProgress.percentage);
-  assert.equal(audit.baseline.formalEvidenceTrackingPercentage, 38.7903226);
+  assert.equal(audit.baseline.formalEvidenceTrackingPercentage, 39.2741935);
   assert.equal(audit.baseline.immutableArchiveCompleteRows, entries.filter(({ proof }) => proof.immutableArchive).length);
   assert.equal(audit.baseline.productionAdmissionCompleteRows, entries.filter(({ proof }) => proof.productionAdmission).length);
   assert.equal(audit.baseline.productionEligibleRows, entries.filter(({ productionEligible }) => productionEligible).length);
@@ -217,14 +217,14 @@ export function validatePhase1RemainingActionsAudit(audit, ledger, currentState,
   assert.equal(currentState.ledger.immutableArchiveCompleteRows, audit.baseline.immutableArchiveCompleteRows);
   assert.equal(currentState.ledger.productionAdmissionCompleteRows, 0);
   assert.equal(currentState.ledger.productionEligibleRows, 0);
-  assert.deepEqual(currentState.globalGates.immutableArchives, { status: "blocked", completeRows: 7, localRowsAwaitingArchive: 9, sourceEvidenceBlockedRows: 15, currentWildfireRequiredObjects: 6, currentWildfireVerifiedObjects: 0, currentWildfireAttestedObjects: 6 });
+  assert.deepEqual(currentState.globalGates.immutableArchives, { status: "blocked", completeRows: 9, localRowsAwaitingArchive: 7, sourceEvidenceBlockedRows: 15, currentWildfireRequiredObjects: 6, currentWildfireVerifiedObjects: 0, currentWildfireAttestedObjects: 6 });
   assert.equal(currentState.globalGates.outreach.repliesRecorded, replyAudit.counts.substantiveReplyRecords);
   assert.equal(currentState.globalGates.outreach.accessBlockedRowsWithSubstantiveReply, replyAudit.counts.accessBlockedRowsWithSubstantiveReply);
   assert.equal(partialOutreach.status, "owner-review-only-not-sent");
   assert.equal(accessBlocker.status, "all-13-access-blocked-no-lawful-acquisition");
   assert.equal(readiness.entries.length, entries.length);
 
-  assert.deepEqual(audit.scope, { auditedRowCount: 31, rowsWithoutImmutableRemoteProof: 24, rowsWithoutProductionAdmission: 31, rowsSelectedByRule: 31, allProductionRowsRemainNonAdmitted: true, allProductionRowsRemainIneligible: true });
+  assert.deepEqual(audit.scope, { auditedRowCount: 31, rowsWithoutImmutableRemoteProof: 22, rowsWithoutProductionAdmission: 31, rowsSelectedByRule: 31, allProductionRowsRemainNonAdmitted: true, allProductionRowsRemainIneligible: true });
   assert.equal(entries.filter(({ proof }) => !proof.immutableArchive).length, audit.scope.rowsWithoutImmutableRemoteProof);
   assert.equal(entries.filter(({ proof }) => !proof.productionAdmission).length, audit.scope.rowsWithoutProductionAdmission);
   validatePhysicalArtifactGroups(audit, immutable);

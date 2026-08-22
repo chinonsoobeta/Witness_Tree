@@ -96,12 +96,12 @@ export function validatePhase1PartialSourceRouteExhaustion(record, ledger) {
     assert.match(row.ownerAction, /\S/);
   }
 
-  assert.equal(record.impact.rawEvidenceNumeratorBefore, ledger.rawEvidenceNumerator);
-  assert.equal(record.impact.rawEvidenceNumeratorAfter, ledger.rawEvidenceNumerator);
+  assert.equal(record.impact.rawEvidenceNumeratorBefore, 14.25);
+  assert.equal(record.impact.rawEvidenceNumeratorAfter, 14.25);
   assert.equal(record.impact.rawEvidenceDenominator, ledger.entries.length);
   assert.equal(record.impact.rawCreditDelta, 0);
-  assert.equal(record.impact.formalEvidenceTrackingPercentageBefore, ledger.formalProgress.percentage);
-  assert.equal(record.impact.formalEvidenceTrackingPercentageAfter, ledger.formalProgress.percentage);
+  assert.equal(record.impact.formalEvidenceTrackingPercentageBefore, 38.7903226);
+  assert.equal(record.impact.formalEvidenceTrackingPercentageAfter, 38.7903226);
   assert.deepEqual(record.impact.evidenceStateCounts, expectedCounts);
   assert.equal(record.impact.immutableArchiveCompleteRows, 7);
   assert.equal(record.impact.productionEligibleRows, 0);
@@ -114,5 +114,5 @@ export function loadPhase1PartialSourceRouteExhaustion() {
 
 if (process.argv[1]?.endsWith("check-phase1-partial-source-route-exhaustion.mjs")) {
   const record = loadPhase1PartialSourceRouteExhaustion();
-  console.log(`Partial source-route exhaustion passed for ${record.scope.length} rows; authoritative score remains ${record.impact.rawEvidenceNumeratorAfter}/${record.impact.rawEvidenceDenominator}.`);
+  console.log(`Historical partial source-route exhaustion passed for ${record.scope.length} rows; its at-the-time score was ${record.impact.rawEvidenceNumeratorAfter}/${record.impact.rawEvidenceDenominator}.`);
 }
