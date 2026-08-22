@@ -9,12 +9,12 @@
   "profiledInput": {"fromYear":2021,"toYear":2022,"path":"loss/detected-forest-loss-2021-2022.tif","byteLength":103762457,"sha256":"5b6661bcd7ec6f5e3c97431a2532d4fe325dc2fdfd70bd53e6a7ea5a8cc3c84d"},
   "profile": {
     "mode": "four-fixed-1024-square-read-only-windows",
-    "observedElapsedSeconds": 0.122261,
+    "observedElapsedSeconds": "0.122261",
     "windows": [
-      {"xOffset":30000,"yOffset":80000,"lossCellCount":30016,"connectedComponentCountWithinWindow":5191,"validNonLossCellCount":1018560,"nodataCellCount":0},
-      {"xOffset":60000,"yOffset":70000,"lossCellCount":532,"connectedComponentCountWithinWindow":355,"validNonLossCellCount":1048044,"nodataCellCount":0},
-      {"xOffset":90000,"yOffset":60000,"lossCellCount":0,"connectedComponentCountWithinWindow":0,"validNonLossCellCount":1048576,"nodataCellCount":0},
-      {"xOffset":120000,"yOffset":50000,"lossCellCount":0,"connectedComponentCountWithinWindow":0,"validNonLossCellCount":1048576,"nodataCellCount":0}
+      {"xOffset":30000,"yOffset":80000,"width":1024,"height":1024,"lossCellCount":30016,"connectedComponentCountWithinWindow":5191,"validNonLossCellCount":1018560,"nodataCellCount":0},
+      {"xOffset":60000,"yOffset":70000,"width":1024,"height":1024,"lossCellCount":532,"connectedComponentCountWithinWindow":355,"validNonLossCellCount":1048044,"nodataCellCount":0},
+      {"xOffset":90000,"yOffset":60000,"width":1024,"height":1024,"lossCellCount":0,"connectedComponentCountWithinWindow":0,"validNonLossCellCount":1048576,"nodataCellCount":0},
+      {"xOffset":120000,"yOffset":50000,"width":1024,"height":1024,"lossCellCount":0,"connectedComponentCountWithinWindow":0,"validNonLossCellCount":1048576,"nodataCellCount":0}
     ],
     "limitation": "Window components are truncated at window edges and cannot prove a national connected-patch count, time, or storage bound."
   },

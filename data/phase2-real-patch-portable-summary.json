@@ -1,0 +1,11 @@
+{
+  "schemaVersion":"witness-tree/phase2-real-patch-portable-summary/1",
+  "profileSha256":"40a1c24abdd8260962209dc7554ef73627945a3179bf73f0e4fb14373c3ed18c",
+  "lossSourceMapSha256":"c962180952e11af0766c5b929d97d4bb635181f93c04e93bbfa7d808e1561430",
+  "sourceLineageSha256":"a43e2bf03b5318c9163b84b4ea0edba3a1da08b8a28b4139d0da7698221779a0",
+  "profiledPair":[2021,2022],
+  "profiledLossSha256":"5b6661bcd7ec6f5e3c97431a2532d4fe325dc2fdfd70bd53e6a7ea5a8cc3c84d",
+  "observedElapsedSeconds":"0.122261",
+  "windowCount":4,
+  "productionEligible":false
+}
