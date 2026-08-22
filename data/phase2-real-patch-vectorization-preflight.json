@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "witness-tree/phase2-real-patch-vectorization-preflight/1",
+  "status": "blocked-before-national-vectorization",
+  "reviewStatus": "owner-approved-versioned-nonproduction",
+  "methodVersion": "phase2-owner-approved-versioned-nonproduction-v1",
+  "methodParameterSha256": "8d12ff6b6fb10208410bedf5f012e96a9682fdec457cccce688509d2dfa0b8fa",
+  "sourceBatchId": "phase2-real-national-1984-2022-v1",
+  "sourceLineageSha256": "a43e2bf03b5318c9163b84b4ea0edba3a1da08b8a28b4139d0da7698221779a0",
+  "profiledInput": {"fromYear":2021,"toYear":2022,"path":"loss/detected-forest-loss-2021-2022.tif","byteLength":103762457,"sha256":"5b6661bcd7ec6f5e3c97431a2532d4fe325dc2fdfd70bd53e6a7ea5a8cc3c84d"},
+  "profile": {
+    "mode": "four-fixed-1024-square-read-only-windows",
+    "observedElapsedSeconds": 0.122261,
+    "windows": [
+      {"xOffset":30000,"yOffset":80000,"lossCellCount":30016,"connectedComponentCountWithinWindow":5191,"validNonLossCellCount":1018560,"nodataCellCount":0},
+      {"xOffset":60000,"yOffset":70000,"lossCellCount":532,"connectedComponentCountWithinWindow":355,"validNonLossCellCount":1048044,"nodataCellCount":0},
+      {"xOffset":90000,"yOffset":60000,"lossCellCount":0,"connectedComponentCountWithinWindow":0,"validNonLossCellCount":1048576,"nodataCellCount":0},
+      {"xOffset":120000,"yOffset":50000,"lossCellCount":0,"connectedComponentCountWithinWindow":0,"validNonLossCellCount":1048576,"nodataCellCount":0}
+    ],
+    "limitation": "Window components are truncated at window edges and cannot prove a national connected-patch count, time, or storage bound."
+  },
+  "absoluteContractBound": {"cellCountPerPair":24889746240,"pairCount":38,"cellIndexArrayBytesIfEveryCellChanged":10927502063298,"approvedStorageCapBytes":2199023255552,"passes":false},
+  "blockers": [
+    "No exact all-38-pair loss-cell inventory exists from which to bound retained event and per-cell geometry bytes.",
+    "No deterministic cross-window component-stitching executor with exact cell lineage has passed a full-pair replay.",
+    "The bounded sample cannot prove completion within 96 hours or retained plus scratch storage within 2 TiB."
+  ],
+  "nationalExecutionStarted": false,
+  "released": false,
+  "productionEligible": false
+}

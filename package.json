@@ -116,6 +116,7 @@
     "readback:phase2-real-national": "node scripts/readback-phase2-real-national.mjs",
     "check:phase2-real-national-execution-evidence": "node --test tests/phase2-real-national-execution-evidence.test.mjs",
     "check:phase2-status-docs": "node --test tests/phase2-status-docs.test.mjs",
+    "check:phase2-real-patch-preflight": "node scripts/check-phase2-real-patch-preflight.mjs && node --test tests/phase2-real-patch-preflight.test.mjs",
     "check:phase2-real-national-execution": "node scripts/check-phase2-real-national-preflight.mjs && node scripts/check-phase2-real-national-execution-evidence.mjs && node --test tests/phase2-real-national-execution-evidence.test.mjs && node scripts/readback-phase2-real-national.mjs /Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data/derived/phase2-real-national-1984-2022-v1",
     "run:phase2-national-baseline-batch": "tsx scripts/run-national-baseline-batch.mts",
     "readback:phase2-synthetic-output": "tsx scripts/check-phase2-synthetic-output.mts",

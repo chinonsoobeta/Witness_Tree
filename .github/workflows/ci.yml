@@ -50,6 +50,7 @@ jobs:
       - run: npm run check:phase2-synthetic-readback
       - run: npm run check:phase2-real-national-execution-evidence
       - run: npm run check:phase2-status-docs
+      - run: node --test tests/phase2-real-patch-preflight.test.mjs
       - run: npm run check:accessibility
       - run: npm run build
       - run: npm run check:claims
