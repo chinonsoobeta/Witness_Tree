@@ -18,6 +18,7 @@ GRID_WIDTH = 193936
 GRID_HEIGHT = 128340
 LOSS_MAP_SHA256 = "c962180952e11af0766c5b929d97d4bb635181f93c04e93bbfa7d808e1561430"
 MAX_SECONDS = 96 * 60 * 60
+CANONICAL_PAIR_COUNT = 38
 
 
 def row_runs(row: np.ndarray) -> list[tuple[int, int]]:
@@ -137,10 +138,12 @@ def inventory_rows(rows: np.ndarray, width: int) -> dict[str, int | str]:
     return inventory.finish()
 
 
-def sha256_file(path: Path) -> str:
+def sha256_file(path: Path, deadline: float | None = None) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as stream:
         for chunk in iter(lambda: stream.read(8 * 1024 * 1024), b""):
+            if deadline is not None and time.monotonic() >= deadline:
+                raise TimeoutError("Inventory exceeded its approved wall-time cap while hashing input.")
             digest.update(chunk)
     return digest.hexdigest()
 
@@ -157,9 +160,27 @@ def canonical_loss_sha(from_year: int, to_year: int) -> str:
     return matches[0]
 
 
+def canonical_loss_pairs() -> list[tuple[int, int, str]]:
+    """Return the ordered, checksum-pinned adjacent national loss pairs."""
+    map_path = Path(__file__).parent.parent / "data" / "phase2-real-loss-source-map.json"
+    map_bytes = map_path.read_bytes()
+    if hashlib.sha256(map_bytes).hexdigest() != LOSS_MAP_SHA256:
+        raise ValueError("Canonical loss-source map checksum changed.")
+    source_map = json.loads(map_bytes)
+    pairs = [tuple(row) for row in source_map.get("pairs", [])]
+    if len(pairs) != CANONICAL_PAIR_COUNT:
+        raise ValueError("Canonical loss-source map pair count changed.")
+    expected = [(1984 + index, 1985 + index) for index in range(CANONICAL_PAIR_COUNT)]
+    if [(row[0], row[1]) for row in pairs] != expected:
+        raise ValueError("Canonical loss-source map order or year range changed.")
+    return [(int(from_year), int(to_year), str(sha256)) for from_year, to_year, sha256 in pairs]
+
+
 def inventory_raster(path: Path, from_year: int, to_year: int, block_rows: int, deadline: float) -> dict[str, object]:
+    if time.monotonic() >= deadline:
+        raise TimeoutError("Inventory exceeded its approved wall-time cap before hashing input.")
     expected_sha = canonical_loss_sha(from_year, to_year)
-    if sha256_file(path) != expected_sha:
+    if sha256_file(path, deadline) != expected_sha:
         raise ValueError("Loss raster SHA-256 does not match its canonical year pair.")
     gdal.SetCacheMax(64 * 1024 * 1024)
     dataset = gdal.Open(str(path), gdal.GA_ReadOnly)
@@ -195,10 +216,51 @@ def inventory_raster(path: Path, from_year: int, to_year: int, block_rows: int, 
     }
 
 
+def inventory_all_pairs(input_root: Path, block_rows: int, max_seconds: int) -> dict[str, object]:
+    """Inventory every canonical pair sequentially under one aggregate deadline."""
+    if input_root.is_symlink() or not input_root.is_dir():
+        raise ValueError("Loss input root must be a non-symlink directory.")
+    deadline = time.monotonic() + max_seconds
+    completed: list[dict[str, object]] = []
+    stopped = False
+    stop_reason: str | None = None
+    for from_year, to_year, _ in canonical_loss_pairs():
+        if time.monotonic() >= deadline:
+            stopped = True
+            stop_reason = "aggregate-deadline-reached"
+            break
+        path = input_root / f"detected-forest-loss-{from_year}-{to_year}.tif"
+        if path.is_symlink() or not path.is_file():
+            raise ValueError(f"Canonical loss raster is missing or symlinked: {path.name}")
+        try:
+            completed.append(inventory_raster(path, from_year, to_year, block_rows, deadline))
+        except TimeoutError:
+            stopped = True
+            stop_reason = "aggregate-deadline-reached"
+            break
+    result: dict[str, object] = {
+        "schemaVersion": "witness-tree/phase2-real-loss-component-inventory-batch/1",
+        "status": "stopped-before-completion" if stopped else "completed",
+        "canonicalPairCount": CANONICAL_PAIR_COUNT,
+        "completedPairCount": len(completed),
+        "pairs": completed,
+        "blockRows": block_rows,
+        "aggregateMaxSeconds": max_seconds,
+        "scratchBytes": 0,
+        "released": False,
+        "productionEligible": False,
+    }
+    if stop_reason is not None:
+        result["stopReason"] = stop_reason
+    return result
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--fixture-json")
     parser.add_argument("--input", type=Path)
+    parser.add_argument("--all-pairs", action="store_true")
+    parser.add_argument("--input-root", type=Path)
     parser.add_argument("--from-year", type=int)
     parser.add_argument("--to-year", type=int)
     parser.add_argument("--block-rows", type=int, default=32)
@@ -206,7 +268,11 @@ def main() -> None:
     args = parser.parse_args()
     if not 1 <= args.block_rows <= 64 or not 1 <= args.max_seconds <= MAX_SECONDS:
         raise ValueError("Inventory block or time cap is outside the approved bound.")
-    if args.fixture_json is not None:
+    if args.all_pairs:
+        if args.fixture_json is not None or args.input is not None or args.input_root is None:
+            parser.error("all-pairs mode requires --input-root and no single-pair or fixture input")
+        result = inventory_all_pairs(args.input_root, args.block_rows, args.max_seconds)
+    elif args.fixture_json is not None:
         rows = np.asarray(json.loads(args.fixture_json), dtype=np.uint8)
         if rows.ndim != 2 or rows.shape[1] == 0:
             raise ValueError("Fixture must be a non-empty rectangular matrix.")

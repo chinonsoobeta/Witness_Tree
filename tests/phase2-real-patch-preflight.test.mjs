@@ -2,7 +2,10 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { spawnSync } from "node:child_process";
 import test from "node:test";
+import { mkdtempSync, rmSync } from "node:fs";
 import { readFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { CANONICAL_LOSS_SOURCES, realDetectedChangeEvent } from "../scripts/phase2-real-patch-contract.mjs";
 import { validateRealPatchPreflight } from "../scripts/check-phase2-real-patch-preflight.mjs";
 
@@ -17,3 +20,4 @@ test("coordinated record and portable-summary profile tamper still fails pinned 
 test("preflight rejects invented capacity, execution, release, and removed blockers",()=>{for(const mutate of [x=>x.absoluteContractBound.passes=true,x=>x.nationalExecutionStarted=true,x=>x.productionEligible=true,x=>x.released=true,x=>x.blockers.pop()]){const changed=structuredClone(record);mutate(changed);assert.throws(()=>validateRealPatchPreflight(changed,structuredClone(summary)));}});
 test("streaming inventory stitches components across row and block boundaries deterministically",()=>{const fixture=[[1,1,0,1,0,0],[0,1,0,1,1,0],[1,1,0,0,1,0],[0,0,255,0,0,1],[1,0,0,0,1,1]],script=new URL("../scripts/inventory_phase2_real_loss_components.py",import.meta.url).pathname,run=blockRows=>spawnSync("python3",[script,"--fixture-json",JSON.stringify(fixture),"--block-rows",String(blockRows)],{encoding:"utf8"});const one=run(1),four=run(4);assert.equal(one.status,0,one.stderr);assert.equal(four.status,0,four.stderr);assert.deepEqual(JSON.parse(one.stdout),JSON.parse(four.stdout));const inventory=JSON.parse(one.stdout).inventory;assert.equal(inventory.lossCellCount,13);assert.equal(inventory.connectedComponentCount,4);assert.equal(inventory.validNonLossCellCount,16);assert.equal(inventory.nodataCellCount,1);assert.match(inventory.orderedLossRunSha256,/^[0-9a-f]{64}$/);});
 test("streaming inventory rejects unexpected values and cap expansion",()=>{const script=new URL("../scripts/inventory_phase2_real_loss_components.py",import.meta.url).pathname;for(const args of [["--fixture-json","[[2]]"],["--fixture-json","[[1]]","--block-rows","65"],["--fixture-json","[[1]]","--max-seconds","345601"]]){const run=spawnSync("python3",[script,...args],{encoding:"utf8"});assert.notEqual(run.status,0);}});
+test("all-pairs inventory requires an explicit complete input root and stays fail-closed",()=>{const script=new URL("../scripts/inventory_phase2_real_loss_components.py",import.meta.url).pathname;const missing=spawnSync("python3",[script,"--all-pairs","--max-seconds","3600"],{encoding:"utf8"});assert.notEqual(missing.status,0);assert.match(missing.stderr,/all-pairs mode requires --input-root/);const root=mkdtempSync(join(tmpdir(),"witness-phase2-all-pairs-"));try{const incomplete=spawnSync("python3",[script,"--all-pairs","--input-root",root,"--block-rows","64","--max-seconds","3600"],{encoding:"utf8"});assert.notEqual(incomplete.status,0);assert.match(incomplete.stderr,/missing or symlinked/);}finally{rmSync(root,{recursive:true,force:true});}});
