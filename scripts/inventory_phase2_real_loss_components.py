@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import time
 from pathlib import Path
 
@@ -19,6 +20,7 @@ GRID_HEIGHT = 128340
 LOSS_MAP_SHA256 = "c962180952e11af0766c5b929d97d4bb635181f93c04e93bbfa7d808e1561430"
 MAX_SECONDS = 96 * 60 * 60
 CANONICAL_PAIR_COUNT = 38
+LINEAGE_BYTE_CAP = 2 * 1024**4
 
 
 def row_runs(row: np.ndarray) -> list[tuple[int, int]]:
@@ -31,13 +33,128 @@ def row_runs(row: np.ndarray) -> list[tuple[int, int]]:
     return [(int(group[0]), int(group[-1])) for group in groups]
 
 
+class LineageByteBudget:
+    """Share one retained-output budget across all pair lineage streams."""
+
+    def __init__(self, maximum: int) -> None:
+        self.maximum = maximum
+        self.used = 0
+
+    def reserve(self, amount: int) -> None:
+        if amount < 0 or self.used + amount > self.maximum:
+            raise ValueError("Component lineage would exceed the approved 2 TiB retained-output cap.")
+        self.used += amount
+
+
+class ComponentLineageWriter:
+    """Write exact row-run lineage without retaining completed components in memory."""
+
+    def __init__(
+        self,
+        path: Path,
+        from_year: int,
+        to_year: int,
+        source_loss_sha256: str,
+        width: int,
+        height: int,
+        budget: LineageByteBudget,
+    ) -> None:
+        if path.exists() or path.is_symlink():
+            raise ValueError(f"Component lineage output already exists: {path.name}")
+        if path.parent.is_symlink() or not path.parent.is_dir():
+            raise ValueError("Component lineage parent must be an existing non-symlink directory.")
+        self.path = path
+        self.budget = budget
+        self.bytes_written = 0
+        self.digest = hashlib.sha256()
+        self.stream = path.open("xb")
+        self._write(
+            {
+                "record": "header",
+                "schemaVersion": "witness-tree/phase2-real-loss-component-lineage/1",
+                "pair": [from_year, to_year],
+                "sourceLossSha256": source_loss_sha256,
+                "grid": [width, height],
+                "connectivity": 4,
+                "encoding": "inclusive-x-runs",
+                "released": False,
+                "productionEligible": False,
+            }
+        )
+
+    def _write(self, record: dict[str, object]) -> None:
+        payload = (json.dumps(record, separators=(",", ":"), sort_keys=True) + "\n").encode("utf-8")
+        self.budget.reserve(len(payload))
+        self.stream.write(payload)
+        self.digest.update(payload)
+        self.bytes_written += len(payload)
+
+    def alias(self, from_component_id: int, to_component_id: int) -> None:
+        if from_component_id == to_component_id:
+            return
+        self._write(
+            {
+                "record": "alias",
+                "fromComponentId": from_component_id,
+                "toComponentId": to_component_id,
+            }
+        )
+
+    def run(self, component_id: int, row_index: int, x0: int, x1: int) -> None:
+        self._write(
+            {
+                "record": "run",
+                "componentId": component_id,
+                "row": row_index,
+                "x0": x0,
+                "x1": x1,
+            }
+        )
+
+    def component(self, component_id: int, first_cell: int, cell_count: int) -> None:
+        self._write(
+            {
+                "record": "component",
+                "componentId": component_id,
+                "firstCell": first_cell,
+                "cellCount": cell_count,
+            }
+        )
+
+    def finish(self, inventory: dict[str, int | str]) -> dict[str, int | str]:
+        self._write(
+            {
+                "record": "footer",
+                "lossCellCount": inventory["lossCellCount"],
+                "connectedComponentCount": inventory["connectedComponentCount"],
+                "orderedLossRunSha256": inventory["orderedLossRunSha256"],
+                "released": False,
+                "productionEligible": False,
+            }
+        )
+        self.stream.flush()
+        os.fsync(self.stream.fileno())
+        self.stream.close()
+        return {
+            "fileName": self.path.name,
+            "byteLength": self.bytes_written,
+            "sha256": self.digest.hexdigest(),
+        }
+
+    def close(self) -> None:
+        if not self.stream.closed:
+            self.stream.close()
+
+
 class StitchInventory:
     """Keep only components touching the previous row; finalize everything else."""
 
-    def __init__(self, width: int) -> None:
+    def __init__(self, width: int, lineage_writer: ComponentLineageWriter | None = None) -> None:
         self.width = width
+        self.lineage_writer = lineage_writer
         self.previous_runs: list[tuple[int, int, int]] = []
         self.active: dict[int, tuple[int, int]] = {}
+        self.active_component_ids: dict[int, int] = {}
         self.loss_cells = 0
         self.valid_non_loss_cells = 0
         self.nodata_cells = 0
@@ -96,30 +213,55 @@ class StitchInventory:
 
         surviving = [group for group in groups.values() if group["runs"]]
         self.component_count += sum(1 for group in groups.values() if not group["runs"])
+        for group in groups.values():
+            if group["runs"]:
+                continue
+            prior = group["prior"]
+            for label in prior:  # A previous-row component cannot merge without a current run.
+                component_id = self.active_component_ids[label]
+                first_cell, cell_count = self.active[label]
+                if self.lineage_writer is not None:
+                    self.lineage_writer.component(component_id, first_cell, cell_count)
         ordered: list[tuple[int, dict[str, object]]] = []
         for group in surviving:
             prior = group["prior"]
             runs = group["runs"]
             first_cells = [self.active[label][0] for label in prior]  # type: ignore[arg-type]
             first_cells.extend(row_index * self.width + run[0] for _, run in runs)  # type: ignore[union-attr]
-            ordered.append((min(first_cells), group))
+            prior_component_ids = [self.active_component_ids[label] for label in prior]  # type: ignore[arg-type]
+            current_component_ids = [row_index * self.width + run[1][0] for run in runs]  # type: ignore[union-attr]
+            component_id = min([*prior_component_ids, *current_component_ids])
+            if self.lineage_writer is not None:
+                for prior_component_id in sorted(prior_component_ids):
+                    self.lineage_writer.alias(prior_component_id, component_id)
+                for _, run in runs:  # type: ignore[union-attr]
+                    self.lineage_writer.run(component_id, row_index, run[0], run[1])
+            ordered.append((min(first_cells), group, component_id))
         ordered.sort(key=lambda item: item[0])
 
         next_active: dict[int, tuple[int, int]] = {}
+        next_component_ids: dict[int, int] = {}
         run_labels: dict[int, int] = {}
-        for next_label, (first_cell, group) in enumerate(ordered):
+        for next_label, (first_cell, group, component_id) in enumerate(ordered):
             prior = group["prior"]
             runs = group["runs"]
             cell_count = sum(self.active[label][1] for label in prior)  # type: ignore[arg-type]
             cell_count += sum(run[1] - run[0] + 1 for _, run in runs)  # type: ignore[union-attr]
             next_active[next_label] = (first_cell, cell_count)
+            next_component_ids[next_label] = component_id
             for index, _ in runs:  # type: ignore[union-attr]
                 run_labels[index] = next_label
         self.active = next_active
+        self.active_component_ids = next_component_ids
         self.previous_runs = [(x0, x1, run_labels[index]) for index, (x0, x1) in enumerate(current)]
         self.max_active_components = max(self.max_active_components, len(self.active))
 
     def finish(self) -> dict[str, int | str]:
+        if self.lineage_writer is not None:
+            for label in sorted(self.active, key=lambda key: self.active[key][0]):
+                component_id = self.active_component_ids[label]
+                first_cell, cell_count = self.active[label]
+                self.lineage_writer.component(component_id, first_cell, cell_count)
         return {
             "lossCellCount": self.loss_cells,
             "connectedComponentCount": self.component_count + len(self.active),
@@ -176,9 +318,19 @@ def canonical_loss_pairs() -> list[tuple[int, int, str]]:
     return [(int(from_year), int(to_year), str(sha256)) for from_year, to_year, sha256 in pairs]
 
 
-def inventory_raster(path: Path, from_year: int, to_year: int, block_rows: int, deadline: float) -> dict[str, object]:
+def inventory_raster(
+    path: Path,
+    from_year: int,
+    to_year: int,
+    block_rows: int,
+    deadline: float,
+    lineage_path: Path | None = None,
+    lineage_budget: LineageByteBudget | None = None,
+) -> dict[str, object]:
     if time.monotonic() >= deadline:
         raise TimeoutError("Inventory exceeded its approved wall-time cap before hashing input.")
+    if path.is_symlink() or not path.is_file():
+        raise ValueError("Loss raster must be an existing non-symlink file.")
     expected_sha = canonical_loss_sha(from_year, to_year)
     if sha256_file(path, deadline) != expected_sha:
         raise ValueError("Loss raster SHA-256 does not match its canonical year pair.")
@@ -189,15 +341,33 @@ def inventory_raster(path: Path, from_year: int, to_year: int, block_rows: int, 
     band = dataset.GetRasterBand(1)
     if band.DataType != gdal.GDT_Byte or band.GetNoDataValue() != 255:
         raise ValueError("Loss raster type or nodata changed.")
-    inventory = StitchInventory(GRID_WIDTH)
-    for y_offset in range(0, GRID_HEIGHT, block_rows):
-        if time.monotonic() >= deadline:
-            raise TimeoutError("Inventory exceeded its approved 96-hour wall-time cap.")
-        height = min(block_rows, GRID_HEIGHT - y_offset)
-        block = band.ReadAsArray(0, y_offset, GRID_WIDTH, height)
-        for local_row, row in enumerate(block):
-            inventory.add_row(y_offset + local_row, row)
-    return {
+    writer = None
+    if lineage_path is not None:
+        writer = ComponentLineageWriter(
+            lineage_path,
+            from_year,
+            to_year,
+            expected_sha,
+            GRID_WIDTH,
+            GRID_HEIGHT,
+            lineage_budget or LineageByteBudget(LINEAGE_BYTE_CAP),
+        )
+    inventory = StitchInventory(GRID_WIDTH, writer)
+    try:
+        for y_offset in range(0, GRID_HEIGHT, block_rows):
+            if time.monotonic() >= deadline:
+                raise TimeoutError("Inventory exceeded its approved 96-hour wall-time cap.")
+            height = min(block_rows, GRID_HEIGHT - y_offset)
+            block = band.ReadAsArray(0, y_offset, GRID_WIDTH, height)
+            for local_row, row in enumerate(block):
+                inventory.add_row(y_offset + local_row, row)
+        inventory_result = inventory.finish()
+        lineage_result = writer.finish(inventory_result) if writer is not None else None
+    except Exception:
+        if writer is not None:
+            writer.close()
+        raise
+    result: dict[str, object] = {
         "schemaVersion": "witness-tree/phase2-real-loss-component-inventory/1",
         "pair": [from_year, to_year],
         "sourceLossSha256": expected_sha,
@@ -214,13 +384,27 @@ def inventory_raster(path: Path, from_year: int, to_year: int, block_rows: int, 
         "released": False,
         "productionEligible": False,
     }
+    if lineage_result is not None:
+        result["componentLineage"] = lineage_result
+    return result
 
 
-def inventory_all_pairs(input_root: Path, block_rows: int, max_seconds: int) -> dict[str, object]:
+def inventory_all_pairs(
+    input_root: Path,
+    block_rows: int,
+    max_seconds: int,
+    components_root: Path | None = None,
+    max_lineage_bytes: int = LINEAGE_BYTE_CAP,
+) -> dict[str, object]:
     """Inventory every canonical pair sequentially under one aggregate deadline."""
     if input_root.is_symlink() or not input_root.is_dir():
         raise ValueError("Loss input root must be a non-symlink directory.")
+    if components_root is not None and (components_root.is_symlink() or not components_root.is_dir()):
+        raise ValueError("Component lineage root must be an existing non-symlink directory.")
+    if not 1 <= max_lineage_bytes <= LINEAGE_BYTE_CAP:
+        raise ValueError("Component lineage byte cap is outside the approved 2 TiB bound.")
     deadline = time.monotonic() + max_seconds
+    lineage_budget = LineageByteBudget(max_lineage_bytes)
     completed: list[dict[str, object]] = []
     stopped = False
     stop_reason: str | None = None
@@ -233,7 +417,12 @@ def inventory_all_pairs(input_root: Path, block_rows: int, max_seconds: int) -> 
         if path.is_symlink() or not path.is_file():
             raise ValueError(f"Canonical loss raster is missing or symlinked: {path.name}")
         try:
-            completed.append(inventory_raster(path, from_year, to_year, block_rows, deadline))
+            lineage_path = None
+            if components_root is not None:
+                lineage_path = components_root / f"detected-forest-loss-{from_year}-{to_year}.components.jsonl"
+            completed.append(
+                inventory_raster(path, from_year, to_year, block_rows, deadline, lineage_path, lineage_budget)
+            )
         except TimeoutError:
             stopped = True
             stop_reason = "aggregate-deadline-reached"
@@ -250,6 +439,12 @@ def inventory_all_pairs(input_root: Path, block_rows: int, max_seconds: int) -> 
         "released": False,
         "productionEligible": False,
     }
+    if components_root is not None:
+        result["componentLineage"] = {
+            "directoryName": components_root.name,
+            "maxBytes": max_lineage_bytes,
+            "usedBytes": lineage_budget.used,
+        }
     if stop_reason is not None:
         result["stopReason"] = stop_reason
     return result
@@ -261,6 +456,9 @@ def main() -> None:
     parser.add_argument("--input", type=Path)
     parser.add_argument("--all-pairs", action="store_true")
     parser.add_argument("--input-root", type=Path)
+    parser.add_argument("--components-jsonl", type=Path)
+    parser.add_argument("--components-root", type=Path)
+    parser.add_argument("--max-lineage-bytes", type=int, default=LINEAGE_BYTE_CAP)
     parser.add_argument("--from-year", type=int)
     parser.add_argument("--to-year", type=int)
     parser.add_argument("--block-rows", type=int, default=32)
@@ -268,21 +466,72 @@ def main() -> None:
     args = parser.parse_args()
     if not 1 <= args.block_rows <= 64 or not 1 <= args.max_seconds <= MAX_SECONDS:
         raise ValueError("Inventory block or time cap is outside the approved bound.")
+    if not 1 <= args.max_lineage_bytes <= LINEAGE_BYTE_CAP:
+        raise ValueError("Component lineage byte cap is outside the approved 2 TiB bound.")
     if args.all_pairs:
-        if args.fixture_json is not None or args.input is not None or args.input_root is None:
+        if (
+            args.fixture_json is not None
+            or args.input is not None
+            or args.components_jsonl is not None
+            or args.input_root is None
+        ):
             parser.error("all-pairs mode requires --input-root and no single-pair or fixture input")
-        result = inventory_all_pairs(args.input_root, args.block_rows, args.max_seconds)
+        result = inventory_all_pairs(
+            args.input_root,
+            args.block_rows,
+            args.max_seconds,
+            args.components_root,
+            args.max_lineage_bytes,
+        )
     elif args.fixture_json is not None:
         rows = np.asarray(json.loads(args.fixture_json), dtype=np.uint8)
         if rows.ndim != 2 or rows.shape[1] == 0:
             raise ValueError("Fixture must be a non-empty rectangular matrix.")
-        result = {"fixtureOnly": True, "grid": list(rows.shape[::-1]), "inventory": inventory_rows(rows, rows.shape[1])}
+        if args.components_root is not None:
+            parser.error("fixture mode accepts --components-jsonl, not --components-root")
+        if args.components_jsonl is None:
+            result = {"fixtureOnly": True, "grid": list(rows.shape[::-1]), "inventory": inventory_rows(rows, rows.shape[1])}
+        else:
+            writer = ComponentLineageWriter(
+                args.components_jsonl,
+                0,
+                1,
+                "fixture-only",
+                int(rows.shape[1]),
+                int(rows.shape[0]),
+                LineageByteBudget(args.max_lineage_bytes),
+            )
+            inventory = StitchInventory(int(rows.shape[1]), writer)
+            try:
+                for row_index, row in enumerate(rows):
+                    inventory.add_row(row_index, row)
+                inventory_result = inventory.finish()
+                lineage_result = writer.finish(inventory_result)
+            except Exception:
+                writer.close()
+                raise
+            result = {
+                "fixtureOnly": True,
+                "grid": list(rows.shape[::-1]),
+                "inventory": inventory_result,
+                "componentLineage": lineage_result,
+            }
     else:
         if args.input is None or args.from_year is None or args.to_year is None:
             parser.error("real inventory requires --input, --from-year, and --to-year")
         if args.to_year != args.from_year + 1 or args.from_year < 1984 or args.to_year > 2022:
             raise ValueError("Inventory requires one canonical adjacent 1984-2022 year pair.")
-        result = inventory_raster(args.input, args.from_year, args.to_year, args.block_rows, time.monotonic() + args.max_seconds)
+        if args.components_root is not None:
+            parser.error("single-pair mode accepts --components-jsonl, not --components-root")
+        result = inventory_raster(
+            args.input,
+            args.from_year,
+            args.to_year,
+            args.block_rows,
+            time.monotonic() + args.max_seconds,
+            args.components_jsonl,
+            LineageByteBudget(args.max_lineage_bytes),
+        )
     print(json.dumps(result, separators=(",", ":"), sort_keys=True))
 
 
