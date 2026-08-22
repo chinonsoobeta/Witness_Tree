@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
-import { chmodSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { chmodSync, existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
-import { assembleQcAttestation } from "../scripts/assemble-qc-immutable-promotion-attestation.mjs";
+import { assembleQcAttestation, normalizeQcOperatorIdentity } from "../scripts/assemble-qc-immutable-promotion-attestation.mjs";
 import { redactQcAttestation, validatePendingQcAttestation, validateQcAttestationPair } from "../scripts/check-qc-immutable-promotion-attestation.mjs";
 import { sidecarFor } from "../scripts/prepare-qc-immutable-promotion.mjs";
 
@@ -61,6 +61,56 @@ test("owner-run transcript assembles four exact objects into a mode-600 digest-b
   } finally { rmSync(paths.dir, { recursive: true, force: true }); }
 });
 
+test("standard STS UserId is accepted, normalized away, and never enters either evidence record", async () => {
+  const paths = await fixture();
+  try {
+    writeFileSync(join(paths.capture, "meta.json"), JSON.stringify({
+      createdAt: "2026-08-21T20:00:00Z",
+      identity: {
+        UserId: "AIDA_PRIVATE_STANDARD_USER_ID",
+        Account: "286853118812",
+        Arn: "arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator"
+      }
+    }), { mode: 0o600 });
+    assert.deepEqual(normalizeQcOperatorIdentity(JSON.parse(readFileSync(join(paths.capture, "meta.json"), "utf8")).identity), { Account: "286853118812", Arn: "arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator" });
+    assembleQcAttestation({ root, captureDirectory: paths.capture, privatePath: paths.privatePath, publicPath: paths.publicPath });
+    const privateBytes = readFileSync(paths.privatePath, "utf8"); const publicBytes = readFileSync(paths.publicPath, "utf8");
+    assert.doesNotMatch(privateBytes, /AIDA_PRIVATE_STANDARD_USER_ID/);
+    assert.doesNotMatch(publicBytes, /AIDA_PRIVATE_STANDARD_USER_ID/);
+  } finally { rmSync(paths.dir, { recursive: true, force: true }); }
+});
+
+test("identity rejection fails closed without rendering raw identity values", async () => {
+  const paths = await fixture();
+  try {
+    const secret = "PRIVATE_IDENTITY_VALUE_MUST_NOT_RENDER";
+    writeFileSync(join(paths.capture, "meta.json"), JSON.stringify({ createdAt: "2026-08-21T20:00:00Z", identity: { UserId: secret, Account: "999999999999", Arn: secret } }), { mode: 0o600 });
+    assert.throws(() => assembleQcAttestation({ root, captureDirectory: paths.capture, privatePath: paths.privatePath, publicPath: paths.publicPath }), (error) => {
+      assert.match(error.message, /exact approved operator/);
+      assert.equal(error.message.includes(secret), false);
+      return true;
+    });
+    assert.equal(existsSync(paths.privatePath), false);
+    assert.equal(existsSync(paths.publicPath), false);
+  } finally { rmSync(paths.dir, { recursive: true, force: true }); }
+});
+
+test("provider identifier mismatch fails closed without rendering the provider value", async () => {
+  const paths = await fixture();
+  try {
+    const secret = "PRIVATE_PROVIDER_VERSION_MUST_NOT_RENDER";
+    const artifact = plan.artifacts[0]; const statePath = join(paths.capture, `${artifact.id}.state.json`);
+    const state = JSON.parse(readFileSync(statePath, "utf8")); state.payloadVersionId = secret; writeFileSync(statePath, JSON.stringify(state), { mode: 0o600 });
+    assert.throws(() => assembleQcAttestation({ root, captureDirectory: paths.capture, privatePath: paths.privatePath, publicPath: paths.publicPath }), (error) => {
+      assert.match(error.message, /payloadVersionId/);
+      assert.equal(error.message.includes(secret), false);
+      return true;
+    });
+    assert.equal(existsSync(paths.privatePath), false);
+    assert.equal(existsSync(paths.publicPath), false);
+  } finally { rmSync(paths.dir, { recursive: true, force: true }); }
+});
+
 test("booleans, placeholders, plausible substitutions, digest drift and unsafe private modes fail closed", async () => {
   const paths = await fixture();
   try {
@@ -87,5 +137,9 @@ test("post-run capture is exact-version read-only and cannot mutate storage", ()
   assert.match(script, /head-object[\s\S]*--version-id[\s\S]*checksum-mode ENABLED/);
   assert.match(script, /get-object-retention[\s\S]*--version-id/);
   assert.match(script, /owner-owned non-symlink mode-600/);
+  assert.match(script, /operator_identity=.*jq -ce/);
+  assert.match(script, /--argjson identity "\$operator_identity"/);
+  assert.match(script, /get-caller-identity --output json 2>"\$TMP\/sts-get-caller-identity\.stderr"/);
+  assert.match(script, /assemble-qc-immutable-promotion-attestation\.mjs[\s\S]*2>"\$TMP\/assembler\.stderr"/);
   assert.doesNotMatch(script, /put-object|upload-part|complete-multipart|put-object-retention|delete-object|abort-multipart/i);
 });

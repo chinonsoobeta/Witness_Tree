@@ -9,6 +9,44 @@ const hash = (value) => createHash("sha256").update(value).digest("hex");
 const read = (path) => readFileSync(path);
 const json = (path) => JSON.parse(read(path));
 const b64sha = (value) => Buffer.from(hash(value), "hex").toString("base64");
+const APPROVED_ACCOUNT = "286853118812";
+const APPROVED_OPERATOR_ARN = `arn:aws:iam::${APPROVED_ACCOUNT}:user/WitnessTreeArchiveOperator`;
+
+function failSafe(message) {
+  throw new Error(message);
+}
+
+function safeEqual(actual, expected, message) {
+  if (actual !== expected) failSafe(message);
+}
+
+function safeMatch(value, pattern, message) {
+  if (typeof value !== "string" || !pattern.test(value)) failSafe(message);
+}
+
+export function normalizeQcOperatorIdentity(rawIdentity) {
+  if (rawIdentity === null || typeof rawIdentity !== "object" || Array.isArray(rawIdentity)) {
+    failSafe("capture identity response must be a JSON object");
+  }
+  if (!Object.prototype.hasOwnProperty.call(rawIdentity, "Account") || !Object.prototype.hasOwnProperty.call(rawIdentity, "Arn")) {
+    failSafe("capture identity response is missing the approved identity fields");
+  }
+  if (rawIdentity.Account !== APPROVED_ACCOUNT || rawIdentity.Arn !== APPROVED_OPERATOR_ARN) {
+    failSafe("capture identity is not the exact approved operator");
+  }
+  return { Account: APPROVED_ACCOUNT, Arn: APPROVED_OPERATOR_ARN };
+}
+
+function captureMetadata(rawMeta) {
+  if (rawMeta === null || typeof rawMeta !== "object" || Array.isArray(rawMeta)) {
+    failSafe("capture metadata must be a JSON object");
+  }
+  const keys = Object.keys(rawMeta).sort();
+  if (keys.length !== 2 || keys[0] !== "createdAt" || keys[1] !== "identity") {
+    failSafe("capture metadata fields drifted");
+  }
+  return { createdAt: rawMeta.createdAt, identity: normalizeQcOperatorIdentity(rawMeta.identity) };
+}
 
 function atomicMode600(path, value) {
   const temp = `${path}.tmp-${process.pid}`;
@@ -21,24 +59,25 @@ export function assembleQcAttestation({ root, captureDirectory, privatePath, pub
   const runnerPath = resolve(root, "scripts/run-qc-approved-multipart-promotion.sh");
   const capturePath = resolve(root, "scripts/capture-qc-immutable-promotion-attestation.sh");
   const plan = json(planPath); validateQcImmutablePromotionPreparation(plan);
-  const meta = json(resolve(captureDirectory, "meta.json"));
-  assert.deepEqual(Object.keys(meta).sort(), ["createdAt", "identity"].sort());
-  assert.deepEqual(meta.identity, { Account: "286853118812", Arn: "arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator" });
+  const meta = captureMetadata(json(resolve(captureDirectory, "meta.json")));
   const states = []; const objects = [];
   for (const artifact of plan.artifacts) {
     const prefix = resolve(captureDirectory, artifact.id);
     const statePath = `${prefix}.state.json`; const state = json(statePath);
     assert.deepEqual({ artifactId: state.artifactId, payloadKey: state.payloadKey, manifestKey: state.manifestKey, sha256: state.sha256, byteLength: state.byteLength, partSizeBytes: state.partSizeBytes }, { artifactId: artifact.id, payloadKey: artifact.payloadKey, manifestKey: artifact.manifestKey, sha256: artifact.sha256, byteLength: artifact.byteLength, partSizeBytes: plan.mfaGatedExecution.multipartPartSizeBytes });
     assert.equal(state.initiation, "accepted");
-    assert.match(state.uploadId, /\S/); assert.match(state.payloadVersionId, /\S/); assert.match(state.sidecarVersionId, /\S/); assert.match(state.compositeChecksumSha256, /\S/);
+    safeMatch(state.uploadId, /\S/, "uploadId is missing from exact accepted state");
+    safeMatch(state.payloadVersionId, /\S/, "payloadVersionId is missing from exact accepted state");
+    safeMatch(state.sidecarVersionId, /\S/, "sidecarVersionId is missing from exact accepted state");
+    safeMatch(state.compositeChecksumSha256, /\S/, "compositeChecksumSha256 is missing from exact accepted state");
     states.push({ artifactId: artifact.id, sha256: hash(read(statePath)) });
     const payloadHeadPath = `${prefix}.payload-head.json`; const payloadHead = json(payloadHeadPath);
-    assert.equal(payloadHead.VersionId, state.payloadVersionId); assert.equal(payloadHead.ContentLength, artifact.byteLength);
-    assert.equal(payloadHead.ChecksumType, "COMPOSITE"); assert.equal(payloadHead.ChecksumSHA256, state.compositeChecksumSha256);
+    safeEqual(payloadHead.VersionId, state.payloadVersionId, "payloadVersionId did not match the exact payload head"); assert.equal(payloadHead.ContentLength, artifact.byteLength);
+    assert.equal(payloadHead.ChecksumType, "COMPOSITE"); safeEqual(payloadHead.ChecksumSHA256, state.compositeChecksumSha256, "payload checksum did not match the exact payload head");
     const manifestHeadPath = `${prefix}.manifest-head.json`; const manifestHead = json(manifestHeadPath);
     const sidecar = sidecarFor(plan, artifact);
-    assert.equal(manifestHead.VersionId, state.sidecarVersionId); assert.equal(manifestHead.ContentLength, Buffer.byteLength(sidecar));
-    assert.equal(manifestHead.ChecksumType ?? "FULL_OBJECT", "FULL_OBJECT"); assert.equal(manifestHead.ChecksumSHA256, b64sha(sidecar));
+    safeEqual(manifestHead.VersionId, state.sidecarVersionId, "sidecarVersionId did not match the exact manifest head"); assert.equal(manifestHead.ContentLength, Buffer.byteLength(sidecar));
+    assert.equal(manifestHead.ChecksumType ?? "FULL_OBJECT", "FULL_OBJECT"); safeEqual(manifestHead.ChecksumSHA256, b64sha(sidecar), "manifest checksum did not match the exact manifest head");
     const retentionPath = `${prefix}.retention.json`; const retention = json(retentionPath);
     assert.equal(retention.Retention.Mode, plan.mfaGatedExecution.retentionMode);
     assert.equal(new Date(retention.Retention.RetainUntilDate).getTime(), new Date(plan.mfaGatedExecution.recommendedRetainUntil).getTime());
