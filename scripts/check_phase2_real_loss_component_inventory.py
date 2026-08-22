@@ -122,56 +122,19 @@ class ComponentGraphReplay:
     def __init__(self, path: Path) -> None:
         self.path = path
         self.active: dict[int, list[int]] = {}
-        self.current_row: int | None = None
+        self.last_row: int | None = None
+        self.buffer_row: int | None = None
         self.row_runs: list[tuple[int, int, int]] = []
         self.previous_runs: list[tuple[int, int, int]] = []
         self.previous_starts: list[int] = []
-        self.aliases: dict[tuple[int, int, int], bool] = {}
-        self.alias_targets: dict[tuple[int, int], int] = {}
+        self.pending_aliases: list[tuple[int, int]] = []
+        self.row_aliases: list[tuple[int, int, int]] = []
         self.run_digest = hashlib.sha256()
         self.run_cells = 0
         self.component_cells = 0
         self.run_count = 0
         self.alias_count = 0
         self.component_count = 0
-
-    def _finish_run_row(self) -> None:
-        previous_x1 = -1
-        for x0, x1, _ in sorted(self.row_runs):
-            if x0 <= previous_x1:
-                fail(f"loss runs overlap or duplicate within a row: {self.path.name}")
-            self.run_digest.update(f"{self.current_row}:{x0}:{x1}\n".encode())
-            previous_x1 = x1
-
-    def _finish_alias_rows_before(self, row: int) -> None:
-        for edge, used in list(self.aliases.items()):
-            if edge[0] >= row:
-                continue
-            if not used:
-                fail(f"component alias is unrelated to any connecting run: {self.path.name}")
-            del self.aliases[edge]
-            del self.alias_targets[(edge[0], edge[1])]
-
-    def _begin_row(self, row: int) -> None:
-        if self.current_row is None:
-            self.current_row = row
-            return
-        if row <= self.current_row:
-            if row < self.current_row:
-                fail(f"loss-run rows are not in raster order: {self.path.name}")
-            return
-        self._finish_run_row()
-        self._finish_alias_rows_before(row)
-        if row == self.current_row + 1:
-            self.previous_runs = sorted(self.row_runs)
-            self.previous_starts = [run[0] for run in self.previous_runs]
-        else:
-            self.previous_runs = []
-            self.previous_starts = []
-        self.row_runs = []
-        self.current_row = row
-        if any(state[2] != row - 1 for state in self.active.values()):
-            fail(f"active component lifecycle skipped a raster row: {self.path.name}")
 
     def _overlap_ids(self, x0: int, x1: int) -> set[int]:
         matches: set[int] = set()
@@ -181,58 +144,136 @@ class ComponentGraphReplay:
             index -= 1
         return matches
 
+    def _finish_run_row(self) -> None:
+        if self.buffer_row is None:
+            return
+        previous_x1 = -1
+        for x0, x1, _ in sorted(self.row_runs):
+            if x0 <= previous_x1:
+                fail(f"loss runs overlap or duplicate within a row: {self.path.name}")
+            self.run_digest.update(f"{self.buffer_row}:{x0}:{x1}\n".encode())
+            previous_x1 = x1
+        adjacent = self.last_row is not None and self.buffer_row == self.last_row + 1
+        if not adjacent:
+            if self.active:
+                fail(f"active component lifecycle skipped a raster row: {self.path.name}")
+            prior_runs: list[tuple[int, int, int]] = []
+            prior_starts: list[int] = []
+        else:
+            prior_runs = self.previous_runs
+            prior_starts = self.previous_starts
+
+        def overlap_ids(x0: int, x1: int) -> set[int]:
+            self.previous_runs = prior_runs
+            self.previous_starts = prior_starts
+            return self._overlap_ids(x0, x1)
+
+        parent = list(range(len(self.row_runs)))
+
+        def find(index: int) -> int:
+            while parent[index] != index:
+                parent[index] = parent[parent[index]]
+                index = parent[index]
+            return index
+
+        def union(left: int, right: int) -> None:
+            left_root = find(left)
+            right_root = find(right)
+            if left_root != right_root:
+                parent[right_root] = left_root
+
+        overlaps: list[set[int]] = []
+        prior_owner: dict[int, int] = {}
+        for index, (x0, x1, _) in enumerate(self.row_runs):
+            ids = overlap_ids(x0, x1) if adjacent else set()
+            for component_id in ids:
+                if component_id not in self.active:
+                    fail(f"current run overlaps a prematurely finalized component: {self.path.name}")
+                if component_id in prior_owner:
+                    union(index, prior_owner[component_id])
+                else:
+                    prior_owner[component_id] = index
+            overlaps.append(ids)
+
+        groups: dict[int, list[int]] = {}
+        for index in range(len(self.row_runs)):
+            groups.setdefault(find(index), []).append(index)
+        expected_by_group: dict[int, set[tuple[int, int]]] = {}
+        next_active: dict[int, list[int]] = {}
+        next_runs: list[tuple[int, int, int]] = []
+        consumed_prior: set[int] = set()
+        for indices in groups.values():
+            group_root = find(indices[0])
+            prior_ids = set().union(*(overlaps[index] for index in indices))
+            if prior_ids:
+                canonical = min(prior_ids)
+                expected_by_group[group_root] = {(source, canonical) for source in prior_ids if source != canonical}
+                first_cell = min(self.active[component_id][0] for component_id in prior_ids)
+                cell_count = sum(self.active[component_id][1] for component_id in prior_ids)
+                consumed_prior.update(prior_ids)
+            else:
+                if len(indices) != 1:
+                    fail(f"disconnected new runs were grouped together: {self.path.name}")
+                x0 = self.row_runs[indices[0]][0]
+                canonical = self.buffer_row * GRID[0] + x0
+                first_cell = canonical
+                cell_count = 0
+                expected_by_group[group_root] = set()
+            if first_cell != canonical:
+                fail(f"overlap group does not preserve its canonical first cell: {self.path.name}")
+            for index in indices:
+                x0, x1, emitted_component = self.row_runs[index]
+                if emitted_component != canonical:
+                    fail(f"run does not use its overlap group's canonical root: {self.path.name}")
+                cell_count += x1 - x0 + 1
+                next_runs.append((x0, x1, canonical))
+            if canonical in next_active:
+                fail(f"two disconnected groups use the same component root: {self.path.name}")
+            next_active[canonical] = [first_cell, cell_count, self.buffer_row]
+        observed_by_group: dict[int, list[tuple[int, int]]] = {root: [] for root in expected_by_group}
+        for source, target, run_index in self.row_aliases:
+            observed_by_group.setdefault(find(run_index), []).append((source, target))
+        for root, expected in expected_by_group.items():
+            observed = observed_by_group.get(root, [])
+            if len(observed) != len(set(observed)) or set(observed) != expected:
+                fail(f"component aliases do not exactly match row-boundary overlap groups: {self.path.name}")
+        if set(self.active) != consumed_prior:
+            fail(f"prior-row component lacks exact finalization or continuation: {self.path.name}")
+        self.active = next_active
+        self.previous_runs = sorted(next_runs)
+        self.previous_starts = [run[0] for run in self.previous_runs]
+        self.last_row = self.buffer_row
+        self.buffer_row = None
+        self.row_runs = []
+        self.row_aliases = []
+
     def alias(self, source: int, target: int) -> None:
-        if source not in self.active or target not in self.active:
-            fail(f"component alias has a dangling or finalized endpoint: {self.path.name}")
-        source_state = self.active[source]
-        target_state = self.active[target]
-        if source_state[2] != target_state[2]:
-            fail(f"component alias endpoints are from different lifecycle rows: {self.path.name}")
-        alias_row = source_state[2] + 1
-        edge = (alias_row, source, target)
-        if edge in self.aliases or (alias_row, source) in self.alias_targets:
-            fail(f"duplicate component alias: {self.path.name}")
-        if target >= source or target_state[0] != target or source_state[0] != source:
+        edge = (source, target)
+        if target >= source:
             fail(f"component alias does not descend between canonical roots: {self.path.name}")
-        target_state[0] = min(target_state[0], source_state[0])
-        target_state[1] += source_state[1]
-        target_state[2] = max(target_state[2], source_state[2])
-        del self.active[source]
-        self.aliases[edge] = False
-        self.alias_targets[(alias_row, source)] = target
+        self.pending_aliases.append(edge)
         self.alias_count += 1
 
-    def _resolve(self, row: int, component_id: int) -> int:
-        seen: set[int] = set()
-        while (row, component_id) in self.alias_targets:
-            if component_id in seen:
-                fail(f"component alias cycle detected: {self.path.name}")
-            seen.add(component_id)
-            target = self.alias_targets[(row, component_id)]
-            self.aliases[(row, component_id, target)] = True
-            component_id = target
-        return component_id
-
     def run(self, component_id: int, row: int, x0: int, x1: int) -> None:
-        self._begin_row(row)
-        overlap_ids = self._overlap_ids(x0, x1)
-        cell_index = row * GRID[0] + x0
-        if overlap_ids:
-            resolved_ids = {self._resolve(row, prior_id) for prior_id in overlap_ids}
-            if resolved_ids != {component_id} or component_id not in self.active:
-                fail(f"run does not resolve to its connected prior-row root: {self.path.name}")
-        else:
-            if component_id != cell_index or component_id in self.active:
-                fail(f"new run does not create one unique canonical component: {self.path.name}")
-            self.active[component_id] = [component_id, 0, row]
-        state = self.active[component_id]
-        state[1] += x1 - x0 + 1
-        state[2] = row
+        if self.buffer_row is not None and row != self.buffer_row:
+            if row < self.buffer_row:
+                fail(f"loss-run rows are not in raster order: {self.path.name}")
+            self._finish_run_row()
+        if self.buffer_row is None:
+            if self.last_row is not None and row <= self.last_row:
+                fail(f"loss-run rows are not in raster order: {self.path.name}")
+            self.buffer_row = row
+        run_index = len(self.row_runs)
+        self.row_aliases.extend((source, target, run_index) for source, target in self.pending_aliases)
+        self.pending_aliases = []
         self.row_runs.append((x0, x1, component_id))
         self.run_cells += x1 - x0 + 1
         self.run_count += 1
 
     def component(self, component_id: int, first_cell: int, cell_count: int) -> None:
+        self._finish_run_row()
+        if self.pending_aliases:
+            fail(f"component summary interrupts a row-boundary alias set: {self.path.name}")
         state = self.active.get(component_id)
         if state is None:
             fail(f"component summary has a dangling, duplicate or finalized ID: {self.path.name}")
@@ -243,13 +284,11 @@ class ComponentGraphReplay:
         self.component_count += 1
 
     def finish(self) -> None:
-        if self.current_row is not None:
-            self._finish_run_row()
-        self._finish_alias_rows_before(GRID[1] + 1)
+        self._finish_run_row()
+        if self.pending_aliases:
+            fail(f"lineage ends with aliases that have no current-row runs: {self.path.name}")
         if self.active:
             fail(f"lineage ends with unfinalized component IDs: {self.path.name}")
-        if self.aliases:
-            fail(f"lineage ends with unresolved component aliases: {self.path.name}")
 
 
 def readback_lineage(

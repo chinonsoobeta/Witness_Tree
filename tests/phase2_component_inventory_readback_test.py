@@ -59,44 +59,74 @@ class ComponentReadbackTest(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, pattern):
                 checker.readback_lineage(self.write(Path(directory), records), 1984, 1985, "a" * 64, inventory)
 
-    def test_missing_unrelated_and_dangling_aliases_fail_closed(self) -> None:
+    def test_missing_dangling_and_duplicate_aliases_fail_closed(self) -> None:
         records, inventory = self.records()
-        self.assert_rejected([*records[:3], *records[4:]], inventory, "resolve|missing.*alias")
-        unrelated_digest = hashlib.sha256(b"0:0:0\n0:2:2\n0:4:4\n1:0:2\n").hexdigest()
-        records = [
-            records[0], records[1], records[2],
-            {"record": "run", "componentId": 4, "row": 0, "x0": 4, "x1": 4},
-            {"record": "alias", "fromComponentId": 4, "toComponentId": 2},
-            records[3], records[4],
-            {"record": "component", "componentId": 0, "firstCell": 0, "cellCount": 6},
-            {"record": "footer", "lossCellCount": 6, "connectedComponentCount": 1, "orderedLossRunSha256": unrelated_digest, "released": False, "productionEligible": False},
-        ]
-        inventory = {"lossCellCount": 6, "connectedComponentCount": 1, "orderedLossRunSha256": unrelated_digest}
-        self.assert_rejected(records, inventory, "unrelated")
+        self.assert_rejected([*records[:3], *records[4:]], inventory, "exactly match")
         records, inventory = self.records()
         records[3]["fromComponentId"] = 3
-        self.assert_rejected(records, inventory, "dangling")
+        self.assert_rejected(records, inventory, "exactly match")
         records, inventory = self.records()
         records.insert(4, {"record": "alias", "fromComponentId": 2, "toComponentId": 0})
-        self.assert_rejected(records, inventory, "dangling|duplicate")
+        self.assert_rejected(records, inventory, "exactly match")
 
-    def test_alias_cycles_and_endpoint_reversal_fail_closed(self) -> None:
+    def test_cross_component_alias_cannot_merge_disconnected_groups(self) -> None:
+        digest = hashlib.sha256(b"0:0:0\n0:4:4\n1:4:4\n").hexdigest()
+        inventory = {"lossCellCount": 3, "connectedComponentCount": 2, "orderedLossRunSha256": digest}
+        records, _ = self.records()
+        records = [
+            records[0],
+            {"record": "run", "componentId": 0, "row": 0, "x0": 0, "x1": 0},
+            {"record": "run", "componentId": 4, "row": 0, "x0": 4, "x1": 4},
+            {"record": "alias", "fromComponentId": 4, "toComponentId": 0},
+            {"record": "run", "componentId": 0, "row": 1, "x0": 4, "x1": 4},
+            {"record": "component", "componentId": 0, "firstCell": 0, "cellCount": 3},
+            {"record": "footer", "lossCellCount": 3, "connectedComponentCount": 2, "orderedLossRunSha256": digest, "released": False, "productionEligible": False},
+        ]
+        self.assert_rejected(records, inventory, "overlap groups|canonical root")
+
+    def test_two_disconnected_overlap_groups_require_exact_aliases(self) -> None:
+        digest = hashlib.sha256(b"0:0:0\n0:2:2\n0:4:4\n0:6:6\n1:0:2\n1:4:6\n").hexdigest()
+        inventory = {"lossCellCount": 10, "connectedComponentCount": 2, "orderedLossRunSha256": digest}
+        header = self.records()[0][0]
+        records = [
+            header,
+            {"record": "run", "componentId": 0, "row": 0, "x0": 0, "x1": 0},
+            {"record": "run", "componentId": 2, "row": 0, "x0": 2, "x1": 2},
+            {"record": "run", "componentId": 4, "row": 0, "x0": 4, "x1": 4},
+            {"record": "run", "componentId": 6, "row": 0, "x0": 6, "x1": 6},
+            {"record": "alias", "fromComponentId": 2, "toComponentId": 0},
+            {"record": "run", "componentId": 0, "row": 1, "x0": 0, "x1": 2},
+            {"record": "alias", "fromComponentId": 6, "toComponentId": 4},
+            {"record": "run", "componentId": 4, "row": 1, "x0": 4, "x1": 6},
+            {"record": "component", "componentId": 0, "firstCell": 0, "cellCount": 5},
+            {"record": "component", "componentId": 4, "firstCell": 4, "cellCount": 5},
+            {"record": "footer", "lossCellCount": 10, "connectedComponentCount": 2, "orderedLossRunSha256": digest, "released": False, "productionEligible": False},
+        ]
+        with tempfile.TemporaryDirectory(prefix="witness-phase2-readback-two-groups-") as directory:
+            result = checker.readback_lineage(self.write(Path(directory), records), 1984, 1985, "a" * 64, inventory)
+        self.assertEqual(result["componentRecordCount"], 2)
+        self.assert_rejected([*records[:5], *records[6:]], inventory, "exactly match")
+        extra = [dict(record) for record in records]
+        extra.insert(6, {"record": "alias", "fromComponentId": 4, "toComponentId": 0})
+        self.assert_rejected(extra, inventory, "exactly match")
+        wrong = [dict(record) for record in records]
+        wrong[7] = {"record": "alias", "fromComponentId": 6, "toComponentId": 0}
+        self.assert_rejected(wrong, inventory, "exactly match")
+
+    def test_alias_endpoint_reversal_fail_closed(self) -> None:
         records, inventory = self.records()
         records[3] = {"record": "alias", "fromComponentId": 0, "toComponentId": 2}
         self.assert_rejected(records, inventory, "strictly descending")
         records, inventory = self.records()
         records[3] = {"record": "alias", "fromComponentId": 2, "toComponentId": 2}
         self.assert_rejected(records, inventory, "strictly descending")
-        replay = checker.ComponentGraphReplay(Path("adversarial-cycle.jsonl"))
-        replay.alias_targets = {(1, 2): 0, (1, 0): 2}
-        replay.aliases = {(1, 2, 0): False, (1, 0, 2): False}
-        with self.assertRaisesRegex(ValueError, "cycle"):
-            replay._resolve(1, 2)
 
     def test_duplicate_and_cross_component_summary_drift_fail_closed(self) -> None:
         records, inventory = self.records()
         records[5]["cellCount"] = 4
         self.assert_rejected(records, inventory, "differs from.*runs")
+        records, inventory = self.records()
+        self.assert_rejected([*records[:5], records[6]], inventory, "unfinalized")
         records, inventory = self.records()
         records.insert(6, dict(records[5]))
         self.assert_rejected(records, inventory, "duplicate|finalized")

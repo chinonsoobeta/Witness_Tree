@@ -7,7 +7,7 @@ import {
   validatePinnedFiles,
 } from "../scripts/check-phase2-real-loss-component-inventory-evidence.mjs";
 
-const SUMMARY_SHA256 = "e42be160e71d55ab6489ea265236efd5c3271cfb68d26948e1f393a94d8ce671";
+const SUMMARY_SHA256 = "0296e433ca9fcca89c5ca64ad63b96b8ae39be8880372711d5fefa9c852d14c0";
 const evidenceBytes = await readFile(new URL("../data/phase2-real-loss-component-inventory-readback.json", import.meta.url));
 const sourceMapBytes = await readFile(new URL("../data/phase2-real-loss-source-map.json", import.meta.url));
 const summaryBytes = await readFile(new URL("../data/phase2-real-loss-component-inventory-summary.json", import.meta.url));

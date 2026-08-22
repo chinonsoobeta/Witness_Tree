@@ -3,7 +3,7 @@
   "evidence": {
     "fileName": "phase2-real-loss-component-inventory-readback.json",
     "byteLength": 38573,
-    "sha256": "760461ef1cb544c6b71b3ff0dc7829c414825e09aa306480d4e501f815a4c579"
+    "sha256": "36f51945151745e752475ee5be36b2b208a05cff9bca433161f379a64aa005d7"
   },
   "sourceMap": {
     "fileName": "phase2-real-loss-source-map.json",
