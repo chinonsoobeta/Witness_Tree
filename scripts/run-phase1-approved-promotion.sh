@@ -66,9 +66,9 @@ done
 print -- "PRECHECK passed: all three approved artifacts exist at the controlled workspace-data path with exact bytes and SHA-256; no TOTP or AWS call was made."
 [[ "$MODE" == "preflight" ]] && exit 0
 if [[ "$MODE" == "run-federal" ]]; then
-  # Harvest is already archived and the canopy prefix is resumed separately;
-  # this explicit mode cannot revisit either completed/preserved artifact.
-  PROMOTION_INDICES=(3)
+  # Preserve the exact owner-approved command while delegating the federal
+  # operation to the fail-closed, acknowledgement-bound evidence path.
+  exec "${0:A:h}/run-federal-electoral-approved-promotion.sh" --run
 else
   PROMOTION_INDICES=(1 2 3)
 fi
