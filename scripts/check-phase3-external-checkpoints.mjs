@@ -26,6 +26,7 @@ const CONSENT_FORM_VERSION = /^consent-form-v[1-9][0-9]{0,3}$/;
 const SENSITIVE_VALUE_SHAPE = /(?:@|https?:\/\/|www\.|(?:^|\s)\+?[0-9][0-9 ()-]{6,}[0-9](?:\s|$)|\b(?:street|st\.?|road|rd\.?|avenue|ave\.?|boulevard|blvd\.?|drive|dr\.?|lane|ln\.?|postal|address|email|phone|contact|name)\b)/i;
 const ENCODED_VALUE_SHAPE = /(?:%[0-9a-f]{2}|&#(?:x[0-9a-f]+|[0-9]+);)/i;
 const CANONICAL_UTC_SECOND = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/;
+const TECHNICAL_ASCII_VALUE = /^[A-Za-z0-9][A-Za-z0-9 ._+()/-]{0,127}$/;
 
 const exact = (actual, expected, message) => {
   if (JSON.stringify(actual) !== JSON.stringify(expected)) throw new Error(message);
@@ -41,7 +42,7 @@ const opaque = (value) => /^[a-f0-9]{16}$/.test(value ?? "");
 const hasSensitiveValueShape = (value) => typeof value !== "string" || SENSITIVE_VALUE_SHAPE.test(value.normalize("NFKC")) || ENCODED_VALUE_SHAPE.test(value.normalize("NFKC"));
 const opaqueReference = (value) => OPAQUE_REFERENCE.test(value ?? "") && !hasSensitiveValueShape(value);
 const observationCode = (value) => OBSERVATION_CODE.test(value ?? "") && !hasSensitiveValueShape(value);
-const safeEnvironmentValue = (value) => nonempty(value) && value.length <= 128 && ![...value].some((character) => character.codePointAt(0) <= 31 || character.codePointAt(0) === 127) && !hasSensitiveValueShape(value);
+const safeEnvironmentValue = (value) => typeof value === "string" && TECHNICAL_ASCII_VALUE.test(value) && value === value.trim() && !hasSensitiveValueShape(value);
 
 function canonicalUtcSecond(value) {
   if (!CANONICAL_UTC_SECOND.test(value ?? "")) return false;

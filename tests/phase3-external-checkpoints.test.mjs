@@ -243,24 +243,47 @@ test("field origin requires an exact canonical HTTPS origin without authority tr
   }
 });
 
-test("manual environment and provider strings reject sensitive, Unicode and encoded value shapes", () => {
+test("manual environment and provider strings reject non-ASCII, controls and encoded value shapes", () => {
   const cases = [
     ["AT email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant@example.com"; }],
     ["AT encoded email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant%40example.com"; }],
+    ["AT named entity email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant&commat;example.com"; }],
+    ["AT unterminated named entity email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant&commatexample.com"; }],
+    ["AT unterminated numeric entity email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant&#64example.com"; }],
+    ["AT unterminated hex entity email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant&#x40example.com"; }],
     ["browser Unicode email", (copy) => { copy.manualAccessibility.screenReader[0].environment.browser = "participant＠example.com"; }],
     ["browser phone", (copy) => { copy.manualAccessibility.screenReader[0].environment.browser = "+1 604 555 1212"; }],
+    ["browser Arabic-Indic phone", (copy) => { copy.manualAccessibility.screenReader[0].environment.browser = "+١ ٦٠٤ ٥٥٥ ١٢١٢"; }],
     ["OS Unicode phone", (copy) => { copy.manualAccessibility.screenReader[0].environment.operatingSystem = "＋１ ６０４ ５５５ １２１２"; }],
+    ["browser C1 control", (copy) => { copy.manualAccessibility.screenReader[0].environment.browser = "Chrome \u0085 Safari"; }],
+    ["browser format character", (copy) => { copy.manualAccessibility.screenReader[0].environment.browser = "Chrome\u200bSafari"; }],
     ["AT version contact", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnologyVersion = "contact 15.6"; }],
     ["browser version entity", (copy) => { copy.manualAccessibility.screenReader[0].environment.browserVersion = "participant&#64;example.com 18"; }],
     ["OS version URL", (copy) => { copy.manualAccessibility.screenReader[0].environment.operatingSystemVersion = "https://example.invalid/15.6"; }],
+    ["OS accented non-ASCII", (copy) => { copy.manualAccessibility.screenReader[0].environment.operatingSystem = "Système"; }],
     ["keyboard email", (copy) => { copy.manualAccessibility.keyboard[0].environment = "participant@example.com"; }],
     ["forced-colors contact", (copy) => { copy.manualAccessibility.forcedColorsAndCvd[0].environment = "participant contact"; }],
-    ["provider encoded email", (copy) => { copy.ownerInputs.fieldPerformanceProvider = "provider%40example.com"; copy.fieldPerformance.forEach((row) => { row.provider = copy.ownerInputs.fieldPerformanceProvider; }); }]
+    ["provider encoded email", (copy) => { copy.ownerInputs.fieldPerformanceProvider = "provider%40example.com"; copy.fieldPerformance.forEach((row) => { row.provider = copy.ownerInputs.fieldPerformanceProvider; }); }],
+    ["provider disallowed punctuation", (copy) => { copy.ownerInputs.fieldPerformanceProvider = "Provider:Production"; copy.fieldPerformance.forEach((row) => { row.provider = copy.ownerInputs.fieldPerformanceProvider; }); }],
+    ["provider leading whitespace", (copy) => { copy.ownerInputs.fieldPerformanceProvider = " Provider"; copy.fieldPerformance.forEach((row) => { row.provider = copy.ownerInputs.fieldPerformanceProvider; }); }],
+    ["provider over 128 characters", (copy) => { copy.ownerInputs.fieldPerformanceProvider = "A".repeat(129); copy.fieldPerformance.forEach((row) => { row.provider = copy.ownerInputs.fieldPerformanceProvider; }); }]
   ];
   for (const [name, mutate] of cases) {
     const copy = completeEvidence(); mutate(copy);
     assert.throws(() => validateEvidence(copy, protocol), name);
   }
+});
+
+test("technical environment allowlist accepts its exact printable-ASCII boundary", () => {
+  for (const value of ["A".repeat(128), "RUM_Provider+v1.2(build)/region-west"]) {
+    const copy = completeEvidence();
+    copy.ownerInputs.fieldPerformanceProvider = value;
+    for (const row of copy.fieldPerformance) row.provider = value;
+    assert.doesNotThrow(() => validateEvidence(copy, protocol), value);
+  }
+  const copy = completeEvidence();
+  copy.manualAccessibility.keyboard[0].environment = "Chrome_151+stable (macOS)/arm64";
+  assert.doesNotThrow(() => validateEvidence(copy, protocol));
 });
 
 test("recursive completed schema rejects arbitrary fields, fabricated results, and PII aliases", () => {

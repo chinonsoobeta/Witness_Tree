@@ -70,7 +70,7 @@ Use a human tester and record environment, start/end timestamps, issue IDs and a
 - Screen reader: place and location in both languages. The environment is structured, not free text, and requires nonblank `assistiveTechnology`, `assistiveTechnologyVersion`, `browser`, `browserVersion`, `operatingSystem` and `operatingSystemVersion`; placeholders such as “test”, “unknown” or “generic” fail. Verify headings, landmarks, link/control names, event order, figures, Unknown reasons, provenance and table alternatives.
 - Forced colours/CVD: all four templates, both languages, in forced-colours, grayscale, protanopia, deuteranopia and tritanopia modes. A person must inspect content, focus, links, evidence shapes, confidence bars, Unknown treatment, charts and legends. Automated emulation does not fill this evidence.
 
-Manual environment and product/version fields may contain legitimate assistive-technology, browser and operating-system names only. They reject email, phone, contact/address terms, URLs, control characters, and Unicode or percent/entity-encoded forms of those values.
+Manual environment and product/version fields, and the field provider, use one bounded technical-value grammar: 1–128 printable ASCII characters, starting with a letter or digit, followed only by letters, digits, spaces, `.`, `_`, `+`, `(`, `)`, `/` or `-`, with no leading or trailing whitespace. This admits the documented VoiceOver, Safari, macOS and provider forms. It rejects all non-ASCII—including Unicode digits—all control and format characters, `&` entity forms, percent encoding, email, phone, contact/address terms and URLs.
 
 ## Field performance
 
