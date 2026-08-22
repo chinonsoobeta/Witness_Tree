@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 
 import { validatePhase2RealDataOwnerDecision } from "./check-phase2-real-data-owner-decision.mjs";
+import { preflightEvidenceSha256, sourceBackedPhase2RealNationalPreflight } from "./preflight-phase2-real-national-run.mjs";
 
 
 export function validatePhase2RealNationalPreflight(record, { decision, preparation, harvest, wildfire, method, grid }) {
@@ -58,7 +59,13 @@ export async function checkPhase2RealNationalPreflight() {
     "phase2-method-parameters.json",
     "raster-grid.json",
   ].map(async (name) => JSON.parse(await readFile(new URL(`../data/${name}`, import.meta.url), "utf8"))));
-  return validatePhase2RealNationalPreflight(files[0], { decision: files[1], preparation: files[2], harvest: files[3], wildfire: files[4], method: files[5], grid: files[6] });
+  const record=validatePhase2RealNationalPreflight(files[0], { decision: files[1], preparation: files[2], harvest: files[3], wildfire: files[4], method: files[5], grid: files[6] });
+  const generated=await sourceBackedPhase2RealNationalPreflight("/Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data");
+  assert.equal(generated.status,record.status); assert.deepEqual(generated.blockers,record.blockers); assert.equal(generated.sourceVerification.inputSetSha256,record.sourceVerification.inputSetSha256); assert.equal(generated.sourceVerification.totalVerifiedBytes,record.sourceVerification.totalVerifiedBytes); assert.deepEqual(generated.executable,record.executable);
+  const lineage=JSON.parse(await readFile("/Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data/derived/phase2-real-national-1984-2022-v1/lineage.json","utf8"));
+  assert.equal(lineage.preflight.digestScope,"canonical-source-backed-preflight-core");
+  assert.equal(lineage.preflight.sha256,preflightEvidenceSha256(generated));
+  return record;
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {

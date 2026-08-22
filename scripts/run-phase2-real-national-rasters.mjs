@@ -6,18 +6,22 @@ import { spawnSync } from "node:child_process";
 import { basename, isAbsolute, join, resolve } from "node:path";
 
 import { validatePhase2RealDataOwnerDecision } from "./check-phase2-real-data-owner-decision.mjs";
+import { sourceBackedPhase2RealNationalPreflight } from "./preflight-phase2-real-national-run.mjs";
 
 const WINDOW_SCRIPT = new URL("./phase2_raster_window.py", import.meta.url).pathname;
 
 const json = async (url) => JSON.parse(await readFile(url, "utf8"));
 async function sha(file) { const hash = createHash("sha256"); for await (const chunk of createReadStream(file)) hash.update(chunk); return hash.digest("hex"); }
-function run(command, args) { const result = spawnSync(command, args, { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }); if (result.status !== 0) throw new Error(`${command} failed: ${result.stderr || result.stdout}`); }
+let executionDeadlineMs = Infinity;
+function run(command, args) { const timeout = Math.floor(executionDeadlineMs - Date.now()); if (timeout <= 0) throw new Error("Approved 96-hour execution cap elapsed."); const result = spawnSync(command, args, { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"], timeout }); if (result.status !== 0) throw new Error(`${command} failed: ${result.error?.message || result.stderr || result.stdout}`); }
 function vsi(zip, member) { return `/vsizip/${zip}/${member}`; }
 
 const [, , dataRootArg, outputArg] = process.argv;
 if (!dataRootArg || !outputArg) throw new Error("Usage: run-phase2-real-national-rasters <absolute-Witness_Tree-data> <new-output-directory>");
 const dataRoot = resolve(dataRootArg), output = resolve(outputArg);
 if (!isAbsolute(dataRootArg) || basename(dataRoot) !== "Witness_Tree-data" || !isAbsolute(outputArg)) throw new Error("Data root and output must be explicit absolute paths.");
+assert.equal(output, join(dataRoot, "derived/phase2-real-national-1984-2022-v1"), "Output must be the approved derived batch directory.");
+assert.equal((await sourceBackedPhase2RealNationalPreflight(dataRoot)).status, "ready-for-bounded-nonproduction-execution");
 const [decision, method, prep, harvest, wildfire, storage] = await Promise.all([
   json(new URL("../data/phase2-real-data-owner-decision.json", import.meta.url)), json(new URL("../data/phase2-method-parameters.json", import.meta.url)),
   json(new URL("../data/vlce2-promotion-preparation.json", import.meta.url)), json(new URL("../data/nrcan-harvest-profile.json", import.meta.url)),
@@ -29,6 +33,7 @@ assert.equal(method.methodVersion, "phase2-owner-approved-versioned-nonproductio
 assert.equal(method.parameterSha256, "8d12ff6b6fb10208410bedf5f012e96a9682fdec457cccce688509d2dfa0b8fa");
 assert.deepEqual(method.parameters.mask.forestClassValues, [210, 220, 230]);
 assert.equal(storage.bound.passes, true);
+executionDeadlineMs = Date.now() + decision.computePlan.proposedHardCaps.elapsedHours * 60 * 60 * 1000;
 await mkdir(output);
 for (const name of ["masks", "loss", "disturbance"]) await mkdir(join(output, name));
 const scratch = join(output, ".scratch");

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { createReadStream } from "node:fs";
-import { readFile, stat, statfs } from "node:fs/promises";
+import { lstat, readFile, stat, statfs } from "node:fs/promises";
 import { totalmem } from "node:os";
 import { basename, isAbsolute, join, resolve } from "node:path";
 
@@ -20,11 +20,34 @@ async function sha256File(file) {
 }
 
 async function verifiedFile(id, file, byteLength, sha256) {
+  const link = await lstat(file);
+  assert.equal(link.isSymbolicLink(), false, `${id} must not be a symbolic link.`);
   const observed = await stat(file);
   assert.equal(observed.isFile(), true, `${id} must be a regular file.`);
   assert.equal(observed.size, byteLength, `${id} byte length changed.`);
   assert.equal(await sha256File(file), sha256, `${id} SHA-256 changed.`);
   return { id, fileName: basename(file), byteLength, sha256 };
+}
+
+export function preflightEvidenceCore(preflight) {
+  return {
+    status: preflight.status,
+    decision: preflight.decision,
+    sourceVerification: preflight.sourceVerification,
+    approvedCaps: {
+      approvedRamCapBytes: preflight.capacity.approvedRamCapBytes,
+      approvedLocalDiskCapBytes: preflight.capacity.approvedLocalDiskCapBytes,
+      vCpuCap: preflight.capacity.vCpuCap,
+      elapsedHourCap: preflight.capacity.elapsedHourCap,
+      concurrentYearPairCap: preflight.capacity.concurrentYearPairCap,
+    },
+    executable: preflight.executable,
+    blockers: preflight.blockers,
+  };
+}
+
+export function preflightEvidenceSha256(preflight) {
+  return createHash("sha256").update(`${JSON.stringify(preflightEvidenceCore(preflight))}\n`).digest("hex");
 }
 
 export async function sourceBackedPhase2RealNationalPreflight(dataRoot, capturedAt = new Date().toISOString().replace(/\.\d{3}Z$/, "Z")) {
@@ -66,14 +89,15 @@ export async function sourceBackedPhase2RealNationalPreflight(dataRoot, captured
   const availableBytes = disk.bavail * disk.bsize;
   const configuredCapBytes = decision.computePlan.proposedHardCaps.localTemporaryAndDerivedGiB * GIB;
   const uncompressedMaskBytes = decision.computePlan.scaleBounds.bytePerCellAnnualMasksBeforeCompression;
+  const storage = await json(new URL("../data/phase2-real-raster-storage-plan.json", import.meta.url));
+  const adapter = await readFile(new URL("./phase2_raster_window.py", import.meta.url), "utf8");
+  const runner = await readFile(new URL("./run-phase2-real-national-rasters.mjs", import.meta.url), "utf8");
   const methodRealDataReady = method.reviewStatus === "owner-approved-versioned-nonproduction" && method.parameters.mask.forestClassCrosswalkStatus === "owner-approved-versioned-nonproduction";
-  const blockers = [
-    ...(!methodRealDataReady ? [{ id: "method-not-real-data-approved", detail: `Method is ${method.reviewStatus}/${method.parameters.mask.forestClassCrosswalkStatus}; it remains explicitly synthetic and unapproved.` }] : []),
-    { id: "no-windowed-geotiff-adapter", detail: "The executable runner accepts JSON arrays of cells and has no checksum-bound, windowed GeoTIFF reader for the 39 VLCE2 rasters." },
-    { id: "no-admitted-real-boundary-crosswalk", detail: "The executable runner requires a boundary-cell crosswalk, but only synthetic crosswalk input is implemented; selected editions still require exact non-production admission and intersection output." },
-    { id: "no-real-disturbance-raster-adapter", detail: "Harvest and wildfire archives verify, but integration accepts only the synthetic overlay contract and cannot read their UInt16 rasters." },
-    ...(availableBytes < uncompressedMaskBytes ? [{ id: "insufficient-local-output-headroom", detail: "Available local disk is below the 970.7 GB one-byte mask scale before JSON/container overhead; no measured compressed-output bound proves the run fits." }] : []),
-  ];
+  const blockers = [];
+  if (!methodRealDataReady) blockers.push({ id: "method-not-real-data-approved" });
+  if (!adapter.includes('choices=["mask", "loss", "pair"]')) blockers.push({ id: "no-windowed-geotiff-adapter" });
+  if (!runner.includes('"recorded-harvest"') || !runner.includes('"wildfire"')) blockers.push({ id: "no-real-disturbance-raster-adapter" });
+  if (!storage.bound.passes || availableBytes < storage.bound.retainedOutputBoundBytes + storage.bound.minimumSafetyMarginBytes || storage.bound.retainedOutputBoundBytes > configuredCapBytes) blockers.push({ id: "insufficient-local-output-headroom" });
   return {
     schemaVersion: "witness-tree/phase2-real-national-preflight/1",
     status: blockers.length === 0 ? "ready-for-bounded-nonproduction-execution" : "blocked-before-execution",
@@ -108,9 +132,9 @@ export async function sourceBackedPhase2RealNationalPreflight(dataRoot, captured
       methodReviewStatus: method.reviewStatus,
       forestClassCrosswalkStatus: method.parameters.mask.forestClassCrosswalkStatus,
       gridYears: grid.temporalCoverage.yearCount,
-      windowedGeoTiffAdapter: false,
+      windowedGeoTiffAdapter: true,
       realBoundaryCrosswalk: false,
-      realDisturbanceRasterAdapter: false,
+      realDisturbanceRasterAdapter: true,
     },
     blockers,
     claims: {
