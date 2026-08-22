@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "witness-tree/phase2-real-patch-event-execution-preflight/1",
+  "status": "storage-preflight-passed-runtime-pilot-required",
+  "sourceBatchId": "phase2-real-national-1984-2022-v1",
+  "componentInventorySummarySha256": "0296e433ca9fcca89c5ca64ad63b96b8ae39be8880372711d5fefa9c852d14c0",
+  "methodVersion": "phase2-owner-approved-versioned-nonproduction-v1",
+  "methodParameterSha256": "8d12ff6b6fb10208410bedf5f012e96a9682fdec457cccce688509d2dfa0b8fa",
+  "exactInputTotals": {
+    "pairCount": 38,
+    "lossCellCount": 1384027417,
+    "connectedComponentCount": 303530909,
+    "runRecordCount": 528596703,
+    "aliasRecordCount": 12199309,
+    "retainedInputBytes": 68322924822
+  },
+  "exactMethod": {
+    "aliasResolution": "first-pass-per-pair-source-to-final-root-map",
+    "sortableRunRecord": "little-endian-u64-root-u32-row-u32-x0-u32-x1",
+    "sortableRunRecordBytes": 20,
+    "externalSortKey": ["finalRoot", "row", "x0", "x1"],
+    "sortChunkMemoryBytes": 1073741824,
+    "merge": "bounded-k-way-by-final-root",
+    "geometry": "one-unsimplified-30m-cell-polygon-per-loss-cell",
+    "eventContract": "realDetectedChangeEvent-equivalent",
+    "finalization": "partial-file-fsync-atomic-unused-name-directory-fsync"
+  },
+  "storagePreflight": {
+    "maximumEventBytesPerCell": 512,
+    "maximumFixedBytesPerEvent": 4096,
+    "maximumScratchBytesPerRun": 64,
+    "retainedInputBytes": 68322924822,
+    "outputBoundBytes": 1951884640768,
+    "scratchBoundBytes": 33830188992,
+    "totalStorageBoundBytes": 2054037754582,
+    "approvedStorageCapBytes": 2199023255552,
+    "headroomBytes": 144985500970,
+    "passes": true
+  },
+  "runtimePreflight": {
+    "approvedMaxSeconds": 345600,
+    "maximumVcpu": 8,
+    "maximumMemoryBytes": 17179869184,
+    "requiredSustainedCellsPerSecond": 4005,
+    "requiredSustainedEventsPerSecond": 879,
+    "requiredSustainedOutputBytesPerSecond": 5647815,
+    "measuredPilot": null,
+    "passes": false
+  },
+  "boundedPilot": {
+    "pair": [1984, 1985],
+    "maximumFinalizedComponents": 10000,
+    "maximumOutputBytes": 67108864,
+    "maximumScratchBytes": 2147483648,
+    "maximumSeconds": 1800,
+    "publicationOnLimit": "partial-only"
+  },
+  "nationalExecutionAdmitted": false,
+  "released": false,
+  "productionEligible": false
+}

@@ -18,4 +18,4 @@ Run the source-backed profile gate with:
 npm run check:phase2-real-patch-preflight
 ```
 
-The preflight increment added no real patch/event output and left the independently audited Phase 2 score at **51% (+0 percentage points)**. The later component-inventory evidence is pending independent rubric audit. Boundary intersections, aggregates, samples/statistics, tiles, release, and production eligibility remain open.
+The preflight increment added no real patch/event output and historically left the independently audited Phase 2 score at **51% (+0 percentage points)**. The later component-inventory evidence was independently accepted at **54% (+3 percentage points from 51%)**. Boundary intersections, aggregates, samples/statistics, tiles, release, and production eligibility remain open.

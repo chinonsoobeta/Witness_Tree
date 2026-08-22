@@ -8,7 +8,7 @@ The final inventory inode records a 4,676.643920-second interval from shell redi
 
 This closes the three execution blockers recorded by the earlier preflight: an exact 38-pair loss-cell inventory now exists, the stitcher completed every full-pair replay with per-component lineage, and actual elapsed/retained/scratch observations are recorded. It does not create patch polygons or normalized real events. Matching and precedence integration, all eight boundary intersections, aggregates, tiles, downloads, samples, statistics, independent scientific validation and release remain unexecuted. Every record remains `released: false` and `productionEligible: false`.
 
-The accepted fixed-rubric score remains 51% until this new evidence receives an independent rubric audit. This execution is not a release, production-admission claim or production-maturity claim.
+Independent audit accepted this component-lineage evidence at a fixed-rubric score of **54% (+3 percentage points from 51%)**. This execution is not a release, production-admission claim or production-maturity claim.
 
 Run the portable evidence gate with:
 
