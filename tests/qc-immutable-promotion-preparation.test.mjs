@@ -176,7 +176,17 @@ case "$1:$2" in
   sts:get-caller-identity) print -- '{"Account":"286853118812","Arn":"arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator"}' ;;
   s3api:list-parts)
     behavior="$(<${JSON.stringify(behavior)})"
-    if [[ "$behavior" == "ambiguous" ]]; then print -u2 -- $'An error occurred (NoSuchUpload) when calling the ListParts operation: The specified upload does not exist.\nAccessDenied from proxy'; elif [[ "$*" == *"--cli-error-format legacy"* ]]; then print -u2 -- 'An error occurred (NoSuchUpload) when calling the ListParts operation: The specified upload does not exist.'; else print -u2 -- $'An error occurred (NoSuchUpload) when calling the ListParts operation: The specified upload does not exist.\n\nError Code: NoSuchUpload\nRequest ID: redacted'; fi
+    case "$behavior" in
+      ambiguous) print -u2 -- $'An error occurred (NoSuchUpload) when calling the ListParts operation: The specified upload does not exist.\nAn error occurred (AccessDenied) when calling the ListParts operation: proxy denied the request.' ;;
+      expired-token) print -u2 -- 'An error occurred (ExpiredToken) when calling the ListParts operation: The provided token has expired.' ;;
+      access-denied) print -u2 -- 'An error occurred (AccessDenied) when calling the ListParts operation: Access Denied' ;;
+      validation-error) print -u2 -- $'Parameter validation failed:\nInvalid length for parameter UploadId' ;;
+      enhanced) print -u2 -- $'An error occurred (NoSuchUpload) when calling the ListParts operation: The specified upload does not exist.\n\nError Code: NoSuchUpload\nRequest ID: should-not-be-rendered' ;;
+      warning) print -u2 -- $'A CLI warning preceded the provider response.\nAn error occurred (ExpiredToken) when calling the ListParts operation: The provided token has expired.' ;;
+      retry-wrapper) print -u2 -- 'An error occurred (ExpiredToken) when calling the ListParts operation (reached max retries: 4): The provided token has expired.' ;;
+      blank) : ;;
+      *) if [[ "$*" == *"--cli-error-format legacy"* ]]; then print -u2 -- 'An error occurred (NoSuchUpload) when calling the ListParts operation: The specified upload does not exist.'; else print -u2 -- $'An error occurred (NoSuchUpload) when calling the ListParts operation: The specified upload does not exist.\n\nError Code: NoSuchUpload\nRequest ID: redacted'; fi ;;
+    esac
     exit 254 ;;
   s3api:head-object)
     key=""; while (( $# )); do if [[ "$1" == "--key" ]]; then key="$2"; break; fi; shift; done
@@ -216,6 +226,15 @@ esac
     for (const [mode, expectedMessage] of [["ambiguous", /unambiguously classify/], ["missing-head", /no exact completed payload can be proved/], ["exact-version-mismatch", /Exact-version completed candidate does not match/], ["third-race", /Payload version read-back does not prove/]]) {
       reset(mode); const before = new Map([...initialStates.keys()].map((path) => [path, readFileSync(path)])); const failed = runOwner();
       assert.notEqual(failed.status, 0, `${mode}: ${failed.stdout}\n${failed.stderr}`); assert.match(`${failed.stdout}${failed.stderr}`, expectedMessage);
+      for (const [path, bytes] of before) assert.deepEqual(readFileSync(path), bytes, `${mode} changed private state`);
+      assert.doesNotMatch(readFileSync(marker, "utf8"), /create-multipart-upload|put-object(?:\s|$)|upload-part|complete-multipart-upload|put-object-retention/);
+    }
+
+    for (const [mode, code] of [["expired-token", "ExpiredToken"], ["access-denied", "AccessDenied"], ["validation-error", "ValidationError"], ["enhanced", "NoSuchUpload"], ["warning", "ExpiredToken"], ["retry-wrapper", "ExpiredToken"], ["blank", "unavailable"], ["ambiguous", "ambiguous"]]) {
+      reset(mode); const before = new Map([...initialStates.keys()].map((path) => [path, readFileSync(path)])); const failed = runOwner(); const output = `${failed.stdout}${failed.stderr}`;
+      assert.equal(failed.status, 70, `${mode}: ${output}`); assert.match(output, new RegExp(`stage=ListParts; awsErrorCode=${code}`));
+      assert.doesNotMatch(output, /saved-upload|sidecar-version|should-not-be-rendered|proxy denied|Invalid length|provided token/i);
+      assert.equal(output.includes(fixture.destination.bucket), false); for (const artifact of fixture.artifacts) { assert.equal(output.includes(artifact.payloadKey), false); assert.equal(output.includes(artifact.manifestKey), false); }
       for (const [path, bytes] of before) assert.deepEqual(readFileSync(path), bytes, `${mode} changed private state`);
       assert.doesNotMatch(readFileSync(marker, "utf8"), /create-multipart-upload|put-object(?:\s|$)|upload-part|complete-multipart-upload|put-object-retention/);
     }

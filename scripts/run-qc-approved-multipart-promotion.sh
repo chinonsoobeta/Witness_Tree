@@ -60,6 +60,18 @@ is_unambiguous_nosuchupload() {
   [[ "$text" == "An error occurred (NoSuchUpload) when calling the ListParts operation: The specified upload does not exist." || "$text" == "An error occurred (NoSuchUpload) when calling the ListParts operation: The specified upload does not exist. The upload ID may be invalid, or the upload may have been aborted or completed." ]]
 }
 
+sanitized_list_parts_error_code() {
+  node -e '
+    const text = require("node:fs").readFileSync(process.argv[1], "utf8");
+    const all = [...text.matchAll(/^An error occurred \(([^)\r\n]+)\)/gm)];
+    const exact = [...text.matchAll(/^An error occurred \(([A-Za-z][A-Za-z0-9]{0,63})\) when calling the ListParts operation(?: \(reached max retries: [1-9][0-9]*\))?:/gm)];
+    if (all.length === 1 && exact.length === 1 && all[0][1] === exact[0][1]) process.stdout.write(exact[0][1]);
+    else if (all.length > 0) process.stdout.write("ambiguous");
+    else if (/^Parameter validation failed:/m.test(text)) process.stdout.write("ValidationError");
+    else process.stdout.write("unavailable");
+  ' "$1"
+}
+
 if [[ $# -eq 0 ]]; then node "$ROOT/scripts/prepare-qc-immutable-promotion.mjs"; exit 0; fi
 [[ "${1:-}" == "--preflight" || "${1:-}" == "--run" ]] && [[ $# -eq 1 ]] || fail "Usage: $0 [--preflight|--run]" 64
 for tool in node jq shasum xxd base64 dd stat; do need "$tool"; done
@@ -94,7 +106,7 @@ mkdir -p "$STATE_ROOT"; chmod 700 "$STATE_ROOT"
 node "$ROOT/scripts/prepare-qc-immutable-promotion.mjs" --write-sidecars "$TMP" >/dev/null
 
 promote_one() {
-  local artifact="$1" id relative file bytes sha payload sidecar sidecar_file state state_dir expected_state sidecar_sha sidecar_b64 sidecar_put sidecar_version sidecar_head upload_id list list_error no_such_upload=false start_new_upload=false part_number offset part_bytes part_file part_b64 part_result parts_file composite_file composite composite_b64 complete version latest_head exact_head
+  local artifact="$1" id relative file bytes sha payload sidecar sidecar_file state state_dir expected_state sidecar_sha sidecar_b64 sidecar_put sidecar_version sidecar_head upload_id list list_error list_error_code no_such_upload=false start_new_upload=false part_number offset part_bytes part_file part_b64 part_result parts_file composite_file composite composite_b64 complete version latest_head exact_head
   id="$(jq -r '.id' <<<"$artifact")"; relative="$(jq -r '.localPath' <<<"$artifact")"; file="$DATA_ROOT/$relative"; bytes="$(jq -r '.byteLength' <<<"$artifact")"; sha="$(jq -r '.sha256' <<<"$artifact")"; payload="$(jq -r '.payloadKey' <<<"$artifact")"; sidecar="$(jq -r '.manifestKey' <<<"$artifact")"; sidecar_file="$TMP/${id}.manifest.json"
   state_dir="$STATE_ROOT/${id}-${sha}"; state="$state_dir/state.json"; mkdir -p "$state_dir"; chmod 700 "$state_dir"
   expected_state="$(jq -n --arg id "$id" --arg payload "$payload" --arg sidecar "$sidecar" --arg sha "$sha" --argjson bytes "$bytes" --argjson partSize "$PART_SIZE" '{artifactId:$id,payloadKey:$payload,manifestKey:$sidecar,sha256:$sha,byteLength:$bytes,partSizeBytes:$partSize,initiation:"not-started",uploadId:null,payloadVersionId:null,compositeChecksumSha256:null,sidecarVersionId:null}')"
@@ -106,7 +118,10 @@ promote_one() {
     [[ "$(jq -r '.initiation' "$state")" == "accepted" && -n "$sidecar_version" ]] || fail "Saved multipart state lacks its exact accepted sidecar version; state was preserved and no upload or overwrite was attempted" 75
     list_error="$TMP/${id}.list-parts.stderr"
     if ! list="$(aws s3api list-parts --bucket "$BUCKET" --key "$payload" --upload-id "$upload_id" --region "$REGION" --output json --cli-error-format legacy 2>"$list_error")"; then
-      is_unambiguous_nosuchupload "$list_error" || fail "Cannot unambiguously classify the approved multipart state; no sidecar or payload write was attempted" 70
+      if ! is_unambiguous_nosuchupload "$list_error"; then
+        list_error_code="$(sanitized_list_parts_error_code "$list_error")"
+        fail "Cannot unambiguously classify the approved multipart state; stage=ListParts; awsErrorCode=$list_error_code; no sidecar or payload write was attempted" 70
+      fi
       no_such_upload=true
     fi
   else
@@ -132,7 +147,10 @@ promote_one() {
     upload_id="$(jq -r '.UploadId // empty' <<<"$initiated")"; [[ -n "$upload_id" ]] || fail "Multipart initiation acknowledgement lacks an upload ID; state prevents a duplicate upload" 70
     state_update "$state" '.initiation="accepted" | .uploadId=$uploadId' --arg uploadId "$upload_id"
     list_error="$TMP/${id}.list-parts.stderr"
-    list="$(aws s3api list-parts --bucket "$BUCKET" --key "$payload" --upload-id "$upload_id" --region "$REGION" --output json --cli-error-format legacy 2>"$list_error")" || fail "Cannot read newly accepted multipart state; no part was sent" 70
+    if ! list="$(aws s3api list-parts --bucket "$BUCKET" --key "$payload" --upload-id "$upload_id" --region "$REGION" --output json --cli-error-format legacy 2>"$list_error")"; then
+      list_error_code="$(sanitized_list_parts_error_code "$list_error")"
+      fail "Cannot read newly accepted multipart state; stage=ListParts; awsErrorCode=$list_error_code; no part was sent" 70
+    fi
   fi
 
   if [[ "$no_such_upload" == true ]]; then
