@@ -65,9 +65,11 @@ sanitized_list_parts_error_code() {
     const text = require("node:fs").readFileSync(process.argv[1], "utf8");
     const all = [...text.matchAll(/^An error occurred \(([^)\r\n]+)\)/gm)];
     const exact = [...text.matchAll(/^An error occurred \(([A-Za-z][A-Za-z0-9]{0,63})\) when calling the ListParts operation(?: \(reached max retries: [1-9][0-9]*\))?:/gm)];
-    if (all.length === 1 && exact.length === 1 && all[0][1] === exact[0][1]) process.stdout.write(exact[0][1]);
-    else if (all.length > 0) process.stdout.write("ambiguous");
-    else if (/^Parameter validation failed:/m.test(text)) process.stdout.write("ValidationError");
+    const validation = /^Parameter validation failed:/m.test(text);
+    const allowed = new Set(["ExpiredToken", "AccessDenied", "ValidationError", "NoSuchUpload"]);
+    if (all.length > 1 || (all.length === 1 && validation)) process.stdout.write("ambiguous");
+    else if (all.length === 1 && exact.length === 1 && all[0][1] === exact[0][1] && allowed.has(exact[0][1])) process.stdout.write(exact[0][1]);
+    else if (all.length === 0 && validation) process.stdout.write("ValidationError");
     else process.stdout.write("unavailable");
   ' "$1"
 }

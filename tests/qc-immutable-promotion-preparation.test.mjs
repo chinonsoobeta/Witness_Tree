@@ -97,6 +97,7 @@ test("owner-local runner is multipart-only and excludes high-level copies, delet
   assert.match(runner, /create-multipart-upload[\s\S]*upload-part[\s\S]*complete-multipart-upload/);
   assert.match(runner, /list-parts[\s\S]*Previously uploaded part does not match/);
   assert.equal((runner.match(/list-parts[^\n]*--cli-error-format legacy/g) ?? []).length, 2);
+  assert.equal((runner.match(/list_error_code="\$\(sanitized_list_parts_error_code "\$list_error"\)"/g) ?? []).length, 2);
   assert.match(runner, /ChecksumType=="COMPOSITE"[\s\S]*put-object-retention[\s\S]*get-object-retention/);
   assert.doesNotMatch(runner, /aws s3 cp|DeleteObject|BypassGovernanceRetention|PutObjectLegalHold|aws iam /i);
   assert.match(runner, /aws configure get mfa_serial --profile/);
@@ -184,6 +185,11 @@ case "$1:$2" in
       enhanced) print -u2 -- $'An error occurred (NoSuchUpload) when calling the ListParts operation: The specified upload does not exist.\n\nError Code: NoSuchUpload\nRequest ID: should-not-be-rendered' ;;
       warning) print -u2 -- $'A CLI warning preceded the provider response.\nAn error occurred (ExpiredToken) when calling the ListParts operation: The provided token has expired.' ;;
       retry-wrapper) print -u2 -- 'An error occurred (ExpiredToken) when calling the ListParts operation (reached max retries: 4): The provided token has expired.' ;;
+      identifier-token) print -u2 -- 'An error occurred (AKIAEXAMPLECREDENTIAL) when calling the ListParts operation: rejected.' ;;
+      overlength-token) print -u2 -- 'An error occurred (ThisTokenNameIsDeliberatelyLongerThanSixtyFourCharactersAndMustNeverBeRendered12345) when calling the ListParts operation: rejected.' ;;
+      punctuation-token) print -u2 -- 'An error occurred (AccessDenied:secret) when calling the ListParts operation: rejected.' ;;
+      case-token) print -u2 -- 'An error occurred (accessdenied) when calling the ListParts operation: rejected.' ;;
+      mixed-token) print -u2 -- $'An error occurred (ExpiredToken) when calling the ListParts operation: expired.\nAn error occurred (AKIAEXAMPLECREDENTIAL) when calling the ListParts operation: rejected.' ;;
       blank) : ;;
       *) if [[ "$*" == *"--cli-error-format legacy"* ]]; then print -u2 -- 'An error occurred (NoSuchUpload) when calling the ListParts operation: The specified upload does not exist.'; else print -u2 -- $'An error occurred (NoSuchUpload) when calling the ListParts operation: The specified upload does not exist.\n\nError Code: NoSuchUpload\nRequest ID: redacted'; fi ;;
     esac
@@ -235,6 +241,13 @@ esac
       assert.equal(failed.status, 70, `${mode}: ${output}`); assert.match(output, new RegExp(`stage=ListParts; awsErrorCode=${code}`));
       assert.doesNotMatch(output, /saved-upload|sidecar-version|should-not-be-rendered|proxy denied|Invalid length|provided token/i);
       assert.equal(output.includes(fixture.destination.bucket), false); for (const artifact of fixture.artifacts) { assert.equal(output.includes(artifact.payloadKey), false); assert.equal(output.includes(artifact.manifestKey), false); }
+      for (const [path, bytes] of before) assert.deepEqual(readFileSync(path), bytes, `${mode} changed private state`);
+      assert.doesNotMatch(readFileSync(marker, "utf8"), /create-multipart-upload|put-object(?:\s|$)|upload-part|complete-multipart-upload|put-object-retention/);
+    }
+
+    for (const [mode, code, secrets] of [["identifier-token", "unavailable", ["AKIAEXAMPLECREDENTIAL"]], ["overlength-token", "unavailable", ["ThisTokenNameIsDeliberatelyLongerThanSixtyFourCharactersAndMustNeverBeRendered12345"]], ["punctuation-token", "unavailable", ["AccessDenied:secret"]], ["case-token", "unavailable", ["accessdenied"]], ["mixed-token", "ambiguous", ["ExpiredToken", "AKIAEXAMPLECREDENTIAL"]]]) {
+      reset(mode); const before = new Map([...initialStates.keys()].map((path) => [path, readFileSync(path)])); const failed = runOwner(); const output = `${failed.stdout}${failed.stderr}`;
+      assert.equal(failed.status, 70, `${mode}: ${output}`); assert.match(output, new RegExp(`stage=ListParts; awsErrorCode=${code}`)); for (const secret of secrets) assert.equal(output.includes(secret), false);
       for (const [path, bytes] of before) assert.deepEqual(readFileSync(path), bytes, `${mode} changed private state`);
       assert.doesNotMatch(readFileSync(marker, "utf8"), /create-multipart-upload|put-object(?:\s|$)|upload-part|complete-multipart-upload|put-object-retention/);
     }
