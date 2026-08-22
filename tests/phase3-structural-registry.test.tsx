@@ -30,6 +30,10 @@ test("coordinate identity drift and missing containment fail closed", () => {
   assert.throws(() => validatePlaceRegistry(PLACE_REGISTRY.slice(1)), /complete canonical province\/type cross-product/);
   assert.throws(() => validatePlaceRegistry([{ ...first, download: { ...first.download, href: "/examples/downloads/other.csv" } }, ...PLACE_REGISTRY.slice(1)]), /checksum-bound/);
   assert.throws(() => validatePlaceRegistry([{ ...first, location: { ...first.location, status: "production" as never } }, ...PLACE_REGISTRY.slice(1)]), /escaped the example boundary/);
+  const provinceGroupDrift = PLACE_REGISTRY.map((entry) => entry.place.province === "BC" ? { ...entry, place: { ...entry.place, province: "bc" as never } } : entry);
+  assert.throws(() => validatePlaceRegistry(provinceGroupDrift), /canonical registry enums/);
+  const typeGroupDrift = PLACE_REGISTRY.map((entry) => entry.place.type === "province" ? { ...entry, place: { ...entry.place, type: "Province" as never } } : entry);
+  assert.throws(() => validatePlaceRegistry(typeGroupDrift), /canonical registry enums/);
 });
 
 test("bilingual generated record and MDX completeness accepts injected records and fails closed", () => {

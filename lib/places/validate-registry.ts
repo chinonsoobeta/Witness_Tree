@@ -15,6 +15,7 @@ export function validatePlaceRegistry(registry: readonly RegistryEntry[] = PLACE
   for (const entry of registry) {
     const records = [entry.place, entry.location, entry.search, entry.source, entry.citation, entry.download];
     if (records.some((record) => record.status !== "example" || record.reviewStatus !== "unapproved" || record.productionEligible !== false)) throw new Error(`${entry.place.id}: a registry record escaped the example boundary.`);
+    if (!PLACE_PROVINCES.includes(entry.place.province) || !PLACE_TYPES.includes(entry.place.type)) throw new Error(`${entry.place.id}: province and type must use the canonical registry enums.`);
     if (entry.place.id !== `${entry.place.province.toLowerCase()}-${entry.place.type}`) throw new Error(`${entry.place.id}: place identity is inconsistent with its province and type.`);
     if (entry.search.id !== `${entry.place.id}-search` || entry.search.placeId !== entry.place.id) throw new Error(`${entry.place.id}: search identity is inconsistent.`);
     const boundaryRecords = [entry.source, entry.citation];
