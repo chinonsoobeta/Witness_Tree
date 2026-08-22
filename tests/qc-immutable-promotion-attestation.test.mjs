@@ -161,23 +161,71 @@ test("direct assembly refuses an existing target, including a symlink, without c
   } finally { rmSync(paths.dir, { recursive: true, force: true }); }
 });
 
-test("exclusive link race fails closed and removes only its owned temporary file", () => {
+test("exclusive open race fails closed and leaves the racing destination untouched", () => {
   const dir = mkdtempSync(join(tmpdir(), "qc-attestation-output-race-")); const output = join(dir, "attestation.json");
   try {
     assert.throws(() => writeExclusiveMode600(output, { claims: { exactReadbacksVerified: true } }, {
-      beforeLink: () => writeFileSync(output, "RACING_TARGET_MUST_WIN", { mode: 0o600, flag: "wx" })
+      beforeOpen: () => writeFileSync(output, "RACING_TARGET_MUST_WIN", { mode: 0o600, flag: "wx" })
     }), /already exists; refusing overwrite/);
     assert.equal(readFileSync(output, "utf8"), "RACING_TARGET_MUST_WIN");
     assert.deepEqual(readdirSync(dir), ["attestation.json"]);
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
-test("temporary-path swap before publication fails without an injected final or residue", () => {
-  const dir = mkdtempSync(join(tmpdir(), "qc-attestation-temp-swap-")); const output = join(dir, "attestation.json");
+test("opened destination swap before verification fails without deleting the racing path", () => {
+  const dir = mkdtempSync(join(tmpdir(), "qc-attestation-output-swap-")); const output = join(dir, "attestation.json"); const moved = `${output}.moved`;
   try {
     assert.throws(() => writeExclusiveMode600(output, { claims: { exactReadbacksVerified: true } }, {
-      beforeLink: (temp) => renameSync(temp, `${temp}.moved`)
-    }), /temporary file changed before publication/);
+      beforeVerify: () => {
+        renameSync(output, moved);
+        writeFileSync(output, "RACING_TARGET_MUST_WIN", { mode: 0o600, flag: "wx" });
+      }
+    }), /rollback was not proved; inspect output state/);
+    assert.equal(readFileSync(output, "utf8"), "RACING_TARGET_MUST_WIN");
+    assert.equal(readFileSync(moved, "utf8").length > 0, true);
+    assert.deepEqual(readdirSync(dir).sort(), ["attestation.json", "attestation.json.moved"]);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("destination swap after directory fsync fails without deleting the racing path", () => {
+  const dir = mkdtempSync(join(tmpdir(), "qc-attestation-post-fsync-swap-")); const output = join(dir, "attestation.json"); const moved = `${output}.moved`; let raced = false;
+  try {
+    assert.throws(() => writeExclusiveMode600(output, { claims: { exactReadbacksVerified: true } }, {
+      afterDirectoryFsync: () => {
+        if (!raced) {
+          raced = true;
+          renameSync(output, moved);
+          writeFileSync(output, "RACING_TARGET_MUST_WIN", { mode: 0o600, flag: "wx" });
+        }
+      }
+    }), /rollback was not proved; inspect output state/);
+    assert.equal(readFileSync(output, "utf8"), "RACING_TARGET_MUST_WIN");
+    assert.equal(readFileSync(moved, "utf8").length > 0, true);
+    assert.deepEqual(readdirSync(dir).sort(), ["attestation.json", "attestation.json.moved"]);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("file and directory fsync stages are both reached", () => {
+  const dir = mkdtempSync(join(tmpdir(), "qc-attestation-fsync-")); const output = join(dir, "attestation.json"); const stages = [];
+  try {
+    writeExclusiveMode600(output, { claims: { exactReadbacksVerified: true } }, { onFsyncStage: (stage) => stages.push(stage) });
+    assert.deepEqual(stages, ["file", "directory"]);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("file fsync failure rolls back the owned destination", () => {
+  const dir = mkdtempSync(join(tmpdir(), "qc-attestation-fsync-file-failure-")); const output = join(dir, "attestation.json");
+  try {
+    assert.throws(() => writeExclusiveMode600(output, { claims: { exactReadbacksVerified: true } }, { onFsyncStage: (stage) => { if (stage === "file") throw new Error("injected file fsync failure"); } }), /owned output was rolled back/);
+    assert.equal(existsSync(output), false);
+    assert.deepEqual(readdirSync(dir), []);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("directory fsync failure reports an unproved rollback state", () => {
+  const dir = mkdtempSync(join(tmpdir(), "qc-attestation-fsync-directory-failure-")); const output = join(dir, "attestation.json");
+  try {
+    assert.throws(() => writeExclusiveMode600(output, { claims: { exactReadbacksVerified: true } }, { onFsyncStage: (stage) => { if (stage === "directory") throw new Error("injected directory fsync failure"); } }), /rollback was not proved; inspect output state/);
     assert.equal(existsSync(output), false);
     assert.deepEqual(readdirSync(dir), []);
   } finally { rmSync(dir, { recursive: true, force: true }); }
@@ -186,7 +234,7 @@ test("temporary-path swap before publication fails without an injected final or 
 test("public publication race rolls back only this invocation's private inode", async () => {
   const paths = await fixture();
   try {
-    assert.throws(() => assembleQcAttestation({ root, captureDirectory: paths.capture, privatePath: paths.privatePath, publicPath: paths.publicPath, beforePublicLink: () => writeFileSync(paths.publicPath, "RACING_PUBLIC_TARGET_MUST_REMAIN", { mode: 0o600, flag: "wx" }) }), /private output was rolled back/);
+    assert.throws(() => assembleQcAttestation({ root, captureDirectory: paths.capture, privatePath: paths.privatePath, publicPath: paths.publicPath, beforePublicOpen: () => writeFileSync(paths.publicPath, "RACING_PUBLIC_TARGET_MUST_REMAIN", { mode: 0o600, flag: "wx" }) }), /private output was rolled back/);
     assert.equal(existsSync(paths.privatePath), false);
     assert.equal(readFileSync(paths.publicPath, "utf8"), "RACING_PUBLIC_TARGET_MUST_REMAIN");
     assert.deepEqual(readdirSync(paths.dir).sort(), ["capture", "public.json"]);
@@ -197,7 +245,7 @@ test("private rollback race reports an unproved state and leaves racing files un
   const paths = await fixture();
   try {
     const racedPrivate = `${paths.privatePath}.raced`;
-    assert.throws(() => assembleQcAttestation({ root, captureDirectory: paths.capture, privatePath: paths.privatePath, publicPath: paths.publicPath, beforePublicLink: () => {
+    assert.throws(() => assembleQcAttestation({ root, captureDirectory: paths.capture, privatePath: paths.privatePath, publicPath: paths.publicPath, beforePublicOpen: () => {
       renameSync(paths.privatePath, racedPrivate);
       writeFileSync(paths.privatePath, "RACING_PRIVATE_TARGET_MUST_REMAIN", { mode: 0o600, flag: "wx" });
       writeFileSync(paths.publicPath, "RACING_PUBLIC_TARGET_MUST_REMAIN", { mode: 0o600, flag: "wx" });
