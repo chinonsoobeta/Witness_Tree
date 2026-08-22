@@ -284,10 +284,38 @@ test("manual environments accept only supported products with numeric versions",
     copy.manualAccessibility.keyboard[0].environment = environment;
     assert.doesNotThrow(() => validateEvidence(copy, protocol));
   }
-  for (const assistiveTechnology of ["JAWS", "NVDA", "Narrator", "Orca", "VoiceOver"]) {
-    copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = assistiveTechnology;
-    copy.manualAccessibility.screenReader[0].environment.assistiveTechnologyVersion = "15.6";
+  for (const environment of [
+    { assistiveTechnology: "VoiceOver", assistiveTechnologyVersion: "15.6", browser: "Safari", browserVersion: "18.6", operatingSystem: "macOS", operatingSystemVersion: "15.6" },
+    { assistiveTechnology: "Narrator", assistiveTechnologyVersion: "11", browser: "Edge", browserVersion: "151", operatingSystem: "Windows", operatingSystemVersion: "11" },
+    { assistiveTechnology: "JAWS", assistiveTechnologyVersion: "26.1", browser: "Chrome", browserVersion: "151", operatingSystem: "Windows", operatingSystemVersion: "11" },
+    { assistiveTechnology: "NVDA", assistiveTechnologyVersion: "26.1", browser: "Firefox", browserVersion: "152", operatingSystem: "Windows", operatingSystemVersion: "11" },
+    { assistiveTechnology: "Orca", assistiveTechnologyVersion: "47.1", browser: "Firefox", browserVersion: "152", operatingSystem: "Linux", operatingSystemVersion: "6.12" }
+  ]) {
+    copy.manualAccessibility.screenReader[0].environment = environment;
     assert.doesNotThrow(() => validateEvidence(copy, protocol));
+  }
+});
+
+test("screen-reader environments reject every incompatible assistive-technology and operating-system pair", () => {
+  const compatibility = {
+    JAWS: "Windows",
+    NVDA: "Windows",
+    Narrator: "Windows",
+    Orca: "Linux",
+    VoiceOver: "macOS"
+  };
+  for (const [assistiveTechnology, supportedOperatingSystem] of Object.entries(compatibility)) {
+    for (const operatingSystem of ["Linux", "macOS", "Windows"]) {
+      if (operatingSystem === supportedOperatingSystem) continue;
+      const copy = completeEvidence();
+      Object.assign(copy.manualAccessibility.screenReader[0].environment, {
+        assistiveTechnology,
+        assistiveTechnologyVersion: "1",
+        operatingSystem,
+        operatingSystemVersion: "1"
+      });
+      assert.throws(() => validateEvidence(copy, protocol), `${assistiveTechnology} with ${operatingSystem}`);
+    }
   }
 });
 

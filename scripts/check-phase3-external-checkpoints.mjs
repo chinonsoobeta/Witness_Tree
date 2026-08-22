@@ -28,7 +28,13 @@ const NUMERIC_VERSION = /^(?:0|[1-9][0-9]{0,2})(?:\.(?:0|[1-9][0-9]{0,2})){0,2}$
 const PROVIDER_CODE = /^provider-[a-f0-9]{16}$/;
 const BROWSERS = Object.freeze(["Chrome", "Edge", "Firefox", "Safari"]);
 const OPERATING_SYSTEMS = Object.freeze(["Linux", "macOS", "Windows"]);
-const ASSISTIVE_TECHNOLOGIES = Object.freeze(["JAWS", "NVDA", "Narrator", "Orca", "VoiceOver"]);
+const ASSISTIVE_TECHNOLOGY_OS = Object.freeze({
+  JAWS: "Windows",
+  NVDA: "Windows",
+  Narrator: "Windows",
+  Orca: "Linux",
+  VoiceOver: "macOS"
+});
 
 const exact = (actual, expected, message) => {
   if (JSON.stringify(actual) !== JSON.stringify(expected)) throw new Error(message);
@@ -154,7 +160,7 @@ function validateManualEnvironment(environment, kind) {
   const commonKeys = ["browser", "browserVersion", "operatingSystem", "operatingSystemVersion"];
   exactKeys(environment, kind === "screen-reader" ? ["assistiveTechnology", "assistiveTechnologyVersion", ...commonKeys] : commonKeys, `${kind}: structured environment is incomplete or altered.`);
   if (!BROWSERS.includes(environment.browser) || !NUMERIC_VERSION.test(environment.browserVersion ?? "") || !OPERATING_SYSTEMS.includes(environment.operatingSystem) || !NUMERIC_VERSION.test(environment.operatingSystemVersion ?? "")) throw new Error(`${kind}: browser or operating-system evidence is unsupported or invalid.`);
-  if (kind === "screen-reader" && (!ASSISTIVE_TECHNOLOGIES.includes(environment.assistiveTechnology) || !NUMERIC_VERSION.test(environment.assistiveTechnologyVersion ?? ""))) throw new Error(`${kind}: assistive-technology evidence is unsupported or invalid.`);
+  if (kind === "screen-reader" && (!Object.hasOwn(ASSISTIVE_TECHNOLOGY_OS, environment.assistiveTechnology) || !NUMERIC_VERSION.test(environment.assistiveTechnologyVersion ?? "") || ASSISTIVE_TECHNOLOGY_OS[environment.assistiveTechnology] !== environment.operatingSystem)) throw new Error(`${kind}: assistive-technology evidence is unsupported or invalid for the operating system.`);
 }
 
 function validateManualRows(rows, expected, kind) {
