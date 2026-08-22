@@ -21,7 +21,7 @@
   "absoluteContractBound": {"cellCountPerPair":24889746240,"pairCount":38,"cellIndexArrayBytesIfEveryCellChanged":10927502063298,"approvedStorageCapBytes":2199023255552,"passes":false},
   "blockers": [
     "No exact all-38-pair loss-cell inventory exists from which to bound retained event and per-cell geometry bytes.",
-    "No deterministic cross-window component-stitching executor with exact cell lineage has passed a full-pair replay.",
+    "The deterministic cross-window inventory stitcher has not passed a full-pair replay and does not yet emit per-component exact cell lineage.",
     "The bounded sample cannot prove completion within 96 hours or retained plus scratch storage within 2 TiB."
   ],
   "nationalExecutionStarted": false,
