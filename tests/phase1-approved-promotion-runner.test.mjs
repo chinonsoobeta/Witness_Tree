@@ -17,9 +17,9 @@ test("the three-artifact runner is preflight-first and binds every approved chec
 
 test("federal-only mode cannot revisit the archived harvest or preserved canopy prefix", () => {
   assert.match(runner, /MODE.*run-federal/);
-  assert.match(runner, /PROMOTION_INDICES=\(3\)/);
+  assert.match(runner, /run-federal-electoral-approved-promotion\.sh.*--run/);
   assert.match(runner, /for i in \$PROMOTION_INDICES/);
-  assert.match(runner, /Harvest is already archived and the canopy prefix is resumed separately/);
+  assert.match(runner, /Preserve the exact owner-approved command/);
 });
 
 test("the canopy archive uses explicit checked multipart calls and never aborts an unfinished upload", () => {

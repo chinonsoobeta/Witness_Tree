@@ -129,7 +129,7 @@ function syncParentDirectory(path, hooks = {}) {
   }
 }
 
-function rollbackExclusivePublication(publication, hooks = {}) {
+export function rollbackExclusivePublication(publication, hooks = {}) {
   if (!publication || resolve(publication.path) !== publication.path) return false;
   // This is a bounded observation, not a filesystem-wide lock: a same-owner
   // mutation after the nlink check, including before unlink, cannot be globally excluded.
