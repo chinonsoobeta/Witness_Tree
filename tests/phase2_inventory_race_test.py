@@ -22,7 +22,9 @@ class SourceRaceTest(unittest.TestCase):
     def prepare(self, root: Path):
         source = root / "source.tif"
         source.write_bytes(b"canonical")
-        expected_sha256, expected_identity = inventory.sha256_file_with_identity(source)
+        descriptor, expected_identity = inventory.open_source_descriptor(source)
+        expected_sha256, hashed_identity = inventory.sha256_descriptor(descriptor)
+        self.assertEqual(hashed_identity, expected_identity)
         final = root / "component-lineage.jsonl"
         writer = inventory.ComponentLineageWriter(
             final,
@@ -34,7 +36,7 @@ class SourceRaceTest(unittest.TestCase):
             inventory.LineageByteBudget(1024 * 1024),
         )
         writer.run(0, 0, 0, 0)
-        return source, expected_sha256, expected_identity, final, writer
+        return source, descriptor, expected_sha256, expected_identity, final, writer
 
     def assert_partial_only(self, final: Path) -> None:
         self.assertFalse(final.exists())
@@ -42,24 +44,60 @@ class SourceRaceTest(unittest.TestCase):
 
     def test_same_path_mutation_cannot_publish_final_lineage(self) -> None:
         with tempfile.TemporaryDirectory(prefix="witness-phase2-mutation-") as directory:
-            source, expected_sha256, expected_identity, final, writer = self.prepare(Path(directory))
-            source.write_bytes(b"mutated!!")
-            with self.assertRaisesRegex(ValueError, "identity changed|bytes changed"):
-                inventory.verify_source_unchanged(source, expected_sha256, expected_identity, time.monotonic() + 60)
-            writer.close()
-            self.assert_partial_only(final)
+            source, descriptor, expected_sha256, expected_identity, final, writer = self.prepare(Path(directory))
+            try:
+                source.write_bytes(b"mutated!!")
+                with self.assertRaisesRegex(ValueError, "identity changed|bytes changed"):
+                    inventory.verify_descriptor_unchanged(
+                        descriptor, expected_sha256, expected_identity, time.monotonic() + 60
+                    )
+                writer.close()
+                self.assert_partial_only(final)
+            finally:
+                writer.close()
+                os.close(descriptor)
 
-    def test_same_bytes_replacement_inode_cannot_publish_final_lineage(self) -> None:
+    def test_transient_replace_process_restore_cannot_publish_final_lineage(self) -> None:
         with tempfile.TemporaryDirectory(prefix="witness-phase2-replacement-") as directory:
             root = Path(directory)
-            source, expected_sha256, expected_identity, final, writer = self.prepare(root)
+            source = root / "source.tif"
             replacement = root / "replacement.tif"
-            replacement.write_bytes(b"canonical")
-            os.replace(replacement, source)
-            with self.assertRaisesRegex(ValueError, "identity changed"):
-                inventory.verify_source_unchanged(source, expected_sha256, expected_identity, time.monotonic() + 60)
-            writer.close()
-            self.assert_partial_only(final)
+            driver = inventory.gdal.GetDriverByName("GTiff")
+            for path, value in [(source, 1), (replacement, 0)]:
+                dataset = driver.Create(str(path), 1, 1, 1, inventory.gdal.GDT_Byte)
+                dataset.GetRasterBand(1).WriteArray(inventory.np.asarray([[value]], dtype=inventory.np.uint8))
+                dataset.FlushCache()
+                dataset = None
+            backup = root / "source-backup.tif"
+            os.link(source, backup)
+            descriptor, expected_identity = inventory.open_source_descriptor(source)
+            expected_sha256, hashed_identity = inventory.sha256_descriptor(descriptor)
+            self.assertEqual(hashed_identity, expected_identity)
+            final = root / "component-lineage.jsonl"
+            writer = inventory.ComponentLineageWriter(
+                final,
+                0,
+                1,
+                expected_sha256,
+                1,
+                1,
+                inventory.LineageByteBudget(1024 * 1024),
+            )
+            try:
+                os.replace(replacement, source)
+                dataset = inventory.gdal.Open(f"/dev/fd/{descriptor}", inventory.gdal.GA_ReadOnly)
+                self.assertEqual(int(dataset.GetRasterBand(1).ReadAsArray(0, 0, 1, 1)[0, 0]), 1)
+                dataset = None
+                os.replace(backup, source)
+                with self.assertRaisesRegex(ValueError, "identity changed"):
+                    inventory.verify_descriptor_unchanged(
+                        descriptor, expected_sha256, expected_identity, time.monotonic() + 60
+                    )
+                writer.close()
+                self.assert_partial_only(final)
+            finally:
+                writer.close()
+                os.close(descriptor)
 
 
 if __name__ == "__main__":

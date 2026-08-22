@@ -22,7 +22,7 @@ LOSS_MAP_SHA256 = "c962180952e11af0766c5b929d97d4bb635181f93c04e93bbfa7d808e1561
 MAX_SECONDS = 96 * 60 * 60
 CANONICAL_PAIR_COUNT = 38
 LINEAGE_BYTE_CAP = 2 * 1024**4
-FileIdentity = tuple[int, int, int, int]
+FileIdentity = tuple[int, int, int, int, int, int]
 
 
 def row_runs(row: np.ndarray) -> list[tuple[int, int]]:
@@ -318,7 +318,7 @@ def inventory_rows(rows: np.ndarray, width: int) -> dict[str, int | str]:
 def identity_from_stat(result: os.stat_result) -> FileIdentity:
     if not stat.S_ISREG(result.st_mode):
         raise ValueError("Loss raster must remain a regular file.")
-    return (result.st_dev, result.st_ino, result.st_size, result.st_mtime_ns)
+    return (result.st_dev, result.st_ino, result.st_size, result.st_mtime_ns, result.st_ctime_ns, result.st_nlink)
 
 
 def file_identity(path: Path) -> FileIdentity:
@@ -327,39 +327,70 @@ def file_identity(path: Path) -> FileIdentity:
     return identity_from_stat(os.stat(path, follow_symlinks=False))
 
 
-def sha256_file_with_identity(path: Path, deadline: float | None = None) -> tuple[str, FileIdentity]:
-    before = file_identity(path)
+def open_source_descriptor(path: Path) -> tuple[int, FileIdentity]:
+    flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    descriptor = os.open(path, flags)
+    try:
+        identity = identity_from_stat(os.fstat(descriptor))
+        if file_identity(path) != identity:
+            raise ValueError("Loss raster identity changed while opening the verified descriptor.")
+        return descriptor, identity
+    except Exception:
+        os.close(descriptor)
+        raise
+
+
+def sha256_descriptor(descriptor: int, deadline: float | None = None) -> tuple[str, FileIdentity]:
+    before = identity_from_stat(os.fstat(descriptor))
     digest = hashlib.sha256()
-    with path.open("rb") as stream:
-        opened = identity_from_stat(os.fstat(stream.fileno()))
-        if opened != before:
-            raise ValueError("Loss raster identity changed while opening for hashing.")
-        for chunk in iter(lambda: stream.read(8 * 1024 * 1024), b""):
-            if deadline is not None and time.monotonic() >= deadline:
-                raise TimeoutError("Inventory exceeded its approved wall-time cap while hashing input.")
-            digest.update(chunk)
-        after_read = identity_from_stat(os.fstat(stream.fileno()))
-    after = file_identity(path)
-    if before != opened or opened != after_read or after_read != after:
-        raise ValueError("Loss raster identity changed during hashing.")
+    offset = 0
+    while True:
+        if deadline is not None and time.monotonic() >= deadline:
+            raise TimeoutError("Inventory exceeded its approved wall-time cap while hashing input.")
+        chunk = os.pread(descriptor, 8 * 1024 * 1024, offset)
+        if not chunk:
+            break
+        digest.update(chunk)
+        offset += len(chunk)
+    after = identity_from_stat(os.fstat(descriptor))
+    if before != after:
+        raise ValueError("Loss raster descriptor identity changed during hashing.")
     return digest.hexdigest(), before
+
+
+def sha256_file_with_identity(path: Path, deadline: float | None = None) -> tuple[str, FileIdentity]:
+    descriptor, identity = open_source_descriptor(path)
+    try:
+        digest, hashed_identity = sha256_descriptor(descriptor, deadline)
+        if hashed_identity != identity:
+            raise ValueError("Loss raster descriptor identity changed during hashing.")
+        if file_identity(path) != identity:
+            raise ValueError("Loss raster path identity changed during hashing.")
+        return digest, identity
+    finally:
+        os.close(descriptor)
 
 
 def sha256_file(path: Path, deadline: float | None = None) -> str:
     return sha256_file_with_identity(path, deadline)[0]
 
 
-def verify_source_unchanged(
-    path: Path,
+def verify_descriptor_unchanged(
+    descriptor: int,
     expected_sha256: str,
     expected_identity: FileIdentity,
     deadline: float,
 ) -> None:
-    observed_sha256, observed_identity = sha256_file_with_identity(path, deadline)
+    observed_sha256, observed_identity = sha256_descriptor(descriptor, deadline)
     if observed_identity != expected_identity:
         raise ValueError("Loss raster identity changed during inventory.")
     if observed_sha256 != expected_sha256:
         raise ValueError("Loss raster bytes changed during inventory.")
+
+
+def verify_path_identity(path: Path, expected_identity: FileIdentity) -> None:
+    if file_identity(path) != expected_identity:
+        raise ValueError("Loss raster path was replaced during inventory.")
 
 
 def canonical_loss_sha(from_year: int, to_year: int) -> str:
@@ -448,43 +479,59 @@ def inventory_raster(
     if path.is_symlink() or not path.is_file():
         raise ValueError("Loss raster must be an existing non-symlink file.")
     expected_sha = canonical_loss_sha(from_year, to_year)
-    observed_sha, source_identity = sha256_file_with_identity(path, deadline)
-    if observed_sha != expected_sha:
-        raise ValueError("Loss raster SHA-256 does not match its canonical year pair.")
-    gdal.SetCacheMax(64 * 1024 * 1024)
-    dataset = gdal.Open(str(path), gdal.GA_ReadOnly)
-    if dataset.RasterXSize != GRID_WIDTH or dataset.RasterYSize != GRID_HEIGHT:
-        raise ValueError("Loss raster grid changed.")
-    band = dataset.GetRasterBand(1)
-    if band.DataType != gdal.GDT_Byte or band.GetNoDataValue() != 255:
-        raise ValueError("Loss raster type or nodata changed.")
+    descriptor, source_identity = open_source_descriptor(path)
+    dataset = None
+    band = None
     writer = None
-    if lineage_path is not None:
-        writer = ComponentLineageWriter(
-            lineage_path,
-            from_year,
-            to_year,
-            expected_sha,
-            GRID_WIDTH,
-            GRID_HEIGHT,
-            lineage_budget or LineageByteBudget(LINEAGE_BYTE_CAP),
-        )
-    inventory = StitchInventory(GRID_WIDTH, writer)
     try:
+        observed_sha, hashed_identity = sha256_descriptor(descriptor, deadline)
+        if hashed_identity != source_identity:
+            raise ValueError("Loss raster descriptor identity changed before inventory.")
+        if observed_sha != expected_sha:
+            raise ValueError("Loss raster SHA-256 does not match its canonical year pair.")
+        verify_path_identity(path, source_identity)
+        gdal.SetCacheMax(64 * 1024 * 1024)
+        descriptor_path = f"/dev/fd/{descriptor}"
+        if not Path(descriptor_path).exists():
+            raise ValueError("This host does not expose the verified descriptor through /dev/fd.")
+        dataset = gdal.Open(descriptor_path, gdal.GA_ReadOnly)
+        if dataset.RasterXSize != GRID_WIDTH or dataset.RasterYSize != GRID_HEIGHT:
+            raise ValueError("Loss raster grid changed.")
+        band = dataset.GetRasterBand(1)
+        if band.DataType != gdal.GDT_Byte or band.GetNoDataValue() != 255:
+            raise ValueError("Loss raster type or nodata changed.")
+        if lineage_path is not None:
+            writer = ComponentLineageWriter(
+                lineage_path,
+                from_year,
+                to_year,
+                expected_sha,
+                GRID_WIDTH,
+                GRID_HEIGHT,
+                lineage_budget or LineageByteBudget(LINEAGE_BYTE_CAP),
+            )
+        inventory = StitchInventory(GRID_WIDTH, writer)
         for y_offset in range(0, GRID_HEIGHT, block_rows):
             if time.monotonic() >= deadline:
                 raise TimeoutError("Inventory exceeded its approved 96-hour wall-time cap.")
+            verify_path_identity(path, source_identity)
             height = min(block_rows, GRID_HEIGHT - y_offset)
             block = band.ReadAsArray(0, y_offset, GRID_WIDTH, height)
             for local_row, row in enumerate(block):
                 inventory.add_row(y_offset + local_row, row)
+            verify_path_identity(path, source_identity)
         inventory_result = inventory.finish()
-        verify_source_unchanged(path, expected_sha, source_identity, deadline)
+        verify_descriptor_unchanged(descriptor, expected_sha, source_identity, deadline)
+        verify_path_identity(path, source_identity)
         lineage_result = writer.finish(inventory_result) if writer is not None else None
     except Exception:
         if writer is not None:
             writer.close()
         raise
+    finally:
+        band = None
+        dataset = None
+        os.close(descriptor)
     result: dict[str, object] = {
         "schemaVersion": "witness-tree/phase2-real-loss-component-inventory/1",
         "pair": [from_year, to_year],
