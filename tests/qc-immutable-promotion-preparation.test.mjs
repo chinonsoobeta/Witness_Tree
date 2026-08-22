@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { chmodSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
@@ -99,6 +100,65 @@ test("owner-local runner is multipart-only and excludes high-level copies, delet
   assert.doesNotMatch(runner, /aws s3 cp|DeleteObject|BypassGovernanceRetention|PutObjectLegalHold|aws iam /i);
   assert.match(runner, /aws configure get mfa_serial --profile/);
   assert.doesNotMatch(runner, /list-mfa-devices|iam list/i);
+  assert.match(runner, /NoSuchUpload[\s\S]*head-object[\s\S]*--version-id[\s\S]*state was preserved and no new upload was started/);
+});
+
+test("NoSuchUpload adopts only an exact completed version, preserves a mismatch, and never starts a replacement upload", () => {
+  const dir = mkdtempSync(join(tmpdir(), "qc-promotion-nosuchupload-"));
+  try {
+    const dataRoot = join(dir, "data"); const stateRoot = join(dir, "state"); mkdirSync(dataRoot, { recursive: true }); mkdirSync(stateRoot, { recursive: true, mode: 0o700 });
+    const fixture = structuredClone(plan); const composites = {}; const payloadHeads = {}; const sidecarHeads = {};
+    for (const [index, artifact] of fixture.artifacts.entries()) {
+      const content = Buffer.from(index ? "second-payload" : "first-payload"); const relative = `raw/qc-test/${artifact.id}.bin`; const file = join(dataRoot, relative); mkdirSync(join(dataRoot, "raw/qc-test"), { recursive: true }); writeFileSync(file, content);
+      artifact.localPath = relative; artifact.byteLength = content.length; artifact.sha256 = createHash("sha256").update(content).digest("hex");
+      const digests = []; for (let offset = 0; offset < content.length; offset += 4) digests.push(createHash("sha256").update(content.subarray(offset, offset + 4)).digest());
+      composites[artifact.id] = `${createHash("sha256").update(Buffer.concat(digests)).digest("base64")}-${digests.length}`;
+      payloadHeads[artifact.payloadKey] = { VersionId: `exact-version-${index}`, ContentLength: content.length, ChecksumType: "COMPOSITE", ChecksumSHA256: composites[artifact.id] };
+      const sidecar = sidecarFor(plan, plan.artifacts[index]); sidecarHeads[artifact.manifestKey] = { VersionId: `sidecar-version-${index}`, ContentLength: Buffer.byteLength(sidecar), ChecksumSHA256: createHash("sha256").update(sidecar).digest("base64") };
+      const stateDir = join(stateRoot, `${artifact.id}-${artifact.sha256}`); mkdirSync(stateDir, { recursive: true, mode: 0o700 });
+      const state = { artifactId: artifact.id, payloadKey: artifact.payloadKey, manifestKey: artifact.manifestKey, sha256: artifact.sha256, byteLength: artifact.byteLength, partSizeBytes: 4, initiation: "accepted", uploadId: `saved-upload-${index}`, payloadVersionId: null, compositeChecksumSha256: null, sidecarVersionId: `sidecar-version-${index}` };
+      writeFileSync(join(stateDir, "state.json"), `${JSON.stringify(state)}\n`, { mode: 0o600 });
+    }
+    payloadHeads[fixture.artifacts[1].payloadKey].ChecksumSHA256 = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+    const fixturePlan = join(dir, "plan.json"); writeFileSync(fixturePlan, `${JSON.stringify(fixture)}\n`);
+    const marker = join(dir, "aws-calls"); const aws = join(dir, "aws");
+    writeFileSync(aws, `#!/bin/zsh
+print -- "$1:$2 $*" >> ${JSON.stringify(marker)}
+case "$1:$2" in
+  configure:get) print -- 'arn:aws:iam::286853118812:mfa/test-device' ;;
+  sts:get-session-token|sts:assume-role) print -- '{"Credentials":{"AccessKeyId":"dummy","SecretAccessKey":"dummy","SessionToken":"dummy"}}' ;;
+  sts:get-caller-identity) print -- '{"Account":"286853118812","Arn":"arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator"}' ;;
+  s3api:list-parts) print -u2 -- 'An error occurred (NoSuchUpload) when calling the ListParts operation'; exit 254 ;;
+  s3api:head-object)
+    key=""; while (( $# )); do if [[ "$1" == "--key" ]]; then key="$2"; break; fi; shift; done
+    case "$key" in
+      ${JSON.stringify(fixture.artifacts[0].manifestKey)}) print -- ${JSON.stringify(JSON.stringify(sidecarHeads[fixture.artifacts[0].manifestKey]))} ;;
+      ${JSON.stringify(fixture.artifacts[1].manifestKey)}) print -- ${JSON.stringify(JSON.stringify(sidecarHeads[fixture.artifacts[1].manifestKey]))} ;;
+      ${JSON.stringify(fixture.artifacts[0].payloadKey)}) print -- ${JSON.stringify(JSON.stringify(payloadHeads[fixture.artifacts[0].payloadKey]))} ;;
+      ${JSON.stringify(fixture.artifacts[1].payloadKey)}) print -- ${JSON.stringify(JSON.stringify(payloadHeads[fixture.artifacts[1].payloadKey]))} ;;
+      *) exit 99 ;;
+    esac ;;
+  s3api:put-object-retention) print -- '{}' ;;
+  s3api:get-object-retention) print -- '{"Retention":{"Mode":"COMPLIANCE","RetainUntilDate":"2033-08-12T00:00:00Z"}}' ;;
+  *) exit 98 ;;
+esac
+`, { mode: 0o700 }); chmodSync(aws, 0o700);
+    const source = readFileSync(runnerPath, "utf8")
+      .replace(/^ROOT=.*$/m, `ROOT=${JSON.stringify(repositoryRoot)}`)
+      .replace(/^PLAN=.*$/m, `PLAN=${JSON.stringify(fixturePlan)}`)
+      .replace(/^DATA_ROOT=.*$/m, `DATA_ROOT=${JSON.stringify(dataRoot)}`)
+      .replace(/^STATE_ROOT=.*$/m, `STATE_ROOT=${JSON.stringify(stateRoot)}`)
+      .replace(/^PART_SIZE=.*$/m, "PART_SIZE=4");
+    const runner = join(dir, "runner.sh"); writeFileSync(runner, source, { mode: 0o700 });
+    const program = `set timeout 30\nset env(PATH) ${JSON.stringify(`${dir}:${process.env.PATH}`)}\nspawn -noecho zsh ${JSON.stringify(runner)} --run\nexpect {\n  "Current MFA TOTP (not stored):" { send -- "123456\\r"; exp_continue }\n  eof { set result [wait]; exit [lindex $result 3] }\n  timeout { exit 2 }\n}`;
+    const run = spawnSync("expect", ["-c", program], { encoding: "utf8", timeout: 30_000, env: { ...process.env, PATH: `${dir}:${process.env.PATH}` } });
+    assert.equal(run.status, 75, `${run.stdout}\n${run.stderr}`); assert.match(run.stdout, /Recovered completed payload evidence after NoSuchUpload/); assert.match(`${run.stdout}${run.stderr}`, /current exact-key object does not match.*state was preserved and no new upload was started/i);
+    const calls = readFileSync(marker, "utf8"); assert.doesNotMatch(calls, /create-multipart-upload|upload-part|complete-multipart-upload|put-object(?:\s|$)/);
+    const exactArtifact = fixture.artifacts[0]; const exactState = JSON.parse(readFileSync(join(stateRoot, `${exactArtifact.id}-${exactArtifact.sha256}`, "state.json"), "utf8"));
+    assert.equal(exactState.payloadVersionId, "exact-version-0"); assert.equal(exactState.compositeChecksumSha256, composites[exactArtifact.id]);
+    const mismatchedArtifact = fixture.artifacts[1]; const mismatchedState = JSON.parse(readFileSync(join(stateRoot, `${mismatchedArtifact.id}-${mismatchedArtifact.sha256}`, "state.json"), "utf8"));
+    assert.equal(mismatchedState.payloadVersionId, null); assert.equal(mismatchedState.compositeChecksumSha256, null); assert.equal(mismatchedState.uploadId, "saved-upload-1");
+  } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
 test("owner-local runner accepts an approved-account MFA path and pins the exact post-MFA operator", () => {

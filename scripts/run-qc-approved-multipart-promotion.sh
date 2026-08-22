@@ -26,6 +26,30 @@ sha256_b64() { print -n -- "$(sha256_hex "$1")" | xxd -r -p | base64 | tr -d '\n
 write_json() { local target="$1" value="$2" tmpfile="${1}.tmp.$$"; print -r -- "$value" > "$tmpfile" && chmod 600 "$tmpfile" && mv -f "$tmpfile" "$target"; }
 state_update() { local state="$1" filter="$2"; shift 2; local temp="${state}.tmp.$$"; jq "$filter" "$@" "$state" > "$temp" && chmod 600 "$temp" && mv -f "$temp" "$state"; }
 
+local_composite_checksum() {
+  local id="$1" file="$2" bytes="$3" part_number=1 offset=0 part_bytes part_file digest_file
+  part_file="$TMP/${id}.diagnostic-part"; digest_file="$TMP/${id}.diagnostic-digests.bin"; : > "$digest_file"; chmod 600 "$digest_file"
+  while (( offset < bytes )); do
+    part_bytes=$(( bytes - offset )); (( part_bytes > PART_SIZE )) && part_bytes=$PART_SIZE
+    dd if="$file" of="$part_file" bs="$PART_SIZE" skip=$((part_number - 1)) count=1 2>/dev/null
+    [[ "$(file_size "$part_file")" == "$part_bytes" ]] || fail "Local diagnostic part extraction mismatched the approved byte range; multipart state was preserved" 70
+    print -n -- "$(sha256_hex "$part_file")" | xxd -r -p >> "$digest_file"
+    (( part_number += 1, offset += part_bytes ))
+  done
+  rm -f "$part_file"
+  print -- "$(openssl dgst -sha256 -binary "$digest_file" | base64 | tr -d '\n')-$((part_number - 1))"
+}
+
+verify_and_retain_payload() {
+  local id="$1" payload="$2" bytes="$3" version="$4" composite="$5" payload_head retention
+  payload_head="$(aws s3api head-object --bucket "$BUCKET" --key "$payload" --version-id "$version" --checksum-mode ENABLED --region "$REGION" --output json)" || fail "Payload version read-back failed" 70
+  jq -e --arg version "$version" --argjson bytes "$bytes" --arg checksum "$composite" '.VersionId==$version and .ContentLength==$bytes and .ChecksumType=="COMPOSITE" and .ChecksumSHA256==$checksum' <<<"$payload_head" >/dev/null || fail "Payload version read-back does not prove expected version, bytes, and composite checksum" 70
+  aws s3api put-object-retention --bucket "$BUCKET" --key "$payload" --version-id "$version" --retention "Mode=COMPLIANCE,RetainUntilDate=$RETAIN_UNTIL" --region "$REGION" >/dev/null || fail "Payload retention could not be applied; the verified version ID remains in local recovery state" 70
+  retention="$(aws s3api get-object-retention --bucket "$BUCKET" --key "$payload" --version-id "$version" --region "$REGION" --output json)" || fail "Payload retention read-back failed" 70
+  jq -e --arg date "$RETAIN_UNTIL" '.Retention.Mode=="COMPLIANCE" and (.Retention.RetainUntilDate | startswith($date[0:10]))' <<<"$retention" >/dev/null || fail "Payload retention read-back mismatch" 70
+  print -- "Completed and retained $id at its exact provider version; retain local state for redacted independent read-back."
+}
+
 if [[ $# -eq 0 ]]; then node "$ROOT/scripts/prepare-qc-immutable-promotion.mjs"; exit 0; fi
 [[ "${1:-}" == "--preflight" || "${1:-}" == "--run" ]] && [[ $# -eq 1 ]] || fail "Usage: $0 [--preflight|--run]" 64
 for tool in node jq shasum xxd base64 dd stat; do need "$tool"; done
@@ -60,7 +84,7 @@ mkdir -p "$STATE_ROOT"; chmod 700 "$STATE_ROOT"
 node "$ROOT/scripts/prepare-qc-immutable-promotion.mjs" --write-sidecars "$TMP" >/dev/null
 
 promote_one() {
-  local artifact="$1" id relative file bytes sha payload sidecar sidecar_file state state_dir expected_state sidecar_sha sidecar_b64 sidecar_put sidecar_version sidecar_head upload_id list part_number offset part_bytes part_file part_b64 part_result parts_file composite_file composite composite_b64 complete version payload_head retention
+  local artifact="$1" id relative file bytes sha payload sidecar sidecar_file state state_dir expected_state sidecar_sha sidecar_b64 sidecar_put sidecar_version sidecar_head upload_id list list_error part_number offset part_bytes part_file part_b64 part_result parts_file composite_file composite composite_b64 complete version latest_head exact_head
   id="$(jq -r '.id' <<<"$artifact")"; relative="$(jq -r '.localPath' <<<"$artifact")"; file="$DATA_ROOT/$relative"; bytes="$(jq -r '.byteLength' <<<"$artifact")"; sha="$(jq -r '.sha256' <<<"$artifact")"; payload="$(jq -r '.payloadKey' <<<"$artifact")"; sidecar="$(jq -r '.manifestKey' <<<"$artifact")"; sidecar_file="$TMP/${id}.manifest.json"
   state_dir="$STATE_ROOT/${id}-${sha}"; state="$state_dir/state.json"; mkdir -p "$state_dir"; chmod 700 "$state_dir"
   expected_state="$(jq -n --arg id "$id" --arg payload "$payload" --arg sidecar "$sidecar" --arg sha "$sha" --argjson bytes "$bytes" --argjson partSize "$PART_SIZE" '{artifactId:$id,payloadKey:$payload,manifestKey:$sidecar,sha256:$sha,byteLength:$bytes,partSizeBytes:$partSize,initiation:"not-started",uploadId:null,payloadVersionId:null,compositeChecksumSha256:null,sidecarVersionId:null}')"
@@ -88,7 +112,25 @@ promote_one() {
     state_update "$state" '.initiation="accepted" | .uploadId=$uploadId' --arg uploadId "$upload_id"
   fi
 
-  list="$(aws s3api list-parts --bucket "$BUCKET" --key "$payload" --upload-id "$upload_id" --region "$REGION" --output json)" || fail "Cannot read approved multipart state; no new part was sent" 70
+  list_error="$TMP/${id}.list-parts.stderr"
+  if ! list="$(aws s3api list-parts --bucket "$BUCKET" --key "$payload" --upload-id "$upload_id" --region "$REGION" --output json 2>"$list_error")"; then
+    if grep -q 'NoSuchUpload' "$list_error"; then
+      print -- "Saved multipart upload is no longer active; checking only the exact payload key for a completed matching object."
+      composite="$(local_composite_checksum "$id" "$file" "$bytes")"
+      if ! latest_head="$(aws s3api head-object --bucket "$BUCKET" --key "$payload" --checksum-mode ENABLED --region "$REGION" --output json 2>"$TMP/${id}.latest-head.stderr")"; then
+        fail "Saved multipart upload is absent and no exact completed payload can be proved; state was preserved and no new upload was started" 75
+      fi
+      version="$(jq -r '.VersionId // empty' <<<"$latest_head")"
+      jq -e --arg version "$version" --argjson bytes "$bytes" --arg checksum "$composite" '$version!="" and .VersionId==$version and .ContentLength==$bytes and .ChecksumType=="COMPOSITE" and .ChecksumSHA256==$checksum' <<<"$latest_head" >/dev/null || fail "Saved multipart upload is absent and the current exact-key object does not match the approved payload; state was preserved and no new upload was started" 75
+      exact_head="$(aws s3api head-object --bucket "$BUCKET" --key "$payload" --version-id "$version" --checksum-mode ENABLED --region "$REGION" --output json)" || fail "Completed candidate could not be read back at its exact version; state was preserved and no new upload was started" 75
+      jq -e --arg version "$version" --argjson bytes "$bytes" --arg checksum "$composite" '.VersionId==$version and .ContentLength==$bytes and .ChecksumType=="COMPOSITE" and .ChecksumSHA256==$checksum' <<<"$exact_head" >/dev/null || fail "Exact-version completed candidate does not match the approved payload; state was preserved and no new upload was started" 75
+      state_update "$state" '.payloadVersionId=$version | .compositeChecksumSha256=$checksum' --arg version "$version" --arg checksum "$composite"
+      verify_and_retain_payload "$id" "$payload" "$bytes" "$version" "$composite"
+      print -- "Recovered completed payload evidence after NoSuchUpload without creating, uploading, completing, or overwriting an object."
+      return 0
+    fi
+    fail "Cannot read approved multipart state; no new part was sent" 70
+  fi
   composite_file="$state_dir/part-digests.bin"; : > "$composite_file"; chmod 600 "$composite_file"
   part_number=1; offset=0
   while (( offset < bytes )); do
@@ -121,12 +163,7 @@ promote_one() {
     state_update "$state" '.payloadVersionId=$version | .compositeChecksumSha256=$checksum' --arg version "$version" --arg checksum "$composite"
   fi
   composite="$(jq -r '.compositeChecksumSha256' "$state")"
-  payload_head="$(aws s3api head-object --bucket "$BUCKET" --key "$payload" --version-id "$version" --checksum-mode ENABLED --region "$REGION" --output json)" || fail "Payload version read-back failed" 70
-  jq -e --argjson bytes "$bytes" --arg checksum "$composite" '.ContentLength==$bytes and .ChecksumType=="COMPOSITE" and .ChecksumSHA256==$checksum' <<<"$payload_head" >/dev/null || fail "Payload version read-back does not prove expected bytes and composite checksum" 70
-  aws s3api put-object-retention --bucket "$BUCKET" --key "$payload" --version-id "$version" --retention "Mode=COMPLIANCE,RetainUntilDate=$RETAIN_UNTIL" --region "$REGION" >/dev/null || fail "Payload retention could not be applied; the verified version ID remains in local recovery state" 70
-  retention="$(aws s3api get-object-retention --bucket "$BUCKET" --key "$payload" --version-id "$version" --region "$REGION" --output json)" || fail "Payload retention read-back failed" 70
-  jq -e --arg date "$RETAIN_UNTIL" '.Retention.Mode=="COMPLIANCE" and (.Retention.RetainUntilDate | startswith($date[0:10]))' <<<"$retention" >/dev/null || fail "Payload retention read-back mismatch" 70
-  print -- "Completed and retained $id version $version; retain local state for redacted independent read-back."
+  verify_and_retain_payload "$id" "$payload" "$bytes" "$version" "$composite"
 }
 
 while IFS= read -r artifact; do promote_one "$artifact"; done < <(jq -c '.artifacts[]' "$PLAN")
