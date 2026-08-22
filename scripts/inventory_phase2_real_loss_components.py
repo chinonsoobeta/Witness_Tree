@@ -46,6 +46,22 @@ class LineageByteBudget:
         self.used += amount
 
 
+def partial_lineage_path(path: Path) -> Path:
+    return path.with_name(f"{path.name}.partial")
+
+
+def validate_lineage_target(path: Path) -> Path:
+    """Require both the final and partial lineage names to be unused."""
+    if path.parent.is_symlink() or not path.parent.is_dir():
+        raise ValueError("Component lineage parent must be an existing non-symlink directory.")
+    if path.exists() or path.is_symlink():
+        raise ValueError(f"Component lineage output already exists: {path.name}")
+    partial_path = partial_lineage_path(path)
+    if partial_path.exists() or partial_path.is_symlink():
+        raise ValueError(f"Component lineage partial output already exists: {partial_path.name}")
+    return partial_path
+
+
 class ComponentLineageWriter:
     """Write exact row-run lineage without retaining completed components in memory."""
 
@@ -59,28 +75,29 @@ class ComponentLineageWriter:
         height: int,
         budget: LineageByteBudget,
     ) -> None:
-        if path.exists() or path.is_symlink():
-            raise ValueError(f"Component lineage output already exists: {path.name}")
-        if path.parent.is_symlink() or not path.parent.is_dir():
-            raise ValueError("Component lineage parent must be an existing non-symlink directory.")
         self.path = path
+        self.partial_path = validate_lineage_target(path)
         self.budget = budget
         self.bytes_written = 0
         self.digest = hashlib.sha256()
-        self.stream = path.open("xb")
-        self._write(
-            {
-                "record": "header",
-                "schemaVersion": "witness-tree/phase2-real-loss-component-lineage/1",
-                "pair": [from_year, to_year],
-                "sourceLossSha256": source_loss_sha256,
-                "grid": [width, height],
-                "connectivity": 4,
-                "encoding": "inclusive-x-runs",
-                "released": False,
-                "productionEligible": False,
-            }
-        )
+        self.stream = self.partial_path.open("xb")
+        try:
+            self._write(
+                {
+                    "record": "header",
+                    "schemaVersion": "witness-tree/phase2-real-loss-component-lineage/1",
+                    "pair": [from_year, to_year],
+                    "sourceLossSha256": source_loss_sha256,
+                    "grid": [width, height],
+                    "connectivity": 4,
+                    "encoding": "inclusive-x-runs",
+                    "released": False,
+                    "productionEligible": False,
+                }
+            )
+        except Exception:
+            self.stream.close()
+            raise
 
     def _write(self, record: dict[str, object]) -> None:
         payload = (json.dumps(record, separators=(",", ":"), sort_keys=True) + "\n").encode("utf-8")
@@ -135,6 +152,11 @@ class ComponentLineageWriter:
         self.stream.flush()
         os.fsync(self.stream.fileno())
         self.stream.close()
+        try:
+            os.link(self.partial_path, self.path, follow_symlinks=False)
+        except FileExistsError as error:
+            raise ValueError(f"Component lineage output appeared during execution: {self.path.name}") from error
+        os.unlink(self.partial_path)
         return {
             "fileName": self.path.name,
             "byteLength": self.bytes_written,
@@ -318,6 +340,50 @@ def canonical_loss_pairs() -> list[tuple[int, int, str]]:
     return [(int(from_year), int(to_year), str(sha256)) for from_year, to_year, sha256 in pairs]
 
 
+def fixture_rows(value: object) -> np.ndarray:
+    """Validate fixture cells before any NumPy conversion can coerce them."""
+    if not isinstance(value, list) or not value or not isinstance(value[0], list) or not value[0]:
+        raise ValueError("Fixture must be a non-empty rectangular matrix.")
+    width = len(value[0])
+    for row in value:
+        if not isinstance(row, list) or len(row) != width:
+            raise ValueError("Fixture must be a non-empty rectangular matrix.")
+        for cell in row:
+            if type(cell) is not int or cell not in {0, 1, 255}:
+                raise ValueError("Fixture cells must be exact integers 0, 1, or 255.")
+    return np.asarray(value, dtype=np.uint8)
+
+
+def preflight_all_pair_paths(
+    input_root: Path,
+    components_root: Path | None,
+    deadline: float,
+) -> list[tuple[int, int, str, Path, Path | None]]:
+    """Validate every canonical input checksum and every output name before writing."""
+    prepared = [
+        (
+            from_year,
+            to_year,
+            expected_sha,
+            input_root / f"detected-forest-loss-{from_year}-{to_year}.tif",
+            components_root / f"detected-forest-loss-{from_year}-{to_year}.components.jsonl"
+            if components_root is not None
+            else None,
+        )
+        for from_year, to_year, expected_sha in canonical_loss_pairs()
+    ]
+    for _, _, _, _, lineage_path in prepared:
+        if lineage_path is not None:
+            validate_lineage_target(lineage_path)
+    for _, _, _, path, _ in prepared:
+        if path.is_symlink() or not path.is_file():
+            raise ValueError(f"Canonical loss raster is missing or symlinked: {path.name}")
+    for _, _, expected_sha, path, _ in prepared:
+        if sha256_file(path, deadline) != expected_sha:
+            raise ValueError(f"Canonical loss raster SHA-256 changed: {path.name}")
+    return prepared
+
+
 def inventory_raster(
     path: Path,
     from_year: int,
@@ -380,7 +446,7 @@ def inventory_raster(
             "componentStateScope": "previous-and-current-row-only",
             "scratchBytes": 0,
         },
-        "inventory": inventory.finish(),
+        "inventory": inventory_result,
         "released": False,
         "productionEligible": False,
     }
@@ -408,18 +474,18 @@ def inventory_all_pairs(
     completed: list[dict[str, object]] = []
     stopped = False
     stop_reason: str | None = None
-    for from_year, to_year, _ in canonical_loss_pairs():
+    try:
+        prepared = preflight_all_pair_paths(input_root, components_root, deadline)
+    except TimeoutError:
+        prepared = []
+        stopped = True
+        stop_reason = "aggregate-deadline-reached-during-preflight"
+    for from_year, to_year, _, path, lineage_path in prepared:
         if time.monotonic() >= deadline:
             stopped = True
             stop_reason = "aggregate-deadline-reached"
             break
-        path = input_root / f"detected-forest-loss-{from_year}-{to_year}.tif"
-        if path.is_symlink() or not path.is_file():
-            raise ValueError(f"Canonical loss raster is missing or symlinked: {path.name}")
         try:
-            lineage_path = None
-            if components_root is not None:
-                lineage_path = components_root / f"detected-forest-loss-{from_year}-{to_year}.components.jsonl"
             completed.append(
                 inventory_raster(path, from_year, to_year, block_rows, deadline, lineage_path, lineage_budget)
             )
@@ -484,9 +550,7 @@ def main() -> None:
             args.max_lineage_bytes,
         )
     elif args.fixture_json is not None:
-        rows = np.asarray(json.loads(args.fixture_json), dtype=np.uint8)
-        if rows.ndim != 2 or rows.shape[1] == 0:
-            raise ValueError("Fixture must be a non-empty rectangular matrix.")
+        rows = fixture_rows(json.loads(args.fixture_json))
         if args.components_root is not None:
             parser.error("fixture mode accepts --components-jsonl, not --components-root")
         if args.components_jsonl is None:
