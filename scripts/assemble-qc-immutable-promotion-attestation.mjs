@@ -79,6 +79,22 @@ function invokeHook(hooks, name, ...args) {
   hook(...args);
 }
 
+function closeDescriptor(fd, stage, hooks = {}) {
+  let injectedFailure = false;
+  const failClose = hooks?.failClose;
+  if (failClose !== undefined && typeof failClose !== "function") injectedFailure = true;
+  if (typeof failClose === "function") {
+    try { injectedFailure = failClose(stage, fd) === true; } catch { injectedFailure = true; }
+  }
+  try {
+    closeSync(fd);
+  } catch {
+    failSafe("attestation descriptor close failed; inspect output state", { closeAttempted: true, descriptorClosed: false, closeProved: false });
+  }
+  if (failClose !== undefined && typeof failClose !== "function") failSafe("attestation test hook is invalid", { closeAttempted: true, descriptorClosed: true, closeProved: false });
+  if (injectedFailure) failSafe("attestation descriptor close failed; inspect output state", { closeAttempted: true, descriptorClosed: true, closeProved: false });
+}
+
 function syncParentDirectory(path, hooks = {}) {
   let fd;
   try {
@@ -87,13 +103,25 @@ function syncParentDirectory(path, hooks = {}) {
     invokeHook(hooks, "onFsyncStage", "directory", path);
     fsyncSync(fd);
     invokeHook(hooks, "afterDirectoryFsync", path);
+    closeDescriptor(fd, "directory", hooks);
+    fd = undefined;
   } catch (error) {
+    if (error?.closeAttempted) {
+      fd = undefined;
+      throw error;
+    }
+    if (fd !== undefined) {
+      try {
+        closeDescriptor(fd, "directory", hooks);
+        fd = undefined;
+      } catch (closeError) {
+        fd = undefined;
+        if (closeError?.safe) throw closeError;
+        failSafe("attestation descriptor close failed; inspect output state", { closeAttempted: true, descriptorClosed: false, closeProved: false });
+      }
+    }
     if (error?.safe) throw error;
     failSafe("attestation output directory could not be synchronized");
-  } finally {
-    if (fd !== undefined) {
-      try { closeSync(fd); } catch { /* the fsync result is the relevant failure */ }
-    }
   }
 }
 
@@ -130,10 +158,32 @@ export function writeExclusiveMode600(path, value, hooks = {}) {
   }
   let fd;
   let opened;
+  let openedFd = false;
+  let fdState = "not-open";
+  const closeOutput = () => {
+    if (fd === undefined || fdState !== "open") return;
+    fdState = "closing";
+    try {
+      closeDescriptor(fd, "output", hooks);
+      fdState = "closed";
+      fd = undefined;
+    } catch (error) {
+      if (error?.descriptorClosed === true) {
+        fdState = "closed";
+        fd = undefined;
+      } else {
+        fdState = "uncertain";
+        fd = undefined;
+      }
+      throw error;
+    }
+  };
   try {
     if (typeof constants.O_NOFOLLOW !== "number") failSafe("attestation output cannot be opened without symlink protection");
     invokeHook(hooks, "beforeOpen", outputPath);
     fd = openSync(outputPath, constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | constants.O_NOFOLLOW, 0o600);
+    openedFd = true;
+    fdState = "open";
     opened = fstatSync(fd);
     if (!opened.isFile() || opened.uid !== process.getuid() || (opened.mode & 0o777) !== 0o600) failSafe("attestation output identity or metadata check failed");
     invokeHook(hooks, "afterOpen", outputPath, opened);
@@ -153,25 +203,29 @@ export function writeExclusiveMode600(path, value, hooks = {}) {
     syncParentDirectory(outputPath, hooks);
     const published = lstatSync(outputPath);
     if (!published.isFile() || published.isSymbolicLink() || !sameInode(published, opened) || published.size !== bytes.length || published.uid !== opened.uid || (published.mode & 0o777) !== (opened.mode & 0o777)) failSafe("attestation output changed after synchronization");
-    return { path: outputPath, dev: published.dev, ino: published.ino, size: published.size, uid: published.uid, mode: published.mode & 0o777 };
+    closeOutput();
+    const closed = lstatSync(outputPath);
+    if (!closed.isFile() || closed.isSymbolicLink() || !sameInode(closed, opened) || closed.size !== bytes.length || closed.uid !== opened.uid || (closed.mode & 0o777) !== (opened.mode & 0o777)) failSafe("attestation output changed after descriptor close");
+    return { path: outputPath, dev: closed.dev, ino: closed.ino, size: closed.size, uid: closed.uid, mode: closed.mode & 0o777 };
   } catch (error) {
-    if (fd !== undefined && !opened) failSafe("attestation output rollback was not proved; inspect output state", { rollbackProved: false, outputCreated: true });
-    if (opened) {
-      const publication = { path: outputPath, dev: opened.dev, ino: opened.ino, size: bytes.length, uid: opened.uid, mode: opened.mode & 0o777 };
-      if (!rollbackExclusivePublication(publication, hooks)) failSafe("attestation output rollback was not proved; inspect output state", { rollbackProved: false, outputCreated: true });
-      failSafe("attestation output failed; owned output was rolled back", { rollbackProved: true, outputCreated: false });
+    let closeError = error?.closeAttempted ? error : null;
+    if (fd !== undefined && fdState === "open") {
+      try { closeOutput(); } catch (closeFailure) { closeError = closeFailure; }
     }
-    if (error?.safe) throw error;
-    if (error?.code === "EEXIST" || error?.code === "ELOOP") failSafe("attestation output already exists; refusing overwrite");
-    failSafe("attestation output could not be created exclusively");
-  } finally {
-    if (fd !== undefined) {
-      try { closeSync(fd); } catch { /* a failed close cannot change the fixed error */ }
+    if (fd !== undefined) fd = undefined;
+    if (!opened) {
+      if (openedFd || closeError) failSafe("attestation output rollback was not proved; inspect output state", { rollbackProved: false, outputCreated: true });
+      if (error?.safe) throw error;
+      if (error?.code === "EEXIST" || error?.code === "ELOOP") failSafe("attestation output already exists; refusing overwrite");
+      failSafe("attestation output could not be created exclusively");
     }
+    const publication = { path: outputPath, dev: opened.dev, ino: opened.ino, size: bytes.length, uid: opened.uid, mode: opened.mode & 0o777 };
+    if (!rollbackExclusivePublication(publication, hooks) || closeError) failSafe("attestation output rollback was not proved; inspect output state", { rollbackProved: false, outputCreated: true });
+    failSafe("attestation output failed; owned output was rolled back", { rollbackProved: true, outputCreated: false });
   }
 }
 
-function assembleQcAttestationUnsafe({ root, captureDirectory, privatePath, publicPath, beforePublicOpen, beforePrivateRollback }) {
+function assembleQcAttestationUnsafe({ root, captureDirectory, privatePath, publicPath, beforePublicOpen, beforePrivateRollback, failClose }) {
   const planPath = resolve(root, "data/qc-immutable-promotion-preparation.json");
   const runnerPath = resolve(root, "scripts/run-qc-approved-multipart-promotion.sh");
   const capturePath = resolve(root, "scripts/capture-qc-immutable-promotion-attestation.sh");
@@ -218,27 +272,27 @@ function assembleQcAttestationUnsafe({ root, captureDirectory, privatePath, publ
     claims: { exactReadbacksVerified: true, retentionVerified: true, immutableObjectStorage: true, sourceLedgerCreditChanged: false, transformed: false, ingested: false, productionEligible: false }
   };
   validatePrivateQcAttestation(privateRecord, plan);
-  const privatePublication = writeExclusiveMode600(privatePath, privateRecord);
+  const privatePublication = writeExclusiveMode600(privatePath, privateRecord, { failClose });
   try {
     const privateBytes = read(privatePublication.path);
     const publicRecord = redactQcAttestation(privateRecord, privateBytes, plan);
-    writeExclusiveMode600(publicPath, publicRecord, { beforeOpen: beforePublicOpen });
+    writeExclusiveMode600(publicPath, publicRecord, { beforeOpen: beforePublicOpen, failClose });
   } catch (error) {
     const publicRollbackUnproved = error?.rollbackProved === false;
-    if (!rollbackExclusivePublication(privatePublication, { beforeRollback: beforePrivateRollback })) failSafe("QC attestation pair publication failed; private rollback was not proved; inspect output state");
+    if (!rollbackExclusivePublication(privatePublication, { beforeRollback: beforePrivateRollback, failClose })) failSafe("QC attestation pair publication failed; private rollback was not proved; inspect output state");
     if (publicRollbackUnproved) failSafe("QC attestation pair publication failed; public rollback was not proved; inspect output state");
     failSafe("QC attestation pair publication failed; private output was rolled back");
   }
   return { privatePath: privatePublication.path, publicPath: resolve(publicPath) };
 }
 
-export function assembleQcAttestation({ root, captureDirectory, privatePath, publicPath, beforePublicOpen, beforePrivateRollback }) {
+export function assembleQcAttestation({ root, captureDirectory, privatePath, publicPath, beforePublicOpen, beforePrivateRollback, failClose }) {
   try {
     const privateOutput = resolve(privatePath); const publicOutput = resolve(publicPath);
     if (privateOutput === publicOutput) failSafe("attestation output paths must be distinct");
     validateFreshOutput(privateOutput);
     validateFreshOutput(publicOutput);
-    return assembleQcAttestationUnsafe({ root, captureDirectory, privatePath: privateOutput, publicPath: publicOutput, beforePublicOpen, beforePrivateRollback });
+    return assembleQcAttestationUnsafe({ root, captureDirectory, privatePath: privateOutput, publicPath: publicOutput, beforePublicOpen, beforePrivateRollback, failClose });
   } catch (error) {
     if (error?.safe) throw error;
     failSafe("QC attestation assembly failed closed; output state requires inspection");

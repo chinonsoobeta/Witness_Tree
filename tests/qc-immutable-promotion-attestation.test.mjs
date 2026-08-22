@@ -11,6 +11,7 @@ const root = new URL("../", import.meta.url).pathname.replace(/\/$/, "");
 const plan = JSON.parse(readFileSync(new URL("../data/qc-immutable-promotion-preparation.json", import.meta.url), "utf8"));
 const pending = JSON.parse(readFileSync(new URL("../data/qc-immutable-promotion-attestation.json", import.meta.url), "utf8"));
 const sha = (value) => import("node:crypto").then(({ createHash }) => createHash("sha256").update(value).digest("hex"));
+const descriptorCount = () => readdirSync("/dev/fd").filter((name) => /^\d+$/.test(name)).length;
 
 async function fixture() {
   const dir = mkdtempSync(join(tmpdir(), "qc-attestation-test-")); const capture = join(dir, "capture");
@@ -231,6 +232,26 @@ test("directory fsync failure reports an unproved rollback state", () => {
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
+test("output descriptor close failure rolls back without a double-close or descriptor leak", () => {
+  const dir = mkdtempSync(join(tmpdir(), "qc-attestation-close-output-failure-")); const output = join(dir, "attestation.json"); const stages = []; const before = descriptorCount();
+  try {
+    assert.throws(() => writeExclusiveMode600(output, { claims: { exactReadbacksVerified: true } }, { failClose: (stage) => { stages.push(stage); return stage === "output"; } }), /rollback was not proved; inspect output state/);
+    assert.deepEqual(stages, ["directory", "output", "directory"]);
+    assert.equal(existsSync(output), false);
+    assert.equal(descriptorCount(), before);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("directory descriptor close failure rolls back without a double-close or descriptor leak", () => {
+  const dir = mkdtempSync(join(tmpdir(), "qc-attestation-close-directory-failure-")); const output = join(dir, "attestation.json"); const stages = []; const before = descriptorCount();
+  try {
+    assert.throws(() => writeExclusiveMode600(output, { claims: { exactReadbacksVerified: true } }, { failClose: (stage) => { stages.push(stage); return stage === "directory"; } }), /rollback was not proved; inspect output state/);
+    assert.deepEqual(stages, ["directory", "output", "directory"]);
+    assert.equal(existsSync(output), false);
+    assert.equal(descriptorCount(), before);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
 test("public publication race rolls back only this invocation's private inode", async () => {
   const paths = await fixture();
   try {
@@ -238,6 +259,48 @@ test("public publication race rolls back only this invocation's private inode", 
     assert.equal(existsSync(paths.privatePath), false);
     assert.equal(readFileSync(paths.publicPath, "utf8"), "RACING_PUBLIC_TARGET_MUST_REMAIN");
     assert.deepEqual(readdirSync(paths.dir).sort(), ["capture", "public.json"]);
+  } finally { rmSync(paths.dir, { recursive: true, force: true }); }
+});
+
+test("public descriptor close failure rolls back both outputs and preserves descriptor ownership", async () => {
+  const paths = await fixture(); const stages = []; const before = descriptorCount(); let outputCloses = 0;
+  try {
+    assert.throws(() => assembleQcAttestation({ root, captureDirectory: paths.capture, privatePath: paths.privatePath, publicPath: paths.publicPath, failClose: (stage) => {
+      stages.push(stage);
+      if (stage === "output") { outputCloses += 1; return outputCloses === 2; }
+      return false;
+    } }), /QC attestation pair publication failed; public rollback was not proved; inspect output state/);
+    assert.equal(existsSync(paths.privatePath), false);
+    assert.equal(existsSync(paths.publicPath), false);
+    assert.equal(descriptorCount(), before);
+  } finally { rmSync(paths.dir, { recursive: true, force: true }); }
+});
+
+test("public rollback directory close failure reports public uncertainty and preserves descriptor ownership", async () => {
+  const paths = await fixture(); const before = descriptorCount(); let outputCloses = 0; let directoryCloses = 0;
+  try {
+    assert.throws(() => assembleQcAttestation({ root, captureDirectory: paths.capture, privatePath: paths.privatePath, publicPath: paths.publicPath, failClose: (stage) => {
+      if (stage === "output") { outputCloses += 1; return outputCloses === 2; }
+      if (stage === "directory") { directoryCloses += 1; return directoryCloses === 2; }
+      return false;
+    } }), /QC attestation pair publication failed; public rollback was not proved; inspect output state/);
+    assert.equal(existsSync(paths.privatePath), false);
+    assert.equal(existsSync(paths.publicPath), false);
+    assert.equal(descriptorCount(), before);
+  } finally { rmSync(paths.dir, { recursive: true, force: true }); }
+});
+
+test("private rollback directory close failure reports pair state without a descriptor leak", async () => {
+  const paths = await fixture(); const stages = []; const before = descriptorCount(); let directoryCloses = 0;
+  try {
+    assert.throws(() => assembleQcAttestation({ root, captureDirectory: paths.capture, privatePath: paths.privatePath, publicPath: paths.publicPath, beforePublicOpen: () => writeFileSync(paths.publicPath, "RACING_PUBLIC_TARGET_MUST_REMAIN", { mode: 0o600, flag: "wx" }), failClose: (stage) => {
+      stages.push(stage);
+      if (stage === "directory") { directoryCloses += 1; return directoryCloses === 2; }
+      return false;
+    } }), /private rollback was not proved; inspect output state/);
+    assert.equal(existsSync(paths.privatePath), false);
+    assert.equal(readFileSync(paths.publicPath, "utf8"), "RACING_PUBLIC_TARGET_MUST_REMAIN");
+    assert.equal(descriptorCount(), before);
   } finally { rmSync(paths.dir, { recursive: true, force: true }); }
 });
 
