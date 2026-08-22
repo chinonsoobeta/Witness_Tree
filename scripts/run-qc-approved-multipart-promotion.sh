@@ -74,6 +74,25 @@ sanitized_list_parts_error_code() {
   ' "$1"
 }
 
+sanitized_list_parts_diagnostic_category() {
+  node -e '
+    const text = require("node:fs").readFileSync(process.argv[1], "utf8");
+    const categories = [
+      ["cli-usage", [/^usage: aws(?:\.cmd)? /m, /^Unknown options:/m, /argument --cli-error-format:/, /the following arguments are required:/]],
+      ["credentials", [/Unable to locate credentials/, /Partial credentials found/, /Error when retrieving credentials/, /NoCredentialsError/]],
+      ["timeout", [/Connect timeout on endpoint URL:/, /Read timeout on endpoint URL:/, /Operation timed out/]],
+      ["network", [/Could not connect to the endpoint URL:/, /EndpointConnectionError/, /Name or service not known/, /SSL validation failed/]],
+      ["process", [/credential_process/, /Broken pipe/, /process exited with a non-zero return code/]],
+      ["provider-error-unparsed", [/^An error occurred \(/m, /^Error Code:/m]],
+    ];
+    process.stdout.write(categories.find(([, patterns]) => patterns.some((pattern) => pattern.test(text)))?.[0] ?? "unavailable");
+  ' "$1"
+}
+
+sanitized_cli_exit_class() {
+  case "$1" in 1|2|130|252|253|254|255) print -- "$1" ;; *) print -- "other" ;; esac
+}
+
 if [[ $# -eq 0 ]]; then node "$ROOT/scripts/prepare-qc-immutable-promotion.mjs"; exit 0; fi
 [[ "${1:-}" == "--preflight" || "${1:-}" == "--run" ]] && [[ $# -eq 1 ]] || fail "Usage: $0 [--preflight|--run]" 64
 for tool in node jq shasum xxd base64 dd stat; do need "$tool"; done
@@ -108,7 +127,7 @@ mkdir -p "$STATE_ROOT"; chmod 700 "$STATE_ROOT"
 node "$ROOT/scripts/prepare-qc-immutable-promotion.mjs" --write-sidecars "$TMP" >/dev/null
 
 promote_one() {
-  local artifact="$1" id relative file bytes sha payload sidecar sidecar_file state state_dir expected_state sidecar_sha sidecar_b64 sidecar_put sidecar_version sidecar_head upload_id list list_error list_error_code no_such_upload=false start_new_upload=false part_number offset part_bytes part_file part_b64 part_result parts_file composite_file composite composite_b64 complete version latest_head exact_head
+  local artifact="$1" id relative file bytes sha payload sidecar sidecar_file state state_dir expected_state sidecar_sha sidecar_b64 sidecar_put sidecar_version sidecar_head upload_id list list_error list_error_code list_error_category list_status list_exit_class no_such_upload=false start_new_upload=false part_number offset part_bytes part_file part_b64 part_result parts_file composite_file composite composite_b64 complete version latest_head exact_head
   id="$(jq -r '.id' <<<"$artifact")"; relative="$(jq -r '.localPath' <<<"$artifact")"; file="$DATA_ROOT/$relative"; bytes="$(jq -r '.byteLength' <<<"$artifact")"; sha="$(jq -r '.sha256' <<<"$artifact")"; payload="$(jq -r '.payloadKey' <<<"$artifact")"; sidecar="$(jq -r '.manifestKey' <<<"$artifact")"; sidecar_file="$TMP/${id}.manifest.json"
   state_dir="$STATE_ROOT/${id}-${sha}"; state="$state_dir/state.json"; mkdir -p "$state_dir"; chmod 700 "$state_dir"
   expected_state="$(jq -n --arg id "$id" --arg payload "$payload" --arg sidecar "$sidecar" --arg sha "$sha" --argjson bytes "$bytes" --argjson partSize "$PART_SIZE" '{artifactId:$id,payloadKey:$payload,manifestKey:$sidecar,sha256:$sha,byteLength:$bytes,partSizeBytes:$partSize,initiation:"not-started",uploadId:null,payloadVersionId:null,compositeChecksumSha256:null,sidecarVersionId:null}')"
@@ -119,10 +138,13 @@ promote_one() {
   if [[ -n "$upload_id" ]]; then
     [[ "$(jq -r '.initiation' "$state")" == "accepted" && -n "$sidecar_version" ]] || fail "Saved multipart state lacks its exact accepted sidecar version; state was preserved and no upload or overwrite was attempted" 75
     list_error="$TMP/${id}.list-parts.stderr"
-    if ! list="$(aws s3api list-parts --bucket "$BUCKET" --key "$payload" --upload-id "$upload_id" --region "$REGION" --output json --cli-error-format legacy 2>"$list_error")"; then
+    if list="$(aws s3api list-parts --bucket "$BUCKET" --key "$payload" --upload-id "$upload_id" --region "$REGION" --output json --cli-error-format legacy 2>"$list_error")"; then :; else
+      list_status=$?
       if ! is_unambiguous_nosuchupload "$list_error"; then
         list_error_code="$(sanitized_list_parts_error_code "$list_error")"
-        fail "Cannot unambiguously classify the approved multipart state; stage=ListParts; awsErrorCode=$list_error_code; no sidecar or payload write was attempted" 70
+        list_error_category="$(sanitized_list_parts_diagnostic_category "$list_error")"
+        list_exit_class="$(sanitized_cli_exit_class "$list_status")"
+        fail "Cannot unambiguously classify the approved multipart state; stage=ListParts; awsErrorCode=$list_error_code; diagnosticCategory=$list_error_category; cliExit=$list_exit_class; no sidecar or payload write was attempted" 70
       fi
       no_such_upload=true
     fi
@@ -149,9 +171,12 @@ promote_one() {
     upload_id="$(jq -r '.UploadId // empty' <<<"$initiated")"; [[ -n "$upload_id" ]] || fail "Multipart initiation acknowledgement lacks an upload ID; state prevents a duplicate upload" 70
     state_update "$state" '.initiation="accepted" | .uploadId=$uploadId' --arg uploadId "$upload_id"
     list_error="$TMP/${id}.list-parts.stderr"
-    if ! list="$(aws s3api list-parts --bucket "$BUCKET" --key "$payload" --upload-id "$upload_id" --region "$REGION" --output json --cli-error-format legacy 2>"$list_error")"; then
+    if list="$(aws s3api list-parts --bucket "$BUCKET" --key "$payload" --upload-id "$upload_id" --region "$REGION" --output json --cli-error-format legacy 2>"$list_error")"; then :; else
+      list_status=$?
       list_error_code="$(sanitized_list_parts_error_code "$list_error")"
-      fail "Cannot read newly accepted multipart state; stage=ListParts; awsErrorCode=$list_error_code; no part was sent" 70
+      list_error_category="$(sanitized_list_parts_diagnostic_category "$list_error")"
+      list_exit_class="$(sanitized_cli_exit_class "$list_status")"
+      fail "Cannot read newly accepted multipart state; stage=ListParts; awsErrorCode=$list_error_code; diagnosticCategory=$list_error_category; cliExit=$list_exit_class; no part was sent" 70
     fi
   fi
 

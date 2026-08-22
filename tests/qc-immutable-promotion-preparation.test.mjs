@@ -98,6 +98,7 @@ test("owner-local runner is multipart-only and excludes high-level copies, delet
   assert.match(runner, /list-parts[\s\S]*Previously uploaded part does not match/);
   assert.equal((runner.match(/list-parts[^\n]*--cli-error-format legacy/g) ?? []).length, 2);
   assert.equal((runner.match(/list_error_code="\$\(sanitized_list_parts_error_code "\$list_error"\)"/g) ?? []).length, 2);
+  assert.equal((runner.match(/list_error_category="\$\(sanitized_list_parts_diagnostic_category "\$list_error"\)"/g) ?? []).length, 2);
   assert.match(runner, /ChecksumType=="COMPOSITE"[\s\S]*put-object-retention[\s\S]*get-object-retention/);
   assert.doesNotMatch(runner, /aws s3 cp|DeleteObject|BypassGovernanceRetention|PutObjectLegalHold|aws iam /i);
   assert.match(runner, /aws configure get mfa_serial --profile/);
@@ -177,6 +178,7 @@ case "$1:$2" in
   sts:get-caller-identity) print -- '{"Account":"286853118812","Arn":"arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator"}' ;;
   s3api:list-parts)
     behavior="$(<${JSON.stringify(behavior)})"
+    fake_exit=254
     case "$behavior" in
       ambiguous) print -u2 -- $'An error occurred (NoSuchUpload) when calling the ListParts operation: The specified upload does not exist.\nAn error occurred (AccessDenied) when calling the ListParts operation: proxy denied the request.' ;;
       expired-token) print -u2 -- 'An error occurred (ExpiredToken) when calling the ListParts operation: The provided token has expired.' ;;
@@ -190,10 +192,15 @@ case "$1:$2" in
       punctuation-token) print -u2 -- 'An error occurred (AccessDenied:secret) when calling the ListParts operation: rejected.' ;;
       case-token) print -u2 -- 'An error occurred (accessdenied) when calling the ListParts operation: rejected.' ;;
       mixed-token) print -u2 -- $'An error occurred (ExpiredToken) when calling the ListParts operation: expired.\nAn error occurred (AKIAEXAMPLECREDENTIAL) when calling the ListParts operation: rejected.' ;;
+      cli-usage) print -u2 -- $'usage: aws [options] <command> <subcommand> [parameters]\nUnknown options: --private-example'; fake_exit=252 ;;
+      credentials-error) print -u2 -- 'Unable to locate credentials. You can configure credentials by running aws configure. PRIVATE-CREDENTIAL-MARKER'; fake_exit=253 ;;
+      network-error) print -u2 -- 'Could not connect to the endpoint URL: PRIVATE-ENDPOINT-MARKER'; fake_exit=255 ;;
+      timeout-error) print -u2 -- 'Connect timeout on endpoint URL: PRIVATE-TIMEOUT-MARKER'; fake_exit=255 ;;
+      process-error) print -u2 -- 'credential_process returned PRIVATE-PROCESS-MARKER'; fake_exit=255 ;;
       blank) : ;;
       *) if [[ "$*" == *"--cli-error-format legacy"* ]]; then print -u2 -- 'An error occurred (NoSuchUpload) when calling the ListParts operation: The specified upload does not exist.'; else print -u2 -- $'An error occurred (NoSuchUpload) when calling the ListParts operation: The specified upload does not exist.\n\nError Code: NoSuchUpload\nRequest ID: redacted'; fi ;;
     esac
-    exit 254 ;;
+    exit "$fake_exit" ;;
   s3api:head-object)
     key=""; while (( $# )); do if [[ "$1" == "--key" ]]; then key="$2"; break; fi; shift; done
     behavior="$(<${JSON.stringify(behavior)})"
@@ -238,9 +245,16 @@ esac
 
     for (const [mode, code] of [["expired-token", "ExpiredToken"], ["access-denied", "AccessDenied"], ["validation-error", "ValidationError"], ["enhanced", "NoSuchUpload"], ["warning", "ExpiredToken"], ["retry-wrapper", "ExpiredToken"], ["blank", "unavailable"], ["ambiguous", "ambiguous"]]) {
       reset(mode); const before = new Map([...initialStates.keys()].map((path) => [path, readFileSync(path)])); const failed = runOwner(); const output = `${failed.stdout}${failed.stderr}`;
-      assert.equal(failed.status, 70, `${mode}: ${output}`); assert.match(output, new RegExp(`stage=ListParts; awsErrorCode=${code}`));
+      assert.equal(failed.status, 70, `${mode}: ${output}`); assert.match(output, new RegExp(`stage=ListParts; awsErrorCode=${code}`)); assert.match(output, /diagnosticCategory=(?:provider-error-unparsed|cli-usage|credentials|network|timeout|process|unavailable); cliExit=(?:1|2|130|252|253|254|255|other)/);
       assert.doesNotMatch(output, /saved-upload|sidecar-version|should-not-be-rendered|proxy denied|Invalid length|provided token/i);
       assert.equal(output.includes(fixture.destination.bucket), false); for (const artifact of fixture.artifacts) { assert.equal(output.includes(artifact.payloadKey), false); assert.equal(output.includes(artifact.manifestKey), false); }
+      for (const [path, bytes] of before) assert.deepEqual(readFileSync(path), bytes, `${mode} changed private state`);
+      assert.doesNotMatch(readFileSync(marker, "utf8"), /create-multipart-upload|put-object(?:\s|$)|upload-part|complete-multipart-upload|put-object-retention/);
+    }
+
+    for (const [mode, category, exitClass, secret] of [["cli-usage", "cli-usage", "252", "private-example"], ["credentials-error", "credentials", "253", "PRIVATE-CREDENTIAL-MARKER"], ["network-error", "network", "255", "PRIVATE-ENDPOINT-MARKER"], ["timeout-error", "timeout", "255", "PRIVATE-TIMEOUT-MARKER"], ["process-error", "process", "255", "PRIVATE-PROCESS-MARKER"]]) {
+      reset(mode); const before = new Map([...initialStates.keys()].map((path) => [path, readFileSync(path)])); const failed = runOwner(); const output = `${failed.stdout}${failed.stderr}`;
+      assert.equal(failed.status, 70, `${mode}: ${output}`); assert.match(output, new RegExp(`stage=ListParts; awsErrorCode=unavailable; diagnosticCategory=${category}; cliExit=${exitClass}`)); assert.equal(output.toLowerCase().includes(secret.toLowerCase()), false);
       for (const [path, bytes] of before) assert.deepEqual(readFileSync(path), bytes, `${mode} changed private state`);
       assert.doesNotMatch(readFileSync(marker, "utf8"), /create-multipart-upload|put-object(?:\s|$)|upload-part|complete-multipart-upload|put-object-retention/);
     }
