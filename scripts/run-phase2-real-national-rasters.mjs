@@ -6,12 +6,12 @@ import { spawnSync } from "node:child_process";
 import { basename, isAbsolute, join, resolve } from "node:path";
 
 import { validatePhase2RealDataOwnerDecision } from "./check-phase2-real-data-owner-decision.mjs";
-import { sourceBackedPhase2RealNationalPreflight } from "./preflight-phase2-real-national-run.mjs";
+import { preflightEvidenceSha256, sourceBackedPhase2RealNationalPreflight } from "./preflight-phase2-real-national-run.mjs";
 
 const WINDOW_SCRIPT = new URL("./phase2_raster_window.py", import.meta.url).pathname;
 
 const json = async (url) => JSON.parse(await readFile(url, "utf8"));
-async function sha(file) { const hash = createHash("sha256"); for await (const chunk of createReadStream(file)) hash.update(chunk); return hash.digest("hex"); }
+async function sha(file) { const hash = createHash("sha256"); for await (const chunk of createReadStream(file)) { if (Date.now() >= executionDeadlineMs) throw new Error("Approved 96-hour whole-operation limit elapsed."); hash.update(chunk); } return hash.digest("hex"); }
 let executionDeadlineMs = Infinity;
 function run(command, args) { const timeout = Math.floor(executionDeadlineMs - Date.now()); if (timeout <= 0) throw new Error("Approved 96-hour execution cap elapsed."); const result = spawnSync(command, args, { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"], timeout }); if (result.status !== 0) throw new Error(`${command} failed: ${result.error?.message || result.stderr || result.stdout}`); }
 function vsi(zip, member) { return `/vsizip/${zip}/${member}`; }
@@ -21,7 +21,11 @@ if (!dataRootArg || !outputArg) throw new Error("Usage: run-phase2-real-national
 const dataRoot = resolve(dataRootArg), output = resolve(outputArg);
 if (!isAbsolute(dataRootArg) || basename(dataRoot) !== "Witness_Tree-data" || !isAbsolute(outputArg)) throw new Error("Data root and output must be explicit absolute paths.");
 assert.equal(output, join(dataRoot, "derived/phase2-real-national-1984-2022-v1"), "Output must be the approved derived batch directory.");
-assert.equal((await sourceBackedPhase2RealNationalPreflight(dataRoot)).status, "ready-for-bounded-nonproduction-execution");
+const operationStartedMs=Date.now(), operationStartedAt=new Date(operationStartedMs).toISOString();
+executionDeadlineMs=operationStartedMs+96*60*60*1000;
+const preflight=await sourceBackedPhase2RealNationalPreflight(dataRoot);
+assert.equal(preflight.status, "ready-for-bounded-nonproduction-execution");
+if(Date.now()>=executionDeadlineMs) throw new Error("Approved 96-hour whole-operation limit elapsed during source verification.");
 const [decision, method, prep, harvest, wildfire, storage] = await Promise.all([
   json(new URL("../data/phase2-real-data-owner-decision.json", import.meta.url)), json(new URL("../data/phase2-method-parameters.json", import.meta.url)),
   json(new URL("../data/vlce2-promotion-preparation.json", import.meta.url)), json(new URL("../data/nrcan-harvest-profile.json", import.meta.url)),
@@ -33,7 +37,7 @@ assert.equal(method.methodVersion, "phase2-owner-approved-versioned-nonproductio
 assert.equal(method.parameterSha256, "8d12ff6b6fb10208410bedf5f012e96a9682fdec457cccce688509d2dfa0b8fa");
 assert.deepEqual(method.parameters.mask.forestClassValues, [210, 220, 230]);
 assert.equal(storage.bound.passes, true);
-executionDeadlineMs = Date.now() + decision.computePlan.proposedHardCaps.elapsedHours * 60 * 60 * 1000;
+assert.equal(decision.computePlan.proposedHardCaps.elapsedHours,96);
 await mkdir(output);
 for (const name of ["masks", "loss", "disturbance"]) await mkdir(join(output, name));
 const scratch = join(output, ".scratch");
@@ -70,11 +74,17 @@ for (const [kind, profile, directory, member] of [
   outputs.push({ kind, fromYear: 1985, toYear: 2022, path: `disturbance/${basename(target)}`, byteLength: (await stat(target)).size, sha256: await sha(target), sourceSha256: profile.raw.sha256 });
 }
 outputs.sort((a, b) => a.path.localeCompare(b.path));
+const operationCompletedMs=Date.now(), operationCompletedAt=new Date(operationCompletedMs).toISOString(), observedWholeOperationElapsedSeconds=Math.ceil((operationCompletedMs-operationStartedMs)/1000);
+assert.ok(observedWholeOperationElapsedSeconds<96*60*60,"Approved 96-hour whole-operation limit elapsed.");
 const lineage = {
   schemaVersion: "witness-tree/phase2-real-national-raster-lineage/1", batchId: "phase2-real-national-1984-2022-v1",
   status: "versioned-nonproduction", reviewStatus: "owner-approved-versioned-nonproduction", productionEligible: false,
   methodVersion: method.methodVersion, methodParameterSha256: method.parameterSha256, forestClassValues: [210, 220, 230], excludedClassValues: [81],
   years: { first: 1984, last: 2022, count: 39 }, outputs, externalStorage: false, released: false,
+  sourceVerification: preflight.sourceVerification,
+  preflight: {sha256:preflightEvidenceSha256(preflight),status:preflight.status,capturedAt:preflight.capturedAt,digestScope:"canonical-source-backed-preflight-core"},
+  execution: {operationStartedAt,operationCompletedAt,observedWholeOperationElapsedSeconds,wholeOperationElapsedMeasured:true,approvedElapsedHourLimit:96,approvedVcpuLimit:8,approvedRamLimitBytes:17179869184,approvedDiskLimitBytes:2199023255552,algorithmicChildProcessUpperBound:1,algorithmicWindowWidth:2048,algorithmicWindowHeight:2048,observedConcurrencyMeasured:false,observedVcpuUseMeasured:false,peakRssMeasured:false,scratchDiskPeakMeasured:false,retainedOutputBoundBytes:storage.bound.retainedOutputBoundBytes},
+  limitations: ["No patch vectorization or normalized events.","No boundary intersections or aggregates.","No tiles, samples, or output statistics.","CPU utilization, peak RSS, actual concurrent-process peak, and scratch-disk peak are not instrumented; approved limits are configuration, not observed usage."],
 };
 await writeFile(join(output, "lineage.json"), `${JSON.stringify(lineage, null, 2)}\n`, { flag: "wx" });
 console.log(JSON.stringify({ output, outputCount: outputs.length, totalBytes: outputs.reduce((sum, row) => sum + row.byteLength, 0), lineageSha256: await sha(join(output, "lineage.json")) }));

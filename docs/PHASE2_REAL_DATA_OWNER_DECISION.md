@@ -1,6 +1,6 @@
 # Phase 2 real-data owner decision
 
-The owner decision was recorded and executed for a real, versioned, **non-production** 1984–2022 national forest-mask and detected-change raster run. It does not authorize production use, release, external compute/storage, or boundary aggregates. The exact decision, source-backed preflight, storage bound, method change and checksum readback evidence are recorded under `data/phase2-*`; 39 masks, 38 annual loss rasters and two normalized disturbance rasters passed readback. Boundary aggregation and patch-vector event normalization remain separate, unexecuted gates.
+The owner decision was recorded and executed for a real, versioned, **non-production** 1984–2022 national forest-mask and detected-change raster run. It does not authorize production use, release, external compute/storage, or boundary aggregates. The exact decision, source-backed preflight, storage bound, method change and checksum readback evidence are recorded under `data/phase2-*`; 39 masks, 38 annual loss rasters and two historical disturbance rasters passed readback. Boundary aggregation and patch-vector event normalization remain separate, unexecuted gates.
 
 ## Evidence-backed recommendation
 
@@ -8,7 +8,7 @@ Use VLCE2 classes `210 coniferous`, `220 broadleaf`, and `230 mixedwood` as the 
 
 Authorize the exact checksum-bound 1985–2022 NRCan harvest and wildfire rasters only as historical national corroboration and precedence inputs. Each records the year of greatest mapped disturbance per pixel, not every event. Neither supports live, complete, operational, legal-cutblock, damage, absence, or post-2022 claims.
 
-Run one windowed year-pair worker at a time, with hard caps of 8 vCPU, 16 GiB RAM, 2 TiB local temporary-plus-derived storage, and 96 elapsed hours. The grid contains 970,700,103,360 cell-years; one-byte annual masks are 970.7 GB before compression. A cap breach must abort and return measurements for a new decision.
+Run one windowed year-pair worker at a time, with approved configuration limits of 8 vCPU, 16 GiB RAM, 2 TiB local temporary-plus-derived storage, and 96 elapsed hours. The completed run measured 10,355 seconds for the raster-transform interval and 23,141,889,028 retained output bytes. It did not instrument whole-operation elapsed time, CPU utilization, peak RSS, actual concurrent-process peak, or scratch-disk peak, so the approved CPU, RAM and storage values must not be described as observed hard limits. The prospective runner starts its 96-hour deadline before source hashing, uses one synchronous child and 2048 × 2048 windows, and aborts when its enforceable deadline is reached. The grid contains 970,700,103,360 cell-years; one-byte annual masks are 970.7 GB before compression.
 
 ## Boundary decision
 
@@ -39,4 +39,4 @@ acknowledge_no_external_compute_storage_release_or_production_claim=<yes | no>
 
 An answer containing `no`, a placeholder, an omitted line, an unlisted crosswalk, or a boundary source without an exact edition remains fail-closed. After approval is recorded, source-backed checks and a fresh dry preflight must still pass before any real transformation starts.
 
-This package changes no Phase 2 implementation item: the fixed maturity remains **43% (+0 percentage points)**.
+The owner decision alone changed no implementation item. The later real, versioned non-production raster execution and source/output readback support a **prospective fixed-rubric ceiling of 51% (+8 percentage points from 43%)**: dependencies 5/20, core methods 21/35, required outputs 12/20, validation 12/15 and publication/exit 1/10. This is a conservative self-assessment pending independent audit, not an accepted score, release, production claim, or completion of the missing event, boundary, aggregation, tile, sample or statistics work.
