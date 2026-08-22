@@ -7,6 +7,7 @@ import argparse
 import hashlib
 import json
 import os
+import stat
 import time
 from pathlib import Path
 
@@ -21,6 +22,7 @@ LOSS_MAP_SHA256 = "c962180952e11af0766c5b929d97d4bb635181f93c04e93bbfa7d808e1561
 MAX_SECONDS = 96 * 60 * 60
 CANONICAL_PAIR_COUNT = 38
 LINEAGE_BYTE_CAP = 2 * 1024**4
+FileIdentity = tuple[int, int, int, int]
 
 
 def row_runs(row: np.ndarray) -> list[tuple[int, int]]:
@@ -62,6 +64,14 @@ def validate_lineage_target(path: Path) -> Path:
     return partial_path
 
 
+def fsync_directory(path: Path) -> None:
+    descriptor = os.open(path, os.O_RDONLY)
+    try:
+        os.fsync(descriptor)
+    finally:
+        os.close(descriptor)
+
+
 class ComponentLineageWriter:
     """Write exact row-run lineage without retaining completed components in memory."""
 
@@ -82,6 +92,7 @@ class ComponentLineageWriter:
         self.digest = hashlib.sha256()
         self.stream = self.partial_path.open("xb")
         try:
+            fsync_directory(self.partial_path.parent)
             self._write(
                 {
                     "record": "header",
@@ -156,7 +167,9 @@ class ComponentLineageWriter:
             os.link(self.partial_path, self.path, follow_symlinks=False)
         except FileExistsError as error:
             raise ValueError(f"Component lineage output appeared during execution: {self.path.name}") from error
+        fsync_directory(self.path.parent)
         os.unlink(self.partial_path)
+        fsync_directory(self.path.parent)
         return {
             "fileName": self.path.name,
             "byteLength": self.bytes_written,
@@ -302,14 +315,51 @@ def inventory_rows(rows: np.ndarray, width: int) -> dict[str, int | str]:
     return inventory.finish()
 
 
-def sha256_file(path: Path, deadline: float | None = None) -> str:
+def identity_from_stat(result: os.stat_result) -> FileIdentity:
+    if not stat.S_ISREG(result.st_mode):
+        raise ValueError("Loss raster must remain a regular file.")
+    return (result.st_dev, result.st_ino, result.st_size, result.st_mtime_ns)
+
+
+def file_identity(path: Path) -> FileIdentity:
+    if path.is_symlink():
+        raise ValueError("Loss raster must remain a non-symlink file.")
+    return identity_from_stat(os.stat(path, follow_symlinks=False))
+
+
+def sha256_file_with_identity(path: Path, deadline: float | None = None) -> tuple[str, FileIdentity]:
+    before = file_identity(path)
     digest = hashlib.sha256()
     with path.open("rb") as stream:
+        opened = identity_from_stat(os.fstat(stream.fileno()))
+        if opened != before:
+            raise ValueError("Loss raster identity changed while opening for hashing.")
         for chunk in iter(lambda: stream.read(8 * 1024 * 1024), b""):
             if deadline is not None and time.monotonic() >= deadline:
                 raise TimeoutError("Inventory exceeded its approved wall-time cap while hashing input.")
             digest.update(chunk)
-    return digest.hexdigest()
+        after_read = identity_from_stat(os.fstat(stream.fileno()))
+    after = file_identity(path)
+    if before != opened or opened != after_read or after_read != after:
+        raise ValueError("Loss raster identity changed during hashing.")
+    return digest.hexdigest(), before
+
+
+def sha256_file(path: Path, deadline: float | None = None) -> str:
+    return sha256_file_with_identity(path, deadline)[0]
+
+
+def verify_source_unchanged(
+    path: Path,
+    expected_sha256: str,
+    expected_identity: FileIdentity,
+    deadline: float,
+) -> None:
+    observed_sha256, observed_identity = sha256_file_with_identity(path, deadline)
+    if observed_identity != expected_identity:
+        raise ValueError("Loss raster identity changed during inventory.")
+    if observed_sha256 != expected_sha256:
+        raise ValueError("Loss raster bytes changed during inventory.")
 
 
 def canonical_loss_sha(from_year: int, to_year: int) -> str:
@@ -398,7 +448,8 @@ def inventory_raster(
     if path.is_symlink() or not path.is_file():
         raise ValueError("Loss raster must be an existing non-symlink file.")
     expected_sha = canonical_loss_sha(from_year, to_year)
-    if sha256_file(path, deadline) != expected_sha:
+    observed_sha, source_identity = sha256_file_with_identity(path, deadline)
+    if observed_sha != expected_sha:
         raise ValueError("Loss raster SHA-256 does not match its canonical year pair.")
     gdal.SetCacheMax(64 * 1024 * 1024)
     dataset = gdal.Open(str(path), gdal.GA_ReadOnly)
@@ -428,6 +479,7 @@ def inventory_raster(
             for local_row, row in enumerate(block):
                 inventory.add_row(y_offset + local_row, row)
         inventory_result = inventory.finish()
+        verify_source_unchanged(path, expected_sha, source_identity, deadline)
         lineage_result = writer.finish(inventory_result) if writer is not None else None
     except Exception:
         if writer is not None:
