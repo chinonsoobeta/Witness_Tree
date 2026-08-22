@@ -23,11 +23,21 @@ test("MFA runner defaults to dry run and excludes prohibited operations", () => 
   assert.match(runner, /Approved .* artifact drifted[\s\S]*read -r -s/);
   assert.match(runner, /WitnessTreeCurrentWildfirePromotionUploader/);
   assert.match(runner, /aws s3api put-object/);
+  assert.match(runner, /--if-none-match '\*'/);
+  assert.match(runner, /head-object --bucket \"\$BUCKET\" --key \"\$\{PAYLOADS\[\$i\]\}\" --version-id \"\$version\"/);
+  assert.match(runner, /head-object --bucket \"\$BUCKET\" --key \"\$\{SIDECARS\[\$i\]\}\" --version-id \"\$sidecar_version\"/);
+  assert.match(runner, /unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN/);
   assert.match(runner, /ChecksumType=="FULL_OBJECT"/);
+  assert.match(runner, /\.ChecksumCRC64NVME==\$c/);
+  assert.match(runner, /RetainUntilDate == \$until/);
   assert.match(runner, /put-object-retention/);
   assert.doesNotMatch(runner, /aws s3 cp|DeleteObject|BypassGovernanceRetention|PutObjectLegalHold|ReplicateObject|aws iam /i);
   assert.match(runner, /aws configure get mfa_serial --profile/);
   assert.doesNotMatch(runner, /list-mfa-devices|iam list/i);
+});
+
+test("raw promotion preparation grants exact-version readback on the approved keys", () => {
+  assert.deepEqual(plan.proposedRoleScope.allow, ["s3:PutObject", "s3:GetObject", "s3:GetObjectVersion", "s3:AbortMultipartUpload", "s3:ListMultipartUploadParts", "s3:PutObjectRetention", "s3:GetObjectRetention"]);
 });
 
 test("valid-shaped dummy TOTP reaches only the mocked direct PutObject boundary", () => {

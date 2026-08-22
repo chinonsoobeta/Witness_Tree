@@ -36,6 +36,10 @@ print -- "PRECHECK passed: four approved current-wildfire artifacts have exact b
 command -v aws >/dev/null || fail "aws CLI is required" 69
 command -v jq >/dev/null || fail "jq is required" 69
 [[ -t 0 && -t 1 ]] || fail "MFA TOTP prompt requires an interactive terminal; no AWS call was made" 64
+# Do not allow ambient credentials or profile selectors to influence the
+# approved MFA bootstrap. The profile is the sole source of bootstrap creds;
+# temporary role credentials are installed only after account verification.
+unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN AWS_PROFILE AWS_DEFAULT_PROFILE AWS_WEB_IDENTITY_TOKEN_FILE AWS_ROLE_ARN AWS_ROLE_SESSION_NAME AWS_CONTAINER_CREDENTIALS_RELATIVE_URI AWS_CONTAINER_CREDENTIALS_FULL_URI
 read -r -s 'totp?Current MFA TOTP (not stored): '; print
 [[ "${totp:-}" =~ '^[0-9]{6}$' ]] || fail "TOTP must be exactly six digits; no AWS call was made" 64
 mfa_serial="$(aws configure get mfa_serial --profile "$PROFILE")" || fail "Cannot read local configured MFA serial" 69
@@ -50,15 +54,17 @@ TMP="$(mktemp -d /private/tmp/witness-tree-current-wildfire-approved-promotion.X
 node "$ROOT/scripts/prepare-current-wildfire-immutable-promotion.mjs" --write-sidecars "$TMP" >/dev/null
 for i in {1..4}; do
   print -- "Uploading approved raw payload $i/4 by direct PutObject; wait for its acknowledgement."
-  payload_put="$(aws s3api put-object --bucket "$BUCKET" --key "${PAYLOADS[$i]}" --body "${FILES[$i]}" --checksum-algorithm CRC64NVME --region "$REGION" --cli-read-timeout 0 --output json)" || fail "Payload upload failed" 70
-  version="$(jq -r '.VersionId // empty' <<<"$payload_put")"; [[ -n "$version" && "$(jq -r '.ChecksumCRC64NVME // empty' <<<"$payload_put")" != "" ]] || fail "Payload upload acknowledgement incomplete" 70
-  payload_head="$(aws s3api head-object --bucket "$BUCKET" --key "${PAYLOADS[$i]}" --checksum-mode ENABLED --region "$REGION" --output json)" || fail "Payload read-back failed" 70
-  jq -e --arg v "$version" --argjson n "${BYTES[$i]}" '.VersionId==$v and .ContentLength==$n and .ChecksumType=="FULL_OBJECT" and (.ChecksumCRC64NVME // empty)!=""' <<<"$payload_head" >/dev/null || fail "Payload read-back lacks exact version, bytes, or FULL_OBJECT CRC64NVME" 70
+  payload_put="$(aws s3api put-object --bucket "$BUCKET" --key "${PAYLOADS[$i]}" --body "${FILES[$i]}" --if-none-match '*' --checksum-algorithm CRC64NVME --region "$REGION" --cli-read-timeout 0 --output json)" || fail "Payload upload failed or exact key already exists; no overwrite was attempted" 70
+  version="$(jq -r '.VersionId // empty' <<<"$payload_put")"; payload_checksum="$(jq -r '.ChecksumCRC64NVME // empty' <<<"$payload_put")"; [[ -n "$version" && -n "$payload_checksum" ]] || fail "Payload upload acknowledgement incomplete" 70
+  payload_head="$(aws s3api head-object --bucket "$BUCKET" --key "${PAYLOADS[$i]}" --version-id "$version" --checksum-mode ENABLED --region "$REGION" --output json)" || fail "Exact payload-version read-back failed" 70
+  jq -e --arg v "$version" --arg c "$payload_checksum" --argjson n "${BYTES[$i]}" '.VersionId==$v and .ContentLength==$n and .ChecksumType=="FULL_OBJECT" and .ChecksumCRC64NVME==$c' <<<"$payload_head" >/dev/null || fail "Exact payload-version read-back lacks exact version, bytes, or acknowledged FULL_OBJECT CRC64NVME" 70
   aws s3api put-object-retention --bucket "$BUCKET" --key "${PAYLOADS[$i]}" --version-id "$version" --retention "Mode=COMPLIANCE,RetainUntilDate=$RETAIN_UNTIL" --region "$REGION" >/dev/null || fail "Payload COMPLIANCE retention failed" 70
   retention="$(aws s3api get-object-retention --bucket "$BUCKET" --key "${PAYLOADS[$i]}" --version-id "$version" --region "$REGION" --output json)" || fail "Retention read-back failed" 70
-  jq -e --arg until "$RETAIN_UNTIL" '.Retention.Mode == "COMPLIANCE" and (.Retention.RetainUntilDate | startswith($until[0:10]))' <<<"$retention" >/dev/null || fail "Payload retention read-back mismatch" 70
-  sidecar_put="$(aws s3api put-object --bucket "$BUCKET" --key "${SIDECARS[$i]}" --body "$TMP/${IDS[$i]}.manifest.json" --checksum-algorithm CRC64NVME --region "$REGION" --cli-read-timeout 0 --output json)" || fail "Sidecar upload failed" 70
-  sidecar_version="$(jq -r '.VersionId // empty' <<<"$sidecar_put")"; [[ -n "$sidecar_version" && "$(jq -r '.ChecksumCRC64NVME // empty' <<<"$sidecar_put")" != "" ]] || fail "Sidecar upload acknowledgement incomplete" 70
-  sidecar_head="$(aws s3api head-object --bucket "$BUCKET" --key "${SIDECARS[$i]}" --checksum-mode ENABLED --region "$REGION" --output json)" || fail "Sidecar read-back failed"; jq -e --arg v "$sidecar_version" '.VersionId==$v and .ChecksumType=="FULL_OBJECT" and (.ChecksumCRC64NVME // empty)!=""' <<<"$sidecar_head" >/dev/null || fail "Sidecar read-back lacks exact version or FULL_OBJECT CRC64NVME" 70
+  jq -e --arg until "$RETAIN_UNTIL" '.Retention.Mode == "COMPLIANCE" and .Retention.RetainUntilDate == $until' <<<"$retention" >/dev/null || fail "Payload retention read-back mismatch" 70
+  sidecar_put="$(aws s3api put-object --bucket "$BUCKET" --key "${SIDECARS[$i]}" --body "$TMP/${IDS[$i]}.manifest.json" --if-none-match '*' --checksum-algorithm CRC64NVME --region "$REGION" --cli-read-timeout 0 --output json)" || fail "Sidecar upload failed or exact key already exists; no overwrite was attempted" 70
+  sidecar_version="$(jq -r '.VersionId // empty' <<<"$sidecar_put")"; sidecar_checksum="$(jq -r '.ChecksumCRC64NVME // empty' <<<"$sidecar_put")"; [[ -n "$sidecar_version" && -n "$sidecar_checksum" ]] || fail "Sidecar upload acknowledgement incomplete" 70
+  sidecar_head="$(aws s3api head-object --bucket "$BUCKET" --key "${SIDECARS[$i]}" --version-id "$sidecar_version" --checksum-mode ENABLED --region "$REGION" --output json)" || fail "Exact sidecar-version read-back failed" 70
+  sidecar_bytes="$(stat -f %z "$TMP/${IDS[$i]}.manifest.json")" || fail "Sidecar byte length could not be measured" 70
+  jq -e --arg v "$sidecar_version" --arg c "$sidecar_checksum" --argjson n "$sidecar_bytes" '.VersionId==$v and .ContentLength==$n and .ChecksumType=="FULL_OBJECT" and .ChecksumCRC64NVME==$c' <<<"$sidecar_head" >/dev/null || fail "Exact sidecar-version read-back lacks exact version, bytes, or acknowledged FULL_OBJECT CRC64NVME" 70
 done
 print -- "Archive promotion completed; this is raw archive evidence only and does not clear BC or Ontario geometry admission blocks."
