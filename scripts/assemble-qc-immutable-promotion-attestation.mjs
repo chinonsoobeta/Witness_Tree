@@ -1,6 +1,6 @@
 import { createHash, randomUUID } from "node:crypto";
-import { closeSync, fstatSync, fsyncSync, linkSync, lstatSync, openSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
+import { closeSync, fstatSync, fsyncSync, linkSync, lstatSync, openSync, readFileSync, readdirSync, unlinkSync, writeFileSync } from "node:fs";
+import { basename, dirname, resolve } from "node:path";
 import { redactQcAttestation, validatePrivateQcAttestation } from "./check-qc-immutable-promotion-attestation.mjs";
 import { sidecarFor, validateQcImmutablePromotionPreparation } from "./prepare-qc-immutable-promotion.mjs";
 
@@ -23,6 +23,10 @@ function safeEqual(actual, expected, message) {
 
 function safeMatch(value, pattern, message) {
   if (typeof value !== "string" || !pattern.test(value)) failSafe(message);
+}
+
+function sameInode(left, right) {
+  return left?.dev === right?.dev && left?.ino === right?.ino;
 }
 
 export function normalizeQcOperatorIdentity(rawIdentity) {
@@ -67,13 +71,46 @@ function validateFreshOutput(path) {
   }
 }
 
-function unlinkOwnedTemp(temp, owner) {
+function unlinkOwnedTemp(temp, owner, preservePath) {
   if (!temp || !owner) return;
+  const parent = dirname(temp);
+  const preserved = preservePath ? resolve(preservePath) : null;
+  let names;
   try {
-    const current = lstatSync(temp);
-    if (!current.isSymbolicLink() && current.dev === owner.dev && current.ino === owner.ino) unlinkSync(temp);
-  } catch (error) {
-    if (error?.code !== "ENOENT") return;
+    names = readdirSync(parent);
+  } catch {
+    return;
+  }
+  const directName = basename(temp);
+  for (const name of names) {
+    const candidate = resolve(parent, name);
+    if (candidate === preserved) continue;
+    try {
+      const current = lstatSync(candidate);
+      const direct = name === directName;
+      if (!current.isSymbolicLink() && sameInode(current, owner) && (direct || current.nlink === 1)) unlinkSync(candidate);
+    } catch {
+      // A concurrent replacement is never removed unless its inode is proved ours.
+    }
+  }
+}
+
+function rollbackExclusivePublication(publication) {
+  if (!publication || resolve(publication.path) !== publication.path) return false;
+  let current;
+  try {
+    current = lstatSync(publication.path);
+    if (!current.isFile() || current.isSymbolicLink() || !sameInode(current, publication) || current.size !== publication.size || current.uid !== publication.uid || (current.mode & 0o777) !== publication.mode || current.nlink !== 1) return false;
+    unlinkSync(publication.path);
+    syncParentDirectory(publication.path);
+    try {
+      lstatSync(publication.path);
+      return false;
+    } catch (error) {
+      return error?.code === "ENOENT";
+    }
+  } catch {
+    return false;
   }
 }
 
@@ -90,39 +127,52 @@ function syncParentDirectory(path) {
 }
 
 export function writeExclusiveMode600(path, value, { beforeLink } = {}) {
-  validateFreshOutput(path);
+  const outputPath = resolve(path);
+  validateFreshOutput(outputPath);
   if (beforeLink !== undefined && typeof beforeLink !== "function") failSafe("attestation output link hook is invalid");
-  const temp = `${path}.tmp-${process.pid}-${randomUUID()}`;
+  const temp = `${outputPath}.tmp-${process.pid}-${randomUUID()}`;
   const bytes = Buffer.from(`${JSON.stringify(value, null, 2)}\n`);
   let fd;
-  let owner;
-  let linked = false;
+  let openedTemp;
+  let linkedStat;
   try {
     fd = openSync(temp, "wx", 0o600);
-    owner = fstatSync(fd);
+    openedTemp = fstatSync(fd);
     writeFileSync(fd, bytes);
     fsyncSync(fd);
-    if (beforeLink) beforeLink();
-    linkSync(temp, path);
-    linked = true;
-    const created = lstatSync(path);
-    if (!created.isFile() || created.isSymbolicLink() || created.uid !== process.getuid() || (created.mode & 0o777) !== 0o600) {
-      failSafe("attestation output is not owner-owned mode 600");
+    const writtenTemp = fstatSync(fd);
+    if (!sameInode(writtenTemp, openedTemp) || writtenTemp.size !== bytes.length || writtenTemp.uid !== openedTemp.uid || (writtenTemp.mode & 0o777) !== (openedTemp.mode & 0o777)) {
+      failSafe("attestation temporary file changed before publication");
     }
-    unlinkOwnedTemp(temp, owner);
-    syncParentDirectory(path);
-    return path;
+    if (beforeLink) beforeLink(temp);
+    let currentTemp;
+    try {
+      currentTemp = lstatSync(temp);
+    } catch {
+      failSafe("attestation temporary file changed before publication");
+    }
+    if (!currentTemp.isFile() || currentTemp.isSymbolicLink() || !sameInode(currentTemp, openedTemp)) failSafe("attestation temporary file changed before publication");
+    linkSync(temp, outputPath);
+    linkedStat = lstatSync(outputPath);
+    if (!linkedStat.isFile() || linkedStat.isSymbolicLink() || !sameInode(linkedStat, openedTemp) || linkedStat.size !== bytes.length || linkedStat.uid !== openedTemp.uid || (linkedStat.mode & 0o777) !== (openedTemp.mode & 0o777)) {
+      const publication = { path: outputPath, ...linkedStat, mode: linkedStat.mode & 0o777 };
+      if (!rollbackExclusivePublication(publication)) failSafe("attestation output identity check failed; rollback was not proved");
+      failSafe("attestation output identity check failed; output was rolled back");
+    }
+    unlinkOwnedTemp(temp, openedTemp, outputPath);
+    syncParentDirectory(outputPath);
+    return { path: outputPath, dev: linkedStat.dev, ino: linkedStat.ino, size: linkedStat.size, uid: linkedStat.uid, mode: linkedStat.mode & 0o777 };
   } catch (error) {
     if (error?.safe) throw error;
     if (error?.code === "EEXIST") failSafe("attestation output already exists; refusing overwrite");
-    failSafe(linked ? "attestation output could not be finalized" : "attestation output could not be created exclusively");
+    failSafe(linkedStat ? "attestation output could not be finalized" : "attestation output could not be created exclusively");
   } finally {
     if (fd !== undefined) closeSync(fd);
-    unlinkOwnedTemp(temp, owner);
+    unlinkOwnedTemp(temp, openedTemp, outputPath);
   }
 }
 
-function assembleQcAttestationUnsafe({ root, captureDirectory, privatePath, publicPath }) {
+function assembleQcAttestationUnsafe({ root, captureDirectory, privatePath, publicPath, beforePublicLink }) {
   const planPath = resolve(root, "data/qc-immutable-promotion-preparation.json");
   const runnerPath = resolve(root, "scripts/run-qc-approved-multipart-promotion.sh");
   const capturePath = resolve(root, "scripts/capture-qc-immutable-promotion-attestation.sh");
@@ -169,21 +219,28 @@ function assembleQcAttestationUnsafe({ root, captureDirectory, privatePath, publ
     claims: { exactReadbacksVerified: true, retentionVerified: true, immutableObjectStorage: true, sourceLedgerCreditChanged: false, transformed: false, ingested: false, productionEligible: false }
   };
   validatePrivateQcAttestation(privateRecord, plan);
-  writeExclusiveMode600(privatePath, privateRecord);
-  const privateBytes = read(privatePath);
-  writeExclusiveMode600(publicPath, redactQcAttestation(privateRecord, privateBytes, plan));
-  return { privatePath, publicPath };
+  const privatePublication = writeExclusiveMode600(privatePath, privateRecord);
+  try {
+    const privateBytes = read(privatePublication.path);
+    const publicRecord = redactQcAttestation(privateRecord, privateBytes, plan);
+    writeExclusiveMode600(publicPath, publicRecord, { beforeLink: beforePublicLink });
+  } catch {
+    if (!rollbackExclusivePublication(privatePublication)) failSafe("QC attestation pair publication failed; private rollback was not proved; inspect output state");
+    failSafe("QC attestation pair publication failed; private output was rolled back");
+  }
+  return { privatePath: privatePublication.path, publicPath: resolve(publicPath) };
 }
 
-export function assembleQcAttestation({ root, captureDirectory, privatePath, publicPath }) {
+export function assembleQcAttestation({ root, captureDirectory, privatePath, publicPath, beforePublicLink }) {
   try {
-    if (privatePath === publicPath) failSafe("attestation output paths must be distinct");
-    validateFreshOutput(privatePath);
-    validateFreshOutput(publicPath);
-    return assembleQcAttestationUnsafe({ root, captureDirectory, privatePath, publicPath });
+    const privateOutput = resolve(privatePath); const publicOutput = resolve(publicPath);
+    if (privateOutput === publicOutput) failSafe("attestation output paths must be distinct");
+    validateFreshOutput(privateOutput);
+    validateFreshOutput(publicOutput);
+    return assembleQcAttestationUnsafe({ root, captureDirectory, privatePath: privateOutput, publicPath: publicOutput, beforePublicLink });
   } catch (error) {
     if (error?.safe) throw error;
-    failSafe("QC attestation assembly failed closed; no output was written");
+    failSafe("QC attestation assembly failed closed; output state requires inspection");
   }
 }
 

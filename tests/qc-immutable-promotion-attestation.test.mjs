@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { chmodSync, existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import { chmodSync, existsSync, mkdtempSync, readFileSync, readdirSync, renameSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
@@ -170,6 +170,47 @@ test("exclusive link race fails closed and removes only its owned temporary file
     assert.equal(readFileSync(output, "utf8"), "RACING_TARGET_MUST_WIN");
     assert.deepEqual(readdirSync(dir), ["attestation.json"]);
   } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("temporary-path swap before publication fails without an injected final or residue", () => {
+  const dir = mkdtempSync(join(tmpdir(), "qc-attestation-temp-swap-")); const output = join(dir, "attestation.json");
+  try {
+    assert.throws(() => writeExclusiveMode600(output, { claims: { exactReadbacksVerified: true } }, {
+      beforeLink: (temp) => renameSync(temp, `${temp}.moved`)
+    }), /temporary file changed before publication/);
+    assert.equal(existsSync(output), false);
+    assert.deepEqual(readdirSync(dir), []);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("public publication race rolls back only this invocation's private inode", async () => {
+  const paths = await fixture();
+  try {
+    assert.throws(() => assembleQcAttestation({ root, captureDirectory: paths.capture, privatePath: paths.privatePath, publicPath: paths.publicPath, beforePublicLink: () => writeFileSync(paths.publicPath, "RACING_PUBLIC_TARGET_MUST_REMAIN", { mode: 0o600, flag: "wx" }) }), /private output was rolled back/);
+    assert.equal(existsSync(paths.privatePath), false);
+    assert.equal(readFileSync(paths.publicPath, "utf8"), "RACING_PUBLIC_TARGET_MUST_REMAIN");
+    assert.deepEqual(readdirSync(paths.dir).sort(), ["capture", "public.json"]);
+  } finally { rmSync(paths.dir, { recursive: true, force: true }); }
+});
+
+test("private rollback race reports an unproved state and leaves racing files untouched", async () => {
+  const paths = await fixture();
+  try {
+    const racedPrivate = `${paths.privatePath}.raced`;
+    assert.throws(() => assembleQcAttestation({ root, captureDirectory: paths.capture, privatePath: paths.privatePath, publicPath: paths.publicPath, beforePublicLink: () => {
+      renameSync(paths.privatePath, racedPrivate);
+      writeFileSync(paths.privatePath, "RACING_PRIVATE_TARGET_MUST_REMAIN", { mode: 0o600, flag: "wx" });
+      writeFileSync(paths.publicPath, "RACING_PUBLIC_TARGET_MUST_REMAIN", { mode: 0o600, flag: "wx" });
+    } }), (error) => {
+      assert.match(error.message, /private rollback was not proved; inspect output state/);
+      assert.doesNotMatch(error.message, /no output was written/);
+      return true;
+    });
+    assert.equal(readFileSync(paths.privatePath, "utf8"), "RACING_PRIVATE_TARGET_MUST_REMAIN");
+    assert.equal(readFileSync(racedPrivate, "utf8").length > 0, true);
+    assert.equal(readFileSync(paths.publicPath, "utf8"), "RACING_PUBLIC_TARGET_MUST_REMAIN");
+    assert.deepEqual(readdirSync(paths.dir).sort(), ["capture", "private.json", "private.json.raced", "public.json"]);
+  } finally { rmSync(paths.dir, { recursive: true, force: true }); }
 });
 
 test("booleans, placeholders, plausible substitutions, digest drift and unsafe private modes fail closed", async () => {
