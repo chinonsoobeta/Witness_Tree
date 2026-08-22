@@ -7,24 +7,25 @@ import { CVD_MODES, LOCALES, SCREEN_READER_TEMPLATES, TASK_IDS, TEMPLATES, evalu
 const clone = (value) => structuredClone(value);
 const reference = (value) => `ref-${value.toString(16).padStart(32, "0")}`;
 const release = (value) => `release-${value.toString(16).padStart(16, "0")}`;
+const utcSecond = (value) => new Date(value).toISOString().replace(".000Z", "Z");
 
 function participant(locale, index) {
-  const base = Date.parse(`2026-09-${String(index + 1).padStart(2, "0")}T16:00:00.000Z`);
+  const base = Date.parse(`2026-09-${String(index + 1).padStart(2, "0")}T16:00:00Z`);
   const passing = index < 8;
   return {
     participantId: (locale === "en" ? index + 1 : index + 101).toString(16).padStart(16, "0"),
     panelId: locale === "en" ? "eeeeeeeeeeeeeeee" : "ffffffffffffffff",
     locale,
     eligibility: { age18Plus: true, languageComfortable: true, noWitnessTreeExposure: true, nonGis24Months: true, noOtherPanel: true, consentBeforeTasks: true },
-    consent: { status: "explicit-recorded", receiptReference: reference((locale === "en" ? 1000 : 1100) + index), protocolVersion: protocol.schemaVersion, recordedAt: new Date(base - 60_000).toISOString() },
-    sessionStartedAt: new Date(base).toISOString(),
-    sessionEndedAt: new Date(base + 10 * 60_000).toISOString(),
-    tasks: TASK_IDS.map((taskId, taskIndex) => ({ taskId, startedAt: new Date(base + taskIndex * 100_000).toISOString(), endedAt: new Date(base + taskIndex * 100_000 + 60_000).toISOString(), completedUnassisted: passing || taskIndex < 3, assistanceProvided: false })),
+    consent: { status: "explicit-recorded", receiptReference: reference((locale === "en" ? 1000 : 1100) + index), protocolVersion: protocol.schemaVersion, recordedAt: utcSecond(base - 60_000) },
+    sessionStartedAt: utcSecond(base),
+    sessionEndedAt: utcSecond(base + 10 * 60_000),
+    tasks: TASK_IDS.map((taskId, taskIndex) => ({ taskId, startedAt: utcSecond(base + taskIndex * 100_000), endedAt: utcSecond(base + taskIndex * 100_000 + 60_000), completedUnassisted: passing || taskIndex < 3, assistanceProvided: false })),
     moderation: { evidenceOrigin: "human-moderated", automationGenerated: false, attestationReference: reference((locale === "en" ? 2000 : 2100) + index) },
   };
 }
 
-const scopes = (templates, locales, modes = [null], screenReader = false) => templates.flatMap((template, templateIndex) => locales.flatMap((locale, localeIndex) => modes.map((mode, modeIndex) => ({ template, locale, ...(mode ? { mode } : {}), evidenceOrigin: "human-manual", automationGenerated: false, testerAttestationReference: reference(3000 + templateIndex * 100 + localeIndex * 10 + modeIndex), startedAt: "2026-09-20T16:00:00.000Z", endedAt: "2026-09-20T16:30:00.000Z", passed: true, blockedTasks: 0, issueIds: [], environment: screenReader ? { assistiveTechnology: "VoiceOver", assistiveTechnologyVersion: "15.6", browser: "Safari", browserVersion: "18.6", operatingSystem: "macOS", operatingSystemVersion: "15.6" } : "Chrome 151 on macOS 15.6" }))));
+const scopes = (templates, locales, modes = [null], screenReader = false) => templates.flatMap((template, templateIndex) => locales.flatMap((locale, localeIndex) => modes.map((mode, modeIndex) => ({ template, locale, ...(mode ? { mode } : {}), evidenceOrigin: "human-manual", automationGenerated: false, testerAttestationReference: reference(3000 + templateIndex * 100 + localeIndex * 10 + modeIndex), startedAt: "2026-09-20T16:00:00Z", endedAt: "2026-09-20T16:30:00Z", passed: true, blockedTasks: 0, issueIds: [], environment: screenReader ? { assistiveTechnology: "VoiceOver", assistiveTechnologyVersion: "15.6", browser: "Safari", browserVersion: "18.6", operatingSystem: "macOS", operatingSystemVersion: "15.6" } : "Chrome 151 on macOS 15.6" }))));
 
 function completeEvidence() {
   const participants = LOCALES.flatMap((locale) => Array.from({ length: 10 }, (_, index) => participant(locale, index)));
@@ -46,8 +47,8 @@ function completeEvidence() {
       fieldPerformanceSamplingDecisionReference: reference(4003),
       fieldPerformanceMinimumSamplesPerLocale: 100,
       fieldPerformanceUrlOrigin: "https://example.invalid",
-      fieldPerformanceWindowStartedAt: "2026-09-01T00:00:00.000Z",
-      fieldPerformanceWindowEndedAt: "2026-09-29T00:00:00.000Z",
+      fieldPerformanceWindowStartedAt: "2026-09-01T00:00:00Z",
+      fieldPerformanceWindowEndedAt: "2026-09-29T00:00:00Z",
       fieldPerformanceProvider: "ApprovedAggregateRUM",
       fieldPerformanceConfigurationReference: reference(4004)
     },
@@ -58,7 +59,7 @@ function completeEvidence() {
       forcedColorsAndCvd: scopes(TEMPLATES, LOCALES, CVD_MODES),
       issues: []
     },
-    fieldPerformance: LOCALES.map((locale, index) => ({ locale, metric: "LCP", statistic: "p75", valueMs: 1500, eligibleSamples: 100, windowStartedAt: "2026-09-01T00:00:00.000Z", windowEndedAt: "2026-09-29T00:00:00.000Z", urlOrigin: "https://example.invalid", provider: "ApprovedAggregateRUM", configurationReference: reference(4004), samplingDecisionReference: reference(4003), privacyReviewReference: reference(4002), aggregateReportReference: reference(5000 + index), containsParticipantIdentifiers: false })),
+    fieldPerformance: LOCALES.map((locale, index) => ({ locale, metric: "LCP", statistic: "p75", valueMs: 1500, eligibleSamples: 100, windowStartedAt: "2026-09-01T00:00:00Z", windowEndedAt: "2026-09-29T00:00:00Z", urlOrigin: "https://example.invalid", provider: "ApprovedAggregateRUM", configurationReference: reference(4004), samplingDecisionReference: reference(4003), privacyReviewReference: reference(4002), aggregateReportReference: reference(5000 + index), containsParticipantIdentifiers: false })),
     outsideAccessibilityReview: {
       status: "complete",
       reviewerName: "Test-only outside reviewer",
@@ -113,7 +114,7 @@ test("completion rejects participant, task, locale, threshold, consent and self-
     ["missing task", (copy) => { copy.usability.participants[0].tasks.pop(); }],
     ["wrong locale count", (copy) => { copy.usability.participants.find(({ locale }) => locale === "fr").locale = "en"; }],
     ["only seven passing participants", (copy) => { const row = copy.usability.participants.filter(({ locale }) => locale === "en")[7]; row.tasks[3].completedUnassisted = false; row.tasks[4].completedUnassisted = false; }],
-    ["task at 180-second boundary", (copy) => { const row = copy.usability.participants.filter(({ locale }) => locale === "en")[7]; row.tasks[4].completedUnassisted = false; row.tasks[0].endedAt = new Date(Date.parse(row.tasks[0].startedAt) + 180_000).toISOString(); }],
+    ["task at 180-second boundary", (copy) => { const row = copy.usability.participants.filter(({ locale }) => locale === "en")[7]; row.tasks[4].completedUnassisted = false; row.tasks[0].endedAt = utcSecond(Date.parse(row.tasks[0].startedAt) + 180_000); }],
     ["missing consent", (copy) => { copy.usability.participants[0].consent.receiptReference = ""; }],
     ["self-generated participant evidence", (copy) => { copy.usability.participants[0].moderation.automationGenerated = true; }],
     ["self-generated completion claim", (copy) => { copy.completionEvidenceOrigin = "self-generated"; }],
@@ -141,13 +142,13 @@ test("consent receipt and observation values accept only bounded opaque codes", 
     ["receipt address", (copy) => { copy.usability.participants[0].consent.receiptReference = "123 Main Street"; }],
     ["receipt contact alias", (copy) => { copy.usability.participants[0].consent.receiptReference = "participant-contact-1"; }],
     ["receipt uppercase token", (copy) => { copy.usability.participants[0].consent.receiptReference = `ref-${"A".repeat(32)}`; }],
-    ["free-text observation", (copy) => { copy.usability.issues.push({ issueId: "issue-000000000001", severity: "low", observationCode: "navigation label missing", observedAt: "2026-09-20T16:00:00.000Z", status: "resolved" }); }],
-    ["observation email", (copy) => { copy.usability.issues.push({ issueId: "issue-000000000001", severity: "low", observationCode: "participant@example.com", observedAt: "2026-09-20T16:00:00.000Z", status: "resolved" }); }],
-    ["observation phone", (copy) => { copy.usability.issues.push({ issueId: "issue-000000000001", severity: "low", observationCode: "+1 604 555 1212", observedAt: "2026-09-20T16:00:00.000Z", status: "resolved" }); }],
-    ["observation full name", (copy) => { copy.usability.issues.push({ issueId: "issue-000000000001", severity: "low", observationCode: "Jordan Example", observedAt: "2026-09-20T16:00:00.000Z", status: "resolved" }); }],
-    ["observation URL", (copy) => { copy.usability.issues.push({ issueId: "issue-000000000001", severity: "low", observationCode: "https://example.invalid/observation/1", observedAt: "2026-09-20T16:00:00.000Z", status: "resolved" }); }],
-    ["observation contact alias", (copy) => { copy.usability.issues.push({ issueId: "issue-000000000001", severity: "low", observationCode: "contact-1", observedAt: "2026-09-20T16:00:00.000Z", status: "resolved" }); }],
-    ["observation wrong prefix", (copy) => { copy.usability.issues.push({ issueId: "issue-000000000001", severity: "low", observationCode: "code-000000000001", observedAt: "2026-09-20T16:00:00.000Z", status: "resolved" }); }]
+    ["free-text observation", (copy) => { copy.usability.issues.push({ issueId: "issue-000000000001", severity: "low", observationCode: "navigation label missing", observedAt: "2026-09-20T16:00:00Z", status: "resolved" }); }],
+    ["observation email", (copy) => { copy.usability.issues.push({ issueId: "issue-000000000001", severity: "low", observationCode: "participant@example.com", observedAt: "2026-09-20T16:00:00Z", status: "resolved" }); }],
+    ["observation phone", (copy) => { copy.usability.issues.push({ issueId: "issue-000000000001", severity: "low", observationCode: "+1 604 555 1212", observedAt: "2026-09-20T16:00:00Z", status: "resolved" }); }],
+    ["observation full name", (copy) => { copy.usability.issues.push({ issueId: "issue-000000000001", severity: "low", observationCode: "Jordan Example", observedAt: "2026-09-20T16:00:00Z", status: "resolved" }); }],
+    ["observation URL", (copy) => { copy.usability.issues.push({ issueId: "issue-000000000001", severity: "low", observationCode: "https://example.invalid/observation/1", observedAt: "2026-09-20T16:00:00Z", status: "resolved" }); }],
+    ["observation contact alias", (copy) => { copy.usability.issues.push({ issueId: "issue-000000000001", severity: "low", observationCode: "contact-1", observedAt: "2026-09-20T16:00:00Z", status: "resolved" }); }],
+    ["observation wrong prefix", (copy) => { copy.usability.issues.push({ issueId: "issue-000000000001", severity: "low", observationCode: "code-000000000001", observedAt: "2026-09-20T16:00:00Z", status: "resolved" }); }]
   ];
   for (const [name, mutate] of cases) {
     const copy = completeEvidence(); mutate(copy);
@@ -187,6 +188,81 @@ test("consent must be recorded strictly before the earliest task", () => {
   }
 });
 
+test("all completed evidence timestamps require canonical whole-second UTC", () => {
+  const cases = [
+    ["owner offset", (copy) => { copy.ownerInputs.fieldPerformanceWindowStartedAt = "2026-08-31T17:00:00-07:00"; }],
+    ["owner milliseconds", (copy) => { copy.ownerInputs.fieldPerformanceWindowStartedAt = "2026-09-01T00:00:00.000Z"; }],
+    ["owner natural language", (copy) => { copy.ownerInputs.fieldPerformanceWindowStartedAt = "September 1, 2026 UTC"; }],
+    ["owner impossible date", (copy) => { copy.ownerInputs.fieldPerformanceWindowStartedAt = "2026-02-30T00:00:00Z"; }],
+    ["field-row offset", (copy) => { copy.fieldPerformance[0].windowStartedAt = "2026-09-01T01:00:00+01:00"; }],
+    ["consent milliseconds", (copy) => { copy.usability.participants[0].consent.recordedAt = "2026-09-01T15:59:00.000Z"; }],
+    ["session lowercase zone", (copy) => { copy.usability.participants[0].sessionStartedAt = "2026-09-01T16:00:00z"; }],
+    ["task offset", (copy) => { copy.usability.participants[0].tasks[0].startedAt = "2026-09-01T09:00:00-07:00"; }],
+    ["manual milliseconds", (copy) => { copy.manualAccessibility.keyboard[0].startedAt = "2026-09-20T16:00:00.000Z"; }],
+    ["manual impossible date", (copy) => { copy.manualAccessibility.keyboard[0].endedAt = "2026-09-31T16:30:00Z"; }],
+    ["usability issue natural language", (copy) => { copy.usability.issues.push({ issueId: "issue-000000000001", severity: "low", observationCode: "obs-000000000001", observedAt: "September 20, 2026 UTC", status: "resolved" }); }],
+    ["outside issue offset", (copy) => { copy.outsideAccessibilityReview.issues.push({ issueId: "issue-000000000002", severity: "low", observationCode: "obs-000000000002", observedAt: "2026-09-20T09:00:00-07:00", status: "resolved" }); }]
+  ];
+  for (const [name, mutate] of cases) {
+    const copy = completeEvidence(); mutate(copy);
+    assert.throws(() => validateEvidence(copy, protocol), name);
+  }
+});
+
+test("field origin requires an exact canonical HTTPS origin without authority tricks", () => {
+  const origins = [
+    "http://example.invalid",
+    "https://user@example.invalid",
+    "https://user:secret@example.invalid",
+    "https://example.invalid:443",
+    "https://example.invalid:8443",
+    "https://example.invalid/",
+    "https://example.invalid/path",
+    "https://example.invalid?sample=1",
+    "https://example.invalid#fragment",
+    "https://example.invalid/%2e%2e",
+    "https://example%2einvalid",
+    "https://éxample.invalid",
+    "https://ｅxample.invalid",
+    "https://exa mple.invalid",
+    "https://-example.invalid",
+    "https://example-.invalid",
+    "https://example..invalid"
+  ];
+  for (const origin of origins) {
+    const copy = completeEvidence();
+    copy.ownerInputs.fieldPerformanceUrlOrigin = origin;
+    for (const row of copy.fieldPerformance) row.urlOrigin = origin;
+    assert.throws(() => validateEvidence(copy, protocol), origin);
+  }
+  for (const origin of ["https://records.example.invalid", "https://127.0.0.1", "https://[2001:db8::1]"]) {
+    const copy = completeEvidence();
+    copy.ownerInputs.fieldPerformanceUrlOrigin = origin;
+    for (const row of copy.fieldPerformance) row.urlOrigin = origin;
+    assert.doesNotThrow(() => validateEvidence(copy, protocol), origin);
+  }
+});
+
+test("manual environment and provider strings reject sensitive, Unicode and encoded value shapes", () => {
+  const cases = [
+    ["AT email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant@example.com"; }],
+    ["AT encoded email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant%40example.com"; }],
+    ["browser Unicode email", (copy) => { copy.manualAccessibility.screenReader[0].environment.browser = "participant＠example.com"; }],
+    ["browser phone", (copy) => { copy.manualAccessibility.screenReader[0].environment.browser = "+1 604 555 1212"; }],
+    ["OS Unicode phone", (copy) => { copy.manualAccessibility.screenReader[0].environment.operatingSystem = "＋１ ６０４ ５５５ １２１２"; }],
+    ["AT version contact", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnologyVersion = "contact 15.6"; }],
+    ["browser version entity", (copy) => { copy.manualAccessibility.screenReader[0].environment.browserVersion = "participant&#64;example.com 18"; }],
+    ["OS version URL", (copy) => { copy.manualAccessibility.screenReader[0].environment.operatingSystemVersion = "https://example.invalid/15.6"; }],
+    ["keyboard email", (copy) => { copy.manualAccessibility.keyboard[0].environment = "participant@example.com"; }],
+    ["forced-colors contact", (copy) => { copy.manualAccessibility.forcedColorsAndCvd[0].environment = "participant contact"; }],
+    ["provider encoded email", (copy) => { copy.ownerInputs.fieldPerformanceProvider = "provider%40example.com"; copy.fieldPerformance.forEach((row) => { row.provider = copy.ownerInputs.fieldPerformanceProvider; }); }]
+  ];
+  for (const [name, mutate] of cases) {
+    const copy = completeEvidence(); mutate(copy);
+    assert.throws(() => validateEvidence(copy, protocol), name);
+  }
+});
+
 test("recursive completed schema rejects arbitrary fields, fabricated results, and PII aliases", () => {
   const cases = [
     ["top-level field", (copy) => { copy.arbitrary = true; }],
@@ -207,7 +283,7 @@ test("recursive completed schema rejects arbitrary fields, fabricated results, a
     ["screen-reader environment field", (copy) => { copy.manualAccessibility.screenReader[0].environment.device = "laptop"; }],
     ["field-row field", (copy) => { copy.fieldPerformance[0].result = "passed"; }],
     ["outside-scope field", (copy) => { copy.outsideAccessibilityReview.scopeResults[0].result = "passed"; }],
-    ["issue field", (copy) => { copy.usability.issues.push({ issueId: "issue-000000000001", severity: "low", observationCode: "obs-000000000001", observedAt: "2026-09-20T16:00:00.000Z", status: "resolved", extra: true }); }],
+    ["issue field", (copy) => { copy.usability.issues.push({ issueId: "issue-000000000001", severity: "low", observationCode: "obs-000000000001", observedAt: "2026-09-20T16:00:00Z", status: "resolved", extra: true }); }],
     ["participantContact", (copy) => { copy.usability.participants[0].participantContact = "forbidden"; }],
     ["participant_contact_details", (copy) => { copy.usability.participants[0].participant_contact_details = "forbidden"; }],
     ["fullName", (copy) => { copy.usability.participants[0].fullName = "forbidden"; }],
@@ -243,11 +319,11 @@ test("screen-reader completion requires an exact real assistive-technology envir
 test("field completion is exactly bound to owner-approved window, provider, configuration and decisions", () => {
   const cases = [
     ["missing owner window start", (copy) => { copy.ownerInputs.fieldPerformanceWindowStartedAt = null; }],
-    ["reversed owner window", (copy) => { copy.ownerInputs.fieldPerformanceWindowEndedAt = "2026-08-01T00:00:00.000Z"; }],
+    ["reversed owner window", (copy) => { copy.ownerInputs.fieldPerformanceWindowEndedAt = "2026-08-01T00:00:00Z"; }],
     ["missing owner provider", (copy) => { copy.ownerInputs.fieldPerformanceProvider = ""; }],
     ["missing owner configuration", (copy) => { copy.ownerInputs.fieldPerformanceConfigurationReference = ""; }],
-    ["row window start drift", (copy) => { copy.fieldPerformance[0].windowStartedAt = "2026-09-02T00:00:00.000Z"; }],
-    ["row window end drift", (copy) => { copy.fieldPerformance[0].windowEndedAt = "2026-09-28T00:00:00.000Z"; }],
+    ["row window start drift", (copy) => { copy.fieldPerformance[0].windowStartedAt = "2026-09-02T00:00:00Z"; }],
+    ["row window end drift", (copy) => { copy.fieldPerformance[0].windowEndedAt = "2026-09-28T00:00:00Z"; }],
     ["row origin drift", (copy) => { copy.fieldPerformance[0].urlOrigin = "https://other.invalid"; }],
     ["row provider drift", (copy) => { copy.fieldPerformance[0].provider = "OtherProvider"; }],
     ["row configuration drift", (copy) => { copy.fieldPerformance[0].configurationReference = "other-config"; }],

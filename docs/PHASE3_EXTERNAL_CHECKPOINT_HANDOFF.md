@@ -60,6 +60,8 @@ Do not record names, email, phone, address, IP address, age, date of birth, recr
 
 Every de-identified evidence reference uses exactly `ref-` followed by 32 lowercase hexadecimal characters. This applies to consent receipts, moderator and tester attestations, owner approval/review/decision/configuration references, aggregate field reports, outside-review attestations and reports, and report sections. Release IDs use exactly `release-` followed by 16 lowercase hexadecimal characters; consent-form versions use `consent-form-v` followed by a positive integer. These fields must never contain a name, email, phone number, URL, contact label, address, or free text. Keep the private mapping, if one is required, outside this evidence envelope under the approved privacy and retention controls.
 
+Every evidence timestamp uses canonical whole-second UTC: `YYYY-MM-DDTHH:MM:SSZ`. Offsets, milliseconds, natural-language dates, lowercase zones and impossible calendar dates fail. This applies to consent, sessions, tasks, manual checks, issues, and the owner-approved and reported field-performance windows.
+
 ## Manual accessibility evidence
 
 Use a human tester and record environment, start/end timestamps, issue IDs and an attestation reference.
@@ -68,9 +70,11 @@ Use a human tester and record environment, start/end timestamps, issue IDs and a
 - Screen reader: place and location in both languages. The environment is structured, not free text, and requires nonblank `assistiveTechnology`, `assistiveTechnologyVersion`, `browser`, `browserVersion`, `operatingSystem` and `operatingSystemVersion`; placeholders such as “test”, “unknown” or “generic” fail. Verify headings, landmarks, link/control names, event order, figures, Unknown reasons, provenance and table alternatives.
 - Forced colours/CVD: all four templates, both languages, in forced-colours, grayscale, protanopia, deuteranopia and tritanopia modes. A person must inspect content, focus, links, evidence shapes, confidence bars, Unknown treatment, charts and legends. Automated emulation does not fill this evidence.
 
+Manual environment and product/version fields may contain legitimate assistive-technology, browser and operating-system names only. They reject email, phone, contact/address terms, URLs, control characters, and Unicode or percent/entity-encoded forms of those values.
+
 ## Field performance
 
-Collect only aggregate place-page LCP by locale. The result is eligible only when p75 is strictly below 2,000 ms for both English and French, each locale meets the owner-approved sample minimum, and every row exactly repeats the approved UTC window, HTTPS origin, provider, configuration reference, sampling-decision reference and privacy-review reference. Strip query strings and retain no IP, user ID, precise location, full URL or raw event. Until the owner and privacy reviewer approve every one of those inputs, do not enable collection.
+Collect only aggregate place-page LCP by locale. The result is eligible only when p75 is strictly below 2,000 ms for both English and French, each locale meets the owner-approved sample minimum, and every row exactly repeats the approved UTC window, HTTPS origin, provider, configuration reference, sampling-decision reference and privacy-review reference. The origin must equal the URL parser’s canonical HTTPS origin exactly: no credentials, port, path or trailing slash, query, fragment, Unicode/encoded hostname alias, or invalid DNS/IP hostname. Strip query strings and retain no IP, user ID, precise location, full URL or raw event. Until the owner and privacy reviewer approve every one of those inputs, do not enable collection.
 
 ## Outside accessibility review
 

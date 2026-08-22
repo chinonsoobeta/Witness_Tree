@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
+import { isIP } from "node:net";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -23,6 +24,8 @@ const OBSERVATION_CODE = /^obs-[a-f0-9]{12}$/;
 const RELEASE_ID = /^release-[a-f0-9]{16}$/;
 const CONSENT_FORM_VERSION = /^consent-form-v[1-9][0-9]{0,3}$/;
 const SENSITIVE_VALUE_SHAPE = /(?:@|https?:\/\/|www\.|(?:^|\s)\+?[0-9][0-9 ()-]{6,}[0-9](?:\s|$)|\b(?:street|st\.?|road|rd\.?|avenue|ave\.?|boulevard|blvd\.?|drive|dr\.?|lane|ln\.?|postal|address|email|phone|contact|name)\b)/i;
+const ENCODED_VALUE_SHAPE = /(?:%[0-9a-f]{2}|&#(?:x[0-9a-f]+|[0-9]+);)/i;
+const CANONICAL_UTC_SECOND = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/;
 
 const exact = (actual, expected, message) => {
   if (JSON.stringify(actual) !== JSON.stringify(expected)) throw new Error(message);
@@ -34,10 +37,30 @@ const exactKeys = (value, expected, message) => {
 };
 
 const nonempty = (value) => typeof value === "string" && value.trim().length > 0;
-const iso = (value) => nonempty(value) && Number.isFinite(Date.parse(value));
 const opaque = (value) => /^[a-f0-9]{16}$/.test(value ?? "");
-const opaqueReference = (value) => OPAQUE_REFERENCE.test(value ?? "") && !SENSITIVE_VALUE_SHAPE.test(value);
-const observationCode = (value) => OBSERVATION_CODE.test(value ?? "") && !SENSITIVE_VALUE_SHAPE.test(value);
+const hasSensitiveValueShape = (value) => typeof value !== "string" || SENSITIVE_VALUE_SHAPE.test(value.normalize("NFKC")) || ENCODED_VALUE_SHAPE.test(value.normalize("NFKC"));
+const opaqueReference = (value) => OPAQUE_REFERENCE.test(value ?? "") && !hasSensitiveValueShape(value);
+const observationCode = (value) => OBSERVATION_CODE.test(value ?? "") && !hasSensitiveValueShape(value);
+const safeEnvironmentValue = (value) => nonempty(value) && value.length <= 128 && ![...value].some((character) => character.codePointAt(0) <= 31 || character.codePointAt(0) === 127) && !hasSensitiveValueShape(value);
+
+function canonicalUtcSecond(value) {
+  if (!CANONICAL_UTC_SECOND.test(value ?? "")) return false;
+  const parsed = new Date(value);
+  return Number.isFinite(parsed.valueOf()) && parsed.toISOString() === `${value.slice(0, -1)}.000Z`;
+}
+
+function canonicalHttpsOrigin(value) {
+  if (typeof value !== "string") return false;
+  try {
+    const parsed = new URL(value);
+    const ipCandidate = parsed.hostname.startsWith("[") && parsed.hostname.endsWith("]") ? parsed.hostname.slice(1, -1) : parsed.hostname;
+    const validDns = parsed.hostname.length <= 253 && parsed.hostname.split(".").every((label) => /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/.test(label));
+    const validHost = isIP(ipCandidate) !== 0 || validDns;
+    return parsed.protocol === "https:" && parsed.username === "" && parsed.password === "" && validHost && parsed.port === "" && parsed.pathname === "/" && parsed.search === "" && parsed.hash === "" && value === parsed.origin;
+  } catch {
+    return false;
+  }
+}
 
 function rejectParticipantPii(value, trail = "evidence") {
   if (Array.isArray(value)) return value.forEach((item, index) => rejectParticipantPii(item, `${trail}[${index}]`));
@@ -86,13 +109,13 @@ function validateParticipant(participant, protocol) {
   const eligibility = participant.eligibility;
   exactKeys(eligibility, ["age18Plus", "languageComfortable", "noWitnessTreeExposure", "nonGis24Months", "noOtherPanel", "consentBeforeTasks"], `${participant.participantId}: eligibility attestations are incomplete or altered.`);
   if (Object.values(eligibility).some((value) => value !== true)) throw new Error(`${participant.participantId}: every eligibility attestation must be explicit true.`);
-  if (participant.consent?.status !== "explicit-recorded" || !opaqueReference(participant.consent?.receiptReference) || participant.consent?.protocolVersion !== protocol.schemaVersion || !iso(participant.consent?.recordedAt)) throw new Error(`${participant.participantId}: explicit consent evidence is missing.`);
+  if (participant.consent?.status !== "explicit-recorded" || !opaqueReference(participant.consent?.receiptReference) || participant.consent?.protocolVersion !== protocol.schemaVersion || !canonicalUtcSecond(participant.consent?.recordedAt)) throw new Error(`${participant.participantId}: explicit consent evidence is missing.`);
   exactKeys(participant.consent, ["status", "receiptReference", "protocolVersion", "recordedAt"], `${participant.participantId}: consent evidence contains missing or unapproved fields.`);
-  if (!iso(participant.sessionStartedAt) || !iso(participant.sessionEndedAt) || Date.parse(participant.sessionEndedAt) <= Date.parse(participant.sessionStartedAt)) throw new Error(`${participant.participantId}: session timestamps are invalid.`);
+  if (!canonicalUtcSecond(participant.sessionStartedAt) || !canonicalUtcSecond(participant.sessionEndedAt) || Date.parse(participant.sessionEndedAt) <= Date.parse(participant.sessionStartedAt)) throw new Error(`${participant.participantId}: session timestamps are invalid.`);
   exact(participant.tasks?.map(({ taskId }) => taskId), TASK_IDS, `${participant.participantId}: all five ordered tasks are required.`);
   for (const task of participant.tasks) {
     exactKeys(task, ["taskId", "startedAt", "endedAt", "completedUnassisted", "assistanceProvided"], `${participant.participantId}/${task.taskId}: task evidence contains missing or unapproved fields.`);
-    if (!iso(task.startedAt) || !iso(task.endedAt) || typeof task.completedUnassisted !== "boolean" || typeof task.assistanceProvided !== "boolean") throw new Error(`${participant.participantId}/${task.taskId}: task evidence is incomplete.`);
+    if (!canonicalUtcSecond(task.startedAt) || !canonicalUtcSecond(task.endedAt) || typeof task.completedUnassisted !== "boolean" || typeof task.assistanceProvided !== "boolean") throw new Error(`${participant.participantId}/${task.taskId}: task evidence is incomplete.`);
     if (Date.parse(task.startedAt) < Date.parse(participant.sessionStartedAt) || Date.parse(task.endedAt) > Date.parse(participant.sessionEndedAt)) throw new Error(`${participant.participantId}/${task.taskId}: task timestamps fall outside the session.`);
   }
   const firstTaskStartedAt = Math.min(...participant.tasks.map((task) => Date.parse(task.startedAt)));
@@ -131,14 +154,14 @@ function validateManualRows(rows, expected, kind) {
   exact(rows.map(({ template, locale, mode }) => ({ template, locale, ...(mode ? { mode } : {}) })), expected, `${kind}: manual scope is missing or reordered.`);
   for (const row of rows) {
     exactKeys(row, ["template", "locale", ...(row.mode ? ["mode"] : []), "evidenceOrigin", "automationGenerated", "testerAttestationReference", "startedAt", "endedAt", "passed", "blockedTasks", "issueIds", "environment"], `${kind}/${row.locale}/${row.template}: manual evidence contains missing or unapproved fields.`);
-    const baseValid = row.evidenceOrigin === "human-manual" && row.automationGenerated === false && opaqueReference(row.testerAttestationReference) && iso(row.startedAt) && iso(row.endedAt) && row.passed === true && row.blockedTasks === 0 && Array.isArray(row.issueIds) && row.issueIds.every((issueId) => /^issue-[a-f0-9]{12}$/.test(issueId));
+    const baseValid = row.evidenceOrigin === "human-manual" && row.automationGenerated === false && opaqueReference(row.testerAttestationReference) && canonicalUtcSecond(row.startedAt) && canonicalUtcSecond(row.endedAt) && Date.parse(row.endedAt) > Date.parse(row.startedAt) && row.passed === true && row.blockedTasks === 0 && Array.isArray(row.issueIds) && row.issueIds.every((issueId) => /^issue-[a-f0-9]{12}$/.test(issueId));
     if (!baseValid) throw new Error(`${kind}/${row.locale}/${row.template}: real manual evidence is incomplete.`);
     if (kind === "screen-reader") {
       exactKeys(row.environment, ["assistiveTechnology", "assistiveTechnologyVersion", "browser", "browserVersion", "operatingSystem", "operatingSystemVersion"], `${kind}/${row.locale}/${row.template}: structured environment is incomplete or altered.`);
       const values = Object.values(row.environment);
-      if (values.some((value) => !nonempty(value) || /(?:test|fixture|placeholder|unknown|n\/a|generic)/i.test(value))) throw new Error(`${kind}/${row.locale}/${row.template}: exact real assistive-technology environment is required.`);
+      if (values.some((value) => !safeEnvironmentValue(value) || /(?:test|fixture|placeholder|unknown|n\/a|generic)/i.test(value))) throw new Error(`${kind}/${row.locale}/${row.template}: exact real assistive-technology environment is required.`);
       if ([row.environment.assistiveTechnologyVersion, row.environment.browserVersion, row.environment.operatingSystemVersion].some((value) => !/\d/.test(value))) throw new Error(`${kind}/${row.locale}/${row.template}: explicit version numbers are required.`);
-    } else if (!nonempty(row.environment)) throw new Error(`${kind}/${row.locale}/${row.template}: environment is required.`);
+    } else if (!safeEnvironmentValue(row.environment)) throw new Error(`${kind}/${row.locale}/${row.template}: environment is required.`);
   }
 }
 
@@ -146,7 +169,7 @@ function validateIssues(issues) {
   if (!Array.isArray(issues)) throw new Error("Issue evidence must be an array.");
   for (const issue of issues) {
     exactKeys(issue, ["issueId", "severity", "observationCode", "observedAt", "status"], "Issue evidence contains missing or unapproved fields.");
-    if (!/^issue-[a-f0-9]{12}$/.test(issue.issueId ?? "") || !SEVERITIES.includes(issue.severity) || !observationCode(issue.observationCode) || !iso(issue.observedAt) || !["open", "resolved", "accepted"].includes(issue.status)) throw new Error("Issue evidence is incomplete or invalid.");
+    if (!/^issue-[a-f0-9]{12}$/.test(issue.issueId ?? "") || !SEVERITIES.includes(issue.severity) || !observationCode(issue.observationCode) || !canonicalUtcSecond(issue.observedAt) || !["open", "resolved", "accepted"].includes(issue.status)) throw new Error("Issue evidence is incomplete or invalid.");
   }
 }
 
@@ -168,7 +191,7 @@ export function validateEvidence(evidence, protocol) {
   }
   if (evidence.status !== "complete" || evidence.completionClaimed !== true || evidence.completionEvidenceOrigin !== "human-and-external") throw new Error("Completion must be supported by human and external evidence.");
   const owner = evidence.ownerInputs;
-  if (!RELEASE_ID.test(owner?.releaseId ?? "") || !nonempty(owner?.studyOwnerName) || !Number.isInteger(owner?.approvedRetentionDays) || owner.approvedRetentionDays < 1 || !CONSENT_FORM_VERSION.test(owner?.consentFormVersion ?? "") || !opaqueReference(owner?.recruitmentApprovalReference) || !opaqueReference(owner?.privacyReviewReference) || !opaqueReference(owner?.fieldPerformanceSamplingDecisionReference) || !Number.isInteger(owner?.fieldPerformanceMinimumSamplesPerLocale) || owner.fieldPerformanceMinimumSamplesPerLocale < 1 || !/^https:\/\/[^/?#]+$/.test(owner?.fieldPerformanceUrlOrigin ?? "") || !iso(owner?.fieldPerformanceWindowStartedAt) || !iso(owner?.fieldPerformanceWindowEndedAt) || Date.parse(owner.fieldPerformanceWindowEndedAt) <= Date.parse(owner.fieldPerformanceWindowStartedAt) || !nonempty(owner?.fieldPerformanceProvider) || !opaqueReference(owner?.fieldPerformanceConfigurationReference)) throw new Error("Required owner-provided execution inputs are incomplete.");
+  if (!RELEASE_ID.test(owner?.releaseId ?? "") || !nonempty(owner?.studyOwnerName) || !Number.isInteger(owner?.approvedRetentionDays) || owner.approvedRetentionDays < 1 || !CONSENT_FORM_VERSION.test(owner?.consentFormVersion ?? "") || !opaqueReference(owner?.recruitmentApprovalReference) || !opaqueReference(owner?.privacyReviewReference) || !opaqueReference(owner?.fieldPerformanceSamplingDecisionReference) || !Number.isInteger(owner?.fieldPerformanceMinimumSamplesPerLocale) || owner.fieldPerformanceMinimumSamplesPerLocale < 1 || !canonicalHttpsOrigin(owner?.fieldPerformanceUrlOrigin) || !canonicalUtcSecond(owner?.fieldPerformanceWindowStartedAt) || !canonicalUtcSecond(owner?.fieldPerformanceWindowEndedAt) || Date.parse(owner.fieldPerformanceWindowEndedAt) <= Date.parse(owner.fieldPerformanceWindowStartedAt) || !safeEnvironmentValue(owner?.fieldPerformanceProvider) || !opaqueReference(owner?.fieldPerformanceConfigurationReference)) throw new Error("Required owner-provided execution inputs are incomplete.");
   validateIssues(evidence.usability.issues);
   if (LOCALES.some((locale) => !Number.isInteger(evidence.usability.excludedCandidateCounts?.[locale]) || evidence.usability.excludedCandidateCounts[locale] < 0)) throw new Error("Excluded-candidate counts must be de-identified locale aggregates.");
   const usability = evaluateUsability(evidence.usability.participants, protocol);
@@ -183,7 +206,7 @@ export function validateEvidence(evidence, protocol) {
   exact(evidence.fieldPerformance.map(({ locale }) => ({ locale })), fieldExpected, "Field-performance locale scope is incomplete.");
   for (const row of evidence.fieldPerformance) {
     exactKeys(row, ["locale", "metric", "statistic", "valueMs", "eligibleSamples", "windowStartedAt", "windowEndedAt", "urlOrigin", "provider", "configurationReference", "samplingDecisionReference", "privacyReviewReference", "aggregateReportReference", "containsParticipantIdentifiers"], `${row.locale}: field-performance evidence contains missing or unapproved fields.`);
-    if (row.metric !== "LCP" || row.statistic !== "p75" || !Number.isFinite(row.valueMs) || row.valueMs >= 2000 || !Number.isInteger(row.eligibleSamples) || row.eligibleSamples < owner.fieldPerformanceMinimumSamplesPerLocale || row.windowStartedAt !== owner.fieldPerformanceWindowStartedAt || row.windowEndedAt !== owner.fieldPerformanceWindowEndedAt || row.urlOrigin !== owner.fieldPerformanceUrlOrigin || row.provider !== owner.fieldPerformanceProvider || row.configurationReference !== owner.fieldPerformanceConfigurationReference || row.samplingDecisionReference !== owner.fieldPerformanceSamplingDecisionReference || row.privacyReviewReference !== owner.privacyReviewReference || !opaqueReference(row.aggregateReportReference) || row.containsParticipantIdentifiers !== false) throw new Error(`${row.locale}: field-performance evidence is incomplete, unbound, or over threshold.`);
+    if (row.metric !== "LCP" || row.statistic !== "p75" || !Number.isFinite(row.valueMs) || row.valueMs >= 2000 || !Number.isInteger(row.eligibleSamples) || row.eligibleSamples < owner.fieldPerformanceMinimumSamplesPerLocale || !canonicalUtcSecond(row.windowStartedAt) || !canonicalUtcSecond(row.windowEndedAt) || row.windowStartedAt !== owner.fieldPerformanceWindowStartedAt || row.windowEndedAt !== owner.fieldPerformanceWindowEndedAt || !canonicalHttpsOrigin(row.urlOrigin) || row.urlOrigin !== owner.fieldPerformanceUrlOrigin || !safeEnvironmentValue(row.provider) || row.provider !== owner.fieldPerformanceProvider || row.configurationReference !== owner.fieldPerformanceConfigurationReference || row.samplingDecisionReference !== owner.fieldPerformanceSamplingDecisionReference || row.privacyReviewReference !== owner.privacyReviewReference || !opaqueReference(row.aggregateReportReference) || row.containsParticipantIdentifiers !== false) throw new Error(`${row.locale}: field-performance evidence is incomplete, unbound, or over threshold.`);
   }
   const review = evidence.outsideAccessibilityReview;
   if (review.status !== "complete" || !nonempty(review.reviewerName) || !nonempty(review.organisation) || !opaqueReference(review.independenceAttestation) || !opaqueReference(review.signedReportReference)) throw new Error("Outside accessibility review attestation is incomplete.");
