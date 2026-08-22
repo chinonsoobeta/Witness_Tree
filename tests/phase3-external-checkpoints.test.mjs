@@ -246,6 +246,12 @@ test("field origin requires an exact canonical HTTPS origin without authority tr
 test("manual environment and provider strings reject non-ASCII, controls and encoded value shapes", () => {
   const cases = [
     ["AT email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant@example.com"; }],
+    ["AT parenthesized-at email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant(at)example.com"; }],
+    ["AT spaced-at email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant at example.com"; }],
+    ["AT spaced-dot email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant at example dot com"; }],
+    ["AT parenthesized-dot email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant(at)example(dot)com"; }],
+    ["AT mixed-case spaced email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant  ( A T )  example  D O T  com"; }],
+    ["AT mixed-case email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "Participant AT Example DOT COM"; }],
     ["AT encoded email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant%40example.com"; }],
     ["AT named entity email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant&commat;example.com"; }],
     ["AT unterminated named entity email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant&commatexample.com"; }],
@@ -253,6 +259,14 @@ test("manual environment and provider strings reject non-ASCII, controls and enc
     ["AT unterminated hex entity email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant&#x40example.com"; }],
     ["browser Unicode email", (copy) => { copy.manualAccessibility.screenReader[0].environment.browser = "participant＠example.com"; }],
     ["browser phone", (copy) => { copy.manualAccessibility.screenReader[0].environment.browser = "+1 604 555 1212"; }],
+    ["browser dotted phone", (copy) => { copy.manualAccessibility.screenReader[0].environment.browser = "604.555.1212"; }],
+    ["browser slashed phone", (copy) => { copy.manualAccessibility.screenReader[0].environment.browser = "604/555/1212"; }],
+    ["browser parenthesized phone", (copy) => { copy.manualAccessibility.screenReader[0].environment.browser = "(604) 555-1212"; }],
+    ["browser alternate-parentheses phone", (copy) => { copy.manualAccessibility.screenReader[0].environment.browser = "604 (555) (1212)"; }],
+    ["browser leading-one phone", (copy) => { copy.manualAccessibility.screenReader[0].environment.browser = "1/604/555/1212"; }],
+    ["browser parenthesized-one phone", (copy) => { copy.manualAccessibility.screenReader[0].environment.browser = "(1) 604 555 1212"; }],
+    ["browser tel phone", (copy) => { copy.manualAccessibility.screenReader[0].environment.browser = "tel 604.555.1212"; }],
+    ["browser mixed-case tel phone", (copy) => { copy.manualAccessibility.screenReader[0].environment.browser = "TeL.  1 (604) 555/1212"; }],
     ["browser Arabic-Indic phone", (copy) => { copy.manualAccessibility.screenReader[0].environment.browser = "+١ ٦٠٤ ٥٥٥ ١٢١٢"; }],
     ["OS Unicode phone", (copy) => { copy.manualAccessibility.screenReader[0].environment.operatingSystem = "＋１ ６０４ ５５５ １２１２"; }],
     ["browser C1 control", (copy) => { copy.manualAccessibility.screenReader[0].environment.browser = "Chrome \u0085 Safari"; }],
@@ -283,6 +297,8 @@ test("technical environment allowlist accepts its exact printable-ASCII boundary
   }
   const copy = completeEvidence();
   copy.manualAccessibility.keyboard[0].environment = "Chrome_151+stable (macOS)/arm64";
+  assert.doesNotThrow(() => validateEvidence(copy, protocol));
+  copy.manualAccessibility.keyboard[0].environment = "Chrome at version 151.0";
   assert.doesNotThrow(() => validateEvidence(copy, protocol));
 });
 
