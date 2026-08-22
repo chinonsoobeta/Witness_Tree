@@ -126,3 +126,13 @@ test("completed state cannot substitute a remote checksum for the approved local
   const remote = { versionId: "version-1", checksumType: "FULL_OBJECT", checksumSha256: Buffer.from("not-the-approved-checksum").toString("base64") };
   assert.throws(() => verifyRemoteObject(plan, entry, remote, () => { throw new Error("AWS must not be called"); }, {}), /state checksum is not bound/);
 });
+
+test("multipart completion accepts the provider composite checksum form", () => {
+  const entry = { id: "sheet-22F", ...plan.archiveSet.payloads.find((item) => item.byteLength > plan.upload.multipartThresholdBytes) };
+  const composite = `${Buffer.from(entry.sha256, "hex").toString("base64")}-6`;
+  const remote = { versionId: "version-1", checksumType: "COMPOSITE", checksumSha256: composite, expectedChecksumSha256: composite };
+  const invoke = (args) => args[1] === "head-object"
+    ? { ContentLength: entry.byteLength, VersionId: remote.versionId, ChecksumType: remote.checksumType, ChecksumSHA256: composite }
+    : { Retention: { Mode: "COMPLIANCE", RetainUntilDate: "2033-08-12T00:00:00Z" } };
+  assert.equal(verifyRemoteObject(plan, entry, remote, invoke, {}), remote);
+});

@@ -33,6 +33,7 @@ const iso = (value) => new Date(value).toISOString();
 const PRIVATE_DIRECTORY_MODE = 0o700;
 const PRIVATE_FILE_MODE = 0o600;
 const BASE64_SHA256 = /^[A-Za-z0-9+/]{43}=$/;
+const COMPOSITE_SHA256 = /^[A-Za-z0-9+/]{43}=-[1-9][0-9]*$/;
 
 function ownerUid() {
   assert.equal(typeof process.getuid, "function", "Owner-controlled paths require a POSIX owner identity.");
@@ -280,7 +281,7 @@ export function verifyRemoteObject(plan, entry, remote, invoke, env) {
   assert.ok(typeof remote.versionId === "string" && remote.versionId.length > 0 && remote.versionId !== "null", `${entry.id} remote VersionId is missing.`);
   const multipart = entry.byteLength > plan.upload.multipartThresholdBytes;
   const expectedChecksum = multipart ? remote.expectedChecksumSha256 : base64Sha256(entry.sha256);
-  assert.ok(typeof expectedChecksum === "string" && BASE64_SHA256.test(expectedChecksum), `${entry.id} expected provider checksum is missing.`);
+  assert.ok(typeof expectedChecksum === "string" && (multipart ? COMPOSITE_SHA256 : BASE64_SHA256).test(expectedChecksum), `${entry.id} expected provider checksum is missing.`);
   assert.equal(remote.checksumType, multipart ? "COMPOSITE" : "FULL_OBJECT", `${entry.id} checksum type is not bound to the approved upload method.`);
   assert.equal(remote.checksumSha256, expectedChecksum, `${entry.id} state checksum is not bound to the approved local bytes.`);
   const head = s3(invoke, env, ["head-object", "--bucket", plan.bucket, "--key", entry.objectKey, "--version-id", remote.versionId, "--checksum-mode", "ENABLED"]);
