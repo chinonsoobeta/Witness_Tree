@@ -96,6 +96,7 @@ test("owner-local runner is multipart-only and excludes high-level copies, delet
   assert.match(runner, /PRECHECK passed[\s\S]*read -r -s/);
   assert.match(runner, /create-multipart-upload[\s\S]*upload-part[\s\S]*complete-multipart-upload/);
   assert.match(runner, /list-parts[\s\S]*Previously uploaded part does not match/);
+  assert.equal((runner.match(/list-parts[^\n]*--cli-error-format legacy/g) ?? []).length, 2);
   assert.match(runner, /ChecksumType=="COMPOSITE"[\s\S]*put-object-retention[\s\S]*get-object-retention/);
   assert.doesNotMatch(runner, /aws s3 cp|DeleteObject|BypassGovernanceRetention|PutObjectLegalHold|aws iam /i);
   assert.match(runner, /aws configure get mfa_serial --profile/);
@@ -175,7 +176,7 @@ case "$1:$2" in
   sts:get-caller-identity) print -- '{"Account":"286853118812","Arn":"arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator"}' ;;
   s3api:list-parts)
     behavior="$(<${JSON.stringify(behavior)})"
-    if [[ "$behavior" == "ambiguous" ]]; then print -u2 -- $'An error occurred (NoSuchUpload) when calling the ListParts operation: The specified upload does not exist.\nAccessDenied from proxy'; else print -u2 -- 'An error occurred (NoSuchUpload) when calling the ListParts operation: The specified upload does not exist.'; fi
+    if [[ "$behavior" == "ambiguous" ]]; then print -u2 -- $'An error occurred (NoSuchUpload) when calling the ListParts operation: The specified upload does not exist.\nAccessDenied from proxy'; elif [[ "$*" == *"--cli-error-format legacy"* ]]; then print -u2 -- 'An error occurred (NoSuchUpload) when calling the ListParts operation: The specified upload does not exist.'; else print -u2 -- $'An error occurred (NoSuchUpload) when calling the ListParts operation: The specified upload does not exist.\n\nError Code: NoSuchUpload\nRequest ID: redacted'; fi
     exit 254 ;;
   s3api:head-object)
     key=""; while (( $# )); do if [[ "$1" == "--key" ]]; then key="$2"; break; fi; shift; done

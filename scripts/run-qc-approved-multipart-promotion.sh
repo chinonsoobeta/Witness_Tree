@@ -105,7 +105,7 @@ promote_one() {
   if [[ -n "$upload_id" ]]; then
     [[ "$(jq -r '.initiation' "$state")" == "accepted" && -n "$sidecar_version" ]] || fail "Saved multipart state lacks its exact accepted sidecar version; state was preserved and no upload or overwrite was attempted" 75
     list_error="$TMP/${id}.list-parts.stderr"
-    if ! list="$(aws s3api list-parts --bucket "$BUCKET" --key "$payload" --upload-id "$upload_id" --region "$REGION" --output json 2>"$list_error")"; then
+    if ! list="$(aws s3api list-parts --bucket "$BUCKET" --key "$payload" --upload-id "$upload_id" --region "$REGION" --output json --cli-error-format legacy 2>"$list_error")"; then
       is_unambiguous_nosuchupload "$list_error" || fail "Cannot unambiguously classify the approved multipart state; no sidecar or payload write was attempted" 70
       no_such_upload=true
     fi
@@ -132,7 +132,7 @@ promote_one() {
     upload_id="$(jq -r '.UploadId // empty' <<<"$initiated")"; [[ -n "$upload_id" ]] || fail "Multipart initiation acknowledgement lacks an upload ID; state prevents a duplicate upload" 70
     state_update "$state" '.initiation="accepted" | .uploadId=$uploadId' --arg uploadId "$upload_id"
     list_error="$TMP/${id}.list-parts.stderr"
-    list="$(aws s3api list-parts --bucket "$BUCKET" --key "$payload" --upload-id "$upload_id" --region "$REGION" --output json 2>"$list_error")" || fail "Cannot read newly accepted multipart state; no part was sent" 70
+    list="$(aws s3api list-parts --bucket "$BUCKET" --key "$payload" --upload-id "$upload_id" --region "$REGION" --output json --cli-error-format legacy 2>"$list_error")" || fail "Cannot read newly accepted multipart state; no part was sent" 70
   fi
 
   if [[ "$no_such_upload" == true ]]; then
