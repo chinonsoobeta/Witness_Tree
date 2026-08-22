@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
-import { chmodSync, existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { chmodSync, existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
-import { assembleQcAttestation, normalizeQcOperatorIdentity } from "../scripts/assemble-qc-immutable-promotion-attestation.mjs";
+import { assembleQcAttestation, normalizeQcOperatorIdentity, writeExclusiveMode600 } from "../scripts/assemble-qc-immutable-promotion-attestation.mjs";
 import { redactQcAttestation, validatePendingQcAttestation, validateQcAttestationPair } from "../scripts/check-qc-immutable-promotion-attestation.mjs";
 import { sidecarFor } from "../scripts/prepare-qc-immutable-promotion.mjs";
 
@@ -58,6 +58,7 @@ test("owner-run transcript assembles four exact objects into a mode-600 digest-b
     assert.equal(JSON.stringify(pair.publicRecord).includes("private-upload"), false);
     assert.equal(pair.publicRecord.objects.some((object) => "versionId" in object || "providerValue" in object), false);
     assert.deepEqual(pair.privateRecord.recoveryBoundary, { multipartResumeStatePreserved: true, replicaCreated: false, replicaAuthorized: false, meaning: "Private multipart state supports interrupted-run diagnosis/resume only; no recovery replica was approved or proved." });
+    assert.deepEqual(readdirSync(paths.dir).sort(), ["capture", "private.json", "public.json"]);
   } finally { rmSync(paths.dir, { recursive: true, force: true }); }
 });
 
@@ -109,6 +110,66 @@ test("provider identifier mismatch fails closed without rendering the provider v
     assert.equal(existsSync(paths.privatePath), false);
     assert.equal(existsSync(paths.publicPath), false);
   } finally { rmSync(paths.dir, { recursive: true, force: true }); }
+});
+
+test("provider-shaped direct failures never render version, checksum, retention, or raw state values", async () => {
+  const cases = [
+    ["uploadId", (state, head, manifest, retention, secret) => { state.uploadId = { secret }; }],
+    ["payloadVersionId", (state, head, manifest, retention, secret) => { state.payloadVersionId = secret; }],
+    ["sidecarVersionId", (state, head, manifest, retention, secret) => { state.sidecarVersionId = secret; }],
+    ["compositeChecksumSha256", (state, head, manifest, retention, secret) => { state.compositeChecksumSha256 = secret; }],
+    ["payloadHeadVersionId", (state, head, manifest, retention, secret) => { head.VersionId = secret; }],
+    ["payloadHeadChecksum", (state, head, manifest, retention, secret) => { head.ChecksumSHA256 = secret; }],
+    ["manifestHeadVersionId", (state, head, manifest, retention, secret) => { manifest.VersionId = secret; }],
+    ["manifestHeadChecksum", (state, head, manifest, retention, secret) => { manifest.ChecksumSHA256 = secret; }],
+    ["retentionMode", (state, head, manifest, retention, secret) => { retention.Retention.Mode = secret; }],
+    ["retentionDate", (state, head, manifest, retention, secret) => { retention.Retention.RetainUntilDate = secret; }],
+    ["statePayloadKey", (state, head, manifest, retention, secret) => { state.payloadKey = secret; }]
+  ];
+  for (const [label, mutate] of cases) {
+    const paths = await fixture();
+    try {
+      const secret = `PRIVATE_PROVIDER_${label}_MUST_NOT_RENDER`;
+      const artifact = plan.artifacts[0]; const statePath = join(paths.capture, `${artifact.id}.state.json`); const payloadPath = join(paths.capture, `${artifact.id}.payload-head.json`); const manifestPath = join(paths.capture, `${artifact.id}.manifest-head.json`); const retentionPath = join(paths.capture, `${artifact.id}.retention.json`);
+      const state = JSON.parse(readFileSync(statePath, "utf8")); const head = JSON.parse(readFileSync(payloadPath, "utf8")); const manifest = JSON.parse(readFileSync(manifestPath, "utf8")); const retention = JSON.parse(readFileSync(retentionPath, "utf8"));
+      mutate(state, head, manifest, retention, secret);
+      writeFileSync(statePath, JSON.stringify(state), { mode: 0o600 }); writeFileSync(payloadPath, JSON.stringify(head), { mode: 0o600 }); writeFileSync(manifestPath, JSON.stringify(manifest), { mode: 0o600 }); writeFileSync(retentionPath, JSON.stringify(retention), { mode: 0o600 });
+      assert.throws(() => assembleQcAttestation({ root, captureDirectory: paths.capture, privatePath: paths.privatePath, publicPath: paths.publicPath }), (error) => {
+        assert.equal(error.message.includes(secret), false, label);
+        return true;
+      });
+      assert.equal(existsSync(paths.privatePath), false, label);
+      assert.equal(existsSync(paths.publicPath), false, label);
+    } finally { rmSync(paths.dir, { recursive: true, force: true }); }
+  }
+});
+
+test("direct assembly refuses an existing target, including a symlink, without changing it", async () => {
+  const paths = await fixture();
+  try {
+    const sentinel = "EXISTING_PRIVATE_ATTESTATION_MUST_REMAIN";
+    writeFileSync(paths.privatePath, sentinel, { mode: 0o600 });
+    assert.throws(() => assembleQcAttestation({ root, captureDirectory: paths.capture, privatePath: paths.privatePath, publicPath: paths.publicPath }), /already exists; refusing overwrite/);
+    assert.equal(readFileSync(paths.privatePath, "utf8"), sentinel);
+    assert.equal(existsSync(paths.publicPath), false);
+    assert.deepEqual(readdirSync(paths.dir).sort(), ["capture", "private.json"]);
+    rmSync(paths.privatePath);
+    const symlinkTarget = join(paths.dir, "symlink-target"); writeFileSync(symlinkTarget, "SYMLINK_TARGET_MUST_REMAIN", { mode: 0o600 }); symlinkSync(symlinkTarget, paths.publicPath);
+    assert.throws(() => assembleQcAttestation({ root, captureDirectory: paths.capture, privatePath: paths.privatePath, publicPath: paths.publicPath }), /already exists; refusing overwrite/);
+    assert.equal(readFileSync(symlinkTarget, "utf8"), "SYMLINK_TARGET_MUST_REMAIN");
+    assert.deepEqual(readdirSync(paths.dir).sort(), ["capture", "public.json", "symlink-target"]);
+  } finally { rmSync(paths.dir, { recursive: true, force: true }); }
+});
+
+test("exclusive link race fails closed and removes only its owned temporary file", () => {
+  const dir = mkdtempSync(join(tmpdir(), "qc-attestation-output-race-")); const output = join(dir, "attestation.json");
+  try {
+    assert.throws(() => writeExclusiveMode600(output, { claims: { exactReadbacksVerified: true } }, {
+      beforeLink: () => writeFileSync(output, "RACING_TARGET_MUST_WIN", { mode: 0o600, flag: "wx" })
+    }), /already exists; refusing overwrite/);
+    assert.equal(readFileSync(output, "utf8"), "RACING_TARGET_MUST_WIN");
+    assert.deepEqual(readdirSync(dir), ["attestation.json"]);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
 test("booleans, placeholders, plausible substitutions, digest drift and unsafe private modes fail closed", async () => {
