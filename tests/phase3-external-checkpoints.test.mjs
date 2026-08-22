@@ -247,9 +247,17 @@ test("manual environment and provider strings reject non-ASCII, controls and enc
   const cases = [
     ["AT email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant@example.com"; }],
     ["AT parenthesized-at email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant(at)example.com"; }],
+    ["AT hyphenated-at email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant-at-example.com"; }],
+    ["AT underscored-at email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant_at_example.com"; }],
+    ["AT plus-at email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant+at+example.com"; }],
+    ["AT slashed-at email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant/at/example.com"; }],
+    ["AT dotted-at email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant.at.example.com"; }],
     ["AT spaced-at email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant at example.com"; }],
     ["AT spaced-dot email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant at example dot com"; }],
     ["AT parenthesized-dot email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant(at)example(dot)com"; }],
+    ["AT parenthesized-dot split-TLD email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant(at)example(dot)c o m"; }],
+    ["AT spaced-dot split-TLD email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant at example dot c o m"; }],
+    ["AT mixed-case split-TLD email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "Participant.AT.Example DOT C O M"; }],
     ["AT mixed-case spaced email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant  ( A T )  example  D O T  com"; }],
     ["AT mixed-case email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "Participant AT Example DOT COM"; }],
     ["AT encoded email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant%40example.com"; }],
@@ -260,6 +268,9 @@ test("manual environment and provider strings reject non-ASCII, controls and enc
     ["browser Unicode email", (copy) => { copy.manualAccessibility.screenReader[0].environment.browser = "participant＠example.com"; }],
     ["browser phone", (copy) => { copy.manualAccessibility.screenReader[0].environment.browser = "+1 604 555 1212"; }],
     ["browser dotted phone", (copy) => { copy.manualAccessibility.screenReader[0].environment.browser = "604.555.1212"; }],
+    ["browser word-dot phone", (copy) => { copy.manualAccessibility.screenReader[0].environment.browser = "604 dot 555 dot 1212"; }],
+    ["browser joined-word-dot phone", (copy) => { copy.manualAccessibility.screenReader[0].environment.browser = "604DOT555DOT1212"; }],
+    ["browser mixed-case-word-dot phone", (copy) => { copy.manualAccessibility.screenReader[0].environment.browser = "604  DoT  555 d O t 1212"; }],
     ["browser slashed phone", (copy) => { copy.manualAccessibility.screenReader[0].environment.browser = "604/555/1212"; }],
     ["browser parenthesized phone", (copy) => { copy.manualAccessibility.screenReader[0].environment.browser = "(604) 555-1212"; }],
     ["browser alternate-parentheses phone", (copy) => { copy.manualAccessibility.screenReader[0].environment.browser = "604 (555) (1212)"; }],
@@ -300,6 +311,10 @@ test("technical environment allowlist accepts its exact printable-ASCII boundary
   assert.doesNotThrow(() => validateEvidence(copy, protocol));
   copy.manualAccessibility.keyboard[0].environment = "Chrome at version 151.0";
   assert.doesNotThrow(() => validateEvidence(copy, protocol));
+  for (const value of ["participant-atlas 1.2", "Chrome.at.version.151.0", "RUM_dot_product 604.55.12", "AT+Adapter/Version 1.2"]) {
+    copy.manualAccessibility.keyboard[0].environment = value;
+    assert.doesNotThrow(() => validateEvidence(copy, protocol), value);
+  }
 });
 
 test("recursive completed schema rejects arbitrary fields, fabricated results, and PII aliases", () => {
