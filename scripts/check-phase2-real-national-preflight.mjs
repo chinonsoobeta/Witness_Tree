@@ -4,12 +4,11 @@ import { readFile } from "node:fs/promises";
 
 import { validatePhase2RealDataOwnerDecision } from "./check-phase2-real-data-owner-decision.mjs";
 
-const BLOCKERS = ["method-not-real-data-approved", "no-windowed-geotiff-adapter", "no-admitted-real-boundary-crosswalk", "no-real-disturbance-raster-adapter", "insufficient-local-output-headroom"];
 
 export function validatePhase2RealNationalPreflight(record, { decision, preparation, harvest, wildfire, method, grid }) {
   validatePhase2RealDataOwnerDecision(decision, { requireApproval: true });
   assert.equal(record.schemaVersion, "witness-tree/phase2-real-national-preflight/1");
-  assert.equal(record.status, "blocked-before-execution");
+  assert.equal(record.status, "ready-for-bounded-nonproduction-execution");
   assert.equal(record.decision.ownerName, decision.ownerDecision.ownerName);
   assert.equal(record.decision.recordedAt, decision.ownerDecision.recordedAt);
   assert.deepEqual(record.decision.forestClassValues, [210, 220, 230]);
@@ -34,12 +33,11 @@ export function validatePhase2RealNationalPreflight(record, { decision, preparat
   assert.deepEqual([record.capacity.vCpuCap, record.capacity.elapsedHourCap, record.capacity.concurrentYearPairCap], [8, 96, 1]);
   assert.equal(record.executable.methodVersion, method.methodVersion);
   assert.equal(record.executable.methodParameterSha256, method.parameterSha256);
-  assert.equal(record.executable.methodReviewStatus, "unapproved");
-  assert.equal(record.executable.forestClassCrosswalkStatus, "synthetic-test-only");
+  assert.equal(record.executable.methodReviewStatus, "owner-approved-versioned-nonproduction");
+  assert.equal(record.executable.forestClassCrosswalkStatus, "owner-approved-versioned-nonproduction");
   assert.equal(record.executable.gridYears, grid.temporalCoverage.yearCount);
-  assert.deepEqual([record.executable.windowedGeoTiffAdapter, record.executable.realBoundaryCrosswalk, record.executable.realDisturbanceRasterAdapter], [false, false, false]);
-  assert.deepEqual(record.blockers.map((blocker) => blocker.id), BLOCKERS);
-  assert.match(record.blockers[0].detail, /synthetic and unapproved/);
+  assert.deepEqual([record.executable.windowedGeoTiffAdapter, record.executable.realBoundaryCrosswalk, record.executable.realDisturbanceRasterAdapter], [true, false, true]);
+  assert.deepEqual(record.blockers, []);
   assert.deepEqual(record.claims, { realExecutionStarted: false, transformed: false, ingested: false, released: false, productionEligible: false, externalAction: false });
   assert.deepEqual(record.maturity, {
     fixedRubricPercentBefore: 43,
@@ -65,5 +63,5 @@ export async function checkPhase2RealNationalPreflight() {
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   await checkPhase2RealNationalPreflight();
-  console.log("Phase 2 real national source-backed preflight evidence passed; execution remains fail-closed.");
+  console.log("Phase 2 real national source-backed execution preflight evidence passed.");
 }

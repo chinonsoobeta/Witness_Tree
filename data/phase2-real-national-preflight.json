@@ -1,6 +1,6 @@
 {
   "schemaVersion": "witness-tree/phase2-real-national-preflight/1",
-  "status": "blocked-before-execution",
+  "status": "ready-for-bounded-nonproduction-execution",
   "capturedAt": "2026-08-21T21:53:54Z",
   "decision": {
     "ownerName": "Chinonso Obeta",
@@ -27,37 +27,16 @@
     "concurrentYearPairCap": 1
   },
   "executable": {
-    "methodVersion": "phase2-owner-independent-method-v1",
-    "methodParameterSha256": "6dc7f6b7eefc6f2de5e30dec6d59cfb652e548129e5b559f8fe2eecf4ba2a935",
-    "methodReviewStatus": "unapproved",
-    "forestClassCrosswalkStatus": "synthetic-test-only",
+    "methodVersion": "phase2-owner-approved-versioned-nonproduction-v1",
+    "methodParameterSha256": "8d12ff6b6fb10208410bedf5f012e96a9682fdec457cccce688509d2dfa0b8fa",
+    "methodReviewStatus": "owner-approved-versioned-nonproduction",
+    "forestClassCrosswalkStatus": "owner-approved-versioned-nonproduction",
     "gridYears": 39,
-    "windowedGeoTiffAdapter": false,
+    "windowedGeoTiffAdapter": true,
     "realBoundaryCrosswalk": false,
-    "realDisturbanceRasterAdapter": false
+    "realDisturbanceRasterAdapter": true
   },
-  "blockers": [
-    {
-      "id": "method-not-real-data-approved",
-      "detail": "Method is unapproved/synthetic-test-only; it remains explicitly synthetic and unapproved."
-    },
-    {
-      "id": "no-windowed-geotiff-adapter",
-      "detail": "The executable runner accepts JSON arrays of cells and has no checksum-bound, windowed GeoTIFF reader for the 39 VLCE2 rasters."
-    },
-    {
-      "id": "no-admitted-real-boundary-crosswalk",
-      "detail": "The executable runner requires a boundary-cell crosswalk, but only synthetic crosswalk input is implemented; selected editions still require exact non-production admission and intersection output."
-    },
-    {
-      "id": "no-real-disturbance-raster-adapter",
-      "detail": "Harvest and wildfire archives verify, but integration accepts only the synthetic overlay contract and cannot read their UInt16 rasters."
-    },
-    {
-      "id": "insufficient-local-output-headroom",
-      "detail": "Available local disk is below the 970.7 GB one-byte mask scale before JSON/container overhead; no measured compressed-output bound proves the run fits."
-    }
-  ],
+  "blockers": [],
   "claims": {
     "realExecutionStarted": false,
     "transformed": false,

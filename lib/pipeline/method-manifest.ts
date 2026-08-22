@@ -21,7 +21,7 @@ export type MethodParameters = Readonly<{
   }>;
   precedence: readonly PrecedenceEventKind[];
   mask: Readonly<{
-    forestClassCrosswalkStatus: "synthetic-test-only";
+    forestClassCrosswalkStatus: "synthetic-test-only" | "owner-approved-versioned-nonproduction";
     forestClassValues: readonly number[];
     nodataPolicy: "preserve";
     implicitReprojection: "forbidden";
@@ -51,8 +51,8 @@ export type MethodParameterManifest = Readonly<{
   schemaVersion: 1;
   methodVersion: string;
   parameterSha256: string;
-  reviewStatus: "unapproved";
-  scope: "owner-independent-phase2-method-contract";
+  reviewStatus: "unapproved" | "owner-approved-versioned-nonproduction";
+  scope: "owner-independent-phase2-method-contract" | "versioned-nonproduction-national-processing";
   productionEligible: false;
   parameters: MethodParameters;
 }>;
@@ -107,8 +107,10 @@ function integerAtLeast(value: number, minimum: number, label: string): void {
 
 export function validateMethodManifest(manifest: MethodParameterManifest): MethodParameterIdentity {
   if (manifest.schemaVersion !== 1 || !manifest.methodVersion.trim()) throw new Error("Method manifest requires schema version 1 and a method version.");
-  if (manifest.reviewStatus !== "unapproved" || manifest.scope !== "owner-independent-phase2-method-contract" || manifest.productionEligible !== false) {
-    throw new Error("Owner-independent method parameters must remain unapproved and non-production.");
+  const synthetic = manifest.reviewStatus === "unapproved" && manifest.scope === "owner-independent-phase2-method-contract";
+  const approved = manifest.reviewStatus === "owner-approved-versioned-nonproduction" && manifest.scope === "versioned-nonproduction-national-processing";
+  if ((!synthetic && !approved) || manifest.productionEligible !== false) {
+    throw new Error("Method review status and scope must form an exact non-production pair.");
   }
 
   const { matching, precedence, mask, vectorization, aggregation, boundary } = manifest.parameters;
@@ -123,9 +125,11 @@ export function validateMethodManifest(manifest: MethodParameterManifest): Metho
   if (precedence.length !== PRECEDENCE_KINDS.size || new Set(precedence).size !== precedence.length || precedence.some((kind) => !PRECEDENCE_KINDS.has(kind))) {
     throw new Error("Precedence must contain every registered event kind exactly once.");
   }
-  if (mask.forestClassCrosswalkStatus !== "synthetic-test-only" || mask.forestClassValues.length === 0 || new Set(mask.forestClassValues).size !== mask.forestClassValues.length || mask.forestClassValues.some((value) => !Number.isSafeInteger(value))) {
+  const expectedCrosswalkStatus = approved ? "owner-approved-versioned-nonproduction" : "synthetic-test-only";
+  if (mask.forestClassCrosswalkStatus !== expectedCrosswalkStatus || mask.forestClassValues.length === 0 || new Set(mask.forestClassValues).size !== mask.forestClassValues.length || mask.forestClassValues.some((value) => !Number.isSafeInteger(value))) {
     throw new Error("Mask forest classes must be non-empty, unique integers.");
   }
+  if (approved && JSON.stringify(mask.forestClassValues) !== "[210,220,230]") throw new Error("The approved conservative crosswalk must contain only classes 210, 220, and 230.");
   if (mask.nodataPolicy !== "preserve" || mask.implicitReprojection !== "forbidden") throw new Error("Mask nodata and reprojection policies are invalid.");
 
   if (![4, 8].includes(vectorization.connectivity)) throw new Error("Vectorization connectivity must be 4 or 8.");

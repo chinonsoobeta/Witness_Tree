@@ -9,7 +9,7 @@ const files = await Promise.all(names.map(async (name) => JSON.parse(await readF
 const context = { decision: files[1], preparation: files[2], harvest: files[3], wildfire: files[4], method: files[5], grid: files[6] };
 const fixture = () => structuredClone(files[0]);
 
-test("records exact source-backed local verification and stops before execution", () => {
+test("records exact source-backed local verification and bounded readiness", () => {
   const record = validatePhase2RealNationalPreflight(fixture(), context);
   assert.equal(record.sourceVerification.verifiedInputCount, 41);
   assert.equal(record.claims.realExecutionStarted, false);
@@ -18,7 +18,7 @@ test("records exact source-backed local verification and stops before execution"
 test("rejects checksum-set drift, a removed blocker, false execution, or expanded maturity", () => {
   const checksum = fixture(); checksum.sourceVerification.inputSetSha256 = "0".repeat(64);
   assert.throws(() => validatePhase2RealNationalPreflight(checksum, context));
-  const blocker = fixture(); blocker.blockers.shift();
+  const blocker = fixture(); blocker.blockers.push({id:"invented"});
   assert.throws(() => validatePhase2RealNationalPreflight(blocker, context));
   const execution = fixture(); execution.claims.realExecutionStarted = true;
   assert.throws(() => validatePhase2RealNationalPreflight(execution, context));

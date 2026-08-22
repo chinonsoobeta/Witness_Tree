@@ -80,7 +80,7 @@ test("every method family contributes to the canonical parameter hash", () => {
 
 test("manifest fails closed on approval, production, incomplete precedence, and invalid numeric parameters", () => {
   const manifest = fixture();
-  assert.throws(() => validateMethodManifest({ ...manifest, reviewStatus: "approved" as never }), /unapproved/);
+  assert.throws(() => validateMethodManifest({ ...manifest, reviewStatus: "approved" as never }), /exact non-production pair/);
   assert.throws(() => validateMethodManifest({ ...manifest, productionEligible: true as false }), /non-production/);
   assert.throws(() => validateMethodManifest({ ...manifest, parameterSha256: "0".repeat(64) }), /does not match/);
   assert.throws(() => validateMethodManifest({ ...manifest, parameters: { ...manifest.parameters, precedence: PRECEDENCE_ORDER.slice(1) } }), /every registered/);

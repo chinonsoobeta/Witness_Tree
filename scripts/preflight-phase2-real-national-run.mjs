@@ -66,7 +66,7 @@ export async function sourceBackedPhase2RealNationalPreflight(dataRoot, captured
   const availableBytes = disk.bavail * disk.bsize;
   const configuredCapBytes = decision.computePlan.proposedHardCaps.localTemporaryAndDerivedGiB * GIB;
   const uncompressedMaskBytes = decision.computePlan.scaleBounds.bytePerCellAnnualMasksBeforeCompression;
-  const methodRealDataReady = method.reviewStatus === "approved-nonproduction" && method.parameters.mask.forestClassCrosswalkStatus === "owner-approved-nonproduction";
+  const methodRealDataReady = method.reviewStatus === "owner-approved-versioned-nonproduction" && method.parameters.mask.forestClassCrosswalkStatus === "owner-approved-versioned-nonproduction";
   const blockers = [
     ...(!methodRealDataReady ? [{ id: "method-not-real-data-approved", detail: `Method is ${method.reviewStatus}/${method.parameters.mask.forestClassCrosswalkStatus}; it remains explicitly synthetic and unapproved.` }] : []),
     { id: "no-windowed-geotiff-adapter", detail: "The executable runner accepts JSON arrays of cells and has no checksum-bound, windowed GeoTIFF reader for the 39 VLCE2 rasters." },

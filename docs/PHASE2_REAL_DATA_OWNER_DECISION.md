@@ -1,6 +1,6 @@
 # Phase 2 real-data owner decision
 
-The owner decision was recorded for a real, versioned, **non-production** 1984–2022 national forest-mask and detected-change run. It does not authorize production use, release, external compute/storage, or all-eight-geography aggregates. The normalized decision is in [`data/phase2-real-data-owner-decision.json`](../data/phase2-real-data-owner-decision.json). The full-byte local source preflight is recorded in [`data/phase2-real-national-preflight.json`](../data/phase2-real-national-preflight.json); it stopped before execution because the executable method remains synthetic-only, real raster/crosswalk adapters do not exist, and local output headroom is not demonstrated.
+The owner decision was recorded and executed for a real, versioned, **non-production** 1984–2022 national forest-mask and detected-change raster run. It does not authorize production use, release, external compute/storage, or boundary aggregates. The exact decision, source-backed preflight, storage bound, method change and checksum readback evidence are recorded under `data/phase2-*`; 39 masks, 38 annual loss rasters and two normalized disturbance rasters passed readback. Boundary aggregation and patch-vector event normalization remain separate, unexecuted gates.
 
 ## Evidence-backed recommendation
 

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "methodVersion": "phase2-owner-independent-method-v1",
-  "parameterSha256": "6dc7f6b7eefc6f2de5e30dec6d59cfb652e548129e5b559f8fe2eecf4ba2a935",
-  "reviewStatus": "unapproved",
-  "scope": "owner-independent-phase2-method-contract",
+  "methodVersion": "phase2-owner-approved-versioned-nonproduction-v1",
+  "parameterSha256": "8d12ff6b6fb10208410bedf5f012e96a9682fdec457cccce688509d2dfa0b8fa",
+  "reviewStatus": "owner-approved-versioned-nonproduction",
+  "scope": "versioned-nonproduction-national-processing",
   "productionEligible": false,
   "parameters": {
     "matching": {
@@ -21,7 +21,7 @@
       "unmatched-detected-change"
     ],
     "mask": {
-      "forestClassCrosswalkStatus": "synthetic-test-only",
+      "forestClassCrosswalkStatus": "owner-approved-versioned-nonproduction",
       "forestClassValues": [210, 220, 230],
       "nodataPolicy": "preserve",
       "implicitReprojection": "forbidden"
