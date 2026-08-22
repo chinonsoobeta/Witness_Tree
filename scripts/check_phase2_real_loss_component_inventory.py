@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+from bisect import bisect_right
 import hashlib
 import json
 import os
@@ -115,6 +116,142 @@ def load_source_map(repository_root: Path) -> list[tuple[int, int, str]]:
     return [(exact_int(row[0], "from year"), exact_int(row[1], "to year"), row[2]) for row in pairs]
 
 
+class ComponentGraphReplay:
+    """Replay component lifecycle with memory bounded to active state and two rows."""
+
+    def __init__(self, path: Path) -> None:
+        self.path = path
+        self.active: dict[int, list[int]] = {}
+        self.current_row: int | None = None
+        self.row_runs: list[tuple[int, int, int]] = []
+        self.previous_runs: list[tuple[int, int, int]] = []
+        self.previous_starts: list[int] = []
+        self.aliases: dict[tuple[int, int, int], bool] = {}
+        self.alias_targets: dict[tuple[int, int], int] = {}
+        self.run_digest = hashlib.sha256()
+        self.run_cells = 0
+        self.component_cells = 0
+        self.run_count = 0
+        self.alias_count = 0
+        self.component_count = 0
+
+    def _finish_run_row(self) -> None:
+        previous_x1 = -1
+        for x0, x1, _ in sorted(self.row_runs):
+            if x0 <= previous_x1:
+                fail(f"loss runs overlap or duplicate within a row: {self.path.name}")
+            self.run_digest.update(f"{self.current_row}:{x0}:{x1}\n".encode())
+            previous_x1 = x1
+
+    def _finish_alias_rows_before(self, row: int) -> None:
+        for edge, used in list(self.aliases.items()):
+            if edge[0] >= row:
+                continue
+            if not used:
+                fail(f"component alias is unrelated to any connecting run: {self.path.name}")
+            del self.aliases[edge]
+            del self.alias_targets[(edge[0], edge[1])]
+
+    def _begin_row(self, row: int) -> None:
+        if self.current_row is None:
+            self.current_row = row
+            return
+        if row <= self.current_row:
+            if row < self.current_row:
+                fail(f"loss-run rows are not in raster order: {self.path.name}")
+            return
+        self._finish_run_row()
+        self._finish_alias_rows_before(row)
+        if row == self.current_row + 1:
+            self.previous_runs = sorted(self.row_runs)
+            self.previous_starts = [run[0] for run in self.previous_runs]
+        else:
+            self.previous_runs = []
+            self.previous_starts = []
+        self.row_runs = []
+        self.current_row = row
+        if any(state[2] != row - 1 for state in self.active.values()):
+            fail(f"active component lifecycle skipped a raster row: {self.path.name}")
+
+    def _overlap_ids(self, x0: int, x1: int) -> set[int]:
+        matches: set[int] = set()
+        index = bisect_right(self.previous_starts, x1) - 1
+        while index >= 0 and self.previous_runs[index][1] >= x0:
+            matches.add(self.previous_runs[index][2])
+            index -= 1
+        return matches
+
+    def alias(self, source: int, target: int) -> None:
+        if source not in self.active or target not in self.active:
+            fail(f"component alias has a dangling or finalized endpoint: {self.path.name}")
+        source_state = self.active[source]
+        target_state = self.active[target]
+        if source_state[2] != target_state[2]:
+            fail(f"component alias endpoints are from different lifecycle rows: {self.path.name}")
+        alias_row = source_state[2] + 1
+        edge = (alias_row, source, target)
+        if edge in self.aliases or (alias_row, source) in self.alias_targets:
+            fail(f"duplicate component alias: {self.path.name}")
+        if target >= source or target_state[0] != target or source_state[0] != source:
+            fail(f"component alias does not descend between canonical roots: {self.path.name}")
+        target_state[0] = min(target_state[0], source_state[0])
+        target_state[1] += source_state[1]
+        target_state[2] = max(target_state[2], source_state[2])
+        del self.active[source]
+        self.aliases[edge] = False
+        self.alias_targets[(alias_row, source)] = target
+        self.alias_count += 1
+
+    def _resolve(self, row: int, component_id: int) -> int:
+        seen: set[int] = set()
+        while (row, component_id) in self.alias_targets:
+            if component_id in seen:
+                fail(f"component alias cycle detected: {self.path.name}")
+            seen.add(component_id)
+            target = self.alias_targets[(row, component_id)]
+            self.aliases[(row, component_id, target)] = True
+            component_id = target
+        return component_id
+
+    def run(self, component_id: int, row: int, x0: int, x1: int) -> None:
+        self._begin_row(row)
+        overlap_ids = self._overlap_ids(x0, x1)
+        cell_index = row * GRID[0] + x0
+        if overlap_ids:
+            resolved_ids = {self._resolve(row, prior_id) for prior_id in overlap_ids}
+            if resolved_ids != {component_id} or component_id not in self.active:
+                fail(f"run does not resolve to its connected prior-row root: {self.path.name}")
+        else:
+            if component_id != cell_index or component_id in self.active:
+                fail(f"new run does not create one unique canonical component: {self.path.name}")
+            self.active[component_id] = [component_id, 0, row]
+        state = self.active[component_id]
+        state[1] += x1 - x0 + 1
+        state[2] = row
+        self.row_runs.append((x0, x1, component_id))
+        self.run_cells += x1 - x0 + 1
+        self.run_count += 1
+
+    def component(self, component_id: int, first_cell: int, cell_count: int) -> None:
+        state = self.active.get(component_id)
+        if state is None:
+            fail(f"component summary has a dangling, duplicate or finalized ID: {self.path.name}")
+        if state[0] != first_cell or state[1] != cell_count or component_id != first_cell:
+            fail(f"component summary differs from its resolved ordered runs: {self.path.name}")
+        del self.active[component_id]
+        self.component_cells += cell_count
+        self.component_count += 1
+
+    def finish(self) -> None:
+        if self.current_row is not None:
+            self._finish_run_row()
+        self._finish_alias_rows_before(GRID[1] + 1)
+        if self.active:
+            fail(f"lineage ends with unfinalized component IDs: {self.path.name}")
+        if self.aliases:
+            fail(f"lineage ends with unresolved component aliases: {self.path.name}")
+
+
 def readback_lineage(
     path: Path,
     from_year: int,
@@ -123,26 +260,11 @@ def readback_lineage(
     inventory: dict[str, object],
 ) -> dict[str, object]:
     digest = hashlib.sha256()
-    run_digest = hashlib.sha256()
     bytes_read = 0
     record_count = 0
-    run_count = 0
-    alias_count = 0
-    component_count = 0
-    run_cells = 0
-    component_cells = 0
     grid_cells = GRID[0] * GRID[1]
-    current_run_row: int | None = None
-    current_row_runs: list[tuple[int, int]] = []
+    replay = ComponentGraphReplay(path)
     footer: dict[str, object] | None = None
-
-    def finish_run_row() -> None:
-        previous_x1 = -1
-        for x0, x1 in sorted(current_row_runs):
-            if x0 <= previous_x1:
-                fail(f"loss runs overlap or duplicate within a row: {path.name}")
-            run_digest.update(f"{current_run_row}:{x0}:{x1}\n".encode())
-            previous_x1 = x1
     descriptor, identity = open_regular_file(path)
     try:
         with os.fdopen(os.dup(descriptor), "rb") as stream:
@@ -189,24 +311,14 @@ def readback_lineage(
                     x1 = exact_int(record["x1"], "run x1")
                     if not (0 <= row < GRID[1] and 0 <= x0 <= x1 < GRID[0] and 0 <= component_id < grid_cells):
                         fail(f"run is outside the canonical grid: {path.name}")
-                    if current_run_row is None:
-                        current_run_row = row
-                    elif row != current_run_row:
-                        if row < current_run_row:
-                            fail(f"loss-run rows are not in raster order: {path.name}")
-                        finish_run_row()
-                        current_run_row = row
-                        current_row_runs = []
-                    current_row_runs.append((x0, x1))
-                    run_cells += x1 - x0 + 1
-                    run_count += 1
+                    replay.run(component_id, row, x0, x1)
                 elif kind == "alias":
                     exact_keys(record, {"fromComponentId", "record", "toComponentId"}, "alias record")
                     source = exact_int(record["fromComponentId"], "alias source")
                     target = exact_int(record["toComponentId"], "alias target")
                     if not (0 <= target < source < grid_cells):
                         fail(f"component alias is not strictly descending: {path.name}")
-                    alias_count += 1
+                    replay.alias(source, target)
                 elif kind == "component":
                     exact_keys(record, {"cellCount", "componentId", "firstCell", "record"}, "component record")
                     component_id = exact_int(record["componentId"], "component ID")
@@ -214,8 +326,7 @@ def readback_lineage(
                     cell_count = exact_int(record["cellCount"], "component cell count")
                     if not (0 <= component_id == first_cell < grid_cells and cell_count > 0):
                         fail(f"component summary value changed: {path.name}")
-                    component_cells += cell_count
-                    component_count += 1
+                    replay.component(component_id, first_cell, cell_count)
                 elif kind == "footer":
                     footer = exact_keys(
                         record,
@@ -227,8 +338,7 @@ def readback_lineage(
         verify_identity(path, descriptor, identity)
     finally:
         os.close(descriptor)
-    if current_run_row is not None:
-        finish_run_row()
+    replay.finish()
     if record_count < 2 or footer is None:
         fail(f"lineage footer is absent: {path.name}")
     expected_loss = exact_int(inventory["lossCellCount"], "inventory loss count")
@@ -243,15 +353,15 @@ def readback_lineage(
         "released": False,
     }:
         fail(f"lineage footer does not match inventory: {path.name}")
-    if run_cells != expected_loss or component_cells != expected_loss:
+    if replay.run_cells != expected_loss or replay.component_cells != expected_loss:
         fail(f"lineage cell totals do not match inventory: {path.name}")
-    if component_count != expected_components or run_digest.hexdigest() != expected_run_sha:
+    if replay.component_count != expected_components or replay.run_digest.hexdigest() != expected_run_sha:
         fail(f"lineage component count or ordered-run digest differs: {path.name}")
     return {
         "recordCount": record_count,
-        "runRecordCount": run_count,
-        "aliasRecordCount": alias_count,
-        "componentRecordCount": component_count,
+        "runRecordCount": replay.run_count,
+        "aliasRecordCount": replay.alias_count,
+        "componentRecordCount": replay.component_count,
         "byteLength": bytes_read,
         "sha256": digest.hexdigest(),
     }

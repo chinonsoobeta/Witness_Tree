@@ -1120,8 +1120,8 @@
     }
   ],
   "productionEligible": false,
-  "readbackAtUtc": "2026-08-22T19:19:44Z",
-  "readbackElapsedSeconds": "2639.695854",
+  "readbackAtUtc": "2026-08-22T20:26:58Z",
+  "readbackElapsedSeconds": "3018.069722",
   "released": false,
   "retainedOutputBytes": 68322924822,
   "schemaVersion": "witness-tree/phase2-real-loss-component-inventory-readback/1",

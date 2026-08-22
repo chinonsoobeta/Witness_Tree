@@ -19,16 +19,16 @@ SPEC.loader.exec_module(checker)
 
 class ComponentReadbackTest(unittest.TestCase):
     def records(self) -> tuple[list[dict[str, object]], dict[str, object]]:
-        ordered_digest = hashlib.sha256(b"0:0:0\n1:0:1\n").hexdigest()
-        inventory = {"lossCellCount": 3, "connectedComponentCount": 2, "orderedLossRunSha256": ordered_digest}
+        ordered_digest = hashlib.sha256(b"0:0:0\n0:2:2\n1:0:2\n").hexdigest()
+        inventory = {"lossCellCount": 5, "connectedComponentCount": 1, "orderedLossRunSha256": ordered_digest}
         return [
             {"record": "header", "schemaVersion": "witness-tree/phase2-real-loss-component-lineage/1", "pair": [1984, 1985], "sourceLossSha256": "a" * 64, "grid": checker.GRID, "connectivity": 4, "encoding": "inclusive-x-runs", "released": False, "productionEligible": False},
             {"record": "run", "componentId": 0, "row": 0, "x0": 0, "x1": 0},
-            {"record": "component", "componentId": 5, "firstCell": 5, "cellCount": 1},
-            {"record": "run", "componentId": 0, "row": 1, "x0": 0, "x1": 1},
-            {"record": "alias", "fromComponentId": 1, "toComponentId": 0},
-            {"record": "component", "componentId": 0, "firstCell": 0, "cellCount": 2},
-            {"record": "footer", "lossCellCount": 3, "connectedComponentCount": 2, "orderedLossRunSha256": ordered_digest, "released": False, "productionEligible": False},
+            {"record": "run", "componentId": 2, "row": 0, "x0": 2, "x1": 2},
+            {"record": "alias", "fromComponentId": 2, "toComponentId": 0},
+            {"record": "run", "componentId": 0, "row": 1, "x0": 0, "x1": 2},
+            {"record": "component", "componentId": 0, "firstCell": 0, "cellCount": 5},
+            {"record": "footer", "lossCellCount": 5, "connectedComponentCount": 1, "orderedLossRunSha256": ordered_digest, "released": False, "productionEligible": False},
         ], inventory
 
     def write(self, root: Path, records: list[dict[str, object]]) -> Path:
@@ -41,34 +41,68 @@ class ComponentReadbackTest(unittest.TestCase):
         with tempfile.TemporaryDirectory(prefix="witness-phase2-readback-") as directory:
             result = checker.readback_lineage(self.write(Path(directory), records), 1984, 1985, "a" * 64, inventory)
         self.assertEqual(result["recordCount"], 7)
-        self.assertEqual(result["runRecordCount"], 2)
+        self.assertEqual(result["runRecordCount"], 3)
         self.assertEqual(result["aliasRecordCount"], 1)
-        self.assertEqual(result["componentRecordCount"], 2)
+        self.assertEqual(result["componentRecordCount"], 1)
 
-    def test_component_grouped_runs_replay_in_bounded_raster_order(self) -> None:
+    def test_noncanonical_bytes_fail_closed(self) -> None:
         records, inventory = self.records()
-        records[1].update({"row": 0, "x0": 2, "x1": 3})
-        records[3].update({"row": 0, "x0": 0, "x1": 0})
-        ordered_digest = hashlib.sha256(b"0:0:0\n0:2:3\n").hexdigest()
-        records[-1]["orderedLossRunSha256"] = ordered_digest
-        inventory["orderedLossRunSha256"] = ordered_digest
-        with tempfile.TemporaryDirectory(prefix="witness-phase2-readback-order-") as directory:
-            result = checker.readback_lineage(self.write(Path(directory), records), 1984, 1985, "a" * 64, inventory)
-        self.assertEqual(result["runRecordCount"], 2)
-
-    def test_noncanonical_bytes_and_semantic_drift_fail_closed(self) -> None:
-        records, inventory = self.records()
-        with tempfile.TemporaryDirectory(prefix="witness-phase2-readback-negative-") as directory:
+        with tempfile.TemporaryDirectory(prefix="witness-phase2-readback-bytes-") as directory:
             root = Path(directory)
             path = self.write(root, records)
             path.write_bytes(path.read_bytes().replace(b'"record":"run"', b'"record": "run"', 1))
             with self.assertRaisesRegex(ValueError, "non-canonical"):
                 checker.readback_lineage(path, 1984, 1985, "a" * 64, inventory)
-            path.unlink()
-            records[4]["toComponentId"] = 2
-            path = self.write(root, records)
-            with self.assertRaisesRegex(ValueError, "strictly descending"):
-                checker.readback_lineage(path, 1984, 1985, "a" * 64, inventory)
+
+    def assert_rejected(self, records: list[dict[str, object]], inventory: dict[str, object], pattern: str) -> None:
+        with tempfile.TemporaryDirectory(prefix="witness-phase2-readback-adversarial-") as directory:
+            with self.assertRaisesRegex(ValueError, pattern):
+                checker.readback_lineage(self.write(Path(directory), records), 1984, 1985, "a" * 64, inventory)
+
+    def test_missing_unrelated_and_dangling_aliases_fail_closed(self) -> None:
+        records, inventory = self.records()
+        self.assert_rejected([*records[:3], *records[4:]], inventory, "resolve|missing.*alias")
+        unrelated_digest = hashlib.sha256(b"0:0:0\n0:2:2\n0:4:4\n1:0:2\n").hexdigest()
+        records = [
+            records[0], records[1], records[2],
+            {"record": "run", "componentId": 4, "row": 0, "x0": 4, "x1": 4},
+            {"record": "alias", "fromComponentId": 4, "toComponentId": 2},
+            records[3], records[4],
+            {"record": "component", "componentId": 0, "firstCell": 0, "cellCount": 6},
+            {"record": "footer", "lossCellCount": 6, "connectedComponentCount": 1, "orderedLossRunSha256": unrelated_digest, "released": False, "productionEligible": False},
+        ]
+        inventory = {"lossCellCount": 6, "connectedComponentCount": 1, "orderedLossRunSha256": unrelated_digest}
+        self.assert_rejected(records, inventory, "unrelated")
+        records, inventory = self.records()
+        records[3]["fromComponentId"] = 3
+        self.assert_rejected(records, inventory, "dangling")
+        records, inventory = self.records()
+        records.insert(4, {"record": "alias", "fromComponentId": 2, "toComponentId": 0})
+        self.assert_rejected(records, inventory, "dangling|duplicate")
+
+    def test_alias_cycles_and_endpoint_reversal_fail_closed(self) -> None:
+        records, inventory = self.records()
+        records[3] = {"record": "alias", "fromComponentId": 0, "toComponentId": 2}
+        self.assert_rejected(records, inventory, "strictly descending")
+        records, inventory = self.records()
+        records[3] = {"record": "alias", "fromComponentId": 2, "toComponentId": 2}
+        self.assert_rejected(records, inventory, "strictly descending")
+        replay = checker.ComponentGraphReplay(Path("adversarial-cycle.jsonl"))
+        replay.alias_targets = {(1, 2): 0, (1, 0): 2}
+        replay.aliases = {(1, 2, 0): False, (1, 0, 2): False}
+        with self.assertRaisesRegex(ValueError, "cycle"):
+            replay._resolve(1, 2)
+
+    def test_duplicate_and_cross_component_summary_drift_fail_closed(self) -> None:
+        records, inventory = self.records()
+        records[5]["cellCount"] = 4
+        self.assert_rejected(records, inventory, "differs from.*runs")
+        records, inventory = self.records()
+        records.insert(6, dict(records[5]))
+        self.assert_rejected(records, inventory, "duplicate|finalized")
+        records, inventory = self.records()
+        records[5].update({"componentId": 2, "firstCell": 2})
+        self.assert_rejected(records, inventory, "dangling|finalized")
 
 
 if __name__ == "__main__":
