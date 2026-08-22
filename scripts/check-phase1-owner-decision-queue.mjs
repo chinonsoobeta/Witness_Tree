@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { validate as validateRecordedApprovals } from "./check-phase1-phase3-owner-approvals.mjs";
 
 const SCHEMA = "witness-tree/phase1-owner-decision-queue/1";
 const HEAD = "4466a14dd1462d09692db869523df713a6db2291";
@@ -208,6 +209,7 @@ function validateOrder(queue) {
 }
 
 export function validatePhase1OwnerDecisionQueue(queue, context) {
+  validateRecordedApprovals(context.approvals);
   assert.equal(queue.schemaVersion, SCHEMA);
   assert.equal(queue.status, "owner-action-queue-read-only");
   assert.equal(queue.derivedFromHead, HEAD);

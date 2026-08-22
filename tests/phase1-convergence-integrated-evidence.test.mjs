@@ -137,6 +137,16 @@ test("repository-wide current-facing records do not request superseded archive a
   }
 });
 
+test("owner packet current action order executes recorded approvals instead of requesting them again", () => {
+  const packet = readFileSync(new URL("../docs/PHASE1_OWNER_APPROVAL_PACKET.md", import.meta.url), "utf8");
+  assert.doesNotMatch(packet, /## Simplest owner action order/);
+  const currentOrder = packet.split("## Current owner execution and readback order")[1]?.split("## Dependency-order copy/paste blocks")[0] ?? "";
+  assert.match(currentOrder, /archive approval is recorded/i);
+  assert.match(currentOrder, /all four approvals are recorded/i);
+  assert.match(currentOrder, /normal archive-control exercise approval is also recorded/i);
+  assert.doesNotMatch(currentOrder, /\|\s*[1-6]\s*\|\s*Approve\b/i);
+});
+
 test("canonical summaries retain the FOM-only submitted state without implying permission", () => {
   const combined = canonicalSummaryFiles.map((file) => readFileSync(new URL(`../${file}`, import.meta.url), "utf8")).join("\n");
   for (const stale of [

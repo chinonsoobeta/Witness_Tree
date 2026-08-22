@@ -83,3 +83,23 @@ test("recorded archive approvals remove duplicate approval requests without impl
     assert.equal(row.exactNextSteps.some((step) => /obtain.*approval/i.test(step)), false);
   }
 });
+
+test("queue validation rejects every mutated recorded approval binding", () => {
+  const queue = read("data/phase1-owner-decision-queue.json");
+  for (const mutate of [
+    (copy) => { copy.phase1.archiveApprovals[0].rows = []; },
+    (copy) => { copy.phase1.archiveApprovals[0].ownerCommand = "zsh scripts/run-phase1-approved-promotion.sh --run-everything"; },
+    (copy) => { copy.phase1.archiveApprovals[1].retention.mode = "GOVERNANCE"; },
+    (copy) => { copy.phase1.archiveApprovals[2].retention.retainUntil = "2099-08-12T00:00:00Z"; },
+    (copy) => { copy.phase1.archiveApprovals.splice(1, 1); },
+    (copy) => { copy.phase1.archiveApprovals[2].id = "plausible-wildfire-archive-proof"; },
+    (copy) => { copy.phase1.archiveApprovals[3].rows[0] = "cwfis-current-fabricated"; },
+    (copy) => { copy.phase1.archiveApprovals[2].ownerCommandTemplate += " --force"; },
+    (copy) => { copy.phase1.archiveControlExercise.preflight += " --write"; },
+    (copy) => { copy.phase1.archiveControlExercise.ownerCommand = "scripts/run-phase1-archive-owner-exercise.sh --recover-latest"; },
+  ]) {
+    const mutatedContext = structuredClone(context);
+    mutate(mutatedContext.approvals);
+    assert.throws(() => validatePhase1OwnerDecisionQueue(queue, mutatedContext));
+  }
+});
