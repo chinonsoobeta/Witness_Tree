@@ -17,18 +17,18 @@ export const SEVERITIES = Object.freeze(["critical", "high", "medium", "low"]);
 const PENDING_RESULTS = Object.freeze({ usability: "not-run", keyboard: "not-run", screenReader: "not-run", forcedColorsAndCvd: "not-run", fieldPerformance: "not-run", outsideAccessibilityReview: "not-started" });
 const PROTOCOL_SHA256 = "cf0b8711113871035b181a317904355723351c1ce3fbbb0dd566a93b859a5e6d";
 const EVIDENCE_KEYS = Object.freeze(["schemaVersion", "protocolVersion", "status", "completionClaimed", "completionEvidenceOrigin", "productionEligible", "ownerInputs", "usability", "manualAccessibility", "fieldPerformance", "outsideAccessibilityReview", "currentResult"]);
-const OWNER_KEYS = Object.freeze(["releaseId", "studyOwnerName", "approvedRetentionDays", "consentFormVersion", "recruitmentApprovalReference", "privacyReviewReference", "fieldPerformanceSamplingDecisionReference", "fieldPerformanceMinimumSamplesPerLocale", "fieldPerformanceUrlOrigin", "fieldPerformanceWindowStartedAt", "fieldPerformanceWindowEndedAt", "fieldPerformanceProvider", "fieldPerformanceConfigurationReference"]);
+const OWNER_KEYS = Object.freeze(["releaseId", "studyOwnerName", "approvedRetentionDays", "consentFormVersion", "recruitmentApprovalReference", "privacyReviewReference", "fieldPerformanceSamplingDecisionReference", "fieldPerformanceMinimumSamplesPerLocale", "fieldPerformanceUrlOrigin", "fieldPerformanceWindowStartedAt", "fieldPerformanceWindowEndedAt", "fieldPerformanceProviderCode", "fieldPerformanceConfigurationReference"]);
 const FORBIDDEN_PII_KEYS = /(?:email|phone|telephone|mobile|contact|participant[a-z]*name|participantdetails|full[a-z]*name|postaladdress|mailingaddress|streetaddress|ipaddress|clientip|remoteip|dateofbirth|birthdate|exactage|rawaudio|rawvideo|screenrecording|recruitmentsource)/;
 const OPAQUE_REFERENCE = /^ref-[a-f0-9]{32}$/;
 const OBSERVATION_CODE = /^obs-[a-f0-9]{12}$/;
 const RELEASE_ID = /^release-[a-f0-9]{16}$/;
 const CONSENT_FORM_VERSION = /^consent-form-v[1-9][0-9]{0,3}$/;
-const SENSITIVE_VALUE_SHAPE = /(?:@|https?:\/\/|www\.|(?:^|\s)\+?[0-9][0-9 ()-]{6,}[0-9](?:\s|$)|\b(?:street|st\.?|road|rd\.?|avenue|ave\.?|boulevard|blvd\.?|drive|dr\.?|lane|ln\.?|postal|address|email|phone|contact|name)\b)/i;
-const OBFUSCATED_EMAIL_VALUE = /[a-z0-9._+/-]+\s*(?:\(\s*a\s*t\s*\)|\s+a\s*t\s+|[-_+/.]\s*a\s*t\s*[-_+/.])\s*[a-z0-9-]+(?:\s*(?:\.|\(\s*d\s*o\s*t\s*\)|\s+d\s*o\s*t\s+)\s*(?:[a-z]{2,}|[a-z](?:\s+[a-z])+))+/i;
-const PHONE_VALUE_SHAPE = /(?:^|\s)(?:tel(?:ephone)?\.?\s*)?(?:(?:\+?1|\(1\))[ ./()-]*)?(?:\([0-9]{3}\)|[0-9]{3})(?:[ ./()-]*d\s*o\s*t[ ./()-]*|[ ./()-]*)(?:\([0-9]{3}\)|[0-9]{3})(?:[ ./()-]*d\s*o\s*t[ ./()-]*|[ ./()-]*)(?:\([0-9]{4}\)|[0-9]{4})(?=\s|$)/i;
-const ENCODED_VALUE_SHAPE = /(?:%[0-9a-f]{2}|&#(?:x[0-9a-f]+|[0-9]+);)/i;
 const CANONICAL_UTC_SECOND = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/;
-const TECHNICAL_ASCII_VALUE = /^[A-Za-z0-9][A-Za-z0-9 ._+()/-]{0,127}$/;
+const NUMERIC_VERSION = /^(?:0|[1-9][0-9]{0,2})(?:\.(?:0|[1-9][0-9]{0,2})){0,2}$/;
+const PROVIDER_CODE = /^provider-[a-f0-9]{16}$/;
+const BROWSERS = Object.freeze(["Chrome", "Edge", "Firefox", "Safari"]);
+const OPERATING_SYSTEMS = Object.freeze(["Linux", "macOS", "Windows"]);
+const ASSISTIVE_TECHNOLOGIES = Object.freeze(["JAWS", "NVDA", "Narrator", "Orca", "VoiceOver"]);
 
 const exact = (actual, expected, message) => {
   if (JSON.stringify(actual) !== JSON.stringify(expected)) throw new Error(message);
@@ -41,10 +41,8 @@ const exactKeys = (value, expected, message) => {
 
 const nonempty = (value) => typeof value === "string" && value.trim().length > 0;
 const opaque = (value) => /^[a-f0-9]{16}$/.test(value ?? "");
-const hasSensitiveValueShape = (value) => typeof value !== "string" || SENSITIVE_VALUE_SHAPE.test(value.normalize("NFKC")) || OBFUSCATED_EMAIL_VALUE.test(value.normalize("NFKC")) || PHONE_VALUE_SHAPE.test(value.normalize("NFKC")) || ENCODED_VALUE_SHAPE.test(value.normalize("NFKC"));
-const opaqueReference = (value) => OPAQUE_REFERENCE.test(value ?? "") && !hasSensitiveValueShape(value);
-const observationCode = (value) => OBSERVATION_CODE.test(value ?? "") && !hasSensitiveValueShape(value);
-const safeEnvironmentValue = (value) => typeof value === "string" && TECHNICAL_ASCII_VALUE.test(value) && value === value.trim() && !hasSensitiveValueShape(value);
+const opaqueReference = (value) => OPAQUE_REFERENCE.test(value ?? "");
+const observationCode = (value) => OBSERVATION_CODE.test(value ?? "");
 
 function canonicalUtcSecond(value) {
   if (!CANONICAL_UTC_SECOND.test(value ?? "")) return false;
@@ -152,6 +150,13 @@ function expectedScope(templates, locales, modes = [null]) {
   return templates.flatMap((template) => locales.flatMap((locale) => modes.map((mode) => ({ template, locale, ...(mode ? { mode } : {}) }))));
 }
 
+function validateManualEnvironment(environment, kind) {
+  const commonKeys = ["browser", "browserVersion", "operatingSystem", "operatingSystemVersion"];
+  exactKeys(environment, kind === "screen-reader" ? ["assistiveTechnology", "assistiveTechnologyVersion", ...commonKeys] : commonKeys, `${kind}: structured environment is incomplete or altered.`);
+  if (!BROWSERS.includes(environment.browser) || !NUMERIC_VERSION.test(environment.browserVersion ?? "") || !OPERATING_SYSTEMS.includes(environment.operatingSystem) || !NUMERIC_VERSION.test(environment.operatingSystemVersion ?? "")) throw new Error(`${kind}: browser or operating-system evidence is unsupported or invalid.`);
+  if (kind === "screen-reader" && (!ASSISTIVE_TECHNOLOGIES.includes(environment.assistiveTechnology) || !NUMERIC_VERSION.test(environment.assistiveTechnologyVersion ?? ""))) throw new Error(`${kind}: assistive-technology evidence is unsupported or invalid.`);
+}
+
 function validateManualRows(rows, expected, kind) {
   if (!Array.isArray(rows) || rows.length !== expected.length) throw new Error(`${kind}: exact manual scope is required.`);
   exact(rows.map(({ template, locale, mode }) => ({ template, locale, ...(mode ? { mode } : {}) })), expected, `${kind}: manual scope is missing or reordered.`);
@@ -159,12 +164,7 @@ function validateManualRows(rows, expected, kind) {
     exactKeys(row, ["template", "locale", ...(row.mode ? ["mode"] : []), "evidenceOrigin", "automationGenerated", "testerAttestationReference", "startedAt", "endedAt", "passed", "blockedTasks", "issueIds", "environment"], `${kind}/${row.locale}/${row.template}: manual evidence contains missing or unapproved fields.`);
     const baseValid = row.evidenceOrigin === "human-manual" && row.automationGenerated === false && opaqueReference(row.testerAttestationReference) && canonicalUtcSecond(row.startedAt) && canonicalUtcSecond(row.endedAt) && Date.parse(row.endedAt) > Date.parse(row.startedAt) && row.passed === true && row.blockedTasks === 0 && Array.isArray(row.issueIds) && row.issueIds.every((issueId) => /^issue-[a-f0-9]{12}$/.test(issueId));
     if (!baseValid) throw new Error(`${kind}/${row.locale}/${row.template}: real manual evidence is incomplete.`);
-    if (kind === "screen-reader") {
-      exactKeys(row.environment, ["assistiveTechnology", "assistiveTechnologyVersion", "browser", "browserVersion", "operatingSystem", "operatingSystemVersion"], `${kind}/${row.locale}/${row.template}: structured environment is incomplete or altered.`);
-      const values = Object.values(row.environment);
-      if (values.some((value) => !safeEnvironmentValue(value) || /(?:test|fixture|placeholder|unknown|n\/a|generic)/i.test(value))) throw new Error(`${kind}/${row.locale}/${row.template}: exact real assistive-technology environment is required.`);
-      if ([row.environment.assistiveTechnologyVersion, row.environment.browserVersion, row.environment.operatingSystemVersion].some((value) => !/\d/.test(value))) throw new Error(`${kind}/${row.locale}/${row.template}: explicit version numbers are required.`);
-    } else if (!safeEnvironmentValue(row.environment)) throw new Error(`${kind}/${row.locale}/${row.template}: environment is required.`);
+    validateManualEnvironment(row.environment, kind);
   }
 }
 
@@ -185,7 +185,7 @@ export function validateEvidence(evidence, protocol) {
   exactKeys(evidence.manualAccessibility, ["keyboard", "screenReader", "forcedColorsAndCvd", "issues"], "Manual-accessibility evidence contains missing or unapproved fields.");
   exactKeys(evidence.outsideAccessibilityReview, ["status", "reviewerName", "organisation", "independenceAttestation", "signedReportReference", "scopeResults", "issues"], "Outside-review evidence contains missing or unapproved fields.");
   exactKeys(evidence.currentResult, ["usability", "keyboard", "screenReader", "forcedColorsAndCvd", "fieldPerformance", "outsideAccessibilityReview"], "Current-result evidence contains missing or unapproved fields.");
-  if (evidence.schemaVersion !== "witness-tree/phase3-external-checkpoint-evidence/2" || evidence.protocolVersion !== protocol.schemaVersion || evidence.productionEligible !== false) throw new Error("External-checkpoint evidence boundary is invalid.");
+  if (evidence.schemaVersion !== "witness-tree/phase3-external-checkpoint-evidence/3" || evidence.protocolVersion !== protocol.schemaVersion || evidence.productionEligible !== false) throw new Error("External-checkpoint evidence boundary is invalid.");
   if (evidence.status === "pending-real-evidence") {
     if (evidence.completionClaimed !== false || evidence.completionEvidenceOrigin !== "none") throw new Error("Pending evidence cannot claim completion or an evidence origin.");
     if (Object.values(evidence.ownerInputs ?? {}).some((value) => value !== null) || Object.values(evidence.usability?.excludedCandidateCounts ?? {}).some((value) => value !== null) || evidence.usability?.participants?.length !== 0 || evidence.usability?.issues?.length !== 0 || evidence.usability?.summary !== null || evidence.manualAccessibility?.keyboard?.length !== 0 || evidence.manualAccessibility?.screenReader?.length !== 0 || evidence.manualAccessibility?.forcedColorsAndCvd?.length !== 0 || evidence.manualAccessibility?.issues?.length !== 0 || evidence.fieldPerformance?.length !== 0 || evidence.outsideAccessibilityReview?.status !== "not-started" || [evidence.outsideAccessibilityReview?.reviewerName, evidence.outsideAccessibilityReview?.organisation, evidence.outsideAccessibilityReview?.independenceAttestation, evidence.outsideAccessibilityReview?.signedReportReference].some((value) => value !== null) || evidence.outsideAccessibilityReview?.scopeResults?.length !== 0 || evidence.outsideAccessibilityReview?.issues?.length !== 0) throw new Error("Pending evidence must not contain inferred or fabricated results.");
@@ -194,7 +194,7 @@ export function validateEvidence(evidence, protocol) {
   }
   if (evidence.status !== "complete" || evidence.completionClaimed !== true || evidence.completionEvidenceOrigin !== "human-and-external") throw new Error("Completion must be supported by human and external evidence.");
   const owner = evidence.ownerInputs;
-  if (!RELEASE_ID.test(owner?.releaseId ?? "") || !nonempty(owner?.studyOwnerName) || !Number.isInteger(owner?.approvedRetentionDays) || owner.approvedRetentionDays < 1 || !CONSENT_FORM_VERSION.test(owner?.consentFormVersion ?? "") || !opaqueReference(owner?.recruitmentApprovalReference) || !opaqueReference(owner?.privacyReviewReference) || !opaqueReference(owner?.fieldPerformanceSamplingDecisionReference) || !Number.isInteger(owner?.fieldPerformanceMinimumSamplesPerLocale) || owner.fieldPerformanceMinimumSamplesPerLocale < 1 || !canonicalHttpsOrigin(owner?.fieldPerformanceUrlOrigin) || !canonicalUtcSecond(owner?.fieldPerformanceWindowStartedAt) || !canonicalUtcSecond(owner?.fieldPerformanceWindowEndedAt) || Date.parse(owner.fieldPerformanceWindowEndedAt) <= Date.parse(owner.fieldPerformanceWindowStartedAt) || !safeEnvironmentValue(owner?.fieldPerformanceProvider) || !opaqueReference(owner?.fieldPerformanceConfigurationReference)) throw new Error("Required owner-provided execution inputs are incomplete.");
+  if (!RELEASE_ID.test(owner?.releaseId ?? "") || !nonempty(owner?.studyOwnerName) || !Number.isInteger(owner?.approvedRetentionDays) || owner.approvedRetentionDays < 1 || !CONSENT_FORM_VERSION.test(owner?.consentFormVersion ?? "") || !opaqueReference(owner?.recruitmentApprovalReference) || !opaqueReference(owner?.privacyReviewReference) || !opaqueReference(owner?.fieldPerformanceSamplingDecisionReference) || !Number.isInteger(owner?.fieldPerformanceMinimumSamplesPerLocale) || owner.fieldPerformanceMinimumSamplesPerLocale < 1 || !canonicalHttpsOrigin(owner?.fieldPerformanceUrlOrigin) || !canonicalUtcSecond(owner?.fieldPerformanceWindowStartedAt) || !canonicalUtcSecond(owner?.fieldPerformanceWindowEndedAt) || Date.parse(owner.fieldPerformanceWindowEndedAt) <= Date.parse(owner.fieldPerformanceWindowStartedAt) || !PROVIDER_CODE.test(owner?.fieldPerformanceProviderCode ?? "") || !opaqueReference(owner?.fieldPerformanceConfigurationReference)) throw new Error("Required owner-provided execution inputs are incomplete.");
   validateIssues(evidence.usability.issues);
   if (LOCALES.some((locale) => !Number.isInteger(evidence.usability.excludedCandidateCounts?.[locale]) || evidence.usability.excludedCandidateCounts[locale] < 0)) throw new Error("Excluded-candidate counts must be de-identified locale aggregates.");
   const usability = evaluateUsability(evidence.usability.participants, protocol);
@@ -208,8 +208,8 @@ export function validateEvidence(evidence, protocol) {
   if (evidence.fieldPerformance.length !== 2) throw new Error("Field-performance evidence is required separately for both locales.");
   exact(evidence.fieldPerformance.map(({ locale }) => ({ locale })), fieldExpected, "Field-performance locale scope is incomplete.");
   for (const row of evidence.fieldPerformance) {
-    exactKeys(row, ["locale", "metric", "statistic", "valueMs", "eligibleSamples", "windowStartedAt", "windowEndedAt", "urlOrigin", "provider", "configurationReference", "samplingDecisionReference", "privacyReviewReference", "aggregateReportReference", "containsParticipantIdentifiers"], `${row.locale}: field-performance evidence contains missing or unapproved fields.`);
-    if (row.metric !== "LCP" || row.statistic !== "p75" || !Number.isFinite(row.valueMs) || row.valueMs >= 2000 || !Number.isInteger(row.eligibleSamples) || row.eligibleSamples < owner.fieldPerformanceMinimumSamplesPerLocale || !canonicalUtcSecond(row.windowStartedAt) || !canonicalUtcSecond(row.windowEndedAt) || row.windowStartedAt !== owner.fieldPerformanceWindowStartedAt || row.windowEndedAt !== owner.fieldPerformanceWindowEndedAt || !canonicalHttpsOrigin(row.urlOrigin) || row.urlOrigin !== owner.fieldPerformanceUrlOrigin || !safeEnvironmentValue(row.provider) || row.provider !== owner.fieldPerformanceProvider || row.configurationReference !== owner.fieldPerformanceConfigurationReference || row.samplingDecisionReference !== owner.fieldPerformanceSamplingDecisionReference || row.privacyReviewReference !== owner.privacyReviewReference || !opaqueReference(row.aggregateReportReference) || row.containsParticipantIdentifiers !== false) throw new Error(`${row.locale}: field-performance evidence is incomplete, unbound, or over threshold.`);
+    exactKeys(row, ["locale", "metric", "statistic", "valueMs", "eligibleSamples", "windowStartedAt", "windowEndedAt", "urlOrigin", "providerCode", "configurationReference", "samplingDecisionReference", "privacyReviewReference", "aggregateReportReference", "containsParticipantIdentifiers"], `${row.locale}: field-performance evidence contains missing or unapproved fields.`);
+    if (row.metric !== "LCP" || row.statistic !== "p75" || !Number.isFinite(row.valueMs) || row.valueMs >= 2000 || !Number.isInteger(row.eligibleSamples) || row.eligibleSamples < owner.fieldPerformanceMinimumSamplesPerLocale || !canonicalUtcSecond(row.windowStartedAt) || !canonicalUtcSecond(row.windowEndedAt) || row.windowStartedAt !== owner.fieldPerformanceWindowStartedAt || row.windowEndedAt !== owner.fieldPerformanceWindowEndedAt || !canonicalHttpsOrigin(row.urlOrigin) || row.urlOrigin !== owner.fieldPerformanceUrlOrigin || !PROVIDER_CODE.test(row.providerCode ?? "") || row.providerCode !== owner.fieldPerformanceProviderCode || row.configurationReference !== owner.fieldPerformanceConfigurationReference || row.samplingDecisionReference !== owner.fieldPerformanceSamplingDecisionReference || row.privacyReviewReference !== owner.privacyReviewReference || !opaqueReference(row.aggregateReportReference) || row.containsParticipantIdentifiers !== false) throw new Error(`${row.locale}: field-performance evidence is incomplete, unbound, or over threshold.`);
   }
   const review = evidence.outsideAccessibilityReview;
   if (review.status !== "complete" || !nonempty(review.reviewerName) || !nonempty(review.organisation) || !opaqueReference(review.independenceAttestation) || !opaqueReference(review.signedReportReference)) throw new Error("Outside accessibility review attestation is incomplete.");

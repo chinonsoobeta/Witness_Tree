@@ -7,6 +7,7 @@ import { CVD_MODES, LOCALES, SCREEN_READER_TEMPLATES, TASK_IDS, TEMPLATES, evalu
 const clone = (value) => structuredClone(value);
 const reference = (value) => `ref-${value.toString(16).padStart(32, "0")}`;
 const release = (value) => `release-${value.toString(16).padStart(16, "0")}`;
+const provider = (value) => `provider-${value.toString(16).padStart(16, "0")}`;
 const utcSecond = (value) => new Date(value).toISOString().replace(".000Z", "Z");
 
 function participant(locale, index) {
@@ -25,13 +26,13 @@ function participant(locale, index) {
   };
 }
 
-const scopes = (templates, locales, modes = [null], screenReader = false) => templates.flatMap((template, templateIndex) => locales.flatMap((locale, localeIndex) => modes.map((mode, modeIndex) => ({ template, locale, ...(mode ? { mode } : {}), evidenceOrigin: "human-manual", automationGenerated: false, testerAttestationReference: reference(3000 + templateIndex * 100 + localeIndex * 10 + modeIndex), startedAt: "2026-09-20T16:00:00Z", endedAt: "2026-09-20T16:30:00Z", passed: true, blockedTasks: 0, issueIds: [], environment: screenReader ? { assistiveTechnology: "VoiceOver", assistiveTechnologyVersion: "15.6", browser: "Safari", browserVersion: "18.6", operatingSystem: "macOS", operatingSystemVersion: "15.6" } : "Chrome 151 on macOS 15.6" }))));
+const scopes = (templates, locales, modes = [null], screenReader = false) => templates.flatMap((template, templateIndex) => locales.flatMap((locale, localeIndex) => modes.map((mode, modeIndex) => ({ template, locale, ...(mode ? { mode } : {}), evidenceOrigin: "human-manual", automationGenerated: false, testerAttestationReference: reference(3000 + templateIndex * 100 + localeIndex * 10 + modeIndex), startedAt: "2026-09-20T16:00:00Z", endedAt: "2026-09-20T16:30:00Z", passed: true, blockedTasks: 0, issueIds: [], environment: screenReader ? { assistiveTechnology: "VoiceOver", assistiveTechnologyVersion: "15.6", browser: "Safari", browserVersion: "18.6", operatingSystem: "macOS", operatingSystemVersion: "15.6" } : { browser: "Chrome", browserVersion: "151", operatingSystem: "macOS", operatingSystemVersion: "15.6" } }))));
 
 function completeEvidence() {
   const participants = LOCALES.flatMap((locale) => Array.from({ length: 10 }, (_, index) => participant(locale, index)));
   const usability = evaluateUsability(participants, protocol);
   return {
-    schemaVersion: "witness-tree/phase3-external-checkpoint-evidence/2",
+    schemaVersion: "witness-tree/phase3-external-checkpoint-evidence/3",
     protocolVersion: protocol.schemaVersion,
     status: "complete",
     completionClaimed: true,
@@ -49,7 +50,7 @@ function completeEvidence() {
       fieldPerformanceUrlOrigin: "https://example.invalid",
       fieldPerformanceWindowStartedAt: "2026-09-01T00:00:00Z",
       fieldPerformanceWindowEndedAt: "2026-09-29T00:00:00Z",
-      fieldPerformanceProvider: "ApprovedAggregateRUM",
+      fieldPerformanceProviderCode: provider(1),
       fieldPerformanceConfigurationReference: reference(4004)
     },
     usability: { participants, excludedCandidateCounts: { en: 0, fr: 0 }, issues: [], summary: usability },
@@ -59,7 +60,7 @@ function completeEvidence() {
       forcedColorsAndCvd: scopes(TEMPLATES, LOCALES, CVD_MODES),
       issues: []
     },
-    fieldPerformance: LOCALES.map((locale, index) => ({ locale, metric: "LCP", statistic: "p75", valueMs: 1500, eligibleSamples: 100, windowStartedAt: "2026-09-01T00:00:00Z", windowEndedAt: "2026-09-29T00:00:00Z", urlOrigin: "https://example.invalid", provider: "ApprovedAggregateRUM", configurationReference: reference(4004), samplingDecisionReference: reference(4003), privacyReviewReference: reference(4002), aggregateReportReference: reference(5000 + index), containsParticipantIdentifiers: false })),
+    fieldPerformance: LOCALES.map((locale, index) => ({ locale, metric: "LCP", statistic: "p75", valueMs: 1500, eligibleSamples: 100, windowStartedAt: "2026-09-01T00:00:00Z", windowEndedAt: "2026-09-29T00:00:00Z", urlOrigin: "https://example.invalid", providerCode: provider(1), configurationReference: reference(4004), samplingDecisionReference: reference(4003), privacyReviewReference: reference(4002), aggregateReportReference: reference(5000 + index), containsParticipantIdentifiers: false })),
     outsideAccessibilityReview: {
       status: "complete",
       reviewerName: "Test-only outside reviewer",
@@ -79,7 +80,7 @@ test("committed package is complete as a protocol and fail-closed as evidence", 
   assert.deepEqual(pendingEvidence.ownerInputs, {
     releaseId: null, studyOwnerName: null, approvedRetentionDays: null, consentFormVersion: null, recruitmentApprovalReference: null, privacyReviewReference: null,
     fieldPerformanceSamplingDecisionReference: null, fieldPerformanceMinimumSamplesPerLocale: null, fieldPerformanceUrlOrigin: null,
-    fieldPerformanceWindowStartedAt: null, fieldPerformanceWindowEndedAt: null, fieldPerformanceProvider: null, fieldPerformanceConfigurationReference: null
+    fieldPerformanceWindowStartedAt: null, fieldPerformanceWindowEndedAt: null, fieldPerformanceProviderCode: null, fieldPerformanceConfigurationReference: null
   });
 });
 
@@ -243,55 +244,28 @@ test("field origin requires an exact canonical HTTPS origin without authority tr
   }
 });
 
-test("manual environment and provider strings reject non-ASCII, controls and encoded value shapes", () => {
+test("manual environments reject every free-text bypass, unknown product and invalid version", () => {
+  const reproduced = [
+    "participant--at__example d-o-t c-o-m",
+    "participant._at+/.example(dot)c-o-m",
+    "participant.at.example.com",
+    "participant at example D.O.T. c o m",
+    "participant at example point com",
+    "604 dot 555 dot 1212",
+    "604DOT555DOT1212"
+  ];
   const cases = [
-    ["AT email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant@example.com"; }],
-    ["AT parenthesized-at email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant(at)example.com"; }],
-    ["AT hyphenated-at email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant-at-example.com"; }],
-    ["AT underscored-at email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant_at_example.com"; }],
-    ["AT plus-at email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant+at+example.com"; }],
-    ["AT slashed-at email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant/at/example.com"; }],
-    ["AT dotted-at email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant.at.example.com"; }],
-    ["AT spaced-at email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant at example.com"; }],
-    ["AT spaced-dot email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant at example dot com"; }],
-    ["AT parenthesized-dot email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant(at)example(dot)com"; }],
-    ["AT parenthesized-dot split-TLD email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant(at)example(dot)c o m"; }],
-    ["AT spaced-dot split-TLD email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant at example dot c o m"; }],
-    ["AT mixed-case split-TLD email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "Participant.AT.Example DOT C O M"; }],
-    ["AT mixed-case spaced email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant  ( A T )  example  D O T  com"; }],
-    ["AT mixed-case email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "Participant AT Example DOT COM"; }],
-    ["AT encoded email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant%40example.com"; }],
-    ["AT named entity email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant&commat;example.com"; }],
-    ["AT unterminated named entity email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant&commatexample.com"; }],
-    ["AT unterminated numeric entity email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant&#64example.com"; }],
-    ["AT unterminated hex entity email", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "participant&#x40example.com"; }],
-    ["browser Unicode email", (copy) => { copy.manualAccessibility.screenReader[0].environment.browser = "participant＠example.com"; }],
-    ["browser phone", (copy) => { copy.manualAccessibility.screenReader[0].environment.browser = "+1 604 555 1212"; }],
-    ["browser dotted phone", (copy) => { copy.manualAccessibility.screenReader[0].environment.browser = "604.555.1212"; }],
-    ["browser word-dot phone", (copy) => { copy.manualAccessibility.screenReader[0].environment.browser = "604 dot 555 dot 1212"; }],
-    ["browser joined-word-dot phone", (copy) => { copy.manualAccessibility.screenReader[0].environment.browser = "604DOT555DOT1212"; }],
-    ["browser mixed-case-word-dot phone", (copy) => { copy.manualAccessibility.screenReader[0].environment.browser = "604  DoT  555 d O t 1212"; }],
-    ["browser slashed phone", (copy) => { copy.manualAccessibility.screenReader[0].environment.browser = "604/555/1212"; }],
-    ["browser parenthesized phone", (copy) => { copy.manualAccessibility.screenReader[0].environment.browser = "(604) 555-1212"; }],
-    ["browser alternate-parentheses phone", (copy) => { copy.manualAccessibility.screenReader[0].environment.browser = "604 (555) (1212)"; }],
-    ["browser leading-one phone", (copy) => { copy.manualAccessibility.screenReader[0].environment.browser = "1/604/555/1212"; }],
-    ["browser parenthesized-one phone", (copy) => { copy.manualAccessibility.screenReader[0].environment.browser = "(1) 604 555 1212"; }],
-    ["browser tel phone", (copy) => { copy.manualAccessibility.screenReader[0].environment.browser = "tel 604.555.1212"; }],
-    ["browser mixed-case tel phone", (copy) => { copy.manualAccessibility.screenReader[0].environment.browser = "TeL.  1 (604) 555/1212"; }],
-    ["browser Arabic-Indic phone", (copy) => { copy.manualAccessibility.screenReader[0].environment.browser = "+١ ٦٠٤ ٥٥٥ ١٢١٢"; }],
-    ["OS Unicode phone", (copy) => { copy.manualAccessibility.screenReader[0].environment.operatingSystem = "＋１ ６０４ ５５５ １２１２"; }],
-    ["browser C1 control", (copy) => { copy.manualAccessibility.screenReader[0].environment.browser = "Chrome \u0085 Safari"; }],
-    ["browser format character", (copy) => { copy.manualAccessibility.screenReader[0].environment.browser = "Chrome\u200bSafari"; }],
-    ["AT version contact", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnologyVersion = "contact 15.6"; }],
-    ["browser version entity", (copy) => { copy.manualAccessibility.screenReader[0].environment.browserVersion = "participant&#64;example.com 18"; }],
-    ["OS version URL", (copy) => { copy.manualAccessibility.screenReader[0].environment.operatingSystemVersion = "https://example.invalid/15.6"; }],
-    ["OS accented non-ASCII", (copy) => { copy.manualAccessibility.screenReader[0].environment.operatingSystem = "Système"; }],
-    ["keyboard email", (copy) => { copy.manualAccessibility.keyboard[0].environment = "participant@example.com"; }],
-    ["forced-colors contact", (copy) => { copy.manualAccessibility.forcedColorsAndCvd[0].environment = "participant contact"; }],
-    ["provider encoded email", (copy) => { copy.ownerInputs.fieldPerformanceProvider = "provider%40example.com"; copy.fieldPerformance.forEach((row) => { row.provider = copy.ownerInputs.fieldPerformanceProvider; }); }],
-    ["provider disallowed punctuation", (copy) => { copy.ownerInputs.fieldPerformanceProvider = "Provider:Production"; copy.fieldPerformance.forEach((row) => { row.provider = copy.ownerInputs.fieldPerformanceProvider; }); }],
-    ["provider leading whitespace", (copy) => { copy.ownerInputs.fieldPerformanceProvider = " Provider"; copy.fieldPerformance.forEach((row) => { row.provider = copy.ownerInputs.fieldPerformanceProvider; }); }],
-    ["provider over 128 characters", (copy) => { copy.ownerInputs.fieldPerformanceProvider = "A".repeat(129); copy.fieldPerformance.forEach((row) => { row.provider = copy.ownerInputs.fieldPerformanceProvider; }); }]
+    ...reproduced.map((value) => [value, (copy) => { copy.manualAccessibility.screenReader[0].environment.browser = value; }]),
+    ["free-form keyboard environment", (copy) => { copy.manualAccessibility.keyboard[0].environment = "Chrome 151 on macOS 15.6"; }],
+    ["unknown browser", (copy) => { copy.manualAccessibility.keyboard[0].environment.browser = "Chromium"; }],
+    ["unknown operating system", (copy) => { copy.manualAccessibility.keyboard[0].environment.operatingSystem = "UnknownOS"; }],
+    ["unknown assistive technology", (copy) => { copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = "UnknownAT"; }],
+    ["email in browser version", (copy) => { copy.manualAccessibility.keyboard[0].environment.browserVersion = "participant@example.com"; }],
+    ["phone in OS version", (copy) => { copy.manualAccessibility.keyboard[0].environment.operatingSystemVersion = "604.555.1212"; }],
+    ["leading-zero version", (copy) => { copy.manualAccessibility.keyboard[0].environment.browserVersion = "015.6"; }],
+    ["too many version components", (copy) => { copy.manualAccessibility.keyboard[0].environment.browserVersion = "1.2.3.4"; }],
+    ["extra environment field", (copy) => { copy.manualAccessibility.keyboard[0].environment.device = "desktop"; }],
+    ["missing environment field", (copy) => { delete copy.manualAccessibility.keyboard[0].environment.browserVersion; }]
   ];
   for (const [name, mutate] of cases) {
     const copy = completeEvidence(); mutate(copy);
@@ -299,21 +273,33 @@ test("manual environment and provider strings reject non-ASCII, controls and enc
   }
 });
 
-test("technical environment allowlist accepts its exact printable-ASCII boundary", () => {
-  for (const value of ["A".repeat(128), "RUM_Provider+v1.2(build)/region-west"]) {
-    const copy = completeEvidence();
-    copy.ownerInputs.fieldPerformanceProvider = value;
-    for (const row of copy.fieldPerformance) row.provider = value;
-    assert.doesNotThrow(() => validateEvidence(copy, protocol), value);
-  }
+test("manual environments accept only supported products with numeric versions", () => {
   const copy = completeEvidence();
-  copy.manualAccessibility.keyboard[0].environment = "Chrome_151+stable (macOS)/arm64";
-  assert.doesNotThrow(() => validateEvidence(copy, protocol));
-  copy.manualAccessibility.keyboard[0].environment = "Chrome at version 151.0";
-  assert.doesNotThrow(() => validateEvidence(copy, protocol));
-  for (const value of ["participant-atlas 1.2", "Chrome.at.version.151.0", "RUM_dot_product 604.55.12", "AT+Adapter/Version 1.2"]) {
-    copy.manualAccessibility.keyboard[0].environment = value;
-    assert.doesNotThrow(() => validateEvidence(copy, protocol), value);
+  for (const environment of [
+    { browser: "Chrome", browserVersion: "151", operatingSystem: "Linux", operatingSystemVersion: "6.12" },
+    { browser: "Edge", browserVersion: "151.2", operatingSystem: "Windows", operatingSystemVersion: "11" },
+    { browser: "Firefox", browserVersion: "152.0.1", operatingSystem: "Windows", operatingSystemVersion: "11.0" },
+    { browser: "Safari", browserVersion: "18.6", operatingSystem: "macOS", operatingSystemVersion: "15.6" }
+  ]) {
+    copy.manualAccessibility.keyboard[0].environment = environment;
+    assert.doesNotThrow(() => validateEvidence(copy, protocol));
+  }
+  for (const assistiveTechnology of ["JAWS", "NVDA", "Narrator", "Orca", "VoiceOver"]) {
+    copy.manualAccessibility.screenReader[0].environment.assistiveTechnology = assistiveTechnology;
+    copy.manualAccessibility.screenReader[0].environment.assistiveTechnologyVersion = "15.6";
+    assert.doesNotThrow(() => validateEvidence(copy, protocol));
+  }
+});
+
+test("field provider and configuration accept only owner-bound opaque codes", () => {
+  for (const [name, mutate] of [
+    ["provider contact text", (copy) => { copy.ownerInputs.fieldPerformanceProviderCode = "participant at example dot com"; }],
+    ["provider unknown code", (copy) => { copy.ownerInputs.fieldPerformanceProviderCode = "provider-production"; }],
+    ["provider row drift", (copy) => { copy.fieldPerformance[0].providerCode = provider(2); }],
+    ["configuration contact text", (copy) => { copy.ownerInputs.fieldPerformanceConfigurationReference = "participant@example.com"; }]
+  ]) {
+    const copy = completeEvidence(); mutate(copy);
+    assert.throws(() => validateEvidence(copy, protocol), name);
   }
 });
 
@@ -374,12 +360,12 @@ test("field completion is exactly bound to owner-approved window, provider, conf
   const cases = [
     ["missing owner window start", (copy) => { copy.ownerInputs.fieldPerformanceWindowStartedAt = null; }],
     ["reversed owner window", (copy) => { copy.ownerInputs.fieldPerformanceWindowEndedAt = "2026-08-01T00:00:00Z"; }],
-    ["missing owner provider", (copy) => { copy.ownerInputs.fieldPerformanceProvider = ""; }],
+    ["missing owner provider", (copy) => { copy.ownerInputs.fieldPerformanceProviderCode = ""; }],
     ["missing owner configuration", (copy) => { copy.ownerInputs.fieldPerformanceConfigurationReference = ""; }],
     ["row window start drift", (copy) => { copy.fieldPerformance[0].windowStartedAt = "2026-09-02T00:00:00Z"; }],
     ["row window end drift", (copy) => { copy.fieldPerformance[0].windowEndedAt = "2026-09-28T00:00:00Z"; }],
     ["row origin drift", (copy) => { copy.fieldPerformance[0].urlOrigin = "https://other.invalid"; }],
-    ["row provider drift", (copy) => { copy.fieldPerformance[0].provider = "OtherProvider"; }],
+    ["row provider drift", (copy) => { copy.fieldPerformance[0].providerCode = provider(2); }],
     ["row configuration drift", (copy) => { copy.fieldPerformance[0].configurationReference = "other-config"; }],
     ["row sampling-decision drift", (copy) => { copy.fieldPerformance[0].samplingDecisionReference = "other-sampling"; }],
     ["row privacy-review drift", (copy) => { copy.fieldPerformance[0].privacyReviewReference = "other-privacy"; }]

@@ -22,7 +22,7 @@ The accountable owner must supply, rather than the build team infer:
 4. Approved bilingual consent-form version.
 5. Recruitment approval reference and privacy-review reference.
 6. Field-performance sampling decision and exact reference.
-7. Exact UTC measurement-window start and end, minimum eligible aggregate samples per locale, HTTPS origin, provider name, immutable configuration reference and privacy-review reference.
+7. Exact UTC measurement-window start and end, minimum eligible aggregate samples per locale, HTTPS origin, opaque provider code, immutable configuration reference and privacy-review reference.
 
 Keep every corresponding field `null` until that decision exists. Do not recruit or contact anyone from this package.
 
@@ -67,14 +67,14 @@ Every evidence timestamp uses canonical whole-second UTC: `YYYY-MM-DDTHH:MM:SSZ`
 Use a human tester and record environment, start/end timestamps, issue IDs and an attestation reference.
 
 - Keyboard: location, place, Explore and bilingual-parity templates in English and French. Verify keyboard-only completion, visible focus, DOM order, no trap and no blocked task.
-- Screen reader: place and location in both languages. The environment is structured, not free text, and requires nonblank `assistiveTechnology`, `assistiveTechnologyVersion`, `browser`, `browserVersion`, `operatingSystem` and `operatingSystemVersion`; placeholders such as “test”, “unknown” or “generic” fail. Verify headings, landmarks, link/control names, event order, figures, Unknown reasons, provenance and table alternatives.
+- Screen reader: place and location in both languages. Verify headings, landmarks, link/control names, event order, figures, Unknown reasons, provenance and table alternatives.
 - Forced colours/CVD: all four templates, both languages, in forced-colours, grayscale, protanopia, deuteranopia and tritanopia modes. A person must inspect content, focus, links, evidence shapes, confidence bars, Unknown treatment, charts and legends. Automated emulation does not fill this evidence.
 
-Manual environment and product/version fields, and the field provider, use one bounded technical-value grammar: 1–128 printable ASCII characters, starting with a letter or digit, followed only by letters, digits, spaces, `.`, `_`, `+`, `(`, `)`, `/` or `-`, with no leading or trailing whitespace. This admits the documented VoiceOver, Safari, macOS and provider forms. It rejects all non-ASCII—including Unicode digits—all control and format characters, `&` entity forms, percent encoding, direct email and obfuscations using `(at)`, spaced `at`, separator-delimited `at`, word-form `dot` or split top-level-domain letters, and 3–3–4 phone forms using punctuation or the word `dot`, parentheses, an optional leading `1` or `tel`, contact/address terms and URLs.
+Every manual row has a structured environment; free text is invalid. Keyboard and forced-colours/CVD rows require exactly `browser`, `browserVersion`, `operatingSystem` and `operatingSystemVersion`. Screen-reader rows additionally require `assistiveTechnology` and `assistiveTechnologyVersion`. Browsers are limited to Chrome, Edge, Firefox and Safari; operating systems to Linux, macOS and Windows; assistive technologies to JAWS, NVDA, Narrator, Orca and VoiceOver. Versions contain one to three dot-separated numeric components, each from 0 to 999 with no leading zero. Unknown products, extra fields and contact-capable text fail structurally.
 
 ## Field performance
 
-Collect only aggregate place-page LCP by locale. The result is eligible only when p75 is strictly below 2,000 ms for both English and French, each locale meets the owner-approved sample minimum, and every row exactly repeats the approved UTC window, HTTPS origin, provider, configuration reference, sampling-decision reference and privacy-review reference. The origin must equal the URL parser’s canonical HTTPS origin exactly: no credentials, port, path or trailing slash, query, fragment, Unicode/encoded hostname alias, or invalid DNS/IP hostname. Strip query strings and retain no IP, user ID, precise location, full URL or raw event. Until the owner and privacy reviewer approve every one of those inputs, do not enable collection.
+Collect only aggregate place-page LCP by locale. The result is eligible only when p75 is strictly below 2,000 ms for both English and French, each locale meets the owner-approved sample minimum, and every row exactly repeats the approved UTC window, HTTPS origin, opaque provider code, configuration reference, sampling-decision reference and privacy-review reference. Provider codes use `provider-` plus 16 lowercase hexadecimal characters; configuration remains an opaque `ref-` reference, so neither field can carry a provider name or contact text. The origin must equal the URL parser’s canonical HTTPS origin exactly: no credentials, port, path or trailing slash, query, fragment, Unicode/encoded hostname alias, or invalid DNS/IP hostname. Strip query strings and retain no IP, user ID, precise location, full URL or raw event. Until the owner and privacy reviewer approve every one of those inputs, do not enable collection.
 
 ## Outside accessibility review
 

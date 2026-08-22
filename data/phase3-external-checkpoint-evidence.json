@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "witness-tree/phase3-external-checkpoint-evidence/2",
+  "schemaVersion": "witness-tree/phase3-external-checkpoint-evidence/3",
   "protocolVersion": "witness-tree/phase3-external-checkpoint-protocol/1",
   "status": "pending-real-evidence",
   "completionClaimed": false,
@@ -17,7 +17,7 @@
     "fieldPerformanceUrlOrigin": null,
     "fieldPerformanceWindowStartedAt": null,
     "fieldPerformanceWindowEndedAt": null,
-    "fieldPerformanceProvider": null,
+    "fieldPerformanceProviderCode": null,
     "fieldPerformanceConfigurationReference": null
   },
   "usability": {
