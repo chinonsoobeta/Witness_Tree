@@ -53,6 +53,22 @@ verify_and_retain_payload() {
   print -- "Completed and retained $id at its exact provider version; retain local state for redacted independent read-back."
 }
 
+verify_reconciled_ecoforest() {
+  local id="$1" payload="$2" bytes="$3" state="$4" version="$5" composite="$6" state_before payload_head retention retention_instant
+  [[ "$id" == "qc-ecoforest-map-2026-08-14" ]] || fail "Reconciled fast path received an unauthorized artifact; no storage call was attempted" 70
+  [[ "$version" != "" && "$version" != "null" && "$composite" =~ '^[A-Za-z0-9+/=]+-[0-9]+$' ]] || fail "Reconciled ecoforest state is incomplete or malformed; no storage write was attempted" 75
+  state_before="$(<"$state")" || fail "Reconciled ecoforest private state could not be read; no storage write was attempted" 75
+  payload_head="$(aws s3api head-object --bucket "$BUCKET" --key "$payload" --version-id "$version" --checksum-mode ENABLED --region "$REGION" --output json --no-cli-pager 2>"$TMP/${id}.reconciled-head.stderr")" || fail "Reconciled ecoforest exact-version read-back failed; no storage write was attempted" 75
+  [[ "$(<"$state")" == "$state_before" ]] || fail "Reconciled ecoforest private state changed during exact-version read-back; no storage write was attempted" 75
+  jq -e --arg version "$version" --argjson bytes "$bytes" --arg checksum "$composite" '.VersionId==$version and .ContentLength==$bytes and .ChecksumType=="COMPOSITE" and .ChecksumSHA256==$checksum' <<<"$payload_head" >/dev/null || fail "Reconciled ecoforest exact-version bytes or composite checksum did not match; no storage write was attempted" 75
+  retention="$(aws s3api get-object-retention --bucket "$BUCKET" --key "$payload" --version-id "$version" --region "$REGION" --output json --no-cli-pager 2>"$TMP/${id}.reconciled-retention.stderr")" || fail "Reconciled ecoforest retention read-back failed; no storage write was attempted" 75
+  [[ "$(<"$state")" == "$state_before" ]] || fail "Reconciled ecoforest private state changed during retention read-back; no storage write was attempted" 75
+  jq -e '.Retention.Mode=="COMPLIANCE"' <<<"$retention" >/dev/null || fail "Reconciled ecoforest retention was not COMPLIANCE; no storage write was attempted" 75
+  retention_instant="$(jq -er '.Retention.RetainUntilDate | select(type=="string" and length>0)' <<<"$retention")" || fail "Reconciled ecoforest retention date was absent; no storage write was attempted" 75
+  node -e 'const [expected, actual] = process.argv.slice(1); if (!Number.isFinite(Date.parse(actual)) || Date.parse(actual) !== Date.parse(expected)) process.exit(1)' "$RETAIN_UNTIL" "$retention_instant" || fail "Reconciled ecoforest retention date did not match; no storage write was attempted" 75
+  print -- "Reconciled ecoforest payload verified; its path performed no multipart or storage write operation."
+}
+
 is_unambiguous_nosuchupload() {
   local error_file="$1" text
   text="$(sed '/^[[:space:]]*$/d' "$error_file")"
@@ -135,6 +151,12 @@ promote_one() {
 
   sidecar_sha="$(sha256_hex "$sidecar_file")"; sidecar_b64="$(sha256_b64 "$sidecar_file")"; sidecar_version="$(jq -r '.sidecarVersionId // empty' "$state")"
   upload_id="$(jq -r '.uploadId // empty' "$state")"
+  version="$(jq -r '.payloadVersionId // empty' "$state")"; composite="$(jq -r '.compositeChecksumSha256 // empty' "$state")"
+  if [[ "$id" == "qc-ecoforest-map-2026-08-14" && ( -n "$version" || -n "$composite" ) ]]; then
+    [[ -n "$version" && -n "$composite" ]] || fail "Reconciled ecoforest private state is partial; no ListParts or storage write was attempted" 75
+    verify_reconciled_ecoforest "$id" "$payload" "$bytes" "$state" "$version" "$composite"
+    return 0
+  fi
   if [[ -n "$upload_id" ]]; then
     [[ "$(jq -r '.initiation' "$state")" == "accepted" && -n "$sidecar_version" ]] || fail "Saved multipart state lacks its exact accepted sidecar version; state was preserved and no upload or overwrite was attempted" 75
     list_error="$TMP/${id}.list-parts.stderr"
