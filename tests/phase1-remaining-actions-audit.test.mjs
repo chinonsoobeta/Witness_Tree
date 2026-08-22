@@ -13,7 +13,8 @@ const args = [
   read("data/current-wildfire-owner-admission.json"),
   read("data/phase1-outreach-reply-audit.json"),
   read("data/partial-ledger-owner-review-outreach-package.json"),
-  read("data/phase1-access-blocker-resolution.json")
+  read("data/phase1-access-blocker-resolution.json"),
+  read("data/phase1-phase3-owner-approvals-2026-08-21.json")
 ];
 
 test("remaining-action audit covers every non-admitted row and preserves the baseline", () => {
@@ -60,7 +61,7 @@ test("shared artifacts, action bindings, and owner boundaries reject divergence"
   assert.throws(() => validatePhase1RemainingActionsAudit(staleAction, ...args.slice(1)));
 
   const unauthorized = structuredClone(args[0]);
-  unauthorized.actions[0].ownerRunAuthorized = true;
+  unauthorized.actions.find(({ id }) => id === "production-admission-and-release-gate").ownerRunAuthorized = true;
   assert.throws(() => validatePhase1RemainingActionsAudit(unauthorized, ...args.slice(1)));
 
   const missingRow = structuredClone(args[0]);

@@ -9,6 +9,7 @@ const context = {
   remaining: read("data/phase1-remaining-actions-audit.json"),
   remoteDecisions: read("data/phase1-remote-source-admission-decisions.json"),
   wildfire: read("data/current-wildfire-owner-admission.json"),
+  approvals: read("data/phase1-phase3-owner-approvals-2026-08-21.json"),
 };
 
 test("consolidates every local/remote Phase 1 row into an owner-decision queue", () => {
@@ -71,4 +72,14 @@ test("keeps the dependency order and current-wildfire archive condition fail-clo
   const wildfireDrift = structuredClone(queue);
   wildfireDrift.queueRows.find((row) => row.id === "bc-wildfire").archiveGate.verifiedObjects = 5;
   assert.throws(() => validatePhase1OwnerDecisionQueue(wildfireDrift, context), /deep-equal|verifiedObjects/);
+});
+
+test("recorded archive approvals remove duplicate approval requests without implying completion", () => {
+  const queue = read("data/phase1-owner-decision-queue.json");
+  for (const id of ["fed-2023-ridings", "elections-canada-45th-files", "qc-current-ecoforest", "qc-original-current-inventory", "qc-fourth-inventory"]) {
+    const row = queue.queueRows.find((candidate) => candidate.id === id);
+    assert.equal(row.ownerDecisionStatus.archivePromotion, "approved-owner-local-execution-evidence-pending");
+    assert.equal(row.productionEligible, false);
+    assert.equal(row.exactNextSteps.some((step) => /obtain.*approval/i.test(step)), false);
+  }
 });

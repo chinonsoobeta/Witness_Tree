@@ -280,7 +280,7 @@
       "readiness": "data/phase1-immutable-promotion-readiness.json",
       "ownerReconciliation": "data/phase1-archive-owner-command-reconciliation-2026-08-20.json",
       "runner": "scripts/run-qc-approved-multipart-promotion.sh",
-      "currentStatus": "no-write preflight passed for both exact local Québec archives; no remote object or sidecar completion/readback is recorded",
+      "currentStatus": "exact owner approval and no-write preflight are recorded; the public attestation remains pending and no canonical remote completion/readback is integrated",
       "localPreflight": {
         "status": "passed-no-write",
         "command": "zsh scripts/run-qc-approved-multipart-promotion.sh --preflight",
@@ -304,7 +304,7 @@
       "preparation": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
       "readiness": "data/phase1-immutable-promotion-readiness.json",
       "runner": "scripts/qc-fourth-inventory-immutable-promotion.mjs",
-      "currentStatus": "no-write local preflight passed for 61 source payload/evidence files and the deterministic 62nd manifest; separate artifact-set, COMPLIANCE-retention, least-privilege-IAM, and MFA approvals are absent, and no immutable credit is claimed",
+      "currentStatus": "no-write local preflight and the four separate artifact-set, COMPLIANCE-retention, least-privilege-IAM, and MFA approvals are recorded; controlled paths, fresh owner execution and exact readbacks remain pending, with no immutable credit claimed",
       "localPreflight": {
         "status": "passed-no-write",
         "command": "node scripts/qc-fourth-inventory-immutable-promotion.mjs --preflight --data-root /Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data",
@@ -330,10 +330,10 @@
       "lawfulImmediacy": "delegate-preflight-now",
       "actor": "delegate-and-owner",
       "executableNow": true,
-      "executionBoundary": "Only redacted readback inspection and the no-write local preflight are executable without owner input; no canopy upload or completion command is authorized by this audit.",
+      "executionBoundary": "The federal-only approval is recorded, but execution remains owner-local and MFA-gated; this audit performs no live action and does not revisit the already archived canopy or harvest artifacts.",
       "requiresOwnerInput": true,
       "requiresExternalReply": false,
-      "ownerRunAuthorized": false,
+      "ownerRunAuthorized": true,
       "rows": ["fed-2023-ridings", "elections-canada-45th-files"],
       "physicalArtifactGroup": "national-two-artifacts",
       "evidenceRefs": [
@@ -342,67 +342,70 @@
         "data/phase1-national-archive-finalization-audit.json",
         "data/nrcan-canopy-height-remote-archive-evidence.json",
         "data/phase1-archive-owner-command-reconciliation-2026-08-20.json",
-        "data/phase1-owner-decision-queue.json"
+        "data/phase1-owner-decision-queue.json",
+        "data/phase1-phase3-owner-approvals-2026-08-21.json"
       ],
       "runnerOrPreflight": {
         "safeNow": "zsh scripts/run-phase1-approved-promotion.sh --preflight",
         "preflightResult": "passed-no-write for the exact shared federal artifact; no TOTP/AWS call",
-        "ownerExecution": "BLOCKED: use only a freshly approved federal-only path that does not revisit the already-archived harvest or canopy artifacts."
+        "ownerExecution": "AUTHORIZED OWNER-LOCAL ONLY: zsh scripts/run-phase1-approved-promotion.sh --run-federal; fresh MFA and exact post-run readbacks remain required."
       },
       "prerequisites": [
         "Canopy and harvest raw archive evidence is complete; do not re-upload, re-complete, or re-retain either artifact.",
         "The federal payload remains local-only and its sidecar is only a planned exact key until owner execution.",
-        "Owner confirms a separate federal-only execution path that does not revisit harvest or canopy."
+        "The exact separate federal-only execution approval is recorded; do not revisit harvest or canopy."
       ],
-      "remainingSteps": ["run the safe federal-only local preflight", "obtain fresh federal owner approval", "owner performs only the separately authorized federal promotion", "integrate exact federal immutable and recovery readbacks", "record named federal source decisions and downstream gates"],
+      "remainingSteps": ["owner performs only the already-authorized federal-only promotion with fresh MFA", "integrate exact federal immutable and recovery readbacks", "record named federal source decisions and downstream gates"],
       "scoreImpact": {"currentRawCreditDelta": 0, "maximumRawCreditDelta": 0.5, "maximumFormalPercentagePointDelta": 0.483871, "productionAdmissionDelta": 0},
-      "blockers": ["The federal artifact and its sidecar are not present and still require a separate owner-approved path."]
+      "blockers": ["No canonical federal payload/sidecar completion or exact readback is integrated; approval is not execution evidence."]
     },
     {
       "id": "quebec-current-original-archive-preflight-and-owner-promotion",
       "rank": 2,
-      "priorityBasis": "Safe local preflight is available now for two exact prepared artifacts; completion still needs owner approval and live readbacks.",
+      "priorityBasis": "The exact approval and safe local preflight are recorded for two prepared artifacts; completion still needs the owner-local run and digest-bound exact readbacks.",
       "lawfulImmediacy": "delegate-preflight-now",
       "actor": "delegate-and-owner",
       "executableNow": true,
-      "executionBoundary": "Only the no-write local preflight is executable without owner input; --run remains blocked.",
+      "executionBoundary": "The approved --run remains owner-local and MFA-gated; this audit performs no live action and treats completion as false until the exact private/redacted attestation pair passes.",
       "requiresOwnerInput": true,
       "requiresExternalReply": false,
-      "ownerRunAuthorized": false,
+      "ownerRunAuthorized": true,
       "rows": ["qc-current-ecoforest", "qc-original-current-inventory"],
       "physicalArtifactGroup": "quebec-provincial-current-and-original",
       "evidenceRefs": [
         "data/qc-immutable-promotion-preparation.json",
         "data/phase1-immutable-promotion-readiness.json",
         "data/phase1-archive-owner-command-reconciliation-2026-08-20.json",
-        "data/phase1-owner-decision-queue.json"
+        "data/phase1-owner-decision-queue.json",
+        "data/phase1-phase3-owner-approvals-2026-08-21.json",
+        "data/qc-immutable-promotion-attestation.json"
       ],
       "runnerOrPreflight": {
         "safeNow": "zsh scripts/run-qc-approved-multipart-promotion.sh --preflight",
         "preflightResult": "passed-no-write; both exact local archives revalidated with their planned payload/manifest keys; no TOTP/AWS call",
-        "ownerExecution": "BLOCKED: zsh scripts/run-qc-approved-multipart-promotion.sh --run"
+        "ownerExecution": "AUTHORIZED OWNER-LOCAL ONLY: zsh scripts/run-qc-approved-multipart-promotion.sh --run; after success, capture and validate the mode-600 private/digest-bound redacted attestation pair."
       },
       "prerequisites": [
-        "Fresh owner approval for both exact payloads, four exact keys, ca-central-1, sequential multipart execution, and COMPLIANCE retention.",
+        "The owner approval for both exact payloads, four exact keys, ca-central-1, sequential multipart execution, and COMPLIANCE retention is recorded.",
         "Both controlled local archives passed exact byte-length and SHA-256 preflight; deterministic sidecars remain planned only and no local or remote sidecar was written.",
         "Owner confirms the existing authorized execution and version-specific payload, sidecar, retention, and recovery readbacks.",
         "Integrate redacted readbacks before changing either ledger row."
       ],
-      "remainingSteps": ["run the safe local preflight", "obtain fresh owner approval", "owner performs the separately authorized promotion", "integrate immutable and recovery readbacks", "record two named owner decisions and downstream gates"],
+      "remainingSteps": ["owner completes the already-authorized promotion with fresh MFA", "capture and validate the mode-600 private/digest-bound redacted attestation pair", "integrate exact immutable readbacks without exposing private identifiers", "record two named owner decisions and downstream gates"],
       "scoreImpact": {"currentRawCreditDelta": 0, "maximumRawCreditDelta": 0.5, "maximumFormalPercentagePointDelta": 0.483871, "productionAdmissionDelta": 0},
-      "blockers": ["Both planned prefixes are empty in the reconciled read-only state.", "No archive or production admission is implied by local preparation."]
+      "blockers": ["The canonical public attestation remains pending; no upload completion, exact readback, archive credit or production admission is inferred."]
     },
     {
       "id": "quebec-fourth-archive-preflight-and-owner-approvals",
       "rank": 3,
-      "priorityBasis": "The exact 62-key product passed a read-only local byte/SHA preflight now, but four separately named approvals are still required before any owner execution.",
+      "priorityBasis": "The exact 62-key product passed its no-write preflight and all four separately named approvals are recorded; controlled paths, fresh MFA execution and exact readbacks remain.",
       "lawfulImmediacy": "delegate-preflight-now",
       "actor": "delegate-and-owner",
       "executableNow": true,
-      "executionBoundary": "Only the no-write local checksum preflight is executable; it generated the manifest in memory and made no AWS/IAM call; no execute command is authorized.",
+      "executionBoundary": "The approved execute template remains owner-local and requires controlled absolute paths plus fresh MFA; this audit performs no live action and claims no completion.",
       "requiresOwnerInput": true,
       "requiresExternalReply": false,
-      "ownerRunAuthorized": false,
+      "ownerRunAuthorized": true,
       "rows": ["qc-fourth-inventory"],
       "physicalArtifactGroup": "quebec-fourth-inventory-56-sheet-product",
       "evidenceRefs": [
@@ -411,20 +414,21 @@
         "data/qc-fourth-inventory-evidence.json",
         "data/phase1-immutable-promotion-readiness.json",
         "data/phase1-archive-owner-command-reconciliation-2026-08-20.json",
-        "data/phase1-owner-decision-queue.json"
+        "data/phase1-owner-decision-queue.json",
+        "data/phase1-phase3-owner-approvals-2026-08-21.json"
       ],
       "runnerOrPreflight": {
         "safeNow": "node scripts/qc-fourth-inventory-immutable-promotion.mjs --preflight --data-root /Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data",
         "preflightResult": "passed-no-write; 61 source payload/evidence files plus deterministic 62nd manifest checked; exact keys and IAM desired state validated; no AWS/IAM call",
-        "ownerExecution": "BLOCKED: execution requires exact-artifact, irreversible COMPLIANCE-retention, least-privilege-IAM, and MFA-session approvals."
+        "ownerExecution": "AUTHORIZED OWNER-LOCAL TEMPLATE ONLY: use the exact ownerCommandTemplate in data/phase1-phase3-owner-approvals-2026-08-21.json with controlled absolute paths and a fresh MFA session."
       },
       "prerequisites": [
         "All 61 local source files passed exact byte-length and SHA-256 checks; the deterministic 62nd manifest passed its pinned bytes/SHA check; all 62 exact keys and IAM desired state passed validation.",
-        "Owner approves the exact artifact set, least-privilege policy, irreversible COMPLIANCE retention, and MFA session separately.",
+        "The separate exact artifact-set, least-privilege policy, irreversible COMPLIANCE retention, and MFA-session approvals are recorded.",
         "Owner confirms the authorized execution path and exact payload/sidecar version, retention, and recovery readbacks.",
         "Review independent redacted readback and recovery evidence before any ledger or production decision."
       ],
-      "remainingSteps": ["retain the no-write preflight receipt", "obtain the four approvals", "owner performs the separately authorized 62-key promotion", "integrate immutable and recovery readbacks", "record named source decision and downstream gates"],
+      "remainingSteps": ["retain the no-write preflight receipt", "owner supplies controlled paths and a fresh MFA session for the already-authorized 62-key promotion", "integrate immutable and recovery readbacks", "record named source decision and downstream gates"],
       "scoreImpact": {"currentRawCreditDelta": 0, "maximumRawCreditDelta": 0.25, "maximumFormalPercentagePointDelta": 0.2419355, "productionAdmissionDelta": 0},
       "blockers": ["No remote object or readback is recorded.", "The 62 keys are one physical product, not 62 ledger credits."]
     },
@@ -501,10 +505,10 @@
       "lawfulImmediacy": "delegate-preflight-now-owner-run-later",
       "actor": "delegate-and-owner",
       "executableNow": true,
-      "executionBoundary": "Only the no-write local evidence/preflight checks are executable now; recovery or mutation provenance and downstream production claims remain conditional.",
+      "executionBoundary": "The exact archive/readback approval is recorded, but MFA execution remains owner-local; this audit performs no live action and recovery/mutation provenance plus downstream claims remain conditional.",
       "requiresOwnerInput": true,
       "requiresExternalReply": false,
-      "ownerRunAuthorized": false,
+      "ownerRunAuthorized": true,
       "rows": ["cwfis-current", "bc-wildfire", "ab-wildfire", "on-fire-disturbance"],
       "physicalArtifactGroup": "current-wildfire-six-release-inputs",
       "evidenceRefs": [
@@ -513,13 +517,14 @@
         "data/current-wildfire-raw-archive-evidence.json",
         "data/current-wildfire-derived-archive-evidence.json",
         "data/phase1-immutable-promotion-readiness.json",
-        "data/phase1-owner-decision-queue.json"
+        "data/phase1-owner-decision-queue.json",
+        "data/phase1-phase3-owner-approvals-2026-08-21.json"
       ],
       "runnerOrPreflight": {
         "safeNow": "zsh scripts/run-current-wildfire-approved-promotion.sh --preflight",
         "derivedReadbackPreflight": "zsh scripts/run-wildfire-derived-readback.sh --preflight <mode-600-owner-approval-file>",
         "derivedReadbackChecker": "scripts/check-current-wildfire-derived-archive-evidence.mjs",
-        "ownerExecution": "BLOCKED: no durable signed or digest-bound exact-version archive proof, transformation/ingestion evidence, release or production admission is integrated; no owner run is authorized by this audit."
+        "ownerExecution": "AUTHORIZED OWNER-LOCAL PROOF CAPTURE ONLY under data/phase1-phase3-owner-approvals-2026-08-21.json; concrete version/checksum/retention/recovery evidence remains unproved until validated."
       },
       "prerequisites": ["Preserve the six exact local payload identities and approved as-of semantics without treating placeholder attestations as readbacks.", "Implement and validate a durable signed or digest-bound attestation verifier for concrete version, provider checksum, exact-version readback, retention and Canadian storage evidence.", "Record separate transformation, ingestion, release and production-admission evidence.", "Keep production eligibility false until every proof is integrated."],
       "remainingSteps": ["implement and validate durable archive attestation verification", "prove all six exact objects", "validate transformation and ingestion evidence", "record release and production admission", "re-run the fail-closed gate"],
@@ -634,13 +639,13 @@
       "lawfulImmediacy": "owner-run-read-only-preflight-then-mfa-exercise",
       "actor": "owner-and-archive-operator",
       "executableNow": false,
-      "executionBoundary": "This audit does not call the owner-local AWS runner or create an exercise object.",
+      "executionBoundary": "The control exercise approval is recorded, but execution remains owner-local and MFA-gated; this audit does not call AWS or create an exercise object.",
       "requiresOwnerInput": true,
       "requiresExternalReply": false,
-      "ownerRunAuthorized": false,
+      "ownerRunAuthorized": true,
       "rows": [],
       "physicalArtifactGroup": null,
-      "evidenceRefs": ["data/phase1-current-state-completion-audit.json", "scripts/run-phase1-archive-owner-exercise.sh", "scripts/check-phase1-archive-exercise-readback.mjs"],
+      "evidenceRefs": ["data/phase1-current-state-completion-audit.json", "data/phase1-phase3-owner-approvals-2026-08-21.json", "scripts/run-phase1-archive-owner-exercise.sh", "scripts/check-phase1-archive-exercise-readback.mjs"],
       "runnerOrPreflight": {"safeNow": "zsh scripts/run-phase1-archive-owner-exercise.sh --preflight", "ownerExercise": "zsh scripts/run-phase1-archive-owner-exercise.sh --run", "checker": "scripts/check-phase1-archive-exercise-readback.mjs"},
       "prerequisites": ["Owner supplies the approved MFA session and operator role.", "Capture legal-hold ON/OFF, unchanged COMPLIANCE retention, denied exact-version delete, and authorized recovery replica readback.", "Integrate redacted evidence through the existing checker."],
       "remainingSteps": ["owner runs the separate control exercise", "retain redacted readbacks", "run the checker", "keep completion false until every required field is present"],

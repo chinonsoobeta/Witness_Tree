@@ -47,6 +47,7 @@ const LOCAL_ARCHIVE = [
   "qc-original-current-inventory",
   "qc-fourth-inventory",
 ];
+const APPROVED_LOCAL_ARCHIVE = new Set(LOCAL_ARCHIVE);
 
 function sameArray(actual, expected, label) {
   assert.deepEqual(actual, expected, label);
@@ -152,10 +153,17 @@ function validateQueueRows(queue, context) {
 
   for (const id of LOCAL_ARCHIVE) {
     const row = queue.queueRows.find((candidate) => candidate.id === id);
-    assert.equal(row.ownerDecisionStatus.archivePromotion.startsWith("pending"), true);
-    assert.equal(row.ownerDecisionStatus.sourceLedger, "pending-after-archive");
+    assert.equal(APPROVED_LOCAL_ARCHIVE.has(id), true);
+    assert.equal(row.ownerDecisionStatus.archivePromotion, "approved-owner-local-execution-evidence-pending");
+    assert.equal(row.ownerDecisionStatus.sourceLedger, "recorded-approved-source-scope-awaiting-archive-evidence");
     assert.equal(row.ownerDecisionStatus.transformation, "pending-after-archive");
     assert.equal(row.ownerDecisionStatus.ingestion, "pending-after-archive");
+    assert.ok(row.evidenceRefs.includes("data/phase1-phase3-owner-approvals-2026-08-21.json"));
+  }
+  assert.equal(context.approvals.phase1.archiveApprovals.length, 4);
+  for (const approval of context.approvals.phase1.archiveApprovals.slice(0, 3)) {
+    assert.match(approval.status, /^approved-owner-local-execution/);
+    for (const id of approval.rows) assert.equal(queue.queueRows.find((row) => row.id === id).ownerDecisionStatus.archivePromotion, "approved-owner-local-execution-evidence-pending");
   }
 
   assert.deepEqual(context.remoteDecisions.decisions.map((decision) => decision.id), [
@@ -203,7 +211,7 @@ export function validatePhase1OwnerDecisionQueue(queue, context) {
   assert.equal(queue.schemaVersion, SCHEMA);
   assert.equal(queue.status, "owner-action-queue-read-only");
   assert.equal(queue.derivedFromHead, HEAD);
-  assert.match(queue.notice, /does not create an approval.*AWS.*transform.*production eligible/i);
+  assert.match(queue.notice, /creates no new approval.*AWS.*transform.*production eligible/i);
   assert.match(queue.selectionRule, /local-verified-profiled.*remote-verified-archived-profiled/);
   assert.deepEqual(queue.baseline, {
     productionRows: 31,
@@ -229,7 +237,7 @@ export function validatePhase1OwnerDecisionQueue(queue, context) {
   validateOrder(queue);
   assert.deepEqual(queue.claims, {
     ownerDecisionsCreated: false,
-    ownerApprovalsGranted: false,
+    newOwnerApprovalsGrantedByThisQueue: false,
     remoteMutationPerformed: false,
     externalMutationPerformed: false,
     transformed: false,
@@ -245,14 +253,15 @@ export function validatePhase1OwnerDecisionQueue(queue, context) {
 
 export async function checkPhase1OwnerDecisionQueue(root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..")) {
   const read = async (file) => JSON.parse(await readFile(path.join(root, file), "utf8"));
-  const [queue, ledger, remaining, remoteDecisions, wildfire] = await Promise.all([
+  const [queue, ledger, remaining, remoteDecisions, wildfire, approvals] = await Promise.all([
     read("data/phase1-owner-decision-queue.json"),
     read("data/phase1-production-source-ledger.json"),
     read("data/phase1-remaining-actions-audit.json"),
     read("data/phase1-remote-source-admission-decisions.json"),
     read("data/current-wildfire-owner-admission.json"),
+    read("data/phase1-phase3-owner-approvals-2026-08-21.json"),
   ]);
-  return validatePhase1OwnerDecisionQueue(queue, { ledger, remaining, remoteDecisions, wildfire });
+  return validatePhase1OwnerDecisionQueue(queue, { ledger, remaining, remoteDecisions, wildfire, approvals });
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {

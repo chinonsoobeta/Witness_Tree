@@ -40,6 +40,13 @@ const LOCAL_AUDIT_GAPS = new Set([
   "local-archive-groups-live-evidence",
   "partial-and-access-artifact-resolution"
 ]);
+const OWNER_RUN_APPROVALS = new Map([
+  ["national-local-archive-preflight-and-owner-promotion", "federal-electoral-archive"],
+  ["quebec-current-original-archive-preflight-and-owner-promotion", "quebec-current-original-archive"],
+  ["quebec-fourth-archive-preflight-and-owner-approvals", "quebec-fourth-inventory-archive"],
+  ["current-wildfire-derived-archive-preflight-and-owner-promotion", "current-wildfire-exact-archive-proof"],
+  ["normal-archive-control-exercise", "archive-control"]
+]);
 
 function assertExistingReferences(audit) {
   for (const action of audit.actions) {
@@ -167,7 +174,7 @@ function validateLocalImplementationAudit(local, actions, ledger) {
   assert.equal(ledger.entries.every((entry) => entry.proof.productionAdmission === false && entry.productionEligible === false), true);
 }
 
-export function validatePhase1RemainingActionsAudit(audit, ledger, currentState, readiness, immutable, wildfire, replyAudit, partialOutreach, accessBlocker) {
+export function validatePhase1RemainingActionsAudit(audit, ledger, currentState, readiness, immutable, wildfire, replyAudit, partialOutreach, accessBlocker, approvals) {
   assert.equal(audit.schemaVersion, "witness-tree/phase1-remaining-actions-audit/1");
   assert.equal(audit.status, "blocked-read-only");
   assert.match(audit.notice, /no AWS call.*email.*form submission.*production-eligibility change/i);
@@ -222,7 +229,10 @@ export function validatePhase1RemainingActionsAudit(audit, ledger, currentState,
   assertExistingReferences(audit);
   for (const action of audit.actions) {
     assert.ok(action.id);
-    assert.equal(action.ownerRunAuthorized, false, `${action.id} cannot authorize an owner run`);
+    const approvalId = OWNER_RUN_APPROVALS.get(action.id);
+    assert.equal(action.ownerRunAuthorized, Boolean(approvalId), `${action.id} owner-run authorization drifted`);
+    if (approvalId === "archive-control") assert.match(approvals.phase1.archiveControlExercise.status, /^approved-owner-local-execution/);
+    else if (approvalId) assert.match(approvals.phase1.archiveApprovals.find(({ id }) => id === approvalId)?.status ?? "", /^approved-owner-local-execution/);
     assert.equal(action.scoreImpact.currentRawCreditDelta, 0, `${action.id} must not claim immediate credit`);
     assert.equal(action.scoreImpact.maximumFormalPercentagePointDelta, formalDelta(action.scoreImpact.maximumRawCreditDelta), `${action.id} formal delta is not formula-bound`);
     assert.ok(action.scoreImpact.maximumRawCreditDelta >= 0);
@@ -232,7 +242,7 @@ export function validatePhase1RemainingActionsAudit(audit, ledger, currentState,
     if (action.executableNow) {
       assert.equal(action.requiresOwnerInput, true);
       assert.equal(typeof action.runnerOrPreflight.safeNow, "string");
-      assert.match(action.executionBoundary, /preflight|dry-run|no-write/i);
+      assert.match(action.executionBoundary, action.ownerRunAuthorized ? /owner-local|MFA-gated/i : /preflight|dry-run|no-write/i);
     }
   }
 
@@ -279,7 +289,8 @@ export function checkPhase1RemainingActionsAudit() {
     read("data/current-wildfire-owner-admission.json"),
     read("data/phase1-outreach-reply-audit.json"),
     read("data/partial-ledger-owner-review-outreach-package.json"),
-    read("data/phase1-access-blocker-resolution.json")
+    read("data/phase1-access-blocker-resolution.json"),
+    read("data/phase1-phase3-owner-approvals-2026-08-21.json")
   );
 }
 

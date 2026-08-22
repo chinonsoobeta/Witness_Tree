@@ -3,7 +3,7 @@
   "status": "owner-action-queue-read-only",
   "asOf": "2026-08-21",
   "derivedFromHead": "4466a14dd1462d09692db869523df713a6db2291",
-  "notice": "This consolidated queue restates existing Phase 1 owner boundaries and evidence and points to two supplied non-admitting decisions: national source-ledger-only acceptance and the PLVI raw/derived scope decision. It does not create an approval, authorize AWS or remote storage, submit a form, send email, transform, ingest, release, or make any row production eligible.",
+  "notice": "This consolidated queue restates existing Phase 1 owner boundaries, including the separately recorded archive approvals in data/phase1-phase3-owner-approvals-2026-08-21.json. This queue creates no new approval, performs no AWS or remote-storage action, submits no form, sends no email, and does not transform, ingest, release, admit, or make any row production eligible.",
   "selectionRule": "Include every canonical production row whose evidenceState is local-verified-profiled or remote-verified-archived-profiled and whose productionAdmission remains false. These rows have a next owner-controlled source-scope, transformation, ingestion, release, archive-promotion, or production-admission decision. Exclude partial-component and access-blocked rows because their next gate is external artifact, rights, authority, or permission resolution before this owner pipeline.",
   "baseline": {
     "productionRows": 31,
@@ -337,25 +337,26 @@
       "decisionBundle": "quebec-current-original-archive",
       "primaryActionId": "quebec-current-original-archive-preflight-and-owner-promotion",
       "ownerDecisionStatus": {
-        "archivePromotion": "pending-owner-approval",
-        "sourceLedger": "pending-after-archive",
-        "scope": "pending-after-archive",
+        "archivePromotion": "approved-owner-local-execution-evidence-pending",
+        "sourceLedger": "recorded-approved-source-scope-awaiting-archive-evidence",
+        "scope": "recorded-approved-source-scope-awaiting-archive-evidence",
         "transformation": "pending-after-archive",
         "ingestion": "pending-after-archive",
         "release": "pending-after-archive",
         "productionAdmission": "pending"
       },
       "exactNextSteps": [
-        "run the safe local preflight",
-        "obtain fresh owner approval",
-        "owner performs the separately authorized promotion",
-        "integrate immutable and recovery readbacks",
+        "owner completes the already-authorized promotion with fresh MFA",
+        "capture the mode-600 private attestation and digest-bound redaction",
+        "validate and integrate exact immutable readbacks without exposing private identifiers",
         "record two named owner decisions and downstream gates"
       ],
       "evidenceRefs": [
         "data/qc-immutable-promotion-preparation.json",
         "data/phase1-immutable-promotion-readiness.json",
-        "data/phase1-archive-owner-command-reconciliation-2026-08-20.json"
+        "data/phase1-archive-owner-command-reconciliation-2026-08-20.json",
+        "data/phase1-phase3-owner-approvals-2026-08-21.json",
+        "data/qc-immutable-promotion-attestation.json"
       ],
       "productionEligible": false
     },
@@ -366,25 +367,26 @@
       "decisionBundle": "quebec-current-original-archive",
       "primaryActionId": "quebec-current-original-archive-preflight-and-owner-promotion",
       "ownerDecisionStatus": {
-        "archivePromotion": "pending-owner-approval",
-        "sourceLedger": "pending-after-archive",
-        "scope": "pending-after-archive",
+        "archivePromotion": "approved-owner-local-execution-evidence-pending",
+        "sourceLedger": "recorded-approved-source-scope-awaiting-archive-evidence",
+        "scope": "recorded-approved-source-scope-awaiting-archive-evidence",
         "transformation": "pending-after-archive",
         "ingestion": "pending-after-archive",
         "release": "pending-after-archive",
         "productionAdmission": "pending"
       },
       "exactNextSteps": [
-        "run the safe local preflight",
-        "obtain fresh owner approval",
-        "owner performs the separately authorized promotion",
-        "integrate immutable and recovery readbacks",
+        "owner completes the already-authorized promotion with fresh MFA",
+        "capture the mode-600 private attestation and digest-bound redaction",
+        "validate and integrate exact immutable readbacks without exposing private identifiers",
         "record two named owner decisions and downstream gates"
       ],
       "evidenceRefs": [
         "data/qc-immutable-promotion-preparation.json",
         "data/phase1-immutable-promotion-readiness.json",
-        "data/phase1-archive-owner-command-reconciliation-2026-08-20.json"
+        "data/phase1-archive-owner-command-reconciliation-2026-08-20.json",
+        "data/phase1-phase3-owner-approvals-2026-08-21.json",
+        "data/qc-immutable-promotion-attestation.json"
       ],
       "productionEligible": false
     },
@@ -395,8 +397,8 @@
       "decisionBundle": "quebec-fourth-inventory-archive",
       "primaryActionId": "quebec-fourth-archive-preflight-and-owner-approvals",
       "ownerDecisionStatus": {
-        "archivePromotion": "pending-four-separate-approvals",
-        "sourceLedger": "pending-after-archive",
+        "archivePromotion": "approved-owner-local-execution-evidence-pending",
+        "sourceLedger": "recorded-approved-source-scope-awaiting-archive-evidence",
         "scope": "pending-semantic-transformation-and-join-selection",
         "transformation": "pending-after-archive",
         "ingestion": "pending-after-archive",
@@ -404,9 +406,8 @@
         "productionAdmission": "pending"
       },
       "exactNextSteps": [
-        "retain the no-write preflight receipt",
-        "obtain the four approvals",
-        "owner performs the separately authorized 62-key promotion",
+        "retain the passed no-write preflight receipt",
+        "owner supplies controlled state and sidecar paths plus a fresh MFA session for the already-authorized 62-key promotion",
         "integrate immutable and recovery readbacks",
         "record named source decision and downstream gates"
       ],
@@ -420,7 +421,8 @@
         "data/qc-fourth-inventory-immutable-promotion-preparation.json",
         "data/qc-fourth-inventory-immutable-promotion-iam-policy.json",
         "data/qc-fourth-inventory-evidence.json",
-        "data/phase1-immutable-promotion-readiness.json"
+        "data/phase1-immutable-promotion-readiness.json",
+        "data/phase1-phase3-owner-approvals-2026-08-21.json"
       ],
       "productionEligible": false
     },
@@ -518,18 +520,16 @@
       "decisionBundle": "federal-electoral-archive",
       "primaryActionId": "national-local-archive-preflight-and-owner-promotion",
       "ownerDecisionStatus": {
-        "archivePromotion": "pending-owner-approval",
-        "sourceLedger": "pending-after-archive",
-        "scope": "pending-after-archive",
+        "archivePromotion": "approved-owner-local-execution-evidence-pending",
+        "sourceLedger": "recorded-approved-source-scope-awaiting-archive-evidence",
+        "scope": "recorded-approved-source-scope-awaiting-archive-evidence",
         "transformation": "pending-after-archive",
         "ingestion": "pending-after-archive",
         "release": "pending-after-archive",
         "productionAdmission": "pending"
       },
       "exactNextSteps": [
-        "run the safe federal-only local preflight",
-        "obtain fresh federal owner approval",
-        "owner performs only the separately authorized federal promotion",
+        "owner performs only the already-authorized federal-only promotion with fresh MFA",
         "integrate exact federal immutable and recovery readbacks",
         "record named federal source decisions and downstream gates"
       ],
@@ -537,7 +537,8 @@
         "data/phase1-local-profiled-promotion-preparation.json",
         "data/elections-canada-fed-2025-profile.json",
         "data/elections-canada-fed-2025-source-ledger.json",
-        "data/phase1-immutable-promotion-readiness.json"
+        "data/phase1-immutable-promotion-readiness.json",
+        "data/phase1-phase3-owner-approvals-2026-08-21.json"
       ],
       "productionEligible": false
     },
@@ -548,18 +549,16 @@
       "decisionBundle": "federal-electoral-archive",
       "primaryActionId": "national-local-archive-preflight-and-owner-promotion",
       "ownerDecisionStatus": {
-        "archivePromotion": "pending-owner-approval",
-        "sourceLedger": "pending-after-archive",
-        "scope": "pending-after-archive",
+        "archivePromotion": "approved-owner-local-execution-evidence-pending",
+        "sourceLedger": "recorded-approved-source-scope-awaiting-archive-evidence",
+        "scope": "recorded-approved-source-scope-awaiting-archive-evidence",
         "transformation": "pending-after-archive",
         "ingestion": "pending-after-archive",
         "release": "pending-after-archive",
         "productionAdmission": "pending"
       },
       "exactNextSteps": [
-        "run the safe federal-only local preflight",
-        "obtain fresh federal owner approval",
-        "owner performs only the separately authorized federal promotion",
+        "owner performs only the already-authorized federal-only promotion with fresh MFA",
         "integrate exact federal immutable and recovery readbacks",
         "record named federal source decisions and downstream gates"
       ],
@@ -567,7 +566,8 @@
         "data/phase1-local-profiled-promotion-preparation.json",
         "data/elections-canada-fed-2025-profile.json",
         "data/elections-canada-fed-2025-source-ledger.json",
-        "data/phase1-immutable-promotion-readiness.json"
+        "data/phase1-immutable-promotion-readiness.json",
+        "data/phase1-phase3-owner-approvals-2026-08-21.json"
       ],
       "productionEligible": false
     }
@@ -578,7 +578,7 @@
       "id": "federal-electoral-archive",
       "rows": ["fed-2023-ridings", "elections-canada-45th-files"],
       "dependsOn": [],
-      "ownerAction": "Before any remote action, the owner must freshly approve these exact artifacts, the exact Canadian bucket and region, an exact COMPLIANCE retain-until instant, and the named execution/read-back procedure.",
+      "ownerAction": "The exact federal-only artifact, Canadian destination, COMPLIANCE-retention and readback approval is recorded. The remaining owner action is fresh-MFA execution followed by exact evidence integration; neither completion nor credit is inferred.",
       "source": "data/phase1-local-profiled-promotion-preparation.json",
       "afterArchive": "Record named federal source decisions and downstream gates; the shared federal artifact remains local-only until exact immutable and recovery readbacks are integrated."
     },
@@ -587,7 +587,7 @@
       "id": "quebec-current-original-archive",
       "rows": ["qc-current-ecoforest", "qc-original-current-inventory"],
       "dependsOn": [],
-      "ownerAction": "Before any remote action, the owner must freshly approve both exact artifacts below, their four exact keys, the exact Canadian bucket and region, MFA-gated sequential multipart execution, COMPLIANCE retention until 2033-08-12T00:00:00Z, and version, byte-length, provider-checksum, and retention read-backs.",
+      "ownerAction": "The exact artifact, key, Canadian destination, MFA-gated multipart, COMPLIANCE-retention and readback approval is recorded. The remaining owner action is fresh-MFA execution followed by the separate private/redacted attestation capture; neither completion nor credit is inferred.",
       "source": "data/qc-immutable-promotion-preparation.json",
       "afterArchive": "Record two named owner decisions and downstream gates; no archive or production admission is implied by local preparation."
     },
@@ -596,7 +596,7 @@
       "id": "quebec-fourth-inventory-archive",
       "rows": ["qc-fourth-inventory"],
       "dependsOn": [],
-      "ownerAction": "Execution is forbidden without separate exact-artifact, IAM, MFA-session and irreversible COMPLIANCE-retention approvals.",
+      "ownerAction": "The four separate exact-artifact, IAM, MFA-session and irreversible COMPLIANCE-retention approvals are recorded. The remaining owner action must supply controlled paths and a fresh MFA session; neither completion nor credit is inferred.",
       "source": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
       "afterArchive": "Record the named source decision and separately scoped semantic transformation and join selection before downstream gates. The exact 62-key plan is one physical product, not 62 ledger credits."
     },
@@ -623,7 +623,7 @@
       "id": "current-wildfire-archive-gate",
       "rows": ["cwfis-current", "bc-wildfire", "ab-wildfire", "on-fire-disturbance"],
       "dependsOn": [],
-      "ownerAction": "Before any remote action, the owner must freshly approve the four exact payloads and four deterministic sidecars derived by this record, bucket witness-tree-raw-archive-ca-central-1 in ca-central-1, COMPLIANCE retention through 2033-08-12T00:00:00Z on payload versions only, and the named MFA-gated direct-PutObject/read-back procedure.",
+      "ownerAction": "The exact current-wildfire archive/readback approval is recorded. Owner-local MFA proof capture remains pending, and the repository still has zero machine-verifiable object proofs; neither completion nor downstream admission is inferred.",
       "source": "data/current-wildfire-immutable-promotion-preparation.json",
       "afterArchive": "The repository has six placeholder-only attestations and zero machine-verifiable object proofs. Durable signed or digest-bound exact-version evidence, transformation and ingestion validation, release and production admission remain required."
     },
@@ -701,7 +701,7 @@
   },
   "claims": {
     "ownerDecisionsCreated": false,
-    "ownerApprovalsGranted": false,
+    "newOwnerApprovalsGrantedByThisQueue": false,
     "remoteMutationPerformed": false,
     "externalMutationPerformed": false,
     "transformed": false,
