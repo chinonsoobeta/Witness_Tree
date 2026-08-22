@@ -107,7 +107,7 @@ test("NoSuchUpload adopts only an exact completed version, preserves a mismatch,
   const dir = mkdtempSync(join(tmpdir(), "qc-promotion-nosuchupload-"));
   try {
     const dataRoot = join(dir, "data"); const stateRoot = join(dir, "state"); mkdirSync(dataRoot, { recursive: true }); mkdirSync(stateRoot, { recursive: true, mode: 0o700 });
-    const fixture = structuredClone(plan); const composites = {}; const payloadHeads = {}; const sidecarHeads = {};
+    const fixture = structuredClone(plan); const composites = {}; const payloadHeads = {}; const sidecarHeads = {}; const initialStates = new Map();
     for (const [index, artifact] of fixture.artifacts.entries()) {
       const content = Buffer.from(index ? "second-payload" : "first-payload"); const relative = `raw/qc-test/${artifact.id}.bin`; const file = join(dataRoot, relative); mkdirSync(join(dataRoot, "raw/qc-test"), { recursive: true }); writeFileSync(file, content);
       artifact.localPath = relative; artifact.byteLength = content.length; artifact.sha256 = createHash("sha256").update(content).digest("hex");
@@ -117,29 +117,36 @@ test("NoSuchUpload adopts only an exact completed version, preserves a mismatch,
       const sidecar = sidecarFor(plan, plan.artifacts[index]); sidecarHeads[artifact.manifestKey] = { VersionId: `sidecar-version-${index}`, ContentLength: Buffer.byteLength(sidecar), ChecksumSHA256: createHash("sha256").update(sidecar).digest("base64") };
       const stateDir = join(stateRoot, `${artifact.id}-${artifact.sha256}`); mkdirSync(stateDir, { recursive: true, mode: 0o700 });
       const state = { artifactId: artifact.id, payloadKey: artifact.payloadKey, manifestKey: artifact.manifestKey, sha256: artifact.sha256, byteLength: artifact.byteLength, partSizeBytes: 4, initiation: "accepted", uploadId: `saved-upload-${index}`, payloadVersionId: null, compositeChecksumSha256: null, sidecarVersionId: `sidecar-version-${index}` };
-      writeFileSync(join(stateDir, "state.json"), `${JSON.stringify(state)}\n`, { mode: 0o600 });
+      const statePath = join(stateDir, "state.json"); const stateBytes = `${JSON.stringify(state)}\n`; writeFileSync(statePath, stateBytes, { mode: 0o600 }); initialStates.set(statePath, stateBytes);
     }
     payloadHeads[fixture.artifacts[1].payloadKey].ChecksumSHA256 = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
     const fixturePlan = join(dir, "plan.json"); writeFileSync(fixturePlan, `${JSON.stringify(fixture)}\n`);
-    const marker = join(dir, "aws-calls"); const aws = join(dir, "aws");
+    const marker = join(dir, "aws-calls"); const behavior = join(dir, "behavior"); const headCounter = join(dir, "head-counter"); writeFileSync(behavior, "normal"); writeFileSync(headCounter, "0"); const aws = join(dir, "aws");
     writeFileSync(aws, `#!/bin/zsh
 print -- "$1:$2 $*" >> ${JSON.stringify(marker)}
 case "$1:$2" in
   configure:get) print -- 'arn:aws:iam::286853118812:mfa/test-device' ;;
   sts:get-session-token|sts:assume-role) print -- '{"Credentials":{"AccessKeyId":"dummy","SecretAccessKey":"dummy","SessionToken":"dummy"}}' ;;
   sts:get-caller-identity) print -- '{"Account":"286853118812","Arn":"arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator"}' ;;
-  s3api:list-parts) print -u2 -- 'An error occurred (NoSuchUpload) when calling the ListParts operation'; exit 254 ;;
+  s3api:list-parts)
+    behavior="$(<${JSON.stringify(behavior)})"
+    if [[ "$behavior" == "ambiguous" ]]; then print -u2 -- $'An error occurred (NoSuchUpload) when calling the ListParts operation: The specified upload does not exist.\nAccessDenied from proxy'; else print -u2 -- 'An error occurred (NoSuchUpload) when calling the ListParts operation: The specified upload does not exist.'; fi
+    exit 254 ;;
   s3api:head-object)
     key=""; while (( $# )); do if [[ "$1" == "--key" ]]; then key="$2"; break; fi; shift; done
+    behavior="$(<${JSON.stringify(behavior)})"
+    if [[ "$behavior" == "missing-head" && "$key" == *"/payload/"* ]]; then exit 44; fi
+    if [[ "$key" == *"/payload/"* ]]; then n=$(( $(<${JSON.stringify(headCounter)}) + 1 )); print -- "$n" > ${JSON.stringify(headCounter)}; fi
     case "$key" in
       ${JSON.stringify(fixture.artifacts[0].manifestKey)}) print -- ${JSON.stringify(JSON.stringify(sidecarHeads[fixture.artifacts[0].manifestKey]))} ;;
       ${JSON.stringify(fixture.artifacts[1].manifestKey)}) print -- ${JSON.stringify(JSON.stringify(sidecarHeads[fixture.artifacts[1].manifestKey]))} ;;
-      ${JSON.stringify(fixture.artifacts[0].payloadKey)}) print -- ${JSON.stringify(JSON.stringify(payloadHeads[fixture.artifacts[0].payloadKey]))} ;;
+      ${JSON.stringify(fixture.artifacts[0].payloadKey)})
+        if [[ "$behavior" == "third-race" && "$(<${JSON.stringify(headCounter)})" -ge 3 ]]; then print -- '{"VersionId":"exact-version-0","ContentLength":13,"ChecksumType":"COMPOSITE","ChecksumSHA256":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="}'; elif [[ "$behavior" == "exact-version-mismatch" && "$*" == *"--version-id"* ]]; then print -- '{"VersionId":"exact-version-0","ContentLength":13,"ChecksumType":"COMPOSITE","ChecksumSHA256":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="}'; else print -- ${JSON.stringify(JSON.stringify(payloadHeads[fixture.artifacts[0].payloadKey]))}; fi ;;
       ${JSON.stringify(fixture.artifacts[1].payloadKey)}) print -- ${JSON.stringify(JSON.stringify(payloadHeads[fixture.artifacts[1].payloadKey]))} ;;
       *) exit 99 ;;
     esac ;;
   s3api:put-object-retention) print -- '{}' ;;
-  s3api:get-object-retention) print -- '{"Retention":{"Mode":"COMPLIANCE","RetainUntilDate":"2033-08-12T00:00:00Z"}}' ;;
+  s3api:get-object-retention) if [[ "$(<${JSON.stringify(behavior)})" == "wrong-retention" ]]; then print -- '{"Retention":{"Mode":"COMPLIANCE","RetainUntilDate":"2033-08-12T01:00:00Z"}}'; else print -- '{"Retention":{"Mode":"COMPLIANCE","RetainUntilDate":"2033-08-12T00:00:00Z"}}'; fi ;;
   *) exit 98 ;;
 esac
 `, { mode: 0o700 }); chmodSync(aws, 0o700);
@@ -150,14 +157,27 @@ esac
       .replace(/^STATE_ROOT=.*$/m, `STATE_ROOT=${JSON.stringify(stateRoot)}`)
       .replace(/^PART_SIZE=.*$/m, "PART_SIZE=4");
     const runner = join(dir, "runner.sh"); writeFileSync(runner, source, { mode: 0o700 });
-    const program = `set timeout 30\nset env(PATH) ${JSON.stringify(`${dir}:${process.env.PATH}`)}\nspawn -noecho zsh ${JSON.stringify(runner)} --run\nexpect {\n  "Current MFA TOTP (not stored):" { send -- "123456\\r"; exp_continue }\n  eof { set result [wait]; exit [lindex $result 3] }\n  timeout { exit 2 }\n}`;
-    const run = spawnSync("expect", ["-c", program], { encoding: "utf8", timeout: 30_000, env: { ...process.env, PATH: `${dir}:${process.env.PATH}` } });
+    const runOwner = () => { const program = `set timeout 30\nset env(PATH) ${JSON.stringify(`${dir}:${process.env.PATH}`)}\nspawn -noecho zsh ${JSON.stringify(runner)} --run\nexpect {\n  "Current MFA TOTP (not stored):" { send -- "123456\\r"; exp_continue }\n  eof { set result [wait]; exit [lindex $result 3] }\n  timeout { exit 2 }\n}`; return spawnSync("expect", ["-c", program], { encoding: "utf8", timeout: 30_000, env: { ...process.env, PATH: `${dir}:${process.env.PATH}` } }); };
+    const reset = (mode) => { for (const [path, bytes] of initialStates) writeFileSync(path, bytes, { mode: 0o600 }); writeFileSync(behavior, mode); writeFileSync(headCounter, "0"); writeFileSync(marker, ""); };
+    const run = runOwner();
     assert.equal(run.status, 75, `${run.stdout}\n${run.stderr}`); assert.match(run.stdout, /Recovered completed payload evidence after NoSuchUpload/); assert.match(`${run.stdout}${run.stderr}`, /current exact-key object does not match.*state was preserved and no new upload was started/i);
     const calls = readFileSync(marker, "utf8"); assert.doesNotMatch(calls, /create-multipart-upload|upload-part|complete-multipart-upload|put-object(?:\s|$)/);
     const exactArtifact = fixture.artifacts[0]; const exactState = JSON.parse(readFileSync(join(stateRoot, `${exactArtifact.id}-${exactArtifact.sha256}`, "state.json"), "utf8"));
     assert.equal(exactState.payloadVersionId, "exact-version-0"); assert.equal(exactState.compositeChecksumSha256, composites[exactArtifact.id]);
     const mismatchedArtifact = fixture.artifacts[1]; const mismatchedState = JSON.parse(readFileSync(join(stateRoot, `${mismatchedArtifact.id}-${mismatchedArtifact.sha256}`, "state.json"), "utf8"));
     assert.equal(mismatchedState.payloadVersionId, null); assert.equal(mismatchedState.compositeChecksumSha256, null); assert.equal(mismatchedState.uploadId, "saved-upload-1");
+
+    for (const [mode, expectedMessage] of [["ambiguous", /unambiguously classify/], ["missing-head", /no exact completed payload can be proved/], ["exact-version-mismatch", /Exact-version completed candidate does not match/], ["third-race", /Payload version read-back does not prove/]]) {
+      reset(mode); const before = new Map([...initialStates.keys()].map((path) => [path, readFileSync(path)])); const failed = runOwner();
+      assert.notEqual(failed.status, 0, `${mode}: ${failed.stdout}\n${failed.stderr}`); assert.match(`${failed.stdout}${failed.stderr}`, expectedMessage);
+      for (const [path, bytes] of before) assert.deepEqual(readFileSync(path), bytes, `${mode} changed private state`);
+      assert.doesNotMatch(readFileSync(marker, "utf8"), /create-multipart-upload|put-object(?:\s|$)|upload-part|complete-multipart-upload|put-object-retention/);
+    }
+
+    reset("normal"); const firstPath = [...initialStates.keys()][0]; const missingSidecar = JSON.parse(initialStates.get(firstPath)); missingSidecar.sidecarVersionId = null; const missingSidecarBytes = `${JSON.stringify(missingSidecar)}\n`; writeFileSync(firstPath, missingSidecarBytes, { mode: 0o600 });
+    const missing = runOwner(); assert.equal(missing.status, 75); assert.match(`${missing.stdout}${missing.stderr}`, /lacks its exact accepted sidecar version/); assert.equal(readFileSync(firstPath, "utf8"), missingSidecarBytes); assert.doesNotMatch(readFileSync(marker, "utf8"), /s3api:(?:list-parts|head-object|create-multipart-upload|put-object|upload-part|complete-multipart-upload)/);
+
+    reset("wrong-retention"); const wrongTime = runOwner(); assert.equal(wrongTime.status, 70); assert.match(`${wrongTime.stdout}${wrongTime.stderr}`, /retention read-back mismatch/); assert.doesNotMatch(readFileSync(marker, "utf8"), /create-multipart-upload|put-object(?:\s|$)|upload-part|complete-multipart-upload/);
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
