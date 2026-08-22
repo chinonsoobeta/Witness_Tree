@@ -27,6 +27,9 @@ test("coordinate identity drift and missing containment fail closed", () => {
   const first = PLACE_REGISTRY[0]!;
   assert.throws(() => validatePlaceRegistry([{ ...first, location: { ...first.location, coordinateId: `${first.location.coordinateId}-drift` } }, ...PLACE_REGISTRY.slice(1)]), /identity drift/);
   assert.throws(() => validatePlaceRegistry([{ ...first, location: { ...first.location, containingPlaceIds: first.location.containingPlaceIds.slice(1) } }, ...PLACE_REGISTRY.slice(1)]), /missing or duplicate applicable/);
+  assert.throws(() => validatePlaceRegistry(PLACE_REGISTRY.slice(1)), /complete canonical province\/type cross-product/);
+  assert.throws(() => validatePlaceRegistry([{ ...first, download: { ...first.download, href: "/examples/downloads/other.csv" } }, ...PLACE_REGISTRY.slice(1)]), /checksum-bound/);
+  assert.throws(() => validatePlaceRegistry([{ ...first, location: { ...first.location, status: "production" as never } }, ...PLACE_REGISTRY.slice(1)]), /escaped the example boundary/);
 });
 
 test("bilingual generated record and MDX completeness accepts injected records and fails closed", () => {
@@ -38,6 +41,7 @@ test("bilingual generated record and MDX completeness accepts injected records a
   assert.throws(() => validateGeneratedRecordCompleteness([{ ...first, mdx: first.mdx.replace("status: example", "status: example\nstatus: production") }, ...GENERATED_RECORDS.slice(1)]), /duplicate MDX front matter key/);
   assert.throws(() => validateGeneratedRecordCompleteness([{ ...first, mdx: first.mdx.replace("status: example", "status: production") }, ...GENERATED_RECORDS.slice(1)]), /contradictory/);
   assert.throws(() => validateGeneratedRecordCompleteness([{ ...first, alternate: { ...first.alternate, href: "/fabricated" } }, ...GENERATED_RECORDS.slice(1)]), /hreflang/);
+  assert.throws(() => validateGeneratedRecordCompleteness([{ ...first, route: "/fabricated" }, ...GENERATED_RECORDS.slice(1)]), /route identity/);
 });
 
 test("one bilingual content/source registry drives all four surfaces and registered citations", () => {
