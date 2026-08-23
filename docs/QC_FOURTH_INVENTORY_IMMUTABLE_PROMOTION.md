@@ -76,11 +76,19 @@ another and from the data root. Generated state, multipart scratch, and
 collection-manifest files are owner-controlled, non-symlink mode-600 files with
 no hard-link aliases. A rerun validates the state record's exact key, byte
 length, SHA-256, upload method, contiguous local part checksums, and provider
-`ListParts` result before it uploads or completes anything. Single-PUT objects
-resume only at the object boundary. The state file contains no credentials. The
+`ListParts` result before it uploads or completes anything. A state with every
+part present and `complete: false` is a valid pre-completion resume boundary;
+it does not create a new multipart upload or re-upload a part. A successful
+completion or single-PUT response is persisted with `complete: false` before
+exact-version readback, and only the matching byte length, provider checksum,
+and retention readback changes it to `complete: true`. A readback interruption
+therefore resumes against the saved VersionId without repeating the write. If
+a completion call returns no usable response and the provider no longer exposes
+the UploadId, the runner fails closed because it cannot safely discover an exact
+VersionId under the no-list policy. The state file contains no credentials. The
 temporary MFA session lasts one hour; if it expires, the run stops safely and a
-later run with a fresh MFA code resumes from the saved exact-part or object
-boundary.
+later run with a fresh MFA code resumes from the saved exact-part, completion,
+or exact-version readback boundary.
 
 Object Lock is applied during `PutObject` or `CreateMultipartUpload`, so no
 completed object has an unlocked interval. Each completed version is read back
@@ -130,17 +138,41 @@ record.
 
 The runner's JSON result and private state file are operational evidence only;
 they do not update the Phase 1 ledger or prove an independently reviewed
-archive. This repository currently has no fourth-inventory-specific
-redacted-attestation capture/checker. The existing
+archive. The fourth-inventory-specific read-only capture and checker are:
+
+```text
+node scripts/capture-qc-fourth-inventory-immutable-promotion-attestation.mjs \
+  --capture --session-ready \
+  --state <OWNER_CONTROLLED_MODE_600_PROMOTION_STATE> \
+  --private-output <NEW_OWNER_CONTROLLED_MODE_600_PRIVATE_ATTESTATION> \
+  --redacted-output <NEW_REDACTED_RECORD>
+
+node scripts/check-qc-fourth-inventory-immutable-promotion-attestation.mjs \
+  --pair <OWNER_CONTROLLED_MODE_600_PRIVATE_ATTESTATION> \
+  <REDACTED_RECORD>
+```
+
+The capture requires temporary credentials from the owner-local MFA role
+session and makes only exact-version `HeadObject` and `GetObjectRetention`
+calls for the 62 plan-bound objects. It validates the completed mode-600 state
+before the first read, writes only new output paths, and never uploads, changes
+retention, lists the bucket, deletes, transforms, ingests, releases, or admits
+anything. The private record preserves the exact keys and VersionIds. The
+digest-bound redacted record exposes only ordinals, hashes, byte lengths,
+checksum types, response digests, and the exact retention facts; it contains no
+raw version, upload, account, operator, role, object-key, or provider-checksum
+identifier.
+
+The pending public record remains
+`data/qc-fourth-inventory-immutable-promotion-attestation.json`. The existing
 `scripts/capture-qc-immutable-promotion-attestation.sh` is scoped to the two
 Québec current/original artifacts and must not be reused for this 62-object
 collection. After an owner run, preserve the mode-700 state directory and
-mode-600 state files and obtain a separately reviewed, digest-bound private and
-redacted record containing exact-version `HeadObject` checksum/length and
-`COMPLIANCE` retention readbacks for all 62 keys (plus any approved recovery
-readback). Until that record is independently validated and integrated, the
-fourth-inventory row remains local verified/profiled only and no immutable
-credit, transformation, ingestion, release, or production claim is permitted.
+mode-600 state and private attestation files. Until the resulting pair is
+independently reviewed, validated, and integrated, the fourth-inventory row
+remains local verified/profiled only and no immutable credit, transformation,
+ingestion, release, or production claim is permitted. Any separately approved
+recovery readback remains outside this capture and must be proved independently.
 
 ## Exact IAM policy and separate approval wording
 

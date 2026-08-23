@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "witness-tree/qc-fourth-inventory-immutable-promotion-attestation-redacted/1",
+  "status": "awaiting-owner-generated-private-attestation",
+  "notice": "This pending public record contains no version, upload, account, operator, role, object-key, or provider-checksum identifier. The public record alone does not prove remote state; verification requires the future exact owner-owned mode-600 private attestation. A passing pair is owner-generated internally consistent evidence, not independently signed AWS proof.",
+  "privateAttestationSha256": null,
+  "objectCount": 62,
+  "objects": [],
+  "claims": {
+    "exactReadbacksVerified": false,
+    "retentionVerified": false,
+    "immutableObjectStorage": false,
+    "sourceLedgerCreditChanged": false,
+    "transformed": false,
+    "ingested": false,
+    "productionEligible": false
+  }
+}
