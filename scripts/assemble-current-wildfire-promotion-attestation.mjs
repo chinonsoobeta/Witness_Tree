@@ -2,8 +2,8 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { closeSync, constants, fstatSync, lstatSync, openSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { validateCheckpoint } from "./check-current-wildfire-promotion-checkpoint.mjs";
-import { rollbackExclusivePublication, writeExclusiveMode600 } from "./assemble-qc-immutable-promotion-attestation.mjs";
+import { loadCheckpoint, validateCheckpoint } from "./check-current-wildfire-promotion-checkpoint.mjs";
+import { publishCurrentWildfireMode600 } from "./current-wildfire-safe-publication.mjs";
 
 const ROOT = resolve(new URL("..", import.meta.url).pathname);
 const PLAN_PATH = resolve(ROOT, "data/current-wildfire-immutable-promotion-preparation.json");
@@ -41,8 +41,8 @@ function publicObjects(checkpoint) {
 }
 
 export function privateAttestation(checkpointPath) {
-  const checkpointBytes = ownerBytes(checkpointPath, "checkpoint");
-  const checkpoint = validateCheckpoint(JSON.parse(checkpointBytes));
+  const checkpoint = loadCheckpoint(checkpointPath);
+  const checkpointBytes = Buffer.from(`${JSON.stringify(checkpoint, null, 2)}\n`);
   assert.equal(checkpoint.status, "completed", "checkpoint is not complete");
   assert.ok(checkpoint.objects.every((object) => object.status === "complete"), "checkpoint has incomplete object boundaries");
   return {
@@ -115,18 +115,15 @@ export function publishPair(checkpointPath, privatePath, publicPath, hooks = {})
   const privateOutput = resolve(privatePath); const publicOutput = resolve(publicPath);
   assert.notEqual(privateOutput, publicOutput, "attestation paths must be distinct");
   const record = privateAttestation(resolve(checkpointPath));
-  const privatePublication = writeExclusiveMode600(privateOutput, record, hooks.private); let publicPublication;
+  publishCurrentWildfireMode600(privateOutput, record, hooks.private);
   try {
     const privateBytes = ownerBytes(privateOutput, "private attestation");
-    publicPublication = writeExclusiveMode600(publicOutput, redact(record, privateBytes), hooks.public);
+    publishCurrentWildfireMode600(publicOutput, redact(record, privateBytes), hooks.public);
     const pair = validatePair(privateOutput, publicOutput);
     ownerBytes(privateOutput, "post-publish private attestation"); ownerBytes(publicOutput, "post-publish redacted attestation");
     return pair;
-  } catch {
-    const publicRolledBack = publicPublication ? rollbackExclusivePublication(publicPublication, hooks.publicRollback) : true;
-    const privateRolledBack = rollbackExclusivePublication(privatePublication, hooks.privateRollback ?? hooks.rollback);
-    if (!publicRolledBack || !privateRolledBack) throw new Error("attestation pair publication failed; rollback was not proved and replacements were preserved for inspection");
-    throw new Error("attestation pair publication failed; both owned outputs were rolled back");
+  } catch (error) {
+    throw new Error("attestation pair publication failed; all published diagnostics and concurrent replacements were retained", { cause: error });
   }
 }
 

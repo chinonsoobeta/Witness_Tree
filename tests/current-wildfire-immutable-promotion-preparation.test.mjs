@@ -25,20 +25,15 @@ test("sidecars are deterministic and the desired role cannot broaden exact keys"
   assert.throws(() => validateCurrentWildfirePromotionPreparation({...plan, proposedRoleScope: {...plan.proposedRoleScope, objectKeys: plan.proposedRoleScope.objectKeys.slice(1)}}, staged));
 });
 
-test("MFA runner defaults to dry run and excludes prohibited operations", () => {
+test("runner defaults to preparation and external execution is fail-closed", () => {
   const runner = readFileSync(new URL("../scripts/run-current-wildfire-approved-promotion.sh", import.meta.url), "utf8");
-  assert.match(runner, /if \[\[ \$# -eq 0 \]\]; then node/);
-  assert.match(runner, /Approved .* artifact drifted[\s\S]*read -r -s/);
-  assert.match(runner, /WitnessTreeCurrentWildfirePromotionUploader/);
-  assert.match(runner, /aws s3api put-object/);
+  assert.match(runner, /if \[\[ \$# -eq 0 \]\]; then/);
+  assert.match(runner, /no descriptor-consuming upload adapter/);
   assert.match(readFileSync(new URL("../scripts/check-current-wildfire-promotion-checkpoint.mjs", import.meta.url), "utf8"), /ChecksumType.*FULL_OBJECT/);
-  assert.match(runner, /put-object-retention/);
-  assert.doesNotMatch(runner, /aws s3 cp|DeleteObject|BypassGovernanceRetention|PutObjectLegalHold|ReplicateObject|aws iam /i);
-  assert.match(runner, /aws configure get mfa_serial --profile/);
-  assert.doesNotMatch(runner, /list-mfa-devices|iam list/i);
+  assert.doesNotMatch(runner, /aws |--body|read -r -s|mktemp|rm -/i);
 });
 
-test("valid-shaped dummy TOTP reaches only the mocked direct PutObject boundary", () => {
+test("execution cannot reach a mocked AWS command or prompt for MFA", () => {
   const dir = mkdtempSync(join(tmpdir(), "current-wildfire-mfa-sts-"));
   const marker = join(dir, "calls");
   const aws = join(dir, "aws");
@@ -53,30 +48,18 @@ case "$1:$2" in
 esac
 `, {mode: 0o700});
   const runner = new URL("../scripts/run-current-wildfire-approved-promotion.sh", import.meta.url).pathname;
-  const { approvalPath, livePath } = writeIamGate(dir);
   const checkpoint = join(dir, "checkpoint.json"); const privateOutput = join(dir, "private.json"); const publicOutput = join(dir, "public.json");
-  const expectProgram = `set timeout 120
-set env(PATH) "${dir}:$env(PATH)"
-set runner "${runner}"
-spawn -noecho zsh $runner --run "${checkpoint}" "${privateOutput}" "${publicOutput}"
-expect {
-  "Current MFA TOTP (not stored):" { send -- "123456\\r"; exp_continue }
-  eof { set result [wait]; exit [lindex $result 3] }
-  timeout { exit 2 }
-}`;
   try {
-    const run = spawnSync("expect", ["-c", expectProgram], {encoding: "utf8", timeout: 120_000, env: {...process.env, PATH: `${dir}:${process.env.PATH}`, CURRENT_WILDFIRE_IAM_APPROVAL: approvalPath, CURRENT_WILDFIRE_IAM_LIVE_ATTESTATION: livePath}});
-    assert.equal(run.status, 70, `${run.stdout}\n${run.stderr}`);
-    assert.match(`${run.stdout}${run.stderr}`, /Payload write response was not accepted/);
-    assert.deepEqual(readFileSync(marker, "utf8").trim().split("\n"), ["configure-get", "sts-get-session-token", "sts-get-caller-identity", "sts-assume-role", "sts-get-caller-identity", "s3-put-object-blocked"]);
-    assert.doesNotMatch(readFileSync(marker, "utf8"), /iam|list-mfa/i);
-    assert.doesNotMatch(`${run.stdout}${run.stderr}`, /123456/);
+    const run = spawnSync("zsh", [runner, "--run", checkpoint, privateOutput, publicOutput], {encoding: "utf8", env: {...process.env, PATH: `${dir}:${process.env.PATH}`}});
+    assert.equal(run.status, 75, `${run.stdout}\n${run.stderr}`);
+    assert.match(`${run.stdout}${run.stderr}`, /descriptor-consuming upload adapter/);
+    assert.equal(run.stdout.includes("TOTP"), false); assert.throws(() => readFileSync(marker));
   } finally { rmSync(dir, {recursive: true, force: true}); }
 });
 
-test("pending or mismatched IAM approval stops before MFA and every AWS call", () => {
+test("external execution stops before MFA, IAM inspection, and every AWS call", () => {
   const dir = mkdtempSync(join(tmpdir(), "current-wildfire-iam-gate-")); const marker = join(dir, "called"); const aws = join(dir, "aws"); const runner = new URL("../scripts/run-current-wildfire-approved-promotion.sh", import.meta.url).pathname;
-  try { writeFileSync(aws, `#!/bin/zsh\nprint called > ${JSON.stringify(marker)}\n`, { mode: 0o700 }); const run = spawnSync("zsh", [runner, "--run", join(dir, "checkpoint.json"), join(dir, "private.json"), join(dir, "public.json")], { encoding: "utf8", env: { ...process.env, PATH: `${dir}:${process.env.PATH}` } }); assert.equal(run.status, 75, `${run.stdout}\n${run.stderr}`); assert.match(`${run.stdout}${run.stderr}`, /IAM gate|owner approval|live IAM/i); assert.throws(() => readFileSync(marker)); }
+  try { writeFileSync(aws, `#!/bin/zsh\nprint called > ${JSON.stringify(marker)}\n`, { mode: 0o700 }); const run = spawnSync("zsh", [runner, "--run", join(dir, "checkpoint.json"), join(dir, "private.json"), join(dir, "public.json")], { encoding: "utf8", env: { ...process.env, PATH: `${dir}:${process.env.PATH}` } }); assert.equal(run.status, 75, `${run.stdout}\n${run.stderr}`); assert.match(`${run.stdout}${run.stderr}`, /fail-closed|descriptor-consuming/i); assert.throws(() => readFileSync(marker)); }
   finally { rmSync(dir, { recursive: true, force: true }); }
 });
 

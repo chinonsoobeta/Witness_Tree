@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { closeSync, constants, fchmodSync, fstatSync, fsyncSync, lstatSync, openSync, readSync, unlinkSync, writeSync } from "node:fs";
+import { closeSync, constants, fchmodSync, fstatSync, fsyncSync, lstatSync, openSync, readSync, writeSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 
 const SHA256 = /^[a-f0-9]{64}$/;
@@ -28,9 +28,6 @@ function ownerRegular(path, mode) {
   const value = lstatSync(path); assert.ok(value.isFile() && !value.isSymbolicLink()); assert.equal(value.uid, process.getuid()); assert.equal(value.nlink, 1); if (mode !== undefined) assert.equal(value.mode & 0o777, mode); return value;
 }
 function writeAll(fd, bytes) { let offset = 0; while (offset < bytes.length) offset += writeSync(fd, bytes, offset, bytes.length - offset); }
-function rollback(path, opened) {
-  try { const current = lstatSync(path); if (!current.isFile() || current.isSymbolicLink() || current.nlink !== 1 || current.uid !== process.getuid() || !sameInode(current, opened)) return false; unlinkSync(path); syncParent(path); return true; } catch { return false; }
-}
 
 export function copyStableFile({ source, destination, expectedBytes, expectedSha256 }) {
   assert.equal(resolve(source), source); assert.equal(resolve(destination), destination); assert.ok(Number.isSafeInteger(expectedBytes) && expectedBytes > 0); assert.match(expectedSha256, SHA256);
@@ -47,7 +44,7 @@ export function copyStableFile({ source, destination, expectedBytes, expectedSha
     assert.ok(sameInode(sourceOpen, sourceAfter)); assert.equal(sourceAfter.size, before.size); assert.equal(length, expectedBytes); assert.equal(sha256, expectedSha256); assert.ok(sameInode(opened, outputAfter)); assert.equal(outputAfter.size, expectedBytes);
     result = { path: destination, device: outputAfter.dev, inode: outputAfter.ino, byteLength: length, sha256, checksumAlgorithm: "CRC64NVME", checksumType: "FULL_OBJECT", checksumValue: crc64NvmeBase64(crc) };
   } catch (error) { failure = error; }
-  finally { try { if (outputFd !== undefined) closeSync(outputFd); } catch (error) { failure ??= error; } try { closeSync(sourceFd); } catch (error) { failure ??= error; } if (!failure) { try { syncParent(destination); const current = ownerRegular(destination, 0o400); assert.ok(sameInode(current, opened)); } catch (error) { failure = error; } } if (failure && opened && !rollback(destination, opened)) failure = new Error("stable-copy rollback was not proved; replacement was preserved", { cause: failure }); }
+  finally { try { if (outputFd !== undefined) closeSync(outputFd); } catch (error) { failure ??= error; } try { closeSync(sourceFd); } catch (error) { failure ??= error; } if (!failure) { try { syncParent(destination); const current = ownerRegular(destination, 0o400); assert.ok(sameInode(current, opened)); } catch (error) { failure = error; } } if (failure && opened) failure = new Error("stable-copy failed; the unique diagnostic is retained and no path was deleted", { cause: failure }); }
   if (failure) throw failure; return result;
 }
 

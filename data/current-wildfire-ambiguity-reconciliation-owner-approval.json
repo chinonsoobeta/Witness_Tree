@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "witness-tree/current-wildfire-ambiguity-reconciliation-owner-approval/1",
+  "status": "pending-owner-approval",
+  "scope": "read-only inspection of an ambiguous current-wildfire checkpoint; no retry, mutation, replacement, or deletion",
+  "approvedAt": null,
+  "ownerStatement": null,
+  "claims": {
+    "readOnlyRecoveryAuthorized": false,
+    "storageMutationAuthorized": false,
+    "retryAuthorized": false
+  }
+}
