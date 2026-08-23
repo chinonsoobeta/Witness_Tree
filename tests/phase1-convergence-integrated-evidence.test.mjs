@@ -180,6 +180,8 @@ test("current-facing Phase 1 docs cannot regress to pre-QC archive state", () =>
   assert.match(approvals, /no-execution statement is historical[\s\S]*Québec current\/original was later run, verified, retained, and integrated/i);
   assert.match(qcPreparation, /Current status:[\s\S]*redacted attestation is integrated[\s\S]*Do not repeat the upload or attestation capture/i);
   assert.match(qcPreparation, /mode-600 private pair remains outside Git/i);
+  assert.doesNotMatch(qcPreparation, /A separate owner decision is still required to record archival admission in the source ledger\./i);
+  assert.match(qcPreparation, /Québec source-ledger decisions are already recorded[\s\S]*only downstream transformation, ingestion, release, and production decisions remain/i);
   assert.match(packet, /Five rows have supplied non-admitting scope decisions:[^\n]*two national rows and two Québec current\/original rows[^\n]*Alberta PLVI/i);
 });
 

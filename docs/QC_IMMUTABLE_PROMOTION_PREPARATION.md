@@ -22,7 +22,7 @@ The historical separate IAM approval follows for audit provenance. It was later 
 
 Both approvals, provisioning, execution, and evidence capture are complete. The historical commands are deliberately omitted so this preparation cannot be mistaken for a renewed upload instruction.
 
-Completion is archival evidence only. It does not grant transformation, analysis, ingestion, public release, production admission, or production eligibility. A separate owner decision is still required to record archival admission in the source ledger.
+Completion is archival evidence only. The Québec source-ledger decisions are already recorded as accepted named immutable source-ledger evidence only; only downstream transformation, ingestion, release, and production decisions remain. It does not grant transformation, analysis, ingestion, public release, production admission, or production eligibility.
 
 ## Historical IAM recovery audit
 
