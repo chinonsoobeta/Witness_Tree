@@ -40,6 +40,39 @@ function closeOwnedDescriptor(fd, hooks, label) {
   invokeHook(hooks, "afterClose", label, fd);
 }
 
+export function verifyStableSourceDescriptor({ source, expectedBytes, expectedSha256, hooks = {} }) {
+  assert.equal(resolve(source), source, "source must be an absolute path");
+  assert.ok(Number.isSafeInteger(expectedBytes) && expectedBytes > 0, "expected byte length is invalid");
+  assert.match(expectedSha256, SHA256, "expected SHA-256 is invalid");
+  const sourceBefore = regularOwnerFile(source, "approved source");
+  assert.equal(sourceBefore.size, expectedBytes, "approved source byte length drifted");
+  const fd = openSync(source, constants.O_RDONLY | (constants.O_NOFOLLOW ?? 0));
+  const hash = createHash("sha256");
+  let bytesRead = 0;
+  try {
+    const opened = fstatSync(fd);
+    assert.equal(sameIdentity(opened, sourceBefore), true, "approved source changed before descriptor verification");
+    const buffer = Buffer.allocUnsafe(1024 * 1024);
+    for (;;) {
+      const count = readSync(fd, buffer, 0, buffer.length, null);
+      if (count === 0) break;
+      hash.update(buffer.subarray(0, count));
+      bytesRead += count;
+      invokeHook(hooks, "afterRead", source, opened, bytesRead);
+    }
+    const after = fstatSync(fd);
+    const named = regularOwnerFile(source, "approved source");
+    assert.equal(sameIdentity(after, opened), true, "approved source changed during descriptor verification");
+    assert.equal(sameIdentity(named, opened), true, "approved source pathname changed during descriptor verification");
+    assert.equal(bytesRead, expectedBytes, "approved source byte length drifted");
+    const sha256 = hash.digest("hex");
+    assert.equal(sha256, expectedSha256, "approved source SHA-256 drifted");
+    return { path: source, byteLength: bytesRead, sha256, sourceDevice: opened.dev, sourceInode: opened.ino, descriptorBound: true };
+  } finally {
+    closeOwnedDescriptor(fd, hooks, "verified-source");
+  }
+}
+
 export function copyStableDescriptor({ source, destination, expectedBytes, expectedSha256, hooks = {} }) {
   assert.ok(resolve(source) === source || source.startsWith("/"), "source must be an absolute path");
   assert.ok(resolve(destination) === destination || destination.startsWith("/"), "destination must be an absolute path");
@@ -163,6 +196,9 @@ if (process.argv[1]?.endsWith("federal-electoral-stable-file.mjs")) {
     const value = (name) => { const index = args.indexOf(name); return index === -1 ? undefined : args[index + 1]; };
     if (args.includes("--copy")) {
       const result = copyStableDescriptor({ source: value("--source"), destination: value("--destination"), expectedBytes: Number(value("--bytes")), expectedSha256: value("--sha256") });
+      console.log(JSON.stringify(result));
+    } else if (args.includes("--verify-source")) {
+      const result = verifyStableSourceDescriptor({ source: resolve(value("--source")), expectedBytes: Number(value("--bytes")), expectedSha256: value("--sha256") });
       console.log(JSON.stringify(result));
     } else if (args.includes("--manifest")) {
       const result = writeStableManifest({ destination: value("--destination"), value: JSON.parse(value("--value")) });

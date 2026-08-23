@@ -10,25 +10,25 @@ OWNER_PACKET="$ROOT/data/phase1-owner-approval-packet.json"
 ARCHIVE_READINESS="$ROOT/data/archive-operations-readiness.json"
 READINESS_PACKAGE="$ROOT/data/federal-electoral-archive-readiness-owner-evidence.json"
 LOCK_DIR="/private/tmp/witness-tree-federal-electoral-promotion.run-lock"
-LOCK_TOMBSTONE="/private/tmp/witness-tree-federal-electoral-promotion.run-lock.release.$$"
 LOCK_JSON=""
 
 fail() { print -u2 -- "Stopped: $1"; exit "${2:-1}"; }
 need() { command -v "$1" >/dev/null || fail "$1 is required" 69; }
 
 cleanup() {
-  local exit_status=$? lock_dev lock_ino
+  local exit_status=$? lock_dev lock_ino lock_generation
   if [[ -n "$LOCK_JSON" ]]; then
     lock_dev="$(jq -er '.dev' <<<"$LOCK_JSON" 2>/dev/null || true)"
     lock_ino="$(jq -er '.ino' <<<"$LOCK_JSON" 2>/dev/null || true)"
-    node "$ROOT/scripts/federal-electoral-run-lock.mjs" release "$LOCK_DIR" "$lock_dev" "$lock_ino" "$LOCK_TOMBSTONE" >/dev/null 2>&1 || { print -u2 -- "Stopped: owner-only run lock release was not proved; inspect lock state."; exit_status=70; }
+    lock_generation="$(jq -er '.generation' <<<"$LOCK_JSON" 2>/dev/null || true)"
+    node "$ROOT/scripts/federal-electoral-run-lock.mjs" release "$LOCK_DIR" "$lock_dev" "$lock_ino" "$lock_generation" >/dev/null 2>&1 || { print -u2 -- "Stopped: durable released lock marker was not proved; explicit owner cleanup is required."; exit_status=70; }
   fi
   exit "$exit_status"
 }
 trap cleanup EXIT
 
 [[ $# -eq 1 && ( "$1" == "--preflight" || "$1" == "--run" ) ]] || fail "Usage: $0 --preflight|--run" 64
-for tool in node jq shasum stat basename awk; do need "$tool"; done
+for tool in node jq basename; do need "$tool"; done
 LOCK_JSON="$(node "$ROOT/scripts/federal-electoral-run-lock.mjs" acquire "$LOCK_DIR")" || fail "Another federal promotion preflight holds the owner-only lock" 73
 
 node "$ROOT/scripts/check-federal-electoral-promotion-gates.mjs" \
@@ -45,10 +45,9 @@ SHA256="$(jq -er '.snapshot.sha256' "$PLAN")" || fail "Federal plan SHA-256 is u
 DATA_ROOT="${FEDERAL_DATA_ROOT:-$ROOT/../Witness_Tree-data}"
 [[ "$DATA_ROOT" == /* && "$(basename "$DATA_ROOT")" == "Witness_Tree-data" && -d "$DATA_ROOT" && ! -L "$DATA_ROOT" ]] || fail "Federal data root is not the controlled Witness_Tree-data directory" 65
 PAYLOAD="$DATA_ROOT/${SOURCE_LOCAL_PATH#../Witness_Tree-data/}"
-[[ -f "$PAYLOAD" && ! -L "$PAYLOAD" ]] || fail "Approved federal payload is missing or aliased" 65
-[[ "$(stat -f %z "$PAYLOAD")" == "$BYTES" ]] || fail "Approved federal byte length drifted" 65
-[[ "$(shasum -a 256 "$PAYLOAD" | awk '{print $1}')" == "$SHA256" ]] || fail "Approved federal source SHA-256 drifted" 65
-print -- "Federal PRECHECK passed: exact canonical plan-bound source and owner-only lock; no MFA, network, or external command was used."
+node "$ROOT/scripts/federal-electoral-stable-file.mjs" --verify-source --source "$PAYLOAD" --bytes "$BYTES" --sha256 "$SHA256" >/dev/null \
+  || fail "Approved federal source descriptor verification failed" 65
+print -- "Federal PRECHECK passed: exact canonical plan-bound source was hashed through one O_NOFOLLOW descriptor; the durable lock now requires explicit owner cleanup; no MFA, network, or external command was used."
 
 [[ "$1" == "--preflight" ]] && exit 0
 node "$ROOT/scripts/check-federal-electoral-promotion-gates.mjs" \

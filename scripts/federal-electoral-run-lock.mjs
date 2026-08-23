@@ -1,57 +1,84 @@
 import assert from "node:assert/strict";
-import { chmodSync, closeSync, constants, fsyncSync, lstatSync, mkdirSync, openSync, renameSync } from "node:fs";
+import { randomBytes } from "node:crypto";
+import { closeSync, constants, fchmodSync, fstatSync, fsyncSync, ftruncateSync, lstatSync, openSync, readSync, writeSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 
 const sameInode = (left, right) => left?.dev === right?.dev && left?.ino === right?.ino;
 
 function syncDirectory(path) {
-  const fd = openSync(path, constants.O_RDONLY);
+  const fd = openSync(path, constants.O_RDONLY | (constants.O_DIRECTORY ?? 0) | (constants.O_NOFOLLOW ?? 0));
   try { fsyncSync(fd); } finally { closeSync(fd); }
+}
+
+function safeLockFile(metadata) {
+  return metadata.isFile() && metadata.nlink === 1 && metadata.uid === process.getuid() && (metadata.mode & 0o777) === 0o600;
+}
+
+function readMarker(fd) {
+  const size = fstatSync(fd).size;
+  assert.equal(Number.isSafeInteger(size) && size > 0 && size <= 4096, true, "federal lock marker size is invalid");
+  const bytes = Buffer.alloc(size);
+  assert.equal(readSync(fd, bytes, 0, size, 0), size, "federal lock marker read was incomplete");
+  const value = JSON.parse(bytes);
+  assert.equal(value !== null && typeof value === "object" && !Array.isArray(value), true, "federal lock marker is invalid");
+  return value;
+}
+
+function writeMarker(fd, value) {
+  const bytes = Buffer.from(`${JSON.stringify(value)}\n`);
+  ftruncateSync(fd, 0);
+  assert.equal(writeSync(fd, bytes, 0, bytes.length, 0), bytes.length, "federal lock marker write was incomplete");
+  fsyncSync(fd);
 }
 
 export function acquireFederalRunLock(path) {
   const lockPath = resolve(path);
   assert.equal(lockPath, path, "federal lock path must be absolute");
-  mkdirSync(lockPath, { mode: 0o700 });
-  chmodSync(lockPath, 0o700);
-  const lock = lstatSync(lockPath);
-  assert.equal(lock.isDirectory() && !lock.isSymbolicLink() && lock.uid === process.getuid() && (lock.mode & 0o777) === 0o700, true, "federal lock is unsafe");
-  syncDirectory(dirname(lockPath));
-  return { path: lockPath, dev: lock.dev, ino: lock.ino };
+  const fd = openSync(lockPath, constants.O_RDWR | constants.O_CREAT | constants.O_EXCL | (constants.O_NOFOLLOW ?? 0), 0o600);
+  try {
+    fchmodSync(fd, 0o600);
+    const opened = fstatSync(fd);
+    assert.equal(safeLockFile(opened), true, "federal lock descriptor is unsafe");
+    const generation = randomBytes(16).toString("hex");
+    writeMarker(fd, { schemaVersion: 1, status: "active", generation, dev: opened.dev, ino: opened.ino });
+    const named = lstatSync(lockPath);
+    assert.equal(safeLockFile(named) && sameInode(named, opened), true, "federal lock path changed during acquisition");
+    syncDirectory(dirname(lockPath));
+    return { path: lockPath, dev: opened.dev, ino: opened.ino, generation };
+  } finally { closeSync(fd); }
 }
 
-export function releaseFederalRunLock(lock, tombstonePath, hooks = {}) {
+export function releaseFederalRunLock(lock, hooks = {}) {
   assert.equal(resolve(lock.path), lock.path, "federal lock path must be absolute");
-  assert.equal(resolve(tombstonePath), tombstonePath, "federal lock tombstone must be absolute");
-  const current = lstatSync(lock.path);
-  if (!current.isDirectory() || current.isSymbolicLink() || !sameInode(current, lock)) return false;
-  hooks.beforeRename?.(lock.path, lock);
-  renameSync(lock.path, tombstonePath);
-  const moved = lstatSync(tombstonePath);
-  if (!moved.isDirectory() || moved.isSymbolicLink() || !sameInode(moved, lock)) {
-    // The atomically moved object was not ours. Restore the name if possible;
-    // never remove it.
-    try { renameSync(tombstonePath, lock.path); } catch { /* preserve both states */ }
-    return false;
-  }
-  hooks.afterRename?.(tombstonePath, lock);
-  const final = lstatSync(tombstonePath);
-  if (!sameInode(final, lock)) return false;
-  // Renaming releases the well-known lock name. Retain the empty inode-bound
-  // tombstone: deleting by pathname would reintroduce a replacement race.
-  syncDirectory(dirname(lock.path));
-  return true;
+  assert.match(lock.generation ?? "", /^[a-f0-9]{32}$/, "federal lock generation is invalid");
+  let fd;
+  try {
+    fd = openSync(lock.path, constants.O_RDWR | (constants.O_NOFOLLOW ?? 0));
+    const opened = fstatSync(fd); const named = lstatSync(lock.path);
+    if (!safeLockFile(opened) || !safeLockFile(named) || !sameInode(opened, named) || !sameInode(opened, lock)) return false;
+    assert.deepEqual(readMarker(fd), { schemaVersion: 1, status: "active", generation: lock.generation, dev: lock.dev, ino: lock.ino }, "federal active lock marker drifted");
+    hooks.beforeReleaseMarker?.(lock.path, lock);
+    const rebound = lstatSync(lock.path);
+    if (!safeLockFile(rebound) || !sameInode(rebound, lock)) return false;
+    const released = { schemaVersion: 1, status: "released-owner-cleanup-required", generation: lock.generation, dev: lock.dev, ino: lock.ino };
+    writeMarker(fd, released);
+    const after = fstatSync(fd); const namedAfter = lstatSync(lock.path);
+    if (!safeLockFile(after) || !safeLockFile(namedAfter) || !sameInode(after, namedAfter) || !sameInode(after, lock)) return false;
+    assert.deepEqual(readMarker(fd), released, "federal released lock marker drifted");
+    syncDirectory(dirname(lock.path));
+    return true;
+  } catch { return false; }
+  finally { if (fd !== undefined) closeSync(fd); }
 }
 
 if (process.argv[1]?.endsWith("federal-electoral-run-lock.mjs")) {
   try {
-    const [mode, path, dev, ino, tombstone] = process.argv.slice(2);
+    const [mode, path, dev, ino, generation] = process.argv.slice(2);
     if (mode === "acquire") console.log(JSON.stringify(acquireFederalRunLock(resolve(path))));
-    else if (mode === "release") {
-      assert.equal(releaseFederalRunLock({ path: resolve(path), dev: Number(dev), ino: Number(ino) }, resolve(tombstone)), true);
-    } else throw new Error("unsupported lock mode");
+    else if (mode === "release") assert.equal(releaseFederalRunLock({ path: resolve(path), dev: Number(dev), ino: Number(ino), generation }), true);
+    else throw new Error("unsupported lock mode");
   } catch {
     console.error("Federal owner-only run lock operation failed.");
-    process.exitCode = 1;
+    process.exit(1);
   }
 }

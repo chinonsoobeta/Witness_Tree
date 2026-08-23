@@ -49,7 +49,7 @@ export function validateFederalElectoralPromotionIam(desired, plan) {
   assert.deepEqual(desired.readOnlyValidation, {
     accessAnalyzer: { rolePolicyFindings: 0, operatorPolicyFindings: 0 },
     operatorSimulation: { exactRole: "allowed", otherRole: "implicitDeny" },
-    roleSimulation: { exactObjectApprovedActions: "allowed", exactObjectDeleteObject: "implicitDeny", exactObjectIamGetRole: "implicitDeny", otherObjectPutAndReadback: "implicitDeny" },
+    roleSimulation: { exactObjectApprovedActions: "allowed", allClaimedExcludedActions: "implicitDeny", otherObjectPutGetAndVersionReadback: "implicitDeny" },
     localArtifactPreflight: "passed-no-totp-no-aws"
   });
   assert.deepEqual(desired.liveAudit, { roleExists: false, policyExactlyVerified: false, iamMutationPerformed: false, s3MutationPerformed: false });
