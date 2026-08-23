@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { spawnSync } from "node:child_process";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, rmSync, unlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
@@ -9,6 +9,8 @@ import { validateApprovedWildfireIamGate } from "../scripts/check-current-wildfi
 import { dryRunLines, validateCurrentWildfirePromotionPreparation, writeSidecars } from "../scripts/prepare-current-wildfire-immutable-promotion.mjs";
 const plan = JSON.parse(readFileSync(new URL("../data/current-wildfire-immutable-promotion-preparation.json", import.meta.url), "utf8"));
 const staged = JSON.parse(readFileSync(new URL("../data/staged-acquisitions.json", import.meta.url), "utf8"));
+const runnerLock = "/private/tmp/witness-tree-current-wildfire-promotion-lock/run.lock";
+function cleanupRunnerLock() { if (!existsSync(runnerLock)) return; const value = JSON.parse(readFileSync(runnerLock)); assert.equal(value.status, "released-owner-cleanup-required"); unlinkSync(runnerLock); }
 function writeIamGate(dir) {
   const live = { schemaVersion: "witness-tree/current-wildfire-promotion-iam-live-attestation/1", status: "exact-live-readback-passed", capturedAt: "2026-08-23T12:00:00.000Z", account: "286853118812", operatorArn: "arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator", roleName: "WitnessTreeCurrentWildfirePromotionUploader", roleArn: "arn:aws:iam::286853118812:role/WitnessTreeCurrentWildfirePromotionUploader", trust: { principal: "arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator", mfaRequired: true }, actions: plan.proposedRoleScope.allow, resources: plan.proposedRoleScope.objectKeys, accessAnalyzerFindings: 0, simulations: { exactEightKeysAllActions: "allowed", exactEightKeysGetObjectVersion: "allowed", otherKeyPutObject: "implicitDeny", otherKeyGetObjectVersion: "implicitDeny", deleteObject: "implicitDeny", iamMutation: "implicitDeny" }, mutation: { iamMutationPerformed: false, s3MutationPerformed: false } };
   const liveBytes = Buffer.from(`${JSON.stringify(live, null, 2)}\n`); const livePath = join(dir, "live-iam.json"); writeFileSync(livePath, liveBytes, { mode: 0o600 });
@@ -50,17 +52,18 @@ esac
   const runner = new URL("../scripts/run-current-wildfire-approved-promotion.sh", import.meta.url).pathname;
   const checkpoint = join(dir, "checkpoint.json"); const privateOutput = join(dir, "private.json"); const publicOutput = join(dir, "public.json");
   try {
+    cleanupRunnerLock();
     const run = spawnSync("zsh", [runner, "--run", checkpoint, privateOutput, publicOutput], {encoding: "utf8", env: {...process.env, PATH: `${dir}:${process.env.PATH}`}});
     assert.equal(run.status, 75, `${run.stdout}\n${run.stderr}`);
     assert.match(`${run.stdout}${run.stderr}`, /descriptor-consuming upload adapter/);
     assert.equal(run.stdout.includes("TOTP"), false); assert.throws(() => readFileSync(marker));
-  } finally { rmSync(dir, {recursive: true, force: true}); }
+  } finally { cleanupRunnerLock(); rmSync(dir, {recursive: true, force: true}); }
 });
 
 test("external execution stops before MFA, IAM inspection, and every AWS call", () => {
   const dir = mkdtempSync(join(tmpdir(), "current-wildfire-iam-gate-")); const marker = join(dir, "called"); const aws = join(dir, "aws"); const runner = new URL("../scripts/run-current-wildfire-approved-promotion.sh", import.meta.url).pathname;
-  try { writeFileSync(aws, `#!/bin/zsh\nprint called > ${JSON.stringify(marker)}\n`, { mode: 0o700 }); const run = spawnSync("zsh", [runner, "--run", join(dir, "checkpoint.json"), join(dir, "private.json"), join(dir, "public.json")], { encoding: "utf8", env: { ...process.env, PATH: `${dir}:${process.env.PATH}` } }); assert.equal(run.status, 75, `${run.stdout}\n${run.stderr}`); assert.match(`${run.stdout}${run.stderr}`, /fail-closed|descriptor-consuming/i); assert.throws(() => readFileSync(marker)); }
-  finally { rmSync(dir, { recursive: true, force: true }); }
+  try { cleanupRunnerLock(); writeFileSync(aws, `#!/bin/zsh\nprint called > ${JSON.stringify(marker)}\n`, { mode: 0o700 }); const run = spawnSync("zsh", [runner, "--run", join(dir, "checkpoint.json"), join(dir, "private.json"), join(dir, "public.json")], { encoding: "utf8", env: { ...process.env, PATH: `${dir}:${process.env.PATH}` } }); assert.equal(run.status, 75, `${run.stdout}\n${run.stderr}`); assert.match(`${run.stdout}${run.stderr}`, /fail-closed|descriptor-consuming/i); assert.throws(() => readFileSync(marker)); }
+  finally { cleanupRunnerLock(); rmSync(dir, { recursive: true, force: true }); }
 });
 
 test("live IAM gate rejects negated approval, digest drift, and widened resources", () => {

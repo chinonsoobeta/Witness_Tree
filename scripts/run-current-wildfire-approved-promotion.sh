@@ -3,10 +3,23 @@ set -euo pipefail
 
 ROOT="${0:A:h:h}"
 fail() { print -u2 -- "$1"; exit "${2:-65}"; }
+LOCK_PATH="/private/tmp/witness-tree-current-wildfire-promotion-lock/run.lock"
+LOCK_JSON=""
+
+cleanup() {
+  local exit_status=$?
+  if [[ -n "$LOCK_JSON" ]]; then
+    node "$ROOT/scripts/current-wildfire-run-lock.mjs" release "$LOCK_PATH" "$LOCK_JSON" >/dev/null 2>&1 || { print -u2 -- "Current-wildfire lock release was not proved; explicit owner cleanup is required."; exit_status=70; }
+  fi
+  exit "$exit_status"
+}
+trap cleanup EXIT
 
 [[ $# -eq 0 || "$1" == "--preflight" ]] || {
   [[ "$1" == "--run" && $# -eq 4 ]] || fail "Usage: $0 [--preflight | --run CHECKPOINT PRIVATE_OUTPUT PUBLIC_OUTPUT]"
 }
+
+LOCK_JSON="$(node "$ROOT/scripts/current-wildfire-run-lock.mjs" acquire "$LOCK_PATH")" || fail "Current-wildfire preflight lock is unavailable; inspect the owner-cleanup marker." 73
 
 node "$ROOT/scripts/prepare-current-wildfire-immutable-promotion.mjs" >/dev/null
 node "$ROOT/scripts/check-current-wildfire-owner-admission.mjs" >/dev/null

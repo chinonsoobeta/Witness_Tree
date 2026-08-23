@@ -4,6 +4,7 @@ import { closeSync, constants, fchmodSync, fstatSync, fsyncSync, lstatSync, open
 import { dirname, resolve } from "node:path";
 
 const SHA256 = /^[a-f0-9]{64}$/;
+assert.equal(Number.isInteger(constants.O_NOFOLLOW), true, "O_NOFOLLOW is required for wildfire stable files");
 const CRC64_POLY = 0x9a6c9329ac4bc9b5n;
 const MASK = 0xffffffffffffffffn;
 const table = Array.from({ length: 256 }, (_, index) => {
@@ -23,6 +24,7 @@ export function crc64NvmeBase64(crc) {
 }
 
 function sameInode(a, b) { return a.dev === b.dev && a.ino === b.ino; }
+function sameStableFile(a, b) { return sameInode(a, b) && a.size === b.size && a.uid === b.uid && a.nlink === b.nlink && (a.mode & 0o777) === (b.mode & 0o777) && a.mtimeMs === b.mtimeMs && a.ctimeMs === b.ctimeMs; }
 function syncParent(path) { const fd = openSync(dirname(path), constants.O_RDONLY); try { fsyncSync(fd); } finally { closeSync(fd); } }
 function ownerRegular(path, mode) {
   const value = lstatSync(path); assert.ok(value.isFile() && !value.isSymbolicLink()); assert.equal(value.uid, process.getuid()); assert.equal(value.nlink, 1); if (mode !== undefined) assert.equal(value.mode & 0o777, mode); return value;
@@ -33,24 +35,26 @@ export function copyStableFile({ source, destination, expectedBytes, expectedSha
   assert.equal(resolve(source), source); assert.equal(resolve(destination), destination); assert.ok(Number.isSafeInteger(expectedBytes) && expectedBytes > 0); assert.match(expectedSha256, SHA256);
   const before = ownerRegular(source); assert.equal(before.size, expectedBytes);
   const parent = lstatSync(dirname(destination)); assert.ok(parent.isDirectory() && !parent.isSymbolicLink()); assert.equal(parent.uid, process.getuid()); assert.equal(parent.mode & 0o077, 0);
-  const sourceFd = openSync(source, constants.O_RDONLY | constants.O_NOFOLLOW); let outputFd; let opened; let failure; let result;
+  const sourceFd = openSync(source, constants.O_RDONLY | constants.O_NOFOLLOW); let outputFd; let opened; let written; let failure; let result;
   try {
-    const sourceOpen = fstatSync(sourceFd); assert.ok(sameInode(before, sourceOpen));
-    outputFd = openSync(destination, constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | constants.O_NOFOLLOW, 0o600); opened = fstatSync(outputFd);
+    const sourceOpen = fstatSync(sourceFd); assert.ok(sameStableFile(before, sourceOpen));
+    outputFd = openSync(destination, constants.O_RDWR | constants.O_CREAT | constants.O_EXCL | constants.O_NOFOLLOW, 0o600); opened = fstatSync(outputFd);
     const sha = createHash("sha256"); let crc = MASK; let length = 0; const buffer = Buffer.allocUnsafe(1024 * 1024);
     for (;;) { const count = readSync(sourceFd, buffer, 0, buffer.length, null); if (!count) break; const chunk = buffer.subarray(0, count); sha.update(chunk); crc = crc64Nvme(chunk, crc); writeAll(outputFd, chunk); length += count; }
     fchmodSync(outputFd, 0o400); fsyncSync(outputFd);
-    const sourceAfter = fstatSync(sourceFd); const outputAfter = fstatSync(outputFd); const sha256 = sha.digest("hex");
-    assert.ok(sameInode(sourceOpen, sourceAfter)); assert.equal(sourceAfter.size, before.size); assert.equal(length, expectedBytes); assert.equal(sha256, expectedSha256); assert.ok(sameInode(opened, outputAfter)); assert.equal(outputAfter.size, expectedBytes);
-    result = { path: destination, device: outputAfter.dev, inode: outputAfter.ino, byteLength: length, sha256, checksumAlgorithm: "CRC64NVME", checksumType: "FULL_OBJECT", checksumValue: crc64NvmeBase64(crc) };
+    const rereadSha = createHash("sha256"); let rereadCrc = MASK; let rereadLength = 0;
+    for (;;) { const count = readSync(outputFd, buffer, 0, buffer.length, rereadLength); if (!count) break; const chunk = buffer.subarray(0, count); rereadSha.update(chunk); rereadCrc = crc64Nvme(chunk, rereadCrc); rereadLength += count; }
+    const sourceAfter = fstatSync(sourceFd); written = fstatSync(outputFd); const sha256 = sha.digest("hex");
+    const sourceNamed = ownerRegular(source); assert.ok(sameStableFile(sourceOpen, sourceAfter)); assert.ok(sameStableFile(sourceNamed, sourceOpen)); assert.equal(length, expectedBytes); assert.equal(sha256, expectedSha256); assert.equal(rereadLength, length); assert.equal(rereadSha.digest("hex"), sha256); assert.equal(crc64NvmeBase64(rereadCrc), crc64NvmeBase64(crc)); assert.ok(sameInode(opened, written)); assert.equal(written.size, expectedBytes);
+    result = { path: destination, device: written.dev, inode: written.ino, byteLength: length, sha256, checksumAlgorithm: "CRC64NVME", checksumType: "FULL_OBJECT", checksumValue: crc64NvmeBase64(crc) };
   } catch (error) { failure = error; }
-  finally { try { if (outputFd !== undefined) closeSync(outputFd); } catch (error) { failure ??= error; } try { closeSync(sourceFd); } catch (error) { failure ??= error; } if (!failure) { try { syncParent(destination); const current = ownerRegular(destination, 0o400); assert.ok(sameInode(current, opened)); } catch (error) { failure = error; } } if (failure && opened) failure = new Error("stable-copy failed; the unique diagnostic is retained and no path was deleted", { cause: failure }); }
+  finally { try { if (outputFd !== undefined) closeSync(outputFd); } catch (error) { failure ??= error; } try { closeSync(sourceFd); } catch (error) { failure ??= error; } if (!failure) { try { syncParent(destination); const current = ownerRegular(destination, 0o400); assert.ok(sameStableFile(current, written)); } catch (error) { failure = error; } } if (failure && opened) failure = new Error("stable-copy failed; the unique diagnostic is retained and no path was deleted", { cause: failure }); }
   if (failure) throw failure; return result;
 }
 
 export function verifyStableFile({ path, expectedDevice, expectedInode, expectedBytes, expectedSha256, expectedChecksum }) {
   const before = ownerRegular(path, 0o400); assert.equal(before.dev, expectedDevice); assert.equal(before.ino, expectedInode); assert.equal(before.size, expectedBytes);
-  const fd = openSync(path, constants.O_RDONLY | constants.O_NOFOLLOW); try { const opened = fstatSync(fd); assert.ok(sameInode(before, opened)); const sha = createHash("sha256"); let crc = MASK; let length = 0; const buffer = Buffer.allocUnsafe(1024 * 1024); for (;;) { const count = readSync(fd, buffer, 0, buffer.length, null); if (!count) break; const chunk = buffer.subarray(0, count); sha.update(chunk); crc = crc64Nvme(chunk, crc); length += count; } const after = fstatSync(fd); assert.ok(sameInode(opened, after)); assert.equal(length, expectedBytes); assert.equal(sha.digest("hex"), expectedSha256); assert.equal(crc64NvmeBase64(crc), expectedChecksum); return true; } finally { closeSync(fd); }
+  const fd = openSync(path, constants.O_RDONLY | constants.O_NOFOLLOW); try { const opened = fstatSync(fd); assert.ok(sameStableFile(before, opened)); const sha = createHash("sha256"); let crc = MASK; let length = 0; const buffer = Buffer.allocUnsafe(1024 * 1024); for (;;) { const count = readSync(fd, buffer, 0, buffer.length, null); if (!count) break; const chunk = buffer.subarray(0, count); sha.update(chunk); crc = crc64Nvme(chunk, crc); length += count; } const after = fstatSync(fd); const named = ownerRegular(path, 0o400); assert.ok(sameStableFile(opened, after)); assert.ok(sameStableFile(named, opened)); assert.equal(length, expectedBytes); assert.equal(sha.digest("hex"), expectedSha256); assert.equal(crc64NvmeBase64(crc), expectedChecksum); return true; } finally { closeSync(fd); }
 }
 
 if (process.argv[1]?.endsWith("current-wildfire-stable-file.mjs")) {

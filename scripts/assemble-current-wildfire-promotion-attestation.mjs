@@ -10,6 +10,8 @@ const PLAN_PATH = resolve(ROOT, "data/current-wildfire-immutable-promotion-prepa
 const RUNNER_PATH = resolve(ROOT, "scripts/run-current-wildfire-approved-promotion.sh");
 const hash = (value) => createHash("sha256").update(value).digest("hex");
 const exactKeys = (value, keys, label) => assert.deepEqual(Object.keys(value).sort(), [...keys].sort(), `${label} fields drifted`);
+assert.equal(Number.isInteger(constants.O_NOFOLLOW), true, "O_NOFOLLOW is required for wildfire attestations");
+const sameStableFile = (left, right) => left.dev === right.dev && left.ino === right.ino && left.size === right.size && left.uid === right.uid && left.nlink === right.nlink && (left.mode & 0o777) === (right.mode & 0o777) && left.mtimeMs === right.mtimeMs && left.ctimeMs === right.ctimeMs;
 
 function ownerFile(path, label) {
   const metadata = lstatSync(path);
@@ -20,7 +22,7 @@ function ownerFile(path, label) {
   return metadata;
 }
 
-function ownerBytes(path, label) { const before = ownerFile(path, label); const fd = openSync(path, constants.O_RDONLY | constants.O_NOFOLLOW); try { const opened = fstatSync(fd); assert.equal(opened.dev, before.dev); assert.equal(opened.ino, before.ino); const bytes = readFileSync(fd); const after = fstatSync(fd); assert.equal(after.dev, opened.dev); assert.equal(after.ino, opened.ino); assert.equal(after.size, opened.size); return bytes; } finally { closeSync(fd); } }
+function ownerBytes(path, label) { const before = ownerFile(path, label); const fd = openSync(path, constants.O_RDONLY | constants.O_NOFOLLOW); try { const opened = fstatSync(fd); assert.equal(sameStableFile(opened, before), true, `${label} changed before read`); const bytes = readFileSync(fd); const after = fstatSync(fd); const named = ownerFile(path, label); assert.equal(sameStableFile(after, opened), true, `${label} changed during read`); assert.equal(sameStableFile(named, opened), true, `${label} pathname changed during read`); return bytes; } finally { closeSync(fd); } }
 
 function publicObjects(checkpoint) {
   return checkpoint.objects.map((object) => ({

@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { existsSync, mkdtempSync, readFileSync, renameSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { chmodSync, existsSync, mkdtempSync, readFileSync, renameSync, rmSync, statSync, unlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { spawnSync } from "node:child_process";
@@ -15,6 +15,8 @@ import { prepareAmbiguityReconciliation } from "../scripts/prepare-current-wildf
 const ids = ["cwfis-current-active-wildfires-2026-08-14T202242Z", "bc-wildfire-current-perimeters-2026-08-14", "alberta-wildfire-locations-2026-08-14", "ontario-in-year-fire-perimeters-2026-08-14"];
 const operator = JSON.stringify({ Account: "286853118812", Arn: "arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator" });
 const role = JSON.stringify({ Account: "286853118812", Arn: "arn:aws:sts::286853118812:assumed-role/WitnessTreeCurrentWildfirePromotionUploader/test" });
+const runnerLock = "/private/tmp/witness-tree-current-wildfire-promotion-lock/run.lock";
+function cleanupRunnerLock() { if (!existsSync(runnerLock)) return; const value = JSON.parse(readFileSync(runnerLock)); assert.equal(value.status, "released-owner-cleanup-required"); unlinkSync(runnerLock); }
 
 function evidenceStdout(name, value) {
   if (name === "operator-identity.evidence.json") return { Account: "286853118812", Arn: "arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator" };
@@ -26,7 +28,7 @@ function evidenceStdout(name, value) {
   return { Retention: { Mode: object.retention.Mode, RetainUntilDate: object.retention.RetainUntilDate } };
 }
 
-function completeFixture(path) {
+function prepareCompleteFacts(path) {
   initializeCheckpoint(path, "2026-08-23T12:00:00.000Z");
   recordIdentity(path, operator, role);
   for (const [index, artifactId] of ids.entries()) {
@@ -45,6 +47,10 @@ function completeFixture(path) {
       } else markManifestComplete(path, artifactId);
     }
   }
+}
+
+function completeFixture(path) {
+  prepareCompleteFacts(path);
   for (const name of EXPECTED_RESPONSE_NAMES) { const evidence = `${path}.${name}`; const current = loadCheckpoint(path); writeFileSync(evidence, JSON.stringify({ command: expectedResponseCommand(name, current), stdout: JSON.stringify(evidenceStdout(name, current)), stderr: "" }), { mode: 0o600 }); recordResponseEvidence(path, name, evidence); }
   completeCheckpoint(path);
 }
@@ -59,7 +65,7 @@ test("lost write response creates a durable ambiguity boundary that forbids dupl
     const value = loadCheckpoint(path);
     assert.equal(value.status, "owner-review-required");
     assert.equal(value.objects[0].ambiguity.reason, "response-lost-or-provider-failure");
-    assert.equal(statSync(path).mode & 0o777, 0o600);
+    assert.equal(statSync(path).mode & 0o777, 0o400);
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
@@ -115,10 +121,44 @@ test("checkpoint mutations append exclusive generations and never replace the im
   finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
+test("checkpoint rejects a generation gap and a broken predecessor hash", () => {
+  const dir = mkdtempSync(join(tmpdir(), "wildfire-chain-")); const path = join(dir, "checkpoint.json");
+  try {
+    initializeCheckpoint(path); recordIdentity(path, operator, role); const anchor = JSON.parse(readFileSync(path)); const store = anchor.generationStore.path;
+    writeFileSync(join(store, "00000003.json"), readFileSync(join(store, "00000001.json")), { mode: 0o400 }); assert.throws(() => loadCheckpoint(path), /exactly contiguous/); unlinkSync(join(store, "00000003.json"));
+    const generation = join(store, "00000001.json"); const changed = JSON.parse(readFileSync(generation)); changed.predecessorSha256 = "0".repeat(64); chmodSync(generation, 0o600); writeFileSync(generation, `${JSON.stringify(changed, null, 2)}\n`); chmodSync(generation, 0o400); assert.throws(() => loadCheckpoint(path), /predecessor hash chain/);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
 test("response evidence rejects command drift and credential-shaped output", () => {
   const dir = mkdtempSync(join(tmpdir(), "wildfire-evidence-")); const path = join(dir, "checkpoint.json"); const evidence = join(dir, "evidence.json");
   try { initializeCheckpoint(path); writeFileSync(evidence, JSON.stringify({ command: ["aws", "sts", "get-caller-identity"], stdout: JSON.stringify({ Account: "286853118812", Arn: "AKIAABCDEFGHIJKLMNOP" }), stderr: "" }), { mode: 0o600 }); assert.throws(() => recordResponseEvidence(path, "operator-identity.evidence.json", evidence), /credential material|exact evidence schema/); }
   finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("every response class rejects stdout facts that contradict the checkpoint", () => {
+  const dir = mkdtempSync(join(tmpdir(), "wildfire-evidence-contradictions-")); const path = join(dir, "checkpoint.json");
+  try {
+    prepareCompleteFacts(path); const value = loadCheckpoint(path); const payload = value.objects.find((object) => object.kind === "payload"); const manifest = value.objects.find((object) => object.kind === "manifest");
+    const cases = [
+      ["operator-identity.evidence.json", { Account: "000000000000", Arn: "arn:aws:iam::000000000000:user/Wrong" }],
+      ["role-identity.evidence.json", { Account: "286853118812", Arn: "arn:aws:sts::286853118812:assumed-role/Wrong/test" }],
+      [`${payload.artifactId}.payload.put-object.evidence.json`, { VersionId: "ContradictoryVersion", ChecksumCRC64NVME: payload.ack.ChecksumCRC64NVME }],
+      [`${manifest.artifactId}.manifest.head-object.evidence.json`, { VersionId: manifest.head.VersionId, ContentLength: manifest.head.ContentLength + 1, ChecksumType: manifest.head.ChecksumType, ChecksumCRC64NVME: manifest.head.ChecksumCRC64NVME }],
+      [`${payload.artifactId}.payload.put-object-retention.evidence.json`, { unexpected: true }],
+      [`${payload.artifactId}.payload.get-object-retention.evidence.json`, { Retention: { Mode: "COMPLIANCE", RetainUntilDate: "2034-08-12T00:00:00Z" } }]
+    ];
+    for (const [name, stdout] of cases) { const evidence = join(dir, `${name}.contradiction`); writeFileSync(evidence, JSON.stringify({ command: expectedResponseCommand(name, value), stdout: JSON.stringify(stdout), stderr: "" }), { mode: 0o600 }); assert.throws(() => recordResponseEvidence(path, name, evidence), /contradicts|fields drifted/); }
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("response evidence read detects a pathname swap and preserves the replacement", () => {
+  const dir = mkdtempSync(join(tmpdir(), "wildfire-evidence-swap-")); const path = join(dir, "checkpoint.json"); const evidence = join(dir, "evidence.json"); const moved = join(dir, "moved.json"); const replacement = join(dir, "replacement.json");
+  try {
+    initializeCheckpoint(path); recordIdentity(path, operator, role); const value = loadCheckpoint(path); const name = "operator-identity.evidence.json";
+    writeFileSync(evidence, JSON.stringify({ command: expectedResponseCommand(name, value), stdout: operator, stderr: "" }), { mode: 0o600 }); writeFileSync(replacement, "replacement", { mode: 0o600 });
+    assert.throws(() => recordResponseEvidence(path, name, evidence, { afterRead: () => { renameSync(evidence, moved); renameSync(replacement, evidence); } }), /changed during read|pathname changed/); assert.equal(readFileSync(evidence, "utf8"), "replacement"); assert.equal(existsSync(moved), true);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
 test("run-lock release cannot rename over or delete a concurrent replacement", () => {
@@ -129,7 +169,13 @@ test("run-lock release cannot rename over or delete a concurrent replacement", (
 
 test("run-lock release is an inode-bound durable no-delete tombstone", () => {
   const dir = mkdtempSync(join(tmpdir(), "wildfire-run-lock-release-")); const path = join(dir, "run.lock");
-  try { const lock = acquireCurrentWildfireRunLock(path); assert.equal(releaseCurrentWildfireRunLock(lock), true); assert.match(readFileSync(path, "utf8"), /active[\s\S]*released-no-delete/); assert.throws(() => acquireCurrentWildfireRunLock(path), /EEXIST/); }
+  try { const lock = acquireCurrentWildfireRunLock(path); assert.equal(releaseCurrentWildfireRunLock(lock), true); assert.equal(JSON.parse(readFileSync(path)).status, "released-owner-cleanup-required"); assert.throws(() => acquireCurrentWildfireRunLock(path), /EEXIST/); }
+  finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("run-lock release detects a path swap after writing and preserves the replacement", () => {
+  const dir = mkdtempSync(join(tmpdir(), "wildfire-run-lock-post-swap-")); const path = join(dir, "run.lock"); const moved = join(dir, "owned"); const replacement = join(dir, "replacement");
+  try { const lock = acquireCurrentWildfireRunLock(path); writeFileSync(replacement, "replacement", { mode: 0o600 }); assert.equal(releaseCurrentWildfireRunLock(lock, { afterWrite: () => { renameSync(path, moved); renameSync(replacement, path); } }), false); assert.equal(readFileSync(path, "utf8"), "replacement"); assert.equal(existsSync(moved), true); }
   finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
@@ -142,5 +188,6 @@ test("ambiguity reconciliation remains owner-gated and read-only", () => {
 test("checked-in runner is preflight-only and cannot cross an upload boundary", () => {
   const runner = new URL("../scripts/run-current-wildfire-approved-promotion.sh", import.meta.url).pathname; const bytes = readFileSync(runner, "utf8");
   assert.equal(/aws\s+(?:s3api|sts)|--body|mktemp|rm -/.test(bytes), false);
-  const result = spawnSync(runner, ["--run", "/tmp/checkpoint", "/tmp/private", "/tmp/public"], { encoding: "utf8" }); assert.equal(result.status, 75); assert.match(result.stderr, /descriptor-consuming upload adapter/);
+  try { cleanupRunnerLock(); const result = spawnSync(runner, ["--run", "/tmp/checkpoint", "/tmp/private", "/tmp/public"], { encoding: "utf8" }); assert.equal(result.status, 75); assert.match(result.stderr, /descriptor-consuming upload adapter/); }
+  finally { cleanupRunnerLock(); }
 });
