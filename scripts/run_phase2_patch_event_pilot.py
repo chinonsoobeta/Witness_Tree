@@ -323,20 +323,37 @@ def verify_directory_descriptor(descriptor: int, identity: tuple[int, int, int, 
         raise ValueError("Pilot output parent descriptor identity changed.")
 
 
-def directory_path_matches_descriptor(
-    path: Path,
+def directory_entry_matches_descriptor(
+    containing_descriptor: int,
+    name: str,
     descriptor: int,
     identity: tuple[int, int, int, int],
 ) -> bool:
     try:
-        if path.is_symlink():
-            return False
-        result = os.stat(path, follow_symlinks=False)
+        result = os.stat(name, dir_fd=containing_descriptor, follow_symlinks=False)
     except FileNotFoundError:
         return False
     observed = (result.st_dev, result.st_ino, result.st_uid, stat.S_IMODE(result.st_mode))
     opened = os.fstat(descriptor)
     return observed == identity and observed[:2] == (opened.st_dev, opened.st_ino)
+
+
+def open_containing_directory_binding(
+    path: Path,
+    descriptor: int,
+    identity: tuple[int, int, int, int],
+) -> tuple[int, str]:
+    name = path.name
+    if name in {"", ".", ".."} or Path(name).name != name:
+        raise ValueError("Pilot output parent must have one stable basename.")
+    containing_descriptor = os.open(
+        path.parent,
+        os.O_RDONLY | getattr(os, "O_DIRECTORY", 0) | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0),
+    )
+    if not directory_entry_matches_descriptor(containing_descriptor, name, descriptor, identity):
+        os.close(containing_descriptor)
+        raise ValueError("Pilot output parent name does not bind its opened descriptor.")
+    return containing_descriptor, name
 
 
 def name_exists(descriptor: int, name: str) -> bool:
@@ -1379,10 +1396,44 @@ def same_regular_inode_at(
     )
 
 
-def rollback_published_at(directory_descriptor: int, final_name: str, partial_name: str) -> None:
-    if same_regular_inode_at(directory_descriptor, final_name, partial_name, expected_link_count=None):
-        os.unlink(final_name, dir_fd=directory_descriptor)
+def preserve_partial_and_rollback_at(directory_descriptor: int, final_name: str, partial_name: str) -> None:
+    if not name_exists(directory_descriptor, final_name):
+        return
+    if not name_exists(directory_descriptor, partial_name):
+        result = os.stat(final_name, dir_fd=directory_descriptor, follow_symlinks=False)
+        if (
+            not stat.S_ISREG(result.st_mode)
+            or result.st_uid != os.getuid()
+            or stat.S_IMODE(result.st_mode) != 0o600
+            or result.st_nlink != 1
+        ):
+            raise RuntimeError("Pilot final cannot be restored to bounded partial state.")
+        os.link(
+            final_name,
+            partial_name,
+            src_dir_fd=directory_descriptor,
+            dst_dir_fd=directory_descriptor,
+            follow_symlinks=False,
+        )
         os.fsync(directory_descriptor)
+    if not same_regular_inode_at(directory_descriptor, final_name, partial_name):
+        raise RuntimeError("Pilot final does not match its bounded partial during rollback.")
+    os.unlink(final_name, dir_fd=directory_descriptor)
+    os.fsync(directory_descriptor)
+
+
+def write_start_gate(descriptor: int, allowed: bool) -> None:
+    if os.write(descriptor, b"1" if allowed else b"0") != 1:
+        raise RuntimeError("Pilot start gate write was incomplete.")
+
+
+def stop_process(process: multiprocessing.Process) -> None:
+    if process.is_alive():
+        try:
+            os.killpg(process.pid, signal.SIGKILL)
+        except ProcessLookupError:
+            process.kill()
+    process.join()
 
 
 def supervise_pilot(
@@ -1397,100 +1448,121 @@ def supervise_pilot(
     validate_limits(limits)
     partial = final_path.with_name(f"{final_path.name}.partial")
     parent_descriptor, parent_identity = open_owner_directory(final_path.parent)
-    context = multiprocessing.get_context("fork")
-    receiving, sending = context.Pipe(duplex=False)
-    start_gate_read, start_gate_write = os.pipe()
-    process = context.Process(
-        target=_pilot_child,
-        args=(
-            sending,
-            receiving,
-            start_gate_read,
-            start_gate_write,
-            parent_descriptor,
-            parent_identity,
-            final_path.name,
-            loss_path,
-            lineage_path,
-            expected_loss_sha256,
-            expected_lineage_sha256,
-            limits,
-        ),
-    )
-    started = time.monotonic()
     try:
-        process.start()
+        containing_descriptor, parent_name = open_containing_directory_binding(
+            final_path.parent, parent_descriptor, parent_identity
+        )
     except BaseException:
-        receiving.close()
-        sending.close()
-        os.close(start_gate_read)
-        os.close(start_gate_write)
         os.close(parent_descriptor)
         raise
-    sending.close()
-    os.close(start_gate_read)
-    parent_path_stable = directory_path_matches_descriptor(final_path.parent, parent_descriptor, parent_identity)
+    receiving: multiprocessing.connection.Connection | None = None
+    sending: multiprocessing.connection.Connection | None = None
+    start_gate_read: int | None = None
+    start_gate_write: int | None = None
+    process: multiprocessing.Process | None = None
+    process_started = False
+    process_reaped = False
+    succeeded = False
     try:
-        os.write(start_gate_write, b"1" if parent_path_stable else b"0")
+        context = multiprocessing.get_context("fork")
+        receiving, sending = context.Pipe(duplex=False)
+        start_gate_read, start_gate_write = os.pipe()
+        process = context.Process(
+            target=_pilot_child,
+            args=(
+                sending,
+                receiving,
+                start_gate_read,
+                start_gate_write,
+                parent_descriptor,
+                parent_identity,
+                final_path.name,
+                loss_path,
+                lineage_path,
+                expected_loss_sha256,
+                expected_lineage_sha256,
+                limits,
+            ),
+        )
+        started = time.monotonic()
+        process.start()
+        process_started = True
+        connection_to_close = sending
+        sending = None
+        connection_to_close.close()
+        descriptor_to_close = start_gate_read
+        start_gate_read = None
+        os.close(descriptor_to_close)
+        parent_path_stable = directory_entry_matches_descriptor(
+            containing_descriptor, parent_name, parent_descriptor, parent_identity
+        )
+        write_start_gate(start_gate_write, parent_path_stable)
+        descriptor_to_close = start_gate_write
+        start_gate_write = None
+        os.close(descriptor_to_close)
+        if not parent_path_stable:
+            raise ValueError("Pilot output parent pathname changed across the fork boundary.")
+        watchdog_deadline = started + limits.seconds
+        watchdog_peak_rss = 0
+        watchdog_reason: str | None = None
+        while process.is_alive() and time.monotonic() < watchdog_deadline:
+            process.join(min(0.1, max(0.0, watchdog_deadline - time.monotonic())))
+            watchdog_peak_rss = max(watchdog_peak_rss, process_rss_bytes(process.pid))
+            if watchdog_peak_rss > limits.memory_bytes:
+                watchdog_reason = "RSS cap"
+                break
+        if process.is_alive():
+            if watchdog_reason is not None:
+                raise MemoryError("Parent watchdog killed the pilot at the exact RSS cap.")
+            raise TimeoutError("Parent watchdog killed the pilot at the exact wall-time boundary.")
+        process.join()
+        process_reaped = True
+        elapsed = time.monotonic() - started
+        if not receiving.poll() or elapsed > limits.seconds:
+            raise RuntimeError("Pilot worker exited without a timely exact result.")
+        message = receiving.recv()
+        if message[0] != "ok":
+            raise RuntimeError(f"Pilot worker stopped fail-closed: {message[1]}: {message[2]}")
+        verify_directory_descriptor(parent_descriptor, parent_identity)
+        if not directory_entry_matches_descriptor(
+            containing_descriptor, parent_name, parent_descriptor, parent_identity
+        ):
+            raise RuntimeError("Pilot output parent pathname changed during execution.")
+        if not same_regular_inode_at(parent_descriptor, final_path.name, partial.name):
+            raise RuntimeError("Pilot publication inode does not match its verified partial inode.")
+        os.unlink(partial.name, dir_fd=parent_descriptor)
+        os.fsync(parent_descriptor)
+        if not directory_entry_matches_descriptor(
+            containing_descriptor, parent_name, parent_descriptor, parent_identity
+        ):
+            preserve_partial_and_rollback_at(parent_descriptor, final_path.name, partial.name)
+            raise RuntimeError("Pilot output parent pathname changed during final acceptance.")
+        result = message[1]
+        result["telemetry"]["parentWatchdogElapsedSeconds"] = f"{elapsed:.6f}"
+        result["telemetry"]["parentWatchdogLimitSeconds"] = limits.seconds
+        result["telemetry"]["parentObservedPeakRssBytes"] = watchdog_peak_rss
+        succeeded = True
+        return result
     finally:
-        os.close(start_gate_write)
-    if not parent_path_stable:
-        process.join()
-        receiving.close()
-        os.close(parent_descriptor)
-        raise ValueError("Pilot output parent pathname changed across the fork boundary.")
-    watchdog_deadline = started + limits.seconds
-    watchdog_peak_rss = 0
-    watchdog_reason: str | None = None
-    while process.is_alive() and time.monotonic() < watchdog_deadline:
-        process.join(min(0.1, max(0.0, watchdog_deadline - time.monotonic())))
-        watchdog_peak_rss = max(watchdog_peak_rss, process_rss_bytes(process.pid))
-        if watchdog_peak_rss > limits.memory_bytes:
-            watchdog_reason = "RSS cap"
-            break
-    if process.is_alive():
         try:
-            os.killpg(process.pid, signal.SIGKILL)
-        except ProcessLookupError:
-            process.kill()
-        process.join()
-        verify_directory_descriptor(parent_descriptor, parent_identity)
-        rollback_published_at(parent_descriptor, final_path.name, partial.name)
-        receiving.close()
-        os.close(parent_descriptor)
-        if watchdog_reason is not None:
-            raise MemoryError("Parent watchdog killed the pilot at the exact RSS cap.")
-        raise TimeoutError("Parent watchdog killed the pilot at the exact wall-time boundary.")
-    elapsed = time.monotonic() - started
-    if not receiving.poll() or elapsed > limits.seconds:
-        verify_directory_descriptor(parent_descriptor, parent_identity)
-        rollback_published_at(parent_descriptor, final_path.name, partial.name)
-        receiving.close()
-        os.close(parent_descriptor)
-        raise RuntimeError("Pilot worker exited without a timely exact result.")
-    message = receiving.recv()
-    receiving.close()
-    if message[0] != "ok":
-        verify_directory_descriptor(parent_descriptor, parent_identity)
-        rollback_published_at(parent_descriptor, final_path.name, partial.name)
-        os.close(parent_descriptor)
-        raise RuntimeError(f"Pilot worker stopped fail-closed: {message[1]}: {message[2]}")
-    verify_directory_descriptor(parent_descriptor, parent_identity)
-    if not directory_path_matches_descriptor(final_path.parent, parent_descriptor, parent_identity):
-        rollback_published_at(parent_descriptor, final_path.name, partial.name)
-        os.close(parent_descriptor)
-        raise RuntimeError("Pilot output parent pathname changed during execution.")
-    if not same_regular_inode_at(parent_descriptor, final_path.name, partial.name):
-        os.close(parent_descriptor)
-        raise RuntimeError("Pilot publication inode does not match its verified partial inode.")
-    os.unlink(partial.name, dir_fd=parent_descriptor)
-    os.fsync(parent_descriptor)
-    os.close(parent_descriptor)
-    result = message[1]
-    result["telemetry"]["parentWatchdogElapsedSeconds"] = f"{elapsed:.6f}"
-    result["telemetry"]["parentWatchdogLimitSeconds"] = limits.seconds
-    result["telemetry"]["parentObservedPeakRssBytes"] = watchdog_peak_rss
-    return result
+            if process is not None and (process_started or process.pid is not None):
+                if not process_reaped:
+                    stop_process(process)
+                process.close()
+            if not succeeded:
+                verify_directory_descriptor(parent_descriptor, parent_identity)
+                preserve_partial_and_rollback_at(parent_descriptor, final_path.name, partial.name)
+        finally:
+            if receiving is not None:
+                receiving.close()
+            if sending is not None:
+                sending.close()
+            if start_gate_read is not None:
+                os.close(start_gate_read)
+            if start_gate_write is not None:
+                os.close(start_gate_write)
+            os.close(containing_descriptor)
+            os.close(parent_descriptor)
 
 
 def main() -> None:

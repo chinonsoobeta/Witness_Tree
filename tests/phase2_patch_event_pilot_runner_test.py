@@ -45,6 +45,27 @@ def slow_pilot_child(connection, *args) -> None:
     time.sleep(5)
 
 
+def empty_result_pilot_child(
+    connection,
+    unused_receiving,
+    start_gate_read,
+    unused_start_gate_write,
+    output_parent_descriptor,
+    *args,
+) -> None:
+    unused_receiving.close()
+    os.close(unused_start_gate_write)
+    os.setsid()
+    os.read(start_gate_read, 1)
+    os.close(start_gate_read)
+    os.close(output_parent_descriptor)
+    connection.close()
+
+
+def open_fd_count() -> int:
+    return len(os.listdir("/dev/fd"))
+
+
 def fixture_lineage() -> bytes:
     records = [
         {
@@ -374,6 +395,78 @@ class PilotRunnerTest(unittest.TestCase):
             {path.name for path in displaced_parent.iterdir()},
             {f"{output.name}.partial", f"{output.name}.scratch.partial"},
         )
+
+    def test_supervisor_rolls_back_late_parent_replacement_to_bounded_partial(self) -> None:
+        output_parent = self.root / "late-output"
+        displaced_parent = self.root / "late-output-original"
+        output_parent.mkdir(mode=0o700)
+        os.chmod(output_parent, 0o700)
+        output = output_parent / "late-renamed.wtpe"
+        real_same_inode = pilot_runner.same_regular_inode_at
+        replaced = False
+
+        def replace_after_publication_check(*args, **kwargs) -> bool:
+            nonlocal replaced
+            result = real_same_inode(*args, **kwargs)
+            if result and not replaced:
+                replaced = True
+                output_parent.rename(displaced_parent)
+                output_parent.mkdir(mode=0o700)
+                os.chmod(output_parent, 0o700)
+            return result
+
+        with patch(
+            "scripts.run_phase2_patch_event_pilot.same_regular_inode_at",
+            side_effect=replace_after_publication_check,
+        ):
+            with self.assertRaisesRegex(RuntimeError, "changed during final acceptance"):
+                supervise_pilot(
+                    self.loss,
+                    self.lineage,
+                    output,
+                    expected_loss_sha256=self.loss_sha,
+                    expected_lineage_sha256=self.lineage_sha,
+                    limits=PilotLimits(components=2, seconds=10, sort_chunk_bytes=60),
+                )
+
+        self.assertEqual(list(output_parent.iterdir()), [])
+        self.assertFalse((displaced_parent / output.name).exists())
+        self.assertEqual(
+            {path.name for path in displaced_parent.iterdir()},
+            {f"{output.name}.partial"},
+        )
+
+    def test_supervisor_gate_write_failure_closes_every_parent_descriptor(self) -> None:
+        output = self.root / "gate-failure.wtpe"
+        before = open_fd_count()
+        with patch("scripts.run_phase2_patch_event_pilot.write_start_gate", side_effect=BrokenPipeError("fixture")):
+            with self.assertRaises(BrokenPipeError):
+                supervise_pilot(
+                    self.loss,
+                    self.lineage,
+                    output,
+                    expected_loss_sha256=self.loss_sha,
+                    expected_lineage_sha256=self.lineage_sha,
+                    limits=PilotLimits(components=2, seconds=10, sort_chunk_bytes=60),
+                )
+        self.assertEqual(open_fd_count(), before)
+        self.assertFalse(output.exists())
+
+    def test_supervisor_receive_eof_closes_every_parent_descriptor(self) -> None:
+        output = self.root / "receive-eof.wtpe"
+        before = open_fd_count()
+        with patch("scripts.run_phase2_patch_event_pilot._pilot_child", empty_result_pilot_child):
+            with self.assertRaises(EOFError):
+                supervise_pilot(
+                    self.loss,
+                    self.lineage,
+                    output,
+                    expected_loss_sha256=self.loss_sha,
+                    expected_lineage_sha256=self.lineage_sha,
+                    limits=PilotLimits(components=2, seconds=10, sort_chunk_bytes=60),
+                )
+        self.assertEqual(open_fd_count(), before)
+        self.assertFalse(output.exists())
 
     def test_parent_watchdog_kills_stalled_worker_at_boundary(self) -> None:
         output = self.root / "watchdog.wtpe"
