@@ -26,7 +26,8 @@ function completedState() {
   }
   const digests = qcFourthPlanDigests(plan);
   const promotionSessions = [{ account: "286853118812", operatorArn: "arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator", roleArn: "arn:aws:iam::286853118812:role/WitnessTreeQcFourthArchivePromotionUploader", roleSessionName: "witness-tree-qc-fourth-approved-promotion", assumedRoleArn: "arn:aws:sts::286853118812:assumed-role/WitnessTreeQcFourthArchivePromotionUploader/witness-tree-qc-fourth-approved-promotion", roleUserId: "AROA_PROMOTION:witness-tree-qc-fourth-approved-promotion", mfaSerialArn: "arn:aws:iam::286853118812:mfa/WitnessTreeArchiveOperator", mfaPresent: true, sessionExpiresAt: "2026-08-23T13:00:00.000Z" }];
-  return { schemaVersion: 1, planSha256: digests.planParsedSha256, planFileSha256: digests.planFileSha256, planParsedSha256: digests.planParsedSha256, bucket: plan.bucket, region: plan.region, retentionUntil: "2033-08-12T00:00:00Z", promotionSessions, objects };
+  const mutationSessionSha256 = createHash("sha256").update(JSON.stringify(promotionSessions[0])).digest("hex"); for (const object of Object.values(objects)) { object.mutationSessionSha256 = mutationSessionSha256; for (const part of object.parts || []) part.mutationSessionSha256 = mutationSessionSha256; }
+  return { schemaVersion: 1, planSha256: digests.planParsedSha256, planFileSha256: digests.planFileSha256, planParsedSha256: digests.planParsedSha256, bucket: plan.bucket, region: plan.region, retentionUntil: "2033-08-12T00:00:00Z", promotionSessions, activeSessionSha256: mutationSessionSha256, objects };
 }
 
 function fixture() {
@@ -124,14 +125,14 @@ test("pair validation rejects any public fact not derived from the exact private
   } finally { item.cleanup(); }
 });
 
-test("paired publication loses an output race transactionally without overwriting the winner or leaving a private half-pair", () => {
+test("paired publication retains bounded rejected evidence without overwriting an output-race winner", () => {
   const item = fixture();
   const remote = readbackMock(item.state, { onCall: ({ callCount }) => {
     if (callCount === 124) writeFileSync(item.redactedPath, "competing-output\n", { flag: "wx", mode: 0o600 });
   } });
   try {
-    assert.throws(() => captureQcFourthAttestation(plan, item.statePath, item.privatePath, item.redactedPath, { invoke: remote.invoke, env: captureEnv, identity, localPreflight: localPreflight(item.state), createdAt: "2026-08-23T12:00:00Z" }), /private output was rolled back/);
-    assert.equal(existsSync(item.privatePath), false);
+    assert.throws(() => captureQcFourthAttestation(plan, item.statePath, item.privatePath, item.redactedPath, { invoke: remote.invoke, env: captureEnv, identity, localPreflight: localPreflight(item.state), createdAt: "2026-08-23T12:00:00Z" }), /rejected.*retained/);
+    assert.equal(existsSync(item.privatePath), true); assert.equal(JSON.parse(readFileSync(`${item.privatePath}.rejected.json`)).status, "rejected-retained-for-owner-inspection");
     assert.equal(readFileSync(item.redactedPath, "utf8"), "competing-output\n");
     assert.equal(existsSync(`${item.privatePath}.next`), false);
     assert.equal(existsSync(`${item.redactedPath}.next`), false);
@@ -153,14 +154,14 @@ test("publication refuses symlinks and preserves rename and hard-link race evide
         if (race === "rename") { renameSync(output, evidence); writeFileSync(output, "racing-replacement\n", { flag: "wx", mode: 0o600 }); }
         else linkSync(output, evidence);
       };
-      assert.throws(() => captureQcFourthAttestation(plan, item.statePath, item.privatePath, item.redactedPath, { invoke: readbackMock(item.state).invoke, env: captureEnv, identity, localPreflight: localPreflight(item.state), createdAt: "2026-08-23T12:00:00Z", publicationHooks: { private: { beforeVerify } } }), /rollback was not proved/);
+      assert.throws(() => captureQcFourthAttestation(plan, item.statePath, item.privatePath, item.redactedPath, { invoke: readbackMock(item.state).invoke, env: captureEnv, identity, localPreflight: localPreflight(item.state), createdAt: "2026-08-23T12:00:00Z", publicationHooks: { private: { beforeVerify } } }), /rejected.*retained/);
       assert.equal(existsSync(evidence), true); assert.equal(existsSync(item.privatePath), true); assert.equal(existsSync(item.redactedPath), false);
       if (race === "rename") assert.equal(readFileSync(item.privatePath, "utf8"), "racing-replacement\n");
     } finally { item.cleanup(); }
   }
 });
 
-test("publication fsync, close, and rollback crash points never yield an accepted half-pair", () => {
+test("publication fsync and close faults retain rejected diagnostics and never claim an accepted pair", () => {
   for (const hooks of [
     { private: { onFsyncStage: (stage) => { if (stage === "file") throw new Error("simulated crash"); } } },
     { redacted: { onFsyncStage: (stage) => { if (stage === "directory") throw new Error("simulated crash"); } } },
@@ -169,20 +170,28 @@ test("publication fsync, close, and rollback crash points never yield an accepte
     const item = fixture();
     try {
       assert.throws(() => captureQcFourthAttestation(plan, item.statePath, item.privatePath, item.redactedPath, { invoke: readbackMock(item.state).invoke, env: captureEnv, identity, localPreflight: localPreflight(item.state), createdAt: "2026-08-23T12:00:00Z", publicationHooks: hooks }));
-      assert.equal(existsSync(item.privatePath), false); assert.equal(existsSync(item.redactedPath), false);
+      assert.equal(JSON.parse(readFileSync(`${item.privatePath}.rejected.json`)).status, "rejected-retained-for-owner-inspection");
     } finally { item.cleanup(); }
   }
 });
 
-test("pair rollback never unlinks a racing replacement", () => {
-  const item = fixture(); const moved = path.join(item.workspace, "owned-private-evidence.json");
+test("descriptor-bound pair reread rejects same-inode byte mutation after publication", () => {
+  const item = fixture();
+  try {
+    const afterVerify = (output) => { const bytes = readFileSync(output); bytes[0] = bytes[0] === 0x7b ? 0x5b : 0x7b; writeFileSync(output, bytes); };
+    assert.throws(() => captureQcFourthAttestation(plan, item.statePath, item.privatePath, item.redactedPath, { invoke: readbackMock(item.state).invoke, env: captureEnv, identity, localPreflight: localPreflight(item.state), createdAt: "2026-08-23T12:00:00Z", publicationHooks: { redacted: { afterVerify } } }), /rejected.*retained/);
+    assert.equal(JSON.parse(readFileSync(`${item.privatePath}.rejected.json`)).status, "rejected-retained-for-owner-inspection");
+  } finally { item.cleanup(); }
+});
+
+test("pair rejection never unlinks either published pathname", () => {
+  const item = fixture();
   try {
     const hooks = {
-      redacted: { beforeOpen: (output) => writeFileSync(output, "competing-redacted\n", { flag: "wx", mode: 0o600 }) },
-      rollback: { beforeRollback: (output) => { renameSync(output, moved); writeFileSync(output, "racing-private\n", { flag: "wx", mode: 0o600 }); } }
+      redacted: { beforeOpen: (output) => writeFileSync(output, "competing-redacted\n", { flag: "wx", mode: 0o600 }) }
     };
-    assert.throws(() => captureQcFourthAttestation(plan, item.statePath, item.privatePath, item.redactedPath, { invoke: readbackMock(item.state).invoke, env: captureEnv, identity, localPreflight: localPreflight(item.state), createdAt: "2026-08-23T12:00:00Z", publicationHooks: hooks }), /private rollback was not proved/);
-    assert.equal(readFileSync(item.privatePath, "utf8"), "racing-private\n"); assert.equal(existsSync(moved), true); assert.equal(readFileSync(item.redactedPath, "utf8"), "competing-redacted\n");
+    assert.throws(() => captureQcFourthAttestation(plan, item.statePath, item.privatePath, item.redactedPath, { invoke: readbackMock(item.state).invoke, env: captureEnv, identity, localPreflight: localPreflight(item.state), createdAt: "2026-08-23T12:00:00Z", publicationHooks: hooks }), /rejected.*retained/);
+    assert.equal(JSON.parse(readFileSync(item.privatePath)).status, "owner-run-exact-version-readbacks-complete"); assert.equal(readFileSync(item.redactedPath, "utf8"), "competing-redacted\n"); assert.equal(JSON.parse(readFileSync(`${item.privatePath}.rejected.json`)).status, "rejected-retained-for-owner-inspection");
   } finally { item.cleanup(); }
 });
 

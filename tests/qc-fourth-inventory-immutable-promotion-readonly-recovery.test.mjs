@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import { chmodSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -17,6 +18,7 @@ function fixture(reason = "single-put-response-unknown", uploadId) {
   const workspace = mkdtempSync(path.join(tmpdir(), "qc-fourth-recovery-"));
   const entry = exactPromotionObjects(plan)[0];
   const digests = qcFourthPlanDigests(plan);
+  const promotionSession = { account: "286853118812", operatorArn: "arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator", roleArn: "arn:aws:iam::286853118812:role/WitnessTreeQcFourthArchivePromotionUploader", roleSessionName: "witness-tree-qc-fourth-approved-promotion", assumedRoleArn: "arn:aws:sts::286853118812:assumed-role/WitnessTreeQcFourthArchivePromotionUploader/witness-tree-qc-fourth-approved-promotion", roleUserId: "AROA_PROMOTION:witness-tree-qc-fourth-approved-promotion", mfaSerialArn: "arn:aws:iam::286853118812:mfa/WitnessTreeArchiveOperator", mfaPresent: true, sessionExpiresAt: "2099-01-01T00:00:00.000Z" }; const mutationSessionSha256 = createHash("sha256").update(JSON.stringify(promotionSession)).digest("hex");
   const state = {
     schemaVersion: 1,
     planSha256: digests.planParsedSha256,
@@ -25,12 +27,13 @@ function fixture(reason = "single-put-response-unknown", uploadId) {
     bucket: plan.bucket,
     region: plan.region,
     retentionUntil: "2033-08-12T00:00:00Z",
-    promotionSessions: [{ account: "286853118812", operatorArn: "arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator", roleArn: "arn:aws:iam::286853118812:role/WitnessTreeQcFourthArchivePromotionUploader", roleSessionName: "witness-tree-qc-fourth-approved-promotion", assumedRoleArn: "arn:aws:sts::286853118812:assumed-role/WitnessTreeQcFourthArchivePromotionUploader/witness-tree-qc-fourth-approved-promotion", roleUserId: "AROA_PROMOTION:witness-tree-qc-fourth-approved-promotion", mfaSerialArn: "arn:aws:iam::286853118812:mfa/WitnessTreeArchiveOperator", mfaPresent: true, sessionExpiresAt: "2099-01-01T00:00:00.000Z" }],
+    promotionSessions: [promotionSession], activeSessionSha256: mutationSessionSha256,
     objects: {
       [entry.id]: {
         objectKey: entry.objectKey,
         byteLength: entry.byteLength,
       sha256: entry.sha256,
+      mutationSessionSha256,
       method: uploadId ? "multipart" : "single-put",
         ...(uploadId ? { uploadId } : {}),
         recoveryRequired: true,
@@ -85,6 +88,15 @@ test("NoSuchUpload recovery records an unresolved read-only diagnostic and canno
     assert.equal(result.claims.replacementStarted, false);
     assert.deepEqual(mock.calls.map(({ operation }) => operation), ["list-parts", "head-object", "head-object", "get-object-retention"]);
     assert.equal(JSON.parse(readFileSync(item.statePath, "utf8")).objects[item.entry.id].recoveryRequired, true);
+  } finally { item.cleanup(); }
+});
+
+test("recovery output succeeds only after descriptor-bound on-disk reread", () => {
+  const item = fixture(); const mock = readOnlyMock(item);
+  try {
+    const afterVerify = (output) => { const bytes = readFileSync(output); bytes[0] = bytes[0] === 0x7b ? 0x5b : 0x7b; writeFileSync(output, bytes); };
+    assert.throws(() => recoverQcFourthReadOnly(plan, item.statePath, item.outputPath, { approveReadOnlyRecovery: true, sessionReady: true, invoke: mock.invoke, env: exactRecoveryEnv, publicationHooks: { afterVerify } }), /identity changed|bytes changed|descriptor reread/);
+    assert.equal(readFileSync(item.outputPath).length > 0, true);
   } finally { item.cleanup(); }
 });
 

@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { chmodSync, existsSync, linkSync, mkdtempSync, readFileSync, readdirSync, renameSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import { chmodSync, existsSync, linkSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, renameSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
@@ -181,7 +181,7 @@ test("opened destination swap before verification fails without deleting the rac
         renameSync(output, moved);
         writeFileSync(output, "RACING_TARGET_MUST_WIN", { mode: 0o600, flag: "wx" });
       }
-    }), /rollback was not proved; inspect output state/);
+    }), /rejected and retained for owner inspection/);
     assert.equal(readFileSync(output, "utf8"), "RACING_TARGET_MUST_WIN");
     assert.equal(readFileSync(moved, "utf8").length > 0, true);
     assert.deepEqual(readdirSync(dir).sort(), ["attestation.json", "attestation.json.moved"]);
@@ -191,7 +191,7 @@ test("opened destination swap before verification fails without deleting the rac
 test("hard-link alias before verification fails closed without claiming rollback", () => {
   const dir = mkdtempSync(join(tmpdir(), "qc-attestation-alias-verification-")); const output = join(dir, "attestation.json"); const alias = join(dir, "attestation.alias");
   try {
-    assert.throws(() => writeExclusiveMode600(output, { claims: { exactReadbacksVerified: true } }, { beforeVerify: () => linkSync(output, alias) }), /rollback was not proved; inspect output state/);
+    assert.throws(() => writeExclusiveMode600(output, { claims: { exactReadbacksVerified: true } }, { beforeVerify: () => linkSync(output, alias) }), /rejected and retained for owner inspection/);
     assert.equal(readFileSync(output, "utf8").length > 0, true);
     assert.equal(readFileSync(alias, "utf8").length > 0, true);
     assert.deepEqual(readdirSync(dir).sort(), ["attestation.alias", "attestation.json"]);
@@ -209,11 +209,21 @@ test("destination swap after directory fsync fails without deleting the racing p
           writeFileSync(output, "RACING_TARGET_MUST_WIN", { mode: 0o600, flag: "wx" });
         }
       }
-    }), /rollback was not proved; inspect output state/);
+    }), /rejected and retained for owner inspection/);
     assert.equal(readFileSync(output, "utf8"), "RACING_TARGET_MUST_WIN");
     assert.equal(readFileSync(moved, "utf8").length > 0, true);
     assert.deepEqual(readdirSync(dir).sort(), ["attestation.json", "attestation.json.moved"]);
   } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("parent-directory swap is rejected while both directory generations are retained", () => {
+  const rootDir = mkdtempSync(join(tmpdir(), "qc-attestation-parent-swap-")); const parent = join(rootDir, "published"); const displaced = join(rootDir, "displaced"); const output = join(parent, "attestation.json");
+  mkdirSync(parent, { mode: 0o700 });
+  try {
+    assert.throws(() => writeExclusiveMode600(output, { claims: { exactReadbacksVerified: true } }, { afterOpen: () => { renameSync(parent, displaced); mkdirSync(parent, { mode: 0o700 }); } }), /rejected and retained/);
+    assert.equal(existsSync(output), false);
+    assert.equal(existsSync(join(displaced, "attestation.json")), true);
+  } finally { rmSync(rootDir, { recursive: true, force: true }); }
 });
 
 test("file and directory fsync stages are both reached", () => {
@@ -224,40 +234,38 @@ test("file and directory fsync stages are both reached", () => {
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
-test("file fsync failure rolls back the owned destination", () => {
+test("file fsync failure retains the rejected owned destination", () => {
   const dir = mkdtempSync(join(tmpdir(), "qc-attestation-fsync-file-failure-")); const output = join(dir, "attestation.json");
   try {
-    assert.throws(() => writeExclusiveMode600(output, { claims: { exactReadbacksVerified: true } }, { onFsyncStage: (stage) => { if (stage === "file") throw new Error("injected file fsync failure"); } }), /owned output was rolled back/);
-    assert.equal(existsSync(output), false);
-    assert.deepEqual(readdirSync(dir), []);
+    assert.throws(() => writeExclusiveMode600(output, { claims: { exactReadbacksVerified: true } }, { onFsyncStage: (stage) => { if (stage === "file") throw new Error("injected file fsync failure"); } }), /rejected and retained/);
+    assert.equal(existsSync(output), true);
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
 test("directory fsync failure reports an unproved rollback state", () => {
   const dir = mkdtempSync(join(tmpdir(), "qc-attestation-fsync-directory-failure-")); const output = join(dir, "attestation.json");
   try {
-    assert.throws(() => writeExclusiveMode600(output, { claims: { exactReadbacksVerified: true } }, { onFsyncStage: (stage) => { if (stage === "directory") throw new Error("injected directory fsync failure"); } }), /rollback was not proved; inspect output state/);
-    assert.equal(existsSync(output), false);
-    assert.deepEqual(readdirSync(dir), []);
+    assert.throws(() => writeExclusiveMode600(output, { claims: { exactReadbacksVerified: true } }, { onFsyncStage: (stage) => { if (stage === "directory") throw new Error("injected directory fsync failure"); } }), /rejected and retained/);
+    assert.equal(existsSync(output), true);
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
-test("output descriptor close failure rolls back without a double-close or descriptor leak", () => {
+test("output descriptor close failure retains evidence without a double-close or descriptor leak", () => {
   const dir = mkdtempSync(join(tmpdir(), "qc-attestation-close-output-failure-")); const output = join(dir, "attestation.json"); const stages = []; const before = descriptorCount();
   try {
-    assert.throws(() => writeExclusiveMode600(output, { claims: { exactReadbacksVerified: true } }, { failClose: (stage) => { stages.push(stage); return stage === "output"; } }), /rollback was not proved; inspect output state/);
-    assert.deepEqual(stages, ["directory", "output", "directory"]);
-    assert.equal(existsSync(output), false);
+    assert.throws(() => writeExclusiveMode600(output, { claims: { exactReadbacksVerified: true } }, { failClose: (stage) => { stages.push(stage); return stage === "output"; } }), /rejected and retained/);
+    assert.deepEqual(stages, ["output", "directory"]);
+    assert.equal(existsSync(output), true);
     assert.equal(descriptorCount(), before);
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
-test("directory descriptor close failure rolls back without a double-close or descriptor leak", () => {
+test("directory descriptor close failure retains evidence without a double-close or descriptor leak", () => {
   const dir = mkdtempSync(join(tmpdir(), "qc-attestation-close-directory-failure-")); const output = join(dir, "attestation.json"); const stages = []; const before = descriptorCount();
   try {
-    assert.throws(() => writeExclusiveMode600(output, { claims: { exactReadbacksVerified: true } }, { failClose: (stage) => { stages.push(stage); return stage === "directory"; } }), /rollback was not proved; inspect output state/);
-    assert.deepEqual(stages, ["directory", "output", "directory"]);
-    assert.equal(existsSync(output), false);
+    assert.throws(() => writeExclusiveMode600(output, { claims: { exactReadbacksVerified: true } }, { failClose: (stage) => { stages.push(stage); return stage === "directory"; } }), /rejected and retained/);
+    assert.deepEqual(stages, ["output", "directory"]);
+    assert.equal(existsSync(output), true);
     assert.equal(descriptorCount(), before);
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
@@ -265,10 +273,10 @@ test("directory descriptor close failure rolls back without a double-close or de
 test("public publication race rolls back only this invocation's private inode", async () => {
   const paths = await fixture();
   try {
-    assert.throws(() => assembleQcAttestation({ root, captureDirectory: paths.capture, privatePath: paths.privatePath, publicPath: paths.publicPath, beforePublicOpen: () => writeFileSync(paths.publicPath, "RACING_PUBLIC_TARGET_MUST_REMAIN", { mode: 0o600, flag: "wx" }) }), /private output was rolled back/);
-    assert.equal(existsSync(paths.privatePath), false);
+    assert.throws(() => assembleQcAttestation({ root, captureDirectory: paths.capture, privatePath: paths.privatePath, publicPath: paths.publicPath, beforePublicOpen: () => writeFileSync(paths.publicPath, "RACING_PUBLIC_TARGET_MUST_REMAIN", { mode: 0o600, flag: "wx" }) }), /private rollback was not proved/);
+    assert.equal(existsSync(paths.privatePath), true);
     assert.equal(readFileSync(paths.publicPath, "utf8"), "RACING_PUBLIC_TARGET_MUST_REMAIN");
-    assert.deepEqual(readdirSync(paths.dir).sort(), ["capture", "public.json"]);
+    assert.deepEqual(readdirSync(paths.dir).sort(), ["capture", "private.json", "public.json"]);
   } finally { rmSync(paths.dir, { recursive: true, force: true }); }
 });
 
@@ -292,9 +300,9 @@ test("public descriptor close failure rolls back both outputs and preserves desc
       stages.push(stage);
       if (stage === "output") { outputCloses += 1; return outputCloses === 2; }
       return false;
-    } }), /QC attestation pair publication failed; public rollback was not proved; inspect output state/);
-    assert.equal(existsSync(paths.privatePath), false);
-    assert.equal(existsSync(paths.publicPath), false);
+    } }), /QC attestation pair publication failed; private rollback was not proved/);
+    assert.equal(existsSync(paths.privatePath), true);
+    assert.equal(existsSync(paths.publicPath), true);
     assert.equal(descriptorCount(), before);
   } finally { rmSync(paths.dir, { recursive: true, force: true }); }
 });
@@ -306,9 +314,9 @@ test("public rollback directory close failure reports public uncertainty and pre
       if (stage === "output") { outputCloses += 1; return outputCloses === 2; }
       if (stage === "directory") { directoryCloses += 1; return directoryCloses === 2; }
       return false;
-    } }), /QC attestation pair publication failed; public rollback was not proved; inspect output state/);
-    assert.equal(existsSync(paths.privatePath), false);
-    assert.equal(existsSync(paths.publicPath), false);
+    } }), /QC attestation pair publication failed; private rollback was not proved/);
+    assert.equal(existsSync(paths.privatePath), true);
+    assert.equal(existsSync(paths.publicPath), true);
     assert.equal(descriptorCount(), before);
   } finally { rmSync(paths.dir, { recursive: true, force: true }); }
 });
@@ -321,7 +329,7 @@ test("private rollback directory close failure reports pair state without a desc
       if (stage === "directory") { directoryCloses += 1; return directoryCloses === 2; }
       return false;
     } }), /private rollback was not proved; inspect output state/);
-    assert.equal(existsSync(paths.privatePath), false);
+    assert.equal(existsSync(paths.privatePath), true);
     assert.equal(readFileSync(paths.publicPath, "utf8"), "RACING_PUBLIC_TARGET_MUST_REMAIN");
     assert.equal(descriptorCount(), before);
   } finally { rmSync(paths.dir, { recursive: true, force: true }); }

@@ -1,11 +1,11 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
-import { lstatSync, readFileSync } from "node:fs";
+import { closeSync, constants, fstatSync, lstatSync, openSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { exactPromotionObjects, loadQcFourthInventoryPromotionPreparation, qcFourthPlanDigests } from "./check-qc-fourth-inventory-immutable-promotion.mjs";
 import { preflightLocal, recomputeMultipartPartChecksums } from "./qc-fourth-inventory-immutable-promotion.mjs";
-import { writeExclusiveMode600 } from "./assemble-qc-immutable-promotion-attestation.mjs";
+import { readOwnedPublication, writeExclusiveMode600 } from "./assemble-qc-immutable-promotion-attestation.mjs";
 
 const RETAIN_UNTIL = "2033-08-12T00:00:00Z";
 const PRIVATE_FILE_MODE = 0o600;
@@ -32,12 +32,8 @@ const exists = (file) => {
 };
 
 function assertPrivateInput(file) {
-  const metadata = lstatSync(file);
-  assert.ok(metadata.isFile() && !metadata.isSymbolicLink(), "recovery state must be a regular non-symlink file");
-  assert.equal(metadata.uid, process.getuid(), "recovery state must be owner-owned");
-  assert.equal(metadata.mode & 0o777, PRIVATE_FILE_MODE, "recovery state must be mode 600");
-  assert.equal(metadata.nlink, 1, "recovery state must not have hard-link aliases");
-  return JSON.parse(readFileSync(file, "utf8"));
+  const descriptor = openSync(file, constants.O_RDONLY | constants.O_NOFOLLOW);
+  try { const metadata = fstatSync(descriptor); assert.ok(metadata.isFile(), "recovery state must be a regular file"); assert.equal(metadata.uid, process.getuid(), "recovery state must be owner-owned"); assert.equal(metadata.mode & 0o777, PRIVATE_FILE_MODE, "recovery state must be mode 600"); assert.equal(metadata.nlink, 1, "recovery state must not have hard-link aliases"); const bytes = readFileSync(descriptor); const after = fstatSync(descriptor); assert.ok(after.dev === metadata.dev && after.ino === metadata.ino && after.size === metadata.size, "recovery state changed during descriptor read"); return { bytes, state: JSON.parse(bytes) }; } finally { closeSync(descriptor); }
 }
 
 function assertControlledDirectory(directory, label) {
@@ -73,6 +69,7 @@ function planBoundState(plan, state) {
   assert.equal(state.region, plan.region);
   assert.equal(state.retentionUntil, RETAIN_UNTIL);
   assert.ok(Array.isArray(state.promotionSessions) && state.promotionSessions.length > 0, "promotion state has no mutation-session provenance");
+  const sessionDigests = new Set(state.promotionSessions.map((session) => createHash("sha256").update(JSON.stringify(session)).digest("hex")));
   assert.ok(state.objects && typeof state.objects === "object" && !Array.isArray(state.objects));
   const entries = new Map(exactPromotionObjects(plan).map((entry) => [entry.id, entry]));
   for (const [id, record] of Object.entries(state.objects)) {
@@ -81,6 +78,7 @@ function planBoundState(plan, state) {
     assert.equal(record.objectKey, entry.objectKey, `${id} state key drifted`);
     assert.equal(record.byteLength, entry.byteLength, `${id} state byte length drifted`);
     assert.equal(record.sha256, entry.sha256, `${id} state SHA-256 drifted`);
+    assert.ok(sessionDigests.has(record.mutationSessionSha256), `${id} mutation session is not bound to persisted provenance`);
     if (record.recoveryRequired) assert.ok(AMBIGUOUS_REASONS.has(record.recoveryReason), `${id} has an unsupported recovery reason`);
   }
   const ambiguous = Object.entries(state.objects).filter(([, record]) => record.recoveryRequired === true);
@@ -120,7 +118,7 @@ export function recoverQcFourthReadOnly(plan, statePath, outputPath, dependencie
   assertControlledDirectory(path.dirname(path.resolve(statePath)), "recovery state parent");
   assertControlledDirectory(path.dirname(path.resolve(outputPath)), "recovery output parent");
   assertNewOutput(outputPath);
-  const state = assertPrivateInput(statePath);
+  const { bytes: stateBytes, state } = assertPrivateInput(statePath);
   const { entries, ambiguous } = planBoundState(plan, state);
   const invoke = dependencies.invoke || invokeJson;
   const env = validateRecoveryEnvironment(dependencies.env || process.env);
@@ -193,17 +191,14 @@ export function recoverQcFourthReadOnly(plan, statePath, outputPath, dependencie
     notice: "This record is a separately gated read-only diagnostic. It does not authorize, perform, or imply a replacement upload, multipart completion, retention change, ledger credit, transformation, ingestion, release, or production admission.",
     planFileSha256: qcFourthPlanDigests(plan).planFileSha256,
     planParsedSha256: qcFourthPlanDigests(plan).planParsedSha256,
-    stateFileSha256: requireStateDigest(statePath),
+    stateFileSha256: createHash("sha256").update(stateBytes).digest("hex"),
+    recoverySession: { account: env.WITNESS_TREE_ACCOUNT, operatorArn: env.WITNESS_TREE_OPERATOR_ARN, roleArn: env.WITNESS_TREE_ROLE_ARN, roleSessionName: env.WITNESS_TREE_ROLE_SESSION_NAME, assumedRoleArn: env.WITNESS_TREE_ASSUMED_ROLE_ARN, roleUserId: env.WITNESS_TREE_ROLE_USER_ID, mfaSerialArn: env.WITNESS_TREE_MFA_SERIAL_ARN, mfaPresent: true, sessionExpiresAt: new Date(env.WITNESS_TREE_SESSION_EXPIRES_AT).toISOString() },
     objectCount: results.length,
     objects: results,
     claims: { stateChanged: false, mutationPerformed: false, replacementStarted: false, sourceLedgerCreditChanged: false, transformed: false, ingested: false, productionEligible: false }
   };
-  writeExclusiveMode600(outputPath, record, dependencies.publicationHooks);
+  const publication = writeExclusiveMode600(outputPath, record, dependencies.publicationHooks); const publishedBytes = readOwnedPublication(publication); assert.deepEqual(JSON.parse(publishedBytes), record, "recovery output changed during descriptor-bound reread");
   return record;
-}
-
-function requireStateDigest(statePath) {
-  return createHash("sha256").update(readFileSync(statePath)).digest("hex");
 }
 
 function option(args, name) {

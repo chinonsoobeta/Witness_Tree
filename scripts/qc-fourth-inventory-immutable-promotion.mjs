@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
-import { closeSync, constants as fsConstants, fstatSync, fsyncSync, linkSync, lstatSync, openSync, readFileSync, readSync, realpathSync, renameSync, unlinkSync, writeFileSync, writeSync } from "node:fs";
+import { closeSync, constants as fsConstants, fstatSync, fsyncSync, lstatSync, openSync, readFileSync, readdirSync, readSync, realpathSync, writeFileSync, writeSync } from "node:fs";
 import { homedir } from "node:os";
 import path from "node:path";
 import { canonicalManifestBytes, exactPromotionObjects, loadQcFourthInventoryPromotionPreparation, qcFourthPlanDigests } from "./check-qc-fourth-inventory-immutable-promotion.mjs";
@@ -40,7 +40,8 @@ const OPERATOR_ARN = `arn:aws:iam::${ACCOUNT}:user/${OPERATOR_PROFILE}`;
 const PROMOTION_ROLE = "WitnessTreeQcFourthArchivePromotionUploader";
 const PROMOTION_ROLE_ARN = `arn:aws:iam::${ACCOUNT}:role/${PROMOTION_ROLE}`;
 const ROLE_SESSION_NAME = "witness-tree-qc-fourth-approved-promotion";
-const RUN_LOCK_NAME = "qc-fourth-inventory-promotion.lock";
+const RUN_TICKET_PREFIX = "qc-fourth-inventory-promotion-run";
+const STATE_PREFIX = "qc-fourth-inventory-promotion-state";
 
 function ownerUid() {
   assert.equal(typeof process.getuid, "function", "Owner-controlled paths require a POSIX owner identity.");
@@ -61,17 +62,25 @@ function pathExists(file) {
   }
 }
 
-function removeIfPresent(file) {
-  try { unlinkSync(file); }
-  catch (error) { if (error?.code !== "ENOENT") throw error; }
-}
-
-function syncDirectory(directory) {
-  const descriptor = openSync(directory, fsConstants.O_RDONLY);
-  try { fsyncSync(descriptor); } finally { closeSync(descriptor); }
-}
-
 function sameInode(left, right) { return left?.dev === right?.dev && left?.ino === right?.ino; }
+
+function bindDirectory(directory, label, mode = PRIVATE_DIRECTORY_MODE) {
+  assert.equal(typeof fsConstants.O_NOFOLLOW, "number", `${label} requires symlink protection.`);
+  const before = lstatSync(directory); const descriptor = openSync(directory, fsConstants.O_RDONLY | fsConstants.O_NOFOLLOW);
+  try { const opened = fstatSync(descriptor); assert.ok(opened.isDirectory() && before.isDirectory() && !before.isSymbolicLink() && sameInode(opened, before), `${label} identity changed.`); assert.equal(opened.uid, ownerUid(), `${label} must be owner-owned.`); if (mode !== undefined) assert.equal(modeBits(opened), mode, `${label} mode drifted.`); return { directory, descriptor, dev: opened.dev, ino: opened.ino }; }
+  catch (error) { closeSync(descriptor); throw error; }
+}
+
+function assertBoundDirectory(binding) { const current = lstatSync(binding.directory); assert.ok(current.isDirectory() && !current.isSymbolicLink() && current.dev === binding.dev && current.ino === binding.ino, "Controlled directory identity changed; published evidence is retained for inspection."); }
+function syncBoundDirectory(binding) { assertBoundDirectory(binding); fsyncSync(binding.descriptor); assertBoundDirectory(binding); }
+
+function appendOnlyPrivateFile(file, bytes, label, binding) {
+  assert.ok(path.isAbsolute(file), `${label} path must be absolute.`); assert.equal(path.dirname(file), binding.directory, `${label} parent binding drifted.`); assertBoundDirectory(binding);
+  const descriptor = openSync(file, fsConstants.O_WRONLY | fsConstants.O_CREAT | fsConstants.O_EXCL | fsConstants.O_NOFOLLOW, PRIVATE_FILE_MODE);
+  try { const opened = fstatSync(descriptor); assert.ok(opened.isFile() && opened.uid === ownerUid() && opened.nlink === 1 && modeBits(opened) === PRIVATE_FILE_MODE); writeFileSync(descriptor, bytes); fsyncSync(descriptor); const after = fstatSync(descriptor); assert.ok(sameInode(opened, after) && after.size === Buffer.byteLength(bytes)); }
+  finally { closeSync(descriptor); }
+  assertBoundDirectory(binding); const published = lstatSync(file); assert.ok(published.isFile() && !published.isSymbolicLink() && published.nlink === 1 && published.uid === ownerUid() && modeBits(published) === PRIVATE_FILE_MODE); syncBoundDirectory(binding); return file;
+}
 
 function assertDirectoryMetadata(directory, label, mode) {
   const info = lstatSync(directory);
@@ -107,12 +116,7 @@ function privateFileRead(file, label) {
 
 function openPrivateScratch(file) {
   assert.equal(typeof fsConstants.O_NOFOLLOW, "number", "Multipart scratch files require symlink protection.");
-  try {
-    assertPrivateFileMetadata(file, "Multipart scratch file");
-  } catch (error) {
-    if (error?.code !== "ENOENT") throw error;
-  }
-  const descriptor = openSync(file, fsConstants.O_WRONLY | fsConstants.O_CREAT | fsConstants.O_TRUNC | fsConstants.O_NOFOLLOW, PRIVATE_FILE_MODE);
+  const descriptor = openSync(file, fsConstants.O_WRONLY | fsConstants.O_CREAT | fsConstants.O_EXCL | fsConstants.O_NOFOLLOW, PRIVATE_FILE_MODE);
   const info = fstatSync(descriptor);
   try {
     assert.ok(info.isFile(), "Multipart scratch file must be regular.");
@@ -141,70 +145,18 @@ function openSourceRead(file) {
 }
 
 function atomicPrivateFile(file, bytes, label) {
-  assert.ok(path.isAbsolute(file), `${label} path must be absolute.`);
-  assert.equal(pathExists(file), false, `${label} already exists; refusing to overwrite it.`);
-  const temporary = `${file}.next`;
-  assert.equal(pathExists(temporary), false, `${label} temporary path already exists; inspect it before continuing.`);
-  const descriptor = openSync(temporary, fsConstants.O_WRONLY | fsConstants.O_CREAT | fsConstants.O_EXCL | fsConstants.O_NOFOLLOW, PRIVATE_FILE_MODE);
-  try { writeFileSync(descriptor, bytes); fsyncSync(descriptor); } finally { closeSync(descriptor); }
-  let linked = false;
-  try {
-    assertPrivateFileMetadata(temporary, `${label} temporary`);
-    // link(2) refuses an existing destination; rename(2) would silently
-    // replace a file if another process won the race after our precheck.
-    linkSync(temporary, file);
-    linked = true;
-    unlinkSync(temporary);
-    assertPrivateFileMetadata(file, label);
-    syncDirectory(path.dirname(file));
-  } catch (error) {
-    removeIfPresent(temporary);
-    if (linked) removeIfPresent(file);
-    throw error;
-  }
+  const binding = bindDirectory(path.dirname(file), `${label} parent`);
+  try { return appendOnlyPrivateFile(file, bytes, label, binding); } finally { closeSync(binding.descriptor); }
 }
 
 function acquireRunLock(options, plan) {
   const stateDir = assertDirectoryMetadata(options.stateDir, "--state-dir", PRIVATE_DIRECTORY_MODE);
-  const lockPath = path.join(stateDir, RUN_LOCK_NAME);
-  assert.equal(pathExists(lockPath), false, "An exclusive QC fourth-inventory promotion run is already active or left an unreviewed lock; inspect it before resuming.");
-  assert.equal(typeof fsConstants.O_NOFOLLOW, "number", "The promotion lock requires symlink protection.");
-  let descriptor;
-  let created = false;
-  let opened;
-  try {
-    descriptor = openSync(lockPath, fsConstants.O_WRONLY | fsConstants.O_CREAT | fsConstants.O_EXCL | fsConstants.O_NOFOLLOW, PRIVATE_FILE_MODE);
-    created = true;
-    const digests = qcFourthPlanDigests(plan);
-    const lock = {
-      schemaVersion: 1,
-      pid: process.pid,
-      startedAt: new Date().toISOString(),
-      planFileSha256: digests.planFileSha256,
-      planParsedSha256: digests.planParsedSha256
-    };
-    writeFileSync(descriptor, `${JSON.stringify(lock)}\n`);
-    fsyncSync(descriptor);
-    opened = fstatSync(descriptor);
-    closeSync(descriptor);
-    descriptor = undefined;
-    const published = lstatSync(lockPath);
-    assert.ok(sameInode(opened, published) && published.nlink === 1, "Promotion run lock changed during durable publication.");
-    syncDirectory(stateDir);
-    return { path: lockPath, release: () => {
-      const current = lstatSync(lockPath);
-      assert.ok(current.isFile() && !current.isSymbolicLink() && current.nlink === 1 && sameInode(current, opened), "Promotion run lock ownership changed; refusing to unlink a racing replacement.");
-      unlinkSync(lockPath);
-      syncDirectory(stateDir);
-    } };
-  } catch (error) {
-    if (descriptor !== undefined) closeSync(descriptor);
-    if (created && opened) {
-      try { const current = lstatSync(lockPath); if (sameInode(current, opened) && current.nlink === 1) { unlinkSync(lockPath); syncDirectory(stateDir); } } catch (cleanupError) { if (cleanupError?.code !== "ENOENT") throw cleanupError; }
-    } else if (created) removeIfPresent(lockPath);
-    if (error?.code === "EEXIST" || error?.code === "ELOOP") throw new Error("An exclusive QC fourth-inventory promotion run is already active; no AWS call was made.", { cause: error });
-    throw error;
-  }
+  const binding = bindDirectory(stateDir, "promotion run journal parent"); assertBoundDirectory(binding); const tickets = readdirSync(stateDir).filter((name) => new RegExp(`^${RUN_TICKET_PREFIX}\\.\\d{8}\\.json$`).test(name)).sort(); assertBoundDirectory(binding); tickets.forEach((name, index) => assert.equal(name, `${RUN_TICKET_PREFIX}.${String(index + 1).padStart(8, "0")}.json`, "promotion run journal sequence drifted"));
+  if (tickets.length) { const latest = tickets.at(-1); assert.equal(pathExists(path.join(stateDir, `${latest}.closed`)), true, "An exclusive promotion run is active or left an unreviewed durable ticket; owner recovery is required."); }
+  const sequence = tickets.length + 1; const name = `${RUN_TICKET_PREFIX}.${String(sequence).padStart(8, "0")}.json`; const lockPath = path.join(stateDir, name); const digests = qcFourthPlanDigests(plan);
+  try { appendOnlyPrivateFile(lockPath, `${JSON.stringify({ schemaVersion: 1, sequence, pid: process.pid, startedAt: new Date().toISOString(), planFileSha256: digests.planFileSha256, planParsedSha256: digests.planParsedSha256 })}\n`, "promotion run ticket", binding); } catch (error) { closeSync(binding.descriptor); throw error; }
+  let closed = false;
+  return { path: lockPath, release: (outcome = "ended") => { if (closed) return; try { appendOnlyPrivateFile(`${lockPath}.closed`, `${JSON.stringify({ schemaVersion: 1, sequence, outcome, closedAt: new Date().toISOString(), ticketSha256: sha256Bytes(privateFileRead(lockPath, "promotion run ticket")) })}\n`, "promotion run closure", binding); } finally { closed = true; closeSync(binding.descriptor); } }, abandon: () => { if (!closed) closeSync(binding.descriptor); closed = true; } };
 }
 
 function assertStateRecordBinding(entry, record) {
@@ -212,6 +164,7 @@ function assertStateRecordBinding(entry, record) {
   assert.equal(record.objectKey, entry.objectKey, `${entry.id} state key drifted.`);
   assert.equal(record.byteLength, entry.byteLength, `${entry.id} state byte length drifted.`);
   assert.equal(record.sha256, entry.sha256, `${entry.id} state SHA-256 drifted.`);
+  assert.match(record.mutationSessionSha256 || "", /^[a-f0-9]{64}$/, `${entry.id} mutation session binding is missing.`);
   return record;
 }
 
@@ -362,10 +315,15 @@ function validateSessionProvenance(session) {
 }
 
 function stateFile(options) {
-  return path.join(assertDirectoryMetadata(options.stateDir, "--state-dir", PRIVATE_DIRECTORY_MODE), "qc-fourth-inventory-promotion-state.json");
+  const directory = assertDirectoryMetadata(options.stateDir, "--state-dir", PRIVATE_DIRECTORY_MODE); const binding = bindDirectory(directory, "promotion state journal parent");
+  try { assertBoundDirectory(binding); const pointers = readdirSync(directory).filter((name) => new RegExp(`^${STATE_PREFIX}\\.current\\.\\d{8}\\.json$`).test(name)).sort(); assertBoundDirectory(binding); pointers.forEach((name, index) => assert.equal(name, `${STATE_PREFIX}.current.${String(index + 1).padStart(8, "0")}.json`, "promotion state pointer sequence drifted")); if (!pointers.length) return null; const pointer = JSON.parse(privateFileRead(path.join(directory, pointers.at(-1)), "Promotion state pointer")); assert.deepEqual(Object.keys(pointer).sort(), ["generation", "sha256", "stateFile"]); assert.equal(pointer.generation, pointers.length); assert.match(pointer.stateFile, new RegExp(`^${STATE_PREFIX}\\.\\d{8}\\.[a-f0-9]{64}\\.json$`)); const file = path.join(directory, pointer.stateFile); const bytes = privateFileRead(file, "Promotion state generation"); assert.equal(sha256Bytes(bytes), pointer.sha256); assertBoundDirectory(binding); return file; }
+  finally { closeSync(binding.descriptor); }
 }
 
-function mutationIntent(plan, entry, operation, details = {}) {
+export function latestQcFourthStatePath(stateDir) { return stateFile({ stateDir }); }
+
+function mutationIntent(plan, entry, operation, state, details = {}) {
+  assert.match(state.activeSessionSha256 || "", /^[a-f0-9]{64}$/, "A durable active mutation session is required.");
   const request = {
     operation,
     bucket: plan.bucket,
@@ -381,7 +339,8 @@ function mutationIntent(plan, entry, operation, details = {}) {
     objectKey: entry.objectKey,
     requestSha256: sha256Bytes(JSON.stringify(request)),
     createdAt: new Date().toISOString(),
-    status: "pre-call"
+    status: "pre-call",
+    mutationSessionSha256: state.activeSessionSha256
   };
 }
 
@@ -420,25 +379,24 @@ function callMutation(state, entry, options, intent, invoke, env, args, reason) 
 function loadState(plan, options) {
   const file = stateFile(options);
   const digests = qcFourthPlanDigests(plan);
-  if (!pathExists(file)) return { schemaVersion: 1, planSha256: digests.planParsedSha256, ...digests, bucket: plan.bucket, region: plan.region, retentionUntil: RETAIN_UNTIL, promotionSessions: [], objects: {} };
+  if (!file) return { schemaVersion: 1, planSha256: digests.planParsedSha256, ...digests, bucket: plan.bucket, region: plan.region, retentionUntil: RETAIN_UNTIL, promotionSessions: [], activeSessionSha256: null, objects: {} };
   const state = JSON.parse(privateFileRead(file, "Promotion state"));
-  assert.equal(state.schemaVersion, 1); assert.equal(state.planSha256, digests.planParsedSha256); assert.equal(state.planParsedSha256, digests.planParsedSha256); assert.equal(state.planFileSha256, digests.planFileSha256); assert.equal(state.bucket, plan.bucket); assert.equal(state.region, plan.region); assert.equal(state.retentionUntil, RETAIN_UNTIL); assert.ok(Array.isArray(state.promotionSessions)); state.promotionSessions.forEach(validateSessionProvenance); assert.ok(state.objects && typeof state.objects === "object" && !Array.isArray(state.objects));
+  assert.equal(state.schemaVersion, 1); assert.equal(state.planSha256, digests.planParsedSha256); assert.equal(state.planParsedSha256, digests.planParsedSha256); assert.equal(state.planFileSha256, digests.planFileSha256); assert.equal(state.bucket, plan.bucket); assert.equal(state.region, plan.region); assert.equal(state.retentionUntil, RETAIN_UNTIL); assert.ok(Array.isArray(state.promotionSessions)); state.promotionSessions.forEach(validateSessionProvenance); assert.ok(state.activeSessionSha256 === null || /^[a-f0-9]{64}$/.test(state.activeSessionSha256)); assert.ok(state.objects && typeof state.objects === "object" && !Array.isArray(state.objects));
+  const sessionDigests = new Set(state.promotionSessions.map((session) => sha256Bytes(JSON.stringify(session))));
   const expected = new Map(exactPromotionObjects(plan).map((entry) => [entry.id, entry]));
-  for (const [id, record] of Object.entries(state.objects)) assertStateRecordBinding(expected.get(id) || assert.fail(`Unexpected ${id} state record.`), record);
+  for (const [id, record] of Object.entries(state.objects)) { assertStateRecordBinding(expected.get(id) || assert.fail(`Unexpected ${id} state record.`), record); assert.ok(sessionDigests.has(record.mutationSessionSha256), `${id} mutation session is not bound to persisted provenance.`); }
   return state;
 }
 
 function saveState(state, options) {
-  const file = stateFile(options);
-  const temporary = `${file}.next`;
-  assert.equal(pathExists(temporary), false, "A stale temporary promotion state file exists; inspect it before resuming.");
-  assert.equal(typeof fsConstants.O_NOFOLLOW, "number", "Promotion state requires symlink protection.");
-  const descriptor = openSync(temporary, fsConstants.O_WRONLY | fsConstants.O_CREAT | fsConstants.O_EXCL | fsConstants.O_NOFOLLOW, 0o600);
-  try { writeFileSync(descriptor, `${JSON.stringify(state, null, 2)}\n`); fsyncSync(descriptor); } finally { closeSync(descriptor); }
-  assertPrivateFileMetadata(temporary, "Temporary promotion state");
-  renameSync(temporary, file);
-  assertPrivateFileMetadata(file, "Promotion state");
-  syncDirectory(path.dirname(file));
+  const directory = assertDirectoryMetadata(options.stateDir, "--state-dir", PRIVATE_DIRECTORY_MODE); const binding = bindDirectory(directory, "promotion state journal parent");
+  try {
+    const pointers = readdirSync(directory).filter((name) => new RegExp(`^${STATE_PREFIX}\\.current\\.\\d{8}\\.json$`).test(name)).sort(); const generation = pointers.length + 1;
+    const bytes = Buffer.from(`${JSON.stringify(state, null, 2)}\n`); const digest = sha256Bytes(bytes); const stateName = `${STATE_PREFIX}.${String(generation).padStart(8, "0")}.${digest}.json`;
+    appendOnlyPrivateFile(path.join(directory, stateName), bytes, "promotion state generation", binding);
+    appendOnlyPrivateFile(path.join(directory, `${STATE_PREFIX}.current.${String(generation).padStart(8, "0")}.json`), `${JSON.stringify({ generation, stateFile: stateName, sha256: digest })}\n`, "promotion state pointer", binding);
+    return path.join(directory, stateName);
+  } finally { closeSync(binding.descriptor); }
 }
 
 function s3(invoke, env, args) {
@@ -487,8 +445,8 @@ function singlePut(plan, entry, state, options, invoke, env) {
   assert.equal(entry.byteLength <= plan.upload.singlePutMaximumBytes, true);
   const expected = base64Sha256(entry.sha256);
   const args = ["s3api", "put-object", "--bucket", plan.bucket, "--key", entry.objectKey, "--body", entry.file, "--checksum-algorithm", "SHA256", "--checksum-sha256", expected, "--object-lock-mode", "COMPLIANCE", "--object-lock-retain-until-date", RETAIN_UNTIL, "--metadata", `sha256=${entry.sha256}`, "--region", "ca-central-1", "--output", "json"];
-  const intent = mutationIntent(plan, entry, "put-object", { checksumAlgorithm: "SHA256", checksumSha256: expected });
-  const remote = { objectKey: entry.objectKey, byteLength: entry.byteLength, sha256: entry.sha256, complete: false, method: "single-put", mutationIntent: intent };
+  const intent = mutationIntent(plan, entry, "put-object", state, { checksumAlgorithm: "SHA256", checksumSha256: expected });
+  const remote = { objectKey: entry.objectKey, byteLength: entry.byteLength, sha256: entry.sha256, mutationSessionSha256: state.activeSessionSha256, complete: false, method: "single-put", mutationIntent: intent };
   state.objects[entry.id] = remote;
   saveState(state, options);
   const response = callMutation(state, entry, options, intent, invoke, env, args.slice(1), "single-put-response-unknown");
@@ -506,8 +464,11 @@ function singlePut(plan, entry, state, options, invoke, env) {
   return remote;
 }
 
-function writePart(source, target, offset, length) {
-  const input = openSourceRead(source);
+function descriptorSha256(descriptor, byteLength) { const hash = createHash("sha256"); const buffer = Buffer.allocUnsafe(8 * 1024 * 1024); let offset = 0; while (offset < byteLength) { const count = readSync(descriptor, buffer, 0, Math.min(buffer.length, byteLength - offset), offset); assert.ok(count > 0, "Unexpected end of approved source descriptor."); hash.update(buffer.subarray(0, count)); offset += count; } return hash.digest("hex"); }
+function openApprovedSource(entry) { const descriptor = openSourceRead(entry.file); try { const opened = fstatSync(descriptor); assert.equal(opened.size, entry.byteLength, `${entry.id} source descriptor length drifted.`); assert.equal(descriptorSha256(descriptor, entry.byteLength), entry.sha256, `${entry.id} source descriptor SHA-256 drifted.`); return { descriptor, opened }; } catch (error) { closeSync(descriptor); throw error; } }
+function verifyApprovedSource(entry, source) { const after = fstatSync(source.descriptor); assert.ok(sameInode(after, source.opened) && after.size === source.opened.size, `${entry.id} source descriptor identity drifted.`); assert.equal(descriptorSha256(source.descriptor, entry.byteLength), entry.sha256, `${entry.id} source descriptor changed during multipart upload.`); }
+
+function writePart(input, target, offset, length) {
   const output = openPrivateScratch(target);
   const hash = createHash("sha256"); const buffer = Buffer.allocUnsafe(Math.min(8 * 1024 * 1024, length)); let position = offset; let remaining = length;
   try {
@@ -518,32 +479,25 @@ function writePart(source, target, offset, length) {
       while (written < bytes) written += writeSync(output, buffer, written, bytes - written);
       hash.update(buffer.subarray(0, bytes)); position += bytes; remaining -= bytes;
     }
-  } finally { closeSync(input); closeSync(output); }
+  } finally { closeSync(output); }
   return hash.digest();
 }
 
-function partChecksum(source, offset, length) {
-  const input = openSourceRead(source);
+function partChecksum(input, offset, length) {
   const hash = createHash("sha256"); const buffer = Buffer.allocUnsafe(Math.min(8 * 1024 * 1024, length)); let position = offset; let remaining = length;
-  try {
-    while (remaining > 0) {
-      const bytes = readSync(input, buffer, 0, Math.min(buffer.length, remaining), position);
-      assert.ok(bytes > 0, "Unexpected end of multipart source.");
-      hash.update(buffer.subarray(0, bytes)); position += bytes; remaining -= bytes;
-    }
-  } finally { closeSync(input); }
+  while (remaining > 0) {
+    const bytes = readSync(input, buffer, 0, Math.min(buffer.length, remaining), position);
+    assert.ok(bytes > 0, "Unexpected end of multipart source.");
+    hash.update(buffer.subarray(0, bytes)); position += bytes; remaining -= bytes;
+  }
   return hash.digest("base64");
 }
 
 export function recomputeMultipartPartChecksums(entry, partSizeBytes) {
   assert.ok(Number.isSafeInteger(partSizeBytes) && partSizeBytes > 0, "Multipart part size must be a positive safe integer.");
-  const partCount = Math.ceil(entry.byteLength / partSizeBytes);
-  const parts = Array.from({ length: partCount }, (_, index) => {
-    const offset = index * partSizeBytes;
-    const length = Math.min(partSizeBytes, entry.byteLength - offset);
-    return { partNumber: index + 1, byteLength: length, checksumSha256: partChecksum(entry.file, offset, length) };
-  });
-  return { partSizeBytes, partCount, parts, compositeChecksumSha256: compositeSha256(parts) };
+  const source = openApprovedSource(entry);
+  try { const partCount = Math.ceil(entry.byteLength / partSizeBytes); const parts = Array.from({ length: partCount }, (_, index) => { const offset = index * partSizeBytes; const length = Math.min(partSizeBytes, entry.byteLength - offset); return { partNumber: index + 1, byteLength: length, checksumSha256: partChecksum(source.descriptor, offset, length) }; }); verifyApprovedSource(entry, source); return { partSizeBytes, partCount, parts, compositeChecksumSha256: compositeSha256(parts) }; }
+  finally { closeSync(source.descriptor); }
 }
 
 function compositeSha256(parts) {
@@ -551,7 +505,7 @@ function compositeSha256(parts) {
   return `${createHash("sha256").update(raw).digest("base64")}-${parts.length}`;
 }
 
-function validateMultipartParts(plan, entry, current, allPartsPresent = false) {
+function validateMultipartParts(plan, entry, current, sourceDescriptor, allPartsPresent = false) {
   assertStateRecordBinding(entry, current);
   assert.equal(current.method, "multipart", `${entry.id} state upload method drifted.`);
   assert.ok(typeof current.uploadId === "string" && current.uploadId.length > 0, `${entry.id} multipart UploadId is missing.`);
@@ -562,20 +516,21 @@ function validateMultipartParts(plan, entry, current, allPartsPresent = false) {
   if (current.partCount !== undefined) assert.equal(current.partCount, partCount, `${entry.id} multipart part count drifted.`);
   assert.ok(current.parts.length <= partCount, `${entry.id} has too many multipart parts.`);
   for (const [index, part] of current.parts.entries()) {
-    assert.deepEqual(Object.keys(part).sort(), ["checksumSha256", "etag", "partNumber"], `${entry.id} multipart part fields drifted.`);
+    assert.deepEqual(Object.keys(part).sort(), ["checksumSha256", "etag", "mutationSessionSha256", "partNumber"], `${entry.id} multipart part fields drifted.`);
     assert.equal(part.partNumber, index + 1, `${entry.id} multipart parts must be a contiguous prefix.`);
     assert.match(part.etag, /^\S+$/, `${entry.id} multipart part ETag is malformed.`);
     assert.match(part.checksumSha256, BASE64_SHA256, `${entry.id} multipart part checksum is malformed.`);
+    assert.match(part.mutationSessionSha256, /^[a-f0-9]{64}$/, `${entry.id} multipart part session binding is missing.`);
     const offset = index * partSize;
     const length = Math.min(partSize, entry.byteLength - offset);
-    assert.equal(part.checksumSha256, partChecksum(entry.file, offset, length), `${entry.id} multipart part checksum is not bound to the local bytes.`);
+    assert.equal(part.checksumSha256, partChecksum(sourceDescriptor, offset, length), `${entry.id} multipart part checksum is not bound to the approved source descriptor.`);
   }
   if (allPartsPresent) assert.equal(current.parts.length, partCount, `${entry.id} multipart state does not contain every part.`);
   return { partSize, partCount, expectedComposite: compositeSha256(current.parts) };
 }
 
-function validateMultipartCompletion(plan, entry, current, persistedComplete) {
-  const result = validateMultipartParts(plan, entry, current, true);
+function validateMultipartCompletion(plan, entry, current, sourceDescriptor, persistedComplete) {
+  const result = validateMultipartParts(plan, entry, current, sourceDescriptor, true);
   assert.equal(current.complete, persistedComplete, `${entry.id} multipart completion state drifted.`);
   assert.equal(current.partSizeBytes, result.partSize, `${entry.id} completed multipart part size is missing.`);
   assert.equal(current.partCount, result.partCount, `${entry.id} completed multipart part count is missing.`);
@@ -586,20 +541,20 @@ function validateMultipartCompletion(plan, entry, current, persistedComplete) {
   return result;
 }
 
-function multipartPut(plan, entry, state, options, invoke, env) {
+function multipartPutWithSource(plan, entry, state, options, invoke, env, sourceDescriptor) {
   const prior = state.objects[entry.id];
   if (prior?.complete) {
     assertNoRecoveryRequired(entry, prior);
-    validateMultipartCompletion(plan, entry, prior, true);
+    validateMultipartCompletion(plan, entry, prior, sourceDescriptor, true);
     return verifyRemoteObject(plan, entry, prior, invoke, env);
   }
-  const current = prior || { objectKey: entry.objectKey, byteLength: entry.byteLength, sha256: entry.sha256, complete: false, method: "multipart", uploadId: null, parts: [], partSizeBytes: plan.upload.partSizeBytes, partCount: Math.ceil(entry.byteLength / plan.upload.partSizeBytes) };
+  const current = prior || { objectKey: entry.objectKey, byteLength: entry.byteLength, sha256: entry.sha256, mutationSessionSha256: state.activeSessionSha256, complete: false, method: "multipart", uploadId: null, parts: [], partSizeBytes: plan.upload.partSizeBytes, partCount: Math.ceil(entry.byteLength / plan.upload.partSizeBytes) };
   assertStateRecordBinding(entry, current);
   assert.equal(current.complete, false, `${entry.id} multipart state is malformed.`);
   assertNoRecoveryRequired(entry, current);
   if (current.pendingMutation) throw new Error(`${entry.id} has an unfinished mutation intent; read-only recovery is required before any retry.`);
   if (current.versionId !== undefined) {
-    validateMultipartCompletion(plan, entry, current, false);
+    validateMultipartCompletion(plan, entry, current, sourceDescriptor, false);
     verifyRemoteObject(plan, entry, current, invoke, env);
     current.complete = true;
     current.mutationIntent = { ...current.mutationIntent, status: "readback-complete" };
@@ -609,10 +564,10 @@ function multipartPut(plan, entry, state, options, invoke, env) {
   if (current.uploadId === null) {
     assert.deepEqual(current.parts, [], `${entry.id} cannot have parts without an UploadId.`);
   } else {
-    validateMultipartParts(plan, entry, current);
+    validateMultipartParts(plan, entry, current, sourceDescriptor);
   }
   if (!current.uploadId) {
-    const intent = mutationIntent(plan, entry, "create-multipart-upload", { checksumAlgorithm: "SHA256", checksumType: "COMPOSITE", partSizeBytes: plan.upload.partSizeBytes });
+    const intent = mutationIntent(plan, entry, "create-multipart-upload", state, { checksumAlgorithm: "SHA256", checksumType: "COMPOSITE", partSizeBytes: plan.upload.partSizeBytes });
     current.pendingMutation = intent;
     current.mutationIntent = intent;
     state.objects[entry.id] = current;
@@ -633,17 +588,18 @@ function multipartPut(plan, entry, state, options, invoke, env) {
     try {
       listed = s3(invoke, env, ["list-parts", "--bucket", plan.bucket, "--key", entry.objectKey, "--upload-id", current.uploadId]);
     } catch (error) {
-      const intent = current.mutationIntent || mutationIntent(plan, entry, "list-parts", { uploadId: current.uploadId });
+      const intent = current.mutationIntent || mutationIntent(plan, entry, "list-parts", state, { uploadId: current.uploadId });
       markRecoveryRequired(state, entry, options, intent, error?.providerCode === "NoSuchUpload" ? "multipart-completion-nosuchupload" : "multipart-list-parts-response-ambiguous", error);
       throw new Error(`${entry.id} multipart provider state could not be read unambiguously; read-only recovery is required and no duplicate upload will be attempted.`);
     }
     assert.equal(listed.IsTruncated, false, `${entry.id} part listing unexpectedly paginated.`);
-    assert.deepEqual((listed.Parts || []).map(({ PartNumber, ETag, ChecksumSHA256 }) => ({ partNumber: PartNumber, etag: ETag, checksumSha256: ChecksumSHA256 })), current.parts, `${entry.id} remote multipart state drifted.`);
+    assert.deepEqual((listed.Parts || []).map(({ PartNumber, ETag, ChecksumSHA256 }) => ({ partNumber: PartNumber, etag: ETag, checksumSha256: ChecksumSHA256 })), current.parts.map(({ partNumber, etag, checksumSha256 }) => ({ partNumber, etag, checksumSha256 })), `${entry.id} remote multipart state drifted.`);
   }
-  const { partSize, partCount } = validateMultipartParts(plan, entry, current); const scratch = path.join(assertDirectoryMetadata(options.stateDir, "--state-dir", PRIVATE_DIRECTORY_MODE), "multipart-part-buffer.bin");
+  const { partSize, partCount } = validateMultipartParts(plan, entry, current, sourceDescriptor); const scratchDirectory = assertDirectoryMetadata(options.stateDir, "--state-dir", PRIVATE_DIRECTORY_MODE);
   for (let index = current.parts.length; index < partCount; index += 1) {
-    const offset = index * partSize; const length = Math.min(partSize, entry.byteLength - offset); const digest = writePart(entry.file, scratch, offset, length); const checksumSha256 = digest.toString("base64");
-    const intent = mutationIntent(plan, entry, "upload-part", { uploadId: current.uploadId, partNumber: index + 1, checksumSha256 });
+    const scratch = path.join(scratchDirectory, `multipart-part-buffer.${process.pid}.${entry.id}.${index + 1}.bin`); const offset = index * partSize; const length = Math.min(partSize, entry.byteLength - offset); const digest = writePart(sourceDescriptor, scratch, offset, length); const checksumSha256 = digest.toString("base64");
+    current.mutationSessionSha256 = state.activeSessionSha256;
+    const intent = mutationIntent(plan, entry, "upload-part", state, { uploadId: current.uploadId, partNumber: index + 1, checksumSha256 });
     current.pendingMutation = intent;
     current.mutationIntent = intent;
     saveState(state, options);
@@ -652,14 +608,16 @@ function multipartPut(plan, entry, state, options, invoke, env) {
       markRecoveryRequired(state, entry, options, intent, "multipart-part-response-invalid", new Error("UploadPart acknowledgement was incomplete or mismatched"));
       throw new Error(`${entry.id} part ${index + 1} acknowledgement was incomplete or mismatched; read-only recovery is required and no duplicate part will be attempted.`);
     }
-    current.parts.push({ partNumber: index + 1, etag: response.ETag, checksumSha256 });
+    current.parts.push({ partNumber: index + 1, etag: response.ETag, checksumSha256, mutationSessionSha256: state.activeSessionSha256 });
     current.pendingMutation = undefined;
     current.mutationIntent = { ...intent, status: "accepted" };
     saveState(state, options);
   }
-  const expectedComposite = validateMultipartParts(plan, entry, current, true).expectedComposite;
+  const expectedComposite = validateMultipartParts(plan, entry, current, sourceDescriptor, true).expectedComposite;
+  assert.equal(descriptorSha256(sourceDescriptor, entry.byteLength), entry.sha256, `${entry.id} approved whole-file SHA-256 changed before multipart completion.`);
   const request = { Parts: current.parts.map((part) => ({ ETag: part.etag, PartNumber: part.partNumber, ChecksumSHA256: part.checksumSha256 })) };
-  const intent = mutationIntent(plan, entry, "complete-multipart-upload", { uploadId: current.uploadId, parts: current.parts });
+  current.mutationSessionSha256 = state.activeSessionSha256;
+  const intent = mutationIntent(plan, entry, "complete-multipart-upload", state, { uploadId: current.uploadId, parts: current.parts });
   current.pendingMutation = intent;
   current.mutationIntent = intent;
   saveState(state, options);
@@ -679,13 +637,15 @@ function multipartPut(plan, entry, state, options, invoke, env) {
   Object.assign(current, { versionId: response.VersionId, checksumType: "COMPOSITE", checksumSha256: expectedComposite, expectedChecksumSha256: expectedComposite, partSizeBytes: partSize, partCount, pendingMutation: undefined, mutationIntent: { ...intent, status: "accepted" } });
   state.objects[entry.id] = current;
   saveState(state, options);
-  validateMultipartCompletion(plan, entry, current, false);
+  validateMultipartCompletion(plan, entry, current, sourceDescriptor, false);
   verifyRemoteObject(plan, entry, current, invoke, env);
   current.complete = true;
   current.mutationIntent = { ...current.mutationIntent, status: "readback-complete" };
   saveState(state, options);
   return current;
 }
+
+function multipartPut(plan, entry, state, options, invoke, env) { const source = openApprovedSource(entry); try { const result = multipartPutWithSource(plan, entry, state, options, invoke, env, source.descriptor); verifyApprovedSource(entry, source); return result; } finally { closeSync(source.descriptor); } }
 
 export function executePromotion(plan, options, dependencies = {}) {
   validateExecutionOptions(plan, options);
@@ -699,15 +659,14 @@ export function executePromotion(plan, options, dependencies = {}) {
     const provenance = sessionProvenance(env);
     if (!state.promotionSessions.some((session) => JSON.stringify(session) === JSON.stringify(provenance))) {
       state.promotionSessions.push(provenance);
-      saveState(state, options);
     }
+    state.activeSessionSha256 = sha256Bytes(JSON.stringify(provenance)); saveState(state, options);
     const evidence = [];
     for (const entry of objects) evidence.push(entry.byteLength > plan.upload.multipartThresholdBytes ? multipartPut(plan, entry, state, options, invoke, env) : singlePut(plan, entry, state, options, invoke, env));
     assert.equal(evidence.length, 62);
-    return { status: "remote-read-back-complete-pending-independent-review", bucket: plan.bucket, region: plan.region, retentionUntil: RETAIN_UNTIL, objects: state.objects };
-  } finally {
-    lock.release();
-  }
+    return { status: "remote-read-back-complete-pending-independent-review", bucket: plan.bucket, region: plan.region, retentionUntil: RETAIN_UNTIL, statePath: stateFile(options), objects: state.objects };
+  } catch (error) { lock.release("ended-with-error"); throw error; }
+  finally { lock.release("ended"); }
 }
 
 function cliOptions(argv) {
@@ -728,7 +687,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     console.log(`SIDECAR bytes=${result.manifestBytes.length} sha256=${sha256Bytes(result.manifestBytes)} key=${plan.canonicalManifest.objectKey} generated-in-memory=true`);
   } else if (!options.execute) console.log(dryRunLines(plan).join("\n"));
   else {
-    executePromotion(plan, options);
-    console.log("QC fourth-inventory promotion completed exact-version readback for all 62 objects; opaque provider identifiers remain only in the owner-only state.");
+    const result = executePromotion(plan, options);
+    console.log(`QC fourth-inventory promotion completed exact-version readback for all 62 objects; opaque provider identifiers remain only in the owner-only state generation ${result.statePath}.`);
   }
 }

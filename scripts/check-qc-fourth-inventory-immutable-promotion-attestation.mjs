@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { lstatSync, readFileSync } from "node:fs";
+import { closeSync, constants, fstatSync, openSync, readFileSync } from "node:fs";
 import { basename, dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { exactPromotionObjects, loadQcFourthInventoryPromotionPreparation, qcFourthPlanDigests } from "./check-qc-fourth-inventory-immutable-promotion.mjs";
@@ -182,12 +182,11 @@ export function redactQcFourthAttestation(privateRecord, privateBytes, plan = lo
 }
 
 export function validateQcFourthAttestationPair(privatePath, publicRecord, plan = loadQcFourthInventoryPromotionPreparation(), expected = {}) {
-  const metadata = lstatSync(privatePath);
-  assert.ok(metadata.isFile() && !metadata.isSymbolicLink(), "private attestation must be a regular file");
-  assert.equal(metadata.uid, process.getuid(), "private attestation must be owner-owned");
-  assert.equal(metadata.mode & 0o777, 0o600, "private attestation must be mode 600");
-  assert.equal(metadata.nlink, 1, "private attestation must not have hard-link aliases");
-  const bytes = readFileSync(privatePath);
+  const descriptor = openSync(privatePath, constants.O_RDONLY | constants.O_NOFOLLOW);
+  try { const metadata = fstatSync(descriptor); assert.ok(metadata.isFile(), "private attestation must be a regular file"); assert.equal(metadata.uid, process.getuid(), "private attestation must be owner-owned"); assert.equal(metadata.mode & 0o777, 0o600, "private attestation must be mode 600"); assert.equal(metadata.nlink, 1, "private attestation must not have hard-link aliases"); const bytes = readFileSync(descriptor); const after = fstatSync(descriptor); assert.ok(after.dev === metadata.dev && after.ino === metadata.ino && after.size === metadata.size, "private attestation changed during descriptor read"); return validateQcFourthAttestationBytes(bytes, publicRecord, plan, expected); } finally { closeSync(descriptor); }
+}
+
+export function validateQcFourthAttestationBytes(bytes, publicRecord, plan = loadQcFourthInventoryPromotionPreparation(), expected = {}) {
   const privateRecord = JSON.parse(bytes);
   const redacted = redactQcFourthAttestation(privateRecord, bytes, plan, expected);
   assert.deepEqual(publicRecord, redacted, "public record is not the exact identifier-free redaction of the digest-bound private attestation");

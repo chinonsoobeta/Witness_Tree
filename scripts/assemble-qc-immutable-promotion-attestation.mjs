@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { closeSync, constants, fstatSync, fsyncSync, lstatSync, openSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
+import { closeSync, constants, fstatSync, fsyncSync, lstatSync, openSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { redactQcAttestation, validatePrivateQcAttestation } from "./check-qc-immutable-promotion-attestation.mjs";
 import { sidecarFor, validateQcImmutablePromotionPreparation } from "./prepare-qc-immutable-promotion.mjs";
@@ -99,7 +99,36 @@ function closeDescriptor(fd, stage, hooks = {}) {
   if (injectedFailure) failSafe("attestation descriptor close failed; inspect output state", { closeAttempted: true, descriptorClosed: true, closeProved: false });
 }
 
-function syncParentDirectory(path, hooks = {}) {
+function bindParentDirectory(path) {
+  const directory = dirname(path);
+  if (typeof constants.O_NOFOLLOW !== "number") failSafe("attestation output directory cannot be opened without symlink protection");
+  const fd = openSync(directory, constants.O_RDONLY | constants.O_NOFOLLOW);
+  try {
+    const opened = fstatSync(fd);
+    const named = lstatSync(directory);
+    if (!opened.isDirectory() || !named.isDirectory() || named.isSymbolicLink() || !sameInode(opened, named)) failSafe("attestation output directory identity changed");
+    return { directory, fd, opened };
+  } catch (error) {
+    closeSync(fd);
+    throw error;
+  }
+}
+
+function assertBoundParent(binding) {
+  const named = lstatSync(binding.directory);
+  if (!named.isDirectory() || named.isSymbolicLink() || !sameInode(named, binding.opened) || !sameInode(fstatSync(binding.fd), binding.opened)) failSafe("attestation output directory identity changed");
+}
+
+function syncParentDirectory(path, hooks = {}, binding) {
+  if (binding) {
+    assertBoundParent(binding);
+    invokeHook(hooks, "beforeDirectoryFsync", path);
+    invokeHook(hooks, "onFsyncStage", "directory", path);
+    fsyncSync(binding.fd);
+    invokeHook(hooks, "afterDirectoryFsync", path);
+    assertBoundParent(binding);
+    return;
+  }
   let fd;
   try {
     const directory = dirname(path);
@@ -137,32 +166,16 @@ function syncParentDirectory(path, hooks = {}) {
 }
 
 export function rollbackExclusivePublication(publication, hooks = {}) {
-  if (!publication || resolve(publication.path) !== publication.path) return false;
-  // This is a bounded observation, not a filesystem-wide lock: a same-owner
-  // mutation after the nlink check, including before unlink, cannot be globally excluded.
-  let current;
-  try {
-    invokeHook(hooks, "beforeRollback", publication.path, publication);
-    current = lstatSync(publication.path);
-    if (!current.isFile() || current.isSymbolicLink() || current.nlink !== 1 || !sameInode(current, publication)) return false;
-    unlinkSync(publication.path);
-    invokeHook(hooks, "beforeRollbackFsync", publication.path);
-    syncParentDirectory(publication.path, hooks);
-    invokeHook(hooks, "afterRollbackFsync", publication.path);
-    try {
-      lstatSync(publication.path);
-      return false;
-    } catch (error) {
-      return error?.code === "ENOENT";
-    }
-  } catch {
-    return false;
-  }
+  void publication; void hooks;
+  // Published pathnames are never deleted: after descriptor ownership is lost,
+  // no pathname observation can make a later unlink race-safe.
+  return false;
 }
+
+export function readOwnedPublication(publication) { const fd = openSync(publication.path, constants.O_RDONLY | constants.O_NOFOLLOW); try { const opened = fstatSync(fd); if (!opened.isFile() || opened.nlink !== 1 || !sameInode(opened, publication) || opened.size !== publication.size || opened.uid !== publication.uid || (opened.mode & 0o777) !== publication.mode) failSafe("published evidence identity changed during descriptor reread"); const bytes = readFileSync(fd); const after = fstatSync(fd); if (!sameInode(after, opened) || after.size !== opened.size || hash(bytes) !== publication.sha256) failSafe("published evidence bytes changed during descriptor reread"); return bytes; } finally { closeSync(fd); } }
 
 export function writeExclusiveMode600(path, value, hooks = {}) {
   const outputPath = resolve(path);
-  validateFreshOutput(outputPath);
   let bytes;
   try {
     bytes = Buffer.from(`${JSON.stringify(value, null, 2)}\n`);
@@ -173,6 +186,8 @@ export function writeExclusiveMode600(path, value, hooks = {}) {
   let opened;
   let openedFd = false;
   let fdState = "not-open";
+  let parent;
+  let parentState = "not-open";
   const closeOutput = () => {
     if (fd === undefined || fdState !== "open") return;
     fdState = "closing";
@@ -191,13 +206,31 @@ export function writeExclusiveMode600(path, value, hooks = {}) {
       throw error;
     }
   };
+  const closeParent = () => {
+    if (!parent || parentState !== "open") return;
+    parentState = "closing";
+    try {
+      closeDescriptor(parent.fd, "directory", hooks);
+      parentState = "closed";
+      parent = undefined;
+    } catch (error) {
+      parentState = error?.descriptorClosed === true ? "closed" : "uncertain";
+      parent = undefined;
+      throw error;
+    }
+  };
   try {
+    parent = bindParentDirectory(outputPath);
+    parentState = "open";
+    validateFreshOutput(outputPath);
+    assertBoundParent(parent);
     if (typeof constants.O_NOFOLLOW !== "number") failSafe("attestation output cannot be opened without symlink protection");
     invokeHook(hooks, "beforeOpen", outputPath);
     fd = openSync(outputPath, constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | constants.O_NOFOLLOW, 0o600);
     openedFd = true;
     fdState = "open";
     opened = fstatSync(fd);
+    assertBoundParent(parent);
     if (!opened.isFile() || opened.nlink !== 1 || opened.uid !== process.getuid() || (opened.mode & 0o777) !== 0o600) failSafe("attestation output identity or metadata check failed");
     invokeHook(hooks, "afterOpen", outputPath, opened);
     invokeHook(hooks, "beforeWrite", outputPath, opened);
@@ -213,28 +246,32 @@ export function writeExclusiveMode600(path, value, hooks = {}) {
     const created = lstatSync(outputPath);
     if (!created.isFile() || created.isSymbolicLink() || created.nlink !== 1 || !sameInode(created, opened) || created.size !== bytes.length || created.uid !== opened.uid || (created.mode & 0o777) !== (opened.mode & 0o777)) failSafe("attestation output identity or metadata check failed");
     invokeHook(hooks, "afterVerify", outputPath, created);
-    syncParentDirectory(outputPath, hooks);
+    syncParentDirectory(outputPath, hooks, parent);
     const published = lstatSync(outputPath);
     if (!published.isFile() || published.isSymbolicLink() || published.nlink !== 1 || !sameInode(published, opened) || published.size !== bytes.length || published.uid !== opened.uid || (published.mode & 0o777) !== (opened.mode & 0o777)) failSafe("attestation output changed after synchronization");
     closeOutput();
     const closed = lstatSync(outputPath);
     if (!closed.isFile() || closed.isSymbolicLink() || closed.nlink !== 1 || !sameInode(closed, opened) || closed.size !== bytes.length || closed.uid !== opened.uid || (closed.mode & 0o777) !== (opened.mode & 0o777)) failSafe("attestation output changed after descriptor close");
-    return { path: outputPath, dev: closed.dev, ino: closed.ino, size: closed.size, uid: closed.uid, mode: closed.mode & 0o777 };
+    assertBoundParent(parent);
+    closeParent();
+    return { path: outputPath, dev: closed.dev, ino: closed.ino, size: closed.size, uid: closed.uid, mode: closed.mode & 0o777, sha256: hash(bytes) };
   } catch (error) {
     let closeError = error?.closeAttempted ? error : null;
     if (fd !== undefined && fdState === "open") {
       try { closeOutput(); } catch (closeFailure) { closeError = closeFailure; }
     }
     if (fd !== undefined) fd = undefined;
+    if (parent && parentState === "open") {
+      try { closeParent(); } catch (closeFailure) { closeError = closeFailure; }
+    }
     if (!opened) {
       if (openedFd || closeError) failSafe("attestation output rollback was not proved; inspect output state", { rollbackProved: false, outputCreated: true });
       if (error?.safe) throw error;
       if (error?.code === "EEXIST" || error?.code === "ELOOP") failSafe("attestation output already exists; refusing overwrite");
       failSafe("attestation output could not be created exclusively");
     }
-    const publication = { path: outputPath, dev: opened.dev, ino: opened.ino, size: bytes.length, uid: opened.uid, mode: opened.mode & 0o777 };
-    if (!rollbackExclusivePublication(publication, hooks) || closeError) failSafe("attestation output rollback was not proved; inspect output state", { rollbackProved: false, outputCreated: true });
-    failSafe("attestation output failed; owned output was rolled back", { rollbackProved: true, outputCreated: false });
+    void closeError;
+    failSafe("attestation output was rejected and retained for owner inspection", { rollbackProved: false, outputCreated: true });
   }
 }
 

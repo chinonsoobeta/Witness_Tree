@@ -1,12 +1,12 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
-import { lstatSync, readFileSync } from "node:fs";
+import { closeSync, constants, fstatSync, lstatSync, openSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { preflightLocal, recomputeMultipartPartChecksums } from "./qc-fourth-inventory-immutable-promotion.mjs";
 import { exactPromotionObjects, loadQcFourthInventoryPromotionPreparation, qcFourthPlanDigests } from "./check-qc-fourth-inventory-immutable-promotion.mjs";
-import { redactQcFourthAttestation, sha256, validateQcFourthAttestationPair } from "./check-qc-fourth-inventory-immutable-promotion-attestation.mjs";
-import { rollbackExclusivePublication, writeExclusiveMode600 } from "./assemble-qc-immutable-promotion-attestation.mjs";
+import { redactQcFourthAttestation, sha256, validateQcFourthAttestationBytes } from "./check-qc-fourth-inventory-immutable-promotion-attestation.mjs";
+import { readOwnedPublication, writeExclusiveMode600 } from "./assemble-qc-immutable-promotion-attestation.mjs";
 
 const RETAIN_UNTIL = "2033-08-12T00:00:00Z";
 const BASE64_SHA256 = /^[A-Za-z0-9+/]{43}=$/;
@@ -31,14 +31,9 @@ function assertControlledDirectory(directory, label) {
   return path.resolve(directory);
 }
 
-function readPrivateState(file) {
-  const metadata = lstatSync(file);
-  assert.ok(metadata.isFile() && !metadata.isSymbolicLink(), "promotion state must be a regular non-symlink file");
-  assert.equal(metadata.uid, process.getuid(), "promotion state must be owner-owned");
-  assert.equal(metadata.mode & 0o777, 0o600, "promotion state must be mode 600");
-  assert.equal(metadata.nlink, 1, "promotion state must not have hard-link aliases");
-  const bytes = readFileSync(file);
-  return { bytes, state: JSON.parse(bytes) };
+function readPrivateState(file, label = "promotion state") {
+  const descriptor = openSync(file, constants.O_RDONLY | constants.O_NOFOLLOW);
+  try { const metadata = fstatSync(descriptor); assert.ok(metadata.isFile(), `${label} must be a regular file`); assert.equal(metadata.uid, process.getuid(), `${label} must be owner-owned`); assert.equal(metadata.mode & 0o777, 0o600, `${label} must be mode 600`); assert.equal(metadata.nlink, 1, `${label} must not have hard-link aliases`); const bytes = readFileSync(descriptor); const after = fstatSync(descriptor); assert.ok(after.dev === metadata.dev && after.ino === metadata.ino && after.size === metadata.size, `${label} changed during descriptor read`); return { bytes, state: JSON.parse(bytes) }; } finally { closeSync(descriptor); }
 }
 
 function compositeSha256(parts) {
@@ -89,6 +84,7 @@ function validateCompletedState(plan, state) {
     assert.equal(session.account, ACCOUNT); assert.equal(session.operatorArn, OPERATOR_ARN); assert.equal(session.roleArn, PROMOTION_ROLE_ARN); assert.equal(session.roleSessionName, ROLE_SESSION_NAME);
     assert.equal(session.assumedRoleArn, `arn:aws:sts::${ACCOUNT}:assumed-role/${PROMOTION_ROLE}/${ROLE_SESSION_NAME}`); assert.match(session.roleUserId, /^\S+$/); assert.match(session.mfaSerialArn, new RegExp(`^arn:aws:iam::${ACCOUNT}:mfa/`)); assert.equal(session.mfaPresent, true); assert.ok(Number.isFinite(Date.parse(session.sessionExpiresAt)));
   }
+  const promotionSessionDigests = new Set(state.promotionSessions.map((session) => sha256(JSON.stringify(session))));
   const entries = exactPromotionObjects(plan);
   assert.deepEqual(Object.keys(state.objects).sort(), entries.map((entry) => entry.id).sort(), "promotion state must contain exactly 62 completed objects");
   for (const entry of entries) {
@@ -96,6 +92,7 @@ function validateCompletedState(plan, state) {
     assert.equal(record.objectKey, entry.objectKey, `${entry.id} state key drifted`);
     assert.equal(record.byteLength, entry.byteLength, `${entry.id} state byte length drifted`);
     assert.equal(record.sha256, entry.sha256, `${entry.id} state SHA-256 drifted`);
+    assert.ok(promotionSessionDigests.has(record.mutationSessionSha256), `${entry.id} is not tied to an exact persisted mutation session`);
     assert.equal(record.complete, true, `${entry.id} is not durably read-back complete`);
     assert.ok(typeof record.versionId === "string" && record.versionId.length > 0 && record.versionId !== "null", `${entry.id} VersionId is missing`);
     const multipart = entry.byteLength > plan.upload.multipartThresholdBytes;
@@ -106,6 +103,7 @@ function validateCompletedState(plan, state) {
       for (const [index, part] of record.parts.entries()) {
         assert.equal(part.partNumber, index + 1, `${entry.id} multipart parts are not contiguous`);
         assert.match(part.checksumSha256, BASE64_SHA256, `${entry.id} multipart part checksum is malformed`);
+        assert.ok(promotionSessionDigests.has(part.mutationSessionSha256), `${entry.id} part ${index + 1} is not tied to persisted mutation-session provenance`);
       }
       const expected = compositeSha256(record.parts);
       assert.match(expected, COMPOSITE_SHA256);
@@ -135,12 +133,7 @@ function localPreflightEvidence(plan, dependencies) {
   assert.ok(dependencies.sidecarDir, "Capture requires the owner-controlled --sidecar-dir for canonical manifest verification.");
   const result = preflightLocal(plan, { execute: false, dataRoot: path.resolve(dependencies.dataRoot) });
   const manifestPath = path.join(assertControlledDirectory(path.resolve(dependencies.sidecarDir), "sidecar directory"), "collection-manifest.json");
-  const metadata = lstatSync(manifestPath);
-  assert.ok(metadata.isFile() && !metadata.isSymbolicLink(), "canonical sidecar must be a regular non-symlink file");
-  assert.equal(metadata.uid, process.getuid(), "canonical sidecar must be owner-owned");
-  assert.equal(metadata.mode & 0o777, 0o600, "canonical sidecar must be mode 600");
-  assert.equal(metadata.nlink, 1, "canonical sidecar must not have hard-link aliases");
-  assert.deepEqual(readFileSync(manifestPath), result.manifestBytes, "canonical sidecar bytes drifted");
+  assert.deepEqual(readPrivateState(manifestPath, "canonical sidecar").bytes, result.manifestBytes, "canonical sidecar bytes drifted");
   const sourceById = new Map(result.sources.map((entry) => [entry.id, entry]));
   const multipart = exactPromotionObjects(plan)
     .filter((entry) => entry.byteLength > plan.upload.multipartThresholdBytes)
@@ -166,14 +159,13 @@ function identityReadback(invoke, env) {
   catch { throw new Error("get-caller-identity provider call failed"); }
 }
 
-function publishPair(privateOutput, privateRecord, redactedOutput, redactedRecord, hooks = {}) {
+function publishPair(privateOutput, privateRecord, redactedOutput, redactedRecord, plan, hooks = {}) {
   assert.notEqual(path.resolve(privateOutput), path.resolve(redactedOutput), "private and redacted outputs must differ");
-  const privatePublication = writeExclusiveMode600(privateOutput, privateRecord, hooks.private);
   try {
-    writeExclusiveMode600(redactedOutput, redactedRecord, hooks.redacted);
-  } catch {
-    if (!rollbackExclusivePublication(privatePublication, hooks.rollback)) throw new Error("attestation pair publication failed; private rollback was not proved; inspect output state");
-    throw new Error("attestation pair publication failed; private output was rolled back");
+    const privatePublication = writeExclusiveMode600(privateOutput, privateRecord, hooks.private); const redactedPublication = writeExclusiveMode600(redactedOutput, redactedRecord, hooks.redacted); const privateBytes = readOwnedPublication(privatePublication); const redactedBytes = readOwnedPublication(redactedPublication); const onDiskRedacted = JSON.parse(redactedBytes); validateQcFourthAttestationBytes(privateBytes, onDiskRedacted, plan); assert.deepEqual(onDiskRedacted, redactedRecord, "published redacted attestation changed after synchronization"); return { privateBytes, redactedBytes };
+  } catch (error) {
+    const rejection = `${path.resolve(privateOutput)}.rejected.json`; try { writeExclusiveMode600(rejection, { schemaVersion: 1, status: "rejected-retained-for-owner-inspection", privateOutput: path.basename(privateOutput), redactedOutput: path.basename(redactedOutput), reason: "publication-or-on-disk-validation-failed", recordedAt: new Date().toISOString() }); } catch { /* Preserve every path; the thrown error remains authoritative. */ }
+    throw new Error("attestation pair was rejected; bounded published evidence was retained for owner inspection", { cause: error });
   }
 }
 
@@ -242,10 +234,7 @@ export function captureQcFourthAttestation(plan, statePath, privateOutput, redac
   };
   const privateBytes = Buffer.from(`${JSON.stringify(privateRecord, null, 2)}\n`);
   const redactedRecord = redactQcFourthAttestation(privateRecord, privateBytes, plan);
-  publishPair(privateOutput, privateRecord, redactedOutput, redactedRecord, dependencies.publicationHooks);
-  const onDiskRedacted = JSON.parse(readFileSync(redactedOutput, "utf8"));
-  validateQcFourthAttestationPair(privateOutput, onDiskRedacted, plan);
-  assert.deepEqual(onDiskRedacted, redactedRecord, "published redacted attestation changed after synchronization");
+  publishPair(privateOutput, privateRecord, redactedOutput, redactedRecord, plan, dependencies.publicationHooks);
   return { privateRecord, redactedRecord };
 }
 
