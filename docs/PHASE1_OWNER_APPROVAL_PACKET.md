@@ -1,8 +1,8 @@
 # Phase 1 owner-approval packet
 
-The copy/paste blocks below are historical input templates. Their federal, Québec current/original, Québec fourth, and current-wildfire archive decisions were later recorded in `data/phase1-phase3-owner-approvals-2026-08-21.json`. That later approval does not prove execution or readback completion.
+The copy/paste blocks below are historical input templates. Their federal, Québec current/original, Québec fourth, and current-wildfire archive decisions were later recorded in `data/phase1-phase3-owner-approvals-2026-08-21.json`. Québec current/original execution and immutable evidence are now complete; the other recorded approvals do not by themselves prove execution or readback completion.
 
-[`data/phase1-owner-approval-packet.json`](../data/phase1-owner-approval-packet.json) is a machine-checked, copy/paste owner-input packet for the 16 `local-verified-profiled` or `remote-verified-archived-profiled` rows in [`data/phase1-owner-decision-queue.json`](../data/phase1-owner-decision-queue.json). It is derived from parent `4466a14` and remains `template-not-approved` for unresolved decisions, while recording two supplied non-admitting decisions: national source-ledger-only acceptance and the exact PLVI raw/derived scope.
+[`data/phase1-owner-approval-packet.json`](../data/phase1-owner-approval-packet.json) is a machine-checked, copy/paste owner-input packet for the 16 `local-verified-profiled` or `remote-verified-archived-profiled` rows in [`data/phase1-owner-decision-queue.json`](../data/phase1-owner-decision-queue.json). Its copy/paste templates are historical inputs; the current execution order is reconciled through the captured Québec immutable evidence integrated at `7708f33`. Unresolved decisions remain `template-not-approved`, while two supplied non-admitting decisions record national source-ledger-only acceptance and the exact PLVI raw/derived scope.
 
 The packet separates every dependency step into three independent decisions:
 
@@ -16,17 +16,16 @@ Current baseline is **14.75/31 raw evidence credits**, **39.2741935% formal evid
 
 ## Current owner execution and readback order
 
-This order prioritizes the fewest unresolved dependencies, then the bounded percentage gain already recorded in the remaining-actions audit. It is not a probability forecast: external response rates are unknown, so no expected gain is invented. Every action remains unexecuted.
+This order prioritizes the fewest unresolved dependencies, then the bounded percentage gain already recorded in the remaining-actions audit. It is not a probability forecast: external response rates are unknown, so no expected gain is invented. Completed Québec current/original archive work is excluded from this pending-action order.
 
 | Rank | Exact owner decision or action | Dependency | Maximum bounded Phase 1 gain |
 | ---: | --- | --- | ---: |
-| 1 | After the active Québec current/original run succeeds, capture and validate its private/redacted exact-version attestation pair. | The archive approval is recorded; execution/readback evidence is pending. | `+0.50` raw, `+0.483871` formal points, `+2/31` immutable coverage |
-| 2 | Execute only the recorded federal-only command with fresh MFA, then integrate exact immutable and recovery readbacks. Do not revisit harvest or canopy-height. | The federal archive approval is recorded; one prepared physical artifact is shared by two rows. | `+0.50` raw, `+0.483871` formal points, `+2/31` immutable coverage |
-| 3 | Supply controlled paths and fresh MFA for the recorded Québec fourth-inventory execute template, then integrate exact readbacks. | All four approvals are recorded; 61 prepared files plus one deterministic manifest remain unexecuted. | `+0.25` raw, `+0.2419355` formal points, `+1/31` immutable coverage |
-| 4 | Perform the approved owner-local wildfire proof/readback workflow and preserve concrete version, checksum, retention and recovery proof for all six exact objects. | The approval is recorded, but the gate remains `0/6` machine-verifiable and `6/6` attested-only. | `+1.00` raw, `+0.9677419` formal points, `+4/31` immutable coverage |
-| 5 | Complete the recorded channel-specific NBAC, Alberta and Québec request prerequisites, then retain complete publisher replies and exact artifacts. | External agreement, consent, signature/declaration, permission and artifact delivery remain pending; this packet sends nothing. | Each partial row: at most `+0.75` raw and `+0.7258065` formal points |
-| 6 | Continue only the recorded, deduplicated publisher/rightsholder engagements for the 13 access-blocked rows, then require lawful exact artifacts, rights, checksum, profile and archive proof. | External responses and lawful artifacts remain pending; no local substitute or inferred permission. | Combined ceiling: `+13.00` raw and `+12.5806452` formal points |
-| 7 | After each row's prerequisites pass, separately decide its named transformation, ingestion, release and production admission. This includes harvest and canopy-height despite their recorded source decisions. | Complete immutable/evidence chain and row-specific downstream output proof. | Immediate current gain `0`; each later admitted row would change admission coverage by `1/31` (`3.2258065` percentage points) |
+| 1 | Execute only the recorded federal-only command with fresh MFA, then integrate exact immutable and recovery readbacks. Do not revisit harvest or canopy-height. | The federal archive approval is recorded; one prepared physical artifact is shared by two rows. | `+0.50` raw, `+0.483871` formal points, `+2/31` immutable coverage |
+| 2 | Supply controlled paths and fresh MFA for the recorded Québec fourth-inventory execute template, then integrate exact readbacks. | All four approvals are recorded; 61 prepared files plus one deterministic manifest remain unexecuted. | `+0.25` raw, `+0.2419355` formal points, `+1/31` immutable coverage |
+| 3 | Perform the approved owner-local wildfire proof/readback workflow and preserve concrete version, checksum, retention and recovery proof for all six exact objects. | The approval is recorded, but the gate remains `0/6` machine-verifiable and `6/6` attested-only. | `+1.00` raw, `+0.9677419` formal points, `+4/31` immutable coverage |
+| 4 | Complete the recorded channel-specific NBAC, Alberta and Québec request prerequisites, then retain complete publisher replies and exact artifacts. | External agreement, consent, signature/declaration, permission and artifact delivery remain pending; this packet sends nothing. | Each partial row: at most `+0.75` raw and `+0.7258065` formal points |
+| 5 | Continue only the recorded, deduplicated publisher/rightsholder engagements for the 13 access-blocked rows, then require lawful exact artifacts, rights, checksum, profile and archive proof. | External responses and lawful artifacts remain pending; no local substitute or inferred permission. | Combined ceiling: `+13.00` raw and `+12.5806452` formal points |
+| 6 | After each row's prerequisites pass, separately decide its named transformation, ingestion, release and production admission. This includes harvest, canopy-height, and Québec current/original despite their recorded source decisions and immutable evidence. | Complete immutable/evidence chain and row-specific downstream output proof. | Immediate current gain `0`; each later admitted row would change admission coverage by `1/31` (`3.2258065` percentage points) |
 
 The normal archive-control exercise approval is also recorded. Its owner-local legal-hold, retention, delete-denial and recovery exercise must still be run and evidenced. It is a global exit dependency, not row credit or production admission.
 
@@ -54,22 +53,7 @@ DO_NOT_RUN=zsh scripts/run-phase1-approved-promotion.sh --run-federal
 
 Exact artifact: `FederalElectoralDistricts_2025_SHP.zip`, `10301648` bytes, SHA-256 `4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93`; exact payload and manifest keys are machine-bound under `exactBindings.federal-electoral-archive`.
 
-### 2. Québec current/original archive
-
-```text
-PHASE1 OWNER INPUT — QUÉBEC CURRENT/ORIGINAL ARCHIVE
-status=template-not-approved
-rows=qc-current-ecoforest,qc-original-current-inventory
-source_scope_decision=<OWNER: accept|reject|defer each row>
-archive_approval=<OWNER: exact two artifacts, four keys, MFA-gated multipart path, bucket, region, and COMPLIANCE date>
-retention_until=2033-08-12T00:00:00Z
-release_and_production_admission=<OWNER: not requested at this stage>
-DO_NOT_RUN=zsh scripts/run-qc-approved-multipart-promotion.sh --run
-```
-
-The packet binds both exact ZIP names, paths, bytes, SHA-256 values, payload keys, manifest keys, the 128 MiB part size, allow list, deny-by-omission list, and exact retention keys. No archive approval is inferred from the local preflight.
-
-### 3. Québec fourth-inventory archive
+### 2. Québec fourth-inventory archive
 
 ```text
 PHASE1 OWNER INPUT — QUÉBEC FOURTH INVENTORY
@@ -85,7 +69,7 @@ DO_NOT_RUN=the --execute template in exactBindings.quebec-fourth-inventory-archi
 
 The 56 publisher-defined sheet payload names, hashes, and object keys remain bound by the authoritative `archiveSet.payloads` manifest reference. The map-only component `CARTE_ECO_ORI_4_PROV_gpkg.zip` remains excluded as the exact recorded redundant component; it is not substituted for the 56-sheet product.
 
-### 4. Archived national source ledger
+### 3. Archived national source ledger
 
 ```text
 PHASE1 OWNER INPUT — ARCHIVED NATIONAL SOURCE LEDGER
@@ -99,7 +83,7 @@ release_and_production_admission=<OWNER: separate decision required>
 
 The packet binds the exact harvest and canopy-height paths, bytes, SHA-256 values, payload keys, manifest keys, and `COMPLIANCE` retain-until `2033-08-12T00:00:00Z`. The supplied source-ledger decisions are limited to those existing records; they do not authorize downstream work.
 
-### 5. Alberta PLVI scope
+### 4. Alberta PLVI scope
 
 ```text
 PHASE1 OWNER INPUT — ALBERTA PLVI SCOPE
@@ -114,7 +98,7 @@ transformation_ingestion_release_production=<OWNER: separate decisions required>
 
 The raw ZIP, 12-feature repair patch, 179087-feature derived output, exact keys, checksums, CRS, `ST_MakeValid` rule, tolerance, duplicate-preservation rule, retention date, and explicit scope exclusions are machine-bound. The supplied PLVI decision admits only this exact raw/derived scope for validation and ingestion preparation; transformation admission and ingestion remain separate.
 
-### 6. Current wildfire archive gate
+### 5. Current wildfire archive gate
 
 ```text
 PHASE1 OWNER INPUT — CURRENT WILDFIRE ARCHIVE GATE
@@ -129,7 +113,7 @@ release_and_production_admission=<OWNER: blocked until recovery/provenance and s
 
 The packet binds all eight exact object keys, all four raw SHA-256 values and bytes, BC's 216-feature derived release with permanently quarantined `V10755`, Ontario's 188-feature closed join with zero exclusions, exact transformation strings, `ca-central-1`, recovery bucket, and payload-only `COMPLIANCE` retention through `2033-08-12T00:00:00Z`.
 
-### 7. Archived remote downstream
+### 6. Archived remote downstream
 
 ```text
 PHASE1 OWNER INPUT — ARCHIVED REMOTE DOWNSTREAM
@@ -144,7 +128,7 @@ avi_exclusion=AVI_PostInventoryHarvestIndex FID 1 only; zero AVI_Crown observati
 
 The annual-cover block remains bound to 39 payloads/39 sidecars and the exact no-resampling, vector-to-raster-grid prerequisites. Canopy-cover binds the exact 2022 ZIP, bytes, SHA-256, multipart archive key, manifest key, and retention. AVI binds the shared raw archive once, its exact repair policy, the one quarantined index FID, quarantine hash, and no-derived-dataset-written boundary. No target transformation or ingestion specification is invented.
 
-### 8. Current wildfire downstream
+### 7. Current wildfire downstream
 
 ```text
 PHASE1 OWNER INPUT — CURRENT WILDFIRE DOWNSTREAM
@@ -158,7 +142,7 @@ prohibited=real-time claim, complete-perimeter claim, source substitution, or ge
 
 This block cannot bypass the six-object archive gate or broaden the existing snapshot, authority, geometry, quarantine, or completeness boundaries.
 
-### 9. Local-row downstream
+### 8. Local-row downstream
 
 ```text
 PHASE1 OWNER INPUT — LOCAL ROW DOWNSTREAM
@@ -169,7 +153,7 @@ archive_readbacks=<version|byte length|provider checksum|COMPLIANCE retention|re
 transformation_ingestion_release_production=<OWNER: record separately for each row; no local preparation implies admission>
 ```
 
-### 10. Final queue admission
+### 9. Final queue admission
 
 ```text
 PHASE1 OWNER INPUT — FINAL QUEUE ADMISSION

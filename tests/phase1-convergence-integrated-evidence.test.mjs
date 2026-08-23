@@ -147,6 +147,31 @@ test("owner packet current action order executes recorded approvals instead of r
   assert.doesNotMatch(currentOrder, /\|\s*[1-6]\s*\|\s*Approve\b/i);
 });
 
+test("current-facing Phase 1 docs cannot regress to pre-QC archive state", () => {
+  const completion = readFileSync(new URL("../docs/PHASE1_CURRENT_STATE_COMPLETION_AUDIT.md", import.meta.url), "utf8");
+  const downstream = readFileSync(new URL("../docs/PHASE1_IMMUTABLE_DOWNSTREAM_PREFLIGHT.md", import.meta.url), "utf8");
+  const readiness = readFileSync(new URL("../docs/PHASE1_IMMUTABLE_PROMOTION_READINESS.md", import.meta.url), "utf8");
+  const packet = readFileSync(new URL("../docs/PHASE1_OWNER_APPROVAL_PACKET.md", import.meta.url), "utf8");
+  const remaining = readFileSync(new URL("../docs/PHASE1_REMAINING_ACTIONS_AUDIT.md", import.meta.url), "utf8");
+
+  assert.match(completion, /Nine remotely archived rows/);
+  assert.match(completion, /Seven locally verified rows/);
+  assert.doesNotMatch(completion, /Seven remotely archived rows|Five locally verified rows/);
+  assert.match(downstream, /audits all nine remotely archived Phase 1 rows/);
+  assert.match(downstream, /Eight rows remain blocked/);
+  assert.doesNotMatch(downstream, /audits all seven remotely archived Phase 1 rows|Six rows remain blocked/);
+  assert.match(readiness, /seven current `local-verified-profiled` rows plus the two remotely verified Québec/);
+  assert.doesNotMatch(readiness, /all 9 current `local-verified-profiled`/);
+
+  const currentOrder = packet.split("## Current owner execution and readback order")[1]?.split("## Dependency-order copy/paste blocks")[0] ?? "";
+  assert.doesNotMatch(currentOrder, /active Québec current\/original run|capture and validate its private\/redacted|\+0\.50[^\n]*\+2\/31[^\n]*Québec/i);
+  assert.doesNotMatch(packet, /DO_NOT_RUN=zsh scripts\/run-qc-approved-multipart-promotion\.sh --run/);
+  assert.doesNotMatch(remaining, /derived from the authoritative Phase 1 convergence records at `4466a14`|Québec current\/original archive promotion and attestation|Complete the owner-local run, then capture/);
+  assert.match(remaining, /reconciled through Phase 1 evidence head `9bf5baa2ecc51ce4c039531e798bfb6418e3baaf`/);
+  assert.match(remaining, /remaining seven gap groups/);
+  assert.doesNotMatch(remaining, /remaining six gap groups/);
+});
+
 test("canonical summaries retain the FOM-only submitted state without implying permission", () => {
   const combined = canonicalSummaryFiles.map((file) => readFileSync(new URL(`../${file}`, import.meta.url), "utf8")).join("\n");
   for (const stale of [

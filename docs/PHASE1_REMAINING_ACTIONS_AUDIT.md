@@ -1,6 +1,6 @@
 # Phase 1 remaining-action audit
 
-This is the fresh, machine-checked remaining-action audit derived from the authoritative Phase 1 convergence records at `4466a14` on 2026-08-21. The machine record is [`data/phase1-remaining-actions-audit.json`](../data/phase1-remaining-actions-audit.json), and its checker is [`scripts/check-phase1-remaining-actions-audit.mjs`](../scripts/check-phase1-remaining-actions-audit.mjs). The exact local processing boundary for the two remotely archived NRCan cover rows is recorded separately in [`PHASE1_NRCAN_COVER_PROCESSING_GATE.md`](PHASE1_NRCAN_COVER_PROCESSING_GATE.md); it adds no score or downstream admission.
+This is the current machine-checked remaining-action audit reconciled through Phase 1 evidence head `9bf5baa2ecc51ce4c039531e798bfb6418e3baaf`. The machine record is [`data/phase1-remaining-actions-audit.json`](../data/phase1-remaining-actions-audit.json), and its checker is [`scripts/check-phase1-remaining-actions-audit.mjs`](../scripts/check-phase1-remaining-actions-audit.mjs). The exact local processing boundary for the two remotely archived NRCan cover rows is recorded separately in [`PHASE1_NRCAN_COVER_PROCESSING_GATE.md`](PHASE1_NRCAN_COVER_PROCESSING_GATE.md); it adds no score or downstream admission.
 
 The audit selects every production row where immutable remote proof is absent **or** production admission is absent. That is all 31 rows: 22 lack immutable remote proof, and all 31 remain non-admitted and non-eligible. The current evidence-tracking baseline is **14.75/31 raw credits and 39.2741935%**. This percentage is not a readiness or production percentage. The two Québec current/original archive steps are complete; their remaining actions start at transformation and ingestion scope.
 
@@ -14,12 +14,12 @@ npm run check:phase1-remaining-actions-audit
 
 The machine record now classifies all 13 remaining actions by requirement: archive and recovery preflights, profiles and validators, existing local transformations and derived outputs, owner/external boundaries, and the production-admission boundary. The local paths are complete for the evidence that exists. They remain deliberately non-admitting:
 
-- The federal, Québec, fourth-inventory, current-wildfire, and derived-wildfire paths expose no-write preflights. The current-wildfire records are placeholder-only attestations: they do not durably prove versions, provider checksums, exact-version readback, retention, transformation, or ingestion.
+- The federal, fourth-inventory, current-wildfire, and derived-wildfire paths expose no-write preflights. Québec current/original immutable evidence is complete, but no downstream transformation or ingestion scope is approved. The current-wildfire records are placeholder-only attestations: they do not durably prove versions, provider checksums, exact-version readback, retention, transformation, or ingestion.
 - Alberta AVI repair/quarantine, Alberta PLVI closed-join validation, and Québec historical-wildfire lossless-copy evidence are locally checked outputs. They do not authorize downstream ingestion or release.
 - NTEMS processing remains blocked because no Phase 1 production-admission target transformation specification and checksum-bound output exists. The separately approved Phase 2 nonproduction method does not close or imply those Phase 1 gates.
 - Partial and access-blocked rows have route-exhaustion, outreach, and rights validators, but no local implementation can manufacture a publisher artifact, permission, owner decision, or external reply.
 
-The local audit reports zero immediate raw-credit or formal-score delta. The remaining six gap groups require owner input or external evidence; production admission and eligibility remain false for all 31 rows.
+The local audit reports zero immediate raw-credit or formal-score delta. The remaining seven gap groups require owner input or external evidence; production admission and eligibility remain false for all 31 rows.
 
 ## Exact next five owner/delegate actions
 
@@ -28,7 +28,7 @@ The ranking gives lawful immediacy priority to safe local preflight or a decisio
 | Rank | Action | Rows / deduplicated artifacts | What can happen now | Prerequisites | Maximum score impact |
 | ---: | --- | --- | --- | --- | ---: |
 | 1 | Federal-only archive promotion | One local federal ZIP shared by two rows | Exact approval and no-write preflight are recorded. | Owner-local `--run-federal` with fresh MFA, then exact immutable/recovery readbacks. | +0.50 raw; +0.483871 percentage points |
-| 2 | Québec current/original archive promotion and attestation | Two Québec payloads; **2 artifacts / 2 rows** | Exact approval and no-write preflight are recorded; owner execution is resumable. | Complete the owner-local run, then capture and validate the private/redacted attestation pair. | +0.50 raw; +0.483871 percentage points |
+| 2 | Québec current/original transformation and ingestion scope | Two remotely archived Québec rows | Exact immutable evidence is integrated; no downstream output or admission is implied. | Record the exact transformation scope, validate checksum-bound outputs, then decide ingestion, release, and production admission separately. | +0 raw; +0 points |
 | 3 | Québec fourth-inventory owner promotion | One logical product with **62 exact archive keys / 1 row** | No-write preflight and all four approvals are recorded. | Supply controlled paths and fresh MFA, execute the exact template, then integrate readbacks. | +0.25 raw; +0.2419355 percentage points |
 | 4 | NRCan harvest/canopy downstream method | Two archived rows with recorded source-ledger decisions | Local source/profile validation is complete; no target output is authorized. | Owner names the transformation method and ingestion scope, then separate release and production decisions. | +0 raw; +0 points |
 | 5 | Alberta PLVI transformation and ingestion | One archived raw/derived pair with recorded scope | Count, geometry, checksum, duplicate and no-loss validation are complete; ordered-schema ingestion preflight is blocked by two renamed fields and 23 integer type widenings. | Produce a corrected checksum-bound output or explicitly decide the field mapping, then separately admit transformation and ingestion; release and production decisions remain later gates. | +0 raw; +0 points |

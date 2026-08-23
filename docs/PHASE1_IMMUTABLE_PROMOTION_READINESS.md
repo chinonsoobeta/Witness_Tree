@@ -1,6 +1,6 @@
 # Phase 1 immutable-promotion readiness
 
-This audit covers all 9 current `local-verified-profiled` production rows, including the four current-wildfire rows. Their six archive records are attested-only and supply zero durable machine-verifiable object proofs. This is a preparation map, not an admission decision.
+This audit covers nine pending-or-completed promotion rows: seven current `local-verified-profiled` rows plus the two remotely verified Québec current/original rows. The four current-wildfire rows are among the seven local rows; their six archive records are attested-only and supply zero durable machine-verifiable object proofs. This is a preparation map, not an admission decision.
 
 | Physical group | Rows | Prepared state | Owner action still required |
 | --- | --- | --- | --- |
