@@ -153,6 +153,8 @@ test("current-facing Phase 1 docs cannot regress to pre-QC archive state", () =>
   const readiness = readFileSync(new URL("../docs/PHASE1_IMMUTABLE_PROMOTION_READINESS.md", import.meta.url), "utf8");
   const packet = readFileSync(new URL("../docs/PHASE1_OWNER_APPROVAL_PACKET.md", import.meta.url), "utf8");
   const remaining = readFileSync(new URL("../docs/PHASE1_REMAINING_ACTIONS_AUDIT.md", import.meta.url), "utf8");
+  const approvals = readFileSync(new URL("../docs/PHASE1_PHASE3_OWNER_APPROVALS_2026-08-21.md", import.meta.url), "utf8");
+  const qcPreparation = readFileSync(new URL("../docs/QC_IMMUTABLE_PROMOTION_PREPARATION.md", import.meta.url), "utf8");
 
   assert.match(completion, /Nine remotely archived rows/);
   assert.match(completion, /Seven locally verified rows/);
@@ -170,6 +172,15 @@ test("current-facing Phase 1 docs cannot regress to pre-QC archive state", () =>
   assert.match(remaining, /reconciled through Phase 1 evidence head `9bf5baa2ecc51ce4c039531e798bfb6418e3baaf`/);
   assert.match(remaining, /remaining seven gap groups/);
   assert.doesNotMatch(remaining, /remaining six gap groups/);
+
+  for (const contents of [approvals, qcPreparation]) {
+    assert.doesNotMatch(contents, /zsh scripts\/run-qc-approved-multipart-promotion\.sh --run/);
+    assert.doesNotMatch(contents, /attestation[^\n]{0,80}(?:intentionally )?pending|IAM is ready, but no S3 call|next storage step remains owner-local/i);
+  }
+  assert.match(approvals, /no-execution statement is historical[\s\S]*Québec current\/original was later run, verified, retained, and integrated/i);
+  assert.match(qcPreparation, /Current status:[\s\S]*redacted attestation is integrated[\s\S]*Do not repeat the upload or attestation capture/i);
+  assert.match(qcPreparation, /mode-600 private pair remains outside Git/i);
+  assert.match(packet, /Five rows have supplied non-admitting scope decisions:[^\n]*two national rows and two Québec current\/original rows[^\n]*Alberta PLVI/i);
 });
 
 test("canonical summaries retain the FOM-only submitted state without implying permission", () => {

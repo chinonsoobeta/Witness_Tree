@@ -2,7 +2,7 @@
 
 Chinonso Obeta approved the complete cross-phase A-list on 2026-08-21. The exact machine record is [`data/phase1-phase3-owner-approvals-2026-08-21.json`](../data/phase1-phase3-owner-approvals-2026-08-21.json). At the time, approval alone changed no evidence score: the historical Phase 1 baseline was **14.25/31**, **38.7903226%**, **7 immutable**, and **0 admitted or eligible**; Phase 3 remained **47%**.
 
-The federal, Québec current/original, Québec fourth-inventory, current-wildfire, and archive-control approvals are recorded. Their canonical artifact names, bytes, checksums, keys, IAM boundaries and retention dates remain those in the owner packet and linked preparations. No MFA prompt, upload, IAM mutation, retention write, legal-hold change, delete attempt, recovery operation, release or production admission occurred.
+The federal, Québec current/original, Québec fourth-inventory, current-wildfire, and archive-control approvals are recorded. Their canonical artifact names, bytes, checksums, keys, IAM boundaries and retention dates remain those in the owner packet and linked preparations. At the approval-recording checkpoint, no MFA prompt, upload, IAM mutation, retention write, legal-hold change, delete attempt, recovery operation, release or production admission had occurred. That no-execution statement is historical: Québec current/original was later run, verified, retained, and integrated as redacted immutable evidence. It remains non-admitting and non-eligible.
 
 ## Owner-local commands still required
 
@@ -12,15 +12,12 @@ Run each no-write preflight before its corresponding owner-local command. Stop o
 zsh scripts/run-phase1-approved-promotion.sh --preflight
 zsh scripts/run-phase1-approved-promotion.sh --run-federal
 
-zsh scripts/run-qc-approved-multipart-promotion.sh --preflight
-zsh scripts/run-qc-approved-multipart-promotion.sh --run
-
 node scripts/qc-fourth-inventory-immutable-promotion.mjs --preflight --data-root /Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data
 ```
 
-The local Québec preflight passes without TOTP or AWS. The owner explicitly approved the additional exact IAM block in `docs/QC_IMMUTABLE_PROMOTION_PREPARATION.md`, including four-resource `s3:GetObjectVersion`, and root-side provisioning is complete. Independent normalized readback reproduces the three canonical policy SHA-256 values, the role has exactly one inline policy and no attached policies, and the dedicated operator policy is attached only to `WitnessTreeArchiveOperator`. Access Analyzer returned zero findings and live positive/negative simulations passed. The initial apply harness exited after attachment only because it compared pretty and compact JSON bytes; canonical JSON comparison proves there was no policy mismatch. IAM is ready, but no S3 call, archive evidence, retention evidence, production admission, or score credit exists. `--run` still requires a fresh owner-local MFA TOTP.
+The Québec current/original commands are intentionally absent from this current action list. Their exact run and private/redacted capture completed, the audited redacted record is integrated, and the mode-600 private half remains outside Git for pair verification. Do not repeat the upload or capture. Transformation, ingestion, release, production admission, and eligibility remain separate and false.
 
-The configured Québec-runner MFA serial is present, has the safe account-scoped form `arn:aws:iam::286853118812:mfa/<path>`, and belongs to the profile whose read-only caller identity is exactly `arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator`. Its path is intentionally not recorded. The earlier runner required the literal terminal path `mfa/WitnessTreeArchiveOperator` and therefore rejected this valid alternate device path before STS. The corrected runner accepts any nonempty syntactically safe MFA path in account `286853118812`, never prints or enumerates it, and then requires the post-MFA caller to be exactly `WitnessTreeArchiveOperator` before assuming the exact Québec promotion role. Empty, malformed, wrong-account, and wrong-principal cases stop before role assumption or storage.
+Historically, the configured Québec runner used a safe account-scoped MFA serial whose private path was never recorded. The original literal-path rejection and its corrected account-scoped validation remain implementation history, not a reason to rerun the completed promotion.
 
 For Québec fourth inventory, use the canonical execute template only after replacing all three controlled-directory placeholders with existing absolute owner-controlled paths and beginning a real MFA session. Do not store a TOTP or credentials in the repository.
 
