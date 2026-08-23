@@ -121,7 +121,8 @@
     "check:budgets": "node scripts/check-budgets.mjs",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "db:generate": "drizzle-kit generate",
-    "check:qc-fourth-inventory-immutable-promotion": "node scripts/check-qc-fourth-inventory-immutable-promotion.mjs"
+    "check:qc-fourth-inventory-immutable-promotion": "node scripts/check-qc-fourth-inventory-immutable-promotion.mjs",
+    "recover:qc-fourth-inventory-readonly": "zsh scripts/run-qc-fourth-inventory-readonly-recovery-owner.sh"
   },
   "dependencies": {
     "@bcgov/bc-sans": "^2.1.0",

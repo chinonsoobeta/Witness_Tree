@@ -68,11 +68,34 @@ set. It performs a full local byte-length and SHA-256 preflight before obtaining
 an MFA session or making the first S3 call. Objects at or below 512 MiB use
 low-level `PutObject`; six larger sheets use low-level multipart uploads with
 128 MiB parts. Multipart progress, part ETags and SHA-256 checksums are stored
-in a caller-supplied controlled state directory. A rerun verifies `ListParts`
-against that state and uploads only missing parts. Single-PUT objects resume at
-the object boundary. The state file contains no credentials. The temporary MFA
-session lasts one hour; if it expires, the run stops safely and a later run with
-a fresh MFA code resumes from the saved exact-part or object boundary.
+in a caller-supplied owner-controlled mode-700 state directory. The data root
+must be an owner-controlled, non-symlink `Witness_Tree-data` directory that is
+not group- or other-writable. The state and sidecar directories must be
+existing owner-controlled, non-symlink mode-700 directories, separate from one
+another and from the data root. Generated state, multipart scratch, and
+collection-manifest files are owner-controlled, non-symlink mode-600 files with
+no hard-link aliases. A rerun validates the state record's exact key, byte
+length, SHA-256, upload method, contiguous local part checksums, and provider
+`ListParts` result before it uploads or completes anything. The entire run is
+held under an exclusive owner-local lock in the state directory; a second
+process or re-entrant call stops before creating a sidecar or making an AWS
+call. A pre-call mutation intent is durably written before every `PutObject`,
+`CreateMultipartUpload`, `UploadPart`, and `CompleteMultipartUpload`. If any
+such response is lost, malformed, or ambiguous, the record is marked
+`recoveryRequired` and future runs refuse the mutation rather than creating a
+duplicate. A state with every
+part present and `complete: false` is a valid pre-completion resume boundary;
+it does not create a new multipart upload or re-upload a part. A successful
+completion or single-PUT response is persisted with `complete: false` before
+exact-version readback, and only the matching byte length, provider checksum,
+and retention readback changes it to `complete: true`. A readback interruption
+therefore resumes against the saved VersionId without repeating the write. If
+a completion call returns no usable response and the provider no longer exposes
+the UploadId, the runner fails closed because it cannot safely discover an exact
+VersionId under the no-list policy. The state file contains no credentials. The
+temporary MFA session lasts one hour; if it expires, the run stops safely and a
+later run with a fresh MFA code resumes from the saved exact-part, completion,
+or exact-version readback boundary.
 
 Object Lock is applied during `PutObject` or `CreateMultipartUpload`, so no
 completed object has an unlocked interval. Each completed version is read back
@@ -92,12 +115,16 @@ The low-level API shape follows AWS's current documentation for
 and [`CompleteMultipartUpload`](https://docs.aws.amazon.com/cli/latest/reference/s3api/complete-multipart-upload.html).
 
 The runner intentionally remains fail-closed. Its safe dry run is available,
-but execution requires an owner-local MFA role-session runner that is not
-enabled until the separate exact artifact/retention approval exists. That future
-runner may read only local `aws configure get mfa_serial`, must accept a safe
-nonempty `arn:aws:iam::286853118812:mfa/<path>` without printing it, pin the
-caller to the operator user/account, and assume only the role above. It must
-never call `ListMFADevices` or take an MFA code as a command-line argument.
+but execution requires the owner-local wrapper
+`scripts/run-qc-fourth-inventory-approved-promotion.sh`. The wrapper reads only
+local `aws configure get mfa_serial`, accepts a fresh six-digit TOTP only from
+an interactive prompt, verifies account `286853118812` and operator
+`arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator`, assumes only
+`arn:aws:iam::286853118812:role/WitnessTreeQcFourthArchivePromotionUploader`,
+verifies the exact role-session name and expiry, and exports only short-lived
+credentials plus non-secret identity markers. It never calls `ListMFADevices`,
+takes an MFA code as a command-line argument, or accepts inherited long-lived
+credentials.
 
 The deliberately non-executable command shape is:
 
@@ -111,9 +138,90 @@ node scripts/qc-fourth-inventory-immutable-promotion.mjs --execute \
   --sidecar-dir <EXISTING_CONTROLLED_SIDECAR_DIRECTORY>
 ```
 
-`--session-ready` is intentionally unavailable in this repository. It cannot
-be supplied with long-lived credentials or manually passed MFA values. The
-controlled directory paths must not be guessed or stored in Git.
+The owner wrapper is deliberately the only execution shape:
+
+```text
+scripts/run-qc-fourth-inventory-approved-promotion.sh --run \
+  --data-root <ABSOLUTE_WITNESS_TREE_DATA_DIRECTORY> \
+  --state-dir <EXISTING_MODE_700_STATE_DIRECTORY> \
+  --sidecar-dir <EXISTING_MODE_700_SIDECAR_DIRECTORY>
+```
+
+The controlled directory paths must not be guessed or stored in Git. The owner
+must provide real absolute paths only after checking the mode, ownership,
+non-symlink, containment, and hard-link requirements above. Direct invocation
+with `--session-ready` is not an owner authorization; the wrapper's exact
+identity markers are required by the runner.
+
+## Post-run evidence boundary
+
+The runner's JSON result and private state file are operational evidence only;
+they do not update the Phase 1 ledger or prove an independently reviewed
+archive. The fourth-inventory-specific owner-gated read-only capture and
+checker are:
+
+```text
+scripts/run-qc-fourth-inventory-approved-promotion.sh --capture \
+  --state <OWNER_CONTROLLED_MODE_600_PROMOTION_STATE> \
+  --data-root <OWNER_CONTROLLED_WITNESS_TREE_DATA_DIRECTORY> \
+  --sidecar-dir <OWNER_CONTROLLED_MODE_700_SIDECAR_DIRECTORY> \
+  --private-output <NEW_OWNER_CONTROLLED_MODE_600_PRIVATE_ATTESTATION> \
+  --redacted-output <NEW_REDACTED_RECORD>
+
+node scripts/check-qc-fourth-inventory-immutable-promotion-attestation.mjs \
+  --pair <OWNER_CONTROLLED_MODE_600_PRIVATE_ATTESTATION> \
+  <REDACTED_RECORD>
+```
+
+The capture mode obtains its own fresh interactive MFA session, verifies the
+exact account, operator, approved role, fixed role-session name, STS identity,
+and expiry, then makes only exact-version `HeadObject` and `GetObjectRetention`
+calls for the 62 plan-bound objects. Before the first remote read it performs a
+fresh local preflight of all 61 source/evidence files and the canonical
+sidecar, then recomputes all six 128 MiB multipart part-hash sequences and
+composite checksums from local bytes. It validates the completed mode-600 state
+and publishes the private/redacted pair through exclusive staged files. The
+private record preserves exact plan-file and parsed-plan digests, state digest,
+local preflight facts, exact keys/VersionIds, and the verified account,
+operator, role, role-session, MFA, and expiry facts. The digest-bound redacted
+record exposes only ordinals, hashes, byte lengths, checksum types, local-part
+digests, response digests, and exact retention facts; it contains no raw
+version, upload, account, operator, role, object-key, or provider-checksum
+identifier.
+
+## Ambiguous-write recovery boundary
+
+An ambiguous single-PUT, multipart-create, part, or completion response is not
+retried automatically. The separate diagnostic tool below is read-only and
+does not edit the promotion state, start a replacement upload, complete an
+upload, change retention, or update any ledger:
+
+```text
+scripts/run-qc-fourth-inventory-readonly-recovery-owner.sh --recover \
+  --state <OWNER_CONTROLLED_MODE_600_PROMOTION_STATE> \
+  --data-root <OWNER_CONTROLLED_WITNESS_TREE_DATA_DIRECTORY> \
+  --output <NEW_OWNER_CONTROLLED_MODE_600_RECOVERY_RECORD>
+```
+
+It is gated by a separate read-only approval and session marker. It may probe
+only exact-key `ListParts` (when an UploadId was already durably recorded),
+unversioned/exact-version `HeadObject`, and `GetObjectRetention`. A
+`NoSuchUpload` result, or any inability to prove a matching exact version,
+remains `recovery-required-no-automatic-duplicate`; it never authorizes a new
+multipart upload. A passing diagnostic is operational evidence only and does
+not make the fourth-inventory row immutable, transformed, ingested, released,
+or production eligible.
+
+The pending public record remains
+`data/qc-fourth-inventory-immutable-promotion-attestation.json`. The existing
+`scripts/capture-qc-immutable-promotion-attestation.sh` is scoped to the two
+Québec current/original artifacts and must not be reused for this 62-object
+collection. After an owner run, preserve the mode-700 state directory and
+mode-600 state and private attestation files. Until the resulting pair is
+independently reviewed, validated, and integrated, the fourth-inventory row
+remains local verified/profiled only and no immutable credit, transformation,
+ingestion, release, or production claim is permitted. Any separately approved
+recovery readback remains outside this capture and must be proved independently.
 
 ## Exact IAM policy and separate approval wording
 

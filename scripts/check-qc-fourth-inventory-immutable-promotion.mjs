@@ -11,6 +11,7 @@ const MANIFEST = "b3d85d1da40d68d79742c77ec418713f2ef968f74845c43e011df274d55961
 const SHA256 = /^[a-f0-9]{64}$/;
 const SHEET = /^\d{2}[A-P]$/;
 const BASE = "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14";
+const PLAN_URL = new URL("../data/qc-fourth-inventory-immutable-promotion-preparation.json", import.meta.url);
 const CLAIMS = { remoteObjectsExist: false, retentionApplied: false, immutableObjectStorage: false, transformed: false, ingested: false, productionEligible: false };
 
 export function canonicalManifestForPlan(plan) {
@@ -48,6 +49,17 @@ export function exactPromotionObjects(plan) {
 
 function sha256(bytes) {
   return createHash("sha256").update(bytes).digest("hex");
+}
+
+// Keep both representations.  The file digest detects a changed source file
+// (including whitespace/order changes); the parsed digest binds the exact
+// object graph consumed by the runner.  They are deliberately not conflated.
+export function qcFourthPlanDigests(plan) {
+  const fileBytes = readFileSync(PLAN_URL);
+  return {
+    planFileSha256: sha256(fileBytes),
+    planParsedSha256: sha256(JSON.stringify(plan))
+  };
 }
 
 function expectedKey(entry) {
@@ -172,7 +184,7 @@ function validateIam(iam, keys) {
 }
 
 export function loadQcFourthInventoryPromotionPreparation() {
-  const plan = JSON.parse(readFileSync(new URL("../data/qc-fourth-inventory-immutable-promotion-preparation.json", import.meta.url), "utf8"));
+  const plan = JSON.parse(readFileSync(PLAN_URL, "utf8"));
   const iam = JSON.parse(readFileSync(new URL("../data/qc-fourth-inventory-immutable-promotion-iam-policy.json", import.meta.url), "utf8"));
   return validateQcFourthInventoryPromotionPreparation(plan, iam);
 }
