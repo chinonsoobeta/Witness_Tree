@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { closeSync, constants, fchmodSync, fstatSync, fsyncSync, lstatSync, openSync, readSync, unlinkSync, writeSync } from "node:fs";
+import { closeSync, constants, fchmodSync, fstatSync, fsyncSync, lstatSync, openSync, readSync, writeSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 
 const SHA256 = /^[a-f0-9]{64}$/;
@@ -32,21 +32,6 @@ function invokeHook(hooks, name, ...args) {
   if (hook === undefined) return;
   assert.equal(typeof hook, "function", `stable-file ${name} hook is invalid`);
   hook(...args);
-}
-
-function rollbackOwnedOutput(path, opened, hooks = {}) {
-  if (!opened) return false;
-  try {
-    invokeHook(hooks, "beforeRollback", path, opened);
-    const current = lstatSync(path);
-    // The device/inode check is deliberate: never unlink a same-owner path
-    // that replaced the descriptor-owned output while cleanup was racing it.
-    if (!current.isFile() || current.isSymbolicLink() || current.nlink !== 1 || current.uid !== process.getuid() || !sameInode(current, opened)) return false;
-    unlinkSync(path);
-    invokeHook(hooks, "beforeRollbackFsync", path, opened);
-    syncDirectory(dirname(path));
-    try { lstatSync(path); return false; } catch (error) { return error?.code === "ENOENT"; }
-  } catch { return false; }
 }
 
 function closeOwnedDescriptor(fd, hooks, label) {
@@ -107,7 +92,7 @@ export function copyStableDescriptor({ source, destination, expectedBytes, expec
     fchmodSync(destinationFd, 0o400);
     fsyncSync(destinationFd);
     invokeHook(hooks, "afterFileFsync", destinationPath, destinationOpened);
-    result = { path: destinationPath, byteLength: bytesRead, sha256, checksumAlgorithm: "SHA256", checksumType: "FULL_OBJECT", checksumSha256: base64Sha(sha256), sourceDevice: sourceBefore.dev, sourceInode: sourceBefore.ino };
+    result = { path: destinationPath, byteLength: bytesRead, sha256, checksumAlgorithm: "SHA256", checksumType: "FULL_OBJECT", checksumSha256: base64Sha(sha256), sourceDevice: sourceBefore.dev, sourceInode: sourceBefore.ino, stableDevice: destinationOpened.dev, stableInode: destinationOpened.ino };
   } catch (error) {
     failure = error;
   } finally {
@@ -116,9 +101,9 @@ export function copyStableDescriptor({ source, destination, expectedBytes, expec
     if (!failure && result) {
       try { syncDirectory(dirname(destinationPath)); } catch (error) { failure = error; }
     }
-    if (failure && !rollbackOwnedOutput(destinationPath, destinationOpened, hooks)) {
-      failure = new Error("stable descriptor copy failed and owned rollback was not proved; inspect output state", { cause: failure });
-    }
+    // POSIX has no atomic conditional unlink-by-inode. Retaining a failed
+    // owner-only diagnostic is safer than risking deletion of a replacement.
+    if (failure && destinationOpened) failure = new Error("stable descriptor copy failed; owner-only diagnostic output was retained", { cause: failure });
   }
   if (failure) throw failure;
   return result;
@@ -143,7 +128,7 @@ export function writeStableManifest({ destination, value, hooks = {} }) {
     writeAll(fd, bytes); invokeHook(hooks, "beforeFileFsync", destinationPath, opened); fsyncSync(fd); fchmodSync(fd, 0o400); fsyncSync(fd); invokeHook(hooks, "afterFileFsync", destinationPath, opened);
     const after = fstatSync(fd);
     assert.equal(after.size, bytes.length); assert.equal(sameInode(after, opened), true);
-    result = { path: destinationPath, byteLength: bytes.length, sha256: createHash("sha256").update(bytes).digest("hex"), checksumAlgorithm: "SHA256", checksumType: "FULL_OBJECT", checksumSha256: base64Sha(createHash("sha256").update(bytes).digest("hex")) };
+    result = { path: destinationPath, byteLength: bytes.length, sha256: createHash("sha256").update(bytes).digest("hex"), checksumAlgorithm: "SHA256", checksumType: "FULL_OBJECT", checksumSha256: base64Sha(createHash("sha256").update(bytes).digest("hex")), stableDevice: opened.dev, stableInode: opened.ino };
   } catch (error) {
     failure = error;
   } finally {
@@ -151,10 +136,25 @@ export function writeStableManifest({ destination, value, hooks = {} }) {
     if (!failure && result) {
       try { syncDirectory(dirname(destinationPath)); } catch (error) { failure = error; }
     }
-    if (failure && !rollbackOwnedOutput(destinationPath, opened, hooks)) failure = new Error("stable manifest failed and owned rollback was not proved; inspect output state", { cause: failure });
+    if (failure && opened) failure = new Error("stable manifest failed; owner-only diagnostic output was retained", { cause: failure });
   }
   if (failure) throw failure;
   return result;
+}
+
+export function verifyStableUploadDescriptor({ fd, path, expectedDevice, expectedInode, expectedBytes }) {
+  assert.equal(Number.isSafeInteger(fd) && fd >= 0, true, "stable upload descriptor is invalid");
+  assert.equal(resolve(path), path, "stable upload path must be absolute");
+  const opened = fstatSync(fd);
+  assert.equal(opened.isFile(), true, "stable upload descriptor is not a regular file");
+  assert.equal(opened.uid, process.getuid(), "stable upload descriptor is not owner-owned");
+  assert.equal(opened.dev, expectedDevice, "stable upload descriptor device drifted");
+  assert.equal(opened.ino, expectedInode, "stable upload descriptor inode drifted");
+  assert.equal(opened.size, expectedBytes, "stable upload descriptor byte length drifted");
+  const named = lstatSync(path);
+  assert.equal(named.isFile() && !named.isSymbolicLink(), true, "stable upload path is not a regular file");
+  assert.equal(sameInode(named, opened), true, "stable upload path no longer names the open descriptor");
+  return { fdPath: `/dev/fd/${fd}`, stableDevice: opened.dev, stableInode: opened.ino, byteLength: opened.size };
 }
 
 if (process.argv[1]?.endsWith("federal-electoral-stable-file.mjs")) {
@@ -166,6 +166,9 @@ if (process.argv[1]?.endsWith("federal-electoral-stable-file.mjs")) {
       console.log(JSON.stringify(result));
     } else if (args.includes("--manifest")) {
       const result = writeStableManifest({ destination: value("--destination"), value: JSON.parse(value("--value")) });
+      console.log(JSON.stringify(result));
+    } else if (args.includes("--verify-fd")) {
+      const result = verifyStableUploadDescriptor({ fd: Number(value("--fd")), path: resolve(value("--path")), expectedDevice: Number(value("--device")), expectedInode: Number(value("--inode")), expectedBytes: Number(value("--bytes")) });
       console.log(JSON.stringify(result));
     } else throw new Error("unsupported mode");
   } catch {

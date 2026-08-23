@@ -3,11 +3,11 @@ import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { validateFederalElectoralPromotionIam, validateFederalElectoralLiveIamAttestation } from "./check-federal-electoral-promotion-iam.mjs";
+import { validateFederalElectoralPromotionIam } from "./check-federal-electoral-promotion-iam.mjs";
+import { validateFederalLiveIamEvidence } from "./check-federal-electoral-live-iam-evidence.mjs";
 import { validateArchiveOperationsReadiness } from "./check-archive-operations-readiness.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const ACCOUNT = "286853118812";
 const RETENTION = { mode: "COMPLIANCE", retainUntil: "2033-08-12T00:00:00Z" };
 const sha256Bytes = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const readBytes = (path) => readFileSync(path);
@@ -15,7 +15,31 @@ const readJson = (path) => JSON.parse(readBytes(path));
 const rootPath = (path) => resolve(ROOT, path);
 const exactKeys = (value, expected, label) => assert.deepEqual(Object.keys(value ?? {}).sort(), [...expected].sort(), `${label} fields drifted`);
 
-export function validateFederalExecutionGates({ plan, approvalRecord, iamDesired, ownerPacket, readiness, liveIam, requireLive = true, requireReady = false }) {
+function validateReadinessPackage(readinessPackage, readiness, requireReady) {
+  exactKeys(readinessPackage, ["schemaVersion", "status", "ownerApprovalRef", "canonicalReadiness", "evidenceFiles", "claims"], "readiness owner-evidence package");
+  assert.equal(readinessPackage.schemaVersion, "witness-tree/federal-electoral-archive-readiness-owner-evidence/1");
+  assert.deepEqual(readinessPackage.canonicalReadiness, { path: "data/archive-operations-readiness.json", sha256: sha256Bytes(readBytes(rootPath("data/archive-operations-readiness.json"))) });
+  assert.deepEqual(readinessPackage.claims, requireReady
+    ? { executionReady: true, remoteMutationAuthorized: true, recoveryAuthorized: false, productionEligible: false }
+    : { executionReady: false, remoteMutationAuthorized: false, recoveryAuthorized: false, productionEligible: false });
+  if (!requireReady) {
+    assert.equal(readinessPackage.status, "blocked-canonical-readiness-not-approved");
+    assert.equal(readinessPackage.ownerApprovalRef, null);
+    assert.deepEqual(readinessPackage.evidenceFiles, []);
+    return;
+  }
+  assert.equal(readinessPackage.status, "owner-approved-file-evidence-complete");
+  assert.equal(readinessPackage.ownerApprovalRef, "data/phase1-phase3-owner-approvals-2026-08-21.json#/phase1/archiveApprovals/0");
+  const expected = readiness.controls.flatMap((control) => control.evidence.map((evidence, index) => ({ controlId: control.id, prerequisiteIndex: index, path: evidence.path, sha256: evidence.sha256 })));
+  assert.deepEqual(readinessPackage.evidenceFiles, expected, "readiness evidence inventory is not exact");
+  for (const evidence of readinessPackage.evidenceFiles) {
+    assert.match(evidence.path, /^data\/federal-electoral-archive-readiness-evidence\/[a-z0-9._-]+\.json$/);
+    assert.match(evidence.sha256, /^[a-f0-9]{64}$/);
+    assert.equal(sha256Bytes(readBytes(rootPath(evidence.path))), evidence.sha256, `${evidence.controlId} evidence file digest drifted`);
+  }
+}
+
+export function validateFederalExecutionGates({ plan, approvalRecord, iamDesired, ownerPacket, readiness, readinessPackage, liveIamEvidencePath, requireLive = true, requireReady = false }) {
   assert.equal(plan.schemaVersion, "witness-tree/elections-canada-fed-2025-promotion-preparation/1");
   assert.equal(plan.status, "blocked-preparation-only");
   assert.equal(plan.sourceLedger, "data/elections-canada-fed-2025-source-ledger.json");
@@ -46,6 +70,8 @@ export function validateFederalExecutionGates({ plan, approvalRecord, iamDesired
   assert.equal(plan.recoveryBoundary.recoveryCreditEligible, false);
   assert.equal(plan.recoveryBoundary.ownerAuthorizationRequired, true);
   assert.equal(plan.executionGates.iamDesiredState, "data/federal-electoral-promotion-iam-desired-state.json");
+  assert.equal(plan.executionGates.readinessOwnerEvidence, "data/federal-electoral-archive-readiness-owner-evidence.json");
+  assert.equal(plan.executionGates.liveIamEvidenceManifest, "/private/tmp/witness-tree-federal-electoral-iam-live-evidence/manifest.json");
   assert.equal(plan.executionGates.ownerPacket, "data/phase1-owner-approval-packet.json#/exactBindings/federal-electoral-archive");
   assert.equal(plan.executionGates.ownerApproval, "data/phase1-phase3-owner-approvals-2026-08-21.json#/phase1/archiveApprovals/0");
 
@@ -89,6 +115,7 @@ export function validateFederalExecutionGates({ plan, approvalRecord, iamDesired
 
   assert.ok(readiness, "archive operations readiness is required");
   validateArchiveOperationsReadiness(readiness);
+  validateReadinessPackage(readinessPackage, readiness, requireReady);
   if (requireReady) {
     assert.equal(readiness.status, "ready", "federal execution cannot arm while archive operations readiness is blocked");
     assert.match(readiness.notice, /ready/i, "ready archive operations must carry an affirmative readiness notice");
@@ -107,45 +134,48 @@ export function validateFederalExecutionGates({ plan, approvalRecord, iamDesired
       for (const [index, evidence] of control.evidence.entries()) {
         assert.equal(evidence.kind, control.requiredEvidence[index], `${control.id} evidence is not ordered and bound to its exact prerequisite`);
         assert.equal(evidence.reviewerRole, control.ownerRole, `${control.id} evidence reviewer is not the named owner role`);
-        assert.match(evidence.reference, /^sha256:[a-f0-9]{64}$/, `${control.id} evidence reference is not an exact SHA-256 binding`);
+        exactKeys(evidence, ["kind", "capturedAt", "path", "sha256", "reviewerRole"], `${control.id} evidence`);
+        assert.match(evidence.path, /^data\/federal-electoral-archive-readiness-evidence\/[a-z0-9._-]+\.json$/, `${control.id} evidence path is not canonical`);
+        assert.match(evidence.sha256, /^[a-f0-9]{64}$/, `${control.id} evidence SHA-256 is malformed`);
       }
     }
   }
 
   validateFederalElectoralPromotionIam(iamDesired, plan);
   if (requireLive) {
-    assert.ok(liveIam, "a separate live IAM attestation is required before mutation");
-    validateFederalElectoralLiveIamAttestation(liveIam, iamDesired, plan);
+    assert.ok(liveIamEvidencePath, "a separate file-backed live IAM evidence manifest is required");
+    validateFederalLiveIamEvidence(liveIamEvidencePath, iamDesired, plan);
   }
   return { status: requireLive ? "live-gates-passed" : "static-gates-passed" };
 }
 
-export function loadFederalExecutionGateInputs({ planPath, approvalPath, iamPath, ownerPacketPath, readinessPath, liveIamPath } = {}) {
+export function loadFederalExecutionGateInputs({ planPath, approvalPath, iamPath, ownerPacketPath, readinessPath, readinessPackagePath, liveIamPath } = {}) {
   const planFile = planPath ?? rootPath("data/elections-canada-fed-2025-promotion-preparation.json");
   const approvalFile = approvalPath ?? rootPath("data/phase1-phase3-owner-approvals-2026-08-21.json");
   const iamFile = iamPath ?? rootPath("data/federal-electoral-promotion-iam-desired-state.json");
   const ownerPacketFile = ownerPacketPath ?? rootPath("data/phase1-owner-approval-packet.json");
   const readinessFile = readinessPath ?? rootPath("data/archive-operations-readiness.json");
+  const readinessPackageFile = readinessPackagePath ?? rootPath("data/federal-electoral-archive-readiness-owner-evidence.json");
   return {
     planPath: planFile,
     approvalPath: approvalFile,
     iamPath: iamFile,
     ownerPacketPath: ownerPacketFile,
     readinessPath: readinessFile,
-    liveIamPath: liveIamPath ?? rootPath("data/federal-electoral-promotion-iam-live-attestation.json"),
+    readinessPackagePath: readinessPackageFile,
+    liveIamPath: liveIamPath ?? "/private/tmp/witness-tree-federal-electoral-iam-live-evidence/manifest.json",
     plan: readJson(planFile),
     approvalRecord: readJson(approvalFile),
     iamDesired: readJson(iamFile),
     ownerPacket: readJson(ownerPacketFile),
-    readiness: readJson(readinessFile)
+    readiness: readJson(readinessFile),
+    readinessPackage: readJson(readinessPackageFile)
   };
 }
 
 export function runFederalExecutionGates(options = {}) {
   const inputs = loadFederalExecutionGateInputs(options);
-  let liveIam;
-  if (options.requireLive !== false) liveIam = readJson(inputs.liveIamPath);
-  const result = validateFederalExecutionGates({ ...inputs, liveIam, requireLive: options.requireLive !== false, requireReady: options.requireReady === true });
+  const result = validateFederalExecutionGates({ ...inputs, liveIamEvidencePath: options.requireLive === false ? undefined : inputs.liveIamPath, requireLive: options.requireLive !== false, requireReady: options.requireReady === true });
   return {
     ...result,
     planSha256: sha256Bytes(readBytes(inputs.planPath)),
@@ -159,7 +189,7 @@ if (process.argv[1]?.endsWith("check-federal-electoral-promotion-gates.mjs")) {
   try {
     const args = process.argv.slice(2);
     const value = (name) => { const index = args.indexOf(name); return index === -1 ? undefined : args[index + 1]; };
-    const result = runFederalExecutionGates({ planPath: value("--plan"), approvalPath: value("--approval"), iamPath: value("--iam"), ownerPacketPath: value("--owner-packet"), readinessPath: value("--readiness"), liveIamPath: value("--live-iam"), requireLive: args.includes("--require-live"), requireReady: args.includes("--require-ready") });
+    const result = runFederalExecutionGates({ planPath: value("--plan"), approvalPath: value("--approval"), iamPath: value("--iam"), ownerPacketPath: value("--owner-packet"), readinessPath: value("--readiness"), readinessPackagePath: value("--readiness-package"), liveIamPath: value("--live-iam"), requireLive: args.includes("--require-live"), requireReady: args.includes("--require-ready") });
     console.log(`${result.status}; plan, owner approval, IAM desired state, and recovery boundary passed without remote mutation.`);
   } catch {
     console.error("Federal execution gate failed without exposing provider values; no mutation was authorized.");

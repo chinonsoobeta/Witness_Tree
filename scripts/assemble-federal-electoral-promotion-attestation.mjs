@@ -3,8 +3,9 @@ import { createHash } from "node:crypto";
 import { closeSync, constants, fstatSync, fsyncSync, lstatSync, openSync, readFileSync, readdirSync } from "node:fs";
 import { basename, dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { rollbackExclusivePublication, writeExclusiveMode600 } from "./assemble-qc-immutable-promotion-attestation.mjs";
-import { validateFederalElectoralPromotionIam, validateFederalElectoralLiveIamAttestation } from "./check-federal-electoral-promotion-iam.mjs";
+import { publishFederalMode600 } from "./federal-electoral-safe-publication.mjs";
+import { validateFederalElectoralPromotionIam } from "./check-federal-electoral-promotion-iam.mjs";
+import { validateFederalLiveIamEvidence } from "./check-federal-electoral-live-iam-evidence.mjs";
 import { FEDERAL_RAW_RESPONSE_NAMES, redactFederalAttestation, validatePrivateFederalAttestation, validateRedactedFederalAttestation } from "./check-federal-electoral-promotion-attestation.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -53,13 +54,13 @@ export function assembleFederalAttestation({ capturePath, planPath, approvalPath
   const inputPath = join(captureDirectory, "attestation-input.json");
   const inputBytes = durableBytes(inputPath, "attestation input"); const input = JSON.parse(inputBytes);
   const readinessFile = resolve(readinessPath);
-  const plan = readJson(planFile); const approval = readJson(approvalFile); const iamDesired = readJson(iamFile); const liveIam = readJson(liveFile); const ownerPacket = readJson(ownerPacketFile);
+  const plan = readJson(planFile); const approval = readJson(approvalFile); const iamDesired = readJson(iamFile); const ownerPacket = readJson(ownerPacketFile);
   assert.deepEqual(Object.keys(authorizationSha256 ?? {}).sort(), ["approval", "iamDesired", "liveIam", "ownerPacket", "plan", "readiness", "runner"], "the exact pre-action authorization SHA-256 set is required");
   for (const [label, file] of Object.entries({ plan: planFile, approval: approvalFile, iamDesired: iamFile, liveIam: liveFile, ownerPacket: ownerPacketFile, readiness: readinessFile, runner: runnerFile })) {
     assert.match(authorizationSha256[label] ?? "", /^[a-f0-9]{64}$/, `${label} pre-action SHA-256 is malformed`);
     assert.equal(sha256(readBytes(file)), authorizationSha256[label], `${label} changed after pre-action authorization`);
   }
-  validateFederalElectoralPromotionIam(iamDesired, plan); validateFederalElectoralLiveIamAttestation(liveIam, iamDesired, plan);
+  validateFederalElectoralPromotionIam(iamDesired, plan); validateFederalLiveIamEvidence(liveFile, iamDesired, plan);
   const approvalEntry = approval.phase1?.archiveApprovals?.find(({ id }) => id === "federal-electoral-archive");
   assert.equal(approvalEntry?.ownerCommand, "zsh scripts/run-phase1-approved-promotion.sh --run-federal");
   assert.equal(approvalEntry?.bindingRef, "data/phase1-owner-approval-packet.json#/exactBindings/federal-electoral-archive");
@@ -105,16 +106,17 @@ export function assembleFederalAttestation({ capturePath, planPath, approvalPath
     claims: { exactReadbacksVerified: true, retentionVerified: true, immutableObjectStorage: true, sourceLedgerCreditChanged: false, recoveryReplicaVerified: false, immutableArchiveCreditEligible: false, transformed: false, ingested: false, released: false, productionAdmission: false, productionEligible: false }
   };
   validatePrivateFederalAttestation(privateRecord, plan);
-  const privatePublication = writeExclusiveMode600(privateOutput, privateRecord);
+  const privatePublication = publishFederalMode600(privateOutput, privateRecord);
   try {
     const privateBytes = durableBytes(privatePublication.path, "private attestation");
     const publicRecord = redactFederalAttestation(privateRecord, privateBytes, plan);
     validateRedactedFederalAttestation(publicRecord, plan);
-    writeExclusiveMode600(publicOutput, publicRecord);
+    publishFederalMode600(publicOutput, publicRecord);
     return { privatePath: privatePublication.path, publicPath: publicOutput };
   } catch {
-    if (!rollbackExclusivePublication(privatePublication)) fail("federal attestation pair publication failed; private rollback was not proved");
-    fail("federal attestation pair publication failed without exposing provider values");
+    // Never delete by pathname during failure handling. An incomplete private
+    // diagnostic remains owner-only and cannot be mistaken for a validated pair.
+    fail("federal attestation pair publication failed; owner-only diagnostic state was retained");
   }
 }
 
