@@ -4,7 +4,8 @@
   "notice": "Dry-run preparation only. It does not call AWS, upload, retain, transform, ingest, admit, release, or make any source production eligible.",
   "destination": {"bucket": "witness-tree-raw-archive-ca-central-1", "region": "ca-central-1", "countryCode": "CA"},
   "mfaGatedExecution": {"operatorProfile": "WitnessTreeArchiveOperator", "proposedRole": "WitnessTreeCurrentWildfirePromotionUploader", "required": true, "recommendedRetainUntil": "2033-08-12T00:00:00Z"},
-  "requiredApproval": "Before any remote action, the owner must freshly approve the four exact payloads and four deterministic sidecars derived by this record, bucket witness-tree-raw-archive-ca-central-1 in ca-central-1, COMPLIANCE retention through 2033-08-12T00:00:00Z on payload versions only, and the named MFA-gated direct-PutObject/exact-version-read-back procedure, including s3:GetObjectVersion.",
+  "requiredApproval": "Before any remote action, the owner must freshly approve the four exact payloads and four deterministic sidecars derived by this record, bucket witness-tree-raw-archive-ca-central-1 in ca-central-1, COMPLIANCE retention through 2033-08-12T00:00:00Z on payload versions only, and the named MFA-gated direct-PutObject/read-back procedure.",
+  "pendingAdditionalIamApproval": "data/current-wildfire-get-object-version-owner-approval.json",
   "artifacts": [
     {"id":"cwfis-current-active-wildfires-2026-08-14T202242Z","profile":"data/cwfis-current-active-fires-profile.json","geometryDecision":"profiled-clean","queryOrEdition":"fixed WFS instant 2026-08-14T20:22:42Z"},
     {"id":"bc-wildfire-current-perimeters-2026-08-14","profile":"data/bc-wildfire-current-perimeters-profile.json","geometryDecision":"owner-approved-derived-216-one-permanent-quarantine","queryOrEdition":"current FeatureServer response last modified 2026-08-14T20:27:00Z"},

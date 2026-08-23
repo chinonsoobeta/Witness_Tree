@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { lstatSync, readFileSync } from "node:fs";
+import { closeSync, constants, fstatSync, lstatSync, openSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { validateCheckpoint } from "./check-current-wildfire-promotion-checkpoint.mjs";
 import { rollbackExclusivePublication, writeExclusiveMode600 } from "./assemble-qc-immutable-promotion-attestation.mjs";
@@ -17,7 +17,10 @@ function ownerFile(path, label) {
   assert.equal(metadata.uid, process.getuid(), `${label} must be owner-owned`);
   assert.equal(metadata.mode & 0o777, 0o600, `${label} must be mode 600`);
   assert.equal(metadata.nlink, 1, `${label} must not have hard-link aliases`);
+  return metadata;
 }
+
+function ownerBytes(path, label) { const before = ownerFile(path, label); const fd = openSync(path, constants.O_RDONLY | constants.O_NOFOLLOW); try { const opened = fstatSync(fd); assert.equal(opened.dev, before.dev); assert.equal(opened.ino, before.ino); const bytes = readFileSync(fd); const after = fstatSync(fd); assert.equal(after.dev, opened.dev); assert.equal(after.ino, opened.ino); assert.equal(after.size, opened.size); return bytes; } finally { closeSync(fd); } }
 
 function publicObjects(checkpoint) {
   return checkpoint.objects.map((object) => ({
@@ -38,8 +41,7 @@ function publicObjects(checkpoint) {
 }
 
 export function privateAttestation(checkpointPath) {
-  ownerFile(checkpointPath, "checkpoint");
-  const checkpointBytes = readFileSync(checkpointPath);
+  const checkpointBytes = ownerBytes(checkpointPath, "checkpoint");
   const checkpoint = validateCheckpoint(JSON.parse(checkpointBytes));
   assert.equal(checkpoint.status, "completed", "checkpoint is not complete");
   assert.ok(checkpoint.objects.every((object) => object.status === "complete"), "checkpoint has incomplete object boundaries");
@@ -82,14 +84,14 @@ export function redact(privateRecord, privateBytes) {
       identityResponseSha256s: privateRecord.provenance.identityRawResponses.map((session) => ({ operator: hash(session.operatorRaw), role: hash(session.roleRaw) }))
     },
     objects: publicObjects(privateRecord.checkpoint),
+    responseInventory: privateRecord.checkpoint.responseInventory.map(({ name, byteLength, sha256 }) => ({ name, byteLength, sha256 })),
     recoveryReplicaProof: privateRecord.recoveryReplicaProof,
     claims: { ...privateRecord.claims, exactVersionReadbacksVerified: false, retentionVerified: false, immutableObjectStorage: false }
   };
 }
 
 export function validatePair(privatePath, publicPath) {
-  ownerFile(privatePath, "private attestation"); ownerFile(publicPath, "redacted attestation");
-  const privateBytes = readFileSync(privatePath); const privateRecord = JSON.parse(privateBytes);
+  const privateBytes = ownerBytes(privatePath, "private attestation"); const publicBytes = ownerBytes(publicPath, "redacted attestation"); const privateRecord = JSON.parse(privateBytes);
   exactKeys(privateRecord, ["checkpoint", "claims", "destination", "provenance", "recoveryReplicaProof", "schemaVersion", "status"], "private attestation");
   assert.equal(privateRecord.schemaVersion, "witness-tree/current-wildfire-promotion-attestation-private/1");
   assert.equal(privateRecord.provenance.planSha256, hash(readFileSync(PLAN_PATH)));
@@ -104,7 +106,7 @@ export function validatePair(privatePath, publicPath) {
     JSON.parse(object.ack.rawResponse); JSON.parse(object.head.rawResponse);
     if (object.kind === "payload") { JSON.parse(object.retention.putResponse); JSON.parse(object.retention.getResponse); }
   }
-  const publicRecord = JSON.parse(readFileSync(publicPath));
+  const publicRecord = JSON.parse(publicBytes);
   assert.deepEqual(publicRecord, redact(privateRecord, privateBytes), "redacted record is not the exact digest-bound projection of the private attestation");
   return { privateRecord, publicRecord };
 }
@@ -113,15 +115,19 @@ export function publishPair(checkpointPath, privatePath, publicPath, hooks = {})
   const privateOutput = resolve(privatePath); const publicOutput = resolve(publicPath);
   assert.notEqual(privateOutput, publicOutput, "attestation paths must be distinct");
   const record = privateAttestation(resolve(checkpointPath));
-  const privatePublication = writeExclusiveMode600(privateOutput, record, hooks.private);
+  const privatePublication = writeExclusiveMode600(privateOutput, record, hooks.private); let publicPublication;
   try {
-    const privateBytes = readFileSync(privateOutput);
-    writeExclusiveMode600(publicOutput, redact(record, privateBytes), hooks.public);
-  } catch (error) {
-    if (!rollbackExclusivePublication(privatePublication, hooks.rollback)) throw new Error("attestation pair publication failed; private rollback was not proved; inspect output state");
-    throw new Error("attestation pair publication failed; private output was rolled back");
+    const privateBytes = ownerBytes(privateOutput, "private attestation");
+    publicPublication = writeExclusiveMode600(publicOutput, redact(record, privateBytes), hooks.public);
+    const pair = validatePair(privateOutput, publicOutput);
+    ownerBytes(privateOutput, "post-publish private attestation"); ownerBytes(publicOutput, "post-publish redacted attestation");
+    return pair;
+  } catch {
+    const publicRolledBack = publicPublication ? rollbackExclusivePublication(publicPublication, hooks.publicRollback) : true;
+    const privateRolledBack = rollbackExclusivePublication(privatePublication, hooks.privateRollback ?? hooks.rollback);
+    if (!publicRolledBack || !privateRolledBack) throw new Error("attestation pair publication failed; rollback was not proved and replacements were preserved for inspection");
+    throw new Error("attestation pair publication failed; both owned outputs were rolled back");
   }
-  return validatePair(privateOutput, publicOutput);
 }
 
 if (process.argv[1]?.endsWith("assemble-current-wildfire-promotion-attestation.mjs")) {

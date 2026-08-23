@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { constants, fsyncSync, lstatSync, mkdirSync, openSync, closeSync, readFileSync, renameSync, unlinkSync, writeFileSync } from "node:fs";
+import { constants, fstatSync, fsyncSync, lstatSync, mkdirSync, openSync, closeSync, readFileSync, renameSync, rmdirSync, unlinkSync, writeFileSync } from "node:fs";
 import { dirname, isAbsolute } from "node:path";
 import { sidecarFor, validateCurrentWildfirePromotionPreparation } from "./prepare-current-wildfire-immutable-promotion.mjs";
 
@@ -10,7 +10,7 @@ const STAGED = read("data/staged-acquisitions.json");
 validateCurrentWildfirePromotionPreparation(PLAN, STAGED);
 
 export const CHECKPOINT_SCHEMA = "witness-tree/current-wildfire-immutable-promotion-checkpoint/1";
-export const CHECKPOINT_STATUS = Object.freeze({ pending: "pending", started: "write-started", acknowledged: "acknowledged", readback: "readback-verified", retentionStarted: "retention-write-started", complete: "complete", ambiguous: "ambiguous-response" });
+export const CHECKPOINT_STATUS = Object.freeze({ pending: "pending", prepared: "stable-copy-prepared", started: "write-started", acknowledged: "acknowledged", readback: "readback-verified", retentionStarted: "retention-write-started", complete: "complete", ambiguous: "ambiguous-response" });
 const SHA256 = /^[a-f0-9]{64}$/;
 const VERSION = /^(?!.*(?:redacted|placeholder|example|fabricated))[A-Za-z0-9._+=:/-]{6,}$/i;
 const CRC64 = /^[A-Za-z0-9+/]{11}=$/;
@@ -28,6 +28,10 @@ const expectedObjects = () => PLAN.artifacts.flatMap((artifact) => {
     { artifactId: artifact.id, sourceId: source.sourceId, kind: "manifest", key: payloadKey.replace(/\/payload\/[^/]+$/, "/manifest.json"), bytes: Buffer.byteLength(sidecarFor(PLAN, source, artifact)), sha256: sha256(sidecarFor(PLAN, source, artifact)) }
   ];
 });
+export const EXPECTED_RESPONSE_NAMES = Object.freeze([
+  "operator-identity.evidence.json", "role-identity.evidence.json",
+  ...PLAN.artifacts.flatMap(({ id }) => ["put-object", "head-object", "put-object-retention", "get-object-retention"].map((operation) => `${id}.payload.${operation}.evidence.json`).concat(["put-object", "head-object"].map((operation) => `${id}.manifest.${operation}.evidence.json`)))
+]);
 
 function exactKeys(value, expected, label) {
   assert.deepEqual(Object.keys(value).sort(), [...expected].sort(), `${label} fields drifted`);
@@ -43,39 +47,40 @@ function ownerRegular(path) {
   return metadata;
 }
 
-function syncParent(path) {
-  const fd = openSync(dirname(path), constants.O_RDONLY);
-  try { fsyncSync(fd); } finally { closeSync(fd); }
-}
+function secureParent(path) { const parent = lstatSync(dirname(path)); assert.ok(parent.isDirectory() && !parent.isSymbolicLink(), "checkpoint parent must be a regular directory"); assert.equal(parent.uid, process.getuid(), "checkpoint parent must be owner-owned"); assert.equal(parent.mode & 0o077, 0, "checkpoint parent must be owner-only"); return parent; }
+function bindParent(path) { const before = secureParent(path); const fd = openSync(dirname(path), constants.O_RDONLY | constants.O_NOFOLLOW); try { const opened = fstatSync(fd); assert.equal(opened.dev, before.dev); assert.equal(opened.ino, before.ino); return { fd, dev: opened.dev, ino: opened.ino }; } catch (error) { closeSync(fd); throw error; } }
+function assertParentBound(path, binding) { const current = secureParent(path); assert.equal(current.dev, binding.dev, "checkpoint parent device changed"); assert.equal(current.ino, binding.ino, "checkpoint parent inode changed"); }
+
+function syncParent(path, binding) { assertParentBound(path, binding); fsyncSync(binding.fd); assertParentBound(path, binding); }
 
 function writeNew(path, value) {
   assert.equal(isAbsolute(path), true, "checkpoint path must be absolute");
-  mkdirSync(dirname(path), { recursive: true, mode: 0o700 });
+  const parent = bindParent(path);
   const bytes = Buffer.from(`${JSON.stringify(value, null, 2)}\n`);
   const flags = constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | (constants.O_NOFOLLOW ?? 0);
   let fd;
   try {
-    fd = openSync(path, flags, 0o600);
-    writeFileSync(fd, bytes);
+    assertParentBound(path, parent); fd = openSync(path, flags, 0o600);
+    const opened = fstatSync(fd); writeFileSync(fd, bytes);
     fsyncSync(fd);
     closeSync(fd);
     fd = undefined;
-    ownerRegular(path);
-    syncParent(path);
+    const published = ownerRegular(path); assert.equal(published.dev, opened.dev); assert.equal(published.ino, opened.ino);
+    syncParent(path, parent);
   } catch (error) {
     if (fd !== undefined) closeSync(fd);
     throw error;
-  }
+  } finally { closeSync(parent.fd); }
 }
 
 function replace(path, value) {
-  const before = ownerRegular(path);
+  const parent = bindParent(path); const before = ownerRegular(path);
   const temporary = `${path}.tmp-${process.pid}-${Math.random().toString(16).slice(2)}`;
   const bytes = Buffer.from(`${JSON.stringify(value, null, 2)}\n`);
-  let fd;
+  let fd; let temporaryIdentity;
   try {
     const flags = constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | (constants.O_NOFOLLOW ?? 0);
-    fd = openSync(temporary, flags, 0o600);
+    assertParentBound(path, parent); fd = openSync(temporary, flags, 0o600); temporaryIdentity = fstatSync(fd);
     writeFileSync(fd, bytes);
     fsyncSync(fd);
     closeSync(fd);
@@ -83,14 +88,19 @@ function replace(path, value) {
     const current = ownerRegular(path);
     assert.equal(current.dev, before.dev, "checkpoint destination changed during update");
     assert.equal(current.ino, before.ino, "checkpoint destination changed during update");
-    renameSync(temporary, path);
-    syncParent(path);
-    ownerRegular(path);
+    const verificationFd = openSync(temporary, constants.O_RDONLY | constants.O_NOFOLLOW); const temporaryOpened = fstatSync(verificationFd); closeSync(verificationFd);
+    assertParentBound(path, parent);
+    const finalCurrent = ownerRegular(path);
+    assert.equal(finalCurrent.dev, before.dev, "checkpoint destination changed immediately before update");
+    assert.equal(finalCurrent.ino, before.ino, "checkpoint destination changed immediately before update");
+    assertParentBound(path, parent); renameSync(temporary, path);
+    syncParent(path, parent);
+    const published = ownerRegular(path); assert.equal(published.dev, temporaryOpened.dev); assert.equal(published.ino, temporaryOpened.ino);
   } catch (error) {
     if (fd !== undefined) closeSync(fd);
-    try { unlinkSync(temporary); } catch (cleanupError) { if (cleanupError?.code !== "ENOENT") throw cleanupError; }
+    try { const currentTemporary = lstatSync(temporary); if (temporaryIdentity && currentTemporary.dev === temporaryIdentity.dev && currentTemporary.ino === temporaryIdentity.ino && currentTemporary.nlink === 1 && currentTemporary.uid === process.getuid()) unlinkSync(temporary); } catch (cleanupError) { if (cleanupError?.code !== "ENOENT") throw cleanupError; }
     throw error;
-  }
+  } finally { closeSync(parent.fd); }
 }
 
 function persist(path, value, fresh = false) {
@@ -113,14 +123,15 @@ export function checkpointTemplate(now = new Date().toISOString()) {
     createdAt: now,
     updatedAt: now,
     identitySessions: [],
-    objects: expectedObjects().map((object) => ({ ...object, status: CHECKPOINT_STATUS.pending, ack: null, head: null, retention: null, ambiguity: null })),
+    objects: expectedObjects().map((object) => ({ ...object, status: CHECKPOINT_STATUS.pending, localCopy: null, ack: null, head: null, retention: null, ambiguity: null })),
+    responseInventory: EXPECTED_RESPONSE_NAMES.map((name) => ({ name, byteLength: null, sha256: null, rawEvidence: null })),
     recoveryBoundary: { replicaCreated: false, replicaReadbackVerified: false, replicationMutationPerformed: false },
     claims: { exactVersionReadbacksVerified: false, retentionVerified: false, immutableObjectStorage: false, productionEligible: false }
   };
 }
 
 function validateObject(object, expected) {
-  exactKeys(object, ["ambiguity", "ack", "artifactId", "bytes", "head", "key", "kind", "retention", "sha256", "sourceId", "status"], `${expected.artifactId}/${expected.kind}`);
+  exactKeys(object, ["ambiguity", "ack", "artifactId", "bytes", "head", "key", "kind", "localCopy", "retention", "sha256", "sourceId", "status"], `${expected.artifactId}/${expected.kind}`);
   assert.equal(object.artifactId, expected.artifactId);
   assert.equal(object.sourceId, expected.sourceId);
   assert.equal(object.kind, expected.kind);
@@ -128,6 +139,7 @@ function validateObject(object, expected) {
   if (expected.kind === "payload") { assert.equal(object.bytes, expected.bytes); assert.equal(object.sha256, expected.sha256); }
   else { assert.equal(object.bytes, expected.bytes); assert.equal(object.sha256, expected.sha256); }
   assert.ok(Object.values(CHECKPOINT_STATUS).includes(object.status), `${expected.artifactId}/${expected.kind} status is unknown`);
+  if (object.localCopy !== null) { exactKeys(object.localCopy, ["path", "device", "inode", "byteLength", "sha256", "checksumAlgorithm", "checksumType", "checksumValue"], `${expected.artifactId}/${expected.kind} local copy`); assert.equal(isAbsolute(object.localCopy.path), true); assert.equal(object.localCopy.byteLength, expected.bytes); assert.equal(object.localCopy.sha256, expected.sha256); assert.equal(object.localCopy.checksumAlgorithm, "CRC64NVME"); assert.equal(object.localCopy.checksumType, "FULL_OBJECT"); assert.match(object.localCopy.checksumValue, CRC64); assert.ok(Number.isSafeInteger(object.localCopy.device)); assert.ok(Number.isSafeInteger(object.localCopy.inode)); }
   if (object.ack !== null) {
     exactKeys(object.ack, ["ChecksumCRC64NVME", "VersionId", "rawResponse"], `${expected.artifactId}/${expected.kind} acknowledgement`);
     assert.match(object.ack.VersionId, VERSION);
@@ -141,7 +153,7 @@ function validateObject(object, expected) {
     assert.equal(object.head.ContentLength, expected.bytes, `${expected.artifactId}/${expected.kind} head byte length drifted`);
     assert.equal(object.head.VersionId, object.ack?.VersionId, `${expected.artifactId}/${expected.kind} head version drifted`);
     assert.equal(object.head.ChecksumType, "FULL_OBJECT", `${expected.artifactId}/${expected.kind} head is not FULL_OBJECT`);
-    assert.equal(object.head.ChecksumCRC64NVME, object.ack?.ChecksumCRC64NVME, `${expected.artifactId}/${expected.kind} head checksum drifted`);
+    assert.equal(object.head.ChecksumCRC64NVME, object.ack?.ChecksumCRC64NVME, `${expected.artifactId}/${expected.kind} head checksum drifted`); assert.equal(object.head.ChecksumCRC64NVME, object.localCopy?.checksumValue, `${expected.artifactId}/${expected.kind} provider checksum is not bound to the stable local bytes`);
     const raw = JSON.parse(object.head.rawResponse);
     for (const field of ["VersionId", "ContentLength", "ChecksumType", "ChecksumCRC64NVME"]) assert.equal(raw[field], object.head[field], `${expected.artifactId}/${expected.kind} raw head ${field} drifted`);
   }
@@ -164,7 +176,7 @@ function validateObject(object, expected) {
 
 export function validateCheckpoint(value, plan = PLAN) {
   assert.ok(value && typeof value === "object" && !Array.isArray(value), "checkpoint is malformed");
-  exactKeys(value, ["claims", "createdAt", "identitySessions", "objects", "operation", "planSha256", "recoveryBoundary", "schemaVersion", "status", "updatedAt"], "checkpoint");
+  exactKeys(value, ["claims", "createdAt", "identitySessions", "objects", "operation", "planSha256", "recoveryBoundary", "responseInventory", "schemaVersion", "status", "updatedAt"], "checkpoint");
   assert.equal(value.schemaVersion, CHECKPOINT_SCHEMA);
   assert.equal(value.operation, "owner-local-current-wildfire-raw-promotion");
   assert.equal(value.planSha256, sha256(readFileSync(new URL("../data/current-wildfire-immutable-promotion-preparation.json", import.meta.url))));
@@ -183,14 +195,15 @@ export function validateCheckpoint(value, plan = PLAN) {
   const expected = expectedObjects(plan);
   assert.equal(value.objects.length, expected.length);
   for (const [index, object] of value.objects.entries()) validateObject(object, expected[index]);
+  assert.deepEqual(value.responseInventory.map(({ name }) => name), [...EXPECTED_RESPONSE_NAMES]); for (const item of value.responseInventory) { exactKeys(item, ["name", "byteLength", "sha256", "rawEvidence"], "response inventory item"); if (item.sha256 !== null) { assert.match(item.sha256, SHA256); assert.ok(Number.isSafeInteger(item.byteLength) && item.byteLength >= 0); assert.equal(typeof item.rawEvidence, "string"); assert.equal(Buffer.byteLength(item.rawEvidence), item.byteLength); assert.equal(sha256(item.rawEvidence), item.sha256); } else { assert.equal(item.byteLength, null); assert.equal(item.rawEvidence, null); } }
   assert.deepEqual(value.recoveryBoundary, { replicaCreated: false, replicaReadbackVerified: false, replicationMutationPerformed: false });
   assert.deepEqual(value.claims, { exactVersionReadbacksVerified: false, retentionVerified: false, immutableObjectStorage: false, productionEligible: false });
   return value;
 }
 
 function load(path) {
-  ownerRegular(path);
-  return validateCheckpoint(JSON.parse(readFileSync(path, "utf8")));
+  const before = ownerRegular(path); const fd = openSync(path, constants.O_RDONLY | constants.O_NOFOLLOW);
+  try { const opened = fstatSync(fd); assert.equal(opened.dev, before.dev); assert.equal(opened.ino, before.ino); const bytes = readFileSync(fd); const after = fstatSync(fd); assert.equal(after.dev, opened.dev); assert.equal(after.ino, opened.ino); assert.equal(after.size, opened.size); return validateCheckpoint(JSON.parse(bytes)); } finally { closeSync(fd); }
 }
 
 function target(value, artifactId, kind) {
@@ -200,12 +213,9 @@ function target(value, artifactId, kind) {
 }
 
 function mutate(path, callback) {
-  const value = load(path);
-  callback(value);
-  value.updatedAt = new Date().toISOString();
-  validateCheckpoint(value);
-  persist(path, value);
-  return value;
+  const parent = bindParent(path); const lock = `${path}.lock`; assertParentBound(path, parent); mkdirSync(lock, { mode: 0o700 });
+  try { const value = load(path); callback(value); value.updatedAt = new Date().toISOString(); validateCheckpoint(value); persist(path, value); return value; }
+  finally { try { assertParentBound(path, parent); rmdirSync(lock); syncParent(path, parent); } finally { closeSync(parent.fd); } }
 }
 
 export function initializeCheckpoint(path, now = new Date().toISOString()) {
@@ -222,11 +232,15 @@ export function recordIdentity(path, operatorRaw, roleRaw) {
   });
 }
 
+export function recordPreparedCopy(path, artifactId, kind, localCopy) { return mutate(path, (value) => { const object = target(value, artifactId, kind); assert.equal(object.status, CHECKPOINT_STATUS.pending); object.localCopy = localCopy; object.status = CHECKPOINT_STATUS.prepared; value.status = "running"; }); }
+
+export function recordResponseEvidence(path, name, evidencePath) { return mutate(path, (value) => { assert.ok(EXPECTED_RESPONSE_NAMES.includes(name), "response name is outside the exact inventory"); const item = value.responseInventory.find((entry) => entry.name === name); assert.equal(item.sha256, null, "response evidence is duplicated"); const before = ownerRegular(evidencePath); const fd = openSync(evidencePath, constants.O_RDONLY | constants.O_NOFOLLOW); try { const opened = fstatSync(fd); assert.equal(opened.dev, before.dev); assert.equal(opened.ino, before.ino); const bytes = readFileSync(fd); const parsed = JSON.parse(bytes); exactKeys(parsed, ["command", "stderr", "stdout"], "response evidence"); assert.ok(Array.isArray(parsed.command) && parsed.command.length > 1); assert.equal(typeof parsed.stderr, "string"); assert.equal(typeof parsed.stdout, "string"); item.byteLength = bytes.length; item.sha256 = sha256(bytes); item.rawEvidence = bytes.toString("utf8"); } finally { closeSync(fd); } }); }
+
 export function markWriteStarted(path, artifactId, kind) {
   return mutate(path, (value) => {
     assert.ok(["new", "running"].includes(value.status), "checkpoint is not runnable; owner review is required");
     const object = target(value, artifactId, kind);
-    assert.equal(object.status, CHECKPOINT_STATUS.pending, "object write already started or completed; do not duplicate it");
+    assert.equal(object.status, CHECKPOINT_STATUS.prepared, "object stable copy is not prepared or write already started");
     object.status = CHECKPOINT_STATUS.started;
     value.status = "running";
   });
@@ -295,7 +309,7 @@ export function markAmbiguous(path, artifactId, kind, phase) {
 export function completeCheckpoint(path) {
   return mutate(path, (value) => {
     assert.ok(value.objects.every((object) => object.status === CHECKPOINT_STATUS.complete), "checkpoint cannot complete before every exact object boundary");
-    assert.ok(value.identitySessions.length > 0, "checkpoint cannot complete without exact operator identity responses");
+    assert.equal(value.identitySessions.length, 1, "checkpoint requires exactly one operator/role identity session"); assert.ok(value.responseInventory.every((entry) => entry.sha256 !== null), "checkpoint cannot complete without the exact finite response inventory");
     value.status = "completed";
   });
 }
@@ -304,6 +318,7 @@ export function assertRunnableCheckpoint(path) {
   const value = load(path);
   assert.ok(["new", "running"].includes(value.status), "checkpoint requires owner review before retry; no duplicate write is safe");
   assert.equal(value.objects.some((object) => [CHECKPOINT_STATUS.started, CHECKPOINT_STATUS.ambiguous, CHECKPOINT_STATUS.retentionStarted].includes(object.status)), false, "checkpoint contains an unresolved write boundary; owner review is required");
+  assert.equal(value.identitySessions.length, 0, "checkpoint already contains an owner session; owner review is required before another session can run");
   return value;
 }
 
@@ -314,6 +329,8 @@ if (process.argv[1]?.endsWith("check-current-wildfire-promotion-checkpoint.mjs")
     else if (mode === "--validate") validateCheckpoint(JSON.parse(readFileSync(path, "utf8")));
     else if (mode === "--assert-runnable") assertRunnableCheckpoint(path);
     else if (mode === "--record-identity") recordIdentity(path, readFileSync(artifactId, "utf8"), readFileSync(kind, "utf8"));
+    else if (mode === "--record-prepared") recordPreparedCopy(path, artifactId, kind, JSON.parse(readFileSync(input, "utf8")));
+    else if (mode === "--record-evidence") recordResponseEvidence(path, artifactId, kind);
     else if (mode === "--mark-write-started") markWriteStarted(path, artifactId, kind);
     else if (mode === "--record-ack") { const rawResponse = readFileSync(input, "utf8"); const raw = JSON.parse(rawResponse); recordAcknowledgement(path, artifactId, kind, { ...raw, rawResponse }); }
     else if (mode === "--record-head") { const rawResponse = readFileSync(input, "utf8"); const raw = JSON.parse(rawResponse); recordHead(path, artifactId, kind, { VersionId: raw.VersionId, ContentLength: raw.ContentLength, ChecksumType: raw.ChecksumType, ChecksumCRC64NVME: raw.ChecksumCRC64NVME, rawResponse }); }

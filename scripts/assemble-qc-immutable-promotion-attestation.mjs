@@ -137,7 +137,8 @@ export function rollbackExclusivePublication(publication, hooks = {}) {
   try {
     invokeHook(hooks, "beforeRollback", publication.path, publication);
     current = lstatSync(publication.path);
-    if (!current.isFile() || current.isSymbolicLink() || current.nlink !== 1 || !sameInode(current, publication)) return false;
+    if (!current.isFile() || current.isSymbolicLink() || current.nlink !== 1 || !sameInode(current, publication) || current.size !== publication.size || current.uid !== publication.uid || (current.mode & 0o777) !== publication.mode) return false;
+    const fd = openSync(publication.path, constants.O_RDONLY | constants.O_NOFOLLOW); try { const opened = fstatSync(fd); if (!sameInode(opened, publication) || hash(readFileSync(fd)) !== publication.sha256) return false; } finally { closeSync(fd); }
     unlinkSync(publication.path);
     invokeHook(hooks, "beforeRollbackFsync", publication.path);
     syncParentDirectory(publication.path, hooks);
@@ -212,7 +213,7 @@ export function writeExclusiveMode600(path, value, hooks = {}) {
     closeOutput();
     const closed = lstatSync(outputPath);
     if (!closed.isFile() || closed.isSymbolicLink() || closed.nlink !== 1 || !sameInode(closed, opened) || closed.size !== bytes.length || closed.uid !== opened.uid || (closed.mode & 0o777) !== (opened.mode & 0o777)) failSafe("attestation output changed after descriptor close");
-    return { path: outputPath, dev: closed.dev, ino: closed.ino, size: closed.size, uid: closed.uid, mode: closed.mode & 0o777 };
+    return { path: outputPath, dev: closed.dev, ino: closed.ino, size: closed.size, uid: closed.uid, mode: closed.mode & 0o777, sha256: hash(bytes) };
   } catch (error) {
     let closeError = error?.closeAttempted ? error : null;
     if (fd !== undefined && fdState === "open") {
@@ -225,7 +226,7 @@ export function writeExclusiveMode600(path, value, hooks = {}) {
       if (error?.code === "EEXIST" || error?.code === "ELOOP") failSafe("attestation output already exists; refusing overwrite");
       failSafe("attestation output could not be created exclusively");
     }
-    const publication = { path: outputPath, dev: opened.dev, ino: opened.ino, size: bytes.length, uid: opened.uid, mode: opened.mode & 0o777 };
+    const publication = { path: outputPath, dev: opened.dev, ino: opened.ino, size: bytes.length, uid: opened.uid, mode: opened.mode & 0o777, sha256: hash(bytes) };
     if (!rollbackExclusivePublication(publication, hooks) || closeError) failSafe("attestation output rollback was not proved; inspect output state", { rollbackProved: false, outputCreated: true });
     failSafe("attestation output failed; owned output was rolled back", { rollbackProved: true, outputCreated: false });
   }

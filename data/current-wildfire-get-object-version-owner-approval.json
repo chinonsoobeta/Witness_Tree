@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "witness-tree/current-wildfire-get-object-version-owner-approval/1",
+  "status": "pending-owner-approval",
+  "roleName": "WitnessTreeCurrentWildfirePromotionUploader",
+  "action": "s3:GetObjectVersion",
+  "resources": "data/current-wildfire-immutable-promotion-preparation.json#/proposedRoleScope/objectKeys",
+  "reason": "The historical approval omitted version-specific read permission. This separate delta must be explicitly approved and live-verified before any storage mutation.",
+  "approvedAt": null,
+  "ownerStatement": null,
+  "liveIamAttestationSha256": null,
+  "claims": {"ownerApproved": false, "liveIamVerified": false, "iamMutationPerformed": false, "s3MutationPerformed": false}
+}
