@@ -98,6 +98,7 @@ function mockS3(fixture, hooks = {}) {
       upload.completed = true;
       const remote = { ContentLength: readFileSync(path.join(fixture.dataRoot, fixture.plan.archiveSet.payloads.find((entry) => entry.objectKey === key).dataRootRelativePath)).length, VersionId: `multipart-version-${nextVersion++}`, ChecksumType: "COMPOSITE", ChecksumSHA256: checksum };
       objects.set(key, remote);
+      if (hooks.loseCompleteResponseOnce) { hooks.loseCompleteResponseOnce = false; throw new Error("completion response lost after remote acceptance"); }
       return { VersionId: remote.VersionId, ChecksumSHA256: checksum };
     }
     if (operation === "head-object") {
@@ -309,6 +310,19 @@ test("executePromotion recovers a completion response whose exact-version readba
     assert.equal(service.count("create-multipart-upload"), 1);
     assert.equal(service.count("complete-multipart-upload"), 1);
     assert.equal(service.count("list-parts"), 1);
+  } finally { fixture.cleanup(); }
+});
+
+test("executePromotion fails closed without a duplicate upload when completion succeeded but returned no usable response", () => {
+  const fixture = executionFixture(); const service = mockS3(fixture, { loseCompleteResponseOnce: true });
+  try {
+    assert.throws(() => executePromotion(fixture.plan, fixture.options, { invoke: service.invoke, mfaEnv: { mocked: "true" } }), /completion response lost/);
+    const pending = JSON.parse(readFileSync(fixture.statePath, "utf8")).objects[fixture.multipartId];
+    assert.equal(pending.complete, false); assert.equal(pending.parts.length, 3); assert.equal(pending.versionId, undefined);
+    assert.throws(() => executePromotion(fixture.plan, fixture.options, { invoke: service.invoke, mfaEnv: { mocked: "true" } }), /NoSuchUpload/);
+    assert.equal(service.count("create-multipart-upload"), 1);
+    assert.equal(service.count("complete-multipart-upload"), 1);
+    assert.equal(service.count("upload-part"), 3);
   } finally { fixture.cleanup(); }
 });
 
