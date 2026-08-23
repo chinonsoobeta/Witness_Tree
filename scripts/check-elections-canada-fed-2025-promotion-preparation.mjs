@@ -41,6 +41,7 @@ export function validateElectionsCanadaFed2025PromotionPreparation(plan, ledger,
   assert.equal(plan.snapshot.sourceId, ledger.source.id);
   assert.equal(plan.snapshot.sourceVersion, ledger.source.sourceVersion);
   assert.equal(plan.snapshot.remoteKeyVersion, "federal-electoral-districts-2025-shp");
+  assert.equal(plan.snapshot.localPath, ledger.source.localPath);
   assert.equal(plan.snapshot.retrievedAt, ledger.source.retrievedAt);
   assert.equal(plan.snapshot.originalFilename, "FederalElectoralDistricts_2025_SHP.zip");
   assert.equal(plan.snapshot.byteLength, ledger.source.http.contentLength);
@@ -60,6 +61,28 @@ export function validateElectionsCanadaFed2025PromotionPreparation(plan, ledger,
   assert.equal(plan.retentionDecision.state, "separate-owner-approval-recorded-execution-evidence-pending");
   assert.equal(plan.retentionDecision.requiredBeforeAnyRemoteAction.length, 3);
   assert.match(plan.retentionDecision.prohibitedInference, /not remote, immutable, or production evidence/i);
+  assert.deepEqual(plan.executionGates, {
+    ownerPacket: "data/phase1-owner-approval-packet.json#/exactBindings/federal-electoral-archive",
+    ownerApproval: "data/phase1-phase3-owner-approvals-2026-08-21.json#/phase1/archiveApprovals/0",
+    iamDesiredState: "data/federal-electoral-promotion-iam-desired-state.json",
+    liveIamAttestation: "data/federal-electoral-promotion-iam-live-attestation.json",
+    requiredBeforeMutation: [
+      "Archive-operations readiness must be explicitly ready with every exact control, Canadian recovery decision, and replication decision independently evidenced; a blocked preparation record cannot arm execution.",
+      "The exact plan, source ledger, owner approval, and federal IAM desired state pass their machine check.",
+      "A separately captured live IAM attestation proves the exact assumed role, zero policy findings, exact allowed actions/resources, and negative simulations before the first S3 write.",
+      "The runner proves both exact destination keys have no versions or delete markers and classifies one exact HeadObject absence error before each conditional put.",
+      "The local payload is copied through one stable owner-only descriptor, hashed from that descriptor, and uploaded with the same locally computed FULL_OBJECT SHA-256 checksum.",
+      "No recovery-bucket operation is authorized by this plan. Primary-only evidence remains non-credit until an exact recovery authorization and readback are separately recorded."
+    ]
+  });
+  assert.deepEqual(plan.recoveryBoundary, {
+    bucket: "witness-tree-raw-recovery-ca-central-1",
+    replicaCreated: false,
+    replicaAuthorized: false,
+    recoveryCreditEligible: false,
+    ownerAuthorizationRequired: true,
+    meaning: "The federal owner approval authorizes only the primary bucket. No recovery copy, version, checksum, byte length, or retention readback may be attempted or claimed. Primary exact-version evidence is retained as non-credit evidence until a separate recovery authorization and proof exist."
+  });
   assert.deepEqual(plan.claims, { remoteObjectExists: false, sidecarUploaded: false, retentionApplied: false, immutableObjectStorage: false, transformed: false, ingested: false, productionEligible: false });
   return plan;
 }

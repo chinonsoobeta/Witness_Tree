@@ -20,7 +20,7 @@ This order prioritizes the fewest unresolved dependencies, then the bounded perc
 
 | Rank | Exact owner decision or action | Dependency | Maximum bounded Phase 1 gain |
 | ---: | --- | --- | ---: |
-| 1 | Execute only the recorded federal-only command with fresh MFA, then integrate exact immutable and recovery readbacks. Do not revisit harvest or canopy-height. | The federal archive approval is recorded; one prepared physical artifact is shared by two rows. | `+0.50` raw, `+0.483871` formal points, `+2/31` immutable coverage |
+| 1 | Execute only the recorded federal-only command with fresh MFA after the exact live IAM gate, then integrate the primary exact-version readbacks. Do not run a recovery copy or revisit harvest/canopy-height. | The federal archive approval is recorded; one prepared physical artifact is shared by two rows. Recovery is not authorized, so primary-only evidence remains non-credit until a separate recovery authorization/proof exists. | `+0.50` raw, `+0.483871` formal points, `+2/31` immutable coverage only after every applicable recovery/evidence gate passes |
 | 2 | Supply controlled paths and fresh MFA for the recorded Québec fourth-inventory execute template, then integrate exact readbacks. | All four approvals are recorded; 61 prepared files plus one deterministic manifest remain unexecuted. | `+0.25` raw, `+0.2419355` formal points, `+1/31` immutable coverage |
 | 3 | Perform the approved owner-local wildfire proof/readback workflow and preserve concrete version, checksum, retention and recovery proof for all six exact objects. | The approval is recorded, but the gate remains `0/6` machine-verifiable and `6/6` attested-only. | `+1.00` raw, `+0.9677419` formal points, `+4/31` immutable coverage |
 | 4 | Complete the recorded channel-specific NBAC, Alberta and Québec request prerequisites, then retain complete publisher replies and exact artifacts. | External agreement, consent, signature/declaration, permission and artifact delivery remain pending; this packet sends nothing. | Each partial row: at most `+0.75` raw and `+0.7258065` formal points |
@@ -30,6 +30,8 @@ This order prioritizes the fewest unresolved dependencies, then the bounded perc
 The normal archive-control exercise approval is also recorded. Its owner-local legal-hold, retention, delete-denial and recovery exercise must still be run and evidenced. It is a global exit dependency, not row credit or production admission.
 
 Exact artifact names, local paths, byte lengths, SHA-256 values, payload and manifest keys, bucket and region, retention dates, proposed role scopes, transformation policies, quarantines, and exclusion decisions are bound in the packet's `exactBindings` and checked against their authoritative records. Shared physical artifacts are listed once and mapped to every applicable row.
+
+The federal runner additionally requires `data/federal-electoral-promotion-iam-live-attestation.json` from a separate owner/admin readback before requesting MFA. That attestation must prove the exact role identity, zero policy findings, exact actions/resources, and negative simulations. Archive readiness must also carry an affirmative, non-contradictory notice and exactly one owner-reviewed, SHA-256-bound evidence record for every canonical prerequisite. Before MFA, the runner binds the plan, owner approval, IAM desired/live state, owner packet, readiness record, and runner itself by exact SHA-256. The post-action attestation records that pre-action authorization separately from the exact raw response set and digest-linked `HeadObject`, version-list, and retention evidence. The runner rechecks the assumed role identity, no-version/no-delete-marker state, one exact `HeadObject` absence error, `If-None-Match: *`, the locally computed FULL_OBJECT SHA-256, and the post-write version list. It records only primary-bucket evidence. It cannot claim source-ledger credit, recovery credit, transformation, ingestion, release, or production admission.
 
 Run the checker with:
 
@@ -52,6 +54,37 @@ DO_NOT_RUN=zsh scripts/run-phase1-approved-promotion.sh --run-federal
 ```
 
 Exact artifact: `FederalElectoralDistricts_2025_SHP.zip`, `10301648` bytes, SHA-256 `4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93`; exact payload and manifest keys are machine-bound under `exactBindings.federal-electoral-archive`.
+
+The recovery operation is deliberately unapproved. Before any recovery bucket call can be considered, the owner must provide this complete separate authorization and exact proof packet; a partial block is not authorization:
+
+```text
+PHASE1 OWNER AUTHORIZATION — FEDERAL RECOVERY COPY (NOT CURRENTLY APPROVED)
+status=<OWNER: approve|reject|defer>
+source_primary_bucket=witness-tree-raw-archive-ca-central-1
+source_primary_payload_key=<exact key from the federal preparation record>
+source_primary_version_id=<exact provider version>
+source_primary_checksum={algorithm,type,value}
+source_primary_byte_length=<exact integer>
+recovery_bucket=<exact named Canadian bucket>
+recovery_region=<exact Canadian region>
+recovery_payload_key=<exact deterministic key>
+recovery_manifest_key=<exact deterministic key>
+recovery_role_arn=<exact least-privilege role ARN>
+recovery_role_policy_sha256=<64 lowercase hex digest>
+recovery_trust_policy_sha256=<64 lowercase hex digest>
+recovery_live_iam_attestation=<owner/admin readback with zero findings and exact allow/deny simulations>
+recovery_version_id=<exact provider version>
+recovery_checksum={algorithm,type,value}
+recovery_byte_length=<exact integer>
+recovery_retention={mode:COMPLIANCE,retainUntil:<exact UTC instant>}
+recovery_retention_readback=<raw-response digest and exact readback>
+recovery_copy_readback=<raw-response digest, exact version, checksum, bytes, and no delete marker>
+recovery_exercise=<owner-approved restore/readback result preserving primary retention>
+source_ledger_credit=<separate decision; never implied by primary-only proof>
+DO_NOT_RUN=<exact recovery command only after every field is completed and machine-checked>
+```
+
+Until this block is completed and independently checked, `recoveryBoundary.replicaAuthorized`, `recoveryBoundary.replicaCreated`, and `recoveryBoundary.recoveryCreditEligible` remain `false`.
 
 ### 2. Québec fourth-inventory archive
 
