@@ -9,6 +9,7 @@
     "sourceId": "elections-canada-federal-electoral-districts-45th-general-election-2025-shp",
     "sourceVersion": "FederalElectoralDistricts_2025_SHP.zip",
     "remoteKeyVersion": "federal-electoral-districts-2025-shp",
+    "localPath": "../Witness_Tree-data/raw/elections-canada-federal-electoral-districts/2026-08-14/FederalElectoralDistricts_2025_SHP.zip",
     "retrievedAt": "2026-08-14T17:42:35Z",
     "originalFilename": "FederalElectoralDistricts_2025_SHP.zip",
     "byteLength": 10301648,
@@ -34,6 +35,26 @@
       "Before compliance retention is considered, an owner must separately approve the exact retain-until instant and a live provider read-back procedure."
     ],
     "prohibitedInference": "A deterministic name, a local checksum, a requested upload, or a planned retention period is not remote, immutable, or production evidence."
+  },
+  "executionGates": {
+    "ownerApproval": "data/phase1-phase3-owner-approvals-2026-08-21.json#/phase1/archiveApprovals/0",
+    "iamDesiredState": "data/federal-electoral-promotion-iam-desired-state.json",
+    "liveIamAttestation": "data/federal-electoral-promotion-iam-live-attestation.json",
+    "requiredBeforeMutation": [
+      "The exact plan, source ledger, owner approval, and federal IAM desired state pass their machine check.",
+      "A separately captured live IAM attestation proves the exact assumed role, zero policy findings, exact allowed actions/resources, and negative simulations before the first S3 write.",
+      "The runner proves both exact destination keys have no versions or delete markers and classifies one exact HeadObject absence error before each conditional put.",
+      "The local payload is copied through one stable owner-only descriptor, hashed from that descriptor, and uploaded with the same locally computed FULL_OBJECT SHA-256 checksum.",
+      "No recovery-bucket operation is authorized by this plan. Primary-only evidence remains non-credit until an exact recovery authorization and readback are separately recorded."
+    ]
+  },
+  "recoveryBoundary": {
+    "bucket": "witness-tree-raw-recovery-ca-central-1",
+    "replicaCreated": false,
+    "replicaAuthorized": false,
+    "recoveryCreditEligible": false,
+    "ownerAuthorizationRequired": true,
+    "meaning": "The federal owner approval authorizes only the primary bucket. No recovery copy, version, checksum, byte length, or retention readback may be attempted or claimed. Primary exact-version evidence is retained as non-credit evidence until a separate recovery authorization and proof exist."
   },
   "claims": {
     "remoteObjectExists": false,
