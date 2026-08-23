@@ -18,7 +18,18 @@ trap cleanup EXIT
 fail() { print -u2 -- "Stopped: $1"; exit "${2:-1}"; }
 
 if [[ $# -eq 0 ]]; then node "$ROOT/scripts/prepare-current-wildfire-immutable-promotion.mjs"; exit 0; fi
-[[ ( "${1:-}" == "--preflight" || "${1:-}" == "--run" ) && $# -eq 1 ]] || fail "Usage: $0 [--preflight|--run]" 64
+[[ ( "${1:-}" == "--preflight" && $# -eq 1 ) || ( "${1:-}" == "--run" && $# -eq 4 ) ]] || fail "Usage: $0 --preflight | --run /absolute/private-checkpoint.json /absolute/private-attestation.json /absolute/redacted-attestation.json" 64
+if [[ "${1:-}" == "--run" ]]; then
+  CHECKPOINT="$2"; PRIVATE_OUTPUT="$3"; PUBLIC_OUTPUT="$4"
+  [[ "$CHECKPOINT" == /* && "$PRIVATE_OUTPUT" == /* && "$PUBLIC_OUTPUT" == /* ]] || fail "Checkpoint and attestation paths must be absolute; no TOTP or AWS call was made" 65
+  [[ "$CHECKPOINT" != "$PRIVATE_OUTPUT" && "$CHECKPOINT" != "$PUBLIC_OUTPUT" && "$PRIVATE_OUTPUT" != "$PUBLIC_OUTPUT" ]] || fail "Checkpoint and attestation paths must be distinct; no TOTP or AWS call was made" 65
+  [[ ! -e "$PRIVATE_OUTPUT" && ! -L "$PRIVATE_OUTPUT" && ! -e "$PUBLIC_OUTPUT" && ! -L "$PUBLIC_OUTPUT" ]] || fail "Attestation outputs must be new; no TOTP or AWS call was made" 65
+  if [[ -e "$CHECKPOINT" || -L "$CHECKPOINT" ]]; then
+    node "$ROOT/scripts/check-current-wildfire-promotion-checkpoint.mjs" --assert-runnable "$CHECKPOINT" >/dev/null || fail "Existing checkpoint is not safely resumable; owner review is required and no TOTP or AWS call was made" 65
+  else
+    node "$ROOT/scripts/check-current-wildfire-promotion-checkpoint.mjs" --init "$CHECKPOINT" >/dev/null || fail "Private checkpoint could not be created; no TOTP or AWS call was made" 65
+  fi
+fi
 command -v shasum >/dev/null || fail "shasum is required" 69
 node "$ROOT/scripts/prepare-current-wildfire-immutable-promotion.mjs" >/dev/null
 typeset -a IDS FILES BYTES SHAS PAYLOADS SIDECARS
@@ -42,23 +53,51 @@ mfa_serial="$(aws configure get mfa_serial --profile "$PROFILE")" || fail "Canno
 [[ "$mfa_serial" =~ '^arn:aws:iam::286853118812:mfa/WitnessTreeArchiveOperator$' ]] || fail "Configured MFA serial is absent or does not name the approved operator; no STS or AWS storage call was made" 69
 bootstrap="$(aws sts get-session-token --serial-number "$mfa_serial" --token-code "$totp" --profile "$PROFILE" --duration-seconds 3600 --output json)" || fail "MFA session failed" 77; unset totp
 export AWS_ACCESS_KEY_ID="$(jq -r '.Credentials.AccessKeyId' <<<"$bootstrap")" AWS_SECRET_ACCESS_KEY="$(jq -r '.Credentials.SecretAccessKey' <<<"$bootstrap")" AWS_SESSION_TOKEN="$(jq -r '.Credentials.SessionToken' <<<"$bootstrap")"; unset bootstrap
-account="$(aws sts get-caller-identity --query Account --output text)" || fail "Cannot identify MFA session" 77
-[[ "$account" == "286853118812" ]] || fail "MFA session is outside the approved account" 77
-creds="$(aws sts assume-role --role-arn "arn:aws:iam::${account}:role/${ROLE}" --role-session-name witness-tree-current-wildfire-approved-promotion --duration-seconds 3600 --output json)" || fail "Promotion role assumption failed" 77
-export AWS_ACCESS_KEY_ID="$(jq -r '.Credentials.AccessKeyId' <<<"$creds")" AWS_SECRET_ACCESS_KEY="$(jq -r '.Credentials.SecretAccessKey' <<<"$creds")" AWS_SESSION_TOKEN="$(jq -r '.Credentials.SessionToken' <<<"$creds")"; unset creds account
+operator_identity="$(aws sts get-caller-identity --output json)" || fail "Cannot identify MFA session" 77
+jq -e '.Account=="286853118812" and .Arn=="arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator"' <<<"$operator_identity" >/dev/null || fail "MFA session is not the exact approved operator" 77
+creds="$(aws sts assume-role --role-arn "arn:aws:iam::286853118812:role/${ROLE}" --role-session-name witness-tree-current-wildfire-approved-promotion --duration-seconds 3600 --output json)" || fail "Promotion role assumption failed" 77
+export AWS_ACCESS_KEY_ID="$(jq -r '.Credentials.AccessKeyId' <<<"$creds")" AWS_SECRET_ACCESS_KEY="$(jq -r '.Credentials.SecretAccessKey' <<<"$creds")" AWS_SESSION_TOKEN="$(jq -r '.Credentials.SessionToken' <<<"$creds")"; unset creds
 TMP="$(mktemp -d /private/tmp/witness-tree-current-wildfire-approved-promotion.XXXXXX)"; chmod 700 "$TMP"
+print -r -- "$operator_identity" >"$TMP/operator-identity.json"; unset operator_identity
+aws sts get-caller-identity --output json >"$TMP/role-identity.json" || fail "Cannot identify assumed promotion role" 77
+node "$ROOT/scripts/check-current-wildfire-promotion-checkpoint.mjs" --record-identity "$CHECKPOINT" "$TMP/operator-identity.json" "$TMP/role-identity.json" >/dev/null || fail "Exact operator and role identity could not be bound to the checkpoint" 70
 node "$ROOT/scripts/prepare-current-wildfire-immutable-promotion.mjs" --write-sidecars "$TMP" >/dev/null
 for i in {1..4}; do
-  print -- "Uploading approved raw payload $i/4 by direct PutObject; wait for its acknowledgement."
-  payload_put="$(aws s3api put-object --bucket "$BUCKET" --key "${PAYLOADS[$i]}" --body "${FILES[$i]}" --checksum-algorithm CRC64NVME --region "$REGION" --cli-read-timeout 0 --output json)" || fail "Payload upload failed" 70
-  version="$(jq -r '.VersionId // empty' <<<"$payload_put")"; [[ -n "$version" && "$(jq -r '.ChecksumCRC64NVME // empty' <<<"$payload_put")" != "" ]] || fail "Payload upload acknowledgement incomplete" 70
-  payload_head="$(aws s3api head-object --bucket "$BUCKET" --key "${PAYLOADS[$i]}" --checksum-mode ENABLED --region "$REGION" --output json)" || fail "Payload read-back failed" 70
-  jq -e --arg v "$version" --argjson n "${BYTES[$i]}" '.VersionId==$v and .ContentLength==$n and .ChecksumType=="FULL_OBJECT" and (.ChecksumCRC64NVME // empty)!=""' <<<"$payload_head" >/dev/null || fail "Payload read-back lacks exact version, bytes, or FULL_OBJECT CRC64NVME" 70
-  aws s3api put-object-retention --bucket "$BUCKET" --key "${PAYLOADS[$i]}" --version-id "$version" --retention "Mode=COMPLIANCE,RetainUntilDate=$RETAIN_UNTIL" --region "$REGION" >/dev/null || fail "Payload COMPLIANCE retention failed" 70
-  retention="$(aws s3api get-object-retention --bucket "$BUCKET" --key "${PAYLOADS[$i]}" --version-id "$version" --region "$REGION" --output json)" || fail "Retention read-back failed" 70
-  jq -e --arg until "$RETAIN_UNTIL" '.Retention.Mode == "COMPLIANCE" and (.Retention.RetainUntilDate | startswith($until[0:10]))' <<<"$retention" >/dev/null || fail "Payload retention read-back mismatch" 70
-  sidecar_put="$(aws s3api put-object --bucket "$BUCKET" --key "${SIDECARS[$i]}" --body "$TMP/${IDS[$i]}.manifest.json" --checksum-algorithm CRC64NVME --region "$REGION" --cli-read-timeout 0 --output json)" || fail "Sidecar upload failed" 70
-  sidecar_version="$(jq -r '.VersionId // empty' <<<"$sidecar_put")"; [[ -n "$sidecar_version" && "$(jq -r '.ChecksumCRC64NVME // empty' <<<"$sidecar_put")" != "" ]] || fail "Sidecar upload acknowledgement incomplete" 70
-  sidecar_head="$(aws s3api head-object --bucket "$BUCKET" --key "${SIDECARS[$i]}" --checksum-mode ENABLED --region "$REGION" --output json)" || fail "Sidecar read-back failed"; jq -e --arg v "$sidecar_version" '.VersionId==$v and .ChecksumType=="FULL_OBJECT" and (.ChecksumCRC64NVME // empty)!=""' <<<"$sidecar_head" >/dev/null || fail "Sidecar read-back lacks exact version or FULL_OBJECT CRC64NVME" 70
+  payload_status="$(jq -r --arg id "${IDS[$i]}" '.objects[] | select(.artifactId==$id and .kind=="payload") | .status' "$CHECKPOINT")"
+  if [[ "$payload_status" == pending ]]; then
+    print -- "Uploading approved raw payload $i/4 by direct conditional PutObject; wait for its acknowledgement."
+    node "$ROOT/scripts/check-current-wildfire-promotion-checkpoint.mjs" --mark-write-started "$CHECKPOINT" "${IDS[$i]}" payload >/dev/null || fail "Payload checkpoint is not writable; no duplicate write was attempted" 70
+    if ! aws s3api put-object --bucket "$BUCKET" --key "${PAYLOADS[$i]}" --body "${FILES[$i]}" --if-none-match '*' --checksum-algorithm CRC64NVME --region "$REGION" --cli-read-timeout 0 --output json >"$TMP/payload-put.json"; then node "$ROOT/scripts/check-current-wildfire-promotion-checkpoint.mjs" --mark-ambiguous "$CHECKPOINT" "${IDS[$i]}" payload unused put-object >/dev/null; fail "Payload write response was not accepted; owner review is required and retry is blocked" 70; fi
+    node "$ROOT/scripts/check-current-wildfire-promotion-checkpoint.mjs" --record-ack "$CHECKPOINT" "${IDS[$i]}" payload "$TMP/payload-put.json" >/dev/null || fail "Payload upload acknowledgement incomplete; retry is blocked" 70
+    payload_status=acknowledged
+  fi
+  version="$(jq -r --arg id "${IDS[$i]}" '.objects[] | select(.artifactId==$id and .kind=="payload") | .ack.VersionId // empty' "$CHECKPOINT")"
+  if [[ "$payload_status" == acknowledged ]]; then
+    aws s3api head-object --bucket "$BUCKET" --key "${PAYLOADS[$i]}" --version-id "$version" --checksum-mode ENABLED --region "$REGION" --output json >"$TMP/payload-head.json" || fail "Exact payload-version read-back failed; checkpoint preserves the acknowledged version" 70
+    node "$ROOT/scripts/check-current-wildfire-promotion-checkpoint.mjs" --record-head "$CHECKPOINT" "${IDS[$i]}" payload "$TMP/payload-head.json" >/dev/null || fail "Exact payload-version read-back mismatch" 70
+    payload_status=readback-verified
+  fi
+  if [[ "$payload_status" == readback-verified ]]; then
+    node "$ROOT/scripts/check-current-wildfire-promotion-checkpoint.mjs" --mark-retention-started "$CHECKPOINT" "${IDS[$i]}" >/dev/null || fail "Retention checkpoint failed" 70
+    if ! aws s3api put-object-retention --bucket "$BUCKET" --key "${PAYLOADS[$i]}" --version-id "$version" --retention "Mode=COMPLIANCE,RetainUntilDate=$RETAIN_UNTIL" --region "$REGION" --output json >"$TMP/retention-put.json"; then node "$ROOT/scripts/check-current-wildfire-promotion-checkpoint.mjs" --mark-ambiguous "$CHECKPOINT" "${IDS[$i]}" payload unused put-object-retention >/dev/null; fail "Retention response was not accepted; owner review is required and retry is blocked" 70; fi
+    aws s3api get-object-retention --bucket "$BUCKET" --key "${PAYLOADS[$i]}" --version-id "$version" --region "$REGION" --output json >"$TMP/retention-get.json" || fail "Retention read-back failed; owner review is required before any retry" 70
+    node "$ROOT/scripts/check-current-wildfire-promotion-checkpoint.mjs" --record-retention "$CHECKPOINT" "${IDS[$i]}" "$TMP/retention-put.json" "$TMP/retention-get.json" >/dev/null || fail "Payload retention read-back mismatch" 70
+  fi
+  manifest_status="$(jq -r --arg id "${IDS[$i]}" '.objects[] | select(.artifactId==$id and .kind=="manifest") | .status' "$CHECKPOINT")"
+  if [[ "$manifest_status" == pending ]]; then
+    node "$ROOT/scripts/check-current-wildfire-promotion-checkpoint.mjs" --mark-write-started "$CHECKPOINT" "${IDS[$i]}" manifest >/dev/null || fail "Manifest checkpoint is not writable; no duplicate write was attempted" 70
+    if ! aws s3api put-object --bucket "$BUCKET" --key "${SIDECARS[$i]}" --body "$TMP/${IDS[$i]}.manifest.json" --if-none-match '*' --checksum-algorithm CRC64NVME --region "$REGION" --cli-read-timeout 0 --output json >"$TMP/manifest-put.json"; then node "$ROOT/scripts/check-current-wildfire-promotion-checkpoint.mjs" --mark-ambiguous "$CHECKPOINT" "${IDS[$i]}" manifest unused put-object >/dev/null; fail "Manifest write response was not accepted; owner review is required and retry is blocked" 70; fi
+    node "$ROOT/scripts/check-current-wildfire-promotion-checkpoint.mjs" --record-ack "$CHECKPOINT" "${IDS[$i]}" manifest "$TMP/manifest-put.json" >/dev/null || fail "Manifest upload acknowledgement incomplete; retry is blocked" 70
+    manifest_status=acknowledged
+  fi
+  sidecar_version="$(jq -r --arg id "${IDS[$i]}" '.objects[] | select(.artifactId==$id and .kind=="manifest") | .ack.VersionId // empty' "$CHECKPOINT")"
+  if [[ "$manifest_status" == acknowledged ]]; then
+    aws s3api head-object --bucket "$BUCKET" --key "${SIDECARS[$i]}" --version-id "$sidecar_version" --checksum-mode ENABLED --region "$REGION" --output json >"$TMP/manifest-head.json" || fail "Exact manifest-version read-back failed; checkpoint preserves the acknowledged version" 70
+    node "$ROOT/scripts/check-current-wildfire-promotion-checkpoint.mjs" --record-head "$CHECKPOINT" "${IDS[$i]}" manifest "$TMP/manifest-head.json" >/dev/null || fail "Exact manifest-version read-back mismatch" 70
+    manifest_status=readback-verified
+  fi
+  [[ "$manifest_status" != readback-verified ]] || node "$ROOT/scripts/check-current-wildfire-promotion-checkpoint.mjs" --mark-manifest-complete "$CHECKPOINT" "${IDS[$i]}" >/dev/null || fail "Manifest completion checkpoint failed" 70
 done
-print -- "Archive promotion completed; this is raw archive evidence only and does not clear BC or Ontario geometry admission blocks."
+node "$ROOT/scripts/check-current-wildfire-promotion-checkpoint.mjs" --complete "$CHECKPOINT" >/dev/null || fail "Promotion checkpoint could not be completed" 70
+node "$ROOT/scripts/assemble-current-wildfire-promotion-attestation.mjs" "$CHECKPOINT" "$PRIVATE_OUTPUT" "$PUBLIC_OUTPUT" || fail "Durable attestation pair publication failed; inspect output state" 70
+print -- "Archive promotion and owner-only digest-bound attestation completed; this does not prove recovery replication or clear downstream admission blocks."

@@ -67,6 +67,8 @@
     "check:wildfire-derived-readback": "node --test tests/wildfire-derived-readback.test.mjs",
     "check:wildfire-derived-recovery": "node --test tests/wildfire-derived-recovery.test.mjs",
     "check:current-wildfire-derived-archive-evidence": "node --test tests/current-wildfire-derived-archive-evidence.test.mjs",
+    "check:current-wildfire-raw-archive-evidence": "node scripts/check-current-wildfire-raw-archive-evidence.mjs",
+    "check:current-wildfire-promotion-checkpoint": "node --test tests/current-wildfire-promotion-checkpoint.test.mjs",
     "recover:wildfire-derived-owner": "zsh scripts/run-wildfire-derived-recovery-owner.sh",
     "capture:wildfire-derived-recovery-state": "node scripts/capture-wildfire-derived-recovery-state.mjs",
     "check:wildfire-derived-readback-iam": "node scripts/check-wildfire-derived-readback-iam.mjs",

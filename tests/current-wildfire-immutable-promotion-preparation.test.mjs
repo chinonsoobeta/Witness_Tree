@@ -23,7 +23,7 @@ test("MFA runner defaults to dry run and excludes prohibited operations", () => 
   assert.match(runner, /Approved .* artifact drifted[\s\S]*read -r -s/);
   assert.match(runner, /WitnessTreeCurrentWildfirePromotionUploader/);
   assert.match(runner, /aws s3api put-object/);
-  assert.match(runner, /ChecksumType=="FULL_OBJECT"/);
+  assert.match(readFileSync(new URL("../scripts/check-current-wildfire-promotion-checkpoint.mjs", import.meta.url), "utf8"), /ChecksumType.*FULL_OBJECT/);
   assert.match(runner, /put-object-retention/);
   assert.doesNotMatch(runner, /aws s3 cp|DeleteObject|BypassGovernanceRetention|PutObjectLegalHold|ReplicateObject|aws iam /i);
   assert.match(runner, /aws configure get mfa_serial --profile/);
@@ -38,17 +38,18 @@ test("valid-shaped dummy TOTP reaches only the mocked direct PutObject boundary"
 case "$1:$2" in
   configure:get) print -- "configure-get" >> ${JSON.stringify(marker)}; print -- "arn:aws:iam::286853118812:mfa/WitnessTreeArchiveOperator" ;;
   sts:get-session-token) print -- "sts-get-session-token" >> ${JSON.stringify(marker)}; print -- '{"Credentials":{"AccessKeyId":"dummy","SecretAccessKey":"dummy","SessionToken":"dummy"}}' ;;
-  sts:get-caller-identity) print -- "sts-get-caller-identity" >> ${JSON.stringify(marker)}; print -- "286853118812" ;;
-  sts:assume-role) print -- "sts-assume-role" >> ${JSON.stringify(marker)}; print -- '{"Credentials":{"AccessKeyId":"dummy","SecretAccessKey":"dummy","SessionToken":"dummy"}}' ;;
+  sts:get-caller-identity) print -- "sts-get-caller-identity" >> ${JSON.stringify(marker)}; if [[ "$AWS_ACCESS_KEY_ID" == "role-dummy" ]]; then print -- '{"UserId":"role","Account":"286853118812","Arn":"arn:aws:sts::286853118812:assumed-role/WitnessTreeCurrentWildfirePromotionUploader/test"}'; else print -- '{"UserId":"operator","Account":"286853118812","Arn":"arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator"}'; fi ;;
+  sts:assume-role) print -- "sts-assume-role" >> ${JSON.stringify(marker)}; print -- '{"Credentials":{"AccessKeyId":"role-dummy","SecretAccessKey":"dummy","SessionToken":"dummy"}}' ;;
   s3api:put-object) print -- "s3-put-object-blocked" >> ${JSON.stringify(marker)}; exit 88 ;;
   *) print -- "unexpected-$1-$2" >> ${JSON.stringify(marker)}; exit 98 ;;
 esac
 `, {mode: 0o700});
   const runner = new URL("../scripts/run-current-wildfire-approved-promotion.sh", import.meta.url).pathname;
+  const checkpoint = join(dir, "checkpoint.json"); const privateOutput = join(dir, "private.json"); const publicOutput = join(dir, "public.json");
   const expectProgram = `set timeout 120
 set env(PATH) "${dir}:$env(PATH)"
 set runner "${runner}"
-spawn -noecho zsh $runner --run
+spawn -noecho zsh $runner --run "${checkpoint}" "${privateOutput}" "${publicOutput}"
 expect {
   "Current MFA TOTP (not stored):" { send -- "123456\\r"; exp_continue }
   eof { set result [wait]; exit [lindex $result 3] }
@@ -57,8 +58,8 @@ expect {
   try {
     const run = spawnSync("expect", ["-c", expectProgram], {encoding: "utf8", timeout: 120_000, env: {...process.env, PATH: `${dir}:${process.env.PATH}`}});
     assert.equal(run.status, 70, `${run.stdout}\n${run.stderr}`);
-    assert.match(`${run.stdout}${run.stderr}`, /Payload upload failed/);
-    assert.deepEqual(readFileSync(marker, "utf8").trim().split("\n"), ["configure-get", "sts-get-session-token", "sts-get-caller-identity", "sts-assume-role", "s3-put-object-blocked"]);
+    assert.match(`${run.stdout}${run.stderr}`, /Payload write response was not accepted/);
+    assert.deepEqual(readFileSync(marker, "utf8").trim().split("\n"), ["configure-get", "sts-get-session-token", "sts-get-caller-identity", "sts-assume-role", "sts-get-caller-identity", "s3-put-object-blocked"]);
     assert.doesNotMatch(readFileSync(marker, "utf8"), /iam|list-mfa/i);
     assert.doesNotMatch(`${run.stdout}${run.stderr}`, /123456/);
   } finally { rmSync(dir, {recursive: true, force: true}); }

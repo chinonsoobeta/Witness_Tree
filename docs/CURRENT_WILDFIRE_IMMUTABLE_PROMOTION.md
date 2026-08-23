@@ -9,11 +9,13 @@ a bounded owner-local command package and grants no credit.
 
 ## Exact approval wording
 
-> I approve, for this one operation only, MFA-gated direct `s3:PutObject` upload and payload-version `s3:PutObjectRetention` in `witness-tree-raw-archive-ca-central-1` / `ca-central-1` for exactly the four raw current-wildfire payloads and four deterministic `manifest.json` sidecars below. Apply COMPLIANCE retention to each payload version through `2033-08-12T00:00:00Z`. Require returned version ID and CRC64NVME acknowledgement, payload version/byte-length/FULL_OBJECT CRC64NVME read-back, payload retention read-back, and sidecar version/FULL_OBJECT CRC64NVME read-back. This does not approve transformation, geometry admission, ingestion, release, production admission, production eligibility, deletion, legal holds, retention bypass, replication, bucket administration, wildcard access, or any other key.
+> I approve, for this one operation only, MFA-gated direct `s3:PutObject` upload and payload-version `s3:PutObjectRetention` in `witness-tree-raw-archive-ca-central-1` / `ca-central-1` for exactly the four raw current-wildfire payloads and four deterministic `manifest.json` sidecars below. Apply COMPLIANCE retention to each payload version through `2033-08-12T00:00:00Z`. Require returned version ID and CRC64NVME acknowledgement, exact-version payload byte-length/FULL_OBJECT CRC64NVME read-back, payload retention read-back, and exact-version sidecar byte-length/FULL_OBJECT CRC64NVME read-back. The role must include `s3:GetObjectVersion` on the eight exact keys for those versioned heads. This does not approve transformation, geometry admission, ingestion, release, production admission, production eligibility, deletion, legal holds, retention bypass, replication, bucket administration, wildcard access, or any other key.
 
 That wording records the earlier archive-operation boundary. A later [owner scope decision](CURRENT_WILDFIRE_OWNER_ADMISSION.md) approves conditional geometry and operational semantics. This preparation does not prove archive, transformation, ingestion, release or production admission. The canonical redacted records are placeholder-only attestations and leave the six-object gate at 0/6 machine-verifiable.
 
-> I authorize creation or update of only `WitnessTreeCurrentWildfirePromotionUploader`, trusted only by MFA-authenticated `arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator`, and only an identity policy granting that user `sts:AssumeRole` on this role. The role may allow only `s3:PutObject`, `s3:GetObject`, `s3:AbortMultipartUpload`, `s3:ListMultipartUploadParts`, `s3:PutObjectRetention`, and `s3:GetObjectRetention` on the eight exact keys in `data/current-wildfire-immutable-promotion-preparation.json`; it has no delete, legal-hold, bypass, replication, bucket, wildcard, other-key, or `iam:*` permission.
+> I authorize creation or update of only `WitnessTreeCurrentWildfirePromotionUploader`, trusted only by MFA-authenticated `arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator`, and only an identity policy granting that user `sts:AssumeRole` on this role. The role may allow only `s3:PutObject`, `s3:GetObject`, `s3:GetObjectVersion`, `s3:AbortMultipartUpload`, `s3:ListMultipartUploadParts`, `s3:PutObjectRetention`, and `s3:GetObjectRetention` on the eight exact keys in `data/current-wildfire-immutable-promotion-preparation.json`; it has no delete, legal-hold, bypass, replication, bucket, wildcard, other-key, or `iam:*` permission.
+
+The earlier proposed scope omitted `s3:GetObjectVersion`. That is an exact authorization mismatch: a `HeadObject` request that supplies a `version-id` needs version-specific read permission. The owner must verify or apply this narrow IAM delta before execution. This repository change makes no IAM call and does not prove that the live role has the permission.
 
 | Snapshot | Exact payload (and manifest at the same prefix) | Bytes / SHA-256 |
 | --- | --- | --- |
@@ -35,7 +37,14 @@ scripts/run-current-wildfire-approved-promotion.sh --preflight
 Only after the two approvals above and role provisioning, run the MFA-gated promotion:
 
 ```sh
-scripts/run-current-wildfire-approved-promotion.sh --run
+scripts/run-current-wildfire-approved-promotion.sh --run \
+  /absolute/owner-only-checkpoint.json \
+  /absolute/owner-only-private-attestation.json \
+  /absolute/owner-only-redacted-attestation.json
 ```
 
-The runner uses direct `PutObject` because every payload is below 5 GB. It stops at the first failed acknowledgement or read-back and never calls a delete, IAM, legal-hold, replication, bucket-administration, high-level `aws s3 cp`, or retention-bypass command.
+The runner uses direct conditional `PutObject` (`If-None-Match: *`) because every payload is below 5 GB, and every readback supplies the exact returned version ID. Before each write or retention mutation it durably records a mode-600 checkpoint boundary. If the provider response is lost or rejected, the checkpoint becomes `owner-review-required`; a retry is blocked so an ambiguous second version is not created. A clean interruption between completed boundaries can resume only from the exact validated checkpoint.
+
+After all eight exact objects and four payload retentions verify, the runner transactionally publishes two new mode-600 files: a private attestation containing the exact operator/role and S3 JSON responses, and a redacted attestation containing only digest cross-links. If the second publication races or fails, the first is rolled back when ownership can be proved; otherwise the runner reports an inspection-required state rather than claiming atomicity.
+
+The private/redacted pair is owner-attested, internally consistent evidence, not independently signed AWS proof. It does not update the canonical repository record automatically. The recovery-replica contract requires a distinct recovery bucket, concrete recovery version IDs, exact byte lengths, FULL_OBJECT CRC64NVME responses, primary/recovery digest equality, `REPLICA` status, and payload retention readback. This runner neither authorizes nor performs those external recovery calls, so recovery remains explicitly unproved. No transformation, ingestion, release, or production eligibility follows from a passing pair.
