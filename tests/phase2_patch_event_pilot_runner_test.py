@@ -9,6 +9,7 @@ import struct
 import tempfile
 import time
 import unittest
+from io import BytesIO
 from pathlib import Path
 from unittest.mock import patch
 
@@ -27,12 +28,16 @@ from scripts.run_phase2_patch_event_pilot import (
     MAX_WHOLE_RUN_COPIES,
     RUN,
     SORT_CHUNK_BYTES,
+    ByteBudget,
     PilotLimits,
     canonical_json,
     compact_event,
+    emit_pinned_selected_prefix,
+    emit_selected_runs,
     patch_checksum,
     readback_output,
     run_pilot,
+    select_components,
     supervise_pilot,
     validate_limits,
 )
@@ -88,6 +93,20 @@ def fixture_lineage() -> bytes:
             "released": False,
         },
     ]
+    return b"".join(canonical_json(record) for record in records)
+
+
+def performance_lineage(selected_count: int = 50, trailing_count: int = 2_000) -> bytes:
+    records: list[dict[str, object]] = [{
+        "record": "header",
+        "schemaVersion": "witness-tree/phase2-real-loss-component-lineage/1",
+        "pair": [1984, 1985],
+        "sourceLossSha256": LOSS_SHA256,
+    }]
+    for component in range(selected_count + trailing_count):
+        records.append({"componentId": component, "record": "run", "row": 0, "x0": component, "x1": component})
+        records.append({"cellCount": 1, "componentId": component, "firstCell": component, "record": "component"})
+    records.append({"connectedComponentCount": selected_count + trailing_count, "lossCellCount": selected_count + trailing_count, "productionEligible": False, "record": "footer", "released": False})
     return b"".join(canonical_json(record) for record in records)
 
 
@@ -159,6 +178,56 @@ class PilotRunnerTest(unittest.TestCase):
                 self.assertEqual(event["eventEnd"], "1985-12-31")
                 self.assertEqual(event["evidence"], "satellite-observation")
                 self.assertEqual(event["lineage"]["sourceLossSha256"], LOSS_SHA256)
+
+    def test_pinned_prefix_capture_is_byte_equivalent_to_full_two_pass_selection(self) -> None:
+        descriptor = os.open(self.lineage, os.O_RDONLY)
+        try:
+            deadline = time.monotonic() + 30
+            selected, aliases = select_components(descriptor, 2, deadline, time.monotonic)
+            legacy = BytesIO()
+            legacy_counts = emit_selected_runs(descriptor, aliases, selected, legacy, ByteBudget(60, "fixture scratch"), deadline, time.monotonic)
+            optimized = BytesIO()
+            optimized_selected, optimized_counts = emit_pinned_selected_prefix(descriptor, 2, optimized, ByteBudget(60, "fixture scratch"), deadline, time.monotonic)
+        finally:
+            os.close(descriptor)
+        self.assertEqual(optimized_selected, selected)
+        self.assertEqual(optimized_counts, legacy_counts)
+        self.assertEqual(optimized.getvalue(), legacy.getvalue())
+
+    def test_pinned_digest_run_uses_prefix_capture_and_preserves_full_readback(self) -> None:
+        with patch.object(pilot_runner, "LINEAGE_SHA256", self.lineage_sha):
+            result = self.execute("pinned-prefix.wtpe")
+        self.assertEqual(result["readback"]["componentCount"], 2)
+        self.assertEqual(result["readback"]["runCount"], 3)
+        self.assertEqual(result["readback"]["lossCellCount"], 3)
+        self.assertEqual(result["telemetry"]["wholeRunCopiesPeak"], 2)
+
+    def test_pinned_prefix_performance_bound_avoids_trailing_json_work_without_timing(self) -> None:
+        lineage = self.root / "performance-lineage.jsonl"
+        lineage.write_bytes(performance_lineage())
+        descriptor = os.open(lineage, os.O_RDONLY)
+        parsed = 0
+        original = pilot_runner.record_from_line
+
+        def counted(line: bytes):
+            nonlocal parsed
+            parsed += 1
+            return original(line)
+
+        try:
+            with patch("scripts.run_phase2_patch_event_pilot.record_from_line", side_effect=counted):
+                optimized = BytesIO()
+                emit_pinned_selected_prefix(descriptor, 50, optimized, ByteBudget(1_000, "fixture scratch"), time.monotonic() + 30, time.monotonic)
+            optimized_records = parsed
+            parsed = 0
+            with patch("scripts.run_phase2_patch_event_pilot.record_from_line", side_effect=counted):
+                selected, aliases = select_components(descriptor, 50, time.monotonic() + 30, time.monotonic)
+                emit_selected_runs(descriptor, aliases, selected, BytesIO(), ByteBudget(1_000, "fixture scratch"), time.monotonic() + 30, time.monotonic)
+            legacy_records = parsed
+        finally:
+            os.close(descriptor)
+        self.assertEqual(optimized_records, 101)
+        self.assertGreaterEqual(legacy_records, optimized_records * 40)
 
     def test_output_scratch_and_copy_caps_leave_no_final_name(self) -> None:
         cases = [

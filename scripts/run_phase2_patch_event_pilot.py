@@ -469,6 +469,83 @@ def emit_selected_runs(
     return counts
 
 
+def emit_pinned_selected_prefix(
+    descriptor: int,
+    maximum: int,
+    spool: BinaryIO,
+    scratch: ByteBudget,
+    deadline: float,
+    clock: Callable[[], float],
+) -> tuple[dict[int, tuple[int, int]], dict[int, int]]:
+    """Capture the finalized prefix while parsing only its pinned lineage prefix.
+
+    The caller must first verify the complete descriptor against LINEAGE_SHA256.
+    Finalized components cannot receive later runs or aliases, so their complete
+    run sets are known at each component record. The full descriptor is hashed
+    again before publication, preserving the existing immutable-input check.
+    """
+    aliases: dict[int, int] = {}
+    selected: dict[int, tuple[int, int]] = {}
+    pending: dict[int, list[tuple[int, int, int]]] = {}
+    counts: dict[int, int] = {}
+    header_seen = False
+    for line in descriptor_lines(descriptor):
+        check_deadline(deadline, clock)
+        record = record_from_line(line)
+        kind = record.get("record")
+        if kind == "header":
+            if header_seen or record.get("pair") != [1984, 1985] or record.get("sourceLossSha256") != LOSS_SHA256:
+                raise ValueError("Lineage header is not the exact approved 1984-1985 source.")
+            header_seen = True
+        elif kind == "alias":
+            source = exact_integer(record.get("fromComponentId"), "alias source")
+            target = exact_integer(record.get("toComponentId"), "alias target")
+            if source in aliases or source in selected or target >= source:
+                raise ValueError("Lineage alias is duplicate, finalized, or non-descending.")
+            target_root = resolve(target, aliases)
+            aliases[source] = target_root
+            source_runs = pending.pop(source, None)
+            if source_runs:
+                pending.setdefault(target_root, []).extend(source_runs)
+        elif kind == "run":
+            component = exact_integer(record.get("componentId"), "run component ID")
+            row = exact_integer(record.get("row"), "run row", 2**32 - 1)
+            x0 = exact_integer(record.get("x0"), "run x0", 2**32 - 1)
+            x1 = exact_integer(record.get("x1"), "run x1", 2**32 - 1)
+            if x1 < x0 or x1 >= GRID_WIDTH:
+                raise ValueError("Lineage run coordinates are invalid.")
+            root = resolve(component, aliases)
+            if root in selected:
+                raise ValueError("A finalized selected component received a later run.")
+            pending.setdefault(root, []).append((row, x0, x1))
+        elif kind == "component":
+            root = exact_integer(record.get("componentId"), "component ID")
+            first = exact_integer(record.get("firstCell"), "component first cell")
+            cells = exact_integer(record.get("cellCount"), "component cell count")
+            if root in selected or resolve(root, aliases) != root or first != root or cells == 0:
+                raise ValueError("Selected component summary is invalid, aliased, or duplicate.")
+            runs = pending.pop(root, [])
+            if not runs or sum(x1 - x0 + 1 for _, x0, x1 in runs) != cells:
+                raise ValueError("Selected component summary differs from its resolved runs.")
+            if min(row * GRID_WIDTH + x0 for row, x0, _ in runs) != first:
+                raise ValueError("Selected component first cell differs from its resolved runs.")
+            selected[root] = (first, cells)
+            counts[root] = len(runs)
+            for row, x0, x1 in runs:
+                payload = RUN.pack(root, row, x0, x1)
+                scratch.add(len(payload))
+                spool.write(payload)
+            if len(selected) == maximum:
+                break
+        elif kind == "footer":
+            raise ValueError("Lineage ended before the exact selected component prefix.")
+        else:
+            raise ValueError("Lineage contains an unknown record type.")
+    if not header_seen or len(selected) != maximum:
+        raise ValueError("Lineage does not contain the exact requested finalized-component prefix.")
+    return selected, counts
+
+
 def sort_spool_in_place(
     spool_descriptor: int,
     raw_bytes: int,
@@ -1161,7 +1238,6 @@ def run_pilot(
     try:
         verify_descriptor(loss_descriptor, loss_identity, expected_loss_sha256, deadline, clock)
         verify_descriptor(lineage_descriptor, lineage_identity, expected_lineage_sha256, deadline, clock)
-        selected, aliases = select_components(lineage_descriptor, limits.components, deadline, clock)
         verify_directory_descriptor(parent_descriptor, parent_identity)
         os.mkdir(scratch_name, mode=0o700, dir_fd=parent_descriptor)
         os.fsync(parent_descriptor)
@@ -1176,9 +1252,15 @@ def run_pilot(
         spool_descriptor = open_exclusive_at(scratch_descriptor, "runs.unsorted.bin")
         scratch_budget = ByteBudget(limits.scratch_bytes, "2 GiB scratch")
         with os.fdopen(os.dup(spool_descriptor), "wb", buffering=1024**2) as spool:
-            run_counts = emit_selected_runs(
-                lineage_descriptor, aliases, selected, spool, scratch_budget, deadline, clock
-            )
+            if expected_lineage_sha256 == LINEAGE_SHA256:
+                selected, run_counts = emit_pinned_selected_prefix(
+                    lineage_descriptor, limits.components, spool, scratch_budget, deadline, clock
+                )
+            else:
+                selected, aliases = select_components(lineage_descriptor, limits.components, deadline, clock)
+                run_counts = emit_selected_runs(
+                    lineage_descriptor, aliases, selected, spool, scratch_budget, deadline, clock
+                )
             spool.flush()
             os.fsync(spool.fileno())
         raw_run_bytes = scratch_budget.used
