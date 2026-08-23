@@ -102,11 +102,18 @@ function closeDescriptor(fd, stage, hooks = {}) {
 function syncParentDirectory(path, hooks = {}) {
   let fd;
   try {
-    fd = openSync(dirname(path), "r");
+    const directory = dirname(path);
+    if (typeof constants.O_NOFOLLOW !== "number") failSafe("attestation output directory cannot be opened without symlink protection");
+    fd = openSync(directory, constants.O_RDONLY | constants.O_NOFOLLOW);
+    const opened = fstatSync(fd);
+    const before = lstatSync(directory);
+    if (!opened.isDirectory() || !before.isDirectory() || before.isSymbolicLink() || !sameInode(opened, before)) failSafe("attestation output directory identity changed before synchronization");
     invokeHook(hooks, "beforeDirectoryFsync", path);
     invokeHook(hooks, "onFsyncStage", "directory", path);
     fsyncSync(fd);
     invokeHook(hooks, "afterDirectoryFsync", path);
+    const after = lstatSync(directory);
+    if (!after.isDirectory() || after.isSymbolicLink() || !sameInode(opened, after)) failSafe("attestation output directory identity changed during synchronization");
     closeDescriptor(fd, "directory", hooks);
     fd = undefined;
   } catch (error) {
@@ -129,7 +136,7 @@ function syncParentDirectory(path, hooks = {}) {
   }
 }
 
-function rollbackExclusivePublication(publication, hooks = {}) {
+export function rollbackExclusivePublication(publication, hooks = {}) {
   if (!publication || resolve(publication.path) !== publication.path) return false;
   // This is a bounded observation, not a filesystem-wide lock: a same-owner
   // mutation after the nlink check, including before unlink, cannot be globally excluded.

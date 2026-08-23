@@ -22,7 +22,7 @@ REDACTED_OUTPUT=""
 
 cleanup() {
   unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN AWS_SECURITY_TOKEN
-  unset WITNESS_TREE_SESSION_VERIFIED WITNESS_TREE_ACCOUNT WITNESS_TREE_OPERATOR_ARN WITNESS_TREE_ROLE_ARN WITNESS_TREE_ROLE_SESSION_NAME WITNESS_TREE_SESSION_EXPIRES_AT WITNESS_TREE_MFA_PRESENT
+  unset WITNESS_TREE_SESSION_VERIFIED WITNESS_TREE_ACCOUNT WITNESS_TREE_OPERATOR_ARN WITNESS_TREE_ROLE_ARN WITNESS_TREE_ROLE_SESSION_NAME WITNESS_TREE_SESSION_EXPIRES_AT WITNESS_TREE_MFA_PRESENT WITNESS_TREE_ASSUMED_ROLE_ARN WITNESS_TREE_ROLE_USER_ID WITNESS_TREE_MFA_SERIAL_ARN
 }
 trap cleanup EXIT
 fail() { print -u2 -- "Stopped: $1"; exit "${2:-1}"; }
@@ -79,25 +79,27 @@ print
 [[ "${totp:-}" =~ '^[0-9]{6}$' ]] || fail "TOTP must be exactly six digits" 64
 mfa_serial="$(aws configure get mfa_serial --profile "$PROFILE" 2>/dev/null || true)"
 [[ "$mfa_serial" =~ '^arn:aws:iam::286853118812:mfa/[A-Za-z0-9+=,.@_/-]+$' ]] || fail "configured MFA serial is absent or outside the approved account" 69
-bootstrap="$(aws sts get-session-token --serial-number "$mfa_serial" --token-code "$totp" --profile "$PROFILE" --duration-seconds 3600 --region "$REGION" --output json)" || fail "MFA session failed" 77
+bootstrap="$(aws sts get-session-token --serial-number "$mfa_serial" --token-code "$totp" --profile "$PROFILE" --duration-seconds 3600 --region "$REGION" --output json 2>/dev/null)" || fail "MFA session failed" 77
+export WITNESS_TREE_MFA_SERIAL_ARN="$mfa_serial"
 unset totp mfa_serial
 export AWS_ACCESS_KEY_ID="$(jq -er '.Credentials.AccessKeyId' <<<"$bootstrap")"
 export AWS_SECRET_ACCESS_KEY="$(jq -er '.Credentials.SecretAccessKey' <<<"$bootstrap")"
 export AWS_SESSION_TOKEN="$(jq -er '.Credentials.SessionToken' <<<"$bootstrap")"
 unset bootstrap
 
-operator_identity="$(aws sts get-caller-identity --region "$REGION" --output json)" || fail "cannot identify the MFA session" 77
+operator_identity="$(aws sts get-caller-identity --region "$REGION" --output json 2>/dev/null)" || fail "cannot identify the MFA session" 77
 jq -e --arg account "$ACCOUNT" --arg arn "$OPERATOR_ARN" '.Account==$account and .Arn==$arn' <<<"$operator_identity" >/dev/null || fail "MFA session is not the exact approved operator identity" 77
 unset operator_identity
 
-role_session="$(aws sts assume-role --role-arn "$ROLE_ARN" --role-session-name "$SESSION_NAME" --duration-seconds 3600 --region "$REGION" --output json)" || fail "promotion role assumption failed" 77
+role_session="$(aws sts assume-role --role-arn "$ROLE_ARN" --role-session-name "$SESSION_NAME" --duration-seconds 3600 --region "$REGION" --output json 2>/dev/null)" || fail "promotion role assumption failed" 77
 export WITNESS_TREE_SESSION_EXPIRES_AT="$(jq -er '.Credentials.Expiration' <<<"$role_session")"
 export AWS_ACCESS_KEY_ID="$(jq -er '.Credentials.AccessKeyId' <<<"$role_session")"
 export AWS_SECRET_ACCESS_KEY="$(jq -er '.Credentials.SecretAccessKey' <<<"$role_session")"
 export AWS_SESSION_TOKEN="$(jq -er '.Credentials.SessionToken' <<<"$role_session")"
 unset role_session
-role_identity="$(aws sts get-caller-identity --region "$REGION" --output json)" || fail "cannot identify the assumed promotion role" 77
+role_identity="$(aws sts get-caller-identity --region "$REGION" --output json 2>/dev/null)" || fail "cannot identify the assumed promotion role" 77
 jq -e --arg account "$ACCOUNT" --arg role "$ROLE" --arg session "$SESSION_NAME" '.Account==$account and .Arn==("arn:aws:sts::"+$account+":assumed-role/"+$role+"/"+$session)' <<<"$role_identity" >/dev/null || fail "assumed identity is not the exact approved promotion role/session" 77
+export WITNESS_TREE_ASSUMED_ROLE_ARN="$(jq -er '.Arn' <<<"$role_identity")" WITNESS_TREE_ROLE_USER_ID="$(jq -er '.UserId' <<<"$role_identity")"
 unset role_identity
 export WITNESS_TREE_SESSION_VERIFIED=1 WITNESS_TREE_ACCOUNT="$ACCOUNT" WITNESS_TREE_OPERATOR_ARN="$OPERATOR_ARN" WITNESS_TREE_ROLE_ARN="$ROLE_ARN" WITNESS_TREE_ROLE_SESSION_NAME="$SESSION_NAME" WITNESS_TREE_MFA_PRESENT=true
 

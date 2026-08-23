@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
-import { closeSync, constants as fsConstants, fstatSync, linkSync, lstatSync, openSync, readFileSync, readSync, realpathSync, renameSync, unlinkSync, writeFileSync, writeSync } from "node:fs";
+import { closeSync, constants as fsConstants, fstatSync, fsyncSync, linkSync, lstatSync, openSync, readFileSync, readSync, realpathSync, renameSync, unlinkSync, writeFileSync, writeSync } from "node:fs";
 import { homedir } from "node:os";
 import path from "node:path";
 import { canonicalManifestBytes, exactPromotionObjects, loadQcFourthInventoryPromotionPreparation, qcFourthPlanDigests } from "./check-qc-fourth-inventory-immutable-promotion.mjs";
@@ -65,6 +65,13 @@ function removeIfPresent(file) {
   try { unlinkSync(file); }
   catch (error) { if (error?.code !== "ENOENT") throw error; }
 }
+
+function syncDirectory(directory) {
+  const descriptor = openSync(directory, fsConstants.O_RDONLY);
+  try { fsyncSync(descriptor); } finally { closeSync(descriptor); }
+}
+
+function sameInode(left, right) { return left?.dev === right?.dev && left?.ino === right?.ino; }
 
 function assertDirectoryMetadata(directory, label, mode) {
   const info = lstatSync(directory);
@@ -138,7 +145,8 @@ function atomicPrivateFile(file, bytes, label) {
   assert.equal(pathExists(file), false, `${label} already exists; refusing to overwrite it.`);
   const temporary = `${file}.next`;
   assert.equal(pathExists(temporary), false, `${label} temporary path already exists; inspect it before continuing.`);
-  writeFileSync(temporary, bytes, { flag: "wx", mode: PRIVATE_FILE_MODE });
+  const descriptor = openSync(temporary, fsConstants.O_WRONLY | fsConstants.O_CREAT | fsConstants.O_EXCL | fsConstants.O_NOFOLLOW, PRIVATE_FILE_MODE);
+  try { writeFileSync(descriptor, bytes); fsyncSync(descriptor); } finally { closeSync(descriptor); }
   let linked = false;
   try {
     assertPrivateFileMetadata(temporary, `${label} temporary`);
@@ -148,6 +156,7 @@ function atomicPrivateFile(file, bytes, label) {
     linked = true;
     unlinkSync(temporary);
     assertPrivateFileMetadata(file, label);
+    syncDirectory(path.dirname(file));
   } catch (error) {
     removeIfPresent(temporary);
     if (linked) removeIfPresent(file);
@@ -162,6 +171,7 @@ function acquireRunLock(options, plan) {
   assert.equal(typeof fsConstants.O_NOFOLLOW, "number", "The promotion lock requires symlink protection.");
   let descriptor;
   let created = false;
+  let opened;
   try {
     descriptor = openSync(lockPath, fsConstants.O_WRONLY | fsConstants.O_CREAT | fsConstants.O_EXCL | fsConstants.O_NOFOLLOW, PRIVATE_FILE_MODE);
     created = true;
@@ -174,13 +184,24 @@ function acquireRunLock(options, plan) {
       planParsedSha256: digests.planParsedSha256
     };
     writeFileSync(descriptor, `${JSON.stringify(lock)}\n`);
+    fsyncSync(descriptor);
+    opened = fstatSync(descriptor);
     closeSync(descriptor);
     descriptor = undefined;
-    assertPrivateFileMetadata(lockPath, "Promotion run lock");
-    return { path: lockPath, release: () => removeIfPresent(lockPath) };
+    const published = lstatSync(lockPath);
+    assert.ok(sameInode(opened, published) && published.nlink === 1, "Promotion run lock changed during durable publication.");
+    syncDirectory(stateDir);
+    return { path: lockPath, release: () => {
+      const current = lstatSync(lockPath);
+      assert.ok(current.isFile() && !current.isSymbolicLink() && current.nlink === 1 && sameInode(current, opened), "Promotion run lock ownership changed; refusing to unlink a racing replacement.");
+      unlinkSync(lockPath);
+      syncDirectory(stateDir);
+    } };
   } catch (error) {
     if (descriptor !== undefined) closeSync(descriptor);
-    if (created) removeIfPresent(lockPath);
+    if (created && opened) {
+      try { const current = lstatSync(lockPath); if (sameInode(current, opened) && current.nlink === 1) { unlinkSync(lockPath); syncDirectory(stateDir); } } catch (cleanupError) { if (cleanupError?.code !== "ENOENT") throw cleanupError; }
+    } else if (created) removeIfPresent(lockPath);
     if (error?.code === "EEXIST" || error?.code === "ELOOP") throw new Error("An exclusive QC fourth-inventory promotion run is already active; no AWS call was made.", { cause: error });
     throw error;
   }
@@ -313,21 +334,31 @@ function roleEnvironment() {
 }
 
 export function ownerRoleEnvironment(environment) {
-  // Unit fixtures may inject a deliberately marked mock environment.  A real
-  // invocation must carry the wrapper's independently verified identity facts;
-  // long-lived credentials or an unmarked role session are never accepted.
-  if (environment?.mocked !== "true") {
-    assert.ok(environment?.AWS_ACCESS_KEY_ID && environment?.AWS_SECRET_ACCESS_KEY && environment?.AWS_SESSION_TOKEN, "The MFA role-session runner did not provide temporary credentials.");
-    assert.equal(environment.WITNESS_TREE_SESSION_VERIFIED, "1", "The owner-local MFA/session wrapper did not attest its exact session.");
-    assert.equal(environment.WITNESS_TREE_ACCOUNT, ACCOUNT, "The owner-local MFA/session wrapper used the wrong AWS account.");
-    assert.equal(environment.WITNESS_TREE_OPERATOR_ARN, OPERATOR_ARN, "The owner-local MFA/session wrapper used the wrong operator identity.");
-    assert.equal(environment.WITNESS_TREE_ROLE_ARN, PROMOTION_ROLE_ARN, "The owner-local MFA/session wrapper used the wrong promotion role.");
-    assert.equal(environment.WITNESS_TREE_ROLE_SESSION_NAME, ROLE_SESSION_NAME, "The owner-local MFA/session wrapper used the wrong role-session name.");
-    assert.equal(environment.WITNESS_TREE_MFA_PRESENT, "true", "The owner-local wrapper did not attest fresh MFA.");
-    assert.ok(typeof environment.WITNESS_TREE_SESSION_EXPIRES_AT === "string" && Number.isFinite(Date.parse(environment.WITNESS_TREE_SESSION_EXPIRES_AT)), "The owner-local MFA/session wrapper did not provide a session expiry.");
-    assert.ok(Date.parse(environment.WITNESS_TREE_SESSION_EXPIRES_AT) > Date.now(), "The owner-local MFA role session is expired.");
-  }
+  assert.ok(environment?.AWS_ACCESS_KEY_ID && environment?.AWS_SECRET_ACCESS_KEY && environment?.AWS_SESSION_TOKEN, "The MFA role-session runner did not provide temporary credentials.");
+  assert.equal(environment.WITNESS_TREE_SESSION_VERIFIED, "1", "The owner-local MFA/session wrapper did not attest its exact session.");
+  assert.equal(environment.WITNESS_TREE_ACCOUNT, ACCOUNT, "The owner-local MFA/session wrapper used the wrong AWS account.");
+  assert.equal(environment.WITNESS_TREE_OPERATOR_ARN, OPERATOR_ARN, "The owner-local MFA/session wrapper used the wrong operator identity.");
+  assert.equal(environment.WITNESS_TREE_ROLE_ARN, PROMOTION_ROLE_ARN, "The owner-local MFA/session wrapper used the wrong promotion role.");
+  assert.equal(environment.WITNESS_TREE_ROLE_SESSION_NAME, ROLE_SESSION_NAME, "The owner-local MFA/session wrapper used the wrong role-session name.");
+  assert.equal(environment.WITNESS_TREE_MFA_PRESENT, "true", "The owner-local wrapper did not attest fresh MFA.");
+  assert.ok(typeof environment.WITNESS_TREE_SESSION_EXPIRES_AT === "string" && Number.isFinite(Date.parse(environment.WITNESS_TREE_SESSION_EXPIRES_AT)), "The owner-local MFA/session wrapper did not provide a session expiry.");
+  assert.ok(Date.parse(environment.WITNESS_TREE_SESSION_EXPIRES_AT) > Date.now(), "The owner-local MFA role session is expired.");
+  assert.equal(environment.WITNESS_TREE_ASSUMED_ROLE_ARN, `arn:aws:sts::${ACCOUNT}:assumed-role/${PROMOTION_ROLE}/${ROLE_SESSION_NAME}`, "The assumed-role identity provenance is missing.");
+  assert.match(environment.WITNESS_TREE_ROLE_USER_ID || "", /^\S+$/, "The assumed-role UserId provenance is missing.");
+  assert.match(environment.WITNESS_TREE_MFA_SERIAL_ARN || "", new RegExp(`^arn:aws:iam::${ACCOUNT}:mfa/[A-Za-z0-9+=,.@_/-]+$`), "The MFA serial provenance is missing.");
   return { ...environment, AWS_REGION: "ca-central-1", AWS_DEFAULT_REGION: "ca-central-1" };
+}
+
+function sessionProvenance(environment) {
+  return { account: ACCOUNT, operatorArn: OPERATOR_ARN, roleArn: PROMOTION_ROLE_ARN, roleSessionName: ROLE_SESSION_NAME, assumedRoleArn: environment.WITNESS_TREE_ASSUMED_ROLE_ARN, roleUserId: environment.WITNESS_TREE_ROLE_USER_ID, mfaSerialArn: environment.WITNESS_TREE_MFA_SERIAL_ARN, mfaPresent: true, sessionExpiresAt: new Date(environment.WITNESS_TREE_SESSION_EXPIRES_AT).toISOString() };
+}
+
+function validateSessionProvenance(session) {
+  assert.deepEqual(Object.keys(session).sort(), ["account", "assumedRoleArn", "mfaPresent", "mfaSerialArn", "operatorArn", "roleArn", "roleSessionName", "roleUserId", "sessionExpiresAt"]);
+  assert.equal(session.account, ACCOUNT); assert.equal(session.operatorArn, OPERATOR_ARN); assert.equal(session.roleArn, PROMOTION_ROLE_ARN); assert.equal(session.roleSessionName, ROLE_SESSION_NAME);
+  assert.equal(session.assumedRoleArn, `arn:aws:sts::${ACCOUNT}:assumed-role/${PROMOTION_ROLE}/${ROLE_SESSION_NAME}`);
+  assert.match(session.roleUserId, /^\S+$/); assert.match(session.mfaSerialArn, new RegExp(`^arn:aws:iam::${ACCOUNT}:mfa/[A-Za-z0-9+=,.@_/-]+$`)); assert.equal(session.mfaPresent, true);
+  assert.ok(typeof session.sessionExpiresAt === "string" && Number.isFinite(Date.parse(session.sessionExpiresAt)));
 }
 
 function stateFile(options) {
@@ -378,18 +409,20 @@ function callMutation(state, entry, options, intent, invoke, env, args, reason) 
     // Once the provider invocation begins, a local error cannot prove that the
     // mutation was rejected before acceptance. Persist ambiguity and require a
     // separately approved read-only investigation instead of guessing/retrying.
-    markRecoveryRequired(state, entry, options, intent, reason, error);
-    const safeLabel = typeof error?.message === "string" && /^[A-Za-z0-9 _-]{1,120}$/.test(error.message) ? ` (${error.message})` : "";
-    throw new Error(`${entry.id} ${reason.replaceAll("-", " ")}${safeLabel}; response is ambiguous and read-only recovery is required; no duplicate mutation will be attempted.`, { cause: error });
+    const effectiveReason = reason === "multipart-completion-response-unknown" && error?.providerCode === "NoSuchUpload" ? "multipart-completion-nosuchupload" : reason;
+    markRecoveryRequired(state, entry, options, intent, effectiveReason, error);
+    const safe = new Error(`${entry.id} ${effectiveReason.replaceAll("-", " ")}; response is ambiguous and read-only recovery is required; no duplicate mutation will be attempted.`);
+    safe.recoveryReason = effectiveReason;
+    throw safe;
   }
 }
 
 function loadState(plan, options) {
   const file = stateFile(options);
   const digests = qcFourthPlanDigests(plan);
-  if (!pathExists(file)) return { schemaVersion: 1, planSha256: digests.planParsedSha256, ...digests, bucket: plan.bucket, region: plan.region, retentionUntil: RETAIN_UNTIL, objects: {} };
+  if (!pathExists(file)) return { schemaVersion: 1, planSha256: digests.planParsedSha256, ...digests, bucket: plan.bucket, region: plan.region, retentionUntil: RETAIN_UNTIL, promotionSessions: [], objects: {} };
   const state = JSON.parse(privateFileRead(file, "Promotion state"));
-  assert.equal(state.schemaVersion, 1); assert.equal(state.planSha256, digests.planParsedSha256); assert.equal(state.planParsedSha256, digests.planParsedSha256); assert.equal(state.planFileSha256, digests.planFileSha256); assert.equal(state.bucket, plan.bucket); assert.equal(state.region, plan.region); assert.equal(state.retentionUntil, RETAIN_UNTIL); assert.ok(state.objects && typeof state.objects === "object" && !Array.isArray(state.objects));
+  assert.equal(state.schemaVersion, 1); assert.equal(state.planSha256, digests.planParsedSha256); assert.equal(state.planParsedSha256, digests.planParsedSha256); assert.equal(state.planFileSha256, digests.planFileSha256); assert.equal(state.bucket, plan.bucket); assert.equal(state.region, plan.region); assert.equal(state.retentionUntil, RETAIN_UNTIL); assert.ok(Array.isArray(state.promotionSessions)); state.promotionSessions.forEach(validateSessionProvenance); assert.ok(state.objects && typeof state.objects === "object" && !Array.isArray(state.objects));
   const expected = new Map(exactPromotionObjects(plan).map((entry) => [entry.id, entry]));
   for (const [id, record] of Object.entries(state.objects)) assertStateRecordBinding(expected.get(id) || assert.fail(`Unexpected ${id} state record.`), record);
   return state;
@@ -399,14 +432,22 @@ function saveState(state, options) {
   const file = stateFile(options);
   const temporary = `${file}.next`;
   assert.equal(pathExists(temporary), false, "A stale temporary promotion state file exists; inspect it before resuming.");
-  writeFileSync(temporary, `${JSON.stringify(state, null, 2)}\n`, { mode: 0o600, flag: "wx" });
+  assert.equal(typeof fsConstants.O_NOFOLLOW, "number", "Promotion state requires symlink protection.");
+  const descriptor = openSync(temporary, fsConstants.O_WRONLY | fsConstants.O_CREAT | fsConstants.O_EXCL | fsConstants.O_NOFOLLOW, 0o600);
+  try { writeFileSync(descriptor, `${JSON.stringify(state, null, 2)}\n`); fsyncSync(descriptor); } finally { closeSync(descriptor); }
   assertPrivateFileMetadata(temporary, "Temporary promotion state");
   renameSync(temporary, file);
   assertPrivateFileMetadata(file, "Promotion state");
+  syncDirectory(path.dirname(file));
 }
 
 function s3(invoke, env, args) {
-  return invoke(["s3api", ...args, "--region", "ca-central-1", "--output", "json"], env);
+  try { return invoke(["s3api", ...args, "--region", "ca-central-1", "--output", "json"], env); }
+  catch (error) {
+    const safe = new Error(`${args[0]} provider call failed`);
+    safe.providerCode = error?.code === "NoSuchUpload" ? "NoSuchUpload" : "provider-error";
+    throw safe;
+  }
 }
 
 export function verifyRemoteObject(plan, entry, remote, invoke, env) {
@@ -593,8 +634,8 @@ function multipartPut(plan, entry, state, options, invoke, env) {
       listed = s3(invoke, env, ["list-parts", "--bucket", plan.bucket, "--key", entry.objectKey, "--upload-id", current.uploadId]);
     } catch (error) {
       const intent = current.mutationIntent || mutationIntent(plan, entry, "list-parts", { uploadId: current.uploadId });
-      markRecoveryRequired(state, entry, options, intent, error?.code === "NoSuchUpload" || /NoSuchUpload/i.test(error?.message || "") ? "multipart-completion-nosuchupload" : "multipart-list-parts-response-ambiguous", error);
-      throw new Error(`${entry.id} multipart provider state could not be read unambiguously; read-only recovery is required and no duplicate upload will be attempted.`, { cause: error });
+      markRecoveryRequired(state, entry, options, intent, error?.providerCode === "NoSuchUpload" ? "multipart-completion-nosuchupload" : "multipart-list-parts-response-ambiguous", error);
+      throw new Error(`${entry.id} multipart provider state could not be read unambiguously; read-only recovery is required and no duplicate upload will be attempted.`);
     }
     assert.equal(listed.IsTruncated, false, `${entry.id} part listing unexpectedly paginated.`);
     assert.deepEqual((listed.Parts || []).map(({ PartNumber, ETag, ChecksumSHA256 }) => ({ partNumber: PartNumber, etag: ETag, checksumSha256: ChecksumSHA256 })), current.parts, `${entry.id} remote multipart state drifted.`);
@@ -626,10 +667,10 @@ function multipartPut(plan, entry, state, options, invoke, env) {
   try {
     response = callMutation(state, entry, options, intent, invoke, env, ["complete-multipart-upload", "--bucket", plan.bucket, "--key", entry.objectKey, "--upload-id", current.uploadId, "--multipart-upload", JSON.stringify(request)], "multipart-completion-response-unknown");
   } catch (error) {
-    if (/NoSuchUpload/i.test(error?.cause?.message || error?.message || "")) {
+    if (error?.recoveryReason === "multipart-completion-nosuchupload") {
       markRecoveryRequired(state, entry, options, intent, "multipart-completion-nosuchupload", error);
     }
-    throw new Error(`${entry.id} multipart completion response is unavailable or ambiguous; read-only recovery is required and no duplicate completion will be attempted.`, { cause: error });
+    throw new Error(`${entry.id} multipart completion response is unavailable or ambiguous; read-only recovery is required and no duplicate completion will be attempted.`);
   }
   if (!response?.VersionId || response.VersionId === "null" || response.ChecksumSHA256 !== expectedComposite) {
     markRecoveryRequired(state, entry, options, intent, "multipart-completion-response-invalid", new Error("CompleteMultipartUpload acknowledgement was incomplete or mismatched"));
@@ -655,6 +696,11 @@ export function executePromotion(plan, options, dependencies = {}) {
     const objects = localObjects(plan, options);
     preflight(objects); // Every local byte and SHA passes before the first AWS call.
     const state = loadState(plan, options);
+    const provenance = sessionProvenance(env);
+    if (!state.promotionSessions.some((session) => JSON.stringify(session) === JSON.stringify(provenance))) {
+      state.promotionSessions.push(provenance);
+      saveState(state, options);
+    }
     const evidence = [];
     for (const entry of objects) evidence.push(entry.byteLength > plan.upload.multipartThresholdBytes ? multipartPut(plan, entry, state, options, invoke, env) : singlePut(plan, entry, state, options, invoke, env));
     assert.equal(evidence.length, 62);
@@ -681,5 +727,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     for (const entry of result.sources) console.log(`LOCAL id=${entry.id} bytes=${entry.byteLength} sha256=${entry.sha256} path=${entry.file} key=${entry.objectKey}`);
     console.log(`SIDECAR bytes=${result.manifestBytes.length} sha256=${sha256Bytes(result.manifestBytes)} key=${plan.canonicalManifest.objectKey} generated-in-memory=true`);
   } else if (!options.execute) console.log(dryRunLines(plan).join("\n"));
-  else console.log(JSON.stringify(executePromotion(plan, options), null, 2));
+  else {
+    executePromotion(plan, options);
+    console.log("QC fourth-inventory promotion completed exact-version readback for all 62 objects; opaque provider identifiers remain only in the owner-only state.");
+  }
 }

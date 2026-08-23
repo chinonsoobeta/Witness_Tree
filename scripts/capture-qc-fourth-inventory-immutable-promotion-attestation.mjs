@@ -1,11 +1,12 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
-import { lstatSync, linkSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
+import { lstatSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { preflightLocal, recomputeMultipartPartChecksums } from "./qc-fourth-inventory-immutable-promotion.mjs";
 import { exactPromotionObjects, loadQcFourthInventoryPromotionPreparation, qcFourthPlanDigests } from "./check-qc-fourth-inventory-immutable-promotion.mjs";
 import { redactQcFourthAttestation, sha256, validateQcFourthAttestationPair } from "./check-qc-fourth-inventory-immutable-promotion-attestation.mjs";
+import { rollbackExclusivePublication, writeExclusiveMode600 } from "./assemble-qc-immutable-promotion-attestation.mjs";
 
 const RETAIN_UNTIL = "2033-08-12T00:00:00Z";
 const BASE64_SHA256 = /^[A-Za-z0-9+/]{43}=$/;
@@ -67,7 +68,10 @@ function normalizeIdentity(identity, environment, createdAt) {
   assert.equal(environment?.WITNESS_TREE_ROLE_SESSION_NAME, match[1], "The owner-local wrapper role-session name does not match STS.");
   assert.equal(environment?.WITNESS_TREE_MFA_PRESENT, "true", "The owner-local wrapper did not attest MFA presence.");
   assert.ok(typeof identity.UserId === "string" && identity.UserId.length > 0, "The STS role identity UserId is missing.");
-  return { account: identity.Account, operatorArn: OPERATOR_ARN, roleArn: PROMOTION_ROLE_ARN, roleSessionName: match[1], assumedRoleArn: identity.Arn, userId: identity.UserId, mfaPresent: true, sessionExpiresAt };
+  assert.equal(environment?.WITNESS_TREE_ASSUMED_ROLE_ARN, identity.Arn, "The wrapper assumed-role ARN does not match STS.");
+  assert.equal(environment?.WITNESS_TREE_ROLE_USER_ID, identity.UserId, "The wrapper role UserId does not match STS.");
+  assert.match(environment?.WITNESS_TREE_MFA_SERIAL_ARN || "", new RegExp(`^arn:aws:iam::${ACCOUNT}:mfa/[A-Za-z0-9+=,.@_/-]+$`), "The wrapper MFA serial provenance is missing.");
+  return { account: identity.Account, operatorArn: OPERATOR_ARN, roleArn: PROMOTION_ROLE_ARN, roleSessionName: match[1], assumedRoleArn: identity.Arn, userId: identity.UserId, mfaSerialArn: environment.WITNESS_TREE_MFA_SERIAL_ARN, mfaPresent: true, sessionExpiresAt };
 }
 
 function validateCompletedState(plan, state) {
@@ -79,6 +83,12 @@ function validateCompletedState(plan, state) {
   assert.equal(state.bucket, plan.bucket);
   assert.equal(state.region, plan.region);
   assert.equal(state.retentionUntil, RETAIN_UNTIL);
+  assert.ok(Array.isArray(state.promotionSessions) && state.promotionSessions.length > 0, "promotion state has no durable mutation-session provenance");
+  for (const session of state.promotionSessions) {
+    assert.deepEqual(Object.keys(session).sort(), ["account", "assumedRoleArn", "mfaPresent", "mfaSerialArn", "operatorArn", "roleArn", "roleSessionName", "roleUserId", "sessionExpiresAt"]);
+    assert.equal(session.account, ACCOUNT); assert.equal(session.operatorArn, OPERATOR_ARN); assert.equal(session.roleArn, PROMOTION_ROLE_ARN); assert.equal(session.roleSessionName, ROLE_SESSION_NAME);
+    assert.equal(session.assumedRoleArn, `arn:aws:sts::${ACCOUNT}:assumed-role/${PROMOTION_ROLE}/${ROLE_SESSION_NAME}`); assert.match(session.roleUserId, /^\S+$/); assert.match(session.mfaSerialArn, new RegExp(`^arn:aws:iam::${ACCOUNT}:mfa/`)); assert.equal(session.mfaPresent, true); assert.ok(Number.isFinite(Date.parse(session.sessionExpiresAt)));
+  }
   const entries = exactPromotionObjects(plan);
   assert.deepEqual(Object.keys(state.objects).sort(), entries.map((entry) => entry.id).sort(), "promotion state must contain exactly 62 completed objects");
   for (const entry of entries) {
@@ -115,7 +125,8 @@ function invokeJson(args, env = process.env) {
 }
 
 function s3(invoke, env, args) {
-  return invoke(["s3api", ...args, "--region", "ca-central-1", "--output", "json"], env);
+  try { return invoke(["s3api", ...args, "--region", "ca-central-1", "--output", "json"], env); }
+  catch { throw new Error(`${args[0]} provider call failed`); }
 }
 
 function localPreflightEvidence(plan, dependencies) {
@@ -151,58 +162,18 @@ function localPreflightEvidence(plan, dependencies) {
 }
 
 function identityReadback(invoke, env) {
-  return invoke(["sts", "get-caller-identity", "--output", "json"], env);
+  try { return invoke(["sts", "get-caller-identity", "--output", "json"], env); }
+  catch { throw new Error("get-caller-identity provider call failed"); }
 }
 
-function writeExclusive(file, bytes, mode) {
-  assert.ok(path.isAbsolute(file), "attestation output paths must be absolute");
-  assert.equal(pathExists(file), false, `${file} already exists`);
-  const staged = `${file}.next`;
-  assert.equal(pathExists(staged), false, `${file} temporary path already exists`);
-  writeFileSync(staged, bytes, { flag: "wx", mode });
-  const metadata = lstatSync(staged);
-  assert.ok(metadata.isFile() && !metadata.isSymbolicLink(), `${file} must remain a regular non-symlink file`);
-  assert.equal(metadata.uid, process.getuid(), `${file} must be owner-owned`);
-  assert.equal(metadata.mode & 0o777, mode, `${file} mode drifted`);
-  assert.equal(metadata.nlink, 1, `${file} must not have hard-link aliases`);
-  return staged;
-}
-
-function publishPair(privateOutput, privateBytes, redactedOutput, redactedBytes) {
+function publishPair(privateOutput, privateRecord, redactedOutput, redactedRecord, hooks = {}) {
   assert.notEqual(path.resolve(privateOutput), path.resolve(redactedOutput), "private and redacted outputs must differ");
-  let privateStaged;
-  let redactedStaged;
+  const privatePublication = writeExclusiveMode600(privateOutput, privateRecord, hooks.private);
   try {
-    privateStaged = writeExclusive(privateOutput, privateBytes, 0o600);
-    redactedStaged = writeExclusive(redactedOutput, redactedBytes, 0o600);
-  } catch (error) {
-    for (const staged of [privateStaged, redactedStaged]) {
-      if (!staged) continue;
-      try { unlinkSync(staged); } catch (cleanupError) { if (cleanupError?.code !== "ENOENT") throw cleanupError; }
-    }
-    throw error;
-  }
-  let privatePublished = false;
-  let redactedPublished = false;
-  try {
-    // link(2) refuses an output that appeared after the precheck; rename(2)
-    // would replace it during that race.
-    linkSync(privateStaged, privateOutput);
-    privatePublished = true;
-    unlinkSync(privateStaged);
-    linkSync(redactedStaged, redactedOutput);
-    redactedPublished = true;
-    unlinkSync(redactedStaged);
-  } catch (error) {
-    try { unlinkSync(privateStaged); } catch (cleanupError) { if (cleanupError?.code !== "ENOENT") throw cleanupError; }
-    try { unlinkSync(redactedStaged); } catch (cleanupError) { if (cleanupError?.code !== "ENOENT") throw cleanupError; }
-    if (privatePublished) {
-      try { unlinkSync(privateOutput); } catch (cleanupError) { if (cleanupError?.code !== "ENOENT") throw cleanupError; }
-    }
-    if (redactedPublished) {
-      try { unlinkSync(redactedOutput); } catch (cleanupError) { if (cleanupError?.code !== "ENOENT") throw cleanupError; }
-    }
-    throw error;
+    writeExclusiveMode600(redactedOutput, redactedRecord, hooks.redacted);
+  } catch {
+    if (!rollbackExclusivePublication(privatePublication, hooks.rollback)) throw new Error("attestation pair publication failed; private rollback was not proved; inspect output state");
+    throw new Error("attestation pair publication failed; private output was rolled back");
   }
 }
 
@@ -259,6 +230,7 @@ export function captureQcFourthAttestation(plan, statePath, privateOutput, redac
       planFileSha256: qcFourthPlanDigests(plan).planFileSha256,
       planParsedSha256: qcFourthPlanDigests(plan).planParsedSha256,
       stateFileSha256: sha256(stateBytes),
+      promotionSessions: state.promotionSessions,
       authentication: "owner-local-mfa-role-session-wrapper",
       identity: identityFacts,
       operation: "read-only-exact-version-head-checksum-bytes-and-retention-capture"
@@ -270,8 +242,10 @@ export function captureQcFourthAttestation(plan, statePath, privateOutput, redac
   };
   const privateBytes = Buffer.from(`${JSON.stringify(privateRecord, null, 2)}\n`);
   const redactedRecord = redactQcFourthAttestation(privateRecord, privateBytes, plan);
-  publishPair(privateOutput, privateBytes, redactedOutput, Buffer.from(`${JSON.stringify(redactedRecord, null, 2)}\n`));
-  validateQcFourthAttestationPair(privateOutput, redactedRecord, plan);
+  publishPair(privateOutput, privateRecord, redactedOutput, redactedRecord, dependencies.publicationHooks);
+  const onDiskRedacted = JSON.parse(readFileSync(redactedOutput, "utf8"));
+  validateQcFourthAttestationPair(privateOutput, onDiskRedacted, plan);
+  assert.deepEqual(onDiskRedacted, redactedRecord, "published redacted attestation changed after synchronization");
   return { privateRecord, redactedRecord };
 }
 

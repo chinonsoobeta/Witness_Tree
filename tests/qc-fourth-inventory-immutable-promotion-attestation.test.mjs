@@ -1,12 +1,12 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { chmodSync, existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { chmodSync, existsSync, linkSync, mkdtempSync, readFileSync, renameSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import test from "node:test";
 import { captureQcFourthAttestation } from "../scripts/capture-qc-fourth-inventory-immutable-promotion-attestation.mjs";
 import { exactPromotionObjects, qcFourthPlanDigests } from "../scripts/check-qc-fourth-inventory-immutable-promotion.mjs";
-import { sha256, validatePendingQcFourthAttestation, validateQcFourthAttestationPair } from "../scripts/check-qc-fourth-inventory-immutable-promotion-attestation.mjs";
+import { validatePendingQcFourthAttestation, validateQcFourthAttestationPair } from "../scripts/check-qc-fourth-inventory-immutable-promotion-attestation.mjs";
 
 const plan = JSON.parse(readFileSync(new URL("../data/qc-fourth-inventory-immutable-promotion-preparation.json", import.meta.url), "utf8"));
 const pending = JSON.parse(readFileSync(new URL("../data/qc-fourth-inventory-immutable-promotion-attestation.json", import.meta.url), "utf8"));
@@ -25,7 +25,8 @@ function completedState() {
     }
   }
   const digests = qcFourthPlanDigests(plan);
-  return { schemaVersion: 1, planSha256: digests.planParsedSha256, planFileSha256: digests.planFileSha256, planParsedSha256: digests.planParsedSha256, bucket: plan.bucket, region: plan.region, retentionUntil: "2033-08-12T00:00:00Z", objects };
+  const promotionSessions = [{ account: "286853118812", operatorArn: "arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator", roleArn: "arn:aws:iam::286853118812:role/WitnessTreeQcFourthArchivePromotionUploader", roleSessionName: "witness-tree-qc-fourth-approved-promotion", assumedRoleArn: "arn:aws:sts::286853118812:assumed-role/WitnessTreeQcFourthArchivePromotionUploader/witness-tree-qc-fourth-approved-promotion", roleUserId: "AROA_PROMOTION:witness-tree-qc-fourth-approved-promotion", mfaSerialArn: "arn:aws:iam::286853118812:mfa/WitnessTreeArchiveOperator", mfaPresent: true, sessionExpiresAt: "2026-08-23T13:00:00.000Z" }];
+  return { schemaVersion: 1, planSha256: digests.planParsedSha256, planFileSha256: digests.planFileSha256, planParsedSha256: digests.planParsedSha256, bucket: plan.bucket, region: plan.region, retentionUntil: "2033-08-12T00:00:00Z", promotionSessions, objects };
 }
 
 function fixture() {
@@ -66,13 +67,15 @@ const identity = {
   UserId: "AROAEXAMPLE:witness-tree-qc-fourth-approved-promotion"
 };
 const captureEnv = {
-  mocked: "true",
   WITNESS_TREE_SESSION_VERIFIED: "1",
   WITNESS_TREE_OPERATOR_ARN: "arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator",
   WITNESS_TREE_ROLE_ARN: "arn:aws:iam::286853118812:role/WitnessTreeQcFourthArchivePromotionUploader",
   WITNESS_TREE_ROLE_SESSION_NAME: "witness-tree-qc-fourth-approved-promotion",
   WITNESS_TREE_SESSION_EXPIRES_AT: "2026-08-23T13:00:00Z",
-  WITNESS_TREE_MFA_PRESENT: "true"
+  WITNESS_TREE_MFA_PRESENT: "true",
+  WITNESS_TREE_ASSUMED_ROLE_ARN: identity.Arn,
+  WITNESS_TREE_ROLE_USER_ID: identity.UserId,
+  WITNESS_TREE_MFA_SERIAL_ARN: "arn:aws:iam::286853118812:mfa/WitnessTreeArchiveOperator"
 };
 
 test("canonical fourth-inventory attestation remains explicitly pending", () => {
@@ -127,10 +130,68 @@ test("paired publication loses an output race transactionally without overwritin
     if (callCount === 124) writeFileSync(item.redactedPath, "competing-output\n", { flag: "wx", mode: 0o600 });
   } });
   try {
-    assert.throws(() => captureQcFourthAttestation(plan, item.statePath, item.privatePath, item.redactedPath, { invoke: remote.invoke, env: captureEnv, identity, localPreflight: localPreflight(item.state), createdAt: "2026-08-23T12:00:00Z" }), /already exists/);
+    assert.throws(() => captureQcFourthAttestation(plan, item.statePath, item.privatePath, item.redactedPath, { invoke: remote.invoke, env: captureEnv, identity, localPreflight: localPreflight(item.state), createdAt: "2026-08-23T12:00:00Z" }), /private output was rolled back/);
     assert.equal(existsSync(item.privatePath), false);
     assert.equal(readFileSync(item.redactedPath, "utf8"), "competing-output\n");
     assert.equal(existsSync(`${item.privatePath}.next`), false);
     assert.equal(existsSync(`${item.redactedPath}.next`), false);
+  } finally { item.cleanup(); }
+});
+
+test("publication refuses symlinks and preserves rename and hard-link race evidence", () => {
+  {
+    const item = fixture(); const target = path.join(item.workspace, "target.json"); writeFileSync(target, "secret-target\n", { mode: 0o600 }); symlinkSync(target, item.privatePath);
+    try {
+      assert.throws(() => captureQcFourthAttestation(plan, item.statePath, item.privatePath, item.redactedPath, { invoke: readbackMock(item.state).invoke, env: captureEnv, identity, localPreflight: localPreflight(item.state), createdAt: "2026-08-23T12:00:00Z" }), /private output already exists/);
+      assert.equal(readFileSync(target, "utf8"), "secret-target\n"); assert.equal(existsSync(item.redactedPath), false);
+    } finally { item.cleanup(); }
+  }
+  for (const race of ["rename", "hardlink"]) {
+    const item = fixture(); const evidence = path.join(item.workspace, `${race}-evidence.json`);
+    try {
+      const beforeVerify = (output) => {
+        if (race === "rename") { renameSync(output, evidence); writeFileSync(output, "racing-replacement\n", { flag: "wx", mode: 0o600 }); }
+        else linkSync(output, evidence);
+      };
+      assert.throws(() => captureQcFourthAttestation(plan, item.statePath, item.privatePath, item.redactedPath, { invoke: readbackMock(item.state).invoke, env: captureEnv, identity, localPreflight: localPreflight(item.state), createdAt: "2026-08-23T12:00:00Z", publicationHooks: { private: { beforeVerify } } }), /rollback was not proved/);
+      assert.equal(existsSync(evidence), true); assert.equal(existsSync(item.privatePath), true); assert.equal(existsSync(item.redactedPath), false);
+      if (race === "rename") assert.equal(readFileSync(item.privatePath, "utf8"), "racing-replacement\n");
+    } finally { item.cleanup(); }
+  }
+});
+
+test("publication fsync, close, and rollback crash points never yield an accepted half-pair", () => {
+  for (const hooks of [
+    { private: { onFsyncStage: (stage) => { if (stage === "file") throw new Error("simulated crash"); } } },
+    { redacted: { onFsyncStage: (stage) => { if (stage === "directory") throw new Error("simulated crash"); } } },
+    { redacted: { failClose: (stage) => stage === "output" } }
+  ]) {
+    const item = fixture();
+    try {
+      assert.throws(() => captureQcFourthAttestation(plan, item.statePath, item.privatePath, item.redactedPath, { invoke: readbackMock(item.state).invoke, env: captureEnv, identity, localPreflight: localPreflight(item.state), createdAt: "2026-08-23T12:00:00Z", publicationHooks: hooks }));
+      assert.equal(existsSync(item.privatePath), false); assert.equal(existsSync(item.redactedPath), false);
+    } finally { item.cleanup(); }
+  }
+});
+
+test("pair rollback never unlinks a racing replacement", () => {
+  const item = fixture(); const moved = path.join(item.workspace, "owned-private-evidence.json");
+  try {
+    const hooks = {
+      redacted: { beforeOpen: (output) => writeFileSync(output, "competing-redacted\n", { flag: "wx", mode: 0o600 }) },
+      rollback: { beforeRollback: (output) => { renameSync(output, moved); writeFileSync(output, "racing-private\n", { flag: "wx", mode: 0o600 }); } }
+    };
+    assert.throws(() => captureQcFourthAttestation(plan, item.statePath, item.privatePath, item.redactedPath, { invoke: readbackMock(item.state).invoke, env: captureEnv, identity, localPreflight: localPreflight(item.state), createdAt: "2026-08-23T12:00:00Z", publicationHooks: hooks }), /private rollback was not proved/);
+    assert.equal(readFileSync(item.privatePath, "utf8"), "racing-private\n"); assert.equal(existsSync(moved), true); assert.equal(readFileSync(item.redactedPath, "utf8"), "competing-redacted\n");
+  } finally { item.cleanup(); }
+});
+
+test("provider errors cannot leak raw text or opaque identifiers", () => {
+  const item = fixture(); const secret = "SECRET_PROVIDER_REQUEST_ID_opaque-123";
+  try {
+    let error;
+    try { captureQcFourthAttestation(plan, item.statePath, item.privatePath, item.redactedPath, { invoke: () => { throw new Error(secret); }, env: captureEnv, identity, localPreflight: localPreflight(item.state), createdAt: "2026-08-23T12:00:00Z" }); } catch (caught) { error = caught; }
+    assert.ok(error); assert.equal(String(error).includes(secret), false); assert.equal(String(error.stack).includes(secret), false);
+    assert.equal(existsSync(item.privatePath), false); assert.equal(existsSync(item.redactedPath), false);
   } finally { item.cleanup(); }
 });

@@ -86,7 +86,7 @@ export function validatePrivateQcFourthAttestation(record, plan = loadQcFourthIn
   exactKeys(record, ["schemaVersion", "status", "provenance", "destination", "localPreflight", "objects", "claims"], "private fourth-inventory attestation");
   assert.equal(record.schemaVersion, "witness-tree/qc-fourth-inventory-immutable-promotion-attestation-private/1");
   assert.equal(record.status, "owner-run-exact-version-readbacks-complete");
-  exactKeys(record.provenance, ["createdAt", "captureCommand", "runnerSha256", "captureScriptSha256", "planSha256", "planFileSha256", "planParsedSha256", "stateFileSha256", "authentication", "identity", "operation"], "private provenance");
+  exactKeys(record.provenance, ["createdAt", "captureCommand", "runnerSha256", "captureScriptSha256", "planSha256", "planFileSha256", "planParsedSha256", "stateFileSha256", "promotionSessions", "authentication", "identity", "operation"], "private provenance");
   assert.ok(exactUtc(record.provenance.createdAt));
   assert.equal(record.provenance.captureCommand, "scripts/run-qc-fourth-inventory-approved-promotion.sh --capture --state <mode-600-state> --data-root <Witness_Tree-data> --sidecar-dir <mode-700-sidecars> --private-output <new-mode-600-private-output> --redacted-output <new-public-output>");
   assert.equal(record.provenance.runnerSha256, expected.runnerSha256 ?? sha256(readFileSync(RUNNER_PATH)));
@@ -96,14 +96,21 @@ export function validatePrivateQcFourthAttestation(record, plan = loadQcFourthIn
   assert.equal(record.provenance.planFileSha256, expected.planFileSha256 ?? digests.planFileSha256);
   assert.equal(record.provenance.planParsedSha256, expected.planParsedSha256 ?? digests.planParsedSha256);
   assert.match(record.provenance.stateFileSha256, SHA256);
+  assert.ok(Array.isArray(record.provenance.promotionSessions) && record.provenance.promotionSessions.length > 0);
+  for (const session of record.provenance.promotionSessions) {
+    exactKeys(session, ["account", "operatorArn", "roleArn", "roleSessionName", "assumedRoleArn", "roleUserId", "mfaSerialArn", "mfaPresent", "sessionExpiresAt"], "promotion session provenance");
+    assert.equal(session.account, ACCOUNT); assert.equal(session.operatorArn, OPERATOR_ARN); assert.equal(session.roleArn, PROMOTION_ROLE_ARN); assert.equal(session.roleSessionName, ROLE_SESSION_NAME);
+    assert.equal(session.assumedRoleArn, `arn:aws:sts::${ACCOUNT}:assumed-role/${PROMOTION_ROLE}/${ROLE_SESSION_NAME}`); assert.match(session.roleUserId, /^\S+$/); assert.match(session.mfaSerialArn, new RegExp(`^arn:aws:iam::${ACCOUNT}:mfa/`)); assert.equal(session.mfaPresent, true); assert.ok(Number.isFinite(Date.parse(session.sessionExpiresAt)));
+  }
   assert.equal(record.provenance.authentication, "owner-local-mfa-role-session-wrapper");
-  exactKeys(record.provenance.identity, ["account", "operatorArn", "roleArn", "roleSessionName", "assumedRoleArn", "userId", "mfaPresent", "sessionExpiresAt"], "private identity facts");
+  exactKeys(record.provenance.identity, ["account", "operatorArn", "roleArn", "roleSessionName", "assumedRoleArn", "userId", "mfaSerialArn", "mfaPresent", "sessionExpiresAt"], "private identity facts");
   assert.equal(record.provenance.identity.account, ACCOUNT);
   assert.equal(record.provenance.identity.operatorArn, OPERATOR_ARN);
   assert.equal(record.provenance.identity.roleArn, PROMOTION_ROLE_ARN);
   assert.equal(record.provenance.identity.roleSessionName, ROLE_SESSION_NAME);
   assert.match(record.provenance.identity.assumedRoleArn, new RegExp(`^arn:aws:sts::${ACCOUNT}:assumed-role/${PROMOTION_ROLE}/[A-Za-z0-9+=,.@_-]+$`));
   assert.match(record.provenance.identity.userId, /^\S+$/);
+  assert.match(record.provenance.identity.mfaSerialArn, new RegExp(`^arn:aws:iam::${ACCOUNT}:mfa/`));
   assert.equal(record.provenance.identity.mfaPresent, true);
   assert.ok(exactUtc(record.provenance.identity.sessionExpiresAt));
   assert.equal(record.provenance.operation, "read-only-exact-version-head-checksum-bytes-and-retention-capture");
@@ -148,6 +155,7 @@ export function redactQcFourthAttestation(privateRecord, privateBytes, plan = lo
       planFileSha256: privateRecord.provenance.planFileSha256,
       planParsedSha256: privateRecord.provenance.planParsedSha256,
       stateFileSha256: privateRecord.provenance.stateFileSha256,
+      promotionSessionsSha256: sha256(JSON.stringify(privateRecord.provenance.promotionSessions)),
       identityFactsSha256: sha256(JSON.stringify(privateRecord.provenance.identity)),
       operation: privateRecord.provenance.operation
     },

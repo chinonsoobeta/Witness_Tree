@@ -11,6 +11,12 @@ const plan = JSON.parse(readFileSync(new URL("../data/qc-fourth-inventory-immuta
 const iam = JSON.parse(readFileSync(new URL("../data/qc-fourth-inventory-immutable-promotion-iam-policy.json", import.meta.url), "utf8"));
 
 const sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex");
+const exactPromotionEnv = {
+  AWS_ACCESS_KEY_ID: "temporary", AWS_SECRET_ACCESS_KEY: "temporary", AWS_SESSION_TOKEN: "temporary",
+  WITNESS_TREE_SESSION_VERIFIED: "1", WITNESS_TREE_ACCOUNT: "286853118812", WITNESS_TREE_OPERATOR_ARN: "arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator",
+  WITNESS_TREE_ROLE_ARN: "arn:aws:iam::286853118812:role/WitnessTreeQcFourthArchivePromotionUploader", WITNESS_TREE_ROLE_SESSION_NAME: "witness-tree-qc-fourth-approved-promotion", WITNESS_TREE_MFA_PRESENT: "true", WITNESS_TREE_SESSION_EXPIRES_AT: "2099-01-01T00:00:00Z",
+  WITNESS_TREE_ASSUMED_ROLE_ARN: "arn:aws:sts::286853118812:assumed-role/WitnessTreeQcFourthArchivePromotionUploader/witness-tree-qc-fourth-approved-promotion", WITNESS_TREE_ROLE_USER_ID: "AROA_TEST:witness-tree-qc-fourth-approved-promotion", WITNESS_TREE_MFA_SERIAL_ARN: "arn:aws:iam::286853118812:mfa/WitnessTreeArchiveOperator"
+};
 
 function executionFixture() {
   const workspace = mkdtempSync(path.join(tmpdir(), "qc-fourth-execution-"));
@@ -70,7 +76,7 @@ function mockS3(fixture, hooks = {}) {
       const checksum = value(args, "--checksum-sha256");
       const remote = { ContentLength: readFileSync(value(args, "--body")).length, VersionId: `single-version-${nextVersion++}`, ChecksumType: "FULL_OBJECT", ChecksumSHA256: checksum };
       objects.set(key, remote);
-      if (hooks.loseSinglePutResponseOnce) { hooks.loseSinglePutResponseOnce = false; throw new Error("single PUT response lost after remote acceptance"); }
+      if (hooks.loseSinglePutResponseOnce) { hooks.loseSinglePutResponseOnce = false; throw new Error(hooks.singlePutErrorMessage || "single PUT response lost after remote acceptance"); }
       return { VersionId: remote.VersionId, ChecksumSHA256: checksum };
     }
     if (operation === "create-multipart-upload") {
@@ -100,7 +106,7 @@ function mockS3(fixture, hooks = {}) {
       upload.completed = true;
       const remote = { ContentLength: readFileSync(path.join(fixture.dataRoot, fixture.plan.archiveSet.payloads.find((entry) => entry.objectKey === key).dataRootRelativePath)).length, VersionId: `multipart-version-${nextVersion++}`, ChecksumType: "COMPOSITE", ChecksumSHA256: checksum };
       objects.set(key, remote);
-      if (hooks.noSuchUploadOnCompleteOnce) { hooks.noSuchUploadOnCompleteOnce = false; throw new Error("NoSuchUpload"); }
+      if (hooks.noSuchUploadOnCompleteOnce) { hooks.noSuchUploadOnCompleteOnce = false; const error = new Error("provider opaque detail"); error.code = "NoSuchUpload"; throw error; }
       if (hooks.loseCompleteResponseOnce) { hooks.loseCompleteResponseOnce = false; throw new Error("completion response lost after remote acceptance"); }
       return { VersionId: remote.VersionId, ChecksumSHA256: checksum };
     }
@@ -188,9 +194,11 @@ test("the promotion session gate binds exact account, operator, role, session, M
     WITNESS_TREE_OPERATOR_ARN: "arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator",
     WITNESS_TREE_ROLE_ARN: "arn:aws:iam::286853118812:role/WitnessTreeQcFourthArchivePromotionUploader",
     WITNESS_TREE_ROLE_SESSION_NAME: "witness-tree-qc-fourth-approved-promotion", WITNESS_TREE_MFA_PRESENT: "true",
-    WITNESS_TREE_SESSION_EXPIRES_AT: "2099-01-01T00:00:00Z"
+    WITNESS_TREE_SESSION_EXPIRES_AT: "2099-01-01T00:00:00Z",
+    WITNESS_TREE_ASSUMED_ROLE_ARN: exactPromotionEnv.WITNESS_TREE_ASSUMED_ROLE_ARN, WITNESS_TREE_ROLE_USER_ID: exactPromotionEnv.WITNESS_TREE_ROLE_USER_ID, WITNESS_TREE_MFA_SERIAL_ARN: exactPromotionEnv.WITNESS_TREE_MFA_SERIAL_ARN
   };
   assert.equal(ownerRoleEnvironment(exact).AWS_REGION, "ca-central-1");
+  assert.throws(() => ownerRoleEnvironment({ mocked: "true" }), /temporary/);
   for (const [field, value] of [["WITNESS_TREE_ACCOUNT", "000000000000"], ["WITNESS_TREE_OPERATOR_ARN", "wrong"], ["WITNESS_TREE_ROLE_ARN", "wrong"], ["WITNESS_TREE_ROLE_SESSION_NAME", "wrong"], ["WITNESS_TREE_MFA_PRESENT", "false"], ["WITNESS_TREE_SESSION_EXPIRES_AT", "2000-01-01T00:00:00Z"]]) {
     assert.throws(() => ownerRoleEnvironment({ ...exact, [field]: value }));
   }
@@ -263,7 +271,7 @@ test("multipart completion accepts the provider composite checksum form", () => 
 test("executePromotion completes a first-run multipart object before persisting complete", () => {
   const fixture = executionFixture(); const service = mockS3(fixture);
   try {
-    const result = executePromotion(fixture.plan, fixture.options, { invoke: service.invoke, mfaEnv: { mocked: "true" } });
+    const result = executePromotion(fixture.plan, fixture.options, { invoke: service.invoke, mfaEnv: exactPromotionEnv });
     assert.equal(result.objects[fixture.multipartId].complete, true);
     assert.equal(service.count("create-multipart-upload"), 1);
     assert.equal(service.count("complete-multipart-upload"), 1);
@@ -276,13 +284,13 @@ test("executePromotion completes a first-run multipart object before persisting 
 test("executePromotion persists an ambiguous part response and refuses an automatic retry", () => {
   const fixture = executionFixture(); const service = mockS3(fixture, { failUploadPartOnce: 2 });
   try {
-    assert.throws(() => executePromotion(fixture.plan, fixture.options, { invoke: service.invoke, mfaEnv: { mocked: "true" } }), /interrupted part 2/);
+    assert.throws(() => executePromotion(fixture.plan, fixture.options, { invoke: service.invoke, mfaEnv: exactPromotionEnv }), /part response unknown|ambiguous/i);
     const partial = JSON.parse(readFileSync(fixture.statePath, "utf8"));
     assert.equal(partial.objects[fixture.multipartId].parts.length, 1);
     assert.equal(partial.objects[fixture.multipartId].recoveryRequired, true);
     const firstPartCalls = () => service.count("upload-part", (call) => call.args[call.args.indexOf("--part-number") + 1] === "1");
     assert.equal(firstPartCalls(), 1);
-    assert.throws(() => executePromotion(fixture.plan, fixture.options, { invoke: service.invoke, mfaEnv: { mocked: "true" } }), /recovery-required|automatic duplicate/i);
+    assert.throws(() => executePromotion(fixture.plan, fixture.options, { invoke: service.invoke, mfaEnv: exactPromotionEnv }), /recovery-required|automatic duplicate/i);
     assert.equal(firstPartCalls(), 1);
     assert.equal(service.count("create-multipart-upload"), 1);
     assert.equal(service.count("put-object", (call) => call.key === fixture.firstSingleKey), 1);
@@ -292,11 +300,11 @@ test("executePromotion persists an ambiguous part response and refuses an automa
 test("executePromotion resumes a single-PUT response pending exact-version readback without a duplicate write", () => {
   const fixture = executionFixture(); const service = mockS3(fixture, { failSingleHeadOnce: true });
   try {
-    assert.throws(() => executePromotion(fixture.plan, fixture.options, { invoke: service.invoke, mfaEnv: { mocked: "true" } }), /single readback interruption/);
+    assert.throws(() => executePromotion(fixture.plan, fixture.options, { invoke: service.invoke, mfaEnv: exactPromotionEnv }), /head-object provider call failed/);
     const firstId = `sheet-${fixture.plan.archiveSet.payloads[0].sheet}`;
     const pending = JSON.parse(readFileSync(fixture.statePath, "utf8")).objects[firstId];
     assert.equal(pending.complete, false); assert.match(pending.versionId, /^single-version-/);
-    const result = executePromotion(fixture.plan, fixture.options, { invoke: service.invoke, mfaEnv: { mocked: "true" } });
+    const result = executePromotion(fixture.plan, fixture.options, { invoke: service.invoke, mfaEnv: exactPromotionEnv });
     assert.equal(result.objects[firstId].complete, true);
     assert.equal(service.count("put-object", (call) => call.key === fixture.firstSingleKey), 1);
   } finally { fixture.cleanup(); }
@@ -305,12 +313,12 @@ test("executePromotion resumes a single-PUT response pending exact-version readb
 test("executePromotion treats every unavailable completion response as ambiguous and never retries it", () => {
   const fixture = executionFixture(); const service = mockS3(fixture, { failCompleteOnce: true });
   try {
-    assert.throws(() => executePromotion(fixture.plan, fixture.options, { invoke: service.invoke, mfaEnv: { mocked: "true" } }), /completion response is unavailable or ambiguous/);
+    assert.throws(() => executePromotion(fixture.plan, fixture.options, { invoke: service.invoke, mfaEnv: exactPromotionEnv }), /completion response is unavailable or ambiguous/);
     const pending = JSON.parse(readFileSync(fixture.statePath, "utf8")).objects[fixture.multipartId];
     assert.equal(pending.complete, false); assert.equal(pending.parts.length, 3); assert.equal(pending.versionId, undefined);
     assert.equal(pending.recoveryRequired, true);
     const uploadsBefore = service.count("upload-part");
-    assert.throws(() => executePromotion(fixture.plan, fixture.options, { invoke: service.invoke, mfaEnv: { mocked: "true" } }), /recovery-required|automatic duplicate/i);
+    assert.throws(() => executePromotion(fixture.plan, fixture.options, { invoke: service.invoke, mfaEnv: exactPromotionEnv }), /recovery-required|automatic duplicate/i);
     assert.equal(service.count("upload-part"), uploadsBefore);
     assert.equal(service.count("create-multipart-upload"), 1);
     assert.equal(service.count("complete-multipart-upload"), 1);
@@ -320,10 +328,10 @@ test("executePromotion treats every unavailable completion response as ambiguous
 test("executePromotion recovers a completion response whose exact-version readback was interrupted", () => {
   const fixture = executionFixture(); const service = mockS3(fixture, { failMultipartHeadOnce: true });
   try {
-    assert.throws(() => executePromotion(fixture.plan, fixture.options, { invoke: service.invoke, mfaEnv: { mocked: "true" } }), /ambiguous readback interruption/);
+    assert.throws(() => executePromotion(fixture.plan, fixture.options, { invoke: service.invoke, mfaEnv: exactPromotionEnv }), /head-object provider call failed/);
     const pending = JSON.parse(readFileSync(fixture.statePath, "utf8")).objects[fixture.multipartId];
     assert.equal(pending.complete, false); assert.match(pending.versionId, /^multipart-version-/); assert.equal(pending.parts.length, 3);
-    const result = executePromotion(fixture.plan, fixture.options, { invoke: service.invoke, mfaEnv: { mocked: "true" } });
+    const result = executePromotion(fixture.plan, fixture.options, { invoke: service.invoke, mfaEnv: exactPromotionEnv });
     assert.equal(result.objects[fixture.multipartId].complete, true);
     assert.equal(service.count("create-multipart-upload"), 1);
     assert.equal(service.count("complete-multipart-upload"), 1);
@@ -334,10 +342,10 @@ test("executePromotion recovers a completion response whose exact-version readba
 test("executePromotion fails closed without a duplicate upload when completion succeeded but returned no usable response", () => {
   const fixture = executionFixture(); const service = mockS3(fixture, { loseCompleteResponseOnce: true });
   try {
-    assert.throws(() => executePromotion(fixture.plan, fixture.options, { invoke: service.invoke, mfaEnv: { mocked: "true" } }), /completion response is unavailable or ambiguous/);
+    assert.throws(() => executePromotion(fixture.plan, fixture.options, { invoke: service.invoke, mfaEnv: exactPromotionEnv }), /completion response is unavailable or ambiguous/);
     const pending = JSON.parse(readFileSync(fixture.statePath, "utf8")).objects[fixture.multipartId];
     assert.equal(pending.complete, false); assert.equal(pending.parts.length, 3); assert.equal(pending.versionId, undefined);
-    assert.throws(() => executePromotion(fixture.plan, fixture.options, { invoke: service.invoke, mfaEnv: { mocked: "true" } }), /recovery-required|automatic duplicate mutation is disabled/i);
+    assert.throws(() => executePromotion(fixture.plan, fixture.options, { invoke: service.invoke, mfaEnv: exactPromotionEnv }), /recovery-required|automatic duplicate mutation is disabled/i);
     assert.equal(service.count("create-multipart-upload"), 1);
     assert.equal(service.count("complete-multipart-upload"), 1);
     assert.equal(service.count("upload-part"), 3);
@@ -347,11 +355,11 @@ test("executePromotion fails closed without a duplicate upload when completion s
 test("NoSuchUpload returned by completion is persisted for separate read-only recovery without replacement", () => {
   const fixture = executionFixture(); const service = mockS3(fixture, { noSuchUploadOnCompleteOnce: true });
   try {
-    assert.throws(() => executePromotion(fixture.plan, fixture.options, { invoke: service.invoke, mfaEnv: { mocked: "true" } }), /completion response is unavailable or ambiguous/);
+    assert.throws(() => executePromotion(fixture.plan, fixture.options, { invoke: service.invoke, mfaEnv: exactPromotionEnv }), /completion response is unavailable or ambiguous/);
     const pending = JSON.parse(readFileSync(fixture.statePath, "utf8")).objects[fixture.multipartId];
     assert.equal(pending.recoveryRequired, true);
     assert.equal(pending.recoveryReason, "multipart-completion-nosuchupload");
-    assert.throws(() => executePromotion(fixture.plan, fixture.options, { invoke: service.invoke, mfaEnv: { mocked: "true" } }), /recovery-required|automatic duplicate/i);
+    assert.throws(() => executePromotion(fixture.plan, fixture.options, { invoke: service.invoke, mfaEnv: exactPromotionEnv }), /recovery-required|automatic duplicate/i);
     assert.equal(service.count("create-multipart-upload"), 1);
     assert.equal(service.count("complete-multipart-upload"), 1);
   } finally { fixture.cleanup(); }
@@ -360,14 +368,14 @@ test("NoSuchUpload returned by completion is persisted for separate read-only re
 test("executePromotion fails closed when provider multipart parts differ from persisted local state", () => {
   const fixture = executionFixture(); const service = mockS3(fixture, { failCompleteOnce: true });
   try {
-    assert.throws(() => executePromotion(fixture.plan, fixture.options, { invoke: service.invoke, mfaEnv: { mocked: "true" } }), /completion response is unavailable or ambiguous/);
+    assert.throws(() => executePromotion(fixture.plan, fixture.options, { invoke: service.invoke, mfaEnv: exactPromotionEnv }), /completion response is unavailable or ambiguous/);
     const state = JSON.parse(readFileSync(fixture.statePath, "utf8"));
     delete state.objects[fixture.multipartId].recoveryRequired; delete state.objects[fixture.multipartId].recoveryReason; delete state.objects[fixture.multipartId].recoveryNotice; delete state.objects[fixture.multipartId].errorCode; delete state.objects[fixture.multipartId].pendingMutation;
     writeFileSync(fixture.statePath, `${JSON.stringify(state, null, 2)}\n`, { mode: 0o600 }); chmodSync(fixture.statePath, 0o600);
     const upload = [...service.uploads.values()][0]; upload.parts[0].ChecksumSHA256 = Buffer.alloc(32, 0x44).toString("base64");
     const mutationCalls = () => service.count("create-multipart-upload") + service.count("upload-part") + service.count("complete-multipart-upload") + service.count("put-object");
     const before = mutationCalls();
-    assert.throws(() => executePromotion(fixture.plan, fixture.options, { invoke: service.invoke, mfaEnv: { mocked: "true" } }), /remote multipart state drifted/);
+    assert.throws(() => executePromotion(fixture.plan, fixture.options, { invoke: service.invoke, mfaEnv: exactPromotionEnv }), /remote multipart state drifted/);
     assert.equal(mutationCalls(), before);
   } finally { fixture.cleanup(); }
 });
@@ -376,23 +384,42 @@ test("lost PutObject and CreateMultipartUpload responses are durably ambiguous a
   for (const hooks of [{ loseSinglePutResponseOnce: true }, { loseCreateResponseOnce: true }]) {
     const fixture = executionFixture(); const service = mockS3(fixture, hooks);
     try {
-      assert.throws(() => executePromotion(fixture.plan, fixture.options, { invoke: service.invoke, mfaEnv: { mocked: "true" } }), /response.*unknown|ambiguous|recovery/i);
+      assert.throws(() => executePromotion(fixture.plan, fixture.options, { invoke: service.invoke, mfaEnv: exactPromotionEnv }), /response.*unknown|ambiguous|recovery/i);
       const state = JSON.parse(readFileSync(fixture.statePath, "utf8"));
       const ambiguous = Object.values(state.objects).find((record) => record.recoveryRequired);
       assert.ok(ambiguous?.mutationIntent?.requestSha256);
       assert.equal(ambiguous.mutationIntent.status, "ambiguous");
       const putCount = service.count("put-object"); const createCount = service.count("create-multipart-upload");
-      assert.throws(() => executePromotion(fixture.plan, fixture.options, { invoke: service.invoke, mfaEnv: { mocked: "true" } }), /recovery-required|automatic duplicate/i);
+      assert.throws(() => executePromotion(fixture.plan, fixture.options, { invoke: service.invoke, mfaEnv: exactPromotionEnv }), /recovery-required|automatic duplicate/i);
       assert.equal(service.count("put-object"), putCount); assert.equal(service.count("create-multipart-upload"), createCount);
     } finally { fixture.cleanup(); }
   }
+});
+
+test("mutation session provenance is durable before the first provider call and provider secrets never enter errors or state", () => {
+  const fixture = executionFixture(); const secret = "SECRET_PROVIDER_REQUEST_opaque-789"; const service = mockS3(fixture, { loseSinglePutResponseOnce: true, singlePutErrorMessage: secret });
+  let firstCallState;
+  const invoke = (args, env) => {
+    if (!firstCallState) firstCallState = JSON.parse(readFileSync(path.join(fixture.options.stateDir, "qc-fourth-inventory-promotion-state.json"), "utf8"));
+    return service.invoke(args, env);
+  };
+  try {
+    let error;
+    try { executePromotion(fixture.plan, fixture.options, { invoke, mfaEnv: exactPromotionEnv }); } catch (caught) { error = caught; }
+    assert.ok(error); assert.equal(firstCallState.promotionSessions.length, 1); assert.deepEqual(firstCallState.promotionSessions[0], {
+      account: "286853118812", operatorArn: exactPromotionEnv.WITNESS_TREE_OPERATOR_ARN, roleArn: exactPromotionEnv.WITNESS_TREE_ROLE_ARN, roleSessionName: exactPromotionEnv.WITNESS_TREE_ROLE_SESSION_NAME,
+      assumedRoleArn: exactPromotionEnv.WITNESS_TREE_ASSUMED_ROLE_ARN, roleUserId: exactPromotionEnv.WITNESS_TREE_ROLE_USER_ID, mfaSerialArn: exactPromotionEnv.WITNESS_TREE_MFA_SERIAL_ARN, mfaPresent: true, sessionExpiresAt: "2099-01-01T00:00:00.000Z"
+    });
+    assert.equal(String(error).includes(secret), false); assert.equal(String(error.stack).includes(secret), false);
+    assert.equal(readFileSync(path.join(fixture.options.stateDir, "qc-fourth-inventory-promotion-state.json"), "utf8").includes(secret), false);
+  } finally { fixture.cleanup(); }
 });
 
 test("the owner-only whole-run lock rejects a concurrent run before sidecar creation or any provider call", () => {
   const fixture = executionFixture(); const service = mockS3(fixture);
   try {
     writeFileSync(path.join(fixture.stateDir, "qc-fourth-inventory-promotion.lock"), "occupied\n", { mode: 0o600 });
-    assert.throws(() => executePromotion(fixture.plan, fixture.options, { invoke: service.invoke, mfaEnv: { mocked: "true" } }), /exclusive.*run|already active/i);
+    assert.throws(() => executePromotion(fixture.plan, fixture.options, { invoke: service.invoke, mfaEnv: exactPromotionEnv }), /exclusive.*run|already active/i);
     assert.equal(service.calls.length, 0);
     assert.equal(existsSync(path.join(fixture.sidecarDir, "collection-manifest.json")), false);
   } finally { fixture.cleanup(); }
@@ -401,11 +428,11 @@ test("the owner-only whole-run lock rejects a concurrent run before sidecar crea
 test("executePromotion rejects corrupted persisted state before any remote call", () => {
   const fixture = executionFixture(); const service = mockS3(fixture, { failUploadPartOnce: 2 });
   try {
-    assert.throws(() => executePromotion(fixture.plan, fixture.options, { invoke: service.invoke, mfaEnv: { mocked: "true" } }), /interrupted part 2/);
+    assert.throws(() => executePromotion(fixture.plan, fixture.options, { invoke: service.invoke, mfaEnv: exactPromotionEnv }), /part response unknown|ambiguous/i);
     const state = JSON.parse(readFileSync(fixture.statePath, "utf8")); state.objects[fixture.multipartId].objectKey = "corrupted-key";
     writeFileSync(fixture.statePath, `${JSON.stringify(state, null, 2)}\n`, { mode: 0o600 }); chmodSync(fixture.statePath, 0o600);
     const before = service.calls.length;
-    assert.throws(() => executePromotion(fixture.plan, fixture.options, { invoke: service.invoke, mfaEnv: { mocked: "true" } }), /state key drifted/);
+    assert.throws(() => executePromotion(fixture.plan, fixture.options, { invoke: service.invoke, mfaEnv: exactPromotionEnv }), /state key drifted/);
     assert.equal(service.calls.length, before);
   } finally { fixture.cleanup(); }
 });
@@ -413,11 +440,11 @@ test("executePromotion rejects corrupted persisted state before any remote call"
 test("executePromotion keeps multipart completion pending until exact COMPLIANCE retention verifies", () => {
   const fixture = executionFixture(); const service = mockS3(fixture, { multipartRetentionMode: "GOVERNANCE" });
   try {
-    assert.throws(() => executePromotion(fixture.plan, fixture.options, { invoke: service.invoke, mfaEnv: { mocked: "true" } }), /not COMPLIANCE/);
+    assert.throws(() => executePromotion(fixture.plan, fixture.options, { invoke: service.invoke, mfaEnv: exactPromotionEnv }), /not COMPLIANCE/);
     const pending = JSON.parse(readFileSync(fixture.statePath, "utf8")).objects[fixture.multipartId];
     assert.equal(pending.complete, false); assert.match(pending.versionId, /^multipart-version-/);
     service.hooks.multipartRetentionMode = "COMPLIANCE";
-    const result = executePromotion(fixture.plan, fixture.options, { invoke: service.invoke, mfaEnv: { mocked: "true" } });
+    const result = executePromotion(fixture.plan, fixture.options, { invoke: service.invoke, mfaEnv: exactPromotionEnv });
     assert.equal(result.objects[fixture.multipartId].complete, true);
     assert.equal(service.count("create-multipart-upload"), 1);
     assert.equal(service.count("complete-multipart-upload"), 1);

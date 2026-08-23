@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { chmodSync, existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { chmodSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import test from "node:test";
@@ -7,6 +7,11 @@ import { exactPromotionObjects, qcFourthPlanDigests } from "../scripts/check-qc-
 import { recoverQcFourthReadOnly, validateRecoveryEnvironment } from "../scripts/recover-qc-fourth-inventory-immutable-promotion-readonly.mjs";
 
 const plan = JSON.parse(readFileSync(new URL("../data/qc-fourth-inventory-immutable-promotion-preparation.json", import.meta.url), "utf8"));
+const exactRecoveryEnv = {
+  AWS_ACCESS_KEY_ID: "temporary", AWS_SECRET_ACCESS_KEY: "temporary", AWS_SESSION_TOKEN: "temporary", WITNESS_TREE_SESSION_VERIFIED: "1", WITNESS_TREE_ACCOUNT: "286853118812",
+  WITNESS_TREE_OPERATOR_ARN: "arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator", WITNESS_TREE_ROLE_ARN: "arn:aws:iam::286853118812:role/WitnessTreeQcFourthArchivePromotionUploader", WITNESS_TREE_ROLE_SESSION_NAME: "witness-tree-qc-fourth-readonly-recovery", WITNESS_TREE_MFA_PRESENT: "true", WITNESS_TREE_SESSION_EXPIRES_AT: "2099-01-01T00:00:00Z",
+  WITNESS_TREE_ASSUMED_ROLE_ARN: "arn:aws:sts::286853118812:assumed-role/WitnessTreeQcFourthArchivePromotionUploader/witness-tree-qc-fourth-readonly-recovery", WITNESS_TREE_ROLE_USER_ID: "AROA_RECOVERY:witness-tree-qc-fourth-readonly-recovery", WITNESS_TREE_MFA_SERIAL_ARN: "arn:aws:iam::286853118812:mfa/WitnessTreeArchiveOperator"
+};
 
 function fixture(reason = "single-put-response-unknown", uploadId) {
   const workspace = mkdtempSync(path.join(tmpdir(), "qc-fourth-recovery-"));
@@ -20,6 +25,7 @@ function fixture(reason = "single-put-response-unknown", uploadId) {
     bucket: plan.bucket,
     region: plan.region,
     retentionUntil: "2033-08-12T00:00:00Z",
+    promotionSessions: [{ account: "286853118812", operatorArn: "arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator", roleArn: "arn:aws:iam::286853118812:role/WitnessTreeQcFourthArchivePromotionUploader", roleSessionName: "witness-tree-qc-fourth-approved-promotion", assumedRoleArn: "arn:aws:sts::286853118812:assumed-role/WitnessTreeQcFourthArchivePromotionUploader/witness-tree-qc-fourth-approved-promotion", roleUserId: "AROA_PROMOTION:witness-tree-qc-fourth-approved-promotion", mfaSerialArn: "arn:aws:iam::286853118812:mfa/WitnessTreeArchiveOperator", mfaPresent: true, sessionExpiresAt: "2099-01-01T00:00:00.000Z" }],
     objects: {
       [entry.id]: {
         objectKey: entry.objectKey,
@@ -46,7 +52,7 @@ function readOnlyMock(fixture, noSuchUpload = false) {
     const operation = args[1];
     calls.push({ operation, args: [...args] });
     assert.equal(["head-object", "get-object-retention", "list-parts"].includes(operation), true, `unexpected mutating recovery operation ${operation}`);
-    if (operation === "list-parts" && noSuchUpload) throw new Error("NoSuchUpload");
+    if (operation === "list-parts" && noSuchUpload) { const error = new Error("provider opaque detail"); error.code = "NoSuchUpload"; throw error; }
     if (operation === "list-parts") return { IsTruncated: false, Parts: [] };
     if (operation === "head-object") return { VersionId: "candidate-version-1", ContentLength: fixture.entry.byteLength, ChecksumType: "FULL_OBJECT", ChecksumSHA256: Buffer.from(fixture.entry.sha256, "hex").toString("base64") };
     return { Retention: { Mode: "COMPLIANCE", RetainUntilDate: "2033-08-12T00:00:00Z" } };
@@ -59,7 +65,7 @@ test("ambiguous single-PUT recovery is separately gated, read-only, and never ch
   const mock = readOnlyMock(item);
   try {
     assert.throws(() => recoverQcFourthReadOnly(plan, item.statePath, item.outputPath, { sessionReady: true, invoke: mock.invoke }), /separate explicit approval/);
-    const result = recoverQcFourthReadOnly(plan, item.statePath, item.outputPath, { approveReadOnlyRecovery: true, sessionReady: true, invoke: mock.invoke, env: { mocked: "true" } });
+    const result = recoverQcFourthReadOnly(plan, item.statePath, item.outputPath, { approveReadOnlyRecovery: true, sessionReady: true, invoke: mock.invoke, env: exactRecoveryEnv });
     assert.equal(result.status, "read-only-diagnostic-only");
     assert.equal(result.objects[0].recoveryDecision, "recovery-required-no-automatic-duplicate");
     assert.equal(result.objects[0].candidateMatchesApprovedBytesChecksumAndRetention, true);
@@ -73,7 +79,7 @@ test("NoSuchUpload recovery records an unresolved read-only diagnostic and canno
   const item = fixture("multipart-completion-nosuchupload", "upload-that-may-have-completed");
   const mock = readOnlyMock(item, true);
   try {
-    const result = recoverQcFourthReadOnly(plan, item.statePath, item.outputPath, { approveReadOnlyRecovery: true, sessionReady: true, invoke: mock.invoke, env: { mocked: "true" } });
+    const result = recoverQcFourthReadOnly(plan, item.statePath, item.outputPath, { approveReadOnlyRecovery: true, sessionReady: true, invoke: mock.invoke, env: exactRecoveryEnv });
     assert.equal(result.objects[0].observedUploadState, "NoSuchUpload");
     assert.equal(result.objects[0].recoveryDecision, "recovery-required-no-automatic-duplicate");
     assert.equal(result.claims.replacementStarted, false);
@@ -89,9 +95,10 @@ test("read-only recovery independently binds the exact owner, account, role, ses
     WITNESS_TREE_OPERATOR_ARN: "arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator",
     WITNESS_TREE_ROLE_ARN: "arn:aws:iam::286853118812:role/WitnessTreeQcFourthArchivePromotionUploader",
     WITNESS_TREE_ROLE_SESSION_NAME: "witness-tree-qc-fourth-readonly-recovery", WITNESS_TREE_MFA_PRESENT: "true",
-    WITNESS_TREE_SESSION_EXPIRES_AT: "2099-01-01T00:00:00Z"
+    WITNESS_TREE_SESSION_EXPIRES_AT: "2099-01-01T00:00:00Z", WITNESS_TREE_ASSUMED_ROLE_ARN: exactRecoveryEnv.WITNESS_TREE_ASSUMED_ROLE_ARN, WITNESS_TREE_ROLE_USER_ID: exactRecoveryEnv.WITNESS_TREE_ROLE_USER_ID, WITNESS_TREE_MFA_SERIAL_ARN: exactRecoveryEnv.WITNESS_TREE_MFA_SERIAL_ARN
   };
   assert.equal(validateRecoveryEnvironment(exact), exact);
+  assert.throws(() => validateRecoveryEnvironment({ mocked: "true" }), /temporary/);
   for (const [field, value] of [["WITNESS_TREE_ACCOUNT", "wrong"], ["WITNESS_TREE_OPERATOR_ARN", "wrong"], ["WITNESS_TREE_ROLE_ARN", "wrong"], ["WITNESS_TREE_ROLE_SESSION_NAME", "wrong"], ["WITNESS_TREE_MFA_PRESENT", "false"], ["WITNESS_TREE_SESSION_EXPIRES_AT", "2000-01-01T00:00:00Z"]]) {
     assert.throws(() => validateRecoveryEnvironment({ ...exact, [field]: value }));
   }

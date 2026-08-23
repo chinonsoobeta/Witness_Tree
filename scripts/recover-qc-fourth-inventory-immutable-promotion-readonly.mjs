@@ -1,10 +1,11 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
-import { lstatSync, linkSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
+import { lstatSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { exactPromotionObjects, loadQcFourthInventoryPromotionPreparation, qcFourthPlanDigests } from "./check-qc-fourth-inventory-immutable-promotion.mjs";
 import { preflightLocal, recomputeMultipartPartChecksums } from "./qc-fourth-inventory-immutable-promotion.mjs";
+import { writeExclusiveMode600 } from "./assemble-qc-immutable-promotion-attestation.mjs";
 
 const RETAIN_UNTIL = "2033-08-12T00:00:00Z";
 const PRIVATE_FILE_MODE = 0o600;
@@ -52,43 +53,14 @@ function assertNewOutput(file) {
   assert.equal(exists(`${file}.next`), false, "recovery output temporary path already exists; inspect it before continuing");
 }
 
-function publishOutput(file, record) {
-  const temporary = `${file}.next`;
-  writeFileSync(temporary, `${JSON.stringify(record, null, 2)}\n`, { flag: "wx", mode: PRIVATE_FILE_MODE });
-  let published = false;
-  try {
-    const metadata = lstatSync(temporary);
-    assert.ok(metadata.isFile() && !metadata.isSymbolicLink(), "recovery output temporary file must be regular");
-    assert.equal(metadata.uid, process.getuid(), "recovery output temporary file must be owner-owned");
-    assert.equal(metadata.mode & 0o777, PRIVATE_FILE_MODE, "recovery output temporary file must be mode 600");
-    assert.equal(metadata.nlink, 1, "recovery output temporary file must not have hard links");
-    // link(2) refuses an output that appeared after the precheck; rename(2)
-    // would replace it during that race.
-    assert.equal(exists(file), false, "recovery output appeared during read-only capture");
-    linkSync(temporary, file);
-    published = true;
-    unlinkSync(temporary);
-    const finalMetadata = lstatSync(file);
-    assert.equal(finalMetadata.uid, process.getuid(), "recovery output must be owner-owned");
-    assert.equal(finalMetadata.mode & 0o777, PRIVATE_FILE_MODE, "recovery output must be mode 600");
-    assert.equal(finalMetadata.nlink, 1, "recovery output must not have hard links");
-  } catch (error) {
-    if (published) {
-      try { unlinkSync(file); } catch (cleanupError) { if (cleanupError?.code !== "ENOENT") throw cleanupError; }
-    }
-    throw error;
-  } finally {
-    try { unlinkSync(temporary); } catch (error) { if (error?.code !== "ENOENT") throw error; }
-  }
-}
-
 function invokeJson(args, env = process.env) {
   const output = execFileSync("aws", args, { encoding: "utf8", env, stdio: ["ignore", "pipe", "pipe"] });
   return output.trim() ? JSON.parse(output) : {};
 }
 
 function s3(invoke, env, args) {
-  return invoke(["s3api", ...args, "--region", "ca-central-1", "--output", "json"], env);
+  try { return invoke(["s3api", ...args, "--region", "ca-central-1", "--output", "json"], env); }
+  catch (error) { const safe = new Error(`${args[0]} provider call failed`); safe.providerCode = error?.code === "NoSuchUpload" ? "NoSuchUpload" : "provider-error"; throw safe; }
 }
 
 function planBoundState(plan, state) {
@@ -100,6 +72,7 @@ function planBoundState(plan, state) {
   assert.equal(state.bucket, plan.bucket);
   assert.equal(state.region, plan.region);
   assert.equal(state.retentionUntil, RETAIN_UNTIL);
+  assert.ok(Array.isArray(state.promotionSessions) && state.promotionSessions.length > 0, "promotion state has no mutation-session provenance");
   assert.ok(state.objects && typeof state.objects === "object" && !Array.isArray(state.objects));
   const entries = new Map(exactPromotionObjects(plan).map((entry) => [entry.id, entry]));
   for (const [id, record] of Object.entries(state.objects)) {
@@ -116,9 +89,7 @@ function planBoundState(plan, state) {
 }
 
 function classifyError(error) {
-  const text = typeof error?.message === "string" ? error.message : "unknown";
-  if (/NoSuchUpload/i.test(text)) return "NoSuchUpload";
-  if (/AccessDenied/i.test(text)) return "AccessDenied";
+  if (error?.providerCode === "NoSuchUpload") return "NoSuchUpload";
   return "readback-error";
 }
 
@@ -128,7 +99,6 @@ function expectedChecksum(plan, entry, localMultipart) {
 }
 
 export function validateRecoveryEnvironment(environment) {
-  if (environment?.mocked === "true") return environment;
   assert.ok(environment?.AWS_ACCESS_KEY_ID && environment?.AWS_SECRET_ACCESS_KEY && environment?.AWS_SESSION_TOKEN, "temporary read-only role-session credentials are required");
   assert.equal(environment.WITNESS_TREE_SESSION_VERIFIED, "1", "the owner-local recovery wrapper did not verify its session");
   assert.equal(environment.WITNESS_TREE_ACCOUNT, ACCOUNT, "the recovery session is outside the approved account");
@@ -138,6 +108,9 @@ export function validateRecoveryEnvironment(environment) {
   assert.equal(environment.WITNESS_TREE_MFA_PRESENT, "true", "the recovery wrapper did not attest fresh MFA");
   assert.ok(typeof environment.WITNESS_TREE_SESSION_EXPIRES_AT === "string" && Number.isFinite(Date.parse(environment.WITNESS_TREE_SESSION_EXPIRES_AT)), "the recovery session expiry is missing");
   assert.ok(Date.parse(environment.WITNESS_TREE_SESSION_EXPIRES_AT) > Date.now(), "the recovery session is expired");
+  assert.equal(environment.WITNESS_TREE_ASSUMED_ROLE_ARN, `arn:aws:sts::${ACCOUNT}:assumed-role/WitnessTreeQcFourthArchivePromotionUploader/${RECOVERY_SESSION_NAME}`, "the exact recovery assumed-role ARN is missing");
+  assert.match(environment.WITNESS_TREE_ROLE_USER_ID || "", /^\S+$/, "the recovery role UserId is missing");
+  assert.match(environment.WITNESS_TREE_MFA_SERIAL_ARN || "", /^arn:aws:iam::286853118812:mfa\//, "the recovery MFA serial provenance is missing");
   return environment;
 }
 
@@ -225,7 +198,7 @@ export function recoverQcFourthReadOnly(plan, statePath, outputPath, dependencie
     objects: results,
     claims: { stateChanged: false, mutationPerformed: false, replacementStarted: false, sourceLedgerCreditChanged: false, transformed: false, ingested: false, productionEligible: false }
   };
-  publishOutput(outputPath, record);
+  writeExclusiveMode600(outputPath, record, dependencies.publicationHooks);
   return record;
 }
 
@@ -247,6 +220,6 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const dataRoot = option(args, "--data-root");
   assert.ok(statePath && outputPath && dataRoot, "Usage: --recover --approve-read-only-recovery --session-ready --state <mode-600-state> --data-root <Witness_Tree-data> --output <new-mode-600-output>");
   assert.ok(process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY && process.env.AWS_SESSION_TOKEN, "temporary read-only role-session credentials are required");
-  const result = recoverQcFourthReadOnly(loadQcFourthInventoryPromotionPreparation(), path.resolve(statePath), path.resolve(outputPath), { approveReadOnlyRecovery: true, sessionReady: true, dataRoot: path.resolve(dataRoot), env: process.env });
-  console.log(JSON.stringify(result, null, 2));
+  recoverQcFourthReadOnly(loadQcFourthInventoryPromotionPreparation(), path.resolve(statePath), path.resolve(outputPath), { approveReadOnlyRecovery: true, sessionReady: true, dataRoot: path.resolve(dataRoot), env: process.env });
+  console.log("QC fourth-inventory read-only recovery diagnostic was written to the requested owner-only output; no opaque provider identifier was printed.");
 }
