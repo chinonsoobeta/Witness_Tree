@@ -299,18 +299,26 @@ function singlePut(plan, entry, state, options, invoke, env) {
   const existing = state.objects[entry.id];
   if (existing) {
     assertStateRecordBinding(entry, existing);
-    assert.equal(existing.complete, true, `${entry.id} single-PUT state is incomplete or malformed.`);
     assert.equal(existing.method, "single-put", `${entry.id} state upload method drifted.`);
-    return verifyRemoteObject(plan, entry, existing, invoke, env);
+    assert.ok(existing.complete === false || existing.complete === true, `${entry.id} single-PUT completion state is malformed.`);
+    verifyRemoteObject(plan, entry, existing, invoke, env);
+    if (!existing.complete) {
+      existing.complete = true;
+      saveState(state, options);
+    }
+    return existing;
   }
   assert.equal(entry.byteLength <= plan.upload.singlePutMaximumBytes, true);
   const expected = base64Sha256(entry.sha256);
   const response = s3(invoke, env, ["put-object", "--bucket", plan.bucket, "--key", entry.objectKey, "--body", entry.file, "--checksum-algorithm", "SHA256", "--checksum-sha256", expected, "--object-lock-mode", "COMPLIANCE", "--object-lock-retain-until-date", RETAIN_UNTIL, "--metadata", `sha256=${entry.sha256}`]);
   assert.ok(response.VersionId, `${entry.id} PutObject did not return a VersionId.`);
   assert.equal(response.ChecksumSHA256, expected, `${entry.id} PutObject checksum drifted.`);
-  const remote = { objectKey: entry.objectKey, byteLength: entry.byteLength, sha256: entry.sha256, complete: true, method: "single-put", versionId: response.VersionId, checksumType: "FULL_OBJECT", checksumSha256: expected };
+  const remote = { objectKey: entry.objectKey, byteLength: entry.byteLength, sha256: entry.sha256, complete: false, method: "single-put", versionId: response.VersionId, checksumType: "FULL_OBJECT", checksumSha256: expected };
+  state.objects[entry.id] = remote;
+  saveState(state, options);
   verifyRemoteObject(plan, entry, remote, invoke, env);
-  state.objects[entry.id] = remote; saveState(state, options);
+  remote.complete = true;
+  saveState(state, options);
   return remote;
 }
 
@@ -348,7 +356,7 @@ function compositeSha256(parts) {
   return `${createHash("sha256").update(raw).digest("base64")}-${parts.length}`;
 }
 
-function validateMultipartState(plan, entry, current, complete = false) {
+function validateMultipartParts(plan, entry, current, allPartsPresent = false) {
   assertStateRecordBinding(entry, current);
   assert.equal(current.method, "multipart", `${entry.id} state upload method drifted.`);
   assert.ok(typeof current.uploadId === "string" && current.uploadId.length > 0, `${entry.id} multipart UploadId is missing.`);
@@ -367,30 +375,43 @@ function validateMultipartState(plan, entry, current, complete = false) {
     const length = Math.min(partSize, entry.byteLength - offset);
     assert.equal(part.checksumSha256, partChecksum(entry.file, offset, length), `${entry.id} multipart part checksum is not bound to the local bytes.`);
   }
-  if (!complete) assert.ok(current.parts.length < partCount, `${entry.id} partial multipart state is already complete.`);
-  if (complete) {
-    assert.equal(current.complete, true, `${entry.id} multipart state is not complete.`);
-    assert.equal(current.parts.length, partCount, `${entry.id} multipart state is incomplete.`);
-    assert.equal(current.partSizeBytes, partSize, `${entry.id} completed multipart part size is missing.`);
-    assert.equal(current.partCount, partCount, `${entry.id} completed multipart part count is missing.`);
-    assert.equal(current.checksumType, "COMPOSITE", `${entry.id} completed multipart checksum type drifted.`);
-  }
+  if (allPartsPresent) assert.equal(current.parts.length, partCount, `${entry.id} multipart state does not contain every part.`);
   return { partSize, partCount, expectedComposite: compositeSha256(current.parts) };
+}
+
+function validateMultipartCompletion(plan, entry, current, persistedComplete) {
+  const result = validateMultipartParts(plan, entry, current, true);
+  assert.equal(current.complete, persistedComplete, `${entry.id} multipart completion state drifted.`);
+  assert.equal(current.partSizeBytes, result.partSize, `${entry.id} completed multipart part size is missing.`);
+  assert.equal(current.partCount, result.partCount, `${entry.id} completed multipart part count is missing.`);
+  assert.equal(current.checksumType, "COMPOSITE", `${entry.id} completed multipart checksum type drifted.`);
+  assert.ok(typeof current.versionId === "string" && current.versionId.length > 0 && current.versionId !== "null", `${entry.id} completed multipart VersionId is missing.`);
+  assert.equal(current.expectedChecksumSha256, result.expectedComposite, `${entry.id} completed checksum is not bound to the local parts.`);
+  assert.equal(current.checksumSha256, result.expectedComposite, `${entry.id} completed checksum drifted.`);
+  return result;
 }
 
 function multipartPut(plan, entry, state, options, invoke, env) {
   const prior = state.objects[entry.id];
   if (prior?.complete) {
-    const expected = validateMultipartState(plan, entry, prior, true).expectedComposite;
-    assert.equal(prior.expectedChecksumSha256, expected, `${entry.id} completed checksum is not bound to the local parts.`);
-    assert.equal(prior.checksumSha256, expected, `${entry.id} completed checksum drifted.`);
+    validateMultipartCompletion(plan, entry, prior, true);
     return verifyRemoteObject(plan, entry, prior, invoke, env);
   }
   const current = prior || { objectKey: entry.objectKey, byteLength: entry.byteLength, sha256: entry.sha256, complete: false, method: "multipart", uploadId: null, parts: [], partSizeBytes: plan.upload.partSizeBytes, partCount: Math.ceil(entry.byteLength / plan.upload.partSizeBytes) };
   assertStateRecordBinding(entry, current);
   assert.equal(current.complete, false, `${entry.id} multipart state is malformed.`);
-  if (current.uploadId === null) assert.equal(current.parts.length, 0, `${entry.id} cannot have parts without an UploadId.`);
-  else validateMultipartState(plan, entry, current);
+  if (current.versionId !== undefined) {
+    validateMultipartCompletion(plan, entry, current, false);
+    verifyRemoteObject(plan, entry, current, invoke, env);
+    current.complete = true;
+    saveState(state, options);
+    return current;
+  }
+  if (current.uploadId === null) {
+    assert.deepEqual(current.parts, [], `${entry.id} cannot have parts without an UploadId.`);
+  } else {
+    validateMultipartParts(plan, entry, current);
+  }
   if (!current.uploadId) {
     const response = s3(invoke, env, ["create-multipart-upload", "--bucket", plan.bucket, "--key", entry.objectKey, "--checksum-algorithm", "SHA256", "--checksum-type", "COMPOSITE", "--object-lock-mode", "COMPLIANCE", "--object-lock-retain-until-date", RETAIN_UNTIL, "--metadata", `sha256=${entry.sha256}`]);
     assert.ok(response.UploadId, `${entry.id} multipart creation returned no UploadId.`);
@@ -401,19 +422,25 @@ function multipartPut(plan, entry, state, options, invoke, env) {
     assert.equal(listed.IsTruncated, false, `${entry.id} part listing unexpectedly paginated.`);
     assert.deepEqual((listed.Parts || []).map(({ PartNumber, ETag, ChecksumSHA256 }) => ({ partNumber: PartNumber, etag: ETag, checksumSha256: ChecksumSHA256 })), current.parts, `${entry.id} remote multipart state drifted.`);
   }
-  const { partSize, partCount } = validateMultipartState(plan, entry, current); const scratch = path.join(assertDirectoryMetadata(options.stateDir, "--state-dir", PRIVATE_DIRECTORY_MODE), "multipart-part-buffer.bin");
+  const { partSize, partCount } = validateMultipartParts(plan, entry, current); const scratch = path.join(assertDirectoryMetadata(options.stateDir, "--state-dir", PRIVATE_DIRECTORY_MODE), "multipart-part-buffer.bin");
   for (let index = current.parts.length; index < partCount; index += 1) {
     const offset = index * partSize; const length = Math.min(partSize, entry.byteLength - offset); const digest = writePart(entry.file, scratch, offset, length); const checksumSha256 = digest.toString("base64");
     const response = s3(invoke, env, ["upload-part", "--bucket", plan.bucket, "--key", entry.objectKey, "--upload-id", current.uploadId, "--part-number", String(index + 1), "--body", scratch, "--checksum-algorithm", "SHA256", "--checksum-sha256", checksumSha256]);
     assert.ok(response.ETag, `${entry.id} part ${index + 1} returned no ETag.`); assert.equal(response.ChecksumSHA256, checksumSha256, `${entry.id} part ${index + 1} checksum drifted.`);
     current.parts.push({ partNumber: index + 1, etag: response.ETag, checksumSha256 }); saveState(state, options);
   }
-  const expectedComposite = validateMultipartState(plan, entry, current, true).expectedComposite;
+  const expectedComposite = validateMultipartParts(plan, entry, current, true).expectedComposite;
   const request = { Parts: current.parts.map((part) => ({ ETag: part.etag, PartNumber: part.partNumber, ChecksumSHA256: part.checksumSha256 })) };
   const response = s3(invoke, env, ["complete-multipart-upload", "--bucket", plan.bucket, "--key", entry.objectKey, "--upload-id", current.uploadId, "--multipart-upload", JSON.stringify(request)]);
   assert.ok(response.VersionId, `${entry.id} multipart completion returned no VersionId.`); assert.equal(response.ChecksumSHA256, expectedComposite, `${entry.id} composite checksum drifted.`);
-  const remote = { objectKey: entry.objectKey, byteLength: entry.byteLength, sha256: entry.sha256, complete: true, method: "multipart", uploadId: current.uploadId, versionId: response.VersionId, checksumType: "COMPOSITE", checksumSha256: expectedComposite, expectedChecksumSha256: expectedComposite, partSizeBytes: partSize, partCount, parts: current.parts };
-  verifyRemoteObject(plan, entry, remote, invoke, env); state.objects[entry.id] = remote; saveState(state, options); return remote;
+  Object.assign(current, { versionId: response.VersionId, checksumType: "COMPOSITE", checksumSha256: expectedComposite, expectedChecksumSha256: expectedComposite, partSizeBytes: partSize, partCount });
+  state.objects[entry.id] = current;
+  saveState(state, options);
+  validateMultipartCompletion(plan, entry, current, false);
+  verifyRemoteObject(plan, entry, current, invoke, env);
+  current.complete = true;
+  saveState(state, options);
+  return current;
 }
 
 export function executePromotion(plan, options, dependencies = {}) {
