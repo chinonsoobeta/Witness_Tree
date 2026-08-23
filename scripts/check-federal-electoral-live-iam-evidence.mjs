@@ -21,17 +21,31 @@ export const FEDERAL_LIVE_IAM_RAW_NAMES = Object.freeze([
 const sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const exactKeys = (value, keys, label) => assert.deepEqual(Object.keys(value ?? {}).sort(), [...keys].sort(), `${label} fields drifted`);
 
-function stableBytes(path, label) {
-  const before = lstatSync(path);
-  assert.equal(before.isFile() && !before.isSymbolicLink() && before.nlink === 1 && before.uid === process.getuid(), true, `${label} is not an owner-only regular file`);
-  const fd = openSync(path, constants.O_RDONLY | constants.O_NOFOLLOW);
+function requireNoFollow() {
+  assert.equal(typeof constants.O_NOFOLLOW === "number" && constants.O_NOFOLLOW !== 0, true, "live IAM evidence requires O_NOFOLLOW support");
+  return constants.O_NOFOLLOW;
+}
+
+function exactIdentity(value) {
+  return { dev: String(value.dev), ino: String(value.ino), size: String(value.size), nlink: String(value.nlink), uid: String(value.uid), mode: Number(value.mode & 0o777n), mtimeNs: String(value.mtimeNs), ctimeNs: String(value.ctimeNs) };
+}
+
+export function stableBytes(path, label, hooks = {}) {
+  const noFollow = requireNoFollow();
+  const before = lstatSync(path, { bigint: true });
+  assert.equal(before.isFile() && !before.isSymbolicLink() && before.nlink === 1n && before.uid === BigInt(process.getuid()) && (before.mode & 0o777n) === 0o600n, true, `${label} is not an owner-only mode-600 regular file`);
+  const fd = openSync(path, constants.O_RDONLY | noFollow);
   try {
-    const opened = fstatSync(fd);
-    assert.equal(opened.dev === before.dev && opened.ino === before.ino, true, `${label} changed before read`);
+    const opened = fstatSync(fd, { bigint: true });
+    assert.deepEqual(exactIdentity(opened), exactIdentity(before), `${label} changed before read`);
     const bytes = readFileSync(fd);
-    const after = fstatSync(fd);
-    assert.equal(after.dev === opened.dev && after.ino === opened.ino && after.size === opened.size && String(after.mtimeNs) === String(opened.mtimeNs), true, `${label} changed during read`);
-    return bytes;
+    hooks.afterRead?.(path, opened, bytes);
+    const after = fstatSync(fd, { bigint: true });
+    const namedAfter = lstatSync(path, { bigint: true });
+    assert.equal(namedAfter.isFile() && !namedAfter.isSymbolicLink(), true, `${label} pathname is not a regular file after read`);
+    assert.deepEqual(exactIdentity(after), exactIdentity(opened), `${label} descriptor changed during read`);
+    assert.deepEqual(exactIdentity(namedAfter), exactIdentity(opened), `${label} pathname changed during read`);
+    return { bytes, sha256: sha256(bytes), identity: exactIdentity(opened) };
   } finally { closeSync(fd); }
 }
 
@@ -70,12 +84,14 @@ function noAttachedPolicies(value, label) {
   assert.equal(required(value, "IsTruncated", label), false, `${label} attached policy inventory is truncated`);
 }
 
-export function validateFederalLiveIamEvidence(manifestPath, desired, plan) {
+export function validateFederalLiveIamEvidence(manifestPath, desired, plan, hooks = {}) {
+  requireNoFollow();
   const manifestFile = resolve(manifestPath);
   const directory = dirname(manifestFile);
   assert.equal(basename(manifestFile), "manifest.json", "live IAM evidence manifest basename drifted");
   assert.deepEqual(readdirSync(directory).sort(), [...FEDERAL_LIVE_IAM_RAW_NAMES, "manifest.json"].sort(), "live IAM evidence directory inventory drifted");
-  const manifest = JSON.parse(stableBytes(manifestFile, "live IAM evidence manifest"));
+  const manifestRead = stableBytes(manifestFile, "live IAM evidence manifest", hooks.manifest);
+  const manifest = JSON.parse(manifestRead.bytes);
   exactKeys(manifest, ["schemaVersion", "status", "capturedAt", "rawFiles", "rawBundleSha256", "derivedSummary", "claims"], "live IAM evidence manifest");
   assert.equal(manifest.schemaVersion, "witness-tree/federal-electoral-live-iam-file-evidence/1");
   assert.equal(manifest.status, "owner-approved-live-file-evidence-complete");
@@ -86,7 +102,7 @@ export function validateFederalLiveIamEvidence(manifestPath, desired, plan) {
   const records = manifest.rawFiles.map((entry) => {
     exactKeys(entry, ["name", "byteLength", "sha256"], `live IAM raw file ${entry.name}`);
     assert.match(entry.name, /^[a-z0-9-]+\.json$/);
-    const bytes = stableBytes(join(directory, entry.name), `live IAM raw file ${entry.name}`);
+    const { bytes } = stableBytes(join(directory, entry.name), `live IAM raw file ${entry.name}`, hooks.raw?.[entry.name]);
     assert.equal(bytes.length, entry.byteLength, `${entry.name} byte length drifted`);
     assert.equal(sha256(bytes), entry.sha256, `${entry.name} SHA-256 drifted`);
     raw[entry.name] = JSON.parse(bytes);
@@ -139,5 +155,5 @@ export function validateFederalLiveIamEvidence(manifestPath, desired, plan) {
     policyInventory: { roleInline: [desired.rolePolicyName], roleAttached: [], operatorInline: [desired.operatorPolicyName], operatorAttached: [] },
     simulations: { operatorAllowed: 1, operatorDenied: 1, roleAllowed: allowed.length, roleDenied: denied.length }
   });
-  return { manifest, manifestSha256: sha256(stableBytes(manifestFile, "live IAM evidence manifest")), rawBundleSha256: manifest.rawBundleSha256 };
+  return { manifest, manifestSha256: manifestRead.sha256, rawBundleSha256: manifest.rawBundleSha256 };
 }

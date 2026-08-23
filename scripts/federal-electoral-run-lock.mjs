@@ -5,8 +5,13 @@ import { dirname, resolve } from "node:path";
 
 const sameInode = (left, right) => left?.dev === right?.dev && left?.ino === right?.ino;
 
+function requireNoFollow() {
+  assert.equal(typeof constants.O_NOFOLLOW === "number" && constants.O_NOFOLLOW !== 0, true, "federal run locks require O_NOFOLLOW support");
+  return constants.O_NOFOLLOW;
+}
+
 function syncDirectory(path) {
-  const fd = openSync(path, constants.O_RDONLY | (constants.O_DIRECTORY ?? 0) | (constants.O_NOFOLLOW ?? 0));
+  const fd = openSync(path, constants.O_RDONLY | (constants.O_DIRECTORY ?? 0) | requireNoFollow());
   try { fsyncSync(fd); } finally { closeSync(fd); }
 }
 
@@ -32,9 +37,10 @@ function writeMarker(fd, value) {
 }
 
 export function acquireFederalRunLock(path) {
+  const noFollow = requireNoFollow();
   const lockPath = resolve(path);
   assert.equal(lockPath, path, "federal lock path must be absolute");
-  const fd = openSync(lockPath, constants.O_RDWR | constants.O_CREAT | constants.O_EXCL | (constants.O_NOFOLLOW ?? 0), 0o600);
+  const fd = openSync(lockPath, constants.O_RDWR | constants.O_CREAT | constants.O_EXCL | noFollow, 0o600);
   try {
     fchmodSync(fd, 0o600);
     const opened = fstatSync(fd);
@@ -49,11 +55,12 @@ export function acquireFederalRunLock(path) {
 }
 
 export function releaseFederalRunLock(lock, hooks = {}) {
+  const noFollow = requireNoFollow();
   assert.equal(resolve(lock.path), lock.path, "federal lock path must be absolute");
   assert.match(lock.generation ?? "", /^[a-f0-9]{32}$/, "federal lock generation is invalid");
   let fd;
   try {
-    fd = openSync(lock.path, constants.O_RDWR | (constants.O_NOFOLLOW ?? 0));
+    fd = openSync(lock.path, constants.O_RDWR | noFollow);
     const opened = fstatSync(fd); const named = lstatSync(lock.path);
     if (!safeLockFile(opened) || !safeLockFile(named) || !sameInode(opened, named) || !sameInode(opened, lock)) return false;
     assert.deepEqual(readMarker(fd), { schemaVersion: 1, status: "active", generation: lock.generation, dev: lock.dev, ino: lock.ino }, "federal active lock marker drifted");

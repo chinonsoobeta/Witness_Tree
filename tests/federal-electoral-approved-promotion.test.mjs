@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { closeSync, existsSync, lstatSync, mkdtempSync, openSync, readFileSync, renameSync, rmSync, symlinkSync, unlinkSync, writeFileSync } from "node:fs";
+import { chmodSync, closeSync, existsSync, lstatSync, mkdtempSync, openSync, readFileSync, renameSync, rmSync, symlinkSync, unlinkSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -172,6 +172,35 @@ test("live IAM requires the exact raw file inventory and recomputed digest chain
     writeFileSync(join(dir, "simulate-role.json"), "{}\n", { mode: 0o600 });
     assert.throws(() => validateFederalLiveIamEvidence(manifest, desired, plan), /byte length drifted|SHA-256 drifted/);
   } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("live IAM manifest is descriptor-read exactly once and its retained bytes supply the digest", () => {
+  const dir = mkdtempSync(join(tmpdir(), "federal-live-iam-single-manifest-read-"));
+  try {
+    const manifest = writeLiveEvidence(dir); let reads = 0;
+    const expected = hash(readFileSync(manifest));
+    const validated = validateFederalLiveIamEvidence(manifest, desired, plan, { manifest: { afterRead: () => { reads += 1; } } });
+    assert.equal(reads, 1); assert.equal(validated.manifestSha256, expected);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("live IAM rejects raw pathname replacement, unsafe mode, and same-inode ctime drift", () => {
+  for (const scenario of ["rename", "mode", "ctime"]) {
+    const dir = mkdtempSync(join(tmpdir(), `federal-live-iam-${scenario}-`));
+    try {
+      const manifest = writeLiveEvidence(dir); const caller = join(dir, "caller-identity.json");
+      if (scenario === "mode") {
+        chmodSync(caller, 0o644);
+        assert.throws(() => validateFederalLiveIamEvidence(manifest, desired, plan), /mode-600/);
+      } else if (scenario === "rename") {
+        const moved = join(dir, "caller-identity.moved"); const replacement = join(dir, "caller-identity.replacement"); const replacementBytes = readFileSync(caller);
+        assert.throws(() => validateFederalLiveIamEvidence(manifest, desired, plan, { raw: { "caller-identity.json": { afterRead: () => { writeFileSync(replacement, replacementBytes, { mode: 0o600 }); renameSync(caller, moved); renameSync(replacement, caller); } } } }), /descriptor changed|pathname changed/);
+        assert.equal(existsSync(moved), true); assert.equal(existsSync(caller), true);
+      } else {
+        assert.throws(() => validateFederalLiveIamEvidence(manifest, desired, plan, { raw: { "caller-identity.json": { afterRead: () => { chmodSync(caller, 0o400); chmodSync(caller, 0o600); } } } }), /descriptor changed/);
+      }
+    } finally { rmSync(dir, { recursive: true, force: true }); }
+  }
 });
 
 test("live IAM fails closed on extra or truncated role and user policy inventories", () => {

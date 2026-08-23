@@ -8,6 +8,11 @@ const sameIdentity = (left, right) => left.dev === right.dev && left.ino === rig
 const sameInode = (left, right) => left.dev === right.dev && left.ino === right.ino;
 const base64Sha = (hex) => Buffer.from(hex, "hex").toString("base64");
 
+function requireNoFollow() {
+  assert.equal(typeof constants.O_NOFOLLOW === "number" && constants.O_NOFOLLOW !== 0, true, "federal stable-file operations require O_NOFOLLOW support");
+  return constants.O_NOFOLLOW;
+}
+
 function regularOwnerFile(path, label) {
   const metadata = lstatSync(path);
   assert.equal(metadata.isSymbolicLink(), false, `${label} cannot be a symlink`);
@@ -18,7 +23,7 @@ function regularOwnerFile(path, label) {
 }
 
 function syncDirectory(path) {
-  const fd = openSync(path, constants.O_RDONLY);
+  const fd = openSync(path, constants.O_RDONLY | requireNoFollow());
   try { fsyncSync(fd); } finally { closeSync(fd); }
 }
 
@@ -41,12 +46,13 @@ function closeOwnedDescriptor(fd, hooks, label) {
 }
 
 export function verifyStableSourceDescriptor({ source, expectedBytes, expectedSha256, hooks = {} }) {
+  const noFollow = requireNoFollow();
   assert.equal(resolve(source), source, "source must be an absolute path");
   assert.ok(Number.isSafeInteger(expectedBytes) && expectedBytes > 0, "expected byte length is invalid");
   assert.match(expectedSha256, SHA256, "expected SHA-256 is invalid");
   const sourceBefore = regularOwnerFile(source, "approved source");
   assert.equal(sourceBefore.size, expectedBytes, "approved source byte length drifted");
-  const fd = openSync(source, constants.O_RDONLY | (constants.O_NOFOLLOW ?? 0));
+  const fd = openSync(source, constants.O_RDONLY | noFollow);
   const hash = createHash("sha256");
   let bytesRead = 0;
   try {
@@ -74,6 +80,7 @@ export function verifyStableSourceDescriptor({ source, expectedBytes, expectedSh
 }
 
 export function copyStableDescriptor({ source, destination, expectedBytes, expectedSha256, hooks = {} }) {
+  const noFollow = requireNoFollow();
   assert.ok(resolve(source) === source || source.startsWith("/"), "source must be an absolute path");
   assert.ok(resolve(destination) === destination || destination.startsWith("/"), "destination must be an absolute path");
   assert.ok(Number.isSafeInteger(expectedBytes) && expectedBytes > 0, "expected byte length is invalid");
@@ -87,7 +94,7 @@ export function copyStableDescriptor({ source, destination, expectedBytes, expec
   assert.equal(parent.isSymbolicLink(), false, "stable-file parent cannot be a symlink");
   try { lstatSync(destinationPath); assert.fail("stable destination already exists"); } catch (error) { if (error?.code !== "ENOENT") throw error; }
 
-  const sourceFd = openSync(sourcePath, constants.O_RDONLY | (constants.O_NOFOLLOW ?? 0));
+  const sourceFd = openSync(sourcePath, constants.O_RDONLY | noFollow);
   let destinationFd;
   let destinationOpened;
   let result;
@@ -98,7 +105,7 @@ export function copyStableDescriptor({ source, destination, expectedBytes, expec
     const openedSource = fstatSync(sourceFd);
     assert.equal(sameIdentity(openedSource, sourceBefore), true, "approved source changed before descriptor copy");
     invokeHook(hooks, "beforeDestinationOpen", destinationPath);
-    destinationFd = openSync(destinationPath, constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | (constants.O_NOFOLLOW ?? 0), 0o600);
+    destinationFd = openSync(destinationPath, constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | noFollow, 0o600);
     destinationOpened = fstatSync(destinationFd);
     assert.equal(destinationOpened.isFile(), true, "stable destination is not a regular file");
     assert.equal(destinationOpened.nlink, 1, "stable destination has a hard-link alias");
@@ -143,6 +150,7 @@ export function copyStableDescriptor({ source, destination, expectedBytes, expec
 }
 
 export function writeStableManifest({ destination, value, hooks = {} }) {
+  const noFollow = requireNoFollow();
   assert.equal(value && typeof value === "object" && !Array.isArray(value), true, "manifest value must be an object");
   const destinationPath = resolve(destination);
   const parent = lstatSync(dirname(destinationPath));
@@ -155,7 +163,7 @@ export function writeStableManifest({ destination, value, hooks = {} }) {
   let failure;
   try {
     invokeHook(hooks, "beforeDestinationOpen", destinationPath);
-    fd = openSync(destinationPath, constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | (constants.O_NOFOLLOW ?? 0), 0o600);
+    fd = openSync(destinationPath, constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | noFollow, 0o600);
     opened = fstatSync(fd);
     assert.equal(opened.isFile(), true); assert.equal(opened.nlink, 1); assert.equal(opened.uid, process.getuid());
     writeAll(fd, bytes); invokeHook(hooks, "beforeFileFsync", destinationPath, opened); fsyncSync(fd); fchmodSync(fd, 0o400); fsyncSync(fd); invokeHook(hooks, "afterFileFsync", destinationPath, opened);
@@ -176,6 +184,7 @@ export function writeStableManifest({ destination, value, hooks = {} }) {
 }
 
 export function verifyStableUploadDescriptor({ fd, path, expectedDevice, expectedInode, expectedBytes }) {
+  requireNoFollow();
   assert.equal(Number.isSafeInteger(fd) && fd >= 0, true, "stable upload descriptor is invalid");
   assert.equal(resolve(path), path, "stable upload path must be absolute");
   const opened = fstatSync(fd);
