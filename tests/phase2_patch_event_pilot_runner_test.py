@@ -6,9 +6,12 @@ import os
 import stat
 import struct
 import tempfile
+import time
 import unittest
 from pathlib import Path
 from unittest.mock import patch
+
+import scripts.run_phase2_patch_event_pilot as pilot_runner
 
 from scripts.run_phase2_patch_event_pilot import (
     EXACT_LIMITS,
@@ -25,12 +28,20 @@ from scripts.run_phase2_patch_event_pilot import (
     SORT_CHUNK_BYTES,
     PilotLimits,
     canonical_json,
+    compact_event,
+    patch_checksum,
     readback_output,
     run_pilot,
+    supervise_pilot,
     validate_limits,
 )
 
 PROJECT_ROOT = Path(__file__).parent.parent
+
+
+def slow_pilot_child(connection, *args) -> None:
+    os.setsid()
+    time.sleep(5)
 
 
 def fixture_lineage() -> bytes:
@@ -97,8 +108,35 @@ class PilotRunnerTest(unittest.TestCase):
         self.assertEqual(result["readback"]["lossCellCount"], 3)
         self.assertLessEqual(result["readback"]["byteLength"], MAX_OUTPUT_BYTES)
         self.assertEqual(result["telemetry"]["maximumWholeRunCopies"], 2)
+        self.assertEqual(result["readback"]["operationTelemetry"]["record"], "whole-operation-telemetry")
+        self.assertEqual(
+            result["readback"]["operationTelemetry"]["candidateFileSha256"],
+            result["telemetry"]["candidateFileSha256"],
+        )
+        self.assertEqual(result["readback"]["telemetryBoundSha256"], result["telemetry"]["telemetryBoundSha256"])
         self.assertFalse(result["released"])
         self.assertFalse(result["productionEligible"])
+
+    def test_compact_events_are_exact_real_detected_change_events(self) -> None:
+        fixtures = [
+            (0, [(0, 0, 0, 1)], 2, "7416e07869647bb0f79b91d0857e8270ce9e1fee52fbd2b40f712db166ba54c9"),
+            (4, [(4, 0, 4, 4)], 1, "4e430ae3fdce85c88bd7bb61cc9460a9a09f9c8bf52c9a8658d6e4a579677cb1"),
+            (193936 * 128340 - 2, [(193936 * 128340 - 2, 128339, 193934, 193935)], 2, "68d763ee511088d2fa18a7357e9d7b7e58437e2c7129c9889baa9ce753c7fd79"),
+            (0, [(0, 0, 0, 0), (0, 1, 0, 0)], 2, "bd9ae7fa9bff1dc45790818ac479c4f79c2a8264afee9ce7e0abeca968aa316f"),
+        ]
+        for root, runs, cells, test_owned_node_contract_digest in fixtures:
+            with self.subTest(root=root):
+                self.assertEqual(patch_checksum(runs), test_owned_node_contract_digest)
+                event = compact_event(root, root, cells, runs)
+                self.assertEqual(event["patchChecksumSha256"], test_owned_node_contract_digest)
+                self.assertEqual(event["eventId"], f"detected-change-1985-{test_owned_node_contract_digest[:24]}")
+                self.assertEqual(event["cellIndices"]["cellCount"], cells)
+                self.assertEqual(event["geometry"]["type"], "MultiPolygon")
+                self.assertEqual(event["areaHectares"], cells * 0.09)
+                self.assertEqual(event["eventStart"], "1985-01-01")
+                self.assertEqual(event["eventEnd"], "1985-12-31")
+                self.assertEqual(event["evidence"], "satellite-observation")
+                self.assertEqual(event["lineage"]["sourceLossSha256"], LOSS_SHA256)
 
     def test_output_scratch_and_copy_caps_leave_no_final_name(self) -> None:
         cases = [
@@ -165,20 +203,48 @@ class PilotRunnerTest(unittest.TestCase):
         payload = bytearray(output.read_bytes())
         header_size = struct.unpack("<I", payload[9:13])[0]
         component_offset = 13 + header_size
-        self.assertEqual(payload[component_offset], ord("C"))
-        run_offset = component_offset + 1 + 28
+        self.assertEqual(payload[component_offset], ord("E"))
+        event_size = struct.unpack("<I", payload[component_offset + 1:component_offset + 5])[0]
+        run_offset = component_offset + 5 + event_size
         self.assertEqual(payload[run_offset], ord("R"))
         payload[run_offset + 1] ^= 1
         output.write_bytes(payload)
-        with self.assertRaises(ValueError):
-            readback_output(output, {4: (4, 1), 0: (0, 2)})
+        descriptor = os.open(output, os.O_RDONLY)
+        try:
+            with self.assertRaises(ValueError):
+                readback_output(descriptor, {4: (4, 1), 0: (0, 2)})
+        finally:
+            os.close(descriptor)
+
+    def test_checksum_bound_whole_operation_telemetry_rejects_tampering(self) -> None:
+        self.execute("telemetry.wtpe")
+        output = self.root / "telemetry.wtpe"
+        payload = output.read_bytes()
+        marker = b'"wholeOperationElapsedSeconds":"'
+        offset = payload.index(marker) + len(marker)
+        changed = bytearray(payload)
+        changed[offset] = ord("9") if changed[offset] != ord("9") else ord("8")
+        output.write_bytes(changed)
+        descriptor = os.open(output, os.O_RDONLY)
+        try:
+            with self.assertRaises(ValueError):
+                readback_output(descriptor, {4: (4, 1), 0: (0, 2)}, self.limits)
+        finally:
+            os.close(descriptor)
 
     def test_final_name_race_is_not_overwritten_and_leaves_partial_output(self) -> None:
         output = self.root / "race.wtpe"
         real_link = os.link
 
         def raced_link(source, destination, **kwargs):
-            Path(destination).write_bytes(b"racer")
+            descriptor = os.open(
+                destination,
+                os.O_WRONLY | os.O_CREAT | os.O_EXCL,
+                0o600,
+                dir_fd=kwargs.get("dst_dir_fd"),
+            )
+            os.write(descriptor, b"racer")
+            os.close(descriptor)
             return real_link(source, destination, **kwargs)
 
         with patch("scripts.run_phase2_patch_event_pilot.os.link", side_effect=raced_link):
@@ -187,6 +253,43 @@ class PilotRunnerTest(unittest.TestCase):
         self.assertEqual(output.read_bytes(), b"racer")
         self.assertTrue((self.root / "race.wtpe.partial").is_file())
 
+    def test_partial_path_replacement_cannot_redirect_same_fd_readback_or_publication(self) -> None:
+        output = self.root / "replacement.wtpe"
+        partial = self.root / "replacement.wtpe.partial"
+        displaced = self.root / "replacement.wtpe.bound-inode.partial"
+        real_append = pilot_runner.append_operation_telemetry
+
+        def replace_then_append(*args, **kwargs):
+            partial.rename(displaced)
+            partial.write_bytes(b"replacement inode")
+            os.chmod(partial, 0o600)
+            return real_append(*args, **kwargs)
+
+        with patch("scripts.run_phase2_patch_event_pilot.append_operation_telemetry", side_effect=replace_then_append):
+            with self.assertRaises(ValueError):
+                self.execute("replacement.wtpe")
+        self.assertFalse(output.exists())
+        self.assertEqual(partial.read_bytes(), b"replacement inode")
+        self.assertTrue(displaced.is_file())
+
+    def test_scratch_directory_symlink_replacement_is_rejected_before_spool_creation(self) -> None:
+        attacker = self.root / "attacker"
+        attacker.mkdir(mode=0o700)
+        output = self.root / "scratch-race.wtpe"
+        real_mkdir = os.mkdir
+
+        def replace_scratch(name, *args, **kwargs):
+            result = real_mkdir(name, *args, **kwargs)
+            directory_descriptor = kwargs.get("dir_fd")
+            os.rename(name, f"{name}.bound.partial", src_dir_fd=directory_descriptor, dst_dir_fd=directory_descriptor)
+            os.symlink("attacker", name, dir_fd=directory_descriptor)
+            return result
+
+        with patch("scripts.run_phase2_patch_event_pilot.os.mkdir", side_effect=replace_scratch):
+            with self.assertRaises(OSError):
+                self.execute("scratch-race.wtpe")
+        self.assertFalse(output.exists())
+
     def test_deadline_crossing_during_link_rolls_back_to_partial_only(self) -> None:
         output = self.root / "late.wtpe"
         current = [0.0]
@@ -194,8 +297,13 @@ class PilotRunnerTest(unittest.TestCase):
 
         def late_link(source, destination, **kwargs):
             result = real_link(source, destination, **kwargs)
-            current[0] = 1800.0
+            current[0] = 2000.0
             return result
+
+        def ticking_clock():
+            if current[0] < 1000:
+                current[0] += 0.01
+            return current[0]
 
         with patch("scripts.run_phase2_patch_event_pilot.os.link", side_effect=late_link):
             with self.assertRaises(TimeoutError):
@@ -206,10 +314,63 @@ class PilotRunnerTest(unittest.TestCase):
                     expected_loss_sha256=self.loss_sha,
                     expected_lineage_sha256=self.lineage_sha,
                     limits=self.limits,
-                    clock=lambda: current[0],
+                    clock=ticking_clock,
                 )
         self.assertFalse(output.exists())
         self.assertTrue((self.root / "late.wtpe.partial").is_file())
+
+    def test_parent_watchdog_enforces_worker_resources_and_cleans_verified_partial_link(self) -> None:
+        output = self.root / "supervised.wtpe"
+        result = supervise_pilot(
+            self.loss,
+            self.lineage,
+            output,
+            expected_loss_sha256=self.loss_sha,
+            expected_lineage_sha256=self.lineage_sha,
+            limits=PilotLimits(components=2, seconds=10, sort_chunk_bytes=60),
+        )
+        self.assertTrue(output.is_file())
+        self.assertFalse((self.root / "supervised.wtpe.partial").exists())
+        self.assertLessEqual(result["telemetry"]["observedPeakRssBytes"], MAX_MEMORY_BYTES)
+        if result["telemetry"]["affinityCpuCount"] is None:
+            self.assertFalse(result["telemetry"]["affinityEnforced"])
+        else:
+            self.assertLessEqual(result["telemetry"]["affinityCpuCount"], MAX_VCPU)
+        self.assertLessEqual(float(result["telemetry"]["observedAverageVcpu"]), MAX_VCPU)
+        self.assertEqual(result["telemetry"]["threadEnvironmentLimit"], 1)
+        self.assertEqual(result["telemetry"]["cpuRlimitSeconds"], 10)
+        self.assertLessEqual(float(result["telemetry"]["parentWatchdogElapsedSeconds"]), 10)
+
+    def test_parent_watchdog_kills_stalled_worker_at_boundary(self) -> None:
+        output = self.root / "watchdog.wtpe"
+        with patch("scripts.run_phase2_patch_event_pilot._pilot_child", slow_pilot_child):
+            with self.assertRaises(TimeoutError):
+                supervise_pilot(
+                    self.loss,
+                    self.lineage,
+                    output,
+                    expected_loss_sha256=self.loss_sha,
+                    expected_lineage_sha256=self.lineage_sha,
+                    limits=PilotLimits(components=2, seconds=1, sort_chunk_bytes=60),
+                )
+        self.assertFalse(output.exists())
+
+    def test_parent_watchdog_kills_worker_when_polled_rss_exceeds_cap(self) -> None:
+        output = self.root / "rss-watchdog.wtpe"
+        with (
+            patch("scripts.run_phase2_patch_event_pilot._pilot_child", slow_pilot_child),
+            patch("scripts.run_phase2_patch_event_pilot.process_rss_bytes", return_value=MAX_MEMORY_BYTES + 1),
+        ):
+            with self.assertRaises(MemoryError):
+                supervise_pilot(
+                    self.loss,
+                    self.lineage,
+                    output,
+                    expected_loss_sha256=self.loss_sha,
+                    expected_lineage_sha256=self.lineage_sha,
+                    limits=PilotLimits(components=2, seconds=10, sort_chunk_bytes=60),
+                )
+        self.assertFalse(output.exists())
 
     def test_production_entrypoint_pins_every_authorized_limit(self) -> None:
         self.assertEqual(EXACT_LIMITS.components, MAX_COMPONENTS)
