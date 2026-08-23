@@ -323,6 +323,22 @@ def verify_directory_descriptor(descriptor: int, identity: tuple[int, int, int, 
         raise ValueError("Pilot output parent descriptor identity changed.")
 
 
+def directory_path_matches_descriptor(
+    path: Path,
+    descriptor: int,
+    identity: tuple[int, int, int, int],
+) -> bool:
+    try:
+        if path.is_symlink():
+            return False
+        result = os.stat(path, follow_symlinks=False)
+    except FileNotFoundError:
+        return False
+    observed = (result.st_dev, result.st_ino, result.st_uid, stat.S_IMODE(result.st_mode))
+    opened = os.fstat(descriptor)
+    return observed == identity and observed[:2] == (opened.st_dev, opened.st_ino)
+
+
 def name_exists(descriptor: int, name: str) -> bool:
     try:
         os.stat(name, dir_fd=descriptor, follow_symlinks=False)
@@ -1067,7 +1083,7 @@ def append_operation_telemetry(
 def run_pilot(
     loss_path: Path,
     lineage_path: Path,
-    final_path: Path,
+    final_path: Path | None,
     *,
     expected_loss_sha256: str = LOSS_SHA256,
     expected_lineage_sha256: str = LINEAGE_SHA256,
@@ -1075,15 +1091,34 @@ def run_pilot(
     clock: Callable[[], float] = time.monotonic,
     enforce_resources: bool = False,
     defer_partial_unlink: bool = False,
+    output_parent_descriptor: int | None = None,
+    output_parent_identity: tuple[int, int, int, int] | None = None,
+    output_name: str | None = None,
 ) -> dict[str, object]:
     validate_limits(limits)
     if enforce_resources:
         enforce_process_limits(limits)
     if RUN.size != 20:
         raise ValueError("Pilot encoding or caps are invalid.")
-    partial, scratch_root = prepare_paths(final_path)
-    parent_descriptor, parent_identity = open_owner_directory(final_path.parent)
-    final_name, partial_name, scratch_name = final_path.name, partial.name, scratch_root.name
+    if output_parent_descriptor is None:
+        if output_parent_identity is not None or output_name is not None:
+            raise ValueError("Pilot inherited output identity and name require their descriptor.")
+        if final_path is None or not final_path.is_absolute() or final_path.name in {"", ".", ".."}:
+            raise ValueError("Pilot output must be an absolute file path.")
+        final_name = final_path.name
+        prepare_paths(final_path)
+        parent_descriptor, parent_identity = open_owner_directory(final_path.parent)
+    else:
+        if final_path is not None or output_parent_identity is None or output_name is None:
+            raise ValueError("Pilot inherited output descriptor requires only its identity and basename.")
+        if output_name in {"", ".", ".."} or Path(output_name).name != output_name:
+            raise ValueError("Pilot inherited output name must be one basename.")
+        final_name = output_name
+        parent_descriptor = os.dup(output_parent_descriptor)
+        parent_identity = output_parent_identity
+        verify_directory_descriptor(parent_descriptor, parent_identity)
+    partial_name = f"{final_name}.partial"
+    scratch_name = f"{final_name}.scratch.partial"
     for name in (final_name, partial_name, scratch_name):
         if name_exists(parent_descriptor, name):
             os.close(parent_descriptor)
@@ -1092,11 +1127,16 @@ def run_pilot(
     initial_usage = resource.getrusage(resource.RUSAGE_SELF)
     cpu_started = initial_usage.ru_utime + initial_usage.ru_stime
     deadline = started + limits.seconds
-    loss_descriptor, loss_identity = open_verified(loss_path)
+    try:
+        loss_descriptor, loss_identity = open_verified(loss_path)
+    except Exception:
+        os.close(parent_descriptor)
+        raise
     try:
         lineage_descriptor, lineage_identity = open_verified(lineage_path)
     except Exception:
         os.close(loss_descriptor)
+        os.close(parent_descriptor)
         raise
     scratch_descriptor: int | None = None
     spool_descriptor: int | None = None
@@ -1273,29 +1313,47 @@ def run_pilot(
 
 def _pilot_child(
     connection: multiprocessing.connection.Connection,
+    unused_receiving: multiprocessing.connection.Connection,
+    start_gate_read: int,
+    unused_start_gate_write: int,
+    output_parent_descriptor: int,
+    output_parent_identity: tuple[int, int, int, int],
+    output_name: str,
     loss_path: Path,
     lineage_path: Path,
-    final_path: Path,
     expected_loss_sha256: str,
     expected_lineage_sha256: str,
     limits: PilotLimits,
 ) -> None:
     try:
+        unused_receiving.close()
+        os.close(unused_start_gate_write)
         os.setsid()
+        permission = os.read(start_gate_read, 1)
+        os.close(start_gate_read)
+        start_gate_read = -1
+        if permission != b"1":
+            raise ValueError("Pilot output parent pathname changed across the fork boundary.")
         result = run_pilot(
             loss_path,
             lineage_path,
-            final_path,
+            None,
             expected_loss_sha256=expected_loss_sha256,
             expected_lineage_sha256=expected_lineage_sha256,
             limits=limits,
             enforce_resources=True,
             defer_partial_unlink=True,
+            output_parent_descriptor=output_parent_descriptor,
+            output_parent_identity=output_parent_identity,
+            output_name=output_name,
         )
         connection.send(("ok", result))
     except BaseException as error:
         connection.send(("error", type(error).__name__, str(error)))
     finally:
+        if start_gate_read >= 0:
+            os.close(start_gate_read)
+        os.close(output_parent_descriptor)
         connection.close()
 
 
@@ -1341,13 +1399,46 @@ def supervise_pilot(
     parent_descriptor, parent_identity = open_owner_directory(final_path.parent)
     context = multiprocessing.get_context("fork")
     receiving, sending = context.Pipe(duplex=False)
+    start_gate_read, start_gate_write = os.pipe()
     process = context.Process(
         target=_pilot_child,
-        args=(sending, loss_path, lineage_path, final_path, expected_loss_sha256, expected_lineage_sha256, limits),
+        args=(
+            sending,
+            receiving,
+            start_gate_read,
+            start_gate_write,
+            parent_descriptor,
+            parent_identity,
+            final_path.name,
+            loss_path,
+            lineage_path,
+            expected_loss_sha256,
+            expected_lineage_sha256,
+            limits,
+        ),
     )
     started = time.monotonic()
-    process.start()
+    try:
+        process.start()
+    except BaseException:
+        receiving.close()
+        sending.close()
+        os.close(start_gate_read)
+        os.close(start_gate_write)
+        os.close(parent_descriptor)
+        raise
     sending.close()
+    os.close(start_gate_read)
+    parent_path_stable = directory_path_matches_descriptor(final_path.parent, parent_descriptor, parent_identity)
+    try:
+        os.write(start_gate_write, b"1" if parent_path_stable else b"0")
+    finally:
+        os.close(start_gate_write)
+    if not parent_path_stable:
+        process.join()
+        receiving.close()
+        os.close(parent_descriptor)
+        raise ValueError("Pilot output parent pathname changed across the fork boundary.")
     watchdog_deadline = started + limits.seconds
     watchdog_peak_rss = 0
     watchdog_reason: str | None = None
@@ -1365,6 +1456,7 @@ def supervise_pilot(
         process.join()
         verify_directory_descriptor(parent_descriptor, parent_identity)
         rollback_published_at(parent_descriptor, final_path.name, partial.name)
+        receiving.close()
         os.close(parent_descriptor)
         if watchdog_reason is not None:
             raise MemoryError("Parent watchdog killed the pilot at the exact RSS cap.")
@@ -1373,6 +1465,7 @@ def supervise_pilot(
     if not receiving.poll() or elapsed > limits.seconds:
         verify_directory_descriptor(parent_descriptor, parent_identity)
         rollback_published_at(parent_descriptor, final_path.name, partial.name)
+        receiving.close()
         os.close(parent_descriptor)
         raise RuntimeError("Pilot worker exited without a timely exact result.")
     message = receiving.recv()
@@ -1383,6 +1476,10 @@ def supervise_pilot(
         os.close(parent_descriptor)
         raise RuntimeError(f"Pilot worker stopped fail-closed: {message[1]}: {message[2]}")
     verify_directory_descriptor(parent_descriptor, parent_identity)
+    if not directory_path_matches_descriptor(final_path.parent, parent_descriptor, parent_identity):
+        rollback_published_at(parent_descriptor, final_path.name, partial.name)
+        os.close(parent_descriptor)
+        raise RuntimeError("Pilot output parent pathname changed during execution.")
     if not same_regular_inode_at(parent_descriptor, final_path.name, partial.name):
         os.close(parent_descriptor)
         raise RuntimeError("Pilot publication inode does not match its verified partial inode.")

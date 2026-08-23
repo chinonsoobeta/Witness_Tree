@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import multiprocessing
 import os
 import stat
 import struct
@@ -340,6 +341,39 @@ class PilotRunnerTest(unittest.TestCase):
         self.assertEqual(result["telemetry"]["threadEnvironmentLimit"], 1)
         self.assertEqual(result["telemetry"]["cpuRlimitSeconds"], 10)
         self.assertLessEqual(float(result["telemetry"]["parentWatchdogElapsedSeconds"]), 10)
+
+    def test_supervisor_rejects_parent_replacement_across_fork_without_publication(self) -> None:
+        output_parent = self.root / "output"
+        displaced_parent = self.root / "output-original"
+        output_parent.mkdir(mode=0o700)
+        os.chmod(output_parent, 0o700)
+        output = output_parent / "renamed.wtpe"
+        real_start = multiprocessing.process.BaseProcess.start
+
+        def replace_parent_then_start(process) -> None:
+            output_parent.rename(displaced_parent)
+            output_parent.mkdir(mode=0o700)
+            os.chmod(output_parent, 0o700)
+            real_start(process)
+
+        with patch.object(multiprocessing.process.BaseProcess, "start", replace_parent_then_start):
+            with self.assertRaisesRegex(ValueError, "changed across the fork boundary"):
+                supervise_pilot(
+                    self.loss,
+                    self.lineage,
+                    output,
+                    expected_loss_sha256=self.loss_sha,
+                    expected_lineage_sha256=self.lineage_sha,
+                    limits=PilotLimits(components=2, seconds=10, sort_chunk_bytes=60),
+                )
+
+        self.assertEqual(stat.S_IMODE(output_parent.stat().st_mode), 0o700)
+        self.assertEqual(list(output_parent.iterdir()), [])
+        self.assertFalse((displaced_parent / output.name).exists())
+        self.assertLessEqual(
+            {path.name for path in displaced_parent.iterdir()},
+            {f"{output.name}.partial", f"{output.name}.scratch.partial"},
+        )
 
     def test_parent_watchdog_kills_stalled_worker_at_boundary(self) -> None:
         output = self.root / "watchdog.wtpe"
