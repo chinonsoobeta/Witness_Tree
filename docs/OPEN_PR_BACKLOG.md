@@ -69,38 +69,39 @@ by reading the change, not by the count.
 
 ## Status
 
-Nine of the original nineteen are settled. Ten remain open, plus #34, which this
-work opened as an owner-blocked draft.
+All nineteen of the original pull requests are settled. One item remains open:
+#34, which this work opened as an owner-blocked draft and which waits on a fresh
+owner admission, not on engineering.
 
 | PR | Branch | Net state against `main` |
 | --- | --- | --- |
 | #4 | `data/alberta-unblock` | closed, fully absorbed |
-| #5 | `fix/transformation-admission-rule` | open, conflicts; based on the now-closed #4 |
-| #6 | `data/nrcan-canopy-staging` | open, conflicts; based on the now-closed #4 |
+| #5 | `fix/transformation-admission-rule` | closed, superseded by #42 |
+| #6 | `data/nrcan-canopy-staging` | closed, absorbed |
 | #7 | `ci/run-both-test-halves` | closed, superseded by a single-runner `test:unit` |
 | #8 | `feat/rank-unmatched-share` | **landed** |
-| #9 | `docs/refresh-status-claims` | open, conflicts |
+| #9 | `docs/refresh-status-claims` | closed, superseded; its status claims are now the stale ones |
 | #10 | `feat/source-review-process` | closed, superseded by #16 |
 | #11 | `data/boundary-editions` | closed, absorbed |
-| #12 | `data/s3-promotion` | open, conflicts; based on #9 |
+| #12 | `data/s3-promotion` | closed, superseded; all three objects since promoted to `remote-verified` |
 | #13 | `data/raster-grid-contract` | **landed** |
 | #15 | `fix/gdal-claim-and-unknown-prose` | closed, split into #33 (landed) and #34 (owner-blocked) |
 | #16 | `feat/source-review-process-evidence-refresh` | **landed** |
-| #17 | `feat/national-baseline-admission` | open, conflicts; based on #13, which has landed |
-| #18 | `docs/external-gates-matrix` | open, conflicts |
-| #19 | `fix/phase3-locale-navigation` | open, conflicts |
-| #20 | `fix/explore-year-query` | open, conflicts, and its own checks fail |
+| #17 | `feat/national-baseline-admission` | closed, landed as #38 |
+| #18 | `docs/external-gates-matrix` | closed, landed as #40 |
+| #19 | `fix/phase3-locale-navigation` | closed, absorbed |
+| #20 | `fix/explore-year-query` | closed, landed as #41 |
 | #21 | `feat/phase5-source-status-contract` | closed, ported as #32 without reopening the live feed |
-| #22 | `feat/local-staging-admission-gate` | open, conflicts, and its own checks fail |
-| #23 | `phase1/coverage-geometry-admission` | open, conflicts |
+| #22 | `feat/local-staging-admission-gate` | closed; gate absorbed, route tests landed as #43 |
+| #23 | `phase1/coverage-geometry-admission` | closed, absorbed; `main` carries stronger guards |
 | #24 | `phase1/phase1-corruption-drill` | closed, fully absorbed |
 | #34 | `fix/boundary-editions-gdal-claim` | open draft, **owner-blocked**, opened by this work |
 
-Every remaining open branch is a draft except #5, #6, #9, and #12.
+No branch from the original backlog remains open.
 
 ## What landing them actually produced
 
-Nine settled branches produced five merges, and not one of them merged as
+Nineteen settled branches produced eleven merges, and not one of them merged as
 written. The pattern is consistent enough to state plainly.
 
 **Two were split.** #15 mixed a real user-facing bug with a rewrite of evidence
@@ -122,3 +123,31 @@ criterion had not previously made. None was rebound to make a gate pass.
 **Several carried assumptions that had expired.** #15's regression test asserted
 U+2014 for the Unknown marker, which the repository has since banned. A green
 check on an old base hides this exactly as it hides a conflict.
+
+**One branch was holding a commit nobody else had.** #22 and #23 both carried
+`f4249fdc`, a VLCE2 forest-mask decision record that existed on no other branch
+and on no remote. Closing either as absorbed on a file-count basis would have
+destroyed it. It was recovered and landed as #39 with a checker behind it before
+either pull request was closed. Absorption must be tested per commit, not per
+pull request.
+
+**A file-level absorption test is not sufficient on its own.** #22 reported zero
+commit-only files, which reads as fully absorbed. It was not: one of its commits
+added sixty-one lines to a test file that already existed on `main`, and `main`
+never received them. Comparing the set of files misses content added to files
+both sides have. Where a branch's commits touch shared files, the comparison has
+to descend to what the file actually asserts, which is how #43 was found.
+
+**Line-level comparison is the wrong instrument for JSON.** Measuring #9 by
+unique lines suggested three hundred and twenty-five lines missing from `main`.
+Nearly all of them were single-line JSON arrays that `main` had reformatted
+across several lines. The same content, differently wrapped, reads as absent.
+JSON has to be compared parsed, and prose by claim, or the count invents value
+that is not there.
+
+**The failure mode worth checking is a lost refusal, not a lost feature.** For
+every branch closed as superseded, each shared differing `.json` and `.md` file
+was compared for blocking language present on the branch and absent from `main`.
+That is the one direction in which closing a stale branch could quietly weaken a
+gate. No file on `main` carried fewer such markers than its counterpart on any
+closed branch.
