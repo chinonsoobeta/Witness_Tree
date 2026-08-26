@@ -4,7 +4,10 @@ import { LocationResult } from "@/components/places";
 import { SiteShell } from "@/components/site";
 import { LOCATIONS, PLACES, locationById } from "@/lib/places";
 
-export const metadata: Metadata = { alternates: { languages: { en: "/en/location", fr: "/fr/emplacement" } } };
+export async function generateMetadata({ params }: { params: Promise<{ locationId: string }> }): Promise<Metadata> {
+  const { locationId } = await params;
+  return { alternates: { languages: { en: `/en/location/${locationId}`, fr: `/fr/emplacement/${locationId}` } } };
+}
 
 export function generateStaticParams() { return LOCATIONS.map(({ id: locationId }) => ({ locationId })); }
 
