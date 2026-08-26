@@ -1,3 +1,5 @@
+import * as nodeFs from "node:fs";
+
 // Canonical resolution of the Witness Tree data root.
 //
 // Runtime jobs, verifiers and local readbacks resolve their data location through this helper, so a
@@ -39,6 +41,31 @@ export async function approvedDataRootRealPath(root = resolveDataRoot()) {
   const link = await lstat(root);
   if (!link.isSymbolicLink()) return root;
   const target = await realpath(root);
+  if (target !== SSD_DATA_ROOT) {
+    throw new Error(`The data root ${root} is a symlink to ${target}, which is not the approved SSD root ${SSD_DATA_ROOT}.`);
+  }
+  return target;
+}
+
+// Synchronous sibling of approvedDataRootRealPath, for the checks that walk
+// paths with the sync fs API.
+//
+// A guard that rejects every symlinked ancestor was written before the data
+// root itself became one. It is not safe to relax such a guard to "any
+// symlink is fine": the point of it is that a task-local link must never
+// redirect a bound path. Exactly one link is approved, it is named here, and
+// it must still point at the approved SSD root, so this returns that one
+// exemption rather than letting callers invent their own.
+export function approvedDataRootRealPathSync(root = resolveDataRoot()) {
+  const { lstatSync, realpathSync } = nodeFs;
+  let link;
+  try {
+    link = lstatSync(root);
+  } catch {
+    return root;
+  }
+  if (!link.isSymbolicLink()) return root;
+  const target = realpathSync(root);
   if (target !== SSD_DATA_ROOT) {
     throw new Error(`The data root ${root} is a symlink to ${target}, which is not the approved SSD root ${SSD_DATA_ROOT}.`);
   }
