@@ -9,6 +9,8 @@ const IDS = ["10", "11", "12", "13", "24", "35", "46", "47", "48", "59", "60", "
 const exactKeys = (value, expected, label) => assert.deepEqual(Object.keys(value).sort(), [...expected].sort(), `${label} keys drifted.`);
 const bytes = (path) => readFileSync(new URL(path, root));
 const digest = (value) => createHash("sha256").update(value).digest("hex");
+const admittedWorkerRecord = (workerSha256) =>
+  `data/provenance/phase2_zonal_aggregate.admitted-${workerSha256.slice(0, 8)}.py`;
 const artifact = (value, path) => {
   exactKeys(value, ["path", "byteLength", "sha256"], path);
   assert.equal(value.path, path);
@@ -24,7 +26,11 @@ export function validatePhase2V21ProvinceZonalPilotEvidence(evidence, rasterEvid
   assert.equal(evidence.run.batchId, "phase2-v21-zonal-province-2021-cbf-v5");
   assert.equal(evidence.run.workerPath, "scripts/phase2_zonal_aggregate.py");
   assert.match(evidence.run.workerSha256, SHA);
-  assert.equal(evidence.run.workerSha256, digest(bytes(evidence.run.workerPath)));
+  // evidence.run.workerSha256 records the bytes that evidence.run.workerPath held at run time. Those bytes are
+  // frozen in a provenance record whose name derives from the recorded digest, so the binding stays verifiable
+  // after the live worker changes. The live worker is deliberately not hashed here: re-running it produces a
+  // sidecar naming a different worker digest, which fails this binding until a fresh owner admission is recorded.
+  assert.equal(evidence.run.workerSha256, digest(bytes(admittedWorkerRecord(evidence.run.workerSha256))));
   assert.equal(evidence.run.codeVersion, `phase1/v21-safe-integration@0c4f547+worker-${evidence.run.workerSha256}`);
   exactKeys(evidence.artifacts, ["output", "sidecar"], "artifacts");
   artifact(evidence.artifacts.output, "province-2020-2022.json");

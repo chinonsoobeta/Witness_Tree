@@ -59,18 +59,48 @@ but not for Phase 2. `npm run check:phase2-formal-exit-status` reads only reposi
 files, so it is portable and belongs on the Ubuntu branch gate. It has been added
 alongside the other exit-status checks.
 
-## Deferred, still open
+## Freezing the admitted worker bytes
 
-The defensive GDAL driver fallback is a genuine robustness improvement and is
-deliberately **not** in the tree, because applying it to an admitted-run worker without
-re-running would reintroduce the same false provenance.
+Restoring the evidence alone put two true facts in conflict:
 
-To land it correctly, in this order:
+- The admitted outputs were produced by worker `ba331f90`, which the run-time sidecar records.
+- That worker is not portable. On the Ubuntu CI image `ogr.GetDriverByName("MEM")` returns
+  `None`, so `npm run check:phase2-zonal-aggregation` failed 5 of 8 GDAL tests.
 
-1. Re-run the 2020-2022 province zonal aggregate with the improved worker against the
-   canonical data root.
+PR #25 resolved the conflict by editing the worker and rewriting the evidence to name the
+edited worker. That is what made the evidence false: it claimed a code version that did not
+exist when the outputs were written.
+
+The honest resolution keeps both facts. `evidence.run.workerSha256` is a statement about
+what `scripts/phase2_zonal_aggregate.py` contained **at run time**. It stays true forever and
+does not require the live file to be frozen. So:
+
+- The admitted bytes are frozen at `data/provenance/phase2_zonal_aggregate.admitted-ba331f90.py`,
+  taken byte-exact from `7023afbd:scripts/phase2_zonal_aggregate.py`. It is a provenance
+  record, not code: nothing imports or executes it.
+- The live worker carries the in-memory OGR driver fallback and now hashes to `e01a1168`.
+- `check-phase2-v21-province-zonal-pilot-evidence.mjs` and the local readback verify the
+  binding against the frozen record instead of the live worker.
+
+The record's path is *derived from the digest it must hash to*
+(`admitted-${workerSha256.slice(0, 8)}.py`), so it is self-binding: the record cannot be
+swapped without breaking equality with `evidence.run.workerSha256`, which is itself
+checksum-bound into the recorded owner admission (`4fb0efc6`). The chain is no weaker than
+hashing the live file, and it survives legitimate worker changes.
+
+This stays fail-closed for re-runs. A new run writes a sidecar naming the new worker digest,
+which will not equal the admitted `evidence.run.workerSha256`, so the readback fails until a
+fresh admission is recorded.
+
+## Still open
+
+Re-running the aggregate with the portable worker still requires, in this order:
+
+1. Re-run the 2020-2022 province zonal aggregate with the live worker against the canonical
+   data root.
 2. Produce a fresh sidecar and evidence file from that run.
-3. Prepare a new owner admission packet and obtain a new owner decision.
+3. Freeze the new worker bytes under `data/provenance/` and prepare a new owner admission
+   packet for a new owner decision.
 
 Until then the admitted zonal evidence remains the `ba331f90` run, and Phase 2 stays
 honestly at 2/4. This repair does not advance any Phase 2 gate; it restores the tree to
