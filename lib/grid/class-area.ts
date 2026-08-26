@@ -127,7 +127,7 @@ export function formatClassArea(area: ClassArea): LocalizedString {
     if (!area.reason.en.trim() || !area.reason.fr.trim()) {
       throw new Error("An unknown class area requires a reason.");
     }
-    return localized(`Unknown — ${area.reason.en}`, `Inconnu — ${area.reason.fr}`);
+    return localized(`Unknown – ${area.reason.en}`, `Inconnu – ${area.reason.fr}`);
   }
   const en = `${area.hectares.toLocaleString("en-CA")} ha`;
   const fr = `${area.hectares.toLocaleString("fr-CA")} ha`;

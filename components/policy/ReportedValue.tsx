@@ -15,7 +15,7 @@ export function ReportedValue({ reported, coverageGrade, locale }: ReportedValue
     const reason = reported.reason[locale];
     return (
       <section>
-        <output aria-label={reason}>— {reason}</output>
+        <output aria-label={reason}>– {reason}</output>
         <EvidenceChip evidence={reported.evidence} locale={locale} />
         <CoverageBand coverageGrade={coverageGrade} locale={locale} />
       </section>

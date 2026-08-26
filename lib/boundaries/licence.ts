@@ -9,7 +9,7 @@ import type { BoundaryLicence, LicenceVersion } from "./types";
 export function formatLicenceVersion(version: LicenceVersion): LocalizedString {
   if (version.kind === "unknown") {
     if (!version.reason.trim()) throw new Error("An unknown licence version requires a reason.");
-    return localized(`Unknown — ${version.reason}`, `Inconnu — ${version.reason}`);
+    return localized(`Unknown – ${version.reason}`, `Inconnu – ${version.reason}`);
   }
   if (!version.value.trim()) throw new Error("A known licence version requires a value.");
   return localized(version.value, version.value);
