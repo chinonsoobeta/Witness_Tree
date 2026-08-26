@@ -65,7 +65,7 @@
    "id": "unknown-renders-an-en-dash-and-a-reason-never-a-zero",
    "title": "A test that renders an unknown value produces an en dash and a reason, never a zero",
    "status": "pass",
-   "reason": "Every unknown marker renders U+2013 followed by the localized reason, and the tests assert the en dash, the reason, and the absence of a zero in both languages.",
+   "reason": "Every unknown marker renders U+2013 followed by the localized reason, and the tests assert the en dash, the reason, and the absence of a zero in both languages. The reason itself is now held to the same standard: a malformed sidecar read off disk can carry a missing or non-integer year, record count, or class value, and tests/raster-grid-hazards.test.ts asserts that no Unknown reason interpolates the words undefined, null, or NaN into either language.",
    "evidence": [
     {
      "path": "lib/domain/reported.ts",
@@ -81,7 +81,7 @@
     },
     {
      "path": "tests/raster-grid-hazards.test.ts",
-     "sha256": "c3f5c688566a60951e3bbb9539385347de5daa85ac9028649b35e6b8a36e61ea"
+     "sha256": "6bad607d3efb96fa22b85556908c058060e0d734bcfb6901e116f36ff492e7ae"
     }
    ]
   }
