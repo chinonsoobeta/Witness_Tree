@@ -5,10 +5,10 @@ import test from "node:test";
 const read = (path) => readFile(new URL(path, import.meta.url), "utf8");
 
 test("BC Sans is imported once at the root and used as the primary family", async () => {
-  const [layout, styles, manifest] = await Promise.all([
-    read("../app/layout.tsx"), read("../app/globals.css"), read("../package.json"),
+  const [shell, styles, manifest] = await Promise.all([
+    read("../components/site/Document.tsx"), read("../app/globals.css"), read("../package.json"),
   ]);
-  assert.equal((layout.match(/@bcgov\/bc-sans\/css\/BC_Sans\.css/g) ?? []).length, 1);
+  assert.equal((shell.match(/@bcgov\/bc-sans\/css\/BC_Sans\.css/g) ?? []).length, 1);
   assert.match(styles, /--ui: "BC Sans", "Noto Sans", Verdana, Arial, sans-serif;/);
   assert.match(styles, /body \{[\s\S]*font-family: var\(--ui\);/);
   assert.match(styles, /h1, h2, h3, h4 \{ font-family: var\(--ui\); \}/);

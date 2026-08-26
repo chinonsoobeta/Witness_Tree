@@ -16,6 +16,7 @@ test("renders the bilingual language gateway", async () => {
   const response = await render("/");
   assert.equal(response.status, 200);
   const html = await response.text();
+  assert.match(html, /<html lang="en">/);
   assert.match(html, /Witness Tree/);
   assert.match(html, /Continue in English/);
   assert.match(html, /Continuer en français/);
@@ -29,6 +30,11 @@ test("renders both localized public records with neutral non-claims", async () =
     render("/en").then((response) => response.text()),
     render("/fr").then((response) => response.text()),
   ]);
+  // The document language, not a wrapper inside <body>. Assistive technology picks the
+  // page voice from <html lang>, so a French route under lang="en" is announced in English.
+  assert.match(english, /<html lang="en">/);
+  assert.match(french, /<html lang="fr">/);
+  assert.doesNotMatch(french, /<html lang="en">/);
   assert.match(english, /What happened to the forest here\?/);
   assert.match(english, /does not estimate merchantable timber/);
   assert.match(french, /Qu’est-il arrivé à la forêt ici\?/);
@@ -49,12 +55,12 @@ test("renders localized place and location records with semantic content and pro
     assert.match(html, /<dl>|<table/);
   }
 
-  assert.match(englishPlace, /<div lang="en">/);
+  assert.match(englishPlace, /<html lang="en">/);
   assert.match(englishPlace, /<meta name="content-language" content="en"/);
   assert.match(englishPlace, /Illustrative British Columbia/);
   assert.match(englishPlace, /<table/);
   assert.match(englishPlace, /Illustrative source-ledger entries/);
-  assert.match(frenchPlace, /<div lang="fr">/);
+  assert.match(frenchPlace, /<html lang="fr">/);
   assert.match(frenchPlace, /<meta name="content-language" content="fr"/);
   assert.match(frenchPlace, /Colombie-Britannique illustrative/);
   assert.match(frenchPlace, /<table/);
