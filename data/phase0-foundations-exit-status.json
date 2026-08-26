@@ -1,0 +1,117 @@
+{
+ "schemaVersion": "witness-tree/phase0-foundations-exit-status/1",
+ "phase": 0,
+ "exitCriteria": [
+  {
+   "id": "forest-definition-published-bilingually",
+   "title": "The forest definition is published in the glossary in English and French",
+   "status": "pass",
+   "reason": "FOREST_DEFINITION carries bilingual text and per-locale glossary anchors, the glossary publishes a Forest and a Foret entry, and a test pins the published minimum area, crown closure and mature height to the constant so the prose cannot drift from the value that drives computation.",
+   "evidence": [
+    {
+     "path": "lib/domain/forest.ts",
+     "sha256": "c078a09f14560bdd90b507bbd2952cf4df21b85bd0f78b375961a5b441f8231d"
+    },
+    {
+     "path": "components/governance/GovernancePage.tsx",
+     "sha256": "617b028c0ff54d9e3478daf8ad85434f01449c2060740db80eae5d14b384cecc"
+    },
+    {
+     "path": "tests/forest-definition-publication.test.ts",
+     "sha256": "88c5d7cdebaf9f1673f4f27fb09f25f1ab3aae96b827bcf49a9d39bbd3e544e7"
+    }
+   ]
+  },
+  {
+   "id": "confidence-rules-generate-bilingual-explanations",
+   "title": "The confidence rule set produces a generated explanation for every rule, in both languages, verified by a unit test",
+   "status": "pass",
+   "reason": "assignConfidence returns a localized reason for all eight branches across the four declared rule identifiers; the unit test proves each identifier is reachable, that no undeclared identifier is produced, that English and French are both present and genuinely differ, and that unknown is never converted into a confident level.",
+   "evidence": [
+    {
+     "path": "lib/domain/confidence.ts",
+     "sha256": "d873c96d2cdbd1efe0cc4cb75a1927f1d100ea53dc89e6e0eda5001925385357"
+    },
+    {
+     "path": "tests/confidence-rules.test.ts",
+     "sha256": "c91f10390e55f9c527e7295a0211de92818b0c48505dae6b49cca959bb6e7c58"
+    }
+   ]
+  },
+  {
+   "id": "source-ledger-rejects-missing-licence",
+   "title": "The source ledger rejects a test dataset that is missing a licence identifier",
+   "status": "pass",
+   "reason": "validateExampleSourceLedgerEntry throws on a missing licence identifier, and the unit test asserts that rejection alongside bilingual explanation, checksum and HTTPS rejections.",
+   "evidence": [
+    {
+     "path": "lib/domain/source-ledger.ts",
+     "sha256": "734c6ed4e9eeb8c7696126b75a94978c8b1d9cff5d29592ca6da874aaf006de6"
+    },
+    {
+     "path": "tests/source-ledger.test.ts",
+     "sha256": "595a9c0e0548171dd090da5ac31b6123477b90680d24bf7d419dc13def038e65"
+    }
+   ]
+  },
+  {
+   "id": "legal-signoff-recorded-in-decision-log",
+   "title": "Legal sign-off is recorded in the decision log",
+   "status": "fail",
+   "blockedBy": "owner",
+   "reason": "No decision-log record of legal sign-off exists in the repository. The governance surfaces state in both languages that the privacy notice and terms are drafts that have not received legal review, so the absence is disclosed rather than implied."
+  },
+  {
+   "id": "engagement-contact-route-answers-within-five-business-days",
+   "title": "The engagement contact route answers a test message within 5 business days",
+   "status": "fail",
+   "blockedBy": "owner",
+   "reason": "No engagement contact route is open and no answered test message exists. Indigenous engagement is owner-led and explicitly outside this implementation's authority; a response time cannot be inferred."
+  },
+  {
+   "id": "product-name-resolves-from-one-token",
+   "title": "The product name resolves from one token, proven by a test",
+   "status": "pass",
+   "reason": "The brand token is the single source of the product name, a checker enforces that no surface hard-codes it, and a unit test proves that changing the token changes every surface.",
+   "evidence": [
+    {
+     "path": "lib/domain/brand.ts",
+     "sha256": "e2709782f36e991350f15a2e32bf7e05167afcb9e5de21f80cc5a81ec8eee757"
+    },
+    {
+     "path": "scripts/check-brand-token.mjs",
+     "sha256": "da538656d581a7730ac1516f758c3ddcdd3a2e0617310d4cd83f5a2fab3c4226"
+    },
+    {
+     "path": "tests/brand-token.test.mjs",
+     "sha256": "a2545e3d25623de65fd681f87ac84910740c3a1bc75b7899998cddb4cabc7078"
+    }
+   ]
+  },
+  {
+   "id": "both-names-registered-with-no-persistent-identifier",
+   "title": "Both names are registered in both languages, and no persistent identifier contains the product name",
+   "status": "fail",
+   "blockedBy": "owner",
+   "reason": "Name registration is an external act with no evidence in the repository. The persistent-identifier half is enforced by the brand-token checker, but registration cannot be inferred, so the criterion as written does not pass."
+  }
+ ],
+ "completedCriteria": 4,
+ "totalCriteria": 7,
+ "percentage": 57.14285714285714,
+ "phaseComplete": false,
+ "ownerBlockers": [
+  {
+   "id": "legal-signoff-recorded-in-decision-log",
+   "reason": "No decision-log record of legal sign-off exists in the repository. The governance surfaces state in both languages that the privacy notice and terms are drafts that have not received legal review, so the absence is disclosed rather than implied."
+  },
+  {
+   "id": "engagement-contact-route-answers-within-five-business-days",
+   "reason": "No engagement contact route is open and no answered test message exists. Indigenous engagement is owner-led and explicitly outside this implementation's authority; a response time cannot be inferred."
+  },
+  {
+   "id": "both-names-registered-with-no-persistent-identifier",
+   "reason": "Name registration is an external act with no evidence in the repository. The persistent-identifier half is enforced by the brand-token checker, but registration cannot be inferred, so the criterion as written does not pass."
+  }
+ ]
+}
