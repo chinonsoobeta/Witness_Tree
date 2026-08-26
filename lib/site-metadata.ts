@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
-import { PRODUCT_NAME, PRODUCT_PURPOSE } from "@/lib/domain";
-import "@bcgov/bc-sans/css/BC_Sans.css";
-import "maplibre-gl/dist/maplibre-gl.css";
-import "./globals.css";
+import { PRODUCT_NAME, PRODUCT_PURPOSE, type Locale } from "@/lib/domain";
 
-export const metadata: Metadata = {
+/**
+ * Metadata every root layout shares. There is no single root layout to inherit
+ * it from: each locale owns its own `<html>` element so the document language
+ * is correct, which means each root layout has to export the whole record.
+ */
+export const siteMetadata: Metadata = {
   metadataBase: new URL("https://witness-tree-canada.r7bv67rgkk.chatgpt.site"),
   title: {
     default: PRODUCT_NAME.en,
@@ -29,14 +31,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  return (
-    <html lang="en">
-      <body>{children}</body>
-    </html>
-  );
+/** The shared record plus the served language, for a locale root layout. */
+export function localeMetadata(locale: Locale): Metadata {
+  return { ...siteMetadata, other: { "content-language": locale } };
 }

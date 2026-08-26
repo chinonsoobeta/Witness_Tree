@@ -7,7 +7,11 @@ function readdirRoutes(dir: URL, prefix = ""): string[] {
   const out: string[] = [];
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     if (entry.name === "page.tsx" && prefix) out.push(prefix);
-    else if (entry.isDirectory()) out.push(...readdirRoutes(new URL(`${entry.name}/`, dir), `${prefix}/${entry.name}`));
+    else if (entry.isDirectory()) {
+      // A route group, `(name)`, organizes root layouts without contributing a URL segment.
+      const isRouteGroup = entry.name.startsWith("(") && entry.name.endsWith(")");
+      out.push(...readdirRoutes(new URL(`${entry.name}/`, dir), isRouteGroup ? prefix : `${prefix}/${entry.name}`));
+    }
   }
   return out;
 }
