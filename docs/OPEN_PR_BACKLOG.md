@@ -69,9 +69,10 @@ by reading the change, not by the count.
 
 ## Status
 
-All nineteen of the original pull requests are settled. One item remains open:
-#34, which this work opened as an owner-blocked draft and which waits on a fresh
-owner admission, not on engineering.
+All nineteen of the original pull requests are settled. The open items are #34
+and #46, both owner-blocked drafts opened by this work. Neither waits on
+engineering. Both are recorded with the exact owner action they need in
+[`OWNER_BLOCKED_ENGINEERING.md`](OWNER_BLOCKED_ENGINEERING.md).
 
 | PR | Branch | Net state against `main` |
 | --- | --- | --- |
@@ -96,6 +97,7 @@ owner admission, not on engineering.
 | #23 | `phase1/coverage-geometry-admission` | closed, absorbed; `main` carries stronger guards |
 | #24 | `phase1/phase1-corruption-drill` | closed, fully absorbed |
 | #34 | `fix/boundary-editions-gdal-claim` | open draft, **owner-blocked**, opened by this work |
+| #46 | `fix/ntems-fail-closed-resume` | open draft, **owner-blocked**, opened by this work |
 
 No branch from the original backlog remains open.
 
