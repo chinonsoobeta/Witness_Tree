@@ -59,8 +59,7 @@ so the byte change and the authorization checksum move together.
 
 ## Cutover sequence
 
-Steps 1 to 5 performed 2026-08-26. Step 6 is the only one outstanding. In this order, stopping at
-the first failure:
+Complete. All six steps performed 2026-08-26, in this order, stopping at the first failure:
 
 1. Finish `rsync -a --partial` convergence of the whole root.
 2. Prove byte identity: `rsync -ani --checksum` must produce an empty transfer list, and the
@@ -82,6 +81,17 @@ internal source is never deleted before byte verification.
 3. **Rename.** The internal root is now `Witness_Tree-data.pre-cutover-backup`.
 4. **Compatibility symlink.** The internal path is a symlink to `SSD_DATA_ROOT`.
 5. **Readbacks through the symlink.** `npm run test:unit` is 873/873 against the symlinked root.
+6. **Deletion.** The owner authorized deleting the internal copy, and it was deleted only after
+   steps 2 and 5 both passed and after the step 5 fix landed on `main`. Immediately before the
+   delete, the backup and the SSD root were confirmed to sit on different devices (16777231 and
+   16777248), the internal path was confirmed to be a symlink resolving to `SSD_DATA_ROOT`, and the
+   SSD root was re-counted at 3,916 files and 367,656,070,795 bytes. 343 GB was reclaimed on the
+   internal drive. The suite was re-run afterwards, with the internal copy gone, and is 873/873
+   reading from the SSD.
+
+The data now exists in one place. The SSD is the only copy, so it is the only thing standing
+between this project and total data loss, and it has no backup of its own. That is a real exposure
+and it is outside what this migration was asked to solve.
 
 ### What step 5 caught
 
