@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { PRODUCT_NAME } from "@/lib/domain";
 
 export const metadata: Metadata = {
@@ -16,8 +15,8 @@ export default function Home() {
         Evidence about recorded and observed forest change in four Canadian provinces, from 1984 to the present.
       </p>
       <nav aria-label="Choose a language" className="language-choices">
-        <Link className="primary-link" href="/en">Continue in English</Link>
-        <Link className="primary-link" href="/fr" lang="fr">Continuer en français</Link>
+        <a className="primary-link" href="/en">Continue in English</a>
+        <a className="primary-link" href="/fr" lang="fr">Continuer en français</a>
       </nav>
     </main>
   );

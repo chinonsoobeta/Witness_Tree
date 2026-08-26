@@ -1,4 +1,3 @@
-import Link from "next/link";
 import type { Locale } from "@/lib/domain";
 
 export function SiteFooter({ locale }: { locale: Locale }) {
@@ -10,7 +9,7 @@ export function SiteFooter({ locale }: { locale: Locale }) {
       <div className="site-footer-inner">
         <p>1984–present · BC · AB · ON · QC</p>
         <nav aria-label={locale === "en" ? "Record and governance" : "Registre et gouvernance"}>
-          {links.map(([label, href]) => <Link key={href} href={href}>{label}</Link>)}
+          {links.map(([label, href]) => <a key={href} href={href}>{label}</a>)}
         </nav>
       </div>
     </footer>

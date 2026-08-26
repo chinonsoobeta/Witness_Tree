@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { PRODUCT_NAME, type Locale } from "@/lib/domain";
 
 const NAV = {
@@ -26,12 +25,12 @@ export function SiteHeader({ locale }: { locale: Locale }) {
     <header className="site-header">
       <a className="skip-link" href="#main">{locale === "en" ? "Skip to content" : "Passer au contenu"}</a>
       <div className="site-header-inner">
-        <Link className="wordmark" href={`/${locale}`}>{PRODUCT_NAME[locale]}</Link>
+        <a className="wordmark" href={`/${locale}`}>{PRODUCT_NAME[locale]}</a>
         <nav className="global-nav" aria-label={locale === "en" ? "Primary navigation" : "Navigation principale"}>
-          {NAV[locale].map(([label, href]) => <Link key={href} href={href}>{label}</Link>)}
-          <Link className="locale-link" href={alternate} hrefLang={locale === "en" ? "fr" : "en"}>
+          {NAV[locale].map(([label, href]) => <a key={href} href={href}>{label}</a>)}
+          <a className="locale-link" href={alternate} hrefLang={locale === "en" ? "fr" : "en"}>
             {locale === "en" ? "Français" : "English"}
-          </Link>
+          </a>
         </nav>
       </div>
     </header>
