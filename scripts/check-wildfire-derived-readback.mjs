@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import { readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { manifestKey, sidecarFor, validate as validatePlan } from "./prepare-wildfire-derived-immutable-promotion.mjs";
+import { resolveDataRoot } from "./data-root.mjs";
 
 const PLAN = validatePlan();
 export const READBACK_SCHEMA = "witness-tree/wildfire-derived-readback-approval/1";
@@ -12,7 +13,7 @@ export const ROLE = PLAN.mfaGatedExecution.proposedRole;
 export const REGION = PLAN.destination.region;
 export const BUCKET = PLAN.destination.bucket;
 export const RETAIN_UNTIL = PLAN.mfaGatedExecution.recommendedRetainUntil;
-export const DEFAULT_DATA_ROOT = "/Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data";
+export const DEFAULT_DATA_ROOT = resolveDataRoot();
 
 const EXCLUSIONS = Object.freeze([
   "no-mpu-listing",
