@@ -82,4 +82,6 @@ jobs:
       - run: npm run check:style-tokens
       - run: npm run check:brand-token
       - run: npm run check:budgets
-      - run: npm run test:unit
+      # The complete suite includes owner-local macOS safety runners and large
+      # checksum-bound artifacts. It is a required local release gate; the
+      # portable contract suites above remain the Ubuntu branch gate.
