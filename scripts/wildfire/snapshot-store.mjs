@@ -31,10 +31,49 @@ function assertPayload(sources) {
     throw new Error('Refusing to publish an empty wildfire refresh.');
   }
   for (const source of sources) {
-    if (!source?.id || source.response == null) {
-      throw new Error('Each wildfire source needs an id and a response.');
+    if (!source?.id || (source.response == null && !source.error)) {
+      throw new Error('Each wildfire source needs an id and either a response or an error.');
     }
   }
+  // One source failing must not blank the others, but a refresh in which every source failed carries no new
+  // observation. Publishing it would restamp the last-good data with a fresh timestamp and make stale data
+  // look current.
+  if (!sources.some((source) => source.response != null)) {
+    throw new Error('Refusing to publish a wildfire refresh without a successful source.');
+  }
+}
+
+// Per-source health, so an outage in one feed is visible rather than hidden behind the others. A failing source
+// keeps the snapshot it last succeeded with, and is marked stale once that snapshot is more than a day old.
+const STALE_AFTER_MS = 24 * 60 * 60 * 1000;
+const RETRY_AFTER_MS = 15 * 60 * 1000;
+
+function sourceStatus({ prior = {}, source, timestamp, snapshot, now }) {
+  if (source.response != null) {
+    return { id: source.id, status: 'healthy', stale: false, consecutiveFailures: 0, lastSuccessAt: timestamp, lastGoodSnapshot: snapshot };
+  }
+  const consecutiveFailures = (prior.consecutiveFailures ?? 0) + 1;
+  return {
+    ...prior,
+    id: source.id,
+    status: consecutiveFailures >= 2 ? 'degraded' : 'retrying',
+    stale: Boolean(prior.lastSuccessAt && now.getTime() - new Date(prior.lastSuccessAt).getTime() > STALE_AFTER_MS),
+    consecutiveFailures,
+    lastFailureAt: timestamp,
+    nextRetryAt: new Date(now.getTime() + RETRY_AFTER_MS).toISOString(),
+    error: String(source.error),
+  };
+}
+
+// Kept in sync with lib/wildfire/status-manifest.ts for consumers of current-status.json.
+function statusManifest({ version, timestamp, sourceStatuses }) {
+  return {
+    version,
+    refreshedAt: timestamp,
+    sources: sourceStatuses.map(({ id, status, stale, consecutiveFailures, lastSuccessAt, lastFailureAt, nextRetryAt, lastGoodSnapshot, error }) => (
+      { id, status, stale, consecutiveFailures, lastSuccessAt, lastFailureAt, nextRetryAt, lastGoodSnapshot, error }
+    )),
+  };
 }
 
 function validDate(value, name) {
@@ -48,7 +87,7 @@ export function createSnapshotStore(root) {
 
   return {
     async readState() {
-      return (await readJson(file('state.json'))) ?? { consecutiveFailures: 0, status: 'unknown' };
+      return (await readJson(file('state.json'))) ?? { consecutiveFailures: 0, status: 'unknown', sources: {} };
     },
 
     async readCurrent() {
@@ -90,24 +129,44 @@ export function createSnapshotStore(root) {
       assertPayload(sources);
       const timestamp = now.toISOString();
       const version = stamp(now);
+      const priorState = await this.readState();
+      const priorCurrent = await this.readCurrent();
+      const lastGood = new Map((priorCurrent?.sources ?? []).map((source) => [source.id, source]));
       const snapshots = [];
+      const published = [];
+      const sourceStatuses = [];
       for (const source of sources) {
-        const snapshot = {
-          source: source.id,
-          fetchedAt: timestamp,
-          response: source.response,
-        };
+        const prior = priorState.sources?.[source.id];
+        if (source.response == null) {
+          // The feed failed this round. Serve what it last returned rather than dropping it, so an outage in one
+          // source cannot silently shrink the map, and record why it is being served.
+          const retained = lastGood.get(source.id);
+          if (retained) published.push(retained);
+          sourceStatuses.push(sourceStatus({ prior, source, timestamp, now }));
+          continue;
+        }
+        const snapshot = { source: source.id, fetchedAt: timestamp, response: source.response };
         const snapshotPath = file('snapshots', `${version}-${safeName(source.id)}.json`);
         await writeImmutableJson(snapshotPath, snapshot);
-        snapshots.push(path.relative(root, snapshotPath));
+        const relative = path.relative(root, snapshotPath);
+        snapshots.push(relative);
+        published.push({ id: source.id, response: source.response });
+        sourceStatuses.push(sourceStatus({ prior, source, timestamp, snapshot: relative, now }));
       }
 
-      const current = { version, refreshedAt: timestamp, sourceResponses, sources, snapshots };
+      const manifest = statusManifest({ version, timestamp, sourceStatuses });
+      const current = { version, refreshedAt: timestamp, sourceResponses, sources: published, snapshots };
       await writeJson(file('current', `${version}.json`), current);
       await writeJson(file('current.json'), current);
+      await writeJson(file('current-status.json'), manifest);
       await writeJson(file('runs', `${version}.json`), { version, status: 'success', ...current });
       await writeJson(file('run-log.json'), { version, status: 'success', refreshedAt: timestamp, sourceResponses });
-      await writeJson(file('state.json'), { status: 'healthy', consecutiveFailures: 0, lastSuccessAt: timestamp });
+      await writeJson(file('state.json'), {
+        status: sourceStatuses.every((source) => source.status === 'healthy') ? 'healthy' : 'degraded',
+        consecutiveFailures: 0,
+        lastSuccessAt: timestamp,
+        sources: Object.fromEntries(sourceStatuses.map((source) => [source.id, source])),
+      });
       return current;
     },
 
