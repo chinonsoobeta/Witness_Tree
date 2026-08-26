@@ -92,6 +92,7 @@ jobs:
       - run: npm run check:phase1-transformation-scope-owner-approval
       - run: npm run check:qc-stand-copy-production-admission-readiness
       - run: npm run check:phase1-ntems-transform
+      - run: npm run check:phase1-ntems-resume
       - run: npm run check:phase1-ntems-production-admission-readiness
       - run: npm run check:phase1-owner-approval-packet
       - run: npm run check:qc-immutable-promotion-preparation

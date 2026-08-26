@@ -212,6 +212,43 @@ function ensureAbsent(file) {
   try { lstatSync(file); fail(`refusing to overwrite existing output: ${file}`); } catch (error) { if (error?.message?.startsWith("NTEMS transformation stopped:")) throw error; if (error.code !== "ENOENT") fail(`cannot safely inspect output: ${file}`); }
 }
 
+/**
+ * Decides whether an already-present output may be treated as done on a resume.
+ *
+ * A 39-year run that stops partway cannot be restarted from the beginning: the
+ * runner refuses to overwrite, so the first completed year aborts the whole run.
+ * Resuming is therefore the only way to finish, and it must never become a way
+ * to accept work the runner cannot prove it produced.
+ *
+ * Returns "produce" when nothing is there, or "skip" when a complete and exactly
+ * matching pair is there. Anything else stops the run for a human to resolve. A
+ * half-written pair is never repaired, deleted or overwritten here, because only
+ * a person can tell an interrupted run from a tampered output.
+ */
+export function resumeOutcome(plan, readSidecar, hashOutput, sizeOutput, present) {
+  const hasOutput = present(plan.output);
+  const hasSidecar = present(plan.sidecar);
+  if (!hasOutput && !hasSidecar) return { action: "produce" };
+  if (hasOutput !== hasSidecar) fail(`incomplete prior output for ${plan.relativeOutput}: ${hasOutput ? "the raster exists without its sidecar" : "the sidecar exists without its raster"}. Resolve this by hand; the runner will not repair or remove it.`);
+  let sidecar;
+  try { sidecar = readSidecar(plan.sidecar); } catch { fail(`prior sidecar for ${plan.relativeOutput} is unreadable; resolve this by hand.`); }
+  if (sidecar?.schemaVersion !== "witness-tree/phase1-ntems-transformation-sidecar/1") fail(`prior sidecar for ${plan.relativeOutput} is not a Phase 1 NTEMS sidecar.`);
+  if (sidecar.specId !== plan.specification.id) fail(`prior output ${plan.relativeOutput} was produced for specification ${sidecar.specId}.`);
+  if (sidecar.methodVersion !== plan.specification.methodVersion) fail(`prior output ${plan.relativeOutput} was produced under method version ${sidecar.methodVersion}, not ${plan.specification.methodVersion}.`);
+  if (sidecar.output?.path !== plan.relativeOutput) fail(`prior sidecar for ${plan.relativeOutput} records a different output path.`);
+  const recordedInput = Array.isArray(sidecar.inputBindings) ? sidecar.inputBindings[0] : undefined;
+  const fields = ["path", "sha256", "byteLength", "member"];
+  for (const field of fields) {
+    if (recordedInput?.[field] !== plan.input[field]) fail(`prior output ${plan.relativeOutput} was produced from a different source: ${field} differs.`);
+  }
+  if ((recordedInput?.year ?? null) !== (plan.input.year ?? null)) fail(`prior output ${plan.relativeOutput} was produced from a different source year.`);
+  const actualByteLength = sizeOutput(plan.output);
+  if (actualByteLength !== sidecar.outputByteLength) fail(`prior output ${plan.relativeOutput} no longer matches its sidecar byte length.`);
+  const actualSha256 = hashOutput(plan.output);
+  if (actualSha256 !== sidecar.outputSha256) fail(`prior output ${plan.relativeOutput} no longer matches its sidecar SHA-256.`);
+  return { action: "skip", sha256: actualSha256, byteLength: actualByteLength };
+}
+
 function executionExpected(root, dataRoot, specs, inputBindings) {
   const runnerSha256 = sha256File(path.join(root, RUNNER_RELATIVE_PATH));
   return {
@@ -261,8 +298,10 @@ function toolVersions() {
 export function parseOptions(argv) {
   const value = (flag) => { const index = argv.indexOf(flag); return index < 0 ? undefined : argv[index + 1]; };
   const execute = argv.includes("--execute");
+  const resume = argv.includes("--resume");
   if (argv.includes("--preflight") && execute) fail("--preflight and --execute are mutually exclusive.");
-  return { execute, specId: value("--spec-id"), dataRoot: path.resolve(value("--data-root") ?? DEFAULT_DATA_ROOT), outputRoot: path.resolve(value("--output-root") ?? path.join(value("--data-root") ?? DEFAULT_DATA_ROOT, "derived/phase1")), authorization: value("--execution-authorization"), createdAt: value("--created-at") };
+  if (resume && !execute) fail("--resume is only meaningful with --execute.");
+  return { execute, resume, specId: value("--spec-id"), dataRoot: path.resolve(value("--data-root") ?? DEFAULT_DATA_ROOT), outputRoot: path.resolve(value("--output-root") ?? path.join(value("--data-root") ?? DEFAULT_DATA_ROOT, "derived/phase1")), authorization: value("--execution-authorization"), createdAt: value("--created-at") };
 }
 
 export function run(options, root = REPO_ROOT) {
@@ -284,6 +323,13 @@ export function run(options, root = REPO_ROOT) {
   const results = [];
   for (const [index, specification] of selected.entries()) {
     for (const plan of buildPlans(specification, inputSets[index], options.outputRoot)) {
+      if (options.resume) {
+        const outcome = resumeOutcome(plan, (file) => JSON.parse(readFileSync(file, "utf8")), sha256File, (file) => statSync(file).size, existsSync);
+        if (outcome.action === "skip") {
+          results.push({ specId: specification.id, path: plan.relativeOutput, sha256: outcome.sha256, byteLength: outcome.byteLength, sidecar: plan.relativeSidecar, resumed: true });
+          continue;
+        }
+      }
       ensureAbsent(plan.output); ensureAbsent(plan.sidecar);
       mkdirSync(path.dirname(plan.output), { recursive: true });
       const realOutputParent = realpathSync(path.dirname(plan.output));
@@ -326,7 +372,7 @@ export function run(options, root = REPO_ROOT) {
       }
     }
   }
-  return { mode: "execute", specs: selected.map(({ id }) => id), inputs: expected.inputs, outputs: results, claims: { transformed: true, ingested: false, released: false, productionAdmission: false, productionEligible: false, externalMutationPerformed: false } };
+  return { mode: options.resume ? "execute-resume" : "execute", specs: selected.map(({ id }) => id), inputs: expected.inputs, outputs: results, resumedOutputs: results.filter((entry) => entry.resumed === true).length, claims: { transformed: true, ingested: false, released: false, productionAdmission: false, productionEligible: false, externalMutationPerformed: false } };
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
