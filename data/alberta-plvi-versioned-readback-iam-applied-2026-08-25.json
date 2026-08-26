@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "witness-tree/alberta-plvi-versioned-readback-iam-applied/1",
+  "status": "applied-readback-attested",
+  "scope": "Phase 1 Alberta PLVI archive recovery only; not archive, transformation, ingestion, release, admission, or production evidence.",
+  "roleName": "WitnessTreePlviArchivePromotionUploader",
+  "inlinePolicyName": "WitnessTreePlviArchivePromotionExactKeys",
+  "change": {
+    "addedAction": "s3:GetObjectVersion",
+    "retentionResourcesBefore": 2,
+    "retentionResourcesAfter": 4,
+    "exactObjectResourceCount": 4,
+    "wildcardsAdded": false
+  },
+  "checksums": {
+    "basePolicySha256": "04d317fdd64d91388c1392911c107afc62b8ae1e63346906927374312f4edb3b",
+    "desiredPolicySha256": "979aca1a1699561a2c67e04841a15ea94ab817d8b771275a2e14360ac262096c",
+    "readbackPolicySha256": "979aca1a1699561a2c67e04841a15ea94ab817d8b771275a2e14360ac262096c"
+  },
+  "validation": {
+    "accessAnalyzerBlockingFindings": 0,
+    "exactObjectChecksAllowed": 12,
+    "outOfScopeChecksImplicitDenied": 3
+  },
+  "operatorDiagnostic": "An exact-version HeadObject for the existing Alberta PLVI raw payload returned 403 Forbidden. Recovery correctly refused; no replacement write was attempted.",
+  "redaction": "No credentials, session data, MFA values, object version IDs, request IDs, or object bodies are recorded."
+}

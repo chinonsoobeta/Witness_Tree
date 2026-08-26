@@ -31,6 +31,6 @@ test("gallery retains the required policy representations", async () => {
   assert.match(evidence, /unknown: "○"/);
   assert.match(confidence, /\[0, 1, 2\]/);
   assert.match(confidence, /<button type="button"/);
-  assert.match(reported, /— {reported.reason}/);
+  assert.match(reported, /— {reason}/);
   assert.doesNotMatch(reported.match(/if \(reported.kind === "unknown"\)[\s\S]*?\n {2}}/)?.[0] ?? "", /\b0\b/);
 });

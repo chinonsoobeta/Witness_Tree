@@ -1,0 +1,135 @@
+{
+  "schemaVersion": 1,
+  "status": "official-source-audit-complete-evidence-still-partial",
+  "asOf": "2026-08-14",
+  "baseEvidenceHeads": ["e42777e", "626a1ef"],
+  "currentRouteExhaustionRef": "data/phase1-partial-source-route-exhaustion.json",
+  "currentReplyAuditRef": "data/phase1-outreach-reply-audit.json",
+  "claims": {
+    "downloadedNewArtifact": false,
+    "acceptedPublisherAgreement": false,
+    "permissionRequested": false,
+    "rawEvidenceCreditChanged": false,
+    "immutable": false,
+    "transformed": false,
+    "ingested": false,
+    "productionEligible": false
+  },
+  "numerator": {
+    "before": 14.75,
+    "after": 14.75,
+    "denominator": 31,
+    "impact": 0,
+    "formalEvidenceTrackingScoreBefore": 39.2741935,
+    "formalEvidenceTrackingScoreAfter": 39.2741935
+  },
+  "rows": [
+    {
+      "id": "cwfis-historical",
+      "canonicalRequirement": "National Burned Area Composite and Canadian National Fire Database",
+      "alreadyAcquired": [
+        {
+          "component": "Canadian National Fire Database fire polygons",
+          "edition": "current_version; layers dated 2025-06-30",
+          "artifactBytes": 778498701,
+          "artifactSha256": "a0373a6dd8e341c3440ed9907f81e8ba6227135dacd9cdc07e4c6af0a59b1b4e",
+          "profileRef": "data/nfdb-poly-current-profile.json",
+          "featureCount": 48571,
+          "licenceState": "The official NFDB polygon metadata identifies the Open Government Licence – Canada and source-specific provincial notices.",
+          "sufficientForNamedRow": false
+        }
+      ],
+      "missing": [
+        {
+          "component": "National Burned Area Composite",
+          "publisher": "Natural Resources Canada, Canadian Forest Service",
+          "edition": "1972–2025, release 20260513",
+          "officialIndexUrl": "https://cwfis.cfs.nrcan.gc.ca/downloads/nbac/",
+          "artifactUrl": "https://cwfis.cfs.nrcan.gc.ca/downloads/nbac/NBAC_1972to2025_20260513_shp.zip",
+          "metadataUrl": "https://cwfis.cfs.nrcan.gc.ca/downloads/nbac/NBAC_1972to2025_20260513_shp_metadata.pdf",
+          "agreementUrl": "https://cwfis.cfs.nrcan.gc.ca/datamart/datarequest/nbac",
+          "officialAccessState": "A dated ZIP and metadata PDF are listed in the official download index. The data remain subject to the NBAC End-User Agreement.",
+          "licenceState": "The agreement is affirmative: access or download accepts it. It permits mapping, analysis, research, evaluation and display for the licensee's own internal use, requires the prescribed Natural Resources Canada citation, and prohibits sale, loan, lease, distribution or transfer without Canada's prior written consent.",
+          "artifactBytes": null,
+          "artifactSha256": null,
+          "downloaded": false,
+          "blocker": "No accountable owner has accepted the NBAC End-User Agreement or confirmed that the intended staging, archive and public-service use fit its internal-use limit. This audit cannot accept legal terms for the owner.",
+          "shortestLawfulPath": [
+            "The accountable data owner reviews and explicitly accepts or rejects the exact NBAC End-User Agreement for Witness Tree's intended private staging, archive and public display.",
+            "If accepted, download the dated official ZIP and metadata PDF without substituting WFS or annual fragments; record exact HEAD facts, bytes, SHA-256 and ZIP integrity.",
+            "Profile every advertised layer for CRS, schema, count, geometry type, extent and missing, empty and invalid geometry; preserve the prescribed citation and component provenance.",
+            "Before any redistribution or transfer of the data, obtain Natural Resources Canada's prior written consent."
+          ]
+        }
+      ],
+      "completionCreditIfResolved": 0.5,
+      "currentEvidenceState": "partial-component"
+    },
+    {
+      "id": "provincial-electoral-boundaries",
+      "canonicalRequirement": "Current authoritative BC, Alberta, Ontario and Québec provincial electoral-boundary editions",
+      "alreadyAcquired": [
+        {
+          "component": "British Columbia",
+          "edition": "2023 redistribution, 93 districts",
+          "artifactBytes": 21828718,
+          "artifactSha256": "d2403eeb488be4ef761f7dcbc72c25f8af3a046fce9980536307ba145993f193",
+          "profileRef": "data/bc-provincial-electoral-2023-profile.json",
+          "featureCount": 93,
+          "licenceUrl": "https://www.elections.bc.ca/docs/EBC-Open-Data-Licence.pdf",
+          "sufficientForProvince": true
+        },
+        {
+          "component": "Ontario",
+          "edition": "2022, 124 districts",
+          "artifactBytes": 1847182,
+          "artifactSha256": "70fd809a4998147b228fd9275e34e569be8ae1fd67470e2f4a20761e5d1e7cae",
+          "profileRef": "data/on-electoral-2022-profile.json",
+          "featureCount": 124,
+          "licenceUrl": "https://www.elections.on.ca/en/voting-in-ontario/electoral-district-shapefiles/open-use-data-product-licence-agreement.html",
+          "sufficientForProvince": true
+        }
+      ],
+      "missing": [
+        {
+          "component": "Alberta",
+          "publisher": "Elections Alberta",
+          "edition": "2019, 87 electoral divisions",
+          "artifactUrl": "https://www.elections.ab.ca/uploads/2019Boundaries_ED-Shapefiles.zip",
+          "termsUrl": "https://www.elections.ab.ca/terms-conditions/",
+          "officialAccessState": "The official ZIP is identified, but no artifact was downloaded because the governing publisher terms do not grant the required public-service rights.",
+          "licenceState": "The official terms permit personal and public non-commercial educational reproduction without modification. Commercial distribution requires written permission; other reproduction and modification are not granted by default.",
+          "artifactBytes": null,
+          "artifactSha256": null,
+          "downloaded": false,
+          "blocker": "Written permission for retention, transformation, public-service use and redistribution has not been received.",
+          "ownerAction": "The geography data lead sends the existing permission request to Elections Alberta's Deputy Chief Electoral Officer and records the exact reply before acquisition."
+        },
+        {
+          "component": "Québec",
+          "publisher": "Élections Québec / Commission de la représentation électorale",
+          "currentEdition": "2017, 125 electoral divisions",
+          "currentEditionUrl": "https://www.electionsquebec.qc.ca/cartes-electorales/carte-electorale-du-quebec/",
+          "historicalArtifactPageUrl": "https://www.electionsquebec.qc.ca/cartes-electorales/carte-electorale-du-quebec/atlas-historique-des-circonscriptions-electorales-du-quebec/",
+          "attemptedArtifactUrl": "https://donnees.electionsquebec.qc.ca/autres/provincial/circonscriptions_electorales_sans_eau_2017.json",
+          "termsUrl": "https://www.electionsquebec.qc.ca/notre-institution/conditions-dutilisation/",
+          "officialAccessState": "Élections Québec identifies the 2017 map as current and offers a historical Shapefile page; the direct current GeoJSON returned HTTP 403 in the recorded audit.",
+          "licenceState": "The official terms permit download and reproduction for nonprofit purposes with source and copyright notice. Other use and adaptation require written authorization.",
+          "futureEdition": "The 2026 127-division artifact is checksum-bound locally but will only become effective when the 43rd legislature ends; it cannot substitute for the current 2017 edition.",
+          "artifactBytes": null,
+          "artifactSha256": null,
+          "downloaded": false,
+          "blocker": "No stable accessible current-edition artifact with rights for adaptation and the intended public service is available under the recorded evidence.",
+          "ownerAction": "The geography data lead requests an accessible official current-edition artifact and written authorization for retention, adaptation, public-service use and redistribution; after the next election is called, re-evaluate whether the 2026 edition has become current instead of mixing editions."
+        }
+      ],
+      "shortestLawfulPath": [
+        "Obtain the two publisher permissions and an accessible current Québec artifact; do not reacquire BC or Ontario.",
+        "Download only the authoritative Alberta and then-current Québec artifacts, record exact edition/effective dates, HEAD evidence, bytes, SHA-256, archive integrity and attribution.",
+        "Profile both artifacts without silently repairing geometry and rerun the four-province aggregate gate."
+      ],
+      "completionCreditIfResolved": 0.5,
+      "currentEvidenceState": "partial-component"
+    }
+  ]
+}

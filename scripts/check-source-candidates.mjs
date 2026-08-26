@@ -54,6 +54,14 @@ export function validateSourceCandidates(candidate) {
     if (entry.access.state === "verified") { if (!Array.isArray(entry.access.formats) || entry.access.formats.length === 0 || entry.access.formats.some((format) => typeof format !== "string" || !format.trim())) throw new Error("Verified access requires formats."); officialUrl(entry.access.url, "Access URL"); }
     if (!Array.isArray(entry.verifiedFacts) || entry.verifiedFacts.length === 0 || entry.verifiedFacts.some((fact) => typeof fact !== "string" || !fact.trim())) throw new Error("Verified facts are required.");
     if (!Array.isArray(entry.unresolvedFields) || entry.unresolvedFields.length === 0 || entry.unresolvedFields.some((field) => typeof field !== "string" || !field.trim())) throw new Error("Unresolved fields must be retained.");
+    if (entry.id === "nrcan-aboriginal-lands-legislative-boundaries") {
+      if (entry.licence.state !== "unresolved" || entry.access.state !== "catalogue-listed") throw new Error("Legislative-land boundaries must remain a no-download, licence-unresolved candidate.");
+      if (!entry.unresolvedFields.some((field) => /authoritative edition/i.test(field)) || !entry.unresolvedFields.some((field) => /engagement/i.test(field))) throw new Error("Legislative-land boundaries must retain edition and engagement gates.");
+    }
+    if (entry.id === "cirnac-finalized-modern-treaties-map") {
+      if (entry.licence.state !== "unresolved" || entry.access.state !== "catalogue-listed") throw new Error("CIRNAC modern-treaty map must remain a no-download, licence-unresolved candidate.");
+      if (!/not a GIS boundary source/i.test(entry.intendedRole.en) || !entry.unresolvedFields.some((field) => /precision/i.test(field))) throw new Error("CIRNAC modern-treaty map must remain excluded from precision use.");
+    }
   }
   return candidate;
 }

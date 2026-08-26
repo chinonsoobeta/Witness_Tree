@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "witness-tree/phase1-manifest-retention-iam-applied/1",
+  "status": "applied-and-readback-verified-policy-only",
+  "observedAt": "2026-08-25",
+  "notice": "Redacted policy-change evidence only. It proves neither an object upload nor retention on an object version, and changes no source, archive, admission, transformation, ingestion, release, or Phase 1 completion state.",
+  "changes": [
+    {
+      "id": "federal-general-promotion",
+      "roleName": "WitnessTreeArchivePromotionUploader",
+      "policyName": "ExactApprovedPromotionOnly",
+      "canonicalPolicySha256": {"before": "c945a08c64aa0c55ae5bda1c9da30b70b0ce36a32241e08f2bdd15978b6a10e9", "after": "bd7ac28a69383e8633d632e4d34659d24f33c073bf6ccc7d5e4fb3567895bb74"},
+      "exactDesiredPolicyReadback": true,
+      "retentionResourceCounts": {"primary": 6, "recovery": 2},
+      "allowedRetentionActions": ["s3:PutObjectRetention", "s3:GetObjectRetention"],
+      "accessAnalyzer": {"errorFindings": 0, "securityWarningFindings": 0}
+    },
+    {
+      "id": "current-wildfire",
+      "roleName": "WitnessTreeCurrentWildfirePromotionUploader",
+      "policyName": "WitnessTreeCurrentWildfireExactObjectAccess",
+      "canonicalPolicySha256": {"before": "07cc81211ba9705773da5c91aeb5a31fa2f9178cc7a25a74a78f8e5bfb300417", "after": "dd9e6519218141459dbddbb0e7a0a6cab2f2a7ea1ea2fa084297fbd36b1e74cd"},
+      "exactDesiredPolicyReadback": true,
+      "retentionResourceCounts": {"primary": 8, "recovery": 0},
+      "allowedRetentionActions": ["s3:PutObjectRetention", "s3:GetObjectRetention"],
+      "accessAnalyzer": {"errorFindings": 0, "securityWarningFindings": 0}
+    },
+    {
+      "id": "wildfire-derived",
+      "roleName": "WitnessTreeWildfireDerivedPromotionUploader",
+      "policyName": "WitnessTreeWildfireDerivedExactObjects",
+      "canonicalPolicySha256": {"before": "6ffd66edeef7fe6d5a4fff81e2b2f684b80850f2c31cde3a9a0b8fd1186218fd", "after": "a99c124331e1cb0d31d201354c016ffe617ef577d8a12d147a4276d1ec290976"},
+      "exactDesiredPolicyReadback": true,
+      "retentionResourceCounts": {"primary": 4, "recovery": 0},
+      "allowedRetentionActions": ["s3:PutObjectRetention", "s3:GetObjectRetention"],
+      "accessAnalyzer": {"errorFindings": 0, "securityWarningFindings": 0}
+    }
+  ],
+  "scopeAssertions": {
+    "noWildcardResource": true,
+    "noDeleteAction": true,
+    "noBypassGovernanceRetention": true,
+    "noBucketAdministration": true,
+    "noIamPermission": true
+  },
+  "claims": {"objectUploaded": false, "objectRetentionVerified": false, "archiveComplete": false, "sourceLedgerCreditChanged": false, "productionAdmission": false, "phase1Complete": false}
+}

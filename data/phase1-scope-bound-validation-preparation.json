@@ -1,0 +1,168 @@
+{
+  "schemaVersion": "witness-tree/phase1-scope-bound-validation-preparation/1",
+  "status": "scope-decisions-reconciled-preparation-only",
+  "asOf": "2026-08-21",
+  "derivedFromHead": "71e557a63e812d980b4cbf840bc8f04cd4419131",
+  "decisionRef": "data/phase1-remote-source-admission-decisions.json",
+  "notice": "This record binds the supplied national source-ledger-only decisions and the exact PLVI raw/derived scope decision to existing local validation and ingestion-preparation boundaries. It performs no AWS call, remote mutation, transformation admission, ingestion, release, production admission, or production-eligibility change.",
+  "baseline": {
+    "productionRows": 31,
+    "rawEvidenceNumerator": 14.25,
+    "rawEvidenceDenominator": 31,
+    "formalEvidenceTrackingPercentage": 38.7903226,
+    "immutableArchiveCompleteRows": 7,
+    "productionAdmissionCompleteRows": 0,
+    "productionEligibleRows": 0
+  },
+  "rows": [
+    {
+      "id": "ntems-forest-harvest",
+      "scopeDecision": "accepted-named-source-ledger-only",
+      "validation": {
+        "status": "passed-existing-evidence",
+        "commands": [
+          "npm run check:nrcan-harvest-profile",
+          "npm run check:nrcan-harvest-remote-archive-evidence"
+        ],
+        "evidenceRefs": [
+          "data/nrcan-harvest-profile.json",
+          "data/nrcan-harvest-remote-archive-evidence.json"
+        ],
+        "facts": {
+          "sourceId": "nrcan-ca-forest-harvest-1985-2022",
+          "byteLength": 247945479,
+          "sha256": "c6f41dff46d91812874672edb53233dac4126952132ad6d1131ad47b11ad7aad",
+          "primaryRecoveryReadbacks": true,
+          "retentionMode": "COMPLIANCE",
+          "retentionUntil": "2033-08-12T00:00:00Z"
+        }
+      },
+      "transformation": {
+        "status": "not-authorized-no-named-target-specification",
+        "namedSpecification": null,
+        "admitted": false,
+        "transformed": false
+      },
+      "ingestionPreparation": {
+        "status": "blocked-before-ingestion",
+        "scopeBound": true,
+        "authorized": false,
+        "ingested": false,
+        "reason": "The accepted source-ledger scope has no separately named target transformation or ingestion decision."
+      },
+      "releaseApproval": false,
+      "productionAdmission": false,
+      "productionEligible": false
+    },
+    {
+      "id": "ntems-canopy-height",
+      "scopeDecision": "accepted-named-source-ledger-only",
+      "validation": {
+        "status": "passed-existing-evidence",
+        "commands": [
+          "npm run check:nrcan-canopy-height-profile",
+          "npm run check:nrcan-canopy-height-remote-archive-evidence"
+        ],
+        "evidenceRefs": [
+          "data/nrcan-canopy-height-profile.json",
+          "data/nrcan-canopy-height-remote-archive-evidence.json"
+        ],
+        "facts": {
+          "sourceId": "nrcan-forest-canopy-height-2022",
+          "byteLength": 10347564066,
+          "sha256": "86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124",
+          "primaryRecoveryReadbacks": true,
+          "retentionMode": "COMPLIANCE",
+          "retentionUntil": "2033-08-12T00:00:00Z"
+        }
+      },
+      "transformation": {
+        "status": "not-authorized-no-named-target-specification",
+        "namedSpecification": null,
+        "admitted": false,
+        "transformed": false
+      },
+      "ingestionPreparation": {
+        "status": "blocked-before-ingestion",
+        "scopeBound": true,
+        "authorized": false,
+        "ingested": false,
+        "reason": "The accepted source-ledger scope has no separately named target transformation or ingestion decision."
+      },
+      "releaseApproval": false,
+      "productionAdmission": false,
+      "productionEligible": false
+    },
+    {
+      "id": "ab-primary-land-vegetation",
+      "scopeDecision": "approved-raw-and-derived-scope-only",
+      "validation": {
+        "status": "passed-under-approved-scope",
+        "commands": [
+          "npm run check:alberta-plvi-geometry-repair",
+          "npm run check:alberta-plvi-full-release-readiness",
+          "npm run check:alberta-plvi-immutable-promotion-evidence",
+          "npm run check:phase1-alberta-transform-ingestion-audit"
+        ],
+        "evidenceRefs": [
+          "data/alberta-plvi-immutable-promotion-evidence.json",
+          "data/alberta-plvi-full-release-readiness.json",
+          "data/transformation-runs/alberta-plvi-geometry-repair-v1-2026-08-14.json",
+          "data/phase1-alberta-transform-ingestion-audit.json"
+        ],
+        "facts": {
+          "rawSha256": "017a0a835c680ca1b6c1eb790322a28e1b4c0c64e36924da46d8bb99cb1571d3",
+          "derivedSha256": "5633e7d49982ee1232b415f362654744c1f1dab11d7c3c7ef8a7928dac20825b",
+          "featureCount": 179087,
+          "repairCount": 12,
+          "validGeometryCount": 179087,
+          "declaredCrs": "EPSG:3400",
+          "duplicatePolygonId41405Multiplicity": 2,
+          "silentLossOrDeduplication": false
+        }
+      },
+      "transformation": {
+        "status": "scope-bound-policy-validated-not-admitted",
+        "namedSpecification": "alberta-plvi-geometry-repair-v1",
+        "admitted": false,
+        "transformed": false
+      },
+      "ingestionPreparation": {
+        "status": "scope-bound-preflight-blocked-schema-drift-not-ingested",
+        "preflightRef": "data/phase1-immutable-downstream-preflight.json",
+        "scopeBound": true,
+        "authorized": false,
+        "ingested": false,
+        "checks": {
+          "rawChecksumBound": true,
+          "derivedChecksumBound": true,
+          "featureCountPreserved": true,
+          "validNonEmptyGeometry": true,
+          "exactSchemaNameParity": false,
+          "exactSchemaNameTypeParity": false,
+          "duplicatePolygonId41405Preserved": true,
+          "silentLossOrDeduplication": false
+        },
+        "reason": "The exact output is checksum-bound and structurally valid, but its ordered attribute schema does not match the raw source: SUBMISSION_ID became SUBMISSION, Shape_Length became Shape_Leng, and 23 Integer fields widened to Integer64. A corrected checksum-bound output or an explicit field-mapping decision is required before ingestion preparation can pass; separate transformation admission and ingestion decisions remain required."
+      },
+      "releaseApproval": false,
+      "productionAdmission": false,
+      "productionEligible": false
+    }
+  ],
+  "claims": {
+    "sourceLedgerScopeDecisionsRecorded": true,
+    "rawEvidenceDelta": 0,
+    "formalEvidenceTrackingPercentagePointDelta": 0,
+    "remoteMutationPerformed": false,
+    "externalMutationPerformed": false,
+    "transformationAdmission": false,
+    "transformed": false,
+    "ingestionAdmission": false,
+    "ingested": false,
+    "releaseApproval": false,
+    "productionAdmission": false,
+    "productionEligible": false,
+    "phase2Started": false
+  }
+}

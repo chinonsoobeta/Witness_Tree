@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "witness-tree/phase2-v21-raster-contract/1",
+  "status": "local-contract-ready-no-output-raster",
+  "purpose": "Pin the Version 2.1 selected-snapshot schedule and whole-interval raster semantics before any admitted-raster execution.",
+  "gridRequirement": {
+    "gridId": "vlce2-lcc-nad83",
+    "mustMatchExactly": true,
+    "rasterReprojection": "forbidden",
+    "nodataValue": 255
+  },
+  "snapshotYears": [1984, 1988, 1992, 1996, 2000, 2004, 2008, 2012, 2016, 2020, 2022],
+  "intervals": [
+    {"fromYear": 1984, "toYear": 1988, "annualPairCount": 4},
+    {"fromYear": 1988, "toYear": 1992, "annualPairCount": 4},
+    {"fromYear": 1992, "toYear": 1996, "annualPairCount": 4},
+    {"fromYear": 1996, "toYear": 2000, "annualPairCount": 4},
+    {"fromYear": 2000, "toYear": 2004, "annualPairCount": 4},
+    {"fromYear": 2004, "toYear": 2008, "annualPairCount": 4},
+    {"fromYear": 2008, "toYear": 2012, "annualPairCount": 4},
+    {"fromYear": 2012, "toYear": 2016, "annualPairCount": 4},
+    {"fromYear": 2016, "toYear": 2020, "annualPairCount": 4},
+    {"fromYear": 2020, "toYear": 2022, "annualPairCount": 2}
+  ],
+  "semantics": {
+    "intervalValueOne": "Observed forest loss in at least one adjacent annual loss raster within the full interval.",
+    "intervalValueZero": "Every adjacent annual loss raster explicitly records no loss for the cell.",
+    "intervalNoData": "If no loss is observed and one or more annual rasters are nodata, retain nodata; never convert missing coverage to zero."
+  },
+  "requiredBeforeOutput": [
+    "Each input raster must be admitted and checksum-bound in the source ledger.",
+    "Each output must record input checksums, method version, code version, grid, CRS, geotransform, nodata, byte length, output checksum, coverage, and timing/resource measurements.",
+    "Boundary aggregates, tiles, downloads, citation metadata, validation, scientific review, release approval, and production admission remain separate gates."
+  ],
+  "outputs": [],
+  "claims": {
+    "inputAdmissionComplete": false,
+    "rasterExecutionPerformed": false,
+    "outputRastersExist": false,
+    "boundaryAggregationPerformed": false,
+    "released": false,
+    "productionEligible": false,
+    "externalAction": false
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "witness-tree/federal-electoral-archive-readiness-owner-evidence/1",
+  "status": "blocked-canonical-readiness-not-approved",
+  "ownerApprovalRef": null,
+  "canonicalReadiness": {
+    "path": "data/archive-operations-readiness.json",
+    "sha256": "1a273a5f83949bde3c7b4e1a35cd155d81c2656552a965b6ede0e30d14c48d1a"
+  },
+  "evidenceFiles": [],
+  "claims": {
+    "executionReady": false,
+    "remoteMutationAuthorized": false,
+    "recoveryAuthorized": false,
+    "productionEligible": false
+  }
+}

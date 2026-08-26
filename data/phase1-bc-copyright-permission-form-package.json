@@ -1,0 +1,251 @@
+{
+  "schemaVersion": 1,
+  "status": "fom-form-submitted-clarification-replied-permission-pending",
+  "preparedAt": "2026-08-20T18:30:57Z",
+  "canonicalRowIds": [
+    "bc-vri",
+    "bc-forest-operations-map",
+    "bc-old-growth-bec"
+  ],
+  "nonClaimNotice": "The prepared package covered three Access Only datasets, but the form actually submitted on 2026-08-21 covered only the FOM Cutblocks catalogue URL. Submission and the later clarification reply are not permission, not a licence, not a fee agreement, and not an artifact, acquisition, archive, transformation, ingestion, release, or production authorization. VRI and TAP remain unsubmitted. The TAP Current View is kept distinct from the authoritative implemented-deferral layer, which has not been identified.",
+  "sourceEvidence": {
+    "replyAuditFile": "data/phase1-outreach-reply-audit.json",
+    "replyRecordId": "reply-bc-copyright-single-form-followup",
+    "sender": "QPIPPCopyright@gov.bc.ca",
+    "subject": "RE: Permission and authoritative-export request — VRI 2025, FOM Cutblocks, and TAP deferral layer",
+    "receivedAt": "2026-08-20T17:39:18Z",
+    "localReceivedAt": "2026-08-20T10:39:18-07:00",
+    "proceduralFinding": "The copyright office said all three datasets may be included in one Copyright Permission Request Form and that the form should include the requested details at its foot. The earlier message in the same thread requires exact catalogue names and URLs, intended use, audience and formats/channels; it says custodians will be consulted, a licensing vehicle will be determined if permission can be granted, and a permission/licence fee will apply.",
+    "oneFormForAllThree": true,
+    "noDeadlineStated": true,
+    "permissionGranted": false,
+    "licenceGranted": false,
+    "artifactSupplied": false,
+    "editionChecksumOrAttributionSupplied": false,
+    "fee": {
+      "applies": true,
+      "amount": null,
+      "currency": null,
+      "disclosureRequestedBeforeCharge": true,
+      "paid": false
+    },
+    "formUrl": "https://forms.gov.bc.ca/copyright-permission-request/"
+  },
+  "submissionOutcome": {
+    "status": "fom-form-submitted-clarification-replied-permission-pending",
+    "submittedCanonicalRowIds": ["bc-forest-operations-map"],
+    "unsubmittedCanonicalRowIds": ["bc-vri", "bc-old-growth-bec"],
+    "submittedAt": "2026-08-21T13:48-07:00",
+    "submissionEvidence": "A copyright-office reply quoted the new form submission and its FOM catalogue URL. Personal contact fields and mailbox identifiers are intentionally not retained.",
+    "clarificationReceivedAt": "2026-08-21T21:21:55Z",
+    "clarificationFinding": "The copyright officer noted that FOM is view-only rather than downloadable and asked how it would be used on the website.",
+    "clarificationReplySentAt": "2026-08-21T22:34:39Z",
+    "clarificationReplyBoundary": [
+      "No scraping or access-control bypass",
+      "Use only through a Province-authorized export or service",
+      "Preserve provincial source, status and date fields and planned/proposed semantics",
+      "No raw redistribution or bulk download",
+      "If authorized access is unavailable, link to the official viewer",
+      "Use screenshots or static excerpts only if expressly permitted",
+      "Ask whether copyright permission can authorize access or a program-area request is required"
+    ],
+    "permissionGranted": false,
+    "licenceGranted": false,
+    "authorizedAccessSupplied": false,
+    "artifactSupplied": false,
+    "feeAccepted": false,
+    "termsAccepted": false
+  },
+  "officialFormInspection": {
+    "url": "https://forms.gov.bc.ca/copyright-permission-request/",
+    "inspectedAt": "2026-08-20T18:30:57Z",
+    "accessMethod": "Public page metadata and visible field labels were inspected read-only. No browser session was available; no form control was focused, typed into, checked, or submitted.",
+    "fieldsMarkedRequired": [
+      "name",
+      "organization",
+      "address",
+      "email",
+      "phone",
+      "previousPermission",
+      "materialIsFrom",
+      "publicationTitle",
+      "publicationPageNumbers",
+      "websiteSourceUrl",
+      "websiteNumberOfCopies",
+      "natureOfIntendedUse",
+      "intendedUseDetails"
+    ],
+    "processingFeeNotice": "The official page states that the majority of copyright requests will be subject to a processing fee.",
+    "hiddenValidationFieldsUntouched": true,
+    "fieldInventory": [
+      {"field": "name.first", "label": "First", "required": true, "conditional": false},
+      {"field": "name.last", "label": "Last", "required": true, "conditional": false},
+      {"field": "title", "label": "Title", "required": false, "conditional": false},
+      {"field": "organization", "label": "Name of Organization", "required": true, "conditional": false},
+      {"field": "address.street", "label": "Street Address", "required": true, "conditional": false},
+      {"field": "address.city", "label": "City", "required": true, "conditional": false},
+      {"field": "address.region", "label": "State / Province / Region", "required": true, "conditional": false},
+      {"field": "address.postalCode", "label": "ZIP / Postal Code", "required": true, "conditional": false},
+      {"field": "address.country", "label": "Country", "required": true, "conditional": false},
+      {"field": "email.enter", "label": "Enter Email", "required": true, "conditional": false},
+      {"field": "email.confirm", "label": "Confirm Email", "required": true, "conditional": false},
+      {"field": "phone", "label": "Phone", "required": true, "conditional": false},
+      {"field": "fax", "label": "Fax", "required": false, "conditional": false},
+      {"field": "previousPermission", "label": "Have you previously received permission to reproduce the requested material?", "required": true, "conditional": false, "options": ["Yes", "No"]},
+      {"field": "priorPermissionFileNumber", "label": "If Yes, please specify the file # included in the permission letter", "required": true, "conditional": true},
+      {"field": "materialIsFrom", "label": "Material is from", "required": true, "conditional": false, "options": ["Publication", "Website"]},
+      {"field": "publicationTitle", "label": "Title", "required": true, "conditional": true},
+      {"field": "publicationAuthor", "label": "Author", "required": false, "conditional": true},
+      {"field": "publicationDate", "label": "Date of Publication", "required": false, "conditional": true},
+      {"field": "sourceMinistry", "label": "Source Ministry", "required": false, "conditional": true},
+      {"field": "publicationTotalPages", "label": "Total Number of Pages in Publication", "required": false, "conditional": true},
+      {"field": "publicationIsbn", "label": "ISBN #", "required": false, "conditional": true},
+      {"field": "publicationPageNumbers", "label": "Page #'s to be reproduced", "required": true, "conditional": true},
+      {"field": "websiteSourceUrl", "label": "Source URL", "required": true, "conditional": true},
+      {"field": "websiteNumberOfCopies", "label": "Number of copies to be reproduced", "required": true, "conditional": true},
+      {"field": "natureOfIntendedUse", "label": "Nature of intended use", "required": true, "conditional": false, "options": ["Commercial", "Non Commercial", "Educational"]},
+      {"field": "intendedUseDetails", "label": "Please provide all relevant details, including the purpose served by the proposed work, and contact information for other persons or parties involved in the production or distribution of the proposed work", "required": true, "conditional": false},
+      {"field": "hiddenValidationName", "label": "Name (validation field)", "required": false, "conditional": false, "hidden": true}
+    ]
+  },
+  "datasets": [
+    {
+      "canonicalRowIds": ["bc-vri"],
+      "exactCatalogueName": "VRI - 2025 - Forest Vegetation Composite Polygons",
+      "catalogueUrl": "https://catalogue.data.gov.bc.ca/dataset/6ba30649-14cd-44ad-a11f-794feed39f40",
+      "catalogueLicence": "Access Only",
+      "purpose": "Use selected vegetation and forest-inventory attributes as background context for forest condition as of the publisher's stated edition.",
+      "transformations": ["Internal inspection and validation after written permission", "Internal transformation", "Derived/public generalized or aggregate outputs after separate source gates"],
+      "limitations": ["Do not present VRI as live information, proof of harvest, or a legal determination.", "The advertised 2025 province-wide FGDB URL is currently unavailable; no replacement artifact is claimed here."]
+    },
+    {
+      "canonicalRowIds": ["bc-forest-operations-map"],
+      "exactCatalogueName": "Forest Operations Map (FOM) - Cutblocks",
+      "catalogueUrl": "https://catalogue.data.gov.bc.ca/dataset/7dda4615-5d32-427e-a303-1dcdb90a6fea",
+      "catalogueLicence": "Access Only",
+      "purpose": "Use this layer to show source-described planned or proposed cutblock context while preserving status and date fields.",
+      "transformations": ["Internal inspection and validation after written permission", "Internal transformation", "Derived/public generalized or aggregate outputs after separate source gates"],
+      "limitations": ["Do not represent a proposed or approved activity as completed harvesting.", "Do not use public service visibility as permission to reproduce or redistribute the layer."]
+    },
+    {
+      "canonicalRowIds": ["bc-old-growth-bec"],
+      "exactCatalogueName": "Old Growth Technical Advisory Panel (TAP) - Priority Deferral Areas - Current View",
+      "catalogueUrl": "https://catalogue.data.gov.bc.ca/dataset/f257ca4a-0c33-4eb2-9da8-21dff4482f58",
+      "catalogueLicence": "Access Only",
+      "purpose": "Use this only as the Province's source-described priority-deferral context.",
+      "transformations": ["Internal inspection and validation after written permission", "Internal transformation", "Derived/public generalized or aggregate outputs after separate source gates"],
+      "limitations": ["This Current View is not necessarily the set of deferrals being implemented.", "Do not conflate it with an authoritative implemented-deferral layer, legal protected-area determination, title, rights, or consultation determination.", "Request that the Province identify the authoritative implemented-deferral layer if this Current View is not it."]
+    }
+  ],
+  "preparedIntendedUse": {
+    "project": "Witness Tree",
+    "purpose": "Help people understand forest condition, planned forestry activity, and documented policy context through clearly sourced maps and explanatory material while preserving each source's meaning and limitations.",
+    "natureOfUse": {
+      "commercial": false,
+      "nonCommercial": true,
+      "educational": false,
+      "basis": "The project is planned as free public information; it is not claiming to be an educational institution. Its audience includes educators, but that audience fact is not an Educational-category claim."
+    },
+    "archiveRequest": "If permission is granted, retain an access-controlled, checksum-verified raw copy only in immutable Canadian object storage; inspect and transform it internally; do not redistribute the raw Access Only files or expose a raw-data API.",
+    "transformations": [
+      "Internal inspection, schema/CRS/geometry validation, and source-lineage preservation after written permission",
+      "Internal transformation for analysis",
+      "Generalized vector or raster map tiles",
+      "Summaries and area statistics",
+      "Static maps",
+      "Methodology and source pages",
+      "Reports"
+    ],
+    "publicOutputs": [
+      "Browser-based map",
+      "Generalized vector or raster map tiles",
+      "Summaries and area statistics",
+      "Static graphics and maps",
+      "Methodology and source pages",
+      "Reports and presentations"
+    ],
+    "audience": [
+      "General public",
+      "Local and Indigenous communities",
+      "Researchers",
+      "Journalists",
+      "Educators",
+      "Forest professionals",
+      "Policy users"
+    ],
+    "distributionChannels": [
+      "Freely accessible Witness Tree website and web map",
+      "Explanatory pages",
+      "Reports",
+      "Static graphics",
+      "Presentations"
+    ],
+    "accessAndFunding": "Public access would be free. Outputs would not be sold, licensed, placed behind a paywall, or supported through advertising. Voluntary donations may help cover project operating costs, with no preferential or exclusive access to provincial data or Witness Tree outputs.",
+    "attributionAndDisclosure": "Identify the Province of British Columbia as the source, include the required attribution and licence notice supplied by the custodian, preserve source dates and lineage, state dataset limitations, and avoid implying provincial endorsement.",
+    "correctionAndRightOfReply": "Request the appropriate refresh and correction contact and a response/right-of-reply route; preserve source dates and lineage in every derived output.",
+    "otherProductionOrDistributionParties": "None currently identified. The owner must add any named production or distribution party and its contact information before submission."
+  },
+  "formFieldMap": [
+    {"field": "name.first", "required": true, "preparedValue": null, "ownerAction": "Owner must enter identity; the audit did not collect or enter it."},
+    {"field": "name.last", "required": true, "preparedValue": null, "ownerAction": "Owner must enter identity; the audit did not collect or enter it."},
+    {"field": "title", "required": false, "preparedValue": null, "ownerAction": "Owner may enter a role title if desired."},
+    {"field": "organization", "required": true, "preparedValue": "Witness Tree", "ownerAction": "Owner must confirm the organization/project name before submission."},
+    {"field": "address.street", "required": true, "preparedValue": null, "ownerAction": "Owner must enter the requested mailing address; the audit did not collect or enter it."},
+    {"field": "address.city", "required": true, "preparedValue": null, "ownerAction": "Owner must enter the requested mailing address; the audit did not collect or enter it."},
+    {"field": "address.region", "required": true, "preparedValue": null, "ownerAction": "Owner must enter the requested mailing address; the audit did not collect or enter it."},
+    {"field": "address.postalCode", "required": true, "preparedValue": null, "ownerAction": "Owner must enter the requested mailing address; the audit did not collect or enter it."},
+    {"field": "address.country", "required": true, "preparedValue": null, "ownerAction": "Owner must enter the requested mailing address; the audit did not collect or enter it."},
+    {"field": "email.enter", "required": true, "preparedValue": null, "ownerAction": "Owner must enter and confirm an email address; the audit did not collect or enter it."},
+    {"field": "email.confirm", "required": true, "preparedValue": null, "ownerAction": "Owner must enter and confirm an email address; the audit did not collect or enter it."},
+    {"field": "phone", "required": true, "preparedValue": null, "ownerAction": "Owner must enter a phone number; the audit did not collect or enter it."},
+    {"field": "fax", "required": false, "preparedValue": null, "ownerAction": "Leave blank unless the owner chooses to provide one."},
+    {"field": "previousPermission", "required": true, "preparedValue": "No (owner must confirm)", "ownerAction": "Confirm that no prior permission letter applies; do not invent a file number."},
+    {"field": "priorPermissionFileNumber", "required": true, "preparedValue": null, "ownerAction": "Leave blank if No is confirmed; otherwise stop and obtain the actual permission-letter file number."},
+    {"field": "materialIsFrom", "required": true, "preparedValue": "Website", "ownerAction": "Select Website because the three source records are BC Data Catalogue web records and services."},
+    {"field": "publicationTitle", "required": true, "preparedValue": null, "ownerAction": "Not applicable when Website is selected; do not enter a fabricated publication title."},
+    {"field": "publicationAuthor", "required": false, "preparedValue": null, "ownerAction": "Not applicable when Website is selected."},
+    {"field": "publicationDate", "required": false, "preparedValue": null, "ownerAction": "Not applicable when Website is selected."},
+    {"field": "sourceMinistry", "required": false, "preparedValue": "Ministry of Forests (owner must confirm exact select option)", "ownerAction": "Confirm the form's exact Source Ministry option for these three Province of British Columbia records."},
+    {"field": "publicationTotalPages", "required": false, "preparedValue": null, "ownerAction": "Not applicable when Website is selected."},
+    {"field": "publicationIsbn", "required": false, "preparedValue": null, "ownerAction": "Not applicable when Website is selected."},
+    {"field": "publicationPageNumbers", "required": true, "preparedValue": null, "ownerAction": "Not applicable when Website is selected; do not enter a fabricated page range."},
+    {"field": "websiteSourceUrl", "required": true, "preparedValue": null, "preparedSupportingValues": ["https://catalogue.data.gov.bc.ca/dataset/6ba30649-14cd-44ad-a11f-794feed39f40", "https://catalogue.data.gov.bc.ca/dataset/7dda4615-5d32-427e-a303-1dcdb90a6fea", "https://catalogue.data.gov.bc.ca/dataset/f257ca4a-0c33-4eb2-9da8-21dff4482f58"], "ownerAction": "The reply requires all three exact URLs. Confirm how the form's singular Source URL control accepts three URLs; if it cannot, place all three in the intended-use details and obtain clarification before submission."},
+    {"field": "websiteNumberOfCopies", "required": true, "preparedValue": null, "ownerAction": "Confirm the form-compatible value for a free public website and derived outputs; do not invent a copy count."},
+    {"field": "natureOfIntendedUse", "required": true, "preparedValue": ["Non Commercial"], "ownerAction": "Select Non Commercial after confirming the free-access/no-sales/no-paywall/no-ads description and voluntary-donation disclosure."},
+    {"field": "intendedUseDetails", "required": true, "preparedValueRef": "preparedIntendedUse", "ownerAction": "Paste the prepared intended-use content, exact dataset names/URLs, limitations, raw non-redistribution boundary, attribution, correction route, audience, channels, and fee/licensing disclosure request."},
+    {"field": "hiddenValidationName", "required": false, "preparedValue": null, "ownerAction": "Leave the hidden validation field unchanged."}
+  ],
+  "ownerAction": {
+    "status": "fom-awaiting-permission-and-access-response-vri-tap-unsubmitted",
+    "steps": [
+      "Review the three exact dataset names, catalogue URLs, source-specific purposes and non-conflation limitations.",
+      "Supply the owner's identity, mailing address, email confirmation and phone directly in the official form; this audit did not collect or enter personal data.",
+      "Confirm the prior-permission answer, Source Ministry select option, singular Source URL handling and website copy-count field before submission.",
+      "Review the intended-use details, free-public-access statement, voluntary-donation/no-preferential-access statement, raw Access Only non-redistribution boundary, Canadian controlled-archive request, attribution, limitations and correction/right-of-reply request.",
+      "Request the applicable licensing vehicle and fee amount in writing before any charge or commitment.",
+      "Do not duplicate the submitted FOM request; await the copyright office's permission and access-path response.",
+      "Submit VRI or TAP only after separate owner review; the FOM submission did not cover those rows."
+    ],
+    "doNotUnderThisAudit": [
+      "Do not submit a duplicate FOM form or imply that the FOM form covered VRI or TAP.",
+      "Do not enter personal identity, address, email or phone information into the live form.",
+      "Do not accept or agree to a fee, licence, terms or permission condition.",
+      "Do not claim that permission or a licence has been granted.",
+      "Do not acquire, archive, transform, publish or redistribute any Access Only source based on this package.",
+      "Do not treat the TAP Current View as the implemented-deferral layer."
+    ]
+  },
+  "impact": {
+    "rowsAffected": ["bc-vri", "bc-forest-operations-map", "bc-old-growth-bec"],
+    "rawEvidenceCreditImpact": 0,
+    "productionEligibilityImpact": 0,
+    "permissionGranted": false,
+    "licenceGranted": false,
+    "formsSubmitted": true,
+    "submittedCanonicalRowIds": ["bc-forest-operations-map"],
+    "feePaid": false,
+    "termsAccepted": false,
+    "artifactAcquired": false,
+    "ownerDecisionRecorded": false
+  }
+}

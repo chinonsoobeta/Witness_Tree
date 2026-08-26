@@ -1,0 +1,283 @@
+{
+  "schemaVersion": 1,
+  "status": "no-complete-public-term2-package",
+  "auditedAt": "2026-08-20T18:51:15Z",
+  "canonicalRowIds": ["on-fri", "on-fri-term-2"],
+  "sourceRecord": "data/ontario-fri-term2-access-block.json",
+  "nonClaimNotice": "This is a read-only official Ontario route-exhaustion and current-availability record. It does not claim that a public web map, a pilot sample, or a mutable FMU boundary service is a complete Term 2 FRI package, a reproducible snapshot, a final schema, source-ledger evidence, or production authorization.",
+  "officialSources": {
+    "catalogueApi": {
+      "url": "https://data.ontario.ca/api/3/action/package_show?id=forest-resource-inventory-term-2-t2-2018-2028",
+      "catalogueUrl": "https://data.ontario.ca/dataset/forest-resource-inventory-term-2-t2-2018-2028",
+      "datasetId": "c4760737-da46-4653-bdf1-b87957260886",
+      "title": "Forest Resource Inventory Term 2 (T2) 2018-2028",
+      "publisher": "Ontario Ministry of Natural Resources and Forestry",
+      "accessLevel": "open",
+      "isopen": false,
+      "licenceId": "OGL-ON-1.0",
+      "licence": "Open Government Licence – Ontario",
+      "licenceUrl": "https://www.ontario.ca/page/open-government-licence-ontario",
+      "metadataModified": "2025-10-22T18:17:07.049078",
+      "currentAsOf": "2022-08-04",
+      "geographicGranularity": "fmu",
+      "resourceCount": 2,
+      "resources": [
+        {
+          "id": "2742880e-2d7c-4629-83de-a4a3672a6825",
+          "name": "Forest Resource Inventory Term 2 (T2) 2018-2028",
+          "format": "WEB",
+          "url": "https://geohub.lio.gov.on.ca/maps/lio::forest-resource-inventory-term-2-t2-2018-2028/explore",
+          "metadataModified": "2025-10-22T18:17:07.063431",
+          "size": null
+        },
+        {
+          "id": "ead5f366-0721-4211-a41b-a2c5fcdc2f11",
+          "name": "Inventaire des ressources forestières – Période 2 (P2), 2018-2028",
+          "format": "WEB",
+          "url": "https://geohub-fr.lio.gov.on.ca/maps/lio::inventaire-des-ressources-foresti%C3%A8res-p%C3%A9riode-2-p2-2018-2028/explore",
+          "metadataModified": "2025-10-22T18:17:07.063520",
+          "size": null
+        }
+      ],
+      "finding": "The current catalogue API still publishes exactly two WEB explorer resources and no downloadable Term 2 artifact, package byte size, checksum, or deterministic complete export endpoint."
+    },
+    "geoHubPage": {
+      "url": "https://geohub.lio.gov.on.ca/pages/forest-resources-inventory",
+      "itemMetadataUrl": "https://www.arcgis.com/sharing/rest/content/items/70a76bb5dc8348b097773bb251c23303?f=json",
+      "itemId": "70a76bb5dc8348b097773bb251c23303",
+      "itemType": "Hub Page",
+      "itemStatus": "public_authoritative",
+      "itemModified": "2026-08-11T21:59:14Z",
+      "directions": {
+        "programOverview": "Current FRI is T1 (2008–2017); lidar-enhanced T2 is in production according to the forest-management planning schedule and the page says to check back for updates.",
+        "relatedProducts": "The page says related data products will be added as they become available over the next few years.",
+        "t2InventoryCard": "The inventory-development card identifies a Romeo Malette Forest pilot test and labels it incomplete.",
+        "contact": "FRI@ontario.ca"
+      },
+      "rangeLabels": {
+        "programOverview": "2018–2027",
+        "inventoryDevelopmentCard": "2018–2028"
+      },
+      "finding": "The page is an authoritative direction and status page, not a complete Term 2 package. Its one-year range-label conflict is unresolved by a publisher version or as-of record."
+    },
+    "term2WebMap": {
+      "aboutUrl": "https://geohub.lio.gov.on.ca/maps/lio::forest-resource-inventory-term-2-t2-2018-2028/about",
+      "exploreUrl": "https://geohub.lio.gov.on.ca/maps/lio::forest-resource-inventory-term-2-t2-2018-2028/explore",
+      "itemMetadataUrl": "https://www.arcgis.com/sharing/rest/content/items/ca6def13e17540deb6e91d81e9cb2c89?f=json",
+      "itemDataUrl": "https://www.arcgis.com/sharing/rest/content/items/ca6def13e17540deb6e91d81e9cb2c89/data?f=json",
+      "itemId": "ca6def13e17540deb6e91d81e9cb2c89",
+      "title": "Forest Resource Inventory Term 2 (T2) 2018-2028",
+      "itemType": "Web Map",
+      "owner": "LandInformationOntario",
+      "orgId": "a03W7iZ8T3s5vB7p",
+      "access": "public",
+      "modified": "2026-02-19T19:42:53Z",
+      "mapJsonBytes": 5440,
+      "accessInformation": "Ontario Ministry of Natural Resources and Forestry © King's Printer for Ontario, 2022",
+      "licence": "Open Government Licence – Ontario",
+      "licenceUrl": "https://www.ontario.ca/page/open-government-licence-ontario",
+      "operationalLayerCount": 2,
+      "operationalLayers": [
+        {
+          "title": "Forest Management Unit",
+          "url": "https://ws.lioservices.lrc.gov.on.ca/arcgis2/rest/services/LIO_OPEN_DATA/LIO_Open07/MapServer/20",
+          "itemId": "c5f284168fe7443c9dc108552ce1b47f"
+        },
+        {
+          "title": "Romeo Malette Forest boundary",
+          "url": "https://services9.arcgis.com/a03W7iZ8T3s5vB7p/arcgis/rest/services/Romeo_Malette_Forest_boundary/FeatureServer/0",
+          "itemId": "c9368b808b9842b0b561efd8b96e6324"
+        }
+      ],
+      "finding": "The public Web Map contains a provincial FMU boundary index and one Romeo Malette pilot boundary; it does not contain Term 2 stand polygons or a complete package download. Its description explicitly calls the FRI packaged products draft consultation/product-development data, says attributes, algorithms and formats may change, and says a final structure/content will be made available after consultation."
+    },
+    "t1PackagedProductsV2": {
+      "aboutUrl": "https://geohub.lio.gov.on.ca/maps/lio::forest-resources-inventory-packaged-products-version-2/about",
+      "itemMetadataUrl": "https://www.arcgis.com/sharing/rest/content/items/9de0dad6f1b3435eb46df8ee49f4ecfd?f=json",
+      "itemId": "9de0dad6f1b3435eb46df8ee49f4ecfd",
+      "title": "Forest Resources Inventory Packaged Products - Version 2",
+      "itemType": "Web Map",
+      "modified": "2026-08-11T20:44:46Z",
+      "currentProduct": "T1/FIMv2 stereo digital imagery-based FRI for 2008–2017",
+      "directZipLinkCount": 78,
+      "explicitFilenameYearRange": [2007, 2016],
+      "finding": "This public direct-ZIP map is the current T1/FIMv2 product route, not Term 2. Its modified timestamp is current, but its advertised packages do not provide a 2018–2028 Term 2 edition."
+    }
+  },
+  "coverage": {
+    "fmuIndex": {
+      "serviceUrl": "https://ws.lioservices.lrc.gov.on.ca/arcgis2/rest/services/LIO_OPEN_DATA/LIO_Open07/MapServer/20",
+      "queryCountUrl": "https://ws.lioservices.lrc.gov.on.ca/arcgis2/rest/services/LIO_OPEN_DATA/LIO_Open07/MapServer/20/query?where=1%3D1&returnCountOnly=true&f=pjson",
+      "name": "Forest Management Unit",
+      "featureCount": 39,
+      "geometryType": "esriGeometryPolygon",
+      "crs": "EPSG:4269",
+      "fieldCount": 19,
+      "fieldNames": ["OGF_ID", "FMU_NAME", "FMU_CODE", "LICENSEE_NAME", "LICENSEE_NUMBER", "FMP_PERIOD_START_YEAR", "FMP_PERIOD_END_YEAR", "LEAD_MNR_DISTRICT_NAME", "LEAD_MNR_REGION_NAME", "BUSINESS_EFFECTIVE_DATE", "SYSTEM_CALCULATED_AREA", "GENERAL_COMMENTS", "GEOMETRY_UPDATE_DATETIME", "EFFECTIVE_DATETIME", "SYSTEM_DATETIME", "SHAPE", "OBJECTID", "SHAPE.AREA", "SHAPE.LEN"],
+      "role": "coverage index only; no Term 2 stand-package feature count"
+    },
+    "pilotBoundary": {
+      "serviceUrl": "https://services9.arcgis.com/a03W7iZ8T3s5vB7p/arcgis/rest/services/Romeo_Malette_Forest_boundary/FeatureServer/0",
+      "queryUrl": "https://services9.arcgis.com/a03W7iZ8T3s5vB7p/arcgis/rest/services/Romeo_Malette_Forest_boundary/FeatureServer/0/query?where=1%3D1&outFields=*&returnGeometry=false&f=pjson",
+      "featureCount": 1,
+      "fmuCode": "930",
+      "fmuName": "Romeo Malette Forest",
+      "ogfId": 131370147,
+      "geometryType": "esriGeometryPolygon",
+      "crs": "EPSG:3857",
+      "fieldCount": 19,
+      "comment": "Subset of the forest provided for review.",
+      "effectiveDate": "20220112154012",
+      "geometryUpdateDate": "20210331110152",
+      "role": "single-FMU pilot boundary; not province-wide Term 2 coverage"
+    }
+  },
+  "routes": [
+    {
+      "id": "catalogue-api",
+      "status": "public-metadata-only",
+      "completeArtifact": false,
+      "officialUrl": "https://data.ontario.ca/api/3/action/package_show?id=forest-resource-inventory-term-2-t2-2018-2028",
+      "blocker": "Exactly two WEB resources are listed; resource size, package bytes, checksum, schema, CRS and complete export are absent."
+    },
+    {
+      "id": "geohub-fri-page",
+      "status": "authoritative-directions-no-package",
+      "completeArtifact": false,
+      "officialUrl": "https://geohub.lio.gov.on.ca/pages/forest-resources-inventory",
+      "blocker": "The page says T2 is in production, points to an incomplete Romeo Malette pilot and says products will be added as available; it provides no final Term 2 package."
+    },
+    {
+      "id": "term2-web-map",
+      "status": "public-web-map-not-package",
+      "completeArtifact": false,
+      "officialUrl": "https://geohub.lio.gov.on.ca/maps/lio::forest-resource-inventory-term-2-t2-2018-2028/about",
+      "blocker": "Only two operational boundary layers are present. The map's own description calls linked FRI packages draft and non-final."
+    },
+    {
+      "id": "fmu-index-service",
+      "status": "coverage-index-only",
+      "completeArtifact": false,
+      "officialUrl": "https://ws.lioservices.lrc.gov.on.ca/arcgis2/rest/services/LIO_OPEN_DATA/LIO_Open07/MapServer/20",
+      "blocker": "The 39-feature polygon service identifies FMUs but carries no Term 2 stand attributes or package snapshot."
+    },
+    {
+      "id": "romeo-malette-pilot-boundary",
+      "status": "single-fmu-pilot-only",
+      "completeArtifact": false,
+      "officialUrl": "https://services9.arcgis.com/a03W7iZ8T3s5vB7p/arcgis/rest/services/Romeo_Malette_Forest_boundary/FeatureServer/0",
+      "blocker": "The one feature is explicitly a review subset and exposes only two sample links, not a complete provincial or selected-FMU Term 2 release."
+    },
+    {
+      "id": "romeo-malette-sample-downloads",
+      "status": "public-draft-samples-head-only",
+      "completeArtifact": false,
+      "officialUrl": "https://ws.gisetl.lrc.gov.on.ca/fmedatadownload/Packages/RMF_FRI_SampleSet.gdb.zip",
+      "additionalOfficialUrl": "https://ws.gisetl.lrc.gov.on.ca/fmedatadownload/Packages/RMF_Predictors_20m_SampleSet.gdb.zip",
+      "blocker": "The two public ZIPs are pilot sample products; only HEAD metadata was read, no archive was downloaded, and neither is a complete Term 2 package."
+    },
+    {
+      "id": "t1-packaged-products-v2",
+      "status": "public-pre-term2-packages",
+      "completeArtifact": false,
+      "officialUrl": "https://geohub.lio.gov.on.ca/maps/lio::forest-resources-inventory-packaged-products-version-2/about",
+      "blocker": "The route is T1/FIMv2 (2008–2017) and its 78 direct ZIP links have explicit filename vintages 2007–2016; it cannot establish Term 2 access."
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "rmf-fri-sample-set",
+      "url": "https://ws.gisetl.lrc.gov.on.ca/fmedatadownload/Packages/RMF_FRI_SampleSet.gdb.zip",
+      "publisherLabel": "Romeo Malette Forest Sample Set",
+      "format": "File Geodatabase ZIP",
+      "coverage": "Romeo Malette Forest, FMU 930 pilot",
+      "observedHead": {
+        "status": 200,
+        "contentType": "application/zip",
+        "contentLength": 354025569,
+        "etag": "W/\"354025569-1652369848000\"",
+        "lastModified": "Thu, 12 May 2022 15:37:28 GMT",
+        "acceptRanges": "bytes"
+      },
+      "expectedBytes": 354025569,
+      "sha256": null,
+      "archiveIntegrity": "not-tested-no-download",
+      "schema": null,
+      "crs": null,
+      "downloaded": false,
+      "completeArtifact": false
+    },
+    {
+      "id": "rmf-predictors-20m-sample-set",
+      "url": "https://ws.gisetl.lrc.gov.on.ca/fmedatadownload/Packages/RMF_Predictors_20m_SampleSet.gdb.zip",
+      "publisherLabel": "Romeo Malette Forest Predictors (20m) Sample Set",
+      "format": "File Geodatabase ZIP",
+      "coverage": "Romeo Malette Forest, FMU 930 pilot",
+      "observedHead": {
+        "status": 200,
+        "contentType": "application/zip",
+        "contentLength": 1103374586,
+        "etag": "W/\"1103374586-1652372816000\"",
+        "lastModified": "Thu, 12 May 2022 16:26:56 GMT",
+        "acceptRanges": "bytes"
+      },
+      "expectedBytes": 1103374586,
+      "sha256": null,
+      "archiveIntegrity": "not-tested-no-download",
+      "schema": null,
+      "crs": null,
+      "downloaded": false,
+      "completeArtifact": false
+    }
+  ],
+  "findings": {
+    "authoritativeDirectionsPublic": true,
+    "completeTerm2PackageAvailable": false,
+    "lawfulPublicCompleteArtifactFound": false,
+    "lawfulPublicSampleRoutesFound": true,
+    "completePackageExpectedBytes": null,
+    "completePackageSha256": null,
+    "packageSchemaPublished": false,
+    "packageCrsPublished": false,
+    "packageFeatureCountPublished": false,
+    "coherentReproducibleSnapshot": false,
+    "dateLabelConflict": true,
+    "dateLabelConflictReason": "The page's program-overview text says 2018–2027 while its inventory-development card, catalogue and Web Map title say 2018–2028. No publisher version/as-of statement resolves the discrepancy.",
+    "conclusion": "No complete, final, checksum-bound and coherently reproducible Term 2 FRI package is publicly available through the official Ontario routes inspected. The only public data payloads are incomplete pilot samples for one FMU, and they remain unprofiled because this audit did not download them."
+  },
+  "rights": {
+    "catalogueLicence": "Open Government Licence – Ontario",
+    "mapLicence": "Open Government Licence – Ontario",
+    "exactPackageReuseConfirmed": false,
+    "status": "unsettled-for-released-package",
+    "reason": "The catalogue and Web Map advertise OGL Ontario, but the linked FRI products are explicitly draft consultation/product-development samples with changing attributes, algorithms and formats. No final Term 2 package licence, attribution wording, version or checksum was published; retain the existing exact-package rights blocker."
+  },
+  "ownerAction": {
+    "status": "prepared-unsent",
+    "contacts": ["FRI@ontario.ca"],
+    "steps": [
+      "Ask the Ontario FRI team to identify whether a final Term 2 release exists beyond the public pilot and, if so, provide the stable package or documented deterministic export route.",
+      "Request the exact edition/version, as-of date, complete FMU coverage list, format, CRS, schema, feature count, byte length, SHA-256 and archive-integrity evidence.",
+      "Request written confirmation of the licence and attribution for the exact package, including retention, internal transformation, public redistribution, refresh, correction and right-of-reply conditions.",
+      "Ask the publisher to resolve the public 2018–2027 versus 2018–2028 range labels and state whether Romeo Malette FMU 930 is only a pilot or a final release.",
+      "Keep on-fri and on-fri-term-2 access-blocked until a complete coherent package and exact-package rights are verified."
+    ],
+    "sent": false,
+    "formSubmitted": false,
+    "personalInformationSubmitted": false,
+    "termsAccepted": false,
+    "paymentPerformed": false
+  },
+  "phase1Impact": {
+    "rowsAffected": ["on-fri", "on-fri-term-2"],
+    "preserveAccessBlocked": true,
+    "rawEvidenceCreditImpact": 0,
+    "productionEligibilityImpact": 0,
+    "sourceLedgerChanged": false,
+    "artifactAcquired": false,
+    "archiveCreated": false,
+    "schemaProfiled": false,
+    "geometryValidated": false,
+    "phase2Started": false
+  }
+}

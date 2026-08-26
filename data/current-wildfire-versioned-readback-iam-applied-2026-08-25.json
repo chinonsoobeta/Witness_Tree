@@ -1,0 +1,28 @@
+{
+  "schemaVersion": "witness-tree/current-wildfire-versioned-readback-iam-applied/1",
+  "status": "applied-readback-attested",
+  "scope": "Phase 1 current-wildfire raw archive recovery only; not archive, admission, transformation, ingestion, release, or production evidence.",
+  "roleName": "WitnessTreeCurrentWildfirePromotionUploader",
+  "inlinePolicyName": "WitnessTreeCurrentWildfireExactObjectAccess",
+  "change": {
+    "kind": "additive-exact-version-read",
+    "addedAction": "s3:GetObjectVersion",
+    "resourceCount": 8,
+    "resourceSet": "the eight raw payload and manifest keys pinned by current-wildfire-immutable-promotion-preparation.json",
+    "wildcards": false
+  },
+  "checksums": {
+    "appliedAgainstPreparationFileSha256": "1d5d759e887c44756d311d9eb71ace09268063abfce3c6593a11d936d05544f1",
+    "currentObjectKeySetSha256": "e4849cd41692148437b9390f6e0c869514588ed5ea3badd6fcf9ad7bf2d2fb16",
+    "basePolicySha256": "9bd7f2d866b9bcfaad5f8c6c099e4b88755ecd4849eba1f0b7568f3ef1cf6fec",
+    "desiredPolicySha256": "f40d08ca17c6b360b116d66b819f653994f26d60e6417c1e7e14b60d9c517e7d",
+    "readbackPolicySha256": "f40d08ca17c6b360b116d66b819f653994f26d60e6417c1e7e14b60d9c517e7d"
+  },
+  "validation": {
+    "accessAnalyzerBlockingFindings": 0,
+    "exactVersionRead": "allowed",
+    "outOfScopeVersionRead": "implicitDeny"
+  },
+  "operatorDiagnostic": "A version-specific HeadObject for current-cwfis-current-active-wildfires-2026-08-14T202242Z-payload returned 403 Forbidden. Recovery correctly refused because the exact existing object could not be read; no replacement write was attempted.",
+  "redaction": "No credentials, session data, object version IDs, request IDs, or object bodies are recorded."
+}

@@ -1,0 +1,382 @@
+{
+  "schemaVersion": "witness-tree/phase1-bc-ontario-row-audit/1",
+  "status": "blocked-read-only",
+  "auditedAt": "2026-08-21T00:00:00Z",
+  "derivedFromHead": "4466a14dd1462d09692db869523df713a6db2291",
+  "jurisdictions": ["BC", "ON"],
+  "notice": "This audit reconciles the eleven BC/ON production rows against the canonical ledger and existing local or independently verified route, reply, geometry, and archive records. It performs no AWS call, email, form submission, permission acceptance, archive mutation, transformation, ingestion, release, production admission, or production-eligibility change.",
+  "canonicalRowIds": [
+    "bc-wildfire",
+    "on-fire-disturbance",
+    "bc-fta-cutblocks",
+    "bc-harvesting-authorities",
+    "bc-vri",
+    "bc-consolidated-cutblocks",
+    "bc-old-growth-bec",
+    "bc-forest-operations-map",
+    "on-fri",
+    "on-fri-term-2",
+    "provincial-electoral-boundaries"
+  ],
+  "baseline": {
+    "productionRows": 31,
+    "rawEvidenceNumerator": 14.25,
+    "rawEvidenceDenominator": 31,
+    "formalEvidenceTrackingPercentage": 38.7903226,
+    "evidenceStateCounts": {
+      "remote-verified-archived-profiled": 7,
+      "local-verified-profiled": 9,
+      "partial-component": 2,
+      "access-blocked": 13
+    },
+    "immutableArchiveCompleteRows": 7,
+    "productionAdmissionCompleteRows": 0,
+    "productionEligibleRows": 0,
+    "bcOntarioRows": 11,
+    "bcOntarioRawCredit": 1.75,
+    "bcOntarioRawCreditDelta": 0,
+    "currentWildfireArchiveGate": {
+      "requiredObjects": 6,
+      "verifiedObjects": 0,
+      "attestedObjects": 6,
+      "productionEligible": false
+    }
+  },
+  "claims": {
+    "remoteMutationPerformed": false,
+    "externalReplyResolved": false,
+    "permissionGranted": false,
+    "archiveEvidenceAdded": false,
+    "productionAdmission": false,
+    "productionEligible": false
+  },
+  "groups": [
+    {
+      "id": "bc-ontario-current-wildfire-derived-gate",
+      "rows": ["bc-wildfire", "on-fire-disturbance"],
+      "category": "local-profile-placeholder-attestation-blocked",
+      "currentStatus": "Both BC and Ontario snapshots and derived payloads are locally checksum-bound, but the archive records omit concrete version identifiers and use placeholder checksum values. Exact-version immutable proof, recovery or mutation provenance, and production admission remain unproven.",
+      "evidenceRefs": [
+        "data/current-wildfire-raw-archive-evidence.json",
+        "data/current-wildfire-derived-archive-evidence.json",
+        "data/current-wildfire-owner-admission.json",
+        "data/current-wildfire-derived-live-recovery-guard-2026-08-20.json",
+        "data/bc-wildfire-geometry-policy-2026-08-14.json",
+        "data/ontario-in-year-fire-geometry-policy-2026-08-14.json"
+      ],
+      "currentWildfireArchiveGate": {
+        "requiredObjects": 6,
+        "verifiedObjects": 0,
+        "attestedObjects": 6,
+        "derivedObjectsVerified": false,
+        "productionEligible": false
+      },
+      "currentRawCreditDelta": 0,
+      "maximumRawCreditDelta": 0.5,
+      "maximumFormalPercentagePointDelta": 0.483871,
+      "nextLawfulAction": "Integrate concrete version identifiers and non-placeholder provider checksums for the exact raw and derived payloads, then prove exact-version retention/readback before any downstream admission.",
+      "blockers": [
+        "Concrete version identifiers and non-placeholder provider checksum values are absent from the redacted evidence.",
+        "Separate transformation, ingestion, release and production-admission records remain absent.",
+        "Production remains blocked even though the raw rows already carry one raw-evidence credit each."
+      ]
+    },
+    {
+      "id": "bc-access-blocked-routes",
+      "rows": [
+        "bc-fta-cutblocks",
+        "bc-harvesting-authorities",
+        "bc-vri",
+        "bc-consolidated-cutblocks",
+        "bc-old-growth-bec",
+        "bc-forest-operations-map"
+      ],
+      "category": "access-and-rights-blocked",
+      "currentStatus": "All six BC rows remain access-blocked with zero raw credit. Public service visibility, a procedural FOI route, the FOM-only submitted copyright form and clarification reply, BEC route replies, and a downloadable Access Only ZIP do not establish a lawful reusable artifact, permission, immutable archive, or production admission.",
+      "evidenceRefs": [
+        "data/phase1-access-blocker-resolution.json",
+        "data/phase1-outreach-reply-audit.json",
+        "data/bc-fta-operational-sources.json",
+        "data/bc-harvesting-authority-access-block.json",
+        "data/bc-vri-access-block.json",
+        "data/bc-consolidated-cutblocks-access.json",
+        "data/bc-bec-snapshot-block.json",
+        "data/phase1-bec-custom-download-route-audit.json",
+        "data/phase1-bec-public-alternative-exhaustion.json",
+        "data/bc-forest-operations-map-access.json",
+        "data/phase1-bc-copyright-permission-form-package.json"
+      ],
+      "currentRawCreditDelta": 0,
+      "maximumRawCreditDelta": 6,
+      "maximumFormalPercentagePointDelta": 5.8064516,
+      "nextLawfulAction": "For each source, obtain the publisher-authorized export or written permission for the exact intended use, then capture edition, checksum, profile and immutable readbacks. BEC additionally requires owner eligibility, terms/order authorization and an identified implemented TAP deferral layer.",
+      "blockers": [
+        "FTA and harvesting-authority services are mutable/non-transaction-safe or custom-order routes without a coherent publisher export.",
+        "VRI and FOM are Access Only or have no functioning complete current artifact; the FOM-only form and clarification reply grant no rights or access, while VRI remains unsubmitted.",
+        "Consolidated cutblocks is Access Only despite a public ZIP; FAIB authorization and output terms remain unresolved.",
+        "BEC public alternatives are incomplete and the custom-download order is blocked before submission; TAP rights and implemented-deferral source remain unresolved."
+      ]
+    },
+    {
+      "id": "ontario-fri-term2-routes",
+      "rows": ["on-fri", "on-fri-term-2"],
+      "category": "access-and-rights-blocked",
+      "currentStatus": "Both Ontario FRI rows remain access-blocked with zero raw credit. The official Term 2 catalogue and Web explorers do not provide a complete stable package or deterministic full API, and the catalogue-deferral reply supplies no exact artifact, checksum or reuse decision.",
+      "evidenceRefs": [
+        "data/ontario-fri-term2-access-block.json",
+        "data/phase1-ontario-fri-term2-route-exhaustion.json",
+        "data/phase1-outreach-reply-audit.json",
+        "data/phase1-access-blocker-resolution.json"
+      ],
+      "currentRawCreditDelta": 0,
+      "maximumRawCreditDelta": 2,
+      "maximumFormalPercentagePointDelta": 1.9354839,
+      "nextLawfulAction": "Obtain the selected complete Term 2 FMU package or deterministic API, edition/as-of statement, coverage and schema, checksum, and written permission for retention, transformation and public results from Ontario MNRF.",
+      "blockers": [
+        "Only mutable WEB explorer resources are catalogued.",
+        "No complete Term 2 package, exact-package checksum/profile or written reuse confirmation is recorded.",
+        "The two canonical rows share one source family; a pilot sample or Term 1 product cannot clear either row."
+      ]
+    },
+    {
+      "id": "provincial-electoral-boundaries-partial",
+      "rows": ["provincial-electoral-boundaries"],
+      "category": "partial-component-route-blocked",
+      "currentStatus": "The row remains partial at 0.25 raw credit. BC and Ontario component profiles are locally checksum-bound, while Alberta and Québec remain unacquired and intended-scope permission/current-edition confirmation is unresolved.",
+      "evidenceRefs": [
+        "data/phase1-partial-source-route-exhaustion.json",
+        "data/bc-provincial-electoral-2023-profile.json",
+        "data/on-electoral-2022-profile.json",
+        "data/alberta-electoral-boundary-block.json",
+        "data/qc-electoral-editions.json",
+        "data/partial-ledger-evidence-audit.json"
+      ],
+      "currentRawCreditDelta": 0,
+      "maximumRawCreditDelta": 0.75,
+      "maximumFormalPercentagePointDelta": 0.7258065,
+      "nextLawfulAction": "Owner reviews the NBAC/Alberta/Québec route terms and sends the prepared requests only if authorized; acquire and profile the missing components after written permission and current-edition confirmation.",
+      "blockers": [
+        "No partial-row substantive reply or owner-approved acquisition is recorded.",
+        "Alberta terms do not clear transformation and public derived outputs without written permission.",
+        "Québec 2017 atlas is a candidate public ZIP but adaptation/use authorization and current-edition confirmation remain outstanding; the 2026 edition cannot be substituted early."
+      ]
+    }
+  ],
+  "rows": [
+    {
+      "id": "bc-wildfire",
+      "jurisdiction": "BC",
+      "evidenceState": "local-verified-profiled",
+      "rawCredit": 0.75,
+      "immutableArchive": false,
+      "productionAdmission": false,
+      "productionEligible": false,
+      "evidenceRefs": [
+        "data/staged-acquisitions.json",
+        "data/bc-wildfire-current-perimeters-profile.json",
+        "data/bc-wildfire-geometry-policy-2026-08-14.json",
+        "data/current-wildfire-owner-admission.json",
+        "data/current-wildfire-raw-archive-evidence.json",
+        "data/current-wildfire-derived-archive-evidence.json"
+      ],
+      "replyRecordIds": [],
+      "currentRawCreditDelta": 0,
+      "maximumRawCreditDelta": 0.25,
+      "maximumFormalPercentagePointDelta": 0.2419355,
+      "nextAction": "Integrate concrete version and non-placeholder checksum bindings, then exact-version readback and retention evidence before downstream decisions activate.",
+      "blockers": ["Placeholder-only archive attestations do not prove an immutable exact-version object; downstream admission remains blocked."],
+      "claims": {"archiveMutation": false, "permissionGranted": false, "externalReplyResolved": false, "productionAdmission": false, "productionEligible": false}
+    },
+    {
+      "id": "on-fire-disturbance",
+      "jurisdiction": "ON",
+      "evidenceState": "local-verified-profiled",
+      "rawCredit": 0.75,
+      "immutableArchive": false,
+      "productionAdmission": false,
+      "productionEligible": false,
+      "evidenceRefs": [
+        "data/staged-acquisitions.json",
+        "data/ontario-in-year-fire-perimeters-profile.json",
+        "data/ontario-in-year-fire-geometry-policy-2026-08-14.json",
+        "data/current-wildfire-owner-admission.json",
+        "data/current-wildfire-raw-archive-evidence.json",
+        "data/current-wildfire-derived-archive-evidence.json"
+      ],
+      "replyRecordIds": [],
+      "currentRawCreditDelta": 0,
+      "maximumRawCreditDelta": 0.25,
+      "maximumFormalPercentagePointDelta": 0.2419355,
+      "nextAction": "Integrate concrete version and non-placeholder checksum bindings, then exact-version readback and retention evidence before downstream decisions activate.",
+      "blockers": ["Placeholder-only archive attestations do not prove an immutable exact-version object; downstream admission remains blocked."],
+      "claims": {"archiveMutation": false, "permissionGranted": false, "externalReplyResolved": false, "productionAdmission": false, "productionEligible": false}
+    },
+    {
+      "id": "bc-fta-cutblocks",
+      "jurisdiction": "BC",
+      "evidenceState": "access-blocked",
+      "rawCredit": 0,
+      "immutableArchive": false,
+      "productionAdmission": false,
+      "productionEligible": false,
+      "evidenceRefs": ["data/bc-fta-operational-sources.json"],
+      "replyRecordIds": ["reply-bc-forest-tenures-foi-route"],
+      "currentRawCreditDelta": 0,
+      "maximumRawCreditDelta": 1,
+      "maximumFormalPercentagePointDelta": 0.9677419,
+      "nextAction": "Receive a coherent BCGW export with edition/as-of, full count, checksum, profile and attribution.",
+      "blockers": ["The public services are mutable/non-transaction-safe and the reply supplied only an FOI route, not an export."],
+      "claims": {"archiveMutation": false, "permissionGranted": false, "externalReplyResolved": false, "productionAdmission": false, "productionEligible": false}
+    },
+    {
+      "id": "bc-harvesting-authorities",
+      "jurisdiction": "BC",
+      "evidenceState": "access-blocked",
+      "rawCredit": 0,
+      "immutableArchive": false,
+      "productionAdmission": false,
+      "productionEligible": false,
+      "evidenceRefs": ["data/bc-harvesting-authority-access-block.json"],
+      "replyRecordIds": ["reply-bc-forest-tenures-foi-route"],
+      "currentRawCreditDelta": 0,
+      "maximumRawCreditDelta": 1,
+      "maximumFormalPercentagePointDelta": 0.9677419,
+      "nextAction": "Receive a publisher-authorized BCGW export and separately review lifecycle semantics.",
+      "blockers": ["The custom order has no stable artifact URL or edition marker; the reply supplied only a procedural route."],
+      "claims": {"archiveMutation": false, "permissionGranted": false, "externalReplyResolved": false, "productionAdmission": false, "productionEligible": false}
+    },
+    {
+      "id": "bc-vri",
+      "jurisdiction": "BC",
+      "evidenceState": "access-blocked",
+      "rawCredit": 0,
+      "immutableArchive": false,
+      "productionAdmission": false,
+      "productionEligible": false,
+      "evidenceRefs": ["data/bc-vri-access-block.json"],
+      "replyRecordIds": ["reply-bc-copyright-permission-process", "reply-bc-copyright-single-form-followup"],
+      "currentRawCreditDelta": 0,
+      "maximumRawCreditDelta": 1,
+      "maximumFormalPercentagePointDelta": 0.9677419,
+      "nextAction": "Obtain a working complete 2025 export and written permission for retention, transformation and public derived results.",
+      "blockers": ["The advertised current artifact returned 404; Access Only rights remain unresolved, and the FOM-only submission does not cover VRI."],
+      "claims": {"archiveMutation": false, "permissionGranted": false, "externalReplyResolved": false, "productionAdmission": false, "productionEligible": false}
+    },
+    {
+      "id": "bc-consolidated-cutblocks",
+      "jurisdiction": "BC",
+      "evidenceState": "access-blocked",
+      "rawCredit": 0,
+      "immutableArchive": false,
+      "productionAdmission": false,
+      "productionEligible": false,
+      "evidenceRefs": ["data/bc-consolidated-cutblocks-access.json"],
+      "replyRecordIds": ["reply-faib-output-details"],
+      "currentRawCreditDelta": 0,
+      "maximumRawCreditDelta": 1,
+      "maximumFormalPercentagePointDelta": 0.9677419,
+      "nextAction": "Obtain written FAIB authorization or an authoritative redistributable licence for the exact resource and intended output.",
+      "blockers": ["The published ZIP is Access Only; the reply clarified output details but supplied no authorization or artifact evidence."],
+      "claims": {"archiveMutation": false, "permissionGranted": false, "externalReplyResolved": false, "productionAdmission": false, "productionEligible": false}
+    },
+    {
+      "id": "bc-old-growth-bec",
+      "jurisdiction": "BC",
+      "evidenceState": "access-blocked",
+      "rawCredit": 0,
+      "immutableArchive": false,
+      "productionAdmission": false,
+      "productionEligible": false,
+      "evidenceRefs": ["data/phase1-bec-custom-download-route-audit.json"],
+      "replyRecordIds": ["reply-bc-bec-service-portal", "reply-bc-bec-custom-download-route", "reply-bc-copyright-permission-process", "reply-bc-copyright-single-form-followup"],
+      "currentRawCreditDelta": 0,
+      "maximumRawCreditDelta": 1,
+      "maximumFormalPercentagePointDelta": 0.9677419,
+      "nextAction": "Confirm owner eligibility and authorize the exact BCGW order/terms step; separately identify and obtain rights for the implemented TAP deferral layer.",
+      "blockers": ["The BEC order is blocked before submission, public routes are incomplete, and no implemented TAP layer or permission is recorded."],
+      "claims": {"archiveMutation": false, "permissionGranted": false, "externalReplyResolved": false, "productionAdmission": false, "productionEligible": false}
+    },
+    {
+      "id": "bc-forest-operations-map",
+      "jurisdiction": "BC",
+      "evidenceState": "access-blocked",
+      "rawCredit": 0,
+      "immutableArchive": false,
+      "productionAdmission": false,
+      "productionEligible": false,
+      "evidenceRefs": ["data/bc-forest-operations-map-access.json"],
+      "replyRecordIds": ["reply-bc-copyright-permission-process", "reply-bc-copyright-single-form-followup", "reply-bc-fom-view-only-clarification"],
+      "currentRawCreditDelta": 0,
+      "maximumRawCreditDelta": 1,
+      "maximumFormalPercentagePointDelta": 0.9677419,
+      "nextAction": "Await written permission and a Province-authorized export or service for the exact FOM layer; do not scrape or redistribute the public viewer.",
+      "blockers": ["The FOM-only form and clarification reply are submitted, but the public service remains Access Only, no authorized access path exists, and planned activity cannot be treated as completed harvest."],
+      "claims": {"archiveMutation": false, "permissionGranted": false, "externalReplyResolved": false, "productionAdmission": false, "productionEligible": false}
+    },
+    {
+      "id": "on-fri",
+      "jurisdiction": "ON",
+      "evidenceState": "access-blocked",
+      "rawCredit": 0,
+      "immutableArchive": false,
+      "productionAdmission": false,
+      "productionEligible": false,
+      "evidenceRefs": ["data/ontario-fri-term2-access-block.json"],
+      "replyRecordIds": ["reply-ontario-fri-catalogue-deferral"],
+      "currentRawCreditDelta": 0,
+      "maximumRawCreditDelta": 1,
+      "maximumFormalPercentagePointDelta": 0.9677419,
+      "nextAction": "Obtain a complete Term 2 package or deterministic API with edition, checksum, profile and written intended-use confirmation.",
+      "blockers": ["Only mutable WEB explorers are catalogued; no complete package or exact-package rights confirmation exists."],
+      "claims": {"archiveMutation": false, "permissionGranted": false, "externalReplyResolved": false, "productionAdmission": false, "productionEligible": false}
+    },
+    {
+      "id": "on-fri-term-2",
+      "jurisdiction": "ON",
+      "evidenceState": "access-blocked",
+      "rawCredit": 0,
+      "immutableArchive": false,
+      "productionAdmission": false,
+      "productionEligible": false,
+      "evidenceRefs": ["data/ontario-fri-term2-access-block.json"],
+      "replyRecordIds": ["reply-ontario-fri-catalogue-deferral"],
+      "currentRawCreditDelta": 0,
+      "maximumRawCreditDelta": 1,
+      "maximumFormalPercentagePointDelta": 0.9677419,
+      "nextAction": "Use the same written MNRF package and rights response as on-fri; do not treat the explorer or pilot sample as a released package.",
+      "blockers": ["The Term 2 source family remains request-based with no stable package, checksum or rights decision."],
+      "claims": {"archiveMutation": false, "permissionGranted": false, "externalReplyResolved": false, "productionAdmission": false, "productionEligible": false}
+    },
+    {
+      "id": "provincial-electoral-boundaries",
+      "jurisdiction": "BC/ON",
+      "evidenceState": "partial-component",
+      "rawCredit": 0.25,
+      "immutableArchive": false,
+      "productionAdmission": false,
+      "productionEligible": false,
+      "evidenceRefs": [
+        "data/bc-provincial-electoral-2023-profile.json",
+        "data/on-electoral-2022-profile.json",
+        "data/alberta-electoral-boundary-block.json",
+        "data/qc-electoral-editions.json",
+        "data/partial-ledger-evidence-audit.json"
+      ],
+      "replyRecordIds": [],
+      "currentRawCreditDelta": 0,
+      "maximumRawCreditDelta": 0.75,
+      "maximumFormalPercentagePointDelta": 0.7258065,
+      "nextAction": "Resolve the Alberta permission and Québec current-edition/authorization blockers before acquiring the two missing components.",
+      "blockers": ["BC and Ontario are profiled locally; Alberta and Québec are not acquired and no partial-row reply or permission is recorded."],
+      "claims": {"archiveMutation": false, "permissionGranted": false, "externalReplyResolved": false, "productionAdmission": false, "productionEligible": false}
+    }
+  ],
+  "reconciliation": {
+    "rowStateChanges": [],
+    "rawCreditChanges": [],
+    "productionAdmissionChanges": [],
+    "unresolvedBlockerCount": 11,
+    "scoreRemainsBounded": true,
+    "scoreChange": 0
+  }
+}

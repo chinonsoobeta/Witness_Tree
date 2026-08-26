@@ -1,0 +1,175 @@
+{
+  "schemaVersion": "witness-tree/phase1-nrcan-cover-processing-gate/1",
+  "status": "blocked-read-only",
+  "auditedAt": "2026-08-21T15:45:00Z",
+  "derivedFromHead": "71925af03fc08b052d12077de2ba4acb9239006b",
+  "notice": "This gate reconciles the locally supported NTEMS annual land-cover and canopy-cover evidence. It records passed raw/profile validation and the absence of a Phase 1 production-admission target transformation, checksum-bound output, ingestion batch, release approval, or production admission. A separately approved Phase 2 nonproduction method does not close these Phase 1 gates. It performs no AWS call, archive mutation, external contact, transformation, ingestion, release, or production-eligibility change.",
+  "baseline": {
+    "productionRows": 31,
+    "rawEvidenceNumerator": 14.25,
+    "rawEvidenceDenominator": 31,
+    "formalEvidenceTrackingPercentage": 38.7903226,
+    "immutableArchiveCompleteRows": 7,
+    "productionAdmissionCompleteRows": 0,
+    "productionEligibleRows": 0,
+    "scoreDelta": {
+      "rawCredit": 0,
+      "formalPercentagePoints": 0
+    }
+  },
+  "claims": {
+    "rawArchiveMutation": false,
+    "transformed": false,
+    "ingested": false,
+    "released": false,
+    "productionAdmission": false,
+    "productionEligible": false,
+    "phase2Started": false
+  },
+  "rows": [
+    {
+      "id": "ntems-annual-land-cover",
+      "evidenceState": "remote-verified-archived-profiled",
+      "rawCredit": 1,
+      "productionAdmission": false,
+      "productionEligible": false,
+      "evidenceRefs": [
+        "data/vlce2-remote-promotion-evidence.json",
+        "data/raster-grid.json",
+        "data/raster-defects.json"
+      ],
+      "namedValidationGates": [
+        {
+          "id": "vlce2-remote-archive",
+          "status": "passed",
+          "command": "npm run check:vlce2-remote-promotion",
+          "evidence": "data/vlce2-remote-promotion-evidence.json",
+          "facts": {
+            "payloads": 39,
+            "sidecars": 39,
+            "retainedPayloadVersions": 39,
+            "retentionMode": "COMPLIANCE",
+            "retentionUntil": "2033-08-12T00:00:00+00:00"
+          }
+        },
+        {
+          "id": "vlce2-grid-and-sidecar-defect-gate",
+          "status": "passed",
+          "command": "npm run check:raster-grid",
+          "evidence": "data/raster-grid.json; data/raster-defects.json",
+          "facts": {
+            "years": 39,
+            "grid": "193936x128340; 30 m; Byte; nodata 255",
+            "defectiveYears": [1991, 2005],
+            "defectRule": "Unknown, never 0"
+          }
+        }
+      ],
+      "namedTransformations": [],
+      "transformation": {
+        "status": "blocked-no-phase1-production-named-specification-and-output",
+        "specification": null,
+        "run": null,
+        "output": null,
+        "requiredBeforeExecution": [
+          "Record and approve a Phase 1 production-admission versioned forest-mask method and exact Canada National Forest Inventory crosswalk for the 13 VLCE2 classes; the separate Phase 2 nonproduction method is insufficient.",
+          "Execute the deterministic vector-to-raster-grid boundary operation; never reproject or resample the categorical raster.",
+          "Validate full-resolution class values, preserve Unknown sidecar-derived statistics for 1991 and 2005, and record an exact output manifest and checksum."
+        ],
+        "blockers": [
+          "No repository-controlled Phase 1 production-admission target specification names a VLCE2 forest-mask operation or derived output checksum; the separate Phase 2 nonproduction method is not this gate.",
+          "The forest-mask definition/crosswalk and actual boundary intersection are unresolved; the existing profile records only the required reprojection direction.",
+          "Full-resolution class distribution and the reprojection/intersection run have not been executed."
+        ]
+      },
+      "ingestion": {
+        "status": "blocked-no-transformation-output",
+        "contract": "lib/ingestion/validate.ts",
+        "reason": "The ingestion contract is example-only and no target normalized batch, source-version match, geometry batch, or release licence record exists."
+      },
+      "release": {
+        "status": "blocked",
+        "sourceLedgerDecision": "approved-source-ledger-only",
+        "productionAdmission": false,
+        "productionEligible": false
+      },
+      "scoreImpact": {
+        "currentRawCreditDelta": 0,
+        "maximumRawCreditDelta": 0,
+        "formalPercentagePointDelta": 0
+      }
+    },
+    {
+      "id": "ntems-canopy-cover",
+      "evidenceState": "remote-verified-archived-profiled",
+      "rawCredit": 1,
+      "productionAdmission": false,
+      "productionEligible": false,
+      "evidenceRefs": [
+        "data/staged-acquisitions.json",
+        "data/nrcan-canopy-cover-profile.json",
+        "data/immutable-promotions.json"
+      ],
+      "namedValidationGates": [
+        {
+          "id": "canopy-cover-staging-profile",
+          "status": "passed",
+          "command": "node scripts/check-nrcan-canopy-cover-profile.mjs",
+          "evidence": "data/nrcan-canopy-cover-profile.json",
+          "facts": {
+            "byteLength": 9954395939,
+            "sha256": "80c37461f4deccfdfffc26124e9064d53a94dde660b9f96194445870393af130",
+            "zipMembers": 8,
+            "raster": "193936x128340; 30 m; Float32; 0–100 percent"
+          }
+        },
+        {
+          "id": "canopy-cover-immutable-archive",
+          "status": "passed",
+          "command": "npm run check:immutable-promotions",
+          "evidence": "data/immutable-promotions.json",
+          "facts": {
+            "payloadChecksum": "CRC64NVME FULL_OBJECT",
+            "retentionMode": "COMPLIANCE",
+            "retentionUntil": "2033-08-12T00:00:00Z",
+            "recoveryReplica": false
+          }
+        }
+      ],
+      "namedTransformations": [],
+      "transformation": {
+        "status": "blocked-no-phase1-production-named-specification-and-output",
+        "specification": null,
+        "run": null,
+        "output": null,
+        "requiredBeforeExecution": [
+          "Record and approve the exact Phase 1 production-admission canopy-cover operation, including 2022 mask semantics and whether any boundary clipping is allowed; the separate Phase 2 nonproduction method is insufficient.",
+          "Run the named operation against the checksum-bound raw archive without changing values, reprojection, or resampling semantics unless the approved specification requires it.",
+          "Validate full-resolution range, extent, nodata handling, and output checksum before any ingestion decision."
+        ],
+        "blockers": [
+          "No repository-controlled Phase 1 production-admission target specification names a canopy-cover derivative, clipping, masking, or output checksum; the separate Phase 2 nonproduction method is not this gate.",
+          "The source README bounds the product to strategic-level assessment and supplies no Witness Tree transformation semantics.",
+          "No exact derived output, independent full-resolution validation, or target ingestion record exists."
+        ]
+      },
+      "ingestion": {
+        "status": "blocked-no-transformation-output",
+        "contract": "lib/ingestion/validate.ts",
+        "reason": "The ingestion contract is example-only and no target normalized batch, source-version match, geometry batch, or release licence record exists."
+      },
+      "release": {
+        "status": "blocked",
+        "sourceLedgerDecision": "approved-source-ledger-only",
+        "productionAdmission": false,
+        "productionEligible": false
+      },
+      "scoreImpact": {
+        "currentRawCreditDelta": 0,
+        "maximumRawCreditDelta": 0,
+        "formalPercentagePointDelta": 0
+      }
+    }
+  ],
+  "nextLawfulAction": "Obtain the missing Phase 1 production-admission owner/technical method decision for each target row, record a named checksum-bound specification, then run and validate a derived output before considering ingestion or release; do not substitute the separately approved Phase 2 nonproduction method."
+}

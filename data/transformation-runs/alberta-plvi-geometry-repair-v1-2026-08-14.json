@@ -1,0 +1,41 @@
+{
+  "status": "local-geometry-repair-patch",
+  "sourceId": "ab-primary-land-vegetation",
+  "specification": "alberta-plvi-geometry-repair-v1",
+  "rawArchiveSha256": "017a0a835c680ca1b6c1eb790322a28e1b4c0c64e36924da46d8bb99cb1571d3",
+  "notice": "A separate 12-feature repair patch only. The raw archive remains unchanged; no feature is dropped, ingested, made immutable, or made production eligible.",
+  "rule": {
+    "function": "GDAL SQLite ST_MakeValid(geometry)",
+    "sourceGeometryRule": "Every invalid source feature must be a Ring Self-intersection with positive Shape_Area.",
+    "outputGeometryRule": "Every patched feature must be valid Polygon geometry.",
+    "relativeAreaTolerance": 1e-9,
+    "lossRule": "All 12 invalid POLYGON_ID values must occur exactly once in the patch; no source feature is silently removed."
+  },
+  "patch": {
+    "externalPath": "../Witness_Tree-data/derived/alberta-plvi-geometry-repair-v1/2026-08-14/alberta-plvi-invalid-polygon-repairs-computed.geojson",
+    "byteLength": 623651,
+    "sha256": "c1e8a3fe57e3562e72ab4307de6e9bdb1d16f4c97e29d3a7048b7ed7cb85abac",
+    "featureCount": 12,
+    "crs": "EPSG:3400",
+    "invalidGeometryCount": 0,
+    "nonPolygonCount": 0,
+    "maxRelativeAreaDelta": 2.64347785840858e-12
+  },
+  "features": [
+    {"polygonId":17119,"reason":"Ring Self-intersection","sourceArea":22857.4125799,"relativeAreaDelta":1.14260744801351e-12},
+    {"polygonId":17583,"reason":"Ring Self-intersection","sourceArea":442346.528697,"relativeAreaDelta":7.96109668959783e-13},
+    {"polygonId":17931,"reason":"Ring Self-intersection","sourceArea":143720.915207,"relativeAreaDelta":6.84660619037194e-13},
+    {"polygonId":19384,"reason":"Ring Self-intersection","sourceArea":60251.2454923,"relativeAreaDelta":3.49480266563748e-13},
+    {"polygonId":20217,"reason":"Ring Self-intersection","sourceArea":126261100.078,"relativeAreaDelta":1.15221581821845e-12},
+    {"polygonId":21021,"reason":"Ring Self-intersection","sourceArea":1259947.13626,"relativeAreaDelta":2.64347785840858e-12},
+    {"polygonId":21992,"reason":"Ring Self-intersection","sourceArea":28506632.2182,"relativeAreaDelta":3.86817327246647e-14},
+    {"polygonId":23014,"reason":"Ring Self-intersection","sourceArea":1154046.46659,"relativeAreaDelta":5.92746003613124e-13},
+    {"polygonId":40392,"reason":"Ring Self-intersection","sourceArea":316290.377845,"relativeAreaDelta":2.74024166307793e-13},
+    {"polygonId":50824,"reason":"Ring Self-intersection","sourceArea":133459.421874,"relativeAreaDelta":3.18603929945329e-13},
+    {"polygonId":82560,"reason":"Ring Self-intersection","sourceArea":6224303.25003,"relativeAreaDelta":2.9805658466674e-13},
+    {"polygonId":161140,"reason":"Ring Self-intersection","sourceArea":833177.101446,"relativeAreaDelta":2.25515474564264e-13}
+  ],
+  "immutableObjectStorage": false,
+  "ownerAdmissionReady": false,
+  "productionEligible": false
+}

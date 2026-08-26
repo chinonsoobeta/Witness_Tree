@@ -26,9 +26,9 @@
       "intendedRole": { "en": "Ecoforest stand attributes and original fourth-inventory context.", "fr": "Attributs des peuplements écoforestiers et contexte du quatrième inventaire original." },
       "metadataVerification": "verified",
       "licence": { "state": "verified", "id": "cc-by-4.0", "officialUrl": "https://www.donneesquebec.ca/licence/" },
-      "access": { "state": "catalogue-listed" },
-      "verifiedFacts": ["Catalogue describes original fourth-inventory mapping and related ecoforest stand tables.", "Catalogue describes conditions as of aerial-photograph year."],
-      "unresolvedFields": ["Download resource URL and format", "Snapshot checksum", "Retrieval date"],
+      "access": { "state": "verified", "formats": ["gpkg", "csv"], "url": "https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/DONNEES_FOR_ECO_SUD/Historique_des_inventaires/4e_IEQM/03-Telechargement/URL_4e.csv" },
+      "verifiedFacts": ["Catalogue UUID 77ec9009-b733-4f09-ade3-99d7b2156ad4 identifies the fixed fourth-inventory product; the provincial GPKG is a map-only component, while the publisher-defined sheet products contain the full result tables.", "The fourth-inventory map is complete since 2018 and receives no new mapping; this distinguishes it from the annually replaced current-original product and the disturbance-updated current map.", "The product covers 2001–2018 southern Québec and contains original stand polygons, merchantable-volume compilations, ecological classification, and forest-station characterization linked principally by GEOCODE.", "The official June 2026 documentation states that temporary sample plots are not included."],
+      "unresolvedFields": ["Immutable object-storage promotion", "Production transformation and ingestion admission", "Semantic field and join selection for product use"],
       "productionEligible": false
     },
     {
@@ -80,11 +80,11 @@
       "publisher": "Province of British Columbia",
       "catalogueUrl": "https://catalogue.data.gov.bc.ca/dataset/dfb8b498-fa4b-4286-b3ec-58db88aca1cf",
       "intendedRole": { "en": "BC cutblock geometry and linked tenure fields, subject to lifecycle-code verification.", "fr": "Géométrie des blocs de coupe de la Colombie-Britannique et champs de tenure liés, sous réserve de la vérification des codes de cycle de vie." },
-      "metadataVerification": "partial",
-      "licence": { "state": "unresolved" },
+      "metadataVerification": "verified",
+      "licence": { "state": "verified", "id": "ogl-british-columbia", "officialUrl": "https://www2.gov.bc.ca/gov/content?id=A519A56BC2BF44E4A008B33FCF527F61" },
       "access": { "state": "verified", "formats": ["json", "geojson", "pbf"], "url": "https://delivery.maps.gov.bc.ca/arcgis/rest/services/whse/bcgw_pub_whse_forest_tenure/MapServer/8" },
-      "verifiedFacts": ["Official feature layer exposes polygons and cutblock, disturbance, client, harvest-authority, retirement, and lifecycle-status-code fields.", "Official service supports JSON, GeoJSON, and PBF queries."],
-      "unresolvedFields": ["Catalogue licence assignment", "Lifecycle-code value definitions", "Publisher metadata in accessible service response", "Snapshot checksum", "Retrieval date"],
+      "verifiedFacts": ["The official catalogue assigns Open Government Licence - British Columbia and says the source is ongoing.", "Official feature layer exposes polygons and cutblock, disturbance, client, harvest-authority, retirement, and lifecycle-status-code fields.", "The official catalogue defines PENDING, ACTIVE, and RETIRED lifecycle meanings.", "Official WFS paging reports PagingIsTransactionSafe=false and has a 10,000-feature default page limit, so a paged service scrape cannot prove one coherent source edition."],
+      "unresolvedFields": ["Publisher-exported complete snapshot", "Declared edition/version and cadence", "Snapshot checksum", "Archive integrity", "Schema/geometry profile", "Lifecycle-rule approval"],
       "productionEligible": false
     },
     {
@@ -94,11 +94,11 @@
       "publisher": "Province of British Columbia",
       "catalogueUrl": "https://catalogue.data.gov.bc.ca/dataset/cff7b8f7-6897-444f-8c53-4bb93c7e9f8b",
       "intendedRole": { "en": "BC harvesting-authority geometry and permit context.", "fr": "Géométrie des autorisations de récolte et contexte des permis de la Colombie-Britannique." },
-      "metadataVerification": "partial",
-      "licence": { "state": "unresolved" },
+      "metadataVerification": "verified",
+      "licence": { "state": "verified", "id": "ogl-british-columbia", "officialUrl": "https://www2.gov.bc.ca/gov/content?id=A519A56BC2BF44E4A008B33FCF527F61" },
       "access": { "state": "verified", "formats": ["json", "geojson", "pbf"], "url": "https://delivery.maps.gov.bc.ca/arcgis/rest/services/whse/bcgw_pub_whse_forest_tenure/MapServer/12?f=pjson" },
-      "verifiedFacts": ["Official feature layer exposes harvesting-authority, forest-file, cutting-permit, type, status, date, client, and lifecycle-status-code fields.", "Official service supports JSON, GeoJSON, and PBF queries."],
-      "unresolvedFields": ["Catalogue licence assignment", "Lifecycle-code value definitions", "Update cadence", "Snapshot checksum", "Retrieval date"],
+      "verifiedFacts": ["The official catalogue assigns Open Government Licence - British Columbia and says the source is ongoing.", "Official feature layer exposes harvesting-authority, forest-file, cutting-permit, type, status, date, client, and lifecycle-status-code fields.", "The official catalogue defines PENDING, ACTIVE, and RETIRED lifecycle meanings.", "Official WFS paging reports PagingIsTransactionSafe=false and has a 10,000-feature default page limit, so a paged service scrape cannot prove one coherent source edition."],
+      "unresolvedFields": ["Publisher-exported complete snapshot", "Declared edition/version and cadence", "Snapshot checksum", "Archive integrity", "Schema/geometry profile", "Lifecycle-rule approval"],
       "productionEligible": false
     },
     {
@@ -113,6 +113,62 @@
       "access": { "state": "verified", "formats": ["json", "geojson", "pbf"], "url": "https://delivery.maps.gov.bc.ca/arcgis/rest/services/whse/bcgw_pub_whse_forest_tenure/MapServer/32?f=pjson" },
       "verifiedFacts": ["Official feature layer exposes cutblock ID, planned development date and area, FSP-holder name, and lifecycle-status fields.", "Official service supports JSON, GeoJSON, and PBF queries."],
       "unresolvedFields": ["Catalogue licence assignment", "Whether it is the intended consolidated-cutblock source", "Update cadence", "Snapshot checksum", "Retrieval date"],
+      "productionEligible": false
+    },
+    {
+      "id": "bc-consolidated-cutblocks",
+      "status": "candidate",
+      "datasetTitle": "Harvested Areas of BC (Consolidated Cutblocks)",
+      "publisher": "Province of British Columbia, Forest Analysis and Inventory Branch",
+      "catalogueUrl": "https://catalogue.data.gov.bc.ca/dataset/harvested-areas-of-bc-consolidated-cutblocks-",
+      "intendedRole": { "en": "Historical BC harvest context consolidated from RESULTS, satellite change detection, and VRI; not a complete or live operational harvest record.", "fr": "Contexte historique des récoltes en Colombie-Britannique, consolidé à partir de RESULTS, de la détection des changements par satellite et de VRI; sans prétendre à un relevé complet ou opérationnel en direct." },
+      "metadataVerification": "verified",
+      "licence": { "state": "unresolved" },
+      "access": { "state": "catalogue-listed" },
+      "verifiedFacts": ["The official BC Data Catalogue identifies the exact consolidated-cutblocks dataset and a 555382445-byte FGDB ZIP resource.", "The authoritative catalogue licence title is Access Only, so no redistributable licence has been verified.", "The November 2024 methodology says the dataset runs quarterly, merges RESULTS, Landsat change detection, and VRI, and carries source-specific historical completeness and timing limitations."],
+      "unresolvedFields": ["Written publisher authorization or a redistributable licence", "Raw snapshot", "Checksum", "Archive integrity", "Schema and geometry profile", "Lifecycle approval"],
+      "productionEligible": false
+    },
+    {
+      "id": "bc-vri-2025-composite-polygons",
+      "status": "candidate",
+      "datasetTitle": "VRI - 2025 - Forest Vegetation Composite Polygons",
+      "publisher": "Province of British Columbia, Ministry of Forests",
+      "catalogueUrl": "https://catalogue.data.gov.bc.ca/dataset/6ba30649-14cd-44ad-a11f-794feed39f40",
+      "intendedRole": { "en": "BC pre-event forest-condition inventory context; not a cutblock, Forest Tenure Application cutblock, harvesting-authority, or planned-operations record.", "fr": "Contexte d’inventaire de l’état forestier avant événement en Colombie-Britannique; il ne s’agit ni d’un bloc de coupe, ni d’un bloc de coupe de demande de tenure forestière, ni d’une autorisation de récolte, ni d’un enregistrement d’activités planifiées." },
+      "metadataVerification": "verified",
+      "licence": { "state": "verified", "id": "bc-access-only", "officialUrl": "https://www2.gov.bc.ca/gov/content/home/copyright" },
+      "access": { "state": "catalogue-listed" },
+      "verifiedFacts": ["The official catalogue labels the 2025 composite-polygon record Access Only and describes a province-wide FGDB in BC Environment Albers.", "The official catalogue lists VEG_COMP_POLY_AND_LAYER_2025.gdb.zip at its current path and describes it as 5.3 GB.", "On 2026-08-14, an HTTP HEAD request to that exact advertised path returned 404, so it is not a verified retrievable artifact.", "The official BC copyright page states that Access Only catalogue materials may not be reproduced or redistributed without written permission.", "The separate VRI historical 2002–2024 catalogue collection is OGL-BC but is a historical series and is not substituted for the current 2025 inventory."],
+      "unresolvedFields": ["Written permission for internal archival reproduction, transformation and any derived or public redistribution", "A functioning, complete, versioned 2025 export URL", "Publisher edition/effective-date and refresh cadence", "Required attribution text", "Snapshot checksum and archive evidence"],
+      "productionEligible": false
+    },
+    {
+      "id": "bc-bec-map-v13-1",
+      "status": "candidate",
+      "datasetTitle": "BEC Map",
+      "publisher": "Province of British Columbia, Ministry of Forests",
+      "catalogueUrl": "https://catalogue.data.gov.bc.ca/dataset/f358a53b-ffde-4830-a325-a5a03ff672c3",
+      "intendedRole": { "en": "BC ecosystem context through the current detailed BEC zone/subzone/variant/phase map; not a forest-condition inventory, cutblock, harvesting-authority, or old-growth TAP layer.", "fr": "Contexte écosystémique de la Colombie-Britannique au moyen de la carte détaillée actuelle des zones, sous-zones, variantes et phases BEC; ce n’est ni un inventaire de l’état forestier, ni un bloc de coupe, ni une autorisation de récolte, ni une couche TAP de vieilles forêts." },
+      "metadataVerification": "verified",
+      "licence": { "state": "verified", "id": "ogl-bc", "officialUrl": "https://www2.gov.bc.ca/gov/content?id=A519A56BC2BF44E4A008B33FCF527F61" },
+      "access": { "state": "catalogue-listed" },
+      "verifiedFacts": ["The official catalogue identifies BEC Map version 13.1, dated 2026-07-08, as the current most detailed approved provincial BEC map and directs GIS analysis to it.", "The official catalogue assigns Open Government Licence - British Columbia.", "The official WFS declares EPSG:3005, supports SHAPE-ZIP, reports 17,870 matched features, and identifies updateSequence 2188590.", "A single SHAPE-ZIP request with count=17870 returned a valid ZIP with only 10,000 features. The WFS declares PagingIsTransactionSafe FALSE and ImplementsFeatureVersioning FALSE, so a paged combination cannot prove a consistent v13.1 snapshot.", "The related Old Growth Technical Advisory Panel records are separate Access Only products and have not been treated as covered by the BEC Map's OGL-BC terms."],
+      "unresolvedFields": ["Publisher-provided complete immutable v13.1 vector export or documented consistent-snapshot semantics", "Source checksum and archive evidence for a complete artifact", "Publisher refresh/correction contact", "Separate selected TAP-layer terms, edition and coverage evidence"],
+      "productionEligible": false
+    },
+    {
+      "id": "bc-tap-priority-deferral-current-view",
+      "status": "candidate",
+      "datasetTitle": "Old Growth Technical Advisory Panel (TAP) - Priority Deferral Areas - Current View",
+      "publisher": "Province of British Columbia, Ministry of Forests",
+      "catalogueUrl": "https://catalogue.data.gov.bc.ca/dataset/f257ca4a-0c33-4eb2-9da8-21dff4482f58",
+      "intendedRole": { "en": "Candidate old-growth and priority-deferral context only; not the separate BEC ecosystem map, not a currently implemented deferral layer, and not a legal restriction determination.", "fr": "Contexte candidat de vieilles forêts et de reports prioritaires seulement; ce n’est ni la carte écosystémique BEC distincte, ni une couche de reports actuellement mise en œuvre, ni une détermination juridique de restriction." },
+      "metadataVerification": "verified",
+      "licence": { "state": "unresolved" },
+      "access": { "state": "verified", "formats": ["json", "geojson", "pbf"], "url": "https://delivery.maps.gov.bc.ca/arcgis/rest/services/whse/bcgw_pub_whse_forest_vegetation/MapServer/69?f=pjson" },
+      "verifiedFacts": ["The official catalogue assigns Access Only, rather than an open-data licence.", "The linked Province copyright terms say Access Only catalogue material may not be reproduced or redistributed without prior written permission.", "The catalogue says this current view does not represent the supported old-growth deferral areas currently being implemented.", "The official live service declares EPSG:3005, supports JSON/GeoJSON/PBF and pagination, has maxRecordCount 1000, and returned a current count of 255486 on 2026-08-14."],
+      "unresolvedFields": ["Written permission for archive, transformation and derived/public redistribution", "Authoritative current implemented-deferral layer selection", "Immutable complete export, version/effective date and checksum", "Attribution, refresh cadence and correction contact"],
       "productionEligible": false
     },
     {
@@ -139,8 +195,8 @@
       "metadataVerification": "verified",
       "licence": { "state": "verified", "id": "ogl-canada", "officialUrl": "https://open.canada.ca/en/open-government-licence-canada" },
       "access": { "state": "verified", "formats": ["zip"], "url": "https://opendata.nfis.org/downloads/forest_change/CA_Forest_Fire_1985-2022.zip" },
-      "verifiedFacts": ["Official catalogue assigns Open Government Licence – Canada and an as-needed update frequency.", "This dataset's own catalogue resource is CA_Forest_Fire_1985-2022.zip, which is the same URL wrongly listed under the CA Forest Harvest record.", "The Canadian Forest Service NTEMS distribution page labels this artifact Wildfire change year 1985-2022.", "A HEAD request returned HTTP 200, Content-Type application/zip and Content-Length 252364563 with no redirect.", "The first bytes of the ZIP name an internal member CA_Forest_Fire_1985-2022.lyr."],
-      "unresolvedFields": ["Attribution", "Relationship to the separate wildfire dNBR magnitude product", "Snapshot checksum", "Retrieval date", "Storage and compute approval"],
+      "verifiedFacts": ["Official catalogue assigns Open Government Licence – Canada and an as-needed update frequency.", "This dataset's own catalogue resource is CA_Forest_Fire_1985-2022.zip, which is the same URL wrongly listed under the CA Forest Harvest record.", "The Canadian Forest Service NTEMS distribution page labels this artifact Wildfire change year 1985-2022.", "A HEAD request returned HTTP 200, Content-Type application/zip and Content-Length 252364563 with no redirect.", "The staged archive passed ZIP integrity and has SHA-256 725f3b582c87cb7c6f3fd397a523fba6621718ac59c68dc904cd1d849a9160c9.", "The archive README provides the OGL Canada and Hermosilla et al. 2016 attribution; its members are wildfire-named, confirming the artifact identity."],
+      "unresolvedFields": ["Relationship to the separate wildfire dNBR magnitude product", "Immutable storage", "Transformation and ingestion approval", "Compute approval"],
       "productionEligible": false
     },
     {
@@ -182,7 +238,7 @@
       "licence": { "state": "verified", "id": "ogl-canada", "officialUrl": "https://open.canada.ca/en/open-government-licence-canada" },
       "access": { "state": "verified", "formats": ["zip"], "url": "https://opendata.nfis.org/downloads/forest_change/CA_canopy_height_2022.zip" },
       "verifiedFacts": ["Official catalogue describes wall-to-wall 2022 canopy-height estimates at 30-m resolution across Canada's forested ecosystems.", "Catalogue says the product supports strategic assessment and is not designed for operational forest management.", "Catalogue assigns Open Government Licence – Canada and an as-needed update frequency."],
-      "unresolvedFields": ["Attribution", "Snapshot checksum", "Retrieval date", "Storage and compute approval"],
+      "unresolvedFields": ["Immutable storage", "Transformation and ingestion approval", "Compute approval"],
       "productionEligible": false
     },
     {
@@ -193,10 +249,10 @@
       "catalogueUrl": "https://www.elections.ca/content.aspx?dir=cir%2FmapsCorner%2Fvector&document=index&lang=e&section=res",
       "intendedRole": { "en": "Reference electoral-district boundaries for presentation and geographic context.", "fr": "Limites des circonscriptions électorales de référence pour la présentation et le contexte géographique." },
       "metadataVerification": "verified",
-      "licence": { "state": "unresolved" },
-      "access": { "state": "catalogue-listed" },
-      "verifiedFacts": ["Official Elections Canada page lists vector boundary files for the 45th general election.", "Listed formats include GDB, KMZ, and SHP."],
-      "unresolvedFields": ["Applicable reuse licence and attribution", "Selected resource URL", "Boundary effective-date handling", "Snapshot checksum", "Retrieval date"],
+      "licence": { "state": "verified", "id": "ogl-canada-2.0", "officialUrl": "https://open.canada.ca/en/open-government-licence-canada" },
+      "access": { "state": "verified", "formats": ["SHP ZIP"], "url": "https://www.elections.ca/res/cir/mapsCorner/vector/FederalElectoralDistricts_2025_SHP.zip" },
+      "verifiedFacts": ["Official Elections Canada page lists and directly links the FederalElectoralDistricts_2025_SHP.zip file for the 45th general election.", "Elections Canada states that the 2023 Representation Orders took effect on 2025-03-23, when writs for the 45th general election were issued.", "The distinct current local-staging source-ledger and profile records capture the exact archive, OGL Canada attribution, raw-byte evidence, schema and validity profile without making this candidate production eligible."],
+      "unresolvedFields": ["Immutable archive promotion", "Explicit ingestion approval", "Public-release approval"],
       "productionEligible": false
     },
     {
@@ -204,13 +260,27 @@
       "status": "candidate",
       "datasetTitle": "Canadian Protected and Conserved Areas Database (CPCAD)",
       "publisher": "Environment and Climate Change Canada",
-      "catalogueUrl": "https://www.canada.ca/en/environment-climate-change/services/national-wildlife-areas/protected-conserved-areas-database.html",
-      "intendedRole": { "en": "Protected and conserved-area context, subject to dataset terms and selected-release verification.", "fr": "Contexte des aires protégées et conservées, sous réserve des conditions du jeu de données et de la vérification de la version retenue." },
-      "metadataVerification": "partial",
-      "licence": { "state": "unresolved" },
-      "access": { "state": "catalogue-listed" },
-      "verifiedFacts": ["Official CPCAD authority page identifies the national protected and conserved areas repository.", "The page lists a December 2025 release with GDB and WMS resources."],
-      "unresolvedFields": ["Applicable use terms and attribution", "Selected resource URL", "Coverage and release-version details", "Snapshot checksum", "Retrieval date"],
+      "catalogueUrl": "https://open.canada.ca/data/en/dataset/6c343726-1e92-451a-876a-76e17d398a1c",
+      "intendedRole": { "en": "Protected and conserved-area context from the national CPCAD service, pending a complete reproducible geometry snapshot.", "fr": "Contexte des aires protégées et conservées issu du service national de la BDCAPC, en attente d’un instantané géométrique complet et reproductible." },
+      "metadataVerification": "verified",
+      "licence": { "state": "verified", "id": "ogl-canada", "officialUrl": "https://open.canada.ca/en/open-government-licence-canada" },
+      "access": { "state": "verified", "formats": ["ArcGIS REST JSON", "GeoJSON", "WMS"], "url": "https://maps-cartes.ec.gc.ca/arcgis/rest/services/CWS_SCF/CPCAD/MapServer/0" },
+      "verifiedFacts": ["The official Open Government catalogue record identifies Environment and Climate Change Canada as publisher and assigns the Open Government Licence – Canada.", "The official CPCAD MapServer layer is polygonal, reports EPSG:3978, a 25,000-record maximum and ordered/paginated query support.", "On 2026-08-14 the service returned 22,438 unique contiguous OBJECTIDs from 1 through 22,438, but its geometry query for OBJECTID 21563 failed with an ArcGIS error response."],
+      "unresolvedFields": ["Complete geometry snapshot because OBJECTID 21563 fails the official geometry query", "Publisher edition/version marker because the service exposes none", "Publisher-requested attribution text", "Complete-snapshot checksum"],
+      "productionEligible": false
+    },
+    {
+      "id": "alberta-historical-wildfire-2006-2025",
+      "status": "candidate",
+      "datasetTitle": "Historical wildfire data : 2006 to 2025",
+      "publisher": "Government of Alberta, Forestry and Parks",
+      "catalogueUrl": "https://open.alberta.ca/publications/wildfire-data",
+      "intendedRole": {"en": "Historical Alberta wildfire-record context; not a current incident feed, fire-perimeter layer, or damage assessment.", "fr": "Contexte historique des enregistrements de feux de forêt de l’Alberta; ni flux d’incidents actuel, ni couche de périmètres d’incendie, ni évaluation des dommages."},
+      "metadataVerification": "verified",
+      "licence": {"state": "verified", "id": "ogl-alberta", "officialUrl": "https://open.alberta.ca/licence"},
+      "access": {"state": "verified", "formats": ["csv", "pdf"], "url": "https://open.alberta.ca/dataset/a221e7a0-4f46-4be7-9c5a-e29de9a3447e/resource/80480824-0c50-456c-9723-f9d4fc136141/download/fp-historical-wildfire-data-2006-2025.csv"},
+      "verifiedFacts": ["Official catalogue describes Alberta wildfire records from 2006 through 2025 inclusive.", "The official record assigns the Open Government Licence – Alberta and identifies a 10,400,030-byte CSV resource plus its data dictionary.", "The publisher says records concern wildfire origins inside Alberta's Forest Protection Area; mutual-aid fires outside it are excluded.", "The data dictionary defines latitude and longitude as confirmed ignition-area GPS decimal-degree locations, not perimeter geometry."],
+      "unresolvedFields": ["Current operational incident endpoint and refresh cadence", "Immutable archive evidence", "Ingestion and release approval"],
       "productionEligible": false
     },
     {
@@ -253,6 +323,34 @@
       "access": { "state": "catalogue-listed" },
       "verifiedFacts": ["Official catalogue lists annual updates and records from 1887–2024.", "Catalogue lists GPKG, FGDB, SHP, WMS, and ZIP resources under CC BY 4.0.", "Catalogue distinguishes principally southern-Québec perimeter coverage from province-wide origin points beginning in 1972."],
       "unresolvedFields": ["Selected resource URL and exact attribution", "Selected spatial coverage", "Snapshot checksum", "Retrieval date"],
+      "productionEligible": false
+    },
+    {
+      "id": "nrcan-aboriginal-lands-legislative-boundaries",
+      "status": "candidate",
+      "datasetTitle": "Aboriginal Lands of Canada Legislative Boundaries",
+      "publisher": "Natural Resources Canada — Surveyor General Branch / Canada Lands Survey System",
+      "catalogueUrl": "https://open.canada.ca/data/en/dataset/522b07b9-78e2-4819-b736-ad9208eb1067",
+      "intendedRole": { "en": "Potential legislative reserve and settlement-land boundary reference only, pending authoritative release, terms, scope, and Indigenous-engagement review; never a representation of rights, title, or traditional territory.", "fr": "Référence éventuelle aux limites législatives des réserves et des terres de règlement seulement, sous réserve de la vérification de la diffusion, des conditions, de la portée et de l’examen de mobilisation autochtone; ne représente jamais les droits, les titres ou les territoires traditionnels." },
+      "metadataVerification": "verified",
+      "licence": { "state": "unresolved" },
+      "access": { "state": "catalogue-listed" },
+      "verifiedFacts": ["The official federal catalogue identifies a monthly-maintained vector service for Indian Reserves, selected land-claim settlement lands, and Indian Lands.", "The catalogue identifies both an official ESRI REST service and downloadable SHP resources, but describes downloadable data as the former GeoBase product and states that attribute differences from the service remain while alignment work continues.", "The federal record is published by NRCan rather than Indigenous Services Canada; no ISC-authored authoritative reserve-boundary release was verified in this review."],
+      "unresolvedFields": ["Applicable reuse licence, redistribution permission, and required attribution", "Whether the selected service or download is the authoritative edition for the intended reserve use", "Exact release/version and schema", "Indigenous engagement and right-of-reply review", "Snapshot checksum", "Retrieval date"],
+      "productionEligible": false
+    },
+    {
+      "id": "cirnac-finalized-modern-treaties-map",
+      "status": "candidate",
+      "datasetTitle": "Modern treaties map",
+      "publisher": "Crown-Indigenous Relations and Northern Affairs Canada",
+      "catalogueUrl": "https://www.rcaanc-cirnac.gc.ca/eng/1677073191939/1677073214344",
+      "intendedRole": { "en": "Discovery and contact-reference only for finalized modern-treaty and agreement information; not a GIS boundary source and never precision analytics geometry.", "fr": "Référence de découverte et de contact seulement pour les renseignements sur les traités modernes et les accords finalisés; n’est pas une source de limites SIG ni une géométrie pour l’analyse de précision." },
+      "metadataVerification": "verified",
+      "licence": { "state": "unresolved" },
+      "access": { "state": "catalogue-listed" },
+      "verifiedFacts": ["CIRNAC states that its map illustrates boundaries of finalized modern treaties between Indigenous communities and Canada.", "CIRNAC's map disclaimer says it is distributed for informal purposes, boundaries are approximate and subject to revision, and the drawings must not be relied on for any purpose or activity including consultation obligations.", "No official CIRNAC vector download, machine-readable geometry endpoint, precision statement, or reuse/redistribution permission was verified in this review."],
+      "unresolvedFields": ["Written permission and applicable reuse licence", "Authoritative vector release, version, schema, and precision statement", "Confirmation from each affected rights holder and engagement/right-of-reply process", "Whether any geometry may be used beyond non-analytical discovery", "Snapshot checksum", "Retrieval date"],
       "productionEligible": false
     }
   ]

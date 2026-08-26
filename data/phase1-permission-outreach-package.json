@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "status": "reply-audit-recorded-blockers-remain",
+  "preparedAt": "2026-08-14T23:55:00Z",
+  "sender": "Chinonso Obeta <chinonso8@gmail.com>",
+  "scope": "A consolidated record of owner-reviewed outreach sends and the bounded read-only reply audit for the genuine external export, permission, rights, authority, and engagement blockers in the Phase 1 access-block matrix. Gmail Sent-label searches verified the exact sender, recipient, subject, and sent timestamp for the seven named messages; the separate reply audit records eight substantive replies and four acknowledgement-only records without retaining message IDs, thread IDs, body content, personal contact fields, attachments or mailbox links. The FOM form submission and clarification reply are recorded separately and do not supply permission or access. A send, form submission, reply, routing instruction or follow-up is not an acquisition, permission, archive, transformation, ingestion, owner source-ledger decision, production-admission decision or production eligibility.",
+  "replyAuditFile": "data/phase1-outreach-reply-audit.json",
+  "officialRouteAuditFile": "data/phase1-bec-custom-download-route-audit.json",
+  "copyrightPermissionFormPackageFile": "data/phase1-bc-copyright-permission-form-package.json",
+  "messages": [
+    {
+      "id": "bc-forest-tenures-export",
+      "status": "reply-received-awaiting-resolution",
+      "verifiedSentAt": "2026-08-14T18:52:07-05:00",
+      "sentVerification": "Gmail Sent-label read-only search matched this exact sender, recipient, and subject; message and thread identifiers are intentionally omitted.",
+      "recipient": "ForestTenuresBranch@gov.bc.ca",
+      "recipientEvidence": "https://www2.gov.bc.ca/gov/content/industry/forestry/forest-tenures",
+      "subject": "Request for coherent BCGW exports — FTA cutblocks and harvesting authorities",
+      "language": "English",
+      "canonicalRowIds": ["bc-fta-cutblocks", "bc-harvesting-authorities"],
+      "requestTerms": ["stable artifact or snapshot", "edition or as-of timestamp", "feature count, CRS, schema and checksum", "licence and attribution", "Canadian immutable raw archive", "transformation and derived/public reuse", "refresh and correction route", "right-of-reply/contact route"]
+    },
+    {
+      "id": "ontario-fri-term2-package-and-rights",
+      "status": "reply-received-awaiting-resolution",
+      "verifiedSentAt": "2026-08-14T18:51:59-05:00",
+      "sentVerification": "Gmail Sent-label read-only search matched this exact sender, recipient, and subject; message and thread identifiers are intentionally omitted.",
+      "recipient": "info.mnrfscience@ontario.ca",
+      "recipientEvidence": "https://www.ontario.ca/page/forest-resources-inventory",
+      "subject": "Request for reproducible Forest Resource Inventory Term 2 package and reuse confirmation",
+      "language": "English / Français",
+      "canonicalRowIds": ["on-fri", "on-fri-term-2"],
+      "requestTerms": ["stable artifact or snapshot", "edition or as-of timestamp", "FMU coverage, CRS, schema, feature count and checksum", "exact-package licence and attribution", "Canadian immutable raw archive", "transformation and derived/public reuse", "refresh and correction route", "right-of-reply/contact route"]
+    },
+    {
+      "id": "bc-bec-v13-1-snapshot",
+      "status": "reply-received-awaiting-resolution",
+      "verifiedSentAt": "2026-08-14T18:52:03-05:00",
+      "sentVerification": "Gmail Sent-label read-only search matched this exact sender, recipient, and subject; message and thread identifiers are intentionally omitted.",
+      "recipient": "datamaps@gov.bc.ca",
+      "recipientEvidence": "data/bc-bec-snapshot-block.json",
+      "subject": "Request for complete immutable BEC Map v13.1 export or snapshot semantics",
+      "language": "English",
+      "canonicalRowIds": ["bc-old-growth-bec"],
+      "requestTerms": ["stable artifact or snapshot with documented transaction consistency", "edition or effective date", "feature count, CRS, schema and checksum", "OGL-BC licence and attribution", "Canadian immutable raw archive", "transformation and derived/public reuse", "refresh and correction route", "right-of-reply/contact route"]
+    },
+    {
+      "id": "bc-copyright-access-only-forest-layers",
+      "status": "reply-received-awaiting-resolution",
+      "verifiedSentAt": "2026-08-14T18:52:11-05:00",
+      "sentVerification": "Gmail Sent-label read-only search matched this exact sender, recipient, and subject; message and thread identifiers are intentionally omitted.",
+      "recipient": "QPIPPCopyright@gov.bc.ca",
+      "recipientEvidence": "https://forms.gov.bc.ca/copyright-permission-request/",
+      "subject": "Permission and authoritative-export request — VRI 2025, FOM Cutblocks, and TAP deferral layer",
+      "language": "English",
+      "canonicalRowIds": ["bc-old-growth-bec", "bc-vri", "bc-forest-operations-map"],
+      "requestTerms": ["stable artifact or snapshot", "edition or effective date", "feature count, CRS, schema and checksum", "exact licence and attribution", "Canadian immutable raw archive", "transformation and derived/public reuse", "refresh and correction route", "right-of-reply/contact route"]
+    },
+    {
+      "id": "sopfeu-wildfire-data-permission",
+      "status": "sent-awaiting-response",
+      "verifiedSentAt": "2026-08-14T18:52:14-05:00",
+      "sentVerification": "Gmail Sent-label read-only search matched this exact sender, recipient, and subject; message and thread identifiers are intentionally omitted.",
+      "recipient": "courrier@sopfeu.qc.ca",
+      "recipientEvidence": "https://www.sopfeu.qc.ca/en/privacy-policy/",
+      "subject": "Demande d’autorisation — données officielles sur les feux de forêt / Permission request — official wildfire data",
+      "language": "Français / English",
+      "canonicalRowIds": ["sopfeu"],
+      "requestTerms": ["stable artifact or snapshot", "version or snapshot identifier", "coverage, cadence, format and checksum", "licence and attribution", "Canadian immutable raw archive", "transformation and derived/public reuse", "refresh and correction route", "right-of-reply/contact route"]
+    },
+    {
+      "id": "isc-reserve-boundary-authority-and-engagement",
+      "status": "sent-awaiting-response",
+      "verifiedSentAt": "2026-08-14T18:52:22-05:00",
+      "sentVerification": "Gmail Sent-label read-only search matched this exact sender, recipient, and subject; message and thread identifiers are intentionally omitted.",
+      "recipient": "communicationspublications@sac-isc.gc.ca",
+      "recipientEvidence": "https://www.isc-sac.gc.ca/eng/1634312499368/1634312554965",
+      "subject": "Request for authoritative reserve-boundary release, reuse terms, and appropriate engagement route / Demande de jeu de données, de conditions de réutilisation et de voie de dialogue",
+      "language": "English / Français",
+      "canonicalRowIds": ["indian-reserves", "first-nation-reserves"],
+      "requestTerms": ["stable artifact or snapshot", "edition and precision/scope statement", "feature count, CRS, schema and checksum", "exact licence and attribution", "Canadian immutable raw archive", "transformation and derived/public reuse", "refresh and correction route", "named Indigenous engagement and right-of-reply route"]
+    },
+    {
+      "id": "cirnac-treaty-geometry-authority-and-engagement",
+      "status": "automatic-reply-only-awaiting-substantive-response",
+      "verifiedSentAt": "2026-08-14T18:52:18-05:00",
+      "sentVerification": "Gmail Sent-label read-only search matched this exact sender, recipient, and subject; message and thread identifiers are intentionally omitted.",
+      "recipient": "infopubs@sac-isc.gc.ca",
+      "recipientEvidence": "https://www.rcaanc-cirnac.gc.ca/eng/1603225519672/1603310558983",
+      "subject": "Request for suitable treaty-boundary source, reuse terms, and appropriate engagement route / Demande de source appropriée, de conditions de réutilisation et de voie de dialogue",
+      "language": "English / Français",
+      "canonicalRowIds": ["historic-treaties", "modern-treaties"],
+      "requestTerms": ["stable artifact or snapshot", "edition and legal/precision scope statement", "feature count, CRS, schema and checksum", "exact licence and attribution", "Canadian immutable raw archive", "transformation and derived/public reuse", "refresh and correction route", "named Indigenous engagement and right-of-reply route"]
+    },
+    {
+      "id": "bc-consolidated-cutblocks-existing-request",
+      "status": "already-sent-reply-received-awaiting-resolution",
+      "recipient": "FAIB.Data.Management@gov.bc.ca",
+      "recipientEvidence": "data/bc-consolidated-cutblocks-access.json",
+      "subject": "Permission request — Harvested Areas of BC (Consolidated Cutblocks)",
+      "language": "English",
+      "canonicalRowIds": ["bc-consolidated-cutblocks"],
+      "requestTerms": ["stable artifact or snapshot", "edition or release date", "checksum", "licence and attribution", "Canadian immutable raw archive", "transformation and derived/public reuse", "refresh and correction route", "right-of-reply/contact route"]
+    }
+  ]
+}

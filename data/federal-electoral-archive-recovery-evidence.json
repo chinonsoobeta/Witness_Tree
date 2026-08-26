@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "witness-tree/federal-electoral-archive-recovery-evidence/1",
+  "status": "exact-version-recovery-verified-raw-only",
+  "verifiedAt": "2026-08-25",
+  "notice": "Version-specific readback evidence for one already-existing raw Elections Canada archive payload and its deterministic manifest. The append-only promotion guard refused replacement before any payload mutation. A separate manifest-retention correction was then applied and read back. This evidence does not claim transformation, ingestion, release, production admission, or production eligibility.",
+  "storage": {
+    "bucket": "witness-tree-raw-archive-ca-central-1",
+    "region": "ca-central-1",
+    "countryCode": "CA"
+  },
+  "physicalArtifact": {
+    "sourceId": "elections-canada-federal-electoral-districts-45th-general-election-2025-shp",
+    "ledgerRows": ["fed-2023-ridings", "elections-canada-45th-files"],
+    "payloadKey": "raw/elections-canada-federal-electoral-districts-45th-general-election-2025-shp/federal-electoral-districts-2025-shp/2026-08-14T17-42-35Z/4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93/payload/federalelectoraldistricts_2025_shp.zip",
+    "manifestKey": "raw/elections-canada-federal-electoral-districts-45th-general-election-2025-shp/federal-electoral-districts-2025-shp/2026-08-14T17-42-35Z/4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93/manifest.json",
+    "deduplicationNotice": "Both ledger rows reference this one physical raw archive; this record does not create a second object or double-count it as two archive artifacts."
+  },
+  "payload": {
+    "versionId": "GzBU7MRKmIE6hXbx3weS4eX.1rMUiYUK",
+    "byteLength": 10301648,
+    "sha256": "4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93",
+    "providerChecksum": {"type": "FULL_OBJECT", "algorithm": "CRC64NVME", "value": "Tjb8SOmhdSU="},
+    "exactVersionDownload": {"byteLengthMatches": true, "sha256Matches": true},
+    "retention": {"mode": "COMPLIANCE", "until": "2033-08-12T00:00:00Z"}
+  },
+  "manifest": {
+    "versionId": "0Zon9n8dRbw.JmQ_E2pKhQe14J785duH",
+    "byteLength": 572,
+    "sha256": "84646377203dccaee1e770899d77b2261f77eb7367462c0bf6be90e0317c00ea",
+    "providerChecksum": {"type": "FULL_OBJECT", "algorithm": "CRC64NVME", "value": "8bs7qwpfqPw="},
+    "deterministicExpectedBytesMatch": true,
+    "retention": {"mode": "COMPLIANCE", "until": "2033-08-12T00:00:00Z"}
+  },
+  "operationBoundary": {
+    "operatorDiagnostic": "Current MFA TOTP (not stored): Stopped: An approved payload key already has a version; no replacement was attempted.",
+    "appendOnlyGuard": "refused-existing-payload-version-no-replacement-attempted",
+    "payloadMutationAttempted": false,
+    "manifestRetentionCorrectionApplied": true,
+    "exactVersionReadbackPerformed": true
+  },
+  "claims": {
+    "rawArchiveRefetch": true,
+    "payloadChecksumReadback": true,
+    "manifestChecksumReadback": true,
+    "immutableArchive": true,
+    "transformed": false,
+    "ingested": false,
+    "released": false,
+    "productionAdmission": false,
+    "productionEligible": false
+  }
+}

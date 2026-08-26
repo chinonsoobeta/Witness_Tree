@@ -1,0 +1,215 @@
+{
+  "schemaVersion": "witness-tree/phase1-alberta-transform-ingestion-audit/1",
+  "status": "local-evidence-reconciled-downstream-blocked",
+  "auditedAt": "2026-08-21T15:40:24Z",
+  "derivedFromHead": "71925af03fc08b052d12077de2ba4acb9239006b",
+  "notice": "This read-only audit validates the exact existing Alberta AVI repair/quarantine and PLVI closed-join evidence against the named owner-scope records. It does not run AWS, write remote storage, submit a form, send email, change a source archive, grant owner admission, claim production transformation, ingest data, release data, or start Phase 2.",
+  "scope": [
+    "ab-avi-crown",
+    "ab-avi-post-harvest",
+    "ab-primary-land-vegetation"
+  ],
+  "baseline": {
+    "productionRows": 31,
+    "rawEvidenceNumerator": 14.25,
+    "rawEvidenceDenominator": 31,
+    "formalEvidenceTrackingPercentage": 38.7903226,
+    "immutableArchiveCompleteRows": 7,
+    "productionAdmissionCompleteRows": 0,
+    "productionEligibleRows": 0
+  },
+  "rows": [
+    {
+      "id": "ab-avi-crown",
+      "evidenceState": "remote-verified-archived-profiled",
+      "ownerScope": {
+        "status": "approved-source-ledger-only",
+        "decisionRef": "data/phase1-remote-source-admission-decisions.json",
+        "scopeRef": "data/alberta-avi-crown-quarantine-decision.json",
+        "summary": "The named source-ledger row is approved with AVI_PostInventoryHarvestIndex FID 1 excluded. The excluded index footprint has zero AVI_Crown observations and no Crown denominator impact.",
+        "downstreamAuthorized": false
+      },
+      "localArtifacts": {
+        "raw": {
+          "externalPath": "../Witness_Tree-data/raw/alberta-avi-crown/2026-08-11/AlbertaVegetationInventoryCrown.zip",
+          "byteLength": 557041258,
+          "sha256": "e93572129f25c83911b73eadfacff12624ff6b08f2db4b311c1662196b665093"
+        },
+        "workingDatasetSha256": "1ea5759caaf3dfbaf622c513e54fff2fda2c3051a80d6b571e06b23b4e3affbe",
+        "quarantine": {
+          "externalPath": "../Witness_Tree-data/derived/alberta-avi-geometry-repair-v1/2026-08-12/quarantine.json",
+          "byteLength": 1075,
+          "sha256": "e633f56ac029c19e785e0699464fc3c9763f7162939920f539823cd00d4dde7b"
+        }
+      },
+      "transformationValidation": {
+        "status": "existing-policy-run-validated-local-only",
+        "specification": "alberta-avi-geometry-repair-v1",
+        "runRecord": "data/transformation-runs/alberta-avi-geometry-repair-v1-2026-08-12.json",
+        "decision": "data/alberta-avi-crown-quarantine-decision.json",
+        "inputFeatureCount": 792443,
+        "invalidGeometryCount": 608,
+        "acceptedInMemoryRepairCount": 607,
+        "quarantinedCount": 1,
+        "quarantinedFeature": {
+          "layer": "AVI_PostInventoryHarvestIndex",
+          "fid": 1,
+          "relativeAreaChange": 0.028800363153499882
+        },
+        "derivedDatasetWritten": false,
+        "transformedClaim": false
+      },
+      "ingestionPreflight": {
+        "status": "blocked-before-ingestion",
+        "authorized": false,
+        "ingested": false,
+        "reason": "The owner decision is source-ledger-only and the existing run writes quarantine evidence only; no approved derived AVI payload is present for ingestion."
+      },
+      "downstream": {
+        "releaseApproval": false,
+        "productionAdmission": false,
+        "productionEligible": false
+      },
+      "rawCreditDelta": 0
+    },
+    {
+      "id": "ab-avi-post-harvest",
+      "evidenceState": "remote-verified-archived-profiled",
+      "ownerScope": {
+        "status": "approved-source-ledger-only",
+        "decisionRef": "data/phase1-remote-source-admission-decisions.json",
+        "summary": "The named source-ledger row is approved only as source evidence. The existing repair policy records the post-inventory observation layer separately from its quarantined index footprint; no downstream transformation or release scope is inferred.",
+        "downstreamAuthorized": false
+      },
+      "localArtifacts": {
+        "raw": {
+          "externalPath": "../Witness_Tree-data/raw/alberta-avi-crown/2026-08-11/AlbertaVegetationInventoryCrown.zip",
+          "byteLength": 557041258,
+          "sha256": "e93572129f25c83911b73eadfacff12624ff6b08f2db4b311c1662196b665093"
+        },
+        "workingDatasetSha256": "1ea5759caaf3dfbaf622c513e54fff2fda2c3051a80d6b571e06b23b4e3affbe",
+        "quarantine": {
+          "externalPath": "../Witness_Tree-data/derived/alberta-avi-geometry-repair-v1/2026-08-12/quarantine.json",
+          "byteLength": 1075,
+          "sha256": "e633f56ac029c19e785e0699464fc3c9763f7162939920f539823cd00d4dde7b"
+        }
+      },
+      "transformationValidation": {
+        "status": "existing-policy-run-validated-local-only",
+        "specification": "alberta-avi-geometry-repair-v1",
+        "runRecord": "data/transformation-runs/alberta-avi-geometry-repair-v1-2026-08-12.json",
+        "inputFeatureCount": 792443,
+        "postInventoryHarvestFeatureCount": 3631,
+        "postInventoryHarvestInvalidGeometryCount": 19,
+        "postInventoryHarvestAcceptedInMemoryRepairCount": 19,
+        "postInventoryHarvestQuarantinedCount": 0,
+        "derivedDatasetWritten": false,
+        "transformedClaim": false
+      },
+      "ingestionPreflight": {
+        "status": "blocked-before-ingestion",
+        "authorized": false,
+        "ingested": false,
+        "reason": "The owner decision is source-ledger-only and no approved derived post-inventory-harvest payload or ingestion admission is recorded."
+      },
+      "downstream": {
+        "releaseApproval": false,
+        "productionAdmission": false,
+        "productionEligible": false
+      },
+      "rawCreditDelta": 0
+    },
+    {
+      "id": "ab-primary-land-vegetation",
+      "evidenceState": "remote-verified-archived-profiled",
+      "ownerScope": {
+        "status": "approved-raw-and-derived-scope-only",
+        "decisionRef": "data/phase1-remote-source-admission-decisions.json",
+        "decisionId": "ab-primary-land-vegetation",
+        "readinessRef": "data/phase1-source-ledger-decision-readiness.json",
+        "readiness": "owner-decision-recorded",
+        "readinessScope": "Accepted only the unchanged raw ZIP and exact 179087-feature closed-join derived artifact under alberta-plvi-geometry-repair-v1 with 12 bounded repairs, preserved duplicate POLYGON_ID 41405 and no feature loss or deduplication; scope-bound validation and ingestion preparation only.",
+        "admissionRef": "data/alberta-plvi-full-release-readiness.json",
+        "scopeDecision": "approved-raw-and-derived-scope-only",
+        "scopeBoundPreparation": "data/phase1-scope-bound-validation-preparation.json",
+        "downstreamAuthorized": false
+      },
+      "localArtifacts": {
+        "raw": {
+          "externalPath": "../Witness_Tree-data/raw/alberta-primary-land-vegetation/2026-08-14/PrimaryLandAndVegetationInventoryPLVI.zip",
+          "byteLength": 675544895,
+          "sha256": "017a0a835c680ca1b6c1eb790322a28e1b4c0c64e36924da46d8bb99cb1571d3"
+        },
+        "repairPatch": {
+          "externalPath": "../Witness_Tree-data/derived/alberta-plvi-geometry-repair-v1/2026-08-14/alberta-plvi-invalid-polygon-repairs-computed.geojson",
+          "byteLength": 623651,
+          "sha256": "c1e8a3fe57e3562e72ab4307de6e9bdb1d16f4c97e29d3a7048b7ed7cb85abac"
+        },
+        "derivedOutput": {
+          "externalPath": "../Witness_Tree-data/derived/alberta-plvi-full-repair-v1/2026-08-14/alberta-plvi-full-repaired-closed-join.gpkg",
+          "byteLength": 899551232,
+          "sha256": "5633e7d49982ee1232b415f362654744c1f1dab11d7c3c7ef8a7928dac20825b"
+        }
+      },
+      "transformationValidation": {
+        "status": "existing-local-readiness-validated-under-approved-scope-not-admitted",
+        "specification": "alberta-plvi-geometry-repair-v1",
+        "runRecord": "data/transformation-runs/alberta-plvi-geometry-repair-v1-2026-08-14.json",
+        "fullReleaseReadiness": "data/alberta-plvi-full-release-readiness.json",
+        "rawFeatureCount": 179087,
+        "repairCount": 12,
+        "outputFeatureCount": 179087,
+        "validGeometryCount": 179087,
+        "invalidGeometryCount": 0,
+        "nonPolygonalGeometryCount": 0,
+        "maxRepairedRelativeAreaDelta": 3.04060011759907e-12,
+        "relativeAreaTolerance": 1e-9,
+        "closedJoinLossOrDuplication": false,
+        "derivedDatasetWrittenByThisAudit": false,
+        "transformedClaim": false
+      },
+      "ingestionPreflight": {
+        "status": "scope-bound-ingestion-preflight-blocked-schema-drift-not-ingested",
+        "preflightRef": "data/phase1-immutable-downstream-preflight.json",
+        "authorized": false,
+        "ingested": false,
+        "scopeBound": true,
+        "checks": {
+          "rawChecksumBound": true,
+          "derivedChecksumBound": true,
+          "featureCountPreserved": true,
+          "validNonEmptyGeometry": true,
+          "declaredCrs": "EPSG:3400",
+          "declaredAttributeFieldCount": 60,
+          "exactSchemaNameParity": false,
+          "exactSchemaNameTypeParity": false,
+          "duplicatePolygonId41405Preserved": true,
+          "silentLossOrDeduplication": false
+        },
+        "reason": "The exact closed-join output is checksum-bound and passes its geometry/count checks, but its ordered attribute schema does not match the raw source: two names changed and 23 Integer fields widened to Integer64. A corrected checksum-bound output or an explicit field-mapping decision is required before this ingestion preflight can pass; transformation admission and ingestion remain separate decisions."
+      },
+      "downstream": {
+        "releaseApproval": false,
+        "productionAdmission": false,
+        "productionEligible": false
+      },
+      "rawCreditDelta": 0
+    }
+  ],
+  "delta": {
+    "rawEvidenceNumerator": 0,
+    "formalEvidenceTrackingPercentagePoints": 0,
+    "immutableArchiveCompleteRows": 0,
+    "productionAdmissionCompleteRows": 0,
+    "productionEligibleRows": 0,
+    "ownerDecisionsCreated": 0,
+    "remoteMutationPerformed": false,
+    "externalMutationPerformed": false,
+    "phase2Started": false
+  },
+  "remainingActions": [
+    "For AVI, obtain a separately named owner transformation and ingestion scope before any derived payload is admitted.",
+    "For PLVI, retain the scope-bound validation and ingestion-preparation receipt, then obtain separate transformation admission and ingestion decisions before treating the local output as an admitted transform or ingestion input.",
+    "For all three rows, record transformation, ingestion, release approval and production admission separately; never infer them from local validation or immutable archive evidence."
+  ]
+}

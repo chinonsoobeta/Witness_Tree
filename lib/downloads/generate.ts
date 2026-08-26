@@ -4,6 +4,7 @@ from "../domain/source-ledger.ts";
 // @ts-expect-error -- Node's TypeScript runner requires explicit local extensions.
 import { PRODUCT_NAME } from "../domain/brand.ts";
 import { createHash } from "node:crypto";
+import type { Locale } from "../domain/localized.ts";
 import type { DownloadArtifact, DownloadRelease, DownloadRow } from "./types";
 const hasUnknownZero = (value: string) => /(?:unknown|inconnu)\s*(?:value|valeur)?\s*0\b/i.test(value);
 const exampleUrl = (value: string) => { try { const url = new URL(value); return url.protocol === "https:" && url.hostname === "example.local"; } catch { return false; } };
@@ -13,5 +14,5 @@ export function validateRelease(release: DownloadRelease): DownloadRelease { if 
 export function addRelease(releases: readonly DownloadRelease[], release: DownloadRelease): readonly DownloadRelease[] { if (releases.some((item) => item.id === release.id)) throw new Error("Release ids are immutable."); validateRelease(release); return [...releases, release]; }
 export function verifyArtifactContent(artifact: DownloadArtifact, content: Uint8Array | string): boolean { validateArtifact(artifact); return createHash("sha256").update(content).digest("hex") === artifact.sha256.toLowerCase(); }
 const escape = (value: string) => /[",\n]/.test(value) ? `"${value.replaceAll('"', '""')}"` : value;
-export function generateCsv(rows: readonly DownloadRow[]): string { return ["id,value,unit,unknown_reason", ...rows.map((row) => row.reported.kind === "figure" ? [row.id, row.reported.value, row.reported.unit, ""].map(String).map(escape).join(",") : [row.id, "", "", row.reported.reason].map(escape).join(","))].join("\n"); }
+export function generateCsv(rows: readonly DownloadRow[], locale: Locale = "en"): string { return ["id,value,unit,unknown_reason", ...rows.map((row) => row.reported.kind === "figure" ? [row.id, row.reported.value, row.reported.unit, ""].map(String).map(escape).join(",") : [row.id, "", "", row.reported.reason[locale]].map(escape).join(","))].join("\n"); }
 export function citation(release: DownloadRelease, artifact: DownloadArtifact): string { validateRelease(release); if (!release.artifacts.some((item) => item.id === artifact.id)) throw new Error("Artifact is not part of the release."); return `${PRODUCT_NAME.en}. ${artifact.id}. Release ${release.id}. ${artifact.timeRange}; ${artifact.boundaryEdition}; method ${artifact.methodVersion}; retrieved ${artifact.retrievedDate}. ${artifact.url}`; }

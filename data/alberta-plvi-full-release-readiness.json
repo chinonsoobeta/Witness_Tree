@@ -1,0 +1,62 @@
+{
+  "status": "immutable-archived-schema-preflight-blocked",
+  "sourceId": "ab-primary-land-vegetation",
+  "derivedReleaseId": "alberta-plvi-full-repair-v1-2026-08-14",
+  "notice": "The exact raw and derived payloads are remotely verified in immutable storage and the owner recorded source-ledger plus exact raw/derived scope approval. Ordered attribute-schema drift still blocks ingestion preparation. This record does not authorize transformation admission, ingestion, release, production admission, or production use.",
+  "rawInput": {
+    "externalPath": "../Witness_Tree-data/raw/alberta-primary-land-vegetation/2026-08-14/PrimaryLandAndVegetationInventoryPLVI.zip",
+    "byteLength": 675544895,
+    "sha256": "017a0a835c680ca1b6c1eb790322a28e1b4c0c64e36924da46d8bb99cb1571d3",
+    "featureCount": 179087,
+    "crs": "EPSG:3400"
+  },
+  "repairPatch": {
+    "runRecord": "data/transformation-runs/alberta-plvi-geometry-repair-v1-2026-08-14.json",
+    "externalPath": "../Witness_Tree-data/derived/alberta-plvi-full-repair-v1/2026-08-14/alberta-plvi-invalid-full-attribute-repairs.gpkg",
+    "sha256": "70348ce64c3e688ee7dc3948a683e49631aa16d591953a89f51d8186169d94e0",
+    "featureCount": 12,
+    "relativeAreaTolerance": 1e-9
+  },
+  "derivedOutput": {
+    "externalPath": "../Witness_Tree-data/derived/alberta-plvi-full-repair-v1/2026-08-14/alberta-plvi-full-repaired-closed-join.gpkg",
+    "byteLength": 899551232,
+    "sha256": "5633e7d49982ee1232b415f362654744c1f1dab11d7c3c7ef8a7928dac20825b",
+    "layer": "alberta_plvi_full_repaired",
+    "featureCount": 179087,
+    "crs": "EPSG:3400",
+    "attributeFieldCount": 60,
+    "emptyOrNullGeometryCount": 0,
+    "invalidGeometryCount": 0,
+    "nonPolygonalGeometryCount": 0,
+    "geometryTypes": {"POLYGON": 179086, "MULTIPOLYGON": 1},
+    "maxRepairedRelativeAreaDelta": 3.04060011759907e-12,
+    "validRawAttributeFingerprintSha256": "fbbaf3cea2466c78223ba1b7557708acae1cd7a7de932fd6cdb1b62fb76d13c6",
+    "validRawFeatureCount": 179075
+  },
+  "closedJoin": {
+    "repairedPolygonIds": [17119,17583,17931,19384,20217,21021,21992,23014,40392,50824,82560,161140],
+    "sourceDuplicateIdentifier": {"field":"POLYGON_ID","value":41405,"multiplicity":2,"treatment":"preserved; no deduplication"},
+    "inputFeatureCount": 179087,
+    "validCopiedUnchangedCount": 179075,
+    "repairedReplacementCount": 12,
+    "outputFeatureCount": 179087,
+    "silentLossOrDuplication": false
+  },
+  "immutableArchive": {
+    "status": "remote-verified-archived-profiled",
+    "evidenceRef": "data/alberta-plvi-immutable-promotion-evidence.json",
+    "rawAndDerivedPayloadsVerified": true
+  },
+  "ownerScope": {
+    "status": "approved-source-ledger-and-exact-raw-derived-scope-only",
+    "decisionRef": "data/phase1-remote-source-admission-decisions.json",
+    "scopeBoundValidationAuthorized": true,
+    "transformationAdmission": false,
+    "ingestionAuthorized": false,
+    "releaseApproved": false,
+    "productionAdmission": false
+  },
+  "immutableObjectStorage": true,
+  "ingestionReady": false,
+  "productionEligible": false
+}

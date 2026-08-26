@@ -1,0 +1,1131 @@
+{
+  "approvedComponentLineageCapBytes": 2199023255552,
+  "canonicalPairCount": 38,
+  "completedPairCount": 38,
+  "componentLineageBytes": 68322891854,
+  "executionObservation": {
+    "approvedMaxSeconds": 345600,
+    "basis": "final inventory inode birth time through final modification time; includes shell redirection, all-pair preflight, processing, and final inventory write",
+    "completedAtUtc": "2026-08-22T18:34:42Z",
+    "elapsedSeconds": "4676.643920",
+    "startedAtUtc": "2026-08-22T17:16:45Z"
+  },
+  "inventory": {
+    "byteLength": 32968,
+    "fileName": "inventory.json",
+    "sha256": "130f3e111fc4626cae2637ac4f5de907a4a92ab9d65fb97eadd90c0cb2050907"
+  },
+  "pairs": [
+    {
+      "inventory": {
+        "connectedComponentCount": 3389250,
+        "lossCellCount": 16638404,
+        "maxActiveComponents": 359,
+        "maxRunsInOneRow": 383,
+        "nodataCellCount": 0,
+        "orderedLossRunSha256": "53f80c1f828af3a19593f59146158e1653cec9ba6ca717baee1b8019a44cf593",
+        "validNonLossCellCount": 24873107836
+      },
+      "lineage": {
+        "aliasRecordCount": 156643,
+        "byteLength": 795594107,
+        "componentRecordCount": 3389250,
+        "fileName": "detected-forest-loss-1984-1985.components.jsonl",
+        "recordCount": 9855923,
+        "runRecordCount": 6310028,
+        "sha256": "ed0b7fa96d1e895b0671036148a10d2ac55adf4a9204740ed974627e2fc28800"
+      },
+      "pair": [
+        1984,
+        1985
+      ],
+      "sourceLoss": {
+        "byteLength": 96228474,
+        "fileName": "detected-forest-loss-1984-1985.tif",
+        "sha256": "e165954229c8803679a795145ad600220af50334cc6be5e56859697b3afd7210"
+      }
+    },
+    {
+      "inventory": {
+        "connectedComponentCount": 3820902,
+        "lossCellCount": 17652330,
+        "maxActiveComponents": 323,
+        "maxRunsInOneRow": 377,
+        "nodataCellCount": 0,
+        "orderedLossRunSha256": "c8d4f44a7574e17193ee84ab13457d0cc7529c06c8adc820731c212cd33df407",
+        "validNonLossCellCount": 24872093910
+      },
+      "lineage": {
+        "aliasRecordCount": 170734,
+        "byteLength": 885003065,
+        "componentRecordCount": 3820902,
+        "fileName": "detected-forest-loss-1985-1986.components.jsonl",
+        "recordCount": 10930619,
+        "runRecordCount": 6938981,
+        "sha256": "20c404c169f1e7e743cf81e0c3626ad7b0c8b401475bda57caef19c9f1ae9398"
+      },
+      "pair": [
+        1985,
+        1986
+      ],
+      "sourceLoss": {
+        "byteLength": 98041677,
+        "fileName": "detected-forest-loss-1985-1986.tif",
+        "sha256": "5ee742ce77d19279b3dae408c596e8e7d3c2152bbe2cf14a1c63919af61aa112"
+      }
+    },
+    {
+      "inventory": {
+        "connectedComponentCount": 5491045,
+        "lossCellCount": 24837798,
+        "maxActiveComponents": 469,
+        "maxRunsInOneRow": 502,
+        "nodataCellCount": 0,
+        "orderedLossRunSha256": "38ed780927d4db49ff002a1af35efad3fdbff5009bb13817ac41a6670fd1fd9a",
+        "validNonLossCellCount": 24864908442
+      },
+      "lineage": {
+        "aliasRecordCount": 253045,
+        "byteLength": 1291275653,
+        "componentRecordCount": 5491045,
+        "fileName": "detected-forest-loss-1986-1987.components.jsonl",
+        "recordCount": 15984934,
+        "runRecordCount": 10240842,
+        "sha256": "567241af0545e889267764adb68aa245f72f7279a40224179de5b13b8ecf3277"
+      },
+      "pair": [
+        1986,
+        1987
+      ],
+      "sourceLoss": {
+        "byteLength": 102664129,
+        "fileName": "detected-forest-loss-1986-1987.tif",
+        "sha256": "37ab1e6f8ad23344fd90a49d9d6654ecc0d1fc707eb89b5002dba1f1df62c3e7"
+      }
+    },
+    {
+      "inventory": {
+        "connectedComponentCount": 5829853,
+        "lossCellCount": 24731470,
+        "maxActiveComponents": 561,
+        "maxRunsInOneRow": 626,
+        "nodataCellCount": 0,
+        "orderedLossRunSha256": "c9d1f29933ccb78783c8d0a0689a3eaf249252f450db5e5e6dba16e24d80092f",
+        "validNonLossCellCount": 24865014770
+      },
+      "lineage": {
+        "aliasRecordCount": 237696,
+        "byteLength": 1335405130,
+        "componentRecordCount": 5829853,
+        "fileName": "detected-forest-loss-1987-1988.components.jsonl",
+        "recordCount": 16494726,
+        "runRecordCount": 10427175,
+        "sha256": "57c63abe1f90ff626a8b58737f5c1dd3a306593d39f1840dab9034a13bf66338"
+      },
+      "pair": [
+        1987,
+        1988
+      ],
+      "sourceLoss": {
+        "byteLength": 103429275,
+        "fileName": "detected-forest-loss-1987-1988.tif",
+        "sha256": "f3790f2cbd3db00facd9376633856e83c5c9dd2094394fd6d7e2d94e9f38477c"
+      }
+    },
+    {
+      "inventory": {
+        "connectedComponentCount": 6111857,
+        "lossCellCount": 50315308,
+        "maxActiveComponents": 688,
+        "maxRunsInOneRow": 910,
+        "nodataCellCount": 0,
+        "orderedLossRunSha256": "d8d8645252f4472eb381197c43128413d90fd6b6382127cd623df0cf301499fb",
+        "validNonLossCellCount": 24839430932
+      },
+      "lineage": {
+        "aliasRecordCount": 492069,
+        "byteLength": 1649286204,
+        "componentRecordCount": 6111857,
+        "fileName": "detected-forest-loss-1988-1989.components.jsonl",
+        "recordCount": 20492774,
+        "runRecordCount": 13888846,
+        "sha256": "18b0aaf018e745e3e87f0d82f26b9b8eb05319bf8dcf460cab2784c444a8fb41"
+      },
+      "pair": [
+        1988,
+        1989
+      ],
+      "sourceLoss": {
+        "byteLength": 108503064,
+        "fileName": "detected-forest-loss-1988-1989.tif",
+        "sha256": "3d20e4ec48a7035416f1bffa52a37d3f38102a4b5f76e0f3e914f001cf2492d4"
+      }
+    },
+    {
+      "inventory": {
+        "connectedComponentCount": 6296656,
+        "lossCellCount": 38560305,
+        "maxActiveComponents": 675,
+        "maxRunsInOneRow": 758,
+        "nodataCellCount": 0,
+        "orderedLossRunSha256": "8501f4e1b7e591083194d4aa85ab2f7fcd152a4410df384615e308cbe0efa599",
+        "validNonLossCellCount": 24851185935
+      },
+      "lineage": {
+        "aliasRecordCount": 368713,
+        "byteLength": 1554142715,
+        "componentRecordCount": 6296656,
+        "fileName": "detected-forest-loss-1989-1990.components.jsonl",
+        "recordCount": 19269323,
+        "runRecordCount": 12603952,
+        "sha256": "35b7494c19343461379cc857390e0d3309f1fc62fa3bf9c6bd4b4acd7e001a16"
+      },
+      "pair": [
+        1989,
+        1990
+      ],
+      "sourceLoss": {
+        "byteLength": 107003232,
+        "fileName": "detected-forest-loss-1989-1990.tif",
+        "sha256": "5ed90b2f9a7482369853dae9216ff7f3f7363080f9c1adf92bd1d1d1a8802152"
+      }
+    },
+    {
+      "inventory": {
+        "connectedComponentCount": 6374848,
+        "lossCellCount": 27618261,
+        "maxActiveComponents": 435,
+        "maxRunsInOneRow": 483,
+        "nodataCellCount": 0,
+        "orderedLossRunSha256": "2184dc61e5720a7c0d5e0f9a3a4968551601e7bfc1ee85d40ae0fc684191e081",
+        "validNonLossCellCount": 24862127979
+      },
+      "lineage": {
+        "aliasRecordCount": 232777,
+        "byteLength": 1426675173,
+        "componentRecordCount": 6374848,
+        "fileName": "detected-forest-loss-1990-1991.components.jsonl",
+        "recordCount": 17588945,
+        "runRecordCount": 10981318,
+        "sha256": "b4a7d0905c0b28167756a2297ef38a7f836386115ff5e68239ad632b04255514"
+      },
+      "pair": [
+        1990,
+        1991
+      ],
+      "sourceLoss": {
+        "byteLength": 104770819,
+        "fileName": "detected-forest-loss-1990-1991.tif",
+        "sha256": "04c7bfcec234db7a9f5d7cb19c8f1ea8f22e207fcea1490177a88cdaac5430b4"
+      }
+    },
+    {
+      "inventory": {
+        "connectedComponentCount": 6260105,
+        "lossCellCount": 28223199,
+        "maxActiveComponents": 422,
+        "maxRunsInOneRow": 467,
+        "nodataCellCount": 0,
+        "orderedLossRunSha256": "01cfab8beee8a24e87a376ee7706a672c494e083a3a5b2094a199df54b615a5c",
+        "validNonLossCellCount": 24861523041
+      },
+      "lineage": {
+        "aliasRecordCount": 243266,
+        "byteLength": 1423052500,
+        "componentRecordCount": 6260105,
+        "fileName": "detected-forest-loss-1991-1992.components.jsonl",
+        "recordCount": 17582145,
+        "runRecordCount": 11078772,
+        "sha256": "87ca8a5d77246268f536cc745537366c797cfe417ac03770fcd1f8aee1d119f8"
+      },
+      "pair": [
+        1991,
+        1992
+      ],
+      "sourceLoss": {
+        "byteLength": 104646749,
+        "fileName": "detected-forest-loss-1991-1992.tif",
+        "sha256": "8988d12b7b3e6c1a1f710108086b39c8b7cdd067b0e735af93017531c686ca1c"
+      }
+    },
+    {
+      "inventory": {
+        "connectedComponentCount": 5562067,
+        "lossCellCount": 27093080,
+        "maxActiveComponents": 356,
+        "maxRunsInOneRow": 432,
+        "nodataCellCount": 0,
+        "orderedLossRunSha256": "c5f32f0b352d36778a7aa4e28f110aa32826234c05f52ec7139211ebd06b7fbb",
+        "validNonLossCellCount": 24862653160
+      },
+      "lineage": {
+        "aliasRecordCount": 235561,
+        "byteLength": 1262350015,
+        "componentRecordCount": 5562067,
+        "fileName": "detected-forest-loss-1992-1993.components.jsonl",
+        "recordCount": 15592042,
+        "runRecordCount": 9794412,
+        "sha256": "9115990f15a557726d346dbb6c64961f7560e792410fbd2e5397b15de052244a"
+      },
+      "pair": [
+        1992,
+        1993
+      ],
+      "sourceLoss": {
+        "byteLength": 103423289,
+        "fileName": "detected-forest-loss-1992-1993.tif",
+        "sha256": "330d12fb139108c9c418008941d1b0917424402a8ad06295aa7c5adbce4bc971"
+      }
+    },
+    {
+      "inventory": {
+        "connectedComponentCount": 7082651,
+        "lossCellCount": 43063896,
+        "maxActiveComponents": 458,
+        "maxRunsInOneRow": 562,
+        "nodataCellCount": 0,
+        "orderedLossRunSha256": "d132a9719713510790bbf61171c92dd2be18f8ad9f5f0896bada7a84edc75e24",
+        "validNonLossCellCount": 24846682344
+      },
+      "lineage": {
+        "aliasRecordCount": 385325,
+        "byteLength": 1700190448,
+        "componentRecordCount": 7082651,
+        "fileName": "detected-forest-loss-1993-1994.components.jsonl",
+        "recordCount": 21076385,
+        "runRecordCount": 13608407,
+        "sha256": "b4e017b12146751b31594027631cb26c6a6f178ab59e23ba172b9486b0264332"
+      },
+      "pair": [
+        1993,
+        1994
+      ],
+      "sourceLoss": {
+        "byteLength": 108636582,
+        "fileName": "detected-forest-loss-1993-1994.tif",
+        "sha256": "331e67edb24e8c766f4f962ba07afccf580ef2c3bc08095261f26fb8c0238c9a"
+      }
+    },
+    {
+      "inventory": {
+        "connectedComponentCount": 7763477,
+        "lossCellCount": 69304156,
+        "maxActiveComponents": 648,
+        "maxRunsInOneRow": 824,
+        "nodataCellCount": 0,
+        "orderedLossRunSha256": "fb3c26cdd59a92e09ad6e77f40c4ea9c055a07504fc94d3c70762b250f83a168",
+        "validNonLossCellCount": 24820442084
+      },
+      "lineage": {
+        "aliasRecordCount": 619640,
+        "byteLength": 2073125166,
+        "componentRecordCount": 7763477,
+        "fileName": "detected-forest-loss-1994-1995.components.jsonl",
+        "recordCount": 25849521,
+        "runRecordCount": 17466402,
+        "sha256": "f33957ca759211200bd6d61dadeda2f2362238b1e4bffbb8b502ce5bbd5bed89"
+      },
+      "pair": [
+        1994,
+        1995
+      ],
+      "sourceLoss": {
+        "byteLength": 114148092,
+        "fileName": "detected-forest-loss-1994-1995.tif",
+        "sha256": "e67574b9cd6dd654068d01da07811db8bd6b610a39bf53f14fc718c55dcd6299"
+      }
+    },
+    {
+      "inventory": {
+        "connectedComponentCount": 8365343,
+        "lossCellCount": 39520100,
+        "maxActiveComponents": 619,
+        "maxRunsInOneRow": 646,
+        "nodataCellCount": 0,
+        "orderedLossRunSha256": "f7fb6eb9cbb2e11d84cee83e6401438093ea391cef2d3a27a48c132ca2650f27",
+        "validNonLossCellCount": 24850226140
+      },
+      "lineage": {
+        "aliasRecordCount": 375110,
+        "byteLength": 1934670771,
+        "componentRecordCount": 8365343,
+        "fileName": "detected-forest-loss-1995-1996.components.jsonl",
+        "recordCount": 23918591,
+        "runRecordCount": 15178136,
+        "sha256": "179d8e4876f1e6506b0fb7ca25d03404846e250aed3d50b0bd313d723c8932c6"
+      },
+      "pair": [
+        1995,
+        1996
+      ],
+      "sourceLoss": {
+        "byteLength": 111137876,
+        "fileName": "detected-forest-loss-1995-1996.tif",
+        "sha256": "56b3dbdf12a81d6f1d887a028e151efe8056a224db9d42af7f22e7ac5e9c3ac6"
+      }
+    },
+    {
+      "inventory": {
+        "connectedComponentCount": 9087257,
+        "lossCellCount": 33513987,
+        "maxActiveComponents": 534,
+        "maxRunsInOneRow": 594,
+        "nodataCellCount": 0,
+        "orderedLossRunSha256": "f899ba9dc2ffd12fbb5dbc637862d70e0382efb6db67be58f78f7f8875cdf2ac",
+        "validNonLossCellCount": 24856232253
+      },
+      "lineage": {
+        "aliasRecordCount": 298032,
+        "byteLength": 1975836898,
+        "componentRecordCount": 9087257,
+        "fileName": "detected-forest-loss-1996-1997.components.jsonl",
+        "recordCount": 24345490,
+        "runRecordCount": 14960199,
+        "sha256": "42f79e8c01d2d70bbd0feb7a6096e441e3f012267b27ad8421b3cb5b0cca076a"
+      },
+      "pair": [
+        1996,
+        1997
+      ],
+      "sourceLoss": {
+        "byteLength": 110907527,
+        "fileName": "detected-forest-loss-1996-1997.tif",
+        "sha256": "2e8e2c0bcca532be9d6b2ee25662c37858e6dfc558518b0a55443d614b2c85b6"
+      }
+    },
+    {
+      "inventory": {
+        "connectedComponentCount": 9136825,
+        "lossCellCount": 41683439,
+        "maxActiveComponents": 520,
+        "maxRunsInOneRow": 589,
+        "nodataCellCount": 0,
+        "orderedLossRunSha256": "61f907ee1a75c0160ab3a228862c4d5cffc0819ee7d71ee85d5addbbe1c8c116",
+        "validNonLossCellCount": 24848062801
+      },
+      "lineage": {
+        "aliasRecordCount": 354286,
+        "byteLength": 2043958846,
+        "componentRecordCount": 9136825,
+        "fileName": "detected-forest-loss-1997-1998.components.jsonl",
+        "recordCount": 25245723,
+        "runRecordCount": 15754610,
+        "sha256": "8b69c491882d7bd273e32a6bbba5953eb743ee3c038f3a516d4a6b1c4c2945c4"
+      },
+      "pair": [
+        1997,
+        1998
+      ],
+      "sourceLoss": {
+        "byteLength": 112414420,
+        "fileName": "detected-forest-loss-1997-1998.tif",
+        "sha256": "3e88166c1bc3c87fb2ddc29cf8a25e09b604a781e2220fc364c0e3cb69f93692"
+      }
+    },
+    {
+      "inventory": {
+        "connectedComponentCount": 8133319,
+        "lossCellCount": 40625214,
+        "maxActiveComponents": 449,
+        "maxRunsInOneRow": 589,
+        "nodataCellCount": 0,
+        "orderedLossRunSha256": "00b9d98025822a8bd9a99390b77dd37d5b935798050ddfd55d522f2a544c3bf4",
+        "validNonLossCellCount": 24849121026
+      },
+      "lineage": {
+        "aliasRecordCount": 340098,
+        "byteLength": 1833777976,
+        "componentRecordCount": 8133319,
+        "fileName": "detected-forest-loss-1998-1999.components.jsonl",
+        "recordCount": 22666914,
+        "runRecordCount": 14193495,
+        "sha256": "ac700be4c28d9048a9cebc58d04a4fa28dfa83e64af8ae491002e3f3235dc95e"
+      },
+      "pair": [
+        1998,
+        1999
+      ],
+      "sourceLoss": {
+        "byteLength": 110744455,
+        "fileName": "detected-forest-loss-1998-1999.tif",
+        "sha256": "d98edacca1fd764b75d3c17bdf6a0dbc798f578b2560a8b948b6cc8a25a6a9be"
+      }
+    },
+    {
+      "inventory": {
+        "connectedComponentCount": 8154594,
+        "lossCellCount": 28682908,
+        "maxActiveComponents": 409,
+        "maxRunsInOneRow": 435,
+        "nodataCellCount": 0,
+        "orderedLossRunSha256": "7943a31757ae1e877bbad0c1460b705fc5c3a0bc203efe253c2da63f5256c18a",
+        "validNonLossCellCount": 24861063332
+      },
+      "lineage": {
+        "aliasRecordCount": 242006,
+        "byteLength": 1738953874,
+        "componentRecordCount": 8154594,
+        "fileName": "detected-forest-loss-1999-2000.components.jsonl",
+        "recordCount": 21416390,
+        "runRecordCount": 13019788,
+        "sha256": "e9395995f9833062463aba31e6369eec2c93fe5e88428d46cd52ba2f65bd4c17"
+      },
+      "pair": [
+        1999,
+        2000
+      ],
+      "sourceLoss": {
+        "byteLength": 108732428,
+        "fileName": "detected-forest-loss-1999-2000.tif",
+        "sha256": "a245989e9d32b209a9bc94f15e5e7c74255962f6eea8b983c3f76f6a915bfee4"
+      }
+    },
+    {
+      "inventory": {
+        "connectedComponentCount": 8646415,
+        "lossCellCount": 34009074,
+        "maxActiveComponents": 588,
+        "maxRunsInOneRow": 611,
+        "nodataCellCount": 0,
+        "orderedLossRunSha256": "48428c1f8effe8c322b5813c11f3699b061ada86ba246a62a430e95e96b0f59b",
+        "validNonLossCellCount": 24855737166
+      },
+      "lineage": {
+        "aliasRecordCount": 319713,
+        "byteLength": 1933507226,
+        "componentRecordCount": 8646415,
+        "fileName": "detected-forest-loss-2000-2001.components.jsonl",
+        "recordCount": 23867352,
+        "runRecordCount": 14901222,
+        "sha256": "7db134130067011d6aa2cb6838ba12d112908fe2609ad365dd856db2e745afca"
+      },
+      "pair": [
+        2000,
+        2001
+      ],
+      "sourceLoss": {
+        "byteLength": 110478705,
+        "fileName": "detected-forest-loss-2000-2001.tif",
+        "sha256": "816a3f9e68bd6b05abe7f69986c7d8b9daa5e32371076d5c04d8a6344a99e586"
+      }
+    },
+    {
+      "inventory": {
+        "connectedComponentCount": 8780335,
+        "lossCellCount": 48262323,
+        "maxActiveComponents": 794,
+        "maxRunsInOneRow": 879,
+        "nodataCellCount": 0,
+        "orderedLossRunSha256": "ce16a630dde4b97b78faca1347deb398853be2c456d13ab7d2a0efd8daad92d3",
+        "validNonLossCellCount": 24841483917
+      },
+      "lineage": {
+        "aliasRecordCount": 454490,
+        "byteLength": 2118536491,
+        "componentRecordCount": 8780335,
+        "fileName": "detected-forest-loss-2001-2002.components.jsonl",
+        "recordCount": 26228196,
+        "runRecordCount": 16993369,
+        "sha256": "314b38362839f9312a5295fd3a502071ae295f825d806d6aa55fcc1cd13bb64a"
+      },
+      "pair": [
+        2001,
+        2002
+      ],
+      "sourceLoss": {
+        "byteLength": 113072466,
+        "fileName": "detected-forest-loss-2001-2002.tif",
+        "sha256": "be08b34b3f23580589d7bddb71cfa48e6f082cae802ad595f68077bf91c7c975"
+      }
+    },
+    {
+      "inventory": {
+        "connectedComponentCount": 8644929,
+        "lossCellCount": 33930007,
+        "maxActiveComponents": 632,
+        "maxRunsInOneRow": 656,
+        "nodataCellCount": 0,
+        "orderedLossRunSha256": "da209f12ce96416a8f778cd874adc4deec892ff3e37fe8a189a8b5c13a059bb3",
+        "validNonLossCellCount": 24855816233
+      },
+      "lineage": {
+        "aliasRecordCount": 304718,
+        "byteLength": 1920251041,
+        "componentRecordCount": 8644929,
+        "fileName": "detected-forest-loss-2002-2003.components.jsonl",
+        "recordCount": 23680484,
+        "runRecordCount": 14730835,
+        "sha256": "6e5322de56b7bf9246c429b20cf7e58ca8ef24357ea9910ec4f6800b0faf9da9"
+      },
+      "pair": [
+        2002,
+        2003
+      ],
+      "sourceLoss": {
+        "byteLength": 110934819,
+        "fileName": "detected-forest-loss-2002-2003.tif",
+        "sha256": "65b28ddba0d3efb1da7c7e842050e53a4c93f5fa5c22ee3192c4ddc519441478"
+      }
+    },
+    {
+      "inventory": {
+        "connectedComponentCount": 8020744,
+        "lossCellCount": 39145985,
+        "maxActiveComponents": 482,
+        "maxRunsInOneRow": 523,
+        "nodataCellCount": 0,
+        "orderedLossRunSha256": "0f086d23382c582b693e592e6da9e75adc336a9bf3467211372364227b0cb4a7",
+        "validNonLossCellCount": 24850600255
+      },
+      "lineage": {
+        "aliasRecordCount": 347013,
+        "byteLength": 1821480315,
+        "componentRecordCount": 8020744,
+        "fileName": "detected-forest-loss-2003-2004.components.jsonl",
+        "recordCount": 22518609,
+        "runRecordCount": 14150850,
+        "sha256": "71d7056addefad9ae85b5d4f333ed842e510041e087cea4c23e2acec34907991"
+      },
+      "pair": [
+        2003,
+        2004
+      ],
+      "sourceLoss": {
+        "byteLength": 110311570,
+        "fileName": "detected-forest-loss-2003-2004.tif",
+        "sha256": "61a705e5b18e5d41408da4000586152b0efc10b5882f6f4d6b346f06fe5ed5ca"
+      }
+    },
+    {
+      "inventory": {
+        "connectedComponentCount": 8695341,
+        "lossCellCount": 41572201,
+        "maxActiveComponents": 544,
+        "maxRunsInOneRow": 605,
+        "nodataCellCount": 0,
+        "orderedLossRunSha256": "b40927e095ef850ad5a9644d695819d7e22c92f1f5054ebdc1f7a9559b77ac82",
+        "validNonLossCellCount": 24848174039
+      },
+      "lineage": {
+        "aliasRecordCount": 366426,
+        "byteLength": 1974238504,
+        "componentRecordCount": 8695341,
+        "fileName": "detected-forest-loss-2004-2005.components.jsonl",
+        "recordCount": 24398318,
+        "runRecordCount": 15336549,
+        "sha256": "5464e06fb397bc80c6e61f0ca13d5171d9fe232322a353f74a92a476784b4ff6"
+      },
+      "pair": [
+        2004,
+        2005
+      ],
+      "sourceLoss": {
+        "byteLength": 111898324,
+        "fileName": "detected-forest-loss-2004-2005.tif",
+        "sha256": "0bfa493bb5c9afb671285a99492a1bf9546aaaa08913160905fe1925aa28741a"
+      }
+    },
+    {
+      "inventory": {
+        "connectedComponentCount": 9010790,
+        "lossCellCount": 40182788,
+        "maxActiveComponents": 549,
+        "maxRunsInOneRow": 581,
+        "nodataCellCount": 0,
+        "orderedLossRunSha256": "b351758c80ce4a10f6895dc4cb009fb27d3ed11013fde2514b106730271df705",
+        "validNonLossCellCount": 24849563452
+      },
+      "lineage": {
+        "aliasRecordCount": 317266,
+        "byteLength": 1984391551,
+        "componentRecordCount": 9010790,
+        "fileName": "detected-forest-loss-2005-2006.components.jsonl",
+        "recordCount": 24496784,
+        "runRecordCount": 15168726,
+        "sha256": "7048a78eb20e5e3d65a3d48265e63101b1f33a998529799d8d5c6a5b077f1100"
+      },
+      "pair": [
+        2005,
+        2006
+      ],
+      "sourceLoss": {
+        "byteLength": 111679661,
+        "fileName": "detected-forest-loss-2005-2006.tif",
+        "sha256": "4a8a565645d0cdb45ba54fbe7118ff6077056e235dc4e2dff7b266163c8e3ce9"
+      }
+    },
+    {
+      "inventory": {
+        "connectedComponentCount": 8094418,
+        "lossCellCount": 31357752,
+        "maxActiveComponents": 461,
+        "maxRunsInOneRow": 528,
+        "nodataCellCount": 0,
+        "orderedLossRunSha256": "92f6b00a07e84db1c7a4575535eb55a09b893df016b1b3b4e2e79a31a30368e5",
+        "validNonLossCellCount": 24858388488
+      },
+      "lineage": {
+        "aliasRecordCount": 252755,
+        "byteLength": 1733831345,
+        "componentRecordCount": 8094418,
+        "fileName": "detected-forest-loss-2006-2007.components.jsonl",
+        "recordCount": 21369736,
+        "runRecordCount": 13022561,
+        "sha256": "3a93546e49473cae1d5513b971cd39195db791c1606f7eac5ae47fc43d010087"
+      },
+      "pair": [
+        2006,
+        2007
+      ],
+      "sourceLoss": {
+        "byteLength": 108863046,
+        "fileName": "detected-forest-loss-2006-2007.tif",
+        "sha256": "daeb1d41e5c663d4c7e7eb21e096fd4c4e1089ce31fc0e2e108fa4da4b70a125"
+      }
+    },
+    {
+      "inventory": {
+        "connectedComponentCount": 8463156,
+        "lossCellCount": 31200626,
+        "maxActiveComponents": 512,
+        "maxRunsInOneRow": 553,
+        "nodataCellCount": 0,
+        "orderedLossRunSha256": "40e41f41ae20e84c0f57a1970f0e6f977b33242c5e243effa0ce34cb89eab4da",
+        "validNonLossCellCount": 24858545614
+      },
+      "lineage": {
+        "aliasRecordCount": 236123,
+        "byteLength": 1781983463,
+        "componentRecordCount": 8463156,
+        "fileName": "detected-forest-loss-2007-2008.components.jsonl",
+        "recordCount": 21955791,
+        "runRecordCount": 13256510,
+        "sha256": "a7bc2d8987c9a241556bdf7aae7d6d9ea2854d5eb75383a2b4738d2e90c5b330"
+      },
+      "pair": [
+        2007,
+        2008
+      ],
+      "sourceLoss": {
+        "byteLength": 108733192,
+        "fileName": "detected-forest-loss-2007-2008.tif",
+        "sha256": "ee1d9ecca3274c6d50b2c11eeba4fdf72dbf7427ce9a84b41f81edaaa632ac61"
+      }
+    },
+    {
+      "inventory": {
+        "connectedComponentCount": 8951504,
+        "lossCellCount": 27125705,
+        "maxActiveComponents": 556,
+        "maxRunsInOneRow": 574,
+        "nodataCellCount": 0,
+        "orderedLossRunSha256": "ff6b0b4d3da4701c1c0961ef4499d95c005304fe7f6f502fe4d25f9eb04b31dc",
+        "validNonLossCellCount": 24862620535
+      },
+      "lineage": {
+        "aliasRecordCount": 207223,
+        "byteLength": 1834225491,
+        "componentRecordCount": 8951504,
+        "fileName": "detected-forest-loss-2008-2009.components.jsonl",
+        "recordCount": 22563367,
+        "runRecordCount": 13404638,
+        "sha256": "664287aafc58ff828bf7dd2c92b9570467907e2d5e3da4e3a54c9b136c4b1488"
+      },
+      "pair": [
+        2008,
+        2009
+      ],
+      "sourceLoss": {
+        "byteLength": 109048085,
+        "fileName": "detected-forest-loss-2008-2009.tif",
+        "sha256": "9887e37fca5c0dd554f708b9802fe1843cde01b080b86b0ea2b9b533a18d1daf"
+      }
+    },
+    {
+      "inventory": {
+        "connectedComponentCount": 9693355,
+        "lossCellCount": 40251948,
+        "maxActiveComponents": 535,
+        "maxRunsInOneRow": 628,
+        "nodataCellCount": 0,
+        "orderedLossRunSha256": "2c90f8a22f8ea17d774ae303c8ee48a8dc4d52e0095df111f5cdb7db0cc279f8",
+        "validNonLossCellCount": 24849494292
+      },
+      "lineage": {
+        "aliasRecordCount": 308215,
+        "byteLength": 2072760460,
+        "componentRecordCount": 9693355,
+        "fileName": "detected-forest-loss-2009-2010.components.jsonl",
+        "recordCount": 25554220,
+        "runRecordCount": 15552648,
+        "sha256": "57c5f51d1f3dd4c5a96624dfb744ef31db2f96f816a857e2b95dae8f1ef3538c"
+      },
+      "pair": [
+        2009,
+        2010
+      ],
+      "sourceLoss": {
+        "byteLength": 112399650,
+        "fileName": "detected-forest-loss-2009-2010.tif",
+        "sha256": "1868c1de06ade9b516ec361cd90e44974bed30637bd1ed5e08fe7a4ed92aed9d"
+      }
+    },
+    {
+      "inventory": {
+        "connectedComponentCount": 10721989,
+        "lossCellCount": 41867066,
+        "maxActiveComponents": 575,
+        "maxRunsInOneRow": 639,
+        "nodataCellCount": 0,
+        "orderedLossRunSha256": "49a5b1d9110d289189b9e1af83eb5fa196fdc305dba776080256b264084f2de7",
+        "validNonLossCellCount": 24847879174
+      },
+      "lineage": {
+        "aliasRecordCount": 310965,
+        "byteLength": 2245652645,
+        "componentRecordCount": 10721989,
+        "fileName": "detected-forest-loss-2010-2011.components.jsonl",
+        "recordCount": 27692164,
+        "runRecordCount": 16659208,
+        "sha256": "39fb336e80937a79ae315e79ba4fb1da8cb9fd5d06f967672bb4efbf5140a478"
+      },
+      "pair": [
+        2010,
+        2011
+      ],
+      "sourceLoss": {
+        "byteLength": 114511354,
+        "fileName": "detected-forest-loss-2010-2011.tif",
+        "sha256": "6dd1436342043113ff01745528830628604a926b8857cf61b21ee75c9ed35604"
+      }
+    },
+    {
+      "inventory": {
+        "connectedComponentCount": 12737425,
+        "lossCellCount": 39072848,
+        "maxActiveComponents": 693,
+        "maxRunsInOneRow": 738,
+        "nodataCellCount": 0,
+        "orderedLossRunSha256": "760fa3e48371cbaf2411d8a42f0f9d1084a9fc212a31276e0f1b2bba47ad701f",
+        "validNonLossCellCount": 24850673392
+      },
+      "lineage": {
+        "aliasRecordCount": 313655,
+        "byteLength": 2612202453,
+        "componentRecordCount": 12737425,
+        "fileName": "detected-forest-loss-2011-2012.components.jsonl",
+        "recordCount": 32210818,
+        "runRecordCount": 19159736,
+        "sha256": "9347f260152ee7bb7b76ff761f076a215902f4489e2acd319ceacba5f1b9f8dc"
+      },
+      "pair": [
+        2011,
+        2012
+      ],
+      "sourceLoss": {
+        "byteLength": 117990314,
+        "fileName": "detected-forest-loss-2011-2012.tif",
+        "sha256": "961c72faee2637432177b5f0c0a67644a0d02d8ab3e912a0ea0e895ea3d1ccdf"
+      }
+    },
+    {
+      "inventory": {
+        "connectedComponentCount": 13442827,
+        "lossCellCount": 51232679,
+        "maxActiveComponents": 868,
+        "maxRunsInOneRow": 994,
+        "nodataCellCount": 0,
+        "orderedLossRunSha256": "94d23a633434552e0035f333079662590b9c0f30c030cffdf510a57e4558a60b",
+        "validNonLossCellCount": 24838513561
+      },
+      "lineage": {
+        "aliasRecordCount": 435367,
+        "byteLength": 2898102052,
+        "componentRecordCount": 13442827,
+        "fileName": "detected-forest-loss-2012-2013.components.jsonl",
+        "recordCount": 35809740,
+        "runRecordCount": 21931544,
+        "sha256": "33f8cfd90e472743f5850d8a4c7981b34624ffa861478b1f8fd41e588ca10428"
+      },
+      "pair": [
+        2012,
+        2013
+      ],
+      "sourceLoss": {
+        "byteLength": 121317064,
+        "fileName": "detected-forest-loss-2012-2013.tif",
+        "sha256": "d8c07dfedf59e836a4c15a1538436055ad414a38a8619ec3db5127c7da8d26e6"
+      }
+    },
+    {
+      "inventory": {
+        "connectedComponentCount": 10234836,
+        "lossCellCount": 45916559,
+        "maxActiveComponents": 582,
+        "maxRunsInOneRow": 669,
+        "nodataCellCount": 0,
+        "orderedLossRunSha256": "ad4af62793f1f1acad57dbda774235c76aab675e7664839144ba286f6a245026",
+        "validNonLossCellCount": 24843829681
+      },
+      "lineage": {
+        "aliasRecordCount": 423406,
+        "byteLength": 2281973795,
+        "componentRecordCount": 10234836,
+        "fileName": "detected-forest-loss-2013-2014.components.jsonl",
+        "recordCount": 28234013,
+        "runRecordCount": 17575769,
+        "sha256": "843f75079ad7975da8ddf8d6bd10cb17bb1c3d5142f562e6186a122e5058fa63"
+      },
+      "pair": [
+        2013,
+        2014
+      ],
+      "sourceLoss": {
+        "byteLength": 115180812,
+        "fileName": "detected-forest-loss-2013-2014.tif",
+        "sha256": "5961872a46d3a141ede19dfc8a30ffdb3334679008d874c73750df23781011c5"
+      }
+    },
+    {
+      "inventory": {
+        "connectedComponentCount": 9620739,
+        "lossCellCount": 54159940,
+        "maxActiveComponents": 569,
+        "maxRunsInOneRow": 663,
+        "nodataCellCount": 0,
+        "orderedLossRunSha256": "465fe3f576db265642382948fda428bfe2a5fd80cf4394bfa2eeffdc1e504d97",
+        "validNonLossCellCount": 24835586300
+      },
+      "lineage": {
+        "aliasRecordCount": 478928,
+        "byteLength": 2245756183,
+        "componentRecordCount": 9620739,
+        "fileName": "detected-forest-loss-2014-2015.components.jsonl",
+        "recordCount": 27853013,
+        "runRecordCount": 17753344,
+        "sha256": "b493be69ea90a07e98a869a5d6b318983d04b10e6e8dbdecbf8f1a3f195f5491"
+      },
+      "pair": [
+        2014,
+        2015
+      ],
+      "sourceLoss": {
+        "byteLength": 115476035,
+        "fileName": "detected-forest-loss-2014-2015.tif",
+        "sha256": "389fed97a4558bec708e1d751828b29a34455f2112b6d2cb02c500c4146529c4"
+      }
+    },
+    {
+      "inventory": {
+        "connectedComponentCount": 8733920,
+        "lossCellCount": 31652714,
+        "maxActiveComponents": 505,
+        "maxRunsInOneRow": 523,
+        "nodataCellCount": 0,
+        "orderedLossRunSha256": "b30135e5e501ebfffd2b9e8225557c9dda1d3daec5610955ccbb4a41ecb9ba8c",
+        "validNonLossCellCount": 24858093526
+      },
+      "lineage": {
+        "aliasRecordCount": 275929,
+        "byteLength": 1873613754,
+        "componentRecordCount": 8733920,
+        "fileName": "detected-forest-loss-2015-2016.components.jsonl",
+        "recordCount": 23101086,
+        "runRecordCount": 14091235,
+        "sha256": "9c2742835ad58d7e1e770bd90a9c98b5c16d63c1f1440e2d2e4b410e32d659b8"
+      },
+      "pair": [
+        2015,
+        2016
+      ],
+      "sourceLoss": {
+        "byteLength": 110540646,
+        "fileName": "detected-forest-loss-2015-2016.tif",
+        "sha256": "c19f27c01c9ad06f6ff4e5acdce655c5ca8d4a168e6fd07477e96e2c49480029"
+      }
+    },
+    {
+      "inventory": {
+        "connectedComponentCount": 10291674,
+        "lossCellCount": 42038571,
+        "maxActiveComponents": 733,
+        "maxRunsInOneRow": 780,
+        "nodataCellCount": 0,
+        "orderedLossRunSha256": "b023ae0249c0b24f132c3bc2ca451f3ff2c6c5205540bc0fb1b00f61ae2c6bc3",
+        "validNonLossCellCount": 24847707669
+      },
+      "lineage": {
+        "aliasRecordCount": 429660,
+        "byteLength": 2353055655,
+        "componentRecordCount": 10291674,
+        "fileName": "detected-forest-loss-2016-2017.components.jsonl",
+        "recordCount": 29107355,
+        "runRecordCount": 18386019,
+        "sha256": "c4bd8d929b2630126bc7886ce045de0c104e590c43bcb2c89552bbcdfdf2b561"
+      },
+      "pair": [
+        2016,
+        2017
+      ],
+      "sourceLoss": {
+        "byteLength": 115107615,
+        "fileName": "detected-forest-loss-2016-2017.tif",
+        "sha256": "ab939b682241dcf24500cdcb02822bcf2aabbd95d8a663a2ae56ec15275016bd"
+      }
+    },
+    {
+      "inventory": {
+        "connectedComponentCount": 8192661,
+        "lossCellCount": 39612558,
+        "maxActiveComponents": 554,
+        "maxRunsInOneRow": 610,
+        "nodataCellCount": 0,
+        "orderedLossRunSha256": "996ba6058f036e4ffcf33282b3b3eb549657e2b35208fd2723c8e47bc166c18e",
+        "validNonLossCellCount": 24850133682
+      },
+      "lineage": {
+        "aliasRecordCount": 340504,
+        "byteLength": 1869302365,
+        "componentRecordCount": 8192661,
+        "fileName": "detected-forest-loss-2017-2018.components.jsonl",
+        "recordCount": 23114654,
+        "runRecordCount": 14581487,
+        "sha256": "fb2ce82814f7747be6629b2353cd85f6075ad7ba3f96cb79afd57729c685c057"
+      },
+      "pair": [
+        2017,
+        2018
+      ],
+      "sourceLoss": {
+        "byteLength": 110366276,
+        "fileName": "detected-forest-loss-2017-2018.tif",
+        "sha256": "eec209d7778a9c950c35119e0254fd2debf5b79105311fd8a69825e05605566c"
+      }
+    },
+    {
+      "inventory": {
+        "connectedComponentCount": 6782267,
+        "lossCellCount": 33612333,
+        "maxActiveComponents": 413,
+        "maxRunsInOneRow": 468,
+        "nodataCellCount": 0,
+        "orderedLossRunSha256": "9afdb29d7d343ecf413f8d63d3ea774f9c12a6c5bd283cbce84b8dacd91ac2b5",
+        "validNonLossCellCount": 24856133907
+      },
+      "lineage": {
+        "aliasRecordCount": 314288,
+        "byteLength": 1555719614,
+        "componentRecordCount": 6782267,
+        "fileName": "detected-forest-loss-2018-2019.components.jsonl",
+        "recordCount": 19240613,
+        "runRecordCount": 12144056,
+        "sha256": "913fb46f2bb47ab2221ad4906bc9dbfc56de833e791e3bcba9a935251372468a"
+      },
+      "pair": [
+        2018,
+        2019
+      ],
+      "sourceLoss": {
+        "byteLength": 106575500,
+        "fileName": "detected-forest-loss-2018-2019.tif",
+        "sha256": "82aac8bc14e0b63dcfbe632c66e6272bcd6edff2b0a9630bcc95bdeb2bd83dcc"
+      }
+    },
+    {
+      "inventory": {
+        "connectedComponentCount": 6299100,
+        "lossCellCount": 21695439,
+        "maxActiveComponents": 466,
+        "maxRunsInOneRow": 484,
+        "nodataCellCount": 0,
+        "orderedLossRunSha256": "9f8cefe528c890d687bc79efe91e30dcc7a02ef85c879b6944f9d4f8221bbb49",
+        "validNonLossCellCount": 24868050801
+      },
+      "lineage": {
+        "aliasRecordCount": 188788,
+        "byteLength": 1350907329,
+        "componentRecordCount": 6299100,
+        "fileName": "detected-forest-loss-2019-2020.components.jsonl",
+        "recordCount": 16643192,
+        "runRecordCount": 10155302,
+        "sha256": "50fc63ab66abb448f1b665250d6429ae2b2bb02ac7fc24a8da2be05598ae5b5f"
+      },
+      "pair": [
+        2019,
+        2020
+      ],
+      "sourceLoss": {
+        "byteLength": 103474408,
+        "fileName": "detected-forest-loss-2019-2020.tif",
+        "sha256": "aa7e08779dbc6ccc2766b0c259f3c29ca9821423264acba36d45cbfaf6d60085"
+      }
+    },
+    {
+      "inventory": {
+        "connectedComponentCount": 6924761,
+        "lossCellCount": 33581706,
+        "maxActiveComponents": 555,
+        "maxRunsInOneRow": 590,
+        "nodataCellCount": 0,
+        "orderedLossRunSha256": "eb8699f9d03236b4cd1d740a3e4892a6bc19a70269301bb1702eb53b14913b44",
+        "validNonLossCellCount": 24856164534
+      },
+      "lineage": {
+        "aliasRecordCount": 303989,
+        "byteLength": 1612473472,
+        "componentRecordCount": 6924761,
+        "fileName": "detected-forest-loss-2020-2021.components.jsonl",
+        "recordCount": 19967410,
+        "runRecordCount": 12738658,
+        "sha256": "5dfc6d7bf6d36c896bcde407f0dcfe8d09c53a2b3a628693acfdbe57d9bb16cc"
+      },
+      "pair": [
+        2020,
+        2021
+      ],
+      "sourceLoss": {
+        "byteLength": 106647577,
+        "fileName": "detected-forest-loss-2020-2021.tif",
+        "sha256": "90abdbf89492c976b4ae67f57d36730a1ac385f51ceeb5cb957d38a403287984"
+      }
+    },
+    {
+      "inventory": {
+        "connectedComponentCount": 5687674,
+        "lossCellCount": 30482740,
+        "maxActiveComponents": 397,
+        "maxRunsInOneRow": 444,
+        "nodataCellCount": 0,
+        "orderedLossRunSha256": "5b166c2f3467fc75a81a1db8f02fa446aec988471aa6a1e691f99f1b01221407",
+        "validNonLossCellCount": 24859263500
+      },
+      "lineage": {
+        "aliasRecordCount": 264887,
+        "byteLength": 1325628109,
+        "componentRecordCount": 5687674,
+        "fileName": "detected-forest-loss-2021-2022.components.jsonl",
+        "recordCount": 16409637,
+        "runRecordCount": 10457074,
+        "sha256": "1bd236971edb5befdc557744504aef04b329b23b48986deb06ff244ad41c6295"
+      },
+      "pair": [
+        2021,
+        2022
+      ],
+      "sourceLoss": {
+        "byteLength": 103762457,
+        "fileName": "detected-forest-loss-2021-2022.tif",
+        "sha256": "5b6661bcd7ec6f5e3c97431a2532d4fe325dc2fdfd70bd53e6a7ea5a8cc3c84d"
+      }
+    }
+  ],
+  "productionEligible": false,
+  "readbackAtUtc": "2026-08-22T21:37:41Z",
+  "readbackElapsedSeconds": "3614.138533",
+  "released": false,
+  "retainedOutputBytes": 68322924822,
+  "schemaVersion": "witness-tree/phase2-real-loss-component-inventory-readback/1",
+  "scratchBytes": 0,
+  "sourceBatchId": "phase2-real-national-1984-2022-v1",
+  "status": "exact-readback-passed"
+}

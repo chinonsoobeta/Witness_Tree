@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "witness-tree/phase2-historical-evidence-status/1",
+  "status": "historical-versioned-nonproduction",
+  "purpose": "Keep the audited 1984–2022 historical execution evidence available for inspection without representing it as a Version 2.1 output or an admission decision.",
+  "historicalRun": {
+    "batchId": "phase2-real-national-1984-2022-v1",
+    "methodVersion": "phase2-owner-approved-versioned-nonproduction-v1",
+    "executionEvidence": "phase2-real-national-execution-evidence.json",
+    "componentInventoryReadback": "phase2-real-loss-component-inventory-readback.json",
+    "componentInventorySummary": "phase2-real-loss-component-inventory-summary.json",
+    "sourceMap": "phase2-real-loss-source-map.json",
+    "outputDirectory": "/Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data/derived/phase2-real-national-1984-2022-v1",
+    "componentInventoryDirectory": "/Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data/derived/phase2-real-loss-component-inventory-1984-2022-v1"
+  },
+  "v21Separation": {
+    "selectedSnapshotCount": 11,
+    "wholeIntervalCount": 10,
+    "v21OutputRastersExist": false,
+    "v21RasterExecutionPerformed": false,
+    "historicalEvidenceMaySatisfyV21OutputGate": false,
+    "historicalEvidenceMaySatisfyAdmissionGate": false,
+    "historicalEvidenceMaySatisfyScientificValidationGate": false,
+    "historicalEvidenceMaySatisfyReleaseGate": false
+  },
+  "claims": {
+    "released": false,
+    "productionEligible": false,
+    "productionAdmitted": false,
+    "externalAction": false
+  }
+}

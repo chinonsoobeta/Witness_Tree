@@ -1,0 +1,10 @@
+{
+  "status": "local-staging-profile",
+  "sourceId": "bc-provincial-electoral-districts-2023",
+  "retrievedAt": "2026-08-14T19:00:00Z",
+  "source": {"catalogueUrl":"https://catalogue.data.gov.bc.ca/dataset/1cba4b16-263f-4d42-8d84-f5fecaa03d1a","licenceUrl":"https://www.elections.bc.ca/docs/EBC-Open-Data-Licence.pdf","attribution":"Elections BC"},
+  "artifact": {"localPath":"../Witness_Tree-data/staging/bc-provincial-electoral-2023/bc-provincial-electoral-districts-2023.geojson","bytes":21828718,"sha256":"d2403eeb488be4ef761f7dcbc72c25f8af3a046fce9980536307ba145993f193"},
+  "profile": {"featureCount":93,"crs":"EPSG:3005","geometryTypes":["Polygon"],"missingGeometry":0,"emptyGeometry":0,"invalidGeometry":0,"extent":{"xmin":273314.8046,"xmax":1870651.7616,"ymin":359771.8521,"ymax":1735770.8897},"fields":["BOUNDARY_SET_ID","ED_ABBREVIATION","ED_NAME","ELECTORAL_DISTRICT_ID","FEATURE_AREA_SQM","FEATURE_LENGTH_M","GAZETTE_DATE","OBJECTID","SE_ANNO_CAD_DATA"]},
+  "immutable": false,"transformed": false,"ingested": false,"productionEligible": false,
+  "notice":"Raw local staging only; not an immutable archive, production boundary edition, or ingestion approval."
+}

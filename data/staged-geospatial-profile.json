@@ -1,12 +1,54 @@
 {
   "status": "local-staging-profile",
   "notice": "Read-only profiling evidence. No source geometry was changed, transformed, ingested, or made production eligible.",
-  "profiledAt": "2026-08-12T05:36:34Z",
+  "profiledAt": "2026-08-14T20:34:00Z",
   "tools": {
     "pyogrio": "0.13.0",
     "gdal": "3.12.4"
   },
   "sources": [
+    {
+      "sourceId": "bc-wildfire",
+      "inputSha256": "46ee3a97ff83128630a030b5cfcc7f3c389fc94e3ca95d463595ab6f4fb57e83",
+      "decision": "owner-approved-derived-release-pending-immutable-readbacks",
+      "requiredAction": "Integrate exact immutable readbacks for the unchanged raw snapshot and separately checksummed derived release. V10755 remains permanently excluded from geometry-dependent use and production stays blocked until the archive gate passes.",
+      "profiledWith": {
+        "gdal": "3.13.2"
+      },
+      "productionEligible": false,
+      "geometryPolicy": {
+        "record": "data/bc-wildfire-geometry-policy-2026-08-14.json",
+        "rawFeatureCount": 217,
+        "derivedReleaseFeatureCount": 216,
+        "quarantinedFeatureIds": ["V10755"],
+        "immutablePromotionReady": false,
+        "ownerAdmissionReady": false,
+        "productionEligible": false
+      },
+      "layers": [
+        {
+          "name": "bc-wildfire-perimeters-2026-08-14",
+          "geometryType": "Polygon/MultiPolygon",
+          "featureCount": 217,
+          "crs": "EPSG:4326",
+          "fieldCount": 16,
+          "requiredFields": [
+            "FIRE_NUMBER",
+            "FIRE_YEAR",
+            "FIRE_SIZE_HECTARES",
+            "TRACK_DATE",
+            "FIRE_STATUS",
+            "GlobalID"
+          ],
+          "missingGeometryCount": 0,
+          "emptyGeometryCount": 0,
+          "invalidGeometryCount": 2,
+          "invalidGeometryReasons": {
+            "Nested shells": 2
+          }
+        }
+      ]
+    },
     {
       "sourceId": "qc-historic-wildfire-detailed",
       "inputSha256": "cfed6c16eac901e6887a2518f566dff7608d4c4c371bd9c1ce6b2eff03fa0815",
@@ -19,7 +61,14 @@
           "featureCount": 94572,
           "crs": "EPSG:32198",
           "fieldCount": 11,
-          "requiredFields": ["geoc_fmj", "origine", "an_origine", "perturb", "an_perturb", "superficie"],
+          "requiredFields": [
+            "geoc_fmj",
+            "origine",
+            "an_origine",
+            "perturb",
+            "an_perturb",
+            "superficie"
+          ],
           "missingGeometryCount": 0,
           "emptyGeometryCount": 0,
           "invalidGeometryCount": 0,
@@ -31,11 +80,40 @@
           "featureCount": 94572,
           "crs": "EPSG:32198",
           "fieldCount": 10,
-          "requiredFields": ["geoc_fmj", "no_prg", "ver_prg", "met_prod", "source_maj", "statut_maj"],
+          "requiredFields": [
+            "geoc_fmj",
+            "no_prg",
+            "ver_prg",
+            "met_prod",
+            "source_maj",
+            "statut_maj"
+          ],
           "missingGeometryCount": 0,
           "emptyGeometryCount": 0,
           "invalidGeometryCount": 0,
           "invalidGeometryReasons": {}
+        }
+      ]
+    },
+    {
+      "sourceId": "ab-primary-land-vegetation",
+      "inputSha256": "017a0a835c680ca1b6c1eb790322a28e1b4c0c64e36924da46d8bb99cb1571d3",
+      "profiledWith": {"gdal": "3.13.2"},
+      "decision": "blocked-pending-geometry-policy",
+      "requiredAction": "Define and test a source-specific deterministic repair-or-quarantine policy before transformation or ingestion; do not repair the publisher geometry in this staged snapshot.",
+      "productionEligible": false,
+      "layers": [
+        {
+          "name": "PrimaryLandAndVegetationInventory",
+          "geometryType": "Polygon",
+          "featureCount": 179087,
+          "crs": "EPSG:3400",
+          "attributeFieldCount": 60,
+          "requiredFields": ["POLYGON_ID", "NSR", "LAND_CLS1", "ECO_PHASE1", "IMAGE_YR", "Shape_Area"],
+          "missingGeometryCount": 0,
+          "emptyGeometryCount": 0,
+          "invalidGeometryCount": 12,
+          "invalidGeometryReasons": {"Ring Self-intersection": 12}
         }
       ]
     },
@@ -52,11 +130,20 @@
           "featureCount": 788810,
           "crs": "EPSG:3400",
           "fieldCount": 67,
-          "requiredFields": ["POLY_NUM", "DENSITY", "HEIGHT", "ORIGIN", "PHOTO_YR", "Shape_Area"],
+          "requiredFields": [
+            "POLY_NUM",
+            "DENSITY",
+            "HEIGHT",
+            "ORIGIN",
+            "PHOTO_YR",
+            "Shape_Area"
+          ],
           "missingGeometryCount": 0,
           "emptyGeometryCount": 0,
           "invalidGeometryCount": 587,
-          "invalidGeometryReasons": {"Ring Self-intersection": 587}
+          "invalidGeometryReasons": {
+            "Ring Self-intersection": 587
+          }
         },
         {
           "name": "AVI_PostInventoryHarvest",
@@ -64,11 +151,16 @@
           "featureCount": 3631,
           "crs": "EPSG:3400",
           "fieldCount": 3,
-          "requiredFields": ["HARVEST_YEAR", "Shape_Area"],
+          "requiredFields": [
+            "HARVEST_YEAR",
+            "Shape_Area"
+          ],
           "missingGeometryCount": 0,
           "emptyGeometryCount": 0,
           "invalidGeometryCount": 19,
-          "invalidGeometryReasons": {"Ring Self-intersection": 19}
+          "invalidGeometryReasons": {
+            "Ring Self-intersection": 19
+          }
         },
         {
           "name": "AVI_CrownIndex",
@@ -76,11 +168,16 @@
           "featureCount": 1,
           "crs": "EPSG:3400",
           "fieldCount": 3,
-          "requiredFields": ["Name", "Shape_Area"],
+          "requiredFields": [
+            "Name",
+            "Shape_Area"
+          ],
           "missingGeometryCount": 0,
           "emptyGeometryCount": 0,
           "invalidGeometryCount": 1,
-          "invalidGeometryReasons": {"Ring Self-intersection": 1}
+          "invalidGeometryReasons": {
+            "Ring Self-intersection": 1
+          }
         },
         {
           "name": "AVI_PostInventoryHarvestIndex",
@@ -88,11 +185,78 @@
           "featureCount": 1,
           "crs": "EPSG:3400",
           "fieldCount": 2,
-          "requiredFields": ["Shape_Area"],
+          "requiredFields": [
+            "Shape_Area"
+          ],
           "missingGeometryCount": 0,
           "emptyGeometryCount": 0,
           "invalidGeometryCount": 1,
-          "invalidGeometryReasons": {"Ring Self-intersection": 1}
+          "invalidGeometryReasons": {
+            "Ring Self-intersection": 1
+          }
+        }
+      ]
+    },
+    {
+      "sourceId": "ab-wildfire",
+      "inputSha256": "f0e86ea34a7624c365349b3a8fbb77967bb45ab73c507cf441efb8f6a8736ee0",
+      "profiledWith": {
+        "gdal": "3.13.2"
+      },
+      "decision": "owner-approved-scope-pending-immutable-readback",
+      "productionEligible": false,
+      "layers": [
+        {
+          "name": "alberta-wildfire-locations_2026-08-14",
+          "geometryType": "Point",
+          "featureCount": 751,
+          "crs": "EPSG:4326",
+          "fieldCount": 17,
+          "requiredFields": [
+            "FIRE_NUMBER",
+            "FIRE_STATUS",
+            "FIRE_YEAR",
+            "LATITUDE",
+            "LONGITUDE",
+            "FIRE_STATUS_DATE"
+          ],
+          "missingGeometryCount": 0,
+          "emptyGeometryCount": 0,
+          "invalidGeometryCount": 0,
+          "invalidGeometryReasons": {}
+        }
+      ]
+    },
+    {
+      "sourceId": "on-fire-disturbance",
+      "inputSha256": "99881f19a32068b5d66b244955f7b088e873ffe76eafebf1740f03e16f042f11",
+      "profiledWith": {
+        "gdal": "3.13.2",
+        "geos": "3.14.1"
+      },
+      "decision": "owner-approved-derived-release-pending-immutable-readbacks",
+      "requiredAction": "Integrate exact immutable readbacks for the unchanged raw snapshot and the checksum-bound 188-feature derived release; owner scope is approved but production remains blocked.",
+      "productionEligible": false,
+      "layers": [
+        {
+          "name": "ontario-in-year-fire-perimeters_2026-08-14",
+          "geometryType": "Polygon/MultiPolygon",
+          "featureCount": 188,
+          "crs": "EPSG:4326",
+          "fieldCount": 7,
+          "requiredFields": [
+            "FIRENUMB",
+            "CUR_SIZE",
+            "FIRETYPE",
+            "STATUS",
+            "DATE_MAPPED"
+          ],
+          "missingGeometryCount": 0,
+          "emptyGeometryCount": 0,
+          "invalidGeometryCount": 9,
+          "invalidGeometryReasons": {
+            "Ring Self-intersection": 9
+          }
         }
       ]
     }

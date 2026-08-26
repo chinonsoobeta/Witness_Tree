@@ -1,0 +1,16 @@
+{
+  "status": "one-repair-one-quarantine-derived-release",
+  "sourceId": "bc-wildfire",
+  "rawSha256": "46ee3a97ff83128630a030b5cfcc7f3c389fc94e3ca95d463595ab6f4fb57e83",
+  "notice": "The raw GeoJSON is unchanged. No repair, derived release, immutable promotion, owner admission, transformation, ingestion, or production claim is authorized.",
+  "policy": {"methodTested": "GDAL SQLite ST_MakeValid", "areaTolerance": 0.0001, "decision": "quarantine because every candidate repair must be valid, polygonal, attribute-preserving, and within tolerance"},
+  "features": [
+    {"fireNumber":"G70362","sourceGeometryType":"MULTIPOLYGON","reason":"Nested shells[-120.19459847283 55.0282474714306]","sourceArea":0.000224110291387499,"makeValidGeometryType":"MULTIPOLYGON","makeValidArea":0.000224109846968594,"relativeAreaDelta":0.0000019830365765251236,"decision":"repair-in-derived-release"},
+    {"fireNumber":"V10755","sourceGeometryType":"MULTIPOLYGON","reason":"Nested shells[-121.140986894783 49.8596771011124]","sourceArea":0.0835699081055166,"makeValidGeometryType":"MULTIPOLYGON","makeValidArea":0.0809231651645561,"relativeAreaDelta":0.03167100456325357,"decision":"quarantine"}
+  ],
+  "derivedRelease": {"externalPath":"../Witness_Tree-data/derived/bc-wildfire-geometry-policy-v1/2026-08-14/bc-wildfire-216-feature-release.gpkg","sha256":"8ee36cc6bdfb5ef267340537e4cf822df7cc886873c7fcf65a1b2b12006d34ce","byteLength":2162688,"featureCount":216,"invalidGeometryCount":0,"emptyGeometryCount":0,"includedUnchanged":215,"repaired":"G70362","quarantined":"V10755"},
+  "coverageImpact": "One of 217 source features, V10755, remains excluded from geometry-dependent use. The 216-feature derived release copies 215 valid raw features unchanged and replaces only G70362 within tolerance.",
+  "immutablePromotionReady": false,
+  "ownerAdmissionReady": false,
+  "productionEligible": false
+}

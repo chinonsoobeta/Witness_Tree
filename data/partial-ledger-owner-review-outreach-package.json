@@ -1,0 +1,140 @@
+{
+  "schemaVersion": 1,
+  "status": "owner-review-only-not-sent",
+  "preparedAt": "2026-08-14",
+  "sourceAuditRef": "data/partial-ledger-evidence-audit.json",
+  "existingOutreachRef": "data/phase1-permission-outreach-package.json",
+  "scope": "Three drafts for the exact unresolved components in the two partial canonical rows. This package is for accountable-owner review only. It does not accept the NBAC agreement, submit a form or letter, send a message, obtain permission, acquire an artifact, or change source-ledger credit or state.",
+  "claims": {
+    "ownerApproved": false,
+    "agreementAccepted": false,
+    "messageSent": false,
+    "permissionReceived": false,
+    "artifactAcquired": false,
+    "rawEvidenceCreditChanged": false
+  },
+  "deduplication": {
+    "method": "Compare each proposed request ID and normalized recipient-plus-subject pair with every message in the existing outreach package.",
+    "existingMessageCount": 8,
+    "duplicateCount": 0
+  },
+  "requests": [
+    {
+      "id": "nrcan-nbac-agreement-and-consent",
+      "canonicalRowId": "cwfis-historical",
+      "component": "National Burned Area Composite",
+      "status": "owner-review-only-not-sent",
+      "delivery": {
+        "channel": "email",
+        "recipient": "cwfissa-csscifv@nrcan-rncan.gc.ca",
+        "recipientLabel": "Canadian Wildland Fire Information System / Système canadien d’information sur les feux de végétation",
+        "recipientEvidenceUrl": "https://cwfis.cfs.nrcan.gc.ca/en/faq",
+        "subject": "NBAC 1972–2025: agreement scope and written consent for Witness Tree / Étendue de l’accord et consentement écrit",
+        "language": "English / Français"
+      },
+      "officialEvidence": {
+        "artifactUrl": "https://cwfis.cfs.nrcan.gc.ca/downloads/nbac/NBAC_1972to2025_20260513_shp.zip",
+        "metadataUrl": "https://cwfis.cfs.nrcan.gc.ca/downloads/nbac/NBAC_1972to2025_20260513_shp_metadata.pdf",
+        "agreementUrl": "https://cwfis.cfs.nrcan.gc.ca/datamart/datarequest/nbac",
+        "edition": "1972–2025, release 20260513"
+      },
+      "requestTerms": [
+        "confirmation that the exact dated ZIP and metadata are governed by the linked agreement",
+        "permission for a private immutable archive hosted in Canada",
+        "permission for internal validation, transformation and analysis",
+        "clear conditions for derived or summarized public-service outputs",
+        "clear statement whether any geometry or raw-data redistribution is permitted",
+        "required attribution and citation",
+        "version, correction and replacement route"
+      ],
+      "ownerReview": [
+        "Review the exact NBAC End-User Agreement independently; this draft does not accept it.",
+        "Confirm the legal name and accountable person that would become the licensee before sending.",
+        "Confirm that the described Canadian private archive, internal processing and public outputs match the intended service.",
+        "Send only after approving both the agreement decision and this exact bilingual request."
+      ],
+      "draft": {
+        "english": "Hello CWFIS team,\n\nWitness Tree is reviewing the National Burned Area Composite (NBAC) 1972–2025 release dated 20260513 for a Canadian public-interest mapping service. We have not accepted the NBAC End-User Agreement or downloaded the artifact. Before an accountable owner decides whether to accept it, please confirm that the linked agreement governs the exact ZIP and metadata URLs below and advise whether Canada gives written consent for: (1) retaining the exact source and metadata in a private, access-controlled, immutable archive hosted in Canada; (2) internal validation, reprojection, transformation, analysis and quality control; and (3) publishing derived or summarized map and analytical outputs for a public web service. Please state whether raw data or geometry may ever be redistributed, and provide the required attribution, citation, version/correction route and any conditions.\n\nArtifact: https://cwfis.cfs.nrcan.gc.ca/downloads/nbac/NBAC_1972to2025_20260513_shp.zip\nMetadata: https://cwfis.cfs.nrcan.gc.ca/downloads/nbac/NBAC_1972to2025_20260513_shp_metadata.pdf\nAgreement: https://cwfis.cfs.nrcan.gc.ca/datamart/datarequest/nbac\n\nThank you,",
+        "french": "Bonjour,\n\nWitness Tree examine la version 1972–2025 de la Base nationale de données sur les feux (NBAC), datée du 20260513, pour un service canadien de cartographie d’intérêt public. Nous n’avons pas accepté l’accord d’utilisation de la NBAC ni téléchargé l’artefact. Avant que la personne responsable décide de l’accepter ou non, veuillez confirmer que l’accord lié régit exactement le fichier ZIP et les métadonnées ci-dessous et préciser si le Canada donne son consentement écrit pour : (1) conserver la source exacte et ses métadonnées dans une archive immuable, privée et à accès contrôlé, hébergée au Canada; (2) effectuer à l’interne la validation, la reprojection, la transformation, l’analyse et le contrôle de la qualité; et (3) publier des cartes et analyses dérivées ou agrégées dans un service Web public. Veuillez indiquer si les données brutes ou la géométrie peuvent être redistribuées, ainsi que les mentions, la citation, la voie de correction ou de remplacement et toute condition requises.\n\nArtefact : https://cwfis.cfs.nrcan.gc.ca/downloads/nbac/NBAC_1972to2025_20260513_shp.zip\nMétadonnées : https://cwfis.cfs.nrcan.gc.ca/downloads/nbac/NBAC_1972to2025_20260513_shp_metadata.pdf\nAccord : https://cwfis.cfs.nrcan.gc.ca/datamart/datarequest/nbac\n\nMerci,"
+      }
+    },
+    {
+      "id": "elections-alberta-boundary-permission",
+      "canonicalRowId": "provincial-electoral-boundaries",
+      "component": "Alberta current provincial electoral boundaries",
+      "status": "owner-review-only-not-sent",
+      "delivery": {
+        "channel": "postal-letter",
+        "recipient": "Elections Alberta, Attn: Deputy Chief Electoral Officer, Suite 100, 11510 Kingsway NW, Edmonton, AB T5G 2Y5, Canada",
+        "recipientLabel": "Deputy Chief Electoral Officer, Elections Alberta",
+        "recipientEvidenceUrl": "https://www.elections.ab.ca/terms-conditions/",
+        "subject": "Permission request — current Alberta electoral-boundary artifact and Witness Tree use",
+        "language": "English"
+      },
+      "officialEvidence": {
+        "artifactUrl": "https://www.elections.ab.ca/uploads/2019Boundaries_ED-Shapefiles.zip",
+        "termsUrl": "https://www.elections.ab.ca/terms-conditions/",
+        "contactUrl": "https://www.elections.ab.ca/contact-us/",
+        "edition": "2019, 87 electoral divisions"
+      },
+      "requestTerms": [
+        "confirmation that the exact ZIP is the current authoritative artifact",
+        "written permission for exact-source retention in a private immutable Canadian archive",
+        "written permission for validation, reprojection and transformation",
+        "written permission and conditions for public-service display and derived outputs",
+        "clear statement whether raw or transformed geometry may be redistributed",
+        "required attribution, non-endorsement and accuracy notices",
+        "current edition, replacement and correction route"
+      ],
+      "ownerReview": [
+        "Confirm the sender name and return address.",
+        "Confirm the intended public-service and archive description.",
+        "Sign and post only after approving this exact request; the official terms direct reproduction requests to this postal recipient."
+      ],
+      "draft": {
+        "english": "Deputy Chief Electoral Officer:\n\nWitness Tree requests written permission concerning Elections Alberta’s 2019 electoral-division Shapefile at https://www.elections.ab.ca/uploads/2019Boundaries_ED-Shapefiles.zip. Please confirm whether this exact ZIP remains the current authoritative provincial boundary artifact. If so, we request permission to retain the unchanged source in a private, access-controlled, immutable archive hosted in Canada; validate, reproject and transform it internally; and display the boundaries and derived outputs in a Canadian public-interest web mapping service. Please state whether raw or transformed geometry may be redistributed, and specify all attribution, non-endorsement, accuracy, commercial/non-commercial, edition, replacement and correction conditions. No acquisition or use beyond the published terms will occur unless the accountable owner approves and the required written permission is received.\n\nSincerely,"
+      }
+    },
+    {
+      "id": "elections-quebec-current-2017-artifact-and-authorization",
+      "canonicalRowId": "provincial-electoral-boundaries",
+      "component": "Québec current 2017 provincial electoral boundaries",
+      "status": "owner-review-only-not-sent",
+      "delivery": {
+        "channel": "secure-web-form",
+        "recipient": "Élections Québec / Commission de la représentation électorale — secure general-information form",
+        "recipientLabel": "Élections Québec / Commission de la représentation électorale",
+        "recipientEvidenceUrl": "https://www.electionsquebec.qc.ca/nous-joindre/obtenir-des-renseignements-generaux/",
+        "submissionUrl": "https://www.pes.electionsquebec.qc.ca/services/PES0209.nous.joindre/",
+        "subject": "Autorisation et artefact stable — circonscriptions provinciales actuelles de 2017 / Authorization and stable artifact",
+        "language": "Français / English"
+      },
+      "officialEvidence": {
+        "currentEditionUrl": "https://www.electionsquebec.qc.ca/cartes-electorales/carte-electorale-du-quebec/",
+        "historicalArtifactPageUrl": "https://www.electionsquebec.qc.ca/cartes-electorales/carte-electorale-du-quebec/atlas-historique-des-circonscriptions-electorales-du-quebec/",
+        "inaccessibleArtifactUrl": "https://donnees.electionsquebec.qc.ca/autres/provincial/circonscriptions_electorales_sans_eau_2017.json",
+        "termsUrl": "https://www.electionsquebec.qc.ca/notre-institution/conditions-dutilisation/",
+        "currentEdition": "2017, 125 electoral divisions"
+      },
+      "requestTerms": [
+        "an accessible stable official artifact for the current 2017 edition",
+        "exact version or publication date, expected bytes or checksum, format and CRS",
+        "written authorization for exact-source retention in a private immutable Canadian archive",
+        "written authorization and conditions for validation, reprojection, adaptation and transformation",
+        "written authorization and conditions for public-service display and derived outputs",
+        "clear statement whether raw or adapted geometry may be redistributed",
+        "required source, copyright, non-endorsement and edition notices",
+        "replacement and correction route"
+      ],
+      "ownerReview": [
+        "Confirm the sender identity and reply email required by the secure form.",
+        "Confirm that the request is limited to the currently effective 2017 edition and does not substitute the future 2026 edition.",
+        "Submit only after approving the exact bilingual text and the form’s declaration and consent."
+      ],
+      "draft": {
+        "french": "Bonjour,\n\nWitness Tree sollicite un artefact officiel stable et accessible des 125 circonscriptions provinciales de la carte électorale actuellement en vigueur (2017), ainsi qu’une autorisation écrite adaptée à un service canadien de cartographie d’intérêt public. L’URL GeoJSON que nous avons trouvée renvoie actuellement un refus d’accès : https://donnees.electionsquebec.qc.ca/autres/provincial/circonscriptions_electorales_sans_eau_2017.json. Pourriez-vous fournir une URL stable ou le fichier officiel, avec sa version ou date de publication, son format, son SCR, sa taille attendue et, si disponible, sa somme de contrôle?\n\nNous demandons aussi l’autorisation de conserver la source exacte dans une archive immuable, privée et à accès contrôlé, hébergée au Canada; de la valider, la reprojeter, l’adapter et la transformer à l’interne; et d’afficher les limites et des produits dérivés dans un service Web public. Veuillez préciser si la géométrie brute ou adaptée peut être redistribuée, et indiquer les mentions de source, de droit d’auteur, de non-approbation et d’édition, ainsi que la voie de correction ou de remplacement. Cette demande vise uniquement l’édition de 2017 actuellement en vigueur; elle ne traite pas la carte de 2026 comme déjà en vigueur. Aucune acquisition ni adaptation ne sera créditée avant la réception et l’examen de votre réponse écrite.\n\nMerci,",
+        "english": "Hello,\n\nWitness Tree requests an accessible, stable official artifact for the 125 provincial electoral divisions in the currently effective 2017 map, plus written authorization suitable for a Canadian public-interest mapping service. The GeoJSON URL we located currently denies access: https://donnees.electionsquebec.qc.ca/autres/provincial/circonscriptions_electorales_sans_eau_2017.json. Please provide a stable URL or official file and its version or publication date, format, CRS, expected bytes and checksum if available.\n\nWe also request authorization to retain the exact source in a private, access-controlled, immutable archive hosted in Canada; validate, reproject, adapt and transform it internally; and display the boundaries and derived outputs in a public web service. Please state whether raw or adapted geometry may be redistributed, and specify source, copyright, non-endorsement, edition, correction and replacement conditions. This request concerns only the currently effective 2017 edition; it does not treat the 2026 map as already effective. No acquisition or adaptation will receive evidence credit before your written reply is received and reviewed.\n\nThank you,"
+      }
+    }
+  ]
+}

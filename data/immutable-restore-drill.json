@@ -1,0 +1,51 @@
+{
+  "schemaVersion": "witness-tree/immutable-restore-drill/1",
+  "status": "passed",
+  "operation": "read-only-version-pinned-restore",
+  "nonMutationStatement": "This drill did not upload, delete, lock, or alter retention on S3. It restored only the three exact named object versions into controlled temporary storage, verified them, and removed the temporary copies after validation.",
+  "startedAt": "2026-08-14T16:00:36Z",
+  "completedAt": "2026-08-14T16:17:37Z",
+  "tools": {
+    "awsCli": "aws-cli/2.36.21 Python/3.14.6 Darwin/27.0.0 source/arm64",
+    "sha256": "shasum 6.02; OpenSSL SHA2-256 used for the 9.95 GB canopy confirmation",
+    "zipIntegrity": "UnZip 6.00 of 20 April 2009, by Info-ZIP, with modifications by Apple Inc."
+  },
+  "entries": [
+    {
+      "sourceId": "qc-historic-wildfire-detailed",
+      "payloadKey": "raw/qc-historic-wildfire-detailed/undeclared/2026-08-12T05-21-46Z/cfed6c16eac901e6887a2518f566dff7608d4c4c371bd9c1ce6b2eff03fa0815/payload/feux_prov_gpkg.zip",
+      "versionId": "DjOdtfn5DPWW77s4.kNOHMfaytNdiEzT",
+      "remoteByteLength": 414244435,
+      "downloadedByteLength": 414244435,
+      "downloadedSha256": "cfed6c16eac901e6887a2518f566dff7608d4c4c371bd9c1ce6b2eff03fa0815",
+      "zipIntegrity": "passed",
+      "downloadStartedAt": "2026-08-14T16:00:36Z",
+      "downloadCompletedAt": "2026-08-14T16:03:05Z",
+      "temporaryCopyRemoved": true
+    },
+    {
+      "sourceId": "alberta-avi-crown",
+      "payloadKey": "raw/alberta-avi-crown/undeclared/2026-08-12T05-28-04Z/e93572129f25c83911b73eadfacff12624ff6b08f2db4b311c1662196b665093/payload/albertavegetationinventorycrown.zip",
+      "versionId": "GBUA_D9Q3nC2Cr3vTEAUypOSA.7cqAU1",
+      "remoteByteLength": 557041258,
+      "downloadedByteLength": 557041258,
+      "downloadedSha256": "e93572129f25c83911b73eadfacff12624ff6b08f2db4b311c1662196b665093",
+      "zipIntegrity": "passed",
+      "downloadStartedAt": "2026-08-14T16:00:39Z",
+      "downloadCompletedAt": "2026-08-14T16:03:47Z",
+      "temporaryCopyRemoved": true
+    },
+    {
+      "sourceId": "nrcan-forest-canopy-cover-2022",
+      "payloadKey": "raw/nrcan-forest-canopy-cover-2022/undeclared/2026-08-12T07-24-32Z/80c37461f4deccfdfffc26124e9064d53a94dde660b9f96194445870393af130/payload/ca_canopy_cover_2022.zip",
+      "versionId": "djna4u6GBKFJrhNjLh8VnhDfpaaG.hiI",
+      "remoteByteLength": 9954395939,
+      "downloadedByteLength": 9954395939,
+      "downloadedSha256": "80c37461f4deccfdfffc26124e9064d53a94dde660b9f96194445870393af130",
+      "zipIntegrity": "passed",
+      "downloadStartedAt": "2026-08-14T16:00:39Z",
+      "downloadCompletedAt": "2026-08-14T16:17:03Z",
+      "temporaryCopyRemoved": true
+    }
+  ]
+}

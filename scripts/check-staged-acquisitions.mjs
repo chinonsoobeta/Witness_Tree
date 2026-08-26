@@ -25,7 +25,7 @@ export function validateStagedAcquisitions(manifest) {
     if (!TIMESTAMP.test(entry.verifiedAt) || Number.isNaN(new Date(entry.verifiedAt).getTime())) throw new Error("Verified time must be a UTC timestamp.");
     if (!Number.isSafeInteger(entry.byteLength) || entry.byteLength <= 0) throw new Error("Byte length must be a positive safe integer.");
     if (!SHA256.test(entry.sha256)) throw new Error("SHA-256 is required.");
-    if (entry.zipIntegrity !== "passed") throw new Error("ZIP integrity must pass before recording an entry.");
+    if (entry.zipIntegrity !== "passed" && entry.contentIntegrity !== "passed") throw new Error("Archive or structured-content integrity must pass before recording an entry.");
     if (!["pending-review", "metadata-verified"].includes(entry.attributionState)) throw new Error("Attribution state is invalid.");
     if (entry.attributionState === "metadata-verified") {
       for (const field of ["attribution", "licenceUrl", "changesNotice"]) required(entry[field], field);

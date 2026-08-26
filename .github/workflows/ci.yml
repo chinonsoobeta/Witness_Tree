@@ -13,21 +13,75 @@ jobs:
         with:
           node-version: 22
           cache: npm
+      - name: Install geospatial test dependencies
+        run: sudo apt-get update && sudo apt-get install -y gdal-bin python3-gdal python3-numpy zsh
       - run: npm ci
       - run: npx tsc --noEmit
       - run: npm run lint
       - run: node scripts/check-bilingual.mjs
       - run: npm run check:source-candidates
+      - run: npm run check:indian-reserves-authority-access
+      - run: npm run check:first-nation-reserves-authority-access
+      - run: npm run check:historic-treaties-authority-access
+      - run: npm run check:modern-treaties-authority-access
+      - run: npm run check:bc-wildfire-current-perimeters
+      - run: npm run check:bc-wildfire-geometry-policy
+      - run: npm run check:bc-forest-operations-map-access
       - run: npm run check:acquisition-readiness
       - run: npm run check:staged-acquisitions
+      - run: npm run check:nrcan-canopy-height-profile
+      - run: npm run check:alberta-historical-wildfire-profile
+      - run: npm run check:nfdb-poly-current
+      - run: npm run check:cwfis-current-active-fires
+      - run: npm run check:phase1-geometry-policies
+      - run: npm run check:phase1-corruption-corpus
+      - run: npm run check:phase1-exit-status
+      - run: npm run check:phase1-manifest-retention-iam-applied
+      - run: npm run check:phase1-source-ledger-field-audit
+      - run: npm run check:phase1-downstream-admission-packet
       - run: npm run check:staged-geospatial-profile
+      - run: npm run check:qc-immutable-promotion-iam
+      - run: npm run check:qc-fourth-inventory-iam-applied-readback
+      - run: npm run check:qc-fourth-inventory-exact-archive-readback
+      - run: npm run check:alberta-wildfire-locations
+      - run: npm run check:ontario-in-year-fire-perimeters
+      - run: npm run check:alberta-plvi-full-release-readiness
+      - run: npm run check:alberta-plvi-immutable-promotion-preparation
+      - run: npm run check:alberta-plvi-versioned-readback-iam-applied
+      - run: npm run check:current-wildfire-immutable-promotion-preparation
+      - run: npm run check:current-wildfire-versioned-readback-iam-applied
+      - run: npm run check:current-wildfire-exact-raw-archive-capture
+      - run: npm run check:phase1-immutable-promotion-readiness
       - run: npm run check:immutable-promotions
       - run: npm run check:boundary-editions
+      - run: npm run check:french-boundary-acquisition
+      - run: npm run check:phase1-optional-enhancements
+      - run: npm run check:phase4-exit-status
+      - run: npm run check:phase5-live-wildfire-exit-status
+      - run: npm run check:phase6-account-alert-exit-status
+      - run: npm run check:phase7-indigenous-explore-comparison-exit-status
+      - run: npm run check:phase8-launch-readiness-exit-status
+      - run: npm run check:phase9-public-beta-launch-exit-status
+      - run: npm run check:elections-canada-fed-2025
+      - run: npm run check:elections-canada-fed-2025-promotion
+      - run: npm run check:federal-electoral-archive-recovery-evidence
       - run: npm run check:raster-grid
+      - run: npm run check:phase2-v21-raster-contract
+      - run: npm run check:phase2-v21-raster-readback
+      - run: npm run check:phase2-zonal-aggregation
+      - run: npm run check:phase2-v21-province-zonal-pilot
+      - run: npm run check:phase2-expert-review-workflow
+      - run: npm run check:phase2-validation-comparison
+      - run: node --test tests/phase2-historical-evidence-status.test.mjs
+      - run: npm run check:phase2-historical-method-parameters
+      - run: npm run check:phase2-historical-component-inventory
+      - run: node --test tests/phase2-real-data-owner-decision.test.mjs tests/phase2-real-national-preflight.test.mjs tests/phase2-real-national-execution-evidence.test.mjs
       - run: npm run check:accessibility
       - run: npm run build
       - run: npm run check:claims
       - run: npm run check:style-tokens
       - run: npm run check:brand-token
       - run: npm run check:budgets
-      - run: npm run test:unit
+      # The complete suite includes owner-local macOS safety runners and large
+      # checksum-bound artifacts. It is a required local release gate; the
+      # portable contract suites above remain the Ubuntu branch gate.

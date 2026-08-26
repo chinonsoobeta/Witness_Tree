@@ -1,0 +1,181 @@
+{
+  "schemaVersion": "witness-tree/phase2-real-data-owner-decision/1",
+  "status": "owner-decision-recorded",
+  "notice": "This package records the exact owner decision for a bounded local non-production run. It authorizes no execution until the remaining source, method, adapter, boundary, capacity, and output gates pass, and never authorizes production use, release, external compute/storage, or broader claims.",
+  "derivedFromHead": "a651924250dfd224262df61633e603712012f0cb",
+  "maturity": {
+    "phase": 2,
+    "fixedRubricPercentBefore": 43,
+    "fixedRubricPercentAfter": 43,
+    "deltaPercentagePoints": 0,
+    "reason": "Decision and preflight evidence does not implement or validate a real-data transform."
+  },
+  "forestDefinition": {
+    "registeredVersion": "nfi-1",
+    "registeredDefinition": {
+      "minimumAreaHectares": 1,
+      "minimumCrownClosurePercent": 10,
+      "minimumMatureTreeHeightMetres": 5,
+      "source": "Canada National Forest Inventory"
+    },
+    "vlce2ClassEvidence": [
+      { "value": 0, "code": "unclassified", "proposedTreatment": "unknown" },
+      { "value": 20, "code": "water", "proposedTreatment": "nonforest" },
+      { "value": 31, "code": "snow_ice", "proposedTreatment": "nonforest" },
+      { "value": 32, "code": "rock_rubble", "proposedTreatment": "nonforest" },
+      { "value": 33, "code": "exposed_barren_land", "proposedTreatment": "nonforest" },
+      { "value": 40, "code": "bryoids", "proposedTreatment": "nonforest" },
+      { "value": 50, "code": "shrubs", "proposedTreatment": "nonforest" },
+      { "value": 80, "code": "wetland", "proposedTreatment": "nonforest" },
+      { "value": 81, "code": "wetland_treed", "proposedTreatment": "owner-choice" },
+      { "value": 100, "code": "herbs", "proposedTreatment": "nonforest" },
+      { "value": 210, "code": "coniferous", "proposedTreatment": "forest" },
+      { "value": 220, "code": "broadleaf", "proposedTreatment": "forest" },
+      { "value": 230, "code": "mixedwood", "proposedTreatment": "forest" },
+      { "value": 255, "code": "nodata", "proposedTreatment": "unknown" }
+    ],
+    "evidenceLimit": "The publisher class labels identify treed cover types but do not establish, cell by cell, the registered one-hectare, ten-percent-crown-closure and five-metre-mature-height thresholds. Class 81 is treed wetland, but the repository evidence does not determine whether the product denominator should include it.",
+    "recommendedOption": "conservative-treed-upland-v1",
+    "options": [
+      {
+        "id": "conservative-treed-upland-v1",
+        "forestClassValues": [210, 220, 230],
+        "unknownClassValues": [0, 255],
+        "tradeoff": "Uses only the three unambiguously named forest-cover classes and matches the tested synthetic crosswalk; it may undercount qualifying treed wetlands."
+      },
+      {
+        "id": "include-treed-wetland-v1",
+        "forestClassValues": [81, 210, 220, 230],
+        "unknownClassValues": [0, 255],
+        "tradeoff": "Includes the explicitly treed wetland class; the current evidence does not prove that every class-81 cell meets the registered forest thresholds."
+      }
+    ],
+    "requiredMethodLabel": "VLCE2 operational proxy for nfi-1; not a pixel-level measurement of all NFI thresholds"
+  },
+  "disturbanceSources": [
+    {
+      "id": "nrcan-ca-forest-harvest-1985-2022",
+      "inputSha256": "c6f41dff46d91812874672edb53233dac4126952132ad6d1131ad47b11ad7aad",
+      "coverage": "1985-2022",
+      "recommendedScope": "historical national corroboration and precedence only",
+      "limitations": [
+        "Records the year of greatest mapped harvest disturbance per pixel, not every harvest or cutblock.",
+        "Agricultural-mask omissions remain possible; zero is not proof that no harvest occurred.",
+        "No automated catalogue fetch: the catalogue resource discrepancy remains recorded.",
+        "No current, operational, completeness, legal-cutblock, or post-2022 claim."
+      ]
+    },
+    {
+      "id": "nrcan-ca-forest-wildfire-1985-2022",
+      "inputSha256": "725f3b582c87cb7c6f3fd397a523fba6621718ac59c68dc904cd1d849a9160c9",
+      "coverage": "1985-2022",
+      "recommendedScope": "historical national corroboration and precedence only",
+      "limitations": [
+        "Records the year of greatest mapped wildfire disturbance per pixel, not every wildfire.",
+        "Agricultural-mask omissions remain possible; zero is not proof that no wildfire occurred.",
+        "Not a live-fire feed, perimeter authority, damage estimate, completeness claim, or post-2022 source."
+      ]
+    }
+  ],
+  "boundaries": {
+    "commonAdmissionRequirements": [
+      "authoritative publisher and intended-use suitability",
+      "exact named edition/reference date and SHA-256-bound archive",
+      "stable edition-qualified identifiers and official English/French names or a documented bilingual mapping",
+      "polygon schema, complete expected coverage, feature count, CRS WKT, missing/empty/invalid geometry checks",
+      "reuse terms, attribution, local readback, and productionEligible=false",
+      "vector reprojection into the exact VLCE2 WKT; categorical VLCE2 rasters are never reprojected or resampled",
+      "no cross-edition join or comparison without an explicit acknowledged mapping"
+    ],
+    "geographyTypes": [
+      {
+        "type": "province",
+        "state": "candidate-evidence-present-not-admitted",
+        "candidate": "statcan-2021-provinces-territories-cbf",
+        "edition": "2021 Census, reference date 2021-01-01",
+        "sha256": "d28bbb15d7b49e3d1828755a5f1b4ebcee699ad70efe8b0f1b902d29ebffd20b",
+        "ownerChoice": "accept this historical edition for versioned non-production output, or name another exact edition"
+      },
+      {
+        "type": "watershed",
+        "state": "blocked-no-authoritative-versioned-national-artifact-in-evidence",
+        "requiredOwnerInput": "name the authoritative hierarchy/level, publisher, exact edition, and intended comparison unit"
+      },
+      {
+        "type": "forest-district",
+        "state": "blocked-no-authoritative-versioned-national-artifact-in-evidence",
+        "requiredOwnerInput": "define the jurisdiction-specific district concept and supply every exact provincial/territorial edition"
+      },
+      {
+        "type": "municipality",
+        "state": "candidate-evidence-present-semantic-decision-required",
+        "candidate": "statcan-2021-census-subdivisions-cbf",
+        "edition": "2021 Census, reference date 2021-01-01",
+        "sha256": "f98d955bff9a8151d002bb07c5fc50775b624d4f2f4052dbe05fe54d58f3bbe8",
+        "ownerChoice": "accept Census Subdivision as the product municipality unit, including its municipal-equivalent types, or provide a narrower documented type mapping"
+      },
+      {
+        "type": "provincial-riding",
+        "state": "blocked-national-coverage-incomplete",
+        "evidence": "BC 2023 and Ontario 2022 local profiles exist; Alberta is rights-blocked and Quebec is temporally/access gated.",
+        "requiredOwnerInput": "supply and approve one authoritative effective edition for every province/territory, with temporal rules"
+      },
+      {
+        "type": "federal-riding",
+        "state": "candidate-evidence-present-not-admitted",
+        "candidate": "elections-canada-federal-electoral-districts-45th-general-election-2025-shp",
+        "edition": "2023 Representation Order, effective for the 45th general election in 2025",
+        "sha256": "4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93",
+        "ownerChoice": "accept this 343-district edition for current versioned non-production output; do not substitute or join the 338-district 2013 order"
+      },
+      {
+        "type": "reserve",
+        "state": "blocked-authority-rights-edition-and-engagement-unverified",
+        "requiredOwnerInput": "identify an authoritative reserve-polygon release, exact-artifact reuse terms, edition/checksum, and engagement/right-of-reply route"
+      },
+      {
+        "type": "treaty-area",
+        "state": "blocked-authority-rights-edition-and-engagement-unverified",
+        "requiredOwnerInput": "identify exact authoritative modern/historic treaty polygon editions and approve non-legal, precision, engagement, and right-of-reply language"
+      }
+    ],
+    "allEightReady": false,
+    "scopeThatOwnerDecisionCanUnlockNow": "national annual forest-mask and detected-change processing without all-eight geography aggregates; province, municipality, and federal-riding intersections remain separately gated by exact edition admission"
+  },
+  "computePlan": {
+    "inputYears": { "first": 1984, "last": 2022, "count": 39, "continuousRequired": true },
+    "grid": { "width": 193936, "height": 128340, "cellsPerYear": 24889746240, "cellYears": 970700103360, "transitionCellPairs": 945810357120 },
+    "knownInputBytes": { "vlce2CompressedArchives": 58954694668, "harvestArchive": 247945479, "wildfireArchive": 252364563 },
+    "scaleBounds": {
+      "bytePerCellAnnualMasksBeforeCompression": 970700103360,
+      "twoBitPerCellAnnualMasksBeforeContainerOverhead": 242675025840,
+      "twoDecodedAnnualByteRasters": 49779492480
+    },
+    "recommendedExecution": "single-worker, windowed and sequential; verify every source checksum first; retain at most the current and next decoded windows; write checksum-bound tiled/compressed non-production outputs; abort rather than exceed a cap",
+    "proposedHardCaps": { "vCpu": 8, "ramGiB": 16, "localTemporaryAndDerivedGiB": 2048, "elapsedHours": 96, "concurrentYearPairs": 1 },
+    "capTradeoff": "The 2 TiB disk cap is above the 970.7 GB uncompressed one-byte mask scale plus known compressed inputs, but patch vectorization can exceed estimates. Any cap breach must abort and return measured evidence for a new owner decision; it must not silently raise limits.",
+    "forbidden": ["external compute or storage", "full-series in-memory loading", "implicit raster reprojection", "overwrite of an existing output directory", "public or production release"]
+  },
+  "ownerDecision": {
+    "status": "approved-for-versioned-nonproduction-processing",
+    "ownerName": "Chinonso Obeta",
+    "recordedAt": "2026-08-21T21:51:54Z",
+    "forestCrosswalkOption": "conservative-treed-upland-v1",
+    "approveExactHarvestScope": true,
+    "approveExactWildfireScope": true,
+    "approveComputeCaps": true,
+    "approveNationalMaskAndChangeNonProductionRun": true,
+    "provinceBoundaryDecision": "accept-statcan-2021",
+    "municipalityBoundaryDecision": "accept-statcan-2021-csd",
+    "federalRidingBoundaryDecision": "accept-elections-canada-2025-2023-order",
+    "acknowledgeAllEightAggregatesRemainBlocked": true,
+    "acknowledgeNonProductionOutputs": true,
+    "acknowledgeNoExternalActionOrRelease": true
+  },
+  "claims": {
+    "approvalRecorded": true,
+    "realTransformationRun": false,
+    "allEightBoundaryEditionsReady": false,
+    "productionEligible": false
+  }
+}

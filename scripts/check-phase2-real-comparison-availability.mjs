@@ -1,0 +1,7 @@
+import assert from "node:assert/strict"; import { createHash } from "node:crypto"; import { readFileSync } from "node:fs"; import { fileURLToPath } from "node:url";
+const root=fileURLToPath(new URL("..",import.meta.url)); const r=JSON.parse(readFileSync(`${root}/data/phase2-real-comparison-availability.json`,"utf8"));
+assert.equal(r.status,"local-hansen-cross-check-input-staged-no-comparison-results"); assert.equal(r.productionEligible,false); assert.equal(r.formalPhase2ComparisonGateComplete,false);
+for(const source of r.sources){if(source.localPath){const bytes=readFileSync(`${root}/${source.localPath}`);assert.equal(bytes.length,source.byteLength);assert.equal(createHash("sha256").update(bytes).digest("hex"),source.sha256)}else assert.deepEqual([source.byteLength,source.sha256],[null,null])}
+for(const row of r.publishedComparisons) for(const key of ["witnessTreeHectares","referenceHectares","absoluteDifferenceHectares","relativeDifference"]) assert.equal(row[key],null);
+const hansen=r.sources.find((source)=>source.id==="hansen-global-forest-change"); assert.equal(hansen.comparisonStatus,"sample-input-staged-not-like-for-like"); assert.equal(hansen.evidence,"data/phase2-hansen-gfc-v1.12-sample-profile.json");
+assert.deepEqual(r.claims,{comparisonResultsExist:false,causalAttributionClaim:false,likeForLikeClaim:false,productAccuracyClaim:false,released:false}); console.log("Phase 2 real comparison availability passes; all unavailable results remain published nulls.");

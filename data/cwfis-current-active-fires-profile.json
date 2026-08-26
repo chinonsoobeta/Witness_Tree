@@ -1,0 +1,18 @@
+{
+  "status": "local-staging-profile",
+  "sourceId": "cwfis-current",
+  "publisher": "Natural Resources Canada, Canadian Forest Service / Canadian Wildland Fire Information Framework",
+  "resourceUrl": "https://geoserver.cwfif.nrcan.gc.ca/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=public%3Acwfif_national_activefires&outputFormat=SHAPE-ZIP&CQL_FILTER=record_start%20%3C%3D%20%272026-08-14T20%3A22%3A42Z%27%20AND%20record_end%20%3E%3D%20%272026-08-14T20%3A22%3A42Z%27",
+  "retrievedAt": "2026-08-14T20:24:34Z",
+  "artifact": {"bytes": 45917, "sha256": "fc3d4a0730f30d6f12782b16e9459c173dabd6e50d0715b27cddecd954097f86", "zipIntegrity": "passed", "externalStagingPath": "Witness_Tree-data/raw/cwfis-current-active-fires/2026-08-14/cwfif_national_activefires_2026-08-14T202242Z.zip"},
+  "licence": {"basis": "Official Active Wildfires in Canada metadata identifies the Open Government Licence – Canada. The official CWFIS Data Placemat identifies public:cwfif_national_activefires as the replacement active-wildfires WFS layer.", "url": "https://open.canada.ca/en/open-government-licence-canada", "requiredNotice": "Contains information licensed under the Open Government Licence – Canada. Source: Canadian Forest Service, Canadian Wildland Fire Information System / Framework."},
+  "snapshot": {"layer": "public:cwfif_national_activefires", "edition": "undeclared operational WFS layer", "fixedQueryInstant": "2026-08-14T20:22:42Z", "query": "record_start <= '2026-08-14T20:22:42Z' AND record_end >= '2026-08-14T20:22:42Z'", "resultTypeHits": 586, "cadence": "operational WFS; the placemat says time queries are supported and lists 2010-08-16-current; this local snapshot is not real-time"},
+  "layer": {"name": "cwfif_national_activefiresPoint", "count": 586, "geometry": "Point", "crs": "EPSG:3978 — NAD83 / Canada Atlas Lambert", "extent": [-2140005.842054, -187546.335893, 2485167.868106, 2786663.304208], "missing": 0, "empty": 0, "invalid": 0, "agencyCount": 11, "statusDateRange": ["2020-06-30", "2026-08-14"]},
+  "serviceSchema": ["id", "agency_code", "region_code", "national_fire_id", "agency_fire_id", "national_fire_cause", "fire_type_ics", "severity_nearest_dsr", "fire_was_prescribed", "percent_contained", "fire_size", "response_type", "stage_of_control_status", "situation_report_date", "status_date", "latitude", "longitude", "fire_year", "status_year", "record_start", "record_end"],
+  "shapefileSchema": ["id", "agency_cod", "region_cod", "national_f", "agency_fir", "national_0", "fire_type_", "severity_n", "fire_was_p", "percent_co", "fire_size", "response_t", "stage_of_c", "situation_", "status_dat", "latitude", "longitude", "fire_year", "status_yea", "record_sta", "record_end"],
+  "limitations": ["A previous unfiltered WFS response was capped at 10,000 of 187,620 features and is deliberately excluded from staging.", "The staged artifact is only the 586 records valid at its fixed query instant; it is not a real-time, complete, incident-perimeter, or provincial-agency-authoritative claim.", "ESRI Shapefile field names are limited to ten characters; the service schema is retained above to make that source-format truncation explicit."],
+  "immutable": false,
+  "transformed": false,
+  "ingested": false,
+  "productionEligible": false
+}

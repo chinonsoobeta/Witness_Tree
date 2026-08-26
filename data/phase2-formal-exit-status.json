@@ -1,0 +1,12 @@
+{
+  "schemaVersion":"witness-tree/phase2-formal-exit-status/1",
+  "status":"two-of-four-formal-exit-criteria",
+  "formalExit":{"completed":2,"total":4,"percentage":50},
+  "criteria":[
+    {"id":"admitted-v21-national-baseline","complete":true,"evidence":"data/phase2-admission-record-2026-08-26.json","reason":"The owner admitted the exact 39 source archives and exact checksum-bound 21-output V2.1 batch under the limited, non-release, nonproduction scope."},
+    {"id":"expert-review-100-per-province","complete":false,"evidence":"data/phase2-v21-real-review-packet-evidence.json","reason":"400 real candidates exist; expert review is not started and all province counts are zero."},
+    {"id":"published-independent-comparisons","complete":false,"evidence":"data/phase2-real-comparison-availability.json","reason":"Every required comparison value and difference is published null pending like-for-like inputs."},
+    {"id":"admitted-boundary-aggregates","complete":true,"evidence":"data/phase2-admission-record-2026-08-26.json","reason":"The owner admitted the exact Statistics Canada boundary input and exact checksum-bound 13-row 2020–2022 province/territory aggregate under the limited, non-release, nonproduction scope."}
+  ],
+  "claims":{"productionEligible":false,"released":false,"formalPhaseComplete":false}
+}

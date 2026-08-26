@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "witness-tree/qc-immutable-promotion-attestation-redacted/1",
+  "status": "owner-private-pair-required-for-verification",
+  "notice": "This redacted record exposes no version or upload identifier and cannot prove remote state by itself. Verification requires the exact owner-owned mode-600 private attestation whose SHA-256 is bound below. A passing pair is owner-attested internally consistent evidence, not independently signed AWS proof.",
+  "privateAttestationSha256": "9560e90b5303cdd2c4ce7aa2e9d0024df6b7afcbffe361551f2c7a021d153940",
+  "provenance": {
+    "createdAt": "2026-08-22T22:06:55Z",
+    "runnerSha256": "48bb07c951fd935949b9f1b55c66264b1cfca9ef205b82f14812a6147c1b2c23",
+    "captureScriptSha256": "9f7c6e4d7834f046e032fcbd527f4841f8c9caee87c9ddcada95973cc7709cc4",
+    "planSha256": "1741f5ed2baee002778c32708880d16fbb8be5ea7472dfb241f6d684f877c55b",
+    "operation": "read-only-exact-version-head-and-payload-retention-capture"
+  },
+  "objects": [
+    {
+      "artifactId": "qc-ecoforest-map-2026-08-14",
+      "productionSourceId": "qc-current-ecoforest",
+      "objectKind": "payload",
+      "keySha256": "a5c44c394af7cf603da4b680cdf56485d75d74948dfa8b08d930a8cba310fd7a",
+      "versionIdSha256": "b20fb12810c7f7be282b2bf6f6b07712dd13640670fae53568c696f71f9a790e",
+      "contentLength": 12399475076,
+      "providerChecksumSha256": "33634e66b2c70a1699e668db79b3006cab3b6ea2d7fb86849110335695bffbe1",
+      "headResponseSha256": "2f3ff6177edeae2fa9ac7a845be5f1983df7dc02573225f97fb71d220b9d679e",
+      "retention": {
+        "mode": "COMPLIANCE",
+        "retainUntil": "2033-08-12T00:00:00Z",
+        "responseSha256": "ec9b4e6b1c446d727b818e24cb7d5f8546ad26b9f3e27a3c6ff737dfc8853b8c"
+      }
+    },
+    {
+      "artifactId": "qc-ecoforest-map-2026-08-14",
+      "productionSourceId": "qc-current-ecoforest",
+      "objectKind": "manifest",
+      "keySha256": "c03fead4e3c3d705ba6e14fc0e766fb4e67c5998d5abacc2653f64fab99029dd",
+      "versionIdSha256": "52f0fb32ac93112f5ddb68215e53c1d4862e465283191099ab9e892f7470c317",
+      "contentLength": 1711,
+      "providerChecksumSha256": "21762f30ae756cb592937cc5be6d8adfad625585c013373ad3612f53c77fa1cd",
+      "headResponseSha256": "e8a569dbc4bb83faee97e6e8731eeeba1809bb9eb9e4e99d76542407a352a75a",
+      "retention": "not-authorized-rebuildable-sidecar"
+    },
+    {
+      "artifactId": "qc-original-current-inventory-2026-08-14",
+      "productionSourceId": "qc-original-current-inventory",
+      "objectKind": "payload",
+      "keySha256": "ad2c68fd5ef2bbf4562e8cd9e05d51696a1db3b21cd83b322b2d6acfe1e737c6",
+      "versionIdSha256": "c56b6a3eb4ce03fdea0d66b63b97963afe1165a8dd6722bc44abe49f2d1d0b35",
+      "contentLength": 11244667626,
+      "providerChecksumSha256": "7a4dcb56942a2f1e052ede9943a7fac72c32908c634de4e6855202f0b1e65db8",
+      "headResponseSha256": "03dbb4096d99c05fde01628b7ec6082d6309440dcb1c5081b02810275ce2e820",
+      "retention": {
+        "mode": "COMPLIANCE",
+        "retainUntil": "2033-08-12T00:00:00Z",
+        "responseSha256": "ec9b4e6b1c446d727b818e24cb7d5f8546ad26b9f3e27a3c6ff737dfc8853b8c"
+      }
+    },
+    {
+      "artifactId": "qc-original-current-inventory-2026-08-14",
+      "productionSourceId": "qc-original-current-inventory",
+      "objectKind": "manifest",
+      "keySha256": "ee77f548252abb6403dac740aa50cdd621127872b94dd360940877e2d06871a9",
+      "versionIdSha256": "79b2bb650a20f304223a5865b490b1e026f3a2c278f5cfee388e76540d568413",
+      "contentLength": 1749,
+      "providerChecksumSha256": "8a0a9211ebf70a7b5a890809c92f598a7cddd68734d56fcca94f71a8e94f58a3",
+      "headResponseSha256": "e45bf449b1d330290d2b416772f2f924e69e6d150ad3b38bf70876208ab3838d",
+      "retention": "not-authorized-rebuildable-sidecar"
+    }
+  ],
+  "recoveryBoundary": {
+    "multipartResumeStatePreserved": true,
+    "replicaCreated": false,
+    "replicaAuthorized": false,
+    "meaning": "Private multipart state supports interrupted-run diagnosis/resume only; no recovery replica was approved or proved."
+  },
+  "claims": {
+    "exactReadbacksVerified": false,
+    "retentionVerified": false,
+    "immutableObjectStorage": false,
+    "sourceLedgerCreditChanged": false,
+    "transformed": false,
+    "ingested": false,
+    "productionEligible": false
+  }
+}

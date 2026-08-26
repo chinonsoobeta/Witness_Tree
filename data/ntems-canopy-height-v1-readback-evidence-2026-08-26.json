@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "witness-tree/phase1-ntems-transformation-readback-evidence/1",
+  "status": "complete-readback-verified",
+  "authorization": {
+    "path": "data/phase1-ntems-canopy-height-execution-authorization.json",
+    "sha256": "0815d5cfc9904fc9f4fd47214df1db2d292f0bf580f6f5e0625aa1f4c8ebc1da",
+    "createdAt": "2026-08-26T00:55:28Z"
+  },
+  "runner": {
+    "path": "scripts/run-phase1-ntems-transform.mjs",
+    "sha256": "ecb3585a27c82119e2d18fbce3231e12f3c8a33abbf5973453db8d1b0cf2a511"
+  },
+  "specifications": [
+    {
+      "id": "ntems-canopy-height-v1",
+      "path": "data/phase1-production-transformation-specifications-v1.json",
+      "sha256": "258ca3f94e30d484b53cc12e29c83beaf57998993edaea05e44f5a4924979efc"
+    }
+  ],
+  "outputs": [
+    {
+      "specification": "ntems-canopy-height-v1",
+      "input": "raw/nrcan-forest-canopy-height-2022/2026-08-14/CA_canopy_height_2022.zip",
+      "status": "verified",
+      "output": "ntems-canopy-height-v1/86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124/phase1-ntems-canopy-height-v1/canopy-height-2022.tif",
+      "outputSha256": "bc98d42d124a9f96b649ea43a36b84f0b0f5d492c48901499aa7e6b7ac2fac4c",
+      "outputByteLength": 14112018239,
+      "sidecarSha256": "74dc84eb83c611d776dd96ea8b7b491fc70abee6249d8ef274729277fe5145bf",
+      "sourcePixelChecksum": 53353,
+      "outputPixelChecksum": 53353
+    }
+  ],
+  "counts": {
+    "expected": 1,
+    "verified": 1,
+    "missing": 0
+  },
+  "claims": {
+    "transformed": true,
+    "ingested": false,
+    "released": false,
+    "productionAdmission": false,
+    "productionEligible": false,
+    "externalMutationPerformed": false
+  },
+  "sourceRecord": {
+    "path": "data/phase1-production-transformation-specifications-v1.json",
+    "sha256": "258ca3f94e30d484b53cc12e29c83beaf57998993edaea05e44f5a4924979efc"
+  }
+}

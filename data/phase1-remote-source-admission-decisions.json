@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "status": "owner-decisions-recorded",
+  "notice": "Nine named Phase 1 source-ledger decisions are recorded. The two national and two Quebec decisions are source-ledger-only; the PLVI decision is limited to the exact raw/derived scope and scope-bound validation preparation. None authorizes transformation admission, ingestion, release, runtime production eligibility, or any unlisted source.",
+  "decisions": [
+    {
+      "id": "ntems-forest-harvest",
+      "sourceEvidenceComplete": true,
+      "profileIssueResolved": true,
+      "ownerAdmission": "approved-source-ledger-only",
+      "scopeDecision": "accepted-named-source-ledger-only",
+      "scope": "The owner accepted this named existing immutable source-ledger evidence row only, including its redacted primary/recovery archive readbacks. This does not authorize transformation admission, ingestion, release, runtime production eligibility, or any other source."
+    },
+    {
+      "id": "ntems-annual-land-cover",
+      "sourceEvidenceComplete": true,
+      "profileIssueResolved": true,
+      "ownerAdmission": "approved-source-ledger-only",
+      "scope": "This approval is limited to this named source-ledger evidence row and does not authorize transformation, ingestion, release, runtime production eligibility, or any other source."
+    },
+    {
+      "id": "ntems-canopy-height",
+      "sourceEvidenceComplete": true,
+      "profileIssueResolved": true,
+      "ownerAdmission": "approved-source-ledger-only",
+      "scopeDecision": "accepted-named-source-ledger-only",
+      "scope": "The owner accepted this named existing immutable source-ledger evidence row only, including its redacted primary/recovery archive readbacks. This does not authorize transformation admission, ingestion, release, runtime production eligibility, or any other source."
+    },
+    {
+      "id": "ntems-canopy-cover",
+      "sourceEvidenceComplete": true,
+      "profileIssueResolved": true,
+      "ownerAdmission": "approved-source-ledger-only",
+      "scope": "This approval is limited to this named source-ledger evidence row and does not authorize transformation, ingestion, release, runtime production eligibility, or any other source."
+    },
+    {
+      "id": "ab-avi-crown",
+      "sourceEvidenceComplete": true,
+      "profileIssueResolved": true,
+      "ownerAdmission": "approved-source-ledger-only",
+      "evidenceRef": "data/alberta-avi-crown-quarantine-decision.json",
+      "scope": "Only AVI_PostInventoryHarvestIndex FID 1 is excluded; it has zero AVI_Crown observations and no Crown denominator impact. This does not authorize transformation, ingestion, release, runtime production eligibility, or any other source."
+    },
+    {
+      "id": "ab-avi-post-harvest",
+      "sourceEvidenceComplete": true,
+      "profileIssueResolved": true,
+      "ownerAdmission": "approved-source-ledger-only",
+      "scope": "This approval is limited to this named source-ledger evidence row and does not authorize transformation, ingestion, release, runtime production eligibility, or any other source."
+    },
+    {
+      "id": "ab-primary-land-vegetation",
+      "sourceEvidenceComplete": true,
+      "profileIssueResolved": true,
+      "ownerAdmission": "approved-source-ledger-only",
+      "scopeDecision": "approved-raw-and-derived-scope-only",
+      "scope": "The owner admitted only the unchanged raw ZIP and the exact 179,087-feature closed-join derived artifact under alberta-plvi-geometry-repair-v1 with 12 bounded repairs, preserving duplicate POLYGON_ID 41405 and no feature loss or deduplication. This authorizes scope-bound validation and ingestion preparation only; it does not authorize transformation admission, ingestion, release, runtime production eligibility, or any other source.",
+      "evidenceRefs": [
+        "data/alberta-plvi-immutable-promotion-evidence.json",
+        "data/alberta-plvi-full-release-readiness.json",
+        "data/phase1-alberta-transform-ingestion-audit.json"
+      ]
+    },
+    {
+      "id": "qc-current-ecoforest",
+      "sourceEvidenceComplete": true,
+      "profileIssueResolved": true,
+      "ownerAdmission": "approved-source-ledger-only",
+      "scopeDecision": "accepted-named-source-ledger-only",
+      "scope": "The owner accepted this named existing immutable source-ledger evidence row only, including its validated redacted archive attestation. This does not authorize transformation admission, ingestion, release, runtime production eligibility, or any other source.",
+      "evidenceRef": "data/qc-immutable-promotion-attestation.json"
+    },
+    {
+      "id": "qc-original-current-inventory",
+      "sourceEvidenceComplete": true,
+      "profileIssueResolved": true,
+      "ownerAdmission": "approved-source-ledger-only",
+      "scopeDecision": "accepted-named-source-ledger-only",
+      "scope": "The owner accepted this named existing immutable source-ledger evidence row only, including its validated redacted archive attestation. This does not authorize transformation admission, ingestion, release, runtime production eligibility, or any other source.",
+      "evidenceRef": "data/qc-immutable-promotion-attestation.json"
+    }
+  ],
+  "nonProduction": {
+    "sourceLedgerDecisionsRecorded": true,
+    "scopeDecisionRecorded": true,
+    "rawEvidenceDelta": 0,
+    "formalEvidenceTrackingPercentagePointDelta": 0,
+    "transformationAdmission": false,
+    "ingestionAdmission": false,
+    "ingested": false,
+    "releaseApproval": false,
+    "productionAdmission": false,
+    "productionEligible": false,
+    "remoteMutationPerformed": false,
+    "externalMutationPerformed": false
+  }
+}

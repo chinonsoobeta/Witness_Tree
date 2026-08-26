@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "witness-tree/phase1-production-transformation-spec/1",
+  "id": "phase1-alberta-current-wildfire-production-v1",
+  "status": "specification-only-all-execution-and-admission-blocked",
+  "notice": "This is a checksum-bound execution specification, not a transformation run, source admission, ingestion receipt, release approval, or production claim. Each row remains blocked until every named prerequisite is independently evidenced and the owner records the separate decisions specified below.",
+  "common": {
+    "outputFormat": "GeoPackage",
+    "outputSidecar": "canonical JSON manifest containing this specification id, input and output SHA-256, byte lengths, exact archive version IDs, source and output feature counts, schema fingerprint, CRS, geometry QA, exclusions, tool versions, UTC execution timestamps, and every validation result",
+    "archiveRule": "Read exact named object versions only; never overwrite, replace, or treat a later mutable source response as the bound input.",
+    "admissionRule": "Transformation, ingestion, public release, and production admission are four separate recorded decisions. A successful run cannot imply any of them.",
+    "qaRule": "Fail closed on checksum, archive-version, schema, feature-count, identifier, CRS, geometry, or sidecar mismatch. Preserve raw input and write a failure receipt without an output release.",
+    "prohibitedClaims": ["real-time", "complete incident inventory", "emergency direction", "damage map", "mortality map", "production eligible before separate admission"]
+  },
+  "rows": [
+    {
+      "sourceId": "ab-avi-crown",
+      "input": {"rawSha256": "e93572129f25c83911b73eadfacff12624ff6b08f2db4b311c1662196b665093", "rawBytes": 557041258, "workingDatasetSha256": "1ea5759caaf3dfbaf622c513e54fff2fda2c3051a80d6b571e06b23b4e3affbe", "layers": ["AVI_Crown"], "crs": "EPSG:3400"},
+      "authorityAndArchive": {"licence": "Open Government Licence – Alberta", "attribution": "Contains information licensed under the Open Government Licence – Alberta.", "existingEvidence": ["data/transformation-runs/alberta-avi-geometry-repair-v1-2026-08-12.json", "data/alberta-avi-crown-quarantine-decision.json"], "missing": ["machine-verifiable exact immutable raw archive object/version/readback"]},
+      "operation": {"geometry": "Copy valid geometries unchanged. For only the 587 AVI_Crown Ring Self-intersections, apply shapely.make_valid(method='structure', keep_collapsed=False) in memory; retain only valid Polygon/MultiPolygon results with relative area change <= 0.000001.", "attributes": "Preserve every source attribute and identifier byte-for-byte in meaning; no field renaming, coercion, filtering, deduplication, or semantic reclassification.", "output": {"layer": "ab_avi_crown_v1", "crs": "EPSG:3400", "expectedFeatureCount": 788810, "expectedInvalidInputCount": 587, "expectedRepairedCount": 587, "expectedQuarantinedCount": 0}},
+      "exclusions": "None for AVI_Crown. The separately quarantined AVI_PostInventoryHarvestIndex FID 1 is not an AVI_Crown observation or denominator record and must not be silently incorporated.",
+      "qa": ["exact input hash and working dataset hash", "788810 closed source-to-output identities", "all output geometry valid, non-empty, and polygonal", "schema name/type fingerprint equals source", "area delta threshold for each repaired feature", "deterministic sidecar hash"],
+      "intendedUse": "Potential Alberta crown-observation analysis only after all separate gates pass.",
+      "blockedPrerequisites": ["immutable archive/version/readback", "owner transformation admission", "owner ingestion admission", "owner release approval", "owner production admission", "an approved output destination and retention plan"]
+    },
+    {
+      "sourceId": "ab-avi-post-harvest",
+      "input": {"rawSha256": "e93572129f25c83911b73eadfacff12624ff6b08f2db4b311c1662196b665093", "rawBytes": 557041258, "workingDatasetSha256": "1ea5759caaf3dfbaf622c513e54fff2fda2c3051a80d6b571e06b23b4e3affbe", "layers": ["AVI_PostInventoryHarvest"], "crs": "EPSG:3400"},
+      "authorityAndArchive": {"licence": "Open Government Licence – Alberta", "attribution": "Contains information licensed under the Open Government Licence – Alberta.", "existingEvidence": ["data/transformation-runs/alberta-avi-geometry-repair-v1-2026-08-12.json"], "missing": ["machine-verifiable exact immutable raw archive object/version/readback"]},
+      "operation": {"geometry": "Copy valid geometries unchanged. For only the 19 AVI_PostInventoryHarvest Ring Self-intersections, use the same in-memory repair, polygonality, and <= 0.000001 relative-area rule as the validated AVI run.", "attributes": "Preserve every source attribute and identifier; no filtering, deduplication, or semantic classification.", "output": {"layer": "ab_avi_post_inventory_harvest_v1", "crs": "EPSG:3400", "expectedFeatureCount": 3631, "expectedInvalidInputCount": 19, "expectedRepairedCount": 19, "expectedQuarantinedCount": 0}},
+      "exclusions": "Do not use AVI_PostInventoryHarvestIndex FID 1; it is separately quarantined after a 0.028800363153499882 relative-area change.",
+      "qa": ["exact input hash and working dataset hash", "3631 closed source-to-output identities", "all output geometry valid, non-empty, and polygonal", "schema name/type fingerprint equals source", "repair area threshold", "deterministic sidecar hash"],
+      "intendedUse": "Potential Alberta post-inventory harvest context only after all separate gates pass.",
+      "blockedPrerequisites": ["immutable archive/version/readback", "owner transformation admission", "owner ingestion admission", "owner release approval", "owner production admission", "approved output destination and retention plan"]
+    },
+    {
+      "sourceId": "ab-primary-land-vegetation",
+      "input": {"rawSha256": "017a0a835c680ca1b6c1eb790322a28e1b4c0c64e36924da46d8bb99cb1571d3", "rawBytes": 675544895, "derivedSha256": "5633e7d49982ee1232b415f362654744c1f1dab11d7c3c7ef8a7928dac20825b", "derivedBytes": 899551232, "repairPatchSha256": "c1e8a3fe57e3562e72ab4307de6e9bdb1d16f4c97e29d3a7048b7ed7cb85abac", "crs": "EPSG:3400"},
+      "authorityAndArchive": {"licence": "Open Government Licence – Alberta", "attribution": "Contains information licensed under the Open Government Licence – Alberta.", "existingEvidence": ["data/transformation-runs/alberta-plvi-geometry-repair-v1-2026-08-14.json", "data/alberta-plvi-full-release-readiness.json", "data/alberta-plvi-immutable-promotion-evidence.json"], "missing": ["resolved ordered source/output schema mapping or corrected schema-parity output"]},
+      "operation": {"geometry": "Use only the existing checksum-bound 179087-feature closed join: copy 179075 valid features unchanged and replace exactly POLYGON_ID 17119,17583,17931,19384,20217,21021,21992,23014,40392,50824,82560,161140 using the bounded valid repairs. Retain Polygon/MultiPolygon only; per repair relative-area delta <= 1e-9.", "attributes": "Preserve source attributes and duplicate POLYGON_ID 41405 with multiplicity two. Before any new output, either produce exact ordered name/type parity or record an owner-approved complete field mapping for the two renamed and 23 Integer-to-Integer64 widened fields; no implicit coercion is permitted.", "output": {"layer": "alberta_plvi_full_repaired", "crs": "EPSG:3400", "expectedFeatureCount": 179087, "expectedRepairCount": 12, "expectedInvalidOutputCount": 0, "expectedDuplicatePolygonId41405Multiplicity": 2}},
+      "exclusions": "None. No source feature may be dropped or deduplicated.",
+      "qa": ["raw, repair patch, and derived hashes", "179087 closed join", "all output geometry valid, non-empty, and polygonal", "12 repair IDs exactly once", "duplicate POLYGON_ID 41405 retained twice", "exact schema parity or explicit signed mapping", "deterministic sidecar hash"],
+      "intendedUse": "Potential primary land and vegetation context only after separate gates pass.",
+      "blockedPrerequisites": ["schema-parity remediation or complete owner-approved mapping", "owner transformation admission", "owner ingestion admission", "owner release approval", "owner production admission"]
+    },
+    {
+      "sourceId": "cwfis-current",
+      "input": {"rawSha256": "fc3d4a0730f30d6f12782b16e9459c173dabd6e50d0715b27cddecd954097f86", "rawBytes": 45917, "archiveVersionId": "Dg8F.JwRhDyVT9f30sy2oIY28PXXBhBz", "featureCount": 586, "geometry": "Point", "crs": "EPSG:3978", "asOf": "2026-08-14T20:22:42Z"},
+      "authorityAndArchive": {"licence": "Open Government Licence – Canada", "attribution": "Contains information licensed under the Open Government Licence – Canada. Source: Canadian Forest Service, Canadian Wildland Fire Information System / Framework.", "existingEvidence": ["data/current-wildfire-exact-raw-archive-capture-2026-08-25.json", "data/current-wildfire-owner-admission.json"], "missing": ["recovery-replica readback", "separate transformation/ingestion/release/production validation evidence"]},
+      "operation": {"geometry": "Reproject all and only the 586 valid points from EPSG:3978 to EPSG:4326. Do not create polygons or infer perimeter area.", "attributes": "Map shapefile truncations only to the documented service-schema names; preserve id, national_fire_id, agency_fire_id, agency_code, record_start, record_end and all values.", "output": {"layer": "cwfis_current_active_fires_20260814t202242z", "crs": "EPSG:4326", "expectedFeatureCount": 586}},
+      "exclusions": "Reject records outside the fixed query instant, missing required provenance fields, or with invalid/non-point geometry; do not fill, interpolate, or merge incidents.",
+      "qa": ["exact raw archive version/hash", "586 closed identities", "all output points valid/non-empty", "fixed query instant retained", "required service-schema mapping", "deterministic sidecar hash"],
+      "intendedUse": "National fallback active-fire point context only. Provincial agency sources prevail within their provinces.",
+      "blockedPrerequisites": ["recovery-replica readback", "separate transformation validation", "separate ingestion evidence", "separate release evidence", "separate production-admission evidence"]
+    },
+    {
+      "sourceId": "bc-wildfire",
+      "input": {"rawSha256": "46ee3a97ff83128630a030b5cfcc7f3c389fc94e3ca95d463595ab6f4fb57e83", "rawBytes": 4813292, "rawArchiveVersionId": "MlbWtwNKGNYE3NKLKZ6Lwd_SIE3nU3.O", "derivedSha256": "8ee36cc6bdfb5ef267340537e4cf822df7cc886873c7fcf65a1b2b12006d34ce", "derivedBytes": 2162688, "featureCount": 216, "crs": "EPSG:4326"},
+      "authorityAndArchive": {"licence": "Open Government Licence – British Columbia", "attribution": "Contains information licensed under the Open Government Licence – British Columbia. Source: Government of British Columbia, BC Wildfire Service.", "existingEvidence": ["data/bc-wildfire-geometry-policy-2026-08-14.json", "data/current-wildfire-exact-raw-archive-capture-2026-08-25.json", "data/current-wildfire-derived-manifest-retention-evidence.json"], "missing": ["derived exact-version readback evidence", "recovery-replica readback", "separate transformation/ingestion/release/production validation evidence"]},
+      "operation": {"geometry": "Use only the checksum-bound 216-feature derived release: copy 215 valid raw features unchanged; use the bounded valid G70362 replacement; permanently exclude V10755.", "attributes": "Preserve attributes and FIRE_NUMBER identity. Do not repair V10755 or substitute another geometry.", "output": {"layer": "bc_wildfire_current_20260814", "crs": "EPSG:4326", "expectedFeatureCount": 216, "expectedUnchangedCount": 215, "expectedRepairIds": ["G70362"], "expectedQuarantineIds": ["V10755"]}},
+      "exclusions": "V10755 is permanently excluded from geometry-dependent use because its repair changes area by 0.03167100456325357, above the 0.0001 tolerance.",
+      "qa": ["raw and derived hash/version binding", "216 closed identities", "all output geometry valid, non-empty, polygonal", "G70362 within 0.0001 relative-area tolerance", "V10755 absent", "schema/attribute preservation", "deterministic sidecar hash"],
+      "intendedUse": "British Columbia current-season perimeter context, labelled as an as-of reference snapshot only.",
+      "blockedPrerequisites": ["derived exact-version and recovery-replica readbacks", "separate transformation validation", "separate ingestion evidence", "separate release evidence", "separate production-admission evidence"]
+    },
+    {
+      "sourceId": "ab-wildfire",
+      "input": {"rawSha256": "f0e86ea34a7624c365349b3a8fbb77967bb45ab73c507cf441efb8f6a8736ee0", "rawBytes": 423853, "archiveVersionId": "dw4wHmsAflq2tavoyrvgU5MYCvAXZT2z", "featureCount": 751, "geometry": "Point", "crs": "EPSG:4326", "asOf": "2026-08-14T13:42:09Z"},
+      "authorityAndArchive": {"licence": "Open Government Licence – Alberta", "attribution": "Contains information licensed under the Open Government Licence – Alberta.", "existingEvidence": ["data/current-wildfire-exact-raw-archive-capture-2026-08-25.json", "data/current-wildfire-owner-admission.json"], "missing": ["recovery-replica readback", "separate transformation/ingestion/release/production validation evidence"]},
+      "operation": {"geometry": "Copy all and only 751 valid EPSG:4326 points unchanged.", "attributes": "Normalize field casing only if mapping is fully listed in the sidecar; preserve OBJECTID, FIRE_NUMBER, FIRE_STATUS, FIRE_STATUS_DATE, FIRE_YEAR, and publisher values. Do not derive perimeter area.", "output": {"layer": "ab_wildfire_locations_20260814", "crs": "EPSG:4326", "expectedFeatureCount": 751}},
+      "exclusions": "Reject invalid/non-point geometries or missing identity/provenance; do not create inferred geometry.",
+      "qa": ["exact raw archive version/hash", "751 closed identities", "all output points valid/non-empty", "required attributes retained", "deterministic sidecar hash"],
+      "intendedUse": "Alberta wildfire-location point context only, labelled as an as-of snapshot and not a perimeter dataset.",
+      "blockedPrerequisites": ["recovery-replica readback", "separate transformation validation", "separate ingestion evidence", "separate release evidence", "separate production-admission evidence"]
+    },
+    {
+      "sourceId": "on-fire-disturbance",
+      "input": {"rawSha256": "99881f19a32068b5d66b244955f7b088e873ffe76eafebf1740f03e16f042f11", "rawBytes": 19510504, "rawArchiveVersionId": "1QhoWWDx0BdCnGd.HuIhNFBOM4BGvOL_", "derivedSha256": "5e55c5d47559c350d9b31ffeda6bd39cfce64a3c57169098fff66341cd8ead31", "derivedBytes": 7913472, "featureCount": 188, "crs": "EPSG:4326"},
+      "authorityAndArchive": {"licence": "Ontario Open Government Licence", "attribution": "Ontario Ministry of Natural Resources © King’s Printer for Ontario, 2025", "existingEvidence": ["data/ontario-in-year-fire-geometry-policy-2026-08-14.json", "data/current-wildfire-exact-raw-archive-capture-2026-08-25.json", "data/current-wildfire-derived-manifest-retention-evidence.json"], "missing": ["derived exact-version readback evidence", "recovery-replica readback", "separate transformation/ingestion/release/production validation evidence"]},
+      "operation": {"geometry": "Use only the checksum-bound 188-feature derived release: copy 179 raw-valid features unchanged and use all nine recorded ST_MakeValid repairs. Keep Polygon/MultiPolygon output only, with each repair relative-area delta <= 1e-9.", "attributes": "Preserve every attribute and all 188 distinct OBJECTID values; no feature loss, deduplication, or reclassification.", "output": {"layer": "on_in_year_fire_perimeters_20260814", "crs": "EPSG:4326", "expectedFeatureCount": 188, "expectedUnchangedCount": 179, "expectedRepairCount": 9, "expectedDistinctObjectIdCount": 188}},
+      "exclusions": "None. Fail closed rather than omit a source feature.",
+      "qa": ["raw and derived hash/version binding", "188 closed OBJECTIDs", "all output geometry valid, non-empty, polygonal", "nine repair area thresholds", "schema/attribute preservation", "deterministic sidecar hash"],
+      "intendedUse": "Ontario in-year perimeter context, labelled as a daily as-of snapshot only.",
+      "blockedPrerequisites": ["derived exact-version and recovery-replica readbacks", "separate transformation validation", "separate ingestion evidence", "separate release evidence", "separate production-admission evidence"]
+    }
+  ],
+  "claims": {"transformed": false, "ingested": false, "released": false, "productionAdmission": false, "productionEligible": false, "phase2": false}
+}

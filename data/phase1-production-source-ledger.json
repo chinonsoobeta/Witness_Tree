@@ -1,0 +1,692 @@
+{
+  "schemaVersion": 1,
+  "status": "partially-admitted",
+  "asOf": "2026-08-26",
+  "notice": "Canonical Phase 1 production-source ledger. It reconciles every planUse: production row with evidence already recorded in this repository. Only rows with exact transformation, rights, field-completeness, release, and production-admission evidence are eligible; all other rows remain fail-closed.",
+  "entries": [
+    {
+      "id": "ntems-annual-land-cover",
+      "evidenceState": "remote-verified-archived-profiled",
+      "evidenceRefs": [
+        "data/vlce2-remote-promotion-evidence.json",
+        "data/raster-grid.json",
+        "data/raster-defects.json"
+      ],
+      "proof": {
+        "licence": true,
+        "attribution": true,
+        "retrievalVersion": true,
+        "checksum": true,
+        "rawArchiveRefetch": true,
+        "profile": true,
+        "immutableArchive": true,
+        "productionAdmission": false
+      },
+      "rawCredit": 1,
+      "productionEligible": false,
+      "blocker": "Owner approved this named source-ledger evidence row only; transform, ingestion, release, and production eligibility remain separately blocked."
+    },
+    {
+      "id": "ntems-forest-harvest",
+      "evidenceState": "remote-verified-archived-profiled",
+      "evidenceRefs": [
+        "data/nrcan-harvest-profile.json",
+        "data/staged-acquisitions.json",
+        "data/nrcan-harvest-remote-archive-evidence.json",
+        "data/phase1-remote-source-admission-decisions.json",
+        "data/phase1-scope-bound-validation-preparation.json"
+      ],
+      "proof": {
+        "licence": true,
+        "attribution": true,
+        "retrievalVersion": true,
+        "checksum": true,
+        "rawArchiveRefetch": true,
+        "profile": true,
+        "immutableArchive": true,
+        "productionAdmission": false
+      },
+      "rawCredit": 1,
+      "productionEligible": false,
+      "blocker": "Owner accepted this named source-ledger evidence row only; transformation admission, ingestion, release, and production eligibility remain separately blocked. The exact raw payload and recovery evidence are archived and redacted read back."
+    },
+    {
+      "id": "ntems-canopy-cover",
+      "evidenceState": "remote-verified-archived-profiled",
+      "evidenceRefs": [
+        "data/staged-acquisitions.json",
+        "data/nrcan-canopy-cover-profile.json",
+        "data/immutable-promotions.json"
+      ],
+      "proof": {
+        "licence": true,
+        "attribution": true,
+        "retrievalVersion": true,
+        "checksum": true,
+        "rawArchiveRefetch": true,
+        "profile": true,
+        "immutableArchive": true,
+        "productionAdmission": false
+      },
+      "rawCredit": 1,
+      "productionEligible": false,
+      "blocker": "Owner approved this named source-ledger evidence row only; transform, ingestion, release, and production eligibility remain separately blocked."
+    },
+    {
+      "id": "ntems-canopy-height",
+      "evidenceState": "remote-verified-archived-profiled",
+      "evidenceRefs": [
+        "data/nrcan-canopy-height-profile.json",
+        "data/staged-acquisitions.json",
+        "data/nrcan-canopy-height-remote-archive-evidence.json",
+        "data/phase1-remote-source-admission-decisions.json",
+        "data/phase1-scope-bound-validation-preparation.json"
+      ],
+      "proof": {
+        "licence": true,
+        "attribution": true,
+        "retrievalVersion": true,
+        "checksum": true,
+        "rawArchiveRefetch": true,
+        "profile": true,
+        "immutableArchive": true,
+        "productionAdmission": false
+      },
+      "rawCredit": 1,
+      "productionEligible": false,
+      "blocker": "Owner accepted this named source-ledger evidence row only; transformation admission, ingestion, release, and production admission remain separately required."
+    },
+    {
+      "id": "cwfis-current",
+      "evidenceState": "remote-verified-archived-profiled",
+      "evidenceRefs": [
+        "data/staged-acquisitions.json",
+        "data/cwfis-current-active-fires-profile.json",
+        "data/current-wildfire-owner-admission.json",
+        "data/current-wildfire-raw-archive-evidence.json",
+        "data/current-wildfire-exact-raw-archive-capture-2026-08-25.json"
+      ],
+      "proof": {
+        "licence": true,
+        "attribution": true,
+        "retrievalVersion": true,
+        "checksum": true,
+        "rawArchiveRefetch": true,
+        "profile": true,
+        "immutableArchive": true,
+        "productionAdmission": false
+      },
+      "rawCredit": 1,
+      "productionEligible": false,
+      "blocker": "Exact-version COMPLIANCE archive evidence now covers this raw payload and deterministic manifest. Recovery-replica proof remains separate; transformation, ingestion, release, and production admission remain separately blocked."
+    },
+    {
+      "id": "cwfis-historical",
+      "evidenceState": "partial-component",
+      "evidenceRefs": [
+        "data/nfdb-poly-current-profile.json",
+        "data/partial-ledger-evidence-audit.json"
+      ],
+      "proof": {
+        "licence": false,
+        "attribution": false,
+        "retrievalVersion": false,
+        "checksum": false,
+        "rawArchiveRefetch": false,
+        "profile": false,
+        "immutableArchive": false,
+        "productionAdmission": false
+      },
+      "rawCredit": 0.25,
+      "productionEligible": false,
+      "blocker": "NBAC is the missing component. Its affirmative end-user agreement limits use to the licensee's own internal use and bars distribution or transfer without Canada's prior written consent; the accountable owner has not accepted it. NFDB alone is not the named combined source."
+    },
+    {
+      "id": "bc-wildfire",
+      "evidenceState": "remote-verified-archived-profiled",
+      "evidenceRefs": [
+        "data/staged-acquisitions.json",
+        "data/bc-wildfire-current-perimeters-profile.json",
+        "data/bc-wildfire-geometry-policy-2026-08-14.json",
+        "data/current-wildfire-owner-admission.json",
+        "data/current-wildfire-raw-archive-evidence.json",
+        "data/current-wildfire-derived-archive-evidence.json",
+        "data/current-wildfire-exact-raw-archive-capture-2026-08-25.json",
+        "data/current-wildfire-derived-manifest-retention-evidence.json"
+      ],
+      "proof": {
+        "licence": true,
+        "attribution": true,
+        "retrievalVersion": true,
+        "checksum": true,
+        "rawArchiveRefetch": true,
+        "profile": true,
+        "immutableArchive": true,
+        "productionAdmission": false
+      },
+      "rawCredit": 1,
+      "productionEligible": false,
+      "blocker": "Exact-version COMPLIANCE evidence covers the raw and approved 216-feature derived payloads with their manifests. V10755 remains permanently quarantined; recovery-replica proof, ingestion, release, and production admission remain separate."
+    },
+    {
+      "id": "ab-wildfire",
+      "evidenceState": "remote-verified-archived-profiled",
+      "evidenceRefs": [
+        "data/staged-acquisitions.json",
+        "data/alberta-wildfire-locations-profile.json",
+        "data/current-wildfire-owner-admission.json",
+        "data/current-wildfire-raw-archive-evidence.json",
+        "data/current-wildfire-exact-raw-archive-capture-2026-08-25.json"
+      ],
+      "proof": {
+        "licence": true,
+        "attribution": true,
+        "retrievalVersion": true,
+        "checksum": true,
+        "rawArchiveRefetch": true,
+        "profile": true,
+        "immutableArchive": true,
+        "productionAdmission": false
+      },
+      "rawCredit": 1,
+      "productionEligible": false,
+      "blocker": "Exact-version COMPLIANCE archive evidence now covers this raw payload and deterministic manifest. The snapshot remains neither real-time nor a complete perimeter dataset; recovery, ingestion, release, and production admission remain separate."
+    },
+    {
+      "id": "on-fire-disturbance",
+      "evidenceState": "remote-verified-archived-profiled",
+      "evidenceRefs": [
+        "data/staged-acquisitions.json",
+        "data/ontario-in-year-fire-perimeters-profile.json",
+        "data/ontario-in-year-fire-geometry-policy-2026-08-14.json",
+        "data/current-wildfire-owner-admission.json",
+        "data/current-wildfire-raw-archive-evidence.json",
+        "data/current-wildfire-derived-archive-evidence.json",
+        "data/current-wildfire-exact-raw-archive-capture-2026-08-25.json",
+        "data/current-wildfire-derived-manifest-retention-evidence.json"
+      ],
+      "proof": {
+        "licence": true,
+        "attribution": true,
+        "retrievalVersion": true,
+        "checksum": true,
+        "rawArchiveRefetch": true,
+        "profile": true,
+        "immutableArchive": true,
+        "productionAdmission": false
+      },
+      "rawCredit": 1,
+      "productionEligible": false,
+      "blocker": "Exact-version COMPLIANCE evidence covers the raw and approved 188-feature derived payloads with their manifests. Recovery-replica proof, ingestion, release, and production admission remain separate."
+    },
+    {
+      "id": "sopfeu",
+      "evidenceState": "access-blocked",
+      "evidenceRefs": [],
+      "proof": {
+        "licence": false,
+        "attribution": false,
+        "retrievalVersion": false,
+        "checksum": false,
+        "rawArchiveRefetch": false,
+        "profile": false,
+        "immutableArchive": false,
+        "productionAdmission": false
+      },
+      "rawCredit": 0,
+      "productionEligible": false,
+      "blocker": "Written reusable terms are unresolved."
+    },
+    {
+      "id": "bc-fta-cutblocks",
+      "evidenceState": "access-blocked",
+      "evidenceRefs": [
+        "data/bc-fta-operational-sources.json"
+      ],
+      "proof": {
+        "licence": false,
+        "attribution": false,
+        "retrievalVersion": false,
+        "checksum": false,
+        "rawArchiveRefetch": false,
+        "profile": false,
+        "immutableArchive": false,
+        "productionAdmission": false
+      },
+      "rawCredit": 0,
+      "productionEligible": false,
+      "blocker": "Obtain a coherent publisher export with declared edition, checksum and profile."
+    },
+    {
+      "id": "bc-harvesting-authorities",
+      "evidenceState": "access-blocked",
+      "evidenceRefs": [
+        "data/bc-harvesting-authority-access-block.json"
+      ],
+      "proof": {
+        "licence": false,
+        "attribution": false,
+        "retrievalVersion": false,
+        "checksum": false,
+        "rawArchiveRefetch": false,
+        "profile": false,
+        "immutableArchive": false,
+        "productionAdmission": false
+      },
+      "rawCredit": 0,
+      "productionEligible": false,
+      "blocker": "Obtain a publisher-authorized snapshot and normal source evidence."
+    },
+    {
+      "id": "bc-vri",
+      "evidenceState": "access-blocked",
+      "evidenceRefs": [
+        "data/bc-vri-access-block.json"
+      ],
+      "proof": {
+        "licence": false,
+        "attribution": false,
+        "retrievalVersion": false,
+        "checksum": false,
+        "rawArchiveRefetch": false,
+        "profile": false,
+        "immutableArchive": false,
+        "productionAdmission": false
+      },
+      "rawCredit": 0,
+      "productionEligible": false,
+      "blocker": "Obtain an authorized raw snapshot, terms, coverage, checksum and profile."
+    },
+    {
+      "id": "bc-consolidated-cutblocks",
+      "evidenceState": "access-blocked",
+      "evidenceRefs": [
+        "data/bc-consolidated-cutblocks-access.json"
+      ],
+      "proof": {
+        "licence": false,
+        "attribution": false,
+        "retrievalVersion": false,
+        "checksum": false,
+        "rawArchiveRefetch": false,
+        "profile": false,
+        "immutableArchive": false,
+        "productionAdmission": false
+      },
+      "rawCredit": 0,
+      "productionEligible": false,
+      "blocker": "Access Only terms require a redistributable licence or publisher authorization."
+    },
+    {
+      "id": "bc-old-growth-bec",
+      "evidenceState": "access-blocked",
+      "evidenceRefs": [
+        "data/phase1-bec-custom-download-route-audit.json"
+      ],
+      "proof": {
+        "licence": false,
+        "attribution": false,
+        "retrievalVersion": false,
+        "checksum": false,
+        "rawArchiveRefetch": false,
+        "profile": false,
+        "immutableArchive": false,
+        "productionAdmission": false
+      },
+      "rawCredit": 0,
+      "productionEligible": false,
+      "blocker": "The official BEC custom-download route is an indirect order requiring an email, Terms and Conditions acceptance and an eligible authorized account; no complete package, checksum, archive or owner admission is recorded. TAP rights and the implemented-deferral source remain unresolved."
+    },
+    {
+      "id": "bc-forest-operations-map",
+      "evidenceState": "access-blocked",
+      "evidenceRefs": [
+        "data/bc-forest-operations-map-access.json"
+      ],
+      "proof": {
+        "licence": false,
+        "attribution": false,
+        "retrievalVersion": true,
+        "checksum": false,
+        "rawArchiveRefetch": false,
+        "profile": false,
+        "immutableArchive": false,
+        "productionAdmission": false
+      },
+      "rawCredit": 0,
+      "productionEligible": false,
+      "blocker": "Access Only rights block raw acquisition, profile, archive, transformation, ingestion, release, and production eligibility."
+    },
+    {
+      "id": "qc-current-ecoforest",
+      "evidenceState": "remote-verified-archived-profiled",
+      "evidenceRefs": [
+        "data/acquisition-readiness.json",
+        "data/coverage-geometry-admission.json",
+        "data/qc-immutable-promotion-attestation.json"
+      ],
+      "proof": {
+        "licence": true,
+        "attribution": true,
+        "retrievalVersion": true,
+        "checksum": true,
+        "rawArchiveRefetch": true,
+        "profile": true,
+        "immutableArchive": true,
+        "productionAdmission": false
+      },
+      "rawCredit": 1,
+      "productionEligible": false,
+      "blocker": "Separate owner decisions and evidence for transformation, ingestion, release, and production admission remain required."
+    },
+    {
+      "id": "qc-original-current-inventory",
+      "evidenceState": "remote-verified-archived-profiled",
+      "evidenceRefs": [
+        "data/qc-original-current-inventory-profile.json",
+        "data/staged-acquisitions.json",
+        "data/qc-immutable-promotion-attestation.json"
+      ],
+      "proof": {
+        "licence": true,
+        "attribution": true,
+        "retrievalVersion": true,
+        "checksum": true,
+        "rawArchiveRefetch": true,
+        "profile": true,
+        "immutableArchive": true,
+        "productionAdmission": false
+      },
+      "rawCredit": 1,
+      "productionEligible": false,
+      "blocker": "Separate owner decisions and evidence for transformation, ingestion, release, and production admission remain required."
+    },
+    {
+      "id": "qc-fourth-inventory",
+      "evidenceState": "remote-verified-archived-profiled",
+      "evidenceRefs": ["data/qc-fourth-inventory-evidence.json", "data/qc-fourth-inventory-exact-archive-readback-2026-08-25.json"],
+      "proof": {
+        "licence": true,
+        "attribution": true,
+        "retrievalVersion": true,
+        "checksum": true,
+        "rawArchiveRefetch": true,
+        "profile": true,
+        "immutableArchive": true,
+        "productionAdmission": false
+      },
+      "rawCredit": 1,
+      "productionEligible": false,
+      "blocker": "Recovery-replica evidence, semantic transformation and join selection, ingestion approval, release approval, and production admission remain separate."
+    },
+    {
+      "id": "ab-avi-crown",
+      "evidenceState": "remote-verified-archived-profiled",
+      "evidenceRefs": [
+        "data/staged-geospatial-profile.json",
+        "data/immutable-promotions.json",
+        "data/phase1-alberta-transform-ingestion-audit.json"
+      ],
+      "proof": {
+        "licence": true,
+        "attribution": true,
+        "retrievalVersion": true,
+        "checksum": true,
+        "rawArchiveRefetch": true,
+        "profile": true,
+        "immutableArchive": true,
+        "productionAdmission": false
+      },
+      "rawCredit": 1,
+      "productionEligible": false,
+      "blocker": "Owner approved this named source-ledger evidence row with only AVI_PostInventoryHarvestIndex FID 1 excluded. The existing repair/quarantine policy run is locally validated, but no downstream transformation scope, ingestion authorization, release approval, or production eligibility is approved."
+    },
+    {
+      "id": "ab-avi-post-harvest",
+      "evidenceState": "remote-verified-archived-profiled",
+      "evidenceRefs": [
+        "data/staged-geospatial-profile.json",
+        "data/immutable-promotions.json",
+        "data/phase1-alberta-transform-ingestion-audit.json"
+      ],
+      "proof": {
+        "licence": true,
+        "attribution": true,
+        "retrievalVersion": true,
+        "checksum": true,
+        "rawArchiveRefetch": true,
+        "profile": true,
+        "immutableArchive": true,
+        "productionAdmission": false
+      },
+      "rawCredit": 1,
+      "productionEligible": false,
+      "blocker": "Owner approved this named source-ledger evidence row only. The existing repair/quarantine policy run is locally validated, but no downstream transformation scope, ingestion authorization, release approval, or production eligibility is recorded."
+    },
+    {
+      "id": "ab-primary-land-vegetation",
+      "evidenceState": "remote-verified-archived-profiled",
+      "evidenceRefs": [
+        "data/staged-acquisitions.json",
+        "data/staged-geospatial-profile.json",
+        "data/transformation-runs/alberta-plvi-geometry-repair-v1-2026-08-14.json",
+        "data/alberta-plvi-full-release-readiness.json",
+        "data/alberta-plvi-immutable-promotion-preparation.json",
+        "data/alberta-plvi-immutable-promotion-evidence.json",
+        "data/phase1-alberta-transform-ingestion-audit.json",
+        "data/phase1-remote-source-admission-decisions.json",
+        "data/phase1-scope-bound-validation-preparation.json"
+      ],
+      "proof": {
+        "licence": true,
+        "attribution": true,
+        "retrievalVersion": true,
+        "checksum": true,
+        "rawArchiveRefetch": true,
+        "profile": true,
+        "immutableArchive": true,
+        "productionAdmission": false
+      },
+      "rawCredit": 1,
+      "productionEligible": false,
+      "blocker": "Exact raw and derived payload versions and deterministic sidecar versions are remotely verified; both payload versions carry COMPLIANCE retention through 2033-08-12. The owner admitted the exact raw/derived scope for scope-bound validation and ingestion preparation only; transformation admission, ingestion, release, production admission, and production eligibility remain separately blocked."
+    },
+    {
+      "id": "on-fri",
+      "evidenceState": "access-blocked",
+      "evidenceRefs": [
+        "data/ontario-fri-term2-access-block.json"
+      ],
+      "proof": {
+        "licence": false,
+        "attribution": false,
+        "retrievalVersion": true,
+        "checksum": false,
+        "rawArchiveRefetch": false,
+        "profile": false,
+        "immutableArchive": false,
+        "productionAdmission": false
+      },
+      "rawCredit": 0,
+      "productionEligible": false,
+      "blocker": "Official Term 2 FRI catalogue exposes only mutable WEB explorer resources; no stable complete payload/deterministic API or exact-package reuse confirmation exists."
+    },
+    {
+      "id": "on-fri-term-2",
+      "evidenceState": "access-blocked",
+      "evidenceRefs": [
+        "data/ontario-fri-term2-access-block.json"
+      ],
+      "proof": {
+        "licence": false,
+        "attribution": false,
+        "retrievalVersion": false,
+        "checksum": false,
+        "rawArchiveRefetch": false,
+        "profile": false,
+        "immutableArchive": false,
+        "productionAdmission": false
+      },
+      "rawCredit": 0,
+      "productionEligible": false,
+      "blocker": "Request-based access and rights remain unresolved."
+    },
+    {
+      "id": "fed-2023-ridings",
+      "evidenceState": "production-admitted",
+      "evidenceRefs": [
+        "data/elections-canada-fed-2025-profile.json",
+        "data/elections-canada-fed-2025-source-ledger.json",
+        "data/federal-electoral-archive-recovery-evidence.json",
+        "data/phase1-federal-electoral-output-verification-evidence.json",
+        "data/phase1-federal-electoral-production-admission.json"
+      ],
+      "proof": {
+        "licence": true,
+        "attribution": true,
+        "retrievalVersion": true,
+        "checksum": true,
+        "rawArchiveRefetch": true,
+        "profile": true,
+        "immutableArchive": true,
+        "productionAdmission": true
+      },
+      "rawCredit": 1,
+      "productionEligible": true,
+      "blocker": "No row-level blocker. The separate French publisher archive remains a phase-wide acquisition checkpoint and is not inferred from this bilingual-attribute layer."
+    },
+    {
+      "id": "elections-canada-45th-files",
+      "evidenceState": "production-admitted",
+      "evidenceRefs": [
+        "data/elections-canada-fed-2025-profile.json",
+        "data/elections-canada-fed-2025-source-ledger.json",
+        "data/federal-electoral-archive-recovery-evidence.json",
+        "data/phase1-federal-electoral-output-verification-evidence.json",
+        "data/phase1-federal-electoral-production-admission.json"
+      ],
+      "proof": {
+        "licence": true,
+        "attribution": true,
+        "retrievalVersion": true,
+        "checksum": true,
+        "rawArchiveRefetch": true,
+        "profile": true,
+        "immutableArchive": true,
+        "productionAdmission": true
+      },
+      "rawCredit": 1,
+      "productionEligible": true,
+      "blocker": "No row-level blocker. The separate French publisher archive remains a phase-wide acquisition checkpoint and is not inferred from this bilingual-attribute layer."
+    },
+    {
+      "id": "provincial-electoral-boundaries",
+      "evidenceState": "partial-component",
+      "evidenceRefs": [
+        "data/bc-provincial-electoral-2023-profile.json",
+        "data/on-electoral-2022-profile.json",
+        "data/alberta-electoral-boundary-block.json",
+        "data/qc-electoral-editions.json",
+        "data/partial-ledger-evidence-audit.json"
+      ],
+      "proof": {
+        "licence": false,
+        "attribution": false,
+        "retrievalVersion": false,
+        "checksum": false,
+        "rawArchiveRefetch": false,
+        "profile": false,
+        "immutableArchive": false,
+        "productionAdmission": false
+      },
+      "rawCredit": 0.25,
+      "productionEligible": false,
+      "blocker": "BC and Ontario are locally checksum-bound and profiled. Alberta still requires written permission for the intended use, and Québec still requires an accessible current-edition artifact plus written authorization for adaptation and any use beyond nonprofit reproduction."
+    },
+    {
+      "id": "indian-reserves",
+      "evidenceState": "access-blocked",
+      "evidenceRefs": [
+        "data/indian-reserves-authority-access-block.json",
+        "data/source-candidates.json"
+      ],
+      "proof": {
+        "licence": false,
+        "attribution": false,
+        "retrievalVersion": false,
+        "checksum": false,
+        "rawArchiveRefetch": false,
+        "profile": false,
+        "immutableArchive": false,
+        "productionAdmission": false
+      },
+      "rawCredit": 0,
+      "productionEligible": false,
+      "blocker": "NRCan candidate lists a mutable service and former GeoBase download but no verified authoritative reserve-only release, exact-artifact rights, or engagement/right-of-reply route."
+    },
+    {
+      "id": "first-nation-reserves",
+      "evidenceState": "access-blocked",
+      "evidenceRefs": [
+        "data/first-nation-reserves-authority-access-block.json"
+      ],
+      "proof": {
+        "licence": false,
+        "attribution": false,
+        "retrievalVersion": false,
+        "checksum": false,
+        "rawArchiveRefetch": false,
+        "profile": false,
+        "immutableArchive": false,
+        "productionAdmission": false
+      },
+      "rawCredit": 0,
+      "productionEligible": false,
+      "blocker": "ISC's reviewed reserve polygon service is unversioned and its reviewed First Nation service is point geometry, not a polygon substitute; no versioned released artifact, exact-artifact rights, checksum/archive recovery, or engagement/right-of-reply route is verified."
+    },
+    {
+      "id": "historic-treaties",
+      "evidenceState": "access-blocked",
+      "evidenceRefs": ["data/historic-treaties-authority-access-block.json"],
+      "proof": {
+        "licence": false,
+        "attribution": false,
+        "retrievalVersion": false,
+        "checksum": false,
+        "rawArchiveRefetch": false,
+        "profile": false,
+        "immutableArchive": false,
+        "productionAdmission": false
+      },
+      "rawCredit": 0,
+      "productionEligible": false,
+      "blocker": "The official federal historic-treaty mapping dataset says its boundaries are usually unsurveyed, estimated from descriptions, informational/representational only, and may use illustrative polygons. It is not legal or precision boundary geometry; no admissible legal artifact, rights, checksum/archive recovery, or engagement route is verified."
+    },
+    {
+      "id": "modern-treaties",
+      "evidenceState": "access-blocked",
+      "evidenceRefs": ["data/modern-treaties-authority-access-block.json", "data/source-candidates.json"],
+      "proof": {
+        "licence": false,
+        "attribution": false,
+        "retrievalVersion": false,
+        "checksum": false,
+        "rawArchiveRefetch": false,
+        "profile": false,
+        "immutableArchive": false,
+        "productionAdmission": false
+      },
+      "rawCredit": 0,
+      "productionEligible": false,
+      "blocker": "CIRNAC's official map is informal, approximate, subject to revision, and expressly cannot be relied on for consultation. It is not legal or precision boundary geometry; no admissible legal artifact, rights, checksum/archive recovery, or engagement route is verified."
+    }
+  ],
+  "rawEvidenceNumerator": 16.5,
+  "formalProgress": {
+    "baselinePercentagePoints": 25,
+    "rawEvidenceWeightPercentagePoints": 30,
+    "completeLedgerWeightPercentagePoints": 45,
+    "percentage": 40.9677419,
+    "notice": "This is an evidence-tracking score only. It does not grant source-ledger admission, transformation, analysis, ingestion, public release, production admission, or production eligibility."
+  }
+}

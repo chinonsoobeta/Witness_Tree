@@ -13,6 +13,8 @@ const COPY = {
     evidenceText: "Each public claim is classified as an official record, satellite observation, derived estimate or unknown. Confidence is high, medium, limited or unknown and always includes its generated reason. A colour alone does not communicate confidence.",
     matching: "Matching and precedence",
     matchingText: "Detected change matches an official record when the overlap is at least 50% of the smaller geometry. The date tolerance is ±2 years, widened to ±3 years before 1995. Where events overlap in the same hectare and year, display and totals use: fire; recorded harvest; recorded insect or disease disturbance; other recorded intervention; then detected change with no matching record. Overlapping evidence is retained.",
+    provincialMatching: "Provincial matching results",
+    provincialMatchingText: "Match rate, non-match rate, and the non-match-reason distribution are not available. No provincial enhancement dataset has been admitted for processing, so publishing numeric rates would be misleading. This page will publish those results only for an admitted, versioned provincial processing run.",
     limits: "What this record does not claim",
     limitsText: "A detected change is not labelled as logging, deforestation, a compliance finding or a named responsible organisation. Where no authoritative public record has been integrated, the record says so rather than substituting a numeric value.",
   },
@@ -28,6 +30,8 @@ const COPY = {
     evidenceText: "Chaque affirmation publique est classée comme registre officiel, observation satellitaire, estimation dérivée ou inconnue. La confiance est élevée, moyenne, limitée ou inconnue et comprend toujours sa raison générée. Une couleur seule ne communique pas la confiance.",
     matching: "Appariement et préséance",
     matchingText: "Un changement détecté correspond à un registre officiel lorsque le chevauchement atteint au moins 50 % de la plus petite géométrie. La tolérance de date est de ±2 ans, élargie à ±3 ans avant 1995. Lorsque des événements se chevauchent dans le même hectare et la même année, l’affichage et les totaux utilisent : incendie; récolte consignée; perturbation consignée par insecte ou maladie; autre intervention consignée; puis changement détecté sans registre correspondant. Les preuves qui se chevauchent sont conservées.",
+    provincialMatching: "Résultats de l’appariement provincial",
+    provincialMatchingText: "Le taux d’appariement, le taux de non-appariement et la répartition des motifs de non-appariement ne sont pas disponibles. Aucun jeu de données d’amélioration provinciale n’a été admis au traitement; publier des taux numériques serait donc trompeur. Cette page publiera ces résultats seulement pour une exécution provinciale admise et versionnée.",
     limits: "Ce que ce registre n’affirme pas",
     limitsText: "Un changement détecté n’est pas qualifié d’exploitation, de déforestation, de conclusion de conformité ou d’organisation responsable désignée. Lorsqu’aucun registre public faisant autorité n’a été intégré, le registre l’indique plutôt que de substituer une valeur numérique.",
   },
@@ -41,6 +45,7 @@ export function MethodologyPage({ locale }: Readonly<{ locale: Locale }>) {
     [copy.coverage, copy.coverageText],
     [copy.evidence, copy.evidenceText],
     [copy.matching, copy.matchingText],
+    [copy.provincialMatching, copy.provincialMatchingText],
     [copy.limits, copy.limitsText],
   ];
 

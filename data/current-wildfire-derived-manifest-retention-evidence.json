@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "witness-tree/wildfire-derived-manifest-retention-evidence/1",
+  "status": "completed",
+  "account": "286853118812",
+  "role": "WitnessTreeWildfireDerivedPromotionUploader",
+  "profile": "WitnessTreeArchiveOperator",
+  "region": "ca-central-1",
+  "bucket": "witness-tree-raw-archive-ca-central-1",
+  "retention": {
+    "mode": "COMPLIANCE",
+    "retainUntil": "2033-08-12T00:00:00Z",
+    "objectNames": ["bcManifest", "ontarioManifest"]
+  },
+  "objects": {
+    "bcPayload": {
+      "key": "derived/bc-wildfire/bc-wildfire-geometry-policy-v1-2026-08-14/2026-08-14T20-31-39Z/8ee36cc6bdfb5ef267340537e4cf822df7cc886873c7fcf65a1b2b12006d34ce/payload/bc-wildfire-216-feature-release.gpkg",
+      "byteLength": 2162688,
+      "checksumType": "FULL_OBJECT",
+      "versionSha256": "4c665f578e0f9ba43b3f941958e3ad6e49e44667e75656d2ef209c261e4455b7",
+      "checksumCrc64nvmeSha256": "48dae0aadd3b98de43491d242183282d0182b67ba0b731902c160bb6810ac7f8"
+    },
+    "bcManifest": {
+      "key": "derived/bc-wildfire/bc-wildfire-geometry-policy-v1-2026-08-14/2026-08-14T20-31-39Z/8ee36cc6bdfb5ef267340537e4cf822df7cc886873c7fcf65a1b2b12006d34ce/manifest.json",
+      "byteLength": 831,
+      "checksumType": "FULL_OBJECT",
+      "versionSha256": "57b34a2f97b178efd9e5d1f3c3fd8e34a73a9f439e955647d9160dfa511d53c7",
+      "checksumCrc64nvmeSha256": "9d8383b27cade728071e443273c239fbc03592731d02003c617c46c5c996d9fc"
+    },
+    "ontarioPayload": {
+      "key": "derived/on-fire-disturbance/ontario-in-year-fire-geometry-policy-v1-2026-08-14/2026-08-14T13-49-36Z/5e55c5d47559c350d9b31ffeda6bd39cfce64a3c57169098fff66341cd8ead31/payload/ontario-in-year-fire-perimeters-188-feature-derived.gpkg",
+      "byteLength": 7913472,
+      "checksumType": "FULL_OBJECT",
+      "versionSha256": "6e3b705839d864a1f90adfefc7fc9541c4133f2ad0ba3496fb4e4e631dc82f5f",
+      "checksumCrc64nvmeSha256": "08e48072aa498a538056e6bd6eaf352f1f74fff746d3038cbabaeeba9377cf81"
+    },
+    "ontarioManifest": {
+      "key": "derived/on-fire-disturbance/ontario-in-year-fire-geometry-policy-v1-2026-08-14/2026-08-14T13-49-36Z/5e55c5d47559c350d9b31ffeda6bd39cfce64a3c57169098fff66341cd8ead31/manifest.json",
+      "byteLength": 885,
+      "checksumType": "FULL_OBJECT",
+      "versionSha256": "bd3c1f9b4ea28ed8ce7f66d2a8a6c2fc69d706df29fc50d567ddc13eccafd066",
+      "checksumCrc64nvmeSha256": "af8d1357469bb518c81a56b917e9583a3ab1177d92e8bc35375cf056a4f6cdf1"
+    }
+  },
+  "objectRetention": {
+    "bcPayload": {"mode": "COMPLIANCE", "retainUntil": "2033-08-12T00:00:00+00:00"},
+    "bcManifest": {"mode": "COMPLIANCE", "retainUntil": "2033-08-12T00:00:00+00:00"},
+    "ontarioPayload": {"mode": "COMPLIANCE", "retainUntil": "2033-08-12T00:00:00+00:00"},
+    "ontarioManifest": {"mode": "COMPLIANCE", "retainUntil": "2033-08-12T00:00:00+00:00"}
+  },
+  "exclusions": ["no-upload", "no-overwrite", "no-delete", "no-multipart", "no-legal-hold", "no-bypass-governance", "no-other-key", "no-iam-change", "no-production-inference", "no-phase2"],
+  "productionEligible": false,
+  "phase2": false
+}

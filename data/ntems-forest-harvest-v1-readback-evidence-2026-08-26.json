@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "witness-tree/phase1-ntems-transformation-readback-evidence/1",
+  "status": "complete-readback-verified",
+  "authorization": {
+    "path": "data/phase1-ntems-forest-harvest-execution-authorization.json",
+    "sha256": "a9052282218fdf833bdb880db08d430237458238af93d3a6302bc3035e927fe8",
+    "createdAt": "2026-08-26T00:55:28Z"
+  },
+  "runner": {
+    "path": "scripts/run-phase1-ntems-transform.mjs",
+    "sha256": "ecb3585a27c82119e2d18fbce3231e12f3c8a33abbf5973453db8d1b0cf2a511"
+  },
+  "specifications": [
+    {
+      "id": "ntems-forest-harvest-v1",
+      "path": "data/phase1-production-transformation-specifications-v1.json",
+      "sha256": "258ca3f94e30d484b53cc12e29c83beaf57998993edaea05e44f5a4924979efc"
+    }
+  ],
+  "outputs": [
+    {
+      "specification": "ntems-forest-harvest-v1",
+      "input": "raw/nrcan-ca-forest-harvest-1985-2022/2026-08-14/CA_Forest_Harvest_1985-2022.zip",
+      "status": "verified",
+      "output": "ntems-forest-harvest-v1/c6f41dff46d91812874672edb53233dac4126952132ad6d1131ad47b11ad7aad/phase1-ntems-forest-harvest-v1/forest-harvest-year-1985-2022.tif",
+      "outputSha256": "02bea6ebd4adcedc777640600b076013d17752b2fd0c8bc0c6ed0ac5a9793a20",
+      "outputByteLength": 205794727,
+      "sidecarSha256": "33598703e0b6d0d2cb6ffda027603c822ef417a13a3ad5d494f94f275e9de599",
+      "sourcePixelChecksum": 40980,
+      "outputPixelChecksum": 40980
+    }
+  ],
+  "counts": {
+    "expected": 1,
+    "verified": 1,
+    "missing": 0
+  },
+  "claims": {
+    "transformed": true,
+    "ingested": false,
+    "released": false,
+    "productionAdmission": false,
+    "productionEligible": false,
+    "externalMutationPerformed": false
+  },
+  "sourceRecord": {
+    "path": "data/phase1-production-transformation-specifications-v1.json",
+    "sha256": "258ca3f94e30d484b53cc12e29c83beaf57998993edaea05e44f5a4924979efc"
+  }
+}

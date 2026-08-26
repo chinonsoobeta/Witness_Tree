@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "witness-tree/transformation-spec/1",
+  "id": "qc-current-ecoforest-stand-copy-v1",
+  "status": "specified-not-approved-not-executed",
+  "sourceId": "qc-current-ecoforest",
+  "sourceBinding": {
+    "rawArchiveSha256": "c67c56b0c101e95bef4fbca53a06e2f1578fe38293961017f70d815209740cf1",
+    "rawArchiveBytes": 12399475076,
+    "archiveMember": "CARTE_ECO_MAJ_PROV.gpkg",
+    "extractedGeoPackageSha256": "4f592f99786770600bdf219e8cdae5908d9a2398ab6a9ae45662fafa2494aa00",
+    "sourceProfileSha256": "fc16cb1abfb94f6bf5a6414f9f90a150a9c548688a719ce636f495561b7295d7"
+  },
+  "input": {
+    "format": "GeoPackage",
+    "layer": "pee_maj_prov",
+    "geometryColumn": "geom",
+    "geometryType": "MultiPolygon",
+    "crs": "EPSG:32198",
+    "featureCount": 9827536,
+    "sourceRowKey": "fid",
+    "publishedAttributes": ["geoc_maj", "geocode", "origine", "an_origine", "perturb", "an_perturb", "reb_ess1", "reb_ess2", "reb_ess3", "et_domi", "part_str", "type_couv", "gr_ess", "cl_dens", "cl_haut", "cl_age", "etagement", "couv_gaule", "cl_pent", "dep_sur", "cl_drai", "type_eco", "co_ter", "type_ter", "strate", "met_at_str", "superficie", "toponyme", "no_prg", "ver_prg", "in_maj", "shape_length", "shape_area"]
+  },
+  "interpretation": {
+    "temporal": "CARTE_ECO_MAJ_PROV is the publisher's current disturbance-updated ecoforest map retrieved on 2026-08-14. It is not an event chronology, a dated harvest record, or a substitute for the fixed fourth-inventory product.",
+    "semantic": "All publisher values are copied verbatim. In particular, origine, perturb, an_origine and an_perturb remain source-coded attributes; this specification does not map them to Witness Tree disturbance classes, event dates, harvest types, or causal claims.",
+    "spatialScope": "The map footprint is local context only, not a Québec boundary or complete forest-land denominator; the documented exception east of management unit 09551 remains disclosed."
+  },
+  "operation": {
+    "kind": "lossless-single-layer-copy",
+    "outputLayer": "qc_current_ecoforest_stands",
+    "outputCrs": "EPSG:32198",
+    "rowOrder": "ORDER BY fid ASC",
+    "rowIdentity": "source_fid is the source fid rendered as an integer; output_record_id is SHA-256(rawArchiveSha256 + ':' + input.layer + ':' + source_fid).",
+    "fieldMapping": "Copy every published attribute by the same name and type; append source_fid, output_record_id, source_raw_sha256 and source_layer.",
+    "geometry": "Copy geom byte-for-byte when the GeoPackage driver permits. Do not simplify, snap, dissolve, reproject, buffer, repair, or otherwise alter geometry.",
+    "joins": "None. Do not join meta or other tables in this operation.",
+    "exclusions": "None. A failed preflight, duplicate source_fid, missing/empty/invalid geometry, count mismatch, field mismatch, or checksum mismatch fails the run; it must not silently exclude records."
+  },
+  "deterministicOutputs": {
+    "artifact": "GeoPackage containing only qc_current_ecoforest_stands and gpkg metadata required by the driver",
+    "sidecar": "Canonical UTF-8 JSON with sorted object keys, newline termination, source binding, executable/version hashes, input and output schema fingerprints, feature counts, geometry counts, output SHA-256, and every QA result.",
+    "prohibitedVolatileFields": ["generatedAt", "hostname", "processId", "absoluteLocalPath"]
+  },
+  "qa": {
+    "required": ["verify raw archive SHA-256 and byte count before extraction", "verify member and extracted GeoPackage SHA-256", "verify layer, CRS, geometry type, full attribute list, and 9827536 source records", "verify source fid uniqueness and no missing, empty, or invalid geometries", "verify output count equals input count and all copied values and geometry fingerprints match by source_fid", "verify deterministic re-run output and sidecar SHA-256 match"],
+    "failurePolicy": "fail-closed; retain no partial artifact as an approved output"
+  },
+  "intendedUse": "A checksum-bound, lossless provincial stand-map artifact for later owner-approved analysis only.",
+  "ownerDecision": {
+    "decision": "Approve, reject, or defer this exact checksum-bound lossless stand-copy scope only.",
+    "doesNotDecide": [
+      "ingestion",
+      "release",
+      "production admission",
+      "semantic interpretation of source-coded attributes",
+      "a complete Québec forest-land denominator"
+    ]
+  },
+  "prohibitedClaims": ["production admission", "complete Québec forest-land coverage", "harvest event identification", "disturbance causation", "current real-time conditions", "a change to publisher data"],
+  "admission": {"transformationApproved": false, "ingestionApproved": false, "releaseApproved": false, "productionEligible": false}
+}

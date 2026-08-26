@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "witness-tree/phase1-transformation-execution-approval/1",
+  "status": "owner-approved-execution-only",
+  "decision": "approve",
+  "ownerAuthorization": {
+    "ownerName": "Chinonso Obeta",
+    "statement": "You can execute them when complete.",
+    "scope": "All seven Phase 1 transformation scopes, including qc-original-current-inventory-stand-copy-v1."
+  },
+  "packet": {"path": "data/phase1-downstream-admission-packet.json", "sha256": "4859407ea256988a50873c03aa4146c8dd15e5e13f9ced47fa87a7883b404d6a"},
+  "ownerScopeApproval": {"path": "data/phase1-transformation-scope-owner-approval-2026-08-25.json", "sha256": "fda1c43d2ee23adb35907ddf012c9b64aa23e69774866c725271ed91223dffb2"},
+  "specification": {"id": "qc-original-current-inventory-stand-copy-v1", "path": "data/transformation-specs/qc-original-current-inventory-stand-copy-v1.json", "sha256": "71707b702f2367d46c985e84f5f16e19ad75012c8efe71b2ff17dd8063c7ab2c"},
+  "runner": {"path": "scripts/run-qc-stand-copy.mjs", "methodVersion": "qc-stand-copy-runner-v1", "sha256": "95d0c479bfb9bd9aedac88e1dcad84184c7dcf12b2f7e574935bf2ca7ef31cfb"},
+  "approvedScopes": [{"specId": "qc-original-current-inventory-stand-copy-v1", "specSha256": "71707b702f2367d46c985e84f5f16e19ad75012c8efe71b2ff17dd8063c7ab2c", "decision": "approve"}],
+  "inputBinding": {
+    "rawArchiveSha256": "c10d691516569de76642dc1fc64e662f2569b5b58ab5d945b58b8b7834ba9c61",
+    "rawArchiveBytes": 11244667626,
+    "extractedGeoPackageSha256": "70539d99497de2773342611d73bf9e4fadf01f1fdbfe3ca536ad711d87916e7c",
+    "extractedGeoPackageBytes": 33243570176,
+    "layer": "pee_ori_prov",
+    "geometryType": "MultiPolygon",
+    "crs": "EPSG:32198",
+    "featureCount": 8387062
+  },
+  "outputBinding": {
+    "artifactRelativePath": "derived/phase1/qc-original-current-inventory-stand-copy-v1/c10d691516569de76642dc1fc64e662f2569b5b58ab5d945b58b8b7834ba9c61/qc-stand-copy-runner-v1/qc_original_current_inventory_stands.gpkg",
+    "sidecarRelativePath": "derived/phase1/qc-original-current-inventory-stand-copy-v1/c10d691516569de76642dc1fc64e662f2569b5b58ab5d945b58b8b7834ba9c61/qc-stand-copy-runner-v1/qc_original_current_inventory_stands.gpkg.json",
+    "layer": "qc_original_current_inventory_stands"
+  },
+  "decisionBoundary": {"executionAuthorized": true, "ingestionAuthorized": false, "releaseAuthorized": false, "productionAdmissionAuthorized": false, "productionEligibilityGranted": false, "externalMutationPerformed": false}
+}

@@ -1,0 +1,269 @@
+{
+  "schemaVersion": 1,
+  "status": "official-route-exhaustion-complete-no-lawful-intended-scope-acquisition",
+  "auditedAt": "2026-08-20T19:09:59Z",
+  "authoritativeHead": "650a7da",
+  "reconciledAtHead": "1749b501f17b5cb55a686178232dc6ac191d3e81",
+  "scope": ["cwfis-historical", "provincial-electoral-boundaries"],
+  "boundary": "Read-only official-page, catalogue and HTTP HEAD inspection plus bounded mailbox searches. No agreement, form, message, authentication, payment, attachment or package download was performed.",
+  "mailbox": {
+    "status": "no-matching-partial-row-replies",
+    "searches": [
+      "exact NBAC 1972–2025 subject and National Burned Area Composite terms",
+      "cwfissa-csscifv@nrcan-rncan.gc.ca sender/address",
+      "Elections Alberta sender/domain and exact boundary-request subject terms",
+      "Élections Québec sender/domain and exact 2017 artifact/authorization subject terms"
+    ],
+    "partialRowsWithSubstantiveReply": 0,
+    "partialRowsWithoutSubstantiveReply": 2,
+    "messageIdsRetained": false,
+    "attachmentsRead": false,
+    "externalStateChanged": false
+  },
+  "routes": [
+    {
+      "id": "cwfis-nbac-dated-shapefile-release",
+      "rowId": "cwfis-historical",
+      "publisher": "Natural Resources Canada, Canadian Forest Service",
+      "officialIndexUrl": "https://cwfis.cfs.nrcan.gc.ca/downloads/nbac/",
+      "artifactUrl": "https://cwfis.cfs.nrcan.gc.ca/downloads/nbac/NBAC_1972to2025_20260513_shp.zip",
+      "metadataUrl": "https://cwfis.cfs.nrcan.gc.ca/downloads/nbac/NBAC_1972to2025_20260513_shp_metadata.pdf",
+      "agreementUrl": "https://cwfis.cfs.nrcan.gc.ca/datamart/datarequest/nbac",
+      "release": "1972–2025, 20260513",
+      "format": "ESRI Shapefile geospatial vector data",
+      "coverage": "National annual burned-area polygons since 1972 through 2025",
+      "coherentArtifact": true,
+      "publicListing": true,
+      "head": {
+        "observedAt": "2026-08-20T19:09:58Z",
+        "status": 200,
+        "contentType": "application/zip",
+        "contentLength": 1257052370,
+        "lastModified": "Fri, 22 May 2026 16:27:30 GMT",
+        "etag": "\"6a1083f2-4aed18d2\""
+      },
+      "rights": {
+        "agreementRequired": true,
+        "accessTriggersAgreement": true,
+        "internalUseOnly": true,
+        "transferRequiresPriorWrittenConsent": true,
+        "prescribedCitationRequired": true,
+        "lawfulForIntendedScope": false,
+        "blocker": "The official agreement binds the end-user by accessing, downloading or using the data, limits the licence to the licensee's own internal use and prohibits distribution or transfer without Canada's prior written consent. No accountable owner has accepted it or supplied the required consent."
+      },
+      "downloaded": false,
+      "sha256": null,
+      "profileComplete": false,
+      "nextOwnerAction": "The accountable data owner independently accepts or rejects the exact agreement for Canadian private archive, internal processing and public derived-output use; if accepted, obtain Canada's written consent before any redistribution or transfer, then acquire and profile this exact dated release."
+    },
+    {
+      "id": "cwfis-nbac-annual-fragments",
+      "rowId": "cwfis-historical",
+      "publisher": "Natural Resources Canada, Canadian Forest Service",
+      "officialIndexUrl": "https://cwfis.cfs.nrcan.gc.ca/downloads/nbac/",
+      "routeKind": "annual ZIP fragments",
+      "coherentArtifact": false,
+      "publicListing": true,
+      "rights": {
+        "agreementRequired": true,
+        "lawfulForIntendedScope": false,
+        "blocker": "The index lists annual files, but they are not the named coherent 1972–2025 release and remain subject to the same NBAC agreement. Substituting a collection of fragments would not establish the required single-release version, archive or profile evidence."
+      },
+      "downloaded": false,
+      "sha256": null,
+      "profileComplete": false,
+      "nextOwnerAction": "Do not substitute annual fragments. Resolve the exact dated release and agreement first."
+    },
+    {
+      "id": "cwfis-nbac-raster-and-summary-routes",
+      "rowId": "cwfis-historical",
+      "publisher": "Natural Resources Canada, Canadian Forest Service",
+      "officialIndexUrl": "https://cwfis.cfs.nrcan.gc.ca/downloads/nbac/",
+      "routeKind": "most-recent-burn rasters, maps, statistics and metadata",
+      "coherentArtifact": false,
+      "publicListing": true,
+      "rights": {
+        "agreementRequired": true,
+        "lawfulForIntendedScope": false,
+        "blocker": "The listed raster, image, workbook and metadata products are not the complete National Burned Area Composite polygon release required by this row; they cannot replace the missing vector source, agreement decision or transfer consent."
+      },
+      "downloaded": false,
+      "sha256": null,
+      "profileComplete": false,
+      "nextOwnerAction": "Retain the exact dated vector release as the only acquisition target."
+    },
+    {
+      "id": "cwfis-nbac-public-services",
+      "rowId": "cwfis-historical",
+      "publisher": "Natural Resources Canada, Canadian Forest Service",
+      "serviceReferenceUrl": "https://cwfis.cfs.nrcan.gc.ca/downloads/docs/en/references/cwfif/cwfis-data-placemat.pdf",
+      "routeKind": "WMS/WFS/WCS services",
+      "coherentArtifact": false,
+      "publicListing": true,
+      "rights": {
+        "agreementRequired": false,
+        "versionedSnapshot": false,
+        "lawfulForIntendedScope": false,
+        "blocker": "The official service placemat describes public services and historical date ranges, but not a checksum-bound 1972–2025 release or transaction-safe immutable snapshot. A live service cannot substitute for the named archive artifact."
+      },
+      "downloaded": false,
+      "sha256": null,
+      "profileComplete": false,
+      "nextOwnerAction": "Do not use a live service as a release substitute; resolve the official dated archive route."
+    },
+    {
+      "id": "elections-alberta-current-ed-shapefile",
+      "rowId": "provincial-electoral-boundaries",
+      "publisher": "Elections Alberta",
+      "officialPageUrl": "https://www.elections.ab.ca/resources/maps/",
+      "artifactUrl": "https://www.elections.ab.ca/uploads/2019Boundaries_ED-Shapefiles.zip",
+      "termsUrl": "https://www.elections.ab.ca/terms-conditions/",
+      "edition": "87 Electoral Divisions effective 2019-03-19",
+      "format": "ZIP containing ED Shapefiles",
+      "coherentArtifact": true,
+      "publicListing": true,
+      "head": {
+        "observedAt": "2026-08-20T19:09:58Z",
+        "status": 200,
+        "contentType": "application/x-zip-compressed",
+        "contentLength": 2852757,
+        "lastModified": "Wed, 11 Sep 2024 18:16:52 GMT",
+        "etag": "0x8DCD28DE977C666"
+      },
+      "rights": {
+        "agreementRequired": false,
+        "unchangedNonCommercialReproductionAllowed": true,
+        "modificationAllowed": false,
+        "transformationAndPublicServicePermissionVerified": false,
+        "lawfulForIntendedScope": false,
+        "blocker": "The official terms allow personal/public non-commercial educational reproduction only when materials are not modified and the source and non-endorsement notice are preserved. The intended service requires validation, transformation and public derived outputs; written permission for that scope and redistribution has not been received."
+      },
+      "downloaded": false,
+      "sha256": null,
+      "profileComplete": false,
+      "nextOwnerAction": "The geography data lead reviews and sends the prepared postal request to Elections Alberta's Deputy Chief Electoral Officer, then records the exact rights and current-edition reply before acquisition."
+    },
+    {
+      "id": "elections-quebec-current-2017-atlas-shapefile",
+      "rowId": "provincial-electoral-boundaries",
+      "publisher": "Élections Québec / Commission de la représentation électorale",
+      "currentEditionPageUrl": "https://www.electionsquebec.qc.ca/cartes-electorales/carte-electorale-du-quebec/",
+      "atlasPageUrl": "https://www.electionsquebec.qc.ca/cartes-electorales/carte-electorale-du-quebec/atlas-historique-des-circonscriptions-electorales-du-quebec/",
+      "artifactUrl": "https://donnees.electionsquebec.qc.ca/autres/atlas/2017.zip",
+      "termsUrl": "https://www.electionsquebec.qc.ca/notre-institution/conditions-dutilisation/",
+      "edition": "2017, 125 provincial electoral divisions plus corresponding municipalities",
+      "format": "Shapefile ZIP",
+      "coherentArtifact": true,
+      "publicListing": true,
+      "head": {
+        "observedAt": "2026-08-20T19:09:59Z",
+        "status": 200,
+        "contentType": "application/x-zip-compressed",
+        "contentLength": 30007395,
+        "lastModified": "Tue, 23 Jun 2026 14:12:34 GMT",
+        "etag": "\"c6e2b6161d2b91ae67c3b033b6ee0c01-3\""
+      },
+      "rights": {
+        "nonCommercialReproductionAllowedWithAttribution": true,
+        "adaptationAllowed": false,
+        "statisticsCanadaMaterialPresent": true,
+        "writtenAuthorizationForIntendedScopeVerified": false,
+        "lawfulForIntendedScope": false,
+        "blocker": "The official atlas exposes a complete public 2017 Shapefile route and permits non-commercial reproduction with attribution, but the official conditions require written authorization for adaptation or other use. The atlas also identifies Statistics Canada material with separate reproduction restrictions. Written authorization for retention, adaptation, public-service use and redistribution has not been received."
+      },
+      "downloaded": false,
+      "sha256": null,
+      "profileComplete": false,
+      "nextOwnerAction": "The geography data lead asks Élections Québec through the prepared secure general-information form whether this exact 2017 atlas artifact is the accepted current source and requests written authorization for the intended archive, adaptation, public-service display and redistribution."
+    },
+    {
+      "id": "elections-quebec-current-2017-direct-geojson",
+      "rowId": "provincial-electoral-boundaries",
+      "publisher": "Élections Québec / Commission de la représentation électorale",
+      "artifactUrl": "https://donnees.electionsquebec.qc.ca/autres/provincial/circonscriptions_electorales_sans_eau_2017.json",
+      "coherentArtifact": false,
+      "publicListing": false,
+      "head": {
+        "observedAt": "2026-08-20T19:09:59Z",
+        "status": 403,
+        "contentType": "text/html",
+        "contentLength": 7745
+      },
+      "rights": {
+        "lawfulForIntendedScope": false,
+        "blocker": "The direct current-edition GeoJSON route remains inaccessible; its error response is not an artifact and supplies no checksum or profile evidence."
+      },
+      "downloaded": false,
+      "sha256": null,
+      "profileComplete": false,
+      "nextOwnerAction": "Use the public atlas route only as a candidate until Élections Québec confirms its acceptance and intended-use rights in writing."
+    },
+    {
+      "id": "elections-quebec-2026-future-edition",
+      "rowId": "provincial-electoral-boundaries",
+      "publisher": "Élections Québec / Commission de la représentation électorale",
+      "futureEditionPageUrl": "https://www.electionsquebec.qc.ca/cartes-electorales/revision-de-la-carte-electorale-du-quebec/la-carte-electorale-delimitation-finale/",
+      "edition": "2026, 127 divisions",
+      "coherentArtifact": true,
+      "publicListing": true,
+      "currentForThisRow": false,
+      "rights": {
+        "lawfulForIntendedScope": false,
+        "blocker": "The official page identifies the 2026 map for the next general provincial elections, while the current-map page identifies 2017 as the map in force. It cannot be substituted early or mixed with the current 2017 component."
+      },
+      "downloaded": false,
+      "sha256": null,
+      "profileComplete": false,
+      "nextOwnerAction": "Keep the effective-date gate and re-evaluate the 2026 edition when the 43rd legislature ends or the official current-map page changes."
+    }
+  ],
+  "rows": [
+    {
+      "id": "cwfis-historical",
+      "evidenceState": "partial-component",
+      "substantiveReplyCount": 0,
+      "lawfulAcquisitionNow": false,
+      "missingArtifactAcquired": false,
+      "permissionReceived": false,
+      "agreementAccepted": false,
+      "remainingBlockers": [
+        "No owner acceptance or rejection of the exact NBAC End-User Agreement",
+        "No written Canadian consent for any redistribution or transfer",
+        "No checksum, archive-integrity or profile evidence for the NBAC 1972–2025 release"
+      ],
+      "ownerAction": "Owner reviews the exact agreement and decides the intended archive/processing/public-output scope; after an affirmative decision, acquire the dated release and obtain written transfer consent before any redistribution."
+    },
+    {
+      "id": "provincial-electoral-boundaries",
+      "evidenceState": "partial-component",
+      "substantiveReplyCount": 0,
+      "lawfulAcquisitionNow": false,
+      "missingArtifactAcquired": false,
+      "permissionReceived": false,
+      "agreementAccepted": false,
+      "remainingBlockers": [
+        "Alberta written permission for transformation, public-service use and redistribution",
+        "Québec confirmation that the public 2017 atlas ZIP is the accepted current artifact",
+        "Québec written authorization for adaptation, public-service use and redistribution",
+        "Checksum, archive-integrity and profile evidence for the two missing components"
+      ],
+      "ownerAction": "Owner reviews and sends the prepared Elections Alberta postal request and Québec secure-form request; only then acquire and profile the publisher-confirmed artifacts."
+    }
+  ],
+  "impact": {
+    "rawEvidenceNumeratorBefore": 14.25,
+    "rawEvidenceNumeratorAfter": 14.25,
+    "rawEvidenceDenominator": 31,
+    "rawCreditDelta": 0,
+    "formalEvidenceTrackingPercentageBefore": 38.7903226,
+    "formalEvidenceTrackingPercentageAfter": 38.7903226,
+    "immutableArchiveCompleteRows": 7,
+    "evidenceStateCounts": {
+      "remote-verified-archived-profiled": 7,
+      "local-verified-profiled": 9,
+      "partial-component": 2,
+      "access-blocked": 13
+    },
+    "productionEligibleRows": 0
+  }
+}

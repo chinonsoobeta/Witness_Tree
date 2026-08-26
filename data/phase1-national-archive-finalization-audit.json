@@ -1,0 +1,114 @@
+{
+  "schemaVersion": "witness-tree/phase1-national-archive-finalization-audit/1",
+  "status": "blocked-read-only",
+  "observedAt": "2026-08-20",
+  "lineage": {"integratedBase": "eca44dd", "runnerFix": "62d008f"},
+  "notice": "Redacted local, offline-mock, read-only, and owner-supplied operational observations only. No AWS, IAM, upload, completion, retention, delete, recovery-state write, TOTP, email, deployment, or production action was performed by this audit.",
+  "localArtifacts": [
+    {"sourceId":"ntems-forest-harvest","byteLength":247945479,"sha256Match":true},
+    {"sourceId":"ntems-canopy-height","byteLength":10347564066,"sha256Match":true},
+    {"sourceId":"fed-2023-ridings-and-elections-canada-45th-files","byteLength":10301648,"sha256Match":true}
+  ],
+  "liveReadOnly": {
+    "bucket": "witness-tree-raw-archive-ca-central-1",
+    "region": "ca-central-1",
+    "multipart": {
+      "canopy": {
+        "prefix": "raw/nrcan-forest-canopy-height-2022/",
+        "exactKey": "raw/nrcan-forest-canopy-height-2022/undeclared/2026-08-14T18-57-22Z/86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124/payload/ca_canopy_height_2022.zip",
+        "openUploadCount": 0,
+        "completionStatus": "completed",
+        "partCount": 155,
+        "isTruncated": false,
+        "allPartsHaveProviderChecksum": true
+      },
+      "federal": {"prefix":"raw/elections-canada-federal-electoral-districts-45th-general-election-2025-shp/","openUploadCount":0},
+      "harvest": {"prefix":"raw/nrcan-ca-forest-harvest-1985-2022/","openUploadCount":0}
+    },
+    "exactHeads": {
+      "canopy": {
+        "payloadExists": true,
+        "manifestExists": true,
+        "payloadBytes": 10347564066,
+        "manifestBytes": 459,
+        "payloadChecksumType": "FULL_OBJECT",
+        "manifestChecksumType": "FULL_OBJECT",
+        "payloadChecksumPresent": true,
+        "manifestChecksumPresent": true,
+        "exactVersionReadback": false,
+        "retentionPresent": false,
+        "recoveryPayloadExists": true,
+        "recoveryManifestExists": true,
+        "recoveryPayloadBytes": 10347564066,
+        "recoveryManifestBytes": 459,
+        "recoveryPayloadChecksumType": "FULL_OBJECT",
+        "recoveryManifestChecksumType": "FULL_OBJECT",
+        "recoveryPayloadChecksumPresent": true,
+        "recoveryManifestChecksumPresent": true,
+        "recoveryExactVersionReadback": false,
+        "recoveryRetentionPresent": false,
+        "versionedReadbackBlocker": "s3:GetObjectVersion is unavailable to the current approved role; exact-version readback is not proven.",
+        "archiveCredit": false
+      },
+      "federal": {"payloadExists": false, "manifestExists": false}
+    },
+    "mutationsPerformed": []
+  },
+  "offlineMultipartReproduction": {
+    "beforeFix": {
+      "status":"reproduced-provider-rejection",
+      "completionAttempted":true,
+      "rejectedCompletionField":"Size",
+      "uploadPartCalled":false,
+      "statePartsAfter":155,
+      "stateUnchanged":true,
+      "exitStatus":70
+    },
+    "afterFix": {
+      "status":"mock-completion-and-readbacks-passed",
+      "completionAttempted":true,
+      "completionPartsFields":["PartNumber","ETag","ChecksumCRC64NVME"],
+      "completionResponse":{"versionPresent":true,"checksumType":"FULL_OBJECT","checksumPresent":true},
+      "uploadPartCalled":false,
+      "statePartsAfter":155,
+      "stateUnchanged":true,
+      "requiredReadbacks":["payload-exact-version","payload-bytes","payload-FULL_OBJECT-checksum","COMPLIANCE-retention","sidecar-exact-version","sidecar-bytes","sidecar-FULL_OBJECT-checksum"],
+      "exitStatus":0
+    }
+  },
+  "privateResumeState": {
+    "matchingMode600RecordFoundInControlledRoots": true,
+    "offlineValidationPassed": true,
+    "recordContentsReadOrRetained": true,
+    "recordContentsRetainedInRepository": false,
+    "recordIdentifiersRecorded": false
+  },
+  "ownerRun": {
+    "safeCommandAvailable": false,
+    "command": null,
+    "blockers":[
+      "The owner-local mode-600 canopy resume record passed offline validation, but its exact path, contents, upload identifier and provider part identifiers are intentionally not recorded in repository evidence; no owner-run command is authorized by this audit.",
+      "Any owner run still requires fresh exact-artifact/retention approval, an interactive MFA session, and live list-parts, completion, exact-version checksum, retention and sidecar read-backs.",
+      "The federal prefix has no open multipart upload and therefore needs its separate owner-approved federal-only promotion path."
+    ]
+  },
+  "postCompletionOperationalTruth": {
+    "status": "multipart-complete-heads-present-retention-and-versioned-readback-blocked",
+    "multipartCompleted": true,
+    "primaryAndRecovery": {
+      "payload": {"present": true, "bytes": 10347564066, "checksumType": "FULL_OBJECT", "checksumPresent": true},
+      "sidecar": {"present": true, "bytes": 459, "checksumType": "FULL_OBJECT", "checksumPresent": true}
+    },
+    "retention": {"primaryPayload": "absent", "recoveryPayload": "absent"},
+    "versionedReadback": {"status": "blocked", "permission": "s3:GetObjectVersion unavailable", "performed": false},
+    "archiveCredit": false,
+    "productionEligible": false
+  },
+  "claims": {
+    "canopyMultipartFinalized": false,
+    "federalArtifactPromoted": false,
+    "harvestPromotionPerformed": false,
+    "remoteMutationPerformed": false,
+    "productionEligible": false
+  }
+}

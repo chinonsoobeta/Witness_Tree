@@ -1,0 +1,300 @@
+{
+  "schemaVersion": 1,
+  "status": "read-only-reply-audit-complete-no-resolution",
+  "auditedAt": "2026-08-21T22:34:39Z",
+  "source": "Gmail read-only searches and bounded thread reads through 2026-08-21T22:34:39Z, including the FOM copyright clarification and its owner-authorized sent reply plus exact NBAC, Elections Alberta and Élections Québec sender/subject searches for the two partial rows. Message IDs, thread IDs, mailbox URLs, bodies, personal contact fields and attachments are not retained here.",
+  "officialRouteAuditFile": "data/phase1-bec-custom-download-route-audit.json",
+  "nonClaimNotice": "A submitted form, reply, routing instruction, follow-up, or acknowledgement is not permission and is not an acquisition, checksum, archive, transformation, ingestion, release, or production eligibility decision. The FOM-only form and clarification reply changed outreach state but supplied no permission, authorized data access, or score evidence.",
+  "counts": {
+    "canonicalAccessBlockedRows": 13,
+    "canonicalPartialRows": 2,
+    "substantiveReplyRecords": 8,
+    "accessBlockedRowsWithSubstantiveReply": 8,
+    "accessBlockedRowsWithoutSubstantiveReply": 5,
+    "partialRowsWithSubstantiveReply": 0,
+    "partialRowsWithoutSubstantiveReply": 2,
+    "automaticOrAcknowledgementOnlyRecords": 4,
+    "ownerFollowUpsObserved": 4,
+    "rawEvidenceCreditImpact": 0,
+    "productionEligibilityImpact": 0
+  },
+  "substantiveReplies": [
+    {
+      "id": "reply-bc-forest-tenures-foi-route",
+      "outreachMessageId": "bc-forest-tenures-export",
+      "canonicalRowIds": ["bc-fta-cutblocks", "bc-harvesting-authorities"],
+      "receivedAt": "2026-08-18T16:12:12Z",
+      "sender": "Shelley.Zupp@gov.bc.ca",
+      "subject": "Request for coherent BCGW exports — FTA cutblocks and harvesting authorities",
+      "status": "procedural-route-only-no-export",
+      "summary": "The Tenures, Compensation and Business Analysis Branch said the request falls under the Freedom of Information and Protection of Privacy Act and pointed to the Province's records-request route. It supplied no BCGW export, edition, snapshot, checksum, licence decision, or reuse authorization.",
+      "remainingBlockers": ["No coherent FTA or harvesting-authority artifact", "No edition/as-of, feature count, schema, CRS or checksum", "No source-specific reuse or archive authorization", "A records request has not been submitted by this audit", "Harvesting-authority lifecycle semantics remain unresolved"]
+    },
+    {
+      "id": "reply-ontario-fri-catalogue-deferral",
+      "outreachMessageId": "ontario-fri-term2-package-and-rights",
+      "canonicalRowIds": ["on-fri", "on-fri-term-2"],
+      "receivedAt": "2026-08-18T18:30:12Z",
+      "sender": "Mya.Rice@ontario.ca",
+      "subject": "RE: Request for reproducible Forest Resource Inventory Term 2 package and reuse confirmation",
+      "status": "catalogue-deferral-no-package",
+      "summary": "The Ontario FRI team said readily available products are listed on Ontario GeoHub FRI and that Term 2 directions and information will be uploaded as they become available for public use. It supplied no Term 2 FMU package, stable artifact, checksum, exact-package rights confirmation, or archive/reuse terms.",
+      "remainingBlockers": ["No stable complete Term 2 artifact or deterministic complete API", "No selected FMU package or edition/as-of statement", "No exact-package checksum or full profile", "No written confirmation of retention, transformation or public-result rights"]
+    },
+    {
+      "id": "reply-bc-bec-service-portal",
+      "outreachMessageId": "bc-bec-v13-1-snapshot",
+      "canonicalRowIds": ["bc-old-growth-bec"],
+      "receivedAt": "2026-08-17T15:28:08Z",
+      "sender": "Sahej.Mundi@gov.bc.ca",
+      "subject": "RE: Request for complete immutable BEC Map v13.1 export or snapshot semantics",
+      "status": "service-portal-route-no-snapshot",
+      "summary": "BC Data Maps encouraged clients to submit a service-portal ticket. A Data Systems & Services acknowledgement later confirmed that DATABC-7005 was received and added to the queue. Neither message supplied a complete BEC v13.1 export, transaction-consistent snapshot method, checksum, or reuse decision.",
+      "remainingBlockers": ["No complete coherent BEC v13.1 artifact or snapshot semantics", "No edition/effective date, full count, schema, CRS or checksum", "No transaction-safe acquisition path", "The TAP component still needs an implemented-deferral source and written Access Only permission"]
+    },
+    {
+      "id": "reply-bc-bec-custom-download-route",
+      "outreachMessageId": "bc-bec-v13-1-snapshot",
+      "canonicalRowIds": ["bc-old-growth-bec"],
+      "receivedAt": "2026-08-20T16:10:17Z",
+      "sender": "Qinghua Yi <jira@dpdd.atlassian.net>",
+      "subject": "DATABC-7005 BEC Map v13.1 — request for complete coherent export and reuse terms",
+      "status": "custom-download-route-no-acquisition",
+      "summary": "Qinghua Yi said a full copy can be obtained through the BC Geographic Warehouse Custom Download option listed for the BEC Map, with supporting information on the resource page and related Attribute Catalogue and Historic Versions records. The ticket was closed. No download was performed by this audit and no file, checksum, versioned snapshot, reuse licence or permission decision was supplied. The official route audit records the publisher metadata and the order/terms gate separately.",
+      "remainingBlockers": ["No acquired BEC artifact or exact export selection", "No version/as-of, feature count, schema, CRS or checksum for an acquired package", "No explicit reuse licence or permission decision for this requested use", "The indirect order requires an email address, Terms and Conditions acceptance and submission", "BCGW policy eligibility and authorized account holder are unconfirmed", "No immutable archive, owner admission or production evidence"]
+    },
+    {
+      "id": "reply-bc-copyright-permission-process",
+      "outreachMessageId": "bc-copyright-access-only-forest-layers",
+      "canonicalRowIds": ["bc-old-growth-bec", "bc-vri", "bc-forest-operations-map"],
+      "receivedAt": "2026-08-19T22:19:33Z",
+      "sender": "QPIPPCopyright@gov.bc.ca",
+      "subject": "RE: Permission and authoritative-export request — VRI 2025, FOM Cutblocks, and TAP deferral layer",
+      "status": "permission-form-required-awaiting-decision",
+      "summary": "BC's Intellectual Property Program instructed the requester to use its Copyright Permission Request Form, name each dataset exactly as in the BC Data Catalogue, provide each catalogue URL, describe intended use, audience and distribution channels, and await custodian ownership/concern checks. It said a licensing vehicle and a permission/licence fee would be determined if permission can be granted. No permission, licence, artifact, attribution wording or fee decision was supplied.",
+      "remainingBlockers": ["No VRI or TAP form submission; the later FOM-only submission does not cover those rows", "No custodian confirmation or licensing vehicle", "No fee decision", "No functioning complete 2025 VRI artifact", "No implemented TAP layer or written rights", "No exact artifact edition, count, schema, CRS, checksum or archive terms"]
+    },
+    {
+      "id": "reply-bc-copyright-single-form-followup",
+      "outreachMessageId": "bc-copyright-access-only-forest-layers",
+      "canonicalRowIds": ["bc-old-growth-bec", "bc-vri", "bc-forest-operations-map"],
+      "receivedAt": "2026-08-20T17:39:18Z",
+      "sender": "QPIPPCopyright@gov.bc.ca",
+      "subject": "RE: Permission and authoritative-export request — VRI 2025, FOM Cutblocks, and TAP deferral layer",
+      "status": "permission-form-guidance-no-authorization",
+      "summary": "The BC copyright office confirmed that all three datasets may be included in one Copyright Permission Request Form and asked that the requested details be included in the form. This confirms a procedural submission route only; it supplies no permission, licence, artifact, custodian decision or fee amount. The owner package maps the official form fields without entering personal data or submitting the form.",
+      "remainingBlockers": ["No VRI or TAP form submission; the later FOM-only submission does not cover those rows", "No custodian ownership/concern review", "No permission or licensing vehicle", "No fee amount or fee agreement", "No functioning complete 2025 VRI artifact", "No implemented TAP layer or written rights", "No exact artifact edition, count, schema, CRS, checksum or archive terms"]
+    },
+    {
+      "id": "reply-faib-output-details",
+      "outreachMessageId": "bc-consolidated-cutblocks-existing-request",
+      "canonicalRowIds": ["bc-consolidated-cutblocks"],
+      "receivedAt": "2026-08-18T18:28:15Z",
+      "sender": "FAIB.Data.Management@gov.bc.ca",
+      "subject": "RE: Permission request — Harvested Areas of BC (Consolidated Cutblocks)",
+      "status": "use-details-clarified-awaiting-authorization",
+      "summary": "FAIB asked for the derived, aggregate, map-tile and public-output products proposed for publication. A Sent follow-up on 2026-08-19 described those products and requested attribution, excluded attributes, review, edition/refresh and correction guidance. No authorization, licence, attribution wording, review decision or new artifact was supplied.",
+      "remainingBlockers": ["Written authorization or redistributable licence for the exact Access Only resource", "Publisher decision on proposed output categories and restricted detail", "Attribution and disclaimer wording", "Edition/as-of and refresh guidance", "No raw download or checksum/profile under this audit"]
+    },
+    {
+      "id": "reply-bc-fom-view-only-clarification",
+      "outreachMessageId": "bc-copyright-access-only-forest-layers",
+      "canonicalRowIds": ["bc-forest-operations-map"],
+      "receivedAt": "2026-08-21T21:21:55Z",
+      "sender": "QPIPPCopyright@gov.bc.ca",
+      "subject": "RE: Copyright Permission Request",
+      "status": "view-only-use-clarification-permission-pending",
+      "summary": "After the owner submitted a form containing the FOM Cutblocks catalogue URL, the copyright officer noted that the dataset is view-only rather than downloadable and asked how it would be used on the website. The owner-authorized reply rejected scraping, bypass and raw redistribution; limited any data use to a Province-authorized export or service; otherwise limited the project to linking the official viewer or expressly permitted static excerpts; and asked which office can authorize access. No permission, licence, access method, artifact or fee decision was supplied.",
+      "remainingBlockers": ["No copyright permission or licensing vehicle", "No Province-authorized export or service", "No exact artifact, edition, checksum or archive evidence", "No permission for screenshots or static excerpts", "No fee or custodian decision"]
+    }
+  ],
+  "automaticOrAcknowledgementOnly": [
+    {
+      "outreachMessageId": "bc-consolidated-cutblocks-existing-request",
+      "receivedAt": "2026-08-14T17:17:21Z",
+      "sender": "FAIB.Data.Management@gov.bc.ca",
+      "subject": "We got your email!",
+      "status": "acknowledgement-only"
+    },
+    {
+      "outreachMessageId": "bc-consolidated-cutblocks-existing-request",
+      "receivedAt": "2026-08-19T17:15:34Z",
+      "sender": "FAIB.Data.Management@gov.bc.ca",
+      "subject": "We got your email!",
+      "status": "acknowledgement-only"
+    },
+    {
+      "outreachMessageId": "cirnac-treaty-geometry-authority-and-engagement",
+      "canonicalRowIds": ["historic-treaties", "modern-treaties"],
+      "receivedAt": "2026-08-14T23:52:26Z",
+      "sender": "infopubs@sac-isc.gc.ca",
+      "subject": "Automatic reply: Request for suitable treaty-boundary source, reuse terms, and appropriate engagement route / Demande de source appropriée, de conditions de réutilisation et de voie de dialogue",
+      "status": "automatic-reply-only"
+    },
+    {
+      "outreachMessageId": "bc-bec-v13-1-snapshot",
+      "canonicalRowIds": ["bc-old-growth-bec"],
+      "receivedAt": "2026-08-19T17:27:33Z",
+      "sender": "Data Systems & Services <jira@dpdd.atlassian.net>",
+      "subject": "DATABC-7005 BEC Map v13.1 — request for complete coherent export and reuse terms",
+      "status": "service-portal-ticket-received-and-queued",
+      "summary": "The automated service-portal notice confirmed that the BEC request was received and added to the queue. This proves portal submission and queueing only; it supplied no complete BEC artifact, snapshot semantics, checksum, terms decision or permission."
+    }
+  ],
+  "ownerFollowUpsObserved": [
+    {
+      "outreachMessageId": "bc-bec-v13-1-snapshot",
+      "sentAt": "2026-08-19T17:15:28Z",
+      "recipient": "Sahej.Mundi@gov.bc.ca",
+      "subject": "RE: Request for complete immutable BEC Map v13.1 export or snapshot semantics",
+      "status": "sent-service-portal-ticket-received-and-queued",
+      "nonClaim": "The ticket-created acknowledgement confirms service-portal submission and queueing; it does not supply a complete source artifact, snapshot semantics, permission or acquisition."
+    },
+    {
+      "outreachMessageId": "bc-consolidated-cutblocks-existing-request",
+      "sentAt": "2026-08-19T17:15:25Z",
+      "recipient": "FAIB.Data.Management@gov.bc.ca",
+      "subject": "RE: Permission request — Harvested Areas of BC (Consolidated Cutblocks)",
+      "status": "sent-output-details-follow-up",
+      "nonClaim": "The follow-up supplies intended-use details only; it is not permission or an acquisition."
+    },
+    {
+      "outreachMessageId": "bc-copyright-access-only-forest-layers",
+      "sentAt": "2026-08-20T16:57:33Z",
+      "recipient": "QPIPPCopyright@gov.bc.ca",
+      "subject": "RE: Permission and authoritative-export request — VRI 2025, FOM Cutblocks, and TAP deferral layer",
+      "status": "sent-dataset-use-details-follow-up",
+      "nonClaim": "The follow-up supplies dataset names, catalogue URLs and intended public outputs; no permission form submission, fee payment or licence decision is recorded."
+    },
+    {
+      "outreachMessageId": "bc-copyright-access-only-forest-layers",
+      "sentAt": "2026-08-21T22:34:39Z",
+      "recipient": "QPIPPCopyright@gov.bc.ca",
+      "subject": "RE: Copyright Permission Request",
+      "status": "sent-fom-view-only-use-clarification",
+      "nonClaim": "The reply requests a lawful access path and limits use to Province-authorized access, official-viewer links, or expressly permitted static excerpts. It does not claim permission, access, acquisition, archive evidence or production use."
+    }
+  ],
+  "rows": [
+    {
+      "id": "bc-fta-cutblocks",
+      "kind": "access-blocked",
+      "replyStatus": "reply-received-foi-route-no-export",
+      "replyRecordIds": ["reply-bc-forest-tenures-foi-route"],
+      "lawfulAcquisitionNow": false,
+      "remainingBlockers": ["No publisher-bounded coherent export or snapshot", "No version, checksum or complete profile", "No acquisition was made through an FOI route"]
+    },
+    {
+      "id": "bc-harvesting-authorities",
+      "kind": "access-blocked",
+      "replyStatus": "reply-received-foi-route-no-export",
+      "replyRecordIds": ["reply-bc-forest-tenures-foi-route"],
+      "lawfulAcquisitionNow": false,
+      "remainingBlockers": ["No publisher-bounded coherent export or snapshot", "No version, checksum or complete profile", "Lifecycle semantics remain unresolved", "No acquisition was made through an FOI route"]
+    },
+    {
+      "id": "on-fri",
+      "kind": "access-blocked",
+      "replyStatus": "reply-received-catalogue-deferral-no-package",
+      "replyRecordIds": ["reply-ontario-fri-catalogue-deferral"],
+      "lawfulAcquisitionNow": false,
+      "remainingBlockers": ["No stable complete Term 2 package", "No exact-package rights confirmation", "No checksum, archive or profile evidence"]
+    },
+    {
+      "id": "on-fri-term-2",
+      "kind": "access-blocked",
+      "replyStatus": "reply-received-catalogue-deferral-no-package",
+      "replyRecordIds": ["reply-ontario-fri-catalogue-deferral"],
+      "lawfulAcquisitionNow": false,
+      "remainingBlockers": ["No stable complete Term 2 package", "No exact-package rights confirmation", "No checksum, archive or profile evidence"]
+    },
+    {
+      "id": "bc-old-growth-bec",
+      "kind": "access-blocked",
+      "replyStatus": "replies-received-service-route-custom-download-and-permission-process-no-resolution",
+      "replyRecordIds": ["reply-bc-bec-service-portal", "reply-bc-bec-custom-download-route", "reply-bc-copyright-permission-process", "reply-bc-copyright-single-form-followup"],
+      "lawfulAcquisitionNow": false,
+      "remainingBlockers": ["No coherent BEC snapshot", "The custom-download route is blocked before order submission by the email/terms/eligibility gate", "No TAP implemented-deferral artifact", "No TAP permission or licence", "No checksum, archive or owner admission"]
+    },
+    {
+      "id": "bc-consolidated-cutblocks",
+      "kind": "access-blocked",
+      "replyStatus": "reply-received-use-details-clarified-no-authorization",
+      "replyRecordIds": ["reply-faib-output-details"],
+      "lawfulAcquisitionNow": false,
+      "remainingBlockers": ["No written authorization or redistributable licence", "No publisher decision on public output categories", "No raw download, checksum or profile"]
+    },
+    {
+      "id": "bc-vri",
+      "kind": "access-blocked",
+      "replyStatus": "reply-received-permission-process-no-authorization",
+      "replyRecordIds": ["reply-bc-copyright-permission-process", "reply-bc-copyright-single-form-followup"],
+      "lawfulAcquisitionNow": false,
+      "remainingBlockers": ["Permission form and custodian review remain outstanding", "No functioning complete 2025 artifact", "No licence, fee, checksum or archive decision"]
+    },
+    {
+      "id": "bc-forest-operations-map",
+      "kind": "access-blocked",
+      "replyStatus": "clarification-received-and-replied-permission-pending",
+      "replyRecordIds": ["reply-bc-copyright-permission-process", "reply-bc-copyright-single-form-followup", "reply-bc-fom-view-only-clarification"],
+      "lawfulAcquisitionNow": false,
+      "remainingBlockers": ["The FOM-only form and clarification reply are submitted, but permission and custodian review remain pending", "No Province-authorized export or service", "No exact-layer authorization, attribution or static-excerpt permission", "No checksum or archive decision"]
+    },
+    {
+      "id": "sopfeu",
+      "kind": "access-blocked",
+      "replyStatus": "no-substantive-reply",
+      "replyRecordIds": [],
+      "lawfulAcquisitionNow": false,
+      "remainingBlockers": ["No official versioned artifact or documented API", "No written rights, archive, transformation or public-result authorization"]
+    },
+    {
+      "id": "indian-reserves",
+      "kind": "access-blocked",
+      "replyStatus": "no-substantive-reply",
+      "replyRecordIds": [],
+      "lawfulAcquisitionNow": false,
+      "remainingBlockers": ["No reserve-only authoritative edition", "No exact rights, checksum/recovery evidence or named engagement route"]
+    },
+    {
+      "id": "first-nation-reserves",
+      "kind": "access-blocked",
+      "replyStatus": "no-substantive-reply",
+      "replyRecordIds": [],
+      "lawfulAcquisitionNow": false,
+      "remainingBlockers": ["No reserve polygon edition suitable for the stated purpose", "No exact rights, checksum/recovery evidence or named engagement route"]
+    },
+    {
+      "id": "historic-treaties",
+      "kind": "access-blocked",
+      "replyStatus": "automatic-reply-only-no-substantive-guidance",
+      "replyRecordIds": [],
+      "lawfulAcquisitionNow": false,
+      "remainingBlockers": ["No suitable legal or precision geometry", "No exact rights, checksum/recovery evidence or named engagement/right-of-reply route"]
+    },
+    {
+      "id": "modern-treaties",
+      "kind": "access-blocked",
+      "replyStatus": "automatic-reply-only-no-substantive-guidance",
+      "replyRecordIds": [],
+      "lawfulAcquisitionNow": false,
+      "remainingBlockers": ["No suitable legal or precision geometry", "No exact rights, checksum/recovery evidence or named engagement/right-of-reply route"]
+    },
+    {
+      "id": "cwfis-historical",
+      "kind": "partial-component",
+      "replyStatus": "owner-review-draft-not-sent",
+      "replyRecordIds": [],
+      "lawfulAcquisitionNow": false,
+      "remainingBlockers": ["Owner has not accepted or rejected the NBAC End-User Agreement", "No owner permission for intended archive, processing and public display", "NBAC artifact remains unacquired"]
+    },
+    {
+      "id": "provincial-electoral-boundaries",
+      "kind": "partial-component",
+      "replyStatus": "owner-review-drafts-not-sent",
+      "replyRecordIds": [],
+      "lawfulAcquisitionNow": false,
+      "remainingBlockers": ["Elections Alberta permission request remains unsent", "No accessible authorized current Québec artifact", "No written adaptation/public-service authorization for the missing components"]
+    }
+  ]
+}

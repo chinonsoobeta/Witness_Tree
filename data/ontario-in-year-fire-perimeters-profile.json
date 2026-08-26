@@ -1,0 +1,31 @@
+{
+  "status": "local-staging-profile",
+  "sourceId": "on-fire-disturbance",
+  "notice": "Read-only raw profiling evidence. The raw source geometry is unchanged; a separately checksummed, local-only derived release is governed by data/ontario-in-year-fire-geometry-policy-2026-08-14.json. Neither artifact is admitted, ingested, or production eligible.",
+  "artifact": {"bytes": 19510504, "sha256": "99881f19a32068b5d66b244955f7b088e873ffe76eafebf1740f03e16f042f11", "contentIntegrity": "passed"},
+  "snapshot": {"service": "LIO_OPEN_DATA/LIO_Open09/MapServer/51", "responseMaxRecordCount": 2000, "responseFeatureCount": 188, "retrievedAt": "2026-08-14T13:49:36Z"},
+  "layer": {
+    "name": "In-year Fire Perimeters",
+    "geometryTypes": {"Polygon": 118, "MultiPolygon": 70},
+    "count": 188,
+    "crs": "EPSG:4326 — WGS 84",
+    "fieldCount": 7,
+    "missing": 0,
+    "empty": 0,
+    "invalid": 9,
+    "invalidReason": "Ring Self-intersection in nine source geometries; raw remains unchanged and each bounded repair is recorded separately.",
+    "extent": [-95.068385, 44.856667, -76.66605, 55.324038],
+    "statusCounts": {"F": 103, "I": 85}
+  },
+  "schema": ["OBJECTID", "FIRENUMB", "CUR_SIZE", "REFERENCE", "FIRETYPE", "STATUS", "DATE_MAPPED"],
+  "licence": {
+    "id": "ogl-ontario",
+    "basis": "The official public ArcGIS item explicitly links the Open Government Licence – Ontario.",
+    "requiredNotice": "Ontario Ministry of Natural Resources © King’s Printer for Ontario, 2025"
+  },
+  "immutable": false,
+  "derivedGeometryPolicy": "data/ontario-in-year-fire-geometry-policy-2026-08-14.json",
+  "transformed": false,
+  "ingested": false,
+  "productionEligible": false
+}

@@ -12,9 +12,10 @@ export type ReportedValueProps = Readonly<{
 
 export function ReportedValue({ reported, coverageGrade, locale }: ReportedValueProps) {
   if (reported.kind === "unknown") {
+    const reason = reported.reason[locale];
     return (
       <section>
-        <output aria-label={reported.reason}>— {reported.reason}</output>
+        <output aria-label={reason}>— {reason}</output>
         <EvidenceChip evidence={reported.evidence} locale={locale} />
         <CoverageBand coverageGrade={coverageGrade} locale={locale} />
       </section>

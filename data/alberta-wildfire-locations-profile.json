@@ -1,0 +1,30 @@
+{
+  "status": "local-staging-profile",
+  "sourceId": "ab-wildfire",
+  "notice": "Read-only profiling evidence. No source geometry was changed, transformed, ingested, or made production eligible.",
+  "artifact": {"bytes": 423853, "sha256": "f0e86ea34a7624c365349b3a8fbb77967bb45ab73c507cf441efb8f6a8736ee0", "contentIntegrity": "passed"},
+  "snapshot": {"service": "wildfire/alberta_fire_status/FeatureServer/0", "responseMaxRecordCount": 1000, "responseFeatureCount": 751, "retrievedAt": "2026-08-14T13:42:09Z"},
+  "layer": {
+    "name": "Alberta Wildfire Locations",
+    "geometryType": "Point",
+    "count": 751,
+    "crs": "EPSG:4326 — WGS 84",
+    "fieldCount": 17,
+    "missing": 0,
+    "empty": 0,
+    "invalid": 0,
+    "invalidReason": "All coordinates were present, Point-typed, finite, and in geographic coordinate ranges; no source geometry was repaired.",
+    "extent": [-120.230234, 49.41204, -110.191577, 60.342924],
+    "statusCounts": {"Assistance Ended": 48, "Extinguished": 697, "Turned Over": 3, "Under Control": 3}
+  },
+  "schema": ["LABEL", "FIRE_NUMBER", "FIRE_TYPE", "FIRE_STATUS", "RESP_AREA", "RESPONSE_TYPE", "INCIDENT_TYPE", "AREA_ESTIMATE", "ASSESSMENT_ASSISTANCE_DATE", "GENERAL_CAUSE", "LATITUDE", "LONGITUDE", "FIRE_STATUS_DATE", "FIRE_YEAR", "CO_FLAG", "SIZE_CLASS", "OBJECTID"],
+  "licence": {
+    "id": "ogl-alberta-2.2",
+    "basis": "Alberta's open-data policy defaults publicly available Government of Alberta data to the Open Government Licence – Alberta unless exempt; the official public wildfire service publishes no different terms.",
+    "requiredNotice": "Contains information licensed under the Open Government Licence – Alberta."
+  },
+  "immutable": false,
+  "transformed": false,
+  "ingested": false,
+  "productionEligible": false
+}

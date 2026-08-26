@@ -1,0 +1,64 @@
+{
+  "status": "blocked-incomplete-snapshot",
+  "sourceId": "canadian-protected-and-conserved-areas-database",
+  "retrievedAt": "2026-08-14T11:10:06Z",
+  "notice": "This is an external-staging retrieval diagnostic only. It is not an immutable archive, transformed data, ingested data, or a production release. The incomplete response set must not be combined or used as a CPCAD snapshot.",
+  "publisher": "Environment and Climate Change Canada",
+  "catalogueUrl": "https://open.canada.ca/data/en/dataset/6c343726-1e92-451a-876a-76e17d398a1c",
+  "layerUrl": "https://maps-cartes.ec.gc.ca/arcgis/rest/services/CWS_SCF/CPCAD/MapServer/0",
+  "licence": {
+    "id": "ogl-canada",
+    "officialUrl": "https://open.canada.ca/en/open-government-licence-canada"
+  },
+  "snapshotIdentity": {
+    "kind": "retrieval-instant",
+    "reason": "The layer metadata contains no editing or publisher edition/version marker.",
+    "layerMetadataSha256": "edb6cf416737ab8eb4b2c446c20ccb7522be73c4c18a5cd0d8b4529b1571e0a6",
+    "objectIdManifestSha256": "1b40351cdc638f0f7d384aeab881abc83aafd5240842ea75e07be28002b7f29c"
+  },
+  "serviceReadback": {
+    "objectIdField": "OBJECTID",
+    "featureCount": 22438,
+    "minimumObjectId": 1,
+    "maximumObjectId": 22438,
+    "objectIdsUniqueAndContiguous": true,
+    "geometryType": "esriGeometryPolygon",
+    "crs": "EPSG:3978",
+    "maxRecordCount": 25000,
+    "supportsPagination": true,
+    "supportsOrderBy": true
+  },
+  "partialRetrieval": {
+    "savedGeoJsonPages": 45,
+    "savedFeatureCount": 21782,
+    "firstObjectId": 1,
+    "lastObjectId": 22000,
+    "bytes": 631532464,
+    "complete": false,
+    "canonicalArtifactCreated": false,
+    "profileCreated": false
+  },
+  "geometryDefect": {
+    "objectId": 21563,
+    "attributesOnly": {
+      "httpStatus": 200,
+      "featureCount": 1,
+      "sha256": "e51110c4b63634cdd7a97bab01c75e7356b5f6787af681cb5766dacd3e5263b0"
+    },
+    "esriJsonGeometry": {
+      "httpStatus": 200,
+      "arcgisErrorCode": 500,
+      "sha256": "a84421cbafb3748a22cab107d392c932151a69ce77dfe8cfb544e2d5609b14ad"
+    },
+    "geoJsonGeometry": {
+      "result": "two 15-second bounded requests timed out with zero response bytes"
+    }
+  },
+  "staging": {
+    "immutable": false,
+    "transformed": false,
+    "ingested": false,
+    "productionEligible": false
+  },
+  "ownerAction": "Request a publisher-provided versioned FGDB or repair confirmation for OBJECTID 21563, then restart from a fresh ID manifest and metadata readback."
+}

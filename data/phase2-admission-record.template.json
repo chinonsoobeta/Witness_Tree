@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "witness-tree/phase2-admission-record/1",
+  "status": "template-no-owner-decision-recorded",
+  "purpose": "Template for a later immutable, checksum-bound Phase 2 admission record. This file is not a decision, admission, release, publication, or production record.",
+  "futureRecordLocationRule": "Create a new immutable record; never replace this template, the owner packet, or historical readback evidence.",
+  "ownerDecisionRequired": {
+    "decisionId": "phase2-v21-21-raster-and-2020-2022-province-aggregate-admission-v1",
+    "allowedDecision": "approve",
+    "mustBindPacket": {
+      "path": "data/phase2-owner-admission-packet.json",
+      "sha256": "f4bc01b389a2c514ad5e04c746821c249ca6c2bf91b6d6f2a46428d6d66d77fd"
+    },
+    "requiredAcknowledgements": ["exact-bindings-reviewed", "method-and-claim-limits-reviewed", "no-release-or-production-admission"]
+  },
+  "requiredSourceInputAdmissionRecords": [
+    {
+      "id": "vlce2-annual-land-cover-1984-2022",
+      "whatMustBeAdmitted": "All 39 exact annual VLCE2 source archives used by the 21 raster outputs.",
+      "evidenceToBind": {"path": "data/vlce2-remote-promotion-evidence.json", "sha256": "1e1f827df3b51b13143b490a204c59475e6ed4af7ce0de8af69d53f8a554c211", "sourceId": "nrcan-annual-land-cover-v2", "entryCount": 39, "years": [1984, 2022]},
+      "requiredFutureRecordFields": ["immutable-record-path", "immutable-record-sha256", "owner-source-admission-decision", "all-39-versioned-artifacts"]
+    },
+    {
+      "id": "statcan-2021-provinces-territories-cbf",
+      "whatMustBeAdmitted": "The exact 2021 Census Province/Territory Cartographic Boundary File used by the 13-row aggregate.",
+      "evidenceToBind": {"path": "data/boundary-editions.json", "sha256": "037786098133fb10a5a485d3d3445b71d44d22b9e7c11ea02c6d95cd1e8ff663", "editionId": "statcan-2021-provinces-territories-cbf", "artifactSha256": "d28bbb15d7b49e3d1828755a5f1b4ebcee699ad70efe8b0f1b902d29ebffd20b", "featureCount": 13},
+      "requiredFutureRecordFields": ["immutable-record-path", "immutable-record-sha256", "owner-source-admission-decision", "edition-qualified-boundary-artifact"]
+    }
+  ],
+  "requiredEvidenceBindings": {
+    "rasterReadback": {"path": "data/phase2-v21-raster-readback-evidence.json", "sha256": "8815684bdde91250a0654fd2890a11d8505532c3c6864169f68165a22dd98210", "outputs": 21, "artifacts": 42},
+    "methodParameters": {"path": "data/phase2-method-parameters.json", "sha256": "8d06ec83542f05e81a4b63b4e6c3c2c7ef1a40df46f501ce8cc0177050446334"},
+    "zonalAggregate": {"path": "data/phase2-v21-province-zonal-pilot-evidence.json", "sha256": "4fb0efc6ec984025e91f0124e0347a2f0a08673ed1f606ba318c9ca732f5ce62", "timeVersion": "2020-2022", "featureCount": 13}
+  },
+  "futureRecordRequirements": [
+    "Enumerate and checksum-bind each of the 21 raster outputs and 21 sidecars from the bound readback evidence.",
+    "Revalidate the packet, method, raster contract, zonal contract, aggregate output, aggregate sidecar, and every source-input admission record at record creation time.",
+    "Fail unless every named source-input admission record exists, is checksum-bound, and explicitly admits the required exact source scope.",
+    "Keep release, publication, production eligibility, expert review, and independent comparison false."
+  ],
+  "formalGateAssessment": {"gate1AdmittedV21Baseline": false, "gate4AdmittedBoundaryAggregates": false, "reason": "No owner decision or source-input admission records have been recorded."},
+  "claims": {"admitted": false, "released": false, "productionEligible": false, "formalGate1Complete": false, "formalGate4Complete": false}
+}
