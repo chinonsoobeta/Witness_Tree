@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
-import { validate } from "../scripts/check-phase1-federal-electoral-production-admission.mjs";
+import { validateControlPlane as validate } from "../scripts/check-phase1-federal-electoral-production-admission.mjs";
 
 const record = JSON.parse(readFileSync(new URL("../data/phase1-federal-electoral-production-admission.json", import.meta.url), "utf8"));
 const clone = () => structuredClone(record);

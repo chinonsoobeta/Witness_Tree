@@ -11,7 +11,7 @@ const OUTPUT_SHA = "ca50eb02e1baee076ebec1b8e8511ca6697e8e48cef68bf5d1d74f545868
 const sha = (file) => createHash("sha256").update(readFileSync(file)).digest("hex");
 const read = (root, relative) => JSON.parse(readFileSync(path.join(root, relative), "utf8"));
 
-export function validate(record, root = ROOT) {
+export function validate(record, root = ROOT, { verifyArtifact = true } = {}) {
   assert.equal(record.schemaVersion, "witness-tree/phase1-production-admission/1");
   assert.equal(record.status, "owner-approved-admitted-and-release-approved");
   assert.equal(record.decisionId, "phase1-federal-electoral-2023-production-admission-v1");
@@ -33,8 +33,25 @@ export function validate(record, root = ROOT) {
   const output = path.resolve(root, "../../Witness_Tree-data", record.sharedArtifact.path.replace(/^\.\.\/Witness_Tree-data\//, ""));
   assert.equal(record.sharedArtifact.path, OUTPUT);
   assert.equal(record.sharedArtifact.sha256, OUTPUT_SHA);
-  assert.equal(statSync(output).size, record.sharedArtifact.byteLength);
-  assert.equal(sha(output), OUTPUT_SHA);
+  const outputVerification = read(root, "data/phase1-federal-electoral-output-verification-evidence.json");
+  assert.deepEqual(outputVerification.output, {
+    path: record.sharedArtifact.path,
+    sha256: OUTPUT_SHA,
+    byteLength: record.sharedArtifact.byteLength,
+    layer: record.sharedArtifact.layer,
+    featureCount: record.sharedArtifact.featureCount,
+    distinctFederalDistrictCount: record.sharedArtifact.distinctDistrictCount,
+    sidecarPath: `${record.sharedArtifact.path}.sidecar.json`,
+    sidecarSha256: "5f18d181e28b522a22071af27404ea422344a67c78599609fd9079c3e9dbc75b",
+    sidecarByteLength: 1826,
+  });
+  assert.equal(outputVerification.deterministicRegeneration.sha256, OUTPUT_SHA);
+  assert.equal(outputVerification.deterministicRegeneration.byteLength, record.sharedArtifact.byteLength);
+  assert.equal(outputVerification.deterministicRegeneration.exactByteMatch, true);
+  if (verifyArtifact) {
+    assert.equal(statSync(output).size, record.sharedArtifact.byteLength);
+    assert.equal(sha(output), OUTPUT_SHA);
+  }
   assert.equal(record.sharedArtifact.layer, "federal_electoral_districts_2023");
   assert.equal(record.sharedArtifact.featureCount, 352);
   assert.equal(record.sharedArtifact.distinctDistrictCount, 343);
@@ -61,6 +78,10 @@ export function validate(record, root = ROOT) {
   assert.ok(record.limits.some((value) => /separate French publisher archive remains an open/i.test(value)));
   assert.doesNotMatch(JSON.stringify(record), /traditional territory dataset is admitted|electoral result is admitted/i);
   return record;
+}
+
+export function validateControlPlane(record, root = ROOT) {
+  return validate(record, root, { verifyArtifact: false });
 }
 
 export function check(root = ROOT) {

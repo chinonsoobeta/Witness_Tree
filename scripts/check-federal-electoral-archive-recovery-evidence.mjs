@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { validate as validateProductionAdmission } from "./check-phase1-federal-electoral-production-admission.mjs";
+import { validateControlPlane as validateProductionAdmission } from "./check-phase1-federal-electoral-production-admission.mjs";
 
 const read = (path) => JSON.parse(readFileSync(new URL(`../${path}`, import.meta.url), "utf8"));
 const SHA256 = "4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93";
