@@ -4,7 +4,7 @@ import { createHash } from "node:crypto";
 import { createReadStream } from "node:fs";
 import { lstat, readFile, readdir, realpath, stat, writeFile } from "node:fs/promises";
 import { basename, isAbsolute, join, resolve } from "node:path";
-import { resolveDataRoot } from "./data-root.mjs";
+import { approvedDataRootRealPath, resolveDataRoot } from "./data-root.mjs";
 
 const DATA_ROOT = resolveDataRoot();
 const BATCH = "phase2-v21-raster-first-1984-2022-v1";
@@ -67,9 +67,16 @@ function observedGdal(file, expected) {
 }
 
 export async function readbackV21RasterFirst(dataRootArg, outputArg) {
-  const dataRoot = resolve(dataRootArg); const output = resolve(outputArg);
-  if (dataRoot !== DATA_ROOT || output !== join(DATA_ROOT, "derived", BATCH)) fail("readback is limited to the approved local V2.1 batch directory.");
-  if (await realpath(output) !== output) fail("output directory must not resolve through a symlink.");
+  // The data root is itself an approved compatibility symlink after the SSD
+  // cutover, so the caller may spell it either way. Both spellings are reduced
+  // to the one real root before any comparison; comparing an unresolved root
+  // against a resolved path made these two guards mutually exclusive, which
+  // refused the real completed batch rather than admitting it.
+  const approvedRoot = await approvedDataRootRealPath(DATA_ROOT);
+  const dataRoot = await realpath(resolve(dataRootArg)); const output = resolve(outputArg);
+  if (dataRoot !== approvedRoot || await realpath(output) !== join(approvedRoot, "derived", BATCH)) {
+    fail("readback is limited to the approved local V2.1 batch directory.");
+  }
   const rootLink = await lstat(output); if (!rootLink.isDirectory() || rootLink.isSymbolicLink()) fail("output directory is not a real directory.");
   exact((await readdir(output)).sort(), ["forest-mask-snapshot-1984.tif", "forest-mask-snapshot-1988.tif", "forest-mask-snapshot-1992.tif", "forest-mask-snapshot-1996.tif", "forest-mask-snapshot-2000.tif", "forest-mask-snapshot-2004.tif", "forest-mask-snapshot-2008.tif", "forest-mask-snapshot-2012.tif", "forest-mask-snapshot-2016.tif", "forest-mask-snapshot-2020.tif", "forest-mask-snapshot-2022.tif", "lineage.json", "sidecars", "whole-interval-loss-1984-1988.tif", "whole-interval-loss-1988-1992.tif", "whole-interval-loss-1992-1996.tif", "whole-interval-loss-1996-2000.tif", "whole-interval-loss-2000-2004.tif", "whole-interval-loss-2004-2008.tif", "whole-interval-loss-2008-2012.tif", "whole-interval-loss-2012-2016.tif", "whole-interval-loss-2016-2020.tif", "whole-interval-loss-2020-2022.tif"].sort(), "output directory entries");
   const lineageFile = join(output, "lineage.json"); const lineage = await json(lineageFile); const { snapshots, intervals } = validateV21LineageShape(lineage);

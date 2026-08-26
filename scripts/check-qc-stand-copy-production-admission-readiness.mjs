@@ -747,13 +747,22 @@ export function validateQcStandCopyProductionAdmissionRecord(record, root = ROOT
   return record;
 }
 
+// Three-valued. Only the filesystem reporting nothing at the path is absence.
+// A permission error, an I/O error, or a symlink loop means we could not tell,
+// and "could not tell" must never be recorded as "not there".
 function present(file) {
   try {
     const info = lstatSync(file);
     return info.isFile() && !info.isSymbolicLink();
-  } catch {
-    return false;
+  } catch (error) {
+    if (error?.code === "ENOENT" || error?.code === "ENOTDIR") return false;
+    return null;
   }
+}
+
+function bothPresent(a, b) {
+  if (a === null || b === null) return null;
+  return a && b;
 }
 
 export function readbackPresence(root = ROOT, artifactRoot = CANONICAL_ARTIFACT_ROOT) {
@@ -770,18 +779,24 @@ export function readbackPresence(root = ROOT, artifactRoot = CANONICAL_ARTIFACT_
       sidecarPath: path.join(artifactRoot, scope.expected.sidecarRelativePath),
       outputPresent,
       sidecarPresent,
-      readbackPresent: outputPresent && sidecarPresent,
+      // Named for what it measures. This is an lstat on two paths: it says
+      // files exist, not that a readback was performed or that the bytes
+      // match anything. Calling it readbackPresent invited the opposite
+      // reading, which is the whole hazard of an existence-only mode.
+      artifactFilesPresent: bothPresent(outputPresent, sidecarPresent),
     };
   });
   return {
     schemaVersion: "witness-tree/phase1-qc-stand-copy-production-admission-readiness/1",
-    mode: "readback-presence-only",
+    mode: "artifact-file-existence-only",
+    verifies: "Existence of the output and sidecar paths. No byte, checksum, sidecar field, or readback record is read in this mode; pass --record to validate an admission record.",
     admissionClaim: false,
     productionAdmission: false,
     productionEligible: false,
     scopes,
-    presentCount: scopes.filter(({ readbackPresent }) => readbackPresent).length,
-    missingCount: scopes.filter(({ readbackPresent }) => !readbackPresent).length,
+    presentCount: scopes.filter(({ artifactFilesPresent }) => artifactFilesPresent === true).length,
+    missingCount: scopes.filter(({ artifactFilesPresent }) => artifactFilesPresent === false).length,
+    undeterminedCount: scopes.filter(({ artifactFilesPresent }) => artifactFilesPresent === null).length,
   };
 }
 

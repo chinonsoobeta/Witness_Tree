@@ -54,13 +54,19 @@ What remains is merging, which is ordinary review, not owner action.
 
 | Item | Decision recorded in | Current state |
 | --- | --- | --- |
-| #34 | `data/phase2-boundary-editions-readmission-2026-08-26.json` | Mergeable |
-| #46 | `data/phase1-ntems-runner-reauthorization-2026-08-26.json` | Mergeable; sweep 157 pass / 1 fail of 158 |
-| #50 | `data/phase1-federal-electoral-runner-reauthorization-2026-08-26.json` | Mergeable |
+| #34 | `data/phase2-boundary-editions-readmission-2026-08-26.json` | Merged as `04da17b` |
+| #46 | `data/phase1-ntems-runner-reauthorization-2026-08-26.json` | Merged as `778e0ea` |
+| #50 | `data/phase1-federal-electoral-runner-reauthorization-2026-08-26.json` | Merged as `ba4e54c` |
 
-The single sweep failure on #46 is not its own: it is
-`check:phase1-federal-electoral-transformation` refusing because its output
-exists, which is the defect #50 fixes. It clears when #50 lands.
+Each landed through its pull request with the required `verify` check green and
+branch protection intact. The one sweep failure that stood on #46 was not its
+own: `check:phase1-federal-electoral-transformation` was refusing because its
+output existed, which is the defect #50 fixes, and it cleared when #50 landed.
+
+No gate moved as a result. Four exit-status files changed bytes across these
+merges, all of them checksum rebindings; the criterion counts and the passing
+counts in each are identical before and after. That was checked rather than
+assumed, because a rebinding that advances a gate is a defect and not progress.
 
 ### One thing that nearly went wrong here, worth keeping
 
@@ -78,13 +84,14 @@ on the branch whose bytes they authorize, as soon as they are made.
 
 ### The in-flight dependency this created
 
-The annual land cover transformation currently running was launched from the
-corrected runner, which is not on `main`. Its sidecars record no runner
-SHA-256, so a mid-run branch switch does not corrupt provenance, and the
-outputs already produced are sound. But `main` still has the runner that
-refuses on an existing output and has no `--resume`, so until #46 lands, a
-crash in that run cannot be resumed from `main`. Recovery requires checking out
-the corrected runner's branch first.
+The annual land cover transformation running while this was written had been
+launched from the corrected runner at a time when that runner was not on
+`main`. Its sidecars record no runner SHA-256, so the mid-run branch switch did
+not corrupt provenance and the outputs already produced are sound. For the
+window before #46 landed, a crash in that run could not have been resumed from
+`main`, because `main` still carried the runner that refuses on an existing
+output and has no `--resume`. That window is now closed: `main` carries the
+corrected runner, and the run is resumable from it.
 
 ## The NTEMS resume block, stated plainly
 
@@ -108,6 +115,36 @@ produced verified outputs. Those should not be reissued when the owner
 re-authorizes. They correctly describe runs that already happened under the
 previous runner, and changing them would assert that the new runner produced
 rasters it never produced.
+
+## The federal-electoral block, and why it is the same defect twice
+
+`--preflight` refused whenever the output or sidecar existed. The transformation
+completed successfully on 2026-08-26 at 00:55:28Z, so from that moment the gate
+reported failure for finished, correct work. The output was re-verified against
+its sidecar during this investigation: 20,525,056 bytes, SHA-256
+`ca50eb02e1baee076ebec1b8e8511ca6697e8e48cef68bf5d1d74f5458681c05`, an exact
+match, with 352 features, 343 districts, and zero missing, empty, or invalid
+geometry.
+
+This is the NTEMS defect in a second runner. Both treat the existence of an
+output as a reason to refuse, without asking whether that output is the one they
+would have produced. The repair in both cases is the same shape: a function that
+returns "produce" only for a genuinely absent pair, returns "complete" only after
+recomputing the output's checksum and matching it against its sidecar, and
+refuses everything in between rather than guessing.
+
+A second defect was hidden underneath the first. `ensureNoSymlink` walks every
+ancestor of the output directory and refuses any symlink component, and after
+the SSD cutover the data root is itself a symlink to the external volume. The
+old code never reached that walk, because it refused at the existence check
+first. The repair resolves the data root once, so the guard still walks
+everything below the resolved root at full strength while the one deliberate
+symlink passes. Nothing about what the guard protects is weakened.
+
+Both repairs change the runner's bytes, which
+`data/phase1-federal-electoral-execution-approval.json` binds with
+`"decision": "approve"`. That binding is deliberately left stale rather than
+reissued.
 
 ## What must never be done to clear an item here
 

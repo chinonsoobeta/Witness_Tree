@@ -25,7 +25,7 @@
   },
   "runner": {
     "path": "scripts/run-phase1-federal-electoral-transformation.mjs",
-    "sha256": "79b11107345996872a5ede12952344345e305a89f2cdb4deba4ca7b25e4ff344",
+    "sha256": "f04cca5ccb27eb737c503d46c416295f674370e649331d5e90c0117467f20aa9",
     "version": "phase1-federal-electoral-transformation-runner-v1"
   },
   "source": {

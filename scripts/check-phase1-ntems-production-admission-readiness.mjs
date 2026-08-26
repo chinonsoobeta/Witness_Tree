@@ -644,7 +644,12 @@ export function readbackPresence(root = ROOT) {
   });
   return {
     schemaVersion: "witness-tree/phase1-ntems-production-admission-readiness/1",
-    mode: "readback-presence-only",
+    // Honest about its reach. This mode lstats four evidence JSON files under
+    // data/. It opens no raster, reads no sidecar, and verifies no checksum,
+    // so a present evidence file here is not evidence that the artifact it
+    // describes exists or matches. The byte-level path needs --record.
+    mode: "readback-evidence-file-existence-only",
+    verifies: "Existence of the four readback evidence files in the repository. No derived raster, sidecar, or checksum under the data root is read in this mode; pass --record to validate an admission record against the artifact bytes.",
     admissionClaim: false,
     scopes,
     presentCount: scopes.filter(({ present }) => present).length,

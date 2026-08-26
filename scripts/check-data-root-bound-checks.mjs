@@ -16,8 +16,39 @@ export const DATA_ROOT_MARKER = "Witness_Tree-data";
 // refuses with a fixed sentence and never echoes a local path, because that
 // runner is MFA adjacent. Both are data-root absence; nothing else is.
 export const ATTRIBUTION_MARKERS = Object.freeze([
-  { marker: DATA_ROOT_MARKER, source: "the check named an unreadable path under the data root" },
-  { marker: "Derived data root is absent or not absolute", source: "scripts/run-wildfire-derived-recovery.sh refused before any TOTP or AWS call" },
+  { marker: DATA_ROOT_MARKER, source: "the check named an unreadable path under the data root", selfEvidencesAbsence: false },
+  { marker: "Derived data root is absent or not absolute", source: "scripts/run-wildfire-derived-recovery.sh refused before any TOTP or AWS call", selfEvidencesAbsence: true },
+]);
+// Naming a path under the data root says which file the check wanted. It does
+// not say the check failed to read it. A checksum disagreement also names its
+// file, so the path alone cannot separate "could not read" from "read and
+// disagreed". These are the signals that the filesystem itself refused.
+export const ABSENCE_MARKERS = Object.freeze([
+  "ENOENT",
+  "ENOTDIR",
+  "ENXIO",
+  "ENODEV",
+  "EIO",
+  "ELOOP",
+  "EACCES",
+  "no such file or directory",
+  "not a directory",
+  "input/output error",
+  "is not mounted",
+  "does not resolve",
+]);
+// Signals that the check read the bytes and they disagreed. A contradiction is
+// a defect and is never excusable by an absent data root, so it is tested
+// first and wins outright over any absence signal in the same output.
+export const CONTRADICTION_MARKERS = Object.freeze([
+  "drifted",
+  "mismatch",
+  "does not match",
+  "differs",
+  "differ from",
+  "byte-for-byte",
+  "unexpected sha256",
+  "checksum disagree",
 ]);
 const REQUIRED_CLAIMS = {
   evidenceUnavailableIsNotEvidenceContradicted: true,
@@ -77,12 +108,19 @@ export function dataRootAvailable(dataRootPath) {
   }
 }
 
-// A failure is attributable to the absent data root only when the failure
-// output itself names a path under that root. Anything else is a real defect
-// and must not be excused by this inventory.
+// A failure is attributable to the absent data root only when the output both
+// points at that root and shows the filesystem refusing to read it. Anything
+// else is a real defect and must not be excused by this inventory. In
+// particular an output that merely echoes a data-root path is classified
+// "other", not excused: unreadable and contradicted are different findings and
+// collapsing them is the one thing this file exists to prevent.
 export function classifyFailure(output) {
   const text = String(output);
-  return ATTRIBUTION_MARKERS.some(({ marker }) => text.includes(marker)) ? "data-root-unavailable" : "other";
+  if (CONTRADICTION_MARKERS.some((marker) => text.includes(marker))) return "contradicted";
+  const attribution = ATTRIBUTION_MARKERS.find(({ marker }) => text.includes(marker));
+  if (!attribution) return "other";
+  if (attribution.selfEvidencesAbsence) return "data-root-unavailable";
+  return ABSENCE_MARKERS.some((marker) => text.includes(marker)) ? "data-root-unavailable" : "other";
 }
 
 export function reconcile(expected, observedFailures) {
@@ -134,7 +172,14 @@ function main() {
   const { missing, unlisted, misattributed } = reconcile(checks, failures);
   for (const name of unlisted) console.error(`unlisted data-root-bound or genuinely failing check: ${name} (${failures.get(name)})`);
   for (const name of missing) console.error(`inventory names ${name} but it passed with the data root detached`);
-  for (const name of misattributed) console.error(`${name} failed for a reason that does not name the data root`);
+  for (const name of misattributed) {
+    const kind = failures.get(name);
+    console.error(
+      kind === "contradicted"
+        ? `${name} read its bytes and they disagreed; that is a defect, not an absent data root`
+        : `${name} failed without showing that the data root was unreadable (${kind})`,
+    );
+  }
   assert.equal(unlisted.length, 0, "a failing check is not accounted for by the data-root inventory");
   assert.equal(missing.length, 0, "the inventory names a check that does not depend on the data root");
   assert.equal(misattributed.length, 0, "a listed check failed for a reason other than the absent data root");
