@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { SiteShell } from "@/components/site";
 import { PRODUCT_NAME } from "@/lib/domain";
 
@@ -26,9 +25,9 @@ export default function EnglishHome() {
     <section className="content-section">
       <div className="section-heading"><span className="num">02</span><h2>Read the record</h2></div>
       <div className="record-grid">
-        <article className="record-card"><p className="eyebrow">Components</p><h3>Evidence before numbers</h3><p>Inspect how figures, unknowns, confidence, coverage and provenance will appear across the public record.</p><Link href="/en/components">Open the component gallery</Link></article>
-        <article className="record-card"><p className="eyebrow">Methods</p><h3>Definitions before numbers</h3><p>See the forest denominator, evidence classes, confidence rules, coverage grades and matching method.</p><Link href="/en/methods">Read the methods</Link></article>
-        <article className="record-card"><p className="eyebrow">Data status</p><h3>Illustrative sources only</h3><p>No production dataset is integrated yet. Review the strict source-ledger contract and the gates that must pass before publication.</p><Link href="/en/data">Review data transparency</Link></article>
+        <article className="record-card"><p className="eyebrow">Components</p><h3>Evidence before numbers</h3><p>Inspect how figures, unknowns, confidence, coverage and provenance will appear across the public record.</p><a href="/en/components">Open the component gallery</a></article>
+        <article className="record-card"><p className="eyebrow">Methods</p><h3>Definitions before numbers</h3><p>See the forest denominator, evidence classes, confidence rules, coverage grades and matching method.</p><a href="/en/methods">Read the methods</a></article>
+        <article className="record-card"><p className="eyebrow">Data status</p><h3>Illustrative sources only</h3><p>No production dataset is integrated yet. Review the strict source-ledger contract and the gates that must pass before publication.</p><a href="/en/data">Review data transparency</a></article>
       </div>
       <aside className="notice"><h3>What this record does not claim</h3><p>{PRODUCT_NAME.en} does not estimate merchantable timber, predict wildfire spread, label detected change as logging or deforestation, make legal or compliance findings, or infer responsibility from proximity.</p></aside>
     </section>

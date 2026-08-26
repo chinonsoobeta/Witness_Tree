@@ -19,6 +19,8 @@ test("renders the bilingual language gateway", async () => {
   assert.match(html, /Witness Tree/);
   assert.match(html, /Continue in English/);
   assert.match(html, /Continuer en français/);
+  assert.match(html, /href="\/en"[^>]*>Continue in English/);
+  assert.match(html, /href="\/fr"[^>]*>Continuer en français/);
   assert.doesNotMatch(html, /loading skeleton|taking shape/i);
 });
 
