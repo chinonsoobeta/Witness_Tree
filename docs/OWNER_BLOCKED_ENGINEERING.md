@@ -28,11 +28,75 @@ carries is about history rather than intent.
 
 | Item | Change | What it would invalidate | Exact owner action needed |
 | --- | --- | --- | --- |
-| #34 | Correct a false GDAL claim in `boundary-editions.json` | Owner-admitted boundary-edition evidence | A fresh admission covering the corrected boundary evidence |
-| #46 | Fail-closed resume path for the NTEMS runner | Four owner-admitted NTEMS execution authorizations, plus three readback records | A fresh execution authorization for the four NTEMS specifications binding runner SHA-256 `09b1016849e0709e46ebad908eec0f01252d5e5eeed3e5cd2fcb712c2042dc90` |
-| #50 | Completion outcome and data-root resolution for the federal-electoral runner | One owner-admitted federal-electoral execution authorization | A fresh execution authorization binding runner SHA-256 `f04cca5ccb27eb737c503d46c416295f674370e649331d5e90c0117467f20aa9` |
+| QC stand-copy runner | Identity-based resume for `run-qc-stand-copy.mjs` | Two owner-admitted QC execution approvals | A fresh execution approval for both Québec stand-copy specifications, binding the corrected runner's SHA-256 |
+
+The QC item is the same "existence means refuse" defect as #46, in the runner
+for both Québec stand-copy scopes. It refuses whenever the artifact or sidecar
+exists, although `binding.expected.rawSha256` is already in scope and already
+part of the output path, so the identity comparison it needs is available and
+unused. The runner's SHA-256 is bound by
+`data/phase1-qc-current-ecoforest-execution-approval.json` and
+`data/phase1-qc-original-current-inventory-execution-approval.json`. Neither may
+be rebound by engineering, so the fix is deliberately not written yet: writing
+it would only produce a second branch that cannot land.
+
+`run-phase2-v21-raster-first.mjs` has the same shape and is not checksum-bound,
+but it should be corrected together with the QC runner under one
+re-authorization rather than piecemeal. Its cost is already visible on disk as
+two `.failed-*` sibling directories, because renaming is the only way past the
+gate, so a corrupt batch and a complete batch are cleared by the identical
+manual gesture.
+
+## Items the owner has now decided
+
+These are no longer blocked on a decision. The decision exists and is recorded.
+What remains is merging, which is ordinary review, not owner action.
+
+| Item | Decision recorded in | Current state |
+| --- | --- | --- |
+| #34 | `data/phase2-boundary-editions-readmission-2026-08-26.json` | Merged as `04da17b` |
+| #46 | `data/phase1-ntems-runner-reauthorization-2026-08-26.json` | Merged as `778e0ea` |
+| #50 | `data/phase1-federal-electoral-runner-reauthorization-2026-08-26.json` | Merged as `ba4e54c` |
+
+Each landed through its pull request with the required `verify` check green and
+branch protection intact. The one sweep failure that stood on #46 was not its
+own: `check:phase1-federal-electoral-transformation` was refusing because its
+output existed, which is the defect #50 fixes, and it cleared when #50 landed.
+
+No gate moved as a result. Four exit-status files changed bytes across these
+merges, all of them checksum rebindings; the criterion counts and the passing
+counts in each are identical before and after. That was checked rather than
+assumed, because a rebinding that advances a gate is a defect and not progress.
+
+### One thing that nearly went wrong here, worth keeping
+
+The owner's re-authorization for #46 was committed to a local branch that no
+pull request pointed at, and that branch had never been pushed. PR #46's head
+carried the corrected runner while still binding the previous runner's
+SHA-256, so the two disagreed and the pull request was both conflicting and
+internally inconsistent.
+
+A recorded owner decision that exists only in one local working tree is one
+disk failure away from having to be sought again, and asking an owner to
+re-approve something they already approved is a good way to end up with an
+approval nobody can reconcile. Owner decision records belong on a remote, and
+on the branch whose bytes they authorize, as soon as they are made.
+
+### The in-flight dependency this created
+
+The annual land cover transformation running while this was written had been
+launched from the corrected runner at a time when that runner was not on
+`main`. Its sidecars record no runner SHA-256, so the mid-run branch switch did
+not corrupt provenance and the outputs already produced are sound. For the
+window before #46 landed, a crash in that run could not have been resumed from
+`main`, because `main` still carried the runner that refuses on an existing
+output and has no `--resume`. That window is now closed: `main` carries the
+corrected runner, and the run is resumable from it.
 
 ## The NTEMS resume block, stated plainly
+
+Kept for the record. The owner has since re-authorized, so this describes how
+the block arose rather than a block that is still open.
 
 The annual land cover scope is 39 yearly rasters produced by one runner
 invocation. The runner refuses to overwrite an existing output, and it performs
