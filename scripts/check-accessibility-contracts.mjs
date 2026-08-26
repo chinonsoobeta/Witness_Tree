@@ -35,7 +35,12 @@ function auditFile(file, source) {
     if (!/<caption\b/i.test(table[1])) failures.push(`${file}: table requires a caption.`);
     for (const header of tags(table[1], "th")) if (!/\bscope\s*=/.test(header)) failures.push(`${file}: table header requires scope.`);
   }
-  for (const input of tags(source, "input")) if (!/\b(?:aria-label|aria-labelledby)\s*=/.test(input)) failures.push(`${file}: input requires a label or aria-label.`);
+  // A hidden input is not exposed to assistive technology, cannot receive focus, and has no
+  // accessible-name requirement. Every other input still needs one, including a range control.
+  for (const input of tags(source, "input")) {
+    if (/\btype\s*=\s*["']hidden["']/.test(input)) continue;
+    if (!/\b(?:aria-label|aria-labelledby)\s*=/.test(input)) failures.push(`${file}: input requires a label or aria-label.`);
+  }
   for (const image of tags(source, "img")) if (!/\balt\s*=/.test(image)) failures.push(`${file}: img requires alt text.`);
   for (const button of tags(source, "button")) if (!/\btype\s*=/.test(button)) failures.push(`${file}: button requires an explicit type.`);
   return failures;

@@ -31,3 +31,13 @@ test("table without caption and scoped headers fails", () => rejects({ "componen
 test("unlabelled input fails", () => rejects({ "components/Input.tsx": "<input type=\"text\" />" }, /input requires a label/));
 test("image without alt fails", () => rejects({ "components/Image.tsx": "<img src=\"tree.png\" />" }, /img requires alt/));
 test("button without type fails", () => rejects({ "components/Button.tsx": "<button>Open</button>" }, /button requires an explicit type/));
+
+// A hidden input carries no accessible name and cannot be focused, so requiring one would
+// force meaningless aria-label noise onto form state. The exemption must stay narrow: it keys
+// on type="hidden" alone, and every other input still fails without a name.
+test("a hidden input needs no accessible name", async () => {
+  const root = await fixture({ "components/Form.tsx": "<form method=\"get\"><input type=\"hidden\" name=\"mode\" value=\"wildfire\" /><input type=\"range\" name=\"year\" aria-label=\"Year\" /><button type=\"submit\">Update</button></form>" });
+  try { assert.deepEqual(await checkAccessibilityContracts([root]), { files: 1 }); } finally { await rm(root, { recursive: true }); }
+});
+test("an unlabelled range input still fails alongside a hidden one", () => rejects({ "components/Form.tsx": "<form method=\"get\"><input type=\"hidden\" name=\"mode\" /><input type=\"range\" name=\"year\" /></form>" }, /input requires a label/));
+test("an input merely named hidden is not exempt", () => rejects({ "components/Form.tsx": "<input type=\"text\" name=\"hidden\" />" }, /input requires a label/));

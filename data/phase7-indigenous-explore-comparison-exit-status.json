@@ -103,11 +103,11 @@
    "evidence": [
     {
      "path": "components/explore/ExploreView.tsx",
-     "sha256": "9cfa78e26192df9756db7906139c0506b846256188d2d473e0c31fbf1ea800e5"
+     "sha256": "40366ba6c6699820b88ab3206e7e5ff664e9aae8b22161bb503031347123a30d"
     },
     {
      "path": "tests/explore.test.tsx",
-     "sha256": "982645eace4c5e345df210363306b7dd8386f7e09af052afb3f4c31691baec48"
+     "sha256": "edc3285de3f574e6578e9306d4c4d1fdb6037b3950110ecd31e2e91dc18197c4"
     }
    ]
   },
@@ -119,11 +119,11 @@
    "evidence": [
     {
      "path": "components/explore/ExploreView.tsx",
-     "sha256": "9cfa78e26192df9756db7906139c0506b846256188d2d473e0c31fbf1ea800e5"
+     "sha256": "40366ba6c6699820b88ab3206e7e5ff664e9aae8b22161bb503031347123a30d"
     },
     {
      "path": "tests/explore.test.tsx",
-     "sha256": "982645eace4c5e345df210363306b7dd8386f7e09af052afb3f4c31691baec48"
+     "sha256": "edc3285de3f574e6578e9306d4c4d1fdb6037b3950110ecd31e2e91dc18197c4"
     }
    ]
   },
@@ -131,15 +131,15 @@
    "id": "native-time-control",
    "title": "Explore uses a native range input whose keyboard interaction advances the selected year",
    "status": "pass",
-   "reason": "Explore renders an input of type range with bounded years; native controls provide arrow-key stepping and the focused route test pins the element and range.",
+   "reason": "Explore renders an input of type range with bounded years, so native controls provide arrow-key stepping, and the focused route test pins the element and its range. The control is also operable rather than decorative: it is named, sits in a GET form that carries the mode, presentation, and data selections through a submit, and its year is reflected in every link on the page, so a chosen year can be linked, bookmarked, and shared. The route parses the year defensively and falls back to the default rather than throwing on any value the control could not have produced.",
    "evidence": [
     {
      "path": "components/explore/ExploreView.tsx",
-     "sha256": "9cfa78e26192df9756db7906139c0506b846256188d2d473e0c31fbf1ea800e5"
+     "sha256": "40366ba6c6699820b88ab3206e7e5ff664e9aae8b22161bb503031347123a30d"
     },
     {
      "path": "tests/explore.test.tsx",
-     "sha256": "982645eace4c5e345df210363306b7dd8386f7e09af052afb3f4c31691baec48"
+     "sha256": "edc3285de3f574e6578e9306d4c4d1fdb6037b3950110ecd31e2e91dc18197c4"
     }
    ]
   },
