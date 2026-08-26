@@ -179,6 +179,7 @@
     "check:claims": "node scripts/check-claim-language.mjs",
     "check:style-tokens": "node scripts/check-style-tokens.mjs",
     "check:brand-token": "node scripts/check-brand-token.mjs",
+    "check:persistent-identifiers": "node scripts/check-persistent-identifiers.mjs && node --test tests/persistent-identifiers.test.mjs",
     "check:accessibility": "node scripts/check-accessibility-contracts.mjs",
     "check:budgets": "node scripts/check-budgets.mjs",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",

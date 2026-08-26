@@ -53,6 +53,14 @@ export async function validateExitStatus(record, { schemaVersion, phase, criteri
   }
   if (record.phaseComplete !== (passed === criteria.size)) throw new Error(`Phase ${phase} completion must be derived from the criteria, never asserted.`);
 
+  // The count is an unweighted tally of the literal published exit criteria. Version 2.1 forbids converting a
+  // phase into an invented cumulative maturity score, and Phase 3 in particular is recorded by evidence rather
+  // than by such a score. Every record must therefore say in its own words what its number is not.
+  text(record.countingBoundary, `Phase ${phase} counting boundary`);
+  if (!/not a cumulative|never a cumulative/i.test(record.countingBoundary)) {
+    throw new Error(`Phase ${phase} must state that its count is not a cumulative maturity percentage.`);
+  }
+
   const failed = record.exitCriteria.filter((item) => item.status === "fail").map((item) => item.id).sort();
   const blockers = (record.ownerBlockers ?? []).map((item) => item?.id).sort();
   if (blockers.join(",") !== failed.join(",")) throw new Error(`Phase ${phase} must list exactly its unmet criteria as blockers.`);

@@ -9,8 +9,16 @@ const CRITERIA = new Map([
   ["legal-signoff-recorded-in-decision-log", "Legal sign-off is recorded in the decision log"],
   ["engagement-contact-route-answers-within-five-business-days", "The engagement contact route answers a test message within 5 business days"],
   ["product-name-resolves-from-one-token", "The product name resolves from one token, proven by a test"],
-  ["both-names-registered-with-no-persistent-identifier", "Both names are registered in both languages, and no persistent identifier contains the product name"],
+  // The plan's final Phase 0 bullet joins two separately testable gates: registration, which only the owner can
+  // complete, and the identifier rule, which a checker can prove. Phases 7 and 8 already count at this grain.
+  // Collapsing them into one criterion would hide a gate that passes behind one that cannot.
+  ["both-names-registered-in-both-languages", "Both names are registered in both languages"],
+  ["no-persistent-identifier-contains-the-product-name", "no persistent identifier contains the product name"],
 ]);
+
+// The two halves must still reconstruct the plan's sentence, so the split cannot drift into a rewrite.
+export const PLAN_BULLET = "Both names are registered in both languages, and no persistent identifier contains the product name";
+export const SPLIT_CLAUSES = ["both-names-registered-in-both-languages", "no-persistent-identifier-contains-the-product-name"];
 
 export async function validatePhase0FoundationsExitStatus(record) {
   return validateExitStatus(record, { schemaVersion: "witness-tree/phase0-foundations-exit-status/1", phase: 0, criteria: CRITERIA });

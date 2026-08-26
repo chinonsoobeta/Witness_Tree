@@ -23,12 +23,12 @@ Real Version 2.1 execution and readback are complete for all **21/21 outputs**: 
 
 ## Other formal phase counts
 
-Version 2.1 does not assign Phase 3 a cumulative percentage. Its historical checkpoint records four completed technical-foundation evidence groups and one execution-ready, empty external-checkpoint envelope; that shorthand is not a Phase 3 exit result or a production-readiness measure.
+Version 2.1 does not assign Phase 3 a cumulative percentage. Its five literal published exit criteria are nonetheless gated and counted, at 4/5 with moderated bilingual usability testing owner-blocked; that count is not a maturity score and does not mean the phase is four fifths complete. Its historical checkpoint records four completed technical-foundation evidence groups and one execution-ready, empty external-checkpoint envelope; that shorthand is not a Phase 3 exit result or a production-readiness measure.
 
 | Phase | Current count | Boundary |
 | --- | --- | --- |
-| Phase 0 | **5/8 (62.5%)** | Local foundation work does not replace approvals, governance, engagement, or operating decisions. |
-| Phase 3 | **No cumulative percentage (Version 2.1)** | Four historical technical-foundation evidence groups are recorded; real national place content, admitted Phase 2 aggregates, and required human/release checkpoints remain open. |
+| Phase 0 | **5/8 (62.5%)** | Derived from [the machine-checked record](../data/phase0-foundations-exit-status.json). Local foundation work does not replace approvals, governance, engagement, or operating decisions. |
+| Phase 3 | **No cumulative percentage (Version 2.1)**; literal exit criteria **4/5** | Four historical technical-foundation evidence groups are recorded; real national place content, admitted Phase 2 aggregates, and required human/release checkpoints remain open. |
 | Phase 4 | **3/4 (75%)** | Provincial safeguards exist; admitted enhancement inputs and published match results do not. |
 | Phase 5 | **4/4 (100%) local; production blocked** | Simulation and safety controls do not establish real feed rights, operations, or deployment. |
 | Phase 6 | **3/5 (60%)** | No live account store, direct RLS proof, sender, or timed kill-switch rehearsal. |
