@@ -144,8 +144,8 @@ test("one publisher's licence does not cover the other's", () => {
 
 test("a missing licence version renders as Unknown and refuses to be fabricated", () => {
   const rendered = formatLicenceVersion(STATCAN_LICENCE.version);
-  assert.equal(rendered.en, "Unknown — The published licence text carries no version number.");
-  assert.match(rendered.fr, /^Inconnu — /);
+  assert.equal(rendered.en, "Unknown – The published licence text carries no version number.");
+  assert.match(rendered.fr, /^Inconnu – /);
   assert.equal(/\b0\b|\b1\.0\b|\b2\.0\b/.test(rendered.en), false);
   assert.deepEqual(formatLicenceVersion(OGL_LICENCE.version), { en: "2.0", fr: "2.0" });
 

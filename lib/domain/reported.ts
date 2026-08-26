@@ -31,6 +31,6 @@ export type Unknown = Readonly<{
 export type Reported = Figure | Unknown;
 
 export function formatReported(value: Reported, locale: Locale = "en"): string {
-  if (value.kind === "unknown") return `— ${value.reason[locale]}`;
+  if (value.kind === "unknown") return `– ${value.reason[locale]}`;
   return new Intl.NumberFormat(locale === "fr" ? "fr-CA" : "en-CA", { maximumFractionDigits: 1 }).format(value.value);
 }

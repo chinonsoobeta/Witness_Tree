@@ -22,7 +22,7 @@ test("registry fails closed for missing cross-product records, untranslated Unkn
 
 test("French Unknown output retains an en dash and its French reason rather than an English fallback or zero", () => {
   const html = renderToStaticMarkup(<PlacePage locale="fr" place={PLACES[0]!} view="table" />);
-  assert.match(html, /— Aucun registre public faisant autorité n/);
-  assert.doesNotMatch(html, /— No authoritative public record/);
+  assert.match(html, /– Aucun registre public faisant autorité n/);
+  assert.doesNotMatch(html, /– No authoritative public record/);
   assert.doesNotMatch(html, />0</);
 });

@@ -136,9 +136,9 @@ test("the 1991 class area is Unknown with a reason and is never 0", () => {
   assert.match(area.reason.fr, /publiée vide/);
 
   const rendered = formatClassArea(area);
-  assert.match(rendered.en, /^Unknown — /);
-  assert.match(rendered.fr, /^Inconnu — /);
-  assert.equal(/\b0\b/.test(rendered.en.split("—")[0]), false);
+  assert.match(rendered.en, /^Unknown – /);
+  assert.match(rendered.fr, /^Inconnu – /);
+  assert.equal(/\b0\b/.test(rendered.en.split("–")[0]), false);
   assert.equal(rendered.en.includes("0 ha"), false);
   assert.equal(rendered.fr.includes("0 ha"), false);
 

@@ -1,0 +1,99 @@
+{
+ "schemaVersion": "witness-tree/phase3-frontend-foundation-exit-status/1",
+ "phase": 3,
+ "exitCriteria": [
+  {
+   "id": "budgets-pass-in-ci",
+   "title": "Every performance and accessibility budget in section 12.7 passes in CI",
+   "status": "pass",
+   "reason": "The budget and accessibility contract checkers both run as required steps on the branch gate.",
+   "evidence": [
+    {
+     "path": "scripts/check-budgets.mjs",
+     "sha256": "b6f7c3b65c5638ca5f036df8cafdcf90b9c3b997069cd0cdc4f2978e3642bdda"
+    },
+    {
+     "path": "scripts/check-accessibility-contracts.mjs",
+     "sha256": "c6a2d25591c1abdb8af158372c124aee046ee50f21e64500a7471325d5a9441c"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "sha256": "41e22e9a570f877280a3f2837fd314d6717a37dd1dc957baced6a0f2e87d1a65"
+    }
+   ]
+  },
+  {
+   "id": "usability-eight-of-ten-in-each-language",
+   "title": "8 of 10 participants complete 4 of 5 core tasks unassisted in each language",
+   "status": "fail",
+   "blockedBy": "owner",
+   "reason": "No usability study has been run. This requires 10 English and 10 French non-GIS participants and cannot be derived from code or simulated."
+  },
+  {
+   "id": "french-page-count-equals-english-with-zero-missing-strings",
+   "title": "French page count equals English page count, with zero missing strings",
+   "status": "pass",
+   "reason": "The bilingual checker enforces route-pair parity across every locale route and fails on a missing route or a missing locale content token, and it runs as a required CI step.",
+   "evidence": [
+    {
+     "path": "scripts/check-bilingual.mjs",
+     "sha256": "8f04030327794264b13a05d2fd055a6b2639b5828be27fd68d4e31456c955ec4"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "sha256": "41e22e9a570f877280a3f2837fd314d6717a37dd1dc957baced6a0f2e87d1a65"
+    }
+   ]
+  },
+  {
+   "id": "figure-without-provenance-fails-the-type-check",
+   "title": "A test that renders a figure without provenance fails the type check",
+   "status": "pass",
+   "reason": "The policy component type test asserts, through expected type errors, that a figure missing provenance, evidence, confidence or coverage cannot be constructed, and that an unknown cannot be constructed as a figure.",
+   "evidence": [
+    {
+     "path": "tests/policy-components.type-test.tsx",
+     "sha256": "0851c91713323e1277acb47c9145612270bbae360052c0ac78b723f238d5e7ef"
+    },
+    {
+     "path": "components/policy/ReportedValue.tsx",
+     "sha256": "6de008f69636b66ea528b47d109468eb7d25ea1c974d4a1a7f31c91a36569069"
+    }
+   ]
+  },
+  {
+   "id": "unknown-renders-an-en-dash-and-a-reason-never-a-zero",
+   "title": "A test that renders an unknown value produces an en dash and a reason, never a zero",
+   "status": "pass",
+   "reason": "Every unknown marker renders U+2013 followed by the localized reason, and the tests assert the en dash, the reason, and the absence of a zero in both languages.",
+   "evidence": [
+    {
+     "path": "lib/domain/reported.ts",
+     "sha256": "31886e817043cd239a4bbacdc6b5dead1272da21f3121eaac8070c64b74257ec"
+    },
+    {
+     "path": "components/policy/ReportedValue.tsx",
+     "sha256": "6de008f69636b66ea528b47d109468eb7d25ea1c974d4a1a7f31c91a36569069"
+    },
+    {
+     "path": "tests/reported-format.test.ts",
+     "sha256": "bbcb90d582726dd8460e3acc458096f9140604ae0c582782e3dbbcbc5732b3ee"
+    },
+    {
+     "path": "tests/raster-grid-hazards.test.ts",
+     "sha256": "c3f5c688566a60951e3bbb9539385347de5daa85ac9028649b35e6b8a36e61ea"
+    }
+   ]
+  }
+ ],
+ "completedCriteria": 4,
+ "totalCriteria": 5,
+ "percentage": 80.0,
+ "phaseComplete": false,
+ "ownerBlockers": [
+  {
+   "id": "usability-eight-of-ten-in-each-language",
+   "reason": "No usability study has been run. This requires 10 English and 10 French non-GIS participants and cannot be derived from code or simulated."
+  }
+ ]
+}

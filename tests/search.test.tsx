@@ -7,12 +7,12 @@ from "../components/search/SearchPage.tsx";
 test("normalizes aliases and diacritics", () => { assert.equal(normalizeSearch("Québec!") , "quebec"); assert.ok(searchPlaces("alias de municipalite quebecoise").length); });
 test("empty and missing results never become zero", () => { assert.deepEqual(searchPlaces(""), []); assert.deepEqual(searchPlaces("not-a-place"), []); });
 test("fixture names have bilingual parity", () => { const found = searchPlaces("illustrative"); assert.equal(found.filter((place) => place.name.en).length, found.filter((place) => place.name.fr).length); });
-test("renders empty and no-result states with em dash and never a zero", () => {
+test("renders empty and no-result states with en dash and never a zero", () => {
   for (const locale of ["en", "fr"] as const) {
     const empty = renderToStaticMarkup(<SearchPage locale={locale} query="" />);
     const noResult = renderToStaticMarkup(<SearchPage locale={locale} query="not-a-place" />);
     assert.doesNotMatch(empty, />0</);
-    assert.match(noResult, /—/);
+    assert.match(noResult, /–/);
     assert.doesNotMatch(noResult, />0</);
   }
 });
