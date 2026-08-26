@@ -42,6 +42,7 @@
     "check:alberta-wildfire-locations": "node scripts/check-alberta-wildfire-locations.mjs",
     "check:ontario-in-year-fire-perimeters": "node scripts/check-ontario-in-year-fire-perimeters.mjs",
     "check:ontario-in-year-fire-geometry-policy": "node scripts/check-ontario-in-year-fire-geometry-policy.mjs",
+    "check:vlce2-forest-mask-decision": "node scripts/check-vlce2-forest-mask-decision.mjs",
     "check:phase1-geometry-policies": "node scripts/check-phase1-geometry-policies.mjs",
     "check:bc-forest-operations-map-access": "node scripts/check-bc-forest-operations-map-access.mjs",
     "check:phase1-source-inventory": "node scripts/check-phase1-source-inventory.mjs",

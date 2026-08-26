@@ -33,6 +33,7 @@ jobs:
       - run: npm run check:alberta-historical-wildfire-profile
       - run: npm run check:nfdb-poly-current
       - run: npm run check:cwfis-current-active-fires
+      - run: npm run check:vlce2-forest-mask-decision
       - run: npm run check:phase1-geometry-policies
       - run: npm run check:phase1-corruption-corpus
       - run: npm run check:national-baseline-admission
