@@ -151,7 +151,7 @@
     "check:federal-electoral-archive-recovery-evidence": "node scripts/check-federal-electoral-archive-recovery-evidence.mjs",
     "check:federal-electoral-promotion-iam": "node scripts/check-federal-electoral-promotion-iam.mjs",
     "check:federal-electoral-promotion-gates": "node scripts/check-federal-electoral-promotion-gates.mjs",
-    "check:phase1-federal-electoral-transformation": "node scripts/run-phase1-federal-electoral-transformation.mjs --preflight && node --test tests/phase1-federal-electoral-transformation.test.mjs",
+    "check:phase1-federal-electoral-transformation": "node scripts/run-phase1-federal-electoral-transformation.mjs --preflight && node --test tests/phase1-federal-electoral-transformation.test.mjs && node --test tests/phase1-federal-electoral-completion.test.mjs",
     "check:phase1-federal-electoral-production-admission": "node scripts/check-phase1-federal-electoral-production-admission.mjs && node --test tests/phase1-federal-electoral-production-admission.test.mjs",
     "check:phase1-federal-electoral-output": "node scripts/check-phase1-federal-electoral-output.mjs && node --test tests/phase1-federal-electoral-output-verification.test.mjs",
     "check:raster-grid": "node scripts/check-raster-grid.mjs",
