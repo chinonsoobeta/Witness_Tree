@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -20,8 +20,10 @@ const template = readJson(`${root}/data/phase2-v21-expert-review-results.templat
 const rosterTemplate = readJson(`${root}/data/phase2-v21-expert-reviewer-roster.template.json`);
 const workflowPath = "data/phase2-v21-expert-review-workflow.json";
 const workflowBytes = readFileSync(`${root}/${workflowPath}`);
-const packetBytes = readFileSync(`${root}/${workflow.packet.path}`);
-const packet = JSON.parse(packetBytes);
+const packetPath = `${root}/${workflow.packet.path}`;
+const packetAvailable = existsSync(packetPath);
+const packetBytes = packetAvailable ? readFileSync(packetPath) : null;
+const packet = packetBytes ? JSON.parse(packetBytes) : null;
 const provinces = ["BC", "AB", "ON", "QC"];
 const resultSchema = "witness-tree/phase2-v21-expert-review-results/1";
 const rosterSchema = "witness-tree/phase2-v21-expert-reviewer-roster/1";
@@ -85,7 +87,7 @@ function validateIndependenceAttestation(attestation, label, reviewerId) {
   timestamp(attestation.attestedAt, `${label} timestamp`);
 }
 
-function validateCanonicalWorkflow() {
+function validateCanonicalWorkflow({ verifyPacket = true } = {}) {
   assert.equal(workflow.schemaVersion, "witness-tree/phase2-v21-expert-review-workflow/1");
   assert.equal(workflow.status, "ready-no-review-results");
   assert.deepEqual(workflow.assignment.provinces, provinces);
@@ -93,6 +95,13 @@ function validateCanonicalWorkflow() {
   assert.equal(workflow.assignment.totalCandidates, 400);
   assert.equal(Number.isSafeInteger(minimumDeterminateOutcomesPerProvince) && minimumDeterminateOutcomesPerProvince > 0, true, "workflow must require determinate outcomes per province");
   assert.equal(Number.isSafeInteger(minimumSubstantiveNoteCharacters) && minimumSubstantiveNoteCharacters >= 1, true, "workflow must require substantive notes");
+  assert.match(workflow.packet.sha256, /^[a-f0-9]{64}$/, "workflow packet checksum is invalid");
+  assert.equal(Number.isSafeInteger(workflow.packet.byteLength) && workflow.packet.byteLength > 0, true, "workflow packet byte length is invalid");
+  assert.deepEqual(template.packet, workflow.packet);
+  assert.equal(template.schemaVersion, resultSchema); assert.equal(template.status, "not-started"); assert.deepEqual(template.results, []);
+  assert.equal(rosterTemplate.schemaVersion, rosterSchema); assert.equal(rosterTemplate.status, "not-approved"); assert.deepEqual(rosterTemplate.reviewers, []);
+  if (!verifyPacket) return { assigned: workflow.assignment.totalCandidates, perProvince: Object.fromEntries(provinces.map((province) => [province, workflow.assignment.requiredCandidatesPerProvince])), verificationMode: "control-plane-only" };
+  assert.equal(packetAvailable, true, `review packet is required for artifact verification: ${workflow.packet.path}`);
   assert.equal(digest(packetBytes), workflow.packet.sha256, "workflow packet checksum differs");
   assert.equal(packetBytes.length, workflow.packet.byteLength, "workflow packet byte length differs");
   assert.equal(packet.samples.length, 400);
@@ -104,9 +113,7 @@ function validateCanonicalWorkflow() {
     for (const sample of samples) assigned.set(sample.id, sample);
   }
   assert.equal(assigned.size, 400, "assignment IDs must be unique");
-  assert.equal(template.schemaVersion, resultSchema); assert.equal(template.status, "not-started"); assert.deepEqual(template.packet, workflow.packet); assert.deepEqual(template.results, []);
-  assert.equal(rosterTemplate.schemaVersion, rosterSchema); assert.equal(rosterTemplate.status, "not-approved"); assert.deepEqual(rosterTemplate.reviewers, []);
-  return { assigned: 400, perProvince: Object.fromEntries(provinces.map((province) => [province, 100])) };
+  return { assigned: 400, perProvince: Object.fromEntries(provinces.map((province) => [province, 100])), verificationMode: "artifact-readback" };
 }
 
 function validateApprovedRoster(document) {
@@ -195,10 +202,10 @@ function validateCompletedResults(document, rosterPath) {
 }
 
 function main() {
-  const assignment = validateCanonicalWorkflow();
+  const assignment = validateCanonicalWorkflow({ verifyPacket: packetAvailable });
   const resultFlag = process.argv.indexOf("--results");
   if (resultFlag === -1) {
-    console.log(JSON.stringify({ status: "ready-no-review-results", totalAssigned: assignment.assigned, totalCompleted: 0, provinces: Object.fromEntries(provinces.map((province) => [province, { assigned: 100, completed: 0 }])) }, null, 2));
+    console.log(JSON.stringify({ status: packetAvailable ? "ready-no-review-results" : "ready-no-review-results-control-plane-only", verificationMode: assignment.verificationMode, totalAssigned: assignment.assigned, totalCompleted: 0, provinces: Object.fromEntries(provinces.map((province) => [province, { assigned: 100, completed: 0 }])) }, null, 2));
   } else {
     assert(resultFlag + 1 < process.argv.length, "--results requires a JSON path");
     const rosterFlag = process.argv.indexOf("--roster"); assert(rosterFlag >= 0 && rosterFlag + 1 < process.argv.length, "--results requires a separate --roster JSON path");
