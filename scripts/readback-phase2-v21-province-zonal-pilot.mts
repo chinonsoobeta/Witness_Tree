@@ -24,14 +24,17 @@ export async function readbackPhase2V21ProvinceZonalPilot(): Promise<void> {
   const outputPath = path.join(DIRECTORY, OUTPUT);
   const sidecarPath = path.join(DIRECTORY, SIDECAR);
   await regularUnsymlinkedFile(outputPath); await regularUnsymlinkedFile(sidecarPath);
-  const [outputBytes, sidecarBytes, workerBytes, evidenceBytes, rasterEvidenceBytes] = await Promise.all([
-    readFile(outputPath), readFile(sidecarPath), readFile(path.join(ROOT, "scripts/phase2_zonal_aggregate.py")),
+  const [outputBytes, sidecarBytes, evidenceBytes, rasterEvidenceBytes] = await Promise.all([
+    readFile(outputPath), readFile(sidecarPath),
     readFile(path.join(ROOT, "data/phase2-v21-province-zonal-pilot-evidence.json")),
     readFile(path.join(ROOT, "data/phase2-v21-raster-readback-evidence.json")),
   ]);
   const evidence = JSON.parse(evidenceBytes.toString("utf8"));
   const rasterEvidence = JSON.parse(rasterEvidenceBytes.toString("utf8"));
   validatePhase2V21ProvinceZonalPilotEvidence(evidence, rasterEvidence);
+  // The admitted run's worker bytes are frozen under data/provenance so this binding stays verifiable after the
+  // live scripts/phase2_zonal_aggregate.py changes. The record's name derives from the digest it must hash to.
+  const workerBytes = await readFile(path.join(ROOT, `data/provenance/phase2_zonal_aggregate.admitted-${String(evidence.run.workerSha256).slice(0, 8)}.py`));
   assert.deepEqual({ path: OUTPUT, byteLength: outputBytes.byteLength, sha256: sha(outputBytes) }, evidence.artifacts.output);
   assert.deepEqual({ path: SIDECAR, byteLength: sidecarBytes.byteLength, sha256: sha(sidecarBytes) }, evidence.artifacts.sidecar);
   const output = JSON.parse(outputBytes.toString("utf8"));
