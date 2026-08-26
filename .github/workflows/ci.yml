@@ -79,6 +79,7 @@ jobs:
       - run: npm run check:phase2-historical-method-parameters
       - run: npm run check:phase2-historical-component-inventory
       - run: node --test tests/phase2-real-data-owner-decision.test.mjs tests/phase2-real-national-preflight.test.mjs tests/phase2-real-national-execution-evidence.test.mjs
+      - run: npm run check:source-review
       - run: npm run check:accessibility
       - run: npm run build
       - run: npm run check:claims
