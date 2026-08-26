@@ -78,9 +78,9 @@ Unconfirmed until selected resources are retrieved and profiled:
 
 ## Required design constraints
 
-The approved plan requires immutable object storage: one source/retrieval prefix with checksum and metadata sidecar, without overwriting a prior source or published result. Raw snapshots must remain reproducible with their recorded method version. See [the plan’s architecture and controls](../../work/witness-tree-plan.md#7-architecture) and [raw-archive contract](RAW_ARCHIVE.md).
+The approved plan requires immutable object storage: one source/retrieval prefix with checksum and metadata sidecar, without overwriting a prior source or published result. Raw snapshots must remain reproducible with their recorded method version. See [the plan’s architecture and controls](CONTROLLING_IMPLEMENTATION_PLAN.md#7-architecture) and [raw-archive contract](RAW_ARCHIVE.md).
 
-Provisioning must distinguish **development**, **data review**, **staging**, and **production**. Data review is a required human-review boundary before staging; it is not a production environment. See [plan section 7.2](../../work/witness-tree-plan.md#72-environments-and-non-negotiable-controls).
+Provisioning must distinguish **development**, **data review**, **staging**, and **production**. Data review is a required human-review boundary before staging; it is not a production environment. See [plan section 7.2](CONTROLLING_IMPLEMENTATION_PLAN.md#72-environments-and-non-negotiable-controls).
 
 ## Decisions needed from owners
 

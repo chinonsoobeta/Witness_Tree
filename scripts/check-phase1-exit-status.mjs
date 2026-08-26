@@ -17,13 +17,12 @@ function nonEmptyString(value, name) {
   assert.ok(value.trim(), `${name} must not be empty.`);
 }
 
-function validateEvidence(evidence, name, root, verifyHashes, { allowControllingPlanPath = false } = {}) {
+function validateEvidence(evidence, name, root, verifyHashes) {
   assert.ok(Array.isArray(evidence) && evidence.length > 0, `${name} requires evidence.`);
   for (const [index, item] of evidence.entries()) {
     nonEmptyString(item?.path, `${name}.evidence[${index}].path`);
     assert.match(item.sha256, /^[a-f0-9]{64}$/, `${name}.evidence[${index}].sha256 must be a SHA-256 hex digest.`);
-    const isControllingPlan = allowControllingPlanPath && item.path === "../work/witness-tree-plan.md";
-    assert.ok(!path.isAbsolute(item.path) && (!item.path.includes("..") || isControllingPlan), `${name}.evidence[${index}].path must stay inside the repository.`);
+    assert.ok(!path.isAbsolute(item.path) && !item.path.includes(".."), `${name}.evidence[${index}].path must stay inside the repository.`);
     if (verifyHashes) {
       const actual = createHash("sha256").update(readFileSync(path.join(root, item.path))).digest("hex");
       assert.equal(actual, item.sha256, `${name}.evidence[${index}] no longer matches its recorded SHA-256.`);
@@ -36,7 +35,7 @@ export function validatePhase1ExitStatus(record, { root = ROOT, verifyHashes = t
   assert.match(record.asOf, /^\d{4}-\d{2}-\d{2}$/);
   const requirements = record.requirementsEvidence;
   assert.deepEqual(requirements?.sections, ["Phase 1 — Exit criteria", "Verified completion checkpoint through 2026-08-25"]);
-  validateEvidence([requirements], "requirementsEvidence", path.resolve(root, ".."), verifyHashes, { allowControllingPlanPath: true });
+  validateEvidence([requirements], "requirementsEvidence", root, verifyHashes);
 
   const exit = record.formalExit;
   assert.equal(exit?.method, "unweighted-four-gate-count");

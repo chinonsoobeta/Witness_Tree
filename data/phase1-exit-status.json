@@ -2,7 +2,7 @@
   "schemaVersion": "phase1-exit-status/v1",
   "asOf": "2026-08-25",
   "requirementsEvidence": {
-    "path": "../work/witness-tree-plan.md",
+    "path": "docs/CONTROLLING_IMPLEMENTATION_PLAN.md",
     "sha256": "7aa04bc77afc0d25546d33a8a195ce3c4b40fc62fca66f4d2d43f891f8005ca2",
     "sections": ["Phase 1 — Exit criteria", "Verified completion checkpoint through 2026-08-25"]
   },
