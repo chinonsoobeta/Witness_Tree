@@ -56,6 +56,7 @@ jobs:
       - run: npm run check:boundary-editions
       - run: npm run check:french-boundary-acquisition
       - run: npm run check:phase1-optional-enhancements
+      - run: npm run check:phase2-formal-exit-status
       - run: npm run check:phase4-exit-status
       - run: npm run check:phase5-live-wildfire-exit-status
       - run: npm run check:phase6-account-alert-exit-status

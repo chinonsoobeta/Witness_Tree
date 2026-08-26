@@ -96,10 +96,7 @@ def create_feature_mask(geometry, crs_wkt, transform, xoff, yoff, width, height)
         gt[3] += xoff * gt[4] + yoff * gt[5]
         memory.SetGeoTransform(gt)
         memory.SetProjection(crs_wkt)
-        memory_driver = ogr.GetDriverByName("MEM") or ogr.GetDriverByName("Memory")
-        if memory_driver is None:
-            raise RuntimeError("GDAL has no in-memory OGR driver")
-        layer_ds = memory_driver.CreateDataSource("")
+        layer_ds = ogr.GetDriverByName("MEM").CreateDataSource("")
         working_ref = osr.SpatialReference()
         working_ref.ImportFromWkt(crs_wkt)
         layer = layer_ds.CreateLayer("feature", srs=working_ref, geom_type=ogr.wkbUnknown)
