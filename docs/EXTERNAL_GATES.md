@@ -1,14 +1,51 @@
-# External gates
+# External and release gates
 
-The implementation plan contains decisions that software cannot honestly manufacture. They remain launch gates until authoritative evidence is recorded.
+The implementation plan contains decisions, reviews, observed operational results, and relationships that software cannot honestly manufacture. This register tracks the plan's external and release gates. Every item below remains **not complete** unless and until the stated evidence is recorded by the accountable owner. A passing local check, fixture, policy document, public technical preview, or draft route is not substitute evidence.
+
+The current preview uses illustrative fixtures only. No production source release, account service, live wildfire integration, reserve/treaty production page, public beta, or general launch is authorized by this register.
+
+## Phase 0: foundations, identity, and governance
 
 | Gate | Required evidence | Current state |
 | --- | --- | --- |
-| Legal review | Written sign-off for defamation, licensing, disclaimer, terms and privacy language in both languages | Not started |
-| SOPFEU reuse | Written public-reuse terms | Not confirmed |
-| Mistik name request | Written permission from the appropriate Cree language authority, including terms, spelling and withdrawal rights | Not authorized. Chinonso Obeta retained Witness Tree and explicitly did not authorize Mistik; nothing ships under Mistik without the required written authority. |
-| Indigenous engagement | Contact register, briefing offers and right-of-reply routes for affected nations | Not started |
-| Professional translation | Subject-matter-reviewed bilingual production release | Required before production/public-data release; the public technical preview is explicitly unreviewed |
-| External accessibility audit | Zero critical WCAG 2.2 AA defects across all four templates | Required before production/public-data release; not represented as complete by the technical preview |
-| Provincial review | One outside reviewer per province confirms presentation of provincial data | Required at Phase 4 and Phase 8 |
-| Editorial and technical sign-off | Recorded decisions for definitions and method changes | Editorial foundations were approved by accountable owner Chinonso Obeta on 2026-08-21 in `data/phase1-phase3-owner-approvals-2026-08-21.json`. Legal, external-review, real-data and release gates remain open. |
+| Editorial foundations sign-off | Recorded approval of the forest definition, evidence classes, and confidence rules | Editorial foundations were approved by accountable owner Chinonso Obeta on 2026-08-21 in `data/phase1-phase3-owner-approvals-2026-08-21.json`. Legal, external-review, real-data and release gates remain open. No separate editorial board has been appointed. |
+| Legal review | Written bilingual sign-off for defamation, licensing, attribution, disclaimers, terms, privacy, and account/alert controls | Not started |
+| Name clearance and registration | Broader professional trademark/confusion review; both required names/domains registered; no persistent identifier uses the product name | Preliminary exact-name screen only; not cleared for filing or launch |
+| Mistik name request | Written response from the appropriate Cree language authority, including terms, spelling, honorarium, and withdrawal rights; outcome recorded | Not authorized. Chinonso Obeta retained Witness Tree and explicitly did not authorize Mistik; nothing ships under Mistik without the required written authority. |
+| Indigenous engagement route | Named, funded engagement lead; tested contact route that answers within five business days; published engagement statement | Not started; no contact route or named lead is active |
+
+## Phases 1 to 4: sources, methods, and provincial presentation
+
+| Gate | Required evidence | Current state |
+| --- | --- | --- |
+| Source rights and attribution | Per-source licence, attribution, redistribution, version, retrieval, and retention approval before ingestion or release | Incomplete; staging and source-candidate evidence do not authorize production use |
+| Immutable archive ownership | Approved Canadian-region provider, retention duration/legal-hold process, access controls, and independently accepted proof before raw-source promotion | Not complete; no production archive or promoted source snapshot is claimed |
+| SOPFEU reuse | Written public-reuse terms before any Québec live-fire integration | Not confirmed |
+| Technical advisory review | Review of the national baseline against provincial statistics, with documented explainable differences | Not started; no national baseline exists |
+| Provincial data-owner review | One outside reviewer per province confirms correct presentation of provincial data | Not started; required at Phase 4 and again for release readiness |
+| Editorial and technical method sign-off | Recorded decisions for definitions, new sources, methods, and published-number changes | Not started; required before published-number releases. The Phase 0 editorial foundations approval above does not cover a method or published-number change. |
+
+## Phases 5 to 7: operational and Indigenous-geography gates
+
+| Gate | Required evidence | Current state |
+| --- | --- | --- |
+| Live wildfire operations | Authoritative endpoint configuration and rights, four-times-daily scheduler, storage/monitoring/on-call ownership, and outage/schema/stale rehearsal evidence | Not complete; routes and refresh logic are illustrative/policy-only |
+| Account privacy and security | Privacy/security sign-off, selected and verified Canadian hosting, live deletion and kill-switch test by an independent person, and approved outbound sender | Not started; accounts are inactive and hosting is unselected |
+| Indigenous-geography engagement | Contact register, briefing offer, and working named right-of-reply recipient for every affected nation before reserve/treaty production pages go live | Not started; no production reserve/treaty pages are authorized |
+| Federal boundary/source review | Verified source terms, names/diacritics, and approved presentation of reserve/treaty data | Not started; no verified production boundary dataset is integrated |
+
+## Phases 8 to 9: release, beta, and launch
+
+| Gate | Required evidence | Current state |
+| --- | --- | --- |
+| Professional bilingual review | Professional translation with subject-matter/terminology review, French usability testing, and zero critical French defects | Required before production/public-data release; the preview is explicitly unreviewed |
+| Independent accessibility audit | External WCAG 2.2 AA and EN 301 549 audit across all four templates, with zero critical defects; rendered keyboard and assistive-technology testing | Required before production/public-data release; source-level checks are not an audit |
+| Security review and load test | Independent security review plus a 50-times-normal-traffic CDN load test that holds | Not started; no production account/alert service or load-test evidence exists |
+| Release reproducibility and validation | A published figure recomputed from an immutable raw archive and recorded method version; independent-data validation and approved release/citation record | Not started; no production release exists |
+| Operations readiness | Published runbook, staffed and tested fire-season on-call rota, incident/escalation route, source-update and correction ownership | Not started; no production operations are active |
+| Public beta and correction evidence | Invited beta participants, observed correction operation, first quarterly correction metrics, no unresolved critical correction, and quarterly reproducibility pass | Not started; no beta has occurred |
+| Source-agency confirmation and launch decision | At least one source agency confirms its data presentation, followed by a recorded go/no-go and formal launch decision | Not started |
+
+## Recording a closure
+
+Do not change a gate to complete because a related implementation task, automated test, or draft document exists. Record the dated evidence, accountable owner, scope, and any limitations in the decision/audit record first. A gate may close only for the release surface and data scope that its evidence actually covers.
