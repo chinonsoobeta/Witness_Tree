@@ -13,12 +13,20 @@ import {
 }
 // @ts-expect-error -- Node's TypeScript runner requires explicit local extensions.
 from "../lib/alerts/subscriptions.ts";
+import { ALERT_TEMPLATES } from "../lib/alerts/templates";
 
 const subscription = createSubscription({
   id: "subscription-1",
   emailAddress: " Person@Example.test ",
   placeId: "place-1",
   eventClass: "official-record",
+});
+
+test("unmatched-change alerts use the locked bilingual neutral wording", () => {
+  assert.deepEqual(ALERT_TEMPLATES["unmatched-detected-change"], {
+    en: "No authoritative record has been integrated for this location.",
+    fr: "Aucun registre faisant autorité n’a été intégré pour cet emplacement.",
+  });
 });
 
 const change: AlertChange = {
@@ -67,7 +75,7 @@ test("digest keeps evidence, confidence, provenance, and unknown instead of zero
     reported: {
       kind: "unknown",
       evidence: "unknown",
-      reason: "No authoritative public record has been integrated for this question.",
+      reason: { en: "No authoritative public record has been integrated for this question.", fr: "Aucun registre public faisant autorité n’a été intégré pour cette question." },
       coverageGrade: "national-baseline",
     },
   };

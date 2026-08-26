@@ -26,7 +26,7 @@ test("rejects damage claims, missing lineage, invalid intersections, and mismatc
   assert.throws(() => validateFireImpactSummary({ ...summary, estimatedIntersectedMatureForest: { ...summary.estimatedIntersectedMatureForest, value: EXAMPLE_FIRE_IMPACT_INPUT.perimeter.hectares } }), /must equal/);
   assert.throws(() => validateFireImpactInput({ ...EXAMPLE_FIRE_IMPACT_INPUT, perimeter: { ...EXAMPLE_FIRE_IMPACT_INPUT.perimeter, observedDate: "2026-02-30" } }), /ISO date/);
   assert.throws(() => validateFireImpactInput({ ...EXAMPLE_FIRE_IMPACT_INPUT, perimeter: { ...EXAMPLE_FIRE_IMPACT_INPUT.perimeter, sourceDate: "2026-08-09" } }), /cannot predate/);
-  assert.throws(() => validateFireImpactInput({ ...EXAMPLE_FIRE_IMPACT_INPUT, confidence: { ...EXAMPLE_FIRE_IMPACT_INPUT.confidence, ruleId: "CONF-MEDIUM-001" } }), /matching confidence/);
+  assert.throws(() => validateFireImpactInput({ ...EXAMPLE_FIRE_IMPACT_INPUT, confidence: { ...EXAMPLE_FIRE_IMPACT_INPUT.confidence, ruleId: "CONF-HIGH-001" } }), /matching confidence/);
   assert.throws(() => validateFireImpactInput({ ...EXAMPLE_FIRE_IMPACT_INPUT, boundaryEdition: "other-edition" }), /boundary editions must match/);
 });
 

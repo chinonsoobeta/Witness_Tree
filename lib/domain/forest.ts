@@ -12,7 +12,7 @@ export const FOREST_DEFINITION = Object.freeze({
     "Land of at least 1 hectare, with at least 10 percent crown closure, carrying trees able to reach 5 metres at maturity.",
     "Terre d’au moins 1 hectare, présentant un couvert de cimes d’au moins 10 pour cent et portant des arbres capables d’atteindre 5 mètres à maturité.",
   ),
-  glossaryPath: Object.freeze({ en: "/en/glossary#forest", fr: "/fr/glossaire#foret" }),
+  glossaryPath: Object.freeze({ en: "/en/glossary#forest", fr: "/fr/glossaire#forest" }),
 });
 
 export type ForestDenominator = Readonly<{

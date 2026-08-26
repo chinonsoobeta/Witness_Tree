@@ -1,4 +1,5 @@
 import type { CoverageGrade, EvidenceClass, Locale } from "../domain";
+import type { BoundaryApplicationBasis } from "../coverage/types";
 
 export const RANKABLE_PLACE_TYPES = ["federal-riding", "provincial-riding"] as const;
 export const COMPARABLE_PLACE_TYPES = [
@@ -18,6 +19,8 @@ export type RankedRiding = Readonly<{
   coverageGrade: CoverageGrade;
   evidence: EvidenceClass;
   sufficientCoverage: boolean;
+  boundaryEdition: string;
+  boundaryApplication: BoundaryApplicationBasis;
 }>;
 export type RankingContext = Readonly<{
   timeRange: string;
@@ -25,6 +28,7 @@ export type RankingContext = Readonly<{
   dataVersion: string;
   denominatorDefinition: Readonly<Record<Locale, string>>;
   evidence: EvidenceClass;
+  boundaryApplication: BoundaryApplicationBasis;
   method: Readonly<Record<Locale, string>>;
 }>;
 export type ComparisonPlace = Readonly<{
@@ -36,4 +40,6 @@ export type ComparisonPlace = Readonly<{
   forestedHectares: number;
   coverageGrade: CoverageGrade;
   evidence: EvidenceClass;
+  boundaryEdition: string;
+  boundaryApplication: BoundaryApplicationBasis;
 }>;

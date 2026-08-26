@@ -8,9 +8,9 @@ export const metadata: Metadata = { title: "Registre public des changements fore
 export default function FrenchHome() {
   return <SiteShell locale="fr"><main id="main" className="page-wrap">
     <header className="masthead">
-      <p className="eyebrow">Registre de preuves · 1984 à aujourd’hui</p>
+      <p className="eyebrow">Aperçu technique · registre national prévu</p>
       <h1>Qu’est-il arrivé à la forêt ici?</h1>
-      <p className="dek">{PRODUCT_NAME.fr} aide à comprendre les changements forestiers consignés et observés dans quatre provinces. Chaque résultat indique ce que montrent les preuves, leur provenance, leur actualité et ce qu’elles ne permettent pas d’établir.</p>
+      <p className="dek">{PRODUCT_NAME.fr} est en cours de développement pour aider à comprendre les changements forestiers consignés et observés partout au Canada, de 1984 à la plus récente année source admise, avec la Colombie-Britannique, l’Alberta, l’Ontario et le Québec comme quatre provinces prioritaires. Le contenu actuel est un aperçu technique illustratif. Chaque résultat indique ce que montrent les preuves, leur provenance, leur actualité et ce qu’elles ne permettent pas d’établir.</p>
       <div className="meta-row"><span>Colombie-Britannique</span><span>Alberta</span><span>Ontario</span><span>Québec</span></div>
     </header>
     <section className="content-section prose-measure">

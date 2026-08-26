@@ -1,10 +1,13 @@
 import { localized, type LocalizedString } from "./localized";
+import type { EvidenceClass } from "./evidence";
 
 export type ConfidenceLevel = "high" | "medium" | "limited" | "unknown";
 
 export type ConfidenceInput = Readonly<{
+  evidenceClass: EvidenceClass;
   authoritativeRecord: boolean;
   geometryResolved: boolean;
+  eventDateResolvedToYear: boolean;
   dateUncertaintyYears?: number;
   requiredAttributesPresent: boolean;
   partialAttribution?: boolean;
@@ -19,13 +22,42 @@ export type ConfidenceResult = Readonly<{
   reason: LocalizedString;
 }>;
 
+const RULE_BY_LEVEL: Readonly<Record<ConfidenceLevel, ConfidenceResult["ruleId"]>> = {
+  high: "CONF-HIGH-001",
+  medium: "CONF-MEDIUM-001",
+  limited: "CONF-LIMITED-001",
+  unknown: "CONF-UNKNOWN-001",
+};
+
+export function validateConfidenceResult(result: ConfidenceResult, evidenceClass: EvidenceClass): ConfidenceResult {
+  if (!result || RULE_BY_LEVEL[result.level] !== result.ruleId || !result.reason?.en.trim() || !result.reason.fr.trim()) {
+    throw new Error("Confidence requires a matching level, rule identifier, and bilingual explanation.");
+  }
+  if (result.level === "high" && evidenceClass !== "official-record") throw new Error("High confidence requires official-record evidence.");
+  return result;
+}
+
 const mediumReason = (limitationEn: string, limitationFr: string): LocalizedString =>
   localized(
     `Strong evidence with a material limitation: ${limitationEn}.`,
     `Preuve solide comportant une limite importante : ${limitationFr}.`,
   );
 
+const OPTIONAL_NUMBERS: readonly (keyof Pick<ConfidenceInput,
+  "dateUncertaintyYears" | "geometryResolutionMetres" | "inventoryAgeAtEventYears"
+>)[] = ["dateUncertaintyYears", "geometryResolutionMetres", "inventoryAgeAtEventYears"];
+
+function validateConfidenceInput(input: ConfidenceInput): void {
+  for (const field of OPTIONAL_NUMBERS) {
+    const value = input[field];
+    if (value !== undefined && (!Number.isFinite(value) || value < 0)) {
+      throw new Error(`${field} must be a finite, non-negative number.`);
+    }
+  }
+}
+
 export function assignConfidence(input: ConfidenceInput): ConfidenceResult {
+  validateConfidenceInput(input);
   if (input.coverageGap || (input.inventoryAgeAtEventYears ?? 0) > 5 || (input.geometryResolutionMetres ?? 0) > 100) {
     const years = input.inventoryAgeAtEventYears;
     const reason = years && years > 5
@@ -42,7 +74,9 @@ export function assignConfidence(input: ConfidenceInput): ConfidenceResult {
 
   if (
     input.authoritativeRecord
+    && input.evidenceClass === "official-record"
     && input.geometryResolved
+    && input.eventDateResolvedToYear
     && (input.dateUncertaintyYears ?? 0) <= 1
     && input.requiredAttributesPresent
     && !input.partialAttribution
@@ -57,7 +91,17 @@ export function assignConfidence(input: ConfidenceInput): ConfidenceResult {
     };
   }
 
-  if (input.authoritativeRecord || input.geometryResolved) {
+  if (input.evidenceClass !== "unknown" && (input.authoritativeRecord || input.geometryResolved)) {
+    if (!input.eventDateResolvedToYear) {
+      return {
+        level: "medium",
+        ruleId: "CONF-MEDIUM-001",
+        reason: mediumReason(
+          "the event date is not resolved to the year",
+          "la date de l’événement n’est pas déterminée à l’année près",
+        ),
+      };
+    }
     const dateUncertainty = input.dateUncertaintyYears ?? 0;
     if (dateUncertainty > 1) {
       return {
@@ -74,6 +118,13 @@ export function assignConfidence(input: ConfidenceInput): ConfidenceResult {
         level: "medium",
         ruleId: "CONF-MEDIUM-001",
         reason: mediumReason("the attribution is partial", "l’attribution est partielle"),
+      };
+    }
+    if (input.evidenceClass === "derived-estimate") {
+      return {
+        level: "medium",
+        ruleId: "CONF-MEDIUM-001",
+        reason: mediumReason("the value is a documented derivation from source inputs", "la valeur est une dérivation documentée à partir de données sources"),
       };
     }
     return {

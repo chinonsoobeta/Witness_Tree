@@ -1,5 +1,6 @@
 import { EVIDENCE_DEFINITIONS, PRODUCT_NAME, type Locale } from "../domain";
 import type { RankingContext } from "./types";
+import { boundaryApplicationLabel } from "./ranking";
 
 export type ComparisonShareImage = Readonly<{ id: string; filename: string; svg: string }>;
 
@@ -20,6 +21,7 @@ export function generateComparisonShareImage(context: RankingContext, locale: Lo
     PRODUCT_NAME[locale],
     context.timeRange,
     context.boundaryEdition,
+    boundaryApplicationLabel(context, locale),
     context.dataVersion,
     context.denominatorDefinition[locale],
     evidence,

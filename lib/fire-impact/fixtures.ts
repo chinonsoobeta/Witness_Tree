@@ -12,5 +12,5 @@ export const EXAMPLE_FIRE_IMPACT_INPUT: FireImpactInput = Object.freeze({
   dataVersion: "example-data-1",
   methodVersion: "example-method-1",
   coverageGrade: "national-baseline",
-  confidence: assignConfidence({ authoritativeRecord: true, geometryResolved: true, requiredAttributesPresent: true }),
+  confidence: assignConfidence({ evidenceClass: "derived-estimate", authoritativeRecord: true, geometryResolved: true, eventDateResolvedToYear: true, requiredAttributesPresent: true }),
 });

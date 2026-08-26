@@ -1,5 +1,7 @@
 # Plan gap matrix
 
+> Historical Version 2 record. Its percentages and four-province framing are superseded by the approved Version 2.1 scope amendment. Use [`V2_1_LIVE_GAP_MATRIX.md`](V2_1_LIVE_GAP_MATRIX.md) and its machine-checked JSON for current implementation status. Nothing below is a current production-readiness score or open-work definition.
+
 **Audit date:** 2026-08-11 (Pacific)
 
 **Authoritative specification:** [`Witness Tree Implementation Plan.docx`](specification/Witness%20Tree%20Implementation%20Plan.docx), with the local extracted working copy at `/Users/chinonsoobeta/Documents/Codex/2026-08-11/go/work/witness-tree-plan.md`.

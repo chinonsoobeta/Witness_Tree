@@ -27,7 +27,22 @@ test("a 60 percent overlap matches, retains lower-overlap candidates, and a 40 p
   ]);
   assert.equal(noMatch.selectedMatch, null);
   assert.equal(noMatch.evidenceClass, "satellite-observation");
-  assert.ok(noMatch.nonMatchReason);
+  assert.equal(noMatch.nonMatchCause, "matching-tolerance");
+  assert.deepEqual(noMatch.nonMatchReason, {
+    en: "No authoritative record has been integrated for this location.",
+    fr: "Aucun registre faisant autorité n’a été intégré pour cet emplacement.",
+  });
+});
+
+test("the public unmatched-change wording is locked while the audit cause remains structured", () => {
+  const result = matchDetectedChange(
+    { id: "outside-coverage", observationYear: 2020, geometryHectares: 1 },
+    [],
+    { nonMatchCause: "outside-published-coverage" },
+  );
+  assert.equal(result.nonMatchCause, "outside-published-coverage");
+  assert.match(result.nonMatchReason?.en ?? "", /^No authoritative record has been integrated for this location\.$/);
+  assert.equal(/unexplained|unreported|undocumented|illegal/i.test(JSON.stringify(result.nonMatchReason)), false);
 });
 
 test("an impossible intersection is rejected as invalid geometry", () => {

@@ -1,7 +1,8 @@
-import type { Reported, CoverageGrade, Locale } from "@/lib/domain";
+import { type Reported, type CoverageGrade, type Locale } from "@/lib/domain";
 import { ConfidenceBadge } from "./ConfidenceBadge";
 import { CoverageBand } from "./CoverageBand";
 import { EvidenceChip } from "./EvidenceChip";
+import { ForestDefinitionLink } from "./ForestDefinitionLink";
 import { ProvenanceBlock } from "./ProvenanceBlock";
 
 export type ReportedValueProps = Readonly<{
@@ -12,9 +13,10 @@ export type ReportedValueProps = Readonly<{
 
 export function ReportedValue({ reported, coverageGrade, locale }: ReportedValueProps) {
   if (reported.kind === "unknown") {
+    const reason = reported.reason[locale];
     return (
       <section>
-        <output aria-label={reported.reason}>— {reported.reason}</output>
+        <output aria-label={reason}>— {reason}</output>
         <EvidenceChip evidence={reported.evidence} locale={locale} />
         <CoverageBand coverageGrade={coverageGrade} locale={locale} />
       </section>
@@ -24,6 +26,7 @@ export function ReportedValue({ reported, coverageGrade, locale }: ReportedValue
   return (
     <section>
       <output>{reported.value} {reported.unit}</output>
+      {reported.unit === "%" ? <ForestDefinitionLink locale={locale}>{locale === "en" ? "Forest denominator" : "Dénominateur forestier"}</ForestDefinitionLink> : null}
       <EvidenceChip evidence={reported.evidence} locale={locale} />
       <ConfidenceBadge confidence={reported.confidence} locale={locale} />
       <CoverageBand coverageGrade={coverageGrade} locale={locale} />

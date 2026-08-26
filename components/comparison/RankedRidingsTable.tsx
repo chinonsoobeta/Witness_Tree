@@ -1,4 +1,4 @@
-import { CoverageBand, EvidenceChip } from "@/components/policy";
+import { CoverageBand, EvidenceChip, ForestDefinitionLink } from "@/components/policy";
 import { RANKING_COPY, RANKING_METRIC, rankRidings, type RankedRiding, type RankingContext } from "@/lib/comparison";
 import type { Locale } from "@/lib/domain";
 
@@ -7,13 +7,14 @@ function TableHeaders({ locale, copy }: { locale: Locale; copy: (typeof RANKING_
 }
 
 function RidingRow({ row, locale }: { row: RankedRiding; locale: Locale }) {
-  return <tr><th scope="row">{row.name[locale]}</th><td>{row.detectedChangePercent}%</td><td>{row.detectedChangeHectares} ha</td><td>{row.forestedHectares} ha</td><td><CoverageBand coverageGrade={row.coverageGrade} locale={locale} /></td><td><EvidenceChip evidence={row.evidence} locale={locale} /></td></tr>;
+  return <tr><th scope="row">{row.name[locale]}</th><td><ForestDefinitionLink locale={locale}>{row.detectedChangePercent}%</ForestDefinitionLink></td><td>{row.detectedChangeHectares} ha</td><td>{row.forestedHectares} ha</td><td><CoverageBand coverageGrade={row.coverageGrade} locale={locale} /></td><td><EvidenceChip evidence={row.evidence} locale={locale} /></td></tr>;
 }
 
 export function RankedRidingsTable({ rows, context, locale }: { rows: readonly RankedRiding[]; context: RankingContext; locale: Locale }) {
+  if (rows.some((row) => row.boundaryEdition !== context.boundaryEdition || row.boundaryApplication !== context.boundaryApplication)) throw new Error("Ranked rows must use the declared boundary edition and application basis.");
   const result = rankRidings(rows); const copy = RANKING_COPY[locale];
   return <section className="comparison-table" aria-label={copy.metric}>
-    <header><p>{context.timeRange} · {context.boundaryEdition} · {context.dataVersion}</p><p>{context.denominatorDefinition[locale]}</p><p>{context.method[locale]}</p><EvidenceChip evidence={context.evidence} locale={locale} /></header>
+    <header><p>{context.timeRange} · {context.boundaryEdition} · {context.dataVersion}</p><p>{context.boundaryApplication === "period-contemporaneous" ? (locale === "en" ? "Boundary contemporaneous with the period" : "Limite contemporaine de la période") : (locale === "en" ? "Current boundary applied to historic events" : "Limite actuelle appliquée aux événements historiques")}</p><p>{context.denominatorDefinition[locale]}</p><p>{context.method[locale]}</p><EvidenceChip evidence={context.evidence} locale={locale} /></header>
     <table><caption>{copy.metric}</caption><thead><TableHeaders locale={locale} copy={copy} /></thead><tbody>{result.ranked.map((row) => <RidingRow key={row.id} row={row} locale={locale} />)}</tbody></table>
     {result.insufficientCoverage.length > 0 && <section aria-label={copy.insufficient}><h3>{copy.insufficient}</h3><table><caption>{copy.insufficient}</caption><thead><TableHeaders locale={locale} copy={copy} /></thead><tbody>{result.insufficientCoverage.map((row) => <RidingRow key={row.id} row={row} locale={locale} />)}</tbody></table></section>}
     <data value={RANKING_METRIC} />

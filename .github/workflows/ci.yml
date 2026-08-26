@@ -24,8 +24,12 @@ jobs:
       - run: npm run check:immutable-promotions
       - run: npm run check:boundary-editions
       - run: npm run check:raster-grid
+      - run: npm run check:phase0-checkpoints
+      - run: npm run check:rename-proof
+      - run: npm run check:v2-1-gap-matrix
       - run: npm run check:accessibility
       - run: npm run build
+      - run: node --test tests/rendered-html.test.mjs
       - run: npm run check:claims
       - run: npm run check:style-tokens
       - run: npm run check:brand-token

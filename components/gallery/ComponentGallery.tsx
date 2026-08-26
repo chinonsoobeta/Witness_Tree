@@ -71,9 +71,10 @@ export function ComponentGallery({ locale }: ComponentGalleryProps) {
   const unknown: Reported = {
     kind: "unknown",
     evidence: "unknown",
-    reason: locale === "en"
-      ? "No authoritative public record has been integrated for this question."
-      : "Aucun registre public faisant autorité n’a été intégré pour cette question.",
+    reason: {
+      en: "No authoritative public record has been integrated for this question.",
+      fr: "Aucun registre public faisant autorité n’a été intégré pour cette question.",
+    },
     coverageGrade: "national-baseline-plus-local-context",
   };
 

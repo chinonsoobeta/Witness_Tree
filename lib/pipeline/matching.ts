@@ -1,4 +1,18 @@
 import type { EvidenceClass } from "../domain/evidence";
+import { localized, type LocalizedString } from "../domain/localized";
+
+export const UNMATCHED_CHANGE_REASON = localized(
+  "No authoritative record has been integrated for this location.",
+  "Aucun registre faisant autorité n’a été intégré pour cet emplacement.",
+);
+
+export type NonMatchCause =
+  | "outside-published-coverage"
+  | "record-not-published"
+  | "natural-change"
+  | "private-land-no-public-record"
+  | "matching-tolerance"
+  | "undetermined";
 
 export const MATCHING_PARAMETERS = Object.freeze({
   minimumOverlapOfSmallerGeometry: 0.5,
@@ -43,12 +57,13 @@ export type MatchingResult = Readonly<{
   temporalToleranceYears: number;
   selectedMatch: OfficialRecordMatch | null;
   rejectedCandidates: readonly RejectedCandidate[];
-  nonMatchReason?: string;
+  nonMatchCause?: NonMatchCause;
+  nonMatchReason?: LocalizedString;
 }>;
 
 export type MatchingOptions = Readonly<{
-  /** Kept whenever no official record satisfies both matching tolerances. */
-  nonMatchReason?: string;
+  /** Audit classification only. Public wording remains locked. */
+  nonMatchCause?: NonMatchCause;
 }>;
 
 export function temporalToleranceYears(observationYear: number): number {
@@ -130,7 +145,8 @@ export function matchDetectedChange(
     temporalToleranceYears: tolerance,
     selectedMatch: null,
     rejectedCandidates,
-    nonMatchReason: options.nonMatchReason?.trim() || "No official record met the date and geometry matching tolerances.",
+    nonMatchCause: options.nonMatchCause ?? "matching-tolerance",
+    nonMatchReason: UNMATCHED_CHANGE_REASON,
   };
 }
 

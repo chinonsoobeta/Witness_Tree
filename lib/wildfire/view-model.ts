@@ -44,7 +44,7 @@ export function buildWildfireViewModel(feed: WildfireFeedState, now = new Date()
       value: 1_250,
       unit: "ha",
       evidence: "derived-estimate",
-      confidence: assignConfidence({ authoritativeRecord: true, geometryResolved: true, requiredAttributesPresent: true }),
+      confidence: assignConfidence({ evidenceClass: "derived-estimate", authoritativeRecord: true, geometryResolved: true, eventDateResolvedToYear: true, requiredAttributesPresent: true }),
       provenance: {
         dataset: "Illustrative wildfire perimeter fixture",
         version: "fixture-1",

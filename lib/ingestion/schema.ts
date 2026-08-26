@@ -1,4 +1,4 @@
-import type { ConfidenceResult } from "../domain/confidence";
+import type { ConfidenceInput, ConfidenceResult } from "../domain/confidence";
 import type { CoverageGrade } from "../domain/coverage";
 import type { EvidenceClass } from "../domain/evidence";
 import type { LocalizedString } from "../domain/localized";
@@ -41,19 +41,39 @@ export type EventProvenance = Readonly<{
   rawChecksumSha256: string;
 }>;
 
-export type NormalizedEvent = Readonly<{
-  status: "example";
+export type OrganisationAttribution = Readonly<{
+  name: string;
+  role: string;
+  recordUrl: string;
+  recordDate: string;
+  recordVersion: string;
+}>;
+
+export type EventInput = Readonly<{
   id: string;
   category: NormalizedEventCategory;
   evidence: Exclude<EvidenceClass, "unknown">;
-  organisation: string;
-  organisationRole: string;
+  organisation?: OrganisationAttribution;
   eventDate: string;
   eventYear: number;
-  sourceVersion: string;
   geometry: PolygonGeometry;
   hectares: number;
-  provenance: EventProvenance;
   confidence: ConfidenceResult;
   coverageGrade: CoverageGrade;
+}>;
+
+export type NormalizedEvent = EventInput & Readonly<{
+  status: "example";
+  sourceVersion: string;
+  provenance: EventProvenance;
+}>;
+
+export type AdmittedEventInput = Omit<EventInput, "confidence"> & Readonly<{
+  confidenceInput: ConfidenceInput;
+}>;
+
+export type AdmittedNormalizedEvent = EventInput & Readonly<{
+  status: "admitted";
+  sourceVersion: string;
+  provenance: EventProvenance;
 }>;

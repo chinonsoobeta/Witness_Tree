@@ -13,7 +13,7 @@ export default function Home() {
       <p className="eyebrow">Public forest-change record · Registre public des changements forestiers</p>
       <h1>{PRODUCT_NAME.en}</h1>
       <p className="gateway-lead">
-        Evidence about recorded and observed forest change in four Canadian provinces, from 1984 to the present.
+        Evidence about recorded and observed forest change across Canada, from 1984 to the latest admitted source year, with British Columbia, Alberta, Ontario and Quebec as Big Four focus provinces.
       </p>
       <nav aria-label="Choose a language" className="language-choices">
         <Link className="primary-link" href="/en">Continue in English</Link>

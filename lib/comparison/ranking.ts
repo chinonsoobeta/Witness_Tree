@@ -15,12 +15,20 @@ export function rankRidings(rows: readonly RankedRiding[]): RankedRidingsResult 
 }
 
 export function rankingContextLines(context: RankingContext, locale: Locale): readonly string[] {
-  return [context.timeRange, context.boundaryEdition, context.dataVersion, context.denominatorDefinition[locale], context.method[locale]];
+  return [context.timeRange, context.boundaryEdition, boundaryApplicationLabel(context, locale), context.dataVersion, context.denominatorDefinition[locale], context.method[locale]];
 }
 
-export function comparePlaces(places: readonly ComparisonPlace[]): readonly [ComparisonPlace, ComparisonPlace] {
+export function boundaryApplicationLabel(context: RankingContext, locale: Locale): string {
+  return context.boundaryApplication === "period-contemporaneous"
+    ? (locale === "en" ? "Boundary contemporaneous with the period" : "Limite contemporaine de la période")
+    : (locale === "en" ? "Current boundary applied to historic events" : "Limite actuelle appliquée aux événements historiques");
+}
+
+export function comparePlaces(places: readonly ComparisonPlace[], acknowledgeBoundaryMismatch = false): readonly [ComparisonPlace, ComparisonPlace] {
   if (places.length !== 2) throw new Error("Side-by-side comparison requires exactly two places.");
   if (places[0].placeType !== places[1].placeType) throw new Error("Side-by-side places must have the same type.");
+  const mismatch = places[0].boundaryEdition !== places[1].boundaryEdition || places[0].boundaryApplication !== places[1].boundaryApplication;
+  if (mismatch && !acknowledgeBoundaryMismatch) throw new Error("Cross-edition comparison requires an acknowledged boundary warning.");
   return [places[0], places[1]];
 }
 

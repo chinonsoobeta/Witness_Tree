@@ -1,6 +1,6 @@
 # Witness Tree / Arbre témoin
 
-Witness Tree is a bilingual public record of documented and satellite-observed forest change in British Columbia, Alberta, Ontario, and Quebec. It is being built from the [implementation plan](docs/specification/Witness%20Tree%20Implementation%20Plan.docx).
+Witness Tree is a bilingual technical preview being built as a public record of documented and satellite-observed forest change across Canada from 1984 to the latest admitted source year. British Columbia, Alberta, Ontario, and Quebec are its Big Four focus provinces. It is being built from the [implementation plan](docs/specification/Witness%20Tree%20Implementation%20Plan.docx) and the [Version 2.1 live gap matrix](docs/V2_1_LIVE_GAP_MATRIX.md).
 
 Public technical preview: [witness-tree-canada.r7bv67rgkk.chatgpt.site](https://witness-tree-canada.r7bv67rgkk.chatgpt.site)
 

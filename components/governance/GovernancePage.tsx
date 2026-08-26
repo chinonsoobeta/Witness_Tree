@@ -1,8 +1,8 @@
-import { PRODUCT_NAME, type Locale } from "@/lib/domain";
+import { GLOSSARY, PRODUCT_NAME, type Locale } from "@/lib/domain";
 
 export type GovernancePageKind = "glossary" | "corrections" | "decisions" | "engagement" | "privacy" | "terms" | "releases";
 
-type Section = Readonly<{ heading: string; paragraphs: readonly string[] }>;
+type Section = Readonly<{ id?: string; heading: string; paragraphs: readonly string[] }>;
 type PageCopy = Readonly<{ title: string; status: string; sections: readonly Section[] }>;
 
 const enBrand = PRODUCT_NAME.en;
@@ -10,18 +10,8 @@ const frBrand = PRODUCT_NAME.fr;
 
 const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
   glossary: {
-    en: { title: "Glossary", status: "Draft terminology; professional forestry terminology review is pending.", sections: [
-      { heading: "Forest", paragraphs: ["Land of at least 1 hectare, with at least 10% crown closure, carrying trees capable of reaching 5 metres at maturity. Percentages use forested hectares inside the stated boundary edition, not total land area."] },
-      { heading: "Evidence", paragraphs: ["Official record: an authoritative public record. Satellite observation: change visible in imagery without, by itself, establishing cause. Derived estimate: a documented calculation. Unknown: no authoritative public record has been integrated for the question."] },
-      { heading: "Coverage", paragraphs: ["National baseline, extended record with sparse official matching, or national baseline plus local context. Coverage is a property of mapped area and time, not a province-wide promise."] },
-      { heading: "Detected change", paragraphs: ["A satellite-observed change in tree cover. It is not, by itself, a claim of logging, deforestation, illegality or responsibility."] },
-    ] },
-    fr: { title: "Glossaire", status: "Terminologie provisoire; la révision professionnelle de la terminologie forestière reste à faire.", sections: [
-      { heading: "Forêt", paragraphs: ["Terre d’au moins 1 hectare, présentant un couvert de cimes d’au moins 10 %, avec des arbres capables d’atteindre 5 mètres à maturité. Les pourcentages utilisent les hectares forestiers dans l’édition de limite indiquée, et non la superficie terrestre totale."] },
-      { heading: "Preuves", paragraphs: ["Registre officiel : registre public faisant autorité. Observation satellitaire : changement visible dans les images qui, à lui seul, n’en établit pas la cause. Estimation dérivée : calcul documenté. Inconnu : aucun registre public faisant autorité n’a été intégré pour la question."] },
-      { heading: "Couverture", paragraphs: ["Référence nationale, registre étendu avec appariement officiel limité, ou référence nationale avec contexte local. La couverture est une propriété de la zone cartographiée et de la période, et non une promesse à l’échelle provinciale."] },
-      { heading: "Changement détecté", paragraphs: ["Changement du couvert arboré observé par satellite. À lui seul, il ne constitue pas une affirmation d’exploitation, de déforestation, d’illégalité ou de responsabilité."] },
-    ] },
+    en: { title: "Glossary", status: "Complete plan-seed draft; professional forestry terminology review is pending.", sections: GLOSSARY.map((entry) => ({ id: entry.id, heading: entry.term.en, paragraphs: [entry.definition.en] })) },
+    fr: { title: "Glossaire", status: "Ébauche complète des termes du plan; la révision professionnelle de la terminologie forestière reste à faire.", sections: GLOSSARY.map((entry) => ({ id: entry.id, heading: entry.term.fr, paragraphs: [entry.definition.fr] })) },
   },
   corrections: {
     en: { title: "Corrections", status: "No production correction has been filed because no production data has been published.", sections: [
@@ -37,12 +27,12 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
   },
   decisions: {
     en: { title: "Decision log", status: "Decisions transcribed from implementation plan version 2, dated 11 August 2026.", sections: [
-      { heading: "Product", paragraphs: [`Working name: ${enBrand}. Record starts in 1984; the default view starts in 2000. Scope is British Columbia, Alberta, Ontario and Quebec.`, "NTEMS is the satellite spine. Live wildfire, riding comparison, accounts and alerts, reserve and treaty pages are in version 1. Advanced layer controls and asserted traditional territories are excluded."] },
+      { heading: "Product", paragraphs: [`Working name: ${enBrand}. The national baseline covers Canada from 1984 to the latest admitted source year; British Columbia, Alberta, Ontario and Quebec are the Big Four focus provinces. The default view starts in 2000.`, "NTEMS is the satellite spine. Live wildfire, riding comparison, accounts and alerts, reserve and treaty pages are in version 1. Advanced layer controls and asserted traditional territories are excluded."] },
       { heading: "Mistik request", paragraphs: [`Mistik is not an approved product name. No request outcome, permission, honorarium or terms exist yet. The working name remains ${enBrand} unless written permission is obtained through the engagement process.`] },
       { heading: "Change control", paragraphs: ["Method changes, new sources and changes to published figures require future editorial-board approval. No board has yet been appointed."] },
     ] },
     fr: { title: "Registre des décisions", status: "Décisions transcrites de la version 2 du plan de mise en œuvre, datée du 11 août 2026.", sections: [
-      { heading: "Produit", paragraphs: [`Nom de travail : ${frBrand}. Le registre commence en 1984; la vue par défaut commence en 2000. La portée comprend la Colombie-Britannique, l’Alberta, l’Ontario et le Québec.`, "NTEMS constitue la base satellitaire. Les incendies actuels, la comparaison des circonscriptions, les comptes et alertes ainsi que les pages de réserves et de traités sont prévus dans la version 1. Les commandes avancées de couches et les territoires traditionnels revendiqués sont exclus."] },
+      { heading: "Produit", paragraphs: [`Nom de travail : ${frBrand}. La référence nationale couvre le Canada de 1984 à la plus récente année source admise; la Colombie-Britannique, l’Alberta, l’Ontario et le Québec sont les quatre provinces prioritaires. La vue par défaut commence en 2000.`, "NTEMS constitue la base satellitaire. Les incendies actuels, la comparaison des circonscriptions, les comptes et alertes ainsi que les pages de réserves et de traités sont prévus dans la version 1. Les commandes avancées de couches et les territoires traditionnels revendiqués sont exclus."] },
       { heading: "Demande concernant Mistik", paragraphs: [`Mistik n’est pas un nom de produit approuvé. Aucun résultat de demande, aucune permission, aucun honoraire ni aucune condition n’existent encore. Le nom de travail demeure ${frBrand} sauf obtention d’une permission écrite par le processus de dialogue.`] },
       { heading: "Contrôle des changements", paragraphs: ["Les changements de méthode, les nouvelles sources et les modifications de valeurs publiées devront être approuvés par un futur comité éditorial. Aucun comité n’a encore été nommé."] },
     ] },
@@ -98,6 +88,6 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
 export function GovernancePage({ kind, locale }: Readonly<{ kind: GovernancePageKind; locale: Locale }>) {
   const page = PAGES[kind][locale];
   return <main id="main" className="page-wrap"><header className="masthead"><h1>{page.title}</h1><p className="dek">{page.status}</p></header><div className="content-section prose-measure">
-    {page.sections.map((section) => <section key={section.heading}><h2>{section.heading}</h2>{section.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</section>)}
+    {page.sections.map((section) => <section id={section.id} key={section.heading}><h2>{section.heading}</h2>{section.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</section>)}
   </div></main>;
 }

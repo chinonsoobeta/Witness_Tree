@@ -57,5 +57,5 @@ test("strict alert metadata, consent, and 5,000 square kilometre limit are valid
   assert.throws(() => validateAlertEvent({ ...event("wildfire-nearby"), authorityUrl: "http://not-secure.test" }), /authoritative/);
   assert.throws(() => validateAlertEvent({ ...event("official-record"), observedAt: "not-date" }), /metadata/);
   assert.throws(() => validateAlertEvent({ ...event("official-record"), evidence: "invented" as never }), /metadata/);
-  assert.throws(() => validateAlertEvent({ ...event("official-record"), reported: { kind: "unknown", evidence: "unknown", reason: "No record.", coverageGrade: "national-baseline", value: 0 } as never }), /numeric/);
+  assert.throws(() => validateAlertEvent({ ...event("official-record"), reported: { kind: "unknown", evidence: "unknown", reason: { en: "No record.", fr: "Aucun registre." }, coverageGrade: "national-baseline", value: 0 } as never }), /numeric/);
 });

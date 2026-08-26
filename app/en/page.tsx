@@ -8,9 +8,9 @@ export const metadata: Metadata = { title: "Public forest-change record", altern
 export default function EnglishHome() {
   return <SiteShell locale="en"><main id="main" className="page-wrap">
     <header className="masthead">
-      <p className="eyebrow">Evidence record · 1984 to present</p>
+      <p className="eyebrow">Technical preview · planned national record</p>
       <h1>What happened to the forest here?</h1>
-      <p className="dek">{PRODUCT_NAME.en} helps you understand recorded and observed forest change in four provinces. Every result shows what the evidence says, where it came from, how current it is, and what it cannot tell you.</p>
+      <p className="dek">{PRODUCT_NAME.en} is being built to help people understand recorded and observed forest change across Canada, from 1984 to the latest admitted source year, with British Columbia, Alberta, Ontario and Quebec as the Big Four focus provinces. Current content is an illustrative technical preview. Every result shows what the evidence says, where it came from, how current it is, and what it cannot tell you.</p>
       <div className="meta-row"><span>British Columbia</span><span>Alberta</span><span>Ontario</span><span>Quebec</span></div>
     </header>
     <section className="content-section prose-measure">

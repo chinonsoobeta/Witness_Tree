@@ -18,6 +18,7 @@ test("comparison share SVG contains the complete English screenshot context dete
   assert.match(first.svg, /aria-labelledby="comparison-summary-en-title comparison-summary-en-description"/);
   assert.match(first.svg, /<title id="comparison-summary-en-title">Witness Tree<\/title>/);
   assert.match(first.svg, /<desc id="comparison-summary-en-description">/);
+  assert.match(first.svg, /Current boundary applied to historic events/);
   for (const value of ["Witness Tree", "2000–2024", "2023 Representation Order", "illustrative-1", "Share of forested hectares at the first year of the range.", "Satellite observation", "Rows are ordered by detected change as a share of forested area."]) assert.match(first.svg, new RegExp(value));
 });
 

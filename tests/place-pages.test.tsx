@@ -1,8 +1,12 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
+import { renderToStaticMarkup } from "react-dom/server";
 // @ts-expect-error -- Node's TypeScript runner requires explicit local extensions.
 import { LOCATIONS, PLACE_TYPES, PLACES } from "../lib/places/index.ts";
+import { PlacePage }
+// @ts-expect-error -- Node's TypeScript runner requires explicit local extensions.
+from "../components/places/PlacePage.tsx";
 
 test("illustrative fixtures cover all place types and provinces", () => {
   assert.deepEqual(new Set(PLACES.map((place) => place.type)), new Set(PLACE_TYPES));
@@ -13,6 +17,14 @@ test("illustrative fixtures cover all place types and provinces", () => {
 test("all fixture locale fields and coverage shares are complete", () => {
   assert.equal(PLACES.filter((place) => Boolean(place.name.en)).length, PLACES.filter((place) => Boolean(place.name.fr)).length);
   assert.ok(PLACES.every((place) => Math.abs(place.coverage.reduce((total, item) => total + item.share, 0) - 1) < 0.001));
+});
+
+test("every rendered coverage percentage links to the localized forest definition", () => {
+  const place = PLACES[0]!;
+  const english = renderToStaticMarkup(<PlacePage locale="en" place={place} view="table" />);
+  const french = renderToStaticMarkup(<PlacePage locale="fr" place={place} view="table" />);
+  assert.equal((english.match(/href="\/en\/glossary#forest"/g) ?? []).length, place.coverage.length);
+  assert.equal((french.match(/href="\/fr\/glossaire#forest"/g) ?? []).length, place.coverage.length);
 });
 
 test("annual summaries retain event identifiers and locations are newest first", () => {
