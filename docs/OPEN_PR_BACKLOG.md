@@ -40,8 +40,8 @@ pull request.
 A branch in this backlog is landed only by:
 
 1. Rebasing it onto current `main`.
-2. Running the full local gate set — `test:unit`, `typecheck`, `lint`, and every
-   affected `check:*` script — against the rebased tree.
+2. Running the full local gate set against the rebased tree: `test:unit`,
+   `typecheck`, `lint`, and every affected `check:*` script.
 3. Resolving any exit-status evidence checksum that the change breaks, by
    confirming the bound criterion's stated reason still holds against the new
    bytes and correcting the reason when the change alters what those bytes
@@ -69,24 +69,56 @@ by reading the change, not by the count.
 
 ## Status
 
+Nine of the original nineteen are settled. Ten remain open, plus #34, which this
+work opened as an owner-blocked draft.
+
 | PR | Branch | Net state against `main` |
 | --- | --- | --- |
 | #4 | `data/alberta-unblock` | closed, fully absorbed |
-| #5 | `fix/transformation-admission-rule` | conflicts |
-| #6 | `data/nrcan-canopy-staging` | conflicts |
+| #5 | `fix/transformation-admission-rule` | open, conflicts; based on the now-closed #4 |
+| #6 | `data/nrcan-canopy-staging` | open, conflicts; based on the now-closed #4 |
 | #7 | `ci/run-both-test-halves` | closed, superseded by a single-runner `test:unit` |
-| #8 | `feat/rank-unmatched-share` | landed |
-| #9 | `docs/refresh-status-claims` | conflicts |
-| #10 | `feat/source-review-process` | conflicts |
-| #11 | `data/boundary-editions` | conflicts |
-| #12 | `data/s3-promotion` | conflicts |
-| #15 | `fix/gdal-claim-and-unknown-prose` | conflicts |
-| #16 | `feat/source-review-process-evidence-refresh` | conflicts |
-| #17 | `feat/national-baseline-admission` | conflicts |
-| #18 | `docs/external-gates-matrix` | conflicts |
-| #19 | `fix/phase3-locale-navigation` | conflicts |
-| #20 | `fix/explore-year-query` | conflicts, and its own checks fail |
-| #21 | `feat/phase5-source-status-contract` | conflicts |
-| #22 | `feat/local-staging-admission-gate` | conflicts, and its own checks fail |
-| #23 | `phase1/coverage-geometry-admission` | conflicts |
+| #8 | `feat/rank-unmatched-share` | **landed** |
+| #9 | `docs/refresh-status-claims` | open, conflicts |
+| #10 | `feat/source-review-process` | closed, superseded by #16 |
+| #11 | `data/boundary-editions` | closed, absorbed |
+| #12 | `data/s3-promotion` | open, conflicts; based on #9 |
+| #13 | `data/raster-grid-contract` | **landed** |
+| #15 | `fix/gdal-claim-and-unknown-prose` | closed, split into #33 (landed) and #34 (owner-blocked) |
+| #16 | `feat/source-review-process-evidence-refresh` | **landed** |
+| #17 | `feat/national-baseline-admission` | open, conflicts; based on #13, which has landed |
+| #18 | `docs/external-gates-matrix` | open, conflicts |
+| #19 | `fix/phase3-locale-navigation` | open, conflicts |
+| #20 | `fix/explore-year-query` | open, conflicts, and its own checks fail |
+| #21 | `feat/phase5-source-status-contract` | closed, ported as #32 without reopening the live feed |
+| #22 | `feat/local-staging-admission-gate` | open, conflicts, and its own checks fail |
+| #23 | `phase1/coverage-geometry-admission` | open, conflicts |
 | #24 | `phase1/phase1-corruption-drill` | closed, fully absorbed |
+| #34 | `fix/boundary-editions-gdal-claim` | open draft, **owner-blocked**, opened by this work |
+
+Every remaining open branch is a draft except #5, #6, #9, and #12.
+
+## What landing them actually produced
+
+Nine settled branches produced five merges, and not one of them merged as
+written. The pattern is consistent enough to state plainly.
+
+**Two were split.** #15 mixed a real user-facing bug with a rewrite of evidence
+bytes an owner admission binds. The bug landed as #33; the rewrite waits on the
+owner as #34. A pull request is not necessarily one decision.
+
+**One was ported, not merged.** #21 would have restored live fetching over
+`WILDFIRE_SOURCE_URLS` against feeds with no rights, no admitted snapshot
+contract, and no production approval. Its status-manifest work was worth having,
+so it was ported onto `main`'s refusal as #32, and the refusal stayed.
+
+**Two were closed as already present.** #10 and #11 added nothing `main` lacked.
+
+**Every one that landed broke an exit-status checksum.** In each case the bound
+criterion's stated reason was checked against the new bytes before rebinding,
+and in three cases the reason was strengthened to record a guarantee the
+criterion had not previously made. None was rebound to make a gate pass.
+
+**Several carried assumptions that had expired.** #15's regression test asserted
+U+2014 for the Unknown marker, which the repository has since banned. A green
+check on an old base hides this exactly as it hides a conflict.
