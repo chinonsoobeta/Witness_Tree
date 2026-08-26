@@ -100,6 +100,12 @@ jobs:
       - run: npm run check:phase2-owner-admission-packet
       - run: npm run check:phase2-admission-record-template
       - run: npm run check:phase2-independent-comparison-evidence
+      # Static half of the data-root inventory: it proves every inventoried
+      # check still exists, so a rename cannot quietly shrink the list of
+      # checks known to be unverifiable without the drive. The completeness
+      # half (--empirical) is only decidable with the data root detached and
+      # is run by hand, not here.
+      - run: npm run check:data-root-bound-checks
       - run: npm run check:source-review
       - run: npm run check:accessibility
       - run: npm run build

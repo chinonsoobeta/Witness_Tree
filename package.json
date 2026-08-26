@@ -75,6 +75,7 @@
     "check:phase1-canopy-completion-recovery": "node --test tests/phase1-canopy-completion-recovery.test.mjs",
     "check:wildfire-derived-readback": "node --test tests/wildfire-derived-readback.test.mjs",
     "check:wildfire-derived-recovery": "node --test tests/wildfire-derived-recovery.test.mjs",
+    "check:data-root-bound-checks": "node scripts/check-data-root-bound-checks.mjs && node --test tests/data-root-bound-checks.test.mjs",
     "check:current-wildfire-derived-archive-evidence": "node --test tests/current-wildfire-derived-archive-evidence.test.mjs",
     "recover:wildfire-derived-owner": "zsh scripts/run-wildfire-derived-recovery-owner.sh",
     "capture:wildfire-derived-recovery-state": "node scripts/capture-wildfire-derived-recovery-state.mjs",
