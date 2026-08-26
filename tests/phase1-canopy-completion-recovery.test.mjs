@@ -52,7 +52,7 @@ function approval() {
     region: canopyRecovery.region,
     primary: { bucket: canopyRecovery.primary.bucket, payloadKey: canopyRecovery.primary.payloadKey, sidecarKey: canopyRecovery.primary.sidecarKey },
     recovery: { bucket: canopyRecovery.recovery.bucket, payloadKey: canopyRecovery.recovery.payloadKey, sidecarKey: canopyRecovery.recovery.sidecarKey },
-    retention: { mode: "COMPLIANCE", retainUntil: canopyRecovery.retainUntil, payloadsOnly: true },
+    retention: { mode: "COMPLIANCE", retainUntil: canopyRecovery.retainUntil, payloadsAndSidecars: true },
     steps: [...canopyRecovery.requiredSteps],
     exclusions: [...canopyRecovery.requiredExclusions],
     productionEligible: false,
@@ -66,7 +66,7 @@ function policy(includeDelta = true, includeRecoveryRetention = true) {
       Sid: "PayloadRetentionOnly",
       Effect: "Allow",
       Action: ["s3:GetObjectRetention", "s3:PutObjectRetention"],
-      Resource: [desiredIamDelta.requiredExistingRetention.resources[0]]
+      Resource: includeRecoveryRetention ? [...desiredIamDelta.requiredExistingRetention.resources] : desiredIamDelta.requiredExistingRetention.resources.slice(0, 2)
     }
   ];
   if (includeDelta) statements.push({ Sid: desiredIamDelta.delta.sid, Effect: desiredIamDelta.delta.effect, Action: [...desiredIamDelta.delta.actions], Resource: [...desiredIamDelta.delta.resources] });
@@ -74,7 +74,7 @@ function policy(includeDelta = true, includeRecoveryRetention = true) {
     Sid: desiredRecoveryRetentionDelta.delta.sid,
     Effect: desiredRecoveryRetentionDelta.delta.effect,
     Action: [...desiredRecoveryRetentionDelta.delta.actions],
-    Resource: [desiredRecoveryRetentionDelta.delta.resource]
+    Resource: [...desiredRecoveryRetentionDelta.delta.resources]
   });
   return { Version: "2012-10-17", Statement: statements };
 }
@@ -129,7 +129,7 @@ test("approval, complete private state, exact heads, version refs, and retention
   validateCanopyRecoveryIamAttestation(attestation());
   validateCanopyRecoveryHeads(heads(), { payloadBytes: canopyRecovery.payloadBytes, sidecarBytes: canopyRecovery.sidecarBytes });
   validateCanopyRecoveryVersionReferences(heads(), refs);
-  validateCanopyRecoveryRetention({ primary: retention(), recovery: retention() });
+  validateCanopyRecoveryRetention({ primaryPayload: retention(), recoveryPayload: retention(), primarySidecar: retention(), recoverySidecar: retention() });
 });
 
 test("missing GetObjectVersion is rejected by the exact IAM checker", () => {
@@ -252,7 +252,7 @@ test("payload checksum mismatch is rejected", () => {
 });
 
 test("retention absence is rejected as an unproven postcondition", () => {
-  assert.throws(() => validateCanopyRecoveryRetention({ primary: {}, recovery: retention() }), /COMPLIANCE/);
+  assert.throws(() => validateCanopyRecoveryRetention({ primaryPayload: {}, recoveryPayload: retention(), primarySidecar: retention(), recoverySidecar: retention() }), /COMPLIANCE/);
 });
 
 function writeFixture(dir) {
@@ -284,9 +284,9 @@ function writeFakeAws(dir, policyDocument, { retentionNever = false, assumeRoleF
     "      print -u2 -- \"An error occurred (AccessDenied) when calling the AssumeRole operation: exact safe diagnostic\"",
     "      exit 1",
     "    fi",
-    "    print -r -- \"{\\\"Credentials\\\":{\\\"AccessKeyId\\\":\\\"test-access\\\",\\\"SecretAccessKey\\\":\\\"test-secret\\\",\\\"SessionToken\\\":\\\"test-session\\\",\\\"Expiration\\\":\\\"2099-01-01T00:00:00Z\\\"}}\"",
+    "    print -r -- \"{\\\"Credentials\\\":{\\\"AccessKeyId\\\":\\\"test-access\\\",\\\"SecretAccessKey\\\":\\\"test-secret\\\",\\\"SessionToken\\\":\\\"test-session\\\",\\\"Expiration\\\":\\\"2099-01-01T00:00:00Z\\\"},\\\"AssumedRoleUser\\\":{\\\"Arn\\\":\\\"arn:aws:sts::286853118812:assumed-role/WitnessTreeArchivePromotionUploader/test\\\"}}\"",
     "    ;;",
-    "  sts:get-caller-identity) print -r -- \"286853118812\" ;;",
+    "  sts:get-caller-identity) if [[ \"$*\" == *--query* ]]; then print -r -- '286853118812'; else print -r -- '{\"Account\":\"286853118812\",\"Arn\":\"arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator\"}'; fi ;;",
     "  s3api:head-object)",
     "    if [[ \"$*\" == *manifest.json* ]]; then",
     "      print -r -- \"{\\\"VersionId\\\":\\\"sidecar-version\\\",\\\"ContentLength\\\":459,\\\"ChecksumType\\\":\\\"FULL_OBJECT\\\",\\\"ChecksumCRC64NVME\\\":\\\"BBBBBBBBBBB=\\\"}\"",
@@ -367,7 +367,7 @@ test("PTY recovery succeeds with exact heads and retention while making no unrel
     assert.equal(calls.filter((call) => call.includes("sts get-session-token")).length, 0);
     assert.equal(calls.filter((call) => call.includes("sts assume-role") && call.includes("--serial-number") && call.includes("--token-code")).length, 1);
     assert.equal(calls.filter((call) => call.includes("--role-arn arn:aws:iam::286853118812:role/WitnessTreeArchivePromotionUploader")).length, 1);
-    assert.equal(calls.filter((call) => call.includes("put-object-retention")).length, 2);
+    assert.equal(calls.filter((call) => call.includes("put-object-retention")).length, 4);
     assert.equal(calls.filter((call) => call.includes("head-object")).length, 12);
     assert.ok(calls.every((call) => !call.startsWith("iam ")));
     assert.ok(calls.every((call) => !/complete-multipart|upload-part|put-object --|delete-object|legal-hold|bypass-governance/i.test(call)));
@@ -386,7 +386,7 @@ test("PTY recovery fails closed when retention remains absent after the attempte
     assert.match(run.stdout + run.stderr, /retention readback failed/i);
     assert.doesNotMatch(run.stdout + run.stderr, /123456|payload-version|sidecar-version/);
     const calls = readFileSync(fake.marker, "utf8").trim().split("\n");
-    assert.equal(calls.filter((call) => call.includes("put-object-retention")).length, 2);
+    assert.equal(calls.filter((call) => call.includes("put-object-retention")).length, 4);
     assert.ok(calls.every((call) => !/complete-multipart|upload-part|put-object --|delete-object|legal-hold|bypass-governance/i.test(call)));
   } finally {
     rmSync(dir, { recursive: true, force: true });
@@ -400,7 +400,7 @@ test("role assumption failure exposes only the sanitized AWS error and makes no 
     const fake = writeFakeAws(dir, policy(), { assumeRoleFails: true });
     const run = runPty(["--recover-canopy", fixture.approvalPath, fixture.statePath, fixture.attestationPath], dir);
     assert.equal(run.status, 77, run.stdout + run.stderr);
-    assert.match(run.stdout + run.stderr, /AWS STS AccessDenied: exact safe diagnostic/);
+    assert.match(run.stdout + run.stderr, /Direct MFA role assumption failed/);
     assert.doesNotMatch(run.stdout + run.stderr, /123456|test-access|test-secret|test-session/);
     const calls = readFileSync(fake.marker, "utf8").trim().split("\n");
     assert.equal(calls.filter((call) => call.startsWith("s3api ")).length, 0);

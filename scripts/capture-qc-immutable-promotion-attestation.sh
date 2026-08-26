@@ -1,6 +1,7 @@
 #!/bin/zsh
 set -euo pipefail
 umask 077
+source "${0:A:h}/aws-direct-mfa-role-session.sh"
 
 # Owner-local, read-only post-run capture. It never uploads, changes retention,
 # deletes, or reads any object other than the four exact completed versions.
@@ -38,15 +39,8 @@ read -r -s 'totp?Current MFA TOTP (not stored): '; print
 [[ "${totp:-}" =~ '^[0-9]{6}$' ]] || fail "TOTP must be exactly six digits; no AWS call was made" 64
 mfa_serial="$(aws configure get mfa_serial --profile "$PROFILE" 2>/dev/null || true)"
 [[ "$mfa_serial" =~ '^arn:aws:iam::286853118812:mfa/[A-Za-z0-9+=,.@_/-]+$' ]] || fail "Configured MFA serial is absent, malformed, or outside the approved account; no STS or storage call was made" 69
-bootstrap="$(aws sts get-session-token --serial-number "$mfa_serial" --token-code "$totp" --profile "$PROFILE" --duration-seconds 3600 --output json 2>"$TMP/sts-get-session-token.stderr")" || fail "MFA session failed" 77
-unset totp
-export AWS_ACCESS_KEY_ID="$(jq -r '.Credentials.AccessKeyId' <<<"$bootstrap")" AWS_SECRET_ACCESS_KEY="$(jq -r '.Credentials.SecretAccessKey' <<<"$bootstrap")" AWS_SESSION_TOKEN="$(jq -r '.Credentials.SessionToken' <<<"$bootstrap")"; unset bootstrap
-identity="$(aws sts get-caller-identity --output json 2>"$TMP/sts-get-caller-identity.stderr")" || fail "Cannot identify MFA session" 77
-operator_identity="$(jq -ce 'if type == "object" then {Account,Arn} else error("identity must be an object") end' <<<"$identity" 2>"$TMP/identity-normalize.stderr")" || fail "MFA session identity response was invalid" 77
-if ! jq -e '.Account=="286853118812" and .Arn=="arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator"' <<<"$operator_identity" >/dev/null 2>"$TMP/identity-check.stderr"; then
-  fail "MFA session is not the exact approved operator identity" 77
-fi
-creds="$(aws sts assume-role --role-arn "arn:aws:iam::286853118812:role/${ROLE}" --role-session-name witness-tree-qc-attestation-readback --duration-seconds 3600 --output json 2>"$TMP/sts-assume-role.stderr")" || fail "Readback role assumption failed" 77
+operator_identity='{"Account":"286853118812","Arn":"arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator"}'
+creds="$(wt_assume_direct_mfa_role "$PROFILE" 286853118812 "$ROLE" witness-tree-qc-attestation-readback)"
 export AWS_ACCESS_KEY_ID="$(jq -r '.Credentials.AccessKeyId' <<<"$creds")" AWS_SECRET_ACCESS_KEY="$(jq -r '.Credentials.SecretAccessKey' <<<"$creds")" AWS_SESSION_TOKEN="$(jq -r '.Credentials.SessionToken' <<<"$creds")"; unset creds
 
 created_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"

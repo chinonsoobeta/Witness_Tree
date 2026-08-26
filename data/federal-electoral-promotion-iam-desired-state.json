@@ -15,7 +15,7 @@
         "Effect": "Allow",
         "Principal": {"AWS": "arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator"},
         "Action": "sts:AssumeRole",
-        "Condition": {"Bool": {"aws:MultiFactorAuthPresent": "true"}, "NumericLessThan": {"aws:MultiFactorAuthAge": "3600"}}
+        "Condition": {"Bool": {"aws:MultiFactorAuthPresent": "true"}, "NumericLessThan": {"aws:MultiFactorAuthAge": "43200"}}
       }
     ]
   },
@@ -42,11 +42,12 @@
         ]
       },
       {
-        "Sid": "FederalExactPayloadRetention",
+        "Sid": "FederalExactPayloadAndSidecarRetention",
         "Effect": "Allow",
         "Action": ["s3:PutObjectRetention", "s3:GetObjectRetention"],
         "Resource": [
-          "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/elections-canada-federal-electoral-districts-45th-general-election-2025-shp/federal-electoral-districts-2025-shp/2026-08-14T17-42-35Z/4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93/payload/federalelectoraldistricts_2025_shp.zip"
+          "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/elections-canada-federal-electoral-districts-45th-general-election-2025-shp/federal-electoral-districts-2025-shp/2026-08-14T17-42-35Z/4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93/payload/federalelectoraldistricts_2025_shp.zip",
+          "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/elections-canada-federal-electoral-districts-45th-general-election-2025-shp/federal-electoral-districts-2025-shp/2026-08-14T17-42-35Z/4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93/manifest.json"
         ]
       },
       {

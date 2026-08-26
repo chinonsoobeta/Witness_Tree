@@ -36,7 +36,7 @@ export function validateAlbertaPlviImmutablePromotionPreparation(plan) {
     for (const key of [artifact.payloadKey, artifact.manifestKey]) { assert.ok(!seen.has(key), "Archive keys must be distinct."); seen.add(key); }
     assert.match(sidecarFor(plan, artifact), /rebuildable-not-locked/);
   }
-  assert.deepEqual(plan.proposedRoleScope.allow, ["s3:PutObject", "s3:GetObject", "s3:AbortMultipartUpload", "s3:ListMultipartUploadParts", "s3:PutObjectRetention", "s3:GetObjectRetention"]);
+  assert.deepEqual(plan.proposedRoleScope.allow, ["s3:PutObject", "s3:GetObject", "s3:GetObjectVersion", "s3:AbortMultipartUpload", "s3:ListMultipartUploadParts", "s3:PutObjectRetention", "s3:GetObjectRetention"]);
   assert.deepEqual([...plan.proposedRoleScope.objectKeys].sort(), [...seen].sort());
   for (const denied of ["s3:DeleteObject", "s3:DeleteObjectVersion", "s3:BypassGovernanceRetention", "iam:*"]) assert.ok(plan.proposedRoleScope.denyByOmission.includes(denied));
   assert.deepEqual(plan.claims, {remoteObjectExists: false, sidecarUploaded: false, retentionApplied: false, immutableObjectStorage: false, ownerSourceLedgerAdmission: false, transformed: false, ingested: false, productionEligible: false});

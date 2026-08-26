@@ -1,6 +1,7 @@
 #!/bin/zsh
 set -euo pipefail
 umask 077
+source "${0:A:h}/aws-direct-mfa-role-session.sh"
 
 # Owner-local only.  The default is a no-AWS preparation check.  --run is
 # intentionally unusable until the exact artifact and IAM approval is granted.
@@ -123,19 +124,7 @@ print -- "PRECHECK passed: both approved Québec archives exist at the controlle
 [[ "${1:-}" == "--preflight" ]] && exit 0
 
 for tool in aws openssl; do need "$tool"; done
-[[ -t 0 && -t 1 ]] || fail "MFA TOTP prompt requires an interactive terminal; no AWS call was made" 64
-read -r -s 'totp?Current MFA TOTP (not stored): '
-print
-[[ "${totp:-}" =~ '^[0-9]{6}$' ]] || fail "TOTP must be exactly six digits; no AWS call was made" 64
-mfa_serial="$(aws configure get mfa_serial --profile "$PROFILE" 2>/dev/null || true)"
-[[ "$mfa_serial" =~ '^arn:aws:iam::286853118812:mfa/[A-Za-z0-9+=,.@_/-]+$' ]] || fail "Configured MFA serial is absent, malformed, or outside the approved account; no STS or AWS storage call was made" 69
-bootstrap="$(aws sts get-session-token --serial-number "$mfa_serial" --token-code "$totp" --profile "$PROFILE" --duration-seconds 3600 --output json)" || fail "MFA session failed" 77
-unset totp
-export AWS_ACCESS_KEY_ID="$(jq -r '.Credentials.AccessKeyId' <<<"$bootstrap")" AWS_SECRET_ACCESS_KEY="$(jq -r '.Credentials.SecretAccessKey' <<<"$bootstrap")" AWS_SESSION_TOKEN="$(jq -r '.Credentials.SessionToken' <<<"$bootstrap")"; unset bootstrap
-identity="$(aws sts get-caller-identity --output json)" || fail "Cannot identify MFA session" 77
-jq -e '.Account=="286853118812" and .Arn=="arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator"' <<<"$identity" >/dev/null || fail "MFA session is not the exact approved operator identity" 77
-unset identity mfa_serial
-creds="$(aws sts assume-role --role-arn "arn:aws:iam::286853118812:role/${ROLE}" --role-session-name witness-tree-qc-approved-promotion --duration-seconds 3600 --output json)" || fail "Promotion role assumption failed" 77
+creds="$(wt_assume_direct_mfa_role "$PROFILE" 286853118812 "$ROLE" witness-tree-qc-approved-promotion)"
 export AWS_ACCESS_KEY_ID="$(jq -r '.Credentials.AccessKeyId' <<<"$creds")" AWS_SECRET_ACCESS_KEY="$(jq -r '.Credentials.SecretAccessKey' <<<"$creds")" AWS_SESSION_TOKEN="$(jq -r '.Credentials.SessionToken' <<<"$creds")"; unset creds
 
 TMP="$(mktemp -d /private/tmp/witness-tree-qc-approved-promotion.XXXXXX)"; chmod 700 "$TMP"

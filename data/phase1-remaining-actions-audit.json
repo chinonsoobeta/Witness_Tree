@@ -3,34 +3,33 @@
   "status": "blocked-read-only",
   "asOf": "2026-08-22",
   "derivedFromHead": "9bf5baa2ecc51ce4c039531e798bfb6418e3baaf",
-  "notice": "Fresh local Phase 1 remaining-action audit. The current baseline is 14.75/31 raw credits, 39.2741935% formal evidence tracking, and 9 immutable rows. It reconciles the canonical 31-row ledger, immutable-promotion preparation, owner-decision readiness, reply, and access-block records. It performs no AWS call, email, form submission, archive mutation, permission grant, transformation, ingestion, release, production admission, or production-eligibility change.",
+  "notice": "Fresh local Phase 1 remaining-action audit. The current baseline is 16.5/31 raw credits, 40.9677419% formal evidence tracking, and 16 immutable rows. It includes Québec fourth-inventory exact archive readback. It makes no AWS call, email, form submission, archive mutation, permission grant, transformation, ingestion, release, production admission, or production-eligibility change. Raw tracking is not Phase 1 completion, production admission, or production eligibility.",
   "selectionRule": "Audit every production row where immutable remote proof is absent OR production admission is absent. The union is all 31 rows because production admission is absent for every row.",
   "baseline": {
     "productionRows": 31,
-    "rawEvidenceNumerator": 14.75,
+    "rawEvidenceNumerator": 16.5,
     "rawEvidenceDenominator": 31,
-    "formalEvidenceTrackingPercentage": 39.2741935,
+    "formalEvidenceTrackingPercentage": 40.9677419,
     "evidenceStateCounts": {
-      "remote-verified-archived-profiled": 9,
-      "local-verified-profiled": 7,
+      "remote-verified-archived-profiled": 16,
       "partial-component": 2,
       "access-blocked": 13
     },
-    "immutableArchiveCompleteRows": 9,
+    "immutableArchiveCompleteRows": 16,
     "productionAdmissionCompleteRows": 0,
     "productionEligibleRows": 0,
     "substantiveReplyRecords": 8,
     "accessBlockedRowsWithSubstantiveReply": 8,
     "currentWildfireArchiveGate": {
       "requiredObjects": 6,
-      "verifiedObjects": 0,
-      "attestedObjects": 6,
+      "verifiedObjects": 6,
+      "attestedObjects": 0,
       "productionEligible": false
     }
   },
   "scope": {
     "auditedRowCount": 31,
-    "rowsWithoutImmutableRemoteProof": 22,
+    "rowsWithoutImmutableRemoteProof": 15,
     "rowsWithoutProductionAdmission": 31,
     "rowsSelectedByRule": 31,
     "allProductionRowsRemainNonAdmitted": true,
@@ -234,7 +233,7 @@
       "allProductionEligibleFalse": true
     }
   },
-  "scoreFormula": "formal percentage-point delta = 30 * raw-credit delta / 31; this audit reports potential deltas only and does not change the 39.2741935 baseline.",
+  "scoreFormula": "formal percentage-point delta = 30 * raw-credit delta / 31; this audit reports potential deltas only and does not change the 40.9677419 baseline.",
   "physicalArtifactGroups": [
     {
       "id": "national-two-artifacts",
@@ -271,7 +270,7 @@
       "preparation": "data/current-wildfire-immutable-promotion-preparation.json",
       "ownerAdmission": "data/current-wildfire-owner-admission.json",
       "runner": "scripts/run-current-wildfire-approved-promotion.sh",
-      "currentStatus": "zero of six objects are machine-verifiably proven; six placeholder-only attestations exist, while durable exact-version proof and downstream transformation, ingestion, release and admission remain blocked",
+      "currentStatus": "six of six primary raw/derived payloads are machine-verifiably exact-version/COMPLIANCE proven; recovery replica evidence remains separate, while transformation, ingestion, release and admission remain blocked",
       "localPreflight": {
         "status": "passed-no-write",
         "command": "zsh scripts/run-current-wildfire-approved-promotion.sh --preflight",
@@ -316,7 +315,7 @@
       "preparation": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
       "readiness": "data/phase1-immutable-promotion-readiness.json",
       "runner": "scripts/qc-fourth-inventory-immutable-promotion.mjs",
-      "currentStatus": "no-write local preflight and the four separate artifact-set, COMPLIANCE-retention, least-privilege-IAM, and MFA approvals are recorded; controlled paths, fresh owner execution and exact readbacks remain pending, with no immutable credit claimed",
+      "currentStatus": "the 62-object promotion completed and independent read-only exact-version, checksum, and COMPLIANCE readback is recorded; recovery replica and downstream decisions remain separate, with no production admission claimed",
       "localPreflight": {
         "status": "passed-no-write",
         "command": "node scripts/qc-fourth-inventory-immutable-promotion.mjs --preflight --data-root /Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data",
@@ -405,11 +404,11 @@
     {
       "id": "quebec-fourth-archive-preflight-and-owner-approvals",
       "rank": 3,
-      "priorityBasis": "The exact 62-key product passed its no-write preflight and all four separately named approvals are recorded; controlled paths, fresh MFA execution and exact readbacks remain.",
-      "lawfulImmediacy": "delegate-preflight-now",
-      "actor": "delegate-and-owner",
-      "executableNow": true,
-      "executionBoundary": "The approved execute template remains owner-local and requires controlled absolute paths plus fresh MFA; this audit performs no live action and claims no completion.",
+      "priorityBasis": "Independent redacted readback binds the completed 62-key archive; remaining work is separate recovery proof and downstream decisions, with no new raw credit possible.",
+      "lawfulImmediacy": "owner-input-for-downstream-decision",
+      "actor": "owner",
+      "executableNow": false,
+      "executionBoundary": "A delegate may run the offline exact-readback checker, but may not infer recovery, transformation, ingestion, release, or production admission.",
       "requiresOwnerInput": true,
       "requiresExternalReply": false,
       "ownerRunAuthorized": true,
@@ -419,25 +418,25 @@
         "data/qc-fourth-inventory-immutable-promotion-preparation.json",
         "data/qc-fourth-inventory-immutable-promotion-iam-policy.json",
         "data/qc-fourth-inventory-evidence.json",
+        "data/qc-fourth-inventory-exact-archive-readback-2026-08-25.json",
         "data/phase1-immutable-promotion-readiness.json",
         "data/phase1-archive-owner-command-reconciliation-2026-08-20.json",
         "data/phase1-owner-decision-queue.json",
         "data/phase1-phase3-owner-approvals-2026-08-21.json"
       ],
       "runnerOrPreflight": {
-        "safeNow": "node scripts/qc-fourth-inventory-immutable-promotion.mjs --preflight --data-root /Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data",
-        "preflightResult": "passed-no-write; 61 source payload/evidence files plus deterministic 62nd manifest checked; exact keys and IAM desired state validated; no AWS/IAM call",
-        "ownerExecution": "AUTHORIZED OWNER-LOCAL TEMPLATE ONLY: use the exact ownerCommandTemplate in data/phase1-phase3-owner-approvals-2026-08-21.json with controlled absolute paths and a fresh MFA session."
+        "safeNow": "npm run check:qc-fourth-inventory-exact-archive-readback",
+        "readbackResult": "passed: 62 exact versions matched private local state, byte lengths and checksum types matched, and all 62 retentions are COMPLIANCE through 2033-08-12T00:00:00Z."
       },
       "prerequisites": [
         "All 61 local source files passed exact byte-length and SHA-256 checks; the deterministic 62nd manifest passed its pinned bytes/SHA check; all 62 exact keys and IAM desired state passed validation.",
         "The separate exact artifact-set, least-privilege policy, irreversible COMPLIANCE retention, and MFA-session approvals are recorded.",
-        "Owner confirms the authorized execution path and exact payload/sidecar version, retention, and recovery readbacks.",
-        "Review independent redacted readback and recovery evidence before any ledger or production decision."
+        "Independent redacted exact-version, checksum, and retention readback is recorded; recovery replica evidence remains separate.",
+        "Review recovery and downstream evidence before any ledger or production decision."
       ],
-      "remainingSteps": ["retain the no-write preflight receipt", "owner supplies controlled paths and a fresh MFA session for the already-authorized 62-key promotion", "integrate immutable and recovery readbacks", "record named source decision and downstream gates"],
-      "scoreImpact": {"currentRawCreditDelta": 0, "maximumRawCreditDelta": 0.25, "maximumFormalPercentagePointDelta": 0.2419355, "productionAdmissionDelta": 0},
-      "blockers": ["No remote object or readback is recorded.", "The 62 keys are one physical product, not 62 ledger credits."]
+      "remainingSteps": ["retain the independent exact readback", "record separate recovery-replica evidence if required", "record named source and downstream decisions", "record production admission separately"],
+      "scoreImpact": {"currentRawCreditDelta": 0, "maximumRawCreditDelta": 0, "maximumFormalPercentagePointDelta": 0, "productionAdmissionDelta": 0},
+      "blockers": ["Recovery-replica evidence and every transformation, ingestion, release, and production decision remain separate.", "The 62 keys are one physical product, not 62 ledger credits."]
     },
     {
       "id": "national-archived-owner-source-ledger-decisions",
@@ -642,7 +641,7 @@
     {
       "id": "normal-archive-control-exercise",
       "rank": 12,
-      "priorityBasis": "A separate global archive-control evidence gate is still absent; it affects operational readiness, not the raw row score.",
+      "priorityBasis": "The separate global archive-control exercise is complete operational evidence; it affects no source row score or admission.",
       "lawfulImmediacy": "owner-run-read-only-preflight-then-mfa-exercise",
       "actor": "owner-and-archive-operator",
       "executableNow": false,
@@ -652,12 +651,12 @@
       "ownerRunAuthorized": true,
       "rows": [],
       "physicalArtifactGroup": null,
-      "evidenceRefs": ["data/phase1-current-state-completion-audit.json", "data/phase1-phase3-owner-approvals-2026-08-21.json", "scripts/run-phase1-archive-owner-exercise.sh", "scripts/check-phase1-archive-exercise-readback.mjs"],
+      "evidenceRefs": ["data/phase1-current-state-completion-audit.json", "data/phase1-archive-exercise-readback-2026-08-25.json", "scripts/check-phase1-archive-exercise-readback.mjs"],
       "runnerOrPreflight": {"safeNow": "zsh scripts/run-phase1-archive-owner-exercise.sh --preflight", "ownerExercise": "zsh scripts/run-phase1-archive-owner-exercise.sh --run", "checker": "scripts/check-phase1-archive-exercise-readback.mjs"},
-      "prerequisites": ["Owner supplies the approved MFA session and operator role.", "Capture legal-hold ON/OFF, unchanged COMPLIANCE retention, denied exact-version delete, and authorized recovery replica readback.", "Integrate redacted evidence through the existing checker."],
-      "remainingSteps": ["owner runs the separate control exercise", "retain redacted readbacks", "run the checker", "keep completion false until every required field is present"],
+      "prerequisites": ["Completed redacted evidence records legal-hold ON/OFF, unchanged COMPLIANCE retention, denied exact-version delete, and authorized recovery replica readback."],
+      "remainingSteps": ["retain the completed redacted operational evidence", "do not infer source admission or raw-credit changes"],
       "scoreImpact": {"currentRawCreditDelta": 0, "maximumRawCreditDelta": 0, "maximumFormalPercentagePointDelta": 0, "productionAdmissionDelta": 0},
-      "blockers": ["The current-state audit records status not-integrated and no evidence reference."]
+      "blockers": ["This operational control is complete but does not satisfy any source-specific admission, transformation, ingestion, release, or production gate."]
     },
     {
       "id": "production-admission-and-release-gate",
@@ -692,11 +691,11 @@
     {"id":"ntems-forest-harvest","evidenceState":"remote-verified-archived-profiled","immutableRemoteProof":true,"currentRawCredit":1,"maximumRawCreditDeltaToRemote":0,"maximumFormalPercentagePointDeltaToRemote":0,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["national-archived-owner-source-ledger-decisions","production-admission-and-release-gate"]},
     {"id":"ntems-canopy-cover","evidenceState":"remote-verified-archived-profiled","immutableRemoteProof":true,"currentRawCredit":1,"maximumRawCreditDeltaToRemote":0,"maximumFormalPercentagePointDeltaToRemote":0,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["archived-remote-transform-ingest-release","production-admission-and-release-gate"]},
     {"id":"ntems-canopy-height","evidenceState":"remote-verified-archived-profiled","immutableRemoteProof":true,"currentRawCredit":1,"maximumRawCreditDeltaToRemote":0,"maximumFormalPercentagePointDeltaToRemote":0,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["national-archived-owner-source-ledger-decisions","production-admission-and-release-gate"]},
-    {"id":"cwfis-current","evidenceState":"local-verified-profiled","immutableRemoteProof":false,"currentRawCredit":0.75,"maximumRawCreditDeltaToRemote":0.25,"maximumFormalPercentagePointDeltaToRemote":0.2419355,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["current-wildfire-derived-archive-preflight-and-owner-promotion","wildfire-transform-ingest-release","production-admission-and-release-gate"]},
+    {"id":"cwfis-current","evidenceState":"remote-verified-archived-profiled","immutableRemoteProof":true,"currentRawCredit":1,"maximumRawCreditDeltaToRemote":0,"maximumFormalPercentagePointDeltaToRemote":0,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["wildfire-transform-ingest-release","production-admission-and-release-gate"]},
     {"id":"cwfis-historical","evidenceState":"partial-component","immutableRemoteProof":false,"currentRawCredit":0.25,"maximumRawCreditDeltaToRemote":0.75,"maximumFormalPercentagePointDeltaToRemote":0.7258065,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["partial-historical-owner-review-and-external-evidence","production-admission-and-release-gate"]},
-    {"id":"bc-wildfire","evidenceState":"local-verified-profiled","immutableRemoteProof":false,"currentRawCredit":0.75,"maximumRawCreditDeltaToRemote":0.25,"maximumFormalPercentagePointDeltaToRemote":0.2419355,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["current-wildfire-derived-archive-preflight-and-owner-promotion","wildfire-transform-ingest-release","production-admission-and-release-gate"]},
-    {"id":"ab-wildfire","evidenceState":"local-verified-profiled","immutableRemoteProof":false,"currentRawCredit":0.75,"maximumRawCreditDeltaToRemote":0.25,"maximumFormalPercentagePointDeltaToRemote":0.2419355,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["current-wildfire-derived-archive-preflight-and-owner-promotion","wildfire-transform-ingest-release","production-admission-and-release-gate"]},
-    {"id":"on-fire-disturbance","evidenceState":"local-verified-profiled","immutableRemoteProof":false,"currentRawCredit":0.75,"maximumRawCreditDeltaToRemote":0.25,"maximumFormalPercentagePointDeltaToRemote":0.2419355,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["current-wildfire-derived-archive-preflight-and-owner-promotion","wildfire-transform-ingest-release","production-admission-and-release-gate"]},
+    {"id":"bc-wildfire","evidenceState":"remote-verified-archived-profiled","immutableRemoteProof":true,"currentRawCredit":1,"maximumRawCreditDeltaToRemote":0,"maximumFormalPercentagePointDeltaToRemote":0,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["wildfire-transform-ingest-release","production-admission-and-release-gate"]},
+    {"id":"ab-wildfire","evidenceState":"remote-verified-archived-profiled","immutableRemoteProof":true,"currentRawCredit":1,"maximumRawCreditDeltaToRemote":0,"maximumFormalPercentagePointDeltaToRemote":0,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["wildfire-transform-ingest-release","production-admission-and-release-gate"]},
+    {"id":"on-fire-disturbance","evidenceState":"remote-verified-archived-profiled","immutableRemoteProof":true,"currentRawCredit":1,"maximumRawCreditDeltaToRemote":0,"maximumFormalPercentagePointDeltaToRemote":0,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["wildfire-transform-ingest-release","production-admission-and-release-gate"]},
     {"id":"sopfeu","evidenceState":"access-blocked","immutableRemoteProof":false,"currentRawCredit":0,"maximumRawCreditDeltaToRemote":1,"maximumFormalPercentagePointDeltaToRemote":0.9677419,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["access-blocked-owner-and-external-resolution","production-admission-and-release-gate"]},
     {"id":"bc-fta-cutblocks","evidenceState":"access-blocked","immutableRemoteProof":false,"currentRawCredit":0,"maximumRawCreditDeltaToRemote":1,"maximumFormalPercentagePointDeltaToRemote":0.9677419,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["access-blocked-owner-and-external-resolution","production-admission-and-release-gate"]},
     {"id":"bc-harvesting-authorities","evidenceState":"access-blocked","immutableRemoteProof":false,"currentRawCredit":0,"maximumRawCreditDeltaToRemote":1,"maximumFormalPercentagePointDeltaToRemote":0.9677419,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["access-blocked-owner-and-external-resolution","production-admission-and-release-gate"]},
@@ -706,14 +705,14 @@
     {"id":"bc-forest-operations-map","evidenceState":"access-blocked","immutableRemoteProof":false,"currentRawCredit":0,"maximumRawCreditDeltaToRemote":1,"maximumFormalPercentagePointDeltaToRemote":0.9677419,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["access-blocked-owner-and-external-resolution","production-admission-and-release-gate"]},
     {"id":"qc-current-ecoforest","evidenceState":"remote-verified-archived-profiled","immutableRemoteProof":true,"currentRawCredit":1,"maximumRawCreditDeltaToRemote":0,"maximumFormalPercentagePointDeltaToRemote":0,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["archived-remote-transform-ingest-release","production-admission-and-release-gate"]},
     {"id":"qc-original-current-inventory","evidenceState":"remote-verified-archived-profiled","immutableRemoteProof":true,"currentRawCredit":1,"maximumRawCreditDeltaToRemote":0,"maximumFormalPercentagePointDeltaToRemote":0,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["archived-remote-transform-ingest-release","production-admission-and-release-gate"]},
-    {"id":"qc-fourth-inventory","evidenceState":"local-verified-profiled","immutableRemoteProof":false,"currentRawCredit":0.75,"maximumRawCreditDeltaToRemote":0.25,"maximumFormalPercentagePointDeltaToRemote":0.2419355,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["quebec-fourth-archive-preflight-and-owner-approvals","production-admission-and-release-gate"]},
+    {"id":"qc-fourth-inventory","evidenceState":"remote-verified-archived-profiled","immutableRemoteProof":true,"currentRawCredit":1,"maximumRawCreditDeltaToRemote":0,"maximumFormalPercentagePointDeltaToRemote":0,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["quebec-fourth-archive-preflight-and-owner-approvals","production-admission-and-release-gate"]},
     {"id":"ab-avi-crown","evidenceState":"remote-verified-archived-profiled","immutableRemoteProof":true,"currentRawCredit":1,"maximumRawCreditDeltaToRemote":0,"maximumFormalPercentagePointDeltaToRemote":0,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["archived-remote-transform-ingest-release","production-admission-and-release-gate"]},
     {"id":"ab-avi-post-harvest","evidenceState":"remote-verified-archived-profiled","immutableRemoteProof":true,"currentRawCredit":1,"maximumRawCreditDeltaToRemote":0,"maximumFormalPercentagePointDeltaToRemote":0,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["archived-remote-transform-ingest-release","production-admission-and-release-gate"]},
     {"id":"ab-primary-land-vegetation","evidenceState":"remote-verified-archived-profiled","immutableRemoteProof":true,"currentRawCredit":1,"maximumRawCreditDeltaToRemote":0,"maximumFormalPercentagePointDeltaToRemote":0,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["plvi-transformation-ingestion-decisions","production-admission-and-release-gate"]},
     {"id":"on-fri","evidenceState":"access-blocked","immutableRemoteProof":false,"currentRawCredit":0,"maximumRawCreditDeltaToRemote":1,"maximumFormalPercentagePointDeltaToRemote":0.9677419,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["access-blocked-owner-and-external-resolution","production-admission-and-release-gate"]},
     {"id":"on-fri-term-2","evidenceState":"access-blocked","immutableRemoteProof":false,"currentRawCredit":0,"maximumRawCreditDeltaToRemote":1,"maximumFormalPercentagePointDeltaToRemote":0.9677419,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["access-blocked-owner-and-external-resolution","production-admission-and-release-gate"]},
-    {"id":"fed-2023-ridings","evidenceState":"local-verified-profiled","immutableRemoteProof":false,"currentRawCredit":0.75,"maximumRawCreditDeltaToRemote":0.25,"maximumFormalPercentagePointDeltaToRemote":0.2419355,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["national-local-archive-preflight-and-owner-promotion","production-admission-and-release-gate"]},
-    {"id":"elections-canada-45th-files","evidenceState":"local-verified-profiled","immutableRemoteProof":false,"currentRawCredit":0.75,"maximumRawCreditDeltaToRemote":0.25,"maximumFormalPercentagePointDeltaToRemote":0.2419355,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["national-local-archive-preflight-and-owner-promotion","production-admission-and-release-gate"]},
+    {"id":"fed-2023-ridings","evidenceState":"remote-verified-archived-profiled","immutableRemoteProof":true,"currentRawCredit":1,"maximumRawCreditDeltaToRemote":0,"maximumFormalPercentagePointDeltaToRemote":0,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["national-local-archive-preflight-and-owner-promotion","production-admission-and-release-gate"]},
+    {"id":"elections-canada-45th-files","evidenceState":"remote-verified-archived-profiled","immutableRemoteProof":true,"currentRawCredit":1,"maximumRawCreditDeltaToRemote":0,"maximumFormalPercentagePointDeltaToRemote":0,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["national-local-archive-preflight-and-owner-promotion","production-admission-and-release-gate"]},
     {"id":"provincial-electoral-boundaries","evidenceState":"partial-component","immutableRemoteProof":false,"currentRawCredit":0.25,"maximumRawCreditDeltaToRemote":0.75,"maximumFormalPercentagePointDeltaToRemote":0.7258065,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["partial-boundaries-owner-review-and-external-evidence","production-admission-and-release-gate"]},
     {"id":"indian-reserves","evidenceState":"access-blocked","immutableRemoteProof":false,"currentRawCredit":0,"maximumRawCreditDeltaToRemote":1,"maximumFormalPercentagePointDeltaToRemote":0.9677419,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["access-blocked-owner-and-external-resolution","production-admission-and-release-gate"]},
     {"id":"first-nation-reserves","evidenceState":"access-blocked","immutableRemoteProof":false,"currentRawCredit":0,"maximumRawCreditDeltaToRemote":1,"maximumFormalPercentagePointDeltaToRemote":0.9677419,"productionAdmission":false,"productionEligible":false,"remainingActionIds":["access-blocked-owner-and-external-resolution","production-admission-and-release-gate"]},

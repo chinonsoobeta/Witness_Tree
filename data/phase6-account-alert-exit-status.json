@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "witness-tree/phase6-account-alert-exit-status/1",
+  "phase": 6,
+  "localImplementationStatus": "incomplete",
+  "phaseComplete": false,
+  "completedCriteria": 3,
+  "totalCriteria": 5,
+  "percentage": 60,
+  "exitCriteria": [
+    {
+      "id": "direct-database-tenant-isolation",
+      "title": "One account cannot read another account’s saved areas, proven by a test that attempts it directly against the database",
+      "status": "fail",
+      "reason": "The local policy filters by owner, but no managed Canadian database, row-level-security policy, or direct database isolation test exists. A policy-only test cannot prove database tenant isolation.",
+      "evidence": [
+        {"path": "lib/accounts/activation-gate.ts", "sha256": "d1631f99618c9a47c863860f70e18f3c4ea2a82d2fa448f6fb10cafc87a3d2bb"},
+        {"path": "tests/account-activation-gate.test.ts", "sha256": "a28b19710643384f7039dd6549a561a7b5e5aae051735cd2fd8e201b71694404"}
+      ]
+    },
+    {
+      "id": "deletion-within-30-days",
+      "title": "Account deletion removes saved areas and personal data within 30 days, proven by a test",
+      "status": "pass",
+      "reason": "The deterministic local store policy removes the account, its saved areas, and its alert history at the 30-day deadline; the focused test exercises that boundary. This is local policy evidence only, not proof of a hosted deletion operation.",
+      "evidence": [
+        {"path": "lib/accounts/policy.ts", "sha256": "31d5b08bcfe4cf32c6c3bc2bee9b1fcafdfc28beabdacca205d10ff2fbe41599"},
+        {"path": "tests/account-policy.test.ts", "sha256": "a6227af60129531367b9d2e63fd5c7123daa813ed653ca6b5124708731e00b32"}
+      ]
+    },
+    {
+      "id": "kill-switch-under-five-minutes",
+      "title": "The kill switch stops all outbound alerts within 5 minutes",
+      "status": "fail",
+      "reason": "The pure evaluator honours a local kill-switch flag, but no outbound queue or sender exists and no independent timed rehearsal has been observed. A unit test cannot establish a five-minute operational stop.",
+      "evidence": [
+        {"path": "lib/accounts/activation-gate.ts", "sha256": "d1631f99618c9a47c863860f70e18f3c4ea2a82d2fa448f6fb10cafc87a3d2bb"},
+        {"path": "tests/account-activation-gate.test.ts", "sha256": "a28b19710643384f7039dd6549a561a7b5e5aae051735cd2fd8e201b71694404"}
+      ]
+    },
+    {
+      "id": "evidence-carrying-alerts",
+      "title": "Every alert template carries its evidence class, data version, source agency and observation time",
+      "status": "pass",
+      "reason": "The local evaluator refuses incomplete event metadata and constructs every bilingual payload with evidence-first-line text, data version, source agency, and observation time. The focused test exercises all seven trigger templates and required fields.",
+      "evidence": [
+        {"path": "lib/alerts/triggers.ts", "sha256": "3041d9e5b6d4caa6a5abef3c502838ba98b193fd8ccfa39a9621bef939aa8c3d"},
+        {"path": "lib/alerts/templates.ts", "sha256": "cc5fe9e3031e6494154fc9299e2cbe3abf360641dd6c0ed763f87041ad21d814"},
+        {"path": "tests/alert-engine.test.ts", "sha256": "c2a2cbae28ab352a32feeb115ccd6ebbb80bd60e5e40d15ef028404679b91d9d"}
+      ]
+    },
+    {
+      "id": "correction-alerts-to-previous-recipients",
+      "title": "A correction to a published figure produces a correction alert to everyone previously notified",
+      "status": "pass",
+      "reason": "The local policy selects every history entry for a restated figure and the evaluator permits correction alerts only for a previously notified saved area. Focused tests cover changed-only correction recipients and rejection of an unnotified correction.",
+      "evidence": [
+        {"path": "lib/accounts/policy.ts", "sha256": "31d5b08bcfe4cf32c6c3bc2bee9b1fcafdfc28beabdacca205d10ff2fbe41599"},
+        {"path": "lib/alerts/triggers.ts", "sha256": "3041d9e5b6d4caa6a5abef3c502838ba98b193fd8ccfa39a9621bef939aa8c3d"},
+        {"path": "tests/account-policy.test.ts", "sha256": "a6227af60129531367b9d2e63fd5c7123daa813ed653ca6b5124708731e00b32"},
+        {"path": "tests/alert-engine.test.ts", "sha256": "c2a2cbae28ab352a32feeb115ccd6ebbb80bd60e5e40d15ef028404679b91d9d"}
+      ]
+    }
+  ],
+  "activationBlockers": [
+    {
+      "id": "canadian-managed-service-and-direct-rls",
+      "status": "blocked",
+      "reason": "No Canadian managed account database, encryption-at-rest verification, or direct database row-level-security isolation test has been provisioned or admitted."
+    },
+    {
+      "id": "independent-live-rehearsal",
+      "status": "blocked",
+      "reason": "The plan requires an independent live test of both deletion and the under-five-minute kill switch; no sender, queue, or independent rehearsal evidence exists."
+    },
+    {
+      "id": "privacy-security-legal-signoff",
+      "status": "blocked",
+      "reason": "Privacy, security, and legal review—including reviewed English/French template and consent wording—remain external approval gates."
+    }
+  ],
+  "localOnlyBoundary": "No real personal data is stored and no outbound alert is sent. The default-closed activation guard prevents local policy evidence from activating an account service."
+}

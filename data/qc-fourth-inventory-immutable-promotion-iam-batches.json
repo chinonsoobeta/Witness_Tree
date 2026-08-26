@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "roles": [
+    {
+      "id": "batch-one",
+      "roleName": "WitnessTreeQcFourthArchivePromotionUploader",
+      "policyName": "WitnessTreeQcFourthArchiveExactObjectsBatchOne",
+      "resourceIndexes": [0, 31]
+    },
+    {
+      "id": "batch-two",
+      "roleName": "WitnessTreeQcFourthArchivePromotionUploaderBatchTwo",
+      "policyName": "WitnessTreeQcFourthArchiveExactObjectsBatchTwo",
+      "resourceIndexes": [31, 62]
+    }
+  ],
+  "sourcePolicy": "qc-fourth-inventory-immutable-promotion-iam-policy.json"
+}

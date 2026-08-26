@@ -373,9 +373,9 @@ test("post-run capture is exact-version read-only and cannot mutate storage", ()
   assert.match(script, /head-object[\s\S]*--version-id[\s\S]*checksum-mode ENABLED/);
   assert.match(script, /get-object-retention[\s\S]*--version-id/);
   assert.match(script, /owner-owned non-symlink mode-600/);
-  assert.match(script, /operator_identity=.*jq -ce/);
+  assert.match(script, /wt_assume_direct_mfa_role/);
   assert.match(script, /--argjson identity "\$operator_identity"/);
-  assert.match(script, /get-caller-identity --output json 2>"\$TMP\/sts-get-caller-identity\.stderr"/);
+  assert.match(script, /aws-direct-mfa-role-session\.sh/);
   assert.match(script, /assemble-qc-immutable-promotion-attestation\.mjs[\s\S]*2>"\$TMP\/assembler\.stderr"/);
   assert.doesNotMatch(script, /put-object|upload-part|complete-multipart|put-object-retention|delete-object|abort-multipart/i);
 });

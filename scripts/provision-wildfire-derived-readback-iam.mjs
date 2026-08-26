@@ -126,8 +126,8 @@ function buildCandidate(current) {
   if (matches.length === 1) {
     if (!equalJson(matches[0], versionedReadbackStatement())) fail("live versioned-readback statement is not exact; no IAM mutation was attempted");
   } else {
-    const retentionIndex = current.Statement.findIndex(({ Sid }) => Sid === "PayloadComplianceRetentionOnly");
-    if (retentionIndex < 0) fail("live policy is missing the exact preserved payload-retention statement; no IAM mutation was attempted");
+    const retentionIndex = current.Statement.findIndex(({ Sid }) => Sid === "ExactDerivedPayloadAndSidecarComplianceRetention");
+    if (retentionIndex < 0) fail("live policy is missing the exact preserved payload-and-sidecar retention statement; no IAM mutation was attempted");
     candidate.Statement.splice(retentionIndex, 0, versionedReadbackStatement());
     change = "append-versioned-readback";
   }
@@ -161,8 +161,10 @@ function simulationResource(name) {
   if (name === "exact-bc-manifest-versioned-read") return DESIRED.requiredDelta.Resource[1];
   if (name === "exact-on-versioned-read") return DESIRED.requiredDelta.Resource[2];
   if (name === "exact-on-manifest-versioned-read") return DESIRED.requiredDelta.Resource[3];
-  if (name === "exact-bc-retention-read") return DESIRED.rolePolicy.Statement.find(({ Sid }) => Sid === "PayloadComplianceRetentionOnly").Resource[0];
-  if (name === "exact-on-retention-read") return DESIRED.rolePolicy.Statement.find(({ Sid }) => Sid === "PayloadComplianceRetentionOnly").Resource[1];
+  const retention = DESIRED.rolePolicy.Statement.find(({ Sid }) => Sid === "ExactDerivedPayloadAndSidecarComplianceRetention");
+  if (!retention) fail("exact retention statement is absent; no IAM mutation was attempted");
+  if (name === "exact-bc-retention-read") return retention.Resource[0];
+  if (name === "exact-on-retention-read") return retention.Resource[2];
   if (name === "out-of-scope-versioned-read" || name === "delete-exact-bc") return name === "out-of-scope-versioned-read" ? OUT_OF_SCOPE_RESOURCE : DESIRED.requiredDelta.Resource[0];
   fail("unknown simulation case; no IAM mutation was attempted");
 }

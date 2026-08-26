@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "witness-tree/alberta-plvi-legacy-manifest-audit/1",
+  "status": "historical-exact-version-manifest-evidence-only",
+  "notice": "These two immutable historical manifests are accepted only at their recorded key, version, byte length, SHA-256 and provider checksum. They retain the obsolete fieldCount: 63 wording. The canonical PLVI preparation remains attributeFieldCount: 60; this record neither replaces, uploads, nor treats the historical wording as current schema evidence.",
+  "correction": {
+    "historicalField": "fieldCount",
+    "historicalValue": 63,
+    "canonicalField": "attributeFieldCount",
+    "canonicalValue": 60,
+    "scope": "manifest wording only; raw and derived payload identities are unchanged"
+  },
+  "manifests": [
+    {
+      "artifactId": "alberta-plvi-raw-2026-08-14",
+      "manifestKey": "raw/ab-primary-land-vegetation/undeclared/2026-08-14T14-01-07Z/017a0a835c680ca1b6c1eb790322a28e1b4c0c64e36924da46d8bb99cb1571d3/manifest.json",
+      "versionId": "yC3g35H9fpX.AcyP7B3hjkB4BuiTZmgl",
+      "byteLength": 1326,
+      "sha256": "1feeeba38ef507616bfb7026b0682138346113ceba06d78f8f7f0633ef1ad090",
+      "providerChecksum": {"algorithm": "CRC64NVME", "type": "FULL_OBJECT", "base64": "irYEkqlA1ZU="}
+    },
+    {
+      "artifactId": "alberta-plvi-full-repair-v1-2026-08-14",
+      "manifestKey": "derived/ab-primary-land-vegetation/alberta-plvi-full-repair-v1-2026-08-14/2026-08-14T14-14-31Z/5633e7d49982ee1232b415f362654744c1f1dab11d7c3c7ef8a7928dac20825b/manifest.json",
+      "versionId": "8K7Wc6oWJPYvpbFLI5KSb9gMM66CqP9Z",
+      "byteLength": 1868,
+      "sha256": "6009afd853f8172e501fed70caa5b5667d347121be405e3dc0146039eced2e61",
+      "providerChecksum": {"algorithm": "CRC64NVME", "type": "FULL_OBJECT", "base64": "AGDKhFTSSRE="}
+    }
+  ],
+  "claims": {"currentCanonicalManifest": false, "remoteMutationPerformed": false, "sourceAdmission": false, "productionEligible": false}
+}

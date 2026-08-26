@@ -13,6 +13,9 @@ VERIFIER_ROLE="WitnessTreeArchiveVerifier"
 CLI_CONNECT_TIMEOUT=10
 CLI_READ_TIMEOUT=15
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Bash 3.2 treats an empty array expansion as unbound under `set -u`.
+# This non-code sentinel makes the loop portable and can never match a TOTP.
+USED_TOTPS=("not-a-totp")
 
 usage() {
   cat <<'EOF'
@@ -70,20 +73,11 @@ cleanup_legal_hold() {
   local status=$?
   if [[ "${hold_cleanup_required:-0}" == 1 ]]; then
     phase "best-effort cleanup: set the exercise legal hold OFF"
-    assume_role "$BREAK_GLASS_ROLE" || true
+    use_role BREAK_GLASS || true
     run_aws cleanup-legal-hold-off --region "$REGION" s3api put-object-legal-hold --bucket "$PRIMARY_BUCKET" --key "$exercise_key" --version-id "$version_id" --legal-hold Status=OFF >/dev/null || true
   fi
   exit "$status"
 }
-
-# Prompt before any AWS call on a mutating or recovery run, so invalid/empty input
-# cannot reach AWS. Preflight is intentionally the sole no-TOTP read-only path.
-if [[ "$mode" != "--preflight" ]]; then
-  phase "enter the current virtual-MFA TOTP; it is not saved"
-  read -r -s -p "Current WitnessTreeArchiveOperator TOTP (not saved): " totp
-  printf '\n'
-  [[ "$totp" =~ ^[0-9]{6,8}$ ]] || fail "TOTP must contain 6–8 digits." 64
-fi
 
 phase "verify the configured no-console operator identity"
 identity="$(run_aws identity --profile "$PROFILE" sts get-caller-identity --output json)"
@@ -95,24 +89,57 @@ mfa_serial="$(aws configure get mfa_serial --profile "$PROFILE" 2>"$evidence_dir
 [[ "$mfa_serial" =~ ^arn:aws:iam::${account_id}:mfa/[A-Za-z0-9+=,.@_/-]+$ ]] || fail "Set this profile's exact account-scoped virtual-MFA serial locally, then retry."
 [[ "$mode" == "--preflight" ]] && { printf 'PRECHECK passed: configured profile identity and account-scoped MFA serial match; no TOTP was requested and no AWS mutation was attempted.\n'; exit 0; }
 
-phase "obtain a short-lived MFA session"
-bootstrap="$(run_aws get-session-token --profile "$PROFILE" sts get-session-token --serial-number "$mfa_serial" --token-code "$totp" --duration-seconds 3600 --output json)"
-unset totp mfa_serial
-BOOTSTRAP_ACCESS_KEY_ID="$(jq -er '.Credentials.AccessKeyId' <<<"$bootstrap")"
-BOOTSTRAP_SECRET_ACCESS_KEY="$(jq -er '.Credentials.SecretAccessKey' <<<"$bootstrap")"
-BOOTSTRAP_SESSION_TOKEN="$(jq -er '.Credentials.SessionToken' <<<"$bootstrap")"
-unset bootstrap
-
-assume_role() {
-  local role="$1" response
-  phase "assume approved ${role} role"
-  response="$(AWS_ACCESS_KEY_ID="$BOOTSTRAP_ACCESS_KEY_ID" AWS_SECRET_ACCESS_KEY="$BOOTSTRAP_SECRET_ACCESS_KEY" AWS_SESSION_TOKEN="$BOOTSTRAP_SESSION_TOKEN" \
-    run_aws "assume-${role}" sts assume-role --role-arn "arn:aws:iam::${account_id}:role/${role}" --role-session-name "WitnessTreeArchiveExercise-$(date -u +%Y%m%dT%H%M%SZ)" --duration-seconds 3600 --output json)"
-  export AWS_ACCESS_KEY_ID="$(jq -er '.Credentials.AccessKeyId' <<<"$response")"
-  export AWS_SECRET_ACCESS_KEY="$(jq -er '.Credentials.SecretAccessKey' <<<"$response")"
-  export AWS_SESSION_TOKEN="$(jq -er '.Credentials.SessionToken' <<<"$response")"
-  unset response
+obtain_role() {
+  local role="$1" prefix="$2" totp response attempt diagnostic used duplicate
+  response=""
+  attempt=0
+  while [[ "$attempt" -lt 3 ]]; do
+    phase "directly assume approved ${role} role with a fresh operator MFA value ($((attempt + 1))/3)"
+    read -r -s -p "Current TOTP for ${role} (not saved): " totp
+    printf '\n'
+    [[ "$totp" =~ ^[0-9]{6}$ ]] || fail "TOTP must contain exactly 6 digits." 64
+    duplicate=0
+    for used in "${USED_TOTPS[@]}"; do [[ "$totp" == "$used" ]] && duplicate=1; done
+    if [[ "$duplicate" == 1 ]]; then
+      printf 'That MFA value already opened an earlier role session. Wait for the authenticator to rotate, then enter the new value.\n' >&2
+      unset totp
+      continue
+    fi
+    attempt=$((attempt + 1))
+    if response="$(run_aws "assume-${role}" --profile "$PROFILE" sts assume-role --role-arn "arn:aws:iam::${account_id}:role/${role}" --role-session-name "WitnessTreeArchiveExercise-$(date -u +%Y%m%dT%H%M%SZ)" --serial-number "$mfa_serial" --token-code "$totp" --duration-seconds 43200 --output json)"; then
+      USED_TOTPS+=("$totp")
+      break
+    fi
+    diagnostic="$evidence_dir/assume-${role}.stderr"
+    if ! grep -q 'MultiFactorAuthentication failed with invalid MFA one time pass code' "$diagnostic"; then
+      fail "AssumeRole failed for a reason other than an invalid MFA value; inspect the private diagnostic."
+    fi
+    [[ "$attempt" -lt 3 ]] || fail "Three distinct MFA values were rejected; no AWS storage call was made." 77
+    printf 'That MFA value was rejected. Wait for a newly rotated value, then retry this role.\n' >&2
+    unset totp
+  done
+  [[ -n "$response" ]] || fail "No approved role session was returned." 77
+  printf -v "${prefix}_ACCESS_KEY_ID" '%s' "$(jq -er '.Credentials.AccessKeyId' <<<"$response")"
+  printf -v "${prefix}_SECRET_ACCESS_KEY" '%s' "$(jq -er '.Credentials.SecretAccessKey' <<<"$response")"
+  printf -v "${prefix}_SESSION_TOKEN" '%s' "$(jq -er '.Credentials.SessionToken' <<<"$response")"
+  unset totp response
 }
+use_role() {
+  local prefix="$1" access secret token
+  access="${prefix}_ACCESS_KEY_ID"; secret="${prefix}_SECRET_ACCESS_KEY"; token="${prefix}_SESSION_TOKEN"
+  export AWS_ACCESS_KEY_ID="${!access}"
+  export AWS_SECRET_ACCESS_KEY="${!secret}"
+  export AWS_SESSION_TOKEN="${!token}"
+}
+
+if [[ "$mode" == "--recover-latest" ]]; then
+  obtain_role "$VERIFIER_ROLE" VERIFIER
+  obtain_role "$BREAK_GLASS_ROLE" BREAK_GLASS
+else
+  obtain_role "$UPLOADER_ROLE" UPLOADER
+  obtain_role "$BREAK_GLASS_ROLE" BREAK_GLASS
+  obtain_role "$VERIFIER_ROLE" VERIFIER
+fi
 
 read_legal_hold() {
   run_aws "$1" --region "$REGION" s3api get-object-legal-hold --bucket "$PRIMARY_BUCKET" --key "$exercise_key" --version-id "$version_id" --output json
@@ -123,7 +150,7 @@ read_retention() {
 
 if [[ "$mode" == "--recover-latest" ]]; then
   phase "assume approved ${VERIFIER_ROLE} role to locate the newest exercise version"
-  assume_role "$VERIFIER_ROLE"
+  use_role VERIFIER
   latest_versions="$(run_aws verifier-list-exercise-versions --region "$REGION" s3api list-object-versions --bucket "$PRIMARY_BUCKET" --prefix 'raw/legal-hold-exercises/' --output json)"
   newest="$(jq -cer '[.Versions[]? | select(.Key | test("^raw/legal-hold-exercises/[0-9]{4}-[0-9]{2}-[0-9]{2}/[A-Za-z0-9-]+/payload\\.txt$"))] | max_by(.LastModified)' <<<"$latest_versions")" || fail "No recoverable legal-hold exercise version was found." 65
   exercise_key="$(jq -er '.Key' <<<"$newest")"
@@ -136,10 +163,10 @@ if [[ "$mode" == "--recover-latest" ]]; then
   retention_until="$(jq -er '.Retention.RetainUntilDate' <<<"$recovery_retention_before")" || fail "Recovery retention readback has no retention instant."
   assert_retention_readback "$recovery_retention_before"
   phase "assume approved ${BREAK_GLASS_ROLE} role to remove only the legal hold"
-  assume_role "$BREAK_GLASS_ROLE"
+  use_role BREAK_GLASS
   run_aws recovery-legal-hold-off --region "$REGION" s3api put-object-legal-hold --bucket "$PRIMARY_BUCKET" --key "$exercise_key" --version-id "$version_id" --legal-hold Status=OFF >/dev/null
   phase "verify legal hold OFF and compliance retention unchanged through verifier"
-  assume_role "$VERIFIER_ROLE"
+  use_role VERIFIER
   recovery_hold_off="$(read_legal_hold recovery-hold-off-readback)"
   recovery_retention_after="$(read_retention recovery-retention-after-readback)"
   jq -e '.LegalHold.Status == "OFF"' <<<"$recovery_hold_off" >/dev/null || fail "Legal hold recovery did not read back as OFF."
@@ -147,7 +174,7 @@ if [[ "$mode" == "--recover-latest" ]]; then
   assert_same_retention "$recovery_retention_before" "$recovery_retention_after"
   jq -n --arg capturedAt "$(date -u +%Y-%m-%dT%H:%M:%SZ)" --arg retentionUntil "$retention_until" \
     '{schemaVersion:1,capturedAt:$capturedAt,identity:"mfa-temporary-session-verified; identifiers omitted",recoveredLatestExercise:{legalHoldBefore:"ON",legalHoldAfter:"OFF",complianceRetentionUnchanged:true,retainUntil:$retentionUntil},productionEligible:false}' > "$evidence_dir/redacted-recovery-readback.json"
-  unset recovery_hold_on recovery_retention_before recovery_hold_off recovery_retention_after AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN BOOTSTRAP_ACCESS_KEY_ID BOOTSTRAP_SECRET_ACCESS_KEY BOOTSTRAP_SESSION_TOKEN account_id version_id exercise_key
+  unset recovery_hold_on recovery_retention_before recovery_hold_off recovery_retention_after AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN account_id version_id exercise_key mfa_serial VERIFIER_ACCESS_KEY_ID VERIFIER_SECRET_ACCESS_KEY VERIFIER_SESSION_TOKEN BREAK_GLASS_ACCESS_KEY_ID BREAK_GLASS_SECRET_ACCESS_KEY BREAK_GLASS_SESSION_TOKEN
   printf 'Recovery completed. Redacted evidence is at: %s\n' "$evidence_dir/redacted-recovery-readback.json"
   exit 0
 fi
@@ -158,19 +185,19 @@ payload="$evidence_dir/payload.txt"
 printf 'Witness Tree Phase 1 legal-hold exercise only.\n' > "$payload"
 retention_until="$(node -e 'console.log(new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString().replace(/\.\d{3}Z$/, "Z"))')"
 
-assume_role "$UPLOADER_ROLE"
+use_role UPLOADER
 phase "upload the tiny dedicated exercise object"
 put_result="$(run_aws put-object --region "$REGION" s3api put-object --bucket "$PRIMARY_BUCKET" --key "$exercise_key" --body "$payload" --checksum-algorithm SHA256 --output json)"
 version_id="$(jq -er '.VersionId' <<<"$put_result")"
 unset put_result
 
-assume_role "$BREAK_GLASS_ROLE"
+use_role BREAK_GLASS
 phase "set compliance retention and legal hold ON"
 run_aws put-retention --region "$REGION" s3api put-object-retention --bucket "$PRIMARY_BUCKET" --key "$exercise_key" --version-id "$version_id" --retention "Mode=COMPLIANCE,RetainUntilDate=${retention_until}" >/dev/null
 run_aws legal-hold-on --region "$REGION" s3api put-object-legal-hold --bucket "$PRIMARY_BUCKET" --key "$exercise_key" --version-id "$version_id" --legal-hold Status=ON >/dev/null
 hold_cleanup_required=1
 trap cleanup_legal_hold EXIT
-assume_role "$VERIFIER_ROLE"
+use_role VERIFIER
 phase "read legal hold ON and compliance retention through verifier"
 hold_on="$(read_legal_hold legal-hold-on-readback)"
 retention_on="$(read_retention retention-on-readback)"
@@ -178,10 +205,10 @@ printf '%s\n' "$hold_on" >"$evidence_dir/legal-hold-on-readback.json"
 printf '%s\n' "$retention_on" >"$evidence_dir/retention-on-readback.json"
 jq -e '.LegalHold.Status == "ON"' <<<"$hold_on" >/dev/null
 assert_retention_readback "$retention_on"
-assume_role "$BREAK_GLASS_ROLE"
+use_role BREAK_GLASS
 phase "set legal hold OFF"
 run_aws legal-hold-off --region "$REGION" s3api put-object-legal-hold --bucket "$PRIMARY_BUCKET" --key "$exercise_key" --version-id "$version_id" --legal-hold Status=OFF >/dev/null
-assume_role "$VERIFIER_ROLE"
+use_role VERIFIER
 phase "verify legal hold OFF and unchanged compliance retention through verifier"
 hold_off="$(read_legal_hold legal-hold-off-readback)"
 retention_off="$(read_retention retention-off-readback)"
@@ -193,12 +220,12 @@ hold_cleanup_required=0
 trap - EXIT
 unset hold_on retention_on hold_off retention_off
 
-assume_role "$UPLOADER_ROLE"
+use_role UPLOADER
 phase "confirm a version-specific delete is denied"
 delete_status="unexpected-success"
 if run_aws delete-probe --region "$REGION" s3api delete-object --bucket "$PRIMARY_BUCKET" --key "$exercise_key" --version-id "$version_id" --output json >"$evidence_dir/delete-probe.stdout"; then fail "Safety failure: uploader version-specific delete unexpectedly succeeded." 70; else delete_status="denied-as-required"; fi
 
-assume_role "$VERIFIER_ROLE"
+use_role VERIFIER
 phase "record CloudTrail query as outside the verifier role; do not broaden it"
 cloudtrail_status="not-queryable-by-verifier-role"
 recovery_status="replica-readback-pending"
@@ -211,7 +238,10 @@ done
 jq -n --arg capturedAt "$(date -u +%Y-%m-%dT%H:%M:%SZ)" --arg retentionUntil "$retention_until" --arg delete "$delete_status" --arg cloudtrail "$cloudtrail_status" --arg recovery "$recovery_status" \
   '{schemaVersion:1,capturedAt:$capturedAt,identity:"mfa-temporary-session-verified; identifiers omitted",legalHold:{onReadback:"ON",offReadback:"OFF",complianceRetentionUnchanged:true,retainUntil:$retentionUntil},deniedVersionDeleteProbe:$delete,cloudTrail:$cloudtrail,recoveryReplication:$recovery,completed:($recovery == "replica-readback-authorized"),productionEligible:false}' > "$evidence"
 node "$SCRIPT_DIR/check-phase1-archive-exercise-readback.mjs" "$evidence" >/dev/null
-unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN BOOTSTRAP_ACCESS_KEY_ID BOOTSTRAP_SECRET_ACCESS_KEY BOOTSTRAP_SESSION_TOKEN account_id version_id
+unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN account_id version_id mfa_serial \
+  UPLOADER_ACCESS_KEY_ID UPLOADER_SECRET_ACCESS_KEY UPLOADER_SESSION_TOKEN \
+  BREAK_GLASS_ACCESS_KEY_ID BREAK_GLASS_SECRET_ACCESS_KEY BREAK_GLASS_SESSION_TOKEN \
+  VERIFIER_ACCESS_KEY_ID VERIFIER_SECRET_ACCESS_KEY VERIFIER_SESSION_TOKEN
 [[ "$recovery_status" == "replica-readback-authorized" ]] || fail "Recovery replica did not read back within the bounded window; inspect the redacted evidence and do not count this exercise complete." 75
 printf 'Exercise completed. Redacted evidence is at: %s\n' "$evidence"
 printf 'CloudTrail lookup is deliberately outside the verifier role; do not use root to bypass that boundary.\n'

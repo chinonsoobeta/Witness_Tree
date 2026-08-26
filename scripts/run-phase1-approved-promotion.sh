@@ -2,6 +2,7 @@
 # Owner-local only. The default path is a no-write local preflight.
 set -euo pipefail
 umask 077
+source "${0:A:h}/aws-direct-mfa-role-session.sh"
 
 PROFILE="WitnessTreeArchiveOperator"
 ROLE="WitnessTreeArchivePromotionUploader"
@@ -76,21 +77,11 @@ fi
 command -v jq >/dev/null || fail "jq is required" 69
 SESSION_EXPIRES_EPOCH=0
 prompt_and_assume() {
-  local totp mfa_serial bootstrap account creds expiration
-  [[ -t 0 && -t 1 ]] || fail "MFA TOTP prompt requires an interactive terminal; no AWS call was made" 64
-  read -r -s 'totp?Current MFA TOTP (not stored): '; print
-  [[ "${totp:-}" =~ '^[0-9]{6}$' ]] || fail "TOTP must be exactly six digits; no AWS call was made" 64
-  mfa_serial="$(aws configure get mfa_serial --profile "$PROFILE")" || fail "Cannot read local configured MFA serial" 69
-  [[ "$mfa_serial" =~ '^arn:aws:iam::286853118812:mfa/[A-Za-z0-9+=,.@_/-]+$' ]] || fail "Configured MFA serial is absent, malformed, or outside the approved account; no STS or storage call was made" 69
-  bootstrap="$(aws sts get-session-token --serial-number "$mfa_serial" --token-code "$totp" --profile "$PROFILE" --duration-seconds 3600 --output json)" || fail "MFA session failed" 77
-  unset totp mfa_serial
-  export AWS_ACCESS_KEY_ID="$(jq -er '.Credentials.AccessKeyId' <<<"$bootstrap")" AWS_SECRET_ACCESS_KEY="$(jq -er '.Credentials.SecretAccessKey' <<<"$bootstrap")" AWS_SESSION_TOKEN="$(jq -er '.Credentials.SessionToken' <<<"$bootstrap")"; unset bootstrap
-  account="$(aws sts get-caller-identity --query Account --output text)" || fail "Cannot identify MFA session" 77
-  [[ "$account" == 286853118812 ]] || fail "MFA session is not in the approved account" 77
-  creds="$(aws sts assume-role --role-arn "arn:aws:iam::${account}:role/${ROLE}" --role-session-name witness-tree-approved-promotion --duration-seconds 3600 --output json)" || fail "Promotion role assumption failed" 77
+  local creds expiration
+  creds="$(wt_assume_direct_mfa_role "$PROFILE" 286853118812 "$ROLE" witness-tree-approved-promotion)"
   expiration="$(jq -er '.Credentials.Expiration' <<<"$creds")" || fail "Promotion session expiry is absent" 77
   SESSION_EXPIRES_EPOCH="$(date -j -f '%Y-%m-%dT%H:%M:%SZ' "$expiration" +%s 2>/dev/null || print 0)"
-  export AWS_ACCESS_KEY_ID="$(jq -er '.Credentials.AccessKeyId' <<<"$creds")" AWS_SECRET_ACCESS_KEY="$(jq -er '.Credentials.SecretAccessKey' <<<"$creds")" AWS_SESSION_TOKEN="$(jq -er '.Credentials.SessionToken' <<<"$creds")"; unset creds account expiration
+  export AWS_ACCESS_KEY_ID="$(jq -er '.Credentials.AccessKeyId' <<<"$creds")" AWS_SECRET_ACCESS_KEY="$(jq -er '.Credentials.SecretAccessKey' <<<"$creds")" AWS_SESSION_TOKEN="$(jq -er '.Credentials.SessionToken' <<<"$creds")"; unset creds expiration
 }
 
 resume_aws() {
@@ -166,6 +157,7 @@ resume_canopy() {
   sidecar_put="$(resume_aws s3api put-object --bucket "$BUCKET" --key "${SIDECARS[2]}" --body "$sidecar" --checksum-algorithm CRC64NVME --region "$REGION" --cli-read-timeout 0 --output json)"; sidecar_version="$(jq -er '.VersionId' <<<"$sidecar_put")"; sidecar_crc="$(jq -er '.ChecksumCRC64NVME' <<<"$sidecar_put")" || fail "Sidecar upload acknowledgement incomplete; state preserved" 70
   payload_head="$(resume_aws s3api head-object --bucket "$BUCKET" --key "${PAYLOADS[2]}" --version-id "$version" --checksum-mode ENABLED --region "$REGION" --output json)"; jq -e --arg version "$version" --arg crc "$payload_crc" --argjson bytes "$bytes" '.VersionId == $version and .ContentLength == $bytes and .ChecksumType == "FULL_OBJECT" and .ChecksumCRC64NVME == $crc' <<<"$payload_head" >/dev/null || fail "Payload exact-version read-back lacks exact bytes or matching FULL_OBJECT CRC64NVME" 70
   resume_aws s3api put-object-retention --bucket "$BUCKET" --key "${PAYLOADS[2]}" --version-id "$version" --retention "Mode=COMPLIANCE,RetainUntilDate=$RETAIN_UNTIL" --region "$REGION" >/dev/null
+  resume_aws s3api put-object-retention --bucket "$BUCKET" --key "${SIDECARS[2]}" --version-id "$sidecar_version" --retention "Mode=COMPLIANCE,RetainUntilDate=$RETAIN_UNTIL" --region "$REGION" >/dev/null
   retention="$(resume_aws s3api get-object-retention --bucket "$BUCKET" --key "${PAYLOADS[2]}" --version-id "$version" --region "$REGION" --output json)"; jq -e '.Retention.Mode == "COMPLIANCE"' <<<"$retention" >/dev/null && node -e 'const [a,b]=process.argv.slice(1).map(Date.parse); if (!Number.isFinite(a) || a !== b) process.exit(1)' "$(jq -er '.Retention.RetainUntilDate' <<<"$retention")" "$RETAIN_UNTIL" || fail "Retention read-back mismatch" 70
   sidecar_head="$(resume_aws s3api head-object --bucket "$BUCKET" --key "${SIDECARS[2]}" --version-id "$sidecar_version" --checksum-mode ENABLED --region "$REGION" --output json)"; jq -e --arg version "$sidecar_version" --arg crc "$sidecar_crc" --argjson bytes "$sidecar_bytes" '.VersionId == $version and .ContentLength == $bytes and .ChecksumType == "FULL_OBJECT" and .ChecksumCRC64NVME == $crc' <<<"$sidecar_head" >/dev/null || fail "Sidecar exact-version read-back lacks exact bytes or matching FULL_OBJECT CRC64NVME" 70
   print -- "Canopy multipart resume completed with required read-backs; do not infer source admission."
@@ -210,6 +202,116 @@ upload_multipart() {
   jq -e '.VersionId != null and (.ChecksumCRC64NVME // empty) != ""' <<<"$complete" >/dev/null || fail "Multipart completion acknowledgement incomplete" 70
 }
 
+# The federal-only command is allowed to recover a stopped run.  This is
+# deliberately separate from the generic --run path: the latter remains an
+# append-only batch command and still refuses every pre-existing payload.
+# A failed HeadObject is only treated as absence when S3 says so explicitly;
+# permissions, network failures, and malformed diagnostics must never open a
+# write path.
+RESOLVED_HEAD=""
+RESOLVED_VERSION=""
+head_current_or_absent() {
+  local key="$1" label="$2" head_file error_file
+  head_file="$TMP/federal-${label}.head.json"
+  error_file="$TMP/federal-${label}.head.stderr"
+  if aws s3api head-object --bucket "$BUCKET" --key "$key" --checksum-mode ENABLED --region "$REGION" --output json >"$head_file" 2>"$error_file"; then
+    RESOLVED_HEAD="$(<"$head_file")"
+    RESOLVED_VERSION="$(jq -er '.VersionId | select(type == "string" and length > 0 and . != "null")' <<<"$RESOLVED_HEAD")" || fail "Existing ${label} has no concrete version ID; recovery refused" 73
+    return 0
+  fi
+  if grep -Eqi '(^|[^[:alnum:]])(404|not[[:space:]-]*found|nosuchkey|nosuchobject)([^[:alnum:]]|$)' "$error_file"; then
+    RESOLVED_HEAD=""; RESOLVED_VERSION=""; return 1
+  fi
+  fail "Could not resolve whether the approved ${label} exists; recovery refused without a write" 73
+}
+
+verify_existing_payload() {
+  local key="$1" version="$2" bytes="$3" sha="$4" exact downloaded
+  exact="$(aws s3api head-object --bucket "$BUCKET" --key "$key" --version-id "$version" --checksum-mode ENABLED --region "$REGION" --output json)" || fail "Could not read the resolved payload version; recovery refused" 73
+  jq -e --arg version "$version" --argjson bytes "$bytes" '
+    .VersionId == $version and .ContentLength == $bytes and
+    .ChecksumType == "FULL_OBJECT" and
+    (.ChecksumCRC64NVME | type == "string" and test("^[A-Za-z0-9+/]+={0,2}$"))
+  ' <<<"$exact" >/dev/null || fail "Existing payload version does not have the approved bytes and provider checksum; recovery refused" 73
+  downloaded="$TMP/federal-existing-payload"
+  aws s3api get-object --bucket "$BUCKET" --key "$key" --version-id "$version" --checksum-mode ENABLED --region "$REGION" "$downloaded" >/dev/null || fail "Could not download the resolved payload version; recovery refused" 73
+  [[ "$(shasum -a 256 "$downloaded" | awk '{print $1}')" == "$sha" ]] || fail "Existing payload bytes do not match the approved SHA-256; recovery refused" 73
+}
+
+verify_existing_manifest() {
+  local key="$1" version="$2" expected="$3" downloaded="$TMP/federal-existing-manifest.json" exact expected_bytes
+  expected_bytes="$(stat -f %z "$expected")"
+  exact="$(aws s3api head-object --bucket "$BUCKET" --key "$key" --version-id "$version" --checksum-mode ENABLED --region "$REGION" --output json)" || fail "Could not read the resolved manifest version; recovery refused" 73
+  jq -e --arg version "$version" --argjson bytes "$expected_bytes" '
+    .VersionId == $version and .ContentLength == $bytes and
+    .ChecksumType == "FULL_OBJECT" and
+    (.ChecksumCRC64NVME | type == "string" and test("^[A-Za-z0-9+/]+={0,2}$"))
+  ' <<<"$exact" >/dev/null || fail "Existing manifest version metadata is not the deterministic approved manifest; recovery refused" 73
+  aws s3api get-object --bucket "$BUCKET" --key "$key" --version-id "$version" --checksum-mode ENABLED --region "$REGION" "$downloaded" >/dev/null || fail "Could not read the resolved manifest content; recovery refused" 73
+  cmp -s "$expected" "$downloaded" || fail "Existing manifest content differs from the deterministic approved manifest; recovery refused" 73
+}
+
+ensure_compliance_retention() {
+  local key="$1" version="$2" label="$3" retention mode until retention_stderr
+  retention_stderr="$TMP/federal-${label}.retention.stderr"
+  if ! retention="$(aws s3api get-object-retention --bucket "$BUCKET" --key "$key" --version-id "$version" --region "$REGION" --output json 2>"$retention_stderr")"; then
+    # These are the only provider diagnostics treated as a missing retention
+    # record. Everything else, including access and transport failures, is an
+    # ambiguous state and therefore a hard stop before any mutation.
+    grep -Eqi 'NoSuchObjectLockConfiguration|NoSuchRetentionConfiguration' "$retention_stderr" || fail "Could not read ${label} retention; recovery refused" 73
+    retention='{"Retention":{}}'
+  fi
+  mode="$(jq -r '.Retention.Mode // empty' <<<"$retention")"
+  until="$(jq -r '.Retention.RetainUntilDate // empty' <<<"$retention")"
+  if [[ -z "$mode" && -z "$until" ]]; then
+    aws s3api put-object-retention --bucket "$BUCKET" --key "$key" --version-id "$version" --retention "Mode=COMPLIANCE,RetainUntilDate=$RETAIN_UNTIL" --region "$REGION" >/dev/null || fail "Could not apply missing COMPLIANCE retention to ${label}" 70
+  elif [[ "$mode" != "COMPLIANCE" ]] || ! node -e 'const [actual, required] = process.argv.slice(1).map(Date.parse); process.exit(Number.isFinite(actual) && Number.isFinite(required) && actual >= required ? 0 : 1)' "$until" "$RETAIN_UNTIL"; then
+    fail "Existing ${label} retention is not sufficient COMPLIANCE retention; recovery refused" 73
+  fi
+  retention="$(aws s3api get-object-retention --bucket "$BUCKET" --key "$key" --version-id "$version" --region "$REGION" --output json)" || fail "Could not read back ${label} retention" 70
+  jq -e '.Retention.Mode == "COMPLIANCE" and (.Retention.RetainUntilDate | type == "string")' <<<"$retention" >/dev/null || fail "${label} retention read-back is not COMPLIANCE" 70
+  until="$(jq -er '.Retention.RetainUntilDate' <<<"$retention")"
+  node -e 'const [actual, required] = process.argv.slice(1).map(Date.parse); process.exit(Number.isFinite(actual) && Number.isFinite(required) && actual >= required ? 0 : 1)' "$until" "$RETAIN_UNTIL" || fail "${label} retention read-back is shorter than required" 70
+}
+
+recover_or_promote_federal() {
+  local i=3 sidecar payload_present=0 manifest_present=0 payload_version="" manifest_version="" put
+  sidecar="$TMP/${IDS[$i]}.manifest.json"
+  jq -n --arg id "${IDS[$i]}" --arg payload "${PAYLOADS[$i]}" --arg sha "${SHAS[$i]}" --argjson bytes "${BYTES[$i]}" '{schemaVersion:1,sourceId:$id,payloadKey:$payload,byteLength:$bytes,sha256:$sha,notice:"Approved raw payload; no transformation, ingestion, or release."}' > "$sidecar"
+
+  if head_current_or_absent "${PAYLOADS[$i]}" payload; then payload_present=1; payload_version="$RESOLVED_VERSION"; fi
+  if head_current_or_absent "${SIDECARS[$i]}" manifest; then manifest_present=1; manifest_version="$RESOLVED_VERSION"; fi
+  if (( ! payload_present && manifest_present )); then
+    fail "A manifest exists without its approved payload; recovery is ambiguous and no write was attempted" 73
+  fi
+
+  if (( payload_present )); then
+    verify_existing_payload "${PAYLOADS[$i]}" "$payload_version" "${BYTES[$i]}" "${SHAS[$i]}"
+  else
+    print -- "Uploading absent approved federal payload by one direct S3 request; wait for the acknowledgement."
+    put="$(aws s3api put-object --bucket "$BUCKET" --key "${PAYLOADS[$i]}" --body "${FILES[$i]}" --checksum-algorithm CRC64NVME --region "$REGION" --cli-read-timeout 0 --output json)" || fail "Federal payload upload failed" 70
+    payload_version="$(jq -er '.VersionId | select(type == "string" and length > 0)' <<<"$put")" || fail "Federal payload upload acknowledgement has no concrete version" 70
+    verify_existing_payload "${PAYLOADS[$i]}" "$payload_version" "${BYTES[$i]}" "${SHAS[$i]}"
+  fi
+
+  if (( manifest_present )); then
+    verify_existing_manifest "${SIDECARS[$i]}" "$manifest_version" "$sidecar"
+  else
+    put="$(aws s3api put-object --bucket "$BUCKET" --key "${SIDECARS[$i]}" --body "$sidecar" --checksum-algorithm CRC64NVME --region "$REGION" --cli-read-timeout 0 --output json)" || fail "Federal manifest upload failed" 70
+    manifest_version="$(jq -er '.VersionId | select(type == "string" and length > 0)' <<<"$put")" || fail "Federal manifest upload acknowledgement has no concrete version" 70
+    verify_existing_manifest "${SIDECARS[$i]}" "$manifest_version" "$sidecar"
+  fi
+
+  ensure_compliance_retention "${PAYLOADS[$i]}" "$payload_version" payload
+  ensure_compliance_retention "${SIDECARS[$i]}" "$manifest_version" manifest
+  print -- "Federal promotion recovered or completed with exact version-specific payload, manifest, and retention read-backs."
+}
+
+if [[ "$MODE" == "run-federal" ]]; then
+  recover_or_promote_federal
+  exit 0
+fi
+
 for i in $PROMOTION_INDICES; do
   # GetObject is granted on every exact approved key. A successful read means
   # a version already exists, which this append-only runner refuses to replace.
@@ -234,6 +336,9 @@ for i in $PROMOTION_INDICES; do
   retention="$(aws s3api get-object-retention --bucket "$BUCKET" --key "${PAYLOADS[$i]}" --version-id "$version" --region "$REGION" --output json)" || fail "Retention read-back failed" 70
   jq -e --arg d "$RETAIN_UNTIL" '.Retention.Mode == "COMPLIANCE" and (.Retention.RetainUntilDate | startswith($d[0:10]))' <<<"$retention" >/dev/null || fail "Retention read-back mismatch" 70
   sidecar_head="$(aws s3api head-object --bucket "$BUCKET" --key "${SIDECARS[$i]}" --checksum-mode ENABLED --region "$REGION" --output json)" || fail "Sidecar read-back failed" 70
+  sidecar_version="$(jq -er '.VersionId' <<<"$sidecar_head")"; aws s3api put-object-retention --bucket "$BUCKET" --key "${SIDECARS[$i]}" --version-id "$sidecar_version" --retention "Mode=COMPLIANCE,RetainUntilDate=$RETAIN_UNTIL" --region "$REGION" >/dev/null || fail "Sidecar COMPLIANCE retention application failed" 70
+  sidecar_retention="$(aws s3api get-object-retention --bucket "$BUCKET" --key "${SIDECARS[$i]}" --version-id "$sidecar_version" --region "$REGION" --output json)" || fail "Sidecar retention read-back failed" 70
+  jq -e --arg d "$RETAIN_UNTIL" '.Retention.Mode == "COMPLIANCE" and (.Retention.RetainUntilDate | startswith($d[0:10]))' <<<"$sidecar_retention" >/dev/null || fail "Sidecar retention read-back mismatch" 70
   jq -e '.VersionId != null and (.ChecksumCRC64NVME // empty) != ""' <<<"$sidecar_head" >/dev/null || fail "Sidecar read-back incomplete" 70
 done
 print -- "Promotion completed. Preserve the Terminal output for the required redacted, version-specific audit."

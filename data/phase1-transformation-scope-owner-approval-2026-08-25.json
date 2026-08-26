@@ -1,0 +1,99 @@
+{
+  "schemaVersion": "witness-tree/phase1-transformation-scope-owner-approval/1",
+  "status": "owner-approved-transformation-scope-only",
+  "recordedOn": "2026-08-25",
+  "notice": "This record captures the owner's approval of seven explicitly named checksum-bound transformation designs. It does not authorize execution, ingestion, release, production admission, production eligibility, or any external mutation. The preparation packet and specification files remain unchanged and non-admitting.",
+  "ownerDecision": {
+    "decisionId": "phase1-seven-transformation-scopes-v1",
+    "ownerName": "Chinonso Obeta",
+    "statement": "I approve all seven Phase 1 transformation scopes.",
+    "decision": "approve",
+    "packet": {
+      "path": "data/phase1-downstream-admission-packet.json",
+      "sha256": "4859407ea256988a50873c03aa4146c8dd15e5e13f9ced47fa87a7883b404d6a"
+    },
+    "scope": "Approve only the seven named transformation designs bound by the packet hash and specification hashes below.",
+    "acknowledgements": [
+      "seven-named-scopes-reviewed",
+      "exact-packet-and-specification-bindings-reviewed",
+      "no-execution-or-external-mutation",
+      "no-ingestion-release-or-production-admission"
+    ]
+  },
+  "approvedScopes": [
+    {
+      "bundleId": "ntems-annual-land-cover",
+      "rows": ["ntems-annual-land-cover"],
+      "specId": "ntems-annual-land-cover-v1",
+      "specPath": "data/phase1-production-transformation-specifications-v1.json",
+      "specSha256": "258ca3f94e30d484b53cc12e29c83beaf57998993edaea05e44f5a4924979efc",
+      "decision": "approve"
+    },
+    {
+      "bundleId": "ntems-forest-harvest",
+      "rows": ["ntems-forest-harvest"],
+      "specId": "ntems-forest-harvest-v1",
+      "specPath": "data/phase1-production-transformation-specifications-v1.json",
+      "specSha256": "258ca3f94e30d484b53cc12e29c83beaf57998993edaea05e44f5a4924979efc",
+      "decision": "approve"
+    },
+    {
+      "bundleId": "ntems-canopy-cover",
+      "rows": ["ntems-canopy-cover"],
+      "specId": "ntems-canopy-cover-v1",
+      "specPath": "data/phase1-production-transformation-specifications-v1.json",
+      "specSha256": "258ca3f94e30d484b53cc12e29c83beaf57998993edaea05e44f5a4924979efc",
+      "decision": "approve"
+    },
+    {
+      "bundleId": "ntems-canopy-height",
+      "rows": ["ntems-canopy-height"],
+      "specId": "ntems-canopy-height-v1",
+      "specPath": "data/phase1-production-transformation-specifications-v1.json",
+      "specSha256": "258ca3f94e30d484b53cc12e29c83beaf57998993edaea05e44f5a4924979efc",
+      "decision": "approve"
+    },
+    {
+      "bundleId": "federal-electoral",
+      "rows": ["fed-2023-ridings", "elections-canada-45th-files"],
+      "specId": "federal-electoral-districts-2023-v1",
+      "specPath": "data/phase1-production-transformation-specifications-v1.json",
+      "specSha256": "258ca3f94e30d484b53cc12e29c83beaf57998993edaea05e44f5a4924979efc",
+      "decision": "approve"
+    },
+    {
+      "bundleId": "qc-current-ecoforest",
+      "rows": ["qc-current-ecoforest"],
+      "specId": "qc-current-ecoforest-stand-copy-v1",
+      "specPath": "data/transformation-specs/qc-current-ecoforest-stand-copy-v1.json",
+      "specSha256": "44cdb08f033fc80040a7edf373189a0ce8c74bc3132d4e0892816fcf3f22bb1d",
+      "decision": "approve"
+    },
+    {
+      "bundleId": "qc-original-current-inventory",
+      "rows": ["qc-original-current-inventory"],
+      "specId": "qc-original-current-inventory-stand-copy-v1",
+      "specPath": "data/transformation-specs/qc-original-current-inventory-stand-copy-v1.json",
+      "specSha256": "71707b702f2367d46c985e84f5f16e19ad75012c8efe71b2ff17dd8063c7ab2c",
+      "decision": "approve"
+    }
+  ],
+  "decisionBoundary": {
+    "transformationScopeApproved": true,
+    "executionAuthorized": false,
+    "ingestionAuthorized": false,
+    "releaseAuthorized": false,
+    "productionAdmissionAuthorized": false,
+    "productionEligibilityGranted": false,
+    "externalMutationPerformed": false
+  },
+  "claims": {
+    "transformationScopeApproved": true,
+    "transformed": false,
+    "ingested": false,
+    "released": false,
+    "productionAdmission": false,
+    "productionEligible": false,
+    "externalMutationPerformed": false
+  }
+}

@@ -2,16 +2,37 @@
 
 ## Status
 
-This is a blocked preparation, not an AWS or IAM action. No object was uploaded,
-no retention was applied, no IAM policy was created or attached, and no remote
-object is claimed. The exact plan is
+The exact 62-object archive is complete. Independent, read-only, exact-version
+readback is recorded in
+`data/qc-fourth-inventory-exact-archive-readback-2026-08-25.json` and checked
+by `npm run check:qc-fourth-inventory-exact-archive-readback`. It binds the
+approved plan, all 62 private version IDs (only as a redacted aggregate hash),
+byte lengths, SHA-256 checksum values/types (56 `FULL_OBJECT`, six
+`COMPOSITE`), and `COMPLIANCE` retention through exactly
+`2033-08-12T00:00:00Z`. It contains no ARNs, credentials, or version IDs.
+
+This is raw immutable-archive evidence only. It does not establish owner
+admission, transformation, ingestion, release, recovery replication, or
+production eligibility. The exact plan is
 `data/qc-fourth-inventory-immutable-promotion-preparation.json`; its SHA-256 at
 commit preparation is
 `fce3e053e68cbed57bf612476235361c37108d911609c82bc5d5a3cdeb82d258`.
 
-No live IAM desired-state record is committed. The exact object-only policy in
-`data/qc-fourth-inventory-immutable-promotion-iam-policy.json` is a review
-input, not evidence that any role, policy, MFA session, or remote object exists.
+The applied IAM state is separately recorded in
+`data/qc-fourth-inventory-iam-applied-readback-2026-08-25.json` and checked by
+`npm run check:qc-fourth-inventory-iam-applied-readback`. It binds the two
+MFA-trusted, 12-hour roles, their two exact 31-object inline-policy hashes, and
+the MFA-gated operator assume-role policy in account `286853118812` / region
+`ca-central-1`. It is IAM evidence only: it does not establish any upload,
+retention, object readback, admission, transformation, ingestion, release, or
+production use.
+
+The applied role trust and operator assume-role grant require
+`aws:MultiFactorAuthPresent=true`. MFA is enforced before either role session is
+issued. The two exact S3 object policies are deliberately unconditional: IAM
+does not propagate that MFA context into S3 authorization for role credentials.
+This preserves the same five actions and exact 31-key resource set per role;
+all other requests remain implicitly denied.
 
 The target is pinned to bucket `witness-tree-raw-archive-ca-central-1` in
 `ca-central-1`. Every object would receive `COMPLIANCE` retention at creation
@@ -91,42 +112,47 @@ The low-level API shape follows AWS's current documentation for
 [`CreateMultipartUpload`](https://docs.aws.amazon.com/cli/latest/reference/s3api/create-multipart-upload.html),
 and [`CompleteMultipartUpload`](https://docs.aws.amazon.com/cli/latest/reference/s3api/complete-multipart-upload.html).
 
-The runner intentionally remains fail-closed. Its safe dry run is available,
-but execution requires an owner-local MFA role-session runner that is not
-enabled until the separate exact artifact/retention approval exists. That future
-runner may read only local `aws configure get mfa_serial`, must accept a safe
-nonempty `arn:aws:iam::286853118812:mfa/<path>` without printing it, pin the
-caller to the operator user/account, and assume only the role above. It must
-never call `ListMFADevices` or take an MFA code as a command-line argument.
+The owner-local wrapper is now `scripts/run-qc-fourth-inventory-approved-promotion.sh`.
+Its default mode validates the immutable preparation only; `--preflight` hashes
+all 61 local source/evidence files and validates the deterministic in-memory
+collection manifest without prompting for MFA or calling AWS. `--run` repeats
+that preflight, creates only two fixed owner-local 0700 directories under the
+controlled `Witness_Tree-data/work/qc-fourth-inventory/` path, then obtains
+separate direct MFA role sessions for the two fixed 31-object batches and
+invokes the exact execution program once per batch with all four recorded
+approval flags. This split is required because IAM rejected the original
+62-object policy after the empty first role was created: the duplicated
+`NotResource` explicit-deny list exceeded IAM's per-role inline-policy limit.
 
-The deliberately non-executable command shape is:
+It accepts no data-root, state-directory, sidecar-directory, role, profile, or
+MFA-code arguments. The code is read hidden from the terminal by the shared
+direct-MFA helper, never printed or stored, and never appears in a command line.
+The helper reads only the local configured `mfa_serial`, pins the caller to the
+approved operator/account, and does not call `ListMFADevices`.
 
-```text
-node scripts/qc-fourth-inventory-immutable-promotion.mjs --execute \
-  --approve-exact-artifact-set --approve-iam-policy \
-  --approve-compliance-retention --approve-mfa-session \
-  --retention-until 2033-08-12T00:00:00Z --session-ready \
-  --data-root <ABSOLUTE_WITNESS_TREE_DATA_DIRECTORY> \
-  --state-dir <EXISTING_CONTROLLED_STATE_DIRECTORY> \
-  --sidecar-dir <EXISTING_CONTROLLED_SIDECAR_DIRECTORY>
+```sh
+zsh scripts/run-qc-fourth-inventory-approved-promotion.sh --preflight
+zsh scripts/run-qc-fourth-inventory-approved-promotion.sh --run
 ```
 
-`--session-ready` is intentionally unavailable in this repository. It cannot
-be supplied with long-lived credentials or manually passed MFA values. The
-controlled directory paths must not be guessed or stored in Git.
+The execute path remains resumable through its fixed state directory. It is raw
+archive evidence only; successful upload/readback does not authorize a semantic
+transformation, join selection, source-ledger admission, public release, or
+production eligibility.
 
 ## Exact IAM policy and separate approval wording
 
-The proposed object policy is
-`data/qc-fourth-inventory-immutable-promotion-iam-policy.json`, SHA-256
-`9259e120095f87da7420ff545aea55175ccdefa0be04687d4a9b4626880118d1`.
-It allows only the minimum read/upload/retention/multipart-read
-actions on the 62 exact object ARNs. It explicitly denies object access outside
-those ARNs, denies bucket listing, and denies deletion, multipart abort,
-retention bypass, legal-hold changes, bucket Object Lock/versioning/lifecycle
-changes, bucket deletion, and replication. Because these explicit denies are
-deliberately strict, the policy is only suitable for the exact dedicated
-principal named by a future approval, not a general-purpose operator identity.
+`data/qc-fourth-inventory-immutable-promotion-iam-batches.json` fixes two
+non-overlapping 31-object batches. The provisioner derives two small Allow-only
+policies from the already checked exact-object ledger:
+`WitnessTreeQcFourthArchiveExactObjectsBatchOne` on the existing
+`WitnessTreeQcFourthArchivePromotionUploader`, and
+`WitnessTreeQcFourthArchiveExactObjectsBatchTwo` on the new
+`WitnessTreeQcFourthArchivePromotionUploaderBatchTwo`. Each permits only the
+minimum read/upload/retention/multipart-read actions on its own exact objects;
+all other objects and actions are implicitly denied. The legacy 62-object JSON
+remains the checked object ledger and must not be applied. This avoids the
+oversized duplicated explicit-deny list without widening scope.
 The exact retain-until instant is enforced and read back by the runner because
 IAM has no direct exact-timestamp condition for this operation.
 
@@ -148,13 +174,15 @@ controlled values:
 **IAM and MFA execution approval**
 
 > In AWS account `286853118812`, I authorize creation or update only of
-> `WitnessTreeQcFourthArchivePromotionUploader`, trusted only by
+> `WitnessTreeQcFourthArchivePromotionUploader` and
+> `WitnessTreeQcFourthArchivePromotionUploaderBatchTwo`, each trusted only by
 > `arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator` when MFA is
 > present. I authorize attaching to that user only an MFA-gated
-> `sts:AssumeRole` policy for that role. I authorize attaching exactly
-> `data/qc-fourth-inventory-immutable-promotion-iam-policy.json` at SHA-256
-> `9259e120095f87da7420ff545aea55175ccdefa0be04687d4a9b4626880118d1` to
-> that role for the exact 62 keys enumerated by the preparation plan. This
+> `sts:AssumeRole` policy for those roles. I authorize attaching exactly the two
+> fixed 31-object policies derived by
+> `scripts/provision-qc-fourth-inventory-iam.mjs` from
+> `data/qc-fourth-inventory-immutable-promotion-iam-batches.json`, collectively
+> covering the exact 62 keys enumerated by the preparation plan. This
 > excludes all deletes, multipart aborts, bypasses, legal-hold changes,
 > replication, bucket administration, wildcard object scope, other keys,
 > other buckets, and other IAM changes. This IAM approval does not authorize

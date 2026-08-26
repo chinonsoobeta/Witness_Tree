@@ -12,7 +12,8 @@ export function validate(e = read("data/current-wildfire-raw-archive-evidence.js
   assert.equal(e.recoveryObservedAt, "2026-08-20");
   assert.deepEqual(e.storage, { bucket: "witness-tree-raw-archive-ca-central-1", recoveryBucket: "witness-tree-raw-recovery-ca-central-1", region: "ca-central-1", countryCode: "CA" });
   assert.deepEqual(e.claims, { derivedObjectsVerified: false, recoveryObjectsVerified: false, machineVerifiableImmutableProof: false, ownerAdmission: false, transformed: false, ingested: false, productionEligible: false });
-  assert.match(e.notice, /concrete provider version identifiers.*checksum values.*cannot prove exact-version immutable archive/i);
+  assert.match(e.notice, /historical placeholder.*by itself cannot prove exact-version immutable archive/i);
+  assert.equal(e.exactRawCaptureRef, "data/current-wildfire-exact-raw-archive-capture-2026-08-25.json");
   for (const x of e.entries) {
     const key = p.proposedRoleScope.objectKeys.find((candidate) => candidate.startsWith(`raw/${x.sourceId}/`) && candidate.includes("/payload/"));
     assert.equal(x.payloadKey, key);

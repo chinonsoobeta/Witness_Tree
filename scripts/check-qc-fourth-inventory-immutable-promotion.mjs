@@ -153,7 +153,7 @@ function validateIam(iam, keys) {
   assert.deepEqual(allow.Action, ["s3:PutObject", "s3:GetObjectVersion", "s3:GetObjectRetention", "s3:PutObjectRetention", "s3:ListMultipartUploadParts"]);
   const resources = keys.map((key) => `arn:aws:s3:::${BUCKET}/${key}`).sort();
   assert.deepEqual([...allow.Resource].sort(), resources);
-  assert.deepEqual(allow.Condition, { Bool: { "aws:MultiFactorAuthPresent": "true" }, NumericLessThan: { "aws:MultiFactorAuthAge": "3600" } });
+  assert.deepEqual(allow.Condition, { Bool: { "aws:MultiFactorAuthPresent": "true" }, NumericLessThan: { "aws:MultiFactorAuthAge": "43200" } });
   const outside = iam.Statement.find((statement) => statement.Sid === "DenyObjectAccessOutsideExactObjectSet");
   assert.equal(outside.Effect, "Deny");
   assert.deepEqual(outside.Action, ["s3:GetObject", "s3:GetObjectVersion", "s3:GetObjectRetention", "s3:ListMultipartUploadParts", "s3:PutObject", "s3:PutObjectRetention"]);
@@ -171,10 +171,25 @@ function validateIam(iam, keys) {
   assert.deepEqual(destructive.Resource, [`arn:aws:s3:::${BUCKET}`, `arn:aws:s3:::${BUCKET}/*`]);
 }
 
+export function qcFourthInventoryIamBatches(plan) {
+  const batches = JSON.parse(readFileSync(new URL("../data/qc-fourth-inventory-immutable-promotion-iam-batches.json", import.meta.url), "utf8"));
+  const objects = exactPromotionObjects(plan).map((entry) => `arn:aws:s3:::${BUCKET}/${entry.objectKey}`).sort();
+  assert.deepEqual(batches, { schemaVersion: 1, roles: [
+    { id: "batch-one", roleName: "WitnessTreeQcFourthArchivePromotionUploader", policyName: "WitnessTreeQcFourthArchiveExactObjectsBatchOne", resourceIndexes: [0, 31] },
+    { id: "batch-two", roleName: "WitnessTreeQcFourthArchivePromotionUploaderBatchTwo", policyName: "WitnessTreeQcFourthArchiveExactObjectsBatchTwo", resourceIndexes: [31, 62] }
+  ], sourcePolicy: "qc-fourth-inventory-immutable-promotion-iam-policy.json" });
+  const split = batches.roles.map((batch) => ({ ...batch, resources: objects.slice(...batch.resourceIndexes) }));
+  assert.equal(new Set(split.flatMap((batch) => batch.resources)).size, 62);
+  assert.deepEqual(split.flatMap((batch) => batch.resources).sort(), objects);
+  return split;
+}
+
 export function loadQcFourthInventoryPromotionPreparation() {
   const plan = JSON.parse(readFileSync(new URL("../data/qc-fourth-inventory-immutable-promotion-preparation.json", import.meta.url), "utf8"));
   const iam = JSON.parse(readFileSync(new URL("../data/qc-fourth-inventory-immutable-promotion-iam-policy.json", import.meta.url), "utf8"));
-  return validateQcFourthInventoryPromotionPreparation(plan, iam);
+  validateQcFourthInventoryPromotionPreparation(plan, iam);
+  qcFourthInventoryIamBatches(plan);
+  return plan;
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {

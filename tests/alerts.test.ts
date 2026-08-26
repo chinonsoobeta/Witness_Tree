@@ -67,7 +67,7 @@ test("digest keeps evidence, confidence, provenance, and unknown instead of zero
     reported: {
       kind: "unknown",
       evidence: "unknown",
-      reason: "No authoritative public record has been integrated for this question.",
+      reason: { en: "No authoritative public record has been integrated for this question.", fr: "Aucun registre public faisant autorité n’a été intégré pour cette question." },
       coverageGrade: "national-baseline",
     },
   };

@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "witness-tree/phase1-ledger-evolution/1",
+  "status": "append-only-post-decision-evolution",
+  "historicalDecisionPacket": {
+    "path": "data/phase1-downstream-admission-packet.json",
+    "sha256": "4859407ea256988a50873c03aa4146c8dd15e5e13f9ced47fa87a7883b404d6a",
+    "boundLedgerPath": "data/phase1-production-source-ledger.json",
+    "boundLedgerSha256": "bed2aff40b5f7d62108aa8174edb3c161cb0acd6f25cb8a7e1f14e54b536258e"
+  },
+  "currentLedger": {
+    "path": "data/phase1-production-source-ledger.json",
+    "sha256": "b723e214c32b6a6d897141b78aa0f26cbfa3d1d09d25733be593cbb84309f13c"
+  },
+  "authorizedChange": {
+    "path": "data/phase1-federal-electoral-production-admission.json",
+    "sha256": "1d2620731ab6669bc7df611726be18f3c76db90307bd1028f83fcafc60ac6e9e",
+    "rows": ["fed-2023-ridings", "elections-canada-45th-files"],
+    "change": "The two exact federal rows advanced from archived/profiled and non-admitted to explicitly production-admitted after transformation, deterministic output verification, rights review, complete field facts, and owner authorization."
+  },
+  "unchangedDecisionBoundary": "The historical seven-scope packet and its owner approval remain byte-for-byte unchanged; this evolution record does not retroactively alter that decision packet."
+}

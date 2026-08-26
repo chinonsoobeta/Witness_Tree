@@ -2,10 +2,16 @@
 
 This is an owner-local, dry-run-by-default preparation for the four raw current-wildfire snapshots already identified in [`data/current-wildfire-immutable-promotion-preparation.json`](../data/current-wildfire-immutable-promotion-preparation.json). It is not authorization to run AWS, create IAM, archive a different object, transform data, clear the BC or Ontario geometry blocks, ingest, release, admit, or make a source eligible.
 
-The canonical raw archive record is a placeholder-only attestation for these
-four snapshots and sidecars. It proves no concrete version, provider checksum,
-exact-version readback, retention, or recovery state. This preparation remains
-a bounded owner-local command package and grants no credit.
+Each artifact records both its immutable `archiveGeometryDecision` and its current `geometryDecision`. The deterministic archive sidecar uses the archive-time value so a later owner decision cannot rewrite historical raw-snapshot metadata; admission reporting uses the current value.
+
+The historical raw archive record remains a placeholder-only attestation for
+these four snapshots and sidecars. It now references a separate
+[exact raw capture](CURRENT_WILDFIRE_EXACT_RAW_ARCHIVE_CAPTURE_2026-08-25.md)
+for the four raw payloads and four deterministic sidecars. That read-only
+capture is raw archive evidence only: it does not verify recovery replication,
+the two required derived payloads, geometry admission, transformation,
+ingestion, release, or production eligibility. This preparation remains a
+bounded owner-local command package and grants no production credit.
 
 ## Exact approval wording
 
@@ -13,7 +19,7 @@ a bounded owner-local command package and grants no credit.
 
 That wording records the earlier archive-operation boundary. A later [owner scope decision](CURRENT_WILDFIRE_OWNER_ADMISSION.md) approves conditional geometry and operational semantics. This preparation does not prove archive, transformation, ingestion, release or production admission. The canonical redacted records are placeholder-only attestations and leave the six-object gate at 0/6 machine-verifiable.
 
-> I authorize creation or update of only `WitnessTreeCurrentWildfirePromotionUploader`, trusted only by MFA-authenticated `arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator`, and only an identity policy granting that user `sts:AssumeRole` on this role. The role may allow only `s3:PutObject`, `s3:GetObject`, `s3:AbortMultipartUpload`, `s3:ListMultipartUploadParts`, `s3:PutObjectRetention`, and `s3:GetObjectRetention` on the eight exact keys in `data/current-wildfire-immutable-promotion-preparation.json`; it has no delete, legal-hold, bypass, replication, bucket, wildcard, other-key, or `iam:*` permission.
+> I authorize creation or update of only `WitnessTreeCurrentWildfirePromotionUploader`, trusted only by MFA-authenticated `arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator`, and only an identity policy granting that user `sts:AssumeRole` on this role. The role may allow only `s3:PutObject`, `s3:GetObject`, `s3:GetObjectVersion`, `s3:AbortMultipartUpload`, `s3:ListMultipartUploadParts`, `s3:PutObjectRetention`, and `s3:GetObjectRetention` on the eight exact keys in `data/current-wildfire-immutable-promotion-preparation.json`; it has no delete, legal-hold, bypass, replication, bucket, wildcard, other-key, or `iam:*` permission. The exact-version read delta and redacted readback hashes are recorded in [CURRENT_WILDFIRE_VERSIONED_READBACK_IAM_2026-08-25.md](CURRENT_WILDFIRE_VERSIONED_READBACK_IAM_2026-08-25.md).
 
 | Snapshot | Exact payload (and manifest at the same prefix) | Bytes / SHA-256 |
 | --- | --- | --- |

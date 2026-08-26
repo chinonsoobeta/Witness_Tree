@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "witness-tree/phase1-ntems-execution-authorization/1",
+  "status": "template-no-execution-authorization-recorded",
+  "notice": "Template only. A future owner-local execution record must replace this template in a new file and bind the final runner SHA-256, all four exact specification SHA-256 values, every exact local input archive SHA-256/byte length/member, and one fixed UTC createdAt. The runner rejects this template.",
+  "decisionId": "phase1-ntems-raster-execution-v1",
+  "ownerDecision": {
+    "ownerName": "Chinonso Obeta",
+    "decision": "approve",
+    "scope": "Approve local execution of the four NTEMS raster scopes only; no external mutation, ingestion, release, or production admission."
+  },
+  "runner": {"path": "scripts/run-phase1-ntems-transform.mjs", "sha256": null},
+  "specifications": [],
+  "inputs": [],
+  "createdAt": null,
+  "boundary": {"localOnly": true, "externalMutation": false, "ingestion": false, "release": false, "productionAdmission": false, "productionEligible": false, "overwriteExisting": false}
+}

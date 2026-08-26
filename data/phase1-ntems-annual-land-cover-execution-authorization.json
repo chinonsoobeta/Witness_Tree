@@ -1,0 +1,307 @@
+{
+  "schemaVersion": "witness-tree/phase1-ntems-execution-authorization/1",
+  "status": "approved-owner-local-execution",
+  "decisionId": "phase1-ntems-raster-execution-v1",
+  "createdAt": "2026-08-26T00:55:28Z",
+  "ownerDecision": {
+    "decision": "approve",
+    "ownerName": "Chinonso Obeta",
+    "statement": "You can execute them when complete.",
+    "scope": "This record selects ntems-annual-land-cover-v1 from the four NTEMS raster scopes within the seven approved Phase 1 transformation scopes."
+  },
+  "runner": {
+    "path": "scripts/run-phase1-ntems-transform.mjs",
+    "sha256": "ecb3585a27c82119e2d18fbce3231e12f3c8a33abbf5973453db8d1b0cf2a511"
+  },
+  "specifications": [
+    {
+      "id": "ntems-annual-land-cover-v1",
+      "path": "data/phase1-production-transformation-specifications-v1.json",
+      "sha256": "258ca3f94e30d484b53cc12e29c83beaf57998993edaea05e44f5a4924979efc"
+    }
+  ],
+  "inputs": [
+    {
+      "path": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1984.zip",
+      "sha256": "6da3aaa2181b3ab4c0a5ae6313776a298f1eea26a5a4f45f178984ae5cb17724",
+      "byteLength": 1520973970,
+      "member": "CA_forest_VLCE2_1984.tif",
+      "year": 1984
+    },
+    {
+      "path": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1985.zip",
+      "sha256": "bab13422243844be74946c3fa51199f7c3816b1b43357bac645612dad15bcf18",
+      "byteLength": 1515795138,
+      "member": "CA_forest_VLCE2_1985.tif",
+      "year": 1985
+    },
+    {
+      "path": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1986.zip",
+      "sha256": "915f32af6b5250513a44eda7134c24803b1c4c95c87f111c726f2751012929f8",
+      "byteLength": 1510230189,
+      "member": "CA_forest_VLCE2_1986.tif",
+      "year": 1986
+    },
+    {
+      "path": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1987.zip",
+      "sha256": "33c16553d73e5c6f38c8404724ad48ef1b874107c413553223cd3a961bc85ee5",
+      "byteLength": 1506185331,
+      "member": "CA_forest_VLCE2_1987.tif",
+      "year": 1987
+    },
+    {
+      "path": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1988.zip",
+      "sha256": "e51475a4a368a7f014cbbea84eefbce449632529e512064415afb5f868c58889",
+      "byteLength": 1501993855,
+      "member": "CA_forest_VLCE2_1988.tif",
+      "year": 1988
+    },
+    {
+      "path": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1989.zip",
+      "sha256": "399ca35d03c7b38462e1bd4599cc5ba6dc4bbcf7763ea51f485f938f24fc8d63",
+      "byteLength": 1501339049,
+      "member": "CA_forest_VLCE2_1989.tif",
+      "year": 1989
+    },
+    {
+      "path": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1990.zip",
+      "sha256": "a62046969e278bc09f5aa8dba81ed3f27b83ef4ee28b03a5b78b1fca99362bbd",
+      "byteLength": 1497437365,
+      "member": "CA_forest_VLCE2_1990.tif",
+      "year": 1990
+    },
+    {
+      "path": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1991.zip",
+      "sha256": "a977d0887ba2b7b2fe6fe6a24e0ff863703eb01d3463d5519944664b9a3de58f",
+      "byteLength": 1494487119,
+      "member": "CA_forest_VLCE2_1991.tif",
+      "year": 1991
+    },
+    {
+      "path": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1992.zip",
+      "sha256": "266faa58e29bdcff906bf577f3bbc80bbd36e2b2da1994f7a5c22a4e2aac088d",
+      "byteLength": 1491133163,
+      "member": "CA_forest_VLCE2_1992.tif",
+      "year": 1992
+    },
+    {
+      "path": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1993.zip",
+      "sha256": "78e49dd3513b36d28a82efc23ebdf6d2c99cc7d412f0c61ab8bedbfe98aea9aa",
+      "byteLength": 1490251627,
+      "member": "CA_forest_VLCE2_1993.tif",
+      "year": 1993
+    },
+    {
+      "path": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1994.zip",
+      "sha256": "62eaba23ca60f4489873c7634ca9b91034986b0103e262adeac11f09236574ac",
+      "byteLength": 1492328775,
+      "member": "CA_forest_VLCE2_1994.tif",
+      "year": 1994
+    },
+    {
+      "path": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1995.zip",
+      "sha256": "24798848d49183d0a39dd282a89830039acb6e4374056d86a0c4d0425d6884e9",
+      "byteLength": 1498053540,
+      "member": "CA_forest_VLCE2_1995.tif",
+      "year": 1995
+    },
+    {
+      "path": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1996.zip",
+      "sha256": "6da70b4f070b22799445580d03bd55e2b1a7e438fc9b171c6608ae6f5b7ee464",
+      "byteLength": 1498624946,
+      "member": "CA_forest_VLCE2_1996.tif",
+      "year": 1996
+    },
+    {
+      "path": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1997.zip",
+      "sha256": "2e63621c57c1104ac8fb4d0ffd165e0b831d1301aba73df6b00c89088df345a1",
+      "byteLength": 1500301551,
+      "member": "CA_forest_VLCE2_1997.tif",
+      "year": 1997
+    },
+    {
+      "path": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1998.zip",
+      "sha256": "b48e47c197f1d87416a2528437c51e01a386c2b5f0206f11ecbd060e2ea19c9b",
+      "byteLength": 1502974375,
+      "member": "CA_forest_VLCE2_1998.tif",
+      "year": 1998
+    },
+    {
+      "path": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1999.zip",
+      "sha256": "0b5c53ba5effabc8c075871593cd410d24d67898054370d28c20b6a22fbdf2a2",
+      "byteLength": 1504085117,
+      "member": "CA_forest_VLCE2_1999.tif",
+      "year": 1999
+    },
+    {
+      "path": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2000.zip",
+      "sha256": "36bbe9f63fdcc13355e21abcdab98af8fdc0016a910e9be8513a329fb13a40cc",
+      "byteLength": 1506122428,
+      "member": "CA_forest_VLCE2_2000.tif",
+      "year": 2000
+    },
+    {
+      "path": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2001.zip",
+      "sha256": "aabec291d296ea3588ff0fb1d195d11189eaed921978edf4e5348a675919930e",
+      "byteLength": 1505838178,
+      "member": "CA_forest_VLCE2_2001.tif",
+      "year": 2001
+    },
+    {
+      "path": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2002.zip",
+      "sha256": "d15ef4086be6fe53a7811fc34a6c1c3b9096c46855a9b6620b2ea0232ffd38a9",
+      "byteLength": 1505579245,
+      "member": "CA_forest_VLCE2_2002.tif",
+      "year": 2002
+    },
+    {
+      "path": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2003.zip",
+      "sha256": "7139f2e512508298bc00a16416a1177ca1ad0c771c3f852eba8a1f1d25ac1301",
+      "byteLength": 1504483054,
+      "member": "CA_forest_VLCE2_2003.tif",
+      "year": 2003
+    },
+    {
+      "path": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2004.zip",
+      "sha256": "7b3927642c11a2ae80c71651407a0142ad127cd7ce420bf35416e996487bcab4",
+      "byteLength": 1505123532,
+      "member": "CA_forest_VLCE2_2004.tif",
+      "year": 2004
+    },
+    {
+      "path": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2005.zip",
+      "sha256": "802281cb3a4a7b0ff01370eba3e2e79f71b2cf96ccbf2e5967a8f41736a88ee4",
+      "byteLength": 1506734685,
+      "member": "CA_forest_VLCE2_2005.tif",
+      "year": 2005
+    },
+    {
+      "path": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2006.zip",
+      "sha256": "611e6d0339dbf8f9934457dc5edb2761927329f9e33f07814d7fa9a1b329dc4c",
+      "byteLength": 1508214599,
+      "member": "CA_forest_VLCE2_2006.tif",
+      "year": 2006
+    },
+    {
+      "path": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2007.zip",
+      "sha256": "9a2292d5169884bb41199ce7717ad87ff49dabbfd08c9ac3410b1902f6ccc02e",
+      "byteLength": 1506551890,
+      "member": "CA_forest_VLCE2_2007.tif",
+      "year": 2007
+    },
+    {
+      "path": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2008.zip",
+      "sha256": "098264bbd04fbe246c9caa9e2fe183b596e62574eb0abd3761b83e1de8f8e76b",
+      "byteLength": 1504569657,
+      "member": "CA_forest_VLCE2_2008.tif",
+      "year": 2008
+    },
+    {
+      "path": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2009.zip",
+      "sha256": "d6431ef5b72a136d6ec6ed17c87b402ef15671bf01fafa0866ff92dbdd2c77e7",
+      "byteLength": 1503537551,
+      "member": "CA_forest_VLCE2_2009.tif",
+      "year": 2009
+    },
+    {
+      "path": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2010.zip",
+      "sha256": "30ed54e0f37190009c342a65462505594647f408e2d064473a2fd3d9de2471da",
+      "byteLength": 1507074555,
+      "member": "CA_forest_VLCE2_2010.tif",
+      "year": 2010
+    },
+    {
+      "path": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2011.zip",
+      "sha256": "f8a386793fd9c4d588388b98490f03e60242303cf14360a238b3dcbaba5eff9b",
+      "byteLength": 1511598018,
+      "member": "CA_forest_VLCE2_2011.tif",
+      "year": 2011
+    },
+    {
+      "path": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2012.zip",
+      "sha256": "2fe932f00881694f0fd36add97ad52614b32cb0944e4b23120cb5b88883ec6e7",
+      "byteLength": 1520484319,
+      "member": "CA_forest_VLCE2_2012.tif",
+      "year": 2012
+    },
+    {
+      "path": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2013.zip",
+      "sha256": "37b2ef95a16c615e90dbfda9300e7f37436bb024482e616f867d8954924fb50d",
+      "byteLength": 1524673952,
+      "member": "CA_forest_VLCE2_2013.tif",
+      "year": 2013
+    },
+    {
+      "path": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2014.zip",
+      "sha256": "56ea51e217ef5ebe393d826808e4558aa9b48c4b79c3eab7bb5322aa623fbc38",
+      "byteLength": 1528666741,
+      "member": "CA_forest_VLCE2_2014.tif",
+      "year": 2014
+    },
+    {
+      "path": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2015.zip",
+      "sha256": "abc3453125d3b76bab4d4cb54ad219a9c9d0c33c8bbb642e34886d4ecf66c8db",
+      "byteLength": 1533932205,
+      "member": "CA_forest_VLCE2_2015.tif",
+      "year": 2015
+    },
+    {
+      "path": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2016.zip",
+      "sha256": "2c6997eec4df23e36fdbc5b47b5756897614961f887be5114f883eeefd3125f3",
+      "byteLength": 1535950872,
+      "member": "CA_forest_VLCE2_2016.tif",
+      "year": 2016
+    },
+    {
+      "path": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2017.zip",
+      "sha256": "b0cf041c1efa3e2ea5666aed05d6b9543ead180ec64ad6b0916ea8c4d17664fe",
+      "byteLength": 1533444187,
+      "member": "CA_forest_VLCE2_2017.tif",
+      "year": 2017
+    },
+    {
+      "path": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2018.zip",
+      "sha256": "e39f70e8482ed718fc3f2128dedf8014204a8f771d2a1a7f742508cec5b3c974",
+      "byteLength": 1532753141,
+      "member": "CA_forest_VLCE2_2018.tif",
+      "year": 2018
+    },
+    {
+      "path": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2019.zip",
+      "sha256": "a785a45513eb2248ca6d8536b0bf0e0ad72a214807372f715729263e2857e301",
+      "byteLength": 1535802581,
+      "member": "CA_forest_VLCE2_2019.tif",
+      "year": 2019
+    },
+    {
+      "path": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2020.zip",
+      "sha256": "e4a043d2a06adda4c87ad260579a1c97996d1f226fbf7591f83fae3a28368097",
+      "byteLength": 1536672675,
+      "member": "CA_forest_VLCE2_2020.tif",
+      "year": 2020
+    },
+    {
+      "path": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2021.zip",
+      "sha256": "96376658236c252ad27d6ecad4d2a76abd215d95905dec748617e6d861ae7a25",
+      "byteLength": 1535181282,
+      "member": "CA_forest_VLCE2_2021.tif",
+      "year": 2021
+    },
+    {
+      "path": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2022.zip",
+      "sha256": "53555f815ffa68adb7c5b6117dd15d7b5385771a36926691e8a41e5fc12b11dd",
+      "byteLength": 1535510211,
+      "member": "CA_forest_VLCE2_2022.tif",
+      "year": 2022
+    }
+  ],
+  "boundary": {
+    "localOnly": true,
+    "externalMutation": false,
+    "ingestion": false,
+    "release": false,
+    "productionAdmission": false,
+    "productionEligible": false,
+    "overwriteExisting": false
+  }
+}

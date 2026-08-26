@@ -109,8 +109,8 @@ function writeFakeAws(dir, { preexistingBcManifest = false, wrongBcVersion = fal
     `print -r -- "$*" >> ${JSON.stringify(marker)}`,
     "case \"$1:$2\" in",
     "  configure:get) print -r -- \"arn:aws:iam::286853118812:mfa/witness-tree/archive-operator.device\" ;;",
-    "  sts:assume-role) print -r -- '{\"Credentials\":{\"AccessKeyId\":\"test-access\",\"SecretAccessKey\":\"test-secret\",\"SessionToken\":\"test-session\"}}' ;;",
-    "  sts:get-caller-identity) print -r -- \"286853118812\" ;;",
+    "  sts:assume-role) print -r -- '{\"Credentials\":{\"AccessKeyId\":\"test-access\",\"SecretAccessKey\":\"test-secret\",\"SessionToken\":\"test-session\"},\"AssumedRoleUser\":{\"Arn\":\"arn:aws:sts::286853118812:assumed-role/WitnessTreeWildfireDerivedPromotionUploader/test\"}}' ;;",
+    "  sts:get-caller-identity) if [[ \"$*\" == *--query* ]]; then print -r -- '286853118812'; else print -r -- '{\"Account\":\"286853118812\",\"Arn\":\"arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator\"}'; fi ;;",
     "  s3api:head-object)",
     "    if [[ \"$*\" == *bc-wildfire* && \"$*\" == *manifest.json* && \"$*\" != *--version-id* ]]; then",
     preexistingBcManifest
@@ -208,7 +208,7 @@ test("recovery approval, private state, IAM attestation, and evidence are exact"
     ontarioPayload: head(7913472, "ontario-payload-version"),
     ontarioManifest: head(885, "ontario-manifest-version")
   };
-  const evidence = buildEvidence(a, s, heads, { bcPayload: retention(), ontarioPayload: retention() });
+  const evidence = buildEvidence(a, s, heads, { bcPayload: retention(), bcManifest: retention(), ontarioPayload: retention(), ontarioManifest: retention() });
   assert.equal(evidence.schemaVersion, EVIDENCE_SCHEMA);
   validateEvidence(evidence, a, s);
   assert.equal(a.schemaVersion, APPROVAL_SCHEMA);
@@ -281,7 +281,7 @@ test("preflight makes no AWS call and blocks already-completed evidence", () => 
       ontarioPayload: head(7913472, "ontario-payload-version"),
       ontarioManifest: head(885, "ontario-manifest-version")
     };
-    writeJson(f.evidencePath, buildEvidence(approval(), state(), heads, { bcPayload: retention(), ontarioPayload: retention() }));
+    writeJson(f.evidencePath, buildEvidence(approval(), state(), heads, { bcPayload: retention(), bcManifest: retention(), ontarioPayload: retention(), ontarioManifest: retention() }));
     const blocked = spawnSync("zsh", [runnerPath, "--preflight", f.approvalPath, f.statePath, f.attestationPath, f.evidencePath], { encoding: "utf8", env: { ...process.env, PATH: `${dir}:${process.env.PATH}`, WITNESS_TREE_DATA_ROOT: dataRoot } });
     assert.equal(blocked.status, 65);
     assert.match(blocked.stderr, /evidence is already complete/i);
@@ -304,7 +304,7 @@ test("recovery reuses BC payload, conditionally creates only three missing objec
     assert.equal(puts.length, 3);
     assert.ok(puts.every((call) => call.includes("--if-none-match *") && call.includes("--checksum-algorithm CRC64NVME")));
     assert.ok(puts.every((call) => !call.includes("bc-wildfire-216-feature-release.gpkg")));
-    assert.equal(calls.filter((call) => call.startsWith("s3api put-object-retention ")).length, 2);
+    assert.equal(calls.filter((call) => call.startsWith("s3api put-object-retention ")).length, 4);
     assert.ok(calls.every((call) => !/list-objects|upload-part|complete-multipart|delete-object|legal-hold|bypass-governance|iam /i.test(call)));
     assert.equal(statSync(f.evidencePath).mode & 0o777, 0o600);
     const evidence = JSON.parse(readFileSync(f.evidencePath, "utf8"));

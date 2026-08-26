@@ -1,6 +1,8 @@
 #!/bin/zsh
 set -euo pipefail
 umask 077
+source "${0:A:h}/aws-direct-mfa-role-session.sh"
+source "${0:A:h}/archive-existing-key-recovery.sh"
 
 # Owner-local only. No argument is a dry run. --run is limited to the exact
 # recorded approval and still requires fresh MFA plus exact readback evidence.
@@ -35,30 +37,29 @@ print -- "PRECHECK passed: four approved current-wildfire artifacts have exact b
 [[ "${1:-}" == "--preflight" ]] && exit 0
 command -v aws >/dev/null || fail "aws CLI is required" 69
 command -v jq >/dev/null || fail "jq is required" 69
-[[ -t 0 && -t 1 ]] || fail "MFA TOTP prompt requires an interactive terminal; no AWS call was made" 64
-read -r -s 'totp?Current MFA TOTP (not stored): '; print
-[[ "${totp:-}" =~ '^[0-9]{6}$' ]] || fail "TOTP must be exactly six digits; no AWS call was made" 64
-mfa_serial="$(aws configure get mfa_serial --profile "$PROFILE")" || fail "Cannot read local configured MFA serial" 69
-[[ "$mfa_serial" =~ '^arn:aws:iam::286853118812:mfa/WitnessTreeArchiveOperator$' ]] || fail "Configured MFA serial is absent or does not name the approved operator; no STS or AWS storage call was made" 69
-bootstrap="$(aws sts get-session-token --serial-number "$mfa_serial" --token-code "$totp" --profile "$PROFILE" --duration-seconds 3600 --output json)" || fail "MFA session failed" 77; unset totp
-export AWS_ACCESS_KEY_ID="$(jq -r '.Credentials.AccessKeyId' <<<"$bootstrap")" AWS_SECRET_ACCESS_KEY="$(jq -r '.Credentials.SecretAccessKey' <<<"$bootstrap")" AWS_SESSION_TOKEN="$(jq -r '.Credentials.SessionToken' <<<"$bootstrap")"; unset bootstrap
-account="$(aws sts get-caller-identity --query Account --output text)" || fail "Cannot identify MFA session" 77
-[[ "$account" == "286853118812" ]] || fail "MFA session is outside the approved account" 77
-creds="$(aws sts assume-role --role-arn "arn:aws:iam::${account}:role/${ROLE}" --role-session-name witness-tree-current-wildfire-approved-promotion --duration-seconds 3600 --output json)" || fail "Promotion role assumption failed" 77
-export AWS_ACCESS_KEY_ID="$(jq -r '.Credentials.AccessKeyId' <<<"$creds")" AWS_SECRET_ACCESS_KEY="$(jq -r '.Credentials.SecretAccessKey' <<<"$creds")" AWS_SESSION_TOKEN="$(jq -r '.Credentials.SessionToken' <<<"$creds")"; unset creds account
+creds="$(wt_assume_direct_mfa_role "$PROFILE" 286853118812 "$ROLE" witness-tree-current-wildfire-approved-promotion)"
+export AWS_ACCESS_KEY_ID="$(jq -r '.Credentials.AccessKeyId' <<<"$creds")" AWS_SECRET_ACCESS_KEY="$(jq -r '.Credentials.SecretAccessKey' <<<"$creds")" AWS_SESSION_TOKEN="$(jq -r '.Credentials.SessionToken' <<<"$creds")"; unset creds
 TMP="$(mktemp -d /private/tmp/witness-tree-current-wildfire-approved-promotion.XXXXXX)"; chmod 700 "$TMP"
 node "$ROOT/scripts/prepare-current-wildfire-immutable-promotion.mjs" --write-sidecars "$TMP" >/dev/null
 for i in {1..4}; do
-  print -- "Uploading approved raw payload $i/4 by direct PutObject; wait for its acknowledgement."
-  payload_put="$(aws s3api put-object --bucket "$BUCKET" --key "${PAYLOADS[$i]}" --body "${FILES[$i]}" --checksum-algorithm CRC64NVME --region "$REGION" --cli-read-timeout 0 --output json)" || fail "Payload upload failed" 70
-  version="$(jq -r '.VersionId // empty' <<<"$payload_put")"; [[ -n "$version" && "$(jq -r '.ChecksumCRC64NVME // empty' <<<"$payload_put")" != "" ]] || fail "Payload upload acknowledgement incomplete" 70
-  payload_head="$(aws s3api head-object --bucket "$BUCKET" --key "${PAYLOADS[$i]}" --checksum-mode ENABLED --region "$REGION" --output json)" || fail "Payload read-back failed" 70
-  jq -e --arg v "$version" --argjson n "${BYTES[$i]}" '.VersionId==$v and .ContentLength==$n and .ChecksumType=="FULL_OBJECT" and (.ChecksumCRC64NVME // empty)!=""' <<<"$payload_head" >/dev/null || fail "Payload read-back lacks exact version, bytes, or FULL_OBJECT CRC64NVME" 70
-  aws s3api put-object-retention --bucket "$BUCKET" --key "${PAYLOADS[$i]}" --version-id "$version" --retention "Mode=COMPLIANCE,RetainUntilDate=$RETAIN_UNTIL" --region "$REGION" >/dev/null || fail "Payload COMPLIANCE retention failed" 70
-  retention="$(aws s3api get-object-retention --bucket "$BUCKET" --key "${PAYLOADS[$i]}" --version-id "$version" --region "$REGION" --output json)" || fail "Retention read-back failed" 70
-  jq -e --arg until "$RETAIN_UNTIL" '.Retention.Mode == "COMPLIANCE" and (.Retention.RetainUntilDate | startswith($until[0:10]))' <<<"$retention" >/dev/null || fail "Payload retention read-back mismatch" 70
-  sidecar_put="$(aws s3api put-object --bucket "$BUCKET" --key "${SIDECARS[$i]}" --body "$TMP/${IDS[$i]}.manifest.json" --checksum-algorithm CRC64NVME --region "$REGION" --cli-read-timeout 0 --output json)" || fail "Sidecar upload failed" 70
-  sidecar_version="$(jq -r '.VersionId // empty' <<<"$sidecar_put")"; [[ -n "$sidecar_version" && "$(jq -r '.ChecksumCRC64NVME // empty' <<<"$sidecar_put")" != "" ]] || fail "Sidecar upload acknowledgement incomplete" 70
-  sidecar_head="$(aws s3api head-object --bucket "$BUCKET" --key "${SIDECARS[$i]}" --checksum-mode ENABLED --region "$REGION" --output json)" || fail "Sidecar read-back failed"; jq -e --arg v "$sidecar_version" '.VersionId==$v and .ChecksumType=="FULL_OBJECT" and (.ChecksumCRC64NVME // empty)!=""' <<<"$sidecar_head" >/dev/null || fail "Sidecar read-back lacks exact version or FULL_OBJECT CRC64NVME" 70
+  label="current-${IDS[$i]}"; sidecar="$TMP/${IDS[$i]}.manifest.json"; payload_present=0; manifest_present=0
+  if wt_archive_head_current_or_absent "${PAYLOADS[$i]}" "$label-payload"; then payload_present=1; version="$WT_ARCHIVE_VERSION"; fi
+  if wt_archive_head_current_or_absent "${SIDECARS[$i]}" "$label-manifest"; then manifest_present=1; sidecar_version="$WT_ARCHIVE_VERSION"; fi
+  (( ! payload_present && manifest_present )) && fail "A manifest exists without its approved current-wildfire payload; recovery is ambiguous and no write was attempted" 73
+  if (( payload_present )); then wt_archive_verify_existing_payload "${PAYLOADS[$i]}" "$version" "${BYTES[$i]}" "${SHAS[$i]}" "$label-payload"
+  else
+    print -- "Uploading absent approved current-wildfire payload $i/4 by conditional direct PutObject."
+    put="$(aws s3api put-object --bucket "$BUCKET" --key "${PAYLOADS[$i]}" --body "${FILES[$i]}" --if-none-match '*' --checksum-algorithm CRC64NVME --region "$REGION" --cli-read-timeout 0 --output json)" || fail "Current-wildfire payload was not provably absent; no duplicate was written" 70
+    version="$(jq -er '.VersionId | select(type == "string" and length > 0)' <<<"$put")" || fail "Current-wildfire payload acknowledgement has no concrete version" 70
+    wt_archive_verify_existing_payload "${PAYLOADS[$i]}" "$version" "${BYTES[$i]}" "${SHAS[$i]}" "$label-payload"
+  fi
+  if (( manifest_present )); then wt_archive_verify_existing_manifest "${SIDECARS[$i]}" "$sidecar_version" "$sidecar" "$label-manifest"
+  else
+    put="$(aws s3api put-object --bucket "$BUCKET" --key "${SIDECARS[$i]}" --body "$sidecar" --if-none-match '*' --checksum-algorithm CRC64NVME --region "$REGION" --cli-read-timeout 0 --output json)" || fail "Current-wildfire manifest was not provably absent; no duplicate was written" 70
+    sidecar_version="$(jq -er '.VersionId | select(type == "string" and length > 0)' <<<"$put")" || fail "Current-wildfire manifest acknowledgement has no concrete version" 70
+    wt_archive_verify_existing_manifest "${SIDECARS[$i]}" "$sidecar_version" "$sidecar" "$label-manifest"
+  fi
+  wt_archive_ensure_compliance_retention "${PAYLOADS[$i]}" "$version" "$label-payload"
+  wt_archive_ensure_compliance_retention "${SIDECARS[$i]}" "$sidecar_version" "$label-manifest"
 done
 print -- "Archive promotion completed; this is raw archive evidence only and does not clear BC or Ontario geometry admission blocks."

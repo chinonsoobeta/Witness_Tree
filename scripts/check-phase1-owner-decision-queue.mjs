@@ -1,11 +1,15 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
+import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { validate as validateFederalAdmission } from "./check-phase1-federal-electoral-production-admission.mjs";
 import { validate as validateRecordedApprovals } from "./check-phase1-phase3-owner-approvals.mjs";
 
 const SCHEMA = "witness-tree/phase1-owner-decision-queue/1";
 const HEAD = "9bf5baa2ecc51ce4c039531e798bfb6418e3baaf";
+const HISTORICAL_QUEUE_ROWS_SHA256 = "74733bcb832ce1c2a992cc5b93cfead6988f6254244f7dc36553d725ff33ce7d";
 const INCLUDED = [
   "ntems-annual-land-cover",
   "ntems-forest-harvest",
@@ -47,6 +51,14 @@ const LOCAL_ARCHIVE = [
   "qc-fourth-inventory",
 ];
 const APPROVED_LOCAL_ARCHIVE = new Set(LOCAL_ARCHIVE);
+const FEDERAL_IDS = new Set(["fed-2023-ridings", "elections-canada-45th-files"]);
+const LATER_FEDERAL_STATE = {
+  evidenceState: "production-admitted",
+  rawCredit: 1,
+  immutableArchive: true,
+  productionAdmission: true,
+  productionEligible: true,
+};
 
 function sameArray(actual, expected, label) {
   assert.deepEqual(actual, expected, label);
@@ -62,17 +74,50 @@ function validateActionMembership(actionById, actionId, rowId) {
   assert.ok(action.rows.includes(rowId), `${actionId} must cover ${rowId}.`);
 }
 
+function ledgerState(entry) {
+  return {
+    evidenceState: entry.evidenceState,
+    rawCredit: entry.rawCredit,
+    immutableArchive: entry.proof?.immutableArchive,
+    productionAdmission: entry.proof?.productionAdmission,
+    productionEligible: entry.productionEligible,
+  };
+}
+
+function validateHistoricalFederalState(row, ledger) {
+  const historical = {
+    evidenceState: row.evidenceState,
+    rawCredit: row.rawCredit,
+    immutableArchive: false,
+    productionAdmission: false,
+    productionEligible: false,
+  };
+  const current = ledgerState(ledger);
+  if (JSON.stringify(current) === JSON.stringify(historical)) return false;
+  assert.deepEqual(current, LATER_FEDERAL_STATE, `${row.id} must be either the historical queue state or the exact later federal admission state.`);
+  return true;
+}
+
 function validateQueueRows(queue, context) {
   const ledgerById = new Map(context.ledger.entries.map((entry) => [entry.id, entry]));
   const actionById = new Map(context.remaining.actions.map((action) => [action.id, action]));
+  const historicalSnapshot = queue.derivedFromHead === HEAD;
+  let laterFederalRows = 0;
   sameArray(queue.queueRows.map((row) => row.id), INCLUDED, "The queue must cover each selected row once in canonical order.");
 
   for (const row of queue.queueRows) {
     const ledger = ledgerById.get(row.id);
     assert.ok(ledger, `Queue row ${row.id} is not in the canonical ledger.`);
-    assert.equal(ledger.evidenceState, row.evidenceState);
-    assert.equal(ledger.rawCredit, row.rawCredit);
-    assert.equal(ledger.productionEligible, false);
+    // The queue is a fixed, read-only decision snapshot, identified by its
+    // recorded source revision. Later exact archive readbacks update the
+    // canonical ledger, not the historical approval/action record.
+    assert.ok(historicalSnapshot || ledger.evidenceState === row.evidenceState, "A non-historical queue state must match the canonical ledger.");
+    assert.ok(historicalSnapshot || ledger.rawCredit === row.rawCredit, "A non-historical queue credit must match the canonical ledger.");
+    assert.ok(ledger.rawCredit >= row.rawCredit, "The canonical ledger cannot regress relative to the historical queue snapshot.");
+    if (historicalSnapshot && FEDERAL_IDS.has(row.id)) {
+      if (validateHistoricalFederalState(row, ledger)) laterFederalRows += 1;
+    }
+    assert.equal(historicalSnapshot && FEDERAL_IDS.has(row.id) ? false : ledger.productionEligible, false);
     assert.equal(row.productionEligible, false);
     assert.ok(row.evidenceRefs.length > 0, `${row.id} must retain existing evidence references.`);
     validateActionMembership(actionById, row.primaryActionId, row.id);
@@ -82,6 +127,11 @@ function validateQueueRows(queue, context) {
       assert.notEqual(status, "approved", `${row.id} cannot use an unqualified approval claim.`);
       assert.notEqual(status, "admitted", `${row.id} cannot claim admission.`);
     }
+  }
+
+  if (laterFederalRows > 0) {
+    assert.equal(laterFederalRows, FEDERAL_IDS.size, "The shared federal admission must cover both queue rows.");
+    validateFederalAdmission(JSON.parse(readFileSync(new URL("../data/phase1-federal-electoral-production-admission.json", import.meta.url), "utf8")));
   }
 
   for (const id of ["ntems-annual-land-cover", "ntems-canopy-cover", "ab-avi-crown", "ab-avi-post-harvest"]) {
@@ -192,9 +242,11 @@ function validateQueueRows(queue, context) {
   assert.equal(context.wildfire.ownerDecision.publicReleaseApproved, true);
   assert.equal(context.wildfire.ownerDecision.productionAdmissionApproved, true);
   assert.equal(context.wildfire.archiveGate.requiredObjectCount, 6);
-  assert.equal(context.wildfire.archiveGate.verifiedObjectCount, 0);
-  assert.equal(context.wildfire.archiveGate.attestedObjectCount, 6);
+  assert.equal(context.wildfire.archiveGate.verifiedObjectCount, 6);
+  assert.equal(context.wildfire.archiveGate.attestedObjectCount, 0);
+  assert.equal(context.wildfire.archiveGate.primaryReadbacksVerified, true);
   assert.equal(context.wildfire.archiveGate.productionEligible, false);
+  assert.equal(createHash("sha256").update(JSON.stringify(queue.queueRows)).digest("hex"), HISTORICAL_QUEUE_ROWS_SHA256, "Historical owner-decision rows or evidence references drifted.");
 }
 
 function validateOrder(queue) {

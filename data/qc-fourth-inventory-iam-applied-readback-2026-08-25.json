@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "witness-tree/qc-fourth-inventory-iam-applied-readback/1",
+  "status": "applied-and-read-back",
+  "observedAt": "2026-08-25T22:07:40Z",
+  "scope": "IAM provisioning readback for the Québec fourth-inventory exact-object promotion roles only. This is not upload, retention, object readback, source admission, transformation, ingestion, release, or production evidence.",
+  "accountId": "286853118812",
+  "region": "ca-central-1",
+  "bucket": "witness-tree-raw-archive-ca-central-1",
+  "preparationSha256": "fce3e053e68cbed57bf612476235361c37108d911609c82bc5d5a3cdeb82d258",
+  "roles": [
+    {
+      "roleName": "WitnessTreeQcFourthArchivePromotionUploader",
+      "inlinePolicyName": "WitnessTreeQcFourthArchiveExactObjectsBatchOne",
+      "exactObjectCount": 31,
+      "objectResourcesSha256": "9a3388d631faaad89a7c64ae4f5d88abfca2e69ed5955c79141eaa0a105cfb1d",
+      "inlinePolicySha256": "634b9a6ee6eb3b348e1ba2366cf4f077fe50860e4d3558f68bdca123f1fa1466"
+    },
+    {
+      "roleName": "WitnessTreeQcFourthArchivePromotionUploaderBatchTwo",
+      "inlinePolicyName": "WitnessTreeQcFourthArchiveExactObjectsBatchTwo",
+      "exactObjectCount": 31,
+      "objectResourcesSha256": "44254737932ded18d198c4ba18c6a8fa76a7d216a308c5249d4824e65621f239",
+      "inlinePolicySha256": "026ede67065ad7e1538c3eabf1addfb827e3e03e3e2b14dc86df6060d203fdfb"
+    }
+  ],
+  "trust": {
+    "principalArn": "arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator",
+    "mfaRequired": true,
+    "maxSessionSeconds": 43200,
+    "policySha256": "dfec82c73390d0d0ff0dc0ab4a0a515166340d94422511bd78c8356b09a769d5"
+  },
+  "operatorPolicy": {
+    "userName": "WitnessTreeArchiveOperator",
+    "inlinePolicyName": "WitnessTreeQcFourthArchivePromotionAssumeRole",
+    "mfaRequired": true,
+    "policySha256": "2bdae6e0008b0cef0dd19dc87a22e0350957cbada9716ea764889c38951b9e62"
+  },
+  "mfaEnforcement": {
+    "trustPolicyBool": { "aws:MultiFactorAuthPresent": "true" },
+    "operatorAssumeRoleBool": { "aws:MultiFactorAuthPresent": "true" },
+    "roleObjectPoliciesConditional": false,
+    "reason": "MFA is enforced when the operator assumes each role. The exact S3 role policies are unconditional because that MFA context is not propagated to S3 authorization for role credentials."
+  },
+  "authorizationBoundary": {
+    "outOfScopeDecision": "implicitDeny",
+    "wildcardObjectResources": false
+  },
+  "redaction": "No credentials, session material, MFA values, role IDs, request IDs, object version IDs, or object bodies are recorded."
+}

@@ -41,10 +41,6 @@ function expectedKeys(plan = PLAN) {
   ]);
 }
 
-function expectedPayloadKeys(plan = PLAN) {
-  return plan.artifacts.map((artifact) => `${BUCKET_PREFIX}${artifact.payloadKey}`);
-}
-
 function canonicalStatement(statement) {
   const result = {};
   for (const key of ["Sid", "Effect", "Principal", "Action", "Resource", "Condition"]) {
@@ -91,7 +87,7 @@ export function validateDesiredState(desired = DESIRED, plan = PLAN) {
     ownerAdmission: false,
     productionEligible: false
   }, "desired IAM state contains a live or production claim");
-  assert.deepEqual(desired.preservedExisting.statementSids, ["ExactDerivedPayloadAndSidecarReadbacks", "PayloadComplianceRetentionOnly"], "existing promotion statements are not explicitly preserved");
+  assert.deepEqual(desired.preservedExisting.statementSids, ["ExactDerivedPayloadAndSidecarReadbacks"], "existing promotion statements are not explicitly preserved");
 
   const expectedTrust = {
     Version: "2012-10-17",
@@ -110,13 +106,12 @@ export function validateDesiredState(desired = DESIRED, plan = PLAN) {
   assert.deepEqual(canonicalPolicy(desired.operatorAssumeRolePolicy), canonicalPolicy(expectedOperator), "operator AssumeRole path is not exact");
 
   const keys = expectedKeys(plan);
-  const payloads = expectedPayloadKeys(plan);
   const expectedRole = {
     Version: "2012-10-17",
     Statement: [
       { Sid: "ExactDerivedPayloadAndSidecarReadbacks", Effect: "Allow", Action: ["s3:PutObject", "s3:GetObject"], Resource: keys },
       { Sid: "ExactDerivedVersionedReadbacks", Effect: "Allow", Action: ["s3:GetObjectVersion"], Resource: keys },
-      { Sid: "PayloadComplianceRetentionOnly", Effect: "Allow", Action: ["s3:PutObjectRetention", "s3:GetObjectRetention"], Resource: payloads }
+      { Sid: "ExactDerivedPayloadAndSidecarComplianceRetention", Effect: "Allow", Action: ["s3:PutObjectRetention", "s3:GetObjectRetention"], Resource: keys }
     ]
   };
   assert.deepEqual(canonicalPolicy(desired.rolePolicy), canonicalPolicy(expectedRole), "role policy is not exact readback scope plus preserved promotion scope");

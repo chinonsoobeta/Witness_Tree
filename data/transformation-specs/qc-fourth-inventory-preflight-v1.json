@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "witness-tree/transformation-spec/1",
+  "id": "qc-fourth-inventory-preflight-v1",
+  "status": "blocked-preflight-only-not-approved-not-executed",
+  "sourceId": "qc-fourth-inventory",
+  "sourceBinding": {"archiveSetSha256": "394f05f984b164b7524e77b00fc73246a791d6c4112f7cc080c43fb3d8a2c0e0", "archiveCount": 56, "profileSha256": "5450a1beade6f8dbbf73320a8751a3131bede150d95bb8847d9522b10ad985f9", "provincialMapArchiveSha256": "62f61998be33d1e3d2f23f6c77e90ca946a40bda0d5d86b00c976c339877d25b"},
+  "knownSchema": {"crs": "EPSG:32198", "baseLayers": ["perimetre_no_terri", "pee_ori_4", "meta_ori_4"], "baseGeometry": {"pee_ori_4": "Multi Polygon", "meta_ori_4": "Point"}, "baseFeatureCounts": {"pee_ori_4": 7489195, "meta_ori_4": 7489195}, "layerSetVariantCount": 6},
+  "blocker": "The 56 sheet archives have six layer-set variants. The profile proves geometry lineage from pee_ori_4 for spatial views, but does not establish one uniform result-table schema, a canonical cross-sheet key, view semantics, join cardinality, duplicate policy, or a selected product purpose. A transformation would guess those meanings.",
+  "preflightOnly": {
+    "allowed": ["verify all 56 archive checksums, ZIP integrity and profile checksum", "enumerate each sheet's layers, fields, view SQL, row count and CRS", "compare every variant against a proposed selected layer set", "measure fid and candidate-key uniqueness and cross-sheet collisions", "document view-to-pee_ori_4 lineage and join cardinality without creating output", "produce a review report only"],
+    "forbidden": ["selecting a result view", "joining attributes", "aggregating inventory results", "merging sheets", "repairing or transforming geometry", "creating an analytical or production output", "admission or release"],
+    "requiredOwnerDecisionBeforeTransformation": ["intended fourth-inventory use", "canonical layer or view selection", "cross-sheet key and duplicate policy", "attribute join and aggregation policy", "temporal and semantic interpretation", "geometry and coverage handling"]
+  },
+  "deterministicOutput": {"artifact": "Canonical UTF-8 preflight JSON, sorted keys with newline termination, containing only measurements and source bindings.", "requiredContents": ["per-sheet checksum and layer signature", "variant membership", "candidate-key null/duplicate/collision counts", "view SQL hashes", "unresolved schema differences", "explicit blocked conclusion"], "prohibitedVolatileFields": ["generatedAt", "hostname", "processId", "absoluteLocalPath"]},
+  "intendedUse": "Preparation for an owner decision; not an inventory transformation.",
+  "prohibitedClaims": ["a canonical Québec fourth-inventory table", "cross-sheet comparability", "production readiness", "a resolved temporal interpretation", "a semantic join"],
+  "admission": {"transformationApproved": false, "ingestionApproved": false, "releaseApproved": false, "productionEligible": false}
+}

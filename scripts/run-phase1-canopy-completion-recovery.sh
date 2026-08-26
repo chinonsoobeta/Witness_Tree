@@ -4,6 +4,7 @@
 # governance bypass or legal hold.
 set -euo pipefail
 umask 077
+source "${0:A:h}/aws-direct-mfa-role-session.sh"
 
 PROFILE="WitnessTreeArchiveOperator"
 ROLE="WitnessTreeArchivePromotionUploader"
@@ -71,20 +72,7 @@ if [[ "$MODE" == "preflight" ]]; then
   exit 0
 fi
 
-[[ -t 0 && -t 1 ]] || fail "MFA TOTP prompt requires an interactive terminal; no storage mutation was authorized" 64
-read -r -s 'totp?Current MFA TOTP (not stored): '
-print
-[[ "$totp" =~ '^[0-9]{6}$' ]] || fail "TOTP must be exactly six digits; no AWS call was made" 64
-mfa_serial="$(aws configure get mfa_serial --profile "$PROFILE" 2>"$TMP/mfa-serial.stderr")" || fail "Configured MFA serial could not be read; no storage mutation was authorized" 69
-[[ "$mfa_serial" =~ '^arn:aws:iam::286853118812:mfa/[A-Za-z0-9+=,.@_/-]+$' ]] || fail "Configured MFA serial is absent or outside the approved account; no STS or storage mutation was authorized" 69
-if ! aws sts assume-role --profile "$PROFILE" --role-arn "arn:aws:iam::${ACCOUNT}:role/$ROLE" --role-session-name witness-tree-canopy-recovery --serial-number "$mfa_serial" --token-code "$totp" --duration-seconds 3600 --output json >"$TMP/role-session.json" 2>"$TMP/sts-role.stderr"; then
-  unset totp mfa_serial
-  sts_error="$(sed -nE 's/^.*An error occurred \(([^)]+)\).*: (.*)$/AWS STS \1: \2/p' "$TMP/sts-role.stderr" | head -n 1)"
-  [[ -n "$sts_error" ]] && print -u2 -r -- "$sts_error"
-  unset sts_error
-  fail "Approved recovery role assumption failed; no storage mutation was authorized" 77
-fi
-unset totp mfa_serial
+wt_assume_direct_mfa_role "$PROFILE" "$ACCOUNT" "$ROLE" witness-tree-canopy-recovery >"$TMP/role-session.json"
 export AWS_ACCESS_KEY_ID="$(jq -er '.Credentials.AccessKeyId' "$TMP/role-session.json")" AWS_SECRET_ACCESS_KEY="$(jq -er '.Credentials.SecretAccessKey' "$TMP/role-session.json")" AWS_SESSION_TOKEN="$(jq -er '.Credentials.SessionToken' "$TMP/role-session.json")"
 account="$(aws sts get-caller-identity --query Account --output text 2>"$TMP/caller.stderr")" || fail "Assumed recovery role identity could not be verified; no storage mutation was authorized" 77
 [[ "$account" == "$ACCOUNT" ]] || fail "Assumed recovery role is outside the approved account; no storage mutation was authorized" 77
@@ -122,6 +110,8 @@ if ! node "$CHECKER" --heads "$TMP/primary-payload.json" "$TMP/recovery-payload.
 fi
 primary_version="$(jq -er '.VersionId' "$TMP/primary-payload.json")" || fail "Primary payload version readback was absent" 70
 recovery_version="$(jq -er '.VersionId' "$TMP/recovery-payload.json")" || fail "Recovery payload version readback was absent" 70
+primary_sidecar_version="$(jq -er '.VersionId' "$TMP/primary-sidecar.json")" || fail "Primary sidecar version readback was absent" 70
+recovery_sidecar_version="$(jq -er '.VersionId' "$TMP/recovery-sidecar.json")" || fail "Recovery sidecar version readback was absent" 70
 
 read_retention() {
   local label="$1" bucket="$2" key="$3" version="$4"
@@ -131,36 +121,36 @@ read_retention() {
     : >"$TMP/$label.json"
     print -- "absent"
   else
-    fail "Exact payload retention could not be read; no retention write was attempted" 70
+    fail "Exact payload or sidecar retention could not be read; no retention write was attempted" 70
   fi
 }
-primary_retention_state="$(read_retention primary-retention "$PRIMARY_BUCKET" "$PRIMARY_PAYLOAD" "$primary_version")"
-recovery_retention_state="$(read_retention recovery-retention "$RECOVERY_BUCKET" "$RECOVERY_PAYLOAD" "$recovery_version")"
-if [[ "$primary_retention_state" == "present" ]]; then
-  node "$CHECKER" --retention-one "$TMP/primary-retention.json" >"$TMP/primary-retention-check.stdout" 2>"$TMP/primary-retention-check.stderr" || fail "Primary payload retention is not the approved COMPLIANCE date; no retention write was attempted" 70
-fi
-if [[ "$recovery_retention_state" == "present" ]]; then
-  node "$CHECKER" --retention-one "$TMP/recovery-retention.json" >"$TMP/recovery-retention-check.stdout" 2>"$TMP/recovery-retention-check.stderr" || fail "Recovery payload retention is not the approved COMPLIANCE date; no retention write was attempted" 70
-fi
-
-if [[ "$primary_retention_state" == "absent" ]]; then
-  if ! aws s3api put-object-retention --bucket "$PRIMARY_BUCKET" --key "$PRIMARY_PAYLOAD" --version-id "$primary_version" --retention "Mode=COMPLIANCE,RetainUntilDate=$RETAIN_UNTIL" --region "$REGION" >"$TMP/primary-retention-put.json" 2>"$TMP/primary-retention-put.stderr"; then
-    fail "Primary payload COMPLIANCE retention application failed" 70
+typeset -A retention_state
+retention_state[primary-payload]="$(read_retention primary-payload-retention "$PRIMARY_BUCKET" "$PRIMARY_PAYLOAD" "$primary_version")"
+retention_state[recovery-payload]="$(read_retention recovery-payload-retention "$RECOVERY_BUCKET" "$RECOVERY_PAYLOAD" "$recovery_version")"
+retention_state[primary-sidecar]="$(read_retention primary-sidecar-retention "$PRIMARY_BUCKET" "$PRIMARY_SIDECAR" "$primary_sidecar_version")"
+retention_state[recovery-sidecar]="$(read_retention recovery-sidecar-retention "$RECOVERY_BUCKET" "$RECOVERY_SIDECAR" "$recovery_sidecar_version")"
+for label in primary-payload recovery-payload primary-sidecar recovery-sidecar; do
+  if [[ "${retention_state[$label]}" == "present" ]]; then
+    node "$CHECKER" --retention-one "$TMP/$label-retention.json" >"$TMP/$label-retention-check.stdout" 2>"$TMP/$label-retention-check.stderr" || fail "$label retention is not the approved COMPLIANCE date; no retention write was attempted" 70
   fi
-fi
-if [[ "$recovery_retention_state" == "absent" ]]; then
-  if ! aws s3api put-object-retention --bucket "$RECOVERY_BUCKET" --key "$RECOVERY_PAYLOAD" --version-id "$recovery_version" --retention "Mode=COMPLIANCE,RetainUntilDate=$RETAIN_UNTIL" --region "$REGION" >"$TMP/recovery-retention-put.json" 2>"$TMP/recovery-retention-put.stderr"; then
-    fail "Recovery payload COMPLIANCE retention application failed" 70
-  fi
-fi
-
-if ! aws s3api get-object-retention --bucket "$PRIMARY_BUCKET" --key "$PRIMARY_PAYLOAD" --version-id "$primary_version" --region "$REGION" --output json >"$TMP/primary-retention-after.json" 2>"$TMP/primary-retention-after.stderr"; then
-  fail "Primary payload COMPLIANCE retention readback failed" 70
-fi
-if ! aws s3api get-object-retention --bucket "$RECOVERY_BUCKET" --key "$RECOVERY_PAYLOAD" --version-id "$recovery_version" --region "$REGION" --output json >"$TMP/recovery-retention-after.json" 2>"$TMP/recovery-retention-after.stderr"; then
-  fail "Recovery payload COMPLIANCE retention readback failed" 70
-fi
-node "$CHECKER" --retention "$TMP/primary-retention-after.json" "$TMP/recovery-retention-after.json" >"$TMP/retention-check.stdout" 2>"$TMP/retention-check.stderr" || fail "COMPLIANCE retention readback did not match the approved date" 70
+done
+apply_retention() {
+  local label="$1" bucket="$2" key="$3" version="$4"
+  if ! aws s3api put-object-retention --bucket "$bucket" --key "$key" --version-id "$version" --retention "Mode=COMPLIANCE,RetainUntilDate=$RETAIN_UNTIL" --region "$REGION" >"$TMP/$label-retention-put.json" 2>"$TMP/$label-retention-put.stderr"; then fail "$label COMPLIANCE retention application failed" 70; fi
+}
+[[ "${retention_state[primary-payload]}" == "absent" ]] && apply_retention primary-payload "$PRIMARY_BUCKET" "$PRIMARY_PAYLOAD" "$primary_version"
+[[ "${retention_state[recovery-payload]}" == "absent" ]] && apply_retention recovery-payload "$RECOVERY_BUCKET" "$RECOVERY_PAYLOAD" "$recovery_version"
+[[ "${retention_state[primary-sidecar]}" == "absent" ]] && apply_retention primary-sidecar "$PRIMARY_BUCKET" "$PRIMARY_SIDECAR" "$primary_sidecar_version"
+[[ "${retention_state[recovery-sidecar]}" == "absent" ]] && apply_retention recovery-sidecar "$RECOVERY_BUCKET" "$RECOVERY_SIDECAR" "$recovery_sidecar_version"
+read_retention_after() {
+  local label="$1" bucket="$2" key="$3" version="$4"
+  aws s3api get-object-retention --bucket "$bucket" --key "$key" --version-id "$version" --region "$REGION" --output json >"$TMP/$label-retention-after.json" 2>"$TMP/$label-retention-after.stderr" || fail "$label COMPLIANCE retention readback failed" 70
+}
+read_retention_after primary-payload "$PRIMARY_BUCKET" "$PRIMARY_PAYLOAD" "$primary_version"
+read_retention_after recovery-payload "$RECOVERY_BUCKET" "$RECOVERY_PAYLOAD" "$recovery_version"
+read_retention_after primary-sidecar "$PRIMARY_BUCKET" "$PRIMARY_SIDECAR" "$primary_sidecar_version"
+read_retention_after recovery-sidecar "$RECOVERY_BUCKET" "$RECOVERY_SIDECAR" "$recovery_sidecar_version"
+node "$CHECKER" --retention "$TMP/primary-payload-retention-after.json" "$TMP/recovery-payload-retention-after.json" "$TMP/primary-sidecar-retention-after.json" "$TMP/recovery-sidecar-retention-after.json" >"$TMP/retention-check.stdout" 2>"$TMP/retention-check.stderr" || fail "Payload or sidecar COMPLIANCE retention readback did not match the approved date" 70
 
 # Re-read the exact versions after retention. The sidecars are read only and
 # are never rewritten; version-specific heads prove that retention did not

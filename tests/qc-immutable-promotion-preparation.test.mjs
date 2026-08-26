@@ -9,6 +9,7 @@ import { multipartPlan, partCount, sidecarFor, validateQcImmutablePromotionPrepa
 
 const plan = JSON.parse(readFileSync(new URL("../data/qc-immutable-promotion-preparation.json", import.meta.url), "utf8"));
 const runnerPath = new URL("../scripts/run-qc-approved-multipart-promotion.sh", import.meta.url).pathname;
+const directMfaHelper = readFileSync(new URL("../scripts/aws-direct-mfa-role-session.sh", import.meta.url), "utf8");
 const repositoryRoot = new URL("../", import.meta.url).pathname.replace(/\/$/, "");
 
 function writeQcFakeTools(dir, { serial, identity = { Account: "286853118812", Arn: "arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator" } }) {
@@ -17,7 +18,7 @@ function writeQcFakeTools(dir, { serial, identity = { Account: "286853118812", A
 print -- "$1:$2" >> ${JSON.stringify(marker)}
 case "$1:$2" in
   configure:get) print -- ${JSON.stringify(serial)} ;;
-  sts:get-session-token|sts:assume-role) print -- '{"Credentials":{"AccessKeyId":"dummy","SecretAccessKey":"dummy","SessionToken":"dummy"}}' ;;
+  sts:assume-role) print -- '{"Credentials":{"AccessKeyId":"dummy","SecretAccessKey":"dummy","SessionToken":"dummy"},"AssumedRoleUser":{"Arn":"arn:aws:sts::286853118812:assumed-role/WitnessTreeQcArchivePromotionUploader/test"}}' ;;
   sts:get-caller-identity) print -- ${JSON.stringify(JSON.stringify(identity))} ;;
   s3api:put-object) exit 88 ;;
   *) exit 99 ;;
@@ -48,6 +49,7 @@ function runQcPty(dir) {
     .replace(/^STATE_ROOT=.*$/m, `STATE_ROOT=${JSON.stringify(join(dir, "state"))}`);
   assert.notEqual(isolatedSource, source, "QC runner test must isolate its local resume state.");
   writeFileSync(isolatedRunner, isolatedSource, { mode: 0o700 });
+  writeFileSync(join(dir, "aws-direct-mfa-role-session.sh"), directMfaHelper, { mode: 0o700 });
   const program = `set timeout 120
 set env(PATH) ${JSON.stringify(`${dir}:${process.env.PATH}`)}
 spawn -noecho zsh ${JSON.stringify(isolatedRunner)} --run
@@ -93,7 +95,8 @@ test("sidecars are deterministic and the preparation rejects remote claims, alia
 test("owner-local runner is multipart-only and excludes high-level copies, deletion, IAM, and bypass", () => {
   const runner = readFileSync(new URL("../scripts/run-qc-approved-multipart-promotion.sh", import.meta.url), "utf8");
   assert.match(runner, /if \[\[ \$# -eq 0 \]\]; then node/);
-  assert.match(runner, /PRECHECK passed[\s\S]*read -r -s/);
+  assert.match(runner, /PRECHECK passed/);
+  assert.match(runner, /wt_assume_direct_mfa_role/);
   assert.match(runner, /create-multipart-upload[\s\S]*upload-part[\s\S]*complete-multipart-upload/);
   assert.match(runner, /list-parts[\s\S]*Previously uploaded part does not match/);
   assert.match(runner, /local artifact=.* observed/);
@@ -103,7 +106,7 @@ test("owner-local runner is multipart-only and excludes high-level copies, delet
   assert.equal((runner.match(/list_error_category="\$\(sanitized_list_parts_diagnostic_category "\$list_error"\)"/g) ?? []).length, 2);
   assert.match(runner, /ChecksumType=="COMPOSITE"[\s\S]*put-object-retention[\s\S]*get-object-retention/);
   assert.doesNotMatch(runner, /aws s3 cp|DeleteObject|BypassGovernanceRetention|PutObjectLegalHold|aws iam /i);
-  assert.match(runner, /aws configure get mfa_serial --profile/);
+  assert.match(directMfaHelper, /aws configure get mfa_serial --profile/);
   assert.doesNotMatch(runner, /list-mfa-devices|iam list/i);
   assert.match(runner, /NoSuchUpload[\s\S]*head-object[\s\S]*--version-id[\s\S]*state was preserved and no new upload was started/);
 });
@@ -127,7 +130,7 @@ test("an interrupted not-started state reuses its exact saved sidecar before mul
 print -- "$1:$2 $*" >> ${JSON.stringify(marker)}
 case "$1:$2" in
   configure:get) print -- 'arn:aws:iam::286853118812:mfa/test-device' ;;
-  sts:get-session-token|sts:assume-role) print -- '{"Credentials":{"AccessKeyId":"dummy","SecretAccessKey":"dummy","SessionToken":"dummy"}}' ;;
+  sts:assume-role) print -- '{"Credentials":{"AccessKeyId":"dummy","SecretAccessKey":"dummy","SessionToken":"dummy"},"AssumedRoleUser":{"Arn":"arn:aws:sts::286853118812:assumed-role/WitnessTreeQcArchivePromotionUploader/test"}}' ;;
   sts:get-caller-identity) print -- '{"Account":"286853118812","Arn":"arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator"}' ;;
   s3api:head-object)
     [[ "$*" == *"--key ${artifact.manifestKey}"* && "$*" == *"--version-id ${sidecarVersion}"* ]] || exit 89
@@ -143,7 +146,7 @@ esac
       .replace(/^DATA_ROOT=.*$/m, `DATA_ROOT=${JSON.stringify(dataRoot)}`)
       .replace(/^STATE_ROOT=.*$/m, `STATE_ROOT=${JSON.stringify(stateRoot)}`)
       .replace(/^PART_SIZE=.*$/m, "PART_SIZE=4");
-    const runner = join(dir, "runner.sh"); writeFileSync(runner, source, { mode: 0o700 });
+    const runner = join(dir, "runner.sh"); writeFileSync(runner, source, { mode: 0o700 }); writeFileSync(join(dir, "aws-direct-mfa-role-session.sh"), directMfaHelper, { mode: 0o700 });
     const program = `set timeout 30\nset env(PATH) ${JSON.stringify(`${dir}:${process.env.PATH}`)}\nspawn -noecho zsh ${JSON.stringify(runner)} --run\nexpect {\n  "Current MFA TOTP (not stored):" { send -- "123456\\r"; exp_continue }\n  eof { set result [wait]; exit [lindex $result 3] }\n  timeout { exit 2 }\n}`;
     const run = spawnSync("expect", ["-c", program], { encoding: "utf8", timeout: 30_000, env: { ...process.env, PATH: `${dir}:${process.env.PATH}` } });
     assert.equal(run.status, 70, `${run.stdout}\n${run.stderr}`); assert.match(`${run.stdout}${run.stderr}`, /Multipart initiation failed/);
@@ -176,7 +179,7 @@ test("NoSuchUpload adopts only an exact completed version, preserves a mismatch,
 print -- "$1:$2 $*" >> ${JSON.stringify(marker)}
 case "$1:$2" in
   configure:get) print -- 'arn:aws:iam::286853118812:mfa/test-device' ;;
-  sts:get-session-token|sts:assume-role) print -- '{"Credentials":{"AccessKeyId":"dummy","SecretAccessKey":"dummy","SessionToken":"dummy"}}' ;;
+  sts:assume-role) print -- '{"Credentials":{"AccessKeyId":"dummy","SecretAccessKey":"dummy","SessionToken":"dummy"},"AssumedRoleUser":{"Arn":"arn:aws:sts::286853118812:assumed-role/WitnessTreeQcArchivePromotionUploader/test"}}' ;;
   sts:get-caller-identity) print -- '{"Account":"286853118812","Arn":"arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator"}' ;;
   s3api:list-parts)
     behavior="$(<${JSON.stringify(behavior)})"
@@ -227,7 +230,7 @@ esac
       .replace(/^DATA_ROOT=.*$/m, `DATA_ROOT=${JSON.stringify(dataRoot)}`)
       .replace(/^STATE_ROOT=.*$/m, `STATE_ROOT=${JSON.stringify(stateRoot)}`)
       .replace(/^PART_SIZE=.*$/m, "PART_SIZE=4");
-    const runner = join(dir, "runner.sh"); writeFileSync(runner, source, { mode: 0o700 });
+    const runner = join(dir, "runner.sh"); writeFileSync(runner, source, { mode: 0o700 }); writeFileSync(join(dir, "aws-direct-mfa-role-session.sh"), directMfaHelper, { mode: 0o700 });
     const runOwner = () => { const program = `set timeout 30\nset env(PATH) ${JSON.stringify(`${dir}:${process.env.PATH}`)}\nspawn -noecho zsh ${JSON.stringify(runner)} --run\nexpect {\n  "Current MFA TOTP (not stored):" { send -- "123456\\r"; exp_continue }\n  eof { set result [wait]; exit [lindex $result 3] }\n  timeout { exit 2 }\n}`; return spawnSync("expect", ["-c", program], { encoding: "utf8", timeout: 30_000, env: { ...process.env, PATH: `${dir}:${process.env.PATH}` } }); };
     const reset = (mode) => { for (const [path, bytes] of initialStates) writeFileSync(path, bytes, { mode: 0o600 }); writeFileSync(behavior, mode); writeFileSync(headCounter, "0"); writeFileSync(marker, ""); };
     const run = runOwner();
@@ -283,7 +286,7 @@ test("owner-local runner accepts an approved-account MFA path and pins the exact
     assert.equal(run.status, 70, `${run.stdout}\n${run.stderr}`);
     assert.match(`${run.stdout}${run.stderr}`, /Sidecar upload failed/);
     assert.doesNotMatch(`${run.stdout}${run.stderr}`, /123456/);
-    assert.deepEqual(readFileSync(marker, "utf8").trim().split("\n"), ["configure:get", "sts:get-session-token", "sts:get-caller-identity", "sts:assume-role", "s3api:put-object"]);
+    assert.deepEqual(readFileSync(marker, "utf8").trim().split("\n"), ["sts:get-caller-identity", "configure:get", "sts:assume-role", "s3api:put-object"]);
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
@@ -293,10 +296,10 @@ test("empty, malformed, and wrong-account MFA serials stop before STS or storage
     try {
       const marker = writeQcFakeTools(dir, { serial });
       const run = runQcPty(dir);
-      assert.equal(run.status, 69, `${run.stdout}\n${run.stderr}`);
+      assert.equal(run.status, 1, `${run.stdout}\n${run.stderr}`);
       assert.match(`${run.stdout}${run.stderr}`, /Configured MFA serial is absent, malformed, or outside the approved account/);
       assert.doesNotMatch(`${run.stdout}${run.stderr}`, /123456/);
-      assert.deepEqual(readFileSync(marker, "utf8").trim().split("\n"), ["configure:get"]);
+      assert.deepEqual(readFileSync(marker, "utf8").trim().split("\n"), ["sts:get-caller-identity", "configure:get"]);
     } finally { rmSync(dir, { recursive: true, force: true }); }
   }
 });
@@ -306,8 +309,8 @@ test("a valid MFA device cannot substitute another post-MFA principal", () => {
   try {
     const marker = writeQcFakeTools(dir, { serial: "arn:aws:iam::286853118812:mfa/alternate-device", identity: { Account: "286853118812", Arn: "arn:aws:iam::286853118812:user/OtherUser" } });
     const run = runQcPty(dir);
-    assert.equal(run.status, 77, `${run.stdout}\n${run.stderr}`);
-    assert.match(`${run.stdout}${run.stderr}`, /not the exact approved operator identity/);
-    assert.deepEqual(readFileSync(marker, "utf8").trim().split("\n"), ["configure:get", "sts:get-session-token", "sts:get-caller-identity"]);
+    assert.equal(run.status, 1, `${run.stdout}\n${run.stderr}`);
+    assert.match(`${run.stdout}${run.stderr}`, /not the exact approved operator/);
+    assert.deepEqual(readFileSync(marker, "utf8").trim().split("\n"), ["sts:get-caller-identity"]);
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });

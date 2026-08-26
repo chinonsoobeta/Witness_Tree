@@ -1,7 +1,49 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { validate as validateFederalAdmission } from "./check-phase1-federal-electoral-production-admission.mjs";
 
 const READINESS = new Set(["owner-decision-recorded", "immutable-archive-then-owner-decision", "owner-scope-decision-after-archive", "owner-scope-decision-recorded-awaiting-archive", "owner-scope-decision-ready", "external-evidence-blocked"]);
+const FEDERAL_IDS = new Set(["fed-2023-ridings", "elections-canada-45th-files"]);
+const HISTORICAL_FEDERAL_STATE = {
+  evidenceState: "local-verified-profiled",
+  rawCredit: 0.75,
+  immutableArchive: false,
+  productionAdmission: false,
+  productionEligible: false,
+};
+const LATER_FEDERAL_STATE = {
+  evidenceState: "production-admitted",
+  rawCredit: 1,
+  immutableArchive: true,
+  productionAdmission: true,
+  productionEligible: true,
+};
+
+function ledgerState(entry) {
+  return {
+    evidenceState: entry.evidenceState,
+    rawCredit: entry.rawCredit,
+    immutableArchive: entry.proof?.immutableArchive,
+    productionAdmission: entry.proof?.productionAdmission,
+    productionEligible: entry.productionEligible,
+  };
+}
+
+function projectHistoricalFederalEntry(entry) {
+  const current = ledgerState(entry);
+  if (JSON.stringify(current) === JSON.stringify(HISTORICAL_FEDERAL_STATE)) return { entry, laterAdmission: false };
+  assert.deepEqual(current, LATER_FEDERAL_STATE, `${entry.id} must be either the historical readiness state or the exact later federal admission state.`);
+  return {
+    entry: {
+      ...entry,
+      evidenceState: HISTORICAL_FEDERAL_STATE.evidenceState,
+      rawCredit: HISTORICAL_FEDERAL_STATE.rawCredit,
+      proof: { ...entry.proof, immutableArchive: HISTORICAL_FEDERAL_STATE.immutableArchive, productionAdmission: HISTORICAL_FEDERAL_STATE.productionAdmission },
+      productionEligible: HISTORICAL_FEDERAL_STATE.productionEligible,
+    },
+    laterAdmission: true,
+  };
+}
 
 export function validatePhase1SourceLedgerDecisionReadiness(audit, ledger, decisions) {
   assert.equal(audit.schemaVersion, 1);
@@ -14,10 +56,14 @@ export function validatePhase1SourceLedgerDecisionReadiness(audit, ledger, decis
   const counts = Object.groupBy(audit.entries, ({ readiness }) => readiness);
   for (const [readiness, expected] of Object.entries(audit.counts)) assert.equal(counts[readiness]?.length ?? 0, expected, `Wrong ${readiness} count.`);
   assert.equal(Object.values(audit.counts).reduce((sum, count) => sum + count, 0), 31);
+  const laterFederalRows = new Set();
   for (const entry of audit.entries) {
     assert.ok(READINESS.has(entry.readiness));
-    const row = ledger.entries.find((candidate) => candidate.id === entry.id);
-    assert.ok(row);
+    const canonical = ledger.entries.find((candidate) => candidate.id === entry.id);
+    assert.ok(canonical);
+    const projected = FEDERAL_IDS.has(entry.id) ? projectHistoricalFederalEntry(canonical) : { entry: canonical, laterAdmission: false };
+    const row = projected.entry;
+    if (projected.laterAdmission) laterFederalRows.add(entry.id);
     assert.equal(row.productionEligible, false);
     assert.equal(row.proof.productionAdmission, false);
     if (entry.readiness === "owner-decision-recorded") {
@@ -48,6 +94,10 @@ export function validatePhase1SourceLedgerDecisionReadiness(audit, ledger, decis
       assert.equal(decisions.decisions.some((decision) => decision.id === entry.id), false);
     }
     if (entry.readiness === "external-evidence-blocked") assert.match(entry.blocker, /.+/);
+  }
+  if (laterFederalRows.size > 0) {
+    assert.deepEqual([...laterFederalRows].sort(), [...FEDERAL_IDS].sort(), "The shared federal admission must cover both ledger rows.");
+    validateFederalAdmission(JSON.parse(readFileSync(new URL("../data/phase1-federal-electoral-production-admission.json", import.meta.url), "utf8")));
   }
   assert.deepEqual(audit.nonProduction, { productionProofChanged: false, productionEligibleChanged: false, transformationAuthorized: false, ingestionAuthorized: false, releaseAuthorized: false, activationBlockedOnImmutableReadbacks: true });
   const nationalIds = ["ntems-forest-harvest", "ntems-canopy-height"];

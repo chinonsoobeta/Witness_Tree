@@ -59,7 +59,7 @@ fi
 
 if [[ "$MODE" == "--preflight" || "$MODE" == "--dry-run" ]]; then
   print -- "PRECHECK passed: fresh root/default state, exact owner approval, applied IAM attestation, and local derived artifacts verified; no TOTP or recovery mutation was attempted."
-  print -- "DRY-RUN: existing BC payload version only; three conditional target writes; payload-only COMPLIANCE retention/readbacks through 2033-08-12T00:00:00Z."
+  print -- "DRY-RUN: existing BC payload version only; three conditional target writes; payload-and-manifest COMPLIANCE retention/readbacks through 2033-08-12T00:00:00Z."
   exit 0
 fi
 

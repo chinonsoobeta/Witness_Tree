@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "status": "blocked",
-  "asOf": "2026-08-20",
-  "notice": "Canonical Phase 1 production-source ledger. It reconciles every planUse: production row with evidence already recorded in this repository. A source remains blocked unless every listed proof is explicit and production admission is separately approved; no entry below is production eligible.",
+  "status": "partially-admitted",
+  "asOf": "2026-08-26",
+  "notice": "Canonical Phase 1 production-source ledger. It reconciles every planUse: production row with evidence already recorded in this repository. Only rows with exact transformation, rights, field-completeness, release, and production-admission evidence are eligible; all other rows remain fail-closed.",
   "entries": [
     {
       "id": "ntems-annual-land-cover",
@@ -98,12 +98,13 @@
     },
     {
       "id": "cwfis-current",
-      "evidenceState": "local-verified-profiled",
+      "evidenceState": "remote-verified-archived-profiled",
       "evidenceRefs": [
         "data/staged-acquisitions.json",
         "data/cwfis-current-active-fires-profile.json",
         "data/current-wildfire-owner-admission.json",
-        "data/current-wildfire-raw-archive-evidence.json"
+        "data/current-wildfire-raw-archive-evidence.json",
+        "data/current-wildfire-exact-raw-archive-capture-2026-08-25.json"
       ],
       "proof": {
         "licence": true,
@@ -112,12 +113,12 @@
         "checksum": true,
         "rawArchiveRefetch": true,
         "profile": true,
-        "immutableArchive": false,
+        "immutableArchive": true,
         "productionAdmission": false
       },
-      "rawCredit": 0.75,
+      "rawCredit": 1,
       "productionEligible": false,
-      "blocker": "Owner scope and downstream decisions are conditional. The repository has local checksum/profile evidence and six placeholder-only archive attestations, but no concrete version identifiers or non-placeholder provider checksum values that machine-verifiably bind the exact payloads. Immutable archive proof, exact-version readback, ingestion, release and production admission remain blocked."
+      "blocker": "Exact-version COMPLIANCE archive evidence now covers this raw payload and deterministic manifest. Recovery-replica proof remains separate; transformation, ingestion, release, and production admission remain separately blocked."
     },
     {
       "id": "cwfis-historical",
@@ -142,14 +143,16 @@
     },
     {
       "id": "bc-wildfire",
-      "evidenceState": "local-verified-profiled",
+      "evidenceState": "remote-verified-archived-profiled",
       "evidenceRefs": [
         "data/staged-acquisitions.json",
         "data/bc-wildfire-current-perimeters-profile.json",
         "data/bc-wildfire-geometry-policy-2026-08-14.json",
         "data/current-wildfire-owner-admission.json",
         "data/current-wildfire-raw-archive-evidence.json",
-        "data/current-wildfire-derived-archive-evidence.json"
+        "data/current-wildfire-derived-archive-evidence.json",
+        "data/current-wildfire-exact-raw-archive-capture-2026-08-25.json",
+        "data/current-wildfire-derived-manifest-retention-evidence.json"
       ],
       "proof": {
         "licence": true,
@@ -158,21 +161,22 @@
         "checksum": true,
         "rawArchiveRefetch": true,
         "profile": true,
-        "immutableArchive": false,
+        "immutableArchive": true,
         "productionAdmission": false
       },
-      "rawCredit": 0.75,
+      "rawCredit": 1,
       "productionEligible": false,
-      "blocker": "Owner approved only the 216-feature geometry policy: 215 unchanged plus bounded repair G70362, with V10755 permanently quarantined and no 217-feature coverage claim. Raw and derived records contain placeholder-only archive attestations without concrete version identifiers or non-placeholder provider checksums, so immutable proof, ingestion, release and production admission remain blocked."
+      "blocker": "Exact-version COMPLIANCE evidence covers the raw and approved 216-feature derived payloads with their manifests. V10755 remains permanently quarantined; recovery-replica proof, ingestion, release, and production admission remain separate."
     },
     {
       "id": "ab-wildfire",
-      "evidenceState": "local-verified-profiled",
+      "evidenceState": "remote-verified-archived-profiled",
       "evidenceRefs": [
         "data/staged-acquisitions.json",
         "data/alberta-wildfire-locations-profile.json",
         "data/current-wildfire-owner-admission.json",
-        "data/current-wildfire-raw-archive-evidence.json"
+        "data/current-wildfire-raw-archive-evidence.json",
+        "data/current-wildfire-exact-raw-archive-capture-2026-08-25.json"
       ],
       "proof": {
         "licence": true,
@@ -181,23 +185,25 @@
         "checksum": true,
         "rawArchiveRefetch": true,
         "profile": true,
-        "immutableArchive": false,
+        "immutableArchive": true,
         "productionAdmission": false
       },
-      "rawCredit": 0.75,
+      "rawCredit": 1,
       "productionEligible": false,
-      "blocker": "Owner scope and downstream decisions are conditional for an as-of point snapshot that is neither real-time nor a complete perimeter dataset. Placeholder-only archive attestations do not supply concrete version identifiers or non-placeholder provider checksums, so immutable proof, ingestion, release and production admission remain blocked."
+      "blocker": "Exact-version COMPLIANCE archive evidence now covers this raw payload and deterministic manifest. The snapshot remains neither real-time nor a complete perimeter dataset; recovery, ingestion, release, and production admission remain separate."
     },
     {
       "id": "on-fire-disturbance",
-      "evidenceState": "local-verified-profiled",
+      "evidenceState": "remote-verified-archived-profiled",
       "evidenceRefs": [
         "data/staged-acquisitions.json",
         "data/ontario-in-year-fire-perimeters-profile.json",
         "data/ontario-in-year-fire-geometry-policy-2026-08-14.json",
         "data/current-wildfire-owner-admission.json",
         "data/current-wildfire-raw-archive-evidence.json",
-        "data/current-wildfire-derived-archive-evidence.json"
+        "data/current-wildfire-derived-archive-evidence.json",
+        "data/current-wildfire-exact-raw-archive-capture-2026-08-25.json",
+        "data/current-wildfire-derived-manifest-retention-evidence.json"
       ],
       "proof": {
         "licence": true,
@@ -206,12 +212,12 @@
         "checksum": true,
         "rawArchiveRefetch": true,
         "profile": true,
-        "immutableArchive": false,
+        "immutableArchive": true,
         "productionAdmission": false
       },
-      "rawCredit": 0.75,
+      "rawCredit": 1,
       "productionEligible": false,
-      "blocker": "Owner approved the 188-feature geometry policy: 179 unchanged plus all nine bounded repairs with zero exclusion. Raw and derived records contain placeholder-only archive attestations without concrete version identifiers or non-placeholder provider checksums, so immutable proof, ingestion, release and production admission remain blocked."
+      "blocker": "Exact-version COMPLIANCE evidence covers the raw and approved 188-feature derived payloads with their manifests. Recovery-replica proof, ingestion, release, and production admission remain separate."
     },
     {
       "id": "sopfeu",
@@ -397,8 +403,8 @@
     },
     {
       "id": "qc-fourth-inventory",
-      "evidenceState": "local-verified-profiled",
-      "evidenceRefs": ["data/qc-fourth-inventory-evidence.json"],
+      "evidenceState": "remote-verified-archived-profiled",
+      "evidenceRefs": ["data/qc-fourth-inventory-evidence.json", "data/qc-fourth-inventory-exact-archive-readback-2026-08-25.json"],
       "proof": {
         "licence": true,
         "attribution": true,
@@ -406,12 +412,12 @@
         "checksum": true,
         "rawArchiveRefetch": true,
         "profile": true,
-        "immutableArchive": false,
+        "immutableArchive": true,
         "productionAdmission": false
       },
-      "rawCredit": 0.75,
+      "rawCredit": 1,
       "productionEligible": false,
-      "blocker": "Immutable archive/recovery evidence, semantic transformation and join selection, ingestion approval, release approval, and production admission remain separate."
+      "blocker": "Recovery-replica evidence, semantic transformation and join selection, ingestion approval, release approval, and production admission remain separate."
     },
     {
       "id": "ab-avi-crown",
@@ -527,10 +533,13 @@
     },
     {
       "id": "fed-2023-ridings",
-      "evidenceState": "local-verified-profiled",
+      "evidenceState": "production-admitted",
       "evidenceRefs": [
         "data/elections-canada-fed-2025-profile.json",
-        "data/elections-canada-fed-2025-source-ledger.json"
+        "data/elections-canada-fed-2025-source-ledger.json",
+        "data/federal-electoral-archive-recovery-evidence.json",
+        "data/phase1-federal-electoral-output-verification-evidence.json",
+        "data/phase1-federal-electoral-production-admission.json"
       ],
       "proof": {
         "licence": true,
@@ -539,19 +548,22 @@
         "checksum": true,
         "rawArchiveRefetch": true,
         "profile": true,
-        "immutableArchive": false,
-        "productionAdmission": false
+        "immutableArchive": true,
+        "productionAdmission": true
       },
-      "rawCredit": 0.75,
-      "productionEligible": false,
-      "blocker": "Promote immutable archive evidence, then obtain ingestion and release approval."
+      "rawCredit": 1,
+      "productionEligible": true,
+      "blocker": "No row-level blocker. The separate French publisher archive remains a phase-wide acquisition checkpoint and is not inferred from this bilingual-attribute layer."
     },
     {
       "id": "elections-canada-45th-files",
-      "evidenceState": "local-verified-profiled",
+      "evidenceState": "production-admitted",
       "evidenceRefs": [
         "data/elections-canada-fed-2025-profile.json",
-        "data/elections-canada-fed-2025-source-ledger.json"
+        "data/elections-canada-fed-2025-source-ledger.json",
+        "data/federal-electoral-archive-recovery-evidence.json",
+        "data/phase1-federal-electoral-output-verification-evidence.json",
+        "data/phase1-federal-electoral-production-admission.json"
       ],
       "proof": {
         "licence": true,
@@ -560,12 +572,12 @@
         "checksum": true,
         "rawArchiveRefetch": true,
         "profile": true,
-        "immutableArchive": false,
-        "productionAdmission": false
+        "immutableArchive": true,
+        "productionAdmission": true
       },
-      "rawCredit": 0.75,
-      "productionEligible": false,
-      "blocker": "Promote immutable archive evidence, then obtain ingestion and release approval."
+      "rawCredit": 1,
+      "productionEligible": true,
+      "blocker": "No row-level blocker. The separate French publisher archive remains a phase-wide acquisition checkpoint and is not inferred from this bilingual-attribute layer."
     },
     {
       "id": "provincial-electoral-boundaries",
@@ -669,12 +681,12 @@
       "blocker": "CIRNAC's official map is informal, approximate, subject to revision, and expressly cannot be relied on for consultation. It is not legal or precision boundary geometry; no admissible legal artifact, rights, checksum/archive recovery, or engagement route is verified."
     }
   ],
-  "rawEvidenceNumerator": 14.75,
+  "rawEvidenceNumerator": 16.5,
   "formalProgress": {
     "baselinePercentagePoints": 25,
     "rawEvidenceWeightPercentagePoints": 30,
     "completeLedgerWeightPercentagePoints": 45,
-    "percentage": 39.2741935,
+    "percentage": 40.9677419,
     "notice": "This is an evidence-tracking score only. It does not grant source-ledger admission, transformation, analysis, ingestion, public release, production admission, or production eligibility."
   }
 }

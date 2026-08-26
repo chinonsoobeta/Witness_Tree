@@ -17,8 +17,12 @@ export function validatePhase1GeometryPolicies({ ledger, bc, ontario, admission 
   assert.equal(ontario.ingested, false);
   assert.equal(ontario.productionEligible, false);
   assert.equal(admission.ownerDecision.geometryApproved, true);
-  assert.equal(admission.archiveGate.verifiedObjectCount, 0);
-  assert.equal(admission.archiveGate.attestedObjectCount, 6);
+  // Exact primary archive evidence was integrated on 2026-08-25. Recovery
+  // remains deliberately separate and production is still fail-closed below.
+  assert.equal(admission.archiveGate.verifiedObjectCount, 6);
+  assert.equal(admission.archiveGate.attestedObjectCount, 0);
+  assert.equal(admission.archiveGate.primaryReadbacksVerified, true);
+  assert.equal(admission.archiveGate.recoveryReplicaVerified, false);
   assert.equal(admission.pipeline.productionEligible, false);
   const bcAdmission = admission.sources.find(({id}) => id === "bc-wildfire");
   assert.equal(bcAdmission.derived.featureCount, 216);
@@ -31,7 +35,7 @@ export function validatePhase1GeometryPolicies({ ledger, bc, ontario, admission 
     const entry = ledger.entries.find((candidate) => candidate.id === sourceId);
     assert.ok(entry, `Missing canonical ledger row for ${sourceId}.`);
     assert.equal(entry.productionEligible, false);
-    assert.equal(entry.proof.immutableArchive, false);
+    assert.equal(entry.proof.immutableArchive, true);
     assert.equal(entry.proof.productionAdmission, false);
     assert.ok(entry.evidenceRefs.includes(reference), `Ledger must cite ${reference}.`);
   }
@@ -53,5 +57,5 @@ export function checkPhase1GeometryPolicies() {
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   checkPhase1GeometryPolicies();
-  console.log("Phase 1 BC and Ontario geometry scope is owner-approved; machine-verifiable wildfire archive readbacks and activation remain blocked.");
+  console.log("Phase 1 BC and Ontario geometry scope has primary exact-version archive evidence; recovery and downstream activation remain blocked.");
 }

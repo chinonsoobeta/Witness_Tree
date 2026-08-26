@@ -10,14 +10,14 @@ test("current-state audit accounts for all 31 rows and remains fail closed", () 
   const audit = validatePhase1CurrentStateCompletionAudit(...args);
   assert.equal(audit.rows.length, 31);
   assert.equal(audit.ledger.productionEligibleRows, 0);
-  assert.equal(audit.ledger.rawEvidenceNumerator, 14.75);
-  assert.equal(audit.ledger.immutableArchiveCompleteRows, 9);
+  assert.equal(audit.ledger.rawEvidenceNumerator, 16.5);
+  assert.equal(audit.ledger.immutableArchiveCompleteRows, 16);
   assert.equal(audit.rows.find(({ id }) => id === "ntems-canopy-height").actionPlan, "national-source-ledger-recorded");
   assert.equal(audit.rows.find(({ id }) => id === "ntems-forest-harvest").actionPlan, "national-source-ledger-recorded");
   assert.equal(audit.rows.find(({ id }) => id === "ab-primary-land-vegetation").actionPlan, "plvi-scope-approved");
   assert.equal(audit.rows.find(({ id }) => id === "qc-current-ecoforest").actionPlan, "quebec-source-ledger-recorded");
   assert.equal(audit.globalGates.outreach.repliesRecorded, 8);
-  assert.equal(audit.globalGates.normalArchiveExercise.complete, false);
+  assert.equal(audit.globalGates.normalArchiveExercise.complete, true);
 });
 
 test("current-state audit rejects invented eligibility, outreach, or archive evidence", () => {
@@ -25,7 +25,7 @@ test("current-state audit rejects invented eligibility, outreach, or archive evi
   assert.throws(() => validatePhase1CurrentStateCompletionAudit(eligible, ...args.slice(1)));
   const reply = structuredClone(args[0]); reply.globalGates.outreach.repliesRecorded = 1;
   assert.throws(() => validatePhase1CurrentStateCompletionAudit(reply, ...args.slice(1)));
-  const archive = structuredClone(args[0]); archive.globalGates.normalArchiveExercise.complete = true;
+  const archive = structuredClone(args[0]); archive.globalGates.normalArchiveExercise.complete = false;
   assert.throws(() => validatePhase1CurrentStateCompletionAudit(archive, ...args.slice(1)));
 });
 

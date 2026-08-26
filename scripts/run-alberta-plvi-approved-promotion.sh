@@ -1,6 +1,8 @@
 #!/bin/zsh
 set -euo pipefail
 umask 077
+source "${0:A:h}/aws-direct-mfa-role-session.sh"
+source "${0:A:h}/archive-existing-key-recovery.sh"
 
 # Owner-local only. Default is a pure dry run; --run requires the separate exact approval.
 PROFILE="WitnessTreeArchiveOperator"
@@ -10,6 +12,7 @@ REGION="ca-central-1"
 RETAIN_UNTIL="2033-08-12T00:00:00Z"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 PLAN="$ROOT/data/alberta-plvi-immutable-promotion-preparation.json"
+LEGACY_MANIFEST_COMPARATOR="$ROOT/scripts/check-alberta-plvi-legacy-manifest-audit.mjs"
 # The approved owner-local workspace data root is deliberately absolute. The
 # promotion worktree lives under /private/tmp and is not a sibling of this data.
 DATA_ROOT="/Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data"
@@ -33,18 +36,8 @@ print -- "PRECHECK passed: both approved artifacts exist at the controlled works
 [[ "${1:-}" == "--preflight" ]] && exit 0
 command -v aws >/dev/null || fail "aws CLI is required" 69
 command -v jq >/dev/null || fail "jq is required" 69
-[[ -t 0 && -t 1 ]] || fail "MFA TOTP prompt requires an interactive terminal; no AWS call was made" 64
-read -r -s 'totp?Current MFA TOTP (not stored): '
-print
-[[ "${totp:-}" =~ '^[0-9]{6}$' ]] || fail "TOTP must be exactly six digits; no AWS call was made" 64
-mfa_serial="$(aws configure get mfa_serial --profile "$PROFILE")" || fail "Cannot read local configured MFA serial" 69
-[[ "$mfa_serial" =~ '^arn:aws:iam::286853118812:mfa/[A-Za-z0-9+=,.@_/-]+$' ]] || fail "Configured MFA serial is absent, malformed, or outside the approved account; no STS or AWS storage call was made" 69
-bootstrap="$(aws sts get-session-token --serial-number "$mfa_serial" --token-code "$totp" --profile "$PROFILE" --duration-seconds 3600 --output json)" || fail "MFA session failed" 77
-unset totp
-export AWS_ACCESS_KEY_ID="$(jq -r '.Credentials.AccessKeyId' <<<"$bootstrap")" AWS_SECRET_ACCESS_KEY="$(jq -r '.Credentials.SecretAccessKey' <<<"$bootstrap")" AWS_SESSION_TOKEN="$(jq -r '.Credentials.SessionToken' <<<"$bootstrap")"; unset bootstrap
-account="$(aws sts get-caller-identity --query Account --output text)" || fail "Cannot identify MFA session" 77
-creds="$(aws sts assume-role --role-arn "arn:aws:iam::${account}:role/${ROLE}" --role-session-name witness-tree-plvi-approved-promotion --duration-seconds 3600 --output json)" || fail "Promotion role assumption failed" 77
-export AWS_ACCESS_KEY_ID="$(jq -r '.Credentials.AccessKeyId' <<<"$creds")" AWS_SECRET_ACCESS_KEY="$(jq -r '.Credentials.SecretAccessKey' <<<"$creds")" AWS_SESSION_TOKEN="$(jq -r '.Credentials.SessionToken' <<<"$creds")"; unset creds account
+creds="$(wt_assume_direct_mfa_role "$PROFILE" 286853118812 "$ROLE" witness-tree-plvi-approved-promotion)"
+export AWS_ACCESS_KEY_ID="$(jq -r '.Credentials.AccessKeyId' <<<"$creds")" AWS_SECRET_ACCESS_KEY="$(jq -r '.Credentials.SecretAccessKey' <<<"$creds")" AWS_SESSION_TOKEN="$(jq -r '.Credentials.SessionToken' <<<"$creds")"; unset creds
 TMP="$(mktemp -d /private/tmp/witness-tree-plvi-approved-promotion.XXXXXX)"; chmod 700 "$TMP"
 node "$ROOT/scripts/prepare-alberta-plvi-immutable-promotion.mjs" --write-sidecars "$TMP" >/dev/null
 typeset -a IDS FILES BYTES SHAS PAYLOADS SIDECARS
@@ -55,23 +48,24 @@ SHAS=(017a0a835c680ca1b6c1eb790322a28e1b4c0c64e36924da46d8bb99cb1571d3 5633e7d49
 PAYLOADS=(raw/ab-primary-land-vegetation/undeclared/2026-08-14T14-01-07Z/017a0a835c680ca1b6c1eb790322a28e1b4c0c64e36924da46d8bb99cb1571d3/payload/primarylandandvegetationinventoryplvi.zip derived/ab-primary-land-vegetation/alberta-plvi-full-repair-v1-2026-08-14/2026-08-14T14-14-31Z/5633e7d49982ee1232b415f362654744c1f1dab11d7c3c7ef8a7928dac20825b/payload/alberta-plvi-full-repaired-closed-join.gpkg)
 SIDECARS=(raw/ab-primary-land-vegetation/undeclared/2026-08-14T14-01-07Z/017a0a835c680ca1b6c1eb790322a28e1b4c0c64e36924da46d8bb99cb1571d3/manifest.json derived/ab-primary-land-vegetation/alberta-plvi-full-repair-v1-2026-08-14/2026-08-14T14-14-31Z/5633e7d49982ee1232b415f362654744c1f1dab11d7c3c7ef8a7928dac20825b/manifest.json)
 for i in {1..2}; do
-  # Do not use the high-level transfer wrapper here.  Its multipart orchestration
-  # can report a completed command without returning the resulting version to this
-  # narrowly scoped runner.  A direct PutObject is within the approved action set
-  # and lets us fail closed unless S3 returns the exact new version and checksum.
-  print -- "Uploading approved payload $i/2 by one direct S3 request; wait for the acknowledgement."
-  payload_put="$(aws s3api put-object --bucket "$BUCKET" --key "${PAYLOADS[$i]}" --body "${FILES[$i]}" --checksum-algorithm CRC64NVME --region "$REGION" --cli-read-timeout 0 --output json)" || fail "Payload upload failed" 70
-  jq -e '.VersionId != null and (.ChecksumCRC64NVME // empty) != ""' <<<"$payload_put" >/dev/null || fail "Payload upload acknowledgement incomplete" 70
-  print -- "Payload $i/2 acknowledged by S3; uploading its deterministic sidecar."
-  sidecar_put="$(aws s3api put-object --bucket "$BUCKET" --key "${SIDECARS[$i]}" --body "$TMP/${IDS[$i]}.manifest.json" --checksum-algorithm CRC64NVME --region "$REGION" --cli-read-timeout 0 --output json)" || fail "Sidecar upload failed" 70
-  jq -e '.VersionId != null and (.ChecksumCRC64NVME // empty) != ""' <<<"$sidecar_put" >/dev/null || fail "Sidecar upload acknowledgement incomplete" 70
-  payload_head="$(aws s3api head-object --bucket "$BUCKET" --key "${PAYLOADS[$i]}" --checksum-mode ENABLED --region "$REGION" --output json)" || fail "Payload read-back failed" 70
-  version="$(jq -r '.VersionId' <<<"$payload_head")"; [[ -n "$version" && "$version" != null ]] || fail "Payload version read-back missing" 70
-  [[ "$(jq -r '.ContentLength' <<<"$payload_head")" == "${BYTES[$i]}" && "$(jq -r '.ChecksumCRC64NVME // empty' <<<"$payload_head")" != '' ]] || fail "Payload read-back integrity incomplete" 70
-  aws s3api put-object-retention --bucket "$BUCKET" --key "${PAYLOADS[$i]}" --version-id "$version" --retention "Mode=COMPLIANCE,RetainUntilDate=$RETAIN_UNTIL" --region "$REGION" >/dev/null
-  retention="$(aws s3api get-object-retention --bucket "$BUCKET" --key "${PAYLOADS[$i]}" --version-id "$version" --region "$REGION" --output json)" || fail "Retention read-back failed" 70
-  jq -e --arg d "$RETAIN_UNTIL" '.Retention.Mode=="COMPLIANCE" and (.Retention.RetainUntilDate|startswith($d[0:10]))' <<<"$retention" >/dev/null || fail "Retention read-back mismatch" 70
-  sidecar_head="$(aws s3api head-object --bucket "$BUCKET" --key "${SIDECARS[$i]}" --checksum-mode ENABLED --region "$REGION" --output json)" || fail "Sidecar read-back failed" 70
-  jq -e '.VersionId != null and (.ChecksumCRC64NVME // empty) != ""' <<<"$sidecar_head" >/dev/null || fail "Sidecar read-back incomplete" 70
+  label="plvi-${IDS[$i]}"; sidecar="$TMP/${IDS[$i]}.manifest.json"; payload_present=0; manifest_present=0
+  if wt_archive_head_current_or_absent "${PAYLOADS[$i]}" "$label-payload"; then payload_present=1; version="$WT_ARCHIVE_VERSION"; fi
+  if wt_archive_head_current_or_absent "${SIDECARS[$i]}" "$label-manifest"; then manifest_present=1; sidecar_version="$WT_ARCHIVE_VERSION"; fi
+  (( ! payload_present && manifest_present )) && fail "A manifest exists without its approved PLVI payload; recovery is ambiguous and no write was attempted" 73
+  if (( payload_present )); then wt_archive_verify_existing_payload "${PAYLOADS[$i]}" "$version" "${BYTES[$i]}" "${SHAS[$i]}" "$label-payload"
+  else
+    print -- "Uploading absent approved PLVI payload $i/2 by conditional direct PutObject."
+    put="$(aws s3api put-object --bucket "$BUCKET" --key "${PAYLOADS[$i]}" --body "${FILES[$i]}" --if-none-match '*' --checksum-algorithm CRC64NVME --region "$REGION" --cli-read-timeout 0 --output json)" || fail "PLVI payload was not provably absent; no duplicate was written" 70
+    version="$(jq -er '.VersionId | select(type == "string" and length > 0)' <<<"$put")" || fail "PLVI payload acknowledgement has no concrete version" 70
+    wt_archive_verify_existing_payload "${PAYLOADS[$i]}" "$version" "${BYTES[$i]}" "${SHAS[$i]}" "$label-payload"
+  fi
+  if (( manifest_present )); then wt_archive_verify_existing_manifest_with_legacy_comparator "${SIDECARS[$i]}" "$sidecar_version" "$sidecar" "$label-manifest" "$LEGACY_MANIFEST_COMPARATOR"
+  else
+    put="$(aws s3api put-object --bucket "$BUCKET" --key "${SIDECARS[$i]}" --body "$sidecar" --if-none-match '*' --checksum-algorithm CRC64NVME --region "$REGION" --cli-read-timeout 0 --output json)" || fail "PLVI manifest was not provably absent; no duplicate was written" 70
+    sidecar_version="$(jq -er '.VersionId | select(type == "string" and length > 0)' <<<"$put")" || fail "PLVI manifest acknowledgement has no concrete version" 70
+    wt_archive_verify_existing_manifest "${SIDECARS[$i]}" "$sidecar_version" "$sidecar" "$label-manifest"
+  fi
+  wt_archive_ensure_compliance_retention "${PAYLOADS[$i]}" "$version" "$label-payload"
+  wt_archive_ensure_compliance_retention "${SIDECARS[$i]}" "$sidecar_version" "$label-manifest"
 done
 print -- "Promotion completed; capture a redacted external read-back before any source-ledger admission."

@@ -1,0 +1,72 @@
+{
+  "schemaVersion": "witness-tree/phase9-public-beta-launch-exit-status/1",
+  "phase": 9,
+  "localImplementationStatus": "incomplete",
+  "phaseComplete": false,
+  "completedCriteria": 0,
+  "totalCriteria": 4,
+  "percentage": 0,
+  "exitCriteria": [
+    {
+      "id": "median-correction-resolution-within-service-levels",
+      "title": "Median correction resolution time is inside the section 14.3 service levels",
+      "status": "fail",
+      "reason": "The aggregate-only calculator is locally implemented, but there are no real production correction cases, quarterly metrics, or observed service-level result. Illustrative cases explicitly cannot produce publishable metrics.",
+      "evidence": [
+        {"path": "lib/corrections/metrics.ts", "sha256": "e98ae6d216196a107450e033a56bb024ca67ccf3ddd346b6428fb9a41bd4f185"},
+        {"path": "tests/correction-metrics.test.ts", "sha256": "ccc495a5a850edaf400e4ba63523598a7273312e1448bb5ba3ad5ceb985c09f3"}
+      ]
+    },
+    {
+      "id": "no-unresolved-critical-correction-at-launch",
+      "title": "No unresolved critical correction at launch",
+      "status": "fail",
+      "reason": "No real beta correction intake or operated case register exists. A local empty or illustrative collection is not evidence that no critical correction remains unresolved at launch.",
+      "evidence": [
+        {"path": "docs/CORRECTIONS_WORKFLOW.md", "sha256": "98d4c2f7f95da87debeab3c9172616c70809d0fe412c62ade4b0f3322ac91610"},
+        {"path": "lib/corrections/metrics.ts", "sha256": "e98ae6d216196a107450e033a56bb024ca67ccf3ddd346b6428fb9a41bd4f185"}
+      ]
+    },
+    {
+      "id": "source-agency-data-review-confirmed",
+      "title": "At least one source agency has reviewed its own data as presented and confirmed it",
+      "status": "fail",
+      "reason": "No admitted real-data presentation has been sent to or reviewed by a source agency, and no confirmation is recorded.",
+      "evidence": [
+        {"path": "docs/EXTERNAL_GATES.md", "sha256": "f47354ee02dae6c7252a3fd1280673b88879481526ca93168e75e93d5222f378"}
+      ]
+    },
+    {
+      "id": "quarterly-reproducibility-test-passes",
+      "title": "The quarterly reproducibility test passes",
+      "status": "fail",
+      "reason": "A source-archive restoration drill exists, but no published real figure has been recomputed from the raw archive and compared as the quarterly test requires.",
+      "evidence": [
+        {"path": "data/phase8-launch-readiness-exit-status.json", "sha256": "d2f3df8efc44e420ae12a07cc19edf6556942826852efe66dfcd8902313ed715"}
+      ]
+    }
+  ],
+  "externalBlockers": [
+    {
+      "id": "all-applicable-prior-release-gates",
+      "status": "blocked",
+      "reason": "Every applicable Phase 0–8 gate must pass for any surface proposed for public beta or launch; the technical preview is not an exception."
+    },
+    {
+      "id": "owner-moment-of-action-authorization",
+      "status": "blocked",
+      "reason": "Actual invitations, public deployment, production admission, and launch require explicit owner authorization at the moment of each action."
+    },
+    {
+      "id": "operated-real-beta-and-correction-evidence",
+      "status": "blocked",
+      "reason": "Real participant support, correction handling, remediation, and the first quarterly aggregate metrics must be operated and evidenced before this phase can pass."
+    },
+    {
+      "id": "source-agency-confirmation",
+      "status": "blocked",
+      "reason": "At least one source agency must review its own admitted data as presented and confirm it; no outreach or confirmation is represented by this local record."
+    }
+  ],
+  "nonProductionBoundary": "The existing ChatGPT-hosted site is a technical preview with illustrative data. This local preparation sends no invitation, contacts no agency, accepts no production data, publishes no correction metric, and makes no beta, deployment, or launch claim."
+}

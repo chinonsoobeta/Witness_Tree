@@ -56,12 +56,14 @@
         ]
       },
       {
-        "Sid": "PayloadComplianceRetentionOnly",
+        "Sid": "ExactDerivedPayloadAndSidecarComplianceRetention",
         "Effect": "Allow",
         "Action": ["s3:PutObjectRetention", "s3:GetObjectRetention"],
         "Resource": [
           "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/derived/bc-wildfire/bc-wildfire-geometry-policy-v1-2026-08-14/2026-08-14T20-31-39Z/8ee36cc6bdfb5ef267340537e4cf822df7cc886873c7fcf65a1b2b12006d34ce/payload/bc-wildfire-216-feature-release.gpkg",
-          "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/derived/on-fire-disturbance/ontario-in-year-fire-geometry-policy-v1-2026-08-14/2026-08-14T13-49-36Z/5e55c5d47559c350d9b31ffeda6bd39cfce64a3c57169098fff66341cd8ead31/payload/ontario-in-year-fire-perimeters-188-feature-derived.gpkg"
+          "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/derived/bc-wildfire/bc-wildfire-geometry-policy-v1-2026-08-14/2026-08-14T20-31-39Z/8ee36cc6bdfb5ef267340537e4cf822df7cc886873c7fcf65a1b2b12006d34ce/manifest.json",
+          "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/derived/on-fire-disturbance/ontario-in-year-fire-geometry-policy-v1-2026-08-14/2026-08-14T13-49-36Z/5e55c5d47559c350d9b31ffeda6bd39cfce64a3c57169098fff66341cd8ead31/payload/ontario-in-year-fire-perimeters-188-feature-derived.gpkg",
+          "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/derived/on-fire-disturbance/ontario-in-year-fire-geometry-policy-v1-2026-08-14/2026-08-14T13-49-36Z/5e55c5d47559c350d9b31ffeda6bd39cfce64a3c57169098fff66341cd8ead31/manifest.json"
         ]
       }
     ]
@@ -78,7 +80,7 @@
     ]
   },
   "preservedExisting": {
-    "statementSids": ["ExactDerivedPayloadAndSidecarReadbacks", "PayloadComplianceRetentionOnly"],
+    "statementSids": ["ExactDerivedPayloadAndSidecarReadbacks"],
     "note": "The existing promotion write permissions are preserved byte-for-byte by this readback delta; the readback runner never invokes them. A separately authorized strict read-only role would be required to remove them."
   },
   "excluded": [

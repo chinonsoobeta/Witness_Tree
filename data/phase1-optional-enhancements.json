@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "witness-tree/phase1-optional-enhancements/1",
+  "status": "v2-1-risk-register-not-admission",
+  "notice": "Version 2.1 restricted or permission-required provincial sources are optional enhancements. Their rights blockers remain active, their absence cannot block the national baseline, Big Four summaries, public launch, or Phase 1 core completion, and none is admitted to production.",
+  "entries": [
+    {"sourceId":"sopfeu","jurisdiction":"Quebec","redistributionStatus":"permission-required","optionalEnhancement":true,"phase1CoreBlocker":false,"productionEligible":false,"rightsBlocker":"Written public-reuse terms are unresolved."},
+    {"sourceId":"bc-fta-cutblocks","jurisdiction":"British Columbia","redistributionStatus":"unverified-redistribution","optionalEnhancement":true,"phase1CoreBlocker":false,"productionEligible":false,"rightsBlocker":"The catalogue is OGL-BC, but no coherent publisher-bounded export or source-specific archive/public-output authorization is verified."},
+    {"sourceId":"bc-harvesting-authorities","jurisdiction":"British Columbia","redistributionStatus":"unverified-redistribution","optionalEnhancement":true,"phase1CoreBlocker":false,"productionEligible":false,"rightsBlocker":"The catalogue is OGL-BC, but no coherent publisher-bounded export or source-specific archive/public-output authorization is verified."},
+    {"sourceId":"bc-vri","jurisdiction":"British Columbia","redistributionStatus":"access-only","optionalEnhancement":true,"phase1CoreBlocker":false,"productionEligible":false,"rightsBlocker":"Written permission to reproduce, transform, and redistribute is unresolved."},
+    {"sourceId":"bc-consolidated-cutblocks","jurisdiction":"British Columbia","redistributionStatus":"access-only","optionalEnhancement":true,"phase1CoreBlocker":false,"productionEligible":false,"rightsBlocker":"A written redistributable licence or publisher authorization is unresolved."},
+    {"sourceId":"bc-old-growth-bec","jurisdiction":"British Columbia","redistributionStatus":"partly-access-only","optionalEnhancement":true,"phase1CoreBlocker":false,"productionEligible":false,"rightsBlocker":"TAP Priority Deferral Areas rights and the authoritative implemented-deferral layer are unresolved."},
+    {"sourceId":"bc-forest-operations-map","jurisdiction":"British Columbia","redistributionStatus":"access-only","optionalEnhancement":true,"phase1CoreBlocker":false,"productionEligible":false,"rightsBlocker":"Province of British Columbia copyright authorization is unresolved."},
+    {"sourceId":"on-fri-term-2","jurisdiction":"Ontario","redistributionStatus":"permission-required","optionalEnhancement":true,"phase1CoreBlocker":false,"productionEligible":false,"rightsBlocker":"Request-based access and reuse rights are unresolved."},
+    {"sourceId":"on-fri","jurisdiction":"Ontario","redistributionStatus":"unverified-redistribution","optionalEnhancement":true,"phase1CoreBlocker":false,"productionEligible":false,"rightsBlocker":"No stable complete Term 2 package or written exact-package reuse confirmation is verified."}
+  ],
+  "historicalEvidenceScore": {"percentage":39.2741935,"status":"historical-not-v2-1-phase-completion"}
+}

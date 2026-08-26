@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "witness-tree/wildfire-derived-manifest-retention-approval/1",
+  "status": "owner-approved",
+  "approved": true,
+  "account": "286853118812",
+  "role": "WitnessTreeWildfireDerivedPromotionUploader",
+  "profile": "WitnessTreeArchiveOperator",
+  "region": "ca-central-1",
+  "bucket": "witness-tree-raw-archive-ca-central-1",
+  "retention": {
+    "mode": "COMPLIANCE",
+    "retainUntil": "2033-08-12T00:00:00Z"
+  },
+  "targetObjectNames": [
+    "bcManifest",
+    "ontarioManifest"
+  ],
+  "exclusions": [
+    "no-upload",
+    "no-overwrite",
+    "no-delete",
+    "no-multipart",
+    "no-legal-hold",
+    "no-bypass-governance",
+    "no-other-key",
+    "no-iam-change",
+    "no-production-inference",
+    "no-phase2"
+  ],
+  "productionEligible": false,
+  "phase2": false
+}

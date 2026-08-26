@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "witness-tree/phase2-real-loss-component-inventory-summary/1",
+  "evidence": {
+    "fileName": "phase2-real-loss-component-inventory-readback.json",
+    "byteLength": 38573,
+    "sha256": "36f51945151745e752475ee5be36b2b208a05cff9bca433161f379a64aa005d7"
+  },
+  "sourceMap": {
+    "fileName": "phase2-real-loss-source-map.json",
+    "byteLength": 3472,
+    "sha256": "c962180952e11af0766c5b929d97d4bb635181f93c04e93bbfa7d808e1561430"
+  },
+  "sourceBatchId": "phase2-real-national-1984-2022-v1",
+  "canonicalPairCount": 38,
+  "completedPairCount": 38,
+  "componentLineageBytes": 68322891854,
+  "retainedOutputBytes": 68322924822,
+  "lossCellCount": 1384027417,
+  "connectedComponentCount": 303530909,
+  "runRecordCount": 528596703,
+  "aliasRecordCount": 12199309,
+  "released": false,
+  "productionEligible": false
+}

@@ -6,12 +6,13 @@ import { join } from "node:path";
 import test from "node:test";
 
 const runner = readFileSync(new URL("../scripts/run-phase1-approved-promotion.sh", import.meta.url), "utf8");
+const directMfaHelper = readFileSync(new URL("../scripts/aws-direct-mfa-role-session.sh", import.meta.url), "utf8");
 
 test("the three-artifact runner is preflight-first and binds every approved checksum and canonical key", () => {
   for (const mode of ["--preflight", "--run", "--run-federal", "--resume", "--validate-resume-state"]) assert.match(runner, new RegExp(mode));
   for (const value of ["c6f41dff46d91812874672edb53233dac4126952132ad6d1131ad47b11ad7aad", "86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124", "4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93", "ca_forest_harvest_1985-2022.zip", "ca_canopy_height_2022.zip", "federalelectoraldistricts_2025_shp.zip"]) assert.match(runner, new RegExp(value));
   assert.match(runner, /2033-08-12T00:00:00Z/);
-  assert.match(runner, /aws configure get mfa_serial --profile/);
+  assert.match(directMfaHelper, /aws configure get mfa_serial --profile/);
   assert.doesNotMatch(runner, /list-mfa-devices|aws iam |DeleteObject|BypassGovernanceRetention/i);
 });
 
@@ -20,6 +21,172 @@ test("federal-only mode cannot revisit the archived harvest or preserved canopy 
   assert.match(runner, /PROMOTION_INDICES=\(3\)/);
   assert.match(runner, /for i in \$PROMOTION_INDICES/);
   assert.match(runner, /Harvest is already archived and the canopy prefix is resumed separately/);
+});
+
+function writeApprovedPromotionLocalChecks(dir) {
+  writeFileSync(join(dir, "stat"), `#!/bin/zsh
+case "$3" in
+  *CA_Forest_Harvest_1985-2022.zip) print -- 247945479 ;;
+  *CA_canopy_height_2022.zip) print -- 10347564066 ;;
+  *FederalElectoralDistricts_2025_SHP.zip) print -- 10301648 ;;
+  *.json) /usr/bin/stat -f %z "$3" ;;
+  *) exit 99 ;;
+esac
+`, { mode: 0o700 });
+  writeFileSync(join(dir, "shasum"), `#!/bin/zsh
+case "$3" in
+  *CA_Forest_Harvest_1985-2022.zip) print -- "c6f41dff46d91812874672edb53233dac4126952132ad6d1131ad47b11ad7aad  $3" ;;
+  *CA_canopy_height_2022.zip) print -- "86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124  $3" ;;
+  *FederalElectoralDistricts_2025_SHP.zip) print -- "4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93  $3" ;;
+  *federal-existing-payload) print -- "4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93  $3" ;;
+  *) exit 99 ;;
+esac
+`, { mode: 0o700 });
+}
+
+function runFederalWithTotp(executable, dir) {
+  return spawnSync("expect", ["-c", `set timeout 120
+set env(PATH) ${JSON.stringify(`${dir}:${process.env.PATH}`)}
+spawn -noecho zsh ${JSON.stringify(executable)} --run-federal
+expect {
+  "Current MFA TOTP (not stored):" { send -- "123456\\r"; exp_continue }
+  eof { set result [wait]; exit [lindex $result 3] }
+  timeout { exit 2 }
+}`], { encoding: "utf8", timeout: 120_000, env: { ...process.env, PATH: `${dir}:${process.env.PATH}` } });
+}
+
+test("federal recovery audits existing exact payload and manifest versions, applies only missing retention, and never puts another object", () => {
+  const dir = mkdtempSync(join(tmpdir(), "phase1-federal-recovery-"));
+  const marker = join(dir, "calls");
+  const executable = new URL("../scripts/run-phase1-approved-promotion.sh", import.meta.url).pathname;
+  writeApprovedPromotionLocalChecks(dir);
+  writeFileSync(join(dir, "aws"), `#!/bin/zsh
+print -- "$1:$2:$*" >> ${JSON.stringify(marker)}
+case "$1:$2" in
+  configure:get) print -- "arn:aws:iam::286853118812:mfa/witness-tree/archive-operator.device" ;;
+  sts:get-caller-identity) print -- '{"Account":"286853118812","Arn":"arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator"}' ;;
+  sts:assume-role) print -- '{"Credentials":{"AccessKeyId":"dummy","SecretAccessKey":"dummy","SessionToken":"dummy","Expiration":"2099-01-01T00:00:00Z"},"AssumedRoleUser":{"Arn":"arn:aws:sts::286853118812:assumed-role/WitnessTreeArchivePromotionUploader/witness-tree-approved-promotion"}}' ;;
+  s3api:head-object)
+    if [[ "$*" == *manifest.json* ]]; then print -- '{"VersionId":"manifest-v1","ContentLength":572,"ChecksumType":"FULL_OBJECT","ChecksumCRC64NVME":"AAAAAAAAAAA="}'; else print -- '{"VersionId":"payload-v1","ContentLength":10301648,"ChecksumType":"FULL_OBJECT","ChecksumCRC64NVME":"AAAAAAAAAAA="}'; fi ;;
+  s3api:get-object)
+    output="\${@: -1}"
+    if [[ "$*" == *manifest.json* ]]; then
+      jq -n --arg id elections-canada-federal-electoral-districts-45th-general-election-2025-shp --arg payload raw/elections-canada-federal-electoral-districts-45th-general-election-2025-shp/federal-electoral-districts-2025-shp/2026-08-14T17-42-35Z/4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93/payload/federalelectoraldistricts_2025_shp.zip --arg sha 4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93 --argjson bytes 10301648 '{schemaVersion:1,sourceId:$id,payloadKey:$payload,byteLength:$bytes,sha256:$sha,notice:"Approved raw payload; no transformation, ingestion, or release."}' > "$output"
+    else print -- payload > "$output"; fi
+    print -- '{}' ;;
+  s3api:get-object-retention)
+    if [[ "$*" == *manifest.json* && -f ${JSON.stringify(join(dir, "manifest-retained"))} ]] || [[ "$*" != *manifest.json* && -f ${JSON.stringify(join(dir, "payload-retained"))} ]]; then print -- '{"Retention":{"Mode":"COMPLIANCE","RetainUntilDate":"2033-08-12T00:00:00Z"}}'; else print -u2 -- NoSuchObjectLockConfiguration; exit 255; fi ;;
+  s3api:put-object-retention)
+    if [[ "$*" == *manifest.json* ]]; then : > ${JSON.stringify(join(dir, "manifest-retained"))}; else : > ${JSON.stringify(join(dir, "payload-retained"))}; fi
+    print -- '{}' ;;
+  s3api:put-object) print -u2 -- "unexpected object overwrite"; exit 91 ;;
+  *) print -u2 -- "unexpected: $*"; exit 99 ;;
+esac
+`, { mode: 0o700 });
+  try {
+    const run = runFederalWithTotp(executable, dir);
+    assert.equal(run.status, 0, `${run.stdout}\n${run.stderr}`);
+    assert.match(`${run.stdout}${run.stderr}`, /exact version-specific payload, manifest, and retention read-backs/);
+    assert.doesNotMatch(`${run.stdout}${run.stderr}`, /123456/);
+    const calls = readFileSync(marker, "utf8");
+    assert.equal((calls.match(/s3api:put-object:/g) ?? []).length, 0, calls);
+    assert.equal((calls.match(/s3api:put-object-retention:/g) ?? []).length, 2, calls);
+    assert.match(calls, /s3api:get-object:/);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("federal recovery fails closed on a mismatched existing manifest without a put-object", () => {
+  const dir = mkdtempSync(join(tmpdir(), "phase1-federal-recovery-mismatch-"));
+  const marker = join(dir, "calls");
+  const executable = new URL("../scripts/run-phase1-approved-promotion.sh", import.meta.url).pathname;
+  writeApprovedPromotionLocalChecks(dir);
+  writeFileSync(join(dir, "aws"), `#!/bin/zsh
+print -- "$1:$2:$*" >> ${JSON.stringify(marker)}
+case "$1:$2" in
+  configure:get) print -- "arn:aws:iam::286853118812:mfa/witness-tree/archive-operator.device" ;;
+  sts:get-caller-identity) print -- '{"Account":"286853118812","Arn":"arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator"}' ;;
+  sts:assume-role) print -- '{"Credentials":{"AccessKeyId":"dummy","SecretAccessKey":"dummy","SessionToken":"dummy","Expiration":"2099-01-01T00:00:00Z"},"AssumedRoleUser":{"Arn":"arn:aws:sts::286853118812:assumed-role/WitnessTreeArchivePromotionUploader/witness-tree-approved-promotion"}}' ;;
+  s3api:head-object) if [[ "$*" == *manifest.json* ]]; then print -- '{"VersionId":"manifest-v1","ContentLength":572,"ChecksumType":"FULL_OBJECT","ChecksumCRC64NVME":"AAAAAAAAAAA="}'; else print -- '{"VersionId":"payload-v1","ContentLength":10301648,"ChecksumType":"FULL_OBJECT","ChecksumCRC64NVME":"AAAAAAAAAAA="}'; fi ;;
+  s3api:get-object) output="\${@: -1}"; if [[ "$*" == *manifest.json* ]]; then print -- '{"wrong":"manifest"}' > "$output"; else print -- payload > "$output"; fi; print -- '{}' ;;
+  s3api:put-object|s3api:put-object-retention) print -u2 -- "unexpected write"; exit 91 ;;
+  *) print -u2 -- "unexpected: $*"; exit 99 ;;
+esac
+`, { mode: 0o700 });
+  try {
+    const run = runFederalWithTotp(executable, dir);
+    assert.equal(run.status, 73, `${run.stdout}\n${run.stderr}`);
+    assert.match(`${run.stdout}${run.stderr}`, /Existing manifest content differs from the deterministic approved manifest/);
+    const calls = readFileSync(marker, "utf8");
+    assert.equal((calls.match(/s3api:put-object:/g) ?? []).length, 0, calls);
+    assert.equal((calls.match(/s3api:put-object-retention:/g) ?? []).length, 0, calls);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("federal recovery treats an unrecognized retention read error as ambiguous and performs no retention mutation", () => {
+  const dir = mkdtempSync(join(tmpdir(), "phase1-federal-retention-error-"));
+  const marker = join(dir, "calls");
+  const executable = new URL("../scripts/run-phase1-approved-promotion.sh", import.meta.url).pathname;
+  writeApprovedPromotionLocalChecks(dir);
+  writeFileSync(join(dir, "aws"), `#!/bin/zsh
+print -- "$1:$2:$*" >> ${JSON.stringify(marker)}
+case "$1:$2" in
+  configure:get) print -- "arn:aws:iam::286853118812:mfa/witness-tree/archive-operator.device" ;;
+  sts:get-caller-identity) print -- '{"Account":"286853118812","Arn":"arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator"}' ;;
+  sts:assume-role) print -- '{"Credentials":{"AccessKeyId":"dummy","SecretAccessKey":"dummy","SessionToken":"dummy","Expiration":"2099-01-01T00:00:00Z"},"AssumedRoleUser":{"Arn":"arn:aws:sts::286853118812:assumed-role/WitnessTreeArchivePromotionUploader/witness-tree-approved-promotion"}}' ;;
+  s3api:head-object) if [[ "$*" == *manifest.json* ]]; then print -- '{"VersionId":"manifest-v1","ContentLength":572,"ChecksumType":"FULL_OBJECT","ChecksumCRC64NVME":"AAAAAAAAAAA="}'; else print -- '{"VersionId":"payload-v1","ContentLength":10301648,"ChecksumType":"FULL_OBJECT","ChecksumCRC64NVME":"AAAAAAAAAAA="}'; fi ;;
+  s3api:get-object)
+    output="\${@: -1}"
+    if [[ "$*" == *manifest.json* ]]; then jq -n --arg id elections-canada-federal-electoral-districts-45th-general-election-2025-shp --arg payload raw/elections-canada-federal-electoral-districts-45th-general-election-2025-shp/federal-electoral-districts-2025-shp/2026-08-14T17-42-35Z/4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93/payload/federalelectoraldistricts_2025_shp.zip --arg sha 4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93 --argjson bytes 10301648 '{schemaVersion:1,sourceId:$id,payloadKey:$payload,byteLength:$bytes,sha256:$sha,notice:"Approved raw payload; no transformation, ingestion, or release."}' > "$output"; else print -- payload > "$output"; fi
+    print -- '{}' ;;
+  s3api:get-object-retention) print -u2 -- AccessDenied; exit 255 ;;
+  s3api:put-object|s3api:put-object-retention) print -u2 -- "unexpected write"; exit 91 ;;
+  *) print -u2 -- "unexpected: $*"; exit 99 ;;
+esac
+`, { mode: 0o700 });
+  try {
+    const run = runFederalWithTotp(executable, dir);
+    assert.equal(run.status, 73, `${run.stdout}\n${run.stderr}`);
+    assert.match(`${run.stdout}${run.stderr}`, /Could not read payload retention; recovery refused/);
+    const calls = readFileSync(marker, "utf8");
+    assert.equal((calls.match(/s3api:put-object:/g) ?? []).length, 0, calls);
+    assert.equal((calls.match(/s3api:put-object-retention:/g) ?? []).length, 0, calls);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("federal recovery rejects an existing payload whose exact-version SHA-256 differs from the approved local artifact", () => {
+  const dir = mkdtempSync(join(tmpdir(), "phase1-federal-payload-sha-mismatch-"));
+  const marker = join(dir, "calls");
+  const executable = new URL("../scripts/run-phase1-approved-promotion.sh", import.meta.url).pathname;
+  writeApprovedPromotionLocalChecks(dir);
+  writeFileSync(join(dir, "shasum"), `#!/bin/zsh
+case "$3" in
+  *CA_Forest_Harvest_1985-2022.zip) print -- "c6f41dff46d91812874672edb53233dac4126952132ad6d1131ad47b11ad7aad  $3" ;;
+  *CA_canopy_height_2022.zip) print -- "86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124  $3" ;;
+  *FederalElectoralDistricts_2025_SHP.zip) print -- "4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93  $3" ;;
+  *federal-existing-payload) print -- "0000000000000000000000000000000000000000000000000000000000000000  $3" ;;
+  *) exit 99 ;;
+esac
+`, { mode: 0o700 });
+  writeFileSync(join(dir, "aws"), `#!/bin/zsh
+print -- "$1:$2:$*" >> ${JSON.stringify(marker)}
+case "$1:$2" in
+  configure:get) print -- "arn:aws:iam::286853118812:mfa/witness-tree/archive-operator.device" ;;
+  sts:get-caller-identity) print -- '{"Account":"286853118812","Arn":"arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator"}' ;;
+  sts:assume-role) print -- '{"Credentials":{"AccessKeyId":"dummy","SecretAccessKey":"dummy","SessionToken":"dummy","Expiration":"2099-01-01T00:00:00Z"},"AssumedRoleUser":{"Arn":"arn:aws:sts::286853118812:assumed-role/WitnessTreeArchivePromotionUploader/witness-tree-approved-promotion"}}' ;;
+  s3api:head-object) if [[ "$*" == *manifest.json* ]]; then print -- '{"VersionId":"manifest-v1","ContentLength":572,"ChecksumType":"FULL_OBJECT","ChecksumCRC64NVME":"AAAAAAAAAAA="}'; else print -- '{"VersionId":"payload-v1","ContentLength":10301648,"ChecksumType":"FULL_OBJECT","ChecksumCRC64NVME":"AAAAAAAAAAA="}'; fi ;;
+  s3api:get-object) output="\${@: -1}"; print -- payload > "$output"; print -- '{}' ;;
+  s3api:put-object|s3api:put-object-retention) print -u2 -- "unexpected write"; exit 91 ;;
+  *) print -u2 -- "unexpected: $*"; exit 99 ;;
+esac
+`, { mode: 0o700 });
+  try {
+    const run = runFederalWithTotp(executable, dir);
+    assert.equal(run.status, 73, `${run.stdout}\n${run.stderr}`);
+    assert.match(`${run.stdout}${run.stderr}`, /Existing payload bytes do not match the approved SHA-256/);
+    const calls = readFileSync(marker, "utf8");
+    assert.equal((calls.match(/s3api:put-object:/g) ?? []).length, 0, calls);
+    assert.equal((calls.match(/s3api:put-object-retention:/g) ?? []).length, 0, calls);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
 test("the canopy archive uses explicit checked multipart calls and never aborts an unfinished upload", () => {
@@ -46,8 +213,8 @@ print -- "$1:$2" >> ${JSON.stringify(marker)}
 print -- "$*" >> ${JSON.stringify(join(dir, "arguments"))}
 case "$1:$2" in
   configure:get) print -- "arn:aws:iam::286853118812:mfa/witness-tree/archive-operator.device" ;;
-  sts:get-session-token|sts:assume-role) print -- '{"Credentials":{"AccessKeyId":"dummy","SecretAccessKey":"dummy","SessionToken":"dummy","Expiration":"2099-01-01T00:00:00Z"}}' ;;
-  sts:get-caller-identity) print -- "286853118812" ;;
+  sts:get-caller-identity) print -- '{"Account":"286853118812","Arn":"arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator"}' ;;
+  sts:assume-role) print -- '{"Credentials":{"AccessKeyId":"dummy","SecretAccessKey":"dummy","SessionToken":"dummy","Expiration":"2099-01-01T00:00:00Z"},"AssumedRoleUser":{"Arn":"arn:aws:sts::286853118812:assumed-role/WitnessTreeArchivePromotionUploader/witness-tree-approved-promotion"}}' ;;
   s3api:head-object) exit 1 ;;
   s3api:put-object) exit 88 ;;
   *) exit 99 ;;
@@ -83,8 +250,8 @@ expect {
     assert.equal(run.status, 70, `${run.stdout}\n${run.stderr}`);
     assert.match(`${run.stdout}${run.stderr}`, /Payload upload failed/);
     assert.doesNotMatch(`${run.stdout}${run.stderr}`, /123456/);
-    assert.deepEqual(readFileSync(marker, "utf8").trim().split("\n"), ["configure:get", "sts:get-session-token", "sts:get-caller-identity", "sts:assume-role", "s3api:head-object", "s3api:put-object"]);
-    assert.match(readFileSync(join(dir, "arguments"), "utf8"), /sts assume-role --role-arn arn:aws:iam::286853118812:role\/WitnessTreeArchivePromotionUploader/);
+    assert.deepEqual(readFileSync(marker, "utf8").trim().split("\n"), ["sts:get-caller-identity", "configure:get", "sts:assume-role", "s3api:head-object", "s3api:put-object"]);
+    assert.match(readFileSync(join(dir, "arguments"), "utf8"), /sts assume-role --profile WitnessTreeArchiveOperator --role-arn arn:aws:iam::286853118812:role\/WitnessTreeArchivePromotionUploader/);
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
@@ -97,7 +264,11 @@ test("empty or wrong-account configured MFA serial stops after local config look
     const shasum = join(dir, "shasum");
     writeFileSync(aws, `#!/bin/zsh
 print -- "$1:$2" >> ${JSON.stringify(marker)}
-case "$1:$2" in configure:get) print -- ${JSON.stringify(serial)} ;; *) exit 99 ;; esac
+case "$1:$2" in
+  sts:get-caller-identity) print -- '{"Account":"286853118812","Arn":"arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator"}' ;;
+  configure:get) print -- ${JSON.stringify(serial)} ;;
+  *) exit 99 ;;
+esac
 `, { mode: 0o700 });
     writeFileSync(stat, `#!/bin/zsh
 case "$3" in *CA_Forest_Harvest_1985-2022.zip) print -- 247945479 ;; *CA_canopy_height_2022.zip) print -- 10347564066 ;; *FederalElectoralDistricts_2025_SHP.zip) print -- 10301648 ;; *) exit 99 ;; esac
@@ -119,7 +290,7 @@ expect {
       assert.equal(run.status, 69, `${run.stdout}\n${run.stderr}`);
       assert.match(`${run.stdout}${run.stderr}`, /Configured MFA serial is absent, malformed, or outside the approved account/);
       assert.doesNotMatch(`${run.stdout}${run.stderr}`, /123456/);
-      assert.deepEqual(readFileSync(marker, "utf8").trim().split("\n"), ["configure:get"]);
+    assert.deepEqual(readFileSync(marker, "utf8").trim().split("\n"), ["sts:get-caller-identity", "configure:get"]);
     } finally { rmSync(dir, { recursive: true, force: true }); }
   }
 });
@@ -250,8 +421,8 @@ test("PTY resume canonicalizes provider-only LastModified metadata and completes
 print -- "$1:$2" >> ${JSON.stringify(marker)}
 case "$1:$2" in
   configure:get) print -- "arn:aws:iam::286853118812:mfa/a-different-safe-device-path" ;;
-  sts:get-session-token|sts:assume-role) print -- '{"Credentials":{"AccessKeyId":"dummy","SecretAccessKey":"dummy","SessionToken":"dummy","Expiration":"2099-01-01T00:00:00Z"}}' ;;
-  sts:get-caller-identity) print -- 286853118812 ;;
+  sts:get-caller-identity) print -- '{"Account":"286853118812","Arn":"arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator"}' ;;
+  sts:assume-role) print -- '{"Credentials":{"AccessKeyId":"dummy","SecretAccessKey":"dummy","SessionToken":"dummy","Expiration":"2099-01-01T00:00:00Z"},"AssumedRoleUser":{"Arn":"arn:aws:sts::286853118812:assumed-role/WitnessTreeArchivePromotionUploader/witness-tree-approved-promotion"}}' ;;
   s3api:list-parts) print -r -- ${JSON.stringify(listResponse)} ;;
   s3api:upload-part) if [[ "\${FAKE_PHASE:-}" == expired ]]; then print -u2 -- ExpiredToken; exit 255; fi; jq -cn --arg ETag '"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"' --arg ChecksumCRC64NVME AAAAAAAAAAA= '{ETag:$ETag,ChecksumCRC64NVME:$ChecksumCRC64NVME}' ;;
   s3api:complete-multipart-upload)

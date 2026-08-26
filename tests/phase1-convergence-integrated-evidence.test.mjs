@@ -27,14 +27,13 @@ test("integrated Phase 1 evidence remains additive and fail-closed across conver
   const replies = read("data/phase1-outreach-reply-audit.json");
 
   assert.deepEqual(state.ledger.evidenceStateCounts, {
-    "remote-verified-archived-profiled": 9,
-    "local-verified-profiled": 7,
+    "remote-verified-archived-profiled": 16,
     "partial-component": 2,
     "access-blocked": 13,
   });
-  assert.equal(state.ledger.rawEvidenceNumerator, 14.75);
-  assert.equal(state.ledger.formalEvidenceTrackingPercentage, 39.2741935);
-  assert.equal(state.ledger.immutableArchiveCompleteRows, 9);
+  assert.equal(state.ledger.rawEvidenceNumerator, 16.5);
+  assert.equal(state.ledger.formalEvidenceTrackingPercentage, 40.9677419);
+  assert.equal(state.ledger.immutableArchiveCompleteRows, 16);
   assert.equal(state.ledger.productionAdmissionCompleteRows, 0);
   assert.equal(state.ledger.productionEligibleRows, 0);
 
@@ -112,7 +111,7 @@ test("canonical wildfire summaries reject superseded readback and score claims",
 });
 
 test("all canonical summaries label superseded Phase 1 totals as historical", () => {
-  const stale = /15\.00\/31|39\.516129%|(?:11\/31.{0,50}immutable|immutable.{0,50}11\/31)|10 immutable rows|owner gate is 4\/6/i;
+  const stale = /15\.00\/31|39\.516129%|10 immutable rows|owner gate is 4\/6/i;
   for (const file of [...canonicalSummaryFiles, ...currentFacingCodeFiles]) {
     const lines = readFileSync(new URL(`../${file}`, import.meta.url), "utf8").split("\n");
     for (let index = 0; index < lines.length; index += 1) {
@@ -156,9 +155,9 @@ test("current-facing Phase 1 docs cannot regress to pre-QC archive state", () =>
   const approvals = readFileSync(new URL("../docs/PHASE1_PHASE3_OWNER_APPROVALS_2026-08-21.md", import.meta.url), "utf8");
   const qcPreparation = readFileSync(new URL("../docs/QC_IMMUTABLE_PROMOTION_PREPARATION.md", import.meta.url), "utf8");
 
-  assert.match(completion, /Nine remotely archived rows/);
-  assert.match(completion, /Seven locally verified rows/);
-  assert.doesNotMatch(completion, /Seven remotely archived rows|Five locally verified rows/);
+  assert.match(completion, /Fifteen remotely archived rows/);
+  assert.doesNotMatch(completion, /Five locally verified rows/);
+  assert.doesNotMatch(completion, /Seven remotely archived rows|Seven locally verified rows/);
   assert.match(downstream, /audits all nine remotely archived Phase 1 rows/);
   assert.match(downstream, /Eight rows remain blocked/);
   assert.doesNotMatch(downstream, /audits all seven remotely archived Phase 1 rows|Six rows remain blocked/);

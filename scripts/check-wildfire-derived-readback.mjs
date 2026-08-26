@@ -49,7 +49,7 @@ export function approvalTemplate(plan = PLAN) {
     profile: PROFILE,
     region: REGION,
     bucket: BUCKET,
-    retention: { mode: "COMPLIANCE", retainUntil: RETAIN_UNTIL, payloadsOnly: true },
+    retention: { mode: "COMPLIANCE", retainUntil: RETAIN_UNTIL, payloadsAndManifests: true },
     artifacts: expectedArtifacts(plan),
     exclusions: [...EXCLUSIONS],
     productionEligible: false,
@@ -134,10 +134,11 @@ export function validateReadback(approval, readback, plan = PLAN) {
   assert.deepEqual(sorted(Object.keys(readback)), sorted(expected.map(({ id }) => id)), "derived readback contains an unexpected artifact");
   for (const artifact of expected) {
     const actual = readback[artifact.id];
-    assert.deepEqual(sorted(Object.keys(actual ?? {})), ["manifest", "payload", "retention"], `${artifact.id} readback shape is not exact`);
+    assert.deepEqual(sorted(Object.keys(actual ?? {})), ["manifest", "manifestRetention", "payload", "retention"], `${artifact.id} readback shape is not exact`);
     validateHead(actual.payload, artifact.byteLength, `${artifact.id} payload`);
     validateHead(actual.manifest, artifact.manifestByteLength, `${artifact.id} manifest`);
     validateRetention(actual.retention, `${artifact.id} payload`);
+    validateRetention(actual.manifestRetention, `${artifact.id} manifest`);
   }
   return true;
 }

@@ -89,7 +89,7 @@ function recoveryRetentionStatement() {
     Sid: desiredRecoveryRetentionDelta.delta.sid,
     Effect: desiredRecoveryRetentionDelta.delta.effect,
     Action: [...desiredRecoveryRetentionDelta.delta.actions],
-    Resource: [desiredRecoveryRetentionDelta.delta.resource]
+    Resource: [...desiredRecoveryRetentionDelta.delta.resources]
   };
 }
 
@@ -158,7 +158,7 @@ function buildRetentionCandidate(current) {
   if (existing.length === 1) {
     if (!equalJson(existing[0], recoveryRetentionStatement())) fail("live recovery-retention statement is not exact; no IAM mutation was attempted");
   } else {
-    if (desiredRecoveryRetentionDelta.delta.actions.every((action) => exactAllow(current, action, desiredRecoveryRetentionDelta.delta.resource))) {
+    if (desiredRecoveryRetentionDelta.delta.actions.every((action) => desiredRecoveryRetentionDelta.delta.resources.every((resource) => exactAllow(current, action, resource)))) {
       fail("live policy already grants recovery retention under another statement; no IAM mutation was attempted");
     }
     candidate.Statement.push(recoveryRetentionStatement());
@@ -223,7 +223,7 @@ function accessAnalyzer(profile, policyPath, applying) {
 function simulationResource(name) {
   if (name.startsWith("exact-primary-retention")) return desiredIamDelta.requiredExistingRetention.resources[0];
   if (name === "exact-primary-versioned-read") return desiredIamDelta.delta.resources[0];
-  if (name === "exact-recovery-versioned-read" || name.startsWith("exact-recovery-retention") || name === "delete-exact-recovery-payload") return desiredRecoveryRetentionDelta.delta.resource;
+  if (name === "exact-recovery-versioned-read" || name.startsWith("exact-recovery-retention") || name === "delete-exact-recovery-payload") return desiredRecoveryRetentionDelta.delta.resources[2];
   if (name === "out-of-scope-retention-read") return OUT_OF_SCOPE_RESOURCE;
   fail("unknown simulation case; no IAM mutation was attempted");
 }
@@ -329,7 +329,7 @@ function main() {
       sid: desiredRecoveryRetentionDelta.delta.sid,
       effect: desiredRecoveryRetentionDelta.delta.effect,
       actions: [...desiredRecoveryRetentionDelta.delta.actions],
-      resource: desiredRecoveryRetentionDelta.delta.resource
+      resources: [...desiredRecoveryRetentionDelta.delta.resources]
     },
     readbackCorrection: {
       sid: desiredIamDelta.delta.sid,

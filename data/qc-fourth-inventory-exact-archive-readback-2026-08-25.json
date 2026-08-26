@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "witness-tree/qc-fourth-inventory-exact-archive-readback/1",
+  "status": "independent-read-only-exact-version-compliance-readback",
+  "capturedAt": "2026-08-25T22:46:40.677Z",
+  "storage": {
+    "region": "ca-central-1",
+    "countryCode": "CA"
+  },
+  "planBinding": {
+    "objectCount": 62,
+    "payloadCount": 56,
+    "evidenceAndManifestCount": 6,
+    "byteLength": 16179091081,
+    "objectDescriptorSha256": "ad40d3eced5918f64453fbaa6296a615c6524aa67900f12ef5fd510988c085cd",
+    "preparationSha256": "fce3e053e68cbed57bf612476235361c37108d911609c82bc5d5a3cdeb82d258"
+  },
+  "verification": {
+    "exactPrivateVersionsMatched": 62,
+    "byteLengthsMatchedPlan": 62,
+    "checksumsMatchedPrivateState": 62,
+    "checksumTypes": {
+      "COMPOSITE": 6,
+      "FULL_OBJECT": 56
+    },
+    "remoteChecksumSetSha256": "ea433eff8cd3c771dd945e5a03a96d16a9569a0386bdcf4f5a400d22159d212a",
+    "privateVersionSetSha256": "49b5a92a7795f954dbb3ca28eb3d05a22aad438a511648df7ea356af462f83c0",
+    "complianceRetentionMatched": 62,
+    "retainUntil": "2033-08-12T00:00:00Z"
+  },
+  "notice": "Independent read-only, exact-version archive evidence. It proves only the 62 archived objects and their COMPLIANCE retention; it is not owner admission, transformation, ingestion, release, or production eligibility.",
+  "claims": {
+    "ownerAdmission": false,
+    "transformed": false,
+    "ingested": false,
+    "released": false,
+    "productionEligible": false
+  }
+}

@@ -26,8 +26,8 @@ function readback() {
   const approval = approvalTemplate();
   const [bc, ontario] = approval.artifacts;
   return {
-    [bc.id]: { payload: head(bc.byteLength, "bc-payload-version"), manifest: head(bc.manifestByteLength, "bc-manifest-version"), retention: retention() },
-    [ontario.id]: { payload: head(ontario.byteLength, "ontario-payload-version"), manifest: head(ontario.manifestByteLength, "ontario-manifest-version"), retention: retention() }
+    [bc.id]: { payload: head(bc.byteLength, "bc-payload-version"), manifest: head(bc.manifestByteLength, "bc-manifest-version"), retention: retention(), manifestRetention: retention() },
+    [ontario.id]: { payload: head(ontario.byteLength, "ontario-payload-version"), manifest: head(ontario.manifestByteLength, "ontario-manifest-version"), retention: retention(), manifestRetention: retention() }
   };
 }
 
@@ -62,8 +62,8 @@ function writeFakeAws(dir, { retentionFailure = false, headFailure = false } = {
     "print -r -- \"$*\" >> __MARKER__",
     "case \"$1:$2\" in",
     "  configure:get) print -r -- \"arn:aws:iam::286853118812:mfa/witness-tree/archive-operator.device\" ;;",
-    "  sts:get-session-token|sts:assume-role) print -r -- \"{\\\"Credentials\\\":{\\\"AccessKeyId\\\":\\\"test-access\\\",\\\"SecretAccessKey\\\":\\\"test-secret\\\",\\\"SessionToken\\\":\\\"test-session\\\"}}\" ;;",
-    "  sts:get-caller-identity) print -r -- \"286853118812\" ;;",
+    "  sts:assume-role) print -r -- \"{\\\"Credentials\\\":{\\\"AccessKeyId\\\":\\\"test-access\\\",\\\"SecretAccessKey\\\":\\\"test-secret\\\",\\\"SessionToken\\\":\\\"test-session\\\"},\\\"AssumedRoleUser\\\":{\\\"Arn\\\":\\\"arn:aws:sts::286853118812:assumed-role/WitnessTreeWildfireDerivedPromotionUploader/test\\\"}}\" ;;",
+    "  sts:get-caller-identity) print -r -- \"{\\\"Account\\\":\\\"286853118812\\\",\\\"Arn\\\":\\\"arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator\\\"}\" ;;",
     "  s3api:head-object)",
     headFailure
       ? "    print -u2 -- \"head unavailable\"; exit 1 ;;"
@@ -137,7 +137,7 @@ test("interactive readback uses only exact versioned heads and retention reads",
     const roleCall = calls.find((call) => call.includes("sts assume-role"));
     assert.match(roleCall, /--serial-number arn:aws:iam::286853118812:mfa\/witness-tree\/archive-operator\.device/);
     assert.match(roleCall, /--token-code 123456/);
-    assert.equal(calls.filter((call) => call.includes("get-object-retention")).length, 2);
+    assert.equal(calls.filter((call) => call.includes("get-object-retention")).length, 4);
     const heads = calls.filter((call) => call.includes("head-object"));
     assert.ok(heads.length === 8 && heads.every((call, index) => index % 2 === 0 || call.includes("--version-id")));
     assert.ok(calls.every((call) => !/^s3api (list-objects|put-object|upload-part|complete-multipart|delete-object|put-object-retention|put-object-legal-hold|put-object-retention|bypass-governance)/i.test(call)));

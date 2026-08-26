@@ -13,7 +13,7 @@ export const canopyRecoveryIamAttestation = Object.freeze({
     sid: desiredRecoveryRetentionDelta.delta.sid,
     effect: desiredRecoveryRetentionDelta.delta.effect,
     actions: Object.freeze([...desiredRecoveryRetentionDelta.delta.actions]),
-    resource: desiredRecoveryRetentionDelta.delta.resource
+    resources: Object.freeze([...desiredRecoveryRetentionDelta.delta.resources])
   }),
   readbackCorrection: Object.freeze({
     sid: desiredIamDelta.delta.sid,
@@ -48,7 +48,7 @@ export const canopyRecovery = Object.freeze({
   retainUntil: "2033-08-12T00:00:00Z",
   requiredSteps: Object.freeze([
     "read-exact-heads",
-    "apply-compliance-retention-exact-payload-versions",
+    "apply-compliance-retention-exact-payload-and-sidecar-versions",
     "read-exact-retention-back"
   ]),
   requiredExclusions: Object.freeze([
@@ -135,7 +135,7 @@ export function validateCanopyRecoveryRetentionProvisioningPolicy(policyEnvelope
   const retention = matches[0];
   assert.equal(retention.Effect, desired.delta.effect, "the recovery-retention statement must allow the exact actions");
   assert.deepEqual(sorted(statementActions(retention)), sorted(desired.delta.actions), "the recovery-retention statement grants an unexpected action");
-  assert.deepEqual(statementResources(retention), [desired.delta.resource], "the recovery-retention statement has an unexpected resource scope");
+  assert.deepEqual(sorted(statementResources(retention)), sorted(desired.delta.resources), "the recovery-retention statement has an unexpected resource scope");
   assert.deepEqual(Object.keys(retention).sort(), ["Action", "Effect", "Resource", "Sid"].sort(), "the recovery-retention statement has an unexpected policy field");
   return true;
 }
@@ -172,7 +172,7 @@ export function validateCanopyRecoveryIamAttestation(attestation, { requireAppli
   assert.equal(attestation.noObjectVersionIds, true, "IAM attestation is not redacted of object version IDs");
   assert.equal(attestation.noUploadIds, true, "IAM attestation is not redacted of upload IDs");
   assert.deepEqual(attestation.delta, canopyRecoveryIamAttestation.delta, "IAM attestation delta is not exact");
-  assert.deepEqual(Object.keys(attestation.delta).sort(), ["actions", "effect", "resource", "sid"].sort(), "IAM attestation delta contains an unexpected field");
+  assert.deepEqual(Object.keys(attestation.delta).sort(), ["actions", "effect", "resources", "sid"].sort(), "IAM attestation delta contains an unexpected field");
   assert.deepEqual(attestation.readbackCorrection, canopyRecoveryIamAttestation.readbackCorrection, "IAM attestation readback correction is not exact");
   assert.deepEqual(Object.keys(attestation.readbackCorrection).sort(), ["actions", "removedCondition", "resources", "sid"].sort(), "IAM attestation readback correction contains an unexpected field");
   assert.deepEqual(Object.keys(attestation.accessAnalyzer).sort(), ["findings", "status"].sort(), "IAM attestation Access Analyzer result contains an unexpected field");
@@ -209,7 +209,7 @@ export function validateCanopyRecoveryApproval(approval, expected = canopyRecove
   assert.equal(approval.region, expected.region, "approval region is not approved");
   assert.deepEqual(approval.primary, expectedObjects(expected.primary), "primary object scope is not exact");
   assert.deepEqual(approval.recovery, expectedObjects(expected.recovery), "recovery object scope is not exact");
-  assert.deepEqual(approval.retention, { mode: "COMPLIANCE", retainUntil: expected.retainUntil, payloadsOnly: true }, "retention scope is not exact");
+  assert.deepEqual(approval.retention, { mode: "COMPLIANCE", retainUntil: expected.retainUntil, payloadsAndSidecars: true }, "retention scope is not exact");
   assert.deepEqual(approval.steps, expected.requiredSteps, "recovery steps are not exact");
   assert.deepEqual(approval.exclusions, expected.requiredExclusions, "recovery exclusions are incomplete or changed");
   assert.equal(approval.productionEligible, false, "recovery approval may not authorize production inference");
@@ -275,8 +275,8 @@ export function validateCanopyRecoveryVersionReferences({ primaryPayload, recove
   return true;
 }
 
-export function validateCanopyRecoveryRetention({ primary, recovery }, retainUntil = "2033-08-12T00:00:00Z") {
-  for (const retention of [primary, recovery]) {
+export function validateCanopyRecoveryRetention({ primaryPayload, recoveryPayload, primarySidecar, recoverySidecar }, retainUntil = "2033-08-12T00:00:00Z") {
+  for (const retention of [primaryPayload, recoveryPayload, primarySidecar, recoverySidecar]) {
     validateCanopyRecoverySingleRetention(retention, retainUntil);
   }
   return true;
@@ -309,7 +309,7 @@ if (process.argv[1]?.endsWith("check-phase1-canopy-completion-recovery.mjs")) {
       validateCanopyRecoveryVersionReferences(heads, state.versionRefs ?? {});
       console.log("Canopy recovery object heads passed.");
     } else if (mode === "--retention") {
-      validateCanopyRecoveryRetention({ primary: JSON.parse(readFileSync(process.argv[3], "utf8")), recovery: JSON.parse(readFileSync(process.argv[4], "utf8")) }, canopyRecovery.retainUntil);
+      validateCanopyRecoveryRetention(Object.fromEntries(["primaryPayload", "recoveryPayload", "primarySidecar", "recoverySidecar"].map((name, index) => [name, JSON.parse(readFileSync(process.argv[3 + index], "utf8"))])), canopyRecovery.retainUntil);
       console.log("Canopy recovery retention passed.");
     } else if (mode === "--retention-one") {
       validateCanopyRecoverySingleRetention(JSON.parse(readFileSync(process.argv[3], "utf8")), canopyRecovery.retainUntil);

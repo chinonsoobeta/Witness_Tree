@@ -5,8 +5,8 @@
   "privateAttestationSha256": "9560e90b5303cdd2c4ce7aa2e9d0024df6b7afcbffe361551f2c7a021d153940",
   "provenance": {
     "createdAt": "2026-08-22T22:06:55Z",
-    "runnerSha256": "c346aef757fb4fa83f4e334d35cbffce48a06d9192b92e52671e65597cd09cfe",
-    "captureScriptSha256": "c648120d19304056786e29e39914cce7ae91ea5ec2d441ea1c27b63684974036",
+    "runnerSha256": "48bb07c951fd935949b9f1b55c66264b1cfca9ef205b82f14812a6147c1b2c23",
+    "captureScriptSha256": "9f7c6e4d7834f046e032fcbd527f4841f8c9caee87c9ddcada95973cc7709cc4",
     "planSha256": "1741f5ed2baee002778c32708880d16fbb8be5ea7472dfb241f6d684f877c55b",
     "operation": "read-only-exact-version-head-and-payload-retention-capture"
   },

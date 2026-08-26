@@ -30,3 +30,20 @@ test("matrix fails closed for an inferred decision, a missing scope, or duplicat
   const duplicate = structuredClone(audit); duplicate.minimalOwnerDecisionBundles.find((bundle) => bundle.id === "elections-canada-2025-shared-artifact").rows = ["fed-2023-ridings"];
   assert.throws(() => validatePhase1SourceLedgerDecisionReadiness(duplicate, ledger, decisions));
 });
+
+test("the readiness matrix validates its historical federal rows after later admission", () => {
+  assert.equal(validatePhase1SourceLedgerDecisionReadiness(audit, ledger, decisions), audit);
+  for (const id of ["fed-2023-ridings", "elections-canada-45th-files"]) {
+    const entry = audit.entries.find((candidate) => candidate.id === id);
+    assert.equal(entry.readiness, "immutable-archive-then-owner-decision");
+    const current = ledger.entries.find((candidate) => candidate.id === id);
+    assert.equal(current.evidenceState, "production-admitted");
+    assert.equal(current.productionEligible, true);
+  }
+});
+
+test("the readiness matrix rejects a corrupted later federal admission", () => {
+  const corrupted = structuredClone(ledger);
+  corrupted.entries.find(({ id }) => id === "elections-canada-45th-files").proof.productionAdmission = false;
+  assert.throws(() => validatePhase1SourceLedgerDecisionReadiness(audit, corrupted, decisions), /exact later federal admission state|later federal admission/i);
+});

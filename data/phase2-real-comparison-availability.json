@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "witness-tree/phase2-real-comparison-availability/1",
+  "status": "local-hansen-cross-check-input-staged-no-comparison-results",
+  "productionEligible": false,
+  "formalPhase2ComparisonGateComplete": false,
+  "sources": [
+    {"id":"ca-forest-harvest-1985-2022","localPath":"../../Witness_Tree-data/raw/nrcan-ca-forest-harvest-1985-2022/2026-08-14/CA_Forest_Harvest_1985-2022.zip","byteLength":247945479,"sha256":"c6f41dff46d91812874672edb53233dac4126952132ad6d1131ad47b11ad7aad","comparisonStatus":"pending","missing":"A checksum-bound provincial published-harvest-statistics series matched by province and year."},
+    {"id":"nfdb-polygons-current","localPath":"../../Witness_Tree-data/staging/nfdb-poly-current/NFDB_poly_verified.zip","byteLength":778498701,"sha256":"a0373a6dd8e341c3440ed9907f81e8ba6227135dacd9cdc07e4c6af0a59b1b4e","comparisonStatus":"not-like-for-like","missing":"The required NBAC artifact and authorization; V2.1 observed loss is not wildfire attribution."},
+    {"id":"nbac-1972-2025","localPath":null,"byteLength":null,"sha256":null,"comparisonStatus":"missing","missing":"NBAC_1972to2025_20260513_shp.zip is unacquired because the end-user agreement and written consent remain unresolved."},
+    {"id":"hansen-global-forest-change","localPath":null,"byteLength":null,"sha256":null,"comparisonStatus":"sample-input-staged-not-like-for-like","evidence":"data/phase2-hansen-gfc-v1.12-sample-profile.json","missing":"Four CC BY 4.0 Hansen v1.12 sample tiles are checksum-bound locally. A complete like-for-like 2000–2022 comparison still needs admitted Witness Tree outputs, matching masks/boundaries/resampling/area method and a documented uncertainty treatment."}
+  ],
+  "publishedComparisons": [
+    {"kind":"provincial-harvest","witnessTreeHectares":null,"referenceHectares":null,"absoluteDifferenceHectares":null,"relativeDifference":null},
+    {"kind":"nbac-burned-area","witnessTreeHectares":null,"referenceHectares":null,"absoluteDifferenceHectares":null,"relativeDifference":null},
+    {"kind":"hansen-cross-check","witnessTreeHectares":null,"referenceHectares":null,"absoluteDifferenceHectares":null,"relativeDifference":null}
+  ],
+  "claims":{"comparisonResultsExist":false,"causalAttributionClaim":false,"likeForLikeClaim":false,"productAccuracyClaim":false,"released":false}
+}

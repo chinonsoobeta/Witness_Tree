@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "witness-tree/phase2-v21-expert-review-workflow/1",
+  "status": "ready-no-review-results",
+  "packet": {
+    "path": "../../Witness_Tree-data/derived/phase2-v21-review-packet-v1/packet.json",
+    "sha256": "48151799249a442c828287897f0d504746b09fb72ef0663308d90339d47e091e",
+    "byteLength": 328499
+  },
+  "assignment": {
+    "algorithm": "packet-samples-sorted-by-province-then-selection-rank-v1",
+    "provinces": ["BC", "AB", "ON", "QC"],
+    "requiredCandidatesPerProvince": 100,
+    "totalCandidates": 400
+  },
+  "reviewerResultSchema": {
+    "requiredTopLevelFields": ["schemaVersion", "status", "packet", "reviewerRoster", "results"],
+    "requiredResultFields": ["sampleId", "province", "sourceRecord", "reviewer", "yearOutcome", "attributionOutcome", "notes"],
+    "allowedOutcomes": ["confirmed", "not-confirmed", "indeterminate"],
+    "minimumDeterminateOutcomesPerProvince": 1,
+    "minimumSubstantiveNoteCharacters": 32,
+    "sourceRecordRequirement": "The reviewer must attest that both checksum-bound packet source records were consulted: rasterSha256 and boundaryGeometrySha256 must exactly match the assigned sample, and verifiedAgainstPacketSourceRecords must be true.",
+    "completionRequirement": "One completed result is required for every assigned candidate. Each result must reference an approved human reviewer ID covering that province, repeat the approved reviewer role, attest independent inspection without a conflict of interest, include a UTC timestamp, bounded year and attribution outcomes, and substantive English and French notes. An indeterminate outcome additionally requires substantive bilingual evidence explaining why the assigned evidence could not resolve that dimension. Each province must contain at least one determinate year outcome and one determinate attribution outcome; 100 all-indeterminate rows cannot complete review."
+  },
+  "reviewerRosterRequirement": {
+    "template": "data/phase2-v21-expert-reviewer-roster.template.json",
+    "schemaVersion": "witness-tree/phase2-v21-expert-reviewer-roster/1",
+    "requirement": "A separate owner-approved roster must bind the exact workflow contract and real review packet and must be checksum-bound byte-for-byte in the completed result and evidence documents. Each reviewer needs a unique human identity, affiliation, substantive role and qualifications, one or more covered provinces, an approved status/date, and a self-attested independent/no-conflict review. At least one approved qualified human reviewer must cover each province."
+  },
+  "claims": {
+    "expertReviewCompleted": false,
+    "admittedInputs": false,
+    "productionEligible": false,
+    "released": false
+  }
+}

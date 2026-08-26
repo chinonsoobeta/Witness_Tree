@@ -7,10 +7,15 @@
   "policyName": "ExactApprovedPromotionOnly",
   "prerequisiteSid": "CanopyVersionedRecoveryReadback",
   "delta": {
-    "sid": "CanopyRecoveryPayloadRetentionOnly",
+    "sid": "CanopyRecoveryPayloadAndSidecarRetention",
     "effect": "Allow",
     "actions": ["s3:GetObjectRetention", "s3:PutObjectRetention"],
-    "resource": "arn:aws:s3:::witness-tree-raw-recovery-ca-central-1/raw/nrcan-forest-canopy-height-2022/undeclared/2026-08-14T18-57-22Z/86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124/payload/ca_canopy_height_2022.zip"
+    "resources": [
+      "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/nrcan-forest-canopy-height-2022/undeclared/2026-08-14T18-57-22Z/86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124/payload/ca_canopy_height_2022.zip",
+      "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/nrcan-forest-canopy-height-2022/undeclared/2026-08-14T18-57-22Z/86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124/manifest.json",
+      "arn:aws:s3:::witness-tree-raw-recovery-ca-central-1/raw/nrcan-forest-canopy-height-2022/undeclared/2026-08-14T18-57-22Z/86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124/payload/ca_canopy_height_2022.zip",
+      "arn:aws:s3:::witness-tree-raw-recovery-ca-central-1/raw/nrcan-forest-canopy-height-2022/undeclared/2026-08-14T18-57-22Z/86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124/manifest.json"
+    ]
   },
   "simulations": [
     {"case": "exact-primary-versioned-read", "action": "s3:GetObjectVersion", "decision": "allowed"},
@@ -30,5 +35,5 @@
     "s3:ReplicateObject",
     "iam:*"
   ],
-  "notice": "This delta adds only exact recovery-payload retention read/write capability. It does not add IAM read permission, alter primary retention permissions, or replace any existing policy statement."
+  "notice": "This delta adds only exact primary/recovery payload-and-sidecar retention read/write capability. It does not add IAM read permission or replace any existing policy statement."
 }

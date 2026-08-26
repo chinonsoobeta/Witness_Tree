@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "witness-tree/transformation-spec/1",
+  "id": "qc-original-current-inventory-stand-copy-v1",
+  "status": "specified-not-approved-not-executed",
+  "sourceId": "qc-original-current-inventory",
+  "sourceBinding": {
+    "rawArchiveSha256": "c10d691516569de76642dc1fc64e662f2569b5b58ab5d945b58b8b7834ba9c61",
+    "rawArchiveBytes": 11244667626,
+    "archiveMember": "CARTE_ECO_ORI_PROV.gpkg",
+    "extractedGeoPackageSha256": "70539d99497de2773342611d73bf9e4fadf01f1fdbfe3ca536ad711d87916e7c"
+  },
+  "input": {
+    "format": "GeoPackage",
+    "layer": "pee_ori_prov",
+    "geometryColumn": "geom",
+    "geometryType": "MultiPolygon",
+    "crs": "EPSG:32198",
+    "featureCount": 8387062,
+    "sourceRowKey": "fid",
+    "joinKey": "geocode",
+    "publishedAttributes": ["geocode", "origine", "an_origine", "perturb", "an_perturb", "reb_ess1", "reb_ess2", "reb_ess3", "et_domi", "part_str", "type_couv", "gr_ess", "cl_dens", "cl_haut", "cl_age", "etagement", "couv_gaule", "cl_pent", "dep_sur", "cl_drai", "type_eco", "co_ter", "type_ter", "strate", "met_at_str", "superficie", "toponyme", "no_prg", "ver_prg", "shape_length", "shape_area"]
+  },
+  "interpretation": {
+    "temporal": "CARTE_ECO_ORI_PROV is the publisher's original/current-inventory product, retrieved 2026-08-14 with no declared publisher edition. It is distinct from the annually updated current ecoforest map and the fixed 2001–2018 fourth-inventory product.",
+    "semantic": "This operation carries the stand polygon attributes without interpreting coded origine, perturb, an_origine, or an_perturb values as harmonized events, dates, harvest classes, or causation. Geocode is retained as the publisher key only.",
+    "joinPolicy": "No joins are executed. meta_ori_prov, essence_ori_prov and etage_ori_prov are deliberately excluded until a separate owner-approved specification defines cardinality, aggregation, conflict policy and semantic use."
+  },
+  "operation": {
+    "kind": "lossless-single-layer-copy",
+    "outputLayer": "qc_original_current_inventory_stands",
+    "outputCrs": "EPSG:32198",
+    "rowOrder": "ORDER BY fid ASC",
+    "rowIdentity": "source_fid is the source fid rendered as an integer; output_record_id is SHA-256(rawArchiveSha256 + ':' + input.layer + ':' + source_fid).",
+    "fieldMapping": "Copy every published attribute by the same name and type; append source_fid, output_record_id, source_raw_sha256 and source_layer.",
+    "geometry": "Copy geom without simplification, snapping, dissolution, reprojection, buffering or repair.",
+    "joins": "None. Do not join meta or other tables in this operation.",
+    "exclusions": "No source record may be silently filtered. Preflight fails for any missing/blank geocode, duplicate fid, invalid geometry, schema drift or count mismatch."
+  },
+  "deterministicOutputs": {
+    "artifact": "GeoPackage containing only qc_original_current_inventory_stands and driver-required metadata",
+    "sidecar": "Canonical UTF-8 JSON with sorted keys and newline termination, binding source checksums, tool hashes, schemas, counts, geometry QA, output checksum and deterministic re-run comparison.",
+    "prohibitedVolatileFields": ["generatedAt", "hostname", "processId", "absoluteLocalPath"]
+  },
+  "qa": {"required": ["verify raw and extracted SHA-256 and byte counts", "verify pee_ori_prov CRS, geometry type, 33 fields and 8387062 records", "verify every input geocode is nonblank and every geometry is present, nonempty and valid", "verify lossless output rows, attributes and geometry fingerprints equal input by source_fid", "verify deterministic re-run output and sidecar checksums match"], "failurePolicy": "fail-closed; no partial or joined product is admitted"},
+  "intendedUse": "A checksum-bound lossless stand-polygon artifact that preserves the provincial original/current-inventory source for later approved work.",
+  "ownerDecision": {
+    "decision": "Approve, reject, or defer this exact checksum-bound lossless stand-copy scope only.",
+    "doesNotDecide": [
+      "ingestion",
+      "release",
+      "production admission",
+      "a join to meta_ori_prov, essence_ori_prov, or etage_ori_prov",
+      "semantic interpretation of source-coded attributes"
+    ]
+  },
+  "prohibitedClaims": ["production admission", "a temporal update chronology", "a fourth-inventory result", "a complete forest-land denominator", "harmonized disturbance or harvest classification"],
+  "admission": {"transformationApproved": false, "ingestionApproved": false, "releaseApproved": false, "productionEligible": false}
+}

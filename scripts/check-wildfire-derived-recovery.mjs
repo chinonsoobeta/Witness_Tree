@@ -81,7 +81,7 @@ export function approvalTemplate(plan = PLAN) {
     profile: PROFILE,
     region: REGION,
     bucket: BUCKET,
-    retention: { mode: "COMPLIANCE", retainUntil: RETAIN_UNTIL, payloadsOnly: true },
+    retention: { mode: "COMPLIANCE", retainUntil: RETAIN_UNTIL, payloadsAndManifests: true },
     operations: {
       reuseExistingBcPayloadVersion: true,
       createBcManifest: true,
@@ -311,8 +311,8 @@ export function validateProgressEvidence(evidence, approval, state, plan = PLAN)
     validateObjectHead(evidence.objects[name].head, name, state, plan);
   }
   for (const name of Object.keys(evidence.retention)) {
-    assert.ok(["bcPayload", "ontarioPayload"].includes(name), `${name} retention is outside the exact recovery scope`);
-    validateRetention(evidence.retention[name], name === "bcPayload" ? "BC payload" : "Ontario payload");
+    assert.ok(["bcPayload", "bcManifest", "ontarioPayload", "ontarioManifest"].includes(name), `${name} retention is outside the exact recovery scope`);
+    validateRetention(evidence.retention[name], name);
   }
   return true;
 }
@@ -330,8 +330,8 @@ export function mergeProgressEvidence(approval, state, current, { objectName, he
     };
   }
   if (retentionName) {
-    assert.ok(["bcPayload", "ontarioPayload"].includes(retentionName), "progress retention is outside the exact recovery scope");
-    validateRetention(retention, retentionName === "bcPayload" ? "BC payload" : "Ontario payload");
+    assert.ok(["bcPayload", "bcManifest", "ontarioPayload", "ontarioManifest"].includes(retentionName), "progress retention is outside the exact recovery scope");
+    validateRetention(retention, retentionName);
     progress.retention[retentionName] = retention;
   }
   validateProgressEvidence(progress, approval, state, plan);
@@ -343,8 +343,7 @@ export function buildEvidence(approval, state, heads, retention, plan = PLAN) {
   for (const name of ["bcPayload", "bcManifest", "ontarioPayload", "ontarioManifest"]) {
     evidence = mergeProgressEvidence(approval, state, evidence, { objectName: name, head: heads[name] }, plan);
   }
-  evidence = mergeProgressEvidence(approval, state, evidence, { retentionName: "bcPayload", retention: retention.bcPayload }, plan);
-  evidence = mergeProgressEvidence(approval, state, evidence, { retentionName: "ontarioPayload", retention: retention.ontarioPayload }, plan);
+  for (const name of ["bcPayload", "bcManifest", "ontarioPayload", "ontarioManifest"]) evidence = mergeProgressEvidence(approval, state, evidence, { retentionName: name, retention: retention[name] }, plan);
   return completeEvidence(approval, state, evidence, plan);
 }
 
@@ -352,7 +351,7 @@ export function completeEvidence(approval, state, progress, plan = PLAN) {
   validateProgressEvidence(progress, approval, state, plan);
   const expected = expectedObjects(plan);
   assert.deepEqual(sorted(Object.keys(progress.objects)), sorted(Object.keys(expected)), "recovery evidence is missing an exact object proof");
-  assert.deepEqual(sorted(Object.keys(progress.retention)), ["bcPayload", "ontarioPayload"], "recovery evidence is missing exact retention proof");
+  assert.deepEqual(sorted(Object.keys(progress.retention)), ["bcManifest", "bcPayload", "ontarioManifest", "ontarioPayload"], "recovery evidence is missing exact retention proof");
   const completed = { ...structuredClone(progress), status: "completed" };
   validateEvidence(completed, approval, state, plan);
   return completed;
@@ -365,7 +364,7 @@ export function validateEvidence(evidence, approval, state, plan = PLAN) {
   validateProgressEvidence(partial, approval, state, plan);
   const expected = expectedObjects(plan);
   assert.deepEqual(sorted(Object.keys(evidence.objects)), sorted(Object.keys(expected)), "recovery evidence is missing an exact object proof");
-  assert.deepEqual(sorted(Object.keys(evidence.retention)), ["bcPayload", "ontarioPayload"], "recovery evidence is missing exact retention proof");
+  assert.deepEqual(sorted(Object.keys(evidence.retention)), ["bcManifest", "bcPayload", "ontarioManifest", "ontarioPayload"], "recovery evidence is missing exact retention proof");
   assert.equal(evidence.objects.bcPayload.head.VersionId, state.bcPayload.versionId, "evidence BC payload version is not the saved version");
   return true;
 }
@@ -469,11 +468,11 @@ function main() {
   }
   if (mode === "--validate-retention") {
     validateRetention(readJson(process.argv[3]));
-    console.log("Payload COMPLIANCE retention readback passed.");
+    console.log("Exact-object COMPLIANCE retention readback passed.");
     return;
   }
   if (mode === "--write-evidence") {
-    const [approvalPath, statePath, bcPayloadPath, bcManifestPath, ontarioPayloadPath, ontarioManifestPath, bcRetentionPath, ontarioRetentionPath, evidencePath] = process.argv.slice(3);
+    const [approvalPath, statePath, bcPayloadPath, bcManifestPath, ontarioPayloadPath, ontarioManifestPath, bcRetentionPath, bcManifestRetentionPath, ontarioRetentionPath, ontarioManifestRetentionPath, evidencePath] = process.argv.slice(3);
     const approval = readJson(approvalPath);
     const state = readJson(statePath);
     const heads = {
@@ -482,7 +481,7 @@ function main() {
       ontarioPayload: readJson(ontarioPayloadPath),
       ontarioManifest: readJson(ontarioManifestPath)
     };
-    const evidence = buildEvidence(approval, state, heads, { bcPayload: readJson(bcRetentionPath), ontarioPayload: readJson(ontarioRetentionPath) });
+    const evidence = buildEvidence(approval, state, heads, { bcPayload: readJson(bcRetentionPath), bcManifest: readJson(bcManifestRetentionPath), ontarioPayload: readJson(ontarioRetentionPath), ontarioManifest: readJson(ontarioManifestRetentionPath) });
     writeEvidence(evidencePath, evidence);
     console.log("Derived wildfire recovery evidence written owner-only mode 600.");
     return;

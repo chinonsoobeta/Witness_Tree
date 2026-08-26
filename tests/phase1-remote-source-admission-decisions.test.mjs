@@ -12,8 +12,14 @@ test("nine named rows have narrowly scoped owner source-ledger or PLVI scope dec
   assert.equal(decisions.decisions.filter((decision) => decision.ownerAdmission === "approved-source-ledger-only").length, 9);
   assert.equal(decisions.decisions.filter((decision) => decision.scopeDecision === "accepted-named-source-ledger-only").length, 4);
   assert.equal(decisions.decisions.filter((decision) => decision.scopeDecision === "approved-raw-and-derived-scope-only").length, 1);
-  assert.equal(ledger.entries.filter((entry) => entry.proof.productionAdmission).length, 0);
-  assert.equal(ledger.entries.filter((entry) => entry.productionEligible).length, 0);
+  assert.deepEqual(
+    ledger.entries.filter((entry) => entry.proof.productionAdmission).map(({ id }) => id).sort(),
+    ["elections-canada-45th-files", "fed-2023-ridings"],
+  );
+  assert.deepEqual(
+    ledger.entries.filter((entry) => entry.productionEligible).map(({ id }) => id).sort(),
+    ["elections-canada-45th-files", "fed-2023-ridings"],
+  );
 });
 
 test("remote decision rejects broader authority or a changed Crown exclusion", () => {

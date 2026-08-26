@@ -2,12 +2,14 @@
 # Owner-local exact recovery for the diagnosed BC/Ontario derived state.
 # This path reuses the saved BC payload version, creates only the missing BC
 # manifest, uploads only the missing Ontario payload and manifest, and applies
-# retention only to the saved BC payload version and new Ontario payload version.
+# retention to the saved BC payload version and every exact newly created
+# payload or manifest version.
 # It never uploads the BC payload, overwrites an existing key, lists/completes
 # multipart uploads, deletes, changes IAM, bypasses governance, or writes a
 # legal hold.
 set -euo pipefail
 umask 077
+source "${0:A:h}/aws-direct-mfa-role-session.sh"
 
 PROFILE="WitnessTreeArchiveOperator"
 ROLE="WitnessTreeWildfireDerivedPromotionUploader"
@@ -93,26 +95,16 @@ fi
 
 if [[ "$MODE" == "preflight" ]]; then
   print -- "PRECHECK passed: exact BC payload reuse state, missing-object recovery approval, applied IAM attestation, and local artifacts verified; no TOTP or AWS call was made."
-  print -- "DRY-RUN: reuse BC payload version; create BC manifest; upload Ontario payload and manifest; apply/read back payload-only COMPLIANCE retention through 2033-08-12T00:00:00Z."
+  print -- "DRY-RUN: reuse BC payload version; create BC manifest; upload Ontario payload and manifest; apply/read back payload-and-manifest COMPLIANCE retention through 2033-08-12T00:00:00Z."
   exit 0
 fi
 
-[[ -t 0 && -t 1 ]] || fail "MFA TOTP prompt requires an interactive terminal; no storage mutation was authorized" 64
-read -r -s 'totp?Current MFA TOTP (not stored): '
-print
-[[ "$totp" =~ '^[0-9]{6}$' ]] || fail "TOTP must be exactly six digits; no AWS call was made" 64
 # Do not let credentials or profile selectors inherited by the owner wrapper
 # influence the operator-profile MFA exchange. The explicit --profile below
 # must be the only source of bootstrap credentials; temporary role credentials
 # are installed only after the account-bound AssumeRole response is checked.
 unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN AWS_PROFILE AWS_DEFAULT_PROFILE AWS_WEB_IDENTITY_TOKEN_FILE AWS_ROLE_ARN AWS_ROLE_SESSION_NAME AWS_CONTAINER_CREDENTIALS_RELATIVE_URI AWS_CONTAINER_CREDENTIALS_FULL_URI
-mfa_serial="$(aws configure get mfa_serial --profile "$PROFILE" 2>"$TMP/mfa-serial.stderr")" || fail "Configured MFA serial could not be read; no storage mutation was authorized" 69
-[[ "$mfa_serial" =~ '^arn:aws:iam::286853118812:mfa/[A-Za-z0-9+=,.@_/-]+$' ]] || fail "Configured MFA serial is absent or outside the approved account; no storage mutation was authorized" 69
-if ! aws sts assume-role --profile "$PROFILE" --role-arn "arn:aws:iam::${ACCOUNT}:role/$ROLE" --role-session-name witness-tree-derived-recovery --serial-number "$mfa_serial" --token-code "$totp" --duration-seconds 3600 --output json >"$TMP/role-session.json" 2>"$TMP/sts-role.stderr"; then
-  unset totp mfa_serial
-  fail "Approved derived recovery role assumption failed; no storage mutation was authorized" 77
-fi
-unset totp mfa_serial
+wt_assume_direct_mfa_role "$PROFILE" "$ACCOUNT" "$ROLE" witness-tree-derived-recovery >"$TMP/role-session.json"
 export AWS_ACCESS_KEY_ID="$(jq -er '.Credentials.AccessKeyId' "$TMP/role-session.json")" AWS_SECRET_ACCESS_KEY="$(jq -er '.Credentials.SecretAccessKey' "$TMP/role-session.json")" AWS_SESSION_TOKEN="$(jq -er '.Credentials.SessionToken' "$TMP/role-session.json")"
 account="$(aws sts get-caller-identity --query Account --output text 2>"$TMP/caller.stderr")" || fail "Assumed recovery role identity could not be verified; no storage mutation was authorized" 77
 [[ "$account" == "$ACCOUNT" ]] || fail "Assumed recovery role is outside the approved account; no storage mutation was authorized" 77
@@ -200,25 +192,36 @@ node "$CHECKER" --record-progress "$APPROVAL" "$STATE" "$EVIDENCE" ontarioManife
   || fail "Ontario manifest checkpoint failed after the conditional write; no overwrite or delete was attempted" 70
 
 bc_version="$state_version"
+bc_manifest_version="$(jq -er '.VersionId' "$TMP/bc-manifest-ack.json")" || fail "BC manifest version was absent; no retention write was attempted" 70
 on_version="$(jq -er '.VersionId' "$TMP/ontario-payload-ack.json")" || fail "Ontario payload version was absent; no retention write was attempted" 70
+on_manifest_version="$(jq -er '.VersionId' "$TMP/ontario-manifest-ack.json")" || fail "Ontario manifest version was absent; no retention write was attempted" 70
+
+put_retention() {
+  local label="$1" key="$2" version="$3"
+  if ! aws s3api put-object-retention --bucket "$BUCKET" --key "$key" --version-id "$version" --retention "Mode=COMPLIANCE,RetainUntilDate=$RETAIN_UNTIL" --region "$REGION" --output json >"$TMP/$label-retention-put.json" 2>"$TMP/$label-retention-put.stderr"; then
+    fail "$label COMPLIANCE retention application failed; no other retention write was attempted" 70
+  fi
+}
+
+read_retention() {
+  local label="$1" key="$2" version="$3"
+  if ! aws s3api get-object-retention --bucket "$BUCKET" --key "$key" --version-id "$version" --region "$REGION" --output json >"$TMP/$label-retention-after.json" 2>"$TMP/$label-retention-after.stderr"; then
+    fail "$label COMPLIANCE retention readback failed; no further mutation was attempted" 70
+  fi
+  node "$CHECKER" --validate-retention "$TMP/$label-retention-after.json" >"$TMP/$label-retention-after-check.stdout" 2>"$TMP/$label-retention-after-check.stderr" || fail "$label COMPLIANCE retention readback did not match the exact approved date" 70
+}
 
 if [[ "$bc_retention_state" == "absent" ]]; then
-  if ! aws s3api put-object-retention --bucket "$BUCKET" --key "$BC_PAYLOAD" --version-id "$bc_version" --retention "Mode=COMPLIANCE,RetainUntilDate=$RETAIN_UNTIL" --region "$REGION" --output json >"$TMP/bc-retention-put.json" 2>"$TMP/bc-retention-put.stderr"; then
-    fail "BC payload COMPLIANCE retention application failed; no other retention write was attempted" 70
-  fi
+  put_retention bc-payload "$BC_PAYLOAD" "$bc_version"
 fi
-if ! aws s3api put-object-retention --bucket "$BUCKET" --key "$ON_PAYLOAD" --version-id "$on_version" --retention "Mode=COMPLIANCE,RetainUntilDate=$RETAIN_UNTIL" --region "$REGION" --output json >"$TMP/ontario-retention-put.json" 2>"$TMP/ontario-retention-put.stderr"; then
-  fail "Ontario payload COMPLIANCE retention application failed; no other retention write was attempted" 70
-fi
+put_retention bc-manifest "$BC_MANIFEST" "$bc_manifest_version"
+put_retention ontario-payload "$ON_PAYLOAD" "$on_version"
+put_retention ontario-manifest "$ON_MANIFEST" "$on_manifest_version"
 
-if ! aws s3api get-object-retention --bucket "$BUCKET" --key "$BC_PAYLOAD" --version-id "$bc_version" --region "$REGION" --output json >"$TMP/bc-retention-after.json" 2>"$TMP/bc-retention-after.stderr"; then
-  fail "BC payload COMPLIANCE retention readback failed; no further mutation was attempted" 70
-fi
-node "$CHECKER" --validate-retention "$TMP/bc-retention-after.json" >"$TMP/bc-retention-after-check.stdout" 2>"$TMP/bc-retention-after-check.stderr" || fail "BC payload COMPLIANCE retention readback did not match the exact approved date" 70
-if ! aws s3api get-object-retention --bucket "$BUCKET" --key "$ON_PAYLOAD" --version-id "$on_version" --region "$REGION" --output json >"$TMP/ontario-retention-after.json" 2>"$TMP/ontario-retention-after.stderr"; then
-  fail "Ontario payload COMPLIANCE retention readback failed; no further mutation was attempted" 70
-fi
-node "$CHECKER" --validate-retention "$TMP/ontario-retention-after.json" >"$TMP/ontario-retention-after-check.stdout" 2>"$TMP/ontario-retention-after-check.stderr" || fail "Ontario payload COMPLIANCE retention readback did not match the exact approved date" 70
+read_retention bc-payload "$BC_PAYLOAD" "$bc_version"
+read_retention bc-manifest "$BC_MANIFEST" "$bc_manifest_version"
+read_retention ontario-payload "$ON_PAYLOAD" "$on_version"
+read_retention ontario-manifest "$ON_MANIFEST" "$on_manifest_version"
 
 # Final exact-version heads prove the retention calls did not substitute a
 # different object. The evidence writer stores the values owner-only mode 600.
@@ -231,23 +234,23 @@ mv "$TMP/bc-manifest-final.json" "$TMP/bc-manifest-evidence.json"
 mv "$TMP/ontario-payload-final.json" "$TMP/ontario-payload-evidence.json"
 mv "$TMP/ontario-manifest-final.json" "$TMP/ontario-manifest-evidence.json"
 
-node "$CHECKER" --record-progress "$APPROVAL" "$STATE" "$EVIDENCE" bcPayload "$TMP/bc-payload-evidence.json" bcPayload "$TMP/bc-retention-after.json" \
+node "$CHECKER" --record-progress "$APPROVAL" "$STATE" "$EVIDENCE" bcPayload "$TMP/bc-payload-evidence.json" bcPayload "$TMP/bc-payload-retention-after.json" \
   >"$TMP/bc-payload-final-progress.stdout" 2>"$TMP/bc-payload-final-progress.stderr" \
   || fail "BC payload final checkpoint failed; no further mutation was attempted" 70
-node "$CHECKER" --record-progress "$APPROVAL" "$STATE" "$EVIDENCE" bcManifest "$TMP/bc-manifest-evidence.json" \
+node "$CHECKER" --record-progress "$APPROVAL" "$STATE" "$EVIDENCE" bcManifest "$TMP/bc-manifest-evidence.json" bcManifest "$TMP/bc-manifest-retention-after.json" \
   >"$TMP/bc-manifest-final-progress.stdout" 2>"$TMP/bc-manifest-final-progress.stderr" \
   || fail "BC manifest final checkpoint failed; no further mutation was attempted" 70
-node "$CHECKER" --record-progress "$APPROVAL" "$STATE" "$EVIDENCE" ontarioPayload "$TMP/ontario-payload-evidence.json" ontarioPayload "$TMP/ontario-retention-after.json" \
+node "$CHECKER" --record-progress "$APPROVAL" "$STATE" "$EVIDENCE" ontarioPayload "$TMP/ontario-payload-evidence.json" ontarioPayload "$TMP/ontario-payload-retention-after.json" \
   >"$TMP/ontario-payload-final-progress.stdout" 2>"$TMP/ontario-payload-final-progress.stderr" \
   || fail "Ontario payload final checkpoint failed; no further mutation was attempted" 70
-node "$CHECKER" --record-progress "$APPROVAL" "$STATE" "$EVIDENCE" ontarioManifest "$TMP/ontario-manifest-evidence.json" \
+node "$CHECKER" --record-progress "$APPROVAL" "$STATE" "$EVIDENCE" ontarioManifest "$TMP/ontario-manifest-evidence.json" ontarioManifest "$TMP/ontario-manifest-retention-after.json" \
   >"$TMP/ontario-manifest-final-progress.stdout" 2>"$TMP/ontario-manifest-final-progress.stderr" \
   || fail "Ontario manifest final checkpoint failed; no further mutation was attempted" 70
 
 node "$CHECKER" --write-evidence "$APPROVAL" "$STATE" \
   "$TMP/bc-payload-evidence.json" "$TMP/bc-manifest-evidence.json" \
   "$TMP/ontario-payload-evidence.json" "$TMP/ontario-manifest-evidence.json" \
-  "$TMP/bc-retention-after.json" "$TMP/ontario-retention-after.json" "$EVIDENCE" \
+  "$TMP/bc-payload-retention-after.json" "$TMP/bc-manifest-retention-after.json" "$TMP/ontario-payload-retention-after.json" "$TMP/ontario-manifest-retention-after.json" "$EVIDENCE" \
   >"$TMP/evidence.stdout" 2>"$TMP/evidence.stderr" || fail "Exact recovery evidence failed closed; no further mutation was attempted" 70
 
-print -- "Derived wildfire recovery completed: BC payload version reused, BC manifest created, Ontario payload and manifest created, exact versioned heads and payload-only COMPLIANCE retention through 2033-08-12T00:00:00Z verified; owner-only evidence written."
+print -- "Derived wildfire recovery completed: BC payload version reused, BC manifest created, Ontario payload and manifest created, exact versioned heads and payload-plus-manifest COMPLIANCE retention through 2033-08-12T00:00:00Z verified; owner-only evidence written."

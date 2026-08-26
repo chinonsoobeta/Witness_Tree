@@ -95,7 +95,7 @@ export function evaluateCurrentWildfireProductionEligibility(record, evidence) {
 
 export function validateCurrentWildfireOwnerAdmission(record, ledger, profiles, policies, remoteEvidence = null, rawEvidence = read("data/current-wildfire-raw-archive-evidence.json"), derivedEvidence = read("data/current-wildfire-derived-archive-evidence.json")) {
   assert.equal(record.schemaVersion, "witness-tree/current-wildfire-owner-admission/1");
-  assert.equal(record.status, "owner-approved-pipeline-blocked-on-machine-verifiable-readbacks");
+  assert.equal(record.status, "owner-approved-pipeline-primary-archive-complete-downstream-blocked");
   assert.deepEqual(record.ownerDecision, {
     scopeApproved: true,
     geometryApproved: true,
@@ -105,13 +105,13 @@ export function validateCurrentWildfireOwnerAdmission(record, ledger, profiles, 
     productionAdmissionApproved: true,
     condition: "Every exact raw payload and each required derived payload must first have repository-integrated immutable archive readback evidence. Approval does not itself satisfy that condition."
   });
-  assert.equal(record.archiveGate.status, "blocked-placeholder-only-version-and-checksum-evidence");
-  assert.equal(record.archiveGate.evidenceRef, "data/current-wildfire-raw-archive-evidence.json");
-  assert.equal(record.archiveGate.derivedEvidenceRef, "data/current-wildfire-derived-archive-evidence.json");
+  assert.equal(record.archiveGate.status, "primary-exact-version-compliance-evidence-complete-recovery-separate");
+  assert.equal(record.archiveGate.evidenceRef, "data/current-wildfire-exact-raw-archive-capture-2026-08-25.json");
+  assert.equal(record.archiveGate.derivedEvidenceRef, "data/current-wildfire-derived-manifest-retention-evidence.json");
   assert.equal(record.archiveGate.requiredObjectCount, 6);
-  assert.equal(record.archiveGate.verifiedObjectCount, 0);
-  assert.equal(record.archiveGate.attestedObjectCount, 6);
-  assert.equal(record.archiveGate.primaryReadbacksVerified, false);
+  assert.equal(record.archiveGate.verifiedObjectCount, 6);
+  assert.equal(record.archiveGate.attestedObjectCount, 0);
+  assert.equal(record.archiveGate.primaryReadbacksVerified, true);
   assert.equal(record.archiveGate.recoveryReplicaVerified, false);
   assert.equal(record.archiveGate.mutationProvenance, false);
   assert.equal(record.archiveGate.productionEligible, false);
@@ -130,7 +130,7 @@ export function validateCurrentWildfireOwnerAdmission(record, ledger, profiles, 
     assert.equal(source.raw.sha256, profile.artifact.sha256);
     const row = ledger.entries.find(({id}) => id === source.id);
     assert.ok(row.evidenceRefs.includes("data/current-wildfire-owner-admission.json"));
-    assert.equal(row.proof.immutableArchive, false);
+    assert.equal(row.proof.immutableArchive, true);
     assert.equal(row.proof.productionAdmission, false);
     assert.equal(row.productionEligible, false);
   }
@@ -151,14 +151,14 @@ export function validateCurrentWildfireOwnerAdmission(record, ledger, profiles, 
   assert.match(ontario.transformation, /zero exclusion|no exclusion/i);
 
   assert.deepEqual(record.pipeline, {
-    transformation: "approved-scope-defined-local-artifacts-not-machine-verifiably-archived",
-    ingestion: "approved-blocked-on-machine-verifiable-archive-gate",
-    release: "approved-blocked-on-machine-verifiable-archive-gate",
-    productionAdmission: "approved-blocked-on-machine-verifiable-archive-gate",
+    transformation: "approved-scope-defined-primary-archive-complete-separate-validation-required",
+    ingestion: "approved-scope-primary-archive-complete-separate-validation-required",
+    release: "approved-scope-primary-archive-complete-separate-validation-required",
+    productionAdmission: "approved-scope-primary-archive-complete-separate-validation-required",
     productionEligible: false,
-    activationRule: "Production eligibility is fail-closed because no durable signed or digest-bound archive attestation verifier is integrated. It may change only after such a verifier cryptographically binds each exact payload to its concrete version, provider checksum, exact-version readback, retention and Canadian storage, and separate transformation, ingestion, release and production-admission evidence is validated."
+    activationRule: "Primary exact-version/COMPLIANCE archive evidence is complete for the four raw and two derived payload/manifest pairs, but recovery-replica evidence remains separate. Production eligibility remains fail-closed until separate transformation, ingestion, release, and production-admission evidence is validated."
   });
-  assert.equal(primaryEvidenceSatisfiesCurrentWildfireGate(rawEvidence, derivedEvidence), false, "Placeholder-only booleans and redacted checksum markers cannot close the six-object archive gate.");
+  assert.equal(primaryEvidenceSatisfiesCurrentWildfireGate(rawEvidence, derivedEvidence), false, "Historical placeholder-only records do not replace the exact primary capture records.");
   assert.equal(derivedEvidence.claims.recoveryReplicaVerified, false);
   assert.equal(derivedEvidence.claims.mutationProvenance, false);
   assert.equal(evaluateCurrentWildfireProductionEligibility(record, remoteEvidence), false, "No unintegrated or incomplete remote evidence may activate production.");
@@ -179,5 +179,5 @@ export function checkCurrentWildfireOwnerAdmission() {
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   checkCurrentWildfireOwnerAdmission();
-  console.log("Current-wildfire owner scope is approved, but 0/6 payloads have machine-verifiable version/checksum bindings; production remains blocked.");
+  console.log("Current-wildfire owner scope has 6/6 primary exact-version/COMPLIANCE payload bindings; recovery and production remain separate.");
 }

@@ -1,0 +1,9 @@
+# Federal electoral archive recovery — 2026-08-25
+
+One exact Elections Canada 45th-general-election ZIP snapshot was found under its approved immutable key. The preserved operator diagnostic is: `Current MFA TOTP (not stored): Stopped: An approved payload key already has a version; no replacement was attempted.` No TOTP was recorded. The exact payload version and deterministic manifest version were then downloaded and checked against their byte lengths, the source SHA-256 (for the payload), and the deterministic manifest bytes. Both versions have COMPLIANCE retention through 2033-08-12.
+
+The machine record is [`data/federal-electoral-archive-recovery-evidence.json`](../data/federal-electoral-archive-recovery-evidence.json). It records the two version identifiers, provider `FULL_OBJECT` CRC64NVME values, and the separate manifest-retention correction. It deliberately binds the single physical object to the two ledger rows without counting it twice.
+
+This is raw archive evidence only. It does not authorize transformation, ingestion, release, production admission, or production eligibility.
+
+The owner-local `--run-federal` recovery path is append-only. When its exact payload key is already present, it resolves the current concrete version, reads that same version again, verifies its declared byte length and `FULL_OBJECT` CRC64NVME metadata, downloads that exact version, and compares its SHA-256 with the approved local artifact. It resolves the deterministic manifest version separately and compares its downloaded bytes exactly. It never replaces either existing object. It creates only an absent paired manifest after the payload is proved exact, and it applies COMPLIANCE retention only where the provider reports the precise missing-retention condition. Any other retention-read error, absent version ID, payload mismatch, manifest mismatch, or orphan manifest stops without a write.

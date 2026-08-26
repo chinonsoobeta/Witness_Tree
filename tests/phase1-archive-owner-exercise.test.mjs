@@ -12,22 +12,30 @@ function invalidTotpPty(mode, input) {
   const program = [
     "set timeout 5",
     `spawn bash ${helperPath} ${mode}`,
-    "expect \"Current WitnessTreeArchiveOperator TOTP (not saved): \"",
+    "expect -re \"Current TOTP for WitnessTreeArchive.* \\\\(not saved\\\\): \"",
     "send -- \"" + input + "\\n\"",
-    "expect \"Stopped: TOTP must contain 6–8 digits.\"",
+    "expect \"Stopped: TOTP must contain exactly 6 digits.\"",
     "expect eof"
   ].join("; ");
   const result = spawnSync("/usr/bin/expect", ["-c", program], { encoding: "utf8" });
   assert.equal(result.status, 0, result.stderr);
-  assert.match(`${result.stdout}${result.stderr}`, /Current WitnessTreeArchiveOperator TOTP \(not saved\):/);
-  assert.match(`${result.stdout}${result.stderr}`, /Stopped: TOTP must contain 6–8 digits\./);
+  assert.match(`${result.stdout}${result.stderr}`, /Current TOTP for WitnessTreeArchive/);
+  assert.match(`${result.stdout}${result.stderr}`, /Stopped: TOTP must contain exactly 6 digits\./);
 }
 
 test("owner-local archive exercise has bounded, redacted MFA and control flow", () => {
-  assert.match(helper, /read -r -s -p "Current WitnessTreeArchiveOperator TOTP/);
+  assert.match(helper, /read -r -s -p "Current TOTP for \$\{role\}/);
   assert.match(helper, /CLI_READ_TIMEOUT=15/);
   assert.match(helper, /--cli-connect-timeout "\$CLI_CONNECT_TIMEOUT" --cli-read-timeout "\$CLI_READ_TIMEOUT"/);
-  assert.match(helper, /sts get-session-token/);
+  assert.match(helper, /sts assume-role/);
+  assert.doesNotMatch(helper, /sts get-session-token|BOOTSTRAP_ACCESS_KEY_ID/);
+  assert.match(helper, /obtain_role "\$UPLOADER_ROLE" UPLOADER/);
+  assert.match(helper, /obtain_role "\$BREAK_GLASS_ROLE" BREAK_GLASS/);
+  assert.match(helper, /obtain_role "\$VERIFIER_ROLE" VERIFIER/);
+  assert.match(helper, /USED_TOTPS=\("not-a-totp"\)/);
+  assert.match(helper, /That MFA value already opened an earlier role session/);
+  assert.match(helper, /invalid MFA one time pass code/);
+  assert.match(helper, /Three distinct MFA values were rejected; no AWS storage call was made\./);
   assert.match(helper, /Date\.parse\(wanted\) !== Date\.parse\(actual\)/);
   assert.doesNotMatch(helper, /Retention\.RetainUntilDate == \$until/);
   assert.match(helper, /Set this profile's exact account-scoped virtual-MFA serial locally, then retry\./);
@@ -51,7 +59,7 @@ test("owner-local archive exercise has bounded, redacted MFA and control flow", 
   assert.match(helper, /Recovery replica did not read back within the bounded window/);
   assert.match(helper, /check-phase1-archive-exercise-readback\.mjs/);
   assert.doesNotMatch(helper, /exec 2>|--no-verify-ssl|root-access-key|console-password/);
-  assert.ok(helper.indexOf('read -r -s -p "Current WitnessTreeArchiveOperator TOTP') < helper.indexOf('identity="$(run_aws identity'), "TOTP validation must occur before the first AWS call.");
+  assert.ok(helper.indexOf('identity="$(run_aws identity') < helper.indexOf('read -r -s -p "Current TOTP for'), "the exact operator identity must be verified before asking for MFA.");
 });
 
 test("retention instants compare across equivalent Z and UTC-offset forms", () => {

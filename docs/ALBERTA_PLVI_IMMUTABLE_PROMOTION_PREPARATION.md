@@ -2,7 +2,7 @@
 
 [`data/alberta-plvi-immutable-promotion-preparation.json`](../data/alberta-plvi-immutable-promotion-preparation.json) binds two local artifacts, not one: the immutable source ZIP and the checksum-bound full repaired GeoPackage. Their deterministic sidecars retain the official OGL-Alberta provenance and the derived release's raw, repair-patch, and profile lineage.
 
-The proposed destination is the existing Canadian bucket `witness-tree-raw-archive-ca-central-1` in `ca-central-1`. The proposed role is limited to upload, version read-back, multipart cleanup, and payload retention for the four exact payload/sidecar keys in the record. It has no delete, retention-bypass, bucket, or IAM permission.
+The proposed destination is the existing Canadian bucket `witness-tree-raw-archive-ca-central-1` in `ca-central-1`. The proposed role is limited to upload, exact-version read-back, multipart cleanup, and retention/readback for the four exact payload/sidecar keys in the record. It has no delete, retention-bypass, bucket, or IAM permission.
 
 `scripts/run-alberta-plvi-approved-promotion.sh` is dry-run by default. Its `--run` path is deliberately owner-local: it rechecks both local byte lengths and SHA-256 values before prompting for a six-digit MFA TOTP, assumes only `WitnessTreePlviArchivePromotionUploader`, uploads the two payloads and deterministic sidecars, reads each version and checksum back, then requires a `COMPLIANCE` retention read-back through `2033-08-12T00:00:00Z`. It must not be run until the exact approval below is received.
 
@@ -11,6 +11,10 @@ The runner resolves its artifacts from the controlled absolute workspace-data ro
 The owner-local `--run` path requires an interactive terminal and uses zsh's hidden `read -s` prompt. It prints a newline after input, does not echo or store the code, and rejects an empty or non-six-digit value before any AWS command.
 
 The runner never calls IAM to discover an MFA device. It reads `mfa_serial` only from the local `WitnessTreeArchiveOperator` AWS profile, requires the exact virtual-MFA ARN for account `286853118812` and that operator, and otherwise stops before any STS or storage command. The ARN is never printed.
+
+## Historical manifests
+
+The two already archived manifest versions used the historical label `fieldCount: 63`. The corrected canonical preparation uses `attributeFieldCount: 60`; it must not be changed back. [`data/alberta-plvi-legacy-manifest-audit.json`](../data/alberta-plvi-legacy-manifest-audit.json) pins only the two historical manifest keys, version IDs, byte lengths, SHA-256 values, and provider checksums. The PLVI runner accepts those exact archived versions through its dedicated comparator, then proceeds to the normal retention/readback path. It never replaces an existing manifest. Any other version, byte length, or content mismatch fails closed.
 
 Suggested artifact-specific immutable-promotion approval:
 

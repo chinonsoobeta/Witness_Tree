@@ -1,6 +1,7 @@
 #!/bin/zsh
 set -euo pipefail
 umask 077
+source "${0:A:h}/aws-direct-mfa-role-session.sh"
 
 # Owner-local, MFA-gated reconciliation for the one already-proved completed
 # Québec ecoforest-map payload.  This script is deliberately separate from the
@@ -166,21 +167,7 @@ expected_composite="$(compute_local_composite)" || fail "Approved local bytes or
 [[ "$expected_composite" =~ '^[A-Za-z0-9+/=]+-[0-9]+$' ]] || fail "Approved local multipart checksum was not produced; no AWS call was made" 70
 stop_on_state_race
 
-read -r -s 'totp?Current MFA TOTP (not stored): '
-print
-[[ "${totp:-}" =~ '^[0-9]{6}$' ]] || fail "TOTP must be exactly six digits; no AWS call was made" 64
-mfa_serial="$(aws configure get mfa_serial --profile "$PROFILE" 2>"$TMP/mfa.stderr")" || fail "Approved MFA serial could not be read; no STS or S3 call was made" 77
-[[ "$mfa_serial" =~ '^arn:aws:iam::286853118812:mfa/[A-Za-z0-9+=,.@_/-]+$' ]] || fail "Configured MFA serial is absent, malformed, or outside the approved account; no STS or S3 call was made" 69
-aws sts get-session-token --serial-number "$mfa_serial" --token-code "$totp" --profile "$PROFILE" --duration-seconds 3600 --output json >"$TMP/bootstrap.json" 2>"$TMP/bootstrap.stderr" || fail "MFA session failed; no S3 call was made" 77
-unset totp mfa_serial
-state_unchanged || fail "Private state changed during MFA setup; no S3 call was made" 75
-export AWS_ACCESS_KEY_ID="$(jq -er '.Credentials.AccessKeyId | select(type=="string" and length>0)' "$TMP/bootstrap.json")" AWS_SECRET_ACCESS_KEY="$(jq -er '.Credentials.SecretAccessKey | select(type=="string" and length>0)' "$TMP/bootstrap.json")" AWS_SESSION_TOKEN="$(jq -er '.Credentials.SessionToken | select(type=="string" and length>0)' "$TMP/bootstrap.json")" || fail "MFA session response was incomplete; no S3 call was made" 77
-unset bootstrap
-
-aws sts get-caller-identity --output json >"$TMP/operator-identity.json" 2>"$TMP/operator-identity.stderr" || fail "MFA session identity could not be verified; no S3 call was made" 77
-state_unchanged || fail "Private state changed during MFA identity verification; no S3 call was made" 75
-jq -e --arg account "$ACCOUNT" '.Account==$account and .Arn=="arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator"' "$TMP/operator-identity.json" >/dev/null || fail "MFA session is not the approved operator; no S3 call was made" 77
-aws sts assume-role --role-arn "arn:aws:iam::${ACCOUNT}:role/${ROLE}" --role-session-name witness-tree-qc-ecoforest-reconciliation --duration-seconds 3600 --output json >"$TMP/role.json" 2>"$TMP/role.stderr" || fail "Approved promotion role assumption failed; no S3 call was made" 77
+wt_assume_direct_mfa_role "$PROFILE" "$ACCOUNT" "$ROLE" witness-tree-qc-ecoforest-reconciliation >"$TMP/role.json"
 state_unchanged || fail "Private state changed during role assumption; no S3 call was made" 75
 jq -e --arg account "$ACCOUNT" --arg role "$ROLE" '.AssumedRoleUser.Arn | type=="string" and startswith("arn:aws:sts::"+$account+":assumed-role/"+$role+"/")' "$TMP/role.json" >/dev/null || fail "Assumed role identity was not the approved role; no S3 call was made" 77
 export AWS_ACCESS_KEY_ID="$(jq -er '.Credentials.AccessKeyId | select(type=="string" and length>0)' "$TMP/role.json")" AWS_SECRET_ACCESS_KEY="$(jq -er '.Credentials.SecretAccessKey | select(type=="string" and length>0)' "$TMP/role.json")" AWS_SESSION_TOKEN="$(jq -er '.Credentials.SessionToken | select(type=="string" and length>0)' "$TMP/role.json")" || fail "Approved role response was incomplete; no S3 call was made" 77

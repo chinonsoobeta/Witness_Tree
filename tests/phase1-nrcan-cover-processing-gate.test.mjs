@@ -5,6 +5,7 @@ import { validateNrcanCanopyCoverProfile } from "../scripts/check-nrcan-canopy-c
 import { checkPhase1NrcanCoverProcessingGate, validatePhase1NrcanCoverProcessingGate } from "../scripts/check-phase1-nrcan-cover-processing-gate.mjs";
 
 const audit = checkPhase1NrcanCoverProcessingGate();
+const ledger = JSON.parse(readFileSync(new URL("../data/phase1-production-source-ledger.json", import.meta.url), "utf8"));
 
 test("the NTEMS cover gate binds both rows to existing local/archive checks", () => {
   assert.equal(audit.rows.length, 2);
@@ -31,4 +32,24 @@ test("the gate fails closed if a transformation, output, or credit is invented",
   rejects((candidate) => { candidate.rows[0].transformation.requiredBeforeExecution[0] = "Record and approve a versioned forest-mask method."; });
   rejects((candidate) => { candidate.rows[1].transformation.blockers[0] = "No approved canopy-cover method exists."; });
   assert.equal(validateNrcanCanopyCoverProfile(JSON.parse(readFileSync(new URL("../data/nrcan-canopy-cover-profile.json", import.meta.url), "utf8"))).productionEligible, false);
+});
+
+test("the gate keeps its bound historical baseline after the later federal admission", () => {
+  assert.equal(validatePhase1NrcanCoverProcessingGate(audit, ledger), audit);
+  assert.deepEqual(audit.baseline, {
+    productionRows: 31,
+    rawEvidenceNumerator: 14.25,
+    rawEvidenceDenominator: 31,
+    formalEvidenceTrackingPercentage: 38.7903226,
+    immutableArchiveCompleteRows: 7,
+    productionAdmissionCompleteRows: 0,
+    productionEligibleRows: 0,
+    scoreDelta: { rawCredit: 0, formalPercentagePoints: 0 },
+  });
+});
+
+test("the gate rejects a corrupted later federal admission instead of treating it as historical state", () => {
+  const corrupted = structuredClone(ledger);
+  corrupted.entries.find(({ id }) => id === "fed-2023-ridings").productionEligible = false;
+  assert.throws(() => validatePhase1NrcanCoverProcessingGate(audit, corrupted), /verified later state|later federal admission/i);
 });

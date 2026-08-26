@@ -19,6 +19,9 @@ test("methodology states the required definitions, matching and neutral limits",
   const page = await read("../components/transparency/MethodologyPage.tsx");
   for (const requirement of ["1 hectare", "10% crown closure", "5 metres", "1984", "2000", "British Columbia", "north of 52", "50%", "±2 years", "±3 years before 1995"]) assert.ok(page.includes(requirement));
   assert.match(page, /fire; recorded harvest; recorded insect or disease disturbance; other recorded intervention; then detected change with no matching record/);
+  assert.match(page, /Match rate, non-match rate, and the non-match-reason distribution are not available/);
+  assert.match(page, /No provincial enhancement dataset has been admitted for processing/);
+  assert.match(page, /taux d’appariement, le taux de non-appariement et la répartition des motifs de non-appariement ne sont pas disponibles/i);
 });
 
 test("data page labels examples and links the ledger and documentation", async () => {

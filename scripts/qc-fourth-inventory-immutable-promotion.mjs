@@ -4,7 +4,7 @@ import { execFileSync } from "node:child_process";
 import { closeSync, existsSync, lstatSync, openSync, readFileSync, readSync, realpathSync, renameSync, statSync, writeFileSync, writeSync } from "node:fs";
 import { homedir } from "node:os";
 import path from "node:path";
-import { canonicalManifestBytes, exactPromotionObjects, loadQcFourthInventoryPromotionPreparation } from "./check-qc-fourth-inventory-immutable-promotion.mjs";
+import { canonicalManifestBytes, exactPromotionObjects, loadQcFourthInventoryPromotionPreparation, qcFourthInventoryIamBatches } from "./check-qc-fourth-inventory-immutable-promotion.mjs";
 
 const RETAIN_UNTIL = "2033-08-12T00:00:00Z";
 
@@ -237,22 +237,25 @@ function multipartPut(plan, entry, state, options, invoke, env) {
 
 export function executePromotion(plan, options, dependencies = {}) {
   validateExecutionOptions(plan, options);
-  const objects = localObjects(plan, options);
+  const permitted = qcFourthInventoryIamBatches(plan).find((batch) => batch.id === options.batch);
+  assert.ok(permitted, "Execution requires one fixed --batch (batch-one or batch-two).");
+  const permittedKeys = new Set(permitted.resources);
+  const objects = localObjects(plan, options).filter((entry) => permittedKeys.has(`arn:aws:s3:::${plan.bucket}/${entry.objectKey}`));
+  assert.equal(objects.length, permitted.resources.length, "The batch does not resolve to its exact local object set.");
   preflight(objects); // Every local byte and SHA passes before the first AWS call.
   const invoke = dependencies.invoke || invokeJson;
   const env = dependencies.mfaEnv || roleEnvironment();
   const state = loadState(plan, options);
   const evidence = [];
   for (const entry of objects) evidence.push(entry.byteLength > plan.upload.multipartThresholdBytes ? multipartPut(plan, entry, state, options, invoke, env) : singlePut(plan, entry, state, options, invoke, env));
-  assert.equal(evidence.length, 62);
-  return { status: "remote-read-back-complete-pending-independent-review", bucket: plan.bucket, region: plan.region, retentionUntil: RETAIN_UNTIL, objects: state.objects };
+  return { status: "remote-read-back-complete-pending-independent-review", batch: permitted.id, bucket: plan.bucket, region: plan.region, retentionUntil: RETAIN_UNTIL, objects: state.objects };
 }
 
 function cliOptions(argv) {
   const value = (name) => { const index = argv.indexOf(name); return index === -1 ? undefined : argv[index + 1]; };
   return {
     preflight: argv.includes("--preflight"), execute: argv.includes("--execute"), approveExactArtifacts: argv.includes("--approve-exact-artifact-set"), approveIam: argv.includes("--approve-iam-policy"), approveRetention: argv.includes("--approve-compliance-retention"), approveMfa: argv.includes("--approve-mfa-session"),
-    retentionUntil: value("--retention-until"), sessionReady: argv.includes("--session-ready"), dataRoot: value("--data-root"), stateDir: value("--state-dir"), sidecarDir: value("--sidecar-dir")
+    retentionUntil: value("--retention-until"), sessionReady: argv.includes("--session-ready"), dataRoot: value("--data-root"), stateDir: value("--state-dir"), sidecarDir: value("--sidecar-dir"), batch: value("--batch")
   };
 }
 

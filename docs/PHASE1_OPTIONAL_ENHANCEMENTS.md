@@ -1,0 +1,5 @@
+# Phase 1 optional enhancements
+
+[`data/phase1-optional-enhancements.json`](../data/phase1-optional-enhancements.json) applies the Version 2.1 rule to the nine provincial sources that currently lack a verified redistributable, production-suitable artifact. The listed sources remain rights-blocked and non-production. They are optional enhancements, so their absence cannot block the national baseline, Big Four summaries, public launch, or Phase 1 core completion. This includes the FTA and harvesting-authority rows: their catalogue licence is OGL-BC, but their exact coherent exports and source-specific archive/public-output evidence remain unverified. Indigenous boundary rows are deliberately excluded because their authority and engagement gates are not provincial optional-enhancement work.
+
+The record preserves the historical 31-row evidence score as historical evidence tracking, not a Version 2.1 phase-completion percentage. It grants no retrieval, acceptance of terms, account creation, transformation, ingestion, release, or production admission.

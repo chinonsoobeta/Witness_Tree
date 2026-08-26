@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "witness-tree/phase2-real-national-preflight/1",
+  "status": "ready-for-bounded-nonproduction-execution",
+  "capturedAt": "2026-08-21T21:53:54Z",
+  "decision": {
+    "ownerName": "Chinonso Obeta",
+    "recordedAt": "2026-08-21T21:51:54Z",
+    "forestClassValues": [210, 220, 230],
+    "productionEligible": false,
+    "externalComputeOrStorageAuthorized": false
+  },
+  "sourceVerification": {
+    "mode": "local-source-backed-full-byte-sha256",
+    "verifiedInputCount": 41,
+    "totalVerifiedBytes": 59455004710,
+    "inputSetSha256": "a69a86d6098cc9d06c102cf1574c6f57cc781617d8c441970903ea529b2b806c",
+    "result": "all exact local bytes matched: 39 VLCE2 annual archives plus the approved harvest and wildfire archives"
+  },
+  "capacity": {
+    "hostMemoryBytes": 17179869184,
+    "approvedRamCapBytes": 17179869184,
+    "availableLocalDiskBytes": 450560000000,
+    "approvedLocalDiskCapBytes": 2199023255552,
+    "uncompressedAnnualMaskScaleBytes": 970700103360,
+    "vCpuCap": 8,
+    "elapsedHourCap": 96,
+    "concurrentYearPairCap": 1
+  },
+  "executable": {
+    "methodVersion": "phase2-owner-approved-versioned-nonproduction-v1",
+    "methodParameterSha256": "8d12ff6b6fb10208410bedf5f012e96a9682fdec457cccce688509d2dfa0b8fa",
+    "methodReviewStatus": "owner-approved-versioned-nonproduction",
+    "forestClassCrosswalkStatus": "owner-approved-versioned-nonproduction",
+    "gridYears": 39,
+    "windowedGeoTiffAdapter": true,
+    "realBoundaryCrosswalk": false,
+    "realDisturbanceRasterAdapter": true
+  },
+  "blockers": [],
+  "claims": {
+    "realExecutionStarted": false,
+    "transformed": false,
+    "ingested": false,
+    "released": false,
+    "productionEligible": false,
+    "externalAction": false
+  },
+  "maturity": {
+    "fixedRubricPercentBefore": 43,
+    "fixedRubricPercentAfter": 43,
+    "deltaPercentagePoints": 0,
+    "reason": "Owner approval and source preflight do not close a real-transform rubric item."
+  }
+}

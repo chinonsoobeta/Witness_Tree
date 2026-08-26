@@ -32,24 +32,29 @@ test("sidecars are deterministic and the preparation rejects drift or remote cla
 test("MFA runner has a dry-run default and excludes deletion, IAM mutation, and retention bypass", () => {
   const runner = readFileSync(new URL("../scripts/run-alberta-plvi-approved-promotion.sh", import.meta.url), "utf8");
   assert.match(runner, /if \[\[ \$# -eq 0 \]\]; then node/);
-  assert.match(runner, /Approved raw ZIP drifted[\s\S]*read -r -s/);
+  assert.match(runner, /Approved raw ZIP drifted/);
+  assert.match(runner, /wt_assume_direct_mfa_role/);
   assert.match(runner, /WitnessTreePlviArchivePromotionUploader/);
+  assert.match(runner, /archive-existing-key-recovery\.sh/);
+  assert.match(runner, /--if-none-match '\*'/);
+  assert.match(runner, /wt_archive_verify_existing_payload/);
+  assert.match(runner, /wt_archive_ensure_compliance_retention/);
   assert.doesNotMatch(runner, /DeleteObject|BypassGovernanceRetention|aws iam (?:create|put|delete|attach|update)/i);
-  assert.match(runner, /aws configure get mfa_serial --profile/);
+  assert.match(readFileSync(new URL("../scripts/aws-direct-mfa-role-session.sh", import.meta.url), "utf8"), /aws configure get mfa_serial --profile/);
   assert.doesNotMatch(runner, /list-mfa-devices|iam list/i);
 });
 
-test("valid-shaped dummy TOTP uses local MFA config then STS and role assumption before a mocked direct S3 put boundary", () => {
+test("hostile ambiguous existing PLVI key stops before any replacement write", () => {
   const dir = mkdtempSync(join(tmpdir(), "plvi-mfa-sts-"));
   const marker = join(dir, "calls");
   const aws = join(dir, "aws");
   writeFileSync(aws, `#!/bin/zsh
 case "$1:$2" in
   configure:get) print -- "configure-get" >> ${JSON.stringify(marker)}; print -- "arn:aws:iam::286853118812:mfa/WitnessTreeArchiveOperator" ;;
-  sts:get-session-token) print -- "sts-get-session-token" >> ${JSON.stringify(marker)}; print -- '{"Credentials":{"AccessKeyId":"dummy","SecretAccessKey":"dummy","SessionToken":"dummy"}}' ;;
-  sts:get-caller-identity) print -- "sts-get-caller-identity" >> ${JSON.stringify(marker)}; print -- "286853118812" ;;
-  sts:assume-role) print -- "sts-assume-role" >> ${JSON.stringify(marker)}; print -- '{"Credentials":{"AccessKeyId":"dummy","SecretAccessKey":"dummy","SessionToken":"dummy"}}' ;;
-  s3api:put-object) print -- "s3-put-object-blocked" >> ${JSON.stringify(marker)}; exit 88 ;;
+  sts:get-caller-identity) print -- "sts-get-caller-identity" >> ${JSON.stringify(marker)}; print -- '{"Account":"286853118812","Arn":"arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator"}' ;;
+  sts:assume-role) print -- "sts-assume-role" >> ${JSON.stringify(marker)}; print -- '{"Credentials":{"AccessKeyId":"dummy","SecretAccessKey":"dummy","SessionToken":"dummy"},"AssumedRoleUser":{"Arn":"arn:aws:sts::286853118812:assumed-role/WitnessTreePlviArchivePromotionUploader/test"}}' ;;
+  s3api:head-object) print -- "s3-head-ambiguous" >> ${JSON.stringify(marker)}; print -u2 -- AccessDenied; exit 88 ;;
+  s3api:put-object|s3api:put-object-retention) print -- "unexpected-write" >> ${JSON.stringify(marker)}; exit 91 ;;
   *) print -- "unexpected-$1-$2" >> ${JSON.stringify(marker)}; exit 98 ;;
 esac
 `, { mode: 0o700 });
@@ -65,20 +70,51 @@ expect {
 }`;
   try {
     const run = spawnSync("expect", ["-c", expectProgram], { encoding: "utf8", timeout: 120_000, env: { ...process.env, PATH: `${dir}:${process.env.PATH}` } });
-    assert.equal(run.status, 70, `${run.stdout}\n${run.stderr}`);
-    assert.match(`${run.stdout}${run.stderr}`, /Payload upload failed/);
-    assert.deepEqual(readFileSync(marker, "utf8").trim().split("\n"), ["configure-get", "sts-get-session-token", "sts-get-caller-identity", "sts-assume-role", "s3-put-object-blocked"]);
+    assert.equal(run.status, 73, `${run.stdout}\n${run.stderr}`);
+    assert.match(`${run.stdout}${run.stderr}`, /Could not resolve whether plvi-.*-payload exists; recovery refused without a write/);
+    assert.deepEqual(readFileSync(marker, "utf8").trim().split("\n"), ["sts-get-caller-identity", "configure-get", "sts-assume-role", "s3-head-ambiguous"]);
     assert.doesNotMatch(readFileSync(marker, "utf8"), /iam|list-mfa/i);
     assert.doesNotMatch(`${run.stdout}${run.stderr}`, /123456/);
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
-test("runner uses direct exact-key PutObject acknowledgements before every read-back", () => {
+test("hostile orphan PLVI manifest stops before any replacement write", () => {
+  const dir = mkdtempSync(join(tmpdir(), "plvi-orphan-manifest-"));
+  const marker = join(dir, "calls");
+  writeFileSync(join(dir, "aws"), `#!/bin/zsh
+print -- "$1:$2:$*" >> ${JSON.stringify(marker)}
+case "$1:$2" in
+  configure:get) print -- "arn:aws:iam::286853118812:mfa/WitnessTreeArchiveOperator" ;;
+  sts:get-caller-identity) print -- '{"Account":"286853118812","Arn":"arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator"}' ;;
+  sts:assume-role) print -- '{"Credentials":{"AccessKeyId":"dummy","SecretAccessKey":"dummy","SessionToken":"dummy"},"AssumedRoleUser":{"Arn":"arn:aws:sts::286853118812:assumed-role/WitnessTreePlviArchivePromotionUploader/test"}}' ;;
+  s3api:head-object) if [[ "$*" == *payload/* ]]; then print -u2 -- NoSuchKey; exit 255; else print -- '{"VersionId":"orphan-manifest-v1","ContentLength":1,"ChecksumType":"FULL_OBJECT","ChecksumCRC64NVME":"AAAAAAAAAAA="}'; fi ;;
+  s3api:put-object|s3api:put-object-retention) print -u2 -- unexpected-write; exit 91 ;;
+  *) print -u2 -- unexpected; exit 99 ;;
+esac
+`, { mode: 0o700 });
+  const runner = new URL("../scripts/run-alberta-plvi-approved-promotion.sh", import.meta.url).pathname;
+  const program = `set timeout 120
+set env(PATH) "${dir}:$env(PATH)"
+spawn -noecho zsh ${runner} --run
+expect {
+  "Current MFA TOTP (not stored):" { send -- "123456\\r"; exp_continue }
+  eof { set result [wait]; exit [lindex $result 3] }
+  timeout { exit 2 }
+}`;
+  try {
+    const run = spawnSync("expect", ["-c", program], { encoding: "utf8", timeout: 120_000, env: { ...process.env, PATH: `${dir}:${process.env.PATH}` } });
+    assert.equal(run.status, 73, `${run.stdout}\n${run.stderr}`);
+    assert.match(`${run.stdout}${run.stderr}`, /A manifest exists without its approved PLVI payload/);
+    const calls = readFileSync(marker, "utf8");
+    assert.doesNotMatch(calls, /s3api:put-object(?:-retention)?/);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("runner uses conditional writes and exact-version recovery verification", () => {
   const runner = readFileSync(new URL("../scripts/run-alberta-plvi-approved-promotion.sh", import.meta.url), "utf8");
-  assert.match(runner, /aws s3api put-object --bucket "\$BUCKET" --key "\$\{PAYLOADS\[\$i\]\}" --body "\$\{FILES\[\$i\]\}"/);
+  assert.match(runner, /--if-none-match '\*'/);
   assert.match(runner, /--cli-read-timeout 0/);
-  assert.match(runner, /Uploading approved payload \$i\/2 by one direct S3 request/);
-  assert.match(runner, /Payload upload acknowledgement incomplete/);
-  assert.match(runner, /Sidecar upload acknowledgement incomplete/);
+  assert.match(runner, /A manifest exists without its approved PLVI payload; recovery is ambiguous/);
+  assert.match(runner, /wt_archive_verify_existing_manifest/);
   assert.doesNotMatch(runner, /aws s3 cp/);
 });

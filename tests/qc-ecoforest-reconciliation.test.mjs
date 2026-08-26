@@ -8,6 +8,7 @@ import test from "node:test";
 
 const sourcePlan = JSON.parse(readFileSync(new URL("../data/qc-immutable-promotion-preparation.json", import.meta.url), "utf8"));
 const scriptPath = new URL("../scripts/reconcile-qc-ecoforest-completed-object.sh", import.meta.url).pathname;
+const directMfaHelper = readFileSync(new URL("../scripts/aws-direct-mfa-role-session.sh", import.meta.url), "utf8");
 const repositoryRoot = new URL("../", import.meta.url).pathname.replace(/\/$/, "");
 
 function composite(content, partSize = 134217728) {
@@ -97,6 +98,7 @@ esac
     .replace(/^EXPECTED_SOURCE_BYTES=.*$/m, `EXPECTED_SOURCE_BYTES=${artifact.byteLength}`)
     .replace(/^EXPECTED_SOURCE_SHA=.*$/m, `EXPECTED_SOURCE_SHA=${JSON.stringify(artifact.sha256)}`);
   writeFileSync(runnerPath, source, { mode: 0o700 });
+  writeFileSync(join(dir, "aws-direct-mfa-role-session.sh"), directMfaHelper, { mode: 0o700 });
   chmodSync(runnerPath, 0o700);
   return { dir, state, stateBytes, statePath, markerPath, expectedComposite, runnerPath };
 }

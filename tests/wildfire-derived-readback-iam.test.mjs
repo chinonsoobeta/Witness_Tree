@@ -24,7 +24,9 @@ test("desired readback IAM state is exact and non-admitting", () => {
   const versioned = DESIRED.rolePolicy.Statement.find(({ Sid }) => Sid === "ExactDerivedVersionedReadbacks");
   assert.deepEqual(versioned.Action, ["s3:GetObjectVersion"]);
   assert.equal(versioned.Resource.length, 4);
-  assert.deepEqual(DESIRED.rolePolicy.Statement.find(({ Sid }) => Sid === "PayloadComplianceRetentionOnly").Action, ["s3:PutObjectRetention", "s3:GetObjectRetention"]);
+  const retention = DESIRED.rolePolicy.Statement.find(({ Sid }) => Sid === "ExactDerivedPayloadAndSidecarComplianceRetention");
+  assert.deepEqual(retention.Action, ["s3:PutObjectRetention", "s3:GetObjectRetention"]);
+  assert.equal(retention.Resource.length, 4);
   assert.equal(DESIRED.claims.productionEligible, false);
 });
 

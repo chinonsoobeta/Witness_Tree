@@ -111,3 +111,22 @@ test("queue validation rejects every mutated recorded approval binding", () => {
     assert.throws(() => validatePhase1OwnerDecisionQueue(queue, mutatedContext));
   }
 });
+
+test("the historical queue remains valid when the shared federal rows are later admitted", () => {
+  const queue = read("data/phase1-owner-decision-queue.json");
+  assert.equal(validatePhase1OwnerDecisionQueue(queue, context), queue);
+  for (const id of ["fed-2023-ridings", "elections-canada-45th-files"]) {
+    const row = context.ledger.entries.find((entry) => entry.id === id);
+    assert.equal(row.evidenceState, "production-admitted");
+    assert.equal(row.proof.productionAdmission, true);
+    assert.equal(row.productionEligible, true);
+    assert.equal(queue.queueRows.find((entry) => entry.id === id).productionEligible, false);
+  }
+});
+
+test("the historical queue rejects a partial or corrupted later federal admission", () => {
+  const queue = read("data/phase1-owner-decision-queue.json");
+  const corruptedContext = structuredClone(context);
+  corruptedContext.ledger.entries.find(({ id }) => id === "fed-2023-ridings").productionEligible = false;
+  assert.throws(() => validatePhase1OwnerDecisionQueue(queue, corruptedContext), /exact later federal admission state|later federal admission/i);
+});

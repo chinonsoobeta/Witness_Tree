@@ -17,13 +17,15 @@
   },
   "authorizedConditionRemoval": {
     "Bool": {"aws:MultiFactorAuthPresent": "true"},
-    "NumericLessThan": {"aws:MultiFactorAuthAge": "3600"}
+    "NumericLessThan": {"aws:MultiFactorAuthAge": "43200"}
   },
   "requiredExistingRetention": {
     "actions": ["s3:GetObjectRetention", "s3:PutObjectRetention"],
     "resources": [
       "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/nrcan-forest-canopy-height-2022/undeclared/2026-08-14T18-57-22Z/86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124/payload/ca_canopy_height_2022.zip",
+      "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/nrcan-forest-canopy-height-2022/undeclared/2026-08-14T18-57-22Z/86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124/manifest.json",
       "arn:aws:s3:::witness-tree-raw-recovery-ca-central-1/raw/nrcan-forest-canopy-height-2022/undeclared/2026-08-14T18-57-22Z/86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124/payload/ca_canopy_height_2022.zip"
+      ,"arn:aws:s3:::witness-tree-raw-recovery-ca-central-1/raw/nrcan-forest-canopy-height-2022/undeclared/2026-08-14T18-57-22Z/86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124/manifest.json"
     ]
   },
   "forbiddenActions": [
@@ -34,5 +36,5 @@
     "s3:ReplicateObject",
     "iam:*"
   ],
-  "notice": "The exact versioned readback remains limited to four objects. The obsolete S3-call MFA condition is removed only from this statement; MFA remains mandatory in the unchanged role trust policy. Existing retention permissions must cover both exact payload versions."
+  "notice": "The exact versioned readback remains limited to four objects. The obsolete S3-call MFA condition is removed only from this statement; MFA remains mandatory in the unchanged role trust policy. Existing retention permissions must cover both exact payload and manifest versions."
 }

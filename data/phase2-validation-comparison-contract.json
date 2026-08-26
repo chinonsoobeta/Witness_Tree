@@ -1,0 +1,59 @@
+{
+  "schemaVersion": "witness-tree/phase2-validation-comparison-contract/1",
+  "status": "synthetic-illustrative-framework-no-validation-results",
+  "purpose": "Define reproducible Phase 2 validation and transparent comparison publication before admitted national outputs or expert review exist.",
+  "samplePlan": {
+    "fixtureStatus": "synthetic-illustrative-nonproduction",
+    "fixedSeed": "witness-tree-phase2-validation-v1",
+    "locationsPerProvince": 100,
+    "locationsPerStratum": 25,
+    "candidateCountPerStratum": 125,
+    "strata": ["1984-2002-attributed", "1984-2002-unattributed", "2003-2022-attributed", "2003-2022-unattributed"],
+    "selectionEvidence": {
+      "algorithm": "sha256-rank-v1",
+      "candidateIdPattern": "synthetic-{province}-{stratum}-{001..125}",
+      "selectedIdsSha256ByProvince": {
+        "BC": "97904a5c18d725406a661b6df7c0b24e89eeabb5456c96b4cd7aab9cd0bbfd88",
+        "AB": "2a60e65ff99da7d6aa6ffd879e2e396a92a5949c17d40e02cdc96b2ab8fd7137",
+        "ON": "05304ef824fe18245588ff98bcf132194c2b94a105d994dd6321850b32f1bc8b",
+        "QC": "17267ec0c1cc446c37a433c805b32cb36cbb7d336c0fc0fa02d69bf01ed2bda4"
+      }
+    },
+    "expertReview": {
+      "status": "not-started",
+      "completedLocationsByProvince": {"BC": 0, "AB": 0, "ON": 0, "QC": 0},
+      "resultClaims": "none"
+    },
+    "productionEligible": false
+  },
+  "harvestComparisons": [
+    {"province": "BC", "year": 2022, "status": "pending", "witnessTreeHectares": null, "provincialPublishedHectares": null, "absoluteDifferenceHectares": null, "relativeDifference": null, "publication": "published", "explanation": {"en": "Pending admitted annual baseline and the province’s published statistic; this gap is published rather than hidden.", "fr": "En attente de la base annuelle admise et de la statistique publiée par la province; cet écart est publié plutôt que masqué."}},
+    {"province": "AB", "year": 2022, "status": "pending", "witnessTreeHectares": null, "provincialPublishedHectares": null, "absoluteDifferenceHectares": null, "relativeDifference": null, "publication": "published", "explanation": {"en": "Pending admitted annual baseline and the province’s published statistic; this gap is published rather than hidden.", "fr": "En attente de la base annuelle admise et de la statistique publiée par la province; cet écart est publié plutôt que masqué."}},
+    {"province": "ON", "year": 2022, "status": "pending", "witnessTreeHectares": null, "provincialPublishedHectares": null, "absoluteDifferenceHectares": null, "relativeDifference": null, "publication": "published", "explanation": {"en": "Pending admitted annual baseline and the province’s published statistic; this gap is published rather than hidden.", "fr": "En attente de la base annuelle admise et de la statistique publiée par la province; cet écart est publié plutôt que masqué."}},
+    {"province": "QC", "year": 2022, "status": "pending", "witnessTreeHectares": null, "provincialPublishedHectares": null, "absoluteDifferenceHectares": null, "relativeDifference": null, "publication": "published", "explanation": {"en": "Pending admitted annual baseline and the province’s published statistic; this gap is published rather than hidden.", "fr": "En attente de la base annuelle admise et de la statistique publiée par la province; cet écart est publié plutôt que masqué."}}
+  ],
+  "nbacComparisons": [
+    {"year": 2022, "status": "pending", "witnessTreeHectares": null, "nbacHectares": null, "absoluteDifferenceHectares": null, "relativeDifference": null, "publication": "published", "explanation": {"en": "Pending admitted burned-area evidence and National Burned Area Composite comparison; this gap is published rather than hidden.", "fr": "En attente des données admises sur les zones brûlées et de la comparaison avec le Composite national des zones brûlées; cet écart est publié plutôt que masqué."}}
+  ],
+  "ntemsHansenCrossCheck": {
+    "fixtureStatus": "synthetic-illustrative-nonproduction",
+    "role": "independent-cross-check-not-source",
+    "status": "not-started",
+    "sampleSize": 1,
+    "resultClaims": "none",
+    "productionEligible": false
+  },
+  "sourceReportedAccuracy": {
+    "sourceProduct": "Source-product reported accuracy figures",
+    "sourceReportedFigure": "No figure copied into this illustrative framework.",
+    "role": "source-reported-context-not-product-accuracy",
+    "witnessTreeProductAccuracyClaim": false
+  },
+  "claims": {
+    "validationResultsExist": false,
+    "productAccuracyClaim": false,
+    "admittedInputs": false,
+    "externalAction": false,
+    "productionEligible": false
+  }
+}

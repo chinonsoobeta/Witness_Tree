@@ -1,0 +1,476 @@
+{
+  "schemaVersion": "witness-tree/phase2-admission-record/1",
+  "status": "recorded-admission",
+  "ownerDecision": {
+    "decisionId": "phase2-v21-21-raster-and-2020-2022-province-aggregate-admission-v1",
+    "decision": "approve",
+    "packet": {
+      "path": "data/phase2-owner-admission-packet.json",
+      "sha256": "f4bc01b389a2c514ad5e04c746821c249ca6c2bf91b6d6f2a46428d6d66d77fd"
+    },
+    "acknowledgements": [
+      "exact-bindings-reviewed",
+      "method-and-claim-limits-reviewed",
+      "no-release-or-production-admission"
+    ]
+  },
+  "sourceInputAdmissionRecords": [
+    {
+      "id": "vlce2-annual-land-cover-1984-2022",
+      "path": "data/phase2-source-input-admission-vlce2-1984-2022.json",
+      "sha256": "ec7cdf9dfa88c5211c858034dd324d7c3e82fbe45b92f74adf90906648e12b13"
+    },
+    {
+      "id": "statcan-2021-provinces-territories-cbf",
+      "path": "data/phase2-source-input-admission-statcan-2021-provinces-territories-cbf.json",
+      "sha256": "5c74cf10d45e7d509069aeea890545b6c57dffc62956c7db1cf0a9ea4c28574d"
+    }
+  ],
+  "evidenceBindings": {
+    "rasterReadback": {
+      "path": "data/phase2-v21-raster-readback-evidence.json",
+      "sha256": "8815684bdde91250a0654fd2890a11d8505532c3c6864169f68165a22dd98210",
+      "outputs": 21,
+      "artifacts": 42
+    },
+    "methodParameters": {
+      "path": "data/phase2-method-parameters.json",
+      "sha256": "8d06ec83542f05e81a4b63b4e6c3c2c7ef1a40df46f501ce8cc0177050446334"
+    },
+    "zonalAggregate": {
+      "path": "data/phase2-v21-province-zonal-pilot-evidence.json",
+      "sha256": "4fb0efc6ec984025e91f0124e0347a2f0a08673ed1f606ba318c9ca732f5ce62",
+      "timeVersion": "2020-2022",
+      "featureCount": 13
+    }
+  },
+  "artifactBindings": [
+    {
+      "kind": "forest-mask-snapshot",
+      "year": 1984,
+      "fromYear": null,
+      "toYear": null,
+      "role": "raster",
+      "path": "forest-mask-snapshot-1984.tif",
+      "byteLength": 482708957,
+      "sha256": "f14fe5188f12b7fb200fa3c3e1f22432645ee2cdcaa1bdd5d7c47d7fd63237f9"
+    },
+    {
+      "kind": "forest-mask-snapshot",
+      "year": 1984,
+      "fromYear": null,
+      "toYear": null,
+      "role": "sidecar",
+      "path": "sidecars/forest-mask-snapshot-1984-snapshot.json",
+      "byteLength": 3749,
+      "sha256": "629a811f7481732e448662faf01c141624b3d3f73c2ae4b05c45805c1f269ef2"
+    },
+    {
+      "kind": "forest-mask-snapshot",
+      "year": 1988,
+      "fromYear": null,
+      "toYear": null,
+      "role": "raster",
+      "path": "forest-mask-snapshot-1988.tif",
+      "byteLength": 478352296,
+      "sha256": "4825bed309cacfc42e29ff86b883d0b37b56f666190aad8603de10327ee74b00"
+    },
+    {
+      "kind": "forest-mask-snapshot",
+      "year": 1988,
+      "fromYear": null,
+      "toYear": null,
+      "role": "sidecar",
+      "path": "sidecars/forest-mask-snapshot-1988-snapshot.json",
+      "byteLength": 3749,
+      "sha256": "38e1d1595bbc734dd03fa6a940b39f9cd96bfe8d3ef5ce7d6b872ed443e06f5b"
+    },
+    {
+      "kind": "forest-mask-snapshot",
+      "year": 1992,
+      "fromYear": null,
+      "toYear": null,
+      "role": "raster",
+      "path": "forest-mask-snapshot-1992.tif",
+      "byteLength": 473633489,
+      "sha256": "5e873f140ac75746f48eaab9c3029fc08246f961701c9bfc31b75137ba216ea8"
+    },
+    {
+      "kind": "forest-mask-snapshot",
+      "year": 1992,
+      "fromYear": null,
+      "toYear": null,
+      "role": "sidecar",
+      "path": "sidecars/forest-mask-snapshot-1992-snapshot.json",
+      "byteLength": 3749,
+      "sha256": "0c2e46767c278d04a3214dc0406521453344ddc46592cb8ffd81c14df6eec74e"
+    },
+    {
+      "kind": "forest-mask-snapshot",
+      "year": 1996,
+      "fromYear": null,
+      "toYear": null,
+      "role": "raster",
+      "path": "forest-mask-snapshot-1996.tif",
+      "byteLength": 473615421,
+      "sha256": "b567cc844a9b30951a66c0e182ae5061369bac0b1cad5e1f371e960b11c38936"
+    },
+    {
+      "kind": "forest-mask-snapshot",
+      "year": 1996,
+      "fromYear": null,
+      "toYear": null,
+      "role": "sidecar",
+      "path": "sidecars/forest-mask-snapshot-1996-snapshot.json",
+      "byteLength": 3749,
+      "sha256": "b2156ce87f459f11fe1e66c04f972a5336997c0b048171c0916ed0362f44ba79"
+    },
+    {
+      "kind": "forest-mask-snapshot",
+      "year": 2000,
+      "fromYear": null,
+      "toYear": null,
+      "role": "raster",
+      "path": "forest-mask-snapshot-2000.tif",
+      "byteLength": 477261501,
+      "sha256": "3461296120b67e5f3bba2cbb1bc4da3264f6d71d4a144f9c17caf78b20096ed7"
+    },
+    {
+      "kind": "forest-mask-snapshot",
+      "year": 2000,
+      "fromYear": null,
+      "toYear": null,
+      "role": "sidecar",
+      "path": "sidecars/forest-mask-snapshot-2000-snapshot.json",
+      "byteLength": 3749,
+      "sha256": "391db2d1ff8336a2919a1a75d70c64be129135242698329d223a7f27d92e0b6f"
+    },
+    {
+      "kind": "forest-mask-snapshot",
+      "year": 2004,
+      "fromYear": null,
+      "toYear": null,
+      "role": "raster",
+      "path": "forest-mask-snapshot-2004.tif",
+      "byteLength": 479666302,
+      "sha256": "396b5071ab168da3f57e7c52cee70c3b4f3a0dda2dc9d80e1dfbb8e7e747bec6"
+    },
+    {
+      "kind": "forest-mask-snapshot",
+      "year": 2004,
+      "fromYear": null,
+      "toYear": null,
+      "role": "sidecar",
+      "path": "sidecars/forest-mask-snapshot-2004-snapshot.json",
+      "byteLength": 3749,
+      "sha256": "c5bd206bd5e4c73816a4c2a7cf407ec56d11ce9f91f95c18a52e18c533dd137d"
+    },
+    {
+      "kind": "forest-mask-snapshot",
+      "year": 2008,
+      "fromYear": null,
+      "toYear": null,
+      "role": "raster",
+      "path": "forest-mask-snapshot-2008.tif",
+      "byteLength": 481374425,
+      "sha256": "a6d4a54ae0eca3c6d52ebbd00721333accf43926bbff9ebe4c698d4df16a97c6"
+    },
+    {
+      "kind": "forest-mask-snapshot",
+      "year": 2008,
+      "fromYear": null,
+      "toYear": null,
+      "role": "sidecar",
+      "path": "sidecars/forest-mask-snapshot-2008-snapshot.json",
+      "byteLength": 3749,
+      "sha256": "f7c80198a8149f6f7a7a33a2a7587d89557223c2cfbd63bb9a0e1165ccdf9f08"
+    },
+    {
+      "kind": "forest-mask-snapshot",
+      "year": 2012,
+      "fromYear": null,
+      "toYear": null,
+      "role": "raster",
+      "path": "forest-mask-snapshot-2012.tif",
+      "byteLength": 483690657,
+      "sha256": "feaba489b43a9a3a571843684c0f445c20d55c2419b92f980f95047684970fc2"
+    },
+    {
+      "kind": "forest-mask-snapshot",
+      "year": 2012,
+      "fromYear": null,
+      "toYear": null,
+      "role": "sidecar",
+      "path": "sidecars/forest-mask-snapshot-2012-snapshot.json",
+      "byteLength": 3749,
+      "sha256": "9abea3183c966b3919c3e13786ac49fad9d150a071163883346c1165d6874a68"
+    },
+    {
+      "kind": "forest-mask-snapshot",
+      "year": 2016,
+      "fromYear": null,
+      "toYear": null,
+      "role": "raster",
+      "path": "forest-mask-snapshot-2016.tif",
+      "byteLength": 485168490,
+      "sha256": "94d8c2d750d54292490080f5cb8dd3192eac61661bc2c697987853c7fdf915a2"
+    },
+    {
+      "kind": "forest-mask-snapshot",
+      "year": 2016,
+      "fromYear": null,
+      "toYear": null,
+      "role": "sidecar",
+      "path": "sidecars/forest-mask-snapshot-2016-snapshot.json",
+      "byteLength": 3749,
+      "sha256": "d68011427d64bc7d2b11fae83a3f495d36b7c9588b920d976273086b6f5767fb"
+    },
+    {
+      "kind": "forest-mask-snapshot",
+      "year": 2020,
+      "fromYear": null,
+      "toYear": null,
+      "role": "raster",
+      "path": "forest-mask-snapshot-2020.tif",
+      "byteLength": 486962325,
+      "sha256": "23d73bb01b68598b4f31c4b2a5bcbb915d4f1300a9e45e27398422c6395bcbde"
+    },
+    {
+      "kind": "forest-mask-snapshot",
+      "year": 2020,
+      "fromYear": null,
+      "toYear": null,
+      "role": "sidecar",
+      "path": "sidecars/forest-mask-snapshot-2020-snapshot.json",
+      "byteLength": 3749,
+      "sha256": "38f547e14978ce0ce88e3fa179ab48abcc94ed9ef03bc2a180e8c6a3512566ab"
+    },
+    {
+      "kind": "forest-mask-snapshot",
+      "year": 2022,
+      "fromYear": null,
+      "toYear": null,
+      "role": "raster",
+      "path": "forest-mask-snapshot-2022.tif",
+      "byteLength": 487314165,
+      "sha256": "3d792c02b917a541c55566e9521da7d6dbc25a80efdbc3018e2493ff7ba98152"
+    },
+    {
+      "kind": "forest-mask-snapshot",
+      "year": 2022,
+      "fromYear": null,
+      "toYear": null,
+      "role": "sidecar",
+      "path": "sidecars/forest-mask-snapshot-2022-snapshot.json",
+      "byteLength": 3749,
+      "sha256": "4ef0a20a0c7a19d5bac1dad1517a90467dfcba1b355a203f724e443462e5260b"
+    },
+    {
+      "kind": "whole-interval-loss",
+      "year": null,
+      "fromYear": 1984,
+      "toYear": 1988,
+      "role": "raster",
+      "path": "whole-interval-loss-1984-1988.tif",
+      "byteLength": 127180261,
+      "sha256": "d3bd71928863bff9589f203d26c6e46d25d3044ff2d7802d5326b2484afc720f"
+    },
+    {
+      "kind": "whole-interval-loss",
+      "year": null,
+      "fromYear": 1984,
+      "toYear": 1988,
+      "role": "sidecar",
+      "path": "sidecars/whole-interval-loss-1984-1988.json",
+      "byteLength": 4922,
+      "sha256": "fa2acd557c164f52fa7b0d167b55573abff10944a78f0ec96c9033af24ade39d"
+    },
+    {
+      "kind": "whole-interval-loss",
+      "year": null,
+      "fromYear": 1988,
+      "toYear": 1992,
+      "role": "raster",
+      "path": "whole-interval-loss-1988-1992.tif",
+      "byteLength": 142611082,
+      "sha256": "fa687d53c3cb6c2f2c8e80e23abb9ea1c2e7c40fea022841e70340ac35762c07"
+    },
+    {
+      "kind": "whole-interval-loss",
+      "year": null,
+      "fromYear": 1988,
+      "toYear": 1992,
+      "role": "sidecar",
+      "path": "sidecars/whole-interval-loss-1988-1992.json",
+      "byteLength": 4925,
+      "sha256": "9f774c79ca8c97eaead56235629747c920202208453f85420972eb58198db5bf"
+    },
+    {
+      "kind": "whole-interval-loss",
+      "year": null,
+      "fromYear": 1992,
+      "toYear": 1996,
+      "role": "raster",
+      "path": "whole-interval-loss-1992-1996.tif",
+      "byteLength": 151964422,
+      "sha256": "977bd9ac534b24b572ff82b75e62e6e11c718aab654b8cf09759a352688baaaa"
+    },
+    {
+      "kind": "whole-interval-loss",
+      "year": null,
+      "fromYear": 1992,
+      "toYear": 1996,
+      "role": "sidecar",
+      "path": "sidecars/whole-interval-loss-1992-1996.json",
+      "byteLength": 4925,
+      "sha256": "dac0fcec9ff3093aa07080a4d595d8586d86285844a5add21f33dd9a2ec5651a"
+    },
+    {
+      "kind": "whole-interval-loss",
+      "year": null,
+      "fromYear": 1996,
+      "toYear": 2000,
+      "role": "raster",
+      "path": "whole-interval-loss-1996-2000.tif",
+      "byteLength": 155372047,
+      "sha256": "a710927c617088a51ceda11ad167a3abfbbc0700df22441b732d52332d44d3dc"
+    },
+    {
+      "kind": "whole-interval-loss",
+      "year": null,
+      "fromYear": 1996,
+      "toYear": 2000,
+      "role": "sidecar",
+      "path": "sidecars/whole-interval-loss-1996-2000.json",
+      "byteLength": 4925,
+      "sha256": "e5c6c7669882393c62e2a228f4c5e8656c9346ab84c3053c34ec2ede85eceeb5"
+    },
+    {
+      "kind": "whole-interval-loss",
+      "year": null,
+      "fromYear": 2000,
+      "toYear": 2004,
+      "role": "raster",
+      "path": "whole-interval-loss-2000-2004.tif",
+      "byteLength": 155934943,
+      "sha256": "47e4d77d931ace7da10744593b4d79b782b8d05610b0b6f843fcbddc6b8ed08b"
+    },
+    {
+      "kind": "whole-interval-loss",
+      "year": null,
+      "fromYear": 2000,
+      "toYear": 2004,
+      "role": "sidecar",
+      "path": "sidecars/whole-interval-loss-2000-2004.json",
+      "byteLength": 4925,
+      "sha256": "d78f1a3a6ab7e1c3be95b71cd7a8dc3dd4a94926ac9e713ed4dbe832e81e63fb"
+    },
+    {
+      "kind": "whole-interval-loss",
+      "year": null,
+      "fromYear": 2004,
+      "toYear": 2008,
+      "role": "raster",
+      "path": "whole-interval-loss-2004-2008.tif",
+      "byteLength": 153939599,
+      "sha256": "2025707d981d77fee9362afb2ced8c69183765d3eb3180c80771bdf976dd9503"
+    },
+    {
+      "kind": "whole-interval-loss",
+      "year": null,
+      "fromYear": 2004,
+      "toYear": 2008,
+      "role": "sidecar",
+      "path": "sidecars/whole-interval-loss-2004-2008.json",
+      "byteLength": 4924,
+      "sha256": "30757ea138890f691dfd22135a99b56b9880a3395852a916a0575ee6f5bde129"
+    },
+    {
+      "kind": "whole-interval-loss",
+      "year": null,
+      "fromYear": 2008,
+      "toYear": 2012,
+      "role": "raster",
+      "path": "whole-interval-loss-2008-2012.tif",
+      "byteLength": 163159890,
+      "sha256": "de11e8f4a1e288224bf7314ea8743d7163911dd048cbb0917b35b660a0d286b3"
+    },
+    {
+      "kind": "whole-interval-loss",
+      "year": null,
+      "fromYear": 2008,
+      "toYear": 2012,
+      "role": "sidecar",
+      "path": "sidecars/whole-interval-loss-2008-2012.json",
+      "byteLength": 4925,
+      "sha256": "098d01a5fe9d8c4b0281c1219f13fcff8ffc97c336d808e0bb98c820943718b9"
+    },
+    {
+      "kind": "whole-interval-loss",
+      "year": null,
+      "fromYear": 2012,
+      "toYear": 2016,
+      "role": "raster",
+      "path": "whole-interval-loss-2012-2016.tif",
+      "byteLength": 169596363,
+      "sha256": "a0031dee86734263ff0f0b2926ed25d26ece39fe70fe35f66da44ceaddf7a5c8"
+    },
+    {
+      "kind": "whole-interval-loss",
+      "year": null,
+      "fromYear": 2012,
+      "toYear": 2016,
+      "role": "sidecar",
+      "path": "sidecars/whole-interval-loss-2012-2016.json",
+      "byteLength": 4925,
+      "sha256": "d6f93aecf70504657d715aa53b55c46b3cd46d8cf14f96c45a73310416c16cd7"
+    },
+    {
+      "kind": "whole-interval-loss",
+      "year": null,
+      "fromYear": 2016,
+      "toYear": 2020,
+      "role": "raster",
+      "path": "whole-interval-loss-2016-2020.tif",
+      "byteLength": 149940421,
+      "sha256": "0caac4a3d73840444b0ea8141baaa1003a90a05bf0473bae39ffd9763d7690fb"
+    },
+    {
+      "kind": "whole-interval-loss",
+      "year": null,
+      "fromYear": 2016,
+      "toYear": 2020,
+      "role": "sidecar",
+      "path": "sidecars/whole-interval-loss-2016-2020.json",
+      "byteLength": 4925,
+      "sha256": "dec098e3a3877b5ba412f7822dc034e2cb9a438a6329f77cd07e15e3cb64ecce"
+    },
+    {
+      "kind": "whole-interval-loss",
+      "year": null,
+      "fromYear": 2020,
+      "toYear": 2022,
+      "role": "raster",
+      "path": "whole-interval-loss-2020-2022.tif",
+      "byteLength": 119265158,
+      "sha256": "2de157a9aa554e1960c1065ff425d2d4dbe31e8922a83b1f41203f9b0eadf56c"
+    },
+    {
+      "kind": "whole-interval-loss",
+      "year": null,
+      "fromYear": 2020,
+      "toYear": 2022,
+      "role": "sidecar",
+      "path": "sidecars/whole-interval-loss-2020-2022.json",
+      "byteLength": 4185,
+      "sha256": "6856ba9782807427585740590f0d36e71437e134f41bbec0c95ea74b18fa81e7"
+    }
+  ],
+  "claims": {
+    "admitted": true,
+    "released": false,
+    "productionEligible": false,
+    "formalGate1Complete": true,
+    "formalGate4Complete": true
+  }
+}

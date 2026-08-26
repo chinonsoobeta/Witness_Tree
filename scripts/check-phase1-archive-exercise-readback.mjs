@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 
 const UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:Z|[+-]\d{2}:\d{2})$/;
 const REDACTED = /(?:\b\d{12}\b|arn:aws:|AccessKeyId|SecretAccessKey|SessionToken|VersionId|[A-Za-z0-9+/]{40,}={0,2})/i;
@@ -39,7 +40,8 @@ export function validateArchiveExerciseReadback(record) {
 }
 
 if (process.argv[1]?.endsWith("check-phase1-archive-exercise-readback.mjs")) {
-  const record = JSON.parse(readFileSync(process.argv[2], "utf8"));
+  const evidenceFile = process.argv[2] ?? fileURLToPath(new URL("../data/phase1-archive-exercise-readback-2026-08-25.json", import.meta.url));
+  const record = JSON.parse(readFileSync(evidenceFile, "utf8"));
   const verdict = validateArchiveExerciseReadback(record);
   console.log(`Redacted ${verdict.kind} archive-exercise evidence is valid (${verdict.completed ? "complete" : "recovery pending"}).`);
 }

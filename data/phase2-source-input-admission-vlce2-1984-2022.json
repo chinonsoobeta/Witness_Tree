@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "witness-tree/phase2-source-input-admission/1",
+  "status": "recorded-limited-source-input-admission",
+  "recordedAt": "2026-08-26T00:23:52Z",
+  "ownerDecisionContext": "The content/data owner replied ‘I approve’ to the exact limited Phase 2 admission request in the active implementation task.",
+  "evidenceToBind": {
+    "path": "data/vlce2-remote-promotion-evidence.json",
+    "sha256": "1e1f827df3b51b13143b490a204c59475e6ed4af7ce0de8af69d53f8a554c211",
+    "sourceId": "nrcan-annual-land-cover-v2",
+    "entryCount": 39,
+    "years": [1984, 2022]
+  },
+  "ownerDecision": {
+    "decision": "approve",
+    "scope": "All 39 exact annual VLCE2 source archives used by the 21 raster outputs."
+  },
+  "limits": [
+    "This admits only the 39 exact checksum- and version-bound annual source archives for the limited Phase 2 record.",
+    "It does not approve public release, publication, production eligibility, accuracy, expert-review, comparison, or causal-attribution claims."
+  ],
+  "claims": {
+    "sourceInputAdmitted": true,
+    "released": false,
+    "productionEligible": false
+  }
+}

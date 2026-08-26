@@ -4,6 +4,7 @@
 # changes IAM, or uses a governance bypass or legal hold.
 set -euo pipefail
 umask 077
+source "${0:A:h}/aws-direct-mfa-role-session.sh"
 
 PROFILE="WitnessTreeArchiveOperator"
 ROLE="WitnessTreeWildfireDerivedPromotionUploader"
@@ -64,22 +65,7 @@ if [[ "$MODE" == "preflight" ]]; then
   exit 0
 fi
 
-[[ -t 0 && -t 1 ]] || fail "MFA TOTP prompt requires an interactive terminal; no AWS readback was authorized" 64
-read -r -s 'totp?Current MFA TOTP (not stored): '
-print
-[[ "$totp" =~ '^[0-9]{6}$' ]] || fail "TOTP must be exactly six digits; no AWS call was made" 64
-mfa_serial="$(aws configure get mfa_serial --profile "$PROFILE" 2>"$TMP/mfa-serial.stderr")" || fail "Configured MFA serial could not be read; no AWS readback was authorized" 69
-[[ "$mfa_serial" =~ '^arn:aws:iam::286853118812:mfa/[A-Za-z0-9+=,.@_/-]+$' ]] || fail "Configured MFA serial is absent or outside the approved account; no STS or S3 readback was authorized" 69
-if ! aws sts get-session-token --serial-number "$mfa_serial" --token-code "$totp" --profile "$PROFILE" --duration-seconds 3600 --output json >"$TMP/bootstrap.json" 2>"$TMP/sts-session.stderr"; then
-  fail "MFA session failed; no S3 readback was authorized" 77
-fi
-export AWS_ACCESS_KEY_ID="$(jq -er '.Credentials.AccessKeyId' "$TMP/bootstrap.json")" AWS_SECRET_ACCESS_KEY="$(jq -er '.Credentials.SecretAccessKey' "$TMP/bootstrap.json")" AWS_SESSION_TOKEN="$(jq -er '.Credentials.SessionToken' "$TMP/bootstrap.json")"
-account="$(aws sts get-caller-identity --query Account --output text 2>"$TMP/caller.stderr")" || fail "MFA session identity could not be verified; no S3 readback was authorized" 77
-[[ "$account" == "$ACCOUNT" ]] || fail "MFA session is outside the approved account; no S3 readback was authorized" 77
-if ! aws sts assume-role --role-arn "arn:aws:iam::${ACCOUNT}:role/${ROLE}" --role-session-name witness-tree-derived-readback --serial-number "$mfa_serial" --token-code "$totp" --duration-seconds 3600 --output json >"$TMP/role-session.json" 2>"$TMP/sts-role.stderr"; then
-  fail "Approved derived readback role assumption failed; no S3 readback was authorized" 77
-fi
-unset totp mfa_serial
+wt_assume_direct_mfa_role "$PROFILE" "$ACCOUNT" "$ROLE" witness-tree-derived-readback >"$TMP/role-session.json"
 export AWS_ACCESS_KEY_ID="$(jq -er '.Credentials.AccessKeyId' "$TMP/role-session.json")" AWS_SECRET_ACCESS_KEY="$(jq -er '.Credentials.SecretAccessKey' "$TMP/role-session.json")" AWS_SESSION_TOKEN="$(jq -er '.Credentials.SessionToken' "$TMP/role-session.json")"
 
 head_exact() {
@@ -93,7 +79,7 @@ head_exact() {
   fi
 }
 
-read_payload_retention() {
+read_retention() {
   local label="$1" key="$2" version
   version="$(jq -er '.VersionId' "$TMP/$label.json")" || fail "Exact payload version was absent; no retention read or mutation was attempted" 70
   if ! aws s3api get-object-retention --bucket "$BUCKET" --key "$key" --version-id "$version" --region "$REGION" --output json >"$TMP/$label-retention.json" 2>"$TMP/$label-retention.stderr"; then
@@ -103,15 +89,17 @@ read_payload_retention() {
 
 head_exact bc-payload "$BC_PAYLOAD"
 head_exact bc-manifest "$BC_MANIFEST"
-read_payload_retention bc-payload "$BC_PAYLOAD"
+read_retention bc-payload "$BC_PAYLOAD"
+read_retention bc-manifest "$BC_MANIFEST"
 head_exact on-payload "$ON_PAYLOAD"
 head_exact on-manifest "$ON_MANIFEST"
-read_payload_retention on-payload "$ON_PAYLOAD"
+read_retention on-payload "$ON_PAYLOAD"
+read_retention on-manifest "$ON_MANIFEST"
 
 jq -n \
-  --slurpfile bcp "$TMP/bc-payload.json" --slurpfile bcm "$TMP/bc-manifest.json" --slurpfile bcr "$TMP/bc-payload-retention.json" \
-  --slurpfile onp "$TMP/on-payload.json" --slurpfile onm "$TMP/on-manifest.json" --slurpfile onr "$TMP/on-payload-retention.json" \
-  '{"bc-wildfire-216-feature-derived-2026-08-14":{payload:$bcp[0],manifest:$bcm[0],retention:$bcr[0]},"ontario-in-year-fire-188-feature-derived-2026-08-14":{payload:$onp[0],manifest:$onm[0],retention:$onr[0]}}' \
+  --slurpfile bcp "$TMP/bc-payload.json" --slurpfile bcm "$TMP/bc-manifest.json" --slurpfile bcr "$TMP/bc-payload-retention.json" --slurpfile bcmr "$TMP/bc-manifest-retention.json" \
+  --slurpfile onp "$TMP/on-payload.json" --slurpfile onm "$TMP/on-manifest.json" --slurpfile onr "$TMP/on-payload-retention.json" --slurpfile onmr "$TMP/on-manifest-retention.json" \
+  '{"bc-wildfire-216-feature-derived-2026-08-14":{payload:$bcp[0],manifest:$bcm[0],retention:$bcr[0],manifestRetention:$bcmr[0]},"ontario-in-year-fire-188-feature-derived-2026-08-14":{payload:$onp[0],manifest:$onm[0],retention:$onr[0],manifestRetention:$onmr[0]}}' \
   >"$TMP/readback.json"
 if ! node "$CHECKER" --readback "$APPROVAL" "$TMP/readback.json" >"$TMP/readback-check.stdout" 2>"$TMP/readback-check.stderr"; then
   fail "Exact derived payload, manifest, checksum, version, or retention readback failed closed; no mutation was attempted" 70

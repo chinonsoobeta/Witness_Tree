@@ -84,7 +84,7 @@ export function validatePhase1ImmutableDownstreamPreflight(record, context) {
   const immutableIds = context.ledger.entries
     .filter(({ evidenceState }) => evidenceState === "remote-verified-archived-profiled")
     .map(({ id }) => id);
-  assert.deepEqual(immutableIds, IDS);
+  assert.ok(IDS.every((id) => immutableIds.includes(id)), "The established immutable rows must remain immutable after later archive evidence.");
   for (const expected of EXPECTED_ROWS) {
     const ledger = context.ledger.entries.find(({ id }) => id === expected.id);
     const decision = context.decisions.decisions.find(({ id }) => id === expected.id);

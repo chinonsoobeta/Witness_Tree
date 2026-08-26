@@ -8,6 +8,7 @@ import test from "node:test";
 
 const sourcePlan = JSON.parse(readFileSync(new URL("../data/qc-immutable-promotion-preparation.json", import.meta.url), "utf8"));
 const runnerPath = new URL("../scripts/run-qc-approved-multipart-promotion.sh", import.meta.url).pathname;
+const directMfaHelper = readFileSync(new URL("../scripts/aws-direct-mfa-role-session.sh", import.meta.url), "utf8");
 const repositoryRoot = new URL("../", import.meta.url).pathname.replace(/\/$/, "");
 
 function makeFixture(mode = "success") {
@@ -80,7 +81,7 @@ function makeFixture(mode = "success") {
 print -r -- "$1:$2 $*" >> ${JSON.stringify(markerPath)}
 case "$1:$2" in
   configure:get) print -r -- 'arn:aws:iam::286853118812:mfa/test-device' ;;
-  sts:get-session-token|sts:assume-role) print -r -- '{"Credentials":{"AccessKeyId":"dummy","SecretAccessKey":"dummy","SessionToken":"dummy"}}' ;;
+  sts:assume-role) print -r -- '{"Credentials":{"AccessKeyId":"dummy","SecretAccessKey":"dummy","SessionToken":"dummy"},"AssumedRoleUser":{"Arn":"arn:aws:sts::286853118812:assumed-role/WitnessTreeQcArchivePromotionUploader/test"}}' ;;
   sts:get-caller-identity) print -r -- '{"Account":"286853118812","Arn":"arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator"}' ;;
   s3api:head-object)
     key=""; version=""
@@ -109,6 +110,7 @@ esac
     .replace(/^DATA_ROOT=.*$/m, `DATA_ROOT=${JSON.stringify(dataRoot)}`)
     .replace(/^STATE_ROOT=.*$/m, `STATE_ROOT=${JSON.stringify(stateRoot)}`)
     .replace(/^PART_SIZE=.*$/m, "PART_SIZE=4"), { mode: 0o700 });
+  writeFileSync(join(dir, "aws-direct-mfa-role-session.sh"), directMfaHelper, { mode: 0o700 });
   return { dir, runner, markerPath, states, eco, original };
 }
 

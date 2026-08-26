@@ -20,7 +20,7 @@ const context = {
   partial: read("data/phase1-partial-source-route-exhaustion.json")
 };
 
-test("BC/ON row audit reconciles every scoped row to canonical state without credit or admission", () => {
+test("historical BC/ON row audit preserves every scoped snapshot row while validating the later federal admission separately", () => {
   assert.equal(validatePhase1BcOntarioRowAudit(audit, ledger, context), audit);
   assert.equal(audit.rows.length, 11);
   assert.equal(audit.baseline.rawEvidenceNumerator, 14.25);

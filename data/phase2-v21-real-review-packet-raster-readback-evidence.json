@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "witness-tree/phase2-v21-real-review-packet-raster-readback-evidence/1",
+  "status": "local-native-pixel-readback-passed-nonproduction",
+  "packet": {
+    "path": "../../Witness_Tree-data/derived/phase2-v21-review-packet-v1/packet.json",
+    "byteLength": 328499,
+    "sha256": "48151799249a442c828287897f0d504746b09fb72ef0663308d90339d47e091e"
+  },
+  "runner": {
+    "path": "scripts/readback-phase2-v21-real-review-packet.mjs",
+    "sha256": "6c756dfdcd7a22d1b6eee78d99fd6d74e5e6434256569bbd54acc5edcccb9e53"
+  },
+  "rasters": [
+    {
+      "path": "whole-interval-loss-2000-2004.tif",
+      "byteLength": 155934943,
+      "sha256": "47e4d77d931ace7da10744593b4d79b782b8d05610b0b6f843fcbddc6b8ed08b",
+      "samples": 200
+    },
+    {
+      "path": "whole-interval-loss-2020-2022.tif",
+      "byteLength": 119265158,
+      "sha256": "2de157a9aa554e1960c1065ff425d2d4dbe31e8922a83b1f41203f9b0eadf56c",
+      "samples": 200
+    }
+  ],
+  "result": {
+    "samples": 400,
+    "observedLoss": 200,
+    "knownNoLoss": 200,
+    "allNativePixelsMatchPacketClass": true
+  },
+  "claims": {
+    "candidatePacketNativeReadbackCompleted": true,
+    "expertReviewCompleted": false,
+    "validationResultsExist": false,
+    "admittedInputs": false,
+    "productionEligible": false,
+    "released": false
+  }
+}

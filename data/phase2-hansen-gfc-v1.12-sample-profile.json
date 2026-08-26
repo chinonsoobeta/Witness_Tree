@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "witness-tree/phase2-hansen-gfc-v1.12-sample-profile/1",
+  "status": "locally-staged-cross-check-input-no-comparison-result",
+  "acquiredAt": "2026-08-25",
+  "source": {
+    "publisher": "Global Land Analysis and Discovery laboratory, University of Maryland",
+    "product": "Global Forest Change 2000–2024, version 1.12",
+    "layer": "lossyear",
+    "downloadPage": "https://storage.googleapis.com/earthenginepartners-hansen/GFC-2024-v1.12/download.html",
+    "licence": "CC BY 4.0",
+    "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "displayAttribution": "Source: Hansen/UMD/Google/USGS/NASA",
+    "citation": "Hansen et al. (2013), High-Resolution Global Maps of 21st-Century Forest Cover Change, Science 342:850–53."
+  },
+  "artifacts": [
+    {"provinceSample":"BC","tile":"60N_130W","localPath":"../../Witness_Tree-data/raw/hansen-gfc-v1.12-2024/2026-08-25/Hansen_GFC-2024-v1.12_lossyear_60N_130W.tif","byteLength":77605485,"sha256":"e7347c67766cbb90b5e781e614464a144ad538739c2db14215d6e3d0cb1dee81","extentWgs84":[-130,50,-120,60]},
+    {"provinceSample":"AB","tile":"60N_110W","localPath":"../../Witness_Tree-data/raw/hansen-gfc-v1.12-2024/2026-08-25/Hansen_GFC-2024-v1.12_lossyear_60N_110W.tif","byteLength":72966593,"sha256":"b0f06eb471f9f70ef95de415b77bd3084c38aa05048d523418607f58a7804f43","extentWgs84":[-110,50,-100,60]},
+    {"provinceSample":"ON","tile":"50N_090W","localPath":"../../Witness_Tree-data/raw/hansen-gfc-v1.12-2024/2026-08-25/Hansen_GFC-2024-v1.12_lossyear_50N_090W.tif","byteLength":42531475,"sha256":"c9b192871c0f31538f4503b57bdcec8aa8dccba05bd3a562695e252d860418df","extentWgs84":[-90,40,-80,50]},
+    {"provinceSample":"QC","tile":"50N_070W","localPath":"../../Witness_Tree-data/raw/hansen-gfc-v1.12-2024/2026-08-25/Hansen_GFC-2024-v1.12_lossyear_50N_070W.tif","byteLength":49144451,"sha256":"d85d75ac5829786c296ff369478d0d7c7b50f5e50b7ed737e73da66d09b6d1de","extentWgs84":[-70,40,-60,50]}
+  ],
+  "rasterContract": {"driver":"GTiff","dataType":"Byte","crs":"EPSG:4326","width":40000,"height":40000,"pixelSizeDegrees":0.00025,"lossYearEncoding":"0 means no mapped loss; 1–24 represent loss detected primarily in 2001–2024."},
+  "limitations": [
+    "These four 10×10-degree tiles are samples, not complete provincial coverage.",
+    "Hansen loss is gross forest-cover loss, not a harvest, fire, or causal-attribution record.",
+    "Version 1.12 reprocessed 2011 onward; its publisher cautions against treating its annual series as fully consistent with earlier years.",
+    "The Witness Tree baseline ends in 2022, so any future comparison must restrict Hansen values to codes 1–22 and document matching masks, boundary version, grid resampling, area method and uncertainty.",
+    "This record is local raw-input evidence only. It is not immutable evidence, an admitted source, a computed comparison, a product-accuracy claim, or a release."
+  ],
+  "claims": {"comparisonComputed":false,"likeForLike":false,"productAccuracyClaim":false,"admitted":false,"productionEligible":false,"released":false}
+}

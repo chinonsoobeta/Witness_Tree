@@ -32,9 +32,9 @@ export function validateAlertEvent(event: AlertEvent): AlertEvent {
 }
 const utcDay = (value: string) => new Date(value).toISOString().slice(0, 10);
 const desiredCadence = (area: AlertReadyArea, trigger: AlertEvent["trigger"]): AlertCadence => area.alertCadence || DEFAULT_CADENCE[trigger];
-export function evaluateAlerts(input: Readonly<{ account: Account; areas: readonly AlertReadyArea[]; events: readonly AlertEvent[]; history: readonly AlertHistoryEntry[]; now: string }>): AlertEvaluation {
+export function evaluateAlerts(input: Readonly<{ account: Account; areas: readonly AlertReadyArea[]; events: readonly AlertEvent[]; history: readonly AlertHistoryEntry[]; now: string; killSwitchEnabled: boolean }>): AlertEvaluation {
   if (!validDate(input.now)) throw new Error("Evaluation time is invalid.");
-  if (!input.account.emailVerifiedAt || input.account.unsubscribedAt) return { alerts: [], skipped: [] };
+  if (input.killSwitchEnabled || !input.account.emailVerifiedAt || input.account.unsubscribedAt) return { alerts: [], skipped: [] };
   const alerts: AlertPayload[] = []; const skipped: AlertEvaluation["skipped"][number][] = [];
   for (const area of input.areas) {
     validateAlertArea(area, input.account);

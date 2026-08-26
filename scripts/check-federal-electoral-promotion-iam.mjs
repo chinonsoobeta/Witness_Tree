@@ -27,17 +27,16 @@ export function validateFederalElectoralPromotionIam(desired, plan) {
   assert.equal(desired.liveAttestationRequired, true);
   assert.deepEqual(desired.trustPolicy, {
     Version: "2012-10-17",
-    Statement: [{ Effect: "Allow", Principal: { AWS: OPERATOR_ARN }, Action: "sts:AssumeRole", Condition: { Bool: { "aws:MultiFactorAuthPresent": "true" }, NumericLessThan: { "aws:MultiFactorAuthAge": "3600" } } }]
+    Statement: [{ Effect: "Allow", Principal: { AWS: OPERATOR_ARN }, Action: "sts:AssumeRole", Condition: { Bool: { "aws:MultiFactorAuthPresent": "true" }, NumericLessThan: { "aws:MultiFactorAuthAge": "43200" } } }]
   });
   assert.deepEqual(desired.operatorPolicy, { Version: "2012-10-17", Statement: [{ Effect: "Allow", Action: "sts:AssumeRole", Resource: ROLE_ARN }] });
   const expectedObjects = [
     `arn:aws:s3:::${BUCKET}/${plan.deterministicRemoteNames.payloadKey}`,
     `arn:aws:s3:::${BUCKET}/${plan.deterministicRemoteNames.manifestKey}`
   ];
-  const expectedPayload = [expectedObjects[0]];
   const bySid = Object.fromEntries(desired.rolePolicy.Statement.map((statement) => [statement.Sid, statement]));
   assert.deepEqual(bySid.FederalExactObjectWritesAndReads, { Sid: "FederalExactObjectWritesAndReads", Effect: "Allow", Action: ["s3:PutObject", "s3:GetObject", "s3:GetObjectVersion"], Resource: expectedObjects });
-  assert.deepEqual(bySid.FederalExactPayloadRetention, { Sid: "FederalExactPayloadRetention", Effect: "Allow", Action: ["s3:PutObjectRetention", "s3:GetObjectRetention"], Resource: expectedPayload });
+  assert.deepEqual(bySid.FederalExactPayloadAndSidecarRetention, { Sid: "FederalExactPayloadAndSidecarRetention", Effect: "Allow", Action: ["s3:PutObjectRetention", "s3:GetObjectRetention"], Resource: expectedObjects });
   assert.deepEqual(bySid.FederalExactVersionListing, { Sid: "FederalExactVersionListing", Effect: "Allow", Action: "s3:ListBucketVersions", Resource: `arn:aws:s3:::${BUCKET}`, Condition: { StringLike: { "s3:prefix": [plan.deterministicRemoteNames.payloadKey, plan.deterministicRemoteNames.manifestKey] } } });
   assert.deepEqual(desired.approvedActions, ["s3:PutObject", "s3:GetObject", "s3:GetObjectVersion", "s3:PutObjectRetention", "s3:GetObjectRetention", "s3:ListBucketVersions"]);
   for (const statement of desired.rolePolicy.Statement) {

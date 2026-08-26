@@ -12,9 +12,9 @@ const policies = {bc:read("../data/bc-wildfire-geometry-policy-2026-08-14.json")
 
 test("owner approves the exact four-source scope while immutable evidence keeps production blocked", () => {
   assert.equal(validateCurrentWildfireOwnerAdmission(record, ledger, profiles, policies), record);
-  assert.equal(record.archiveGate.verifiedObjectCount, 0);
-  assert.equal(record.archiveGate.attestedObjectCount, 6);
-  assert.equal(record.archiveGate.primaryReadbacksVerified, false);
+  assert.equal(record.archiveGate.verifiedObjectCount, 6);
+  assert.equal(record.archiveGate.attestedObjectCount, 0);
+  assert.equal(record.archiveGate.primaryReadbacksVerified, true);
   assert.equal(record.archiveGate.recoveryReplicaVerified, false);
   assert.equal(record.pipeline.productionEligible, false);
 });

@@ -17,11 +17,11 @@ const args = [
   read("data/phase1-phase3-owner-approvals-2026-08-21.json")
 ];
 
-test("remaining-action audit covers every non-admitted row and preserves the baseline", () => {
+test("historical remaining-action audit covers every snapshot row and preserves its pre-admission baseline", () => {
   const audit = validatePhase1RemainingActionsAudit(...args);
   assert.equal(audit.rowCoverage.length, 31);
-  assert.equal(audit.scope.rowsWithoutImmutableRemoteProof, 22);
-  assert.equal(audit.baseline.formalEvidenceTrackingPercentage, 39.2741935);
+  assert.equal(audit.scope.rowsWithoutImmutableRemoteProof, 15);
+  assert.equal(audit.baseline.formalEvidenceTrackingPercentage, 40.9677419);
   assert.deepEqual(audit.nextFive, [
     "national-local-archive-preflight-and-owner-promotion",
     "quebec-current-original-transform-ingest-release",

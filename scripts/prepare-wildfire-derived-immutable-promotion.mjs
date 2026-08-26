@@ -27,7 +27,7 @@ export function validateIamDesiredState(desired = read("data/wildfire-derived-im
   const [objects, retention] = desired.rolePolicy.Statement;
   const prefix = `arn:aws:s3:::${plan.destination.bucket}/`;
   assert.deepEqual(objects.Action, ["s3:PutObject","s3:GetObject"]); assert.deepEqual(objects.Resource, plan.proposedRoleScope.objectKeys.map((key) => `${prefix}${key}`));
-  assert.deepEqual(retention.Action, ["s3:PutObjectRetention","s3:GetObjectRetention"]); assert.deepEqual(retention.Resource, plan.proposedRoleScope.payloadKeys.map((key) => `${prefix}${key}`));
+  assert.deepEqual(retention.Action, ["s3:PutObjectRetention","s3:GetObjectRetention"]); assert.deepEqual(retention.Resource, plan.proposedRoleScope.objectKeys.map((key) => `${prefix}${key}`));
   for (const excluded of ["s3:DeleteObject","s3:DeleteObjectVersion","s3:BypassGovernanceRetention","s3:PutObjectLegalHold","s3:AbortMultipartUpload","s3:ListBucket*","s3:PutBucket*","s3:DeleteBucket*","s3:Replicate*","iam:*"]) assert.ok(desired.excluded.includes(excluded));
   return desired;
 }

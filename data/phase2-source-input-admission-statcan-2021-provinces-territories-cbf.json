@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "witness-tree/phase2-source-input-admission/1",
+  "status": "recorded-limited-source-input-admission",
+  "recordedAt": "2026-08-26T00:23:52Z",
+  "ownerDecisionContext": "The content/data owner replied ‘I approve’ to the exact limited Phase 2 admission request in the active implementation task.",
+  "evidenceToBind": {
+    "path": "data/boundary-editions.json",
+    "sha256": "037786098133fb10a5a485d3d3445b71d44d22b9e7c11ea02c6d95cd1e8ff663",
+    "editionId": "statcan-2021-provinces-territories-cbf",
+    "artifactSha256": "d28bbb15d7b49e3d1828755a5f1b4ebcee699ad70efe8b0f1b902d29ebffd20b",
+    "featureCount": 13
+  },
+  "ownerDecision": {
+    "decision": "approve",
+    "scope": "The exact 2021 Census Province/Territory Cartographic Boundary File used by the 13-row aggregate."
+  },
+  "limits": [
+    "This admits only the exact edition-qualified, checksum-bound 13-feature boundary artifact for the limited Phase 2 aggregate.",
+    "It does not approve public release, publication, production eligibility, other boundary editions, or other aggregate time ranges."
+  ],
+  "claims": {
+    "sourceInputAdmitted": true,
+    "released": false,
+    "productionEligible": false
+  }
+}

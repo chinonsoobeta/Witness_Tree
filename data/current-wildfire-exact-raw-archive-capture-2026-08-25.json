@@ -1,0 +1,151 @@
+{
+  "schemaVersion": "witness-tree/current-wildfire-exact-raw-archive-capture/1",
+  "status": "machine-verifiable-raw-archive-evidence-only",
+  "capturedAt": "2026-08-25T21:36:25.533Z",
+  "storage": {
+    "bucket": "witness-tree-raw-archive-ca-central-1",
+    "region": "ca-central-1",
+    "countryCode": "CA"
+  },
+  "notice": "Read-only, exact-version capture. It proves only the archived raw payloads and deterministic sidecars; it is not owner admission, transformation, ingestion, release, or production eligibility.",
+  "entries": [
+    {
+      "sourceId": "cwfis-current",
+      "payload": {
+        "key": "raw/cwfis-current/undeclared/2026-08-14T20-24-34Z/fc3d4a0730f30d6f12782b16e9459c173dabd6e50d0715b27cddecd954097f86/payload/cwfif_national_activefires_2026-08-14t202242z.zip",
+        "versionId": "Dg8F.JwRhDyVT9f30sy2oIY28PXXBhBz",
+        "byteLength": 45917,
+        "sha256": "fc3d4a0730f30d6f12782b16e9459c173dabd6e50d0715b27cddecd954097f86",
+        "checksum": {
+          "type": "FULL_OBJECT",
+          "algorithm": "CRC64NVME",
+          "providerValue": "lUQvLRQlCIk="
+        },
+        "retention": {
+          "mode": "COMPLIANCE",
+          "until": "2033-08-12T00:00:00Z"
+        }
+      },
+      "manifest": {
+        "key": "raw/cwfis-current/undeclared/2026-08-14T20-24-34Z/fc3d4a0730f30d6f12782b16e9459c173dabd6e50d0715b27cddecd954097f86/manifest.json",
+        "versionId": "X19mwNSDrObMzrHPdVI.B8XcNTXzF7Iw",
+        "byteLength": 1488,
+        "sha256": "b564e51c8ce87c29ea1afed1cea95d80ef21d8ddb5e9991581d11bb9a005158c",
+        "checksum": {
+          "type": "FULL_OBJECT",
+          "algorithm": "CRC64NVME",
+          "providerValue": "bbm+arcl/5U="
+        },
+        "retention": {
+          "mode": "COMPLIANCE",
+          "until": "2033-08-12T00:00:00Z"
+        }
+      }
+    },
+    {
+      "sourceId": "bc-wildfire",
+      "payload": {
+        "key": "raw/bc-wildfire/undeclared/2026-08-14T20-31-39Z/46ee3a97ff83128630a030b5cfcc7f3c389fc94e3ca95d463595ab6f4fb57e83/payload/bc-wildfire-fire-perimeters_2026-08-14.geojson",
+        "versionId": "MlbWtwNKGNYE3NKLKZ6Lwd_SIE3nU3.O",
+        "byteLength": 4813292,
+        "sha256": "46ee3a97ff83128630a030b5cfcc7f3c389fc94e3ca95d463595ab6f4fb57e83",
+        "checksum": {
+          "type": "FULL_OBJECT",
+          "algorithm": "CRC64NVME",
+          "providerValue": "9JW2roeBTYI="
+        },
+        "retention": {
+          "mode": "COMPLIANCE",
+          "until": "2033-08-12T00:00:00Z"
+        }
+      },
+      "manifest": {
+        "key": "raw/bc-wildfire/undeclared/2026-08-14T20-31-39Z/46ee3a97ff83128630a030b5cfcc7f3c389fc94e3ca95d463595ab6f4fb57e83/manifest.json",
+        "versionId": "Gj3Ller87R2nzbkH2zFYcTEx8sROHX_e",
+        "byteLength": 1502,
+        "sha256": "07d6005d8a3c3c1be7a41802a801aa029f2cb64c39687294f04a9eeb6c13ee59",
+        "checksum": {
+          "type": "FULL_OBJECT",
+          "algorithm": "CRC64NVME",
+          "providerValue": "Mgei2GJhZlI="
+        },
+        "retention": {
+          "mode": "COMPLIANCE",
+          "until": "2033-08-12T00:00:00Z"
+        }
+      }
+    },
+    {
+      "sourceId": "ab-wildfire",
+      "payload": {
+        "key": "raw/ab-wildfire/undeclared/2026-08-14T13-42-09Z/f0e86ea34a7624c365349b3a8fbb77967bb45ab73c507cf441efb8f6a8736ee0/payload/alberta-wildfire-locations_2026-08-14.geojson",
+        "versionId": "dw4wHmsAflq2tavoyrvgU5MYCvAXZT2z",
+        "byteLength": 423853,
+        "sha256": "f0e86ea34a7624c365349b3a8fbb77967bb45ab73c507cf441efb8f6a8736ee0",
+        "checksum": {
+          "type": "FULL_OBJECT",
+          "algorithm": "CRC64NVME",
+          "providerValue": "1i2TpyVef/Q="
+        },
+        "retention": {
+          "mode": "COMPLIANCE",
+          "until": "2033-08-12T00:00:00Z"
+        }
+      },
+      "manifest": {
+        "key": "raw/ab-wildfire/undeclared/2026-08-14T13-42-09Z/f0e86ea34a7624c365349b3a8fbb77967bb45ab73c507cf441efb8f6a8736ee0/manifest.json",
+        "versionId": "4i0.HiHNQ3_.sJwS7J6v68JYVZ35Qf9m",
+        "byteLength": 1335,
+        "sha256": "557a9552d613bf762f8733a1313851ba50173cb6060fe48d0b59184e19556704",
+        "checksum": {
+          "type": "FULL_OBJECT",
+          "algorithm": "CRC64NVME",
+          "providerValue": "KYu+ocKTSYk="
+        },
+        "retention": {
+          "mode": "COMPLIANCE",
+          "until": "2033-08-12T00:00:00Z"
+        }
+      }
+    },
+    {
+      "sourceId": "on-fire-disturbance",
+      "payload": {
+        "key": "raw/on-fire-disturbance/undeclared/2026-08-14T13-49-36Z/99881f19a32068b5d66b244955f7b088e873ffe76eafebf1740f03e16f042f11/payload/ontario-in-year-fire-perimeters_2026-08-14.geojson",
+        "versionId": "1QhoWWDx0BdCnGd.HuIhNFBOM4BGvOL_",
+        "byteLength": 19510504,
+        "sha256": "99881f19a32068b5d66b244955f7b088e873ffe76eafebf1740f03e16f042f11",
+        "checksum": {
+          "type": "FULL_OBJECT",
+          "algorithm": "CRC64NVME",
+          "providerValue": "g/47cKImmbQ="
+        },
+        "retention": {
+          "mode": "COMPLIANCE",
+          "until": "2033-08-12T00:00:00Z"
+        }
+      },
+      "manifest": {
+        "key": "raw/on-fire-disturbance/undeclared/2026-08-14T13-49-36Z/99881f19a32068b5d66b244955f7b088e873ffe76eafebf1740f03e16f042f11/manifest.json",
+        "versionId": "_BjI2yB6BwfxMJXlMvZTcoNemdQ38vbo",
+        "byteLength": 1369,
+        "sha256": "f76a1611cb2171a8f8efb39c1c43b25273959e16183406a58b5f625ecc52bb17",
+        "checksum": {
+          "type": "FULL_OBJECT",
+          "algorithm": "CRC64NVME",
+          "providerValue": "e2mE2mCriTg="
+        },
+        "retention": {
+          "mode": "COMPLIANCE",
+          "until": "2033-08-12T00:00:00Z"
+        }
+      }
+    }
+  ],
+  "claims": {
+    "ownerAdmission": false,
+    "transformed": false,
+    "ingested": false,
+    "productionEligible": false
+  }
+}

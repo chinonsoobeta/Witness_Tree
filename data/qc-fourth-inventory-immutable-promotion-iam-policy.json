@@ -80,7 +80,7 @@
           "aws:MultiFactorAuthPresent": "true"
         },
         "NumericLessThan": {
-          "aws:MultiFactorAuthAge": "3600"
+          "aws:MultiFactorAuthAge": "43200"
         }
       }
     },

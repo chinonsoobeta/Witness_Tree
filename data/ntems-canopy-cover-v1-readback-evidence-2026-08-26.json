@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "witness-tree/phase1-ntems-transformation-readback-evidence/1",
+  "status": "complete-readback-verified",
+  "authorization": {
+    "path": "data/phase1-ntems-canopy-cover-execution-authorization.json",
+    "sha256": "2797e810663a25961a75d699832d47d7a1b5e67a407d120af0a662fd424cc69e",
+    "createdAt": "2026-08-26T00:55:28Z"
+  },
+  "runner": {
+    "path": "scripts/run-phase1-ntems-transform.mjs",
+    "sha256": "ecb3585a27c82119e2d18fbce3231e12f3c8a33abbf5973453db8d1b0cf2a511"
+  },
+  "specifications": [
+    {
+      "id": "ntems-canopy-cover-v1",
+      "path": "data/phase1-production-transformation-specifications-v1.json",
+      "sha256": "258ca3f94e30d484b53cc12e29c83beaf57998993edaea05e44f5a4924979efc"
+    }
+  ],
+  "outputs": [
+    {
+      "specification": "ntems-canopy-cover-v1",
+      "input": "raw/nrcan-forest-canopy-cover-2022/2026-08-11/CA_canopy_cover_2022.zip",
+      "status": "verified",
+      "output": "ntems-canopy-cover-v1/80c37461f4deccfdfffc26124e9064d53a94dde660b9f96194445870393af130/phase1-ntems-canopy-cover-v1/canopy-cover-2022.tif",
+      "outputSha256": "18cb7904cf9ec16ef602f7cb57c788dcdb49c2ef0719992abdc3366e4be1079e",
+      "outputByteLength": 13110248051,
+      "sidecarSha256": "77d533967cf10f962c0ac8e66e0eb747a2ae5c5c818e7226c9cfd22c097f2b6b",
+      "sourcePixelChecksum": 61491,
+      "outputPixelChecksum": 61491
+    }
+  ],
+  "counts": {
+    "expected": 1,
+    "verified": 1,
+    "missing": 0
+  },
+  "claims": {
+    "transformed": true,
+    "ingested": false,
+    "released": false,
+    "productionAdmission": false,
+    "productionEligible": false,
+    "externalMutationPerformed": false
+  },
+  "sourceRecord": {
+    "path": "data/phase1-production-transformation-specifications-v1.json",
+    "sha256": "258ca3f94e30d484b53cc12e29c83beaf57998993edaea05e44f5a4924979efc"
+  }
+}

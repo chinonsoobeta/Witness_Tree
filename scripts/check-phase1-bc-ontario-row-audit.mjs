@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
+import { validate as validateFederalAdmission } from "./check-phase1-federal-electoral-production-admission.mjs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -7,6 +9,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const read = (file) => JSON.parse(readFileSync(path.join(ROOT, file), "utf8"));
 const exists = (file) => typeof file === "string" && file.startsWith("data/") && existsSync(path.join(ROOT, file));
 const formalDelta = (rawCreditDelta) => Number((30 * rawCreditDelta / 31).toFixed(7));
+const HISTORICAL_ROWS_SHA256 = "e85813ef962d66de26788b7cb22165c0bdc261f2e85afacbfd06aed0649ab6e1";
 
 const ROW_IDS = [
   "bc-wildfire",
@@ -92,16 +95,12 @@ function validateWildfireEvidence(audit, raw, owner, liveGuard, derived) {
     productionEligible: false
   });
   assert.equal(owner.archiveGate.requiredObjectCount, 6);
-  assert.equal(owner.archiveGate.verifiedObjectCount, 0);
-  assert.equal(owner.archiveGate.attestedObjectCount, 6);
-  assert.equal(raw.claims.derivedObjectsVerified, false);
+  assert.equal(owner.archiveGate.verifiedObjectCount, 6);
+  assert.equal(owner.archiveGate.attestedObjectCount, 0);
+  assert.equal(owner.archiveGate.primaryReadbacksVerified, true);
+  assert.equal(owner.archiveGate.recoveryReplicaVerified, false);
   assert.equal(raw.claims.recoveryObjectsVerified, false);
-  assert.equal(raw.claims.machineVerifiableImmutableProof, false);
-  assert.equal(raw.claims.ownerAdmission, false);
   assert.equal(raw.claims.productionEligible, false);
-  assert.equal(derived.claims.derivedObjectsVerified, false);
-  assert.equal(derived.claims.primaryObjectsVerified, false);
-  assert.equal(derived.claims.machineVerifiableImmutableProof, false);
   assert.equal(derived.claims.recoveryReplicaVerified, false);
   assert.equal(derived.claims.mutationProvenance, false);
   for (const sourceId of ["bc-wildfire", "on-fire-disturbance"]) {
@@ -215,10 +214,15 @@ export function validatePhase1BcOntarioRowAudit(audit, ledger, context) {
   assert.equal(audit.baseline.rawEvidenceDenominator, ledger.entries.length);
   assert.equal(audit.baseline.formalEvidenceTrackingPercentage, 38.7903226);
   assert.equal(audit.baseline.immutableArchiveCompleteRows, 7);
-  assert.equal(audit.baseline.productionAdmissionCompleteRows, ledger.entries.filter(({ proof }) => proof.productionAdmission).length);
-  assert.equal(audit.baseline.productionEligibleRows, ledger.entries.filter(({ productionEligible }) => productionEligible).length);
+  assert.equal(audit.baseline.productionAdmissionCompleteRows, 0);
+  assert.equal(audit.baseline.productionEligibleRows, 0);
+  validateFederalAdmission(read("data/phase1-federal-electoral-production-admission.json"));
+  assert.deepEqual(ledger.entries.filter(({ proof }) => proof.productionAdmission).map(({ id }) => id), ["fed-2023-ridings", "elections-canada-45th-files"]);
+  assert.deepEqual(ledger.entries.filter(({ productionEligible }) => productionEligible).map(({ id }) => id), ["fed-2023-ridings", "elections-canada-45th-files"]);
   assert.equal(audit.baseline.bcOntarioRows, ROW_IDS.length);
-  assert.equal(audit.baseline.bcOntarioRawCredit, ledger.entries.filter(({ id }) => ROW_IDS.includes(id)).reduce((sum, row) => sum + row.rawCredit, 0));
+  // The audit deliberately records the 2026-08-21 pre-promotion baseline.
+  // The current ledger has moved independently after exact archive readbacks.
+  assert.equal(audit.baseline.bcOntarioRawCredit, 1.75);
   assert.equal(audit.baseline.bcOntarioRawCreditDelta, 0);
   assert.deepEqual(audit.baseline.currentWildfireArchiveGate, { requiredObjects: 6, verifiedObjects: 0, attestedObjects: 6, productionEligible: false });
 
@@ -241,19 +245,31 @@ export function validatePhase1BcOntarioRowAudit(audit, ledger, context) {
 
   assert.equal(audit.rows.length, ROW_IDS.length);
   assert.deepEqual(audit.rows.map(({ id }) => id), ROW_IDS);
+  const historicalRows = new Map([
+    ["bc-wildfire", ["local-verified-profiled", 0.75, false]],
+    ["on-fire-disturbance", ["local-verified-profiled", 0.75, false]],
+    ["bc-fta-cutblocks", ["access-blocked", 0, false]],
+    ["bc-harvesting-authorities", ["access-blocked", 0, false]],
+    ["bc-vri", ["access-blocked", 0, false]],
+    ["bc-consolidated-cutblocks", ["access-blocked", 0, false]],
+    ["bc-old-growth-bec", ["access-blocked", 0, false]],
+    ["bc-forest-operations-map", ["access-blocked", 0, false]],
+    ["on-fri", ["access-blocked", 0, false]],
+    ["on-fri-term-2", ["access-blocked", 0, false]],
+    ["provincial-electoral-boundaries", ["partial-component", 0.25, false]],
+  ]);
   for (const row of audit.rows) {
     const canonical = ledger.entries.find(({ id }) => id === row.id);
     assert.ok(canonical, `${row.id} is missing from the canonical ledger.`);
-    assert.equal(row.evidenceState, canonical.evidenceState);
-    assert.equal(row.rawCredit, canonical.rawCredit);
-    assert.equal(row.immutableArchive, canonical.proof.immutableArchive);
+    const expected = historicalRows.get(row.id);
+    assert.ok(expected, `${row.id} is missing from the fixed historical snapshot.`);
+    assert.deepEqual([row.evidenceState, row.rawCredit, row.immutableArchive], expected, `${row.id} historical state drifted.`);
     assert.equal(row.productionAdmission, canonical.proof.productionAdmission);
     assert.equal(row.productionEligible, canonical.productionEligible);
-    assert.deepEqual(row.evidenceRefs, canonical.evidenceRefs, `${row.id} evidence references drifted.`);
     assertReferences(row.evidenceRefs, row.id);
     assert.deepEqual(row.claims, ROW_CLAIMS);
     assert.equal(row.currentRawCreditDelta, 0);
-    assert.equal(row.maximumRawCreditDelta, 1 - canonical.rawCredit);
+    assert.equal(row.maximumRawCreditDelta, 1 - expected[1]);
     assert.equal(row.maximumFormalPercentagePointDelta, formalDelta(row.maximumRawCreditDelta));
     const replyRow = replies.rows.find(({ id }) => id === row.id);
     assert.deepEqual(row.replyRecordIds, replyRow?.replyRecordIds ?? [], `${row.id} reply mapping drifted.`);
@@ -265,6 +281,7 @@ export function validatePhase1BcOntarioRowAudit(audit, ledger, context) {
   validateBcAccessEvidence(access, replies, becCustom, becPublic, copyright);
   validateOntarioEvidence(access, replies, friRoute);
   validatePartialEvidence(partial);
+  assert.equal(createHash("sha256").update(JSON.stringify(audit.rows)).digest("hex"), HISTORICAL_ROWS_SHA256, "Historical BC/ON rows or evidence references drifted.");
   return audit;
 }
 
@@ -286,5 +303,5 @@ export function loadPhase1BcOntarioRowAudit() {
 
 if (process.argv[1]?.endsWith("check-phase1-bc-ontario-row-audit.mjs")) {
   const audit = loadPhase1BcOntarioRowAudit();
-  console.log(`Phase 1 BC/ON row audit passed: ${audit.rows.length} rows, ${audit.baseline.rawEvidenceNumerator}/${audit.baseline.rawEvidenceDenominator} raw credits, ${audit.baseline.formalEvidenceTrackingPercentage}% formal evidence tracking, no production admission.`);
+  console.log(`Phase 1 historical BC/ON row audit passed: ${audit.rows.length} rows, ${audit.baseline.rawEvidenceNumerator}/${audit.baseline.rawEvidenceDenominator} raw credits, ${audit.baseline.formalEvidenceTrackingPercentage}% formal evidence tracking, no production admission in that snapshot; the later federal admission is separate.`);
 }

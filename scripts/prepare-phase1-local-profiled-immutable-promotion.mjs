@@ -4,6 +4,19 @@ import { archiveKeys, safeSegment, snapshotId, validatePromotionManifest } from 
 
 const read = (path) => JSON.parse(readFileSync(new URL(`../${path}`, import.meta.url), "utf8"));
 
+const FEDERAL_ROWS = new Set(["fed-2023-ridings", "elections-canada-45th-files"]);
+
+function remainsHistoricalPreparationSource(row) {
+  if (["local-verified-profiled", "remote-verified-archived-profiled"].includes(row?.evidenceState)) return true;
+  return FEDERAL_ROWS.has(row?.id)
+    && row.evidenceState === "production-admitted"
+    && row.productionEligible === true
+    && row.proof?.productionAdmission === true
+    && row.evidenceRefs?.includes("data/federal-electoral-archive-recovery-evidence.json")
+    && row.evidenceRefs?.includes("data/phase1-federal-electoral-output-verification-evidence.json")
+    && row.evidenceRefs?.includes("data/phase1-federal-electoral-production-admission.json");
+}
+
 export function validateLocalProfiledPromotionPreparation(plan, staged, ledger) {
   assert.equal(plan.schemaVersion, 1);
   assert.equal(plan.status, "blocked-preparation-only");
@@ -14,7 +27,8 @@ export function validateLocalProfiledPromotionPreparation(plan, staged, ledger) 
   const expectedRows = [...plan.plannedProductionRowIds].sort();
   assert.equal(new Set(expectedRows).size, expectedRows.length, "Prepared production rows must be unique.");
   for (const id of expectedRows) {
-    assert.equal(ledger.entries.find((entry) => entry.id === id)?.evidenceState, "local-verified-profiled", "Every prepared row must be locally verified and profiled.");
+    const row = ledger.entries.find((entry) => entry.id === id);
+    assert.ok(remainsHistoricalPreparationSource(row), "Every prepared row must remain a verified profile or have its exact approved archive recovery and later federal admission evidence.");
   }
   const seenRows = new Set(); const seenAcquisitions = new Set();
   for (const artifact of plan.artifacts) {

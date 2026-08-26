@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "witness-tree/phase4-provincial-matching-preflight/1",
+  "status": "blocked-no-numeric-results",
+  "province": "QC",
+  "purpose": "Prepare checksum-bound provincial matching without publishing values from unadmitted inputs.",
+  "inputBindings": [
+    {"path":"data/phase1-production-source-ledger.json","sha256":"b723e214c32b6a6d897141b78aa0f26cbfa3d1d09d25733be593cbb84309f13c","role":"authoritative admission state for Québec source rows"},
+    {"path":"data/coverage-geometry-admission.json","sha256":"cdc401d96348764540b37aa63e8d7dc42b8f0c343956272fd85051e62d75a2e5","role":"staged Québec current-ecoforest geometry evidence"},
+    {"path":"data/qc-original-current-inventory-profile.json","sha256":"109812a985ff3b7ddc89e172ddb73112f3ec96d7f0f2b80ddb28fe5616ab1be0","role":"staged Québec original/current-inventory geometry evidence"},
+    {"path":"data/qc-fourth-inventory-evidence.json","sha256":"2abac48b505f6ec457bfe0cabf3c4453fac80f3365445cc29bf8a8057a65f38d","role":"staged Québec fourth-inventory geometry/event-supporting evidence"},
+    {"path":"data/phase2-v21-province-zonal-pilot-evidence.json","sha256":"4fb0efc6ec984025e91f0124e0347a2f0a08673ed1f606ba318c9ca732f5ce62","role":"Phase 2 aggregate-only change evidence"},
+    {"path":"data/phase2-real-national-execution-evidence.json","sha256":"77ee3c70ce729a1a01a9cc9a9f1bbaeee920b3f10ac556e2ba53feea6f9562a0","role":"Phase 2 national execution limitations"}
+  ],
+  "matchingContract": {
+    "implementation":"lib/phase4/provincial-matching.ts",
+    "parametersFrom":"lib/pipeline/matching.ts",
+    "requires":"materialized change geometry plus an admitted, transform-approved and release-approved provincial event source"
+  },
+  "result": {
+    "matchRate": null,
+    "nonMatchRate": null,
+    "nonMatchReasonDistribution": null,
+    "productionEligible": false
+  },
+  "blockers": [
+    "All staged Québec source-ledger rows have productionAdmission=false and productionEligible=false.",
+    "No approved semantic transformation maps the staged Québec ecoforest attributes to official event records for matching.",
+    "The Phase 2 provincial pilot contains boundary aggregates and explicitly does not materialize per-cell change geometry; the national execution likewise has no patch vectorization or normalized events.",
+    "Release approval and outside provincial review remain separate required checkpoints."
+  ]
+}
