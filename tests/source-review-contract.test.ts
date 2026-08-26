@@ -121,7 +121,8 @@ test("missing evidence returns Unknown with a reason and never reports no change
     if (decision.outcome !== "evidence-insufficient") throw new Error("unreachable");
     assert.equal(decision.unresolved.unknown.kind, "unknown");
     assert.equal(decision.unresolved.unknown.evidence, "unknown");
-    assert.match(decision.unresolved.unknown.reason, /Absence of evidence is not evidence/);
+    assert.match(decision.unresolved.unknown.reason.en, /Absence of evidence is not evidence/);
+    assert.match(decision.unresolved.unknown.reason.fr, /L’absence de preuve/);
     assert.match(decision.unresolved.question.fr, /L’absence de preuve/);
     assert.equal(decision.confidence.level, "unknown");
     assert.ok(decision.acceptance.reAcceptanceRequirements.length > 0);

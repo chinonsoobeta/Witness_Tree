@@ -66,7 +66,7 @@ function unresolvedQuestion(question: LocalizedString): UnresolvedQuestion {
     unknown: Object.freeze({
       kind: "unknown" as const,
       evidence: "unknown" as const,
-      reason: question.en,
+      reason: question,
       coverageGrade: "not-applicable" as const,
     }),
   });
