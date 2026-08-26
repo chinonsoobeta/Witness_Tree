@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "witness-tree/phase2-boundary-editions-readmission/1",
+  "status": "approved-owner-readmission",
+  "decisionId": "phase2-boundary-editions-gdal-correction-2026-08-26",
+  "createdAt": "2026-08-26T15:08:00Z",
+  "ownerDecision": {
+    "decision": "approve",
+    "ownerName": "Chinonso Obeta",
+    "statement": "All of them.",
+    "channel": "Claude Code chat session, in reply to a question naming this item as the false GDAL claim in boundary-editions.json",
+    "scope": "Re-admit the same source input against the corrected boundary evidence. The correction replaces a false statement that gdalinfo is not installed, which main already contradicted in data/raster-grid.json, with the verified toolchain versions and five feature counts confirmed by real OGR reads."
+  },
+  "evidenceRebound": {
+    "path": "data/boundary-editions.json",
+    "from": "037786098133fb10a5a485d3d3445b71d44d22b9e7c11ea02c6d95cd1e8ff663",
+    "to": "2ee846edbd8230109342b0077f01bae9def20acef40e70f8970868df51db777c"
+  },
+  "unchangedByThisDecision": {
+    "editionId": "statcan-2021-provinces-territories-cbf",
+    "artifactSha256": "d28bbb15d7b49e3d1828755a5f1b4ebcee699ad70efe8b0f1b902d29ebffd20b",
+    "featureCount": 13,
+    "note": "The admitted artifact itself is untouched. Only the surrounding evidence text changed, and it changed from false to true."
+  },
+  "stillUnknown": [
+    "geometryValidated stays false: ogrinfo -so reads headers and does not open geometry.",
+    "crsValidated stays false: PROJ established that the two boundary CRSs match each other, which is not the same claim as the boundary CRS having been validated against the VLCE2 raster grid.",
+    "attributeSchemaValidated stays false beyond the headers."
+  ],
+  "cascadeRebindings": [
+    {
+      "path": "data/phase2-admission-record.template.json",
+      "class": "template, no owner decision recorded, engineering-derived"
+    },
+    {
+      "path": "data/phase2-admission-record-2026-08-26.json",
+      "class": "owner-admitted, re-admitted under this decision",
+      "why": "It binds the source-input admission by checksum. Re-admitting it re-affirms claims.admitted and Phase 2 formal gates 1 and 4 for the same artifacts."
+    }
+  ],
+  "whyThisDifferedFrom50": "The federal-electoral rebinding in #50 cascaded into an owner admission carrying ingestion, release, production admission, production eligibility and deployment, so its wider scope was put to the owner separately before being carried. This cascade asserts no new class of authority: released and productionEligible remain false in every record touched, and the subject matter is identical.",
+  "claims": {
+    "sourceInputAdmitted": true,
+    "released": false,
+    "productionEligible": false
+  }
+}

@@ -22,3 +22,15 @@ Verify the packet with:
 npm run check:phase2-owner-admission-packet
 npm run check:phase2-admission-record-template
 ```
+
+## Open owner decision: re-admit the corrected boundary evidence
+
+`data/phase2-source-input-admission-statcan-2021-provinces-territories-cbf.json` binds the exact
+bytes of `data/boundary-editions.json`. That record contains a toolchain claim that is now false,
+and correcting it breaks the binding. Engineering has verified the correction and refused to rebind
+an owner admission to it.
+
+The decision, the independent verification behind it, and the exact digests involved are in
+[`docs/BOUNDARY_EDITIONS_GDAL_CLAIM_CORRECTION.md`](BOUNDARY_EDITIONS_GDAL_CLAIM_CORRECTION.md).
+The admitted artifact, edition id, and feature count are unchanged; only the surrounding evidence
+text is corrected.

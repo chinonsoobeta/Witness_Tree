@@ -22,7 +22,7 @@
     {"path": "data/federal-electoral-archive-recovery-evidence.json", "sha256": "18b9fbfa5e3eecdc33ad0098f5ffa55f7bfebb1a47d2e33b7f01a94e05a6ed32"},
     {"path": "data/phase1-production-transformation-specifications-v1.json", "sha256": "258ca3f94e30d484b53cc12e29c83beaf57998993edaea05e44f5a4924979efc"},
     {"path": "data/phase1-transformation-scope-owner-approval-2026-08-25.json", "sha256": "fda1c43d2ee23adb35907ddf012c9b64aa23e69774866c725271ed91223dffb2"},
-    {"path": "data/phase1-federal-electoral-execution-approval.json", "sha256": "be3ba42081f04d8313ad352c291c18f04a16f25599dd47f0e381a6170e39bbec"},
+    {"path": "data/phase1-federal-electoral-execution-approval.json", "sha256": "59e526e779be7e169513562790f87d924af55872fc67e9f2e0cb5b9d199a2179"},
     {"path": "data/phase1-federal-electoral-output-verification-evidence.json", "sha256": "9342a36dce2748d6be510a9aa14953343714958f93738cd4067d66379b322bc4"}
   ],
   "ledgerFields": {

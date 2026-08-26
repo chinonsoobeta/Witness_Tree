@@ -1,7 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  ABSENCE_MARKERS,
   ATTRIBUTION_MARKERS,
+  CONTRADICTION_MARKERS,
   DATA_ROOT_MARKER,
   INVENTORY_PATH,
   INVENTORY_SCHEMA,
@@ -69,9 +71,43 @@ test("the schema identifier is pinned", () => {
 test("attribution is an allow-list, so an unrelated failure is never excused", () => {
   assert.equal(classifyFailure(`ENOENT: stat /x/${DATA_ROOT_MARKER}/raw/a.zip`), "data-root-unavailable");
   assert.equal(classifyFailure("Derived data root is absent or not absolute; no TOTP or AWS call was made"), "data-root-unavailable");
-  assert.equal(classifyFailure("AssertionError: province total drifted"), "other");
+  assert.equal(classifyFailure("AssertionError: province total drifted"), "contradicted");
   assert.equal(classifyFailure("ENOENT: open data/phase2-admission-record-2026-08-26.json"), "other");
   assert.equal(ATTRIBUTION_MARKERS.length, 2);
+});
+
+// The defect this pins: a check that read the bytes and found them wrong names
+// the offending file, and that path lives under the data root. Excusing it on
+// the path alone turns a contradiction into "evidence unavailable", which is
+// the one collapse this inventory exists to prevent.
+test("a contradiction is never excused merely because the offending path is under the data root", () => {
+  const contradiction = `AssertionError: sha256 for /x/${DATA_ROOT_MARKER}/derived/a.tif drifted from the bound value`;
+  assert.equal(classifyFailure(contradiction), "contradicted");
+  assert.deepEqual(reconcile(["check:a"], new Map([["check:a", classifyFailure(contradiction)]])).misattributed, ["check:a"]);
+});
+
+test("a contradiction wins over an absence signal present in the same output", () => {
+  const mixed = `ENOENT: stat /x/${DATA_ROOT_MARKER}/raw/b.zip\nAssertionError: recorded sha256 does not match`;
+  assert.equal(classifyFailure(mixed), "contradicted");
+});
+
+test("naming a data-root path without any unreadability signal is not excused", () => {
+  assert.equal(classifyFailure(`AssertionError: /x/${DATA_ROOT_MARKER}/derived/a.tif has 4 bands, expected 1`), "other");
+  assert.equal(classifyFailure(`feature count for /x/${DATA_ROOT_MARKER}/derived/a.gpkg was 0`), "other");
+});
+
+test("each recognised unreadability signal alongside a data-root path is excused", () => {
+  for (const marker of ABSENCE_MARKERS) {
+    assert.equal(classifyFailure(`${marker}: /x/${DATA_ROOT_MARKER}/raw/a.zip`), "data-root-unavailable", marker);
+  }
+});
+
+test("the marker sets are disjoint, so no single word both excuses and condemns", () => {
+  for (const absence of ABSENCE_MARKERS) {
+    for (const contradiction of CONTRADICTION_MARKERS) {
+      assert.ok(!absence.includes(contradiction) && !contradiction.includes(absence), `${absence} overlaps ${contradiction}`);
+    }
+  }
 });
 
 test("reconciliation reports an unlisted failure, a listed check that passed, and a misattributed reason separately", () => {
@@ -94,7 +130,7 @@ test("a passing sweep produces no findings and never invents one", () => {
 test("the sweep classifies each failing check and ignores passing ones", () => {
   const failures = validateEmpirically(["check:a", "check:b", "check:c"], (name) => ({
     ok: name === "check:b",
-    output: name === "check:a" ? `stat /x/${DATA_ROOT_MARKER}/y` : "AssertionError: real defect",
+    output: name === "check:a" ? `ENOENT: no such file or directory, stat /x/${DATA_ROOT_MARKER}/y` : "AssertionError: real defect",
   }));
   assert.deepEqual([...failures.entries()], [["check:a", "data-root-unavailable"], ["check:c", "other"]]);
 });

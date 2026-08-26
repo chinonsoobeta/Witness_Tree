@@ -13,7 +13,7 @@
   },
   "authorizedChange": {
     "path": "data/phase1-federal-electoral-production-admission.json",
-    "sha256": "1d2620731ab6669bc7df611726be18f3c76db90307bd1028f83fcafc60ac6e9e",
+    "sha256": "52465465a20938aa7312cd2e76f2f4b1e3688dd8c2164025e690e3deb565c034",
     "rows": ["fed-2023-ridings", "elections-canada-45th-files"],
     "change": "The two exact federal rows advanced from archived/profiled and non-admitted to explicitly production-admitted after transformation, deterministic output verification, rights review, complete field facts, and owner authorization."
   },

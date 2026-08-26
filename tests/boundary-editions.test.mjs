@@ -107,17 +107,129 @@ test("the superseded 2013 riding edition can never present itself as current", (
   );
 });
 
+test("the record states the installed GDAL toolchain and cannot claim GDAL is missing", () => {
+  assert.deepEqual(
+    { gdal: record.toolchain.gdal, proj: record.toolchain.proj, geos: record.toolchain.geos },
+    { gdal: "3.13.2", proj: "9.8.1", geos: "3.14.1" },
+  );
+  assert.equal(record.toolchain.vectorContentRead, true);
+  assert.equal(record.toolchain.vectorReadDepth, "headers-only");
+  assert.equal(record.toolchain.geometryValidated, false);
+  assert.match(record.notice, /GDAL 3\.13\.2/);
+  assert.match(record.notice, /ogrinfo -so/);
+  assert.equal(/gdalinfo is not installed/i.test(record.notice), false);
+  assert.equal(/gdalinfo is not installed/i.test(record.limitations.join("\n")), false);
+
+  assert.throws(
+    () => validateBoundaryEditions({
+      ...record,
+      notice: `${record.notice} gdalinfo is NOT installed on the staging machine.`,
+    }),
+    /must not claim it is missing/,
+  );
+  assert.throws(
+    () => validateBoundaryEditions({ ...record, notice: "Boundary archives staged. Nothing here has been ingested." }),
+    /must record the installed GDAL version/,
+  );
+  assert.throws(
+    () => validateBoundaryEditions({ ...record, toolchain: { ...record.toolchain, gdal: "3.9.0" } }),
+    /Recorded gdal version is 3\.9\.0/,
+  );
+  assert.throws(() => validateBoundaryEditions({ ...record, toolchain: undefined }), /toolchain must be recorded/);
+});
+
+test("the record cannot understate the OGR reads that were actually performed", () => {
+  assert.throws(
+    () => validateBoundaryEditions({ ...record, toolchain: { ...record.toolchain, vectorContentRead: false } }),
+    /must not understate that read/,
+  );
+  assert.throws(
+    () => validateBoundaryEditions({
+      ...record,
+      notice: record.notice.replace("ogrinfo -so was run against these archives", "it was not run against these archives"),
+    }),
+    /the notice must not claim otherwise/,
+  );
+  assert.throws(
+    () => validateBoundaryEditions({
+      ...record,
+      limitations: ["The staged archives were not opened with GDAL.", ...record.limitations.slice(1)],
+    }),
+    /the limitations must not claim otherwise/,
+  );
+  assert.throws(
+    () => validateBoundaryEditions({
+      ...record,
+      toolchain: { ...record.toolchain, readNote: "GDAL is installed and ogrinfo -so is available, but no vector content was read." },
+    }),
+    /must not deny either/,
+  );
+  assert.throws(
+    () => validateBoundaryEditions({ ...record, featureCountMethod: "Derived from each shapefile's .shx index length alone." }),
+    /confirmed by real OGR reads/,
+  );
+});
+
+test("the record cannot overclaim validation that ogrinfo -so never performed", () => {
+  assert.throws(
+    () => validateBoundaryEditions({
+      ...record,
+      notice: `${record.notice} Geometry was validated for every edition.`,
+    }),
+    /claims validation that was never performed/,
+  );
+  assert.throws(
+    () => validateBoundaryEditions({
+      ...record,
+      limitations: [...record.limitations, "Topological gaps between adjacent polygons were checked and none were found."],
+    }),
+    /claims validation that was never performed/,
+  );
+  assert.throws(
+    () => validateBoundaryEditions({
+      ...record,
+      toolchain: { ...record.toolchain, readNote: `${record.toolchain.readNote} The full attribute schema was verified.` },
+    }),
+    /claims validation that was never performed/,
+  );
+  assert.throws(
+    () => validateBoundaryEditions({
+      ...record,
+      limitations: [...record.limitations, "Reprojection onto the raster grid has been executed."],
+    }),
+    /claims validation that was never performed/,
+  );
+  assert.throws(
+    () => validateBoundaryEditions({ ...record, toolchain: { ...record.toolchain, geometryValidated: true } }),
+    /must not claim one/,
+  );
+  assert.throws(
+    () => validateBoundaryEditions({ ...record, toolchain: { ...record.toolchain, vectorReadDepth: "full-scan" } }),
+    /headers-only/,
+  );
+});
+
 test("the record keeps its unvalidated-geometry and missing-French limitations", () => {
   assert.throws(
-    () => validateBoundaryEditions({ ...record, notice: "Boundary archives staged." }),
-    /missing-GDAL limitation/,
+    () => validateBoundaryEditions({
+      ...record,
+      limitations: record.limitations.map((limitation) => limitation.replace("no geometry was examined", "the geometry was read")),
+    }),
+    /no geometry was examined/,
+  );
+  assert.throws(
+    () => validateBoundaryEditions({
+      ...record,
+      notice: record.notice.replace(" ogrinfo -so reads headers only, so geometry validity and the full attribute schema remain Unknown, and no reprojection and no intersection has been executed.", ""),
+    }),
+    /headers-only limitation/,
   );
   assert.throws(
     () => validateBoundaryEditions({ ...record, limitations: record.limitations.filter((limitation) => !/French-language/.test(limitation)) }),
     /French-language editions are not staged/,
   );
   assert.throws(
-    () => validateBoundaryEditions({ ...record, featureCountMethod: "Counted by opening each layer." }),
+    () => validateBoundaryEditions({ ...record, featureCountMethod: "Counted by opening each layer with OGR." }),
     /\.shx index/,
   );
   assert.throws(() => validateBoundaryEditions({ ...record, status: "verified" }), /local-staging-record/);
