@@ -35,3 +35,65 @@ test("renders both localized public records with neutral non-claims", async () =
   assert.match(french, /n’estime pas le bois marchand/);
   assert.doesNotMatch(`${english}\n${french}`, /the truth|real-time|complete record/i);
 });
+
+test("renders localized place and location records with semantic content and provenance", async () => {
+  const [englishPlace, frenchPlace, englishLocation, frenchLocation] = await Promise.all([
+    render("/en/places/bc-province?view=table").then((response) => response.text()),
+    render("/fr/lieux/bc-province?view=table").then((response) => response.text()),
+    render("/en/location/location-bc-province").then((response) => response.text()),
+    render("/fr/emplacement/location-bc-province").then((response) => response.text()),
+  ]);
+
+  for (const html of [englishPlace, frenchPlace, englishLocation, frenchLocation]) {
+    assert.match(html, /<main\b[^>]*id="main"/);
+    assert.match(html, /<dl>|<table/);
+  }
+
+  assert.match(englishPlace, /<div lang="en">/);
+  assert.match(englishPlace, /<meta name="content-language" content="en"/);
+  assert.match(englishPlace, /Illustrative British Columbia/);
+  assert.match(englishPlace, /<table/);
+  assert.match(englishPlace, /Illustrative source-ledger entries/);
+  assert.match(frenchPlace, /<div lang="fr">/);
+  assert.match(frenchPlace, /<meta name="content-language" content="fr"/);
+  assert.match(frenchPlace, /Colombie-Britannique illustrative/);
+  assert.match(frenchPlace, /<table/);
+  assert.match(frenchPlace, /Entrées illustratives du registre des sources/);
+  assert.match(englishLocation, /Coordinates and accuracy/);
+  assert.match(englishLocation, /Provenance/);
+  assert.match(frenchLocation, /Coordonnées et précision/);
+  assert.match(frenchLocation, /Provenance/);
+});
+
+test("renders localized search results and Explore list/table alternatives without browser JavaScript", async () => {
+  const [englishSearch, frenchSearch, englishExplore, frenchExplore] = await Promise.all([
+    render("/en/search?q=British%20Columbia").then((response) => response.text()),
+    render("/fr/recherche?q=Colombie-Britannique").then((response) => response.text()),
+    render("/en/explore?mode=wildfire&presentation=list&data=table").then((response) => response.text()),
+    render("/fr/explorer?mode=wildfire&presentation=list&data=table").then((response) => response.text()),
+  ]);
+
+  assert.match(englishSearch, /<main\b[^>]*id="main"/);
+  assert.match(englishSearch, /Search places/);
+  assert.match(englishSearch, /Illustrative fixtures only/);
+  assert.match(englishSearch, /Illustrative British Columbia/);
+  assert.match(frenchSearch, /<main\b[^>]*id="main"/);
+  assert.match(frenchSearch, /Rechercher des lieux/);
+  assert.match(frenchSearch, /Exemples illustratifs seulement/);
+  assert.match(frenchSearch, /Colombie-Britannique illustrative/);
+
+  assert.match(englishExplore, /<main\b[^>]*id="main"/);
+  assert.match(englishExplore, /Explore forest change/);
+  // The dash in this notice is deliberately not pinned: the sentence must keep saying the
+  // fixtures are illustrative and that nothing live is shown, but the punctuation is copy.
+  assert.match(englishExplore, /Illustrative fixtures only\s*\S\s*no live data or geometry is shown\./);
+  assert.match(englishExplore, /Reported fire perimeter/);
+  assert.match(englishExplore, /<table/);
+  assert.match(englishExplore, /Source attribution/);
+  assert.match(frenchExplore, /<main\b[^>]*id="main"/);
+  assert.match(frenchExplore, /Explorer les changements forestiers/);
+  assert.match(frenchExplore, /Exemples illustratifs seulement\s*\S\s*aucune donnée ni géométrie en direct n’est affichée\./);
+  assert.match(frenchExplore, /Périmètre d’incendie déclaré/);
+  assert.match(frenchExplore, /<table/);
+  assert.match(frenchExplore, /Attribution de la source/);
+});
