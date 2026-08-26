@@ -23,25 +23,70 @@ export function isLandCoverClassValue(value: number): value is LandCoverClassVal
   return CLASS_VALUES.has(value);
 }
 
+/** Keys that name an integer. `Object.keys` can hand back "undefined", "null", or "NaN". */
+const INTEGER_KEY = /^-?\d{1,15}$/;
+
+/**
+ * A `VatSidecar` is typed, but it is read off disk, so a malformed one can carry a missing
+ * or non-integer `year`, `recordCount`, or class value at runtime. Every reason below is
+ * shown to the public in both languages, so no slot may ever interpolate `undefined`,
+ * `null`, or `NaN`. Each helper either has a real number to name or says so in prose.
+ */
+function isNameableInteger(value: number): boolean {
+  return typeof value === "number" && Number.isSafeInteger(value);
+}
+
+/** The sentence subject, so the year sits in a slot that has a wording for "no year". */
+function vatTableSubject(year: number): LocalizedString {
+  return isNameableInteger(year)
+    ? localized(`The ${year} raster attribute table`, `La table d'attributs raster de ${year}`)
+    : localized(
+        "The raster attribute table for an unidentified year",
+        "La table d'attributs raster d'une année non identifiée",
+      );
+}
+
 function emptyVatReason(year: number): LocalizedString {
+  const subject = vatTableSubject(year);
   return localized(
-    `The ${year} raster attribute table was published empty — ${EMPTY_VAT_BYTE_LENGTH} bytes of header with 0 records, against ${POPULATED_VAT_BYTE_LENGTH} bytes and ${POPULATED_VAT_RECORD_COUNT} records in the neighbouring control years. The pixels are sound and carry all ${POPULATED_VAT_RECORD_COUNT} classes, but no class statistic can be read from this sidecar.`,
-    `La table d'attributs raster de ${year} a été publiée vide — ${EMPTY_VAT_BYTE_LENGTH} octets d'en-tête avec 0 enregistrement, contre ${POPULATED_VAT_BYTE_LENGTH} octets et ${POPULATED_VAT_RECORD_COUNT} enregistrements pour les années témoins voisines. Les pixels sont valides et portent les ${POPULATED_VAT_RECORD_COUNT} classes, mais aucune statistique de classe ne peut être lue dans ce fichier annexe.`,
+    `${subject.en} was published empty — ${EMPTY_VAT_BYTE_LENGTH} bytes of header with 0 records, against ${POPULATED_VAT_BYTE_LENGTH} bytes and ${POPULATED_VAT_RECORD_COUNT} records in the neighbouring control years. The pixels are sound and carry all ${POPULATED_VAT_RECORD_COUNT} classes, but no class statistic can be read from this sidecar.`,
+    `${subject.fr} a été publiée vide — ${EMPTY_VAT_BYTE_LENGTH} octets d'en-tête avec 0 enregistrement, contre ${POPULATED_VAT_BYTE_LENGTH} octets et ${POPULATED_VAT_RECORD_COUNT} enregistrements pour les années témoins voisines. Les pixels sont valides et portent les ${POPULATED_VAT_RECORD_COUNT} classes, mais aucune statistique de classe ne peut être lue dans ce fichier annexe.`,
   );
 }
 
 function incompleteVatReason(year: number, recordCount: number): LocalizedString {
+  const subject = vatTableSubject(year);
+  const held = isNameableInteger(recordCount) && recordCount >= 0
+    ? localized(`holds ${recordCount} records`, `contient ${recordCount} enregistrements`)
+    : localized("holds an unreadable number of records", "contient un nombre illisible d'enregistrements");
   return localized(
-    `The ${year} raster attribute table holds ${recordCount} records; a complete table holds ${POPULATED_VAT_RECORD_COUNT}, one per documented class. An incomplete table cannot support a class statistic.`,
-    `La table d'attributs raster de ${year} contient ${recordCount} enregistrements; une table complète en contient ${POPULATED_VAT_RECORD_COUNT}, un par classe documentée. Une table incomplète ne peut pas fonder une statistique de classe.`,
+    `${subject.en} ${held.en}; a complete table holds ${POPULATED_VAT_RECORD_COUNT}, one per documented class. An incomplete table cannot support a class statistic.`,
+    `${subject.fr} ${held.fr}; une table complète en contient ${POPULATED_VAT_RECORD_COUNT}, un par classe documentée. Une table incomplète ne peut pas fonder une statistique de classe.`,
   );
 }
 
 function missingRowReason(year: number, classValue: number): LocalizedString {
+  const subject = vatTableSubject(year);
+  const row = isNameableInteger(classValue)
+    ? localized(`has no row for class ${classValue}`, `n'a aucune ligne pour la classe ${classValue}`)
+    : localized("has no row for the requested class", "n'a aucune ligne pour la classe demandée");
   return localized(
-    `Class ${classValue} has no row in the ${year} raster attribute table. An absent row is not evidence of an absent class.`,
-    `La classe ${classValue} n'a aucune ligne dans la table d'attributs raster de ${year}. Une ligne absente n'est pas la preuve d'une classe absente.`,
+    `${subject.en} ${row.en}. An absent row is not evidence of an absent class.`,
+    `${subject.fr} ${row.fr}. Une ligne absente n'est pas la preuve d'une classe absente.`,
   );
+}
+
+function offSchemeValueReason(year: number, key: string): LocalizedString {
+  const subject = vatTableSubject(year);
+  return INTEGER_KEY.test(key)
+    ? localized(
+        `${subject.en} carries value ${key}, which is not part of the documented ${POPULATED_VAT_RECORD_COUNT}-class scheme.`,
+        `${subject.fr} contient la valeur ${key}, qui ne fait pas partie du schéma documenté à ${POPULATED_VAT_RECORD_COUNT} classes.`,
+      )
+    : localized(
+        `${subject.en} carries a key that is not an integer, so it names no class in the documented ${POPULATED_VAT_RECORD_COUNT}-class scheme.`,
+        `${subject.fr} contient une clé qui n'est pas un entier; elle ne désigne donc aucune classe du schéma documenté à ${POPULATED_VAT_RECORD_COUNT} classes.`,
+      );
 }
 
 /** True when this year's sidecar cannot support any class statistic. */
@@ -75,10 +120,7 @@ export function classListFromVat(sidecar: VatSidecar): ClassList {
       return Object.freeze({
         kind: "unknown",
         year: sidecar.year,
-        reason: localized(
-          `The ${sidecar.year} raster attribute table carries value ${key}, which is not part of the documented 13-class scheme.`,
-          `La table d'attributs raster de ${sidecar.year} contient la valeur ${key}, qui ne fait pas partie du schéma documenté à 13 classes.`,
-        ),
+        reason: offSchemeValueReason(sidecar.year, key),
       });
     }
     values.push(value);
