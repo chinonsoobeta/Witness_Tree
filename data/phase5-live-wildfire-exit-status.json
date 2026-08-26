@@ -1,63 +1,84 @@
 {
-  "schemaVersion": "witness-tree/phase5-live-wildfire-exit-status/1",
-  "phase": 5,
-  "localImplementationStatus": "complete",
-  "phaseComplete": false,
-  "completedCriteria": 4,
-  "totalCriteria": 4,
-  "percentage": 100,
-  "exitCriteria": [
+ "schemaVersion": "witness-tree/phase5-live-wildfire-exit-status/1",
+ "phase": 5,
+ "localImplementationStatus": "complete",
+ "phaseComplete": false,
+ "completedCriteria": 4,
+ "totalCriteria": 4,
+ "percentage": 100,
+ "exitCriteria": [
+  {
+   "id": "pacific-dst-schedule",
+   "title": "Four Pacific refresh slots preserve daylight-saving behaviour",
+   "status": "pass",
+   "reason": "The schedule gate resolves America/Vancouver local hours 05:00, 12:00, 16:00, and 21:00 across Pacific standard and daylight time; the workflow invokes the gate before refresh.",
+   "evidence": [
     {
-      "id": "pacific-dst-schedule",
-      "title": "Four Pacific refresh slots preserve daylight-saving behaviour",
-      "status": "pass",
-      "reason": "The schedule gate resolves America/Vancouver local hours 05:00, 12:00, 16:00, and 21:00 across Pacific standard and daylight time; the workflow invokes the gate before refresh.",
-      "evidence": [
-        {"path": "scripts/wildfire/dst-gate.mjs", "sha256": "d223159cdc84286cb9d6c6d1494b910155b5b0a55fba50f956dd9a6e09bcb5b3"},
-        {"path": "tests/wildfire-workflow.test.mjs", "sha256": "1d1cde6cd4255d153188b38dd3532fc0dd60b814ff5e92cd2fc89e6c90986c7e"}
-      ]
+     "path": "scripts/wildfire/dst-gate.mjs",
+     "sha256": "d223159cdc84286cb9d6c6d1494b910155b5b0a55fba50f956dd9a6e09bcb5b3"
     },
     {
-      "id": "five-required-display-fields",
-      "title": "Both public routes retain the five required safety display fields and block deployment if one is absent",
-      "status": "pass",
-      "reason": "Rendered route tests require source updated, last successful refresh, source agency, next scheduled refresh, and official emergency information in both English and French; deleting a field fails the validator.",
-      "evidence": [
-        {"path": "tests/wildfire-routes.test.tsx", "sha256": "fe27fc30543ab1b7be5020b12dd780046e8ece6460519f9edb5f75cd4c37e6bc"}
-      ]
-    },
-    {
-      "id": "stale-25-hour-safe-state",
-      "title": "At 25 hours without a successful refresh, the static route shows unavailable guidance and an agency link",
-      "status": "pass",
-      "reason": "The stale-state contract begins after 24 hours, removes the derived illustrative summary, and retains official-agency guidance. The workflow test covers the stricter 25-hour case through the same persisted last-success state.",
-      "evidence": [
-        {"path": "tests/wildfire-workflow.test.mjs", "sha256": "1d1cde6cd4255d153188b38dd3532fc0dd60b814ff5e92cd2fc89e6c90986c7e"},
-        {"path": "tests/wildfire-routes.test.tsx", "sha256": "fe27fc30543ab1b7be5020b12dd780046e8ece6460519f9edb5f75cd4c37e6bc"}
-      ]
-    },
-    {
-      "id": "simulated-season-history",
-      "title": "A full simulated season of immutable snapshots is retained and queryable by bounded time range",
-      "status": "pass",
-      "reason": "The local store writes each raw snapshot with exclusive create, never queries current.json as history, and the simulated May–September season test retains 612 snapshots then queries a bounded July interval.",
-      "evidence": [
-        {"path": "scripts/wildfire/snapshot-store.mjs", "sha256": "c14e46fe400f2c0cfddbc1cbccb4287bb2250059dd3bf1306ff13b5c7195e77b"},
-        {"path": "tests/wildfire-workflow.test.mjs", "sha256": "1d1cde6cd4255d153188b38dd3532fc0dd60b814ff5e92cd2fc89e6c90986c7e"}
-      ]
+     "path": "tests/wildfire-workflow.test.mjs",
+     "sha256": "23661f1a24ee6c8352b07d017fabcde0cc34caa5bf895b7cc3e1454c1fb9627c"
     }
-  ],
-  "productionBlockers": [
+   ]
+  },
+  {
+   "id": "five-required-display-fields",
+   "title": "Both public routes retain the five required safety display fields and block deployment if one is absent",
+   "status": "pass",
+   "reason": "Rendered route tests require source updated, last successful refresh, source agency, next scheduled refresh, and official emergency information in both English and French; deleting a field fails the validator.",
+   "evidence": [
     {
-      "id": "cleared-feeds",
-      "status": "blocked",
-      "reason": "No production route may use the fixture or any configured endpoint until every feed has a documented authoritative endpoint, rights, version/snapshot contract, archive admission, and production approval. SOPFEU remains rights-and-snapshot-blocked."
+     "path": "tests/wildfire-routes.test.tsx",
+     "sha256": "fe27fc30543ab1b7be5020b12dd780046e8ece6460519f9edb5f75cd4c37e6bc"
+    }
+   ]
+  },
+  {
+   "id": "stale-25-hour-safe-state",
+   "title": "At 25 hours without a successful refresh, the static route shows unavailable guidance and an agency link",
+   "status": "pass",
+   "reason": "The stale-state contract begins after 24 hours, removes the derived illustrative summary, and retains official-agency guidance. The workflow test covers the stricter 25-hour case through the same persisted last-success state.",
+   "evidence": [
+    {
+     "path": "tests/wildfire-workflow.test.mjs",
+     "sha256": "23661f1a24ee6c8352b07d017fabcde0cc34caa5bf895b7cc3e1454c1fb9627c"
     },
     {
-      "id": "operations-rehearsal",
-      "status": "blocked",
-      "reason": "There is no observed production scheduler/storage/monitoring/on-call rehearsal for outage, schema change, stale state, and daylight-saving transitions. Local simulation is not operational evidence."
+     "path": "tests/wildfire-routes.test.tsx",
+     "sha256": "fe27fc30543ab1b7be5020b12dd780046e8ece6460519f9edb5f75cd4c37e6bc"
     }
-  ],
-  "safetyBoundary": "This local contract provides context only: it is not emergency direction, a spread prediction, or a damage map."
+   ]
+  },
+  {
+   "id": "simulated-season-history",
+   "title": "A full simulated season of immutable snapshots is retained and queryable by bounded time range",
+   "status": "pass",
+   "reason": "The local store writes each raw snapshot with exclusive create, never queries current.json as history, and the simulated May–September season test retains 612 snapshots then queries a bounded July interval.",
+   "evidence": [
+    {
+     "path": "scripts/wildfire/snapshot-store.mjs",
+     "sha256": "efc30357a5ff2c51fdc7b3e96b5974ec438b3704daef12e3da7d7b029dc502a3"
+    },
+    {
+     "path": "tests/wildfire-workflow.test.mjs",
+     "sha256": "23661f1a24ee6c8352b07d017fabcde0cc34caa5bf895b7cc3e1454c1fb9627c"
+    }
+   ]
+  }
+ ],
+ "productionBlockers": [
+  {
+   "id": "cleared-feeds",
+   "status": "blocked",
+   "reason": "No production route may use the fixture or any configured endpoint until every feed has a documented authoritative endpoint, rights, version/snapshot contract, archive admission, and production approval. SOPFEU remains rights-and-snapshot-blocked."
+  },
+  {
+   "id": "operations-rehearsal",
+   "status": "blocked",
+   "reason": "There is no observed production scheduler/storage/monitoring/on-call rehearsal for outage, schema change, stale state, and daylight-saving transitions. Local simulation is not operational evidence."
+  }
+ ],
+ "safetyBoundary": "This local contract provides context only: it is not emergency direction, a spread prediction, or a damage map."
 }
