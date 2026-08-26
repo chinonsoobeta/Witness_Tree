@@ -19,7 +19,7 @@ const COUNTERPARTS: Record<string, string> = {
   "/en/search": "/fr/recherche", "/fr/recherche": "/en/search",
 };
 
-const SAFE_QUERY_PARAMETERS = new Set(["q", "view", "mode", "presentation", "data"]);
+const SAFE_QUERY_PARAMETERS = new Set(["q", "view", "mode", "presentation", "data", "year"]);
 
 export function localeCounterpart(pathname: string, locale: Locale): string {
   const staticCounterpart = COUNTERPARTS[pathname];

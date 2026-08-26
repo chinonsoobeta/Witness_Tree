@@ -6,6 +6,61 @@ import { exploreFixtures }
 // @ts-expect-error -- Node's TypeScript runner requires explicit local extensions.
 from "../lib/explore/fixtures.ts";
 
-test("renders four plan modes, independent same-url controls, fixture boundaries, and native time control", () => { const en = renderToStaticMarkup(<ExploreView events={exploreFixtures} locale="en" />); const listTable = renderToStaticMarkup(<ExploreView events={exploreFixtures} locale="en" mode="recorded-harvest" presentation="list" data="table" />); const fr = renderToStaticMarkup(<ExploreView events={exploreFixtures} locale="fr" mode="condition-recovery" presentation="list" data="chart" />); assert.match(en, /Illustrative fixtures only/); assert.match(en, /type="range"/); assert.match(en, /min="1984"/); assert.match(en, /max="2026"/); assert.match(en, /value="2000"/); for (const label of ["Forest change", "Recorded harvest", "Wildfire", "Condition and recovery"]) assert.match(en, new RegExp(label)); assert.match(en, /presentation=map&amp;data=chart/); assert.match(en, /presentation=list&amp;data=chart/); assert.match(en, /presentation=map&amp;data=table/); assert.match(en, /Boundary overlays/); for (const label of ["Watersheds", "Federal ridings", "Provincial ridings", "Reserves", "Treaty areas"]) assert.match(en, new RegExp(label)); assert.match(en, /geometry unavailable/); assert.match(listTable, /aria-label="List"/); assert.match(listTable, /<table/); assert.equal((listTable.match(/scope="col"/g) ?? []).length, 6); assert.match(listTable, /scope="row"/); assert.match(fr, /État et rétablissement/); assert.match(fr, /Exemples illustratifs seulement/); assert.match(fr, /Superpositions de limites/); });
+test("renders four plan modes, independent same-url controls, fixture boundaries, and native time control", () => { const en = renderToStaticMarkup(<ExploreView events={exploreFixtures} locale="en" />); const listTable = renderToStaticMarkup(<ExploreView events={exploreFixtures} locale="en" mode="recorded-harvest" presentation="list" data="table" />); const fr = renderToStaticMarkup(<ExploreView events={exploreFixtures} locale="fr" mode="condition-recovery" presentation="list" data="chart" />); assert.match(en, /Illustrative fixtures only/); assert.match(en, /type="range"/); assert.match(en, /min="1984"/); assert.match(en, /max="2026"/); assert.match(en, /name="year"/); for (const label of ["Forest change", "Recorded harvest", "Wildfire", "Condition and recovery"]) assert.match(en, new RegExp(label)); assert.match(en, /presentation=map&amp;data=chart/); assert.match(en, /presentation=list&amp;data=chart/); assert.match(en, /presentation=map&amp;data=table/); assert.match(en, /Boundary overlays/); for (const label of ["Watersheds", "Federal ridings", "Provincial ridings", "Reserves", "Treaty areas"]) assert.match(en, new RegExp(label)); assert.match(en, /geometry unavailable/); assert.match(listTable, /aria-label="List"/); assert.match(listTable, /<table/); assert.equal((listTable.match(/scope="col"/g) ?? []).length, 6); assert.match(listTable, /scope="row"/); assert.match(fr, /État et rétablissement/); assert.match(fr, /Exemples illustratifs seulement/); assert.match(fr, /Superpositions de limites/); });
 test("map/list and chart/table retain evidence, confidence, coverage, provenance, and Unknown is never zero", () => { const mapChart = renderToStaticMarkup(<ExploreView events={exploreFixtures} locale="en" mode="forest-change" presentation="map" data="chart" />); const listTable = renderToStaticMarkup(<ExploreView events={exploreFixtures} locale="en" mode="condition-recovery" presentation="list" data="table" />); assert.match(mapChart, /aria-label="Map"/); assert.match(mapChart, /aria-label="Chart"/); assert.match(mapChart, /Satellite observation/); assert.match(mapChart, /Source attribution/); assert.match(listTable, /No authoritative public record/); assert.match(listTable, /Coverage/); assert.match(listTable, /Source attribution/); assert.equal(/>0<|caused by|logging|deforestation/i.test(listTable), false); });
-test("Explore lazily integrates MapLibre with the PMTiles protocol only on map routes", async () => { const { readFile } = await import("node:fs/promises"); const map = await readFile(new URL("../components/explore/ExploreMapClient.tsx", import.meta.url), "utf8"); const enRoute = await readFile(new URL("../app/en/explore/page.tsx", import.meta.url), "utf8"); const frRoute = await readFile(new URL("../app/fr/explorer/page.tsx", import.meta.url), "utf8"); assert.match(map, /import\("maplibre-gl"\)/); assert.match(map, /import\("pmtiles"\)/); assert.match(map, /addProtocol\("pmtiles"/); assert.match(map, /Verified PMTiles are not yet published/); for (const route of [enRoute, frRoute]) { assert.match(route, /presentation === "map" \? <ExploreMapClient/); assert.match(route, /events=\{events\}/); } });
+test("Explore lazily integrates MapLibre with the PMTiles protocol only on map routes", async () => { const { readFile } = await import("node:fs/promises"); const map = await readFile(new URL("../components/explore/ExploreMapClient.tsx", import.meta.url), "utf8"); const enRoute = await readFile(new URL("../app/en/explore/page.tsx", import.meta.url), "utf8"); const frRoute = await readFile(new URL("../app/fr/explorer/page.tsx", import.meta.url), "utf8"); assert.match(map, /import\("maplibre-gl"\)/); assert.match(map, /import\("pmtiles"\)/); assert.match(map, /addProtocol\("pmtiles"/); assert.match(map, /Verified PMTiles are not yet published/); for (const route of [enRoute, frRoute]) { assert.match(route, /presentation === "map" \? <ExploreMapClient/); assert.match(route, /events=\{events\.filter\(\(event\) => event\.mode === mode\)\}/); } });
+
+test("the year control is a real, shareable control rather than a decorative slider", () => {
+  const en = renderToStaticMarkup(<ExploreView events={exploreFixtures} locale="en" mode="wildfire" presentation="list" data="table" year={1995} />);
+
+  // The bug: the slider had no name and no form, so moving it changed nothing and the
+  // chosen year could not be linked, bookmarked, or shared.
+  assert.match(en, /<form method="get">/);
+  assert.match(en, /name="year"/);
+  assert.match(en, /value="1995"/);
+
+  // The other selections survive a submit, so changing the year does not silently reset them.
+  assert.match(en, /<input type="hidden" name="mode" value="wildfire"\/>/);
+  assert.match(en, /<input type="hidden" name="presentation" value="list"\/>/);
+  assert.match(en, /<input type="hidden" name="data" value="table"\/>/);
+
+  // Every other control carries the year forward, so no link discards it.
+  for (const link of en.match(/href="\?[^"]*"/g) ?? []) assert.match(link, /&amp;year=1995/);
+
+  const fr = renderToStaticMarkup(<ExploreView events={exploreFixtures} locale="fr" year={1995} />);
+  assert.match(fr, /Afficher les exemples illustratifs jusqu/);
+  assert.match(fr, /Mettre à jour/);
+});
+
+test("the year query is parsed defensively and filters fixtures to that year and earlier", async () => {
+  const { parseExploreYear, fixturesThroughYear }
+    // @ts-expect-error -- Node's TypeScript runner requires explicit local extensions.
+    = await import("../lib/explore/fixtures.ts");
+  const { EXPLORE_DEFAULT_YEAR }
+    // @ts-expect-error -- Node's TypeScript runner requires explicit local extensions.
+    = await import("../lib/explore/types.ts");
+  assert.equal(EXPLORE_DEFAULT_YEAR, 2026);
+
+  assert.equal(parseExploreYear("1995"), 1995);
+  // Anything that is not an in-range ASCII four-digit year falls back rather than throwing
+  // or producing a year the control could never select.
+  for (const bad of [undefined, "", "abc", "12", "20055", "1983", "2027", " 1995", "1995.0", "١٩٩٥", "-999"]) {
+    assert.equal(parseExploreYear(bad as string | undefined), EXPLORE_DEFAULT_YEAR, `parseExploreYear(${JSON.stringify(bad)})`);
+  }
+
+  // Fixture years are 1988, 2004, 2012, 2020.
+  assert.deepEqual(fixturesThroughYear(exploreFixtures, 1987).map((event: { id: string }) => event.id), []);
+  assert.deepEqual(fixturesThroughYear(exploreFixtures, 1988).map((event: { id: string }) => event.id), ["condition"]);
+  assert.deepEqual(fixturesThroughYear(exploreFixtures, 2012).map((event: { id: string }) => event.id), ["change", "harvest", "condition"]);
+  assert.equal(fixturesThroughYear(exploreFixtures, EXPLORE_DEFAULT_YEAR).length, exploreFixtures.length);
+});
+
+test("switching language keeps the selected year", async () => {
+  const { localeHref }
+    // @ts-expect-error -- Node's TypeScript runner requires explicit local extensions.
+    = await import("../lib/locale-navigation.ts");
+  const href = localeHref("/en/explore", new URLSearchParams("mode=wildfire&year=1995"), "en");
+  assert.match(href, /^\/fr\/explorer\?/);
+  assert.match(href, /year=1995/);
+  assert.match(href, /mode=wildfire/);
+});
