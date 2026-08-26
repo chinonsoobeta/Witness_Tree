@@ -92,6 +92,7 @@
     "check:acquisition-readiness": "node scripts/check-acquisition-readiness.mjs",
     "check:staged-acquisitions": "node scripts/check-staged-acquisitions.mjs",
     "check:phase1-corruption-corpus": "tsx --test tests/phase1-corruption-gate.test.ts",
+    "check:national-baseline-admission": "tsx --test tests/national-baseline-admission.test.ts",
     "check:staged-geospatial-profile": "node scripts/check-staged-geospatial-profile.mjs",
     "check:nrcan-canopy-height-profile": "node scripts/check-nrcan-canopy-height-profile.mjs",
     "check:nrcan-canopy-cover-profile": "node scripts/check-nrcan-canopy-cover-profile.mjs",

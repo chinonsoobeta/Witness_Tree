@@ -35,6 +35,7 @@ jobs:
       - run: npm run check:cwfis-current-active-fires
       - run: npm run check:phase1-geometry-policies
       - run: npm run check:phase1-corruption-corpus
+      - run: npm run check:national-baseline-admission
       - run: npm run check:phase0-foundations-exit-status
       - run: npm run check:phase3-frontend-foundation-exit-status
       - run: npm run check:phase1-exit-status
