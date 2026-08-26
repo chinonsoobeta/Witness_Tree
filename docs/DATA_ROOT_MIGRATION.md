@@ -59,7 +59,8 @@ so the byte change and the authorization checksum move together.
 
 ## Cutover sequence
 
-Not yet performed. In this order, stopping at the first failure:
+Steps 1 to 5 performed 2026-08-26. Step 6 is the only one outstanding. In this order, stopping at
+the first failure:
 
 1. Finish `rsync -a --partial` convergence of the whole root.
 2. Prove byte identity: `rsync -ani --checksum` must produce an empty transfer list, and the
@@ -71,3 +72,33 @@ Not yet performed. In this order, stopping at the first failure:
 
 The owner has authorized deleting the internal copy. Step 6 stays gated on steps 2 and 5: the
 internal source is never deleted before byte verification.
+
+### What each step produced
+
+1. **Convergence.** Complete.
+2. **Byte identity.** `rsync -ani --checksum --delete` ran for 63 minutes and exited 0 with an
+   empty transfer list: no file differs and nothing would be deleted. Regular-file counts and byte
+   totals match exactly on both roots: 3,916 files, 367,656,070,795 bytes.
+3. **Rename.** The internal root is now `Witness_Tree-data.pre-cutover-backup`.
+4. **Compatibility symlink.** The internal path is a symlink to `SSD_DATA_ROOT`.
+5. **Readbacks through the symlink.** `npm run test:unit` is 873/873 against the symlinked root.
+
+### What step 5 caught
+
+The first run through the symlink failed one test, and it was a real finding rather than noise.
+
+`scripts/run-federal-electoral-approved-promotion.sh` requires its data root to satisfy
+`! -L "$DATA_ROOT"`. That is deliberate. The script hashes the exact approved artifact through one
+`O_NOFOLLOW` descriptor, and a swappable root would defeat the point of refusing to follow links.
+The guard was left byte-identical; its SHA-256 is unchanged at
+`892769330c386636e4870323a6cb82369d505dc8eadd1e9924e785b266648d34`.
+
+The fix belonged in the caller. `tests/federal-electoral-approved-promotion.test.mjs` hard-coded
+the internal root as the `FEDERAL_DATA_ROOT` it passed in. It now calls
+`approvedDataRootRealPath(INTERNAL_DATA_ROOT)`, which is the helper written for exactly this: it
+permits the one approved link at the root and returns the real directory. Before cutover it returns
+the internal root unchanged, so the test reads identically either way.
+
+This is the general rule for the rest of the migration. A caller that rejects a symlinked root is
+usually correct, and the answer is to resolve the approved real root before calling it, never to
+relax the rejection.
