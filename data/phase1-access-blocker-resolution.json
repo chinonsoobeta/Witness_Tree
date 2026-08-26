@@ -1,0 +1,142 @@
+{
+  "schemaVersion": 1,
+  "status": "all-13-access-blocked-no-lawful-acquisition",
+  "reviewedAt": "2026-08-20T17:36:00Z",
+  "scope": "This is a source-by-source recheck of every canonical Phase 1 production row in evidenceState access-blocked. It is a resolution matrix, not an acquisition, authorization, archive, transformation, ingestion, or production-admission decision.",
+  "decision": "No row has both an authoritative reusable, coherent source artifact or transaction-safe API and the evidence required by the Phase 1 source ledger. No acquisition is lawful or sufficiently reproducible without a publisher response. The existing blocks are retained rather than worked around with a similarly named source, a public web map, an unversioned scrape, or an approximate legal boundary.",
+  "rankedRows": [
+    {
+      "rank": 1,
+      "id": "bc-fta-cutblocks",
+      "blockClass": "snapshot-coherence",
+      "primaryEvidence": ["https://catalogue.data.gov.bc.ca/dataset/dfb8b498-fa4b-4286-b3ec-58db88aca1cf", "https://openmaps.gov.bc.ca/geo/pub/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=pub%3AWHSE_FOREST_TENURE.FTEN_CUT_BLOCK_POLY_SVW"],
+      "record": "data/bc-fta-operational-sources.json",
+      "verifiedFinding": "The publisher assigns OGL-BC, but its WFS reports PagingIsTransactionSafe=false, caps pages at 10,000, and has no immutable edition. Its observed MapServer and WFS counts differ. A page-by-page scrape cannot establish one coherent release.",
+      "resolution": "Receive the publisher's BCGW Custom Download export with as-of timestamp or edition, full feature count, CRS, schema, checksum and attribution from foresttenuresbranch@gov.bc.ca.",
+      "lawfulAcquisitionNow": false
+    },
+    {
+      "rank": 2,
+      "id": "bc-harvesting-authorities",
+      "blockClass": "snapshot-coherence",
+      "primaryEvidence": ["https://catalogue.data.gov.bc.ca/dataset/cff7b8f7-6897-444f-8c53-4bb93c7e9f8b", "https://openmaps.gov.bc.ca/geo/pub/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=pub%3AWHSE_FOREST_TENURE.FTEN_HARVEST_AUTH_POLY_SVW"],
+      "record": "data/bc-harvesting-authority-access-block.json",
+      "verifiedFinding": "The publisher assigns OGL-BC, but the sole download route is a custom order and the mutable service has no publisher edition/version marker. An authority polygon is not completed-harvest evidence.",
+      "resolution": "Receive the BCGW Custom Download export with as-of timestamp or edition, full feature count, CRS, schema, checksum and attribution from foresttenuresbranch@gov.bc.ca; separately review lifecycle semantics.",
+      "lawfulAcquisitionNow": false
+    },
+    {
+      "rank": 3,
+      "id": "on-fri",
+      "blockClass": "artifact-and-rights",
+      "primaryEvidence": ["https://data.ontario.ca/dataset/forest-resource-inventory-term-2-t2-2018-2028", "https://www.ontario.ca/page/open-government-licence-ontario"],
+      "record": "data/ontario-fri-term2-access-block.json",
+      "verifiedFinding": "The official Term 2 record exposes only two mutable WEB explorers. It provides neither a downloadable complete artifact nor a deterministic complete API, and the exact-package reuse position is unsettled.",
+      "resolution": "Ontario MNRF must provide the selected FMU package(s), edition/as-of date, coverage list, CRS, schema, feature count, checksum, attribution and written confirmation that the exact package may be retained, transformed and used for public results.",
+      "lawfulAcquisitionNow": false
+    },
+    {
+      "rank": 4,
+      "id": "on-fri-term-2",
+      "blockClass": "artifact-and-rights",
+      "primaryEvidence": ["https://data.ontario.ca/dataset/forest-resource-inventory-term-2-t2-2018-2028", "https://geohub.lio.gov.on.ca/maps/lio::forest-resource-inventory-term-2-t2-2018-2028/explore"],
+      "record": "data/ontario-fri-term2-access-block.json",
+      "verifiedFinding": "This is the same request-based Term 2 source family, not an independently downloadable dataset. Treating the explorer as a released package would duplicate and evade the Term 2 block.",
+      "resolution": "Use the same written MNRF package and rights response as on-fri; do not acquire the web explorer as a substitute.",
+      "lawfulAcquisitionNow": false
+    },
+    {
+      "rank": 5,
+      "id": "bc-old-growth-bec",
+      "blockClass": "mixed-rights-and-snapshot",
+      "primaryEvidence": ["https://catalogue.data.gov.bc.ca/dataset/f358a53b-ffde-4830-a325-a5a03ff672c3", "https://catalogue.data.gov.bc.ca/api/3/action/package_show?id=f358a53b-ffde-4830-a325-a5a03ff672c3", "https://openmaps.gov.bc.ca/geo/pub/WHSE_FOREST_VEGETATION.BEC_BIOGEOCLIMATIC_POLY/wfs", "https://bcgov.github.io/data-publication/pages/dps_data_distribution_w.html", "https://www2.gov.bc.ca/assets/gov/data/geographic/bcgw/bcgw_data_access_policy_and_agreement.pdf"],
+      "record": "data/bc-bec-snapshot-block.json",
+      "supplementalRecords": ["data/phase1-bec-custom-download-route-audit.json", "data/phase1-bec-public-alternative-exhaustion.json", "data/phase1-bc-copyright-permission-form-package.json"],
+      "verifiedFinding": "The OGL-BC BEC WFS is unversioned and non-transaction-safe; its one-request SHAPE-ZIP truncates at 10,000 of 17,870 matched features. Official ArcGIS query services are public but paged and mutable, with observed counts of 15,666 and 17,870 and no versioned snapshot identity. The official BEC Map v13.1 record names a BC Geographic Warehouse Custom Download resource, but it is indirect order access: the publisher's workflow requires order parameters, a notification email, Terms and Conditions acceptance and submission, while the BCGW policy requires an eligible Province employee/contractor/agent/representative account. The direct hectare-summary workbook is supplemental and contains no geometry. The distinct TAP priority-deferral record is Access Only and is not the implemented deferral layer.",
+      "resolution": "An owner must confirm BCGW eligibility and authorize the exact order/terms step before submitting the custom-download request; after an assembled package is returned, capture bytes, checksum, version, schema, CRS, feature count, geometry validity and archive evidence. The BC Ministry of Forests must separately identify the implemented old-growth-deferral layer and grant written TAP reuse rights.",
+      "lawfulAcquisitionNow": false
+    },
+    {
+      "rank": 6,
+      "id": "bc-consolidated-cutblocks",
+      "blockClass": "rights",
+      "primaryEvidence": ["https://catalogue.data.gov.bc.ca/dataset/harvested-areas-of-bc-consolidated-cutblocks-", "https://www.for.gov.bc.ca/ftp/HTS/external/!publish/DataCatalogue_FAIB_Data/consolidated_cutblocks/Cut_Block_all_BC.zip"],
+      "record": "data/bc-consolidated-cutblocks-access.json",
+      "verifiedFinding": "A complete FGDB ZIP is published, but its authoritative catalogue licence is Access Only. Downloadability does not grant the needed reproduction or redistribution rights.",
+      "resolution": "Await written authorization or an authoritative redistributable licence from FAIB.Data.Management@gov.bc.ca for the exact resource and intended uses.",
+      "lawfulAcquisitionNow": false
+    },
+    {
+      "rank": 7,
+      "id": "bc-vri",
+      "blockClass": "rights-and-artifact",
+      "primaryEvidence": ["https://catalogue.data.gov.bc.ca/dataset/6ba30649-14cd-44ad-a11f-794feed39f40", "https://www2.gov.bc.ca/gov/content/home/copyright"],
+      "record": "data/bc-vri-access-block.json",
+      "supplementalRecords": ["data/phase1-bc-copyright-permission-form-package.json"],
+      "verifiedFinding": "The current 2025 composite-polygons record is Access Only and its advertised province-wide FGDB URL returned HTTP 404. Historical OGL data cannot be silently substituted for the required current source.",
+      "resolution": "Obtain a working, complete versioned 2025 export and written permission covering immutable retention, transformation, derived/public results, attribution and correction/refresh contact through the BC copyright-permission route.",
+      "lawfulAcquisitionNow": false
+    },
+    {
+      "rank": 8,
+      "id": "bc-forest-operations-map",
+      "blockClass": "rights",
+      "primaryEvidence": ["https://catalogue.data.gov.bc.ca/dataset/forest-operations-map-fom-cutblocks", "https://www2.gov.bc.ca/gov/content/home/copyright"],
+      "record": "data/bc-forest-operations-map-access.json",
+      "supplementalRecords": ["data/phase1-bc-copyright-permission-form-package.json"],
+      "verifiedFinding": "The public Feature Service is explicitly Access Only. It represents planned activity, not completed harvest, and its public accessibility supplies no reproduction or redistribution grant.",
+      "resolution": "Obtain written permission for the precise selected layer and intended uses through https://forms.gov.bc.ca/copyright-permission-request/ or QPIPPCopyright@gov.bc.ca.",
+      "lawfulAcquisitionNow": false
+    },
+    {
+      "rank": 9,
+      "id": "sopfeu",
+      "blockClass": "rights-and-snapshot",
+      "primaryEvidence": ["https://www.sopfeu.qc.ca/etat-situation/", "https://www.sopfeu.qc.ca/termes-et-conditions/"],
+      "record": "data/sopfeu-wildfire-access-block.json",
+      "verifiedFinding": "No official open-data catalogue, versioned snapshot or documented API was found. SOPFEU's terms prohibit reproduction, distribution and modification without prior written authorization. MRNF's CC-BY historical fire dataset is a distinct source.",
+      "resolution": "Obtain SOPFEU's written data grant naming endpoint(s), coverage, cadence, snapshot/version identifiers, checksums, archive/transform/public-result rights, attribution, rate limits and correction route.",
+      "lawfulAcquisitionNow": false
+    },
+    {
+      "rank": 10,
+      "id": "indian-reserves",
+      "blockClass": "authority-rights-and-engagement",
+      "primaryEvidence": ["https://open.canada.ca/data/en/dataset/522b07b9-78e2-4819-b736-ad9208eb1067"],
+      "record": "data/indian-reserves-authority-access-block.json",
+      "verifiedFinding": "The NRCan candidate combines reserve-related categories, identifies a former GeoBase download whose attributes differ from the service, and does not establish an ISC-authored reserve-only edition, exact rights or engagement/right-of-reply route.",
+      "resolution": "ISC/NRCan and affected Indigenous rights-holders must identify an authoritative reserve-only edition, exact terms, checksum/recovery artifact, required attribution and named engagement/right-of-reply route before any acquisition.",
+      "lawfulAcquisitionNow": false
+    },
+    {
+      "rank": 11,
+      "id": "first-nation-reserves",
+      "blockClass": "authority-rights-and-engagement",
+      "primaryEvidence": ["https://data.sac-isc.gc.ca/geomatics/rest/services/AGOL_FEATURE_SERVICES/Image_Acquisition_Sites/FeatureServer/1", "https://services.sac-isc.gc.ca/geomatics/rest/services/Donnees_Ouvertes-Open_Data/Premiere_Nation_First_Nation/FeatureServer/0"],
+      "record": "data/first-nation-reserves-authority-access-block.json",
+      "verifiedFinding": "The reviewed ISC polygon service has no released versioned artifact; its separate First Nation service is point geometry and cannot substitute for reserve polygons. Rights, checksum/recovery and engagement route are unverified.",
+      "resolution": "ISC and affected Indigenous rights-holders must designate a versioned polygon release with exact rights, checksum/recovery, attribution and right-of-reply process.",
+      "lawfulAcquisitionNow": false
+    },
+    {
+      "rank": 12,
+      "id": "historic-treaties",
+      "blockClass": "precision-authority-rights-and-engagement",
+      "primaryEvidence": ["https://open.canada.ca/data/en/dataset/f281b150-0645-48e4-9c30-01f55f93f78e"],
+      "record": "data/historic-treaties-authority-access-block.json",
+      "verifiedFinding": "The federal candidate says boundaries are usually unsurveyed, estimated from treaty descriptions, informational/representational only and sometimes illustrative. It cannot be represented as legal or precision boundary geometry.",
+      "resolution": "Do not substitute the mapping dataset. The responsible authority and affected Indigenous rights-holders must identify a suitable legal/precision edition and rights, checksum/recovery, attribution and right-of-reply evidence.",
+      "lawfulAcquisitionNow": false
+    },
+    {
+      "rank": 13,
+      "id": "modern-treaties",
+      "blockClass": "precision-authority-rights-and-engagement",
+      "primaryEvidence": ["https://www.rcaanc-cirnac.gc.ca/eng/1677073191939/1677073214344"],
+      "record": "data/modern-treaties-authority-access-block.json",
+      "verifiedFinding": "CIRNAC calls the map informal, approximate and subject to revision, and says it must not be relied on for consultation. No suitable official vector or precision statement is verified.",
+      "resolution": "Do not digitize or infer from the map. CIRNAC and affected Indigenous rights-holders must identify a suitable legal/precision edition and rights, checksum/recovery, attribution and right-of-reply evidence.",
+      "lawfulAcquisitionNow": false
+    }
+  ]
+}

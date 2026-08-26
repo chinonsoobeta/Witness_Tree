@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "phase2-zonal-aggregation-v1",
+  "algorithm": "windowed-bounded-feature-rasterization",
+  "prohibitions": [
+    "national per-cell geometry or polygon materialization",
+    "converting nodata/Unknown to observed non-loss",
+    "production claims using illustrative or unadmitted geometry"
+  ],
+  "requiredBindings": [
+    "boundary edition and identifier field",
+    "forest-mask and change-raster versions",
+    "time version",
+    "source version",
+    "code version and worker SHA-256",
+    "forest-mask, change-raster, and boundary SHA-256",
+    "shared raster-grid CRS and reprojection evidence",
+    "coverage grade",
+    "forest-mask-derived known-forested-hectare denominator",
+    "Unknown preservation when either required raster is nodata",
+    "elapsed time, peak RSS, and maximum allocated scratch-disk bytes",
+    "GDAL, Python, and NumPy environment versions"
+  ],
+  "claims": {
+    "admittedNationalBoundaryAggregatesExist": false,
+    "productionEligible": false
+  }
+}

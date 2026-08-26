@@ -1,0 +1,73 @@
+{
+  "schemaVersion": "witness-tree/alberta-plvi-immutable-promotion-evidence/1",
+  "status": "remote-verified-archived",
+  "observedAt": "2026-08-14T23:45:14Z",
+  "notice": "This record is limited to read-only storage evidence for the two approved PLVI payload versions and their deterministic sidecar versions. It is not an owner source-ledger admission and does not authorize transformation, analysis, ingestion, public release, production admission, or production use.",
+  "destination": {
+    "bucket": "witness-tree-raw-archive-ca-central-1",
+    "region": "ca-central-1",
+    "countryCode": "CA"
+  },
+  "verificationMethod": "Read-only S3 HeadObject with ChecksumMode=ENABLED resolved each exact key and version. Read-only GetObjectRetention resolved each payload version.",
+  "payloads": [
+    {
+      "artifactId": "alberta-plvi-raw-2026-08-14",
+      "kind": "raw-source",
+      "payloadKey": "raw/ab-primary-land-vegetation/undeclared/2026-08-14T14-01-07Z/017a0a835c680ca1b6c1eb790322a28e1b4c0c64e36924da46d8bb99cb1571d3/payload/primarylandandvegetationinventoryplvi.zip",
+      "payloadVersionId": "HIhHeurKOnQKZiNM6zp4.bBRYacSp5y8",
+      "byteLength": 675544895,
+      "sourceSha256": "017a0a835c680ca1b6c1eb790322a28e1b4c0c64e36924da46d8bb99cb1571d3",
+      "providerChecksum": {"algorithm": "CRC64NVME", "type": "FULL_OBJECT", "base64": "qzGaEjJFXlw="},
+      "retention": {"mode": "COMPLIANCE", "retainUntil": "2033-08-12T00:00:00Z"}
+    },
+    {
+      "artifactId": "alberta-plvi-full-repair-v1-2026-08-14",
+      "kind": "derived-repair",
+      "payloadKey": "derived/ab-primary-land-vegetation/alberta-plvi-full-repair-v1-2026-08-14/2026-08-14T14-14-31Z/5633e7d49982ee1232b415f362654744c1f1dab11d7c3c7ef8a7928dac20825b/payload/alberta-plvi-full-repaired-closed-join.gpkg",
+      "payloadVersionId": "dc3guAiVB_PuIWA5e3JliC4f4c42RyDm",
+      "byteLength": 899551232,
+      "sourceSha256": "5633e7d49982ee1232b415f362654744c1f1dab11d7c3c7ef8a7928dac20825b",
+      "rawSourceSha256": "017a0a835c680ca1b6c1eb790322a28e1b4c0c64e36924da46d8bb99cb1571d3",
+      "providerChecksum": {"algorithm": "CRC64NVME", "type": "FULL_OBJECT", "base64": "J/itqleVHdU="},
+      "retention": {"mode": "COMPLIANCE", "retainUntil": "2033-08-12T00:00:00Z"}
+    }
+  ],
+  "sidecars": [
+    {
+      "artifactId": "alberta-plvi-raw-2026-08-14",
+      "manifestKey": "raw/ab-primary-land-vegetation/undeclared/2026-08-14T14-01-07Z/017a0a835c680ca1b6c1eb790322a28e1b4c0c64e36924da46d8bb99cb1571d3/manifest.json",
+      "manifestVersionId": "yC3g35H9fpX.AcyP7B3hjkB4BuiTZmgl",
+      "byteLength": 1326,
+      "providerChecksum": {"algorithm": "CRC64NVME", "type": "FULL_OBJECT", "base64": "irYEkqlA1ZU="}
+    },
+    {
+      "artifactId": "alberta-plvi-full-repair-v1-2026-08-14",
+      "manifestKey": "derived/ab-primary-land-vegetation/alberta-plvi-full-repair-v1-2026-08-14/2026-08-14T14-14-31Z/5633e7d49982ee1232b415f362654744c1f1dab11d7c3c7ef8a7928dac20825b/manifest.json",
+      "manifestVersionId": "8K7Wc6oWJPYvpbFLI5KSb9gMM66CqP9Z",
+      "byteLength": 1868,
+      "providerChecksum": {"algorithm": "CRC64NVME", "type": "FULL_OBJECT", "base64": "AGDKhFTSSRE="}
+    }
+  ],
+  "scopeExclusions": [
+    "owner-source-ledger-admission",
+    "transformation",
+    "analysis",
+    "ingestion",
+    "public-release",
+    "production-admission",
+    "production-eligibility"
+  ],
+  "claims": {
+    "remoteObjectExists": true,
+    "sidecarUploaded": true,
+    "payloadComplianceRetention": true,
+    "immutableArchive": true,
+    "ownerSourceLedgerAdmission": false,
+    "transformed": false,
+    "analysed": false,
+    "ingested": false,
+    "publicReleased": false,
+    "productionAdmission": false,
+    "productionEligible": false
+  }
+}

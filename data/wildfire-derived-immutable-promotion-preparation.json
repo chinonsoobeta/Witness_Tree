@@ -1,0 +1,93 @@
+{
+  "schemaVersion": "witness-tree/wildfire-derived-immutable-promotion-preparation/1",
+  "status": "preparation-only",
+  "notice": "This contract is local preparation only. It does not create IAM or AWS objects and is not an owner admission, transformation authorization, ingestion, release, or production decision.",
+  "destination": {
+    "bucket": "witness-tree-raw-archive-ca-central-1",
+    "region": "ca-central-1"
+  },
+  "mfaGatedExecution": {
+    "operatorProfile": "WitnessTreeArchiveOperator",
+    "proposedRole": "WitnessTreeWildfireDerivedPromotionUploader",
+    "required": true,
+    "recommendedRetainUntil": "2033-08-12T00:00:00Z"
+  },
+  "requiredApproval": "Approve only the two exact derived payloads and their two deterministic sidecars, the distinct MFA role WitnessTreeWildfireDerivedPromotionUploader, direct PutObject/read-backs, and COMPLIANCE retention through 2033-08-12T00:00:00Z. This does not admit either raw or derived source, alter V10755 quarantine, authorize further transformation, ingestion, release, or production use.",
+  "artifacts": [
+    {
+      "id": "bc-wildfire-216-feature-derived-2026-08-14",
+      "sourceId": "bc-wildfire",
+      "localPath": "../Witness_Tree-data/derived/bc-wildfire-geometry-policy-v1/2026-08-14/bc-wildfire-216-feature-release.gpkg",
+      "byteLength": 2162688,
+      "sha256": "8ee36cc6bdfb5ef267340537e4cf822df7cc886873c7fcf65a1b2b12006d34ce",
+      "payloadKey": "derived/bc-wildfire/bc-wildfire-geometry-policy-v1-2026-08-14/2026-08-14T20-31-39Z/8ee36cc6bdfb5ef267340537e4cf822df7cc886873c7fcf65a1b2b12006d34ce/payload/bc-wildfire-216-feature-release.gpkg",
+      "profile": "data/bc-wildfire-geometry-policy-2026-08-14.json",
+      "featureCount": 216,
+      "lineage": {
+        "rawSha256": "46ee3a97ff83128630a030b5cfcc7f3c389fc94e3ca95d463595ab6f4fb57e83",
+        "repaired": "G70362",
+        "quarantined": "V10755"
+      }
+    },
+    {
+      "id": "ontario-in-year-fire-188-feature-derived-2026-08-14",
+      "sourceId": "on-fire-disturbance",
+      "localPath": "../Witness_Tree-data/derived/ontario-in-year-fire-geometry-policy-v1/2026-08-14/ontario-in-year-fire-perimeters-188-feature-derived.gpkg",
+      "byteLength": 7913472,
+      "sha256": "5e55c5d47559c350d9b31ffeda6bd39cfce64a3c57169098fff66341cd8ead31",
+      "payloadKey": "derived/on-fire-disturbance/ontario-in-year-fire-geometry-policy-v1-2026-08-14/2026-08-14T13-49-36Z/5e55c5d47559c350d9b31ffeda6bd39cfce64a3c57169098fff66341cd8ead31/payload/ontario-in-year-fire-perimeters-188-feature-derived.gpkg",
+      "profile": "data/ontario-in-year-fire-geometry-policy-2026-08-14.json",
+      "featureCount": 188,
+      "lineage": {
+        "rawSha256": "99881f19a32068b5d66b244955f7b088e873ffe76eafebf1740f03e16f042f11",
+        "repairedFeatureCount": 9,
+        "closedJoin": true
+      }
+    }
+  ],
+  "proposedRoleScope": {
+    "trust": {
+      "principal": "arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator",
+      "mfaRequired": true
+    },
+    "assumeRoleIdentityPolicy": {
+      "action": "sts:AssumeRole",
+      "resource": "arn:aws:iam::286853118812:role/WitnessTreeWildfireDerivedPromotionUploader"
+    },
+    "allow": [
+      "s3:PutObject",
+      "s3:GetObject",
+      "s3:PutObjectRetention",
+      "s3:GetObjectRetention"
+    ],
+    "objectKeys": [
+      "derived/bc-wildfire/bc-wildfire-geometry-policy-v1-2026-08-14/2026-08-14T20-31-39Z/8ee36cc6bdfb5ef267340537e4cf822df7cc886873c7fcf65a1b2b12006d34ce/payload/bc-wildfire-216-feature-release.gpkg",
+      "derived/bc-wildfire/bc-wildfire-geometry-policy-v1-2026-08-14/2026-08-14T20-31-39Z/8ee36cc6bdfb5ef267340537e4cf822df7cc886873c7fcf65a1b2b12006d34ce/manifest.json",
+      "derived/on-fire-disturbance/ontario-in-year-fire-geometry-policy-v1-2026-08-14/2026-08-14T13-49-36Z/5e55c5d47559c350d9b31ffeda6bd39cfce64a3c57169098fff66341cd8ead31/payload/ontario-in-year-fire-perimeters-188-feature-derived.gpkg",
+      "derived/on-fire-disturbance/ontario-in-year-fire-geometry-policy-v1-2026-08-14/2026-08-14T13-49-36Z/5e55c5d47559c350d9b31ffeda6bd39cfce64a3c57169098fff66341cd8ead31/manifest.json"
+    ],
+    "payloadKeys": [
+      "derived/bc-wildfire/bc-wildfire-geometry-policy-v1-2026-08-14/2026-08-14T20-31-39Z/8ee36cc6bdfb5ef267340537e4cf822df7cc886873c7fcf65a1b2b12006d34ce/payload/bc-wildfire-216-feature-release.gpkg",
+      "derived/on-fire-disturbance/ontario-in-year-fire-geometry-policy-v1-2026-08-14/2026-08-14T13-49-36Z/5e55c5d47559c350d9b31ffeda6bd39cfce64a3c57169098fff66341cd8ead31/payload/ontario-in-year-fire-perimeters-188-feature-derived.gpkg"
+    ],
+    "denyByOmission": [
+      "s3:DeleteObject",
+      "s3:DeleteObjectVersion",
+      "s3:BypassGovernanceRetention",
+      "s3:PutObjectLegalHold",
+      "s3:ReplicateObject",
+      "s3:PutBucket*",
+      "s3:DeleteBucket*",
+      "iam:*"
+    ]
+  },
+  "claims": {
+    "remoteObjectExists": false,
+    "retentionApplied": false,
+    "immutableObjectStorage": false,
+    "ownerAdmission": false,
+    "transformed": false,
+    "ingested": false,
+    "productionEligible": false
+  }
+}

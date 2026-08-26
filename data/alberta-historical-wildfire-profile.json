@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "1.0",
+  "status": "read-only-staging-profile",
+  "notice": "This records a read-only profile of the checksum-bound raw CSV and its official data dictionary. It is not a transformation, ingestion, immutable archive, current incident feed, perimeter dataset, or production dataset.",
+  "sourceId": "alberta-historical-wildfire-2006-2025",
+  "stagedAcquisitionId": "alberta-historical-wildfire-2006-2025-2026-08-14",
+  "profiledAt": "2026-08-14T19:08:19Z",
+  "raw": {
+    "localPath": "../Witness_Tree-data/raw/alberta-historical-wildfire/2026-08-14/fp-historical-wildfire-data-2006-2025.csv",
+    "byteLength": 10400030,
+    "sha256": "8b6ed447ab0f958dbe845a53dc15362b8ef5c0810ad9420d2143f9f5ee010a72",
+    "contentIntegrity": "passed",
+    "rowCount": 27828,
+    "columnCount": 50
+  },
+  "dictionary": {
+    "localPath": "../Witness_Tree-data/raw/alberta-historical-wildfire/2026-08-14/fp-historical-wildfire-data-dictionary-2006-2025.pdf",
+    "byteLength": 192870,
+    "sha256": "bfff81c0d0e4b5cb0684180a53ddab4da54ddb5dd63f0c0f9497fa67f2334cdf",
+    "contentIntegrity": "passed",
+    "pageCount": 16
+  },
+  "table": {
+    "driver": "CSV",
+    "geometryKind": "none",
+    "crs": "not declared; the official dictionary describes LATITUDE and LONGITUDE as GPS decimal degrees",
+    "fields": ["YEAR", "FIRE_NUMBER", "CURRENT_SIZE", "LATITUDE", "LONGITUDE", "FIRE_ORIGIN", "GENERAL_CAUSE", "FIRE_START_DATE", "FIRST_EX_DATE", "FIRST_EX_SIZE_PERIMETER"],
+    "yearRange": [2006, 2025],
+    "coordinateRange": {"latitude": [48.998195, 59.99951], "longitude": [-119.999983, -110.000917], "missingLatitudeOrLongitude": 0},
+    "identifierEvidence": {"key": ["YEAR", "FIRE_NUMBER"], "distinctKeyCount": 27828, "duplicateKeyCount": 0},
+    "valueEvidence": {"currentSize": "The official dictionary defines CURRENT_SIZE as final area burned; it may differ from status-field sizes.", "latitudeLongitude": "The official dictionary defines these as confirmed ignition-area GPS coordinates, not fire perimeters."}
+  },
+  "limitations": [
+    "This is a historical 2006–2025 wildfire-record CSV, not a current incident feed.",
+    "Rows are non-spatial in the delivered CSV; latitude and longitude are ignition-area locations, not fire perimeters.",
+    "The raw CSV and dictionary declare no coordinate reference system authority, so no EPSG code is asserted.",
+    "No source rows, fields, coordinates, values, or supporting files were changed."
+  ],
+  "productionEligible": false
+}

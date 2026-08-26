@@ -1,0 +1,378 @@
+{
+  "schemaVersion": 1,
+  "status": "no-complete-public-artifact",
+  "auditedAt": "2026-08-20T18:13:50Z",
+  "nonClaimNotice": "This is a read-only official-route exhaustion record. Public service visibility and OGL-BC metadata do not establish a versioned, coherent BEC v13.1 vector snapshot, source-ledger admission, transformation, ingestion, production release, or production eligibility.",
+  "canonicalRowId": "bc-old-growth-bec",
+  "source": {
+    "datasetTitle": "BEC Map",
+    "datasetId": "f358a53b-ffde-4830-a325-a5a03ff672c3",
+    "datasetVersion": "13.1",
+    "editionDate": "2026-07-08",
+    "publisher": "Forest Analysis and Inventory Branch",
+    "catalogueUrl": "https://catalogue.data.gov.bc.ca/dataset/f358a53b-ffde-4830-a325-a5a03ff672c3",
+    "packageApiUrl": "https://catalogue.data.gov.bc.ca/api/3/action/package_show?id=f358a53b-ffde-4830-a325-a5a03ff672c3",
+    "licence": "Open Government Licence - British Columbia",
+    "licenceUrl": "https://www2.gov.bc.ca/gov/content/data/policy-standards/data-policies/open-data/open-government-licence-bc",
+    "attribution": "Contains information licensed under the Open Government Licence – British Columbia.",
+    "objectName": "WHSE_FOREST_VEGETATION.BEC_BIOGEOCLIMATIC_POLY",
+    "declaredCrs": "EPSG:3005",
+    "catalogueResourceId": "46ceb84a-3f6d-436c-b4c1-c89beb72d11a",
+    "catalogueResourceName": "BC Geographic Warehouse Custom Download",
+    "catalogueResourceUrl": "https://catalogue.data.gov.bc.ca/dataset/f358a53b-ffde-4830-a325-a5a03ff672c3/resource/46ceb84a-3f6d-436c-b4c1-c89beb72d11a",
+    "wfsFeatureCount": 17870
+  },
+  "rightsAndBoundary": {
+    "catalogueDownloadAudience": "Public",
+    "catalogueIsOpen": false,
+    "publicWfsFees": "NONE",
+    "publicWfsAccessConstraints": "NONE",
+    "publicServiceAuthenticationObserved": false,
+    "newTermsAcceptancePerformed": false,
+    "formsSubmitted": false,
+    "personalInformationSubmitted": false,
+    "paymentPerformed": false,
+    "linksOpenedBeyondReadOnlyMetadata": false,
+    "boundary": "The public WFS and ArcGIS query services are lawful public read routes under the catalogue's OGL-BC metadata, but their responses are mutable and do not provide publisher-attested snapshot identity. The BCGW custom-download order remains a separate account/order/terms gate."
+  },
+  "routes": [
+    {
+      "id": "bcgw-custom-download",
+      "class": "indirect-order",
+      "status": "blocked-before-order",
+      "officialUrl": "https://catalogue.data.gov.bc.ca/dataset/f358a53b-ffde-4830-a325-a5a03ff672c3/resource/46ceb84a-3f6d-436c-b4c1-c89beb72d11a",
+      "metadataUrl": "https://catalogue.data.gov.bc.ca/api/3/action/resource_show?id=46ceb84a-3f6d-436c-b4c1-c89beb72d11a",
+      "observed": {
+        "accessMethod": "indirect access",
+        "format": "multiple",
+        "featureCount": null,
+        "resourceUrl": null,
+        "requiresEmail": true,
+        "requiresTermsAndConditionsCheckbox": true,
+        "requiresSubmitAndContinue": true,
+        "requiresProvinceIdentityOrAccountReview": true,
+        "feeMentioned": false
+      },
+      "completeArtifact": false,
+      "blockers": [
+        "The route requires an order form, notification email, terms checkbox and submit/continue flow.",
+        "The BCGW policy requires an eligible Province employee, contractor, agent or representative account.",
+        "No package URL, bytes, checksum, archive, schema, feature count or geometry evidence is exposed before the order."
+      ]
+    },
+    {
+      "id": "public-wfs",
+      "class": "official-public-wfs",
+      "status": "public-but-no-coherent-snapshot",
+      "officialUrl": "https://openmaps.gov.bc.ca/geo/pub/WHSE_FOREST_VEGETATION.BEC_BIOGEOCLIMATIC_POLY/wfs",
+      "capabilitiesUrl": "https://openmaps.gov.bc.ca/geo/pub/WHSE_FOREST_VEGETATION.BEC_BIOGEOCLIMATIC_POLY/wfs?service=WFS&request=GetCapabilities",
+      "schemaUrl": "https://openmaps.gov.bc.ca/geo/pub/WHSE_FOREST_VEGETATION.BEC_BIOGEOCLIMATIC_POLY/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=pub%3AWHSE_FOREST_VEGETATION.BEC_BIOGEOCLIMATIC_POLY",
+      "queryCountUrl": "https://openmaps.gov.bc.ca/geo/pub/WHSE_FOREST_VEGETATION.BEC_BIOGEOCLIMATIC_POLY/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=pub%3AWHSE_FOREST_VEGETATION.BEC_BIOGEOCLIMATIC_POLY&resultType=hits",
+      "observed": {
+        "retrievedAt": "2026-08-20T18:03:11.128Z",
+        "serviceTitle": "DataBC Public Web Feature Service",
+        "updateSequence": "2188590",
+        "featureTypeTitle": "BEC Map",
+        "defaultCrs": "EPSG:3005",
+        "numberMatched": 17870,
+        "countDefault": 10000,
+        "implementsResultPaging": true,
+        "pagingIsTransactionSafe": false,
+        "implementsFeatureVersioning": false,
+        "outputFormats": [
+          "application/json",
+          "application/flatgeobuf",
+          "SHAPE-ZIP",
+          "GML2"
+        ],
+        "schemaColumnCount": 20,
+        "schemaColumns": [
+          "FEATURE_CLASS_SKEY",
+          "ZONE",
+          "SUBZONE",
+          "VARIANT",
+          "PHASE",
+          "NATURAL_DISTURBANCE",
+          "MAP_LABEL",
+          "BGC_LABEL",
+          "ZONE_NAME",
+          "SUBZONE_NAME",
+          "VARIANT_NAME",
+          "PHASE_NAME",
+          "NATURAL_DISTURBANCE_NAME",
+          "FEATURE_AREA_SQM",
+          "FEATURE_LENGTH_M",
+          "GEOMETRY",
+          "FEATURE_AREA",
+          "FEATURE_LENGTH",
+          "OBJECTID",
+          "SE_ANNO_CAD_DATA"
+        ]
+      },
+      "existingDiagnostic": {
+        "sourceRecord": "data/bc-bec-snapshot-block.json",
+        "requestedFormat": "SHAPE-ZIP",
+        "requestedCount": 17870,
+        "returnedFeatureCount": 10000,
+        "zipIntegrity": "passed",
+        "byteLength": 170501931,
+        "sha256": "c7b2189003625d1d530cae15d70635048620539de47d72882e1c88f0ad8baf13",
+        "localPath": "../Witness_Tree-data/staging/bc-bec-map-v13-1/BEC_BIOGEOCLIMATIC_POLY_v13_1_20260814.incomplete-excluded.zip",
+        "retainedAsCompleteArtifact": false
+      },
+      "boundedRangeProbe": {
+        "requestedHeader": "Range: bytes=0-0",
+        "responseStatus": 200,
+        "transferEncoding": "chunked",
+        "contentLength": null,
+        "partialBytesObservedBeforeStop": 665673728,
+        "responseRetained": false,
+        "finding": "The service ignored the byte range and streamed an unbounded response without Content-Length; the exact identified read-only client was stopped and the incomplete body was removed. No package size was established and no body was treated as an artifact."
+      },
+      "completeArtifact": false,
+      "blockers": [
+        "The one-request SHAPE-ZIP response is capped at 10000 of 17870 features.",
+        "A paged union cannot prove internal consistency because paging is explicitly non-transaction-safe and feature versioning is false.",
+        "The service does not expose a publisher checksum or immutable edition identity."
+      ]
+    },
+    {
+      "id": "arcgis-whse-layer21",
+      "class": "official-public-arcgis-query",
+      "status": "public-but-mutable-and-count-diverges",
+      "serviceUrl": "https://delivery.maps.gov.bc.ca/arcgis/rest/services/whse/bcgw_pub_whse_forest_vegetation/MapServer",
+      "layerUrl": "https://delivery.maps.gov.bc.ca/arcgis/rest/services/whse/bcgw_pub_whse_forest_vegetation/MapServer/21",
+      "queryCountUrl": "https://delivery.maps.gov.bc.ca/arcgis/rest/services/whse/bcgw_pub_whse_forest_vegetation/MapServer/21/query?where=1%3D1&returnCountOnly=true&f=pjson",
+      "observed": {
+        "layerId": 21,
+        "name": "BEC Map",
+        "objectName": "WHSE_FOREST_VEGETATION.BEC_BIOGEOCLIMATIC_POLY",
+        "count": 15666,
+        "maxRecordCount": 1000,
+        "supportsPagination": true,
+        "supportedQueryFormats": "JSON, geoJSON, PBF",
+        "crs": "EPSG:3005",
+        "fieldCount": 21,
+        "serviceDescription": "This service has been built for a specific purpose and may change at any time",
+        "serviceItemId": null,
+        "timeInfo": null,
+        "editingInfo": null,
+        "copyrightText": ""
+      },
+      "completeArtifact": false,
+      "blockers": [
+        "The public query count is 15666, divergent from the official WFS count of 17870.",
+        "The service declares that it may change at any time and provides no version, time or publisher checksum.",
+        "Pagination at 1000 records cannot establish a coherent v13.1 edition."
+      ]
+    },
+    {
+      "id": "arcgis-mpcm-layer38",
+      "class": "official-public-arcgis-query",
+      "status": "public-but-mutable-and-unversioned",
+      "serviceUrl": "https://delivery.maps.gov.bc.ca/arcgis/rest/services/mpcm/bcgwpub/MapServer",
+      "layerUrl": "https://delivery.maps.gov.bc.ca/arcgis/rest/services/mpcm/bcgwpub/MapServer/38",
+      "queryCountUrl": "https://delivery.maps.gov.bc.ca/arcgis/rest/services/mpcm/bcgwpub/MapServer/38/query?where=1%3D1&returnCountOnly=true&f=pjson",
+      "observed": {
+        "layerId": 38,
+        "name": "Biogeoclimatic Ecosystem Classification ( BEC ) Map",
+        "objectName": "WHSE_FOREST_VEGETATION.BEC_BIOGEOCLIMATIC_POLY",
+        "count": 17870,
+        "maxRecordCount": 1000,
+        "supportsPagination": true,
+        "supportedQueryFormats": "JSON, geoJSON, PBF",
+        "crs": "EPSG:3005",
+        "fieldCount": 21,
+        "serviceDescription": "BC Geographic Warehouse Public Layers",
+        "serviceItemId": null,
+        "timeInfo": null,
+        "editingInfo": null,
+        "copyrightText": ""
+      },
+      "completeArtifact": false,
+      "blockers": [
+        "Matching the WFS count does not establish edition identity or snapshot consistency.",
+        "The public MapServer has no version, time, edit or publisher-checksum evidence and pages at 1000 records.",
+        "The service metadata links back to the catalogue but does not itself publish OGL attribution or a versioned package."
+      ]
+    },
+    {
+      "id": "wms",
+      "class": "official-public-wms",
+      "status": "display-only",
+      "officialUrl": "https://openmaps.gov.bc.ca/geo/pub/WHSE_FOREST_VEGETATION.BEC_BIOGEOCLIMATIC_POLY/ows?service=WMS&request=GetCapabilities",
+      "observed": {
+        "serviceTitle": "DataBC Public Web Map Service",
+        "operations": ["GetCapabilities", "GetMap", "GetFeatureInfo"],
+        "crs": ["EPSG:3005", "EPSG:4326", "EPSG:3857"],
+        "layerName": "pub:WHSE_FOREST_VEGETATION.BEC_BIOGEOCLIMATIC_POLY",
+        "abstract": "A compliant implementation of WMS plus most of the SLD extension; can generate PDF, SVG, KML and GeoRSS."
+      },
+      "completeArtifact": false,
+      "blockers": [
+        "WMS map and feature-info operations do not expose the complete authoritative vector package.",
+        "Rendered images or map documents cannot satisfy the BEC vector schema, feature count, checksum and geometry requirements."
+      ]
+    },
+    {
+      "id": "kml-loader",
+      "class": "catalogue-service-resource",
+      "status": "not-available",
+      "officialUrl": "https://openmaps.gov.bc.ca/kml/geo/layers/WHSE_FOREST_VEGETATION.BEC_BIOGEOCLIMATIC_POLY_loader.kml",
+      "observed": {
+        "headStatus": 404,
+        "contentLength": 28,
+        "contentType": "application/json"
+      },
+      "completeArtifact": false,
+      "blockers": [
+        "The catalogue-listed KML loader returned 404 and is a display/service resource rather than a coherent vector package."
+      ]
+    },
+    {
+      "id": "hectare-summary",
+      "class": "official-direct-supplemental-report",
+      "status": "supplemental-acquired-not-complete",
+      "officialUrl": "https://catalogue.data.gov.bc.ca/dataset/f358a53b-ffde-4830-a325-a5a03ff672c3/resource/5661eeb8-4ad4-4508-877c-f845793d001d/download/bgc_bc_v13_hectaresummary.xlsx",
+      "observed": {
+        "contentType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "lastModified": "2026-07-09T15:42:20Z",
+        "byteLength": 74839,
+        "etag": "1783611740.150505-74839-1951142454",
+        "sha256": "72ee0c40b6016a6dba89772fe8d148cc8e00b1ea6e46c9edf64d68fc88c0f6f4",
+        "zipIntegrity": "passed",
+        "controlledPath": "../Witness_Tree-data/staging/bc-bec-map-v13-1/bgc_bc_v13_hectaresummary_2026-07-09.xlsx",
+        "workbookSheets": ["BGC Hectare Summary", "Metadata"],
+        "sheetDimensions": {
+          "BGC Hectare Summary": "A1:M644",
+          "Metadata": "A1:D4"
+        },
+        "geometryPresent": false,
+        "vectorFeatureCount": null
+      },
+      "completeArtifact": false,
+      "creditImpact": 0,
+      "blockers": [
+        "This is a hectare summary/report, not the BEC polygon package and contains no geometry or vector feature count.",
+        "It is retained only as supplemental checksum-bound official evidence; it cannot replace the blocked source row."
+      ]
+    },
+    {
+      "id": "poster-map",
+      "class": "official-direct-cartographic-report",
+      "status": "not-vector",
+      "officialUrl": "https://catalogue.data.gov.bc.ca/dataset/f358a53b-ffde-4830-a325-a5a03ff672c3/resource/b13810e0-7a37-4fc9-a693-b9e3a3009553/download/bgcmap.2026.05.pdf",
+      "observed": {
+        "contentType": "application/pdf",
+        "lastModified": "2026-06-30T21:21:51Z",
+        "contentLength": 58491912
+      },
+      "completeArtifact": false,
+      "blockers": ["The poster is a cartographic report, not a complete polygon export; no download was performed."]
+    },
+    {
+      "id": "letter-map",
+      "class": "official-direct-cartographic-report",
+      "status": "not-vector",
+      "officialUrl": "https://catalogue.data.gov.bc.ca/dataset/f358a53b-ffde-4830-a325-a5a03ff672c3/resource/0011d14f-f7c7-4877-8de7-7bdc986d753e/download/bgczones.v13.8x11.pdf",
+      "observed": {
+        "contentType": "application/pdf",
+        "lastModified": "2026-06-30T21:36:18Z",
+        "contentLength": 2876723
+      },
+      "completeArtifact": false,
+      "blockers": ["The letter-sized map is cartographic output, not the full BEC polygon package; no download was performed."]
+    },
+    {
+      "id": "revision-history-map",
+      "class": "official-direct-cartographic-report",
+      "status": "not-vector",
+      "officialUrl": "https://catalogue.data.gov.bc.ca/dataset/f358a53b-ffde-4830-a325-a5a03ff672c3/resource/60cf9bef-6612-4e7d-a5a5-83f5440bb12a/download/bgc_versionsbyassessmentwatershed.pdf",
+      "observed": {
+        "contentType": "application/pdf",
+        "lastModified": "2026-06-30T21:55:21Z",
+        "contentLength": 1351878
+      },
+      "completeArtifact": false,
+      "blockers": ["The revision-history map documents versions by watershed but is not a vector export; no download was performed."]
+    },
+    {
+      "id": "district-scale-maps",
+      "class": "catalogue-indirect-report",
+      "status": "not-complete-current-vector",
+      "officialUrl": "https://www.for.gov.bc.ca/hre/becweb/resources/maps/DistrictScaleMaps.html",
+      "observed": {
+        "catalogueAccessMethod": "indirect access",
+        "catalogueDescription": "District-scale cartographic map sheets, mostly 1:250,000, with some districts covered by more than one sheet."
+      },
+      "completeArtifact": false,
+      "blockers": ["Map sheets are indirect cartographic products and do not establish a coherent BEC v13.1 polygon package."]
+    },
+    {
+      "id": "bec-website",
+      "class": "catalogue-indirect-information-site",
+      "status": "not-vector",
+      "officialUrl": "https://www.for.gov.bc.ca/hre/becweb/",
+      "observed": {
+        "catalogueAccessMethod": "indirect access"
+      },
+      "completeArtifact": false,
+      "blockers": ["The BEC website supplies classification resources and documentation, not a checksum-bound complete vector release."]
+    },
+    {
+      "id": "generalized-arcgis-substitutions",
+      "class": "official-public-generalized-layers",
+      "status": "not-equivalent",
+      "officialUrls": [
+        "https://delivery.maps.gov.bc.ca/arcgis/rest/services/whse/bcgw_pub_whse_forest_vegetation/MapServer/40",
+        "https://delivery.maps.gov.bc.ca/arcgis/rest/services/whse/bcgw_pub_whse_forest_vegetation/MapServer/31"
+      ],
+      "observed": {
+        "objects": [
+          "WHSE_FOREST_VEGETATION.BEC_BIOGEOCLIMATIC_20K_SPG",
+          "WHSE_FOREST_VEGETATION.BEC_BIOGEOCLIMATIC_250K_SPG"
+        ],
+        "scale": "generalized 1:20K and 1:250K products",
+        "crs": "EPSG:3005"
+      },
+      "completeArtifact": false,
+      "blockers": ["Generalized layers are different source objects and cannot substitute for the exact BEC_BIOGEOCLIMATIC_POLY row."]
+    }
+  ],
+  "exhaustion": {
+    "lawfulPublicCompleteArtifactFound": false,
+    "lawfulPublicServiceRoutesFound": true,
+    "completeVectorAcquired": false,
+    "completeVectorProfiled": false,
+    "completeVectorChecksumBound": false,
+    "archiveIntegrityVerified": false,
+    "geometryValidityVerified": false,
+    "rawEvidenceCreditImpact": 0,
+    "productionEligibilityImpact": 0,
+    "rowsAffected": ["bc-old-growth-bec"],
+    "vriFomTapChanged": false,
+    "conclusion": "Official public WFS and ArcGIS query routes are available without authentication or new terms, but they are mutable/unversioned, the WFS is explicitly non-transaction-safe, one WFS export caps at 10000 of 17870 features, ArcGIS services expose paged queries rather than an immutable package, and the two ArcGIS services disagree on count. The direct workbook is supplemental only. No official public alternative establishes a complete coherent BEC v13.1 vector artifact."
+  },
+  "ownerAction": {
+    "status": "prepared-unsent",
+    "contacts": [
+      "datamaps@gov.bc.ca",
+      "FAIB.Data.Management@gov.bc.ca",
+      "Will.Mackenzie@gov.bc.ca"
+    ],
+    "steps": [
+      "Ask the publisher for a complete coherent BEC Map v13.1 vector export or a documented transaction-consistent single-snapshot service route, without submitting a BCGW order ourselves.",
+      "Require publisher-attested edition/effective date, exact full-provincial feature count, EPSG:3005 CRS, schema, geometry-validity statement, byte length, SHA-256, correction/refresh contact, licence and attribution for that exact artifact.",
+      "If only the public WFS or ArcGIS route is authorized, require documented snapshot identity/consistency semantics before paging or retaining a raw response; do not union the current pages as a coherent edition without that proof.",
+      "If the publisher confirms the BCGW order route is the only coherent export, the owner must separately confirm eligible account identity, terms acceptance, exact order parameters and notification email before any submission.",
+      "After an authorized artifact is returned, place it in the controlled Phase 1 data location, capture HEAD/bytes/SHA-256/archive/schema/CRS/feature count/geometry evidence, and rerun the source ledger gates before any promotion decision."
+    ]
+  },
+  "admission": {
+    "sourceLedgerAdmitted": false,
+    "transformed": false,
+    "ingested": false,
+    "productionAdmitted": false,
+    "productionEligible": false
+  }
+}

@@ -1,0 +1,105 @@
+{
+  "schemaVersion": "witness-tree/phase1-immutable-downstream-preflight/1",
+  "status": "owner-independent-audit-complete-plvi-schema-blocked",
+  "asOf": "2026-08-22",
+  "notice": "This is a read-only preparation contract for the nine immutable Phase 1 rows. It does not transform data, authorize transformation or ingestion, ingest, release, admit a production source, change eligibility, or perform an external mutation.",
+  "baseline": {
+    "immutableRows": 9,
+    "rawEvidenceNumerator": 14.75,
+    "rawEvidenceDenominator": 31,
+    "formalEvidenceTrackingPercentage": 39.2741935,
+    "productionAdmissionRows": 0,
+    "productionEligibleRows": 0
+  },
+  "auditedRows": [
+    {"id":"ntems-annual-land-cover","preparationStatus":"blocked-phase1-production-method-output-and-downstream-decisions","reason":"The separately approved Phase 2 nonproduction method does not supply a Phase 1 production-admission target method, crosswalk, checksum-bound full-resolution output, or downstream decisions."},
+    {"id":"ntems-forest-harvest","preparationStatus":"blocked-phase1-source-ledger-scope-only-no-production-method-output","reason":"The recorded Phase 1 source-ledger-only decision supplies no Phase 1 production-admission target transformation, checksum-bound output, or ingestion decision; the separate Phase 2 nonproduction method does not close those gates."},
+    {"id":"ntems-canopy-cover","preparationStatus":"blocked-phase1-production-method-output-and-downstream-decisions","reason":"The separately approved Phase 2 nonproduction method does not supply Phase 1 production-admission canopy-cover semantics, a checksum-bound output, or downstream decisions."},
+    {"id":"ntems-canopy-height","preparationStatus":"blocked-phase1-source-ledger-scope-only-no-production-method-output","reason":"The recorded Phase 1 source-ledger-only decision supplies no Phase 1 production-admission target transformation, checksum-bound output, or ingestion decision; the separate Phase 2 nonproduction method does not close those gates."},
+    {"id":"ab-avi-crown","preparationStatus":"blocked-source-ledger-only-no-derived-payload-or-downstream-scope","reason":"The source-ledger-only decision preserves the exact FID 1 exclusion, but the repair/quarantine audit wrote no derived AVI payload and no downstream transformation or ingestion scope is approved."},
+    {"id":"ab-avi-post-harvest","preparationStatus":"blocked-source-ledger-only-no-derived-payload-or-downstream-scope","reason":"The source-ledger-only decision supplies no approved derived post-inventory-harvest payload, downstream transformation scope, or ingestion decision."},
+    {"id":"ab-primary-land-vegetation","preparationStatus":"selected-exact-scope-schema-preflight-blocked-downstream-decisions","reason":"The owner-approved exact raw/derived scope and immutable output support read-only validation, but ordered schema parity fails and transformation admission plus ingestion decisions remain separate."},
+    {"id":"qc-current-ecoforest","preparationStatus":"blocked-source-ledger-only-no-production-method-output","reason":"The recorded immutable archive attestation and source-ledger-only decision supply no approved production transformation, checksum-bound output, ingestion decision, release, or production admission."},
+    {"id":"qc-original-current-inventory","preparationStatus":"blocked-source-ledger-only-no-production-method-output","reason":"The recorded immutable archive attestation and source-ledger-only decision supply no approved production transformation, checksum-bound output, ingestion decision, release, or production admission."}
+  ],
+  "selectedBatch": {
+    "rows": ["ab-primary-land-vegetation"],
+    "selectionReason": "PLVI is the only immutable row with an existing owner-scoped, checksum-bound derived payload and complete feature/geometry/closed-join evidence.",
+    "methodContract": {
+      "specification": "alberta-plvi-geometry-repair-v1",
+      "runRecord": "data/transformation-runs/alberta-plvi-geometry-repair-v1-2026-08-14.json",
+      "runRecordSha256": "428fe15feaaf5994a6267a63221be024ca2120adf4c5d446c6c30afacf0a0e45",
+      "rule": "Copy 179075 valid source features unchanged; replace the 12 named invalid polygons with bounded ST_MakeValid repairs; preserve duplicate POLYGON_ID 41405 twice; do not drop or deduplicate a source feature.",
+      "relativeAreaTolerance": 1e-9
+    },
+    "outputContract": {
+      "relativePath": "derived/alberta-plvi-full-repair-v1/2026-08-14/alberta-plvi-full-repaired-closed-join.gpkg",
+      "byteLength": 899551232,
+      "sha256": "5633e7d49982ee1232b415f362654744c1f1dab11d7c3c7ef8a7928dac20825b",
+      "layer": "alberta_plvi_full_repaired",
+      "featureCount": 179087,
+      "crs": "EPSG:3400",
+      "attributeFieldCount": 60,
+      "emptyOrNullGeometryCount": 0,
+      "invalidGeometryCount": 0,
+      "nonPolygonalGeometryCount": 0
+    },
+    "sourceSchemaContract": {
+      "relativePath": "raw/alberta-primary-land-vegetation/2026-08-14/PrimaryLandAndVegetationInventoryPLVI.zip",
+      "archiveByteLength": 675544895,
+      "archiveSha256": "017a0a835c680ca1b6c1eb790322a28e1b4c0c64e36924da46d8bb99cb1571d3",
+      "datasetPath": "PrimaryLandAndVegetationInventoryPLVI/Data/Geodatabase/PrimaryLandAndVegetationInventoryPLVI.gdb",
+      "layer": "PrimaryLandAndVegetationInventory",
+      "attributeFieldCount": 60,
+      "orderedNameTypeSha256": "48cfd5562b5d8efe80cc6284ecf5ad45809209513ba1a69d5e8e77d2fff6a59c"
+    },
+    "observedOutputSchema": {
+      "orderedNameTypeSha256": "7fe569a75dc692daa2b352c7d462d71bb7376d781ca6ef5ccf33015faa5d70db",
+      "attributeFieldCount": 60,
+      "nameDrift": [
+        {"index":57,"source":"SUBMISSION_ID","output":"SUBMISSION"},
+        {"index":58,"source":"Shape_Length","output":"Shape_Leng"}
+      ],
+      "integerToInteger64WideningCount": 23,
+      "exactNameParity": false,
+      "exactNameTypeParity": false
+    },
+    "validationGates": {
+      "methodRecordChecksumBound": true,
+      "outputChecksumBound": true,
+      "featureCountPreserved": true,
+      "geometryValidAndPolygonal": true,
+      "duplicateIdentityPreserved": true,
+      "exactSchemaNameParity": false,
+      "exactSchemaNameTypeParity": false,
+      "preflightResult": "blocked"
+    },
+    "preflight": {
+      "contractCommand": "npm run check:phase1-immutable-downstream-preflight",
+      "localReadOnlyCommand": "node scripts/check-phase1-immutable-downstream-preflight.mjs --verify-local --data-root <controlled-absolute-Witness_Tree-data-path>",
+      "writesData": false,
+      "requiresTransformationAdmission": true,
+      "requiresIngestionDecision": true,
+      "requiredBeforeReady": [
+        "Create a new checksum-bound output that preserves the exact approved source schema or obtain an explicit field mapping decision.",
+        "Re-run feature, geometry, duplicate, closed-join, checksum, and exact ordered schema validation.",
+        "Obtain separate transformation admission and ingestion decisions."
+      ]
+    }
+  },
+  "claims": {
+    "realDataTransformedByThisWork": false,
+    "ingestionAuthorized": false,
+    "ingested": false,
+    "released": false,
+    "productionAdmission": false,
+    "productionEligible": false,
+    "remoteMutationPerformed": false,
+    "externalMutationPerformed": false,
+    "rawEvidenceDelta": 0,
+    "formalPercentagePointDelta": 0,
+    "immutableRowsDelta": 0,
+    "productionAdmissionRowsDelta": 0,
+    "productionEligibleRowsDelta": 0
+  }
+}

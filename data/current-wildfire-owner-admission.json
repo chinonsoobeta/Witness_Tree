@@ -1,0 +1,94 @@
+{
+  "schemaVersion": "witness-tree/current-wildfire-owner-admission/1",
+  "status": "owner-approved-pipeline-primary-archive-complete-downstream-blocked",
+  "approvedAt": "2026-08-14",
+  "ownerDecision": {
+    "scopeApproved": true,
+    "geometryApproved": true,
+    "transformationApproved": true,
+    "ingestionApproved": true,
+    "publicReleaseApproved": true,
+    "productionAdmissionApproved": true,
+    "condition": "Every exact raw payload and each required derived payload must first have repository-integrated immutable archive readback evidence. Approval does not itself satisfy that condition."
+  },
+  "archiveGate": {
+    "status": "primary-exact-version-compliance-evidence-complete-recovery-separate",
+    "evidenceRef": "data/current-wildfire-exact-raw-archive-capture-2026-08-25.json",
+    "derivedEvidenceRef": "data/current-wildfire-derived-manifest-retention-evidence.json",
+    "requiredObjectCount": 6,
+    "verifiedObjectCount": 6,
+    "attestedObjectCount": 0,
+    "primaryReadbacksVerified": true,
+    "recoveryReplicaVerified": false,
+    "mutationProvenance": false,
+    "requirements": [
+      "exact immutable object key",
+      "exact object version ID",
+      "remote byte length matching local evidence",
+      "remote full-object checksum matching local SHA-256 or independently verified full-object checksum",
+      "successful exact-version readback",
+      "active COMPLIANCE retention through at least 2033-08-12T00:00:00Z",
+      "Canadian ca-central-1 storage evidence"
+    ],
+    "productionEligible": false
+  },
+  "refreshAndAuthority": {
+    "representation": "Each publication is a separately archived as-of snapshot; never label it real-time or overwrite an earlier snapshot.",
+    "schedule": "Attempt at the existing four America/Vancouver refresh slots; a schedule is not a publisher freshness guarantee.",
+    "failurePolicy": "Reject empty, capped, partial, schema-drifted, invalid, checksum-unbound or unarchived input; retain the last good release and mark it degraded, then stale after 24 hours.",
+    "precedence": "Within a province, the responsible provincial wildfire agency source prevails over CWFIS when records conflict. CWFIS is national fallback context only.",
+    "safety": "No source is emergency direction, a damage map, a mortality map or a completeness guarantee. Link users to the responsible agency."
+  },
+  "sources": [
+    {
+      "id": "cwfis-current",
+      "role": "national active-fire fallback point context",
+      "raw": {"bytes": 45917, "sha256": "fc3d4a0730f30d6f12782b16e9459c173dabd6e50d0715b27cddecd954097f86", "featureCount": 586, "geometry": "Point", "asOf": "2026-08-14T20:22:42Z"},
+      "requiredArchiveObjects": ["raw"],
+      "transformation": "Source-preserving field normalization and EPSG:3978-to-EPSG:4326 reprojection only; retain the raw archive and source identifiers.",
+      "ingestion": "Admit only records valid at the fixed query instant with all 586 point geometries and exact source provenance.",
+      "release": "Label as an as-of national point snapshot and fallback context; it is not real-time, not a complete incident or perimeter inventory, and not provincial-agency authoritative.",
+      "productionEligible": false
+    },
+    {
+      "id": "bc-wildfire",
+      "role": "British Columbia provincial current-season perimeter context",
+      "raw": {"bytes": 4813292, "sha256": "46ee3a97ff83128630a030b5cfcc7f3c389fc94e3ca95d463595ab6f4fb57e83", "featureCount": 217, "immutableAndUnchanged": true},
+      "derived": {"bytes": 2162688, "sha256": "8ee36cc6bdfb5ef267340537e4cf822df7cc886873c7fcf65a1b2b12006d34ce", "featureCount": 216, "unchanged": 215, "repaired": ["G70362"], "excludedAndQuarantined": ["V10755"], "excludedRelativeAreaDelta": 0.03167100456325357, "invalid": 0, "empty": 0},
+      "requiredArchiveObjects": ["raw", "derived"],
+      "transformation": "Use only the checksum-bound derived release: copy 215 raw-valid features unchanged, replace G70362 with its bounded valid polygonal repair, and permanently exclude and quarantine V10755 from geometry-dependent use.",
+      "ingestion": "Closed join to the 216 admitted derived features; never ingest V10755 geometry and never mutate or substitute the 217-feature raw archive.",
+      "release": "Disclose 216 admitted perimeters from a 217-feature snapshot and one permanent geometry exclusion; never claim 217-feature geometry coverage.",
+      "productionEligible": false
+    },
+    {
+      "id": "ab-wildfire",
+      "role": "Alberta provincial wildfire-location point context",
+      "raw": {"bytes": 423853, "sha256": "f0e86ea34a7624c365349b3a8fbb77967bb45ab73c507cf441efb8f6a8736ee0", "featureCount": 751, "geometry": "Point", "asOf": "2026-08-14T13:42:09Z"},
+      "requiredArchiveObjects": ["raw"],
+      "transformation": "Source-preserving field normalization only; retain every raw point and publisher status without inferring a perimeter.",
+      "ingestion": "Admit 751 valid points with exact snapshot provenance and status dates; do not derive perimeter area from points.",
+      "release": "Label as an as-of wildfire-location snapshot, not real-time and not a complete perimeter dataset; Alberta Wildfire remains authoritative.",
+      "productionEligible": false
+    },
+    {
+      "id": "on-fire-disturbance",
+      "role": "Ontario provincial in-year perimeter context",
+      "raw": {"bytes": 19510504, "sha256": "99881f19a32068b5d66b244955f7b088e873ffe76eafebf1740f03e16f042f11", "featureCount": 188, "immutableAndUnchanged": true},
+      "derived": {"bytes": 7913472, "sha256": "5e55c5d47559c350d9b31ffeda6bd39cfce64a3c57169098fff66341cd8ead31", "featureCount": 188, "unchanged": 179, "repairedCount": 9, "excludedAndQuarantined": [], "invalid": 0, "empty": 0},
+      "requiredArchiveObjects": ["raw", "derived"],
+      "transformation": "Use only the checksum-bound closed-join derived release: copy 179 raw-valid features unchanged and use all nine recorded bounded valid polygonal repairs, with no exclusion or deduplication.",
+      "ingestion": "Require 188 distinct source object IDs and 188 valid non-empty polygonal derived counterparts with attributes preserved.",
+      "release": "Disclose a daily as-of in-year snapshot with nine bounded repairs and zero exclusions; it is not a publisher freshness or completeness guarantee.",
+      "productionEligible": false
+    }
+  ],
+  "pipeline": {
+    "transformation": "approved-scope-defined-primary-archive-complete-separate-validation-required",
+    "ingestion": "approved-scope-primary-archive-complete-separate-validation-required",
+    "release": "approved-scope-primary-archive-complete-separate-validation-required",
+    "productionAdmission": "approved-scope-primary-archive-complete-separate-validation-required",
+    "productionEligible": false,
+    "activationRule": "Primary exact-version/COMPLIANCE archive evidence is complete for the four raw and two derived payload/manifest pairs, but recovery-replica evidence remains separate. Production eligibility remains fail-closed until separate transformation, ingestion, release, and production-admission evidence is validated."
+  }
+}

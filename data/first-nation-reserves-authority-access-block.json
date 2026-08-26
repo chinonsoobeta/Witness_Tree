@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "status": "authority-and-access-blocked",
+  "productionRowId": "first-nation-reserves",
+  "reviewedAt": "2026-08-14T22:30:00Z",
+  "officialCandidates": {
+    "iscReserveBoundaryService": {
+      "publisher": "Indigenous Services Canada",
+      "url": "https://data.sac-isc.gc.ca/geomatics/rest/services/AGOL_FEATURE_SERVICES/Image_Acquisition_Sites/FeatureServer/1",
+      "datasetTitle": "Indian Reserve Boundary",
+      "geometry": "Polygon",
+      "isDataVersioned": false,
+      "scope": "The reviewed official service is an operational feature-service layer. The reviewed metadata did not identify a versioned, released boundary artifact or an exact-artifact checksum."
+    },
+    "iscFirstNationLocationService": {
+      "publisher": "Indigenous Services Canada",
+      "url": "https://services.sac-isc.gc.ca/geomatics/rest/services/Donnees_Ouvertes-Open_Data/Premiere_Nation_First_Nation/FeatureServer/0",
+      "datasetTitle": "First Nation",
+      "geometry": "Point",
+      "scope": "The official service describes First Nation geographic locations for maps, including administrative-office locations. It is not reserve-boundary geometry and is a non-substitute for this production row."
+    }
+  },
+  "authorityAndRights": {
+    "versionedReleasedBoundaryArtifactVerified": false,
+    "exactArtifactLicenceAndAttributionVerified": false,
+    "checksumAndArchiveRecoveryVerified": false,
+    "engagementAndRightOfReplyRouteVerified": false,
+    "reason": "This review found an ISC polygon service without a versioned released artifact, and an ISC point service that cannot stand in for reserve polygons. It did not verify exact-artifact reuse terms, attribution, checksum/archive recovery, or a named Indigenous engagement and right-of-reply route."
+  },
+  "actions": {
+    "downloaded": false,
+    "staged": false,
+    "profiled": false,
+    "transformed": false,
+    "archived": false,
+    "ingested": false,
+    "productionEligible": false
+  },
+  "requiredBeforeAnyAcquisition": [
+    "Authoritative publisher and exact reserve-boundary edition identified for this intended use",
+    "Versioned released polygon artifact available over HTTPS with declared checksum and required attribution",
+    "Written reuse and redistribution terms for that exact artifact",
+    "Named Indigenous engagement and right-of-reply route"
+  ]
+}

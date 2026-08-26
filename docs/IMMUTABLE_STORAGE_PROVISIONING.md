@@ -85,6 +85,8 @@ Three payload snapshots are uploaded, remote-verified, and locked until 2033-08-
 
 This list describes the bucket-creation step recorded above, not everything that has happened since.
 
+The machine-checked [archive operations readiness record](ARCHIVE_OPERATIONS_READINESS.md) captures these missing controls as a blocked, non-production evidence package. It cannot be marked ready without documented recovery/replication decisions and evidence for dedicated identities, access logging, lifecycle, legal-hold, and recovery controls.
+
 - No IAM user, role, access key, secret key, or session token was created, viewed, copied, or handled.
 - No file was uploaded to the bucket during this step.
 - No Cross-Region Replication was enabled.

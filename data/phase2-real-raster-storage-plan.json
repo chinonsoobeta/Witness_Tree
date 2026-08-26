@@ -1,0 +1,7 @@
+{
+  "schemaVersion": "witness-tree/phase2-real-raster-storage-plan/1",
+  "status": "approved-cap-preflight-passed",
+  "sample": {"years":[1984,1985],"window":{"x":80000,"y":50000,"width":4096,"height":4096},"rawBytesPerRaster":16777216,"compressedMaskBytes":90852,"compressedLossBytes":6473,"compression":"ZSTD level 9, tiled 512x512"},
+  "bound": {"basis":"two times the complete 59.455 GB compressed input set for masks and loss plus disturbance copies","retainedOutputBoundBytes":237820018840,"availableBytesAtPreflight":450560000000,"approvedCapBytes":2199023255552,"minimumSafetyMarginBytes":100000000000,"passes":true},
+  "execution":{"workers":1,"yearPairs":1,"ramCapGiB":16,"outputCompression":"LZW, tiled 512x512","externalStorage":false,"productionEligible":false}
+}

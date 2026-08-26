@@ -1,0 +1,47 @@
+{
+  "status": "local-staging-source-ledger",
+  "notice": "Read-only acquisition and profile evidence only. This archive is not immutable object storage, transformed data, ingested data, or a production release.",
+  "source": {
+    "id": "elections-canada-federal-electoral-districts-45th-general-election-2025-shp",
+    "publisher": "Elections Canada",
+    "datasetTitle": "Federal Electoral Districts SHP — 45th General Election",
+    "officialListingUrl": "https://www.elections.ca/content.aspx?dir=cir%2FmapsCorner%2Fvector&document=index&lang=e&section=res",
+    "officialCurrentOrderUrl": "https://www.elections.ca/content.aspx?dir=cir%2Fred&document=admin&lang=e&section=res",
+    "sourceUrl": "https://www.elections.ca/res/cir/mapsCorner/vector/FederalElectoralDistricts_2025_SHP.zip",
+    "sourceVersion": "FederalElectoralDistricts_2025_SHP.zip",
+    "representationOrder": "2023",
+    "currentEditionBasis": "The official 45th-General-Election listing directly links this archive. Elections Canada states that the 2023 Representation Orders came into effect on 2025-03-23, when writs for the 45th general election were issued. The archive's REPORDER field contains only 2023.",
+    "licence": {
+      "id": "ogl-canada-2.0",
+      "name": "Open Government Licence – Canada, version 2.0",
+      "url": "https://open.canada.ca/en/open-government-licence-canada",
+      "requiredAttribution": "Contains information licensed under the Open Government Licence – Canada."
+    },
+    "localPath": "../Witness_Tree-data/raw/elections-canada-federal-electoral-districts/2026-08-14/FederalElectoralDistricts_2025_SHP.zip",
+    "retrievedAt": "2026-08-14T17:42:35Z",
+    "retrievedAtBasis": "Project-recorded completion time for an HTTPS download from the exact ZIP link on the official Elections Canada listing; it is not a publisher attestation.",
+    "verifiedAt": "2026-08-14T17:43:09Z",
+    "http": {
+      "contentLength": 10301648,
+      "lastModified": "2025-11-25T17:58:54Z",
+      "etag": "f869df29355edc1:0",
+      "observedAt": "2026-08-14T17:43:09Z"
+    },
+    "sha256": "4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93",
+    "zipIntegrity": "passed",
+    "zipEntryCount": 9,
+    "archiveMembers": [
+      "SHP/FED_CA_2025_EN.cpg",
+      "SHP/FED_CA_2025_EN.dbf",
+      "SHP/FED_CA_2025_EN.prj",
+      "SHP/FED_CA_2025_EN.sbn",
+      "SHP/FED_CA_2025_EN.sbx",
+      "SHP/FED_CA_2025_EN.shp",
+      "SHP/FED_CA_2025_EN.shp.xml",
+      "SHP/FED_CA_2025_EN.shx",
+      "SHP/Data Dictionary.pdf"
+    ],
+    "immutableObjectStorage": false,
+    "productionEligible": false
+  }
+}

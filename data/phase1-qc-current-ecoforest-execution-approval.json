@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "witness-tree/phase1-transformation-execution-approval/1",
+  "status": "owner-approved-execution-only",
+  "decision": "approve",
+  "ownerAuthorization": {
+    "ownerName": "Chinonso Obeta",
+    "statement": "You can execute them when complete.",
+    "scope": "All seven Phase 1 transformation scopes, including qc-current-ecoforest-stand-copy-v1."
+  },
+  "packet": {"path": "data/phase1-downstream-admission-packet.json", "sha256": "4859407ea256988a50873c03aa4146c8dd15e5e13f9ced47fa87a7883b404d6a"},
+  "ownerScopeApproval": {"path": "data/phase1-transformation-scope-owner-approval-2026-08-25.json", "sha256": "fda1c43d2ee23adb35907ddf012c9b64aa23e69774866c725271ed91223dffb2"},
+  "specification": {"id": "qc-current-ecoforest-stand-copy-v1", "path": "data/transformation-specs/qc-current-ecoforest-stand-copy-v1.json", "sha256": "44cdb08f033fc80040a7edf373189a0ce8c74bc3132d4e0892816fcf3f22bb1d"},
+  "runner": {"path": "scripts/run-qc-stand-copy.mjs", "methodVersion": "qc-stand-copy-runner-v1", "sha256": "95d0c479bfb9bd9aedac88e1dcad84184c7dcf12b2f7e574935bf2ca7ef31cfb"},
+  "approvedScopes": [{"specId": "qc-current-ecoforest-stand-copy-v1", "specSha256": "44cdb08f033fc80040a7edf373189a0ce8c74bc3132d4e0892816fcf3f22bb1d", "decision": "approve"}],
+  "inputBinding": {
+    "rawArchiveSha256": "c67c56b0c101e95bef4fbca53a06e2f1578fe38293961017f70d815209740cf1",
+    "rawArchiveBytes": 12399475076,
+    "extractedGeoPackageSha256": "4f592f99786770600bdf219e8cdae5908d9a2398ab6a9ae45662fafa2494aa00",
+    "extractedGeoPackageBytes": 36111704064,
+    "layer": "pee_maj_prov",
+    "geometryType": "MultiPolygon",
+    "crs": "EPSG:32198",
+    "featureCount": 9827536
+  },
+  "outputBinding": {
+    "artifactRelativePath": "derived/phase1/qc-current-ecoforest-stand-copy-v1/c67c56b0c101e95bef4fbca53a06e2f1578fe38293961017f70d815209740cf1/qc-stand-copy-runner-v1/qc_current_ecoforest_stands.gpkg",
+    "sidecarRelativePath": "derived/phase1/qc-current-ecoforest-stand-copy-v1/c67c56b0c101e95bef4fbca53a06e2f1578fe38293961017f70d815209740cf1/qc-stand-copy-runner-v1/qc_current_ecoforest_stands.gpkg.json",
+    "layer": "qc_current_ecoforest_stands"
+  },
+  "decisionBoundary": {"executionAuthorized": true, "ingestionAuthorized": false, "releaseAuthorized": false, "productionAdmissionAuthorized": false, "productionEligibilityGranted": false, "externalMutationPerformed": false}
+}

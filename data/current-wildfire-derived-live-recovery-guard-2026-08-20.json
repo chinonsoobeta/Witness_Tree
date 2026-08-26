@@ -1,0 +1,70 @@
+{
+  "schemaVersion": "phase1/current-wildfire-derived-live-recovery-guard/1",
+  "status": "blocked-live-read-only",
+  "capturedAt": "2026-08-20T17:28:41Z",
+  "sourceOfTruth": "Live S3 read-only list, head, retention, and repository-local preparation checks.",
+  "mutationsPerformed": [],
+  "ownerAdmission": false,
+  "productionEligible": false,
+  "permissionPreconditions": {
+    "versionSpecificReadback": "unverified; no additional permission requested",
+    "retentionWrite": "unverified; no retention attempted",
+    "mfaSession": "not requested",
+    "iamMutation": "not requested"
+  },
+  "liveObjects": {
+    "bc-wildfire": {
+      "prefix": "derived/bc-wildfire/",
+      "payloadKey": "derived/bc-wildfire/bc-wildfire-geometry-policy-v1-2026-08-14/2026-08-14T20-31-39Z/8ee36cc6bdfb5ef267340537e4cf822df7cc886873c7fcf65a1b2b12006d34ce/payload/bc-wildfire-216-feature-release.gpkg",
+      "payloadObjectCount": 1,
+      "payloadBytes": 2162688,
+      "checksum": "CRC64NVME FULL_OBJECT",
+      "retention": "NONE",
+      "replication": "NONE",
+      "manifestPresent": false,
+      "recoveryObjectCount": 0,
+      "disposition": "owner disposition required; do not overwrite or delete under this audit"
+    },
+    "on-fire-disturbance": {
+      "prefix": "derived/on-fire-disturbance/",
+      "payloadObjectCount": 0,
+      "recoveryObjectCount": 0,
+      "disposition": "approved exact promotion remains pending; no live object exists"
+    }
+  },
+  "readOnlyPreconditions": [
+    {
+      "operation": "list-objects-v2",
+      "scope": "derived/bc-wildfire/",
+      "expected": "one payload key matching the approved 216-feature artifact"
+    },
+    {
+      "operation": "head-object",
+      "scope": "the observed BC payload key",
+      "expected": "2162688 bytes, CRC64NVME FULL_OBJECT, no Object Lock retention, no replication"
+    },
+    {
+      "operation": "get-object-retention",
+      "scope": "the observed BC payload key",
+      "expected": "no retention returned"
+    },
+    {
+      "operation": "list-objects-v2",
+      "scope": "derived/on-fire-disturbance/",
+      "expected": "empty result"
+    }
+  ],
+  "ownerActions": [
+    "Freshly approve the exact BC and Ontario derived payloads, deterministic sidecars, retention date, and archive destination.",
+    "Confirm the existing authorized execution path has the required version-specific readback and retention capabilities; do not change IAM as part of this guard.",
+    "Record an explicit disposition for the existing unlocked BC payload before any separate owner-authorized action; this audit does not delete or overwrite it.",
+    "Promote the exact Ontario artifact only after the local bytes and checksum pass the preparation preflight and the owner-authorized execution path is confirmed.",
+    "Integrate durable signed or digest-bound concrete-version, provider-checksum, exact-version readback, retention and Canadian-storage proof before changing the six-object owner gate or source-ledger state."
+  ],
+  "failClosedRules": [
+    "Any duplicate, unexpected, or checksum-mismatched key stops the path.",
+    "A missing or drifted local derived artifact stops the path before any external call.",
+    "Unverified owner approval, role capability, or retention capability stops the path.",
+    "The live BC payload is not an immutable archive proof because it has no retention, sidecar, replication, or recovery object."
+  ]
+}

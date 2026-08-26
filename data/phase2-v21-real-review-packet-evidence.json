@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "witness-tree/phase2-v21-real-review-packet-evidence/1",
+  "status": "local-readback-passed-no-review-results",
+  "packet": {
+    "path": "../../Witness_Tree-data/derived/phase2-v21-review-packet-v1/packet.json",
+    "sha256": "48151799249a442c828287897f0d504746b09fb72ef0663308d90339d47e091e",
+    "byteLength": 328499
+  },
+  "counts": { "samples": 400, "perProvince": 100, "perStratum": 25 },
+  "claims": {
+    "expertReviewCompleted": false,
+    "validationResultsExist": false,
+    "productAccuracyClaim": false,
+    "admittedInputs": false,
+    "productionEligible": false,
+    "released": false
+  }
+}

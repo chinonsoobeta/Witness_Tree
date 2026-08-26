@@ -1,0 +1,242 @@
+{
+  "schemaVersion": 1,
+  "status": "blocked-before-custom-download-order",
+  "auditedAt": "2026-08-20T17:36:00Z",
+  "source": "Read-only inspection of the official BC Data Catalogue package API, the named BEC resource metadata, the publisher's distribution workflow, the BCGW Data Access Policy and Agreement, and the current OGL-BC page. No catalogue order, form, terms acceptance, authentication, payment, or download was performed.",
+  "canonicalRowId": "bc-old-growth-bec",
+  "official": {
+    "publisher": "Forest Analysis and Inventory Branch",
+    "contacts": [
+      {
+        "name": "Will Mackenzie",
+        "email": "Will.Mackenzie@gov.bc.ca",
+        "role": "pointOfContact"
+      },
+      {
+        "name": "FAIB Data Management",
+        "email": "FAIB.Data.Management@gov.bc.ca",
+        "role": "dataSteward"
+      }
+    ],
+    "datasetTitle": "BEC Map",
+    "datasetName": "bec-map",
+    "datasetId": "f358a53b-ffde-4830-a325-a5a03ff672c3",
+    "catalogueUrl": "https://catalogue.data.gov.bc.ca/dataset/f358a53b-ffde-4830-a325-a5a03ff672c3",
+    "packageApiUrl": "https://catalogue.data.gov.bc.ca/api/3/action/package_show?id=f358a53b-ffde-4830-a325-a5a03ff672c3",
+    "datasetVersion": "13.1",
+    "versionReleasedAt": "2026-07-08",
+    "metadataCreated": "2014-12-10T23:39:09.109050",
+    "metadataModified": "2026-07-09T16:07:56.380469",
+    "recordLastModified": "2026-07-09",
+    "licence": "Open Government Licence - British Columbia",
+    "catalogueLicenceUrl": "https://www2.gov.bc.ca/gov/content?id=A519A56BC2BF44E4A008B33FCF527F61",
+    "currentLicenceUrl": "https://www2.gov.bc.ca/gov/content/data/policy-standards/data-policies/open-data/open-government-licence-bc",
+    "attribution": "Contains information licensed under the Open Government Licence – British Columbia.",
+    "downloadAudience": "Public",
+    "isOpen": false,
+    "securityClass": "PUBLIC",
+    "resource": {
+      "id": "46ceb84a-3f6d-436c-b4c1-c89beb72d11a",
+      "resourceApiUrl": "https://catalogue.data.gov.bc.ca/api/3/action/resource_show?id=46ceb84a-3f6d-436c-b4c1-c89beb72d11a",
+      "catalogueResourceUrl": "https://catalogue.data.gov.bc.ca/dataset/f358a53b-ffde-4830-a325-a5a03ff672c3/resource/46ceb84a-3f6d-436c-b4c1-c89beb72d11a",
+      "name": "BC Geographic Warehouse Custom Download",
+      "objectName": "WHSE_FOREST_VEGETATION.BEC_BIOGEOCLIMATIC_POLY",
+      "projection": "epsg3005",
+      "spatialDatatype": "SDO_GEOMETRY",
+      "accessMethod": "indirect access",
+      "storageLocation": "bc geographic warehouse",
+      "lastModified": "2026-07-08T22:15:10",
+      "format": "multiple",
+      "url": null,
+      "featureCount": null,
+      "schemaColumns": [
+        {
+          "name": "FEATURE_CLASS_SKEY",
+          "type": "NUMBER",
+          "precision": "10",
+          "shortName": "FTRCLSSSK"
+        },
+        {
+          "name": "ZONE",
+          "type": "VARCHAR2",
+          "precision": "12",
+          "shortName": "ZONE"
+        },
+        {
+          "name": "SUBZONE",
+          "type": "VARCHAR2",
+          "precision": "9",
+          "shortName": "SUBZONE"
+        },
+        {
+          "name": "VARIANT",
+          "type": "VARCHAR2",
+          "precision": "3",
+          "shortName": "VARIANT"
+        },
+        {
+          "name": "PHASE",
+          "type": "VARCHAR2",
+          "precision": "3",
+          "shortName": "PHASE"
+        },
+        {
+          "name": "NATURAL_DISTURBANCE",
+          "type": "VARCHAR2",
+          "precision": "12",
+          "shortName": "NTRLDSTRBN"
+        },
+        {
+          "name": "MAP_LABEL",
+          "type": "VARCHAR2",
+          "precision": "27",
+          "shortName": "MAP_LABEL"
+        },
+        {
+          "name": "BGC_LABEL",
+          "type": "VARCHAR2",
+          "precision": "27",
+          "shortName": "BGC_LABEL"
+        },
+        {
+          "name": "ZONE_NAME",
+          "type": "VARCHAR2",
+          "precision": "105",
+          "shortName": "ZONE_NAME"
+        },
+        {
+          "name": "SUBZONE_NAME",
+          "type": "VARCHAR2",
+          "precision": "105",
+          "shortName": "SBZNNM"
+        },
+        {
+          "name": "VARIANT_NAME",
+          "type": "VARCHAR2",
+          "precision": "60",
+          "shortName": "VRNTNM"
+        },
+        {
+          "name": "PHASE_NAME",
+          "type": "VARCHAR2",
+          "precision": "45",
+          "shortName": "PHASE_NAME"
+        },
+        {
+          "name": "NATURAL_DISTURBANCE_NAME",
+          "type": "VARCHAR2",
+          "precision": "360",
+          "shortName": "NTRLDSTRB1"
+        },
+        {
+          "name": "FEATURE_AREA_SQM",
+          "type": "NUMBER",
+          "precision": "19",
+          "shortName": "AREA_SQM"
+        },
+        {
+          "name": "FEATURE_LENGTH_M",
+          "type": "NUMBER",
+          "precision": "19",
+          "shortName": "FEAT_LEN"
+        },
+        {
+          "name": "GEOMETRY",
+          "type": "SDO_GEOMETRY",
+          "precision": "1",
+          "shortName": "GEOMETRY"
+        },
+        {
+          "name": "FEATURE_AREA",
+          "type": "NUMBER",
+          "precision": "38",
+          "shortName": "FEAT_AREA"
+        },
+        {
+          "name": "FEATURE_LENGTH",
+          "type": "NUMBER",
+          "precision": "38",
+          "shortName": "FTRLNGTH"
+        },
+        {
+          "name": "OBJECTID",
+          "type": "NUMBER",
+          "precision": "38",
+          "shortName": "OBJECTID"
+        },
+        {
+          "name": "SE_ANNO_CAD_DATA",
+          "type": "BLOB",
+          "precision": "4000"
+        }
+      ],
+      "geographicExtent": [
+        {
+          "east_bound_longitude": "-110.4",
+          "north_bound_latitude": "60.7",
+          "south_bound_latitude": "47.6",
+          "west_bound_longitude": "-139.4"
+        }
+      ],
+      "supplementalInfo": "Click <b>Access/Download</b> in the toolbar to download this dataset. For more information on using the distribution order form see [How to download data using the Catalogue or iMapBC](https://bcgov.github.io/data-publication/pages/dps_data_distribution_w.html). If the data is visible through public WMS, click the <b>Preview</b> button on the toolbar."
+    }
+  },
+  "terms": {
+    "distributionGuideUrl": "https://bcgov.github.io/data-publication/pages/dps_data_distribution_w.html",
+    "currentExportingGuideUrl": "https://www2.gov.bc.ca/gov/content/data/bc-data-catalogue/using-the-catalogue/exporting-data",
+    "accessPolicyUrl": "https://www2.gov.bc.ca/assets/gov/data/geographic/bcgw/bcgw_data_access_policy_and_agreement.pdf",
+    "requiresIndirectOrder": true,
+    "requiredOrderInputs": [
+      "coordinate system",
+      "area of interest or full-extent decision",
+      "clipping mode",
+      "format",
+      "included layers",
+      "notification email address"
+    ],
+    "requiresTermsAndConditionsCheckbox": true,
+    "requiresSubmitOrder": true,
+    "requiresContinueConfirmation": true,
+    "requiresProvinceIdentityOrAccountReview": true,
+    "requiresNewTermsAcceptanceForThisAudit": true,
+    "requiresPersonalInformationForThisAudit": true,
+    "feeMentionedInInspectedOfficialInstructions": false,
+    "policyEligibilityText": "The applicant must be a current employee, contractor, agent or representative of the Province of British Columbia.",
+    "policyRestrictions": [
+      "Do not share database credentials.",
+      "Only the account holder may use the warehouse access account.",
+      "Do not use that account to develop or implement an application.",
+      "If Crown Copyright restricts the data, archive or delete it after the work and do not disclose, sell, license, loan, give away or distribute it.",
+      "Protect the data against disclosure, misuse and theft and report errors to the data custodian.",
+      "Access may be limited or suspended for technical usage or violations."
+    ],
+    "accepted": false,
+    "submitted": false,
+    "paid": false
+  },
+  "artifact": {
+    "acquired": false,
+    "downloadUrl": null,
+    "head": null,
+    "bytes": null,
+    "sha256": null,
+    "archiveIntegrity": null,
+    "contents": {
+      "schemaVerified": false,
+      "crsVerified": false,
+      "featureCount": null,
+      "geometryValidityVerified": false
+    }
+  },
+  "officialAlternativeExhaustionFile": "data/phase1-bec-public-alternative-exhaustion.json",
+  "ownerAction": {
+    "status": "prepared-awaiting-owner-authorization",
+    "steps": [
+      "Confirm that the requester is eligible under the BCGW policy and identify the authorized account holder.",
+      "Review and accept the distribution Terms and Conditions and the OGL-BC terms, if the owner authorizes that acceptance.",
+      "Choose the exact order parameters: EPSG:3005, full BEC layer, output format, clipping/AOI decision and notification email.",
+      "Submit the order only after the owner authorizes the identity, terms acceptance and order parameters.",
+      "After the assembled package is returned, preserve the exact response and capture HEAD, byte count, SHA-256, archive integrity, schema/CRS/feature count and geometry validity before any ledger promotion."
+    ]
+  }
+}

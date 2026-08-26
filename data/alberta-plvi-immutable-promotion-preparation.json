@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "witness-tree/alberta-plvi-immutable-promotion-preparation/1",
+  "status": "preparation-only",
+  "notice": "Dry-run preparation only. It does not call AWS, upload a payload or sidecar, create an object, apply Object Lock retention, transform, ingest, release, or admit data.",
+  "destination": {"bucket": "witness-tree-raw-archive-ca-central-1", "region": "ca-central-1", "countryCode": "CA"},
+  "mfaGatedExecution": {"operatorProfile": "WitnessTreeArchiveOperator", "proposedRole": "WitnessTreePlviArchivePromotionUploader", "required": true, "retentionMode": "COMPLIANCE", "recommendedRetainUntil": "2033-08-12T00:00:00Z"},
+  "requiredApproval": "Before any remote action, the owner must freshly approve both exact artifacts below, the exact Canadian bucket and region, COMPLIANCE retention until 2033-08-12T00:00:00Z, and the named MFA-gated execution and read-back procedure.",
+  "artifacts": [
+    {
+      "id": "alberta-plvi-raw-2026-08-14",
+      "kind": "raw-source",
+      "localPath": "../Witness_Tree-data/raw/alberta-primary-land-vegetation/2026-08-14/PrimaryLandAndVegetationInventoryPLVI.zip",
+      "originalFilename": "PrimaryLandAndVegetationInventoryPLVI.zip",
+      "sourceId": "ab-primary-land-vegetation",
+      "sourceVersion": "undeclared",
+      "capturedAt": "2026-08-14T14:01:07Z",
+      "byteLength": 675544895,
+      "sha256": "017a0a835c680ca1b6c1eb790322a28e1b4c0c64e36924da46d8bb99cb1571d3",
+      "payloadKey": "raw/ab-primary-land-vegetation/undeclared/2026-08-14T14-01-07Z/017a0a835c680ca1b6c1eb790322a28e1b4c0c64e36924da46d8bb99cb1571d3/payload/primarylandandvegetationinventoryplvi.zip",
+      "manifestKey": "raw/ab-primary-land-vegetation/undeclared/2026-08-14T14-01-07Z/017a0a835c680ca1b6c1eb790322a28e1b4c0c64e36924da46d8bb99cb1571d3/manifest.json",
+      "sourceEvidence": {"stagedAcquisition": "alberta-primary-land-vegetation-2026-08-14", "profile": "data/staged-geospatial-profile.json", "featureCount": 179087, "crs": "EPSG:3400", "attributeFieldCount": 60, "invalidGeometryCount": 12, "licenceId": "ogl-alberta-2.2", "licenceUrl": "https://open.alberta.ca/licence", "attribution": "Contains information licensed under the Open Government Licence – Alberta."}
+    },
+    {
+      "id": "alberta-plvi-full-repair-v1-2026-08-14",
+      "kind": "derived-repair",
+      "localPath": "../Witness_Tree-data/derived/alberta-plvi-full-repair-v1/2026-08-14/alberta-plvi-full-repaired-closed-join.gpkg",
+      "originalFilename": "alberta-plvi-full-repaired-closed-join.gpkg",
+      "sourceId": "ab-primary-land-vegetation",
+      "sourceVersion": "alberta-plvi-full-repair-v1-2026-08-14",
+      "capturedAt": "2026-08-14T14:14:31Z",
+      "byteLength": 899551232,
+      "sha256": "5633e7d49982ee1232b415f362654744c1f1dab11d7c3c7ef8a7928dac20825b",
+      "payloadKey": "derived/ab-primary-land-vegetation/alberta-plvi-full-repair-v1-2026-08-14/2026-08-14T14-14-31Z/5633e7d49982ee1232b415f362654744c1f1dab11d7c3c7ef8a7928dac20825b/payload/alberta-plvi-full-repaired-closed-join.gpkg",
+      "manifestKey": "derived/ab-primary-land-vegetation/alberta-plvi-full-repair-v1-2026-08-14/2026-08-14T14-14-31Z/5633e7d49982ee1232b415f362654744c1f1dab11d7c3c7ef8a7928dac20825b/manifest.json",
+      "derivedLineage": {"rawArtifactId": "alberta-plvi-raw-2026-08-14", "rawSha256": "017a0a835c680ca1b6c1eb790322a28e1b4c0c64e36924da46d8bb99cb1571d3", "repairRun": "data/transformation-runs/alberta-plvi-geometry-repair-v1-2026-08-14.json", "fullReleaseReadiness": "data/alberta-plvi-full-release-readiness.json", "repairPatchSha256": "70348ce64c3e688ee7dc3948a683e49631aa16d591953a89f51d8186169d94e0", "repairCount": 12, "featureCount": 179087, "crs": "EPSG:3400", "attributeFieldCount": 60, "invalidGeometryCount": 0, "emptyOrNullGeometryCount": 0, "nonPolygonalGeometryCount": 0, "geometryTypes": {"POLYGON": 179086, "MULTIPOLYGON": 1}, "maxRepairedRelativeAreaDelta": 3.04060011759907e-12, "relativeAreaTolerance": 1e-9, "validRawAttributeFingerprintSha256": "fbbaf3cea2466c78223ba1b7557708acae1cd7a7de932fd6cdb1b62fb76d13c6"}
+    }
+  ],
+  "proposedRoleScope": {"allow": ["s3:PutObject", "s3:GetObject", "s3:GetObjectVersion", "s3:AbortMultipartUpload", "s3:ListMultipartUploadParts", "s3:PutObjectRetention", "s3:GetObjectRetention"], "objectKeys": ["raw/ab-primary-land-vegetation/undeclared/2026-08-14T14-01-07Z/017a0a835c680ca1b6c1eb790322a28e1b4c0c64e36924da46d8bb99cb1571d3/payload/primarylandandvegetationinventoryplvi.zip", "raw/ab-primary-land-vegetation/undeclared/2026-08-14T14-01-07Z/017a0a835c680ca1b6c1eb790322a28e1b4c0c64e36924da46d8bb99cb1571d3/manifest.json", "derived/ab-primary-land-vegetation/alberta-plvi-full-repair-v1-2026-08-14/2026-08-14T14-14-31Z/5633e7d49982ee1232b415f362654744c1f1dab11d7c3c7ef8a7928dac20825b/payload/alberta-plvi-full-repaired-closed-join.gpkg", "derived/ab-primary-land-vegetation/alberta-plvi-full-repair-v1-2026-08-14/2026-08-14T14-14-31Z/5633e7d49982ee1232b415f362654744c1f1dab11d7c3c7ef8a7928dac20825b/manifest.json"], "denyByOmission": ["s3:DeleteObject", "s3:DeleteObjectVersion", "s3:BypassGovernanceRetention", "iam:*", "s3:PutBucket*", "s3:DeleteBucket*"]},
+  "claims": {"remoteObjectExists": false, "sidecarUploaded": false, "retentionApplied": false, "immutableObjectStorage": false, "ownerSourceLedgerAdmission": false, "transformed": false, "ingested": false, "productionEligible": false}
+}

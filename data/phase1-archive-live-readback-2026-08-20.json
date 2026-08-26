@@ -1,0 +1,213 @@
+{
+  "schemaVersion": "phase1/archive-live-readback/1",
+  "status": "read-only-live-audit",
+  "capturedAt": "2026-08-20T17:28:41Z",
+  "sourceOfTruth": "Live AWS S3 read-only API responses in ca-central-1, compared with repository preparations.",
+  "mutationsPerformed": [],
+  "versionIdsRecorded": false,
+  "productionEligible": false,
+  "primaryBucket": {
+    "region": "ca-central-1",
+    "versioning": "Enabled",
+    "objectLock": "Enabled",
+    "defaultRetentionConfigured": false,
+    "publicAccessBlock": "all-controls-enabled",
+    "ownership": "BucketOwnerEnforced",
+    "encryption": "AES256",
+    "lifecycle": {
+      "status": "Enabled",
+      "scope": "raw/",
+      "abortIncompleteMultipartAfterDays": 7
+    },
+    "replication": {
+      "status": "Enabled",
+      "scope": "raw/",
+      "destination": "same-region recovery bucket",
+      "deleteMarkerReplication": "Disabled"
+    },
+    "serverAccessLogging": "not-configured",
+    "bucketPolicy": "not-present"
+  },
+  "recoveryBucket": {
+    "region": "ca-central-1",
+    "versioning": "Enabled",
+    "objectLock": "Enabled",
+    "currentObjectCount": 14,
+    "replicationRule": "not-configured",
+    "lifecycle": "not-configured",
+    "replicaGroups": [
+      "ab-primary-land-vegetation",
+      "ab-wildfire",
+      "bc-wildfire",
+      "cwfis-current",
+      "legal-hold-exercises",
+      "nrcan-ca-forest-harvest-1985-2022",
+      "on-fire-disturbance"
+    ]
+  },
+  "national": {
+    "annualVlce2": {
+      "prefix": "raw/nrcan-annual-land-cover-v2/version-2/",
+      "payloadObjectCount": 39,
+      "manifestObjectCount": 39,
+      "deleteMarkerCount": 0,
+      "payloadChecksum": {
+        "algorithm": "CRC64NVME",
+        "type": "FULL_OBJECT",
+        "observedOnEveryPayload": true
+      },
+      "payloadRetention": {
+        "mode": "COMPLIANCE",
+        "until": "2033-08-12T00:00:00Z",
+        "observedOnEveryPayload": true
+      },
+      "recoveryPayloadObjectCount": 0,
+      "repositoryContradiction": {
+        "record": "data/vlce2-remote-promotion-evidence.json",
+        "recordAsOf": "2026-08-14",
+        "recordedState": "remote-verified; 39 retained payload versions",
+        "liveState": "all-payloads-retained; current readback agrees",
+        "reconciliation": "no ledger change required"
+      }
+    },
+    "forestHarvest": {
+      "prefix": "raw/nrcan-ca-forest-harvest-1985-2022/",
+      "primaryPayloadBytes": 247945479,
+      "primaryPayloadChecksum": "CRC64NVME FULL_OBJECT",
+      "primaryPayloadRetention": "COMPLIANCE through 2033-08-12T00:00:00Z",
+      "primaryReplication": "COMPLETED",
+      "primaryManifest": "present, unlocked, CRC64NVME FULL_OBJECT, replication COMPLETED",
+      "recoveryPayload": "present, REPLICA, COMPLIANCE through 2033-08-12T00:00:00Z",
+      "recoveryManifest": "present, unlocked, REPLICA"
+    },
+    "canopyCover": {
+      "prefix": "raw/nrcan-forest-canopy-cover-2022/",
+      "canonicalPayloadBytes": 9954395939,
+      "canonicalPayloadChecksum": "CRC64NVME FULL_OBJECT",
+      "canonicalPayloadRetention": "COMPLIANCE through 2033-08-12T00:00:00Z",
+      "canonicalPayloadReplication": "NONE",
+      "canonicalManifest": "present, unlocked, CRC64NVME FULL_OBJECT, replication NONE",
+      "recoveryObjectCount": 0,
+      "supersededUnlockedPayloadCopies": 2
+    },
+    "canopyHeight": {
+      "prefix": "raw/nrcan-forest-canopy-height-2022/",
+      "primaryObjectCount": 0,
+      "recoveryObjectCount": 0
+    },
+    "federalElectoralDistricts": {
+      "prefix": "raw/elections-canada-federal-electoral-districts/",
+      "primaryObjectCount": 0,
+      "recoveryObjectCount": 0
+    }
+  },
+  "currentWildfire": {
+    "raw": [
+      {
+        "sourceId": "cwfis-current",
+        "payloadBytes": 45917,
+        "primaryPayload": "CRC64NVME FULL_OBJECT, COMPLIANCE through 2033-08-12T00:00:00Z, replication COMPLETED",
+        "primaryManifest": "present, unlocked, replication COMPLETED",
+        "recoveryPayload": "present, REPLICA, COMPLIANCE through 2033-08-12T00:00:00Z",
+        "recoveryManifest": "present, REPLICA, unlocked"
+      },
+      {
+        "sourceId": "bc-wildfire",
+        "payloadBytes": 4813292,
+        "primaryPayload": "CRC64NVME FULL_OBJECT, COMPLIANCE through 2033-08-12T00:00:00Z, replication COMPLETED",
+        "primaryManifest": "present, unlocked, replication COMPLETED",
+        "recoveryPayload": "present, REPLICA, COMPLIANCE through 2033-08-12T00:00:00Z",
+        "recoveryManifest": "present, REPLICA, unlocked"
+      },
+      {
+        "sourceId": "ab-wildfire",
+        "payloadBytes": 423853,
+        "primaryPayload": "CRC64NVME FULL_OBJECT, COMPLIANCE through 2033-08-12T00:00:00Z, replication COMPLETED",
+        "primaryManifest": "present, unlocked, replication COMPLETED",
+        "recoveryPayload": "present, REPLICA, COMPLIANCE through 2033-08-12T00:00:00Z",
+        "recoveryManifest": "present, REPLICA, unlocked"
+      },
+      {
+        "sourceId": "on-fire-disturbance",
+        "payloadBytes": 19510504,
+        "primaryPayload": "CRC64NVME FULL_OBJECT, COMPLIANCE through 2033-08-12T00:00:00Z, replication COMPLETED",
+        "primaryManifest": "present, unlocked, replication COMPLETED",
+        "recoveryPayload": "present, REPLICA, COMPLIANCE through 2033-08-12T00:00:00Z",
+        "recoveryManifest": "present, REPLICA, unlocked"
+      }
+    ],
+    "derived": {
+      "bc-wildfire": {
+        "prefix": "derived/bc-wildfire/",
+        "payloadObjectCount": 1,
+        "payloadBytes": 2162688,
+        "checksum": "CRC64NVME FULL_OBJECT",
+        "retention": "NONE",
+        "replication": "NONE",
+        "manifestPresent": false,
+        "recoveryObjectCount": 0
+      },
+      "on-fire-disturbance": {
+        "prefix": "derived/on-fire-disturbance/",
+        "primaryObjectCount": 0,
+        "recoveryObjectCount": 0
+      }
+    }
+  },
+  "quebec": {
+    "qc-current-ecoforest": {
+      "primaryObjectCount": 0,
+      "recoveryObjectCount": 0
+    },
+    "qc-original-current-inventory": {
+      "primaryObjectCount": 0,
+      "recoveryObjectCount": 0
+    },
+    "qc-fourth-inventory": {
+      "primaryObjectCount": 0,
+      "recoveryObjectCount": 0
+    },
+    "unrelatedQcHistoricPrefixExcluded": true
+  },
+  "archiveControlExercise": {
+    "primaryObjectCount": 2,
+    "recoveryReplicaCount": 2,
+    "payloadSizeBytes": [47, 47],
+    "payloadContent": "non-sensitive placeholder only",
+    "retentionMode": "COMPLIANCE",
+    "retentionStateAtCapture": "expired",
+    "legalHoldAtCapture": "OFF on both primary objects and both replicas",
+    "requiredProofs": {
+      "legalHoldOnTransition": false,
+      "legalHoldOffTransition": false,
+      "unchangedComplianceRetention": false,
+      "deniedExactVersionDelete": false,
+      "authorizedRecoveryReadback": false
+    },
+    "mutationEvidence": "none; no exercise mutation was performed"
+  },
+  "ownerActions": [
+    "Reconcile the annual VLCE2 repository record with the current live COMPLIANCE retention readback before any score is changed.",
+    "Historical 2026-08-20 next action: obtain owner approval and complete national canopy-height and federal-electoral promotions; later records supersede the approval state and canopy observation.",
+    "Resolve the BC derived orphan and create the Ontario derived archive only through an approved, version-specific promotion run with sidecars, retention, and readback.",
+    "Historical 2026-08-20 next action: obtain owner approval and execute the Quebec current, original, and fourth-inventory promotion plans; later records supersede the approval state, while completion evidence remains pending.",
+    "Run the normal archive-control exercise with approved authority and capture every required transition, denied delete, and recovery-readback proof.",
+    "Close control gaps in recovery coverage, access logging, and archive identity evidence before production admission."
+  ],
+  "percentageImpact": {
+    "baselineLedgerRef": "phase1/current-state-convergence-audit:data/phase1-production-source-ledger.json",
+    "baselineAsOf": "2026-08-20",
+    "baselineRawEvidenceNumerator": 14.75,
+    "baselineFormalPercentage": 39.2741935,
+    "canonicalRawReconciliation": {
+      "rows": ["cwfis-current", "bc-wildfire", "ab-wildfire", "on-fire-disturbance"],
+      "rawEvidenceNumeratorDelta": 0,
+      "formalPercentagePointDelta": 0,
+      "basis": "Historical operator observations asserted retention, checksum and recovery state for four raw pairs, but retain no durable concrete version/checksum binding. They add no current credit and prove zero of the six owner-gate objects."
+    },
+    "productionEligibleRows": 0,
+    "productionPercentagePointDelta": 0,
+    "repositoryPercentagePointDelta": 0,
+    "rawEvidenceUplift": "No current credit is claimed. This historical observation is not durable machine-verifiable archive proof; transformation, ingestion, release and production gates remain blocked."
+  }
+}

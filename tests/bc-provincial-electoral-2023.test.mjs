@@ -1,0 +1,2 @@
+import assert from "node:assert/strict"; import test from "node:test"; import { validate } from "../scripts/check-bc-provincial-electoral-2023.mjs"; import record from "../data/bc-provincial-electoral-2023-profile.json" with { type:"json" };
+test("BC electoral staging remains fail-closed",()=>{assert.doesNotThrow(()=>validate(record));assert.throws(()=>validate({...record,productionEligible:true}));});

@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "witness-tree/ontario-in-year-fire-geometry-policy/1",
+  "status": "full-derived-release-local-only",
+  "sourceId": "on-fire-disturbance",
+  "rawArchive": {
+    "path": "../Witness_Tree-data/raw/ontario-in-year-fire-perimeters/2026-08-14/ontario-in-year-fire-perimeters_2026-08-14.geojson",
+    "bytes": 19510504,
+    "sha256": "99881f19a32068b5d66b244955f7b088e873ffe76eafebf1740f03e16f042f11",
+    "unchanged": true
+  },
+  "policy": {
+    "method": "GDAL SQLite ST_MakeValid; retain only Polygon or MultiPolygon output",
+    "relativeAreaTolerance": 1e-9,
+    "invalidFeatureCount": 9,
+    "validFeaturesCopiedUnchanged": 179,
+    "repairedFeatureCount": 9,
+    "quarantinedFeatureIds": [],
+    "invalidFeatures": [
+      {"fireNumber":"DRY042","objectId":43423074,"geometryType":"POLYGON","reason":"Ring Self-intersection[-89.8904435996993 50.1891553988234]","sourceArea":3.79615850239269e-6,"repairedArea":3.79615850239268e-6,"relativeAreaDelta":1.00408037763489e-15,"disposition":"repair-in-derived-release"},
+      {"fireNumber":"BEAR TRAP","objectId":43423106,"geometryType":"MULTIPOLYGON","reason":"Ring Self-intersection[-91.8473474998846 48.1225344990586]","sourceArea":0.0145703333972009,"repairedArea":0.0145703333972008,"relativeAreaDelta":5.11951974148599e-15,"disposition":"repair-in-derived-release"},
+      {"fireNumber":"DRY020","objectId":43423266,"geometryType":"POLYGON","reason":"Ring Self-intersection[-92.8828229999842 50.2992912991991]","sourceArea":5.37940678341977e-7,"repairedArea":5.37940678341978e-7,"relativeAreaDelta":5.90469113061637e-16,"disposition":"repair-in-derived-release"},
+      {"fireNumber":"NOR027","objectId":43422050,"geometryType":"MULTIPOLYGON","reason":"Ring Self-intersection[-80.1261371996768 46.68233829917]","sourceArea":1.63069804742677e-5,"repairedArea":1.63069804742677e-5,"relativeAreaDelta":6.23315602976954e-16,"disposition":"repair-in-derived-release"},
+      {"fireNumber":"NIP018","objectId":43422434,"geometryType":"MULTIPOLYGON","reason":"Ring Self-intersection[-88.5983947996639 51.6222005989709]","sourceArea":0.0318700174181196,"repairedArea":0.0318700174181197,"relativeAreaDelta":1.74179858463764e-15,"disposition":"repair-in-derived-release"},
+      {"fireNumber":"WAW014","objectId":43422562,"geometryType":"POLYGON","reason":"Ring Self-intersection[-85.152328999629 48.5243620989678]","sourceArea":1.51094624386885e-5,"repairedArea":1.51094624386885e-5,"relativeAreaDelta":2.24239068912321e-15,"disposition":"repair-in-derived-release"},
+      {"fireNumber":"SUD015","objectId":43421826,"geometryType":"POLYGON","reason":"Ring Self-intersection[-81.1073100996035 46.4967217988074]","sourceArea":1.28497019520958e-6,"repairedArea":1.28497019520958e-6,"relativeAreaDelta":4.94388673612086e-16,"disposition":"repair-in-derived-release"},
+      {"fireNumber":"FOR014","objectId":43421858,"geometryType":"MULTIPOLYGON","reason":"Ring Self-intersection[-90.468598400277 48.9655938990989]","sourceArea":0.0634907612490839,"repairedArea":0.063490761249084,"relativeAreaDelta":1.53005748779084e-15,"disposition":"repair-in-derived-release"},
+      {"fireNumber":"DRY036","objectId":43421922,"geometryType":"MULTIPOLYGON","reason":"Ring Self-intersection[-91.7427435997318 49.2280327990656]","sourceArea":0.00218444676495365,"repairedArea":0.00218444676495367,"relativeAreaDelta":1.05221543621277e-14,"disposition":"repair-in-derived-release"}
+    ]
+  },
+  "derivedRelease": {
+    "path": "../Witness_Tree-data/derived/ontario-in-year-fire-geometry-policy-v1/2026-08-14/ontario-in-year-fire-perimeters-188-feature-derived.gpkg",
+    "bytes": 7913472,
+    "sha256": "5e55c5d47559c350d9b31ffeda6bd39cfce64a3c57169098fff66341cd8ead31",
+    "layer": "in_year_fire_perimeters",
+    "crs": "EPSG:4326",
+    "featureCount": 188,
+    "distinctObjectIdCount": 188,
+    "allGeometriesValid": true,
+    "emptyOrNullGeometryCount": 0,
+    "nonPolygonalGeometryCount": 0,
+    "geometryTypes": {"POLYGON":118,"MULTIPOLYGON":70}
+  },
+  "closedJoin": {"rawFeatureCount":188,"derivedFeatureCount":188,"rawDistinctObjectIdCount":188,"derivedDistinctObjectIdCount":188,"lostFeatureCount":0,"duplicatedFeatureCount":0,"attributesPreserved":true},
+  "coverageImpact": "None: all 188 raw features have a bounded polygonal derived counterpart; the raw source remains unchanged and separately retained.",
+  "immutableArchive": false,
+  "ownerAdmission": false,
+  "ingested": false,
+  "productionEligible": false
+}

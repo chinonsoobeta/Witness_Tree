@@ -1,0 +1,99 @@
+{
+  "schemaVersion": "witness-tree/qc-immutable-promotion-iam-desired-state/1",
+  "status": "applied-and-exactly-verified-storage-not-run",
+  "account": "286853118812",
+  "region": "ca-central-1",
+  "bucket": "witness-tree-raw-archive-ca-central-1",
+  "roleName": "WitnessTreeQcArchivePromotionUploader",
+  "rolePolicyName": "WitnessTreeQcArchiveExactObjects",
+  "operatorUser": "WitnessTreeArchiveOperator",
+  "operatorPolicyName": "WitnessTreeQcArchivePromotionAssumeOnly",
+  "trustPolicy": {
+    "Version": "2012-10-17",
+    "Statement": [{"Effect":"Allow","Principal":{"AWS":"arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator"},"Action":"sts:AssumeRole","Condition":{"Bool":{"aws:MultiFactorAuthPresent":"true"}}}]
+  },
+  "operatorPolicy": {
+    "Version": "2012-10-17",
+    "Statement": [{"Effect":"Allow","Action":"sts:AssumeRole","Resource":"arn:aws:iam::286853118812:role/WitnessTreeQcArchivePromotionUploader"}]
+  },
+  "rolePolicy": {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Sid": "ExactQcArchiveObjects",
+        "Effect": "Allow",
+        "Action": ["s3:PutObject", "s3:GetObject"],
+        "Resource": [
+          "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/qc-ecoforest-map/undeclared/2026-08-14T09-00-15Z/c67c56b0c101e95bef4fbca53a06e2f1578fe38293961017f70d815209740cf1/payload/carte_eco_maj_prov_gpkg.zip",
+          "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/qc-ecoforest-map/undeclared/2026-08-14T09-00-15Z/c67c56b0c101e95bef4fbca53a06e2f1578fe38293961017f70d815209740cf1/manifest.json",
+          "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/qc-original-inventory/undeclared/2026-08-14T15-15-58Z/c10d691516569de76642dc1fc64e662f2569b5b58ab5d945b58b8b7834ba9c61/payload/carte_eco_ori_prov_gpkg.zip",
+          "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/qc-original-inventory/undeclared/2026-08-14T15-15-58Z/c10d691516569de76642dc1fc64e662f2569b5b58ab5d945b58b8b7834ba9c61/manifest.json"
+        ]
+      },
+      {
+        "Sid": "ExactQcMultipartPayloads",
+        "Effect": "Allow",
+        "Action": ["s3:AbortMultipartUpload", "s3:ListMultipartUploadParts"],
+        "Resource": [
+          "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/qc-ecoforest-map/undeclared/2026-08-14T09-00-15Z/c67c56b0c101e95bef4fbca53a06e2f1578fe38293961017f70d815209740cf1/payload/carte_eco_maj_prov_gpkg.zip",
+          "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/qc-original-inventory/undeclared/2026-08-14T15-15-58Z/c10d691516569de76642dc1fc64e662f2569b5b58ab5d945b58b8b7834ba9c61/payload/carte_eco_ori_prov_gpkg.zip"
+        ]
+      },
+      {
+        "Sid": "ExactQcVersionedReadbacks",
+        "Effect": "Allow",
+        "Action": ["s3:GetObjectVersion"],
+        "Resource": [
+          "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/qc-ecoforest-map/undeclared/2026-08-14T09-00-15Z/c67c56b0c101e95bef4fbca53a06e2f1578fe38293961017f70d815209740cf1/payload/carte_eco_maj_prov_gpkg.zip",
+          "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/qc-ecoforest-map/undeclared/2026-08-14T09-00-15Z/c67c56b0c101e95bef4fbca53a06e2f1578fe38293961017f70d815209740cf1/manifest.json",
+          "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/qc-original-inventory/undeclared/2026-08-14T15-15-58Z/c10d691516569de76642dc1fc64e662f2569b5b58ab5d945b58b8b7834ba9c61/payload/carte_eco_ori_prov_gpkg.zip",
+          "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/qc-original-inventory/undeclared/2026-08-14T15-15-58Z/c10d691516569de76642dc1fc64e662f2569b5b58ab5d945b58b8b7834ba9c61/manifest.json"
+        ]
+      },
+      {
+        "Sid": "ExactQcPayloadRetention",
+        "Effect": "Allow",
+        "Action": ["s3:PutObjectRetention", "s3:GetObjectRetention"],
+        "Resource": [
+          "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/qc-ecoforest-map/undeclared/2026-08-14T09-00-15Z/c67c56b0c101e95bef4fbca53a06e2f1578fe38293961017f70d815209740cf1/payload/carte_eco_maj_prov_gpkg.zip",
+          "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/qc-original-inventory/undeclared/2026-08-14T15-15-58Z/c10d691516569de76642dc1fc64e662f2569b5b58ab5d945b58b8b7834ba9c61/payload/carte_eco_ori_prov_gpkg.zip"
+        ]
+      }
+    ]
+  },
+  "approvedActions": ["s3:PutObject", "s3:GetObject", "s3:GetObjectVersion", "s3:AbortMultipartUpload", "s3:ListMultipartUploadParts", "s3:PutObjectRetention", "s3:GetObjectRetention"],
+  "additionalApprovalRequired": null,
+  "excluded": ["s3:DeleteObject", "s3:DeleteObjectVersion", "s3:BypassGovernanceRetention", "s3:PutObjectLegalHold", "s3:ReplicateObject", "s3:ListBucket", "iam:*"],
+  "readOnlyValidation": {
+    "accessAnalyzer": {"rolePolicyFindings":0,"operatorPolicyFindings":0},
+    "operatorSimulation": {"exactRole":"allowed","otherRole":"implicitDeny"},
+    "roleSimulation": {
+      "exactPayloadApprovedActions":"allowed",
+      "exactPayloadDeleteObject":"implicitDeny",
+      "exactPayloadIamGetRole":"implicitDeny",
+      "otherObjectPutAndReadback":"implicitDeny"
+    },
+    "localArtifactPreflight":"passed-no-totp-no-aws"
+  },
+  "appliedAttestation": {
+    "roleExists": true,
+    "dedicatedOperatorPolicyExists": true,
+    "dedicatedOperatorPolicyAttachedOnlyTo": "WitnessTreeArchiveOperator",
+    "roleInlinePolicies": ["WitnessTreeQcArchiveExactObjects"],
+    "roleAttachedPolicies": [],
+    "trustPolicyCanonicalSha256": "d500f965cea406ab82e55f3985eee035ce07649977d474a399bd6b9fd42960da",
+    "rolePolicyCanonicalSha256": "a06181bb6034076dd0bb79731a1141e597293a7ad3e084cda5bd92995e7f7173",
+    "operatorPolicyCanonicalSha256": "81947e11bcf89ae0679afd220ff6ab78e5bf49ddb8245fba0cb0587001791375",
+    "operatorInlinePoliciesNormalizedEqualPrestate": true,
+    "operatorAttachedPoliciesNormalizedEqualPrestatePlusDedicatedPolicy": true,
+    "initialHarnessExit": {
+      "occurredAfterAuthorizedAttachment": true,
+      "cause": "raw-pretty-versus-compact-json-comparison",
+      "policyMismatch": false,
+      "normalizedReadbackPassed": true
+    },
+    "containsPrivateIdentifiers": false
+  },
+  "liveAudit": {"roleExists":true,"dedicatedOperatorPolicyExists":true,"iamMutationPerformed":true,"s3MutationPerformed":false},
+  "claims": {"iamReady":true,"archiveComplete":false,"productionAdmission":false,"productionEligible":false}
+}

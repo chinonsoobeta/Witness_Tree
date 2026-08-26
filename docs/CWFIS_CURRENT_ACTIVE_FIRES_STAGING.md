@@ -1,0 +1,7 @@
+# CWFIS current active-wildfire staging
+
+The plan row `cwfis-current` is represented by one checksum-bound local snapshot of the Canadian Wildland Fire Information Framework (CWFIF) `public:cwfif_national_activefires` WFS layer. The official March 2026 CWFIS Data Placemat identifies that layer as the replacement for the retired legacy `public:activefires_current` layer. The official Active Wildfires in Canada metadata identifies the Open Government Licence – Canada.
+
+The raw ZIP is outside Git at `Witness_Tree-data/raw/cwfis-current-active-fires/2026-08-14/cwfif_national_activefires_2026-08-14T202242Z.zip`. It is a 45,917-byte SHAPE-ZIP with SHA-256 `fc3d4a0730f30d6f12782b16e9459c173dabd6e50d0715b27cddecd954097f86`; `unzip -t` passed. The exact query fixes `record_start` and `record_end` at `2026-08-14T20:22:42Z`, for which the WFS `resultType=hits` response reported 586 records. Read-only GDAL profiling found 586 EPSG:3978 point features, 11 agencies, and no missing, empty, or invalid geometries.
+
+This is not an immutable archive, real-time feed, complete incident record, perimeter product, transformed data set, ingested data set, or production release. A preliminary unfiltered response was capped at 10,000 of 187,620 matches and is explicitly excluded from staging. Any refresh must use a new fixed-time query and repeat the count, integrity, profile, attribution, and retention checks.

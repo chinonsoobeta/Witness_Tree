@@ -1,0 +1,57 @@
+{
+  "status": "blocked",
+  "verificationDate": "2026-08-14",
+  "nonClaimNotice": "This is a rights and access verification record. It is not an acquisition, staging, transformation, ingestion, or production authorization.",
+  "source": {
+    "id": "bc-vri-2025-composite-polygons",
+    "publisher": "Province of British Columbia, Ministry of Forests",
+    "catalogueUrl": "https://catalogue.data.gov.bc.ca/dataset/6ba30649-14cd-44ad-a11f-794feed39f40",
+    "edition": "2025",
+    "advertisedArtifactUrl": "https://pub.data.gov.bc.ca/datasets/02dba161-fdb7-48ae-a4bb-bd6ef017c36d/current/VEG_COMP_POLY_AND_LAYER_2025.gdb.zip",
+    "advertisedFormat": "FGDB ZIP",
+    "advertisedCoverage": "Entire province in BC Environment Albers (catalogue describes 5.3 GB)",
+    "observedAccess": {
+      "method": "HTTP HEAD",
+      "observedAt": "2026-08-14T19:38:42Z",
+      "result": "HTTP 404 Not Found"
+    }
+  },
+  "rights": {
+    "catalogueLicence": "Access Only",
+    "officialTermsUrl": "https://www2.gov.bc.ca/gov/content/home/copyright",
+    "officialRestriction": "Access Only catalogue material may not be reproduced or redistributed without written permission."
+  },
+  "scope": {
+    "allowedOnlyAfterAdmission": "Pre-event forest-condition inventory context.",
+    "notEquivalentTo": [
+      "Forest Tenure Cutblock Polygons (FTA 4.0)",
+      "Forest Tenure Harvesting Authority Polygons",
+      "Forest Operations Map planned cutblocks",
+      "completed harvest geometry"
+    ]
+  },
+  "admission": {
+    "downloaded": false,
+    "staged": false,
+    "immutable": false,
+    "transformed": false,
+    "ingested": false,
+    "productionEligible": false
+  },
+  "blockers": [
+    "No written reproduction or redistribution permission for Access Only content.",
+    "The official catalogue's advertised 2025 province-wide FGDB URL returned HTTP 404.",
+    "No verified publisher edition/effective date, cadence, checksum, or complete immutable artifact."
+  ],
+  "requestDraft": {
+    "status": "unsent",
+    "permissionFormUrl": "https://forms.gov.bc.ca/copyright-permission-request/",
+    "requestedPermissions": [
+      "Retrieve a complete versioned 2025 VRI composite-polygon export",
+      "Maintain an internal immutable archival copy",
+      "Transform it for internal analysis",
+      "Redistribute derived and, if intended, public outputs",
+      "Use the publisher's required attribution and receive correction or refresh guidance"
+    ]
+  }
+}

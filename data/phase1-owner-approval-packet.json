@@ -1,0 +1,541 @@
+{
+  "schemaVersion": "witness-tree/phase1-owner-approval-packet/1",
+  "status": "template-not-approved",
+  "asOf": "2026-08-22",
+  "derivedFromHead": "9bf5baa2ecc51ce4c039531e798bfb6418e3baaf",
+  "sourceQueue": "data/phase1-owner-decision-queue.json",
+  "supersededArchiveApprovalState": "The template fields in this packet are historical inputs. Federal, Quebec current/original, Quebec fourth, and current-wildfire archive approvals are separately recorded in data/phase1-phase3-owner-approvals-2026-08-21.json. Quebec current/original immutable evidence is now integrated; the other archive executions/readbacks remain pending.",
+  "recordedDecisions": {
+    "source": "data/phase1-remote-source-admission-decisions.json",
+    "rows": [
+      "ntems-forest-harvest",
+      "ntems-canopy-height",
+      "ab-primary-land-vegetation",
+      "qc-current-ecoforest",
+      "qc-original-current-inventory"
+    ],
+    "scope": "The two national and two Quebec rows are accepted source-ledger-only; PLVI is admitted only as the exact raw/derived scope for scope-bound validation and ingestion preparation."
+  },
+  "notice": "Copy/paste owner-input blocks plus reconciled non-admitting owner decisions. This packet does not create or infer permission, IAM state, an AWS or remote-storage action, transformation admission, ingestion, release, production admission, or production eligibility. Remaining owner fields stay pending until separately recorded.",
+  "phaseOrder": [
+    "reversible-source-scope",
+    "irreversible-archive-retention",
+    "release-production-admission"
+  ],
+  "baseline": {
+    "productionRows": 31,
+    "rawEvidenceNumerator": 14.75,
+    "rawEvidenceDenominator": 31,
+    "formalEvidenceTrackingPercentage": 39.2741935,
+    "evidenceStateCounts": {
+      "remote-verified-archived-profiled": 9,
+      "local-verified-profiled": 7,
+      "partial-component": 2,
+      "access-blocked": 13
+    },
+    "immutableArchiveCompleteRows": 9,
+    "productionAdmissionCompleteRows": 0,
+    "productionEligibleRows": 0,
+    "queueRowCount": 16
+  },
+  "rows": [
+    "ntems-annual-land-cover",
+    "ntems-forest-harvest",
+    "ntems-canopy-cover",
+    "ntems-canopy-height",
+    "cwfis-current",
+    "bc-wildfire",
+    "ab-wildfire",
+    "on-fire-disturbance",
+    "qc-current-ecoforest",
+    "qc-original-current-inventory",
+    "qc-fourth-inventory",
+    "ab-avi-crown",
+    "ab-avi-post-harvest",
+    "ab-primary-land-vegetation",
+    "fed-2023-ridings",
+    "elections-canada-45th-files"
+  ],
+  "decisionOrder": [
+    {
+      "step": 1,
+      "id": "federal-electoral-archive",
+      "rows": ["fed-2023-ridings", "elections-canada-45th-files"],
+      "dependsOn": [],
+      "binding": "federal-electoral-archive",
+      "reversibleSourceScope": {
+        "status": "pending-owner-input",
+        "prompt": "Accept, reject, or defer the exact Elections Canada source-ledger artifact for these two row IDs. This is not a transformation, ingestion, release, or production decision."
+      },
+      "irreversibleArchiveRetention": {
+        "status": "blocked-until-separate-owner-approval",
+        "preflightCommand": "zsh scripts/run-phase1-approved-promotion.sh --preflight",
+        "blockedRunCommand": "zsh scripts/run-phase1-approved-promotion.sh --run-federal"
+      },
+      "releaseProductionAdmission": {
+        "status": "deferred-until-exact-immutable-and-recovery-readbacks",
+        "requiredSeparateDecisions": ["source", "transformation", "ingestion", "release", "productionAdmission"]
+      },
+      "copyPasteBlock": "PHASE1 OWNER INPUT — FEDERAL ELECTORAL ARCHIVE\nstatus=template-not-approved\nrows=fed-2023-ridings,elections-canada-45th-files\nsource_scope_decision=<OWNER: accept|reject|defer>\narchive_approval=<OWNER: pending; exact artifact, bucket, region, retention, and read-back procedure must be reviewed>\nrelease_and_production_admission=<OWNER: not requested at this stage>\nDO_NOT_RUN=zsh scripts/run-phase1-approved-promotion.sh --run-federal"
+    },
+    {
+      "step": 2,
+      "id": "quebec-current-original-archive",
+      "rows": ["qc-current-ecoforest", "qc-original-current-inventory"],
+      "dependsOn": [],
+      "binding": "quebec-current-original-archive",
+      "reversibleSourceScope": {
+        "status": "pending-owner-input",
+        "prompt": "Accept, reject, or defer the two named Québec raw artifacts as separate source-ledger rows; no derived transformation or release is implied."
+      },
+      "irreversibleArchiveRetention": {
+        "status": "blocked-until-four-exact-keys-and-approvals",
+        "preflightCommand": "zsh scripts/run-qc-approved-multipart-promotion.sh --preflight",
+        "blockedRunCommand": "zsh scripts/run-qc-approved-multipart-promotion.sh --run"
+      },
+      "releaseProductionAdmission": {
+        "status": "deferred-until-immutable-and-recovery-readbacks",
+        "requiredSeparateDecisions": ["two source decisions", "transformation", "ingestion", "release", "productionAdmission"]
+      },
+      "copyPasteBlock": "PHASE1 OWNER INPUT — QUÉBEC CURRENT/ORIGINAL ARCHIVE\nstatus=template-not-approved\nrows=qc-current-ecoforest,qc-original-current-inventory\nsource_scope_decision=<OWNER: accept|reject|defer each row>\narchive_approval=<OWNER: exact two artifacts, four keys, MFA-gated multipart path, bucket, region, and COMPLIANCE date>\nretention_until=2033-08-12T00:00:00Z\nrelease_and_production_admission=<OWNER: not requested at this stage>\nDO_NOT_RUN=zsh scripts/run-qc-approved-multipart-promotion.sh --run"
+    },
+    {
+      "step": 3,
+      "id": "quebec-fourth-inventory-archive",
+      "rows": ["qc-fourth-inventory"],
+      "dependsOn": [],
+      "binding": "quebec-fourth-inventory-archive",
+      "reversibleSourceScope": {
+        "status": "pending-owner-input",
+        "prompt": "Accept, reject, or defer the exact 56-sheet publisher-defined product and its separately recorded excluded map-only component; semantic transformation and join selection remain separate."
+      },
+      "irreversibleArchiveRetention": {
+        "status": "blocked-until-four-separate-approvals",
+        "dryRunCommand": "node scripts/qc-fourth-inventory-immutable-promotion.mjs",
+        "blockedExecuteTemplate": "node scripts/qc-fourth-inventory-immutable-promotion.mjs --execute --approve-exact-artifact-set --approve-iam-policy --approve-compliance-retention --approve-mfa-session --retention-until 2033-08-12T00:00:00Z --session-ready --data-root <controlled-absolute-path> --state-dir <controlled-absolute-path> --sidecar-dir <controlled-absolute-path>"
+      },
+      "releaseProductionAdmission": {
+        "status": "deferred-until-immutable-and-recovery-readbacks",
+        "requiredSeparateDecisions": ["source", "semantic transformation", "join selection", "ingestion", "release", "productionAdmission"]
+      },
+      "copyPasteBlock": "PHASE1 OWNER INPUT — QUÉBEC FOURTH INVENTORY\nstatus=template-not-approved\nrows=qc-fourth-inventory\nsource_scope_decision=<OWNER: accept|reject|defer>\narchive_approvals=<OWNER: exact-artifact-set|IAM|MFA-session|irreversible-COMPLIANCE-retention>\narchive_set=count 56; digest 394f05f984b164b7524e77b00fc73246a791d6c4112f7cc080c43fb3d8a2c0e0\nretention_until=2033-08-12T00:00:00Z\ntransformation_and_join_scope=<OWNER: pending after archive>\nDO_NOT_RUN=the --execute template above"
+    },
+    {
+      "step": 4,
+      "id": "national-archived-source-ledger",
+      "rows": ["ntems-forest-harvest", "ntems-canopy-height"],
+      "dependsOn": [],
+      "binding": "national-archived-source-ledger",
+      "reversibleSourceScope": {
+        "status": "recorded-source-ledger-only",
+        "prompt": "The owner accepted the exact archived raw evidence for each named row as source-ledger-only; no transformation, ingestion, release, or production decision is implied."
+      },
+      "irreversibleArchiveRetention": {
+        "status": "evidence-existing-not-an-approval",
+        "readbackRefs": ["data/nrcan-harvest-remote-archive-evidence.json", "data/nrcan-canopy-height-remote-archive-evidence.json"],
+        "requiredAction": "Do not replace, re-upload, or infer any version or retention fact from this packet."
+      },
+      "releaseProductionAdmission": {
+        "status": "deferred-until-separate-transformation-ingestion-release-decisions",
+        "requiredSeparateDecisions": ["transformation", "ingestion", "release", "productionAdmission"]
+      },
+      "copyPasteBlock": "PHASE1 OWNER INPUT — ARCHIVED NATIONAL SOURCE LEDGER\nstatus=recorded-nonadmitting\nrows=ntems-forest-harvest,ntems-canopy-height\nsource_ledger_decision=OWNER: accepted existing named source-ledger evidence for each row only\narchive_readback=<existing evidence only; no new archive approval is inferred>\ntransformation_and_ingestion=<OWNER: separate decision required>\nrelease_and_production_admission=<OWNER: separate decision required>"
+    },
+    {
+      "step": 5,
+      "id": "alberta-plvi-scope",
+      "rows": ["ab-primary-land-vegetation"],
+      "dependsOn": [],
+      "binding": "alberta-plvi-scope",
+      "reversibleSourceScope": {
+        "status": "recorded-approved-raw-and-derived-scope-only",
+        "prompt": "The owner admitted only the unchanged raw ZIP and exact 179087-feature closed-join derived artifact with the named repair policy; scope-bound validation and ingestion preparation are allowed, while transformation admission and ingestion remain separate."
+      },
+      "irreversibleArchiveRetention": {
+        "status": "evidence-existing-not-an-approval",
+        "readbackRefs": ["data/alberta-plvi-immutable-promotion-evidence.json"],
+        "requiredAction": "No new archive, retention, or permission is authorized by this packet."
+      },
+      "releaseProductionAdmission": {
+        "status": "deferred-until-owner-scope-and-downstream-proof",
+        "requiredSeparateDecisions": ["transformation under owner scope", "ingestion", "release", "productionAdmission"]
+      },
+      "copyPasteBlock": "PHASE1 OWNER INPUT — ALBERTA PLVI SCOPE\nstatus=recorded-nonadmitting\nrow=ab-primary-land-vegetation\nraw_scope=OWNER: admit unchanged raw ZIP\nderived_scope=OWNER: admit exact 179087-feature closed-join artifact\nrepair_policy=alberta-plvi-geometry-repair-v1; 12 bounded repairs; preserve duplicate POLYGON_ID 41405; no loss or deduplication\nscope_bound_preparation=OWNER: allowed for validation and ingestion preparation only\ntransformation_ingestion_release_production=<OWNER: separate decisions required>"
+    },
+    {
+      "step": 6,
+      "id": "current-wildfire-archive-gate",
+      "rows": ["cwfis-current", "bc-wildfire", "ab-wildfire", "on-fire-disturbance"],
+      "dependsOn": [],
+      "binding": "current-wildfire-archive-gate",
+      "reversibleSourceScope": {
+        "status": "existing-conditional-record-not-new-approval",
+        "evidenceRef": "data/current-wildfire-owner-admission.json",
+        "prompt": "Review the existing conservative snapshot, authority, geometry, transformation, and ingestion boundaries; this packet does not create a new approval."
+      },
+      "irreversibleArchiveRetention": {
+        "status": "zero-machine-verifiable-six-attested-durable-proof-pending",
+        "preflightCommand": "zsh scripts/run-wildfire-derived-readback.sh --preflight <mode-600-owner-approval-file>",
+        "gate": {"requiredObjects": 6, "verifiedObjects": 0, "attestedObjects": 6, "primaryReadbacksVerified": false, "recoveryReplicaVerified": false, "mutationProvenance": false},
+        "requiredRetention": "COMPLIANCE payload versions only through 2033-08-12T00:00:00Z"
+      },
+      "releaseProductionAdmission": {
+        "status": "deferred-until-six-object-gate",
+        "requiredSeparateDecisions": ["transformation", "ingestion", "release", "productionAdmission"]
+      },
+      "copyPasteBlock": "PHASE1 OWNER INPUT — CURRENT WILDFIRE ARCHIVE GATE\nstatus=template-not-approved\nrows=cwfis-current,bc-wildfire,ab-wildfire,on-fire-disturbance\nsource_scope=<existing conditional record; no new approval inferred>\nprimary_readbacks=0/6 machine-verifiable; six placeholder-only attestations require concrete version and checksum bindings\nrelease_and_production_admission=<remain false until every archive and downstream gate passes>"
+    },
+    {
+      "step": 7,
+      "id": "archived-remote-downstream",
+      "rows": ["ntems-annual-land-cover", "ntems-canopy-cover", "ab-avi-crown", "ab-avi-post-harvest"],
+      "dependsOn": ["national-archived-source-ledger"],
+      "binding": "archived-remote-downstream",
+      "reversibleSourceScope": {
+        "status": "source-ledger-only-or-pending-dependent-decision",
+        "prompt": "Confirm the named row scope only; existing source-ledger evidence does not authorize a derived transformation."
+      },
+      "irreversibleArchiveRetention": {
+        "status": "evidence-existing-for-raw-sources-not-a-new-archive-approval",
+        "requiredAction": "Preserve exact existing raw archive evidence and do not create a substitute artifact."
+      },
+      "releaseProductionAdmission": {
+        "status": "blocked-no-approved-named-transform-or-downstream-scope",
+        "requiredSeparateDecisions": ["named transformation", "ingestion", "release", "productionAdmission"]
+      },
+      "copyPasteBlock": "PHASE1 OWNER INPUT — ARCHIVED REMOTE DOWNSTREAM\nstatus=template-not-approved\nrows=ntems-annual-land-cover,ntems-canopy-cover,ab-avi-crown,ab-avi-post-harvest\nsource_scope=<OWNER: confirm named row scope only>\ntransformation_scope=<OWNER: exact named policy/specification required>\ningestion=<OWNER: separate validation and decision required>\nrelease_and_production_admission=<OWNER: separate decisions required; remain false>\navi_exclusion=AVI_PostInventoryHarvestIndex FID 1 only; zero AVI_Crown observation and denominator impact; no derived geometry written"
+    },
+    {
+      "step": 8,
+      "id": "wildfire-downstream",
+      "rows": ["cwfis-current", "bc-wildfire", "ab-wildfire", "on-fire-disturbance"],
+      "dependsOn": ["current-wildfire-archive-gate"],
+      "binding": "current-wildfire-archive-gate",
+      "reversibleSourceScope": {
+        "status": "inherits-existing-conditional-scope-only",
+        "requiredAction": "Do not broaden authority, freshness, completeness, geometry, or provincial-source precedence."
+      },
+      "irreversibleArchiveRetention": {
+        "status": "must-pass-integrated-six-object-gate-first",
+        "requiredAction": "No transform or ingestion may substitute for missing exact archive readbacks."
+      },
+      "releaseProductionAdmission": {
+        "status": "deferred-until-gate-and-downstream-validation",
+        "requiredSeparateDecisions": ["approved transformation validation", "ingestion", "release", "productionAdmission"]
+      },
+      "copyPasteBlock": "PHASE1 OWNER INPUT — CURRENT WILDFIRE DOWNSTREAM\nstatus=template-not-approved\nrows=cwfis-current,bc-wildfire,ab-wildfire,on-fire-disturbance\ndepends_on=current-wildfire-archive-gate\narchive_gate=<0/6 machine-verifiable; durable signed or digest-bound verification required>\ntransformation_ingestion=<separate machine evidence required after archive proof>\nrelease_and_production_admission=<separate decisions required; remain false>\nprohibited=real-time claim, complete-perimeter claim, source substitution, or geometry quarantine removal"
+    },
+    {
+      "step": 9,
+      "id": "local-row-downstream",
+      "rows": ["fed-2023-ridings", "elections-canada-45th-files", "qc-current-ecoforest", "qc-original-current-inventory", "qc-fourth-inventory"],
+      "dependsOn": ["federal-electoral-archive", "quebec-current-original-archive", "quebec-fourth-inventory-archive"],
+      "binding": "local-row-downstream",
+      "reversibleSourceScope": {
+        "status": "deferred-until-exact-immutable-and-recovery-readbacks",
+        "requiredAction": "Record source decisions separately for each row after archive evidence is integrated."
+      },
+      "irreversibleArchiveRetention": {
+        "status": "must-have-exact-version-byte-checksum-retention-and-recovery-readbacks",
+        "requiredAction": "Local preparation and no-write preflight are not archive proof."
+      },
+      "releaseProductionAdmission": {
+        "status": "deferred-until-row-specific-downstream-proof",
+        "requiredSeparateDecisions": ["source", "transformation", "ingestion", "release", "productionAdmission"]
+      },
+      "copyPasteBlock": "PHASE1 OWNER INPUT — LOCAL ROW DOWNSTREAM\nstatus=template-not-approved\nrows=fed-2023-ridings,elections-canada-45th-files,qc-current-ecoforest,qc-original-current-inventory,qc-fourth-inventory\nsource_decisions=<OWNER: record each row after exact readbacks>\narchive_readbacks=<version|byte length|provider checksum|COMPLIANCE retention|recovery>\ntransformation_ingestion_release_production=<OWNER: record separately for each row; no local preparation implies admission>"
+    },
+    {
+      "step": 10,
+      "id": "queue-production-admission",
+      "rows": ["ntems-annual-land-cover", "ntems-forest-harvest", "ntems-canopy-cover", "ntems-canopy-height", "cwfis-current", "bc-wildfire", "ab-wildfire", "on-fire-disturbance", "qc-current-ecoforest", "qc-original-current-inventory", "qc-fourth-inventory", "ab-avi-crown", "ab-avi-post-harvest", "ab-primary-land-vegetation", "fed-2023-ridings", "elections-canada-45th-files"],
+      "dependsOn": ["archived-remote-downstream", "wildfire-downstream", "local-row-downstream", "alberta-plvi-scope"],
+      "binding": "queue-production-admission",
+      "reversibleSourceScope": {
+        "status": "all-row-specific-decisions-must-be-recorded",
+        "requiredAction": "Do not use this final block to backfill a source, scope, or permission decision."
+      },
+      "irreversibleArchiveRetention": {
+        "status": "all-required-archive-and-recovery-proof-must-already-pass",
+        "requiredAction": "No archive plan, reply, preflight, or existing conditional record is sufficient."
+      },
+      "releaseProductionAdmission": {
+        "status": "not-approved",
+        "productionEligible": false,
+        "requiredAction": "Record release and production admission separately; recompute eligibility fail-closed only after every required proof is true."
+      },
+      "copyPasteBlock": "PHASE1 OWNER INPUT — FINAL QUEUE ADMISSION\nstatus=template-not-approved\nrows=all 16 queue rows\nsource_scope_transformation_ingestion_release_production=<OWNER: each named decision must be recorded separately>\nproductionAdmission=false\nproductionEligible=false\nDO_NOT_TREAT_THIS_BLOCK_AS_APPROVAL"
+    }
+  ],
+  "exactBindings": {
+    "federal-electoral-archive": {
+      "preparation": "data/phase1-local-profiled-promotion-preparation.json",
+      "rows": ["fed-2023-ridings", "elections-canada-45th-files"],
+      "stagedAcquisitionId": "elections-canada-federal-electoral-districts-45th-general-election-2025-shp",
+      "sourceVersion": "FederalElectoralDistricts_2025_SHP.zip",
+      "localPath": "../Witness_Tree-data/raw/elections-canada-federal-electoral-districts/2026-08-14/FederalElectoralDistricts_2025_SHP.zip",
+      "byteLength": 10301648,
+      "sha256": "4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93",
+      "profile": "data/elections-canada-fed-2025-profile.json",
+      "payloadKey": "raw/elections-canada-federal-electoral-districts-45th-general-election-2025-shp/federal-electoral-districts-2025-shp/2026-08-14T17-42-35Z/4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93/payload/federalelectoraldistricts_2025_shp.zip",
+      "manifestKey": "raw/elections-canada-federal-electoral-districts-45th-general-election-2025-shp/federal-electoral-districts-2025-shp/2026-08-14T17-42-35Z/4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93/manifest.json",
+      "bucket": "witness-tree-raw-archive-ca-central-1",
+      "region": "ca-central-1",
+      "retention": {"mode": "COMPLIANCE", "retainUntil": "2033-08-12T00:00:00Z"},
+      "profileName": "WitnessTreeArchiveOperator",
+      "proposedRole": "WitnessTreeArchivePromotionUploader",
+      "noWriteCommands": ["zsh scripts/run-phase1-approved-promotion.sh --preflight", "zsh scripts/run-phase1-approved-promotion.sh --run-federal"]
+    },
+    "quebec-current-original-archive": {
+      "preparation": "data/qc-immutable-promotion-preparation.json",
+      "rows": ["qc-current-ecoforest", "qc-original-current-inventory"],
+      "bucket": "witness-tree-raw-archive-ca-central-1",
+      "region": "ca-central-1",
+      "countryCode": "CA",
+      "operatorProfile": "WitnessTreeArchiveOperator",
+      "proposedRole": "WitnessTreeQcArchivePromotionUploader",
+      "mfaRequired": true,
+      "multipartPartSizeBytes": 134217728,
+      "retention": {"mode": "COMPLIANCE", "retainUntil": "2033-08-12T00:00:00Z"},
+      "artifacts": [
+        {
+          "id": "qc-ecoforest-map-2026-08-14",
+          "productionSourceId": "qc-current-ecoforest",
+          "archiveSourceId": "qc-ecoforest-map",
+          "localPath": "raw/qc-current-ecoforest/2026-08-14/CARTE_ECO_MAJ_PROV_GPKG.zip",
+          "originalFilename": "CARTE_ECO_MAJ_PROV_GPKG.zip",
+          "sourceVersion": "undeclared",
+          "byteLength": 12399475076,
+          "sha256": "c67c56b0c101e95bef4fbca53a06e2f1578fe38293961017f70d815209740cf1",
+          "payloadKey": "raw/qc-ecoforest-map/undeclared/2026-08-14T09-00-15Z/c67c56b0c101e95bef4fbca53a06e2f1578fe38293961017f70d815209740cf1/payload/carte_eco_maj_prov_gpkg.zip",
+          "manifestKey": "raw/qc-ecoforest-map/undeclared/2026-08-14T09-00-15Z/c67c56b0c101e95bef4fbca53a06e2f1578fe38293961017f70d815209740cf1/manifest.json"
+        },
+        {
+          "id": "qc-original-current-inventory-2026-08-14",
+          "productionSourceId": "qc-original-current-inventory",
+          "archiveSourceId": "qc-original-inventory",
+          "localPath": "raw/qc-original-current-inventory/2026-08-14/CARTE_ECO_ORI_PROV_GPKG.zip",
+          "originalFilename": "CARTE_ECO_ORI_PROV_GPKG.zip",
+          "sourceVersion": "undeclared",
+          "byteLength": 11244667626,
+          "sha256": "c10d691516569de76642dc1fc64e662f2569b5b58ab5d945b58b8b7834ba9c61",
+          "payloadKey": "raw/qc-original-inventory/undeclared/2026-08-14T15-15-58Z/c10d691516569de76642dc1fc64e662f2569b5b58ab5d945b58b8b7834ba9c61/payload/carte_eco_ori_prov_gpkg.zip",
+          "manifestKey": "raw/qc-original-inventory/undeclared/2026-08-14T15-15-58Z/c10d691516569de76642dc1fc64e662f2569b5b58ab5d945b58b8b7834ba9c61/manifest.json"
+        }
+      ],
+      "allow": ["s3:PutObject", "s3:GetObject", "s3:AbortMultipartUpload", "s3:ListMultipartUploadParts", "s3:PutObjectRetention", "s3:GetObjectRetention"],
+      "denyByOmission": ["s3:DeleteObject", "s3:DeleteObjectVersion", "s3:BypassGovernanceRetention", "s3:PutObjectLegalHold", "s3:ReplicateObject", "s3:PutBucket*", "s3:DeleteBucket*", "iam:*"],
+      "retentionKeys": [
+        "raw/qc-ecoforest-map/undeclared/2026-08-14T09-00-15Z/c67c56b0c101e95bef4fbca53a06e2f1578fe38293961017f70d815209740cf1/payload/carte_eco_maj_prov_gpkg.zip",
+        "raw/qc-original-inventory/undeclared/2026-08-14T15-15-58Z/c10d691516569de76642dc1fc64e662f2569b5b58ab5d945b58b8b7834ba9c61/payload/carte_eco_ori_prov_gpkg.zip"
+      ],
+      "noWriteCommands": ["zsh scripts/run-qc-approved-multipart-promotion.sh --preflight", "zsh scripts/run-qc-approved-multipart-promotion.sh --run"]
+    },
+    "quebec-fourth-inventory-archive": {
+      "preparation": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+      "row": "qc-fourth-inventory",
+      "bucket": "witness-tree-raw-archive-ca-central-1",
+      "region": "ca-central-1",
+      "retention": {"mode": "COMPLIANCE", "retainUntil": "2033-08-12T00:00:00Z"},
+      "archiveSet": {
+        "count": 56,
+        "byteLength": 16177306782,
+        "digest": "394f05f984b164b7524e77b00fc73246a791d6c4112f7cc080c43fb3d8a2c0e0",
+        "payloadManifestRef": "data/qc-fourth-inventory-immutable-promotion-preparation.json#/archiveSet/payloads"
+      },
+      "canonicalManifest": {
+        "originalFilename": "collection-manifest.json",
+        "byteLength": 76127,
+        "sha256": "b3d85d1da40d68d79742c77ec418713f2ef968f74845c43e011df274d559616c",
+        "objectKey": "raw/qc-fourth-inventory/fourth-inventory-2001-2018/2026-08-14/collection-394f05f984b164b7524e77b00fc73246a791d6c4112f7cc080c43fb3d8a2c0e0/manifest/b3d85d1da40d68d79742c77ec418713f2ef968f74845c43e011df274d559616c/collection-manifest.json"
+      },
+      "excludedMapComponent": {
+        "originalFilename": "CARTE_ECO_ORI_4_PROV_gpkg.zip",
+        "byteLength": 8096656664,
+        "sha256": "62f61998be33d1e3d2f23f6c77e90ca946a40bda0d5d86b00c976c339877d25b",
+        "decision": "excluded-map-only-redundant-component"
+      },
+      "requiredApprovals": ["exact-artifact-set", "IAM", "MFA-session", "irreversible-COMPLIANCE-retention"],
+      "noWriteCommands": ["node scripts/qc-fourth-inventory-immutable-promotion.mjs"]
+    },
+    "national-archived-source-ledger": {
+      "rows": ["ntems-forest-harvest", "ntems-canopy-height"],
+      "harvest": {
+        "profile": "data/nrcan-harvest-profile.json",
+        "remoteEvidence": "data/nrcan-harvest-remote-archive-evidence.json",
+        "localPath": "../Witness_Tree-data/raw/nrcan-ca-forest-harvest-1985-2022/2026-08-14/CA_Forest_Harvest_1985-2022.zip",
+        "byteLength": 247945479,
+        "sha256": "c6f41dff46d91812874672edb53233dac4126952132ad6d1131ad47b11ad7aad",
+        "payloadKey": "raw/nrcan-ca-forest-harvest-1985-2022/undeclared/2026-08-14T09-27-41Z/c6f41dff46d91812874672edb53233dac4126952132ad6d1131ad47b11ad7aad/payload/ca_forest_harvest_1985-2022.zip",
+        "manifestKey": "raw/nrcan-ca-forest-harvest-1985-2022/undeclared/2026-08-14T09-27-41Z/c6f41dff46d91812874672edb53233dac4126952132ad6d1131ad47b11ad7aad/manifest.json",
+        "retention": {"mode": "COMPLIANCE", "retainUntil": "2033-08-12T00:00:00Z"}
+      },
+      "canopyHeight": {
+        "profile": "data/nrcan-canopy-height-profile.json",
+        "remoteEvidence": "data/nrcan-canopy-height-remote-archive-evidence.json",
+        "localPath": "../Witness_Tree-data/raw/nrcan-forest-canopy-height-2022/2026-08-14/CA_canopy_height_2022.zip",
+        "byteLength": 10347564066,
+        "sha256": "86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124",
+        "payloadKey": "raw/nrcan-forest-canopy-height-2022/undeclared/2026-08-14T18-57-22Z/86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124/payload/ca_canopy_height_2022.zip",
+        "manifestKey": "raw/nrcan-forest-canopy-height-2022/undeclared/2026-08-14T18-57-22Z/86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124/manifest.json",
+        "retention": {"mode": "COMPLIANCE", "retainUntil": "2033-08-12T00:00:00Z"}
+      },
+      "transformationPolicy": "No named transformation, ingestion, release, or production admission is approved by the source-ledger packet."
+    },
+    "archived-remote-downstream": {
+      "rows": ["ntems-annual-land-cover", "ntems-canopy-cover", "ab-avi-crown", "ab-avi-post-harvest"],
+      "annualLandCover": {
+        "gate": "data/phase1-nrcan-cover-processing-gate.json#/rows/0",
+        "remoteEvidence": "data/vlce2-remote-promotion-evidence.json",
+        "payloadCount": 39,
+        "sidecarCount": 39,
+        "retentionMode": "COMPLIANCE",
+        "retentionUntil": "2033-08-12T00:00:00+00:00",
+        "transformationStatus": "blocked-no-phase1-production-named-specification-and-output",
+        "requiredBeforeExecution": [
+          "Record and approve a Phase 1 production-admission versioned forest-mask method and exact Canada National Forest Inventory crosswalk for the 13 VLCE2 classes; the separate Phase 2 nonproduction method is insufficient.",
+          "Execute the deterministic vector-to-raster-grid boundary operation; never reproject or resample the categorical raster.",
+          "Validate full-resolution class values, preserve Unknown sidecar-derived statistics for 1991 and 2005, and record an exact output manifest and checksum."
+        ]
+      },
+      "canopyCover": {
+        "profile": "data/nrcan-canopy-cover-profile.json",
+        "archiveEvidence": "data/immutable-promotions.json#/entries[sourceId=nrcan-forest-canopy-cover-2022]",
+        "localPath": "../Witness_Tree-data/raw/nrcan-forest-canopy-cover-2022/2026-08-11/CA_canopy_cover_2022.zip",
+        "byteLength": 9954395939,
+        "sha256": "80c37461f4deccfdfffc26124e9064d53a94dde660b9f96194445870393af130",
+        "payloadKey": "raw/nrcan-forest-canopy-cover-2022/undeclared/2026-08-12T07-24-32Z/80c37461f4deccfdfffc26124e9064d53a94dde660b9f96194445870393af130/payload/ca_canopy_cover_2022.zip",
+        "manifestKey": "raw/nrcan-forest-canopy-cover-2022/undeclared/2026-08-12T07-24-32Z/80c37461f4deccfdfffc26124e9064d53a94dde660b9f96194445870393af130/manifest.json",
+        "retention": {"mode": "COMPLIANCE", "retainUntil": "2033-08-12T00:00:00Z"},
+        "transformationStatus": "blocked-no-phase1-production-named-specification-and-output",
+        "requiredBeforeExecution": [
+          "Record and approve the exact Phase 1 production-admission canopy-cover operation, including 2022 mask semantics and whether any boundary clipping is allowed; the separate Phase 2 nonproduction method is insufficient.",
+          "Run the named operation against the checksum-bound raw archive without changing values, reprojection, or resampling semantics unless the approved specification requires it.",
+          "Validate full-resolution range, extent, nodata handling, and output checksum before any ingestion decision."
+        ]
+      },
+      "aviSharedArtifact": {
+        "rows": ["ab-avi-crown", "ab-avi-post-harvest"],
+        "profile": "data/phase1-alberta-transform-ingestion-audit.json",
+        "localPath": "../Witness_Tree-data/raw/alberta-avi-crown/2026-08-11/AlbertaVegetationInventoryCrown.zip",
+        "byteLength": 557041258,
+        "sha256": "e93572129f25c83911b73eadfacff12624ff6b08f2db4b311c1662196b665093",
+        "payloadKey": "raw/alberta-avi-crown/undeclared/2026-08-12T05-28-04Z/e93572129f25c83911b73eadfacff12624ff6b08f2db4b311c1662196b665093/payload/albertavegetationinventorycrown.zip",
+        "manifestKey": "raw/alberta-avi-crown/undeclared/2026-08-12T05-28-04Z/e93572129f25c83911b73eadfacff12624ff6b08f2db4b311c1662196b665093/manifest.json",
+        "retention": {"mode": "COMPLIANCE", "retainUntil": "2033-08-12T00:00:00Z"},
+        "transformationSpecification": "alberta-avi-geometry-repair-v1",
+        "repairFunction": "shapely.make_valid(method='structure', keep_collapsed=False)",
+        "areaRelativeTolerance": 0.000001,
+        "quarantine": {
+          "layer": "AVI_PostInventoryHarvestIndex",
+          "fid": 1,
+          "relativeAreaChange": 0.028800363153499882,
+          "excludedCrownObservationRecords": 0,
+          "crownDenominatorImpact": "none; excluded index footprint is not AVI_Crown or a denominator layer",
+          "record": "data/alberta-avi-crown-quarantine-decision.json",
+          "output": "../Witness_Tree-data/derived/alberta-avi-geometry-repair-v1/2026-08-12/quarantine.json",
+          "outputSha256": "e633f56ac029c19e785e0699464fc3c9763f7162939920f539823cd00d4dde7b"
+        },
+        "derivedDatasetWritten": false
+      }
+    },
+    "current-wildfire-archive-gate": {
+      "rows": ["cwfis-current", "bc-wildfire", "ab-wildfire", "on-fire-disturbance"],
+      "preparation": "data/current-wildfire-immutable-promotion-preparation.json",
+      "ownerAdmission": "data/current-wildfire-owner-admission.json",
+      "rawEvidence": "data/current-wildfire-raw-archive-evidence.json",
+      "bucket": "witness-tree-raw-archive-ca-central-1",
+      "recoveryBucket": "witness-tree-raw-recovery-ca-central-1",
+      "region": "ca-central-1",
+      "retention": {"mode": "COMPLIANCE", "retainUntil": "2033-08-12T00:00:00Z", "appliesTo": "payload versions only"},
+      "objectKeys": [
+        "raw/cwfis-current/undeclared/2026-08-14T20-24-34Z/fc3d4a0730f30d6f12782b16e9459c173dabd6e50d0715b27cddecd954097f86/payload/cwfif_national_activefires_2026-08-14t202242z.zip",
+        "raw/cwfis-current/undeclared/2026-08-14T20-24-34Z/fc3d4a0730f30d6f12782b16e9459c173dabd6e50d0715b27cddecd954097f86/manifest.json",
+        "raw/bc-wildfire/undeclared/2026-08-14T20-31-39Z/46ee3a97ff83128630a030b5cfcc7f3c389fc94e3ca95d463595ab6f4fb57e83/payload/bc-wildfire-fire-perimeters_2026-08-14.geojson",
+        "raw/bc-wildfire/undeclared/2026-08-14T20-31-39Z/46ee3a97ff83128630a030b5cfcc7f3c389fc94e3ca95d463595ab6f4fb57e83/manifest.json",
+        "raw/ab-wildfire/undeclared/2026-08-14T13-42-09Z/f0e86ea34a7624c365349b3a8fbb77967bb45ab73c507cf441efb8f6a8736ee0/payload/alberta-wildfire-locations_2026-08-14.geojson",
+        "raw/ab-wildfire/undeclared/2026-08-14T13-42-09Z/f0e86ea34a7624c365349b3a8fbb77967bb45ab73c507cf441efb8f6a8736ee0/manifest.json",
+        "raw/on-fire-disturbance/undeclared/2026-08-14T13-49-36Z/99881f19a32068b5d66b244955f7b088e873ffe76eafebf1740f03e16f042f11/payload/ontario-in-year-fire-perimeters_2026-08-14.geojson",
+        "raw/on-fire-disturbance/undeclared/2026-08-14T13-49-36Z/99881f19a32068b5d66b244955f7b088e873ffe76eafebf1740f03e16f042f11/manifest.json"
+      ],
+      "rawAndDerived": {
+        "cwfis-current": {"rawBytes": 45917, "rawSha256": "fc3d4a0730f30d6f12782b16e9459c173dabd6e50d0715b27cddecd954097f86", "transformation": "Source-preserving field normalization and EPSG:3978-to-EPSG:4326 reprojection only; retain the raw archive and source identifiers."},
+        "bc-wildfire": {"rawBytes": 4813292, "rawSha256": "46ee3a97ff83128630a030b5cfcc7f3c389fc94e3ca95d463595ab6f4fb57e83", "derivedBytes": 2162688, "derivedSha256": "8ee36cc6bdfb5ef267340537e4cf822df7cc886873c7fcf65a1b2b12006d34ce", "derivedFeatures": 216, "quarantined": ["V10755"], "transformation": "Use only the checksum-bound derived release: copy 215 raw-valid features unchanged, replace G70362 with its bounded valid polygonal repair, and permanently exclude and quarantine V10755 from geometry-dependent use."},
+        "ab-wildfire": {"rawBytes": 423853, "rawSha256": "f0e86ea34a7624c365349b3a8fbb77967bb45ab73c507cf441efb8f6a8736ee0", "transformation": "Source-preserving field normalization only; retain every raw point and publisher status without inferring a perimeter."},
+        "on-fire-disturbance": {"rawBytes": 19510504, "rawSha256": "99881f19a32068b5d66b244955f7b088e873ffe76eafebf1740f03e16f042f11", "derivedBytes": 7913472, "derivedSha256": "5e55c5d47559c350d9b31ffeda6bd39cfce64a3c57169098fff66341cd8ead31", "derivedFeatures": 188, "quarantined": [], "transformation": "Use only the checksum-bound closed-join derived release: copy 179 raw-valid features unchanged and use all nine recorded bounded valid polygonal repairs, with no exclusion or deduplication."}
+      },
+      "noWritePreflight": "zsh scripts/run-wildfire-derived-readback.sh --preflight <mode-600-owner-approval-file>"
+    },
+    "alberta-plvi-scope": {
+      "row": "ab-primary-land-vegetation",
+      "preparation": "data/alberta-plvi-immutable-promotion-preparation.json",
+      "evidence": "data/alberta-plvi-immutable-promotion-evidence.json",
+      "raw": {
+        "localPath": "../Witness_Tree-data/raw/alberta-primary-land-vegetation/2026-08-14/PrimaryLandAndVegetationInventoryPLVI.zip",
+        "byteLength": 675544895,
+        "sha256": "017a0a835c680ca1b6c1eb790322a28e1b4c0c64e36924da46d8bb99cb1571d3",
+        "payloadKey": "raw/ab-primary-land-vegetation/undeclared/2026-08-14T14-01-07Z/017a0a835c680ca1b6c1eb790322a28e1b4c0c64e36924da46d8bb99cb1571d3/payload/primarylandandvegetationinventoryplvi.zip",
+        "manifestKey": "raw/ab-primary-land-vegetation/undeclared/2026-08-14T14-01-07Z/017a0a835c680ca1b6c1eb790322a28e1b4c0c64e36924da46d8bb99cb1571d3/manifest.json"
+      },
+      "repairPatch": {
+        "localPath": "../Witness_Tree-data/derived/alberta-plvi-geometry-repair-v1/2026-08-14/alberta-plvi-invalid-polygon-repairs-computed.geojson",
+        "byteLength": 623651,
+        "sha256": "c1e8a3fe57e3562e72ab4307de6e9bdb1d16f4c97e29d3a7048b7ed7cb85abac",
+        "featureCount": 12
+      },
+      "derived": {
+        "localPath": "../Witness_Tree-data/derived/alberta-plvi-full-repair-v1/2026-08-14/alberta-plvi-full-repaired-closed-join.gpkg",
+        "byteLength": 899551232,
+        "sha256": "5633e7d49982ee1232b415f362654744c1f1dab11d7c3c7ef8a7928dac20825b",
+        "payloadKey": "derived/ab-primary-land-vegetation/alberta-plvi-full-repair-v1-2026-08-14/2026-08-14T14-14-31Z/5633e7d49982ee1232b415f362654744c1f1dab11d7c3c7ef8a7928dac20825b/payload/alberta-plvi-full-repaired-closed-join.gpkg",
+        "manifestKey": "derived/ab-primary-land-vegetation/alberta-plvi-full-repair-v1-2026-08-14/2026-08-14T14-14-31Z/5633e7d49982ee1232b415f362654744c1f1dab11d7c3c7ef8a7928dac20825b/manifest.json",
+        "featureCount": 179087,
+        "crs": "EPSG:3400"
+      },
+      "transformation": {
+        "specification": "alberta-plvi-geometry-repair-v1",
+        "rule": "GDAL SQLite ST_MakeValid(geometry); every invalid source feature is a Ring Self-intersection with positive Shape_Area; every patched feature is valid Polygon geometry; relative area tolerance 1e-9; all 12 invalid POLYGON_ID values occur exactly once; no source feature is silently removed.",
+        "closedJoin": "179075 copied unchanged + 12 repaired = 179087 output features; preserve duplicate POLYGON_ID 41405 with multiplicity 2; no silent loss or deduplication.",
+        "derivedDatasetWrittenByAudit": false
+      },
+      "retention": {"mode": "COMPLIANCE", "retainUntil": "2033-08-12T00:00:00Z"},
+      "scopeExclusions": ["owner-source-ledger-admission", "transformation", "analysis", "ingestion", "public-release", "production-admission", "production-eligibility"]
+    },
+    "local-row-downstream": {
+      "rows": ["fed-2023-ridings", "elections-canada-45th-files", "qc-current-ecoforest", "qc-original-current-inventory", "qc-fourth-inventory"],
+      "evidenceRefs": [
+        "data/phase1-current-state-completion-audit.json",
+        "data/phase1-immutable-promotion-readiness.json",
+        "data/phase1-local-profiled-promotion-preparation.json",
+        "data/qc-immutable-promotion-preparation.json",
+        "data/qc-fourth-inventory-immutable-promotion-preparation.json"
+      ],
+      "requiredReadbacks": ["exact version", "byte length", "provider checksum", "COMPLIANCE retention", "recovery replica"],
+      "productionEligible": false
+    },
+    "queue-production-admission": {
+      "rows": ["ntems-annual-land-cover", "ntems-forest-harvest", "ntems-canopy-cover", "ntems-canopy-height", "cwfis-current", "bc-wildfire", "ab-wildfire", "on-fire-disturbance", "qc-current-ecoforest", "qc-original-current-inventory", "qc-fourth-inventory", "ab-avi-crown", "ab-avi-post-harvest", "ab-primary-land-vegetation", "fed-2023-ridings", "elections-canada-45th-files"],
+      "source": "data/phase1-current-state-completion-audit.json",
+      "requiredProofs": ["source", "scope", "transformation", "ingestion", "immutable archive", "recovery", "release", "production admission"],
+      "productionAdmission": false,
+      "productionEligible": false
+    }
+  },
+  "excludedRows": {
+    "partial-component": ["cwfis-historical", "provincial-electoral-boundaries"],
+    "access-blocked": ["sopfeu", "bc-fta-cutblocks", "bc-harvesting-authorities", "bc-vri", "bc-consolidated-cutblocks", "bc-old-growth-bec", "bc-forest-operations-map", "on-fri", "on-fri-term-2", "indian-reserves", "first-nation-reserves", "historic-treaties", "modern-treaties"]
+  },
+  "claims": {
+    "ownerDecisionsCreated": false,
+    "ownerApprovalsGranted": false,
+    "remoteMutationPerformed": false,
+    "externalMutationPerformed": false,
+    "transformed": false,
+    "ingested": false,
+    "released": false,
+    "productionAdmission": false,
+    "productionEligible": false,
+    "rawEvidenceDelta": 0,
+    "formalEvidenceTrackingPercentagePointDelta": 0
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "witness-tree/phase1-canopy-recovery-retention-iam-delta/1",
+  "account": "286853118812",
+  "role": "WitnessTreeArchivePromotionUploader",
+  "profile": "WitnessTreeArchiveOperator",
+  "region": "ca-central-1",
+  "policyName": "ExactApprovedPromotionOnly",
+  "prerequisiteSid": "CanopyVersionedRecoveryReadback",
+  "delta": {
+    "sid": "CanopyRecoveryPayloadAndSidecarRetention",
+    "effect": "Allow",
+    "actions": ["s3:GetObjectRetention", "s3:PutObjectRetention"],
+    "resources": [
+      "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/nrcan-forest-canopy-height-2022/undeclared/2026-08-14T18-57-22Z/86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124/payload/ca_canopy_height_2022.zip",
+      "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/nrcan-forest-canopy-height-2022/undeclared/2026-08-14T18-57-22Z/86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124/manifest.json",
+      "arn:aws:s3:::witness-tree-raw-recovery-ca-central-1/raw/nrcan-forest-canopy-height-2022/undeclared/2026-08-14T18-57-22Z/86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124/payload/ca_canopy_height_2022.zip",
+      "arn:aws:s3:::witness-tree-raw-recovery-ca-central-1/raw/nrcan-forest-canopy-height-2022/undeclared/2026-08-14T18-57-22Z/86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124/manifest.json"
+    ]
+  },
+  "simulations": [
+    {"case": "exact-primary-versioned-read", "action": "s3:GetObjectVersion", "decision": "allowed"},
+    {"case": "exact-recovery-versioned-read", "action": "s3:GetObjectVersion", "decision": "allowed"},
+    {"case": "exact-primary-retention-read", "action": "s3:GetObjectRetention", "decision": "allowed"},
+    {"case": "exact-primary-retention-write", "action": "s3:PutObjectRetention", "decision": "allowed"},
+    {"case": "exact-recovery-retention-read", "action": "s3:GetObjectRetention", "decision": "allowed"},
+    {"case": "exact-recovery-retention-write", "action": "s3:PutObjectRetention", "decision": "allowed"},
+    {"case": "out-of-scope-retention-read", "action": "s3:GetObjectRetention", "decision": "implicitDeny"},
+    {"case": "delete-exact-recovery-payload", "action": "s3:DeleteObject", "decision": "implicitDeny"}
+  ],
+  "forbiddenActions": [
+    "s3:DeleteObject",
+    "s3:DeleteObjectVersion",
+    "s3:BypassGovernanceRetention",
+    "s3:PutObjectLegalHold",
+    "s3:ReplicateObject",
+    "iam:*"
+  ],
+  "notice": "This delta adds only exact primary/recovery payload-and-sidecar retention read/write capability. It does not add IAM read permission or replace any existing policy statement."
+}

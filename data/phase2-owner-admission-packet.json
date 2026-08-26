@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "witness-tree/phase2-owner-admission-packet/1",
+  "status": "template-not-approved",
+  "decisionId": "phase2-v21-21-raster-and-2020-2022-province-aggregate-admission-v1",
+  "purpose": "One exact owner decision may later authorize creation of a separate Phase 2 admission record for the checksum-bound local V2.1 raster batch and the checksum-bound 2020-2022 provincial/territorial aggregate. This packet is not an approval, admission, release, publication, or production record.",
+  "requestedDecision": {
+    "ownerMayChoose": ["approve", "reject", "defer"],
+    "approvalScope": "Admit only the exact 21 V2.1 raster outputs and the exact 13-row 2020-2022 provincial/territorial aggregate bound below, under the stated method and limits. Approval does not admit raw source inputs, expert review, comparisons, release, publication, production use, vector geometry, or any other time range.",
+    "futureRecordRule": "If approved, create a new immutable admission record that names this decisionId and revalidates every binding. Do not edit this packet or historical readback evidence to record approval."
+  },
+  "exactBindings": {
+    "rasterReadback": {
+      "path": "data/phase2-v21-raster-readback-evidence.json",
+      "sha256": "8815684bdde91250a0654fd2890a11d8505532c3c6864169f68165a22dd98210",
+      "batchId": "phase2-v21-raster-first-1984-2022-v1",
+      "lineageSha256": "2499c2d37e0f55f5145f6842aedcee5398a3bac073699afbd17512f476b9f928",
+      "outputCount": 21,
+      "artifactCount": 42,
+      "checksumBinding": "The bound readback record enumerates the relative path, byte length, and SHA-256 for every one of the 21 rasters and 21 sidecars."
+    },
+    "rasterMethod": {
+      "contractPath": "data/phase2-v21-raster-contract.json",
+      "contractSha256": "afcc0b2d764e63d9c71b99181d17f7cde68fc6a817ad4a96474c42f78886dcc1",
+      "gridId": "vlce2-lcc-nad83",
+      "rasterReprojection": "forbidden",
+      "nodataValue": 255,
+      "snapshotYears": [1984, 1988, 1992, 1996, 2000, 2004, 2008, 2012, 2016, 2020, 2022],
+      "intervalCount": 10,
+      "unknownPolicy": "retain-nodata-never-convert-to-zero"
+    },
+    "methodParameters": {
+      "path": "data/phase2-method-parameters.json",
+      "sha256": "8d06ec83542f05e81a4b63b4e6c3c2c7ef1a40df46f501ce8cc0177050446334",
+      "methodVersion": "phase2-owner-approved-versioned-nonproduction-v1",
+      "parameterSha256": "8d12ff6b6fb10208410bedf5f012e96a9682fdec457cccce688509d2dfa0b8fa",
+      "matching": {"minimumOverlapOfSmallerGeometry": 0.5, "standardTemporalToleranceYears": 2, "historicalTemporalToleranceYears": 3, "historicalYearExclusive": 1995, "multipleCandidateRule": "highest-overlap-stable-input-order"},
+      "precedence": ["fire", "recorded-harvest", "insect-disease", "other-intervention", "unmatched-detected-change"],
+      "aggregation": {"denominatorReference": "first-year-of-range", "overlapPolicy": "precedence-once-per-hectare-year", "areaUnit": "hectare", "decimalPlaces": 6},
+      "boundary": {"cellIntersection": "fractional-area", "gridAlignment": "exact", "snapToleranceMetres": 0, "boundaryEditionRequired": true, "crossEditionComparison": "reject-without-acknowledgement"}
+    },
+    "provinceAggregate": {
+      "evidencePath": "data/phase2-v21-province-zonal-pilot-evidence.json",
+      "evidenceSha256": "4fb0efc6ec984025e91f0124e0347a2f0a08673ed1f606ba318c9ca732f5ce62",
+      "zonalContractPath": "data/phase2-zonal-aggregation-contract.json",
+      "zonalContractSha256": "7eaf545359174c84a623c6df79e912fbab8f4f7c02c045d8af4796e1692869f7",
+      "output": {"path": "province-2020-2022.json", "byteLength": 3131, "sha256": "ff1589029f30800021b52d9aa736b9aa9e122df70e3070d19a68f7aa45d9a16d"},
+      "sidecar": {"path": "province-2020-2022.sidecar.json", "byteLength": 8374, "sha256": "20894a732a762fdbfd618e35f2b8934028727e6207ac9846732d9899e501c50c"},
+      "timeVersion": "2020-2022",
+      "boundary": {"edition": "2021-Census-cartographic-boundary", "idField": "PRUID", "sha256": "d28bbb15d7b49e3d1828755a5f1b4ebcee699ad70efe8b0f1b902d29ebffd20b", "classification": "authoritative-boundary", "geometryReadPolicy": "shapefile-ring-orientation-only-ccw", "reprojection": "reprojected"},
+      "featureCount": 13,
+      "boundaryIds": ["10", "11", "12", "13", "24", "35", "46", "47", "48", "59", "60", "61", "62"],
+      "nationalPerCellGeometryMaterialized": false
+    }
+  },
+  "permittedClaimsAfterSeparateAdmission": [
+    "The exact V2.1 21-output local batch is admitted for the bound scope.",
+    "The exact 13-row 2020-2022 aggregate is admitted for the bound boundary edition and method.",
+    "The aggregate is not national per-cell geometry."
+  ],
+  "prohibitedClaimsEvenAfterSeparateAdmission": [
+    "expert review completed",
+    "independent comparison completed or published",
+    "accuracy or causal attribution",
+    "release, public availability, or production eligibility",
+    "admission of raw source inputs or any unbound output",
+    "vector or national per-cell geometry materialization",
+    "a time range other than the bound 2020-2022 aggregate"
+  ],
+  "formalGateAssessment": {
+    "beforeOwnerDecision": {"gate1AdmittedV21Baseline": false, "gate4AdmittedBoundaryAggregates": false},
+    "afterApprovalOnly": {"gate1AdmittedV21Baseline": false, "gate4AdmittedBoundaryAggregates": false},
+    "remainingTechnicalPrerequisite": "A separate fail-closed admission-record validator must verify a recorded owner decision, this packet's unchanged SHA-256, the exact source-input admission evidence required by the V2.1 contract, and all bindings before either formal gate can pass.",
+    "honestConclusion": "Owner approval alone cannot truthfully complete gate 1 or gate 4 because the bound source readback evidence explicitly records non-admitted inputs and outputs."
+  },
+  "ownerCopyPaste": "PHASE2 OWNER INPUT — EXACT V2.1 RASTER + 2020-2022 PROVINCE/TERRITORY AGGREGATE\ndecision_id=phase2-v21-21-raster-and-2020-2022-province-aggregate-admission-v1\ndecision=<OWNER: approve|reject|defer>\npacket_status=template-not-approved\nacknowledge=exact bindings, method limits, permitted claims, and prohibited claims reviewed\nNO_RELEASE_OR_PRODUCTION_ADMISSION=true\nDO_NOT_EDIT=historical readback evidence or this packet"
+}

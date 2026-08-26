@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "witness-tree/french-boundary-acquisition-targets/1",
+  "status": "planning-only-not-staged",
+  "notice": "Authoritative catalogue evidence only. No target has been downloaded, hashed, profiled, archived, transformed, ingested, or admitted to production.",
+  "targets": [
+    {
+      "id": "elections-canada-fed-2023-fr",
+      "boundaryKind": "FED",
+      "language": "fr",
+      "status": "not-staged",
+      "publisher": "Elections Canada",
+      "catalogueUrl": "https://open.canada.ca/data/dataset/18bf3ea7-1940-46ec-af52-9ba3f77ed708",
+      "artifactUrl": "https://ftp.maps.canada.ca/pub/elections_elections/Electoral-districts_Circonscription-electorale/federal_electoral_districts_boundaries_2023/CF_CA_2023_FR-SHP.zip",
+      "edition": "2023 Representation Order",
+      "currentForRankings": true,
+      "licenceId": "ogl-canada-2.0",
+      "downloaded": false,
+      "sha256": null,
+      "profiled": false,
+      "productionEligible": false
+    },
+    {
+      "id": "statcan-2021-census-divisions-cbf-fr",
+      "boundaryKind": "CD",
+      "language": "fr",
+      "status": "not-staged",
+      "publisher": "Statistics Canada",
+      "catalogueUrl": "https://www12.statcan.gc.ca/census-recensement/2021/geo/sip-pis/boundary-limites/index-fra.cfm",
+      "artifactUrl": null,
+      "artifactSelectionStatus": "not-selected-from-authoritative-form",
+      "edition": "2021 Census Cartographic Boundary File",
+      "currentForRankings": null,
+      "licenceId": "statcan-open-licence",
+      "downloaded": false,
+      "sha256": null,
+      "profiled": false,
+      "productionEligible": false
+    },
+    {
+      "id": "statcan-2021-census-subdivisions-cbf-fr",
+      "boundaryKind": "CSD",
+      "language": "fr",
+      "status": "not-staged",
+      "publisher": "Statistics Canada",
+      "catalogueUrl": "https://www12.statcan.gc.ca/census-recensement/2021/geo/sip-pis/boundary-limites/index-fra.cfm",
+      "artifactUrl": null,
+      "artifactSelectionStatus": "not-selected-from-authoritative-form",
+      "edition": "2021 Census Cartographic Boundary File",
+      "currentForRankings": null,
+      "licenceId": "statcan-open-licence",
+      "downloaded": false,
+      "sha256": null,
+      "profiled": false,
+      "productionEligible": false
+    }
+  ]
+}

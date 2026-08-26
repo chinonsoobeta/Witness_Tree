@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "status": "authority-and-access-blocked",
+  "productionRowId": "historic-treaties",
+  "reviewedAt": "2026-08-14T22:45:00Z",
+  "officialCandidate": {
+    "publisher": "Crown-Indigenous Relations and Northern Affairs Canada and Indigenous Services Canada",
+    "catalogueUrl": "https://open.canada.ca/data/en/dataset/f281b150-0645-48e4-9c30-01f55f93f78e",
+    "datasetTitle": "Historic treaties",
+    "primaryMappingSource": true,
+    "advertisedFormats": ["WMS", "WFS", "FGDB/GDB", "SHP", "CSV", "ESRI REST"],
+    "scope": "The catalogue identifies this as the federal departments' primary source for historic treaty geographic boundaries on maps."
+  },
+  "legalGeometryLimit": {
+    "boundariesUsuallySurveyed": false,
+    "estimatedFromWrittenDescriptions": true,
+    "informationalAndRepresentationalOnly": true,
+    "illustrativePolygonsMayBeUsedWhereNoGeographicDescription": true,
+    "reason": "The official catalogue says the boundaries are usually not surveyed, are estimated from treaty descriptions, are for informational and representational use only, and may be illustrative where no geographic description exists. They therefore cannot be substituted for legal or precision boundary geometry."
+  },
+  "authorityAndRights": {
+    "legalBoundaryArtifactVerified": false,
+    "exactArtifactLicenceAndAttributionVerified": false,
+    "checksumAndArchiveRecoveryVerified": false,
+    "engagementAndRightOfReplyRouteVerified": false,
+    "reason": "No acquisition was made because the official candidate itself excludes legal or precision use. This review did not establish exact-artifact licence, attribution, checksum/archive recovery, or a named Indigenous engagement and right-of-reply route for the requested legal-boundary use."
+  },
+  "actions": {"downloaded": false, "staged": false, "profiled": false, "transformed": false, "archived": false, "ingested": false, "productionEligible": false},
+  "requiredBeforeAnyAcquisition": ["Authoritative legal-boundary publisher and exact edition identified for this intended use", "Versioned legal-boundary polygon artifact with its precision statement, checksum and required attribution", "Written reuse and redistribution terms for that exact artifact", "Named Indigenous engagement and right-of-reply route"]
+}

@@ -1,0 +1,110 @@
+{
+  "schemaVersion": "witness-tree/phase1-ntems-rights-verification/1",
+  "status": "read-only-official-rights-verified",
+  "verifiedAt": "2026-08-26T02:02:00Z",
+  "verificationMethod": "Read-only review of the official Government of Canada Open Government Licence page and official Open Government Portal dataset listings; no contact, registration, upload, purchase, or external mutation was performed.",
+  "licence": {
+    "id": "ogl-canada",
+    "version": "2.0",
+    "name": "Open Government Licence – Canada",
+    "url": "https://open.canada.ca/en/open-government-licence-canada",
+    "permissions": [
+      "copy",
+      "modify",
+      "publish",
+      "translate",
+      "adapt",
+      "distribute",
+      "otherwise use for a lawful purpose"
+    ],
+    "requirements": [
+      "Acknowledge the information provider and include any specified attribution.",
+      "Where possible, link to the Open Government Licence – Canada.",
+      "Do not imply official status or endorsement."
+    ],
+    "exclusions": [
+      "personal information",
+      "third-party rights the information provider is not authorized to license",
+      "names, crests, logos, and other official symbols",
+      "information subject to other intellectual-property rights"
+    ],
+    "defaultAttribution": {
+      "en": "Contains information licensed under the Open Government Licence – Canada.",
+      "fr": "Contient des informations octroyées sous licence en vertu de la Licence du gouvernement ouvert – Canada."
+    }
+  },
+  "datasets": [
+    {
+      "rowId": "ntems-annual-land-cover",
+      "recordId": "2785c103-9c2d-429b-9f3d-89f5cd9ea94d",
+      "listingUrl": "https://open.canada.ca/data/en/dataset/2785c103-9c2d-429b-9f3d-89f5cd9ea94d",
+      "title": "Annual High-resolution forest land cover for Canada (1984-2022)",
+      "publisher": "Natural Resources Canada",
+      "datePublished": "2025-12-16",
+      "temporalCoverage": "1984-01-01/2022-01-01",
+      "updateCadence": "as-needed",
+      "contact": "mike.wulder@canada.ca",
+      "licenceId": "ogl-canada",
+      "sourceResourceUrl": "https://opendata.nfis.org/downloads/forest_change/CA_forest_VLCE2_{YEAR}.zip"
+    },
+    {
+      "rowId": "ntems-forest-harvest",
+      "recordId": "87e35bf0-b734-4c4e-9eb6-e08ffe80e3fe",
+      "listingUrl": "https://open.canada.ca/data/en/dataset/87e35bf0-b734-4c4e-9eb6-e08ffe80e3fe",
+      "title": "CA Forest Harvest (1985-2022)",
+      "publisher": "Natural Resources Canada",
+      "datePublished": "2024-01-01",
+      "temporalCoverage": "1985-01-01/2022-01-01",
+      "updateCadence": "as-needed",
+      "contact": "mike.wulder@canada.ca",
+      "licenceId": "ogl-canada",
+      "sourceResourceUrl": "https://opendata.nfis.org/downloads/forest_change/CA_Forest_Harvest_1985-2022.zip",
+      "catalogueResourceLimitation": "The official portal listing has been observed linking a fire-named ZIP from the harvest record. Admission must remain bound to the exact harvest-named NFIS archive already checksummed and verified."
+    },
+    {
+      "rowId": "ntems-canopy-cover",
+      "recordId": "5b905ab8-44dc-42b4-ad5b-3b1dde8423ab",
+      "listingUrl": "https://open.canada.ca/data/en/dataset/5b905ab8-44dc-42b4-ad5b-3b1dde8423ab",
+      "title": "Forest Canopy Cover (2022)",
+      "publisher": "Natural Resources Canada",
+      "datePublished": "2023-01-01",
+      "temporalCoverage": "2022-01-01/2022-01-01",
+      "updateCadence": "as-needed",
+      "contact": "mike.wulder@canada.ca",
+      "licenceId": "ogl-canada",
+      "sourceResourceUrl": "https://opendata.nfis.org/downloads/forest_change/CA_canopy_cover_2022.zip"
+    },
+    {
+      "rowId": "ntems-canopy-height",
+      "recordId": "016d2624-30b4-45f3-87d7-30b06c6a30ca",
+      "listingUrl": "https://open.canada.ca/data/en/dataset/016d2624-30b4-45f3-87d7-30b06c6a30ca",
+      "title": "Forest Canopy Height (2022)",
+      "publisher": "Natural Resources Canada",
+      "datePublished": "2023-01-01",
+      "temporalCoverage": "2022-01-01/2022-01-01",
+      "updateCadence": "as-needed",
+      "contact": "mike.wulder@canada.ca",
+      "licenceId": "ogl-canada",
+      "sourceResourceUrl": "https://opendata.nfis.org/downloads/forest_change/CA_canopy_height_2022.zip"
+    }
+  ],
+  "ownerAuthority": {
+    "ownerName": "Chinonso Obeta",
+    "roles": [
+      "content/data owner",
+      "dispute escalation owner",
+      "rules sign-off owner"
+    ],
+    "licenceAcceptanceAuthorized": true,
+    "releaseAuthorizationStatement": "I explicitly authorize ingestion, release, production admission, and deployment."
+  },
+  "claims": {
+    "rightsVerifiedForNamedInputs": true,
+    "bulkRedistributionAllowedSubjectToLicenceRequirementsAndExclusions": true,
+    "thirdPartyRightsClearedBeyondPublisherOffer": false,
+    "officialEndorsementClaimed": false,
+    "externalMutationPerformed": false,
+    "productionAdmission": false,
+    "productionEligible": false
+  }
+}

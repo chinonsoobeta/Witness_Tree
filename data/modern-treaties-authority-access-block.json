@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "status": "authority-and-access-blocked",
+  "productionRowId": "modern-treaties",
+  "reviewedAt": "2026-08-14T23:00:00Z",
+  "officialCandidate": {
+    "publisher": "Crown-Indigenous Relations and Northern Affairs Canada",
+    "url": "https://www.rcaanc-cirnac.gc.ca/eng/1677073191939/1677073214344",
+    "datasetTitle": "Modern treaties map",
+    "scope": "CIRNAC says this map illustrates boundaries of finalized modern treaties between Indigenous communities and Canada."
+  },
+  "legalGeometryLimit": {
+    "distributedForInformalPurposes": true,
+    "boundariesApproximateAndSubjectToRevision": true,
+    "consultationRelianceForbidden": true,
+    "machineReadableVectorArtifactVerified": false,
+    "reason": "CIRNAC's map disclaimer says it is for informal purposes, boundaries are approximate and subject to revision, and the drawings must not be relied on for any purpose or activity including consultation obligations. No official vector artifact or precision statement was verified."
+  },
+  "authorityAndRights": {
+    "legalBoundaryArtifactVerified": false,
+    "exactArtifactLicenceAndAttributionVerified": false,
+    "checksumAndArchiveRecoveryVerified": false,
+    "engagementAndRightOfReplyRouteVerified": false,
+    "reason": "The official map does not meet legal or precision use, and this review did not verify exact-artifact rights, archive recovery, or a named engagement and right-of-reply route."
+  },
+  "actions": {"downloaded": false, "staged": false, "profiled": false, "transformed": false, "archived": false, "ingested": false, "productionEligible": false},
+  "requiredBeforeAnyAcquisition": ["Authoritative legal-boundary publisher and exact edition identified for this intended use", "Versioned legal-boundary polygon artifact with precision statement, checksum and required attribution", "Written reuse and redistribution terms for that exact artifact", "Named Indigenous engagement and right-of-reply route"]
+}

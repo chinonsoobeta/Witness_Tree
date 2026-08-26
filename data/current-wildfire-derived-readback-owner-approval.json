@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "witness-tree/wildfire-derived-readback-approval/1",
+  "approved": true,
+  "account": "286853118812",
+  "role": "WitnessTreeWildfireDerivedPromotionUploader",
+  "profile": "WitnessTreeArchiveOperator",
+  "region": "ca-central-1",
+  "bucket": "witness-tree-raw-archive-ca-central-1",
+  "retention": {"mode":"COMPLIANCE","retainUntil":"2033-08-12T00:00:00Z","payloadsAndManifests":true},
+  "artifacts": [
+    {"id":"bc-wildfire-216-feature-derived-2026-08-14","sourceId":"bc-wildfire","featureCount":216,"byteLength":2162688,"sha256":"8ee36cc6bdfb5ef267340537e4cf822df7cc886873c7fcf65a1b2b12006d34ce","payloadKey":"derived/bc-wildfire/bc-wildfire-geometry-policy-v1-2026-08-14/2026-08-14T20-31-39Z/8ee36cc6bdfb5ef267340537e4cf822df7cc886873c7fcf65a1b2b12006d34ce/payload/bc-wildfire-216-feature-release.gpkg","manifestKey":"derived/bc-wildfire/bc-wildfire-geometry-policy-v1-2026-08-14/2026-08-14T20-31-39Z/8ee36cc6bdfb5ef267340537e4cf822df7cc886873c7fcf65a1b2b12006d34ce/manifest.json","manifestByteLength":831,"manifestSha256":"c9c9ca2361e715693ee2d669280b40d5fe2ef028a33d06d507749c96e0c9e167"},
+    {"id":"ontario-in-year-fire-188-feature-derived-2026-08-14","sourceId":"on-fire-disturbance","featureCount":188,"byteLength":7913472,"sha256":"5e55c5d47559c350d9b31ffeda6bd39cfce64a3c57169098fff66341cd8ead31","payloadKey":"derived/on-fire-disturbance/ontario-in-year-fire-geometry-policy-v1-2026-08-14/2026-08-14T13-49-36Z/5e55c5d47559c350d9b31ffeda6bd39cfce64a3c57169098fff66341cd8ead31/payload/ontario-in-year-fire-perimeters-188-feature-derived.gpkg","manifestKey":"derived/on-fire-disturbance/ontario-in-year-fire-geometry-policy-v1-2026-08-14/2026-08-14T13-49-36Z/5e55c5d47559c350d9b31ffeda6bd39cfce64a3c57169098fff66341cd8ead31/manifest.json","manifestByteLength":885,"manifestSha256":"e81285a479cf46d521929c233e9185c3ded28429bc985c45e9ff74235910bf79"}
+  ],
+  "exclusions": ["no-mpu-listing","no-mpu-completion","no-upload","no-sidecar-rewrite","no-delete","no-replication","no-bypass-governance","no-legal-hold","no-iam-change","no-production-inference","no-phase2"],
+  "productionEligible": false,
+  "phase2": false
+}

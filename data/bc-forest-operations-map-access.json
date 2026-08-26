@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "1.0",
+  "status": "blocked-access-only-licence",
+  "sourceId": "bc-forest-operations-map",
+  "verifiedAt": "2026-08-14T20:55:54Z",
+  "catalogue": {
+    "url": "https://catalogue.data.gov.bc.ca/dataset/forest-operations-map-fom-cutblocks",
+    "datasetId": "7dda4615-5d32-427e-a303-1dcdb90a6fea",
+    "title": "Forest Operations Map (FOM) - Cutblocks",
+    "publisher": "Forest Science, Planning and Practices Branch",
+    "metadataModifiedAt": "2026-08-14T12:38:36.697732Z",
+    "licenceTitle": "Access Only",
+    "licenceUrl": "https://www2.gov.bc.ca/gov/content?id=1AAACC9C65754E4D89A118B875E0FBDA"
+  },
+  "authoritativeService": {
+    "itemUrl": "https://governmentofbc.maps.arcgis.com/home/item.html?id=d3424124ff4541ff8375d8e95ea79668",
+    "itemId": "d3424124ff4541ff8375d8e95ea79668",
+    "itemType": "Feature Service",
+    "access": "public",
+    "licence": "Access Only",
+    "observedLayer": {
+      "url": "https://delivery.maps.gov.bc.ca/arcgis/rest/services/whse/bcgw_pub_whse_forest_tenure/MapServer/32",
+      "observedAt": "2026-08-14T20:55:54Z",
+      "featureCount": 47654,
+      "spatialReference": "EPSG:3005",
+      "maxRecordCount": 1000
+    }
+  },
+  "scopeAndLifecycleCaveats": [
+    "The layer reflects planned operational activities for proposed and finalized, but not yet permitted, cutblocks within harvesting authorities.",
+    "PLANNED_DEVELOPMENT_DATE is an anticipated date of development, not evidence that development occurred.",
+    "Proposed cutblocks may be altered following public comments before they become final in this dataset.",
+    "This is planned-activity context, distinct from a completed-harvest record, and must not be used to infer completed harvest."
+  ],
+  "permissionRequest": {
+    "status": "form-submitted-clarification-replied-permission-pending",
+    "proposedSender": "Chinonso Obeta <chinonso8@gmail.com>",
+    "recipientRoute": "https://forms.gov.bc.ca/copyright-permission-request/",
+    "copyrightContact": "QPIPPCopyright@gov.bc.ca",
+    "subject": "Copyright Permission Request",
+    "submittedAt": "2026-08-21T13:48-07:00",
+    "clarificationReceivedAt": "2026-08-21T21:21:55Z",
+    "clarificationReplySentAt": "2026-08-21T22:34:39Z",
+    "submittedCatalogueUrl": "https://catalogue.data.gov.bc.ca/dataset/7dda4615-5d32-427e-a303-1dcdb90a6fea",
+    "clarificationBoundary": "No scraping, bypass, raw redistribution or bulk download; use only through a Province-authorized export/service, otherwise link the official viewer or use expressly permitted static excerpts.",
+    "authorizationOutcome": "pending-no-permission-or-access"
+  },
+  "blocker": {
+    "reason": "The authoritative BC Data Catalogue assigns the dataset the licence title Access Only. The Province's copyright notice states that Access Only catalogue material cannot be reproduced without written permission.",
+    "requiredBeforeAcquisition": "Obtain written Province of British Columbia copyright permission or an authoritative redistributable licence for this exact dataset and intended uses.",
+    "rawDownloadPerformed": false,
+    "sha256": null,
+    "archiveIntegrity": "not-run-access-blocked",
+    "schemaProfile": "not-run-access-blocked",
+    "productionEligible": false
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "schemaVersion": "witness-tree/federal-electoral-promotion-iam-desired-state/1",
+  "status": "owner-live-readback-required-storage-not-run",
+  "account": "286853118812",
+  "region": "ca-central-1",
+  "bucket": "witness-tree-raw-archive-ca-central-1",
+  "roleName": "WitnessTreeArchivePromotionUploader",
+  "rolePolicyName": "WitnessTreeFederalElectoralExactObjects",
+  "operatorUser": "WitnessTreeArchiveOperator",
+  "operatorPolicyName": "WitnessTreeFederalElectoralPromotionAssumeOnly",
+  "trustPolicy": {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Principal": {"AWS": "arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator"},
+        "Action": "sts:AssumeRole",
+        "Condition": {"Bool": {"aws:MultiFactorAuthPresent": "true"}, "NumericLessThan": {"aws:MultiFactorAuthAge": "43200"}}
+      }
+    ]
+  },
+  "operatorPolicy": {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Action": "sts:AssumeRole",
+        "Resource": "arn:aws:iam::286853118812:role/WitnessTreeArchivePromotionUploader"
+      }
+    ]
+  },
+  "rolePolicy": {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Sid": "FederalExactObjectWritesAndReads",
+        "Effect": "Allow",
+        "Action": ["s3:PutObject", "s3:GetObject", "s3:GetObjectVersion"],
+        "Resource": [
+          "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/elections-canada-federal-electoral-districts-45th-general-election-2025-shp/federal-electoral-districts-2025-shp/2026-08-14T17-42-35Z/4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93/payload/federalelectoraldistricts_2025_shp.zip",
+          "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/elections-canada-federal-electoral-districts-45th-general-election-2025-shp/federal-electoral-districts-2025-shp/2026-08-14T17-42-35Z/4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93/manifest.json"
+        ]
+      },
+      {
+        "Sid": "FederalExactPayloadAndSidecarRetention",
+        "Effect": "Allow",
+        "Action": ["s3:PutObjectRetention", "s3:GetObjectRetention"],
+        "Resource": [
+          "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/elections-canada-federal-electoral-districts-45th-general-election-2025-shp/federal-electoral-districts-2025-shp/2026-08-14T17-42-35Z/4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93/payload/federalelectoraldistricts_2025_shp.zip",
+          "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/elections-canada-federal-electoral-districts-45th-general-election-2025-shp/federal-electoral-districts-2025-shp/2026-08-14T17-42-35Z/4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93/manifest.json"
+        ]
+      },
+      {
+        "Sid": "FederalExactVersionListing",
+        "Effect": "Allow",
+        "Action": "s3:ListBucketVersions",
+        "Resource": "arn:aws:s3:::witness-tree-raw-archive-ca-central-1",
+        "Condition": {
+          "StringLike": {
+            "s3:prefix": [
+              "raw/elections-canada-federal-electoral-districts-45th-general-election-2025-shp/federal-electoral-districts-2025-shp/2026-08-14T17-42-35Z/4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93/payload/federalelectoraldistricts_2025_shp.zip",
+              "raw/elections-canada-federal-electoral-districts-45th-general-election-2025-shp/federal-electoral-districts-2025-shp/2026-08-14T17-42-35Z/4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93/manifest.json"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "approvedActions": ["s3:PutObject", "s3:GetObject", "s3:GetObjectVersion", "s3:PutObjectRetention", "s3:GetObjectRetention", "s3:ListBucketVersions"],
+  "excluded": ["s3:DeleteObject", "s3:DeleteObjectVersion", "s3:BypassGovernanceRetention", "s3:PutObjectLegalHold", "s3:ReplicateObject", "s3:ReplicateDelete", "s3:ListBucket", "iam:GetRole"],
+  "readOnlyValidation": {
+    "accessAnalyzer": {"rolePolicyFindings": 0, "operatorPolicyFindings": 0},
+    "operatorSimulation": {"exactRole": "allowed", "otherRole": "implicitDeny"},
+    "roleSimulation": {
+      "exactObjectApprovedActions": "allowed",
+      "allClaimedExcludedActions": "implicitDeny",
+      "otherObjectPutGetAndVersionReadback": "implicitDeny"
+    },
+    "localArtifactPreflight": "passed-no-totp-no-aws"
+  },
+  "liveAttestationRequired": true,
+  "liveAudit": {"roleExists": false, "policyExactlyVerified": false, "iamMutationPerformed": false, "s3MutationPerformed": false},
+  "recoveryBoundary": {"replicaCreated": false, "replicaAuthorized": false, "recoveryCreditEligible": false},
+  "claims": {"iamReady": false, "archiveComplete": false, "sourceLedgerCreditChanged": false, "productionAdmission": false, "productionEligible": false}
+}

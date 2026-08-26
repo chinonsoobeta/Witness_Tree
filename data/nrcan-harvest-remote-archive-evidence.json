@@ -1,0 +1,70 @@
+{
+  "schemaVersion": "witness-tree/nrcan-harvest-remote-archive-evidence/1",
+  "status": "remote-verified-archived-raw-only",
+  "verifiedAt": "2026-08-20",
+  "sourceId": "ntems-forest-harvest",
+  "profile": "data/nrcan-harvest-profile.json",
+  "stagedAcquisition": "data/staged-acquisitions.json",
+  "storage": {
+    "primary": "witness-tree-raw-archive-ca-central-1",
+    "recovery": "witness-tree-raw-recovery-ca-central-1",
+    "region": "ca-central-1",
+    "countryCode": "CA"
+  },
+  "notice": "Redacted read-only archive and recovery evidence for one exact raw payload and its manifest. Provider version identifiers and checksum values are intentionally not retained. This record does not grant owner source-ledger admission, transformation, ingestion, release, production admission, or production eligibility.",
+  "verificationMethod": "Read-only S3 HeadObject with checksum mode enabled, GetObjectRetention, and recovery-replication readbacks; local byte length and SHA-256 were independently checked before recording this row.",
+  "payload": {
+    "key": "raw/nrcan-ca-forest-harvest-1985-2022/undeclared/2026-08-14T09-27-41Z/c6f41dff46d91812874672edb53233dac4126952132ad6d1131ad47b11ad7aad/payload/ca_forest_harvest_1985-2022.zip",
+    "byteLength": 247945479,
+    "sha256": "c6f41dff46d91812874672edb53233dac4126952132ad6d1131ad47b11ad7aad",
+    "localBinding": {
+      "path": "../Witness_Tree-data/raw/nrcan-ca-forest-harvest-1985-2022/2026-08-14/CA_Forest_Harvest_1985-2022.zip",
+      "byteLengthMatches": true,
+      "sha256Matches": true
+    },
+    "primary": {
+      "versionPresent": true,
+      "checksum": {"type": "FULL_OBJECT", "algorithm": "CRC64NVME", "providerValue": "redacted-present"},
+      "replication": "COMPLETED",
+      "retention": {"mode": "COMPLIANCE", "until": "2033-08-12T00:00:00Z"}
+    },
+    "recovery": {
+      "versionPresent": true,
+      "checksum": {"type": "FULL_OBJECT", "algorithm": "CRC64NVME", "providerValue": "redacted-present"},
+      "replication": "REPLICA",
+      "retention": {"mode": "COMPLIANCE", "until": "2033-08-12T00:00:00Z"}
+    }
+  },
+  "manifest": {
+    "key": "raw/nrcan-ca-forest-harvest-1985-2022/undeclared/2026-08-14T09-27-41Z/c6f41dff46d91812874672edb53233dac4126952132ad6d1131ad47b11ad7aad/manifest.json",
+    "byteLength": 467,
+    "primary": {
+      "versionPresent": true,
+      "checksum": {"type": "FULL_OBJECT", "algorithm": "CRC64NVME", "providerValue": "redacted-present"},
+      "replication": "COMPLETED",
+      "retention": null
+    },
+    "recovery": {
+      "versionPresent": true,
+      "checksum": {"type": "FULL_OBJECT", "algorithm": "CRC64NVME", "providerValue": "redacted-present"},
+      "replication": "REPLICA",
+      "retention": null
+    }
+  },
+  "claims": {
+    "remoteObjectExists": true,
+    "sidecarUploaded": true,
+    "rawArchiveRefetch": true,
+    "payloadChecksumReadback": true,
+    "manifestChecksumReadback": true,
+    "recoveryPayloadReadback": true,
+    "recoveryManifestReadback": true,
+    "immutableArchive": true,
+    "ownerSourceLedgerDecision": false,
+    "transformed": false,
+    "ingested": false,
+    "released": false,
+    "productionAdmission": false,
+    "productionEligible": false
+  }
+}

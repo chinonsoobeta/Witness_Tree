@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "witness-tree/phase2-v21-expert-reviewer-roster/1",
+  "status": "not-approved",
+  "approval": {
+    "approvedBy": "",
+    "approvedRole": "",
+    "approvedAt": "",
+    "workflow": {
+      "path": "data/phase2-v21-expert-review-workflow.json",
+      "sha256": "",
+      "byteLength": 0
+    },
+    "packet": {
+      "path": "../../Witness_Tree-data/derived/phase2-v21-review-packet-v1/packet.json",
+      "sha256": "",
+      "byteLength": 0
+    }
+  },
+  "reviewers": []
+}

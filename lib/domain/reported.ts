@@ -2,6 +2,7 @@ import type { ConfidenceResult } from "./confidence";
 import type { CoverageGrade } from "./coverage";
 import type { EvidenceClass } from "./evidence";
 import type { LicenceId } from "./source-ledger";
+import type { LocalizedString, Locale } from "./localized";
 
 export type Provenance = Readonly<{
   dataset: string;
@@ -23,13 +24,13 @@ export type Figure = Readonly<{
 export type Unknown = Readonly<{
   kind: "unknown";
   evidence: "unknown";
-  reason: string;
+  reason: LocalizedString;
   coverageGrade: CoverageGrade;
 }>;
 
 export type Reported = Figure | Unknown;
 
-export function formatReported(value: Reported): string {
-  if (value.kind === "unknown") return `— ${value.reason}`;
-  return new Intl.NumberFormat("en-CA", { maximumFractionDigits: 1 }).format(value.value);
+export function formatReported(value: Reported, locale: Locale = "en"): string {
+  if (value.kind === "unknown") return `— ${value.reason[locale]}`;
+  return new Intl.NumberFormat(locale === "fr" ? "fr-CA" : "en-CA", { maximumFractionDigits: 1 }).format(value.value);
 }

@@ -73,12 +73,12 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
   },
   terms: {
     en: { title: "Terms and limitations — draft", status: "These terms have not received legal review and do not authorize a production release.", sections: [
-      { heading: "Informational record", paragraphs: [`${enBrand} is an evidence record, not an emergency service, legal opinion, compliance finding, ownership history, merchantable-timber estimate or wildfire forecast. Source agencies remain authoritative.`] },
+      { heading: "Informational record", paragraphs: [`${enBrand} is an evidence record, not an emergency service, legal opinion, compliance finding, ownership history, merchantable-timber estimate or statement about future wildfire behaviour. Source agencies remain authoritative.`] },
       { heading: "Interpretation", paragraphs: ["Satellite-observed change does not establish cause. A named organisation appears only in the exact role and dated version of an authoritative public record; proximity is never attribution."] },
       { heading: "Licences", paragraphs: ["Code has no open-source licence yet. Data retains source-specific terms. Illustrative fixtures grant no redistribution rights."] },
     ] },
     fr: { title: "Conditions et limites — ébauche", status: "Ces conditions n’ont pas fait l’objet d’un examen juridique et n’autorisent pas une diffusion de production.", sections: [
-      { heading: "Registre d’information", paragraphs: [`${frBrand} est un registre de preuves, et non un service d’urgence, un avis juridique, une conclusion de conformité, un historique de propriété, une estimation du bois marchand ou une prévision d’incendie. Les organismes sources demeurent les autorités.`] },
+      { heading: "Registre d’information", paragraphs: [`${frBrand} est un registre de preuves, et non un service d’urgence, un avis juridique, une conclusion de conformité, un historique de propriété, une estimation du bois marchand ou une déclaration sur le comportement futur des incendies. Les organismes sources demeurent les autorités.`] },
       { heading: "Interprétation", paragraphs: ["Un changement observé par satellite n’en établit pas la cause. Une organisation n’est nommée que dans le rôle exact et la version datée d’un registre public faisant autorité; la proximité ne constitue jamais une attribution."] },
       { heading: "Licences", paragraphs: ["Le code ne possède pas encore de licence libre. Les données conservent leurs conditions propres à la source. Les exemples illustratifs n’accordent aucun droit de redistribution."] },
     ] },

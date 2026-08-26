@@ -1,0 +1,75 @@
+{
+  "schemaVersion": "phase1/archive-owner-command-reconciliation/1",
+  "status": "read-only-reconciled-blocked",
+  "capturedAt": "2026-08-20T17:28:41Z",
+  "mutationsPerformed": [],
+  "versionIdsRecorded": false,
+  "sourceOfTruth": "Historical 2026-08-20 read-only prefix observations, current repository runners, and the later owner-approval record. Historical observations are not current live proof.",
+  "national": {
+    "preparation": "data/phase1-local-profiled-promotion-preparation.json",
+    "historicalObservationsAtCapture": {
+      "forestHarvest": "primary and recovery objects present; canonical runner target already exists remotely",
+      "canopyHeight": "primary and recovery prefixes empty",
+      "federalElectoralDistricts": "primary and recovery prefixes empty"
+    },
+    "readOnlyChecks": [
+      "aws s3api list-objects-v2 --region ca-central-1 --bucket witness-tree-raw-archive-ca-central-1 --prefix raw/nrcan-forest-canopy-height-2022/ --query 'Contents[].Key' --output text",
+      "aws s3api list-objects-v2 --region ca-central-1 --bucket witness-tree-raw-archive-ca-central-1 --prefix raw/elections-canada-federal-electoral-districts/ --query 'Contents[].Key' --output text"
+    ],
+    "localPreflightCommand": "zsh scripts/run-phase1-approved-promotion.sh --preflight",
+    "approval": "data/phase1-phase3-owner-approvals-2026-08-21.json#/phase1/archiveApprovals/0",
+    "ownerRunCommand": "zsh scripts/run-phase1-approved-promotion.sh --run-federal",
+    "runnerConflict": "The generic --run includes already-archived harvest/canopy targets and remains prohibited; the approved --run-federal mode selects only the shared federal artifact.",
+    "preconditions": [
+      "The federal-only owner approval for the exact payload/sidecar keys, ca-central-1, and COMPLIANCE retention through 2033-08-12 is recorded.",
+      "Local byte length and SHA-256 preflight passes for the exact controlled workspace-data files.",
+      "Owner confirms the existing authorized execution path and all required version-specific readback and retention capabilities; no IAM change is assumed here.",
+      "Exact readback and recovery evidence is integrated before any ledger or production gate changes."
+    ]
+  },
+  "quebecCurrentOriginal": {
+    "preparation": "data/qc-immutable-promotion-preparation.json",
+    "plannedPrefixes": ["raw/qc-ecoforest-map/", "raw/qc-original-inventory/"],
+    "historicalObservationsAtCapture": "both planned prefixes were empty on the primary and recovery buckets on 2026-08-20; this is not a current readback",
+    "readOnlyChecks": [
+      "aws s3api list-objects-v2 --region ca-central-1 --bucket witness-tree-raw-archive-ca-central-1 --prefix raw/qc-ecoforest-map/ --query 'Contents[].Key' --output text",
+      "aws s3api list-objects-v2 --region ca-central-1 --bucket witness-tree-raw-archive-ca-central-1 --prefix raw/qc-original-inventory/ --query 'Contents[].Key' --output text"
+    ],
+    "localPreflightCommand": "zsh scripts/run-qc-approved-multipart-promotion.sh --preflight",
+    "approval": "data/phase1-phase3-owner-approvals-2026-08-21.json#/phase1/archiveApprovals/1",
+    "ownerRunCommand": "zsh scripts/run-qc-approved-multipart-promotion.sh --run",
+    "preconditions": [
+      "The owner approval for both exact payloads, four exact keys, ca-central-1, sequential multipart execution, and COMPLIANCE retention through 2033-08-12 is recorded.",
+      "Both controlled local archives pass exact byte-length and SHA-256 preflight.",
+      "Owner confirms the existing authorized execution path and all required version-specific readback and retention capabilities; no IAM change is assumed here.",
+      "Exact payload/sidecar version, checksum, retention, and recovery readbacks are integrated before source-ledger changes."
+    ]
+  },
+  "quebecFourth": {
+    "preparation": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+    "plannedPrefix": "raw/qc-fourth-inventory/",
+    "historicalObservationsAtCapture": "the planned prefix was empty on the primary and recovery buckets on 2026-08-20; this is not a current readback",
+    "approval": "data/phase1-phase3-owner-approvals-2026-08-21.json#/phase1/archiveApprovals/2",
+    "dryRunCommand": "node scripts/qc-fourth-inventory-immutable-promotion.mjs --preflight --data-root /Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data",
+    "executeTemplate": "node scripts/qc-fourth-inventory-immutable-promotion.mjs --execute --approve-exact-artifact-set --approve-iam-policy --approve-compliance-retention --approve-mfa-session --retention-until 2033-08-12T00:00:00Z --session-ready --data-root <controlled-absolute-path> --state-dir <controlled-absolute-path> --sidecar-dir <controlled-absolute-path>",
+    "requiredApprovals": {
+      "exactArtifactSet": true,
+      "irreversibleComplianceRetention": true,
+      "leastPrivilegeIamPolicy": true,
+      "mfaSessionExecution": true
+    },
+    "preconditions": [
+      "All 62 exact keys and local SHA-256 values pass the dry-run/local preflight.",
+      "The recorded approval covers the exact artifact set, least-privilege policy, irreversible COMPLIANCE retention, and MFA session.",
+      "Owner confirms the existing authorized execution path and all required version-specific readback and retention capabilities; no IAM change is assumed here.",
+      "Independent redacted readback and recovery evidence is reviewed before any source-ledger or production decision."
+    ]
+  },
+  "archiveControl": {
+    "approval": "data/phase1-phase3-owner-approvals-2026-08-21.json#/phase1/archiveControlExercise",
+    "preflight": "scripts/run-phase1-archive-owner-exercise.sh --preflight",
+    "ownerCommand": "scripts/run-phase1-archive-owner-exercise.sh --run",
+    "completionEvidence": false
+  },
+  "globalBlocker": "The later owner approvals authorize only the exact owner-local commands recorded here. Execution and exact readback evidence remain absent; this record does not apply retention, upload, delete, or make any production inference."
+}

@@ -1,0 +1,67 @@
+{
+  "schemaVersion": "witness-tree/phase1-production-admission/1",
+  "status": "owner-approved-admitted-and-release-approved",
+  "decisionId": "phase1-federal-electoral-2023-production-admission-v1",
+  "decidedAt": "2026-08-26T00:55:28Z",
+  "ownerAuthorization": {
+    "ownerName": "Chinonso Obeta",
+    "statement": "I explicitly authorize ingestion, release, production admission, and deployment.",
+    "decision": "approve"
+  },
+  "rows": ["fed-2023-ridings", "elections-canada-45th-files"],
+  "sharedArtifact": {
+    "path": "../Witness_Tree-data/derived/phase1/federal-electoral-districts-2023-v1/4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93/phase1-federal-electoral-districts-2023-v1/federal-electoral-districts-2023.gpkg",
+    "sha256": "ca50eb02e1baee076ebec1b8e8511ca6697e8e48cef68bf5d1d74f5458681c05",
+    "byteLength": 20525056,
+    "layer": "federal_electoral_districts_2023",
+    "featureCount": 352,
+    "distinctDistrictCount": 343
+  },
+  "evidenceBindings": [
+    {"path": "data/elections-canada-fed-2025-source-ledger.json", "sha256": "b1d28895c43c843a6072ef9adca661c26c3a27fbdda27650ea216abe56c707fb"},
+    {"path": "data/federal-electoral-archive-recovery-evidence.json", "sha256": "18b9fbfa5e3eecdc33ad0098f5ffa55f7bfebb1a47d2e33b7f01a94e05a6ed32"},
+    {"path": "data/phase1-production-transformation-specifications-v1.json", "sha256": "258ca3f94e30d484b53cc12e29c83beaf57998993edaea05e44f5a4924979efc"},
+    {"path": "data/phase1-transformation-scope-owner-approval-2026-08-25.json", "sha256": "fda1c43d2ee23adb35907ddf012c9b64aa23e69774866c725271ed91223dffb2"},
+    {"path": "data/phase1-federal-electoral-execution-approval.json", "sha256": "be3ba42081f04d8313ad352c291c18f04a16f25599dd47f0e381a6170e39bbec"},
+    {"path": "data/phase1-federal-electoral-output-verification-evidence.json", "sha256": "9342a36dce2748d6be510a9aa14953343714958f93738cd4067d66379b322bc4"}
+  ],
+  "ledgerFields": {
+    "editionEffectiveDate": "2025-03-23",
+    "transformations": {
+      "methodVersion": "phase1-federal-electoral-districts-2023-v1",
+      "summary": "Selected REPORDER 2023, retained FED_NUM, ED_NAMEE, ED_NAMEF and REPORDER, appended checksum-bound lineage fields, and retained every source polygon without dissolve, simplify, repair, clipping or reprojection.",
+      "outputSha256": "ca50eb02e1baee076ebec1b8e8511ca6697e8e48cef68bf5d1d74f5458681c05"
+    },
+    "redistributionStatus": "allowed-under-ogl-canada-2.0-with-required-attribution-and-modification-notice",
+    "plainLanguageExplanation": {
+      "en": "Official federal electoral district boundaries under the 2023 Representation Orders, used as boundary context only.",
+      "fr": "Limites officielles des circonscriptions électorales fédérales selon les décrets de représentation de 2023, utilisées uniquement comme contexte territorial."
+    },
+    "updateCadence": "as-needed-by-publisher-and-representation-order; no fixed calendar cadence",
+    "nextExpectedRefresh": {
+      "status": "unknown",
+      "reason": "Elections Canada publishes boundary editions as required and does not provide a fixed next-release date; recheck the official listing before each Witness Tree release."
+    },
+    "bulkRedistributionAllowed": true,
+    "correctionContactRoute": {
+      "internalEn": "/en/corrections",
+      "internalFr": "/fr/corrections",
+      "publisherListing": "https://www.elections.ca/content.aspx?dir=cir%2FmapsCorner%2Fvector&document=index&lang=e&section=res"
+    },
+    "admissionState": true
+  },
+  "requiredAttribution": "Contains information licensed under the Open Government Licence – Canada.",
+  "modificationNotice": "Witness Tree selected only REPORDER 2023 fields and appended lineage fields. Source geometries and named publisher attributes were not altered.",
+  "decisions": {
+    "ingestionApproved": true,
+    "releaseApproved": true,
+    "productionAdmission": true,
+    "productionEligible": true,
+    "deploymentAuthorized": true
+  },
+  "limits": [
+    "The artifact is federal electoral boundary context, not an electoral result, electorate, demographic, representation, Indigenous-rights, or traditional-territory dataset.",
+    "The edition is the 2023 Representation Orders used for the 45th general election; it is not claimed current beyond that named edition.",
+    "A separate French publisher archive remains an open acquisition checkpoint even though this admitted layer contains both ED_NAMEE and ED_NAMEF."
+  ]
+}

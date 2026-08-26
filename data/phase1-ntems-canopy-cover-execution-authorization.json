@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "witness-tree/phase1-ntems-execution-authorization/1",
+  "status": "approved-owner-local-execution",
+  "decisionId": "phase1-ntems-raster-execution-v1",
+  "createdAt": "2026-08-26T00:55:28Z",
+  "ownerDecision": {
+    "decision": "approve",
+    "ownerName": "Chinonso Obeta",
+    "statement": "You can execute them when complete.",
+    "scope": "This record selects ntems-canopy-cover-v1 from the four NTEMS raster scopes within the seven approved Phase 1 transformation scopes."
+  },
+  "runner": {
+    "path": "scripts/run-phase1-ntems-transform.mjs",
+    "sha256": "ecb3585a27c82119e2d18fbce3231e12f3c8a33abbf5973453db8d1b0cf2a511"
+  },
+  "specifications": [
+    {
+      "id": "ntems-canopy-cover-v1",
+      "path": "data/phase1-production-transformation-specifications-v1.json",
+      "sha256": "258ca3f94e30d484b53cc12e29c83beaf57998993edaea05e44f5a4924979efc"
+    }
+  ],
+  "inputs": [
+    {
+      "path": "raw/nrcan-forest-canopy-cover-2022/2026-08-11/CA_canopy_cover_2022.zip",
+      "sha256": "80c37461f4deccfdfffc26124e9064d53a94dde660b9f96194445870393af130",
+      "byteLength": 9954395939,
+      "member": "CA_canopy_cover_2022.tif",
+      "year": 2022
+    }
+  ],
+  "boundary": {
+    "localOnly": true,
+    "externalMutation": false,
+    "ingestion": false,
+    "release": false,
+    "productionAdmission": false,
+    "productionEligible": false,
+    "overwriteExisting": false
+  }
+}

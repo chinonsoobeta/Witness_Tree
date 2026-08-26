@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "witness-tree/phase1-ntems-execution-authorization/1",
+  "status": "approved-owner-local-execution",
+  "decisionId": "phase1-ntems-raster-execution-v1",
+  "createdAt": "2026-08-26T00:55:28Z",
+  "ownerDecision": {
+    "decision": "approve",
+    "ownerName": "Chinonso Obeta",
+    "statement": "You can execute them when complete.",
+    "scope": "This record selects ntems-forest-harvest-v1 from the four NTEMS raster scopes within the seven approved Phase 1 transformation scopes."
+  },
+  "runner": {
+    "path": "scripts/run-phase1-ntems-transform.mjs",
+    "sha256": "ecb3585a27c82119e2d18fbce3231e12f3c8a33abbf5973453db8d1b0cf2a511"
+  },
+  "specifications": [
+    {
+      "id": "ntems-forest-harvest-v1",
+      "path": "data/phase1-production-transformation-specifications-v1.json",
+      "sha256": "258ca3f94e30d484b53cc12e29c83beaf57998993edaea05e44f5a4924979efc"
+    }
+  ],
+  "inputs": [
+    {
+      "path": "raw/nrcan-ca-forest-harvest-1985-2022/2026-08-14/CA_Forest_Harvest_1985-2022.zip",
+      "sha256": "c6f41dff46d91812874672edb53233dac4126952132ad6d1131ad47b11ad7aad",
+      "byteLength": 247945479,
+      "member": "CA_Forest_Harvest_1985-2022.tif"
+    }
+  ],
+  "boundary": {
+    "localOnly": true,
+    "externalMutation": false,
+    "ingestion": false,
+    "release": false,
+    "productionAdmission": false,
+    "productionEligible": false,
+    "overwriteExisting": false
+  }
+}
