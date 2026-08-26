@@ -4,6 +4,8 @@ import { closeSync, lstatSync, openSync, readFileSync, readSync } from "node:fs"
 import { basename, dirname, isAbsolute, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { approvedDataRootRealPathSync, resolveDataRoot } from "./data-root.mjs";
+
 import {
   assertBurnedAreaComparison,
   assertHarvestComparison,
@@ -102,6 +104,19 @@ function assertNoTraversal(path: string, label: string, allowCanonicalDataParent
   throw new Error(`${label} path must not contain traversal segments`);
 }
 
+// Resolved once and only when a symlink is actually met, so a detached drive
+// cannot make this check fail for a reason unrelated to the evidence.
+let approvedDataRootLinkCache: string | null = null;
+function approvedDataRootLink(): string {
+  if (approvedDataRootLinkCache === null) {
+    const configured = resolveDataRoot();
+    // Throws if the link points anywhere other than the approved SSD root.
+    approvedDataRootRealPathSync(configured);
+    approvedDataRootLinkCache = configured;
+  }
+  return approvedDataRootLinkCache;
+}
+
 function assertNoSymlinkAncestors(absolutePath: string, label: string): void {
   let current = absolutePath;
   while (true) {
@@ -118,7 +133,14 @@ function assertNoSymlinkAncestors(absolutePath: string, label: string): void {
     }
     // macOS commonly exposes /tmp as a system alias for /private/tmp. That
     // alias is safe; every task-local symlink remains rejected.
-    assert(!info.isSymbolicLink() || current === "/tmp" || current === "/var", `${label} must not traverse a symlink parent`);
+    //
+    // The data root is the third approved alias. After the SSD cutover the
+    // recorded internal path is a compatibility symlink, so every artifact
+    // this check is built to accept sits beneath one. Exempting that single
+    // link keeps the guard's purpose intact: any other symlink ancestor,
+    // including one planted inside the data root, is still rejected.
+    const approvedLink = current === "/tmp" || current === "/var" || current === approvedDataRootLink();
+    assert(!info.isSymbolicLink() || approvedLink, `${label} must not traverse a symlink parent`);
     const parent = dirname(current);
     if (parent === current) break;
     current = parent;

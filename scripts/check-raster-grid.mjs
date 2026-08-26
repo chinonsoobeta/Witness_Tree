@@ -208,7 +208,17 @@ function validateBoundaryFeatureCounts(record) {
     throw new Error(`The record must carry all ${EXPECTED_BOUNDARY_COUNTS.size} confirmed boundary feature counts.`);
   }
   required(block.method, "Boundary feature-count method");
-  if (!/OGR|ogrinfo/.test(block.method)) throw new Error("The feature-count method must state that the counts come from real OGR reads.");
+  // Prose cannot prove where a number came from, so this only rejects a method
+  // statement that fails to claim an OGR read. A bare substring test could not
+  // do even that: "no ogrinfo read was performed" contains "ogrinfo", so a
+  // negation read identically to an affirmation. Require the affirmative form
+  // and reject an explicit denial or a transcription.
+  if (!/\b(?:real OGR reads|ogrinfo\s+-)/i.test(block.method)) {
+    throw new Error("The feature-count method must state that the counts come from real OGR reads.");
+  }
+  if (/\b(?:no|not|without|never)\b[^.]*\b(?:ogr|ogrinfo|read)\b|\btranscrib/i.test(block.method)) {
+    throw new Error("The feature-count method denies or disclaims the OGR read it must assert.");
+  }
   const seen = new Set();
   for (const layer of block.layers) {
     const expected = EXPECTED_BOUNDARY_COUNTS.get(layer.archive);
