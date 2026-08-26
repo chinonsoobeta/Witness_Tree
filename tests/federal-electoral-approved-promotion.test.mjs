@@ -11,11 +11,17 @@ import { loadFederalExecutionGateInputs, validateFederalExecutionGates } from ".
 import { publishFederalMode600 } from "../scripts/federal-electoral-safe-publication.mjs";
 import { acquireFederalRunLock, releaseFederalRunLock } from "../scripts/federal-electoral-run-lock.mjs";
 import { copyStableDescriptor, verifyStableSourceDescriptor, verifyStableUploadDescriptor } from "../scripts/federal-electoral-stable-file.mjs";
+import { approvedDataRootRealPath, INTERNAL_DATA_ROOT } from "../scripts/data-root.mjs";
 
 const runner = new URL("../scripts/run-federal-electoral-approved-promotion.sh", import.meta.url).pathname;
 const plan = JSON.parse(readFileSync(new URL("../data/elections-canada-fed-2025-promotion-preparation.json", import.meta.url)));
 const desired = JSON.parse(readFileSync(new URL("../data/federal-electoral-promotion-iam-desired-state.json", import.meta.url)));
-const dataRoot = "/Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data";
+// The runner refuses a symlinked data root on purpose: it hashes the approved artifact through one
+// O_NOFOLLOW descriptor, and a swappable root would defeat that. After the SSD cutover the internal
+// path is a compatibility symlink, so the test resolves the approved real root and hands the runner
+// a real directory rather than relaxing the guard. Before cutover this returns the internal root
+// unchanged, so the test reads the same either way.
+const dataRoot = await approvedDataRootRealPath(INTERNAL_DATA_ROOT);
 const runnerLock = "/private/tmp/witness-tree-federal-electoral-promotion.run-lock";
 const hash = (value) => createHash("sha256").update(value).digest("hex");
 const result = (action, resource, decision) => ({ EvalActionName: action, EvalResourceName: resource, EvalDecision: decision, MatchedStatements: [], MissingContextValues: [] });

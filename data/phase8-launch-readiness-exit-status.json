@@ -15,7 +15,7 @@
    "evidence": [
     {
      "path": "docs/EXTERNAL_GATES.md",
-     "sha256": "f47354ee02dae6c7252a3fd1280673b88879481526ca93168e75e93d5222f378"
+     "sha256": "f2b541a80f6e718d675abaf115adb7948ff3f2388aa23085526a8f32f9b8825c"
     }
    ]
   },
@@ -79,7 +79,7 @@
    "evidence": [
     {
      "path": "docs/EXTERNAL_GATES.md",
-     "sha256": "f47354ee02dae6c7252a3fd1280673b88879481526ca93168e75e93d5222f378"
+     "sha256": "f2b541a80f6e718d675abaf115adb7948ff3f2388aa23085526a8f32f9b8825c"
     }
    ]
   },

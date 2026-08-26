@@ -67,7 +67,8 @@ function completeReadbackPresence(root, artifactRoot) {
     outputPath: OUTPUT_PATH,
     scopes,
     evidenceMissingCount: scopes.filter(({ readbackEvidencePresent }) => !readbackEvidencePresent).length,
-    admissionReady: scopes.every(({ readbackPresent, readbackEvidencePresent }) => readbackPresent && readbackEvidencePresent),
+    // Explicit === true, so an undetermined presence is never read as ready.
+    admissionReady: scopes.every(({ artifactFilesPresent, readbackEvidencePresent }) => artifactFilesPresent === true && readbackEvidencePresent === true),
   };
 }
 
@@ -77,7 +78,7 @@ export function readiness(root = ROOT, artifactRoot = ARTIFACT_ROOT) {
 
 function requireCompleteReadbacks(root, artifactRoot) {
   const presence = completeReadbackPresence(root, artifactRoot);
-  const incomplete = presence.scopes.filter(({ readbackPresent, readbackEvidencePresent }) => !readbackPresent || !readbackEvidencePresent);
+  const incomplete = presence.scopes.filter(({ artifactFilesPresent, readbackEvidencePresent }) => artifactFilesPresent !== true || readbackEvidencePresent !== true);
   if (incomplete.length > 0) {
     throw new Error(`Cannot build admission record: complete output, sidecar, and readback evidence are required for both QC scopes; incomplete: ${incomplete.map(({ rowId }) => rowId).join(", ")}.`);
   }

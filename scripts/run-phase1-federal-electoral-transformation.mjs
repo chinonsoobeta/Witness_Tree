@@ -11,7 +11,7 @@
 
 import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
-import { existsSync, lstatSync, linkSync, mkdirSync, readFileSync, writeFileSync, rmSync, unlinkSync } from "node:fs";
+import { existsSync, lstatSync, linkSync, mkdirSync, readFileSync, realpathSync, writeFileSync, rmSync, unlinkSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -40,7 +40,16 @@ export const EXECUTION_APPROVAL_PATH = "data/phase1-federal-electoral-execution-
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const REPO_ROOT = path.resolve(HERE, "..");
-export const DEFAULT_DATA_ROOT = path.resolve(REPO_ROOT, "../../Witness_Tree-data");
+/*
+ * The data root is itself a symlink to the external volume after the SSD
+ * cutover. ensureNoSymlink walks every ancestor and refuses any symlink
+ * component, which is what stops a symlink inside the derived tree from
+ * redirecting a write outside the approved location. Resolving the root once,
+ * here, keeps that guard at full strength while letting the one deliberate
+ * symlink through: everything below the resolved root is still walked.
+ */
+export const resolveDataRoot = (target) => (existsSync(target) ? realpathSync(target) : path.resolve(target));
+export const DEFAULT_DATA_ROOT = resolveDataRoot(path.resolve(REPO_ROOT, "../../Witness_Tree-data"));
 const SELECTED_FIELDS = ["FED_NUM", "ED_NAMEE", "ED_NAMEF", "REPORDER"];
 const REQUIRED_OUTPUT_FIELDS = [
   ...SELECTED_FIELDS,
@@ -126,9 +135,63 @@ function loadContext(root = REPO_ROOT, dataRoot = DEFAULT_DATA_ROOT) {
 
   const outputPath = path.resolve(dataRoot, OUTPUT_RELATIVE_PATH);
   const sidecarPath = `${outputPath}.sidecar.json`;
-  if (existsSync(outputPath) || existsSync(sidecarPath)) fail("output or sidecar already exists; overwrite is refused");
+  const completion = completionOutcome({ outputPath, sidecarPath });
   ensureNoSymlink(path.dirname(outputPath));
-  return { root, dataRoot, spec, ownerScope, profile, ledger, archiveEvidence, inputPath, outputPath, sidecarPath, sourceDataset: `/vsizip/${inputPath}/${LAYER_PATH}` };
+  return { root, dataRoot, spec, ownerScope, profile, ledger, archiveEvidence, inputPath, outputPath, sidecarPath, completion, sourceDataset: `/vsizip/${inputPath}/${LAYER_PATH}` };
+}
+
+/*
+ * Distinguishes "not yet produced" from "already produced" without ever
+ * treating the output's mere existence as proof.
+ *
+ * The previous behaviour refused whenever the output or sidecar existed, which
+ * made a completed run indistinguishable from a corrupt one: --preflight
+ * reported failure for work that had finished correctly. That is the same
+ * defect class as the NTEMS runner's missing resume path.
+ *
+ * A "complete" verdict requires the sidecar AND an exact byte match against
+ * it. Anything partial, foreign, or drifted still refuses, and nothing here
+ * narrows the checks that ran before it.
+ */
+export function completionOutcome(
+  { outputPath, sidecarPath },
+  readSidecar = (target) => readFileSync(target, "utf8"),
+  hashOutput = (target) => sha256File(target),
+  sizeOutput = (target) => lstatSync(target).size,
+  present = (target) => existsSync(target),
+) {
+  const hasOutput = present(outputPath);
+  const hasSidecar = present(sidecarPath);
+  if (!hasOutput && !hasSidecar) return { action: "produce" };
+  if (hasOutput !== hasSidecar) {
+    fail(hasOutput
+      ? "output exists without its sidecar; a half-written pair requires owner review before any retry"
+      : "sidecar exists without its output; a half-written pair requires owner review before any retry");
+  }
+
+  let sidecar;
+  try {
+    sidecar = JSON.parse(readSidecar(sidecarPath));
+  } catch (error) {
+    fail(`existing sidecar is unreadable or invalid JSON: ${error instanceof Error ? error.message : String(error)}`);
+  }
+  if (!isObject(sidecar)) fail("existing sidecar is not a JSON object");
+  if (sidecar.specId !== SPEC_ID) fail(`existing sidecar belongs to a foreign specification: ${String(sidecar.specId)}`);
+  if (sidecar.methodVersion !== METHOD_VERSION) fail(`existing sidecar method version differs: ${String(sidecar.methodVersion)}`);
+  if (!isObject(sidecar.output)) fail("existing sidecar output record is missing");
+  if (sidecar.output.path !== `../Witness_Tree-data/${OUTPUT_RELATIVE_PATH}`) fail("existing sidecar binds a different output path");
+  if (sidecar.output.layer !== OUTPUT_LAYER) fail("existing sidecar binds a different output layer");
+
+  const declaredBytes = sidecar.outputByteLength;
+  if (!Number.isSafeInteger(declaredBytes) || declaredBytes <= 0) fail("existing sidecar declares no usable output byte length");
+  if (typeof sidecar.outputSha256 !== "string" || !/^[a-f0-9]{64}$/.test(sidecar.outputSha256)) fail("existing sidecar declares no usable output SHA-256");
+
+  const actualBytes = sizeOutput(outputPath);
+  if (actualBytes !== declaredBytes) fail(`existing output byte length drifted from its sidecar: expected ${declaredBytes}, got ${actualBytes}`);
+  const actualSha = hashOutput(outputPath);
+  if (actualSha !== sidecar.outputSha256) fail(`existing output checksum drifted from its sidecar: expected ${sidecar.outputSha256}, got ${actualSha}`);
+
+  return { action: "complete", sha256: actualSha, byteLength: actualBytes };
 }
 
 const metadataFor = (dataset, layer = undefined) => runOgr(["-ro", "-json", "-so", dataset, ...(layer ? [layer] : [])]).layers?.[0];
@@ -290,7 +353,7 @@ function parseArgs(argv) {
     const arg = argv[index];
     if (arg === "--preflight") mode = "preflight";
     else if (arg === "--execute") mode = "execute";
-    else if (arg === "--data-root") dataRoot = path.resolve(argv[++index] ?? fail("--data-root requires a path"));
+    else if (arg === "--data-root") dataRoot = resolveDataRoot(path.resolve(argv[++index] ?? fail("--data-root requires a path")));
     else if (arg === "--help" || arg === "-h") return { help: true };
     else fail(`unknown argument: ${arg}`);
   }
@@ -304,8 +367,16 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       console.log("Usage: node scripts/run-phase1-federal-electoral-transformation.mjs [--preflight|--execute] [--data-root PATH]");
     } else {
       const result = preflight({ dataRoot: args.dataRoot });
+      const { completion } = result.context;
       if (args.mode === "preflight") {
-        console.log(`Preflight passed: ${SPEC_ID}; 352 polygon features, 343 FED_NUM districts; execution remains blocked until ${EXECUTION_APPROVAL_PATH} exists.`);
+        if (completion.action === "complete") {
+          console.log(`Preflight passed: ${SPEC_ID}; 352 polygon features, 343 FED_NUM districts; output already produced and verified against its sidecar (${completion.sha256}, ${completion.byteLength} bytes).`);
+        } else {
+          console.log(`Preflight passed: ${SPEC_ID}; 352 polygon features, 343 FED_NUM districts; execution remains blocked until ${EXECUTION_APPROVAL_PATH} exists.`);
+        }
+      } else if (completion.action === "complete") {
+        // Producing again would overwrite bytes an owner already admitted.
+        fail(`output already exists and matches its sidecar (${completion.sha256}); refusing to overwrite an existing result`);
       } else {
         const approval = validateExecutionApproval(result.context);
         const sidecar = execute(result.context, result.sourceReadback, approval);

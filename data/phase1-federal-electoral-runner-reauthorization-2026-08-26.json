@@ -1,0 +1,65 @@
+{
+  "schemaVersion": "witness-tree/phase1-federal-electoral-runner-reauthorization/1",
+  "status": "approved-owner-runner-rebinding-and-readmission",
+  "decisionId": "phase1-federal-electoral-runner-rebinding-2026-08-26",
+  "createdAt": "2026-08-26T15:08:00Z",
+  "ownerDecision": {
+    "decision": "approve",
+    "ownerName": "Chinonso Obeta",
+    "statement": "Re-affirm production admission too.",
+    "channel": "Claude Code chat session",
+    "questionAnswered": "#50's rebinding also invalidates an owner admission carrying ingestion, release, production admission, production eligibility and deployment. Re-affirming that is wider than what you approved. How do you want it handled?",
+    "priorApproval": "An earlier reply of 'All of them.' approved binding runner f04cca5c. That approval alone did not cover step 2 below; step 2 was put to the owner separately once its scope was discovered, and approved.",
+    "scope": "Two steps. (1) Rebind the runner checksum in data/phase1-federal-electoral-execution-approval.json from 79b11107 to f04cca5c. (2) Re-admit data/phase1-federal-electoral-production-admission.json against the rebound execution approval, re-affirming ingestion, release, production admission, production eligibility and deployment for the federal-electoral scope only."
+  },
+  "runner": {
+    "path": "scripts/run-phase1-federal-electoral-transformation.mjs",
+    "supersededSha256": "79b11107345996872a5ede12952344345e305a89f2cdb4deba4ca7b25e4ff344",
+    "sha256": "f04cca5ccb27eb737c503d46c416295f674370e649331d5e90c0117467f20aa9"
+  },
+  "rebindings": [
+    {
+      "path": "data/phase1-federal-electoral-execution-approval.json",
+      "from": "79b11107345996872a5ede12952344345e305a89f2cdb4deba4ca7b25e4ff344",
+      "to": "f04cca5ccb27eb737c503d46c416295f674370e649331d5e90c0117467f20aa9",
+      "field": "runner.sha256",
+      "class": "owner-admitted, rebound under this decision"
+    },
+    {
+      "path": "data/phase1-federal-electoral-production-admission.json",
+      "from": "be3ba42081f04d8313ad352c291c18f04a16f25599dd47f0e381a6170e39bbec",
+      "to": "59e526e779be7e169513562790f87d924af55872fc67e9f2e0cb5b9d199a2179",
+      "field": "binding of the execution approval",
+      "class": "owner-admitted, re-admitted under this decision"
+    },
+    {
+      "path": "data/phase1-source-ledger-field-audit.json",
+      "from": "1d2620731ab6669bc7df611726be18f3c76db90307bd1028f83fcafc60ac6e9e",
+      "to": "52465465a20938aa7312cd2e76f2f4b1e3688dd8c2164025e690e3deb565c034",
+      "field": "binding of the production admission, 16 occurrences",
+      "class": "engineering-derived, rebound because its stated reason still holds"
+    },
+    {
+      "path": "data/phase1-ledger-post-scope-approval-evolution.json",
+      "from": "1d2620731ab6669bc7df611726be18f3c76db90307bd1028f83fcafc60ac6e9e",
+      "to": "52465465a20938aa7312cd2e76f2f4b1e3688dd8c2164025e690e3deb565c034",
+      "field": "binding of the production admission",
+      "class": "engineering-derived, rebound because its stated reason still holds"
+    }
+  ],
+  "whatTheRebindingCovers": "Two repairs, both proven by test: a completion outcome that returns 'complete' only after recomputing the output checksum and matching its sidecar, and resolution of the data root symlink so ensureNoSymlink still walks every component below the resolved root. Neither weakens a guard.",
+  "underlyingDataUnchanged": {
+    "note": "No transformation was re-run and no output changed. The output produced on 2026-08-26T00:55:28Z under runner 79b11107 was re-verified during this work.",
+    "outputByteLength": 20525056,
+    "outputSha256": "ca50eb02e1baee076ebec1b8e8511ca6697e8e48cef68bf5d1d74f5458681c05",
+    "sidecarMatch": true,
+    "featureCount": 352,
+    "districtCount": 343,
+    "invalidGeometryCount": 0
+  },
+  "boundary": {
+    "localOnly": true,
+    "externalMutation": false,
+    "scopeLimitedTo": "federal-electoral-districts-2023-v1"
+  }
+}

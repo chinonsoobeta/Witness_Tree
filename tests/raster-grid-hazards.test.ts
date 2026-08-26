@@ -13,6 +13,7 @@ import type {
   BoundaryCrsVectorLayer,
   ConformantRasterYear,
   GridAlignedVectorLayer,
+  LandCoverClassValue,
   RasterYearHeader,
   VatSidecar,
 } from "../lib/grid/types";
@@ -188,6 +189,70 @@ test("a sidecar that is short, over-full, or missing a row is Unknown, never zer
     () => formatClassArea({ kind: "unknown", classValue: 210, reason: { en: "  ", fr: "  " } }),
     /requires a reason/,
   );
+});
+
+test("no Unknown reason ever shows a reader the words undefined, null, or NaN, in either language", () => {
+  const broken = (patch: Partial<Record<keyof VatSidecar, unknown>>): VatSidecar =>
+    ({ ...VAT_1990, ...patch }) as unknown as VatSidecar;
+
+  const malformed: VatSidecar[] = [
+    broken({ year: undefined, recordCount: 0 }),
+    broken({ year: null, recordCount: 0 }),
+    broken({ year: Number.NaN, recordCount: 0 }),
+    broken({ year: undefined, recordCount: undefined }),
+    broken({ year: Number.NaN, recordCount: Number.NaN }),
+    broken({ year: null, recordCount: null }),
+    broken({ year: undefined, recordCount: 12 }),
+    broken({ year: 1990.5, recordCount: undefined }),
+    broken({ year: undefined, counts: {} }),
+    broken({ year: null, counts: { ...VAT_1990.counts, "210": undefined } }),
+    broken({ year: undefined, counts: { ...VAT_1990.counts, undefined: 1 } }),
+    broken({ year: Number.NaN, counts: { ...VAT_1990.counts, null: 1 } }),
+    broken({ year: null, counts: { ...VAT_1990.counts, NaN: 1 } }),
+    broken({ year: undefined, counts: { ...VAT_1990.counts, "255": 1 } }),
+  ];
+  const classValues: LandCoverClassValue[] = [
+    210,
+    undefined as unknown as LandCoverClassValue,
+    Number.NaN as unknown as LandCoverClassValue,
+  ];
+
+  const forbidden = /undefined|null|NaN/i;
+  let unknownCount = 0;
+
+  const inspect = (reason: { en: string; fr: string }) => {
+    unknownCount += 1;
+    for (const text of [reason.en, reason.fr]) {
+      assert.equal(text.trim().length > 0, true);
+      assert.equal(forbidden.test(text), false, `Unknown reason leaked a placeholder: ${text}`);
+    }
+  };
+
+  for (const sidecar of malformed) {
+    const before = unknownCount;
+
+    const list = classListFromVat(sidecar);
+    if (list.kind === "unknown") inspect(list.reason);
+
+    for (const classValue of classValues) {
+      const area = classAreaFromVat(sidecar, classValue);
+      if (area.kind === "unknown") {
+        inspect(area.reason);
+        const rendered = formatClassArea(area);
+        // The Unknown marker is U+2013, matching the marker asserted at line 140 and the Phase 3
+        // criterion named for an en dash. U+2014 is banned repository-wide.
+        assert.match(rendered.en, /^Unknown – /);
+        assert.match(rendered.fr, /^Inconnu – /);
+        assert.equal(forbidden.test(rendered.en), false, rendered.en);
+        assert.equal(forbidden.test(rendered.fr), false, rendered.fr);
+      }
+    }
+
+    assert.equal(unknownCount > before, true, `A malformed sidecar produced no Unknown at all: ${JSON.stringify(sidecar)}`);
+  }
+
+  // Every malformed sidecar is exercised against the class list and three class values.
+  assert.equal(unknownCount >= malformed.length, true);
 });
 
 // ---------------------------------------------------------------------------

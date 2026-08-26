@@ -33,8 +33,11 @@ jobs:
       - run: npm run check:alberta-historical-wildfire-profile
       - run: npm run check:nfdb-poly-current
       - run: npm run check:cwfis-current-active-fires
+      - run: npm run check:vlce2-forest-mask-decision
+      - run: npm run check:transformation-contract
       - run: npm run check:phase1-geometry-policies
       - run: npm run check:phase1-corruption-corpus
+      - run: npm run check:national-baseline-admission
       - run: npm run check:phase0-foundations-exit-status
       - run: npm run check:phase3-frontend-foundation-exit-status
       - run: npm run check:phase1-exit-status
@@ -79,6 +82,30 @@ jobs:
       - run: npm run check:phase2-historical-method-parameters
       - run: npm run check:phase2-historical-component-inventory
       - run: node --test tests/phase2-real-data-owner-decision.test.mjs tests/phase2-real-national-preflight.test.mjs tests/phase2-real-national-execution-evidence.test.mjs
+      # Checkers that validate an owner admission. Each of these binds bytes an
+      # owner approved, so a change that silently voids an approval must fail the
+      # branch gate rather than be discovered at execution time.
+      - run: npm run check:phase1-bc-copyright-permission-form-package
+      - run: npm run check:phase1-immutable-downstream-preflight
+      - run: npm run check:current-wildfire-owner-admission
+      - run: npm run check:phase1-alberta-transform-ingestion-audit
+      - run: npm run check:phase1-transformation-scope-owner-approval
+      - run: npm run check:qc-stand-copy-production-admission-readiness
+      - run: npm run check:phase1-ntems-transform
+      - run: npm run check:phase1-ntems-resume
+      - run: npm run check:phase1-ntems-production-admission-readiness
+      - run: npm run check:phase1-owner-approval-packet
+      - run: npm run check:qc-immutable-promotion-preparation
+      - run: npm run check:federal-electoral-promotion-gates
+      - run: npm run check:phase2-owner-admission-packet
+      - run: npm run check:phase2-admission-record-template
+      - run: npm run check:phase2-independent-comparison-evidence
+      # Static half of the data-root inventory: it proves every inventoried
+      # check still exists, so a rename cannot quietly shrink the list of
+      # checks known to be unverifiable without the drive. The completeness
+      # half (--empirical) is only decidable with the data root detached and
+      # is run by hand, not here.
+      - run: npm run check:data-root-bound-checks
       - run: npm run check:source-review
       - run: npm run check:accessibility
       - run: npm run build
@@ -90,3 +117,13 @@ jobs:
       # The complete suite includes owner-local macOS safety runners and large
       # checksum-bound artifacts. It is a required local release gate; the
       # portable contract suites above remain the Ubuntu branch gate.
+      #
+      # Nine owner-admission checkers stay out of this branch gate because they
+      # read the local data root, which holds payloads no CI runner has:
+      # check:phase1-remaining-actions-audit, check:phase1-phase3-owner-approvals,
+      # check:phase1-source-ledger-decision-readiness,
+      # check:phase1-current-state-completion-audit, check:phase1-bc-ontario-row-audit,
+      # check:phase1-owner-decision-queue, check:phase1-federal-electoral-transformation,
+      # check:phase1-federal-electoral-production-admission and
+      # check:phase2-historical-national-execution. They remain required local
+      # release gates and are the reason the local suite is not optional.

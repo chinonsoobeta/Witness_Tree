@@ -8,10 +8,19 @@ export type GeometryCount =
   | Readonly<{ kind: "known"; value: number }>
   | Readonly<{ kind: "unknown" }>;
 
+/** Every feature a deterministic policy run visited, split into disjoint classes. */
+export type GeometryPolicyOutcome = Readonly<{
+  featureCount: number;
+  repairedCount: number;
+  quarantinedCount: number;
+  unchangedCount: number;
+}>;
+
 export type DeterministicGeometryPolicy = Readonly<{
   version: string;
   action: "repair-or-quarantine";
   deterministic: true;
+  outcome: GeometryPolicyOutcome;
 }>;
 
 export type StagedTransformationInput = Readonly<{

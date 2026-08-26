@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "witness-tree/data-root-bound-checks/1",
+  "status": "engineering-derived-inventory",
+  "claims": {
+    "evidenceUnavailableIsNotEvidenceContradicted": true,
+    "listVerifiedAgainstPackageScripts": true,
+    "listVerifiedEmpiricallyWhenDataRootAbsent": true,
+    "ownerAdmitted": false,
+    "released": false,
+    "productionEligible": false
+  },
+  "dataRoot": {
+    "path": "../../Witness_Tree-data",
+    "reason": "Every check below reads real source or derived bytes and verifies their SHA-256 against a bound checksum. None of them can be satisfied by a fixture, because a fixture cannot reproduce the checksum of a real archive."
+  },
+  "checks": [
+    "check:phase1-bc-ontario-row-audit",
+    "check:phase1-current-state-completion-audit",
+    "check:phase1-federal-electoral-output",
+    "check:phase1-federal-electoral-production-admission",
+    "check:phase1-federal-electoral-transformation",
+    "check:phase1-nrcan-cover-processing-gate",
+    "check:phase1-ntems-readback-bytes",
+    "check:phase1-owner-decision-queue",
+    "check:phase1-phase3-owner-approvals",
+    "check:phase1-production-source-ledger",
+    "check:phase1-remaining-actions-audit",
+    "check:phase1-source-ledger-decision-readiness",
+    "check:phase2-expert-review-evidence",
+    "check:phase2-historical-evidence-status",
+    "check:phase2-historical-national-execution",
+    "check:phase2-real-comparison-availability",
+    "check:phase2-real-review-packet",
+    "check:phase2-real-review-packet-raster-readback",
+    "check:wildfire-derived-readback",
+    "check:wildfire-derived-recovery"
+  ]
+}

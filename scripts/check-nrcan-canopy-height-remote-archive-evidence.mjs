@@ -14,7 +14,15 @@ export function validateNrcanCanopyHeightRemoteArchiveEvidence(e = read("data/nr
   assert.equal(x.bytes, profile.raw.byteLength);
   assert.equal(x.sha256, profile.raw.sha256);
   assert.equal(x.manifestBytes, 459);
-  assert.match(x.payloadKey, new RegExp(`${profile.raw.sha256}/payload/ca_canopy_height_2022\\.zip$`));
+  // Anchored at both ends. Right-anchored alone accepted any prefix, so an
+  // object living under a different source's key space passed as "exact", and
+  // manifestKey is derived from this value so it agreed with the wrong key too.
+  assert.match(
+    x.payloadKey,
+    new RegExp(
+      `^raw/nrcan-forest-canopy-height-2022/undeclared/\\d{4}-\\d{2}-\\d{2}T\\d{2}-\\d{2}-\\d{2}Z/${profile.raw.sha256}/payload/ca_canopy_height_2022\\.zip$`,
+    ),
+  );
   assert.equal(x.manifestKey, x.payloadKey.replace(/\/payload\/[^/]+$/, "/manifest.json"));
   assert.equal(x.primary.payloadVersionPresent && x.primary.manifestVersionPresent, true);
   assert.equal(x.recovery.payloadVersionPresent && x.recovery.manifestVersionPresent, true);
