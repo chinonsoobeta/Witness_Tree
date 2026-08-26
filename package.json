@@ -124,6 +124,7 @@
     "prepare:qc-stand-copy-production-admission": "node scripts/prepare-qc-stand-copy-production-admission.mjs",
     "check:phase1-ntems-transform": "node --test tests/phase1-ntems-transform.test.mjs",
     "check:phase1-ntems-transform-readback": "node --test tests/phase1-ntems-transform-readback.test.mjs",
+    "check:phase1-ntems-readback-bytes": "node scripts/check-phase1-ntems-readback-bytes.mjs",
     "check:phase1-ntems-production-admission-readiness": "node scripts/check-phase1-ntems-production-admission-readiness.mjs && node --test tests/phase1-ntems-production-admission-readiness.test.mjs",
     "prepare:phase1-ntems-production-admission": "node scripts/prepare-phase1-ntems-production-admission.mjs",
     "check:phase1-owner-approval-packet": "node scripts/check-phase1-owner-approval-packet.mjs",

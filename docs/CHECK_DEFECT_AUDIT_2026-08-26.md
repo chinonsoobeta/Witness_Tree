@@ -79,7 +79,7 @@ fact on a regex over an operator-written sentence. Flagged as marginal because
 the console output is honest where the name is not: it says "internally
 consistent", not "verified".
 
-## The coverage gap this audit did not close
+## The coverage gap, now closed
 
 No runnable `npm run check:*` reads the underlying NTEMS artifact bytes.
 
@@ -98,11 +98,38 @@ No runnable `npm run check:*` reads the underlying NTEMS artifact bytes.
 appears among the 19 checks that read real bytes.
 
 So for the three NTEMS scopes with readback evidence, the runnable checks
-confirm the evidence file exists and is self-consistent. They do not confirm
-the artifact. Closing this requires either wiring the existing verifier into a
-check script, or an owner admission record that unlocks the byte-level branch.
-The first is engineering work and is not blocked. The second is not mine to
-create.
+confirmed that the evidence file exists and is self-consistent. They did not
+confirm the artifact.
+
+`check:phase1-ntems-readback-bytes` now does. For each committed readback
+evidence record it recomputes the evidence from the bytes under the data root
+and requires exact equality: output SHA-256, byte length, sidecar SHA-256, and
+the GDAL pixel checksum of source against output. The verifier emits no
+volatile fields, so nothing is stripped and nothing is excused.
+
+A scope with no committed evidence is reported as not yet evidenced rather
+than passed, so `ntems-annual-land-cover` cannot be mistaken for verified while
+its transformation is still running.
+
+Proven both ways: `ntems-forest-harvest-v1` verifies against the real artifact,
+and a record with one forged digest fails with a contradiction and exits 1.
+
+Two things about this are worth stating rather than leaving to be discovered.
+
+It is expensive. The two large scopes are 13.1 GB and 14.1 GB, and the check
+hashes both output and source and runs GDAL pixel checksums over each. Only
+`ntems-forest-harvest-v1` at 205 MB has been exercised end to end so far; the
+two large scopes were deferred because a transformation is currently writing to
+the same drive. The check is wired and correct, but its cost on the full set is
+so far estimated rather than measured.
+
+Its entry in `data/data-root-bound-checks.json` is derived from construction,
+not from an empirical detached sweep. It reads derived rasters under the data
+root, so with the drive detached it fails naming an unreadable path, which the
+repaired classifier attributes correctly. That reasoning is sound but it is not
+the same evidence as a sweep, and the inventory's claim that its list was
+verified empirically with the root absent now has one member that predates the
+next such sweep. The next detached sweep should confirm it.
 
 ## Verification limit worth stating
 
