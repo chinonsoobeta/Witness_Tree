@@ -50,8 +50,22 @@ export type BoundaryLicence = Readonly<{
 }>;
 
 /**
- * Container-level evidence only. Vector content was never opened, so geometry, CRS, and
- * attribute schema are Unknown for every edition here.
+ * Container evidence plus a header read. `ogrinfo -so` was run against these archives: the
+ * header reads confirmed every recorded feature count by real OGR reads, and PROJ proved the
+ * Statistics Canada and Elections Canada boundary coordinate reference systems identical to
+ * each other (IsSame true, zero displacement on round-tripped test points).
+ *
+ * `ogrinfo -so` reads headers only, so geometry validity is still Unknown: self-intersections,
+ * ring order, null or empty geometries, duplicate identifiers, and topological gaps or overlaps
+ * between adjacent polygons were never checked. The full attribute schema beyond the headers is
+ * Unknown. No reprojection and no intersection has been executed.
+ *
+ * `crsValidated` therefore stays false, and it is not stale. PROJ established that the two
+ * boundary CRSs match EACH OTHER, which is a different claim from the boundary CRS having been
+ * validated for use against the VLCE2 raster grid. It has not been, and it does not match the
+ * raster grid CRS: the two differ by roughly 6,000 km. `geometryValidated` and
+ * `attributeSchemaValidated` stay false for the same reason, that the evidence for them does not
+ * exist. All three are compile-time hazard gates. Do not flip one without the read that earns it.
  */
 export type BoundaryEvidence = Readonly<{
   byteLength: number;

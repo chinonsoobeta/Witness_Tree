@@ -147,15 +147,15 @@
    "id": "boundary-editioning",
    "title": "Comparison and place aggregates retain and display a boundary edition rather than silently applying a current boundary",
    "status": "pass",
-   "reason": "The boundary-edition validator retains staged editions as nonproduction, and aggregate tests reproduce a prior edition after loading a newer one.",
+   "reason": "The boundary-edition validator retains staged editions as nonproduction, and aggregate tests reproduce a prior edition after loading a newer one. The validator is now fail-closed in both directions: it refuses the retired claim that the GDAL toolchain is absent, and it refuses any claim of geometry, CRS, or attribute-schema validation that a headers-only read cannot support.",
    "evidence": [
     {
      "path": "data/boundary-editions.json",
-     "sha256": "037786098133fb10a5a485d3d3445b71d44d22b9e7c11ea02c6d95cd1e8ff663"
+     "sha256": "2ee846edbd8230109342b0077f01bae9def20acef40e70f8970868df51db777c"
     },
     {
      "path": "scripts/check-boundary-editions.mjs",
-     "sha256": "9f4154b6f4dbb92a759b31b5ed4a36300ae998ab1db863a2d7de49c33a3ea47d"
+     "sha256": "b8d49317083220b0b43e67b1b644eea3cbb4ab335d3179d29584a8b3d5c5db95"
     },
     {
      "path": "tests/event-normalization.test.ts",
