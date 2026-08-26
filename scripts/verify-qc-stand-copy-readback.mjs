@@ -525,15 +525,34 @@ export function preflightScope({ root = ROOT, dataRoot = DEFAULT_DATA_ROOT, scop
   const outputFile = output ? path.resolve(output) : path.join(dataRoot, outputRelativePath(expected.specId, expected.sourceRawSha256, expected.outputLayer));
   const sidecarFile = sidecar ? path.resolve(sidecar) : `${outputFile}.json`;
   const sourceFile = source ? path.resolve(source) : path.join(dataRoot, expected.sourceRelativePath);
-  const regular = (file) => { try { return regularFile(file, "preflight artifact") && true; } catch { return false; } };
+  // Presence is three-valued on purpose. A bare catch returning false said
+  // "not there" for a permission error, an I/O error, a symlink loop, or an
+  // entry of the wrong kind, and an operator reading "not there" re-runs a
+  // producer. Only the filesystem actually reporting nothing at the path is
+  // absence; anything we could not read stays null, never false.
+  const presenceNotes = [];
+  const regular = (file, label) => {
+    try {
+      regularFile(file, "preflight artifact");
+      return true;
+    } catch (error) {
+      if (error?.code === "ENOENT" || error?.code === "ENOTDIR") return false;
+      presenceNotes.push(`${label}: could not determine presence (${error?.code ?? error?.message ?? "unknown error"})`);
+      return null;
+    }
+  };
+  const outputPresent = regular(outputFile, "output");
+  const sidecarPresent = regular(sidecarFile, "sidecar");
+  const sourcePresent = regular(sourceFile, "source");
   return {
     schemaVersion: "witness-tree/qc-stand-copy-readback-preflight/1",
     mode: "preflight",
     scopeId,
     paths: { output: outputFile, sidecar: sidecarFile, source: sourceFile },
-    outputPresent: regular(outputFile),
-    sidecarPresent: regular(sidecarFile),
-    sourcePresent: regular(sourceFile),
+    outputPresent,
+    sidecarPresent,
+    sourcePresent,
+    presenceNotes,
     admissionClaim: false,
     productionAdmission: false,
     productionEligible: false,

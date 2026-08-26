@@ -296,10 +296,11 @@ test("default readback mode reports presence only and never admission", () => {
     mkdirFor(output);
     writeFileSync(output, "synthetic output");
     const result = readbackPresence(root, "artifacts");
-    assert.equal(result.mode, "readback-presence-only");
+    assert.equal(result.mode, "artifact-file-existence-only");
     assert.equal(result.admissionClaim, false);
     assert.equal(result.productionAdmission, false);
-    assert.deepEqual(result.scopes.map(({ rowId, outputPresent, sidecarPresent, readbackPresent }) => [rowId, outputPresent, sidecarPresent, readbackPresent]), [
+    assert.equal(result.undeterminedCount, 0);
+    assert.deepEqual(result.scopes.map(({ rowId, outputPresent, sidecarPresent, artifactFilesPresent }) => [rowId, outputPresent, sidecarPresent, artifactFilesPresent]), [
       ["qc-current-ecoforest", true, false, false],
       ["qc-original-current-inventory", false, false, false],
     ]);
@@ -350,6 +351,6 @@ test("candidate validation fails closed for source, approval, readback, rights, 
 test("validator source has no transform, GDAL, or external mutation path", async () => {
   const source = await import("node:fs/promises").then(({ readFile }) => readFile(new URL("../scripts/check-qc-stand-copy-production-admission-readiness.mjs", import.meta.url), "utf8"));
   assert.doesNotMatch(source, /child_process|spawn\(|ogr2ogr|ogrinfo|writeFileSync\([^)]*output/i);
-  assert.match(source, /readback-presence-only/);
+  assert.match(source, /artifact-file-existence-only/);
   assert.match(source, /admissionClaim: false/);
 });

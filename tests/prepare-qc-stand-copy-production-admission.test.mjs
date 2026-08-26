@@ -180,7 +180,7 @@ test("readiness is presence-only and requires both canonical readbacks", () => {
     assert.equal(result.admissionReady, false);
     assert.equal(result.presentCount, 0);
     assert.equal(result.evidenceMissingCount, QC_SCOPES.length);
-    assert.deepEqual(result.scopes.map(({ rowId, readbackPresent, readbackEvidencePresent }) => [rowId, readbackPresent, readbackEvidencePresent]), [
+    assert.deepEqual(result.scopes.map(({ rowId, artifactFilesPresent, readbackEvidencePresent }) => [rowId, artifactFilesPresent, readbackEvidencePresent]), [
       ["qc-current-ecoforest", false, false],
       ["qc-original-current-inventory", false, false],
     ]);

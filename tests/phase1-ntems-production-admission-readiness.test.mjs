@@ -241,7 +241,7 @@ test("default readback inventory is four-scope and never an admission claim", ()
     mkdirFor(presentPath);
     writeFileSync(presentPath, "{}\n");
     const result = readbackPresence(root);
-    assert.equal(result.mode, "readback-presence-only");
+    assert.equal(result.mode, "readback-evidence-file-existence-only");
     assert.equal(result.admissionClaim, false);
     assert.deepEqual(result.scopes.map(({ rowId, present }) => [rowId, present]), [
       ["ntems-annual-land-cover", false],
