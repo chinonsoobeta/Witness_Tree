@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "witness-tree/phase1-ntems-runner-reauthorization/1",
+  "status": "approved-owner-runner-rebinding",
+  "decisionId": "phase1-ntems-runner-rebinding-2026-08-26",
+  "createdAt": "2026-08-26T15:08:00Z",
+  "ownerDecision": {
+    "decision": "approve",
+    "ownerName": "Chinonso Obeta",
+    "statement": "All of them.",
+    "channel": "Claude Code chat session, in reply to a question that named this runner SHA-256 explicitly",
+    "questionAnswered": "Which of the waiting owner decisions does \"I approve\" apply to? Options named PR #50 (binding f04cca5c), PR #46 (binding 09b10168), PR #34 (false GDAL claim), and preparing the Phase 2 zonal packet.",
+    "scope": "Approve rebinding the runner checksum in the four NTEMS execution authorizations from ecb3585a to 09b10168. The underlying execution approval is unchanged and remains the standing statement 'You can execute them when complete.' covering the seven Phase 1 transformation scopes. This record adds no new execution scope."
+  },
+  "runner": {
+    "path": "scripts/run-phase1-ntems-transform.mjs",
+    "supersededSha256": "ecb3585a27c82119e2d18fbce3231e12f3c8a33abbf5973453db8d1b0cf2a511",
+    "sha256": "09b1016849e0709e46ebad908eec0f01252d5e5eeed3e5cd2fcb712c2042dc90"
+  },
+  "rebound": [
+    "data/phase1-ntems-annual-land-cover-execution-authorization.json",
+    "data/phase1-ntems-forest-harvest-execution-authorization.json",
+    "data/phase1-ntems-canopy-cover-execution-authorization.json",
+    "data/phase1-ntems-canopy-height-execution-authorization.json"
+  ],
+  "readbacksDeliberatelyNotReissued": [
+    "data/ntems-forest-harvest-v1-readback-evidence-2026-08-26.json",
+    "data/ntems-canopy-cover-v1-readback-evidence-2026-08-26.json",
+    "data/ntems-canopy-height-v1-readback-evidence-2026-08-26.json"
+  ],
+  "knownResidualConflict": "The three readback records above bind runner ecb3585a and the pre-rebinding authorization checksums. They are correct records of runs that already happened and are deliberately left untouched. A production-admission record prepared for those three scopes will therefore fail its authorization binding until the conflict is resolved by a decision about history, not by rebinding. ntems-annual-land-cover has no readback and is unaffected.",
+  "boundary": {
+    "localOnly": true,
+    "externalMutation": false,
+    "ingestion": false,
+    "release": false,
+    "productionAdmission": false,
+    "productionEligible": false,
+    "overwriteExisting": false
+  }
+}
