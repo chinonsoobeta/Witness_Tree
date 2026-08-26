@@ -4,8 +4,9 @@ import { createHash } from "node:crypto";
 import { createReadStream } from "node:fs";
 import { lstat, readFile, readdir, realpath, stat, writeFile } from "node:fs/promises";
 import { basename, isAbsolute, join, resolve } from "node:path";
+import { resolveDataRoot } from "./data-root.mjs";
 
-const DATA_ROOT = "/Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data";
+const DATA_ROOT = resolveDataRoot();
 const BATCH = "phase2-v21-raster-first-1984-2022-v1";
 const SNAPSHOTS = [1984, 1988, 1992, 1996, 2000, 2004, 2008, 2012, 2016, 2020, 2022];
 const INTERVALS = SNAPSHOTS.slice(0, -1).map((fromYear, index) => ({ fromYear, toYear: SNAPSHOTS[index + 1] }));

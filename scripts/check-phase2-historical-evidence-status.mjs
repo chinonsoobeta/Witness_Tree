@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { access, readFile, readdir } from "node:fs/promises";
+import { relocateToDataRoot } from "./data-root.mjs";
 
 const STATUS_URL = new URL("../data/phase2-historical-evidence-status.json", import.meta.url);
 
@@ -42,11 +43,15 @@ export async function readPhase2HistoricalEvidenceStatus() {
 }
 
 export async function checkHistoricalEvidenceAvailability(status) {
-  await access(new URL(`file://${status.historicalRun.outputDirectory}/lineage.json`));
-  await access(new URL(`file://${status.historicalRun.componentInventoryDirectory}/inventory.json`));
+  // The record keeps the absolute directory the historical run actually wrote to. Availability is
+  // checked wherever that data lives now, so moving the volume does not change what the record claims.
+  const outputDirectory = relocateToDataRoot(status.historicalRun.outputDirectory);
+  const componentInventoryDirectory = relocateToDataRoot(status.historicalRun.componentInventoryDirectory);
+  await access(new URL(`file://${outputDirectory}/lineage.json`));
+  await access(new URL(`file://${componentInventoryDirectory}/inventory.json`));
   const [historicalFiles, componentFiles] = await Promise.all([
-    readdir(status.historicalRun.outputDirectory, { recursive: true }),
-    readdir(new URL(`file://${status.historicalRun.componentInventoryDirectory}/components/`)),
+    readdir(outputDirectory, { recursive: true }),
+    readdir(new URL(`file://${componentInventoryDirectory}/components/`)),
   ]);
   assert.equal(historicalFiles.filter((path) => path.endsWith(".tif")).length, 79);
   assert.equal(componentFiles.filter((path) => path.endsWith(".components.jsonl")).length, 38);

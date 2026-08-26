@@ -5,6 +5,7 @@ import { lstat, readFile, readdir, realpath, stat } from "node:fs/promises";
 import { spawnSync } from "node:child_process";
 import { join, resolve } from "node:path";
 import { exactKeys, validateOutputIdentity, validateRealExecutionEvidence } from "./check-phase2-real-national-execution-evidence.mjs";
+import { resolveDataRoot } from "./data-root.mjs";
 
 async function sha(file) { const h = createHash("sha256"); for await (const chunk of createReadStream(file)) h.update(chunk); return h.digest("hex"); }
 const root = resolve(process.argv[2] ?? "");
@@ -14,7 +15,7 @@ const lineage = JSON.parse(await readFile(lineageFile, "utf8"));
 const evidence = JSON.parse(await readFile(new URL("../data/phase2-real-national-execution-evidence.json", import.meta.url), "utf8"));
 const lineageSha256=await sha(lineageFile);
 validateRealExecutionEvidence(evidence,{lineageSha256,inputSetSha256:lineage.sourceVerification.inputSetSha256,preflightSha256:lineage.preflight.sha256,executionEvidenceCoreSha256:lineage.execution.executionEvidenceCoreSha256});
-const expectedRoot = "/Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data/derived/phase2-real-national-1984-2022-v1";
+const expectedRoot = join(resolveDataRoot(), "derived/phase2-real-national-1984-2022-v1");
 assert.equal(root,expectedRoot);
 assert.equal(await realpath(root), await realpath(expectedRoot));
 const rootLink=await lstat(root); assert.equal(rootLink.isDirectory(),true); assert.equal(rootLink.isSymbolicLink(),false);

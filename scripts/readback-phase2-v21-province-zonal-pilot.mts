@@ -5,9 +5,10 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { assertZonalAggregationSidecar, type ZonalAggregationSidecar } from "../lib/phase2/zonal-aggregation.js";
 import { validatePhase2V21ProvinceZonalPilotEvidence } from "./check-phase2-v21-province-zonal-pilot-evidence.mjs";
+import { approvedDataRootRealPath } from "./data-root.mjs";
 
 const ROOT = fileURLToPath(new URL("../", import.meta.url));
-const DIRECTORY = "/Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data/derived/phase2-v21-zonal-province-2021-cbf-v5";
+const DIRECTORY_RELATIVE = "derived/phase2-v21-zonal-province-2021-cbf-v5";
 const OUTPUT = "province-2020-2022.json";
 const SIDECAR = "province-2020-2022.sidecar.json";
 const sha = (value: Uint8Array) => createHash("sha256").update(value).digest("hex");
@@ -19,6 +20,10 @@ async function regularUnsymlinkedFile(file: string): Promise<void> {
 }
 
 export async function readbackPhase2V21ProvinceZonalPilot(): Promise<void> {
+  // The data root itself may be the approved compatibility symlink onto the SSD; resolving it first keeps
+  // recorded absolute paths working after the migration. Every path below the root must still be real, so
+  // the assertion that follows continues to reject a symlinked pilot directory.
+  const DIRECTORY = path.join(await approvedDataRootRealPath(), DIRECTORY_RELATIVE);
   assert.equal(await realpath(DIRECTORY), DIRECTORY, "The canonical pilot directory must not resolve through a symlink.");
   assert.deepEqual((await readdir(DIRECTORY)).sort(), [OUTPUT, SIDECAR].sort(), "The pilot directory must contain exactly the two recorded artifacts.");
   const outputPath = path.join(DIRECTORY, OUTPUT);
