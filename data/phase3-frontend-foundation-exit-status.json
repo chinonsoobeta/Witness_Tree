@@ -18,7 +18,7 @@
     },
     {
      "path": ".github/workflows/ci.yml",
-     "sha256": "f4e430cea9fb0ecb3f38e41332106fe34fdf319472303740bf2e2acaaedba7a3"
+     "sha256": "54321387e3e96f9442e3df20afa1ac100980bdede2b6679f060553a953ba5781"
     }
    ]
   },
@@ -41,7 +41,7 @@
     },
     {
      "path": ".github/workflows/ci.yml",
-     "sha256": "f4e430cea9fb0ecb3f38e41332106fe34fdf319472303740bf2e2acaaedba7a3"
+     "sha256": "54321387e3e96f9442e3df20afa1ac100980bdede2b6679f060553a953ba5781"
     }
    ]
   },
@@ -95,5 +95,6 @@
    "id": "usability-eight-of-ten-in-each-language",
    "reason": "No usability study has been run. This requires 10 English and 10 French non-GIS participants and cannot be derived from code or simulated."
   }
- ]
+ ],
+ "countingBoundary": "An unweighted count of the five literal Phase 3 exit criteria published in section 16 of the controlling plan. It is not a cumulative maturity percentage: Version 2.1 assigns Phase 3 no such score and records it by evidence instead. Four passing criteria do not mean the phase is four fifths done. Real national place content, admitted Phase 2 aggregates, moderated bilingual usability testing, independent accessibility review, professional translation, legal review, and production-content approval all remain open."
 }

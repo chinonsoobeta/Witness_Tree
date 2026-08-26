@@ -1,36 +1,264 @@
 {
-  "schemaVersion": "witness-tree/phase8-launch-readiness-exit-status/1",
-  "phase": 8,
-  "localImplementationStatus": "incomplete",
-  "phaseComplete": false,
-  "completedCriteria": 4,
-  "totalCriteria": 16,
-  "percentage": 25,
-  "exitCriteria": [
-    {"id":"professional-bilingual-review","title":"Professional bilingual review is complete","status":"fail","reason":"English/French route parity and draft copy are automated, but no professional, subject-matter bilingual review record exists.","evidence":[{"path":"docs/EXTERNAL_GATES.md","sha256":"f47354ee02dae6c7252a3fd1280673b88879481526ca93168e75e93d5222f378"}]},
-    {"id":"external-accessibility-audit","title":"An external accessibility audit is complete","status":"fail","reason":"The repository has a source-level accessibility gate only; it explicitly does not claim an independent WCAG 2.2 AA or EN 301 549 audit.","evidence":[{"path":"docs/ACCESSIBILITY.md","sha256":"174b29e346a06f3424ead57c7aea6b40d73398d69378c67bde8e05e734ec31cf"}]},
-    {"id":"security-review","title":"A security review is complete","status":"fail","reason":"No production threat-model, security-review, or sign-off evidence is present.","evidence":[{"path":"docs/PLAN_GAP_MATRIX.md","sha256":"441d93ba493cf044dad6d70c08fa9de7758270284e4542c2c1705509d6181a2a"}]},
-    {"id":"load-testing","title":"Load testing is complete","status":"fail","reason":"Artifact budgets do not measure a deployed service or establish the required 50× load-test result.","evidence":[{"path":"docs/PERFORMANCE.md","sha256":"e60b5538236246b44d5e9a4e08ef076bb171991dbbb4a9ff8d95e64e496b3746"}]},
-    {"id":"raw-archive-reproducibility","title":"Reproducibility from the raw archive is demonstrated","status":"fail","reason":"A read-only, version-pinned restoration of three immutable raw snapshots recorded byte length, SHA-256, ZIP integrity, and temporary-copy removal, but no complete admitted output has been reproduced from its raw archived inputs. The drill is restoration evidence only.","evidence":[{"path":"data/immutable-restore-drill.json","sha256":"666bdfbc9380b861a1cafa8d78eec213ca9e663e1037c949c6417c8aaa858c0e"},{"path":"scripts/check-immutable-restore-drill.mjs","sha256":"95e11c86e39b90cde6324abd088157792b9dc953e81419f71bd311156429ab8c"}]},
-    {"id":"legal-licence-attribution-review","title":"Legal, licence, and attribution review is complete","status":"fail","reason":"Individual source records may carry attribution evidence, but no legal review or complete production-release licence and attribution sign-off exists.","evidence":[{"path":"docs/EXTERNAL_GATES.md","sha256":"f47354ee02dae6c7252a3fd1280673b88879481526ca93168e75e93d5222f378"}]},
-    {"id":"governance-and-corrections-procedures","title":"Governance and corrections procedures are implemented","status":"pass","reason":"The bilingual correction policy and validation tests define classifications, service targets, accountable-recipient and public-record requirements without claiming a live intake or real cases.","evidence":[{"path":"docs/CORRECTIONS_WORKFLOW.md","sha256":"98d4c2f7f95da87debeab3c9172616c70809d0fe412c62ade4b0f3322ac91610"},{"path":"lib/corrections/policy.ts","sha256":"0e74e54721d35f250d0ac10e6559e1dcd17c97197d3235816de946e0ddcf2a50"},{"path":"tests/corrections-workflow.test.ts","sha256":"7ab50a7dcda86cc0c7742da951731066351c8424e0aa51bfd9949490e3904b79"}]},
-    {"id":"operations-handbook","title":"An operations handbook is complete","status":"fail","reason":"No complete operations handbook with incident, escalation, ownership, and production procedures is recorded.","evidence":[{"path":"docs/PLAN_GAP_MATRIX.md","sha256":"441d93ba493cf044dad6d70c08fa9de7758270284e4542c2c1705509d6181a2a"}]},
-    {"id":"on-call-rota","title":"An on-call rota is complete","status":"fail","reason":"No staffed, approved on-call rota or escalation coverage is recorded.","evidence":[{"path":"docs/PLAN_GAP_MATRIX.md","sha256":"441d93ba493cf044dad6d70c08fa9de7758270284e4542c2c1705509d6181a2a"}]},
-    {"id":"bulk-downloads","title":"Bulk downloads are complete","status":"fail","reason":"Only immutable illustrative-download contracts exist; no real CSV or GeoPackage binary has been retrieved or published.","evidence":[{"path":"docs/DOWNLOADS.md","sha256":"efbc69d3009ae3439a23b7d1585770af53c262ff2fbdb0079f711bbd226f7932"},{"path":"lib/downloads/generate.ts","sha256":"1b885c46402ffa505da1ec171fdf14616367b0ab0659ca63fe700e4852d202ac"}]},
-    {"id":"citation-format","title":"A citation format is implemented","status":"pass","reason":"Release downloads require provenance metadata and generate a stable citation containing the release, time range, boundary edition, method, retrieval date, and artifact URL.","evidence":[{"path":"lib/downloads/generate.ts","sha256":"1b885c46402ffa505da1ec171fdf14616367b0ab0659ca63fe700e4852d202ac"},{"path":"tests/downloads.test.ts","sha256":"9edb21d671b60df617dcf113f5db9f0ad80098e36e4b46f64b4f2b8130c223ae"}]},
-    {"id":"release-notes","title":"Release notes are implemented","status":"pass","reason":"The release manifest requires a bilingual note, immutable artifact checksums, licence IDs, boundary edition, method version, corrections URL, and stale/degraded state; tests reject missing notes.","evidence":[{"path":"lib/releases/manifest.ts","sha256":"04161b5e3439c24023a15b0499c41f777ffd2a757f81982796ae30922ca7e234"},{"path":"tests/release-manifest.test.ts","sha256":"6df496f76249b23e955c6a87ead4372a12a70ed03667afac771b80674cfbf09b"}]},
-    {"id":"observability","title":"Observability is complete","status":"fail","reason":"No deployed monitoring, alerting, log-retention, dashboard, or operational review evidence is recorded.","evidence":[{"path":"docs/IMMUTABLE_STORAGE_PROVISIONING.md","sha256":"84fa8cbf80435104a1ad61e73e4d8fbdf1e8b43dacb85c4141105d1bbf109bb2"}]},
-    {"id":"backups","title":"Backups are complete","status":"fail","reason":"The immutable-storage record explicitly says that no Canadian recovery copy or documented provider durability/recovery evidence exists.","evidence":[{"path":"docs/IMMUTABLE_STORAGE_PROVISIONING.md","sha256":"84fa8cbf80435104a1ad61e73e4d8fbdf1e8b43dacb85c4141105d1bbf109bb2"}]},
-    {"id":"restore-tests","title":"Restore tests are complete","status":"pass","reason":"The exact immutable versions of three raw archives were restored, verified, and removed from controlled temporary storage in a recorded read-only drill.","evidence":[{"path":"data/immutable-restore-drill.json","sha256":"666bdfbc9380b861a1cafa8d78eec213ca9e663e1037c949c6417c8aaa858c0e"},{"path":"scripts/check-immutable-restore-drill.mjs","sha256":"95e11c86e39b90cde6324abd088157792b9dc953e81419f71bd311156429ab8c"}]},
-    {"id":"cdn-tile-validation","title":"CDN and tile validation are complete","status":"fail","reason":"No production CDN, admitted tiles, or live tile-validation evidence is recorded; the source-level artifact budget is not a substitute.","evidence":[{"path":"docs/PERFORMANCE.md","sha256":"e60b5538236246b44d5e9a4e08ef076bb171991dbbb4a9ff8d95e64e496b3746"}]}
-  ],
-  "externalBlockers": [
-    {"id":"professional-bilingual-review","status":"blocked","reason":"A qualified reviewer must complete and record bilingual subject-matter review."},
-    {"id":"independent-accessibility-audit","status":"blocked","reason":"An independent WCAG 2.2 AA and EN 301 549 audit is required."},
-    {"id":"security-and-load-review","status":"blocked","reason":"Production security review and measured 50× load-test evidence need an approved deployment environment."},
-    {"id":"legal-licence-attribution-sign-off","status":"blocked","reason":"Counsel and rights holders must approve the complete production release, licence, attribution, terms, privacy, and disclaimer materials."},
-    {"id":"production-operations","status":"blocked","reason":"An accountable operational owner must establish the handbook, on-call rota, monitoring, backups, and escalation procedures."},
-    {"id":"admitted-production-data-and-delivery","status":"blocked","reason":"Admitted real figures, bulk artifacts, CDN/tile deployment, and live validation are required before production delivery can open."}
-  ],
-  "nonProductionBoundary": "The existing public site remains a technical preview with illustrative data. This record does not claim a production deployment, production figure, reviewed translation, accessibility conformance, security review, load result, backup, live operations, bulk download, CDN, or tile validation."
+ "schemaVersion": "witness-tree/phase8-launch-readiness-exit-status/1",
+ "phase": 8,
+ "localImplementationStatus": "incomplete",
+ "phaseComplete": false,
+ "completedCriteria": 4,
+ "totalCriteria": 16,
+ "percentage": 25,
+ "exitCriteria": [
+  {
+   "id": "professional-bilingual-review",
+   "title": "Professional bilingual review is complete",
+   "status": "fail",
+   "reason": "English/French route parity and draft copy are automated, but no professional, subject-matter bilingual review record exists.",
+   "evidence": [
+    {
+     "path": "docs/EXTERNAL_GATES.md",
+     "sha256": "f47354ee02dae6c7252a3fd1280673b88879481526ca93168e75e93d5222f378"
+    }
+   ]
+  },
+  {
+   "id": "external-accessibility-audit",
+   "title": "An external accessibility audit is complete",
+   "status": "fail",
+   "reason": "The repository has a source-level accessibility gate only; it explicitly does not claim an independent WCAG 2.2 AA or EN 301 549 audit.",
+   "evidence": [
+    {
+     "path": "docs/ACCESSIBILITY.md",
+     "sha256": "174b29e346a06f3424ead57c7aea6b40d73398d69378c67bde8e05e734ec31cf"
+    }
+   ]
+  },
+  {
+   "id": "security-review",
+   "title": "A security review is complete",
+   "status": "fail",
+   "reason": "No production threat-model, security-review, or sign-off evidence is present.",
+   "evidence": [
+    {
+     "path": "docs/PLAN_GAP_MATRIX.md",
+     "sha256": "c4f8724378ff6878e0d37e3826a5ae8f1219bc7372f98b1c53981c73ba6fadce"
+    }
+   ]
+  },
+  {
+   "id": "load-testing",
+   "title": "Load testing is complete",
+   "status": "fail",
+   "reason": "Artifact budgets do not measure a deployed service or establish the required 50× load-test result.",
+   "evidence": [
+    {
+     "path": "docs/PERFORMANCE.md",
+     "sha256": "e60b5538236246b44d5e9a4e08ef076bb171991dbbb4a9ff8d95e64e496b3746"
+    }
+   ]
+  },
+  {
+   "id": "raw-archive-reproducibility",
+   "title": "Reproducibility from the raw archive is demonstrated",
+   "status": "fail",
+   "reason": "A read-only, version-pinned restoration of three immutable raw snapshots recorded byte length, SHA-256, ZIP integrity, and temporary-copy removal, but no complete admitted output has been reproduced from its raw archived inputs. The drill is restoration evidence only.",
+   "evidence": [
+    {
+     "path": "data/immutable-restore-drill.json",
+     "sha256": "666bdfbc9380b861a1cafa8d78eec213ca9e663e1037c949c6417c8aaa858c0e"
+    },
+    {
+     "path": "scripts/check-immutable-restore-drill.mjs",
+     "sha256": "95e11c86e39b90cde6324abd088157792b9dc953e81419f71bd311156429ab8c"
+    }
+   ]
+  },
+  {
+   "id": "legal-licence-attribution-review",
+   "title": "Legal, licence, and attribution review is complete",
+   "status": "fail",
+   "reason": "Individual source records may carry attribution evidence, but no legal review or complete production-release licence and attribution sign-off exists.",
+   "evidence": [
+    {
+     "path": "docs/EXTERNAL_GATES.md",
+     "sha256": "f47354ee02dae6c7252a3fd1280673b88879481526ca93168e75e93d5222f378"
+    }
+   ]
+  },
+  {
+   "id": "governance-and-corrections-procedures",
+   "title": "Governance and corrections procedures are implemented",
+   "status": "pass",
+   "reason": "The bilingual correction policy and validation tests define classifications, service targets, accountable-recipient and public-record requirements without claiming a live intake or real cases.",
+   "evidence": [
+    {
+     "path": "docs/CORRECTIONS_WORKFLOW.md",
+     "sha256": "98d4c2f7f95da87debeab3c9172616c70809d0fe412c62ade4b0f3322ac91610"
+    },
+    {
+     "path": "lib/corrections/policy.ts",
+     "sha256": "0e74e54721d35f250d0ac10e6559e1dcd17c97197d3235816de946e0ddcf2a50"
+    },
+    {
+     "path": "tests/corrections-workflow.test.ts",
+     "sha256": "7ab50a7dcda86cc0c7742da951731066351c8424e0aa51bfd9949490e3904b79"
+    }
+   ]
+  },
+  {
+   "id": "operations-handbook",
+   "title": "An operations handbook is complete",
+   "status": "fail",
+   "reason": "No complete operations handbook with incident, escalation, ownership, and production procedures is recorded.",
+   "evidence": [
+    {
+     "path": "docs/PLAN_GAP_MATRIX.md",
+     "sha256": "c4f8724378ff6878e0d37e3826a5ae8f1219bc7372f98b1c53981c73ba6fadce"
+    }
+   ]
+  },
+  {
+   "id": "on-call-rota",
+   "title": "An on-call rota is complete",
+   "status": "fail",
+   "reason": "No staffed, approved on-call rota or escalation coverage is recorded.",
+   "evidence": [
+    {
+     "path": "docs/PLAN_GAP_MATRIX.md",
+     "sha256": "c4f8724378ff6878e0d37e3826a5ae8f1219bc7372f98b1c53981c73ba6fadce"
+    }
+   ]
+  },
+  {
+   "id": "bulk-downloads",
+   "title": "Bulk downloads are complete",
+   "status": "fail",
+   "reason": "Only immutable illustrative-download contracts exist; no real CSV or GeoPackage binary has been retrieved or published.",
+   "evidence": [
+    {
+     "path": "docs/DOWNLOADS.md",
+     "sha256": "efbc69d3009ae3439a23b7d1585770af53c262ff2fbdb0079f711bbd226f7932"
+    },
+    {
+     "path": "lib/downloads/generate.ts",
+     "sha256": "1b885c46402ffa505da1ec171fdf14616367b0ab0659ca63fe700e4852d202ac"
+    }
+   ]
+  },
+  {
+   "id": "citation-format",
+   "title": "A citation format is implemented",
+   "status": "pass",
+   "reason": "Release downloads require provenance metadata and generate a stable citation containing the release, time range, boundary edition, method, retrieval date, and artifact URL.",
+   "evidence": [
+    {
+     "path": "lib/downloads/generate.ts",
+     "sha256": "1b885c46402ffa505da1ec171fdf14616367b0ab0659ca63fe700e4852d202ac"
+    },
+    {
+     "path": "tests/downloads.test.ts",
+     "sha256": "9edb21d671b60df617dcf113f5db9f0ad80098e36e4b46f64b4f2b8130c223ae"
+    }
+   ]
+  },
+  {
+   "id": "release-notes",
+   "title": "Release notes are implemented",
+   "status": "pass",
+   "reason": "The release manifest requires a bilingual note, immutable artifact checksums, licence IDs, boundary edition, method version, corrections URL, and stale/degraded state; tests reject missing notes.",
+   "evidence": [
+    {
+     "path": "lib/releases/manifest.ts",
+     "sha256": "04161b5e3439c24023a15b0499c41f777ffd2a757f81982796ae30922ca7e234"
+    },
+    {
+     "path": "tests/release-manifest.test.ts",
+     "sha256": "6df496f76249b23e955c6a87ead4372a12a70ed03667afac771b80674cfbf09b"
+    }
+   ]
+  },
+  {
+   "id": "observability",
+   "title": "Observability is complete",
+   "status": "fail",
+   "reason": "No deployed monitoring, alerting, log-retention, dashboard, or operational review evidence is recorded.",
+   "evidence": [
+    {
+     "path": "docs/IMMUTABLE_STORAGE_PROVISIONING.md",
+     "sha256": "84fa8cbf80435104a1ad61e73e4d8fbdf1e8b43dacb85c4141105d1bbf109bb2"
+    }
+   ]
+  },
+  {
+   "id": "backups",
+   "title": "Backups are complete",
+   "status": "fail",
+   "reason": "The immutable-storage record explicitly says that no Canadian recovery copy or documented provider durability/recovery evidence exists.",
+   "evidence": [
+    {
+     "path": "docs/IMMUTABLE_STORAGE_PROVISIONING.md",
+     "sha256": "84fa8cbf80435104a1ad61e73e4d8fbdf1e8b43dacb85c4141105d1bbf109bb2"
+    }
+   ]
+  },
+  {
+   "id": "restore-tests",
+   "title": "Restore tests are complete",
+   "status": "pass",
+   "reason": "The exact immutable versions of three raw archives were restored, verified, and removed from controlled temporary storage in a recorded read-only drill.",
+   "evidence": [
+    {
+     "path": "data/immutable-restore-drill.json",
+     "sha256": "666bdfbc9380b861a1cafa8d78eec213ca9e663e1037c949c6417c8aaa858c0e"
+    },
+    {
+     "path": "scripts/check-immutable-restore-drill.mjs",
+     "sha256": "95e11c86e39b90cde6324abd088157792b9dc953e81419f71bd311156429ab8c"
+    }
+   ]
+  },
+  {
+   "id": "cdn-tile-validation",
+   "title": "CDN and tile validation are complete",
+   "status": "fail",
+   "reason": "No production CDN, admitted tiles, or live tile-validation evidence is recorded; the source-level artifact budget is not a substitute.",
+   "evidence": [
+    {
+     "path": "docs/PERFORMANCE.md",
+     "sha256": "e60b5538236246b44d5e9a4e08ef076bb171991dbbb4a9ff8d95e64e496b3746"
+    }
+   ]
+  }
+ ],
+ "externalBlockers": [
+  {
+   "id": "professional-bilingual-review",
+   "status": "blocked",
+   "reason": "A qualified reviewer must complete and record bilingual subject-matter review."
+  },
+  {
+   "id": "independent-accessibility-audit",
+   "status": "blocked",
+   "reason": "An independent WCAG 2.2 AA and EN 301 549 audit is required."
+  },
+  {
+   "id": "security-and-load-review",
+   "status": "blocked",
+   "reason": "Production security review and measured 50× load-test evidence need an approved deployment environment."
+  },
+  {
+   "id": "legal-licence-attribution-sign-off",
+   "status": "blocked",
+   "reason": "Counsel and rights holders must approve the complete production release, licence, attribution, terms, privacy, and disclaimer materials."
+  },
+  {
+   "id": "production-operations",
+   "status": "blocked",
+   "reason": "An accountable operational owner must establish the handbook, on-call rota, monitoring, backups, and escalation procedures."
+  },
+  {
+   "id": "admitted-production-data-and-delivery",
+   "status": "blocked",
+   "reason": "Admitted real figures, bulk artifacts, CDN/tile deployment, and live validation are required before production delivery can open."
+  }
+ ],
+ "nonProductionBoundary": "The existing public site remains a technical preview with illustrative data. This record does not claim a production deployment, production figure, reviewed translation, accessibility conformance, security review, load result, backup, live operations, bulk download, CDN, or tile validation."
 }

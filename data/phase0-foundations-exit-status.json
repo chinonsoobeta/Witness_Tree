@@ -89,16 +89,40 @@
    ]
   },
   {
-   "id": "both-names-registered-with-no-persistent-identifier",
-   "title": "Both names are registered in both languages, and no persistent identifier contains the product name",
+   "id": "both-names-registered-in-both-languages",
+   "title": "Both names are registered in both languages",
    "status": "fail",
    "blockedBy": "owner",
-   "reason": "Name registration is an external act with no evidence in the repository. The persistent-identifier half is enforced by the brand-token checker, but registration cannot be inferred, so the criterion as written does not pass."
+   "reason": "No registration record exists for either name in either language. Registration is an external act the repository cannot perform or prove."
+  },
+  {
+   "id": "no-persistent-identifier-contains-the-product-name",
+   "title": "no persistent identifier contains the product name",
+   "status": "pass",
+   "reason": "A gate reads the product name from the brand token and rejects any route segment or path literal that carries it in any joined, accent-stripped spelling. Its tests prove it rejects a violating route and a violating path, and that renaming the brand token changes what it rejects.",
+   "evidence": [
+    {
+     "path": "scripts/check-persistent-identifiers.mjs",
+     "sha256": "8eadd4f39deda0673823539d538bff4e7a35a7e077d2285f087c1df71679fd8a"
+    },
+    {
+     "path": "tests/persistent-identifiers.test.mjs",
+     "sha256": "6225218a033fb260b247e833289e8f996a3b0a6414f225d43d4fe0293720a775"
+    },
+    {
+     "path": "lib/domain/brand.ts",
+     "sha256": "e2709782f36e991350f15a2e32bf7e05167afcb9e5de21f80cc5a81ec8eee757"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "sha256": "54321387e3e96f9442e3df20afa1ac100980bdede2b6679f060553a953ba5781"
+    }
+   ]
   }
  ],
- "completedCriteria": 4,
- "totalCriteria": 7,
- "percentage": 57.14285714285714,
+ "completedCriteria": 5,
+ "totalCriteria": 8,
+ "percentage": 62.5,
  "phaseComplete": false,
  "ownerBlockers": [
   {
@@ -110,8 +134,9 @@
    "reason": "No engagement contact route is open and no answered test message exists. Indigenous engagement is owner-led and explicitly outside this implementation's authority; a response time cannot be inferred."
   },
   {
-   "id": "both-names-registered-with-no-persistent-identifier",
-   "reason": "Name registration is an external act with no evidence in the repository. The persistent-identifier half is enforced by the brand-token checker, but registration cannot be inferred, so the criterion as written does not pass."
+   "id": "both-names-registered-in-both-languages",
+   "reason": "Name registration is an external act with no evidence in the repository. It cannot be inferred from any local check."
   }
- ]
+ ],
+ "countingBoundary": "An unweighted count of the eight literal Phase 0 exit criteria published in section 16 of the controlling plan. It is not a cumulative maturity percentage and not a measure of production readiness. Local foundation work does not replace legal sign-off, editorial approval, engagement, name registration, or governance decisions."
 }
