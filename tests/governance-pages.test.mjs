@@ -6,7 +6,8 @@ const read = (path) => readFile(new URL(path, import.meta.url), "utf8");
 
 test("governance content is bilingual and truthful about unfinished external gates", async () => {
   const content = await read("../components/governance/GovernancePage.tsx");
-  for (const phrase of ["No production correction", "Aucune correction de production", "No engagement contact", "Aucun contact de dialogue", "stores no account", "ne conserve actuellement aucune donnée", "Mistik is not an approved", "Mistik n’est pas un nom"]) assert.match(content, new RegExp(phrase));
+  for (const phrase of ["No production correction", "Aucune correction de production", "No engagement contact route", "Aucune voie de dialogue", "stores no account", "ne conserve actuellement aucune donnée", "not to pursue Mistik", "ne pas poursuivre Mistik"]) assert.match(content, new RegExp(phrase));
+  for (const phrase of ["Mistik request: not opened", "Terms: none", "Honorarium: none", "Final outcome: not pursued", "Demande concernant Mistik : non ouverte", "Conditions : aucune", "Honoraire : aucun", "Résultat final : non poursuivie"]) assert.match(content, new RegExp(phrase));
   assert.doesNotMatch(content, /permission (?:was|has been) granted|contacted on \d|legally approved/i);
 });
 

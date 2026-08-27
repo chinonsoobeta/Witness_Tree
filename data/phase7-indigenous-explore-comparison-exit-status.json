@@ -3,9 +3,9 @@
  "phase": 7,
  "localImplementationStatus": "incomplete",
  "phaseComplete": false,
- "completedCriteria": 13,
+ "completedCriteria": 14,
  "totalCriteria": 16,
- "percentage": 81.25,
+ "percentage": 87.5,
  "exitCriteria": [
   {
    "id": "reserve-and-treaty-layers-loaded",
@@ -35,7 +35,7 @@
    "evidence": [
     {
      "path": "components/governance/GovernancePage.tsx",
-     "sha256": "617b028c0ff54d9e3478daf8ad85434f01449c2060740db80eae5d14b384cecc"
+     "sha256": "70e60b17fca6e823ecd6e17384f6f15f7d4cb628ba47487caac20ed075e4fdc0"
     }
    ]
   },
@@ -63,7 +63,7 @@
    "evidence": [
     {
      "path": "components/governance/GovernancePage.tsx",
-     "sha256": "617b028c0ff54d9e3478daf8ad85434f01449c2060740db80eae5d14b384cecc"
+     "sha256": "70e60b17fca6e823ecd6e17384f6f15f7d4cb628ba47487caac20ed075e4fdc0"
     }
    ]
   },
@@ -86,12 +86,16 @@
   {
    "id": "mistik-request-recorded",
    "title": "The Mistik request, terms, honorarium, and outcome appear in the decision log and engagement register",
-   "status": "fail",
-   "reason": "The decision log correctly records that no request, permission, honorarium, terms, or outcome exists. It must remain Witness Tree unless a written owner-managed decision is obtained.",
+   "status": "pass",
+   "reason": "The decision log and engagement register record the owner's final outcome: Mistik was not pursued, no request was made, no permission, honorarium, or terms exist, and Witness Tree / Arbre témoin remains the product name. The surfaces do not imply that engagement or permission occurred.",
    "evidence": [
     {
      "path": "components/governance/GovernancePage.tsx",
-     "sha256": "617b028c0ff54d9e3478daf8ad85434f01449c2060740db80eae5d14b384cecc"
+     "sha256": "70e60b17fca6e823ecd6e17384f6f15f7d4cb628ba47487caac20ed075e4fdc0"
+    },
+    {
+     "path": "data/phase0-owner-scope-decisions-2026-08-27.json",
+     "sha256": "222f236e3ba90322d876d10405011dafd94847b295d1324ca898f0e9f1279fe1"
     }
    ]
   },
@@ -274,11 +278,6 @@
    "id": "owner-managed-right-of-reply-route",
    "status": "blocked",
    "reason": "A named accountable recipient, tested bilingual intake route, and owner-managed engagement process are required before a right-of-reply claim can be live."
-  },
-  {
-   "id": "written-mistik-decision",
-   "status": "blocked",
-   "reason": "No written request outcome, terms, honorarium, or permission exists; the product remains Witness Tree unless this owner-managed process concludes."
   }
  ],
  "nonProductionBoundary": "No official reserve or treaty geometry, Indigenous names, page, contact route, or engagement outcome is admitted to production. Existing Explore, comparison, and Indigenous fixtures remain illustrative and nonproduction."

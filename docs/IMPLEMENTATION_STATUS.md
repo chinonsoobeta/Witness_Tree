@@ -4,7 +4,7 @@
 
 ## Current Phase 1 and 2 position
 
-### Phase 1 — 2/4 (50%) formal exit criteria
+### Phase 1 – 2/4 (50%) formal exit criteria
 
 Two criteria pass: national coverage geometry and the corruption-validation suite. Two do not:
 
@@ -15,7 +15,7 @@ The recovered federal-electoral pair, four current-wildfire raw payload/manifest
 
 A source-review process for publisher updates, corrections, licence changes, and reprocessing is defined in [source review](SOURCE_REVIEW.md), with the decision contract in `lib/source-review/` and the registered baselines in [`data/source-review-register.json`](../data/source-review-register.json). No review has been run against a live publisher change; the register records baselines only, and it cannot grant re-acceptance, immutable promotion, or production eligibility.
 
-### Phase 2 — 2/4 (50%) formal exit criteria
+### Phase 2 – 2/4 (50%) formal exit criteria
 
 The local Version 2.1 implementation contract specifies **11 national snapshots** and **10 whole-interval rasters**, calculates each interval across every annual pair, and fails closed for incompatible grid/CRS/nodata/Unknown/lineage/sidecar conditions.
 
@@ -25,15 +25,17 @@ Real Version 2.1 execution and readback are complete for all **21/21 outputs**: 
 
 Version 2.1 does not assign Phase 3 a cumulative percentage. Its five literal published exit criteria are nonetheless gated and counted, at 4/5 with moderated bilingual usability testing owner-blocked; that count is not a maturity score and does not mean the phase is four fifths complete. Its historical checkpoint records four completed technical-foundation evidence groups and one execution-ready, empty external-checkpoint envelope; that shorthand is not a Phase 3 exit result or a production-readiness measure.
 
+Phase 0 is complete under its recorded scope: seven of its eight literal gates pass, and the remaining Indigenous-engagement gate is an explicit accountable-owner-approved exclusion. The passed-only count is **7/8 (87.5%)**. The legal sign-off is owner-recorded, and bilingual name registration is owner-attested complete; neither claim is represented as an independent counsel opinion or public registrar evidence. No engagement route, five-business-day test, or engagement occurred, and Witness Tree will not claim otherwise. This Phase 0 scope decision does not close the separate Phase 7 production source or right-of-reply gates.
+
 | Phase | Current count | Boundary |
 | --- | --- | --- |
-| Phase 0 | **5/8 (62.5%)** | Derived from [the machine-checked record](../data/phase0-foundations-exit-status.json). Local foundation work does not replace approvals, governance, engagement, or operating decisions. |
+| Phase 0 | **7/8 passed-only (87.5%); complete under recorded scope** | Seven literal gates pass. The eighth is the explicit accountable-owner-approved Indigenous-engagement exclusion, not an engagement result. Legal sign-off is owner-recorded and bilingual name registration is owner-attested complete. No engagement route, test, or engagement occurred. Phase 7 production source and right-of-reply gates remain open. |
 | Phase 3 | **No cumulative percentage (Version 2.1)**; literal exit criteria **4/5** | Four historical technical-foundation evidence groups are recorded; real national place content, admitted Phase 2 aggregates, and required human/release checkpoints remain open. |
 | Phase 4 | **3/4 (75%)** | Provincial safeguards exist; admitted enhancement inputs and published match results do not. |
 | Phase 5 | **4/4 (100%) local; production blocked** | Simulation and safety controls do not establish real feed rights, operations, or deployment. |
-| Phase 6 | **3/5 (60%)** | No live account store, direct RLS proof, sender, or timed kill-switch rehearsal. |
-| Phase 7 | **13/16 (81.25%)** | Indigenous-source authority, named reply operation, and Mistik decision evidence remain missing. |
-| Phase 8 | **4/16 (25%)** | Local release controls and a limited restoration drill do not replace raw-archive reproducibility, independent review, or operated production evidence. |
+| Phase 6 | **4/5 (80%)** | Managed Canadian database isolation is proven. Sender infrastructure and the independent timed kill-switch rehearsal remain absent. |
+| Phase 7 | **14/16 (87.5%)** | The Mistik outcome is recorded as not pursued. Indigenous-source authority and a named tested reply operation remain missing. |
+| Phase 8 | **6/16 (37.5%)** | Raw-archive reproducibility and the operations handbook now pass. Independent review and operated production evidence remain incomplete. |
 | Phase 9 | **0/4 (0%)** | No operated beta, real correction metrics, source-agency confirmation, or quarterly published-figure reproduction. |
 
 The underlying machine-checked records are [Phase 4](../data/phase4-exit-status.json), [Phase 5](../data/phase5-live-wildfire-exit-status.json), [Phase 6](../data/phase6-account-alert-exit-status.json), [Phase 7](../data/phase7-indigenous-explore-comparison-exit-status.json), [Phase 8](../data/phase8-launch-readiness-exit-status.json), and [Phase 9](../data/phase9-public-beta-launch-exit-status.json).
@@ -48,7 +50,7 @@ The underlying machine-checked records are [Phase 4](../data/phase4-exit-status.
 
 ## External work that remains external
 
-Written source rights and publisher terms, legal/licence/privacy/security review, bilingual editorial review, Indigenous engagement and right-of-reply operations, independent accessibility and scientific validation, production infrastructure and on-call evidence, and formal release/launch decisions remain outside the repository. They are tracked in [external gates](EXTERNAL_GATES.md); no test or documentation change can honestly close them.
+Written source rights and publisher terms, bilingual editorial review, Phase 7 production source and right-of-reply operations, independent accessibility and scientific validation, production infrastructure and on-call evidence, and formal release/launch decisions remain outside the repository. The recorded Phase 0 legal sign-off and bilingual name-registration attestation have their stated limited scope and do not substitute for those later gates. They are tracked in [external gates](EXTERNAL_GATES.md); no test or documentation change can honestly close them.
 
 ## Verification posture
 

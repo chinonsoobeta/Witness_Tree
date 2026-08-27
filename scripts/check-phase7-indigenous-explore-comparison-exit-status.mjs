@@ -55,10 +55,10 @@ export async function validatePhase7IndigenousExploreComparisonExitStatus(record
   const percentage = passed / CRITERIA.size * 100;
   if (record.completedCriteria !== passed || record.totalCriteria !== CRITERIA.size || record.percentage !== percentage) throw new Error("Phase 7 completion must equal the unweighted formal exit-criterion result.");
   if (record.localImplementationStatus !== (passed === CRITERIA.size ? "complete" : "incomplete")) throw new Error("Phase 7 local implementation status must be derived from its formal exit criteria.");
-  if (record.phaseComplete !== false) throw new Error("Phase 7 cannot claim completion while official geography, reply-route, and Mistik gates remain open.");
-  if (!Array.isArray(record.externalBlockers) || record.externalBlockers.length !== 3) throw new Error("Phase 7 must retain exactly three external blockers.");
+  if (record.phaseComplete !== false) throw new Error("Phase 7 cannot claim completion while official geography and reply-route gates remain open.");
+  if (!Array.isArray(record.externalBlockers) || record.externalBlockers.length !== 2) throw new Error("Phase 7 must retain exactly two external blockers.");
   const ids = record.externalBlockers.map((item) => item?.id).sort().join(",");
-  if (ids !== "official-indigenous-boundary-admission,owner-managed-right-of-reply-route,written-mistik-decision") throw new Error("Phase 7 external blockers must remain precise.");
+  if (ids !== "official-indigenous-boundary-admission,owner-managed-right-of-reply-route") throw new Error("Phase 7 external blockers must remain precise.");
   for (const blocker of record.externalBlockers) {
     if (blocker.status !== "blocked") throw new Error("External blockers remain blocked without primary evidence.");
     requiredText(blocker.reason, `${blocker.id} reason`);

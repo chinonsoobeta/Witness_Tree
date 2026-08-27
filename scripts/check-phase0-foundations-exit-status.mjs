@@ -16,12 +16,23 @@ const CRITERIA = new Map([
   ["no-persistent-identifier-contains-the-product-name", "no persistent identifier contains the product name"],
 ]);
 
+const OWNER_EXCLUDABLE_CRITERIA = new Set(["engagement-contact-route-answers-within-five-business-days"]);
+const OWNER_EXCLUSION_EVIDENCE = new Map([
+  ["engagement-contact-route-answers-within-five-business-days", "data/phase0-owner-scope-decisions-2026-08-27.json"],
+]);
+
 // The two halves must still reconstruct the plan's sentence, so the split cannot drift into a rewrite.
 export const PLAN_BULLET = "Both names are registered in both languages, and no persistent identifier contains the product name";
 export const SPLIT_CLAUSES = ["both-names-registered-in-both-languages", "no-persistent-identifier-contains-the-product-name"];
 
 export async function validatePhase0FoundationsExitStatus(record) {
-  return validateExitStatus(record, { schemaVersion: "witness-tree/phase0-foundations-exit-status/1", phase: 0, criteria: CRITERIA });
+  return validateExitStatus(record, {
+    schemaVersion: "witness-tree/phase0-foundations-exit-status/1",
+    phase: 0,
+    criteria: CRITERIA,
+    ownerExcludableCriteria: OWNER_EXCLUDABLE_CRITERIA,
+    ownerExclusionEvidence: OWNER_EXCLUSION_EVIDENCE,
+  });
 }
 
 export async function checkPhase0FoundationsExitStatus(file = new URL("../data/phase0-foundations-exit-status.json", import.meta.url)) {
