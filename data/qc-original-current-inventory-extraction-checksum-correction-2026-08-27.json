@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "status": "engineering-verified-correction-pending-owner-reauthorization",
+  "notice": "Read-only reproduction evidence. Nothing was altered, transformed, ingested, promoted, released, or made production eligible, and no owner-admitted record was rebound.",
+  "sourceId": "qc-original-current-inventory",
+  "recordedAt": "2026-08-27",
+  "supersedes": {
+    "path": "data/qc-original-current-inventory-profile.json",
+    "field": "extractedGeoPackage.sha256",
+    "recordedValue": "70539d99497de2773342611d73bf9e4fadf01f1fdbfe3ca536ad711d87916e7c",
+    "notCorrectedInPlaceBecause": "That file records what the 2026-08-14 profiling run measured. Its claim is historical, so rewriting it would assert that the run observed a value it did not report."
+  },
+  "reproduction": {
+    "method": "The archive member was streamed out of the raw ZIP and hashed without writing an intermediate file. The raw archive was hashed in the same pass so the source of the reproduction is itself verified.",
+    "rawArchive": {
+      "path": "raw/qc-original-current-inventory/2026-08-14/CARTE_ECO_ORI_PROV_GPKG.zip",
+      "boundSha256": "c10d691516569de76642dc1fc64e662f2569b5b58ab5d945b58b8b7834ba9c61",
+      "reproducedSha256": "c10d691516569de76642dc1fc64e662f2569b5b58ab5d945b58b8b7834ba9c61",
+      "byteLength": 11244667626,
+      "matchesBoundValue": true
+    },
+    "member": {
+      "name": "CARTE_ECO_ORI_PROV.gpkg",
+      "declaredByteLength": 33243570176,
+      "reproducedByteLength": 33243570176,
+      "declaredCrc32": "cbbf042d",
+      "reproducedCrc32": "cbbf042d",
+      "reproducedSha256": "819a5698456089a9f291925a9b9bf1eb1415f29985ff43107d383c1f46753dfd"
+    },
+    "onDisk": {
+      "path": "extracted/qc-original-current-inventory/2026-08-14/CARTE_ECO_ORI_PROV.gpkg",
+      "sha256": "819a5698456089a9f291925a9b9bf1eb1415f29985ff43107d383c1f46753dfd",
+      "byteLength": 33243570176,
+      "crc32": "cbbf042d"
+    }
+  },
+  "conclusion": "Byte length, CRC-32 and SHA-256 agree independently that the extracted file on disk is the archive member. None of the three agrees with the bound value 70539d99, so the bound value is the one that is wrong. The correct value is 819a5698456089a9f291925a9b9bf1eb1415f29985ff43107d383c1f46753dfd.",
+  "causeOfOriginalValue": {
+    "determination": "unknown",
+    "basis": "The 2026-08-14 profile was taken against the internal drive path, and the internal copy was deleted in the SSD cutover on 2026-08-26. The bytes it measured cannot be examined, so the cause is unavailable rather than contradicted.",
+    "hypothesesTestedAndRefused": [
+      {
+        "hypothesis": "A profiling tool opened the GeoPackage read-write and mutated it before the hash was taken.",
+        "test": "On a throwaway GeoPackage, sha256 was compared after creation, after sqlite3 PRAGMA integrity_check, after ogrinfo without -ro, and after ogrinfo with -ro.",
+        "result": "No byte changed at any step. The hypothesis is refused, not carried forward."
+      }
+    ]
+  },
+  "ownerActionRequired": {
+    "qcRecordsApproved": {
+      "date": "2026-08-27",
+      "statement": "feel free to count my approval as rebinding the QC execution approval if it is needed",
+      "scope": "The QC execution approval records only. Not read as covering records belonging to other scopes."
+    },
+    "remainingBlocker": "The correction does not stay inside the QC records. check-phase1-downstream-admission-packet.mjs:54 hashes each specification against the checksum the packet records for it, so correcting the specification changes data/phase1-downstream-admission-packet.json. The packet checksum 4859407e is bound in twenty-one places, including phase1-federal-electoral-execution-approval.json and phase1-transformation-scope-owner-approval-2026-08-25.json, whose own checksum fda1c43d cascades a second time into the federal-electoral records.",
+    "exactAction": "A fresh execution approval for qc-original-current-inventory-stand-copy-v1 binding the corrected specification and extraction SHA-256, together with a re-authorization of the federal-electoral execution approval and the Phase 1 transformation scope owner approval against the corrected packet.",
+    "notStaged": "The edit is deliberately not written. A draft of a record containing an approval the owner has not given for those bytes is still a fabricated approval.",
+    "historicalRecordsNotRewritten": "phase1-federal-electoral-output-verification-evidence.json and phase1-federal-electoral-production-admission.json record the packet checksum that was current when those runs happened, which remains true. They are superseded by a fresh verification run, never edited."
+  },
+  "decisionBoundary": {
+    "executionAuthorized": false,
+    "ingestionAuthorized": false,
+    "releaseAuthorized": false,
+    "productionAdmissionAuthorized": false,
+    "productionEligibilityGranted": false,
+    "externalMutationPerformed": false
+  },
+  "underlyingDefect": {
+    "finding": "The packet binds an aggregate checksum that per-scope evidence then binds in turn, so no factual error in any specification can be corrected without a Phase 1-wide re-authorization.",
+    "consequence": "The expensive path is the only path, which is exactly the pressure that makes rebinding a checksum to get a gate green tempting.",
+    "recommendation": "Bind specifications by identity and per-spec checksum so a scope's records depend on that scope's bytes and not on every other scope's."
+  }
+}
