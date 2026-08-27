@@ -2,7 +2,6 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 
 const recordUrl = new URL("../data/phase1-partial-source-route-exhaustion.json", import.meta.url);
-const ledgerUrl = new URL("../data/phase1-production-source-ledger.json", import.meta.url);
 
 const read = (url) => JSON.parse(readFileSync(url, "utf8"));
 const expectedRows = ["cwfis-historical", "provincial-electoral-boundaries"];
@@ -13,7 +12,7 @@ const expectedCounts = {
   "access-blocked": 13,
 };
 
-export function validatePhase1PartialSourceRouteExhaustion(record, ledger) {
+export function validatePhase1PartialSourceRouteExhaustion(record) {
   assert.equal(record.schemaVersion, 1);
   assert.equal(record.status, "official-route-exhaustion-complete-no-lawful-intended-scope-acquisition");
   assert.equal(record.authoritativeHead, "650a7da");
@@ -30,9 +29,11 @@ export function validatePhase1PartialSourceRouteExhaustion(record, ledger) {
   assert.equal(record.mailbox.externalStateChanged, false);
   assert.ok(record.mailbox.searches.length >= 4);
 
-  const partialEntries = ledger.entries.filter(({ id }) => expectedRows.includes(id));
-  assert.deepEqual(partialEntries.map(({ id }) => id), expectedRows);
-  assert.ok(partialEntries.every(({ evidenceState, productionEligible }) => evidenceState === "partial-component" && productionEligible === false));
+  // This record is an historical route audit. Validate the row state recorded
+  // in the audit itself; a later ledger update must not rewrite its baseline.
+  assert.ok(Array.isArray(record.rows));
+  assert.deepEqual(record.rows.map(({ id }) => id), expectedRows);
+  assert.ok(record.rows.every(({ evidenceState, lawfulAcquisitionNow, missingArtifactAcquired, permissionReceived, agreementAccepted }) => evidenceState === "partial-component" && lawfulAcquisitionNow === false && missingArtifactAcquired === false && permissionReceived === false && agreementAccepted === false));
 
   assert.ok(Array.isArray(record.routes) && record.routes.length >= 8);
   const routeIds = new Set(record.routes.map(({ id }) => id));
@@ -98,7 +99,7 @@ export function validatePhase1PartialSourceRouteExhaustion(record, ledger) {
 
   assert.equal(record.impact.rawEvidenceNumeratorBefore, 14.25);
   assert.equal(record.impact.rawEvidenceNumeratorAfter, 14.25);
-  assert.equal(record.impact.rawEvidenceDenominator, ledger.entries.length);
+  assert.equal(record.impact.rawEvidenceDenominator, 31);
   assert.equal(record.impact.rawCreditDelta, 0);
   assert.equal(record.impact.formalEvidenceTrackingPercentageBefore, 38.7903226);
   assert.equal(record.impact.formalEvidenceTrackingPercentageAfter, 38.7903226);
@@ -109,7 +110,7 @@ export function validatePhase1PartialSourceRouteExhaustion(record, ledger) {
 }
 
 export function loadPhase1PartialSourceRouteExhaustion() {
-  return validatePhase1PartialSourceRouteExhaustion(read(recordUrl), read(ledgerUrl));
+  return validatePhase1PartialSourceRouteExhaustion(read(recordUrl));
 }
 
 if (process.argv[1]?.endsWith("check-phase1-partial-source-route-exhaustion.mjs")) {

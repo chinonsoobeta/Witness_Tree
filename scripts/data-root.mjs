@@ -12,8 +12,9 @@ import * as nodeFs from "node:fs";
 export const INTERNAL_DATA_ROOT = "/Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data";
 export const SSD_DATA_ROOT = "/Volumes/Extended_SSD/Witness_Tree-data";
 
-// Flips to SSD_DATA_ROOT at migration cutover, once byte identity with the internal root is proven.
-export const DEFAULT_DATA_ROOT = INTERNAL_DATA_ROOT;
+// Migration cutover is complete. The internal path remains only as an approved
+// compatibility symlink for historical evidence that recorded it verbatim.
+export const DEFAULT_DATA_ROOT = SSD_DATA_ROOT;
 
 export function resolveDataRoot(fallback = DEFAULT_DATA_ROOT) {
   const configured = process.env.WITNESS_TREE_DATA_ROOT;

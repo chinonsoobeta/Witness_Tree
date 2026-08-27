@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "status": "partially-admitted",
-  "asOf": "2026-08-26",
+  "asOf": "2026-08-27",
   "notice": "Canonical Phase 1 production-source ledger. It reconciles every planUse: production row with evidence already recorded in this repository. Only rows with exact transformation, rights, field-completeness, release, and production-admission evidence are eligible; all other rows remain fail-closed.",
   "entries": [
     {
@@ -122,24 +122,25 @@
     },
     {
       "id": "cwfis-historical",
-      "evidenceState": "partial-component",
+      "evidenceState": "local-verified-profiled",
       "evidenceRefs": [
         "data/nfdb-poly-current-profile.json",
-        "data/partial-ledger-evidence-audit.json"
+        "data/phase1-nbac-owner-authorization-2026-08-27.json",
+        "data/phase1-nbac-profile-2026-08-27.json"
       ],
       "proof": {
-        "licence": false,
-        "attribution": false,
-        "retrievalVersion": false,
-        "checksum": false,
-        "rawArchiveRefetch": false,
-        "profile": false,
+        "licence": true,
+        "attribution": true,
+        "retrievalVersion": true,
+        "checksum": true,
+        "rawArchiveRefetch": true,
+        "profile": true,
         "immutableArchive": false,
         "productionAdmission": false
       },
-      "rawCredit": 0.25,
+      "rawCredit": 0.75,
       "productionEligible": false,
-      "blocker": "NBAC is the missing component. Its affirmative end-user agreement limits use to the licensee's own internal use and bars distribution or transfer without Canada's prior written consent; the accountable owner has not accepted it. NFDB alone is not the named combined source."
+      "blocker": "The NFDB and exact NBAC 1972-2025 components are locally checksum-bound and profiled under the current official OGL Canada metadata. The 49 invalid NBAC geometries remain quarantined. Immutable archive proof, transformation, ingestion, release and production admission remain separately blocked."
     },
     {
       "id": "bc-wildfire",
@@ -681,12 +682,12 @@
       "blocker": "CIRNAC's official map is informal, approximate, subject to revision, and expressly cannot be relied on for consultation. It is not legal or precision boundary geometry; no admissible legal artifact, rights, checksum/archive recovery, or engagement route is verified."
     }
   ],
-  "rawEvidenceNumerator": 16.5,
+  "rawEvidenceNumerator": 17,
   "formalProgress": {
     "baselinePercentagePoints": 25,
     "rawEvidenceWeightPercentagePoints": 30,
     "completeLedgerWeightPercentagePoints": 45,
-    "percentage": 40.9677419,
+    "percentage": 41.4516129,
     "notice": "This is an evidence-tracking score only. It does not grant source-ledger admission, transformation, analysis, ingestion, public release, production admission, or production eligibility."
   }
 }

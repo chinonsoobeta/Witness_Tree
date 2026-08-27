@@ -3,6 +3,13 @@ import { readFileSync } from "node:fs";
 import { validate as validateFederalAdmission } from "./check-phase1-federal-electoral-production-admission.mjs";
 
 const READINESS = new Set(["owner-decision-recorded", "immutable-archive-then-owner-decision", "owner-scope-decision-after-archive", "owner-scope-decision-recorded-awaiting-archive", "owner-scope-decision-ready", "external-evidence-blocked"]);
+const OWNER_SCOPE_EVIDENCE_BY_ROW = new Map([
+  ["cwfis-current", "data/current-wildfire-owner-admission.json"],
+  ["cwfis-historical", "data/phase1-nbac-owner-authorization-2026-08-27.json"],
+  ["bc-wildfire", "data/current-wildfire-owner-admission.json"],
+  ["ab-wildfire", "data/current-wildfire-owner-admission.json"],
+  ["on-fire-disturbance", "data/current-wildfire-owner-admission.json"],
+]);
 const FEDERAL_IDS = new Set(["fed-2023-ridings", "elections-canada-45th-files"]);
 const HISTORICAL_FEDERAL_STATE = {
   evidenceState: "local-verified-profiled",
@@ -84,7 +91,9 @@ export function validatePhase1SourceLedgerDecisionReadiness(audit, ledger, decis
       assert.ok(["local-verified-profiled", "remote-verified-archived-profiled"].includes(row.evidenceState));
       assert.equal(row.proof.immutableArchive, row.evidenceState === "remote-verified-archived-profiled");
       assert.equal(row.proof.productionAdmission, false);
-      assert.ok(row.evidenceRefs.includes("data/current-wildfire-owner-admission.json"));
+      const requiredEvidence = OWNER_SCOPE_EVIDENCE_BY_ROW.get(row.id);
+      assert.ok(requiredEvidence, `${row.id} has no exact owner-scope evidence mapping`);
+      assert.ok(row.evidenceRefs.includes(requiredEvidence), `${row.id} lacks its exact owner-scope evidence`);
     }
     if (entry.readiness === "owner-scope-decision-after-archive" || entry.readiness === "owner-scope-decision-recorded-awaiting-archive" || entry.readiness === "owner-scope-decision-ready") assert.match(entry.scope, /.+/);
     if (entry.readiness === "owner-scope-decision-ready") {
@@ -109,6 +118,9 @@ export function validatePhase1SourceLedgerDecisionReadiness(audit, ledger, decis
   const plvi = audit.entries.find((candidate) => candidate.id === "ab-primary-land-vegetation");
   assert.equal(plvi.readiness, "owner-decision-recorded");
   assert.match(plvi.scope, /179,087-feature closed-join derived artifact.*12 bounded repairs.*POLYGON_ID 41405.*scope-bound validation and ingestion preparation only/i);
+  const nbac = audit.entries.find((candidate) => candidate.id === "cwfis-historical");
+  assert.equal(nbac.readiness, "owner-scope-decision-recorded-awaiting-archive");
+  assert.match(nbac.scope, /OGL Canada.*NFDB and NBAC.*49 invalid NBAC geometries.*quarantined/i);
   const elections = audit.entries.filter((entry) => entry.physicalArtifactGroup === "elections-canada-2025-shp");
   assert.deepEqual(elections.map(({ id }) => id), ["fed-2023-ridings", "elections-canada-45th-files"]);
   const shared = audit.minimalOwnerDecisionBundles.find((bundle) => bundle.id === "elections-canada-2025-shared-artifact");

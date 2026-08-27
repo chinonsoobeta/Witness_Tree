@@ -152,7 +152,7 @@ function classifyRows(optionalEnhancements, expectedIds) {
 export function validatePhase1SourceLedgerFieldAudit(audit, ledger, inventory, root = DEFAULT_ROOT, optionalEnhancements = DEFAULT_OPTIONAL_ENHANCEMENTS) {
   assertCondition(audit && audit.schemaVersion === 1, "Field audit must be schema-versioned.");
   assertCondition(ALLOWED_STATUSES.has(audit.status), "Field audit has an invalid status.");
-  assertCondition(/^\d{4}-\d{2}-\d{2}$/.test(audit.asOf), "Field audit requires an as-of date.");
+  assertCondition(audit.asOf === "2026-08-27", "Field audit must use the current evidence date 2026-08-27.");
   assertCondition(typeof audit.notice === "string" && /fail closed/i.test(audit.notice), "Field audit needs an explicit fail-closed notice.");
   assertCondition(Array.isArray(audit.requiredFields) && audit.requiredFields.length === REQUIRED_FIELDS.length && audit.requiredFields.every((field, index) => field === REQUIRED_FIELDS[index]), "Field audit required fields must match the Phase 1 contract exactly.");
   assertCondition(ledger && ledger.schemaVersion === 1 && ["blocked", "partially-admitted"].includes(ledger.status), "The canonical production ledger must state its blocked or partial-admission status.");

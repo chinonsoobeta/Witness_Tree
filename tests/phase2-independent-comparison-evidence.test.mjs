@@ -318,6 +318,20 @@ test("rejects an evidence path reached through a parent symlink", () => {
   });
 });
 
+test("rejects an invalid data-root override even for test-only evidence", () => {
+  withDirectory((directory) => {
+    const evidencePath = join(directory, "test-only-invalid-data-root-evidence.json");
+    writeFileSync(evidencePath, JSON.stringify(syntheticV2Envelope(directory)));
+    const result = spawnSync(tsx, [script, "--evidence", evidencePath], {
+      cwd: root,
+      env: { ...process.env, WITNESS_TREE_DATA_ROOT: "relative-data-root" },
+      encoding: "utf8",
+    });
+    assert.notEqual(result.status, 0);
+    assert.match(`${result.stderr}\n${result.stdout}`, /absolute path/);
+  });
+});
+
 test("rejects publication metadata that does not bind the page checksum", () => {
   withDirectory((directory) => {
     const evidencePath = join(directory, "test-only-publication-checksum-evidence.json");

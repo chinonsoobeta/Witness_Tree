@@ -19,6 +19,7 @@
     "check:phase1-federal-electoral-output",
     "check:phase1-federal-electoral-production-admission",
     "check:phase1-federal-electoral-transformation",
+    "check:phase1-nbac-profile-bytes",
     "check:phase1-nrcan-cover-processing-gate",
     "check:phase1-ntems-readback-bytes",
     "check:phase1-owner-decision-queue",

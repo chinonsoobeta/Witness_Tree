@@ -10,7 +10,7 @@ const decisions = read("../data/phase1-remote-source-admission-decisions.json");
 
 test("decision-readiness matrix reconciles all rows and stays strictly non-admitting", () => {
   assert.equal(validatePhase1SourceLedgerDecisionReadiness(audit, ledger, decisions), audit);
-  assert.deepEqual(audit.counts, { "owner-decision-recorded": 9, "immutable-archive-then-owner-decision": 3, "owner-scope-decision-after-archive": 0, "owner-scope-decision-recorded-awaiting-archive": 4, "owner-scope-decision-ready": 0, "external-evidence-blocked": 15 });
+  assert.deepEqual(audit.counts, { "owner-decision-recorded": 9, "immutable-archive-then-owner-decision": 3, "owner-scope-decision-after-archive": 0, "owner-scope-decision-recorded-awaiting-archive": 5, "owner-scope-decision-ready": 0, "external-evidence-blocked": 14 });
   const harvest = audit.entries.find(({ id }) => id === "ntems-forest-harvest");
   assert.equal(harvest.readiness, "owner-decision-recorded");
   assert.equal(ledger.entries.find(({ id }) => id === "ntems-forest-harvest").proof.immutableArchive, true);
@@ -29,6 +29,19 @@ test("matrix fails closed for an inferred decision, a missing scope, or duplicat
   assert.throws(() => validatePhase1SourceLedgerDecisionReadiness(scope, ledger, decisions));
   const duplicate = structuredClone(audit); duplicate.minimalOwnerDecisionBundles.find((bundle) => bundle.id === "elections-canada-2025-shared-artifact").rows = ["fed-2023-ridings"];
   assert.throws(() => validatePhase1SourceLedgerDecisionReadiness(duplicate, ledger, decisions));
+});
+
+test("each recorded owner scope requires the evidence for that exact row", () => {
+  for (const [id, required, wrong] of [
+    ["cwfis-historical", "data/phase1-nbac-owner-authorization-2026-08-27.json", "data/current-wildfire-owner-admission.json"],
+    ["bc-wildfire", "data/current-wildfire-owner-admission.json", "data/phase1-nbac-owner-authorization-2026-08-27.json"],
+  ]) {
+    const corrupted = structuredClone(ledger);
+    const row = corrupted.entries.find((entry) => entry.id === id);
+    row.evidenceRefs = row.evidenceRefs.filter((ref) => ref !== required);
+    row.evidenceRefs.push(wrong);
+    assert.throws(() => validatePhase1SourceLedgerDecisionReadiness(audit, corrupted, decisions), /exact owner-scope evidence/);
+  }
 });
 
 test("the readiness matrix validates its historical federal rows after later admission", () => {

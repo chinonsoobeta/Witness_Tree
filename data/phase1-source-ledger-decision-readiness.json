@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "status": "non-admitting-audit",
-  "asOf": "2026-08-22",
+  "asOf": "2026-08-27",
   "notice": "Decision-readiness audit of the canonical 31-row Phase 1 production-source ledger. It neither changes a ledger proof nor grants archival admission, transformation, ingestion, release, production admission, or production eligibility.",
   "contract": ["licence", "attribution", "retrievalVersion", "checksum", "rawArchiveRefetch", "profile", "immutableArchive", "ownerSourceLedgerDecision"],
   "readinessDefinitions": {
@@ -18,7 +18,7 @@
     {"id":"ntems-canopy-cover","readiness":"owner-decision-recorded","decisionBundle":"remote-source-evidence-recorded"},
     {"id":"ntems-canopy-height","readiness":"owner-decision-recorded","decisionBundle":"national-baselines","scope":"Accepted named existing immutable source-ledger evidence only; transformation admission, ingestion, release and production remain separate decisions."},
     {"id":"cwfis-current","readiness":"owner-scope-decision-recorded-awaiting-archive","decisionBundle":"wildfire-operational-scope","scope":"Approved as a fixed-time 586-point national fallback snapshot: not real-time, complete perimeter, or provincial-authoritative data; provincial agencies prevail."},
-    {"id":"cwfis-historical","readiness":"external-evidence-blocked","decisionBundle":"none","blocker":"The named combined source lacks its burned-area component and normal source evidence."},
+    {"id":"cwfis-historical","readiness":"owner-scope-decision-recorded-awaiting-archive","decisionBundle":"nbac-current-terms-and-publication","scope":"The owner approved acquisition and downstream publication under the current official OGL Canada metadata. Exact NFDB and NBAC components are locally checksum-bound and profiled; 49 invalid NBAC geometries remain quarantined. Immutable archive, transformation, ingestion, release and production evidence remain separate."},
     {"id":"bc-wildfire","readiness":"owner-scope-decision-recorded-awaiting-archive","decisionBundle":"wildfire-geometry-scope","scope":"Approved unchanged 217-feature raw retention plus the 216-feature derived geometry release: 215 unchanged, G70362 repaired within tolerance, V10755 permanently quarantined; no 217-feature geometry coverage claim."},
     {"id":"ab-wildfire","readiness":"owner-scope-decision-recorded-awaiting-archive","decisionBundle":"wildfire-operational-scope","scope":"Approved as an as-of 751-point provincial location snapshot, not real-time or a complete perimeter dataset; Alberta Wildfire remains authoritative."},
     {"id":"on-fire-disturbance","readiness":"owner-scope-decision-recorded-awaiting-archive","decisionBundle":"wildfire-geometry-scope","scope":"Approved unchanged 188-feature raw retention plus the 188-feature closed-join derived artifact with 179 unchanged, nine bounded repairs and zero quarantine."},
@@ -45,13 +45,14 @@
     {"id":"historic-treaties","readiness":"external-evidence-blocked","decisionBundle":"none","blocker":"Reviewed federal mapping is informational and non-legal, not admissible precision geometry; rights and engagement route are also unverified."},
     {"id":"modern-treaties","readiness":"external-evidence-blocked","decisionBundle":"none","blocker":"Reviewed federal map is informal, approximate, revisable, and not for consultation reliance; rights and engagement route are also unverified."}
   ],
-  "counts": {"owner-decision-recorded":9,"immutable-archive-then-owner-decision":3,"owner-scope-decision-after-archive":0,"owner-scope-decision-recorded-awaiting-archive":4,"owner-scope-decision-ready":0,"external-evidence-blocked":15},
+  "counts": {"owner-decision-recorded":9,"immutable-archive-then-owner-decision":3,"owner-scope-decision-after-archive":0,"owner-scope-decision-recorded-awaiting-archive":5,"owner-scope-decision-ready":0,"external-evidence-blocked":14},
   "minimalOwnerDecisionBundles": [
     {"id":"national-baselines","rows":["ntems-forest-harvest","ntems-canopy-height"],"precondition":"Existing immutable archive/recovery readbacks are integrated and the named source-ledger-only decisions are recorded; any downstream method decision remains separate."},
     {"id":"quebec-ecoforest","rows":["qc-current-ecoforest","qc-original-current-inventory","qc-fourth-inventory"],"precondition":"The current and original rows have immutable attestation and recorded source-ledger-only decisions; the fourth-inventory source still requires immutable archive/recovery readbacks plus separately scoped semantic transformation and join selection."},
     {"id":"elections-canada-2025-shared-artifact","rows":["fed-2023-ridings","elections-canada-45th-files"],"physicalArtifactGroup":"elections-canada-2025-shp","precondition":"One immutable archive/recovery proof for the shared exact Elections Canada 2025 SHP artifact, followed by two named ledger-row decisions."},
     {"id":"wildfire-operational-scope","rows":["cwfis-current","ab-wildfire"],"precondition":"Scope is owner-approved; integrate each exact raw payload's immutable archive/recovery readbacks before activation."},
     {"id":"wildfire-geometry-scope","rows":["bc-wildfire","on-fire-disturbance"],"precondition":"Raw/derived scope and dispositions are owner-approved; integrate exact immutable archive/recovery readbacks for both raw and derived artifacts before activation."},
+    {"id":"nbac-current-terms-and-publication","rows":["cwfis-historical"],"precondition":"Current official OGL Canada terms and owner publication scope are recorded; integrate exact immutable archive/recovery readback and keep invalid geometry handling explicit before activation."},
     {"id":"alberta-plvi-geometry-scope","rows":["ab-primary-land-vegetation"],"precondition":"Immutable archive evidence and the exact raw/derived scope decision are recorded; scope-bound validation and ingestion preparation are allowed, while transformation admission and ingestion remain separate."}
   ],
   "nonProduction": {"productionProofChanged":false,"productionEligibleChanged":false,"transformationAuthorized":false,"ingestionAuthorized":false,"releaseAuthorized":false,"activationBlockedOnImmutableReadbacks":true}

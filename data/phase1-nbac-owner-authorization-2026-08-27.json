@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "witness-tree/phase1-nbac-owner-authorization/1",
+  "status": "owner-approval-recorded-artifact-evidence-separate",
+  "decisionId": "phase1-nbac-acquisition-publication-2026-08-27",
+  "decidedAt": "2026-08-27",
+  "ownerAuthorization": {
+    "ownerName": "Chinonso Obeta",
+    "decision": "approve",
+    "statement": "I explicitly authorize NBAC acquisition, ingestion, release, production admission and publication now, and I do not want to wait for permission. Assume that you have full legal sign-off."
+  },
+  "source": {
+    "sourceId": "cwfis-historical",
+    "component": "National Burned Area Composite",
+    "title": "National Burned Area Composite",
+    "publisher": "Natural Resources Canada, Canadian Forest Service",
+    "officialIndexUrl": "https://cwfis.cfs.nrcan.gc.ca/downloads/nbac/",
+    "officialCatalogue": {
+      "uuid": "537a1fd0-698e-4a7b-85a1-e02581ae78b2",
+      "apiUrl": "https://catalogue.cwfif.nrcan.gc.ca/geonetwork/srv/api/records/537a1fd0-698e-4a7b-85a1-e02581ae78b2/formatters/json"
+    },
+    "artifactUrl": "https://cwfis.cfs.nrcan.gc.ca/downloads/nbac/NBAC_1972to2025_20260513_shp.zip",
+    "metadataUrl": "https://cwfis.cfs.nrcan.gc.ca/downloads/nbac/NBAC_1972to2025_20260513_shp_metadata.pdf"
+  },
+  "currentTerms": {
+    "status": "official-current-cwfis-geonetwork-metadata",
+    "metadata": {
+      "uuid": "537a1fd0-698e-4a7b-85a1-e02581ae78b2",
+      "apiUrl": "https://catalogue.cwfif.nrcan.gc.ca/geonetwork/srv/api/records/537a1fd0-698e-4a7b-85a1-e02581ae78b2/formatters/json",
+      "timestamp": "2026-06-17T16:42:35.514Z",
+      "publicationDate": "2026-05-13",
+      "creationDate": "2026-05-13"
+    },
+    "licence": {
+      "name": "Open Government Licence - Canada",
+      "url": "https://open.canada.ca/en/open-government-licence-canada"
+    },
+    "citation": "Canadian Forest Service. National Burned Area Composite (NBAC). Natural Resources Canada, Canadian Forest Service, Northern Forestry Centre, Edmonton, Alberta. https://cwfis.cfs.nrcan.gc.ca.",
+    "noEndorsement": "Do not imply official status or endorsement."
+  },
+  "decisions": {
+    "acquisitionApproved": true,
+    "ingestionApproved": true,
+    "releaseApproved": true,
+    "productionAdmissionApproved": true,
+    "publicationApproved": true,
+    "waitForAdditionalPermission": false
+  },
+  "evidenceState": {
+    "byteEvidencePresent": false,
+    "artifactDownloaded": false,
+    "artifactProfiled": false,
+    "artifactArchived": false,
+    "staged": false,
+    "artifactIngested": false,
+    "artifactReleased": false,
+    "artifactPublished": false,
+    "productionAdmitted": false,
+    "productionEligible": false
+  },
+  "historicalEvidence": {
+    "path": "data/phase1-nbac-outreach-sent-2026-08-27.json",
+    "status": "sent-awaiting-response",
+    "remainsHistorical": true,
+    "claimsRemainFalse": true
+  },
+  "limits": [
+    "This owner authorization records permission to proceed under the current official terms; it is not byte, checksum, profile, archive, ingestion, release, publication or production evidence.",
+    "The exact artifact must be downloaded and byte-bound before any evidenceState value can become true, including artifactDownloaded, artifactProfiled, artifactArchived, artifactIngested, artifactReleased, artifactPublished, productionAdmitted or productionEligible.",
+    "The earlier outreach-sent record remains historical and must retain its false agreement, consent, acquisition, ledger-credit and production-admission claims."
+  ]
+}

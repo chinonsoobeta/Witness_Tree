@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { validate as validateFederalAdmission } from "./check-phase1-federal-electoral-production-admission.mjs";
+import { validatePhase1NbacProfile } from "./check-phase1-nbac-profile.mjs";
 import { validateNtemsProductionAdmissionRecord } from "./check-phase1-ntems-production-admission-readiness.mjs";
 import { validateQcStandCopyProductionAdmissionRecord } from "./check-qc-stand-copy-production-admission-readiness.mjs";
 
@@ -77,7 +78,7 @@ function validateAdmissionRecord(record, root) {
   throw new Error(`Unsupported Phase 1 production-admission schema: ${record?.schemaVersion ?? "missing"}.`);
 }
 
-export function validatePhase1ProductionSourceLedger(ledger, inventory, root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..")) {
+export function validatePhase1ProductionSourceLedger(ledger, inventory, root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), ".."), suppliedNbacProfile) {
   if (!ledger || ledger.schemaVersion !== 1 || !["blocked", "partially-admitted", "admitted"].includes(ledger.status)) throw new Error("Production source ledger must be schema-versioned and truthfully state its admission status.");
   if (!/^\d{4}-\d{2}-\d{2}$/.test(ledger.asOf) || !ledger.notice) throw new Error("Production source ledger requires its as-of date and an explicit notice.");
   const requiredIds = inventory.entries.filter((entry) => entry.planUse === "production").map((entry) => entry.id);
@@ -111,6 +112,22 @@ export function validatePhase1ProductionSourceLedger(ledger, inventory, root = p
     if (entry.evidenceState.startsWith("remote-") && (!entry.proof.immutableArchive || !entry.proof.profile || !entry.proof.rawArchiveRefetch)) throw new Error("Remote-verified evidence requires archive, profile, and raw recovery proof.");
     if (entry.evidenceState === "local-verified-profiled" && (!entry.proof.profile || !entry.proof.rawArchiveRefetch || entry.proof.immutableArchive)) throw new Error("Local evidence must remain profile/re-fetch evidence without immutable proof.");
   }
+  const nbacEntry = ledger.entries.find(({ id }) => id === "cwfis-historical");
+  const nbacProfileReference = "data/phase1-nbac-profile-2026-08-27.json";
+  const nbacAuthorizationReference = "data/phase1-nbac-owner-authorization-2026-08-27.json";
+  if (!nbacEntry.evidenceRefs.includes(nbacProfileReference) || !nbacEntry.evidenceRefs.includes(nbacAuthorizationReference)) throw new Error("NBAC ledger row must bind the exact profile and owner-authorization records.");
+  const nbacProfile = validatePhase1NbacProfile(suppliedNbacProfile ?? JSON.parse(readFileSync(validateEvidenceReference(root, nbacProfileReference), "utf8")));
+  const expectedNbacProof = {
+    licence: true,
+    attribution: true,
+    retrievalVersion: true,
+    checksum: nbacProfile.evidenceState.checksumVerified,
+    rawArchiveRefetch: nbacProfile.evidenceState.refetchable,
+    profile: nbacProfile.evidenceState.profiled,
+    immutableArchive: nbacProfile.evidenceState.immutableArchive,
+    productionAdmission: nbacProfile.evidenceState.productionAdmitted,
+  };
+  if (nbacEntry.evidenceState !== nbacProfile.status || Object.keys(expectedNbacProof).some((key) => nbacEntry.proof[key] !== expectedNbacProof[key]) || nbacEntry.productionEligible !== nbacProfile.evidenceState.productionEligible) throw new Error("NBAC ledger proof, state, or eligibility differs from the exact validated profile.");
   const admittedIds = ledger.entries.filter((entry) => entry.proof.productionAdmission).map((entry) => entry.id);
   const validatedAdmissionRecords = new Map();
   for (const [reference, admission] of admissionReferences) {

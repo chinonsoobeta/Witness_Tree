@@ -9,7 +9,7 @@
   },
   "currentLedger": {
     "path": "data/phase1-production-source-ledger.json",
-    "sha256": "b723e214c32b6a6d897141b78aa0f26cbfa3d1d09d25733be593cbb84309f13c"
+    "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351"
   },
   "authorizedChange": {
     "path": "data/phase1-federal-electoral-production-admission.json",

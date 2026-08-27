@@ -63,7 +63,7 @@
     },
     {
      "path": "docs/PLAN_GAP_MATRIX.md",
-     "sha256": "a6a3dd2082b91b542276384352d16720306eb2852d6f4d6efa018e83eb88ed89"
+          "sha256": "94077da717d964af14e9bd291117d1aa18431a0646d441b0cf789e0e8ee57bb4"
     }
    ]
   },
@@ -108,7 +108,7 @@
    "evidence": [
     {
      "path": "data/phase4-provincial-matching-preflight.json",
-     "sha256": "cbbdb54b8cfbc586477023454bbdbc6a238c54caf68018612fa8db2a05a06190"
+          "sha256": "c86e516121adcae06a830f964f08633818d6ff3f5d7018dd6c39537b494503f0"
     },
     {
      "path": "docs/PHASE4_OPTIONAL_ENHANCEMENT_GATE.md",
@@ -124,7 +124,7 @@
    "evidence": [
     {
      "path": "data/phase4-provincial-matching-preflight.json",
-     "sha256": "cbbdb54b8cfbc586477023454bbdbc6a238c54caf68018612fa8db2a05a06190"
+          "sha256": "c86e516121adcae06a830f964f08633818d6ff3f5d7018dd6c39537b494503f0"
     },
     {
      "path": "docs/EXTERNAL_GATES.md",

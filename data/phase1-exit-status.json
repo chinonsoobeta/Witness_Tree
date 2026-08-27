@@ -1,6 +1,6 @@
 {
   "schemaVersion": "phase1-exit-status/v1",
-  "asOf": "2026-08-25",
+  "asOf": "2026-08-27",
   "requirementsEvidence": {
     "path": "docs/CONTROLLING_IMPLEMENTATION_PLAN.md",
     "sha256": "7aa04bc77afc0d25546d33a8a195ce3c4b40fc62fca66f4d2d43f891f8005ca2",
@@ -20,8 +20,8 @@
         "status": "fail",
         "requirement": "100 percent of production datasets have a complete ledger entry.",
         "evidence": [
-          {"path": "data/phase1-production-source-ledger.json", "sha256": "b723e214c32b6a6d897141b78aa0f26cbfa3d1d09d25733be593cbb84309f13c"},
-          {"path": "data/phase1-source-ledger-field-audit.json", "sha256": "ab854d00096310568aa4480aa234dd0b554da597902e9b3e804215b388a71bc1"},
+          {"path": "data/phase1-production-source-ledger.json", "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351"},
+          {"path": "data/phase1-source-ledger-field-audit.json", "sha256": "3faa30c28bfb9e2cd9cbaa09b271af279f72ea1a984939cf38e23b9e715eeeaa"},
           {"path": "data/phase1-optional-enhancements.json", "sha256": "2617e8a975b2fe7d328b7cb43834cf89aa34f2df028a57d517168277c57d24be"},
           {"path": "data/phase1-current-state-completion-audit.json", "sha256": "f0c59e0f66a0cfdc26d4f97a4defd6ec09db4379623db303e09b1d9d5b2a3c07"}
         ],
@@ -37,9 +37,10 @@
           {"path": "data/phase1-archive-live-readback-2026-08-20.json", "sha256": "0e9430e3aebf258a592b2c310e8a01400d2eb925e699be901e90cb2650fed342"},
           {"path": "data/federal-electoral-archive-recovery-evidence.json", "sha256": "18b9fbfa5e3eecdc33ad0098f5ffa55f7bfebb1a47d2e33b7f01a94e05a6ed32"},
           {"path": "data/current-wildfire-exact-raw-archive-capture-2026-08-25.json", "sha256": "6600c3b7eb00c80ae8220c976a5b4038c2c59c959dc14a239d1cacdb979b9990"},
-          {"path": "data/qc-fourth-inventory-exact-archive-readback-2026-08-25.json", "sha256": "8624b6283177c5910d04a4933714e7bd4193e9c7becc821d04c4d64582d4c689"}
+          {"path": "data/qc-fourth-inventory-exact-archive-readback-2026-08-25.json", "sha256": "8624b6283177c5910d04a4933714e7bd4193e9c7becc821d04c4d64582d4c689"},
+          {"path": "data/phase1-nbac-profile-2026-08-27.json", "sha256": "53bfa7edc94d09273db4a1c65fe2f8689c3312b991f2888dbcb0b177c9fd86b2"}
         ],
-        "reason": "The federal raw payload/manifest, four current-wildfire raw payload/manifest pairs, and the Québec 62-object archive have checksum-bound exact-version evidence, but the requirement is universal: other raw files still lack all required archive-control proofs."
+        "reason": "The federal raw payload/manifest, four current-wildfire raw payload/manifest pairs, and the Québec 62-object archive have checksum-bound exact-version evidence. The exact NBAC ZIP has local checksum and refetch proof but no durable immutable payload/manifest retention receipt. The requirement is universal, and other raw files also still lack all required archive-control proofs."
       },
       {
         "id": "coverage-geometry",
@@ -47,10 +48,11 @@
         "status": "pass",
         "requirement": "The coverage geometry layer exists and covers all four provinces with a grade for every part of the land base.",
         "evidence": [
-          {"path": "scripts/check-phase1-geometry-policies.mjs", "sha256": "9d8c2cc723e8ee32a36150ba809e531f713eb945b9cc4cd44d314c56b9326fc6"},
-          {"path": "tests/phase1-geometry-policies.test.mjs", "sha256": "820c4f2054755bbc596583ae02099f15a5074bb60a366821447ce1b813220b37"}
+          {"path": "data/coverage-geometry-admission.json", "sha256": "cdc401d96348764540b37aa63e8d7dc42b8f0c343956272fd85051e62d75a2e5"},
+          {"path": "scripts/check-coverage-geometry-admission.mjs", "sha256": "fb9b0bd3e2ce2e946ae5eb854272df5b966b73402959b36d752747aa4520f22c"},
+          {"path": "tests/coverage-geometry-admission.test.mjs", "sha256": "b29e4f74cff1aa631e6a6147be6900a49005b9769119bc81214fa38848a711bc"}
         ],
-        "reason": "The current machine-checked geometry policy gate passes while retaining its non-admission and non-production boundaries."
+        "reason": "The machine-checked coverage-admission record directly verifies graded coverage across British Columbia, Alberta, Ontario and Quebec while retaining its non-production boundaries."
       },
       {
         "id": "corruption-validation-suite",
@@ -65,14 +67,13 @@
     ]
   },
   "historicalRawEvidenceTracking": {
-    "value": 40.9677419,
+    "value": 41.4516129,
     "unit": "percent",
     "status": "current-non-exit-tracker",
     "excludedFromFormalExitCalculation": true,
     "reason": "This is the current bounded raw-evidence tracking score recorded by the 31-row audit. It is not Phase 1 exit coverage or production completion.",
     "evidence": [
-      {"path": "data/phase1-current-state-completion-audit.json", "sha256": "f0c59e0f66a0cfdc26d4f97a4defd6ec09db4379623db303e09b1d9d5b2a3c07"},
-      {"path": "docs/PHASE1_CURRENT_STATE_COMPLETION_AUDIT.md", "sha256": "54a54b69a06f3c2e24d51513e1c978652a2ed08c386f4d4b7393064f636f0f1e"}
+      {"path": "data/phase1-production-source-ledger.json", "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351"}
     ]
   }
 }

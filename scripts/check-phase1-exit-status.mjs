@@ -58,7 +58,7 @@ export function validatePhase1ExitStatus(record, { root = ROOT, verifyHashes = t
   assert.doesNotMatch(JSON.stringify(exit), /39\.2741935/, "Historical raw-evidence tracking must not enter formal exit coverage.");
 
   const historical = record.historicalRawEvidenceTracking;
-  assert.equal(historical?.value, 40.9677419);
+  assert.equal(historical?.value, 41.4516129);
   assert.equal(historical.unit, "percent");
   assert.equal(historical.status, "current-non-exit-tracker");
   assert.equal(historical.excludedFromFormalExitCalculation, true);

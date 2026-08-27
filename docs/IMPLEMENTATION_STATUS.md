@@ -8,12 +8,16 @@
 
 Two criteria pass: national coverage geometry and the corruption-validation suite. Two do not:
 
-- The production source ledger is incomplete: **0/22 core rows** have every required field and production admission.
+- The production source ledger is incomplete: **2/22 core rows** have every required field and production admission.
 - Archive/refetch/restore evidence is not yet universal for every required raw file.
 
 The recovered federal-electoral pair, four current-wildfire raw payload/manifest pairs, two derived wildfire payload/manifest pairs, and Québec fourth-inventory's 62-object product are checksum-bound at exact immutable versions with the recorded retention. The normal archive-control exercise also completed its legal-hold, denied-delete, unchanged-retention, and recovery-replica checks. These are material archive/control facts, but they do not satisfy the universal all-source criterion or prove remaining recovery replicas, transformations, admission, or release. Restricted optional datasets are tracked separately and do not block the 22-source core baseline. See [Phase 1 exit status](PHASE1_EXIT_STATUS.md), [current-state completion audit](PHASE1_CURRENT_STATE_COMPLETION_AUDIT.md), [source-ledger audit](PHASE1_SOURCE_LEDGER_FIELD_AUDIT.md), [federal recovery evidence](FEDERAL_ELECTORAL_ARCHIVE_RECOVERY_2026-08-25.md), [current-wildfire exact capture](CURRENT_WILDFIRE_EXACT_RAW_ARCHIVE_CAPTURE_2026-08-25.md), and [Québec fourth-inventory promotion/readback](QC_FOURTH_INVENTORY_IMMUTABLE_PROMOTION.md).
 
 A source-review process for publisher updates, corrections, licence changes, and reprocessing is defined in [source review](SOURCE_REVIEW.md), with the decision contract in `lib/source-review/` and the registered baselines in [`data/source-review-register.json`](../data/source-review-register.json). No review has been run against a live publisher change; the register records baselines only, and it cannot grant re-acceptance, immutable promotion, or production eligibility.
+
+The current Phase 1 ledger is **17.00/31 raw credits**, with a bounded evidence-tracking score of **41.4516129%**. Its evidence-state counts are 14 `remote-verified-archived-profiled`, one `local-verified-profiled` row (`cwfis-historical`), one `partial-component`, 13 `access-blocked`, and two `production-admitted` rows. The tracker is not a Phase 1 completion or production percentage.
+
+The exact NBAC ZIP was acquired on 2026-08-27 under the current official Open Government Licence - Canada metadata. It is 1,257,052,370 bytes with SHA-256 `c42740eb9d2fe3991a27344d0c33927705ec3e78c277efc5311b502439cb2165`; ZIP integrity passed, and the local profile records 52,610 polygons with 49 ring self-intersections quarantined. Archive, transformation, ingestion, release, publication, and production admission remain false. The owner authorized acquisition and publication without waiting. The exact-key IAM delta is applied, but the storage object has not been uploaded. See [`NBAC profile`](../data/phase1-nbac-profile-2026-08-27.json), [`owner authorization`](../data/phase1-nbac-owner-authorization-2026-08-27.json), and [`IAM readback`](../data/nbac-archive-iam-applied-2026-08-27.json).
 
 ### Phase 2 – 2/4 (50%) formal exit criteria
 

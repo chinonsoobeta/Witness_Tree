@@ -39,7 +39,7 @@
       "evidence": [
         {
           "path": "docs/PLAN_GAP_MATRIX.md",
-          "sha256": "a6a3dd2082b91b542276384352d16720306eb2852d6f4d6efa018e83eb88ed89"
+          "sha256": "94077da717d964af14e9bd291117d1aa18431a0646d441b0cf789e0e8ee57bb4"
         }
       ]
     },
@@ -119,7 +119,7 @@
         },
         {
           "path": "docs/PLAN_GAP_MATRIX.md",
-          "sha256": "a6a3dd2082b91b542276384352d16720306eb2852d6f4d6efa018e83eb88ed89"
+          "sha256": "94077da717d964af14e9bd291117d1aa18431a0646d441b0cf789e0e8ee57bb4"
         }
       ],
       "ownerAuthorization": {
@@ -136,7 +136,7 @@
       "evidence": [
         {
           "path": "docs/PLAN_GAP_MATRIX.md",
-          "sha256": "a6a3dd2082b91b542276384352d16720306eb2852d6f4d6efa018e83eb88ed89"
+          "sha256": "94077da717d964af14e9bd291117d1aa18431a0646d441b0cf789e0e8ee57bb4"
         }
       ]
     },
@@ -144,7 +144,7 @@
       "id": "bulk-downloads",
       "title": "Bulk downloads are complete",
       "status": "fail",
-      "reason": "Only immutable illustrative-download contracts exist; no real CSV or GeoPackage binary has been retrieved or published.",
+      "reason": "Real source and processing GeoPackages exist, and one federal output is checksum-bound, but no admitted public bulk CSV and GeoPackage pair has been published at stable URLs and independently retrieved and hashed.",
       "evidence": [
         {
           "path": "docs/DOWNLOADS.md",
@@ -153,6 +153,10 @@
         {
           "path": "lib/downloads/generate.ts",
           "sha256": "1b885c46402ffa505da1ec171fdf14616367b0ab0659ca63fe700e4852d202ac"
+        },
+        {
+          "path": "data/phase1-federal-electoral-output-verification-evidence.json",
+          "sha256": "934a4381ab1ef23d913092e6c34da544e4c75326ae2c9ec172c63d33e34e5d17"
         }
       ]
     },
@@ -192,11 +196,19 @@
       "id": "observability",
       "title": "Observability is complete",
       "status": "fail",
-      "reason": "No deployed monitoring, alerting, log-retention, dashboard, or operational review evidence is recorded.",
+      "reason": "The scheduled wildfire workflow provides limited job-failure notification and manual run-list review, but no deployed service monitor, retained operational logs, dashboard, or completed operational review is recorded.",
       "evidence": [
         {
           "path": "docs/IMMUTABLE_STORAGE_PROVISIONING.md",
           "sha256": "84fa8cbf80435104a1ad61e73e4d8fbdf1e8b43dacb85c4141105d1bbf109bb2"
+        },
+        {
+          "path": ".github/workflows/wildfire-refresh.yml",
+          "sha256": "308505801e9a3be0e5407fe6c710598e6501078095c94c38d256db7b14789308"
+        },
+        {
+          "path": "docs/OPERATIONS_HANDBOOK.md",
+          "sha256": "f920d0d976673f5c16e9b43ba244b8125601a9940b106999b2823045e21b955b"
         }
       ]
     },
@@ -204,11 +216,19 @@
       "id": "backups",
       "title": "Backups are complete",
       "status": "fail",
-      "reason": "The immutable-storage record explicitly says that no Canadian recovery copy or documented provider durability/recovery evidence exists.",
+      "reason": "Bounded same-region recovery-replica readbacks exist for some archive objects, but no approved complete Canadian recovery copy covers every relied-on object and no current complete provider durability and recovery record exists.",
       "evidence": [
         {
           "path": "docs/IMMUTABLE_STORAGE_PROVISIONING.md",
           "sha256": "84fa8cbf80435104a1ad61e73e4d8fbdf1e8b43dacb85c4141105d1bbf109bb2"
+        },
+        {
+          "path": "data/phase1-archive-live-readback-2026-08-20.json",
+          "sha256": "0e9430e3aebf258a592b2c310e8a01400d2eb925e699be901e90cb2650fed342"
+        },
+        {
+          "path": "docs/PHASE1_ARCHIVE_LIVE_READBACK_2026-08-20.md",
+          "sha256": "6630983a082fce4b4d814ee2116f1524fba32d6c132ed132114b3e653c70a882"
         }
       ]
     },

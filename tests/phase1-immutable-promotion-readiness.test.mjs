@@ -4,13 +4,14 @@ import test from "node:test";
 import { validatePhase1ImmutablePromotionReadiness } from "../scripts/check-phase1-immutable-promotion-readiness.mjs";
 
 const read = (file) => JSON.parse(readFileSync(new URL(`../${file}`, import.meta.url), "utf8"));
-const args = [read("data/phase1-immutable-promotion-readiness.json"), read("data/phase1-production-source-ledger.json"), read("data/phase1-local-profiled-promotion-preparation.json"), read("data/current-wildfire-immutable-promotion-preparation.json"), read("data/current-wildfire-owner-admission.json"), read("data/qc-immutable-promotion-preparation.json"), read("data/qc-fourth-inventory-evidence.json"), read("data/qc-fourth-inventory-immutable-promotion-preparation.json"), read("data/qc-fourth-inventory-immutable-promotion-iam-policy.json"), read("data/phase1-phase3-owner-approvals-2026-08-21.json")];
+const args = [read("data/phase1-immutable-promotion-readiness.json"), read("data/phase1-production-source-ledger.json"), read("data/phase1-local-profiled-promotion-preparation.json"), read("data/current-wildfire-immutable-promotion-preparation.json"), read("data/current-wildfire-owner-admission.json"), read("data/qc-immutable-promotion-preparation.json"), read("data/qc-fourth-inventory-evidence.json"), read("data/qc-fourth-inventory-immutable-promotion-preparation.json"), read("data/qc-fourth-inventory-immutable-promotion-iam-policy.json"), read("data/phase1-phase3-owner-approvals-2026-08-21.json"), read("data/phase1-nbac-profile-2026-08-27.json"), read("data/phase1-nbac-owner-authorization-2026-08-27.json"), read("data/nbac-immutable-promotion-preparation.json"), read("data/nbac-archive-iam-applied-2026-08-27.json")];
 
 test("immutable-promotion readiness accounts for every local-profiled row without duplicate work", () => {
   assert.equal(validatePhase1ImmutablePromotionReadiness(...args), args[0]);
-  assert.equal(args[0].coveredProductionRowIds.length, 9);
+  assert.equal(args[0].coveredProductionRowIds.length, 10);
   assert.equal(args[0].physicalArtifactGroups.find((group) => group.id === "national-two-artifacts").physicalArtifactCount, 1);
   assert.equal(args[0].physicalArtifactGroups.find((group) => group.id === "current-wildfire-six-release-inputs").physicalArtifactCount, 6);
+  assert.equal(args[0].physicalArtifactGroups.find((group) => group.id === "nbac-1972-2025").physicalArtifactCount, 1);
 });
 
 test("recorded approvals stay fail-closed without owner execution and remote evidence", () => {
@@ -19,7 +20,7 @@ test("recorded approvals stay fail-closed without owner execution and remote evi
   const claim = structuredClone(args[0]); claim.claims.immutableObjectStorage = true;
   assert.throws(() => validatePhase1ImmutablePromotionReadiness(claim, ...args.slice(1)));
   const remote = structuredClone(args[7]); remote.claims.remoteObjectsExist = true;
-  assert.throws(() => validatePhase1ImmutablePromotionReadiness(args[0], ...args.slice(1, 7), remote, args[8], args[9]));
+  assert.throws(() => validatePhase1ImmutablePromotionReadiness(args[0], ...args.slice(1, 7), remote, ...args.slice(8)));
 });
 
 test("exact approval rows, commands, mode, and date reject plausible mutations", () => {

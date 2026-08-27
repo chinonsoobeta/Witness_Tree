@@ -8,8 +8,8 @@ verifiers and readbacks must be able to name their data root instead of hard-cod
 `scripts/data-root.mjs` is the single source of truth:
 
 - `WITNESS_TREE_DATA_ROOT` overrides the root for any run.
-- `DEFAULT_DATA_ROOT` is the fallback. It is still the internal root and **flips to
-  `SSD_DATA_ROOT` at cutover**, once byte identity with the internal root is proven.
+- `DEFAULT_DATA_ROOT` is now `SSD_DATA_ROOT`; the migration cutover is complete.
+  The internal root remains only as a compatibility symlink for historical evidence.
 - `relocateToDataRoot(recordedPath)` re-roots a path that a durable record captured against
   the internal root. The record keeps the directory the run actually wrote to; only the
   location where the bytes are checked moves.

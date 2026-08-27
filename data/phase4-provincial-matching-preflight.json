@@ -4,7 +4,7 @@
   "province": "QC",
   "purpose": "Prepare checksum-bound provincial matching without publishing values from unadmitted inputs.",
   "inputBindings": [
-    {"path":"data/phase1-production-source-ledger.json","sha256":"b723e214c32b6a6d897141b78aa0f26cbfa3d1d09d25733be593cbb84309f13c","role":"authoritative admission state for Québec source rows"},
+    {"path":"data/phase1-production-source-ledger.json","sha256":"7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351","role":"authoritative admission state for Québec source rows"},
     {"path":"data/coverage-geometry-admission.json","sha256":"cdc401d96348764540b37aa63e8d7dc42b8f0c343956272fd85051e62d75a2e5","role":"staged Québec current-ecoforest geometry evidence"},
     {"path":"data/qc-original-current-inventory-profile.json","sha256":"109812a985ff3b7ddc89e172ddb73112f3ec96d7f0f2b80ddb28fe5616ab1be0","role":"staged Québec original/current-inventory geometry evidence"},
     {"path":"data/qc-fourth-inventory-evidence.json","sha256":"2abac48b505f6ec457bfe0cabf3c4453fac80f3365445cc29bf8a8057a65f38d","role":"staged Québec fourth-inventory geometry/event-supporting evidence"},
