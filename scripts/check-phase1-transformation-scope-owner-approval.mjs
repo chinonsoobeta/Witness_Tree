@@ -5,7 +5,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const PACKET_PATH = "data/phase1-downstream-admission-packet.json";
-const PACKET_SHA256 = "4859407ea256988a50873c03aa4146c8dd15e5e13f9ced47fa87a7883b404d6a";
+const PACKET_SHA256 = "82c55e3bea87d1a3856b233b2e483cd9b5318afd3d998bd753867af944370520";
 const APPROVED_BUNDLES = [
   ["ntems-annual-land-cover", ["ntems-annual-land-cover"], "ntems-annual-land-cover-v1"],
   ["ntems-forest-harvest", ["ntems-forest-harvest"], "ntems-forest-harvest-v1"],
@@ -65,6 +65,10 @@ export function validatePhase1TransformationScopeOwnerApproval(record, root = pa
   assert.deepEqual(record.claims, CLAIMS, "claims");
 
   const packet = readJson(root, PACKET_PATH);
+  // Specification checksums moved into their own registry so that correcting one
+  // specification no longer changes the packet, whose checksum every scope binds.
+  assert.equal(packet.specificationRegistry?.path, "data/phase1-transformation-spec-registry.json", "packet must name the specification registry");
+  const specRegistry = readJson(root, packet.specificationRegistry.path);
   assert.equal(sha256(root, PACKET_PATH), PACKET_SHA256, "downstream packet checksum drift");
   assert.equal(packet.schemaVersion, "witness-tree/phase1-downstream-admission-packet/2");
   assert.equal(packet.status, "owner-transformation-scope-decision-preparation-read-only");
@@ -97,7 +101,7 @@ export function validatePhase1TransformationScopeOwnerApproval(record, root = pa
     assert.equal(bundle.technicalReadiness, "ready-for-owner-approve-reject-defer-transformation-scope");
     assert.deepEqual(bundle.rows, rows, `scope rows drift: ${bundleId}`);
     assert.equal(bundle.specId, specId, `scope spec drift: ${bundleId}`);
-    const binding = packet.specificationBindings.find(({ specId: candidate }) => candidate === specId);
+    const binding = specRegistry.specificationBindings.find(({ specId: candidate }) => candidate === specId);
     assert.ok(binding, `missing packet specification binding: ${specId}`);
     assert.equal(scope.specPath, binding.path, `scope specification path drift: ${specId}`);
     assert.equal(scope.specSha256, binding.sha256, `scope specification checksum drift: ${specId}`);

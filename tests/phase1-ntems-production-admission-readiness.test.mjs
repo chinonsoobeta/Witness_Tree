@@ -29,6 +29,7 @@ function copyEvidenceFixture(root) {
     "scripts/verify-phase1-ntems-transform.mjs",
     "data/phase1-transformation-scope-owner-approval-2026-08-25.json",
     "data/phase1-downstream-admission-packet.json",
+    "data/phase1-transformation-spec-registry.json",
     "data/transformation-specs/qc-current-ecoforest-stand-copy-v1.json",
     "data/transformation-specs/qc-original-current-inventory-stand-copy-v1.json",
     "data/vlce2-promotion-preparation.json",

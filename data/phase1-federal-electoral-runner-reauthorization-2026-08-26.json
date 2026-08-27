@@ -15,34 +15,34 @@
   "runner": {
     "path": "scripts/run-phase1-federal-electoral-transformation.mjs",
     "supersededSha256": "79b11107345996872a5ede12952344345e305a89f2cdb4deba4ca7b25e4ff344",
-    "sha256": "f04cca5ccb27eb737c503d46c416295f674370e649331d5e90c0117467f20aa9"
+    "sha256": "e333b27cab488a53b5c7a27db7236c5792129482ec8e93fe5af75a94b3c8734b"
   },
   "rebindings": [
     {
       "path": "data/phase1-federal-electoral-execution-approval.json",
       "from": "79b11107345996872a5ede12952344345e305a89f2cdb4deba4ca7b25e4ff344",
-      "to": "f04cca5ccb27eb737c503d46c416295f674370e649331d5e90c0117467f20aa9",
+      "to": "e333b27cab488a53b5c7a27db7236c5792129482ec8e93fe5af75a94b3c8734b",
       "field": "runner.sha256",
       "class": "owner-admitted, rebound under this decision"
     },
     {
       "path": "data/phase1-federal-electoral-production-admission.json",
       "from": "be3ba42081f04d8313ad352c291c18f04a16f25599dd47f0e381a6170e39bbec",
-      "to": "59e526e779be7e169513562790f87d924af55872fc67e9f2e0cb5b9d199a2179",
+      "to": "61c83886069973229e43645f33a26a694cbb715908dac855c39b117c95946ac7",
       "field": "binding of the execution approval",
       "class": "owner-admitted, re-admitted under this decision"
     },
     {
       "path": "data/phase1-source-ledger-field-audit.json",
       "from": "1d2620731ab6669bc7df611726be18f3c76db90307bd1028f83fcafc60ac6e9e",
-      "to": "52465465a20938aa7312cd2e76f2f4b1e3688dd8c2164025e690e3deb565c034",
+      "to": "bce16e68db0ac7c3c74c08cf0d76a6c50cc361143b9a5f303bd7798e64b1d422",
       "field": "binding of the production admission, 16 occurrences",
       "class": "engineering-derived, rebound because its stated reason still holds"
     },
     {
       "path": "data/phase1-ledger-post-scope-approval-evolution.json",
       "from": "1d2620731ab6669bc7df611726be18f3c76db90307bd1028f83fcafc60ac6e9e",
-      "to": "52465465a20938aa7312cd2e76f2f4b1e3688dd8c2164025e690e3deb565c034",
+      "to": "bce16e68db0ac7c3c74c08cf0d76a6c50cc361143b9a5f303bd7798e64b1d422",
       "field": "binding of the production admission",
       "class": "engineering-derived, rebound because its stated reason still holds"
     }

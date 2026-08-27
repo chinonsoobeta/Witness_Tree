@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SPECS = [
   ["qc-current-ecoforest-stand-copy-v1.json", "qc-current-ecoforest", "specified-not-approved-not-executed", "c67c56b0c101e95bef4fbca53a06e2f1578fe38293961017f70d815209740cf1", 12399475076, "CARTE_ECO_MAJ_PROV.gpkg", "4f592f99786770600bdf219e8cdae5908d9a2398ab6a9ae45662fafa2494aa00", "pee_maj_prov", 9827536],
-  ["qc-original-current-inventory-stand-copy-v1.json", "qc-original-current-inventory", "specified-not-approved-not-executed", "c10d691516569de76642dc1fc64e662f2569b5b58ab5d945b58b8b7834ba9c61", 11244667626, "CARTE_ECO_ORI_PROV.gpkg", "70539d99497de2773342611d73bf9e4fadf01f1fdbfe3ca536ad711d87916e7c", "pee_ori_prov", 8387062]
+  ["qc-original-current-inventory-stand-copy-v1.json", "qc-original-current-inventory", "specified-not-approved-not-executed", "c10d691516569de76642dc1fc64e662f2569b5b58ab5d945b58b8b7834ba9c61", 11244667626, "CARTE_ECO_ORI_PROV.gpkg", "819a5698456089a9f291925a9b9bf1eb1415f29985ff43107d383c1f46753dfd", "pee_ori_prov", 8387062]
 ];
 const NO_JOIN = "None. Do not join meta or other tables in this operation.";
 const NO_GEOMETRY_CHANGE = /(?:Do not|without) .*simplif(?:y|ication).*snap(?:ping)?.*dissol(?:ve|ution).*reproject(?:ion)?.*buffer(?:ing)?.*repair/i;

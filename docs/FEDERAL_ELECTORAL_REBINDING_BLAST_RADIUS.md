@@ -16,7 +16,7 @@ A full sweep on the rebound branch was **148 pass / 9 fail**. All nine failures
 share one root cause, verified by reading the assertion in each:
 
 ```
-actual:   59e526e779be7e169513562790f87d924af55872fc67e9f2e0cb5b9d199a2179
+actual:   61c83886069973229e43645f33a26a694cbb715908dac855c39b117c95946ac7
 expected: be3ba42081f04d8313ad352c291c18f04a16f25599dd47f0e381a6170e39bbec
 ```
 

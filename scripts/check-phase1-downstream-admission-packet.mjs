@@ -45,12 +45,21 @@ export async function validatePhase1DownstreamAdmissionPacket(packet, root) {
   const evolutionPath = "data/phase1-ledger-post-scope-approval-evolution.json";
   const evolution = JSON.parse(await readFile(path.join(root, evolutionPath), "utf8"));
   assert.equal(evolution.schemaVersion, "witness-tree/phase1-ledger-evolution/1");
-  assert.deepEqual(evolution.historicalDecisionPacket, { path: "data/phase1-downstream-admission-packet.json", sha256: "4859407ea256988a50873c03aa4146c8dd15e5e13f9ced47fa87a7883b404d6a", boundLedgerPath: "data/phase1-production-source-ledger.json", boundLedgerSha256: packet.evidenceBindings["data/phase1-production-source-ledger.json"] });
+  assert.deepEqual(evolution.historicalDecisionPacket, { path: "data/phase1-downstream-admission-packet.json", sha256: "82c55e3bea87d1a3856b233b2e483cd9b5318afd3d998bd753867af944370520", boundLedgerPath: "data/phase1-production-source-ledger.json", boundLedgerSha256: packet.evidenceBindings["data/phase1-production-source-ledger.json"] });
   assert.equal(await sha256(root, evolution.historicalDecisionPacket.path), evolution.historicalDecisionPacket.sha256);
   assert.equal(await sha256(root, evolution.currentLedger.path), evolution.currentLedger.sha256);
   assert.equal(await sha256(root, evolution.authorizedChange.path), evolution.authorizedChange.sha256);
-  assert.equal(packet.specificationBindings.length, packet.bundles.length, "Every scoped row requires one exact spec binding.");
-  for (const binding of packet.specificationBindings) {
+  // Specification checksums live in their own registry, which the packet names by
+  // path and deliberately does not bind by checksum. Binding it would restore the
+  // coupling the split removed: the packet's checksum is bound by every scope's
+  // evidence, so any correction to any specification would again invalidate
+  // unrelated scopes. The load-bearing check is unchanged and still per
+  // specification, immediately below.
+  assert.equal(packet.specificationRegistry?.path, "data/phase1-transformation-spec-registry.json", "Packet must name the specification registry.");
+  const registry = JSON.parse(await readFile(path.join(root, packet.specificationRegistry.path), "utf8"));
+  assert.equal(registry.schemaVersion, "witness-tree/phase1-transformation-spec-registry/1");
+  assert.equal(registry.specificationBindings.length, packet.bundles.length, "Every scoped row requires one exact spec binding.");
+  for (const binding of registry.specificationBindings) {
     assert.equal(await sha256(root, binding.path), binding.sha256, `Specification checksum binding drift: ${binding.path}`);
     const record = JSON.parse(await readFile(path.join(root, binding.path), "utf8"));
     const spec = specFor(record, binding.specId);
@@ -59,7 +68,7 @@ export async function validatePhase1DownstreamAdmissionPacket(packet, root) {
     assert.deepEqual(specRows, binding.rows, `Bound spec scope drift: ${binding.specId}`);
   }
   for (const bundle of packet.bundles) {
-    const binding = packet.specificationBindings.find((candidate) => candidate.specId === bundle.specId);
+    const binding = registry.specificationBindings.find((candidate) => candidate.specId === bundle.specId);
     assert.ok(binding, `Bundle has no exact spec binding: ${bundle.id}`);
     assert.deepEqual(binding.rows, bundle.rows, `Bundle/spec rows differ: ${bundle.id}`);
   }

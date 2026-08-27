@@ -1,6 +1,6 @@
 # Phase 1 transformation-scope owner approval
 
-The owner-approved decision is recorded in [`data/phase1-transformation-scope-owner-approval-2026-08-25.json`](../data/phase1-transformation-scope-owner-approval-2026-08-25.json). It binds the read-only downstream preparation packet at SHA-256 `4859407ea256988a50873c03aa4146c8dd15e5e13f9ced47fa87a7883b404d6a` and approves exactly seven named transformation designs:
+The owner-approved decision is recorded in [`data/phase1-transformation-scope-owner-approval-2026-08-25.json`](../data/phase1-transformation-scope-owner-approval-2026-08-25.json). It binds the read-only downstream preparation packet at SHA-256 `82c55e3bea87d1a3856b233b2e483cd9b5318afd3d998bd753867af944370520` and approves exactly seven named transformation designs:
 
 - NTEMS annual land cover, forest harvest, canopy cover, and canopy height;
 - the shared 2023 federal-electoral district scope for `fed-2023-ridings` and `elections-canada-45th-files`; and

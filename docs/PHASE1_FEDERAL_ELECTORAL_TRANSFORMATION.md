@@ -30,7 +30,7 @@ must have this schema and must bind every value shown:
   "decision": "approve",
   "approvedAt": "2026-08-25T00:00:00.000Z",
   "spec": {"id":"federal-electoral-districts-2023-v1","methodVersion":"phase1-federal-electoral-districts-2023-v1","path":"data/phase1-production-transformation-specifications-v1.json","sha256":"258ca3f94e30d484b53cc12e29c83beaf57998993edaea05e44f5a4924979efc"},
-  "packet": {"path":"data/phase1-downstream-admission-packet.json","sha256":"4859407ea256988a50873c03aa4146c8dd15e5e13f9ced47fa87a7883b404d6a"},
+  "packet": {"path":"data/phase1-downstream-admission-packet.json","sha256":"82c55e3bea87d1a3856b233b2e483cd9b5318afd3d998bd753867af944370520"},
   "ownerScope": {"path":"data/phase1-transformation-scope-owner-approval-2026-08-25.json","sha256":"<exact-current-file-sha256>","specId":"federal-electoral-districts-2023-v1"},
   "runner": {"path":"scripts/run-phase1-federal-electoral-transformation.mjs","sha256":"<sha256-of-final-runner>","version":"phase1-federal-electoral-transformation-runner-v1"},
   "source": {"path":"../Witness_Tree-data/raw/elections-canada-federal-electoral-districts/2026-08-14/FederalElectoralDistricts_2025_SHP.zip","sha256":"4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93","byteLength":10301648,"profilePath":"data/elections-canada-fed-2025-profile.json","profileSha256":"a742f27e879126ded6cd37dc66f4595b488afd467a4523d8b9defcaa16379301","ledgerPath":"data/elections-canada-fed-2025-source-ledger.json","ledgerSha256":"b1d28895c43c843a6072ef9adca661c26c3a27fbdda27650ea216abe56c707fb","archiveEvidencePath":"data/federal-electoral-archive-recovery-evidence.json","archiveEvidenceSha256":"18b9fbfa5e3eecdc33ad0098f5ffa55f7bfebb1a47d2e33b7f01a94e05a6ed32"},

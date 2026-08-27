@@ -5906,7 +5906,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-federal-electoral-production-admission.json",
-            "sha256": "52465465a20938aa7312cd2e76f2f4b1e3688dd8c2164025e690e3deb565c034",
+            "sha256": "a8f7130e54210147845c7c3a77134a82bb88bf7e1814e261aa4bdd2c5a8492e2",
             "jsonPointer": "/ledgerFields/editionEffectiveDate",
             "expectedValue": "2025-03-23"
           }
@@ -6140,7 +6140,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-federal-electoral-production-admission.json",
-            "sha256": "52465465a20938aa7312cd2e76f2f4b1e3688dd8c2164025e690e3deb565c034",
+            "sha256": "a8f7130e54210147845c7c3a77134a82bb88bf7e1814e261aa4bdd2c5a8492e2",
             "jsonPointer": "/ledgerFields/transformations",
             "expectedValue": {
               "methodVersion": "phase1-federal-electoral-districts-2023-v1",
@@ -6170,7 +6170,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-federal-electoral-production-admission.json",
-            "sha256": "52465465a20938aa7312cd2e76f2f4b1e3688dd8c2164025e690e3deb565c034",
+            "sha256": "a8f7130e54210147845c7c3a77134a82bb88bf7e1814e261aa4bdd2c5a8492e2",
             "jsonPointer": "/ledgerFields/redistributionStatus",
             "expectedValue": "allowed-under-ogl-canada-2.0-with-required-attribution-and-modification-notice"
           }
@@ -6225,7 +6225,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-federal-electoral-production-admission.json",
-            "sha256": "52465465a20938aa7312cd2e76f2f4b1e3688dd8c2164025e690e3deb565c034",
+            "sha256": "a8f7130e54210147845c7c3a77134a82bb88bf7e1814e261aa4bdd2c5a8492e2",
             "jsonPointer": "/ledgerFields/plainLanguageExplanation",
             "expectedValue": {
               "en": "Official federal electoral district boundaries under the 2023 Representation Orders, used as boundary context only.",
@@ -6241,7 +6241,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-federal-electoral-production-admission.json",
-            "sha256": "52465465a20938aa7312cd2e76f2f4b1e3688dd8c2164025e690e3deb565c034",
+            "sha256": "a8f7130e54210147845c7c3a77134a82bb88bf7e1814e261aa4bdd2c5a8492e2",
             "jsonPointer": "/ledgerFields/updateCadence",
             "expectedValue": "as-needed-by-publisher-and-representation-order; no fixed calendar cadence"
           }
@@ -6257,7 +6257,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-federal-electoral-production-admission.json",
-            "sha256": "52465465a20938aa7312cd2e76f2f4b1e3688dd8c2164025e690e3deb565c034",
+            "sha256": "a8f7130e54210147845c7c3a77134a82bb88bf7e1814e261aa4bdd2c5a8492e2",
             "jsonPointer": "/ledgerFields/nextExpectedRefresh",
             "expectedValue": {
               "status": "unknown",
@@ -6273,7 +6273,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-federal-electoral-production-admission.json",
-            "sha256": "52465465a20938aa7312cd2e76f2f4b1e3688dd8c2164025e690e3deb565c034",
+            "sha256": "a8f7130e54210147845c7c3a77134a82bb88bf7e1814e261aa4bdd2c5a8492e2",
             "jsonPointer": "/ledgerFields/bulkRedistributionAllowed",
             "expectedValue": true
           }
@@ -6290,7 +6290,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-federal-electoral-production-admission.json",
-            "sha256": "52465465a20938aa7312cd2e76f2f4b1e3688dd8c2164025e690e3deb565c034",
+            "sha256": "a8f7130e54210147845c7c3a77134a82bb88bf7e1814e261aa4bdd2c5a8492e2",
             "jsonPointer": "/ledgerFields/correctionContactRoute",
             "expectedValue": {
               "internalEn": "/en/corrections",
@@ -6389,7 +6389,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-federal-electoral-production-admission.json",
-            "sha256": "52465465a20938aa7312cd2e76f2f4b1e3688dd8c2164025e690e3deb565c034",
+            "sha256": "a8f7130e54210147845c7c3a77134a82bb88bf7e1814e261aa4bdd2c5a8492e2",
             "jsonPointer": "/ledgerFields/editionEffectiveDate",
             "expectedValue": "2025-03-23"
           }
@@ -6623,7 +6623,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-federal-electoral-production-admission.json",
-            "sha256": "52465465a20938aa7312cd2e76f2f4b1e3688dd8c2164025e690e3deb565c034",
+            "sha256": "a8f7130e54210147845c7c3a77134a82bb88bf7e1814e261aa4bdd2c5a8492e2",
             "jsonPointer": "/ledgerFields/transformations",
             "expectedValue": {
               "methodVersion": "phase1-federal-electoral-districts-2023-v1",
@@ -6653,7 +6653,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-federal-electoral-production-admission.json",
-            "sha256": "52465465a20938aa7312cd2e76f2f4b1e3688dd8c2164025e690e3deb565c034",
+            "sha256": "a8f7130e54210147845c7c3a77134a82bb88bf7e1814e261aa4bdd2c5a8492e2",
             "jsonPointer": "/ledgerFields/redistributionStatus",
             "expectedValue": "allowed-under-ogl-canada-2.0-with-required-attribution-and-modification-notice"
           }
@@ -6708,7 +6708,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-federal-electoral-production-admission.json",
-            "sha256": "52465465a20938aa7312cd2e76f2f4b1e3688dd8c2164025e690e3deb565c034",
+            "sha256": "a8f7130e54210147845c7c3a77134a82bb88bf7e1814e261aa4bdd2c5a8492e2",
             "jsonPointer": "/ledgerFields/plainLanguageExplanation",
             "expectedValue": {
               "en": "Official federal electoral district boundaries under the 2023 Representation Orders, used as boundary context only.",
@@ -6724,7 +6724,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-federal-electoral-production-admission.json",
-            "sha256": "52465465a20938aa7312cd2e76f2f4b1e3688dd8c2164025e690e3deb565c034",
+            "sha256": "a8f7130e54210147845c7c3a77134a82bb88bf7e1814e261aa4bdd2c5a8492e2",
             "jsonPointer": "/ledgerFields/updateCadence",
             "expectedValue": "as-needed-by-publisher-and-representation-order; no fixed calendar cadence"
           }
@@ -6740,7 +6740,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-federal-electoral-production-admission.json",
-            "sha256": "52465465a20938aa7312cd2e76f2f4b1e3688dd8c2164025e690e3deb565c034",
+            "sha256": "a8f7130e54210147845c7c3a77134a82bb88bf7e1814e261aa4bdd2c5a8492e2",
             "jsonPointer": "/ledgerFields/nextExpectedRefresh",
             "expectedValue": {
               "status": "unknown",
@@ -6756,7 +6756,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-federal-electoral-production-admission.json",
-            "sha256": "52465465a20938aa7312cd2e76f2f4b1e3688dd8c2164025e690e3deb565c034",
+            "sha256": "a8f7130e54210147845c7c3a77134a82bb88bf7e1814e261aa4bdd2c5a8492e2",
             "jsonPointer": "/ledgerFields/bulkRedistributionAllowed",
             "expectedValue": true
           }
@@ -6773,7 +6773,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-federal-electoral-production-admission.json",
-            "sha256": "52465465a20938aa7312cd2e76f2f4b1e3688dd8c2164025e690e3deb565c034",
+            "sha256": "a8f7130e54210147845c7c3a77134a82bb88bf7e1814e261aa4bdd2c5a8492e2",
             "jsonPointer": "/ledgerFields/correctionContactRoute",
             "expectedValue": {
               "internalEn": "/en/corrections",

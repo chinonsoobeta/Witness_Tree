@@ -15,6 +15,17 @@ umask 077
 source "${0:A:h}/aws-direct-mfa-role-session.sh"
 
 PROFILE="WitnessTreeArchiveOperator"
+# The default is the least-privilege read-only role, which is the right default
+# and is currently the wrong answer: the six-probe diagnosis of 2026-08-26 in
+# docs/OWNER_BLOCKED_ENGINEERING.md found that WitnessTreeArchiveVerifier returns
+# 403 on this prefix even on an unpinned head, so a run that takes the default
+# cannot read the object. Set WT_REPRO_ROLE to override it.
+#
+# The default is deliberately not changed to the write-capable role that does
+# work. A reproduction should not quietly acquire write permission it does not
+# need; the real repair is granting the verifier role read access on this prefix,
+# which is an owner IAM action. Until then the failure below says so out loud
+# rather than leaving the next person to rediscover the 403.
 ROLE="${WT_REPRO_ROLE:-WitnessTreeArchiveVerifier}"
 ACCOUNT="286853118812"
 BUCKET="witness-tree-raw-archive-ca-central-1"
@@ -116,8 +127,19 @@ restore_one() {
   local key version bytes sha label destination head got
   key="$1"; version="$2"; bytes="$3"; sha="$4"; label="$5"; destination="$6"
   PINNED_MARKER="$TMP/$label.pinned"; : >"$PINNED_MARKER"
-  head="$(try_head "$key" "$version")" \
-    || fail "Could not head the $label object at all; nothing was downloaded" 73
+  head="$(try_head "$key" "$version")" || {
+    print -u2 -- "Every read shape for the $label object was refused under role $ROLE."
+    if [[ "$ROLE" == "WitnessTreeArchiveVerifier" ]]; then
+      print -u2 -- "That is the documented state, not a new fault: this role returns 403 on"
+      print -u2 -- "this prefix even unpinned. See docs/OWNER_BLOCKED_ENGINEERING.md."
+      print -u2 -- "A role holding s3:GetObject here is required, for example:"
+      print -u2 -- "  WT_REPRO_ROLE=WitnessTreeArchivePromotionUploader $0 --restore"
+      print -u2 -- "Note that role also holds write permission. This runner makes no mutating"
+      print -u2 -- "call, so under it the non-mutation guarantee rests on this source rather"
+      print -u2 -- "than on the credential being incapable of writing. Record that caveat."
+    fi
+    fail "Could not head the $label object at all; nothing was downloaded" 73
+  }
   # The version assertion is the load-bearing one on the unpinned path, so it is
   # checked on the head and again on the get, and it is never skipped.
   jq -e --arg version "$version" '.VersionId == $version' <<<"$head" >/dev/null \

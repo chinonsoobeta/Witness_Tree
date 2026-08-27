@@ -3,7 +3,7 @@
   "status": "append-only-post-decision-evolution",
   "historicalDecisionPacket": {
     "path": "data/phase1-downstream-admission-packet.json",
-    "sha256": "4859407ea256988a50873c03aa4146c8dd15e5e13f9ced47fa87a7883b404d6a",
+    "sha256": "82c55e3bea87d1a3856b233b2e483cd9b5318afd3d998bd753867af944370520",
     "boundLedgerPath": "data/phase1-production-source-ledger.json",
     "boundLedgerSha256": "bed2aff40b5f7d62108aa8174edb3c161cb0acd6f25cb8a7e1f14e54b536258e"
   },
@@ -13,7 +13,7 @@
   },
   "authorizedChange": {
     "path": "data/phase1-federal-electoral-production-admission.json",
-    "sha256": "52465465a20938aa7312cd2e76f2f4b1e3688dd8c2164025e690e3deb565c034",
+    "sha256": "a8f7130e54210147845c7c3a77134a82bb88bf7e1814e261aa4bdd2c5a8492e2",
     "rows": ["fed-2023-ridings", "elections-canada-45th-files"],
     "change": "The two exact federal rows advanced from archived/profiled and non-admitted to explicitly production-admitted after transformation, deterministic output verification, rights review, complete field facts, and owner authorization."
   },
