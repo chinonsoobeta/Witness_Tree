@@ -1,16 +1,16 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
-import { runnerSha256OnDisk, validateRawArchiveReproductionDrill } from "../scripts/check-raw-archive-reproduction-drill.mjs";
+import { restoreRunnerSha256OnDisk, runnerSha256OnDisk, validateRawArchiveReproductionDrill } from "../scripts/check-raw-archive-reproduction-drill.mjs";
 
 const archiveEvidence = JSON.parse(readFileSync(new URL("../data/federal-electoral-archive-recovery-evidence.json", import.meta.url), "utf8"));
 const admission = JSON.parse(readFileSync(new URL("../data/phase1-federal-electoral-production-admission.json", import.meta.url), "utf8"));
 const context = { archiveEvidence, admission };
 
 /**
- * data/raw-archive-reproduction-drill.json does not exist yet; it will be written by a real
- * execution of the runbook. These tests therefore build the record the checker expects and mutate
- * one field at a time to prove each rule bites.
+ * These tests build the record the checker expects and mutate one field at a time to prove each
+ * rule bites. They stay independent of data/raw-archive-reproduction-drill.json, which a real
+ * execution of the runbook wrote, so a rule is tested rather than a single recorded run.
  */
 function fixture(overrides = {}) {
   return {
@@ -18,6 +18,9 @@ function fixture(overrides = {}) {
     status: "passed",
     operation: "read-only-reproduction",
     versionBinding: "pinned-version-id",
+    restoreRunnerPath: "scripts/restore-federal-electoral-archive-reproduction-inputs.sh",
+    restoreRunnerSha256: restoreRunnerSha256OnDisk(),
+    assumedRole: "WitnessTreeArchivePromotionUploader",
     nonMutationStatement: "This drill did not upload, delete, lock, or alter retention on S3.",
     startedAt: "2026-08-26T12:00:00Z",
     completedAt: "2026-08-26T12:09:00Z",
@@ -29,12 +32,14 @@ function fixture(overrides = {}) {
         versionId: archiveEvidence.payload.versionId,
         byteLength: archiveEvidence.payload.byteLength,
         sha256: archiveEvidence.payload.sha256,
+        checksumCRC64NVME: archiveEvidence.payload.providerChecksum.value,
       },
       manifest: {
         key: archiveEvidence.physicalArtifact.manifestKey,
         versionId: archiveEvidence.manifest.versionId,
         byteLength: archiveEvidence.manifest.byteLength,
         sha256: archiveEvidence.manifest.sha256,
+        checksumCRC64NVME: archiveEvidence.manifest.providerChecksum.value,
       },
     },
     reproduction: {
@@ -163,4 +168,25 @@ test("a drill bound by assertion must prove the assertion ran on both calls", ()
   assert.throws(() => validateRawArchiveReproductionDrill(fixture({ versionBinding: "asserted-on-head-and-get" }), context), /must record versionAssertedOnHeadAndGet as true/);
   assert.throws(() => validateRawArchiveReproductionDrill(fixture({ versionBinding: "asserted-on-head-and-get", versionAssertedOnHeadAndGet: false }), context), /must record versionAssertedOnHeadAndGet as true/);
   assert.doesNotThrow(() => validateRawArchiveReproductionDrill(fixture({ versionBinding: "asserted-on-head-and-get", versionAssertedOnHeadAndGet: true }), context));
+});
+
+test("a wrong provider checksum is rejected on both objects", () => {
+  for (const name of ["payload", "manifest"]) {
+    const broken = fixture({});
+    broken.restoredInputs[name].checksumCRC64NVME = "WRONG=";
+    assert.throws(() => validateRawArchiveReproductionDrill(broken, context), /CRC64NVME checksum does not match/);
+    const missing = fixture({});
+    delete missing.restoredInputs[name].checksumCRC64NVME;
+    assert.throws(() => validateRawArchiveReproductionDrill(missing, context), /CRC64NVME checksum is required/);
+  }
+});
+
+test("the restore runner must be named and hashed to the script in this repository", () => {
+  assert.throws(() => validateRawArchiveReproductionDrill(fixture({ restoreRunnerPath: "scripts/something-else.sh" }), context), /must name scripts\/restore-federal-electoral-archive-reproduction-inputs\.sh/);
+  assert.throws(() => validateRawArchiveReproductionDrill(fixture({ restoreRunnerSha256: "0".repeat(64) }), context), /recorded restore runner SHA-256 does not match/);
+  assert.throws(() => validateRawArchiveReproductionDrill(fixture({ assumedRole: "  " }), context), /Assumed role is required/);
+});
+
+test("sts assume-role may be listed without rejecting an honest record", () => {
+  assert.doesNotThrow(() => validateRawArchiveReproductionDrill(fixture({ awsOperations: ["sts get-caller-identity", "sts assume-role", "s3api head-object", "s3api get-object"] }), context));
 });

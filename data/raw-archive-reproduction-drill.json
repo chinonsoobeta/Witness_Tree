@@ -14,6 +14,8 @@
     "node": "v22.23.0"
   },
   "awsOperations": [
+    "sts get-caller-identity",
+    "sts assume-role",
     "s3api head-object",
     "s3api get-object"
   ],
@@ -41,5 +43,9 @@
     "outputByteLength": 20525056,
     "exactByteMatch": true
   },
-  "temporaryCopyRemoved": true
+  "temporaryCopyRemoved": true,
+  "restoreRunnerPath": "scripts/restore-federal-electoral-archive-reproduction-inputs.sh",
+  "restoreRunnerSha256": "95f1400d68b5b098a75882a050f610c2beb5be21bc873d679dd7b12a49d6c0fd",
+  "assumedRole": "WitnessTreeArchivePromotionUploader",
+  "assumedRoleNote": "The read-only WitnessTreeArchiveVerifier role returns 403 on this prefix, so the reproduction was performed with a role that also holds write permission. The runner makes no mutating call, but the non-mutation guarantee for this run rests on the runner's source, not on the credential's capability."
 }
