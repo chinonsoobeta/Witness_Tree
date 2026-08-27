@@ -29,6 +29,7 @@ carries is about history rather than intent.
 | Item | Change | What it would invalidate | Exact owner action needed |
 | --- | --- | --- | --- |
 | QC stand-copy runner | Identity-based resume for `run-qc-stand-copy.mjs` | Two owner-admitted QC execution approvals | A fresh execution approval for both Québec stand-copy specifications, binding the corrected runner's SHA-256 |
+| Raw archive reproduction drill | Re-running the drill against the changed federal-electoral runner | `data/raw-archive-reproduction-drill.json`, which records a drill that ran on 2026-08-26 | One MFA-assumed role session on the owner's device, re-running `check:raw-archive-reproduction-drill` |
 
 The QC item is the same "existence means refuse" defect as #46, in the runner
 for both Québec stand-copy scopes. It refuses whenever the artifact or sidecar
@@ -184,6 +185,29 @@ regeneration.
 
 `qc-current-ecoforest` was never blocked on this. Its own extraction is verified
 by the runner against `4f592f99` during execution.
+
+### The reproduction drill the coupling fix invalidated
+
+`data/raw-archive-reproduction-drill.json` records a drill that ran between
+2026-08-26T19:09:09Z and 2026-08-27T02:13:15Z, restored the archived inputs, and
+re-ran the federal-electoral transformation from them.
+`check-raw-archive-reproduction-drill.mjs:128` requires the runner SHA-256 that
+drill recorded to equal the runner in the repository today. That is deliberate:
+a reproducibility claim is only worth something if it applies to the code you
+actually have.
+
+Correcting the QC extraction checksum changed the downstream admission packet,
+and the federal-electoral runner carries the packet's SHA-256 as a source
+constant, so the runner's own bytes changed from `f04cca5c` to `e333b27c`. The
+drill's binding is therefore stale, and the gate refuses.
+
+Rebinding it is not available. The record's claim is about what a specific past
+run observed, so writing today's runner hash into it would assert that the drill
+exercised bytes it never saw. Re-running the drill is the only honest way to
+clear this, and that needs an MFA-assumed role session on the owner's device.
+
+This is a real cost of the coupling fix, and it is stated rather than absorbed:
+the change is correct, and it is not free.
 
 ### The archive reproduction session
 
