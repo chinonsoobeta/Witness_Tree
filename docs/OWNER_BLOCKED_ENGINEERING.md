@@ -47,6 +47,49 @@ two `.failed-*` sibling directories, because renaming is the only way past the
 gate, so a corrupt batch and a complete batch are cleared by the identical
 manual gesture.
 
+## Items waiting on an owner action, not a re-authorization
+
+These are different in kind from the table above. Nothing here would invalidate
+an existing approval. Each is one owner gesture away, and the engineering half
+is finished and merged.
+
+| Item | State of the engineering | The one thing needed | Who can do it |
+| --- | --- | --- | --- |
+| Phase 8 `raw-archive-reproducibility` | Runbook written, checker merged, record deliberately absent | One MFA-assumed role session | The owner, on the owner's own device |
+| Phase 8 `operations-handbook` | Handbook complete and bound as evidence; the full case for a pass is written into the criterion's `reason` | A decision to flip one `"fail"` to `"pass"` | The Release approver role |
+| Phase 6 `direct-database-tenant-isolation` | Row-level-security policy merged, 17 probes executed and held, negative control fails 14 of 17 | A decision to unbundle the isolation proof from the managed Canadian database in the `canadian-managed-service-and-direct-rls` blocker | The owner |
+
+### The archive reproduction session
+
+Steps 1 and 5 through 8 of the runbook in
+[RAW_ARCHIVE_REPRODUCIBILITY_SCOPE.md](RAW_ARCHIVE_REPRODUCIBILITY_SCOPE.md) are
+local and touch no credential. Steps 3 and 4 are read-only S3 calls,
+`head-object` and `get-object` with an explicit `--version-id`. Step 2 mints the
+session by reading a six-digit TOTP, and engineering must never handle, echo, or
+record one. The session lasts 43,200 seconds, which is ample for every remaining
+step. The blocker is therefore not a decision and not a cost; it is one gesture
+that only the holder of the MFA device can perform.
+
+Once that session exists, `data/raw-archive-reproduction-drill.json` can be
+written from a real run and
+`npm run check:raw-archive-reproduction-drill` can pass. Until then it exits 1
+with a message saying the drill has not been executed, which is the correct
+state and is why it is registered in no aggregate suite.
+
+### A security observation found while checking for a session
+
+The default AWS profile on the owner's machine resolves to the account **root**
+user, `arn:aws:iam::286853118812:root`. The `WitnessTreeArchiveOperator` profile
+exists alongside it and is the least-privilege identity every archive runner
+requires; `wt_assume_direct_mfa_role` verifies the caller is exactly that user
+and refuses anything else.
+
+Root can alter Object Lock configuration and the retention boundaries this
+project treats as immutable, which is precisely the boundary the operator role
+exists to keep engineering outside of. No root credential was used for anything,
+and none will be. Rotating or removing it is an account security change and is
+recorded here as an observation only.
+
 ## Items the owner has now decided
 
 These are no longer blocked on a decision. The decision exists and is recorded.
