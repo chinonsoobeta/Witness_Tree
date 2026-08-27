@@ -55,11 +55,15 @@
       "id": "quarterly-reproducibility-test-passes",
       "title": "The quarterly reproducibility test passes",
       "status": "fail",
-      "reason": "A source-archive restoration drill exists, but no published real figure has been recomputed from the raw archive and compared as the quarterly test requires.",
+      "reason": "Recomputation from the raw archive is now demonstrated, not merely restoration: the admitted federal electoral output was regenerated from its raw archived inputs and matched the admitted SHA-256 exactly, which is what closed Phase 8 raw-archive-reproducibility. That is not this criterion. The controlling plan requires that every published number be reproducible and that this be tested quarterly by recomputing a random sample and comparing. Two things are still missing and neither can be derived. Nothing real is published, so there is no population to sample from; and one reproduction is not a quarterly cadence, so no recurring test result exists.",
       "evidence": [
         {
           "path": "data/phase8-launch-readiness-exit-status.json",
           "sha256": "d2e34a13778aca4d4580d790c9ab0c3e11a327da763c73599bc00ae9da2e2803"
+        },
+        {
+          "path": "data/raw-archive-reproduction-drill.json",
+          "sha256": "21a9c67ea4eca1b44defbb11393ed0e295301d7e8877110a188b987baf1ea04d"
         }
       ]
     }
