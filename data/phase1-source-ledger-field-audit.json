@@ -97,8 +97,17 @@
           }
         },
         "licenceUrl": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "https://open.canada.ca/en/open-government-licence-canada",
+          "evidenceRefs": [
+            "data/vlce2-remote-promotion-evidence.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/vlce2-remote-promotion-evidence.json",
+            "sha256": "1e1f827df3b51b13143b490a204c59475e6ed4af7ce0de8af69d53f8a554c211",
+            "jsonPointer": "/source/licence/url",
+            "expectedValue": "https://open.canada.ca/en/open-government-licence-canada"
+          }
         },
         "editionEffectiveDate": {
           "status": "missing",
@@ -571,8 +580,17 @@
           "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
         },
         "updateCadence": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "as-needed",
+          "evidenceRefs": [
+            "data/phase1-ntems-rights-verification-2026-08-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ntems-rights-verification-2026-08-26.json",
+            "sha256": "b84cdf47c4dd66127bd498e3214f2bc91307bb6426712a0532501107196641af",
+            "jsonPointer": "/datasets/1/updateCadence",
+            "expectedValue": "as-needed"
+          }
         },
         "nextExpectedRefresh": {
           "status": "missing",
@@ -864,8 +882,17 @@
           "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
         },
         "updateCadence": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "as-needed",
+          "evidenceRefs": [
+            "data/phase1-ntems-rights-verification-2026-08-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ntems-rights-verification-2026-08-26.json",
+            "sha256": "b84cdf47c4dd66127bd498e3214f2bc91307bb6426712a0532501107196641af",
+            "jsonPointer": "/datasets/2/updateCadence",
+            "expectedValue": "as-needed"
+          }
         },
         "nextExpectedRefresh": {
           "status": "missing",
@@ -1155,8 +1182,17 @@
           "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
         },
         "updateCadence": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "as-needed",
+          "evidenceRefs": [
+            "data/phase1-ntems-rights-verification-2026-08-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ntems-rights-verification-2026-08-26.json",
+            "sha256": "b84cdf47c4dd66127bd498e3214f2bc91307bb6426712a0532501107196641af",
+            "jsonPointer": "/datasets/3/updateCadence",
+            "expectedValue": "as-needed"
+          }
         },
         "nextExpectedRefresh": {
           "status": "missing",
@@ -1205,8 +1241,17 @@
           }
         },
         "datasetTitle": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "Active Wildland Fires — fixed-time WFS snapshot",
+          "evidenceRefs": [
+            "data/staged-acquisitions.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/staged-acquisitions.json",
+            "sha256": "28f23f088e4f5de2f9652ed94edc5c7e5d9f8a3d34a9f8dddc3f84835a063f53",
+            "jsonPointer": "/entries/0/datasetTitle",
+            "expectedValue": "Active Wildland Fires — fixed-time WFS snapshot"
+          }
         },
         "sourceUrl": {
           "status": "verified",
@@ -1298,8 +1343,17 @@
           }
         },
         "archiveVersion": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "undeclared",
+          "evidenceRefs": [
+            "data/staged-acquisitions.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/staged-acquisitions.json",
+            "sha256": "28f23f088e4f5de2f9652ed94edc5c7e5d9f8a3d34a9f8dddc3f84835a063f53",
+            "jsonPointer": "/entries/0/sourceVersion",
+            "expectedValue": "undeclared"
+          }
         },
         "coverage": {
           "status": "verified",
@@ -1456,8 +1510,17 @@
           "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
         },
         "modificationNotice": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "The raw WFS response is unchanged. Read-only ZIP and GDAL profiling made no extraction, transformation, repair, ingestion, object-storage promotion, or production use. A separate unfiltered first-page test response is retained outside this manifest and is not a staged artifact.",
+          "evidenceRefs": [
+            "data/staged-acquisitions.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/staged-acquisitions.json",
+            "sha256": "28f23f088e4f5de2f9652ed94edc5c7e5d9f8a3d34a9f8dddc3f84835a063f53",
+            "jsonPointer": "/entries/0/changesNotice",
+            "expectedValue": "The raw WFS response is unchanged. Read-only ZIP and GDAL profiling made no extraction, transformation, repair, ingestion, object-storage promotion, or production use. A separate unfiltered first-page test response is retained outside this manifest and is not a staged artifact."
+          }
         },
         "admissionState": {
           "status": "verified",
@@ -1674,8 +1737,17 @@
           }
         },
         "datasetTitle": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "BC Wildfire Fire Perimeters — Current",
+          "evidenceRefs": [
+            "data/staged-acquisitions.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/staged-acquisitions.json",
+            "sha256": "28f23f088e4f5de2f9652ed94edc5c7e5d9f8a3d34a9f8dddc3f84835a063f53",
+            "jsonPointer": "/entries/12/datasetTitle",
+            "expectedValue": "BC Wildfire Fire Perimeters — Current"
+          }
         },
         "sourceUrl": {
           "status": "verified",
@@ -1782,8 +1854,17 @@
           }
         },
         "archiveVersion": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "undeclared",
+          "evidenceRefs": [
+            "data/staged-acquisitions.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/staged-acquisitions.json",
+            "sha256": "28f23f088e4f5de2f9652ed94edc5c7e5d9f8a3d34a9f8dddc3f84835a063f53",
+            "jsonPointer": "/entries/12/sourceVersion",
+            "expectedValue": "undeclared"
+          }
         },
         "coverage": {
           "status": "verified",
@@ -1982,8 +2063,17 @@
           "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
         },
         "modificationNotice": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "The raw GeoJSON is unchanged. Read-only JSON and GDAL/GEOS profiling made no transformation, geometry repair, ingestion, object-storage promotion, or production use. The two recorded invalid geometries must not be silently repaired.",
+          "evidenceRefs": [
+            "data/staged-acquisitions.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/staged-acquisitions.json",
+            "sha256": "28f23f088e4f5de2f9652ed94edc5c7e5d9f8a3d34a9f8dddc3f84835a063f53",
+            "jsonPointer": "/entries/12/changesNotice",
+            "expectedValue": "The raw GeoJSON is unchanged. Read-only JSON and GDAL/GEOS profiling made no transformation, geometry repair, ingestion, object-storage promotion, or production use. The two recorded invalid geometries must not be silently repaired."
+          }
         },
         "admissionState": {
           "status": "verified",
@@ -2072,16 +2162,43 @@
       "canonicalProductionAdmission": false,
       "fields": {
         "publisher": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "Government of Alberta, Forestry and Parks",
+          "evidenceRefs": [
+            "data/staged-acquisitions.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/staged-acquisitions.json",
+            "sha256": "28f23f088e4f5de2f9652ed94edc5c7e5d9f8a3d34a9f8dddc3f84835a063f53",
+            "jsonPointer": "/entries/13/publisher",
+            "expectedValue": "Government of Alberta, Forestry and Parks"
+          }
         },
         "datasetTitle": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "Alberta Fire Status — Alberta Wildfire Locations",
+          "evidenceRefs": [
+            "data/staged-acquisitions.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/staged-acquisitions.json",
+            "sha256": "28f23f088e4f5de2f9652ed94edc5c7e5d9f8a3d34a9f8dddc3f84835a063f53",
+            "jsonPointer": "/entries/13/datasetTitle",
+            "expectedValue": "Alberta Fire Status — Alberta Wildfire Locations"
+          }
         },
         "sourceUrl": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "https://geospatial.alberta.ca/mimas/rest/services/wildfire/alberta_fire_status/FeatureServer/0/query?where=1%3D1&outFields=*&returnGeometry=true&f=geojson",
+          "evidenceRefs": [
+            "data/staged-acquisitions.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/staged-acquisitions.json",
+            "sha256": "28f23f088e4f5de2f9652ed94edc5c7e5d9f8a3d34a9f8dddc3f84835a063f53",
+            "jsonPointer": "/entries/13/sourceUrl",
+            "expectedValue": "https://geospatial.alberta.ca/mimas/rest/services/wildfire/alberta_fire_status/FeatureServer/0/query?where=1%3D1&outFields=*&returnGeometry=true&f=geojson"
+          }
         },
         "licence": {
           "status": "verified",
@@ -2101,8 +2218,17 @@
           }
         },
         "licenceUrl": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "https://open.alberta.ca/licence",
+          "evidenceRefs": [
+            "data/staged-acquisitions.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/staged-acquisitions.json",
+            "sha256": "28f23f088e4f5de2f9652ed94edc5c7e5d9f8a3d34a9f8dddc3f84835a063f53",
+            "jsonPointer": "/entries/13/licenceUrl",
+            "expectedValue": "https://open.alberta.ca/licence"
+          }
         },
         "editionEffectiveDate": {
           "status": "missing",
@@ -2143,8 +2269,17 @@
           }
         },
         "archiveVersion": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "undeclared",
+          "evidenceRefs": [
+            "data/staged-acquisitions.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/staged-acquisitions.json",
+            "sha256": "28f23f088e4f5de2f9652ed94edc5c7e5d9f8a3d34a9f8dddc3f84835a063f53",
+            "jsonPointer": "/entries/13/sourceVersion",
+            "expectedValue": "undeclared"
+          }
         },
         "coverage": {
           "status": "verified",
@@ -2299,8 +2434,17 @@
           "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
         },
         "modificationNotice": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "This raw GeoJSON is unchanged. Read-only inspection made no source modification, feature transformation, repair, filtering, extraction, ingestion, or promotion.",
+          "evidenceRefs": [
+            "data/staged-acquisitions.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/staged-acquisitions.json",
+            "sha256": "28f23f088e4f5de2f9652ed94edc5c7e5d9f8a3d34a9f8dddc3f84835a063f53",
+            "jsonPointer": "/entries/13/changesNotice",
+            "expectedValue": "This raw GeoJSON is unchanged. Read-only inspection made no source modification, feature transformation, repair, filtering, extraction, ingestion, or promotion."
+          }
         },
         "admissionState": {
           "status": "verified",
@@ -2373,16 +2517,43 @@
       "canonicalProductionAdmission": false,
       "fields": {
         "publisher": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "Ontario Ministry of Natural Resources",
+          "evidenceRefs": [
+            "data/staged-acquisitions.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/staged-acquisitions.json",
+            "sha256": "28f23f088e4f5de2f9652ed94edc5c7e5d9f8a3d34a9f8dddc3f84835a063f53",
+            "jsonPointer": "/entries/15/publisher",
+            "expectedValue": "Ontario Ministry of Natural Resources"
+          }
         },
         "datasetTitle": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "In-year Fire Perimeters",
+          "evidenceRefs": [
+            "data/staged-acquisitions.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/staged-acquisitions.json",
+            "sha256": "28f23f088e4f5de2f9652ed94edc5c7e5d9f8a3d34a9f8dddc3f84835a063f53",
+            "jsonPointer": "/entries/15/datasetTitle",
+            "expectedValue": "In-year Fire Perimeters"
+          }
         },
         "sourceUrl": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "https://ws.lioservices.lrc.gov.on.ca/arcgis2/rest/services/LIO_OPEN_DATA/LIO_Open09/MapServer/51/query?where=1%3D1&outFields=*&returnGeometry=true&f=geojson",
+          "evidenceRefs": [
+            "data/staged-acquisitions.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/staged-acquisitions.json",
+            "sha256": "28f23f088e4f5de2f9652ed94edc5c7e5d9f8a3d34a9f8dddc3f84835a063f53",
+            "jsonPointer": "/entries/15/sourceUrl",
+            "expectedValue": "https://ws.lioservices.lrc.gov.on.ca/arcgis2/rest/services/LIO_OPEN_DATA/LIO_Open09/MapServer/51/query?where=1%3D1&outFields=*&returnGeometry=true&f=geojson"
+          }
         },
         "licence": {
           "status": "verified",
@@ -2405,8 +2576,17 @@
           }
         },
         "licenceUrl": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "https://www.ontario.ca/page/open-government-licence-ontario",
+          "evidenceRefs": [
+            "data/staged-acquisitions.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/staged-acquisitions.json",
+            "sha256": "28f23f088e4f5de2f9652ed94edc5c7e5d9f8a3d34a9f8dddc3f84835a063f53",
+            "jsonPointer": "/entries/15/licenceUrl",
+            "expectedValue": "https://www.ontario.ca/page/open-government-licence-ontario"
+          }
         },
         "editionEffectiveDate": {
           "status": "missing",
@@ -2453,8 +2633,17 @@
           }
         },
         "archiveVersion": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "undeclared",
+          "evidenceRefs": [
+            "data/staged-acquisitions.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/staged-acquisitions.json",
+            "sha256": "28f23f088e4f5de2f9652ed94edc5c7e5d9f8a3d34a9f8dddc3f84835a063f53",
+            "jsonPointer": "/entries/15/sourceVersion",
+            "expectedValue": "undeclared"
+          }
         },
         "coverage": {
           "status": "verified",
@@ -2603,8 +2792,17 @@
           "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
         },
         "modificationNotice": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "This raw GeoJSON is unchanged. A separately checksummed, external local-only derived GeoPackage copies 179 valid features unchanged and repairs nine bounded self-intersections under data/ontario-in-year-fire-geometry-policy-2026-08-14.json. The raw artifact was not modified, filtered, ingested, promoted, admitted, or made production eligible.",
+          "evidenceRefs": [
+            "data/staged-acquisitions.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/staged-acquisitions.json",
+            "sha256": "28f23f088e4f5de2f9652ed94edc5c7e5d9f8a3d34a9f8dddc3f84835a063f53",
+            "jsonPointer": "/entries/15/changesNotice",
+            "expectedValue": "This raw GeoJSON is unchanged. A separately checksummed, external local-only derived GeoPackage copies 179 valid features unchanged and repairs nine bounded self-intersections under data/ontario-in-year-fire-geometry-policy-2026-08-14.json. The raw artifact was not modified, filtered, ingested, promoted, admitted, or made production eligible."
+          }
         },
         "admissionState": {
           "status": "verified",
@@ -3495,8 +3693,17 @@
           }
         },
         "licenceUrl": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "https://www.donneesquebec.ca/licence/#cc-by",
+          "evidenceRefs": [
+            "data/coverage-geometry-admission.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/coverage-geometry-admission.json",
+            "sha256": "cdc401d96348764540b37aa63e8d7dc42b8f0c343956272fd85051e62d75a2e5",
+            "jsonPointer": "/layers/6/licence/url",
+            "expectedValue": "https://www.donneesquebec.ca/licence/#cc-by"
+          }
         },
         "editionEffectiveDate": {
           "status": "missing",
@@ -3527,8 +3734,17 @@
           "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
         },
         "requiredAttribution": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "Source : Ministère des Ressources naturelles et des Forêts du Québec, Secteur des forêts, Direction des inventaires forestiers. Sous licence CC BY 4.0.",
+          "evidenceRefs": [
+            "data/coverage-geometry-admission.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/coverage-geometry-admission.json",
+            "sha256": "cdc401d96348764540b37aa63e8d7dc42b8f0c343956272fd85051e62d75a2e5",
+            "jsonPointer": "/layers/6/attribution",
+            "expectedValue": "Source : Ministère des Ressources naturelles et des Forêts du Québec, Secteur des forêts, Direction des inventaires forestiers. Sous licence CC BY 4.0."
+          }
         },
         "redistributionStatus": {
           "status": "missing",
@@ -3615,8 +3831,17 @@
           }
         },
         "datasetTitle": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "Carte écoforestière originale et résultats d’inventaire courants — provincial GeoPackage",
+          "evidenceRefs": [
+            "data/staged-acquisitions.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/staged-acquisitions.json",
+            "sha256": "28f23f088e4f5de2f9652ed94edc5c7e5d9f8a3d34a9f8dddc3f84835a063f53",
+            "jsonPointer": "/entries/14/datasetTitle",
+            "expectedValue": "Carte écoforestière originale et résultats d’inventaire courants — provincial GeoPackage"
+          }
         },
         "sourceUrl": {
           "status": "verified",
@@ -3709,8 +3934,17 @@
           }
         },
         "archiveVersion": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "undeclared",
+          "evidenceRefs": [
+            "data/qc-original-current-inventory-profile.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/qc-original-current-inventory-profile.json",
+            "sha256": "109812a985ff3b7ddc89e172ddb73112f3ec96d7f0f2b80ddb28fe5616ab1be0",
+            "jsonPointer": "/retrieval/sourceVersion",
+            "expectedValue": "undeclared"
+          }
         },
         "coverage": {
           "status": "verified",
@@ -4206,8 +4440,17 @@
           "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
         },
         "modificationNotice": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "The raw ZIP and extracted GeoPackage are unchanged. Read-only integrity, schema, key, and geometry checks made no transformation, repair, filtering, ingestion, archive promotion, release, or production use.",
+          "evidenceRefs": [
+            "data/staged-acquisitions.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/staged-acquisitions.json",
+            "sha256": "28f23f088e4f5de2f9652ed94edc5c7e5d9f8a3d34a9f8dddc3f84835a063f53",
+            "jsonPointer": "/entries/14/changesNotice",
+            "expectedValue": "The raw ZIP and extracted GeoPackage are unchanged. Read-only integrity, schema, key, and geometry checks made no transformation, repair, filtering, ingestion, archive promotion, release, or production use."
+          }
         },
         "admissionState": {
           "status": "verified",
@@ -4802,8 +5045,17 @@
           "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
         },
         "updateCadence": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "irregular",
+          "evidenceRefs": [
+            "data/acquisition-readiness.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/acquisition-readiness.json",
+            "sha256": "77ae91f056a529d43c6fd3eccfd4674fb72a11d1aae8249ef58d430d7f93c38e",
+            "jsonPointer": "/sources/5/updateCadence",
+            "expectedValue": "irregular"
+          }
         },
         "nextExpectedRefresh": {
           "status": "missing",
@@ -5654,7 +5906,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-federal-electoral-production-admission.json",
-            "sha256": "52465465a20938aa7312cd2e76f2f4b1e3688dd8c2164025e690e3deb565c034",
+            "sha256": "a8f7130e54210147845c7c3a77134a82bb88bf7e1814e261aa4bdd2c5a8492e2",
             "jsonPointer": "/ledgerFields/editionEffectiveDate",
             "expectedValue": "2025-03-23"
           }
@@ -5888,7 +6140,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-federal-electoral-production-admission.json",
-            "sha256": "52465465a20938aa7312cd2e76f2f4b1e3688dd8c2164025e690e3deb565c034",
+            "sha256": "a8f7130e54210147845c7c3a77134a82bb88bf7e1814e261aa4bdd2c5a8492e2",
             "jsonPointer": "/ledgerFields/transformations",
             "expectedValue": {
               "methodVersion": "phase1-federal-electoral-districts-2023-v1",
@@ -5918,7 +6170,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-federal-electoral-production-admission.json",
-            "sha256": "52465465a20938aa7312cd2e76f2f4b1e3688dd8c2164025e690e3deb565c034",
+            "sha256": "a8f7130e54210147845c7c3a77134a82bb88bf7e1814e261aa4bdd2c5a8492e2",
             "jsonPointer": "/ledgerFields/redistributionStatus",
             "expectedValue": "allowed-under-ogl-canada-2.0-with-required-attribution-and-modification-notice"
           }
@@ -5973,7 +6225,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-federal-electoral-production-admission.json",
-            "sha256": "52465465a20938aa7312cd2e76f2f4b1e3688dd8c2164025e690e3deb565c034",
+            "sha256": "a8f7130e54210147845c7c3a77134a82bb88bf7e1814e261aa4bdd2c5a8492e2",
             "jsonPointer": "/ledgerFields/plainLanguageExplanation",
             "expectedValue": {
               "en": "Official federal electoral district boundaries under the 2023 Representation Orders, used as boundary context only.",
@@ -5989,7 +6241,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-federal-electoral-production-admission.json",
-            "sha256": "52465465a20938aa7312cd2e76f2f4b1e3688dd8c2164025e690e3deb565c034",
+            "sha256": "a8f7130e54210147845c7c3a77134a82bb88bf7e1814e261aa4bdd2c5a8492e2",
             "jsonPointer": "/ledgerFields/updateCadence",
             "expectedValue": "as-needed-by-publisher-and-representation-order; no fixed calendar cadence"
           }
@@ -6005,7 +6257,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-federal-electoral-production-admission.json",
-            "sha256": "52465465a20938aa7312cd2e76f2f4b1e3688dd8c2164025e690e3deb565c034",
+            "sha256": "a8f7130e54210147845c7c3a77134a82bb88bf7e1814e261aa4bdd2c5a8492e2",
             "jsonPointer": "/ledgerFields/nextExpectedRefresh",
             "expectedValue": {
               "status": "unknown",
@@ -6021,7 +6273,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-federal-electoral-production-admission.json",
-            "sha256": "52465465a20938aa7312cd2e76f2f4b1e3688dd8c2164025e690e3deb565c034",
+            "sha256": "a8f7130e54210147845c7c3a77134a82bb88bf7e1814e261aa4bdd2c5a8492e2",
             "jsonPointer": "/ledgerFields/bulkRedistributionAllowed",
             "expectedValue": true
           }
@@ -6038,7 +6290,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-federal-electoral-production-admission.json",
-            "sha256": "52465465a20938aa7312cd2e76f2f4b1e3688dd8c2164025e690e3deb565c034",
+            "sha256": "a8f7130e54210147845c7c3a77134a82bb88bf7e1814e261aa4bdd2c5a8492e2",
             "jsonPointer": "/ledgerFields/correctionContactRoute",
             "expectedValue": {
               "internalEn": "/en/corrections",
@@ -6137,7 +6389,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-federal-electoral-production-admission.json",
-            "sha256": "52465465a20938aa7312cd2e76f2f4b1e3688dd8c2164025e690e3deb565c034",
+            "sha256": "a8f7130e54210147845c7c3a77134a82bb88bf7e1814e261aa4bdd2c5a8492e2",
             "jsonPointer": "/ledgerFields/editionEffectiveDate",
             "expectedValue": "2025-03-23"
           }
@@ -6371,7 +6623,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-federal-electoral-production-admission.json",
-            "sha256": "52465465a20938aa7312cd2e76f2f4b1e3688dd8c2164025e690e3deb565c034",
+            "sha256": "a8f7130e54210147845c7c3a77134a82bb88bf7e1814e261aa4bdd2c5a8492e2",
             "jsonPointer": "/ledgerFields/transformations",
             "expectedValue": {
               "methodVersion": "phase1-federal-electoral-districts-2023-v1",
@@ -6401,7 +6653,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-federal-electoral-production-admission.json",
-            "sha256": "52465465a20938aa7312cd2e76f2f4b1e3688dd8c2164025e690e3deb565c034",
+            "sha256": "a8f7130e54210147845c7c3a77134a82bb88bf7e1814e261aa4bdd2c5a8492e2",
             "jsonPointer": "/ledgerFields/redistributionStatus",
             "expectedValue": "allowed-under-ogl-canada-2.0-with-required-attribution-and-modification-notice"
           }
@@ -6456,7 +6708,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-federal-electoral-production-admission.json",
-            "sha256": "52465465a20938aa7312cd2e76f2f4b1e3688dd8c2164025e690e3deb565c034",
+            "sha256": "a8f7130e54210147845c7c3a77134a82bb88bf7e1814e261aa4bdd2c5a8492e2",
             "jsonPointer": "/ledgerFields/plainLanguageExplanation",
             "expectedValue": {
               "en": "Official federal electoral district boundaries under the 2023 Representation Orders, used as boundary context only.",
@@ -6472,7 +6724,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-federal-electoral-production-admission.json",
-            "sha256": "52465465a20938aa7312cd2e76f2f4b1e3688dd8c2164025e690e3deb565c034",
+            "sha256": "a8f7130e54210147845c7c3a77134a82bb88bf7e1814e261aa4bdd2c5a8492e2",
             "jsonPointer": "/ledgerFields/updateCadence",
             "expectedValue": "as-needed-by-publisher-and-representation-order; no fixed calendar cadence"
           }
@@ -6488,7 +6740,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-federal-electoral-production-admission.json",
-            "sha256": "52465465a20938aa7312cd2e76f2f4b1e3688dd8c2164025e690e3deb565c034",
+            "sha256": "a8f7130e54210147845c7c3a77134a82bb88bf7e1814e261aa4bdd2c5a8492e2",
             "jsonPointer": "/ledgerFields/nextExpectedRefresh",
             "expectedValue": {
               "status": "unknown",
@@ -6504,7 +6756,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-federal-electoral-production-admission.json",
-            "sha256": "52465465a20938aa7312cd2e76f2f4b1e3688dd8c2164025e690e3deb565c034",
+            "sha256": "a8f7130e54210147845c7c3a77134a82bb88bf7e1814e261aa4bdd2c5a8492e2",
             "jsonPointer": "/ledgerFields/bulkRedistributionAllowed",
             "expectedValue": true
           }
@@ -6521,7 +6773,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-federal-electoral-production-admission.json",
-            "sha256": "52465465a20938aa7312cd2e76f2f4b1e3688dd8c2164025e690e3deb565c034",
+            "sha256": "a8f7130e54210147845c7c3a77134a82bb88bf7e1814e261aa4bdd2c5a8492e2",
             "jsonPointer": "/ledgerFields/correctionContactRoute",
             "expectedValue": {
               "internalEn": "/en/corrections",

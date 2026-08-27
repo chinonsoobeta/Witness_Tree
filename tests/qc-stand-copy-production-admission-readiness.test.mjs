@@ -15,6 +15,8 @@ import {
   readbackPresence,
   sha256File,
   validateQcStandCopyProductionAdmissionRecord,
+  SPEC_REGISTRY_PATH,
+  EXTRACTION_CORRECTION_PATH,
 } from "../scripts/check-qc-stand-copy-production-admission-readiness.mjs";
 
 const REPO = path.resolve(new URL("..", import.meta.url).pathname);
@@ -28,6 +30,8 @@ function copyFixtureFiles(root) {
     "scripts/run-qc-stand-copy.mjs",
     READBACK_VERIFIER_PATH,
     "data/phase1-downstream-admission-packet.json",
+    SPEC_REGISTRY_PATH,
+    EXTRACTION_CORRECTION_PATH,
     "data/phase1-transformation-scope-owner-approval-2026-08-25.json",
   ]);
   for (const scope of QC_SCOPES) {
@@ -57,8 +61,8 @@ function syntheticOutputs(root, scope) {
     methodVersion: "qc-stand-copy-runner-v1",
     scopeId: scope.rowId,
     specification: { id: scope.specId, sha256: scope.expected.specSha256 },
-    packetSha256: "4859407ea256988a50873c03aa4146c8dd15e5e13f9ced47fa87a7883b404d6a",
-    ownerScopeApprovalSha256: "fda1c43d2ee23adb35907ddf012c9b64aa23e69774866c725271ed91223dffb2",
+    packetSha256: "82c55e3bea87d1a3856b233b2e483cd9b5318afd3d998bd753867af944370520",
+    ownerScopeApprovalSha256: "98c1becf3f4b392fdcfa57ae65a3e85e56a2b4b22d9671b418c300dc769d1be1",
     executionApprovalSha256: scope.expected.executionApprovalSha256,
     source: {
       rawArchiveSha256: scope.expected.rawArchiveSha256,

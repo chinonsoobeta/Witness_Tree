@@ -17,8 +17,8 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const DATA_ROOT = path.resolve(ROOT, "../../Witness_Tree-data");
 const PACKET_REL = "data/phase1-downstream-admission-packet.json";
 const OWNER_REL = "data/phase1-transformation-scope-owner-approval-2026-08-25.json";
-const PACKET_SHA256 = "4859407ea256988a50873c03aa4146c8dd15e5e13f9ced47fa87a7883b404d6a";
-const OWNER_SHA256 = "fda1c43d2ee23adb35907ddf012c9b64aa23e69774866c725271ed91223dffb2";
+const PACKET_SHA256 = "82c55e3bea87d1a3856b233b2e483cd9b5318afd3d998bd753867af944370520";
+const OWNER_SHA256 = "98c1becf3f4b392fdcfa57ae65a3e85e56a2b4b22d9671b418c300dc769d1be1";
 const METHOD_VERSION = "qc-stand-copy-runner-v1";
 const PYTHON_HELPER = path.join(ROOT, "scripts/qc-stand-copy-append.py");
 
@@ -51,10 +51,10 @@ const EXPECTED = {
     sourceProfileSha256: "fc16cb1abfb94f6bf5a6414f9f90a150a9c548688a719ce636f495561b7295d7",
   },
   "qc-original-current-inventory": {
-    specSha256: "71707b702f2367d46c985e84f5f16e19ad75012c8efe71b2ff17dd8063c7ab2c",
+    specSha256: "09d647959275497ec1c380a4989c70d46935c4967f2621c01edab272ccfccf3e",
     rawSha256: "c10d691516569de76642dc1fc64e662f2569b5b58ab5d945b58b8b7834ba9c61",
     rawBytes: 11244667626,
-    extractedSha256: "70539d99497de2773342611d73bf9e4fadf01f1fdbfe3ca536ad711d87916e7c",
+    extractedSha256: "819a5698456089a9f291925a9b9bf1eb1415f29985ff43107d383c1f46753dfd",
     member: "CARTE_ECO_ORI_PROV.gpkg",
     layer: "pee_ori_prov",
     outputLayer: "qc_original_current_inventory_stands",
@@ -138,7 +138,9 @@ async function loadScope(root, scopeId, options = {}) {
   if (specSha256 !== expected.specSha256 || packetSha256 !== PACKET_SHA256 || ownerSha256 !== OWNER_SHA256) throw new Error("bound packet, owner approval, or specification bytes changed; refusing to proceed");
   const spec = JSON.parse(specBytes), packet = JSON.parse(packetBytes), owner = JSON.parse(ownerBytes);
   if (spec.status !== "specified-not-approved-not-executed" || spec.operation?.kind !== "lossless-single-layer-copy" || spec.operation?.joins !== "None. Do not join meta or other tables in this operation." || Object.values(spec.admission ?? {}).some((value) => value !== false)) throw new Error("spec is not the exact unadmitted lossless stand-copy scope");
-  const packetBinding = packet.specificationBindings?.find((entry) => entry.specId === spec.id);
+  const registryBytes = await readFile(path.join(root, packet.specificationRegistry.path));
+  const registry = JSON.parse(registryBytes);
+  const packetBinding = registry.specificationBindings?.find((entry) => entry.specId === spec.id);
   const ownerBinding = owner.approvedScopes?.find((entry) => entry.specId === spec.id);
   if (!packetBinding || packetBinding.sha256 !== specSha256 || ownerBinding?.decision !== "approve" || ownerBinding.specSha256 !== specSha256 || owner.decisionBoundary?.executionAuthorized !== false) throw new Error("packet/owner scope binding is not exact or is already execution-authorized");
   const dataRoot = options.dataRoot || DATA_ROOT;

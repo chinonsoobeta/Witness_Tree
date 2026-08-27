@@ -752,11 +752,33 @@ These were discovered by reading, and none of them is repaired here.
    raw inputs already locked in the Canadian archive. The single missing input
    is the StatCan boundary file, which `data/boundary-editions.json` binds by
    checksum but not by object key or version ID.
-5. **The runtime target is ambiguous.** `.openai/hosting.json` names an OpenAI
-   hosting project with `d1: null` and `r2: null`, while `worker/index.ts`,
-   `wrangler`, and `@cloudflare/vite-plugin` still describe a Cloudflare
-   Workers deployment. Whichever is live, one of the two is stale, and several
-   steps above assume this is settled first.
+5. **The runtime target is not ambiguous, and this entry was wrong.**
+   **Corrected on 2026-08-27.** The original text said `.openai/hosting.json`
+   and the Cloudflare Workers surface described two different deployments and
+   that one of them must be stale. They are one deployment. `vite.config.ts`
+   imports `.openai/hosting.json`, reads `d1` and `r2` out of it, and feeds
+   them straight into the `@cloudflare/vite-plugin` binding config whose
+   `main` is `worker/index.ts`. The ChatGPT Site runs on a Workers-compatible
+   runtime, so `wrangler` and `@cloudflare/vite-plugin` are the live
+   toolchain, not leftovers: `vinext` itself declares neither of them, so
+   nothing else would supply them. `d1: null` and `r2: null` are not evidence
+   of staleness either; they are how the config says no database and no bucket
+   are provisioned for this site, and the plugin config turns each null into
+   an empty binding array.
+
+   **Do not delete `worker/index.ts`, `wrangler`, or `@cloudflare/vite-plugin`
+   on the strength of the entry that used to be here.** Doing so would remove
+   the deployment, not clean up after it. No step in this plan is waiting on
+   this being settled.
+7. **`/_vinext/image` fails open to a 500 when the images binding is absent.**
+   `worker/index.ts` calls `env.IMAGES.input(...)` with no guard, and no
+   images binding is declared in `vite.config.ts`. No component in this
+   application requests that path, so it is reachable only by a direct
+   request, and the failure is a 500 rather than a 404. It is recorded here
+   rather than repaired because the fix touches live deployment code for a
+   route the product does not use, which is a change the owner should choose
+   rather than inherit.
+
 6. **"50 times normal traffic" has no left operand.** There is no analytics,
    telemetry, or request counting anywhere in the application. The load-test
    criterion cannot be computed until a baseline is measured, which makes

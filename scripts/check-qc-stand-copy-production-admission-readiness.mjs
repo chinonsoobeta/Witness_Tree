@@ -22,9 +22,25 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 export const PACKET_PATH = "data/phase1-downstream-admission-packet.json";
-export const PACKET_SHA256 = "4859407ea256988a50873c03aa4146c8dd15e5e13f9ced47fa87a7883b404d6a";
+export const PACKET_SHA256 = "82c55e3bea87d1a3856b233b2e483cd9b5318afd3d998bd753867af944370520";
+// The specification registry is bound by path only, never by an aggregate
+// checksum. Binding its bytes would recreate the coupling this split removed:
+// correcting one specification would invalidate every unrelated scope. It is
+// safe to leave unbound here because it is only ever cross-checked against
+// per-scope constants that are themselves the gate, so tampering with it can
+// make this check fail but can never make it pass.
+export const SPEC_REGISTRY_PATH = "data/phase1-transformation-spec-registry.json";
+
+// data/qc-original-current-inventory-profile.json records what the 2026-08-14
+// profiling run measured, so its extraction SHA-256 is not rewritten even
+// though reproduction proved it wrong. This checker follows the supersession
+// record instead. The gate is not weakened: a mismatch is only tolerated when
+// the correction record is present, is bound to this exact profile field,
+// carries the exact stale value it supersedes, and carries the exact corrected
+// value the scope expects. Any tampering breaks one of those four and fails.
+export const EXTRACTION_CORRECTION_PATH = "data/qc-original-current-inventory-extraction-checksum-correction-2026-08-27.json";
 export const OWNER_SCOPE_APPROVAL_PATH = "data/phase1-transformation-scope-owner-approval-2026-08-25.json";
-export const OWNER_SCOPE_APPROVAL_SHA256 = "fda1c43d2ee23adb35907ddf012c9b64aa23e69774866c725271ed91223dffb2";
+export const OWNER_SCOPE_APPROVAL_SHA256 = "98c1becf3f4b392fdcfa57ae65a3e85e56a2b4b22d9671b418c300dc769d1be1";
 export const RUNNER_PATH = "scripts/run-qc-stand-copy.mjs";
 export const METHOD_VERSION = "qc-stand-copy-runner-v1";
 export const READBACK_VERIFIER_PATH = "scripts/verify-qc-stand-copy-readback.mjs";
@@ -124,7 +140,7 @@ export const QC_SCOPES = Object.freeze([
     sourceRightsSha256: "cdc401d96348764540b37aa63e8d7dc42b8f0c343956272fd85051e62d75a2e5",
     expected: {
       specSha256: "44cdb08f033fc80040a7edf373189a0ce8c74bc3132d4e0892816fcf3f22bb1d",
-      executionApprovalSha256: "e6b746fc433a40c3bc44651d0354b794dbf6700f4e28d1496b5467b8fe71dac5",
+      executionApprovalSha256: "31cf0a1042958cb67dd42c95406318504538f94ac2c932a7122e02a6dd1611df",
       rawArchiveSha256: "c67c56b0c101e95bef4fbca53a06e2f1578fe38293961017f70d815209740cf1",
       rawArchiveBytes: 12399475076,
       extractedGeoPackageSha256: "4f592f99786770600bdf219e8cdae5908d9a2398ab6a9ae45662fafa2494aa00",
@@ -170,11 +186,11 @@ export const QC_SCOPES = Object.freeze([
     sourceRightsPath: "data/qc-original-current-inventory-profile.json",
     sourceRightsSha256: "109812a985ff3b7ddc89e172ddb73112f3ec96d7f0f2b80ddb28fe5616ab1be0",
     expected: {
-      specSha256: "71707b702f2367d46c985e84f5f16e19ad75012c8efe71b2ff17dd8063c7ab2c",
-      executionApprovalSha256: "af17727494ae2ef9c1c67d8bcb38110a855493a7edf2538b593c0b8147badb89",
+      specSha256: "09d647959275497ec1c380a4989c70d46935c4967f2621c01edab272ccfccf3e",
+      executionApprovalSha256: "c0cea5a6f27aaa977fb893a5dbecdde2ed86e9d2165b0936da63565c0f6806ba",
       rawArchiveSha256: "c10d691516569de76642dc1fc64e662f2569b5b58ab5d945b58b8b7834ba9c61",
       rawArchiveBytes: 11244667626,
-      extractedGeoPackageSha256: "70539d99497de2773342611d73bf9e4fadf01f1fdbfe3ca536ad711d87916e7c",
+      extractedGeoPackageSha256: "819a5698456089a9f291925a9b9bf1eb1415f29985ff43107d383c1f46753dfd",
       extractedGeoPackageBytes: 33243570176,
       sourceRelativePath: "extracted/qc-original-current-inventory/2026-08-14/CARTE_ECO_ORI_PROV.gpkg",
       archiveMember: "CARTE_ECO_ORI_PROV.gpkg",
@@ -365,7 +381,19 @@ function validateSourceRights(root, row, scope) {
     assert.match(document.licence?.attribution ?? "", /Ministère des Ressources naturelles et des Forêts du Québec/i);
     assert.match(document.licence?.attribution ?? "", /CC BY 4\.0/i);
     exact(document.rawArchive?.sha256, expected.rawArchiveSha256, `${row.id} rights/raw archive binding`);
-    exact(document.extractedGeoPackage?.sha256, expected.extractedGeoPackageSha256, `${row.id} rights/extracted binding`);
+    const recordedExtracted = document.extractedGeoPackage?.sha256;
+    if (recordedExtracted !== expected.extractedGeoPackageSha256) {
+      const correction = readJson(regularFile(root, EXTRACTION_CORRECTION_PATH, `${row.id} extraction correction`), `${row.id} extraction correction`);
+      exact(correction.status, "engineering-verified-correction-applied", `${row.id} extraction correction status`);
+      exact(correction.sourceId, row.id, `${row.id} extraction correction source`);
+      exact(correction.supersedes?.path, scope.sourceRightsPath, `${row.id} extraction correction target`);
+      exact(correction.supersedes?.field, "extractedGeoPackage.sha256", `${row.id} extraction correction field`);
+      exact(correction.supersedes?.recordedValue, recordedExtracted, `${row.id} extraction correction superseded value`);
+      exact(correction.reproduction?.onDisk?.sha256, expected.extractedGeoPackageSha256, `${row.id} extraction correction reproduced value`);
+      exact(correction.reproduction?.member?.reproducedSha256, expected.extractedGeoPackageSha256, `${row.id} extraction correction member value`);
+      exact(correction.reproduction?.rawArchive?.reproducedSha256, expected.rawArchiveSha256, `${row.id} extraction correction raw archive`);
+      exact(correction.reproduction?.rawArchive?.matchesBoundValue, true, `${row.id} extraction correction raw archive match`);
+    }
   }
   const rights = row.rights;
   exactKeys(rights, ["bulkRedistributionAllowed", "licenceId", "licenceUrl", "licenceVersion", "modificationNotice", "redistributionStatus", "requiredAttribution", "sourceAttribution"], `${row.id}.rights`);
@@ -431,7 +459,9 @@ function validatePacket(root, row, scope) {
   const packet = readJson(file, `${row.id} downstream packet`);
   exact(packet.schemaVersion, "witness-tree/phase1-downstream-admission-packet/2", `${row.id} packet schema`);
   exact(packet.status, "owner-transformation-scope-decision-preparation-read-only", `${row.id} packet status`);
-  const binding = packet.specificationBindings?.find(({ specId }) => specId === scope.specId);
+  exact(packet.specificationRegistry?.path, SPEC_REGISTRY_PATH, `${row.id} packet specification registry path`);
+  const registry = readJson(regularFile(root, SPEC_REGISTRY_PATH, `${row.id} specification registry`), `${row.id} specification registry`);
+  const binding = registry.specificationBindings?.find(({ specId }) => specId === scope.specId);
   assert.ok(binding, `${row.id} packet specification binding is missing.`);
   exact(binding.path, scope.specPath, `${row.id} packet specification path`);
   exact(binding.sha256, scope.expected.specSha256, `${row.id} packet specification SHA-256`);

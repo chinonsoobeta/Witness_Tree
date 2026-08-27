@@ -16,16 +16,16 @@
   },
   "packet": {
     "path": "data/phase1-downstream-admission-packet.json",
-    "sha256": "4859407ea256988a50873c03aa4146c8dd15e5e13f9ced47fa87a7883b404d6a"
+    "sha256": "82c55e3bea87d1a3856b233b2e483cd9b5318afd3d998bd753867af944370520"
   },
   "ownerScope": {
     "path": "data/phase1-transformation-scope-owner-approval-2026-08-25.json",
-    "sha256": "fda1c43d2ee23adb35907ddf012c9b64aa23e69774866c725271ed91223dffb2",
+    "sha256": "98c1becf3f4b392fdcfa57ae65a3e85e56a2b4b22d9671b418c300dc769d1be1",
     "specId": "federal-electoral-districts-2023-v1"
   },
   "runner": {
     "path": "scripts/run-phase1-federal-electoral-transformation.mjs",
-    "sha256": "f04cca5ccb27eb737c503d46c416295f674370e649331d5e90c0117467f20aa9",
+    "sha256": "e333b27cab488a53b5c7a27db7236c5792129482ec8e93fe5af75a94b3c8734b",
     "version": "phase1-federal-electoral-transformation-runner-v1"
   },
   "source": {

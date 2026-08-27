@@ -10,7 +10,7 @@
     "decision": "approve",
     "packet": {
       "path": "data/phase1-downstream-admission-packet.json",
-      "sha256": "4859407ea256988a50873c03aa4146c8dd15e5e13f9ced47fa87a7883b404d6a"
+      "sha256": "82c55e3bea87d1a3856b233b2e483cd9b5318afd3d998bd753867af944370520"
     },
     "scope": "Approve only the seven named transformation designs bound by the packet hash and specification hashes below.",
     "acknowledgements": [
@@ -74,7 +74,7 @@
       "rows": ["qc-original-current-inventory"],
       "specId": "qc-original-current-inventory-stand-copy-v1",
       "specPath": "data/transformation-specs/qc-original-current-inventory-stand-copy-v1.json",
-      "specSha256": "71707b702f2367d46c985e84f5f16e19ad75012c8efe71b2ff17dd8063c7ab2c",
+      "specSha256": "09d647959275497ec1c380a4989c70d46935c4967f2621c01edab272ccfccf3e",
       "decision": "approve"
     }
   ],

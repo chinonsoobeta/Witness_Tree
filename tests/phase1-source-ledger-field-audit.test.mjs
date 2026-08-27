@@ -41,7 +41,9 @@ test("field audit carries only directly bound source-profile facts", () => {
   const cwfis = audit.rows.find((row) => row.id === "cwfis-current");
   assert.equal(cwfis.fields.publisher.status, "verified");
   assert.equal(cwfis.fields.publisher.evidenceBinding.path, "data/cwfis-current-active-fires-profile.json");
-  assert.equal(cwfis.fields.datasetTitle.status, "missing");
+  // datasetTitle is bound now. redistributionStatus stands in for the same point:
+  // a field no record states literally stays missing rather than being derived.
+  assert.equal(cwfis.fields.redistributionStatus.status, "missing");
 
   const qcOriginal = audit.rows.find((row) => row.id === "qc-original-current-inventory");
   assert.equal(qcOriginal.fields.checksum.value, "c10d691516569de76642dc1fc64e662f2569b5b58ab5d945b58b8b7834ba9c61");
@@ -54,18 +56,18 @@ test("field audit carries only directly bound source-profile facts", () => {
 
 test("field audit exhaustively records the directly evidenced fields for every archive-evidenced core row", () => {
   const expectedVerifiedCounts = {
-    "ntems-annual-land-cover": 9,
-    "ntems-forest-harvest": 14,
-    "ntems-canopy-cover": 14,
-    "ntems-canopy-height": 14,
-    "cwfis-current": 13,
-    "bc-wildfire": 13,
-    "ab-wildfire": 9,
-    "on-fire-disturbance": 9,
-    "qc-current-ecoforest": 6,
-    "qc-original-current-inventory": 12,
+    "ntems-annual-land-cover": 10,
+    "ntems-forest-harvest": 15,
+    "ntems-canopy-cover": 15,
+    "ntems-canopy-height": 15,
+    "cwfis-current": 16,
+    "bc-wildfire": 16,
+    "ab-wildfire": 15,
+    "on-fire-disturbance": 15,
+    "qc-current-ecoforest": 8,
+    "qc-original-current-inventory": 15,
     "qc-fourth-inventory": 11,
-    "ab-avi-crown": 14,
+    "ab-avi-crown": 15,
     "ab-avi-post-harvest": 13,
     "ab-primary-land-vegetation": 14,
     "fed-2023-ridings": 22,

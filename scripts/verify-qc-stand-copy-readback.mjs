@@ -22,8 +22,8 @@ export const VERIFIER_PATH = "scripts/verify-qc-stand-copy-readback.mjs";
 export const VERIFIER_METHOD_VERSION = "qc-stand-copy-independent-readback-v1";
 export const SIDECAR_SCHEMA = "witness-tree/qc-stand-copy-sidecar/1";
 export const EVIDENCE_SCHEMA = "witness-tree/qc-stand-copy-readback-evidence/1";
-export const PACKET_SHA256 = "4859407ea256988a50873c03aa4146c8dd15e5e13f9ced47fa87a7883b404d6a";
-export const OWNER_SCOPE_APPROVAL_SHA256 = "fda1c43d2ee23adb35907ddf012c9b64aa23e69774866c725271ed91223dffb2";
+export const PACKET_SHA256 = "82c55e3bea87d1a3856b233b2e483cd9b5318afd3d998bd753867af944370520";
+export const OWNER_SCOPE_APPROVAL_SHA256 = "98c1becf3f4b392fdcfa57ae65a3e85e56a2b4b22d9671b418c300dc769d1be1";
 export const METHOD_VERSION = "qc-stand-copy-runner-v1";
 const SHA256 = /^[0-9a-f]{64}$/;
 
@@ -61,20 +61,20 @@ export const SCOPES = Object.freeze({
     sourceRowKey: "fid",
     joinKey: undefined,
     fields: CURRENT_FIELDS,
-    executionApprovalSha256: "e6b746fc433a40c3bc44651d0354b794dbf6700f4e28d1496b5467b8fe71dac5",
+    executionApprovalSha256: "31cf0a1042958cb67dd42c95406318504538f94ac2c932a7122e02a6dd1611df",
     prohibitedClaims: ["production admission", "complete Québec forest-land coverage", "harvest event identification", "disturbance causation", "current real-time conditions", "a change to publisher data"],
     evidencePath: "data/qc-current-ecoforest-stand-copy-readback-evidence.json",
   }),
   "qc-original-current-inventory": Object.freeze({
     rowId: "qc-original-current-inventory",
     specId: "qc-original-current-inventory-stand-copy-v1",
-    specSha256: "71707b702f2367d46c985e84f5f16e19ad75012c8efe71b2ff17dd8063c7ab2c",
+    specSha256: "09d647959275497ec1c380a4989c70d46935c4967f2621c01edab272ccfccf3e",
     specPath: "data/transformation-specs/qc-original-current-inventory-stand-copy-v1.json",
     sourceRelativePath: "extracted/qc-original-current-inventory/2026-08-14/CARTE_ECO_ORI_PROV.gpkg",
     sourceLayer: "pee_ori_prov",
     sourceRawSha256: "c10d691516569de76642dc1fc64e662f2569b5b58ab5d945b58b8b7834ba9c61",
     sourceRawBytes: 11244667626,
-    extractedSha256: "70539d99497de2773342611d73bf9e4fadf01f1fdbfe3ca536ad711d87916e7c",
+    extractedSha256: "819a5698456089a9f291925a9b9bf1eb1415f29985ff43107d383c1f46753dfd",
     archiveMember: "CARTE_ECO_ORI_PROV.gpkg",
     outputLayer: "qc_original_current_inventory_stands",
     featureCount: 8387062,
@@ -83,7 +83,7 @@ export const SCOPES = Object.freeze({
     sourceRowKey: "fid",
     joinKey: "geocode",
     fields: ORIGINAL_FIELDS,
-    executionApprovalSha256: "af17727494ae2ef9c1c67d8bcb38110a855493a7edf2538b593c0b8147badb89",
+    executionApprovalSha256: "c0cea5a6f27aaa977fb893a5dbecdde2ed86e9d2165b0936da63565c0f6806ba",
     prohibitedClaims: ["production admission", "a temporal update chronology", "a fourth-inventory result", "a complete forest-land denominator", "harmonized disturbance or harvest classification"],
     evidencePath: "data/qc-original-current-inventory-stand-copy-readback-evidence.json",
   }),
