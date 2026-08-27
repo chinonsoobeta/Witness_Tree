@@ -189,7 +189,7 @@ async function executeScope(binding, options, runnerSha256) {
   let publishedArtifact = false;
   let publishedSidecar = false;
   try {
-    const copyArgs = (target) => ["-ro", "-f", "GPKG", target, binding.extracted, binding.spec.input.layer, "-nln", binding.expected.outputLayer, "-select", binding.spec.input.publishedAttributes.join(","), "-progress"];
+    const copyArgs = (target) => ["-f", "GPKG", target, binding.extracted, binding.spec.input.layer, "-nln", binding.expected.outputLayer, "-select", binding.spec.input.publishedAttributes.join(","), "-progress"];
     await run(process.env.OGR2OGR_BIN || "ogr2ogr", copyArgs(tempArtifact));
     const helperArgs = (target) => [PYTHON_HELPER, "--source", binding.extracted, "--source-layer", binding.spec.input.layer, "--artifact", target, "--layer", binding.expected.outputLayer, "--published-attributes", JSON.stringify(binding.spec.input.publishedAttributes), "--raw-sha256", binding.expected.rawSha256];
     const first = JSON.parse((await run(process.env.PYTHON_BIN || "python3", helperArgs(tempArtifact))).stdout);
