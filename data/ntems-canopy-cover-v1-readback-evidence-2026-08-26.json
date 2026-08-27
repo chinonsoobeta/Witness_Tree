@@ -3,12 +3,12 @@
   "status": "complete-readback-verified",
   "authorization": {
     "path": "data/phase1-ntems-canopy-cover-execution-authorization.json",
-    "sha256": "2797e810663a25961a75d699832d47d7a1b5e67a407d120af0a662fd424cc69e",
+    "sha256": "f0e1486a7817db5cdf7af3c13898073a202f1db4919320fa2b287c9e2103e47c",
     "createdAt": "2026-08-26T00:55:28Z"
   },
   "runner": {
     "path": "scripts/run-phase1-ntems-transform.mjs",
-    "sha256": "ecb3585a27c82119e2d18fbce3231e12f3c8a33abbf5973453db8d1b0cf2a511"
+    "sha256": "09b1016849e0709e46ebad908eec0f01252d5e5eeed3e5cd2fcb712c2042dc90"
   },
   "specifications": [
     {
