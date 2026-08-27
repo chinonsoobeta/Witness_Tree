@@ -1,0 +1,89 @@
+{
+  "schemaVersion": "witness-tree/phase2-zonal-v6-owner-admission-packet/1",
+  "status": "prepared-awaiting-owner-decision",
+  "preparedAt": "2026-08-26",
+  "ownerDecision": null,
+  "whatThisPacketIsNot": "This packet contains no decision and no approval. It is the material an owner would need in order to make one. Nothing here may be read as an admission, and no field in it may be filled in on the owner's behalf.",
+  "questionForOwner": "The portable zonal worker e01a1168 was run against the same three inputs as the admitted ba331f90 run and produced a byte-identical output. Do you admit the v6 run and its worker in place of the v5 run, under the same limited non-release, non-production scope as the 2026-08-26 Phase 2 admission?",
+  "whatWouldBeAdmitted": {
+    "batchId": "phase2-v21-zonal-province-2021-cbf-v6",
+    "workerPath": "scripts/phase2_zonal_aggregate.py",
+    "workerSha256": "e01a116842af0c8382d35464c55bce3c4ebe01bc373f751c94227a6ef64b0ff1",
+    "frozenWorkerRecord": {
+      "path": "data/provenance/phase2_zonal_aggregate.candidate-e01a1168.py",
+      "sha256": "e01a116842af0c8382d35464c55bce3c4ebe01bc373f751c94227a6ef64b0ff1"
+    },
+    "artifacts": {
+      "output": {
+        "path": "province-2020-2022.json",
+        "byteLength": 3131,
+        "sha256": "ff1589029f30800021b52d9aa736b9aa9e122df70e3070d19a68f7aa45d9a16d"
+      },
+      "sidecar": {
+        "path": "province-2020-2022.sidecar.json",
+        "byteLength": 8350,
+        "sha256": "bdc5c5576a51a91496f4038602b118bf1c528310a1a50c79ef950f67e79c8d56"
+      }
+    },
+    "inputBindings": {
+      "sourceRasterReadbackEvidence": {
+        "path": "data/phase2-v21-raster-readback-evidence.json",
+        "sha256": "8815684bdde91250a0654fd2890a11d8505532c3c6864169f68165a22dd98210"
+      },
+      "sourceLineageSha256": "2499c2d37e0f55f5145f6842aedcee5398a3bac073699afbd17512f476b9f928",
+      "forestMask": {
+        "version": "phase2-v21-raster-first-1984-2022-v1-snapshot-2020",
+        "sha256": "23d73bb01b68598b4f31c4b2a5bcbb915d4f1300a9e45e27398422c6395bcbde"
+      },
+      "changeRaster": {
+        "version": "phase2-v21-raster-first-1984-2022-v1-interval-2020-2022",
+        "sha256": "2de157a9aa554e1960c1065ff425d2d4dbe31e8922a83b1f41203f9b0eadf56c"
+      },
+      "boundary": {
+        "edition": "2021-Census-cartographic-boundary",
+        "idField": "PRUID",
+        "sha256": "d28bbb15d7b49e3d1828755a5f1b4ebcee699ad70efe8b0f1b902d29ebffd20b",
+        "classification": "authoritative-boundary",
+        "geometryReadPolicy": "shapefile-ring-orientation-only-ccw",
+        "reprojection": "reprojected"
+      },
+      "timeVersion": "2020-2022",
+      "gridCrsSha256": "b3aa946d6e8a9a93d8787595250d041ae984a4fc1e3c63402c932ee08e93462d"
+    }
+  },
+  "evidenceBindings": {
+    "v6Evidence": {
+      "path": "data/phase2-v21-province-zonal-pilot-v6-evidence.json",
+      "sha256": "cca1f314da7add3259a2f0dbce7975c7e47eab4f98bd5c7f10e698421615f432"
+    },
+    "admittedV5Evidence": {
+      "path": "data/phase2-v21-province-zonal-pilot-evidence.json",
+      "sha256": "4fb0efc6ec984025e91f0124e0347a2f0a08673ed1f606ba318c9ca732f5ce62"
+    },
+    "rasterReadback": {
+      "path": "data/phase2-v21-raster-readback-evidence.json",
+      "sha256": "8815684bdde91250a0654fd2890a11d8505532c3c6864169f68165a22dd98210"
+    },
+    "priorAdmissionRecord": {
+      "path": "data/phase2-admission-record-2026-08-26.json",
+      "sha256": "58147c088d12190f8882d0c493364cd07cf7c176d4fafbc266421bf337ca7d82"
+    }
+  },
+  "whatTheOwnerShouldKnow": [
+    "The v6 output is byte-identical to the admitted v5 output. The reproduction is verified by scripts/check-phase2-v21-province-zonal-pilot-v6-evidence.mjs, which binds both digests rather than restating the claim.",
+    "The two sidecars are not identical, and are not expected to be. Each records its own worker digest, code version, start and completion times, and elapsed seconds.",
+    "The only functional difference between the two workers is a fallback used when GDAL exposes no in-memory OGR driver. The Ubuntu CI image needs that fallback; this machine does not. The identical output is evidence that the fallback did not change the numbers on this run, and is not evidence about any other run.",
+    "Admitting v6 would not advance any Phase 2 exit gate. Phase 2 stays at 2 of 4. The two open criteria are expert review at 100 per province and published independent comparisons, and neither is touched by this.",
+    "If v6 is admitted, data/provenance/phase2_zonal_aggregate.candidate-e01a1168.py should be renamed to admitted-e01a1168.py, so that the filename records the admission rather than anticipating it. The v5 record stays where it is, because the v5 run really happened and its evidence remains a true record of it."
+  ],
+  "scopeIfAdmitted": {
+    "admitted": true,
+    "released": false,
+    "productionEligible": false,
+    "productionAdmission": false,
+    "externalAction": false,
+    "ingestion": false,
+    "deployment": false
+  },
+  "notAdmittedUntil": "An owner decision record binding this packet's sha256 exists and is committed."
+}
