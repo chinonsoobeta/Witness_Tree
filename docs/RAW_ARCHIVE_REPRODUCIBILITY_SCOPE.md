@@ -413,6 +413,23 @@ by the main agent, never by a discovery agent.
    to the admitted artifact in
    `data/phase1-federal-electoral-production-admission.json`.
 
+   Correction, found when this step was first executed on 2026-08-26. The byte
+   comparison above is the pass condition and it held. The
+   `check-phase1-federal-electoral-output.mjs` invocation does **not** belong in
+   this step: it compares the whole recorded evidence record against a live
+   recomputation, and that record includes `output.sidecarSha256`, which embeds
+   `toolVersions.node`. A reproduction on any other toolchain therefore fails it
+   with "recorded federal output evidence drifted from live verification" even
+   when the artifact reproduces exactly. On the first real run the canonical
+   sidecar recorded `v26.5.0` and the reproduction ran on `v22.23.0`; GDAL was
+   identical and the only differing byte was that version string. That checker
+   remains correct against the canonical data root, where the sidecar is the
+   original one. It is simply not a reproduction test.
+
+   The incidental finding is worth keeping: the transform produced identical
+   bytes across two major Node versions, so its determinism does not rest on a
+   pinned interpreter.
+
 8. Local only. Remove the temporary root and record its removal, mirroring the
    drill's `temporaryCopyRemoved` field.
 

@@ -58,13 +58,22 @@ function checkArchivedObject(recorded, expected, name) {
  * the archive recovery evidence and the production admission record rather than restated here, so the
  * drill cannot drift away from the records it claims to reproduce.
  */
+const VERSION_BINDINGS = new Set(["pinned-version-id", "asserted-on-head-and-get"]);
+
 export function validateRawArchiveReproductionDrill(record, { archiveEvidence, admission, runnerSha256 = runnerSha256OnDisk() } = {}) {
   if (!record || typeof record !== "object") throw new Error("The reproduction drill record is missing.");
   if (!archiveEvidence || typeof archiveEvidence !== "object") throw new Error("The federal electoral archive recovery evidence is required.");
   if (!admission || typeof admission !== "object") throw new Error("The federal electoral production admission record is required.");
   if (record.schemaVersion !== SCHEMA_VERSION) throw new Error(`The reproduction drill must be a ${SCHEMA_VERSION} record.`);
   if (record.status !== "passed") throw new Error("The reproduction drill must record a passed status.");
-  if (record.operation !== "read-only-version-pinned-reproduction") throw new Error("The reproduction drill must record a read-only version-pinned reproduction.");
+  if (record.operation !== "read-only-reproduction") throw new Error("The reproduction drill must record a read-only reproduction.");
+  // How each restored object was bound to its recorded version. A pinned read passes --version-id.
+  // An asserted read fetches the current version and requires the VersionId S3 reports on BOTH the
+  // head and the get to equal the recorded version, which fails closed where a pinned read would
+  // quietly succeed against a superseded object. Either is acceptable; neither may be left implied,
+  // and a free-text claim is no longer accepted in place of one of these two values.
+  if (!VERSION_BINDINGS.has(record.versionBinding)) throw new Error(`The reproduction drill must record versionBinding as one of: ${[...VERSION_BINDINGS].join(", ")}.`);
+  if (record.versionBinding === "asserted-on-head-and-get" && record.versionAssertedOnHeadAndGet !== true) throw new Error("A drill bound by assertion must record versionAssertedOnHeadAndGet as true, proven on both the head and the get.");
   requiredText(record.nonMutationStatement, "Non-mutation statement");
   if (!isUtc(record.startedAt) || !isUtc(record.completedAt)) throw new Error("The reproduction drill must record whole-second UTC start and completion timestamps.");
   if (new Date(record.completedAt) < new Date(record.startedAt)) throw new Error("The reproduction drill cannot complete before it started.");
@@ -128,7 +137,7 @@ export function checkRawArchiveReproductionDrill(file = DRILL_URL) {
 if (import.meta.url === `file://${process.argv[1]}`) {
   try {
     const record = checkRawArchiveReproductionDrill();
-    console.log(`PASS raw archive reproduction drill: the version-pinned raw payload reproduced the admitted ${record.reproduction.outputByteLength}-byte artifact byte for byte, and the temporary copy was removed.`);
+    console.log(`PASS raw archive reproduction drill: the raw payload, bound to its recorded version by ${record.versionBinding}, reproduced the admitted ${record.reproduction.outputByteLength}-byte artifact byte for byte, and the temporary copy was removed.`);
   } catch (error) {
     console.error(`FAIL raw archive reproduction drill: ${error.message}`);
     process.exitCode = 1;

@@ -101,6 +101,8 @@ jobs:
       - run: npm run check:phase2-owner-admission-packet
       - run: npm run check:phase2-admission-record-template
       - run: npm run check:phase2-independent-comparison-evidence
+      # Reads only repository records: no data root, no AWS call, no write path.
+      - run: npm run check:raw-archive-reproduction-drill
       # Static half of the data-root inventory: it proves every inventoried
       # check still exists, so a rename cannot quietly shrink the list of
       # checks known to be unverifiable without the drive. The completeness

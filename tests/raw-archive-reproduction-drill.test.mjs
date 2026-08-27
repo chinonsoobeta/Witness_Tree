@@ -16,7 +16,8 @@ function fixture(overrides = {}) {
   return {
     schemaVersion: "witness-tree/raw-archive-reproduction-drill/1",
     status: "passed",
-    operation: "read-only-version-pinned-reproduction",
+    operation: "read-only-reproduction",
+    versionBinding: "pinned-version-id",
     nonMutationStatement: "This drill did not upload, delete, lock, or alter retention on S3.",
     startedAt: "2026-08-26T12:00:00Z",
     completedAt: "2026-08-26T12:09:00Z",
@@ -151,4 +152,15 @@ test("a zero or negative reproduced byte length is refused", () => {
     record.reproduction.outputByteLength = value;
     assert.throws(() => validateRawArchiveReproductionDrill(record, context), /positive integer byte length/);
   }
+});
+
+test("the version binding must be one of the two recognised mechanisms", () => {
+  assert.throws(() => validateRawArchiveReproductionDrill(fixture({ versionBinding: undefined }), context), /must record versionBinding as one of/);
+  assert.throws(() => validateRawArchiveReproductionDrill(fixture({ versionBinding: "trust-me" }), context), /must record versionBinding as one of/);
+});
+
+test("a drill bound by assertion must prove the assertion ran on both calls", () => {
+  assert.throws(() => validateRawArchiveReproductionDrill(fixture({ versionBinding: "asserted-on-head-and-get" }), context), /must record versionAssertedOnHeadAndGet as true/);
+  assert.throws(() => validateRawArchiveReproductionDrill(fixture({ versionBinding: "asserted-on-head-and-get", versionAssertedOnHeadAndGet: false }), context), /must record versionAssertedOnHeadAndGet as true/);
+  assert.doesNotThrow(() => validateRawArchiveReproductionDrill(fixture({ versionBinding: "asserted-on-head-and-get", versionAssertedOnHeadAndGet: true }), context));
 });
