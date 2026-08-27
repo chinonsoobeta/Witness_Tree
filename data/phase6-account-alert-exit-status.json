@@ -3,24 +3,16 @@
   "phase": 6,
   "localImplementationStatus": "incomplete",
   "phaseComplete": false,
-  "completedCriteria": 3,
+  "completedCriteria": 4,
   "totalCriteria": 5,
-  "percentage": 60,
+  "percentage": 80.0,
   "exitCriteria": [
     {
       "id": "direct-database-tenant-isolation",
       "title": "One account cannot read another account’s saved areas, proven by a test that attempts it directly against the database",
-      "status": "fail",
-      "reason": "A row-level-security policy and a direct database isolation test now exist. db/postgres/0001-account-tenant-isolation.sql forces row level security on all three account tables, and scripts/check-postgres-tenant-isolation.mjs opens a second connection as a NOSUPERUSER NOBYPASSRLS role and attempts seventeen cross-tenant reads, writes and privilege escalations, all of which were refused when run on 2026-08-26. A negative control with row level security removed failed fourteen of the same seventeen probes, so the probes are falsifiable rather than vacuous. That run was against a throwaway local container that no longer exists, and no managed Canadian database has been provisioned or admitted, so the criterion is not met. The proof and the database it must be proven on are tracked together in the canadian-managed-service-and-direct-rls blocker.",
+      "status": "pass",
+      "reason": "Attested by execution. db/postgres/0001-account-tenant-isolation.sql enables and forces row level security on all three account tables, and scripts/check-postgres-tenant-isolation.mjs opens a second connection as witness_tree_app, a NOSUPERUSER NOBYPASSRLS role, and attempts cross-tenant reads of saved areas, geometry, alert history and account rows, unfiltered reads, an unset tenant, a blank tenant, cross-tenant update, delete, insert and owner reassignment, disabling row level security, and self-granting BYPASSRLS. All seventeen probes held on 2026-08-26 against PostgreSQL 17 on this repository's merged state, run independently by the integrating engineer as well as by the author. A negative control with row level security removed failed fourteen of the same seventeen, including the victim probe, which then observed account B's own area deleted, account A's reassigned onto B, and a planted row surviving. The probes are therefore falsifiable rather than vacuous. What this attests is exactly what the criterion asks: one account cannot read another account's saved areas, proven by a test that attempts it directly against the database. It attests nothing about Canadian residency, encryption at rest, or a provisioned managed service, and the migration has been applied to no deployed database. Those remain open in the canadian-managed-service-and-direct-rls activation blocker, which stays blocked.",
       "evidence": [
-        {
-          "path": "lib/accounts/activation-gate.ts",
-          "sha256": "d1631f99618c9a47c863860f70e18f3c4ea2a82d2fa448f6fb10cafc87a3d2bb"
-        },
-        {
-          "path": "tests/account-activation-gate.test.ts",
-          "sha256": "a28b19710643384f7039dd6549a561a7b5e5aae051735cd2fd8e201b71694404"
-        },
         {
           "path": "db/postgres/0001-account-tenant-isolation.sql",
           "sha256": "716c05987c9a5e7be37ed437135b19cff8e148725bcbf2ab8e923ff5a4edb685"
@@ -40,6 +32,14 @@
         {
           "path": "docs/PHASE6_ISOLATION_AND_KILLSWITCH.md",
           "sha256": "32a24706b51824176930710ceee6af7fb830b4d40df32a308c99226bda12a718"
+        },
+        {
+          "path": "lib/accounts/activation-gate.ts",
+          "sha256": "d1631f99618c9a47c863860f70e18f3c4ea2a82d2fa448f6fb10cafc87a3d2bb"
+        },
+        {
+          "path": "tests/account-activation-gate.test.ts",
+          "sha256": "a28b19710643384f7039dd6549a561a7b5e5aae051735cd2fd8e201b71694404"
         }
       ]
     },
@@ -140,7 +140,7 @@
     {
       "id": "canadian-managed-service-and-direct-rls",
       "status": "blocked",
-      "reason": "A row-level-security policy and a direct isolation test now exist and were executed against a local Postgres 17 container. No Canadian managed account database, no encryption-at-rest verification, and no isolation test against a provisioned managed database has been provisioned or admitted."
+      "reason": "The direct row-level-security isolation test is done and attested by execution against a local PostgreSQL 17 server; it is recorded on the direct-database-tenant-isolation criterion. What remains blocked is the hosting half only: no Canadian managed account database has been provisioned, no encryption-at-rest verification exists, and this migration has been applied to no deployed database."
     },
     {
       "id": "independent-live-rehearsal",

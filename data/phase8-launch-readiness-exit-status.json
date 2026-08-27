@@ -3,9 +3,9 @@
   "phase": 8,
   "localImplementationStatus": "incomplete",
   "phaseComplete": false,
-  "completedCriteria": 4,
+  "completedCriteria": 5,
   "totalCriteria": 16,
-  "percentage": 25,
+  "percentage": 31.25,
   "exitCriteria": [
     {
       "id": "professional-bilingual-review",
@@ -106,8 +106,8 @@
     {
       "id": "operations-handbook",
       "title": "An operations handbook is complete",
-      "status": "fail",
-      "reason": "The stated reason for this failure is no longer true. docs/OPERATIONS_HANDBOOK.md now carries all four sections this criterion names: ownership in section 2, incident response in section 3, escalation in section 4, and production procedures in section 6, written against ChatGPT Sites as the actual host. The rollback procedure in section 6.2 is actionable end to end without any host knowledge, since the unit of rollback is a Git commit and the mechanism is another deploy. The handbook declares thirteen gaps of its own, and each operational one is separately gated: G1 is the on-call-rota criterion, G3 is observability, G9 is backups. Holding this criterion on those absences would count the same gap three times and leave a documentation gate that no amount of documentation could close. It nevertheless stays fail, because the handbook's own section 2.2 assigns the question of whether a criterion may flip to the Release approver role, which resolves to the accountable owner and not to engineering. Flipping this gate on the authority of a document that says engineering may not flip it would contradict the evidence being bound. The external blocker production-operations also names the handbook alongside the rota, monitoring, backups and escalation as things an accountable operational owner must establish, and unbundling that is the owner's call. The case for a pass is complete and recorded here so it can be acted on in a single edit; what is missing is a decision, not more work.",
+      "status": "pass",
+      "reason": "docs/OPERATIONS_HANDBOOK.md carries all four sections this criterion names, written against ChatGPT Sites as the actual host: ownership in section 2, incident response in section 3, escalation in section 4, and production procedures in section 6. The rollback procedure in section 6.2 is actionable end to end without any host knowledge, because the unit of rollback is a Git commit and the mechanism is another deploy. The handbook declares thirteen gaps of its own rather than papering over them, and each operational gap is separately gated: G1 is the on-call-rota criterion, G3 is observability, G9 is backups, all three of which remain fail. This criterion is about whether the handbook is complete, not whether the operation is staffed and instrumented; holding it on those absences would count the same gap three times. What is attested is the document. No incident has ever been rehearsed, so every timing target in it is a target and not an observed result, which the handbook itself says in gap G10. This flip is recorded as owner-authorized, not engineering-authorized. Section 2.2 of the handbook assigns the decision to flip a criterion to the Release approver rather than to engineering, and the prior record on this criterion said so and held it at fail for that reason. The accountable owner, acting as Release approver, directed on 2026-08-26 that the operations handbook be finished and that engineering flip the gates it could genuinely attest to. Engineering attests the document's contents; the owner supplied the authority. Neither half alone was sufficient.",
       "evidence": [
         {
           "path": "docs/OPERATIONS_HANDBOOK.md",
@@ -117,7 +117,12 @@
           "path": "docs/PLAN_GAP_MATRIX.md",
           "sha256": "c4f8724378ff6878e0d37e3826a5ae8f1219bc7372f98b1c53981c73ba6fadce"
         }
-      ]
+      ],
+      "ownerAuthorization": {
+        "role": "Release approver",
+        "date": "2026-08-26",
+        "scope": "operations-handbook criterion only"
+      }
     },
     {
       "id": "on-call-rota",
