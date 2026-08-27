@@ -21,9 +21,9 @@
     {"path": "data/elections-canada-fed-2025-source-ledger.json", "sha256": "b1d28895c43c843a6072ef9adca661c26c3a27fbdda27650ea216abe56c707fb"},
     {"path": "data/federal-electoral-archive-recovery-evidence.json", "sha256": "18b9fbfa5e3eecdc33ad0098f5ffa55f7bfebb1a47d2e33b7f01a94e05a6ed32"},
     {"path": "data/phase1-production-transformation-specifications-v1.json", "sha256": "258ca3f94e30d484b53cc12e29c83beaf57998993edaea05e44f5a4924979efc"},
-    {"path": "data/phase1-transformation-scope-owner-approval-2026-08-25.json", "sha256": "fda1c43d2ee23adb35907ddf012c9b64aa23e69774866c725271ed91223dffb2"},
-    {"path": "data/phase1-federal-electoral-execution-approval.json", "sha256": "59e526e779be7e169513562790f87d924af55872fc67e9f2e0cb5b9d199a2179"},
-    {"path": "data/phase1-federal-electoral-output-verification-evidence.json", "sha256": "9342a36dce2748d6be510a9aa14953343714958f93738cd4067d66379b322bc4"}
+    {"path": "data/phase1-transformation-scope-owner-approval-2026-08-25.json", "sha256": "98c1becf3f4b392fdcfa57ae65a3e85e56a2b4b22d9671b418c300dc769d1be1"},
+    {"path": "data/phase1-federal-electoral-execution-approval.json", "sha256": "93d6bb6c9dbb1f8d83302212a1975a2b7a21fa5c64db1a5a29dfdaae2d874138"},
+    {"path": "data/phase1-federal-electoral-output-verification-evidence.json", "sha256": "934a4381ab1ef23d913092e6c34da544e4c75326ae2c9ec172c63d33e34e5d17"}
   ],
   "ledgerFields": {
     "editionEffectiveDate": "2025-03-23",

@@ -1,0 +1,129 @@
+{
+  "schemaVersion": "witness-tree/phase1-transformation-spec-registry/1",
+  "status": "read-only-specification-checksum-registry",
+  "asOf": "2026-08-27",
+  "notice": "Read-only per-specification checksum registry. It records no owner approval, transformation, ingestion, release, production admission, eligibility, or external mutation. It was split out of data/phase1-downstream-admission-packet.json so that correcting a factual error in one specification changes only that specification's entry. While these lived in the packet, the packet's own checksum was bound by every scope's evidence, so any correction to any specification invalidated unrelated scopes' records and forced a Phase 1-wide re-authorization. The load-bearing binding is unchanged and remains per-specification: every consumer still compares a specification's bytes against the exact checksum recorded for it here.",
+  "specificationBindings": [
+    {
+      "rows": [
+        "ntems-annual-land-cover"
+      ],
+      "specId": "ntems-annual-land-cover-v1",
+      "path": "data/phase1-production-transformation-specifications-v1.json",
+      "sha256": "258ca3f94e30d484b53cc12e29c83beaf57998993edaea05e44f5a4924979efc"
+    },
+    {
+      "rows": [
+        "ntems-forest-harvest"
+      ],
+      "specId": "ntems-forest-harvest-v1",
+      "path": "data/phase1-production-transformation-specifications-v1.json",
+      "sha256": "258ca3f94e30d484b53cc12e29c83beaf57998993edaea05e44f5a4924979efc"
+    },
+    {
+      "rows": [
+        "ntems-canopy-cover"
+      ],
+      "specId": "ntems-canopy-cover-v1",
+      "path": "data/phase1-production-transformation-specifications-v1.json",
+      "sha256": "258ca3f94e30d484b53cc12e29c83beaf57998993edaea05e44f5a4924979efc"
+    },
+    {
+      "rows": [
+        "ntems-canopy-height"
+      ],
+      "specId": "ntems-canopy-height-v1",
+      "path": "data/phase1-production-transformation-specifications-v1.json",
+      "sha256": "258ca3f94e30d484b53cc12e29c83beaf57998993edaea05e44f5a4924979efc"
+    },
+    {
+      "rows": [
+        "fed-2023-ridings",
+        "elections-canada-45th-files"
+      ],
+      "specId": "federal-electoral-districts-2023-v1",
+      "path": "data/phase1-production-transformation-specifications-v1.json",
+      "sha256": "258ca3f94e30d484b53cc12e29c83beaf57998993edaea05e44f5a4924979efc"
+    },
+    {
+      "rows": [
+        "qc-current-ecoforest"
+      ],
+      "specId": "qc-current-ecoforest-stand-copy-v1",
+      "path": "data/transformation-specs/qc-current-ecoforest-stand-copy-v1.json",
+      "sha256": "44cdb08f033fc80040a7edf373189a0ce8c74bc3132d4e0892816fcf3f22bb1d"
+    },
+    {
+      "rows": [
+        "qc-original-current-inventory"
+      ],
+      "specId": "qc-original-current-inventory-stand-copy-v1",
+      "path": "data/transformation-specs/qc-original-current-inventory-stand-copy-v1.json",
+      "sha256": "09d647959275497ec1c380a4989c70d46935c4967f2621c01edab272ccfccf3e"
+    },
+    {
+      "rows": [
+        "qc-fourth-inventory"
+      ],
+      "specId": "qc-fourth-inventory-preflight-v1",
+      "path": "data/transformation-specs/qc-fourth-inventory-preflight-v1.json",
+      "sha256": "352da46d893ca764ac2152408fbde543f015784c4fb3ea3f2d0ab622b7c3839e"
+    },
+    {
+      "rows": [
+        "ab-avi-crown"
+      ],
+      "specId": "phase1-alberta-current-wildfire-production-v1#ab-avi-crown",
+      "path": "data/transformation-specs/phase1-alberta-current-wildfire-production-v1.json",
+      "sha256": "90a6ef89016d32141d1c723fedf8dcfbc2c93204889d0827e0f8ff6bbc462ea6"
+    },
+    {
+      "rows": [
+        "ab-avi-post-harvest"
+      ],
+      "specId": "phase1-alberta-current-wildfire-production-v1#ab-avi-post-harvest",
+      "path": "data/transformation-specs/phase1-alberta-current-wildfire-production-v1.json",
+      "sha256": "90a6ef89016d32141d1c723fedf8dcfbc2c93204889d0827e0f8ff6bbc462ea6"
+    },
+    {
+      "rows": [
+        "ab-primary-land-vegetation"
+      ],
+      "specId": "phase1-alberta-current-wildfire-production-v1#ab-primary-land-vegetation",
+      "path": "data/transformation-specs/phase1-alberta-current-wildfire-production-v1.json",
+      "sha256": "90a6ef89016d32141d1c723fedf8dcfbc2c93204889d0827e0f8ff6bbc462ea6"
+    },
+    {
+      "rows": [
+        "cwfis-current"
+      ],
+      "specId": "phase1-alberta-current-wildfire-production-v1#cwfis-current",
+      "path": "data/transformation-specs/phase1-alberta-current-wildfire-production-v1.json",
+      "sha256": "90a6ef89016d32141d1c723fedf8dcfbc2c93204889d0827e0f8ff6bbc462ea6"
+    },
+    {
+      "rows": [
+        "bc-wildfire"
+      ],
+      "specId": "phase1-alberta-current-wildfire-production-v1#bc-wildfire",
+      "path": "data/transformation-specs/phase1-alberta-current-wildfire-production-v1.json",
+      "sha256": "90a6ef89016d32141d1c723fedf8dcfbc2c93204889d0827e0f8ff6bbc462ea6"
+    },
+    {
+      "rows": [
+        "ab-wildfire"
+      ],
+      "specId": "phase1-alberta-current-wildfire-production-v1#ab-wildfire",
+      "path": "data/transformation-specs/phase1-alberta-current-wildfire-production-v1.json",
+      "sha256": "90a6ef89016d32141d1c723fedf8dcfbc2c93204889d0827e0f8ff6bbc462ea6"
+    },
+    {
+      "rows": [
+        "on-fire-disturbance"
+      ],
+      "specId": "phase1-alberta-current-wildfire-production-v1#on-fire-disturbance",
+      "path": "data/transformation-specs/phase1-alberta-current-wildfire-production-v1.json",
+      "sha256": "90a6ef89016d32141d1c723fedf8dcfbc2c93204889d0827e0f8ff6bbc462ea6"
+    }
+  ]
+}

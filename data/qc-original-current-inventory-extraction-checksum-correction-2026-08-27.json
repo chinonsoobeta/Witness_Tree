@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "status": "engineering-verified-correction-pending-owner-reauthorization",
+  "status": "engineering-verified-correction-applied",
   "notice": "Read-only reproduction evidence. Nothing was altered, transformed, ingested, promoted, released, or made production eligible, and no owner-admitted record was rebound.",
   "sourceId": "qc-original-current-inventory",
   "recordedAt": "2026-08-27",
@@ -69,5 +69,6 @@
     "finding": "The packet binds an aggregate checksum that per-scope evidence then binds in turn, so no factual error in any specification can be corrected without a Phase 1-wide re-authorization.",
     "consequence": "The expensive path is the only path, which is exactly the pressure that makes rebinding a checksum to get a gate green tempting.",
     "recommendation": "Bind specifications by identity and per-spec checksum so a scope's records depend on that scope's bytes and not on every other scope's."
-  }
+  },
+  "appliedAt": "2026-08-27"
 }
