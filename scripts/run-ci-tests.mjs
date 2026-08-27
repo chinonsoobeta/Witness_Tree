@@ -20,6 +20,7 @@ const REQUIRES_DATA_ROOT = new Map([
   ["phase1-owner-decision-queue.test.mjs", "Reads recorded artifacts under the data root to confirm the queue matches bytes on disk."],
   ["phase1-phase3-owner-approvals.test.mjs", "Resolves approval evidence paths through the data root."],
   ["wildfire-derived-readback.test.mjs", "Reads derived wildfire outputs from the data root."],
+  ["federal-electoral-approved-promotion.test.mjs", "Resolves the approved data root at module load through approvedDataRootRealPath, and drives the promotion runner against it."],
   ["phase1-federal-electoral-output-verification.test.mjs", "Verifies the federal electoral GeoPackage under the data root, including a byte-for-byte deterministic regeneration."],
   ["phase1-nrcan-cover-processing-gate.test.mjs", "Profiles the NRCan canopy cover raster from the data root."],
   ["phase2-v21-expert-review-evidence.test.mjs", "Reads raw/nrcan-ca-forest-harvest-1985-2022 from the data root."],
