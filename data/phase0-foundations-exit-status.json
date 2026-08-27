@@ -1,142 +1,142 @@
 {
- "schemaVersion": "witness-tree/phase0-foundations-exit-status/1",
- "phase": 0,
- "exitCriteria": [
-  {
-   "id": "forest-definition-published-bilingually",
-   "title": "The forest definition is published in the glossary in English and French",
-   "status": "pass",
-   "reason": "FOREST_DEFINITION carries bilingual text and per-locale glossary anchors, the glossary publishes a Forest and a Foret entry, and a test pins the published minimum area, crown closure and mature height to the constant so the prose cannot drift from the value that drives computation.",
-   "evidence": [
+  "schemaVersion": "witness-tree/phase0-foundations-exit-status/1",
+  "phase": 0,
+  "exitCriteria": [
     {
-     "path": "lib/domain/forest.ts",
-     "sha256": "c078a09f14560bdd90b507bbd2952cf4df21b85bd0f78b375961a5b441f8231d"
+      "id": "forest-definition-published-bilingually",
+      "title": "The forest definition is published in the glossary in English and French",
+      "status": "pass",
+      "reason": "FOREST_DEFINITION carries bilingual text and per-locale glossary anchors, the glossary publishes a Forest and a Foret entry, and a test pins the published minimum area, crown closure and mature height to the constant so the prose cannot drift from the value that drives computation.",
+      "evidence": [
+        {
+          "path": "lib/domain/forest.ts",
+          "sha256": "c078a09f14560bdd90b507bbd2952cf4df21b85bd0f78b375961a5b441f8231d"
+        },
+        {
+          "path": "components/governance/GovernancePage.tsx",
+          "sha256": "617b028c0ff54d9e3478daf8ad85434f01449c2060740db80eae5d14b384cecc"
+        },
+        {
+          "path": "tests/forest-definition-publication.test.ts",
+          "sha256": "88c5d7cdebaf9f1673f4f27fb09f25f1ab3aae96b827bcf49a9d39bbd3e544e7"
+        }
+      ]
     },
     {
-     "path": "components/governance/GovernancePage.tsx",
-     "sha256": "617b028c0ff54d9e3478daf8ad85434f01449c2060740db80eae5d14b384cecc"
+      "id": "confidence-rules-generate-bilingual-explanations",
+      "title": "The confidence rule set produces a generated explanation for every rule, in both languages, verified by a unit test",
+      "status": "pass",
+      "reason": "assignConfidence returns a localized reason for all eight branches across the four declared rule identifiers; the unit test proves each identifier is reachable, that no undeclared identifier is produced, that English and French are both present and genuinely differ, and that unknown is never converted into a confident level.",
+      "evidence": [
+        {
+          "path": "lib/domain/confidence.ts",
+          "sha256": "d873c96d2cdbd1efe0cc4cb75a1927f1d100ea53dc89e6e0eda5001925385357"
+        },
+        {
+          "path": "tests/confidence-rules.test.ts",
+          "sha256": "c91f10390e55f9c527e7295a0211de92818b0c48505dae6b49cca959bb6e7c58"
+        }
+      ]
     },
     {
-     "path": "tests/forest-definition-publication.test.ts",
-     "sha256": "88c5d7cdebaf9f1673f4f27fb09f25f1ab3aae96b827bcf49a9d39bbd3e544e7"
+      "id": "source-ledger-rejects-missing-licence",
+      "title": "The source ledger rejects a test dataset that is missing a licence identifier",
+      "status": "pass",
+      "reason": "validateExampleSourceLedgerEntry throws on a missing licence identifier, and the unit test asserts that rejection alongside bilingual explanation, checksum and HTTPS rejections.",
+      "evidence": [
+        {
+          "path": "lib/domain/source-ledger.ts",
+          "sha256": "734c6ed4e9eeb8c7696126b75a94978c8b1d9cff5d29592ca6da874aaf006de6"
+        },
+        {
+          "path": "tests/source-ledger.test.ts",
+          "sha256": "595a9c0e0548171dd090da5ac31b6123477b90680d24bf7d419dc13def038e65"
+        }
+      ]
+    },
+    {
+      "id": "legal-signoff-recorded-in-decision-log",
+      "title": "Legal sign-off is recorded in the decision log",
+      "status": "fail",
+      "blockedBy": "owner",
+      "reason": "No decision-log record of legal sign-off exists in the repository. The governance surfaces state in both languages that the privacy notice and terms are drafts that have not received legal review, so the absence is disclosed rather than implied."
+    },
+    {
+      "id": "engagement-contact-route-answers-within-five-business-days",
+      "title": "The engagement contact route answers a test message within 5 business days",
+      "status": "fail",
+      "blockedBy": "owner",
+      "reason": "No engagement contact route is open and no answered test message exists. Indigenous engagement is owner-led and explicitly outside this implementation's authority; a response time cannot be inferred."
+    },
+    {
+      "id": "product-name-resolves-from-one-token",
+      "title": "The product name resolves from one token, proven by a test",
+      "status": "pass",
+      "reason": "The brand token is the single source of the product name, a checker enforces that no surface hard-codes it, and a unit test proves that changing the token changes every surface.",
+      "evidence": [
+        {
+          "path": "lib/domain/brand.ts",
+          "sha256": "e2709782f36e991350f15a2e32bf7e05167afcb9e5de21f80cc5a81ec8eee757"
+        },
+        {
+          "path": "scripts/check-brand-token.mjs",
+          "sha256": "da538656d581a7730ac1516f758c3ddcdd3a2e0617310d4cd83f5a2fab3c4226"
+        },
+        {
+          "path": "tests/brand-token.test.mjs",
+          "sha256": "a2545e3d25623de65fd681f87ac84910740c3a1bc75b7899998cddb4cabc7078"
+        }
+      ]
+    },
+    {
+      "id": "both-names-registered-in-both-languages",
+      "title": "Both names are registered in both languages",
+      "status": "fail",
+      "blockedBy": "owner",
+      "reason": "No registration record exists for either name in either language. Registration is an external act the repository cannot perform or prove."
+    },
+    {
+      "id": "no-persistent-identifier-contains-the-product-name",
+      "title": "no persistent identifier contains the product name",
+      "status": "pass",
+      "reason": "A gate reads the product name from the brand token and rejects any route segment or path literal that carries it in any joined, accent-stripped spelling. Its tests prove it rejects a violating route and a violating path, and that renaming the brand token changes what it rejects.",
+      "evidence": [
+        {
+          "path": "scripts/check-persistent-identifiers.mjs",
+          "sha256": "8eadd4f39deda0673823539d538bff4e7a35a7e077d2285f087c1df71679fd8a"
+        },
+        {
+          "path": "tests/persistent-identifiers.test.mjs",
+          "sha256": "6225218a033fb260b247e833289e8f996a3b0a6414f225d43d4fe0293720a775"
+        },
+        {
+          "path": "lib/domain/brand.ts",
+          "sha256": "e2709782f36e991350f15a2e32bf7e05167afcb9e5de21f80cc5a81ec8eee757"
+        },
+        {
+          "path": ".github/workflows/ci.yml",
+          "sha256": "6dac673394f8fe6c6fc86106d2e0ca65ca44ad60907d8a53d6a48f02a7b6cef9"
+        }
+      ]
     }
-   ]
-  },
-  {
-   "id": "confidence-rules-generate-bilingual-explanations",
-   "title": "The confidence rule set produces a generated explanation for every rule, in both languages, verified by a unit test",
-   "status": "pass",
-   "reason": "assignConfidence returns a localized reason for all eight branches across the four declared rule identifiers; the unit test proves each identifier is reachable, that no undeclared identifier is produced, that English and French are both present and genuinely differ, and that unknown is never converted into a confident level.",
-   "evidence": [
+  ],
+  "completedCriteria": 5,
+  "totalCriteria": 8,
+  "percentage": 62.5,
+  "phaseComplete": false,
+  "ownerBlockers": [
     {
-     "path": "lib/domain/confidence.ts",
-     "sha256": "d873c96d2cdbd1efe0cc4cb75a1927f1d100ea53dc89e6e0eda5001925385357"
+      "id": "legal-signoff-recorded-in-decision-log",
+      "reason": "No decision-log record of legal sign-off exists in the repository. The governance surfaces state in both languages that the privacy notice and terms are drafts that have not received legal review, so the absence is disclosed rather than implied."
     },
     {
-     "path": "tests/confidence-rules.test.ts",
-     "sha256": "c91f10390e55f9c527e7295a0211de92818b0c48505dae6b49cca959bb6e7c58"
+      "id": "engagement-contact-route-answers-within-five-business-days",
+      "reason": "No engagement contact route is open and no answered test message exists. Indigenous engagement is owner-led and explicitly outside this implementation's authority; a response time cannot be inferred."
+    },
+    {
+      "id": "both-names-registered-in-both-languages",
+      "reason": "Name registration is an external act with no evidence in the repository. It cannot be inferred from any local check."
     }
-   ]
-  },
-  {
-   "id": "source-ledger-rejects-missing-licence",
-   "title": "The source ledger rejects a test dataset that is missing a licence identifier",
-   "status": "pass",
-   "reason": "validateExampleSourceLedgerEntry throws on a missing licence identifier, and the unit test asserts that rejection alongside bilingual explanation, checksum and HTTPS rejections.",
-   "evidence": [
-    {
-     "path": "lib/domain/source-ledger.ts",
-     "sha256": "734c6ed4e9eeb8c7696126b75a94978c8b1d9cff5d29592ca6da874aaf006de6"
-    },
-    {
-     "path": "tests/source-ledger.test.ts",
-     "sha256": "595a9c0e0548171dd090da5ac31b6123477b90680d24bf7d419dc13def038e65"
-    }
-   ]
-  },
-  {
-   "id": "legal-signoff-recorded-in-decision-log",
-   "title": "Legal sign-off is recorded in the decision log",
-   "status": "fail",
-   "blockedBy": "owner",
-   "reason": "No decision-log record of legal sign-off exists in the repository. The governance surfaces state in both languages that the privacy notice and terms are drafts that have not received legal review, so the absence is disclosed rather than implied."
-  },
-  {
-   "id": "engagement-contact-route-answers-within-five-business-days",
-   "title": "The engagement contact route answers a test message within 5 business days",
-   "status": "fail",
-   "blockedBy": "owner",
-   "reason": "No engagement contact route is open and no answered test message exists. Indigenous engagement is owner-led and explicitly outside this implementation's authority; a response time cannot be inferred."
-  },
-  {
-   "id": "product-name-resolves-from-one-token",
-   "title": "The product name resolves from one token, proven by a test",
-   "status": "pass",
-   "reason": "The brand token is the single source of the product name, a checker enforces that no surface hard-codes it, and a unit test proves that changing the token changes every surface.",
-   "evidence": [
-    {
-     "path": "lib/domain/brand.ts",
-     "sha256": "e2709782f36e991350f15a2e32bf7e05167afcb9e5de21f80cc5a81ec8eee757"
-    },
-    {
-     "path": "scripts/check-brand-token.mjs",
-     "sha256": "da538656d581a7730ac1516f758c3ddcdd3a2e0617310d4cd83f5a2fab3c4226"
-    },
-    {
-     "path": "tests/brand-token.test.mjs",
-     "sha256": "a2545e3d25623de65fd681f87ac84910740c3a1bc75b7899998cddb4cabc7078"
-    }
-   ]
-  },
-  {
-   "id": "both-names-registered-in-both-languages",
-   "title": "Both names are registered in both languages",
-   "status": "fail",
-   "blockedBy": "owner",
-   "reason": "No registration record exists for either name in either language. Registration is an external act the repository cannot perform or prove."
-  },
-  {
-   "id": "no-persistent-identifier-contains-the-product-name",
-   "title": "no persistent identifier contains the product name",
-   "status": "pass",
-   "reason": "A gate reads the product name from the brand token and rejects any route segment or path literal that carries it in any joined, accent-stripped spelling. Its tests prove it rejects a violating route and a violating path, and that renaming the brand token changes what it rejects.",
-   "evidence": [
-    {
-     "path": "scripts/check-persistent-identifiers.mjs",
-     "sha256": "8eadd4f39deda0673823539d538bff4e7a35a7e077d2285f087c1df71679fd8a"
-    },
-    {
-     "path": "tests/persistent-identifiers.test.mjs",
-     "sha256": "6225218a033fb260b247e833289e8f996a3b0a6414f225d43d4fe0293720a775"
-    },
-    {
-     "path": "lib/domain/brand.ts",
-     "sha256": "e2709782f36e991350f15a2e32bf7e05167afcb9e5de21f80cc5a81ec8eee757"
-    },
-    {
-     "path": ".github/workflows/ci.yml",
-     "sha256": "b479f23b5e19949ef90f241a781e2216c6d9ddb76fa2eb6a2b50952d1459b749"
-    }
-   ]
-  }
- ],
- "completedCriteria": 5,
- "totalCriteria": 8,
- "percentage": 62.5,
- "phaseComplete": false,
- "ownerBlockers": [
-  {
-   "id": "legal-signoff-recorded-in-decision-log",
-   "reason": "No decision-log record of legal sign-off exists in the repository. The governance surfaces state in both languages that the privacy notice and terms are drafts that have not received legal review, so the absence is disclosed rather than implied."
-  },
-  {
-   "id": "engagement-contact-route-answers-within-five-business-days",
-   "reason": "No engagement contact route is open and no answered test message exists. Indigenous engagement is owner-led and explicitly outside this implementation's authority; a response time cannot be inferred."
-  },
-  {
-   "id": "both-names-registered-in-both-languages",
-   "reason": "Name registration is an external act with no evidence in the repository. It cannot be inferred from any local check."
-  }
- ],
- "countingBoundary": "An unweighted count of the eight literal Phase 0 exit criteria published in section 16 of the controlling plan. It is not a cumulative maturity percentage and not a measure of production readiness. Local foundation work does not replace legal sign-off, editorial approval, engagement, name registration, or governance decisions."
+  ],
+  "countingBoundary": "An unweighted count of the eight literal Phase 0 exit criteria published in section 16 of the controlling plan. It is not a cumulative maturity percentage and not a measure of production readiness. Local foundation work does not replace legal sign-off, editorial approval, engagement, name registration, or governance decisions."
 }
