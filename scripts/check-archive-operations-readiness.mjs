@@ -33,7 +33,10 @@ export function validateArchiveOperationsReadiness(record) {
   if (!["blocked", "ready"].includes(record.status)) throw new Error("Archive operations status must be blocked or ready.");
   if (record.productionEligible !== false) throw new Error("This control record must remain production ineligible.");
   requiredString(record.notice, "Notice");
-  if (!record.archive || !["empty-non-production", "configured-no-objects"].includes(record.archive.resourceState)) throw new Error("Archive resource state must be explicit and non-production.");
+  // configured-with-locked-objects describes a bucket that already holds compliance-locked payloads.
+  // It is permitted so the record can be truthful, and it is deliberately not a readiness state: the
+  // ready branch below still demands configured-no-objects, so nothing about arming is loosened here.
+  if (!record.archive || !["empty-non-production", "configured-no-objects", "configured-with-locked-objects"].includes(record.archive.resourceState)) throw new Error("Archive resource state must be explicit and non-production.");
   requiredString(record.archive.provider, "Archive provider");
   requiredString(record.archive.region, "Archive region");
   if (!record.decisions || typeof record.decisions !== "object") throw new Error("Archive decisions are required.");

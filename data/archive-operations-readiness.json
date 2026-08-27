@@ -6,7 +6,8 @@
   "archive": {
     "provider": "AWS S3",
     "region": "ca-central-1",
-    "resourceState": "empty-non-production"
+    "resourceState": "configured-with-locked-objects",
+    "resourceStateBasis": "data/immutable-promotions.json records three payloads promoted into this bucket under compliance-mode Object Lock retained until 2033-08-12, plus superseded flat-key versions that remain unlocked. The bucket is not empty and has not been empty since those promotions. This state is not a readiness state; readiness still requires configured-no-objects."
   },
   "decisions": {
     "recoveryCopy": {
@@ -25,35 +26,55 @@
       "id": "dedicated-identity",
       "state": "missing",
       "ownerRole": "Archive owner",
-      "requiredEvidence": ["Dedicated upload identity and least-privilege policy reference", "Separate, tightly limited break-glass retention-administration role reference", "Independent access-policy review record"],
+      "requiredEvidence": [
+        "Dedicated upload identity and least-privilege policy reference",
+        "Separate, tightly limited break-glass retention-administration role reference",
+        "Independent access-policy review record"
+      ],
       "evidence": []
     },
     {
       "id": "access-logging",
       "state": "missing",
       "ownerRole": "Archive owner",
-      "requiredEvidence": ["Object access, policy, retention, and deletion-attempt logging configuration reference", "Canadian log destination and retention reference", "Named log-review procedure and review record"],
+      "requiredEvidence": [
+        "Object access, policy, retention, and deletion-attempt logging configuration reference",
+        "Canadian log destination and retention reference",
+        "Named log-review procedure and review record"
+      ],
       "evidence": []
     },
     {
       "id": "lifecycle",
       "state": "missing",
       "ownerRole": "Archive owner",
-      "requiredEvidence": ["Approved retention duration", "Lifecycle configuration reference showing no rule bypasses retained objects", "Multipart cleanup scope and review record"],
+      "requiredEvidence": [
+        "Approved retention duration",
+        "Lifecycle configuration reference showing no rule bypasses retained objects",
+        "Multipart cleanup scope and review record"
+      ],
       "evidence": []
     },
     {
       "id": "legal-hold",
       "state": "missing",
       "ownerRole": "Archive owner",
-      "requiredEvidence": ["Owner-approved legal-hold procedure", "Authorized role and audit-log review reference", "Test or exercise record showing the procedure does not weaken compliance retention"],
+      "requiredEvidence": [
+        "Owner-approved legal-hold procedure",
+        "Authorized role and audit-log review reference",
+        "Test or exercise record showing the procedure does not weaken compliance retention"
+      ],
       "evidence": []
     },
     {
       "id": "recovery-and-replication",
       "state": "missing",
       "ownerRole": "Archive owner",
-      "requiredEvidence": ["Approved recovery-copy or equivalent provider durability decision", "Canadian residency evidence for every recovery, replica, backup, inventory, and log destination", "Recovery exercise record that preserves primary-object retention"],
+      "requiredEvidence": [
+        "Approved recovery-copy or equivalent provider durability decision",
+        "Canadian residency evidence for every recovery, replica, backup, inventory, and log destination",
+        "Recovery exercise record that preserves primary-object retention"
+      ],
       "evidence": []
     }
   ]
