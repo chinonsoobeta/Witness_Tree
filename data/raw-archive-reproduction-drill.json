@@ -1,0 +1,51 @@
+{
+  "schemaVersion": "witness-tree/raw-archive-reproduction-drill/1",
+  "status": "passed",
+  "operation": "read-only-reproduction",
+  "versionBinding": "asserted-on-head-and-get",
+  "versionAssertedOnHeadAndGet": true,
+  "versionBindingNote": "The archive role holds s3:GetObject but not s3:GetObjectVersion, so every --version-id call returns 403. The runner tried the pinned read first, fell back to an unpinned read, and required the VersionId reported by S3 on both the head-object and the get-object to equal the recorded version. See docs/OWNER_BLOCKED_ENGINEERING.md for the six-probe diagnosis.",
+  "nonMutationStatement": "This drill did not upload, delete, lock, or alter retention on S3. Only head-object and get-object were called.",
+  "startedAt": "2026-08-26T19:09:09Z",
+  "completedAt": "2026-08-27T02:13:15Z",
+  "tools": {
+    "awsCli": "aws-cli/2.36.21 Python/3.14.6 Darwin/27.0.0 source/arm64",
+    "gdal": "GDAL 3.13.2 \"Iowa City\", released 2026/07/20",
+    "node": "v22.23.0"
+  },
+  "awsOperations": [
+    "sts get-caller-identity",
+    "sts assume-role",
+    "s3api head-object",
+    "s3api get-object"
+  ],
+  "restoredInputs": {
+    "payload": {
+      "key": "raw/elections-canada-federal-electoral-districts-45th-general-election-2025-shp/federal-electoral-districts-2025-shp/2026-08-14T17-42-35Z/4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93/payload/federalelectoraldistricts_2025_shp.zip",
+      "versionId": "GzBU7MRKmIE6hXbx3weS4eX.1rMUiYUK",
+      "byteLength": 10301648,
+      "sha256": "4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93",
+      "checksumCRC64NVME": "Tjb8SOmhdSU="
+    },
+    "manifest": {
+      "key": "raw/elections-canada-federal-electoral-districts-45th-general-election-2025-shp/federal-electoral-districts-2025-shp/2026-08-14T17-42-35Z/4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93/manifest.json",
+      "versionId": "0Zon9n8dRbw.JmQ_E2pKhQe14J785duH",
+      "byteLength": 572,
+      "sha256": "84646377203dccaee1e770899d77b2261f77eb7367462c0bf6be90e0317c00ea",
+      "checksumCRC64NVME": "8bs7qwpfqPw="
+    }
+  },
+  "reproduction": {
+    "methodVersion": "phase1-federal-electoral-districts-2023-v1",
+    "runnerPath": "scripts/run-phase1-federal-electoral-transformation.mjs",
+    "runnerSha256": "f04cca5ccb27eb737c503d46c416295f674370e649331d5e90c0117467f20aa9",
+    "outputSha256": "ca50eb02e1baee076ebec1b8e8511ca6697e8e48cef68bf5d1d74f5458681c05",
+    "outputByteLength": 20525056,
+    "exactByteMatch": true
+  },
+  "temporaryCopyRemoved": true,
+  "restoreRunnerPath": "scripts/restore-federal-electoral-archive-reproduction-inputs.sh",
+  "restoreRunnerSha256": "95f1400d68b5b098a75882a050f610c2beb5be21bc873d679dd7b12a49d6c0fd",
+  "assumedRole": "WitnessTreeArchivePromotionUploader",
+  "assumedRoleNote": "The read-only WitnessTreeArchiveVerifier role returns 403 on this prefix, so the reproduction was performed with a role that also holds write permission. The runner makes no mutating call, but the non-mutation guarantee for this run rests on the runner's source, not on the credential's capability."
+}

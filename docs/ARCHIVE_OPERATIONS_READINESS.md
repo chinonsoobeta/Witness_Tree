@@ -1,6 +1,6 @@
 # Archive operations readiness gate
 
-`data/archive-operations-readiness.json` is the Phase 1 evidence record for the archive controls that are currently absent from the empty AWS bucket. It is intentionally **blocked** and `productionEligible: false`. Passing `npm run check:archive-operations-readiness` confirms that this record is structurally complete and does not overstate readiness; it does not make the archive ready.
+`data/archive-operations-readiness.json` is the Phase 1 evidence record for the archive controls that are currently absent from the AWS bucket. The bucket is not empty and has not been since the three payloads in `data/immutable-promotions.json` were promoted under compliance-mode Object Lock, so its `resourceState` is `configured-with-locked-objects`. That is a truthful description, not a readiness state: readiness still requires `configured-no-objects`, which this bucket can no longer be. What readiness should mean for a bucket that already holds locked objects is an open question for the archive owner, and it is why `status` cannot become `ready` by any amount of evidence gathering. It is intentionally **blocked** and `productionEligible: false`. Passing `npm run check:archive-operations-readiness` confirms that this record is structurally complete and does not overstate readiness; it does not make the archive ready.
 
 The record separately preserves the recovery-copy and replication decisions. It also requires owned evidence for five controls:
 
