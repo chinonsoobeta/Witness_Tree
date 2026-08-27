@@ -130,3 +130,25 @@ test("a record naming a mutating AWS operation is rejected", () => {
   assert.throws(() => validateRawArchiveReproductionDrill(fixture({ awsOperations: ["s3api select-object-content"] }), context), /not on the read-only allowlist/);
   assert.throws(() => validateRawArchiveReproductionDrill(fixture({ awsOperations: [] }), context), /must name every AWS operation/);
 });
+
+test("a byte length absent on both sides is refused rather than compared vacuously", () => {
+  // Guards against a fail-open shape: if the archive evidence were restructured so that
+  // payload.byteLength resolved to undefined, and the drill also omitted it, an equality
+  // comparison of undefined against undefined would hold and prove nothing.
+  const record = fixture();
+  delete record.restoredInputs.payload.byteLength;
+  const strippedEvidence = JSON.parse(JSON.stringify(archiveEvidence));
+  delete strippedEvidence.payload.byteLength;
+  assert.throws(
+    () => validateRawArchiveReproductionDrill(record, { ...context, archiveEvidence: strippedEvidence }),
+    /positive integer byte length/,
+  );
+});
+
+test("a zero or negative reproduced byte length is refused", () => {
+  for (const value of [0, -1, 1.5, "20525056"]) {
+    const record = fixture();
+    record.reproduction.outputByteLength = value;
+    assert.throws(() => validateRawArchiveReproductionDrill(record, context), /positive integer byte length/);
+  }
+});

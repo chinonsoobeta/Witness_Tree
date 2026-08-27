@@ -22,6 +22,14 @@ function requiredSha256(value, name) {
   if (typeof value !== "string" || !SHA256.test(value)) throw new Error(`${name} must be a lowercase hexadecimal SHA-256.`);
 }
 
+/**
+ * Byte lengths are compared against another record's field. If both sides were allowed to be absent
+ * the comparison would hold vacuously, so each side is required to be a positive integer first.
+ */
+function requiredByteLength(value, name) {
+  if (!Number.isSafeInteger(value) || value <= 0) throw new Error(`${name} must be a positive integer byte length.`);
+}
+
 function isUtc(value) {
   return typeof value === "string" && UTC.test(value) && new Date(value).toISOString() === value.replace("Z", ".000Z");
 }
@@ -36,6 +44,8 @@ function checkArchivedObject(recorded, expected, name) {
   requiredText(recorded.key, `${name} key`);
   requiredText(recorded.versionId, `${name} versionId`);
   requiredSha256(recorded.sha256, `${name} SHA-256`);
+  requiredByteLength(recorded.byteLength, `${name} byte length`);
+  requiredByteLength(expected.byteLength, `The archive recovery evidence ${name} byte length`);
   if (recorded.key !== expected.key) throw new Error(`The restored ${name} key does not match the archive recovery evidence.`);
   if (recorded.versionId !== expected.versionId) throw new Error(`The restored ${name} versionId does not match the archive recovery evidence.`);
   if (recorded.byteLength !== expected.byteLength) throw new Error(`The restored ${name} byte length does not match the archive recovery evidence.`);
@@ -93,6 +103,8 @@ export function validateRawArchiveReproductionDrill(record, { archiveEvidence, a
   const matchesAdmitted = reproduction.outputSha256 === admitted.sha256;
   if (reproduction.exactByteMatch !== matchesAdmitted) throw new Error("exactByteMatch must equal the computed comparison of the reproduced SHA-256 against the admitted artifact SHA-256.");
   if (!matchesAdmitted) throw new Error("The reproduced output SHA-256 does not equal the admitted artifact SHA-256.");
+  requiredByteLength(reproduction.outputByteLength, "Reproduced output byte length");
+  requiredByteLength(admitted.byteLength, "The admitted artifact byte length");
   if (reproduction.outputByteLength !== admitted.byteLength) throw new Error("The reproduced output byte length does not equal the admitted artifact byte length.");
 
   if (record.temporaryCopyRemoved !== true) throw new Error("The reproduction drill must record that the temporary copy was removed.");
