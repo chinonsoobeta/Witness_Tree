@@ -4,7 +4,7 @@
   "ownerApprovalRef": null,
   "canonicalReadiness": {
     "path": "data/archive-operations-readiness.json",
-    "sha256": "1a273a5f83949bde3c7b4e1a35cd155d81c2656552a965b6ede0e30d14c48d1a"
+    "sha256": "2ff95d27417cf49f5fbb6c98090df62dad0dff72e694c45e297332dd48cac169"
   },
   "evidenceFiles": [],
   "claims": {

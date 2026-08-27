@@ -733,8 +733,12 @@ These were discovered by reading, and none of them is repaired here.
    `.github/workflows/wildfire-refresh.yml` is a cron-scheduled job with
    `permissions: contents: write` that commits and pushes to the repository.
    The handbook's sentence about external storage is defensible; the sentence
-   about schedulers is not. That file belongs to another agent, so it is
-   flagged rather than edited.
+   about schedulers is not. That file belonged to another agent when this was
+   written, so it was flagged rather than edited. **Closed on 2026-08-26.** The
+   handbook that merged names `wildfire-refresh.yml` explicitly as the one
+   scheduled job with `contents: write` and tells the reader not to repeat the
+   older claim. The remaining sentence in section 7.1 is scoped to *AWS* write
+   credentials, which no scheduler holds, and is correct as written.
 3. **`docs/EXTERNAL_GATES.md` understates the archive.** Its "Immutable archive
    ownership" row reads "Not complete; no production archive or promoted
    source snapshot is claimed", while
