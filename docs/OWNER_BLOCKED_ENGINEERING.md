@@ -29,6 +29,7 @@ carries is about history rather than intent.
 | Item | Change | What it would invalidate | Exact owner action needed |
 | --- | --- | --- | --- |
 | QC stand-copy runner | Identity-based resume for `run-qc-stand-copy.mjs` | Two owner-admitted QC execution approvals | A fresh execution approval for both Québec stand-copy specifications, binding the corrected runner's SHA-256 |
+| QC original current inventory extraction | Correcting `extractedGeoPackageSha256` from `70539d99` to the reproducible `819a5698` | The `qc-original-current-inventory` execution approval and the transformation specification it binds | A fresh execution approval for `qc-original-current-inventory-stand-copy-v1`, binding the corrected specification and extraction SHA-256 |
 
 The QC item is the same "existence means refuse" defect as #46, in the runner
 for both Québec stand-copy scopes. It refuses whenever the artifact or sidecar
@@ -56,8 +57,118 @@ is finished and merged.
 | Item | State of the engineering | The one thing needed | Who can do it |
 | --- | --- | --- | --- |
 | Phase 8 `raw-archive-reproducibility` | Runbook written, checker merged, record deliberately absent | One MFA-assumed role session | The owner, on the owner's own device |
-| Phase 8 `operations-handbook` | Handbook complete and bound as evidence; the full case for a pass is written into the criterion's `reason` | A decision to flip one `"fail"` to `"pass"` | The Release approver role |
-| Phase 6 `direct-database-tenant-isolation` | Row-level-security policy merged, 17 probes executed and held, negative control fails 14 of 17 | A decision to unbundle the isolation proof from the managed Canadian database in the `canadian-managed-service-and-direct-rls` blocker | The owner |
+
+### The QC original current inventory extraction checksum
+
+`data/transformation-specs/qc-original-current-inventory-stand-copy-v1.json`
+binds the extracted GeoPackage at SHA-256 `70539d99`. The file on disk does not
+hash to that value, so the runner refuses at
+`scripts/run-qc-stand-copy.mjs:151` before doing any work. The bound value is
+the one that is wrong, and this is established rather than assumed.
+
+The member was reproduced on 2026-08-27 by streaming it out of the raw archive
+and hashing it without writing an intermediate file. The archive was hashed in
+the same pass and matched its own bound value, `c10d6915`, so the source of the
+reproduction is itself verified:
+
+| Quantity | Declared by the archive | Reproduced | On disk |
+| --- | --- | --- | --- |
+| Member bytes | 33,243,570,176 | 33,243,570,176 | 33,243,570,176 |
+| Member CRC-32 | `cbbf042d` | `cbbf042d` | `cbbf042d` |
+| Member SHA-256 | not declared | `819a5698` | `819a5698` |
+
+Three independent quantities agree that the file on disk is the archive member,
+and none of them agrees with `70539d99`.
+
+#### Where the wrong value came from is not fully known
+
+`data/qc-original-current-inventory-profile.json` recorded `70539d99` on
+2026-08-14. That profile was taken against the **internal drive** path,
+`.../go/Witness_Tree-data/extracted/...`, and the internal copy was deleted in
+the SSD cutover on 2026-08-26. The bytes it measured therefore cannot be
+examined. That makes the cause unavailable, not contradicted, and it is recorded
+as unknown rather than guessed.
+
+One plausible mechanism was tested and refused. If a profiling tool had opened
+the GeoPackage read-write and mutated it before hashing, the recorded value
+would be post-mutation. Reproduced on a throwaway GeoPackage, neither
+`sqlite3 "PRAGMA integrity_check"` nor `ogrinfo` without `-ro` changed a single
+byte. The hypothesis is discarded rather than carried forward as a likely story.
+
+What remains certain is narrower and sufficient: the value bound today does not
+describe the archive member, and the value that does is reproducible from an
+archive whose own checksum verifies.
+
+#### The profile is not corrected in place
+
+`data/qc-original-current-inventory-profile.json` is a record of what a past run
+produced. It is not rebound, and would not be rebound even on the owner's
+instruction, because its claim is about what was measured on 2026-08-14 and not
+about what is true now. Rewriting it would assert that the 2026-08-14 run
+observed something it did not. It is superseded by a correction record instead.
+
+#### The correction does not stay inside the QC scope
+
+The owner approved rebinding the QC execution approval on 2026-08-27. That
+approval is sufficient for the QC records and is not the reason this is still
+open. The reason is that the correction does not stay inside them.
+
+`check-phase1-downstream-admission-packet.mjs:54` hashes every specification
+file and asserts it equals the checksum the packet records for it. So changing
+the specification's bytes changes `data/phase1-downstream-admission-packet.json`,
+and the packet's own SHA-256 `4859407e` is bound in twenty-one places, including
+records belonging to scopes that have nothing to do with Québec:
+
+| Kind | Records |
+| --- | --- |
+| Owner-admitted approvals | the two QC execution approvals, `phase1-federal-electoral-execution-approval.json`, `phase1-transformation-scope-owner-approval-2026-08-25.json` |
+| Records of what a past run produced | `phase1-federal-electoral-output-verification-evidence.json`, `phase1-federal-electoral-production-admission.json` |
+| Constants in checkers and runners | `PACKET_SHA256` in six scripts, `OWNER_SCOPE_APPROVAL_SHA256` in three |
+| Tests and prose | two test files, three documents |
+
+The scope owner approval is itself bound at `fda1c43d` by the federal-electoral
+records, so it cascades a second time.
+
+Correcting one wrong input measurement for one unexecuted Québec scope therefore
+rewrites the checksum spine of all of Phase 1 and reissues a different scope's
+owner-admitted approvals. The owner's approval named the QC execution approval.
+It is not read as covering the federal-electoral records, and that is the
+narrower reason this stays open.
+
+#### The coupling is the underlying defect
+
+Binding an aggregate packet checksum into per-scope evidence means no factual
+error in any specification can ever be corrected locally. Every correction is a
+Phase 1-wide re-authorization, which makes the expensive and risky path the only
+path, and that pressure is what makes rebinding-to-get-green tempting. The
+packet should bind specifications by identity and per-spec checksum, so that a
+scope's records depend on that scope's bytes and not on every other scope's.
+That is a design change and is recorded here rather than made in passing.
+
+#### What is not blocked
+
+The federal-electoral evidence record does not have to be falsified to fix this.
+It records the packet checksum that was current when that run happened, which
+stays true. The correct treatment is a fresh verification run producing a new
+record, not an edit to the existing one.
+
+#### Why engineering stops here
+
+The corrected value has to reach the specification, and the specification's own
+SHA-256 is bound twice inside
+`data/phase1-qc-original-current-inventory-execution-approval.json`, at
+`specification.sha256` and at `approvedScopes[].specSha256`, in a record
+carrying `"decision": "approve"`. The same record binds the extraction directly
+at `extractedGeoPackageSha256`. Correcting the checksum therefore reissues an
+owner-admitted approval, which is the one thing engineering does not do on its
+own authority.
+
+The edit is deliberately not staged. Writing it would produce a record
+containing an approval the owner has not given for these bytes, and a draft of
+such a record is still a fabricated approval.
+
+`qc-current-ecoforest` is unaffected. Its own extraction is verified by the
+runner against `4f592f99` during execution, and that scope is not blocked.
 
 ### The archive reproduction session
 
@@ -137,6 +248,9 @@ What remains is merging, which is ordinary review, not owner action.
 | #34 | `data/phase2-boundary-editions-readmission-2026-08-26.json` | Merged as `04da17b` |
 | #46 | `data/phase1-ntems-runner-reauthorization-2026-08-26.json` | Merged as `778e0ea` |
 | #50 | `data/phase1-federal-electoral-runner-reauthorization-2026-08-26.json` | Merged as `ba4e54c` |
+| Phase 8 `operations-handbook` | The criterion's `ownerAuthorization` block, Release approver, 2026-08-26 | Merged as `74c2b3f` (#62) |
+| Phase 6 `direct-database-tenant-isolation` | `data/phase6-account-alert-exit-status.json` | Merged as `74c2b3f` (#62) |
+| QC stand-copy runner `-ro` removal | The owner's approval of the fixed runner, 2026-08-27 | Merged as `3faddce` (#63) |
 
 Each landed through its pull request with the required `verify` check green and
 branch protection intact. The one sweep failure that stood on #46 was not its

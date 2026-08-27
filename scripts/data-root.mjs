@@ -10,7 +10,7 @@ import * as nodeFs from "node:fs";
 // Overriding the root changes only where a job reads and writes, never what a record claims.
 
 export const INTERNAL_DATA_ROOT = "/Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data";
-export const SSD_DATA_ROOT = "/Volumes/Extended SSD/Witness_Tree-data";
+export const SSD_DATA_ROOT = "/Volumes/Extended_SSD/Witness_Tree-data";
 
 // Flips to SSD_DATA_ROOT at migration cutover, once byte identity with the internal root is proven.
 export const DEFAULT_DATA_ROOT = INTERNAL_DATA_ROOT;

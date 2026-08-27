@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 import crypto from "node:crypto";
-import { chmodSync, lstatSync, mkdirSync, mkdtempSync, renameSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { chmodSync, existsSync, lstatSync, mkdirSync, mkdtempSync, renameSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
-import { dirname, isAbsolute } from "node:path";
+import { dirname, isAbsolute, join } from "node:path";
+import { tmpdir } from "node:os";
 import {
   ACCOUNT,
   BUCKET_PREFIX,
@@ -14,6 +15,13 @@ import {
   ROLE_ARN,
   validateDesiredState
 } from "./check-wildfire-derived-readback-iam.mjs";
+
+// /private/tmp is the owner's macOS device, where these runners actually execute
+// and where the private workspace is intended. The fallback exists only so the
+// tests can run where that path does not exist, such as a CI runner. It is
+// chosen from the filesystem, never from an environment variable, so nothing an
+// attacker sets can redirect a directory that briefly holds policy documents.
+const privateTmp = (prefix) => mkdtempSync(existsSync("/private/tmp") ? `/private/tmp/${prefix}` : join(tmpdir(), prefix));
 
 const PROFILE_DEFAULT = "default";
 const OPERATOR_PROFILE = "WitnessTreeArchiveOperator";
@@ -236,7 +244,7 @@ function main() {
   const basePolicySha256 = policyHash(current);
   const { candidate, change } = buildCandidate(current);
   const desiredPolicySha256 = policyHash(candidate);
-  const tempDir = mkdtempSync("/private/tmp/witness-tree-derived-iam-provisioning.");
+  const tempDir = privateTmp("witness-tree-derived-iam-provisioning.");
   let analyzer;
   let simulations;
   let readbackPolicySha256 = null;
