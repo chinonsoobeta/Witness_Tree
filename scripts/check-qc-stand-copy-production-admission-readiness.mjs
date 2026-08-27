@@ -124,7 +124,7 @@ export const QC_SCOPES = Object.freeze([
     sourceRightsSha256: "cdc401d96348764540b37aa63e8d7dc42b8f0c343956272fd85051e62d75a2e5",
     expected: {
       specSha256: "44cdb08f033fc80040a7edf373189a0ce8c74bc3132d4e0892816fcf3f22bb1d",
-      executionApprovalSha256: "35185ce3f5fc1a3ae4b66a4ac498f68a25ce5d2ed81cfd6b8d7b130b41ff0b0f",
+      executionApprovalSha256: "e6b746fc433a40c3bc44651d0354b794dbf6700f4e28d1496b5467b8fe71dac5",
       rawArchiveSha256: "c67c56b0c101e95bef4fbca53a06e2f1578fe38293961017f70d815209740cf1",
       rawArchiveBytes: 12399475076,
       extractedGeoPackageSha256: "4f592f99786770600bdf219e8cdae5908d9a2398ab6a9ae45662fafa2494aa00",
@@ -171,7 +171,7 @@ export const QC_SCOPES = Object.freeze([
     sourceRightsSha256: "109812a985ff3b7ddc89e172ddb73112f3ec96d7f0f2b80ddb28fe5616ab1be0",
     expected: {
       specSha256: "71707b702f2367d46c985e84f5f16e19ad75012c8efe71b2ff17dd8063c7ab2c",
-      executionApprovalSha256: "971c7514b4f404c8892cfbb68e43687d1559c9a01bc7d1a36a5886e0aa145a40",
+      executionApprovalSha256: "af17727494ae2ef9c1c67d8bcb38110a855493a7edf2538b593c0b8147badb89",
       rawArchiveSha256: "c10d691516569de76642dc1fc64e662f2569b5b58ab5d945b58b8b7834ba9c61",
       rawArchiveBytes: 11244667626,
       extractedGeoPackageSha256: "70539d99497de2773342611d73bf9e4fadf01f1fdbfe3ca536ad711d87916e7c",
