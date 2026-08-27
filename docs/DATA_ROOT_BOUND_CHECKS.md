@@ -1,13 +1,13 @@
 # Checks that require the real data root
 
-Nineteen of the repository's check scripts read real source or derived bytes
+Twenty of the repository's check scripts read real source or derived bytes
 and verify their SHA-256 against a bound checksum. They live in
 [`data/data-root-bound-checks.json`](../data/data-root-bound-checks.json) and
 are validated by `npm run check:data-root-bound-checks`.
 
 ## Why this record exists
 
-When the drive holding `Witness_Tree-data` is detached, those nineteen checks
+When the drive holding `Witness_Tree-data` is detached, those twenty checks
 fail. Some fail with a bare `AssertionError`, which on its face is
 indistinguishable from a check that ran and found the evidence wrong. The two
 findings are not the same and must never be collapsed:
@@ -43,6 +43,16 @@ At revision `cf985e1`, with the drive detached, that reconciliation passed:
 137 of 156 check scripts passed and exactly the nineteen inventoried checks
 failed.
 
+That sentence is a record of what one sweep produced at one revision, so it
+keeps its own numbers and is not updated to agree with today. The inventory has
+since grown: `1a7a35f` added `check:phase1-ntems-readback-bytes`, taking it to
+twenty, and the total number of check scripts has grown alongside it. The
+current figures are the ones `npm run check:data-root-bound-checks` prints,
+which is why they are not restated here. The empirical
+reconciliation has not been re-run with the drive detached since, so whether a
+fresh sweep would again attribute every failure cleanly is not determined. It
+must not be assumed either way.
+
 ## Attribution is an allow-list
 
 A failure counts as data-root absence only when its output matches one of two
@@ -70,7 +80,7 @@ exists to establish. The boundary is recorded here instead.
 
 ## What this means operationally
 
-The nineteen checks are unverifiable until the drive holding
+The twenty checks are unverifiable until the drive holding
 `Witness_Tree-data` is reattached. That drive currently holds the only copy of
 the data. Reattaching it is an owner action; nothing in this repository can
 substitute for it, and no evidence derived from those checks may be recorded
