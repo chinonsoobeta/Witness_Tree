@@ -75,9 +75,9 @@
       "name": "National Burned Area Composite and Canadian National Fire Database",
       "purpose": "National historical fire context.",
       "planUse": "production",
-      "evidence": "The NFDB polygon component is locally checksum-bound and profiled; an official-source audit identifies the dated NBAC 1972–2025 release but did not accept its end-user agreement or download it.",
+      "evidence": "The NFDB polygon component and exact NBAC 1972-2025 release are locally checksum-bound and profiled. Current official CWFIS catalogue metadata identifies OGL Canada terms and the required NBAC citation.",
       "ownerRole": "data lead",
-      "missing": "Owner acceptance of the NBAC end-user agreement, then exact NBAC retrieval, checksum, archive integrity and profile evidence; written consent before redistribution or transfer.",
+      "missing": "Immutable archive and recovery proof, explicit invalid-geometry handling in the transformation, ingestion, release and production-admission evidence.",
       "externalDependency": "Canadian Forest Service datamart"
     },
     {

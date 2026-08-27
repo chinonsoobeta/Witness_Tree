@@ -6,4 +6,6 @@ The six supported controls are: the documented governance and corrections proced
 
 Ten gates remain closed: professional bilingual review, independent accessibility audit, security review, measured load test, complete production source-rights/licence/attribution review, on-call rota, bulk downloads, observability, backups, and CDN/tile validation. The six precise external blockers are intentionally retained in the status record.
 
+The current reasons distinguish partial evidence from completion. Real processing GeoPackages are not public bulk releases; the scheduled wildfire workflow is limited notification rather than deployed observability; and bounded same-region replica readbacks do not establish complete recovery coverage for every relied-on archive object.
+
 The public site remains a technical preview with illustrative data. No production deployment, production figure, reviewed translation, accessibility conformance, security review, load result, backup, live operations, bulk download, CDN, or tile validation is claimed by this record.

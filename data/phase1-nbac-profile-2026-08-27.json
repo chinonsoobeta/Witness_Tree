@@ -1,0 +1,75 @@
+{
+  "schemaVersion": "witness-tree/phase1-nbac-profile/1",
+  "status": "local-verified-profiled",
+  "sourceId": "cwfis-historical",
+  "componentId": "nrcan-nbac-1972-2025",
+  "retrievedAt": "2026-08-27",
+  "dataRootRelativeDirectory": "raw/nrcan-nbac-1972-2025/2026-08-27",
+  "source": {
+    "publisher": "Natural Resources Canada, Canadian Forest Service",
+    "catalogueUuid": "537a1fd0-698e-4a7b-85a1-e02581ae78b2",
+    "catalogueUrl": "https://cwfis.cfs.nrcan.gc.ca/en/catalogue/results/537a1fd0-698e-4a7b-85a1-e02581ae78b2",
+    "artifactUrl": "https://cwfis.cfs.nrcan.gc.ca/downloads/nbac/NBAC_1972to2025_20260513_shp.zip",
+    "metadataUrl": "https://cwfis.cfs.nrcan.gc.ca/downloads/nbac/NBAC_1972to2025_20260513_shp_metadata.pdf",
+    "edition": "NBAC 1972-2025, 20260513",
+    "lastModified": "2026-05-22T16:27:30Z",
+    "etag": "6a1083f2-4aed18d2"
+  },
+  "licence": {
+    "name": "Open Government Licence - Canada",
+    "url": "https://open.canada.ca/en/open-government-licence-canada",
+    "requiredCitation": "Canadian Forest Service. National Burned Area Composite (NBAC). Natural Resources Canada, Canadian Forest Service, Northern Forestry Centre, Edmonton, Alberta. https://cwfis.cfs.nrcan.gc.ca.",
+    "noEndorsement": true
+  },
+  "artifacts": {
+    "payload": {
+      "filename": "NBAC_1972to2025_20260513_shp.zip",
+      "byteLength": 1257052370,
+      "sha256": "c42740eb9d2fe3991a27344d0c33927705ec3e78c277efc5311b502439cb2165",
+      "zipIntegrity": "passed"
+    },
+    "metadata": {
+      "filename": "NBAC_1972to2025_20260513_shp_metadata.pdf",
+      "byteLength": 3483845,
+      "sha256": "cc04f0392921cf43723351ad1b1ed5e4794432724d95421db63dd92c33a4fca9"
+    },
+    "catalogueSnapshot": {
+      "filename": "cwfis-catalogue-537a1fd0-698e-4a7b-85a1-e02581ae78b2.json",
+      "byteLength": 73615,
+      "sha256": "c38c3555da665884201e07c5c0b0a1dd46afb042b9b39466569ff6e39ac105c9"
+    },
+    "geospatialProfile": {
+      "filename": "geospatial-profile.json",
+      "byteLength": 3212,
+      "sha256": "fb95cc162d23920008708ca856f147f7bd4eb9cd2e3234af2dd7e73990eab1a7"
+    }
+  },
+  "profile": {
+    "toolchain": {"pyogrio": "0.13.0", "gdal": "3.12.4"},
+    "layer": "NBAC_merged_1972_to_2025_20260513",
+    "geometryType": "Polygon",
+    "featureCount": 52610,
+    "yearRange": [1972, 2025],
+    "missingYearCount": 0,
+    "fields": ["YEAR", "NFIREID", "BASRC", "FIREMAPS", "FIREMAPM", "FIRECAUS", "HS_SDATE", "HS_EDATE", "AG_SDATE", "AG_EDATE", "CAPDATE", "POLY_HA", "ADJ_HA", "ADJ_FLAG", "ADMIN_NAME", "ADMIN_DIV", "PRESCRIBED", "VERSION", "GID"],
+    "bounds": [-2307184.843699999, -716411.5524000004, 2998755.321999997, 2764440.964400001],
+    "missingGeometryCount": 0,
+    "emptyGeometryCount": 0,
+    "invalidGeometryCount": 49,
+    "invalidGeometryReasons": {"Ring Self-intersection": 49},
+    "invalidGeometryPolicy": "quarantine; no silent repair"
+  },
+  "evidenceState": {
+    "downloaded": true,
+    "checksumVerified": true,
+    "profiled": true,
+    "refetchable": true,
+    "immutableArchive": false,
+    "transformed": false,
+    "ingested": false,
+    "released": false,
+    "published": false,
+    "productionAdmitted": false,
+    "productionEligible": false
+  }
+}

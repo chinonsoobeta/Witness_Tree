@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "witness-tree/nbac-archive-iam-applied/1",
+  "status": "applied-and-read-back",
+  "appliedAt": "2026-08-27",
+  "accountId": "286853118812",
+  "roleName": "WitnessTreeArchivePromotionUploader",
+  "policyName": "ExactApprovedPromotionOnly",
+  "sourceDelta": "data/nbac-archive-iam-delta.json",
+  "sourceDeltaSha256": "4d4ca610c059c93b1a07c0ca4a5d39f861a25d8cfe0e3b6805abd152f56ec7c8",
+  "liveReadback": "data/nbac-archive-iam-live-readback-2026-08-27.json",
+  "liveReadbackSha256": "18c44d747a54492f6753cda6d62ccf1d0f9c37d40771bb884f71a204675c782a",
+  "beforePolicyCanonicalSha256": "805807f54c89954de5a3577d0eb1fe089e7051379050394fa2f3c75b6810f23d",
+  "desiredPolicyCanonicalSha256": "154b9d3f3b68b6721d41a3778a9c7e3f6ada504c99d71a8b197d9e7765bf2c7b",
+  "appliedPolicyCanonicalSha256": "154b9d3f3b68b6721d41a3778a9c7e3f6ada504c99d71a8b197d9e7765bf2c7b",
+  "scope": {
+    "exactObjectCount": 2,
+    "deleteAllowed": false,
+    "retentionBypassAllowed": false,
+    "bucketAdministrationAllowed": false,
+    "otherObjectAllowed": false
+  },
+  "claims": {
+    "iamApplied": true,
+    "archiveObjectWritten": false,
+    "retentionApplied": false,
+    "immutableArchive": false,
+    "productionAdmission": false
+  }
+}

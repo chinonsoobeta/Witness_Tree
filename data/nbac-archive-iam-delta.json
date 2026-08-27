@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "witness-tree/nbac-archive-iam-delta/1",
+  "status": "approved-exact-delta-source",
+  "accountId": "286853118812",
+  "roleName": "WitnessTreeArchivePromotionUploader",
+  "policyName": "ExactApprovedPromotionOnly",
+  "expectedCurrentPolicyCanonicalSha256": "805807f54c89954de5a3577d0eb1fe089e7051379050394fa2f3c75b6810f23d",
+  "statements": [
+    {
+      "Sid": "NbacExactApprovedObjectWrites",
+      "Effect": "Allow",
+      "Action": ["s3:PutObject", "s3:GetObject", "s3:GetObjectVersion", "s3:AbortMultipartUpload", "s3:ListMultipartUploadParts"],
+      "Resource": [
+        "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/nrcan-nbac-1972-2025/20260513/2026-08-27T18-17-41Z/c42740eb9d2fe3991a27344d0c33927705ec3e78c277efc5311b502439cb2165/payload/nbac_1972to2025_20260513_shp.zip",
+        "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/nrcan-nbac-1972-2025/20260513/2026-08-27T18-17-41Z/c42740eb9d2fe3991a27344d0c33927705ec3e78c277efc5311b502439cb2165/manifest.json"
+      ]
+    },
+    {
+      "Sid": "NbacPayloadAndManifestComplianceRetention",
+      "Effect": "Allow",
+      "Action": ["s3:PutObjectRetention", "s3:GetObjectRetention"],
+      "Resource": [
+        "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/nrcan-nbac-1972-2025/20260513/2026-08-27T18-17-41Z/c42740eb9d2fe3991a27344d0c33927705ec3e78c277efc5311b502439cb2165/payload/nbac_1972to2025_20260513_shp.zip",
+        "arn:aws:s3:::witness-tree-raw-archive-ca-central-1/raw/nrcan-nbac-1972-2025/20260513/2026-08-27T18-17-41Z/c42740eb9d2fe3991a27344d0c33927705ec3e78c277efc5311b502439cb2165/manifest.json"
+      ]
+    }
+  ],
+  "prohibitedActions": ["s3:DeleteObject", "s3:DeleteObjectVersion", "s3:BypassGovernanceRetention", "iam:*", "s3:PutBucket*", "s3:DeleteBucket*"],
+  "claims": {"applied": false, "archiveObjectWritten": false, "productionAdmission": false}
+}

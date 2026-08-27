@@ -1,12 +1,12 @@
 {
   "schemaVersion": "witness-tree/phase2-real-comparison-availability/1",
-  "status": "local-hansen-cross-check-input-staged-no-comparison-results",
+  "status": "local-nbac-and-hansen-inputs-staged-no-comparison-results",
   "productionEligible": false,
   "formalPhase2ComparisonGateComplete": false,
   "sources": [
     {"id":"ca-forest-harvest-1985-2022","localPath":"../../Witness_Tree-data/raw/nrcan-ca-forest-harvest-1985-2022/2026-08-14/CA_Forest_Harvest_1985-2022.zip","byteLength":247945479,"sha256":"c6f41dff46d91812874672edb53233dac4126952132ad6d1131ad47b11ad7aad","comparisonStatus":"pending","missing":"A checksum-bound provincial published-harvest-statistics series matched by province and year."},
-    {"id":"nfdb-polygons-current","localPath":"../../Witness_Tree-data/staging/nfdb-poly-current/NFDB_poly_verified.zip","byteLength":778498701,"sha256":"a0373a6dd8e341c3440ed9907f81e8ba6227135dacd9cdc07e4c6af0a59b1b4e","comparisonStatus":"not-like-for-like","missing":"The required NBAC artifact and authorization; V2.1 observed loss is not wildfire attribution."},
-    {"id":"nbac-1972-2025","localPath":null,"byteLength":null,"sha256":null,"comparisonStatus":"missing","missing":"NBAC_1972to2025_20260513_shp.zip is unacquired because the end-user agreement and written consent remain unresolved."},
+    {"id":"nfdb-polygons-current","localPath":"../../Witness_Tree-data/staging/nfdb-poly-current/NFDB_poly_verified.zip","byteLength":778498701,"sha256":"a0373a6dd8e341c3440ed9907f81e8ba6227135dacd9cdc07e4c6af0a59b1b4e","comparisonStatus":"not-like-for-like","missing":"V2.1 observed loss is not wildfire attribution, so NFDB polygons cannot replace the separate admitted NBAC comparison method."},
+    {"id":"nbac-1972-2025","localPath":"../../Witness_Tree-data/raw/nrcan-nbac-1972-2025/2026-08-27/NBAC_1972to2025_20260513_shp.zip","byteLength":1257052370,"sha256":"c42740eb9d2fe3991a27344d0c33927705ec3e78c277efc5311b502439cb2165","comparisonStatus":"input-staged-not-admitted","evidence":"data/phase1-nbac-profile-2026-08-27.json","missing":"Immutable archive and Phase 1 production admission, a like-for-like 2022 Witness Tree burned-area output, matching area and forest-mask methods, explicit handling of 49 invalid NBAC geometries, uncertainty treatment and publication evidence."},
     {"id":"hansen-global-forest-change","localPath":null,"byteLength":null,"sha256":null,"comparisonStatus":"sample-input-staged-not-like-for-like","evidence":"data/phase2-hansen-gfc-v1.12-sample-profile.json","missing":"Four CC BY 4.0 Hansen v1.12 sample tiles are checksum-bound locally. A complete like-for-like 2000–2022 comparison still needs admitted Witness Tree outputs, matching masks/boundaries/resampling/area method and a documented uncertainty treatment."}
   ],
   "publishedComparisons": [

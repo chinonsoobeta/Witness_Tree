@@ -14,6 +14,7 @@ import {
 } from "../lib/phase2/validation-comparison";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
+const canonicalDataRoot = resolve(root, "../../Witness_Tree-data");
 // Keep the envelope identifier at /1: the formal Phase 2 checker already
 // names this completion schema. The hardened fields below make old, loose /1
 // envelopes fail closed without changing the formal-status record.
@@ -106,15 +107,54 @@ function assertNoTraversal(path: string, label: string, allowCanonicalDataParent
 
 // Resolved once and only when a symlink is actually met, so a detached drive
 // cannot make this check fail for a reason unrelated to the evidence.
-let approvedDataRootLinkCache: string | null = null;
 function approvedDataRootLink(): string {
-  if (approvedDataRootLinkCache === null) {
-    const configured = resolveDataRoot();
-    // Throws if the link points anywhere other than the approved SSD root.
-    approvedDataRootRealPathSync(configured);
-    approvedDataRootLinkCache = configured;
+  const configured = resolveDataRoot();
+  // Throws if the link points anywhere other than the approved SSD root.
+  approvedDataRootRealPathSync(configured);
+  return configured;
+}
+
+function comparisonDataRoot(): string {
+  const configured = resolveDataRoot();
+  assert(typeof configured === "string" && configured.trim().length > 0, "WITNESS_TREE_DATA_ROOT must not be empty");
+  assert(!configured.includes("\0"), "WITNESS_TREE_DATA_ROOT must not contain NUL");
+  assert(isAbsolute(configured), "WITNESS_TREE_DATA_ROOT must be an absolute path");
+  const approved = approvedDataRootRealPathSync(configured);
+  let info;
+  try {
+    info = lstatSync(approved);
+  } catch (error) {
+    throw new Error(`WITNESS_TREE_DATA_ROOT is unavailable: ${error instanceof Error ? error.message : String(error)}`);
   }
-  return approvedDataRootLinkCache;
+  assert(!info.isSymbolicLink() && info.isDirectory(), "WITNESS_TREE_DATA_ROOT must resolve to a directory");
+  let current = configured;
+  while (true) {
+    let ancestor;
+    try {
+      ancestor = lstatSync(current);
+    } catch {
+      const parent = dirname(current);
+      if (parent === current) break;
+      current = parent;
+      continue;
+    }
+    const approvedLink = current === "/tmp" || current === "/var" || current === configured;
+    assert(!ancestor.isSymbolicLink() || approvedLink, "WITNESS_TREE_DATA_ROOT must not traverse an unapproved symlink parent");
+    const parent = dirname(current);
+    if (parent === current) break;
+    current = parent;
+  }
+  return resolve(approved);
+}
+
+function reRootCanonicalDataPath(absolutePath: string, label: string): string {
+  const prefix = `${canonicalDataRoot}/`;
+  if (!absolutePath.startsWith(prefix)) return absolutePath;
+  const relativePath = absolutePath.slice(prefix.length);
+  const dataRoot = comparisonDataRoot();
+  const rerooted = resolve(dataRoot, relativePath);
+  assert(rerooted === dataRoot || rerooted.startsWith(`${dataRoot}/`), `${label} escapes the configured data root`);
+  return rerooted;
 }
 
 function assertNoSymlinkAncestors(absolutePath: string, label: string): void {
@@ -150,7 +190,7 @@ function assertNoSymlinkAncestors(absolutePath: string, label: string): void {
 function resolvePath(path: string, label: string, kind: "artifact" | "metadata" | "generic"): string {
   nonEmptyString(path, `${label} path`);
   assertNoTraversal(path, label, kind === "artifact");
-  const absolutePath = resolve(root, path);
+  const absolutePath = reRootCanonicalDataPath(resolve(root, path), label);
   assertNoSymlinkAncestors(absolutePath, label);
   if (kind === "metadata" && !isTestOnlyPath(absolutePath)) {
     const dataRoot = resolve(root, "data");
@@ -293,7 +333,7 @@ function assertRealSourcePath(path: string, label: string): void {
   const normalised = resolvePath(path, label, "artifact").replaceAll("\\", "/");
   assert.match(normalised, /\/Witness_Tree-data\/raw\//, `${label} must point at the raw source archive, not a metadata file`);
   assert.doesNotMatch(normalised, /(?:synthetic|fixture|illustrative|example|fake|\.bin$)/i, `${label} cannot be synthetic or illustrative`);
-  const canonicalRoot = resolve(root, "../../Witness_Tree-data").replaceAll("\\", "/");
+  const canonicalRoot = (isTestOnlyPath(normalised) ? canonicalDataRoot : comparisonDataRoot()).replaceAll("\\", "/");
   assert(
     normalised.startsWith(`${canonicalRoot}/`) || isTestOnlyPath(normalised),
     `${label} must be in the canonical Witness_Tree-data root or an explicitly test-only path`,
@@ -744,6 +784,10 @@ function validateClaims(value: unknown): typeof requiredClaims {
 }
 
 export function validateIndependentComparisonEvidence(evidence: UnknownRecord): UnknownRecord {
+  // An explicit override is an operator input, not evidence. Validate it even
+  // for a test-only envelope so a typo or redirect cannot silently fall back
+  // to the repository's internal compatibility path.
+  if (process.env.WITNESS_TREE_DATA_ROOT !== undefined) comparisonDataRoot();
   exactKeys(
     evidence ?? {},
     ["claims", "comparisonScope", "contract", "contracts", "harvestComparisons", "inputs", "nbacComparisons", "ntemsHansenCrossCheck", "publication", "schemaVersion", "status", "witnessTree"],

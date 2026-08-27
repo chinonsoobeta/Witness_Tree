@@ -1,6 +1,5 @@
 import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
-import { validate as validateFederalAdmission } from "./check-phase1-federal-electoral-production-admission.mjs";
 
 const read = (file) => JSON.parse(readFileSync(new URL(`../${file}`, import.meta.url), "utf8"));
 const fileExists = (file) => existsSync(new URL(`../${file}`, import.meta.url));
@@ -135,7 +134,7 @@ function validatePhysicalArtifactGroups(audit, immutable) {
   assert.equal(fourth.localPreflight.multipartPayloads, 6);
 }
 
-function validateLocalImplementationAudit(local, actions, ledger) {
+function validateLocalImplementationAudit(local, actions, snapshotRows) {
   assert.equal(local.status, "local-gates-complete-owner-or-external-blockers-remain");
   assert.equal(local.derivedFromHead, LOCAL_AUDIT_HEAD);
   assert.match(local.notice, /without granting.*production admission.*Phase 2/i);
@@ -170,8 +169,8 @@ function validateLocalImplementationAudit(local, actions, ledger) {
     assert.equal(gap.ownerOrExternalPrerequisite, true);
   }
   const gapRows = [...new Set(local.gaps.flatMap(({ rows }) => rows))].sort();
-  const ledgerRows = ledger.entries.map(({ id }) => id).sort();
-  assert.deepEqual(gapRows, ledgerRows, "Local implementation gap rows must cover the exact 31-row production ledger.");
+  const snapshotIds = snapshotRows.map(({ id }) => id).sort();
+  assert.deepEqual(gapRows, snapshotIds, "Local implementation gap rows must cover the exact 31-row historical snapshot.");
   assert.equal(local.coverage.remainingActionCount, actions.length);
   assert.equal(local.coverage.ownerIndependentGapsRemaining, 0);
   assert.equal(local.coverage.localGatesIncomplete, 0);
@@ -179,10 +178,10 @@ function validateLocalImplementationAudit(local, actions, ledger) {
   assert.deepEqual(local.coverage.scoreDelta, { rawCreditDelta: 0, formalPercentagePointDelta: 0 });
   assert.equal(local.coverage.allProductionAdmissionFalse, true);
   assert.equal(local.coverage.allProductionEligibleFalse, true);
-  assert.equal(ledger.entries.every((entry) => entry.proof.productionAdmission === false && entry.productionEligible === false), true);
+  assert.equal(snapshotRows.every((entry) => entry.productionAdmission === false && entry.productionEligible === false), true);
 }
 
-export function validatePhase1RemainingActionsAudit(audit, ledger, currentState, readiness, immutable, wildfire, replyAudit, partialOutreach, accessBlocker, approvals) {
+export function validatePhase1RemainingActionsAudit(audit, _currentLedger, currentState, readiness, immutable, wildfire, replyAudit, partialOutreach, accessBlocker, approvals) {
   assert.equal(audit.schemaVersion, "witness-tree/phase1-remaining-actions-audit/1");
   assert.equal(audit.status, "blocked-read-only");
   assert.match(audit.notice, /no AWS call.*email.*form submission.*production-eligibility change/i);
@@ -191,31 +190,34 @@ export function validatePhase1RemainingActionsAudit(audit, ledger, currentState,
   assert.equal(audit.derivedFromHead, "9bf5baa2ecc51ce4c039531e798bfb6418e3baaf");
   assert.deepEqual(audit.claims, CLAIMS);
 
-  validateFederalAdmission(read("data/phase1-federal-electoral-production-admission.json"));
-  const historicalLedger = structuredClone(ledger);
-  for (const id of ["fed-2023-ridings", "elections-canada-45th-files"]) {
-    const current = ledger.entries.find((entry) => entry.id === id);
-    assert.equal(current?.evidenceState, "production-admitted");
-    assert.equal(current?.proof?.productionAdmission, true);
-    assert.equal(current?.productionEligible, true);
-    const historical = historicalLedger.entries.find((entry) => entry.id === id);
-    historical.evidenceState = "remote-verified-archived-profiled";
-    historical.proof.productionAdmission = false;
-    historical.productionEligible = false;
-  }
-  const entries = historicalLedger.entries;
+  // The row-coverage array is the audit's recorded ledger snapshot. The live
+  // production ledger may have advanced after this dated audit was written.
+  const entries = audit.rowCoverage;
+  assert.ok(Array.isArray(entries));
   const ids = entries.map(({ id }) => id);
+  assert.equal(entries.length, audit.baseline.productionRows);
+  assert.equal(new Set(ids).size, ids.length);
+  const stateCredits = new Map([
+    ["remote-verified-archived-profiled", 1],
+    ["local-verified-profiled", 0.75],
+    ["partial-component", 0.25],
+    ["access-blocked", 0],
+  ]);
+  for (const entry of entries) {
+    assert.ok(stateCredits.has(entry.evidenceState), `${entry.id} has an unknown historical evidence state`);
+    assert.equal(entry.currentRawCredit, stateCredits.get(entry.evidenceState));
+    assert.equal(entry.immutableRemoteProof, entry.evidenceState === "remote-verified-archived-profiled");
+    assert.equal(entry.productionAdmission, false);
+    assert.equal(entry.productionEligible, false);
+  }
   const stateCounts = Object.fromEntries(Object.entries(Object.groupBy(entries, ({ evidenceState }) => evidenceState)).map(([state, rows]) => [state, rows.length]));
-  assert.equal(entries.length, 31);
-  const historicalFederalRecovery = false;
-  assert.deepEqual(audit.baseline.evidenceStateCounts, stateCounts, "The historical baseline must match the ledger with only the later two-row federal admission rolled back.");
-  assert.deepEqual(audit.baseline.evidenceStateCounts, { "remote-verified-archived-profiled": 16, "partial-component": 2, "access-blocked": 13 });
-  assert.ok(historicalFederalRecovery || audit.baseline.rawEvidenceNumerator === ledger.rawEvidenceNumerator);
+  assert.deepEqual(audit.baseline.evidenceStateCounts, stateCounts, "The historical baseline must match its recorded row coverage.");
+  assert.equal(audit.baseline.rawEvidenceNumerator, entries.reduce((sum, entry) => sum + entry.currentRawCredit, 0));
   assert.equal(audit.baseline.rawEvidenceDenominator, entries.length);
-  assert.ok(historicalFederalRecovery || audit.baseline.formalEvidenceTrackingPercentage === ledger.formalProgress.percentage);
   assert.equal(audit.baseline.formalEvidenceTrackingPercentage, 40.9677419);
-  assert.ok(historicalFederalRecovery || audit.baseline.immutableArchiveCompleteRows === entries.filter(({ proof }) => proof.immutableArchive).length);
-  assert.equal(audit.baseline.productionAdmissionCompleteRows, entries.filter(({ proof }) => proof.productionAdmission).length);
+  assert.equal(audit.baseline.formalEvidenceTrackingPercentage, Number((25 + 30 * audit.baseline.rawEvidenceNumerator / entries.length).toFixed(7)));
+  assert.equal(audit.baseline.immutableArchiveCompleteRows, entries.filter(({ immutableRemoteProof }) => immutableRemoteProof).length);
+  assert.equal(audit.baseline.productionAdmissionCompleteRows, entries.filter(({ productionAdmission }) => productionAdmission).length);
   assert.equal(audit.baseline.productionEligibleRows, entries.filter(({ productionEligible }) => productionEligible).length);
   assert.equal(audit.baseline.substantiveReplyRecords, replyAudit.counts.substantiveReplyRecords);
   assert.equal(audit.baseline.accessBlockedRowsWithSubstantiveReply, replyAudit.counts.accessBlockedRowsWithSubstantiveReply);
@@ -225,10 +227,10 @@ export function validatePhase1RemainingActionsAudit(audit, ledger, currentState,
   assert.equal(audit.baseline.currentWildfireArchiveGate.productionEligible, wildfire.archiveGate.productionEligible);
 
   assert.equal(currentState.ledger.totalRows, entries.length);
-  assert.ok(historicalFederalRecovery || (() => { try { assert.deepEqual(currentState.ledger.evidenceStateCounts, audit.baseline.evidenceStateCounts); return true; } catch { return false; } })());
-  assert.ok(historicalFederalRecovery || currentState.ledger.rawEvidenceNumerator === audit.baseline.rawEvidenceNumerator);
-  assert.ok(historicalFederalRecovery || currentState.ledger.formalEvidenceTrackingPercentage === audit.baseline.formalEvidenceTrackingPercentage);
-  assert.ok(historicalFederalRecovery || currentState.ledger.immutableArchiveCompleteRows === audit.baseline.immutableArchiveCompleteRows);
+  assert.deepEqual(currentState.ledger.evidenceStateCounts, audit.baseline.evidenceStateCounts);
+  assert.equal(currentState.ledger.rawEvidenceNumerator, audit.baseline.rawEvidenceNumerator);
+  assert.equal(currentState.ledger.formalEvidenceTrackingPercentage, audit.baseline.formalEvidenceTrackingPercentage);
+  assert.equal(currentState.ledger.immutableArchiveCompleteRows, audit.baseline.immutableArchiveCompleteRows);
   assert.equal(currentState.ledger.productionAdmissionCompleteRows, 0);
   assert.equal(currentState.ledger.productionEligibleRows, 0);
   assert.deepEqual(currentState.globalGates.immutableArchives, { status: "blocked", completeRows: 16, localRowsAwaitingArchive: 0, sourceEvidenceBlockedRows: 15, currentWildfireRequiredObjects: 6, currentWildfireVerifiedObjects: 6, currentWildfireAttestedObjects: 0 });
@@ -239,8 +241,8 @@ export function validatePhase1RemainingActionsAudit(audit, ledger, currentState,
   assert.equal(readiness.entries.length, entries.length);
 
   assert.deepEqual(audit.scope, { auditedRowCount: 31, rowsWithoutImmutableRemoteProof: 15, rowsWithoutProductionAdmission: 31, rowsSelectedByRule: 31, allProductionRowsRemainNonAdmitted: true, allProductionRowsRemainIneligible: true });
-  assert.equal(entries.filter(({ proof }) => !proof.immutableArchive).length, audit.scope.rowsWithoutImmutableRemoteProof);
-  assert.equal(entries.filter(({ proof }) => !proof.productionAdmission).length, audit.scope.rowsWithoutProductionAdmission);
+  assert.equal(entries.filter(({ immutableRemoteProof }) => !immutableRemoteProof).length, audit.scope.rowsWithoutImmutableRemoteProof);
+  assert.equal(entries.filter(({ productionAdmission }) => !productionAdmission).length, audit.scope.rowsWithoutProductionAdmission);
   validatePhysicalArtifactGroups(audit, immutable);
 
   const actionsById = new Map(audit.actions.map((action) => [action.id, action]));
@@ -276,7 +278,7 @@ export function validatePhase1RemainingActionsAudit(audit, ledger, currentState,
     }
   }
 
-  validateLocalImplementationAudit(audit.localImplementationAudit, audit.actions, historicalLedger);
+  validateLocalImplementationAudit(audit.localImplementationAudit, audit.actions, entries);
 
   const wildfireReadbackAction = actionsById.get("current-wildfire-derived-archive-preflight-and-owner-promotion");
   assert.equal(wildfireReadbackAction.runnerOrPreflight.derivedReadbackChecker, "scripts/check-current-wildfire-derived-archive-evidence.mjs");
@@ -289,15 +291,9 @@ export function validatePhase1RemainingActionsAudit(audit, ledger, currentState,
   assert.equal(audit.rowCoverage.length, entries.length);
   assert.deepEqual(audit.rowCoverage.map(({ id }) => id), ids);
   for (const coverage of audit.rowCoverage) {
-    const entry = entries.find(({ id }) => id === coverage.id);
-    assert.ok((entry.evidenceRefs.includes("data/federal-electoral-archive-recovery-evidence.json") && coverage.evidenceState === "local-verified-profiled") || coverage.evidenceState === entry.evidenceState);
-    assert.ok((entry.evidenceRefs.includes("data/federal-electoral-archive-recovery-evidence.json") && coverage.immutableRemoteProof === false) || coverage.immutableRemoteProof === entry.proof.immutableArchive);
-    assert.ok((entry.evidenceRefs.includes("data/federal-electoral-archive-recovery-evidence.json") && coverage.currentRawCredit === 0.75) || coverage.currentRawCredit === entry.rawCredit);
-    assert.equal(coverage.productionAdmission, entry.proof.productionAdmission);
-    assert.equal(coverage.productionEligible, entry.productionEligible);
-    const maximumRawCreditDelta = 1 - entry.rawCredit;
-    assert.ok((entry.evidenceRefs.includes("data/federal-electoral-archive-recovery-evidence.json") && coverage.maximumRawCreditDeltaToRemote === 0.25) || coverage.maximumRawCreditDeltaToRemote === maximumRawCreditDelta);
-    assert.ok((entry.evidenceRefs.includes("data/federal-electoral-archive-recovery-evidence.json") && coverage.maximumFormalPercentagePointDeltaToRemote === formalDelta(0.25)) || coverage.maximumFormalPercentagePointDeltaToRemote === formalDelta(maximumRawCreditDelta));
+    const maximumRawCreditDelta = 1 - coverage.currentRawCredit;
+    assert.equal(coverage.maximumRawCreditDeltaToRemote, maximumRawCreditDelta);
+    assert.equal(coverage.maximumFormalPercentagePointDeltaToRemote, formalDelta(maximumRawCreditDelta));
     assert.ok(coverage.remainingActionIds.length >= 1);
     for (const actionId of coverage.remainingActionIds) {
       const action = actionsById.get(actionId);

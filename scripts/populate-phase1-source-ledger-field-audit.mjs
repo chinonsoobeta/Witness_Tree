@@ -44,6 +44,7 @@ async function bindStaged(row, index, { schemaPointer } = {}) {
 }
 
 const audit = JSON.parse(await readFile(auditPath, "utf8"));
+audit.asOf = "2026-08-27";
 const byId = new Map(audit.rows.map((row) => [row.id, row]));
 const productionLedger = (await source("data/phase1-production-source-ledger.json")).document;
 for (const row of audit.rows) {
@@ -96,6 +97,19 @@ async function bindStagedSubset(row, index, fields) {
 }
 
 await bindStagedSubset(byId.get("cwfis-current"), 0, ["datasetTitle", "archiveVersion", "modificationNotice"]);
+const nbac = byId.get("cwfis-historical");
+for (const [field, pointer] of Object.entries({
+  publisher: "/source/publisher",
+  sourceUrl: "/source/artifactUrl",
+  licence: "/licence/name",
+  licenceUrl: "/licence/url",
+  retrievalDate: "/retrievedAt",
+  checksum: "/artifacts/payload/sha256",
+  archiveVersion: "/source/edition",
+  coverage: "/profile/yearRange",
+  schema: "/profile/fields",
+  requiredAttribution: "/licence/requiredCitation",
+})) await bind(nbac, field, "data/phase1-nbac-profile-2026-08-27.json", pointer);
 await bindStagedSubset(byId.get("bc-wildfire"), 12, ["datasetTitle", "archiveVersion", "modificationNotice"]);
 await bindStagedSubset(byId.get("ab-wildfire"), 13, ["publisher", "datasetTitle", "sourceUrl", "licenceUrl", "archiveVersion", "modificationNotice"]);
 await bindStagedSubset(byId.get("on-fire-disturbance"), 15, ["publisher", "datasetTitle", "sourceUrl", "licenceUrl", "archiveVersion", "modificationNotice"]);

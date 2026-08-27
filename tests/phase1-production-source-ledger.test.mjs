@@ -9,18 +9,19 @@ import { validatePhase1ProductionSourceLedger } from "../scripts/check-phase1-pr
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const ledger = JSON.parse(readFileSync(new URL("../data/phase1-production-source-ledger.json", import.meta.url), "utf8"));
 const inventory = JSON.parse(readFileSync(new URL("../data/phase1-source-inventory.json", import.meta.url), "utf8"));
+const nbacProfile = JSON.parse(readFileSync(new URL("../data/phase1-nbac-profile-2026-08-27.json", import.meta.url), "utf8"));
 
 test("canonical production ledger reconciles all 31 plan rows and only exact admitted rows", () => {
   assert.equal(validatePhase1ProductionSourceLedger(ledger, inventory), ledger);
   assert.equal(ledger.entries.length, 31);
   assert.equal(ledger.entries.filter((entry) => entry.productionEligible).length, 2);
-  assert.equal(ledger.rawEvidenceNumerator, 16.5);
+  assert.equal(ledger.rawEvidenceNumerator, 17);
   assert.equal(ledger.entries.reduce((sum, entry) => sum + entry.rawCredit, 0), ledger.rawEvidenceNumerator);
   assert.deepEqual(ledger.formalProgress, {
     baselinePercentagePoints: 25,
     rawEvidenceWeightPercentagePoints: 30,
     completeLedgerWeightPercentagePoints: 45,
-    percentage: 40.9677419,
+    percentage: 41.4516129,
     notice: "This is an evidence-tracking score only. It does not grant source-ledger admission, transformation, analysis, ingestion, public release, production admission, or production eligibility."
   });
   const bcWildfire = ledger.entries.find((entry) => entry.id === "bc-wildfire");
@@ -135,6 +136,15 @@ test("ledger fails closed for omission, credit inflation, a missing proof, or in
   assert.throws(() => validatePhase1ProductionSourceLedger(staleProgress, inventory), /Formal progress must be recomputed/i);
   const staleStatus = structuredClone(ledger); staleStatus.status = "admitted";
   assert.throws(() => validatePhase1ProductionSourceLedger(staleStatus, inventory), /status does not match admitted rows/i);
+});
+
+test("NBAC ledger proof is cross-validated against the exact profile", () => {
+  const proofDrift = structuredClone(ledger);
+  proofDrift.entries.find(({ id }) => id === "cwfis-historical").proof.checksum = false;
+  assert.throws(() => validatePhase1ProductionSourceLedger(proofDrift, inventory), /NBAC ledger proof/);
+  const profileDrift = structuredClone(nbacProfile);
+  profileDrift.artifacts.payload.sha256 = "0".repeat(64);
+  assert.throws(() => validatePhase1ProductionSourceLedger(ledger, inventory, ROOT, profileDrift));
 });
 
 test("Ontario FRI is explicitly access-blocked by its official Term 2 record", () => {

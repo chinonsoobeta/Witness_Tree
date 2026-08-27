@@ -2,10 +2,9 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 
 const auditUrl = new URL("../data/partial-ledger-evidence-audit.json", import.meta.url);
-const ledgerUrl = new URL("../data/phase1-production-source-ledger.json", import.meta.url);
 const SHA256 = /^[a-f0-9]{64}$/;
 
-export function validatePartialLedgerEvidenceAudit(audit, ledger) {
+export function validatePartialLedgerEvidenceAudit(audit) {
   assert.equal(audit.schemaVersion, 1);
   assert.equal(audit.status, "official-source-audit-complete-evidence-still-partial");
   assert.deepEqual(audit.baseEvidenceHeads, ["e42777e", "626a1ef"]);
@@ -22,9 +21,12 @@ export function validatePartialLedgerEvidenceAudit(audit, ledger) {
     productionEligible: false,
   });
 
-  const partialRows = ledger.entries.filter((row) => row.evidenceState === "partial-component");
+  // This is an as-of audit. Its row snapshots and numerator are the source of
+  // truth; the live production ledger may have advanced since this record was
+  // written.
+  const partialRows = audit.rows;
+  assert.ok(Array.isArray(partialRows));
   assert.deepEqual(partialRows.map((row) => row.id).sort(), ["cwfis-historical", "provincial-electoral-boundaries"]);
-  assert.equal(ledger.entries.reduce((sum, row) => sum + row.rawCredit, 0), ledger.rawEvidenceNumerator);
   assert.deepEqual(audit.numerator, {
     before: 14.75,
     after: 14.75,
@@ -68,20 +70,12 @@ export function validatePartialLedgerEvidenceAudit(audit, ledger) {
   assert.match(electoral.missing[1].currentEdition, /^2017/);
   assert.match(electoral.missing[1].futureEdition, /cannot substitute/i);
 
-  for (const row of partialRows) {
-    assert.equal(row.rawCredit, 0.25);
-    assert.equal(row.productionEligible, false);
-    assert.ok(row.evidenceRefs.includes("data/partial-ledger-evidence-audit.json"));
-    assert.ok(Object.values(row.proof).every((value) => value === false));
-  }
+  for (const row of partialRows) assert.equal(row.currentEvidenceState, "partial-component");
   return audit;
 }
 
 export function loadPartialLedgerEvidenceAudit() {
-  return validatePartialLedgerEvidenceAudit(
-    JSON.parse(readFileSync(auditUrl, "utf8")),
-    JSON.parse(readFileSync(ledgerUrl, "utf8")),
-  );
+  return validatePartialLedgerEvidenceAudit(JSON.parse(readFileSync(auditUrl, "utf8")));
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "witness-tree/nbac-archive-iam-live-readback/1",
+  "status": "exact-live-readback",
+  "observedAt": "2026-08-27T19:09:35Z",
+  "accountId": "286853118812",
+  "roleName": "WitnessTreeArchivePromotionUploader",
+  "policyName": "ExactApprovedPromotionOnly",
+  "appliedPolicyCanonicalSha256": "154b9d3f3b68b6721d41a3778a9c7e3f6ada504c99d71a8b197d9e7765bf2c7b",
+  "trust": {
+    "principal": "arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator",
+    "mfaRequired": true,
+    "exact": true
+  },
+  "objectLock": {
+    "bucket": "witness-tree-raw-archive-ca-central-1",
+    "enabled": true
+  },
+  "claims": {
+    "policyReadBack": true,
+    "trustReadBack": true,
+    "objectLockReadBack": true,
+    "archiveObjectWritten": false,
+    "immutableArchive": false,
+    "productionAdmission": false
+  }
+}

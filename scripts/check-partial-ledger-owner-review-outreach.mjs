@@ -4,7 +4,6 @@ import { readFileSync } from "node:fs";
 const packageUrl = new URL("../data/partial-ledger-owner-review-outreach-package.json", import.meta.url);
 const auditUrl = new URL("../data/partial-ledger-evidence-audit.json", import.meta.url);
 const existingUrl = new URL("../data/phase1-permission-outreach-package.json", import.meta.url);
-const ledgerUrl = new URL("../data/phase1-production-source-ledger.json", import.meta.url);
 
 const expected = {
   "nrcan-nbac-agreement-and-consent": {
@@ -41,7 +40,7 @@ const expected = {
 
 const normalize = (value) => value.normalize("NFKC").toLowerCase().replace(/\s+/g, " ").trim();
 
-export function validatePartialLedgerOwnerReviewOutreach(pkg, audit, existing, ledger) {
+export function validatePartialLedgerOwnerReviewOutreach(pkg, audit, existing) {
   assert.equal(pkg.schemaVersion, 1);
   assert.equal(pkg.status, "owner-review-only-not-sent");
   assert.equal(pkg.sourceAuditRef, "data/partial-ledger-evidence-audit.json");
@@ -103,12 +102,16 @@ export function validatePartialLedgerOwnerReviewOutreach(pkg, audit, existing, l
   assert.equal(audit.claims.downloadedNewArtifact, false);
   assert.equal(audit.numerator.after, 14.75);
   assert.equal(audit.numerator.impact, 0);
-  const rows = ledger.entries.filter(({ id }) => ["cwfis-historical", "provincial-electoral-boundaries"].includes(id));
-  assert.equal(rows.reduce((sum, row) => sum + row.rawCredit, 0), 0.5);
+  assert.deepEqual(audit.rows.map(({ id }) => id).sort(), ["cwfis-historical", "provincial-electoral-boundaries"]);
+  // The package describes the two rows as they stood when the owner-review
+  // drafts were prepared. Do not reinterpret that historical snapshot from
+  // the live production ledger.
+  const rows = audit.rows.filter(({ id }) => ["cwfis-historical", "provincial-electoral-boundaries"].includes(id));
+  assert.equal(rows.length, 2);
+  assert.equal(rows.length * 0.25, 0.5);
   for (const row of rows) {
-    assert.equal(row.evidenceState, "partial-component");
-    assert.equal(row.productionEligible, false);
-    assert.ok(Object.values(row.proof).every((value) => value === false));
+    assert.equal(row.currentEvidenceState, "partial-component");
+    assert.equal(row.completionCreditIfResolved, 0.5);
   }
   return pkg;
 }
@@ -118,11 +121,10 @@ export function loadPartialLedgerOwnerReviewOutreach() {
     JSON.parse(readFileSync(packageUrl, "utf8")),
     JSON.parse(readFileSync(auditUrl, "utf8")),
     JSON.parse(readFileSync(existingUrl, "utf8")),
-    JSON.parse(readFileSync(ledgerUrl, "utf8")),
   );
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   const pkg = loadPartialLedgerOwnerReviewOutreach();
-  console.log(`Owner-review outreach package passed for ${pkg.requests.length} unsent requests; current canonical state is 14.75/31 raw credits, 39.2741935% formal evidence tracking, 9/31 immutable, and 0/31 production admitted or eligible.`);
+  console.log(`Owner-review outreach package passed for ${pkg.requests.length} unsent requests; its historical snapshot is 14.75/31 raw credits, 39.2741935% formal evidence tracking, 9/31 immutable, and 0/31 production admitted or eligible.`);
 }

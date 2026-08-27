@@ -1,0 +1,63 @@
+{
+  "schemaVersion": "witness-tree/bc-forest-tenure-foi-catalogue-response/1",
+  "status": "official-response-received-catalogue-export-not-yet-verified",
+  "recordedOn": "2026-08-27",
+  "request": {
+    "reference": "FOR-2026-056834",
+    "requestedViews": [
+      "WHSE_FOREST_TENURE.FTEN_CUT_BLOCK_POLY_SVW",
+      "WHSE_FOREST_TENURE.FTEN_HARVEST_AUTH_POLY_SVW"
+    ],
+    "requestedOutcome": "Complete coherent machine-readable extracts, including all records, geometries and attributes, captured at one stated timestamp on or after 2026-08-18, with existing export metadata.",
+    "requestedOutcomeIsSummary": true,
+    "requestedOutcomeBasis": "Condensed from the official response's quoted request scope; the original scope also permits separate per-view timestamps when one shared timestamp is unavailable, prefers a native GIS format, and asks for existing export metadata.",
+    "responseReceivedAt": "2026-08-27T09:00:10-07:00",
+    "responseDeadline": "2026-09-01",
+    "responseSummary": "The BC FOI program area stated that the requested information is publicly available through the two named BC Data Catalogue records and asked whether the links satisfy the request and the FOI may be withdrawn.",
+    "responseProvenance": {
+      "channel": "official email",
+      "senderDomain": "gov.bc.ca",
+      "subject": "FOI Request FOR-2026-056834 - Withdrawal request"
+    },
+    "outboundReplySent": false
+  },
+  "catalogueReadback": {
+    "retrievedAt": "2026-08-27T17:00:00Z",
+    "api": "https://catalogue.data.gov.bc.ca/api/3/action/package_show",
+    "datasets": [
+      {
+        "sourceId": "bc-fta-cutblocks",
+        "catalogueId": "dfb8b498-fa4b-4286-b3ec-58db88aca1cf",
+        "title": "Forest Tenure Cutblock Polygons (FTA 4.0)",
+        "catalogueUrl": "https://catalogue.data.gov.bc.ca/dataset/forest-tenure-cutblock-polygons-fta-4-0",
+        "metadataModified": "2026-08-27T12:44:28.011625",
+        "licence": "Open Government Licence - British Columbia",
+        "licenceUrl": "https://www2.gov.bc.ca/gov/content?id=A519A56BC2BF44E4A008B33FCF527F61",
+        "objectName": "WHSE_FOREST_TENURE.FTEN_CUT_BLOCK_POLY_SVW",
+        "resources": ["indirect-custom-download", "WMS", "KML-ground-overlay"]
+      },
+      {
+        "sourceId": "bc-harvesting-authorities",
+        "catalogueId": "cff7b8f7-6897-444f-8c53-4bb93c7e9f8b",
+        "title": "Forest Tenure Harvesting Authority Polygons",
+        "catalogueUrl": "https://catalogue.data.gov.bc.ca/dataset/forest-tenure-harvesting-authority-polygons",
+        "metadataModified": "2026-08-27T12:42:17.687850",
+        "licence": "Open Government Licence - British Columbia",
+        "licenceUrl": "https://www2.gov.bc.ca/gov/content?id=A519A56BC2BF44E4A008B33FCF527F61",
+        "objectName": "WHSE_FOREST_TENURE.FTEN_HARVEST_AUTH_POLY_SVW",
+        "resources": ["indirect-custom-download", "WMS", "KML-ground-overlay"]
+      }
+    ]
+  },
+  "assessment": {
+    "officialProgramAreaSaysPubliclyAvailable": true,
+    "exactCatalogueLicenceVerified": true,
+    "directFullProvincePackagePresent": false,
+    "coherentTimestampedExtractVerified": false,
+    "completeRecordCountVerified": false,
+    "archiveOrProductionAdmission": false,
+    "withdrawalRecommended": false,
+    "reason": "The official records establish the exact OGL-BC catalogue entries and warehouse object names, but expose only an indirect custom-download route plus WMS/KML services. No direct timestamped full-province package, exact record count, checksum, schema profile, or completeness proof has yet been obtained."
+  },
+  "nextSafeStep": "Run and profile the official custom-download export for both exact views. Compare its scope and timestamps to the FOI request before the owner decides whether to withdraw or respond that the links are insufficient."
+}

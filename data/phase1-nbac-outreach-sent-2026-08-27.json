@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "witness-tree/phase1-owner-outreach-sent/1",
+  "status": "sent-awaiting-response",
+  "sentAt": "2026-08-27T18:08:52Z",
+  "requestId": "nrcan-nbac-agreement-and-consent",
+  "canonicalRowId": "cwfis-historical",
+  "delivery": {
+    "channel": "email",
+    "recipient": "cwfissa-csscifv@nrcan-rncan.gc.ca",
+    "recipientDomain": "nrcan-rncan.gc.ca",
+    "subject": "NBAC 1972–2025: agreement scope and written consent for Witness Tree / Étendue de l’accord et consentement écrit",
+    "language": "English / Français",
+    "sentLabelConfirmed": true
+  },
+  "sourceDraft": {
+    "path": "data/partial-ledger-owner-review-outreach-package.json",
+    "sha256": "8165f643776c724fda06167e946d95b26e8e546bf17fc432d350035f50d0dc44",
+    "englishSha256": "71bac0fe3779ea9fe4694ee24a75675b9ce3f37d4b0a619433673c646da720d9",
+    "frenchSha256": "78a5f5244ec27ed20bdbb9e705a5e120682a6e304cf32a34b5ffe16d6f41ea66",
+    "sentBodySha256": "06975371f3fab7d1c8399965e2be65cf9a12cd9917c146ae30e5c6ae4c08728d",
+    "composition": "english + two newlines + three hyphens + two newlines + french"
+  },
+  "privacy": {
+    "providerMessageIdStored": false,
+    "providerThreadIdStored": false,
+    "mailboxUrlStored": false,
+    "senderAddressStored": false
+  },
+  "claims": {
+    "agreementAccepted": false,
+    "writtenConsentReceived": false,
+    "artifactAcquired": false,
+    "ledgerCreditChanged": false,
+    "productionAdmission": false
+  },
+  "nextStep": "Wait for the official written response, review its exact scope, and keep the NBAC artifact unacquired until the agreement and intended archive, processing, public-display, and redistribution terms are resolved."
+}

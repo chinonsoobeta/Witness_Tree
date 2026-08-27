@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "status": "partially-admitted",
-  "asOf": "2026-08-25",
+  "asOf": "2026-08-27",
   "notice": "Field-level completeness is fail closed: every required field must have an explicit, evidence-bound value before a row is complete. Missing fields do not grant source-ledger admission, ingestion, release, production admission, or production eligibility.",
   "requiredFields": [
     "publisher",
@@ -184,7 +184,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "b723e214c32b6a6d897141b78aa0f26cbfa3d1d09d25733be593cbb84309f13c",
+            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
             "jsonPointer": "/entries/0/proof/productionAdmission",
             "expectedValue": false
           }
@@ -557,7 +557,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "b723e214c32b6a6d897141b78aa0f26cbfa3d1d09d25733be593cbb84309f13c",
+            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
             "jsonPointer": "/entries/1/proof/productionAdmission",
             "expectedValue": false
           }
@@ -859,7 +859,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "b723e214c32b6a6d897141b78aa0f26cbfa3d1d09d25733be593cbb84309f13c",
+            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
             "jsonPointer": "/entries/2/proof/productionAdmission",
             "expectedValue": false
           }
@@ -1159,7 +1159,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "b723e214c32b6a6d897141b78aa0f26cbfa3d1d09d25733be593cbb84309f13c",
+            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
             "jsonPointer": "/entries/3/proof/productionAdmission",
             "expectedValue": false
           }
@@ -1530,7 +1530,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "b723e214c32b6a6d897141b78aa0f26cbfa3d1d09d25733be593cbb84309f13c",
+            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
             "jsonPointer": "/entries/4/proof/productionAdmission",
             "expectedValue": false
           }
@@ -1591,65 +1591,202 @@
     },
     {
       "id": "cwfis-historical",
-      "canonicalEvidenceState": "partial-component",
+      "canonicalEvidenceState": "local-verified-profiled",
       "canonicalEvidenceRefs": [
         "data/nfdb-poly-current-profile.json",
-        "data/partial-ledger-evidence-audit.json"
+        "data/phase1-nbac-owner-authorization-2026-08-27.json",
+        "data/phase1-nbac-profile-2026-08-27.json"
       ],
       "canonicalProductionEligible": false,
       "canonicalProductionAdmission": false,
       "fields": {
         "publisher": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "Natural Resources Canada, Canadian Forest Service",
+          "evidenceRefs": [
+            "data/phase1-nbac-profile-2026-08-27.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-nbac-profile-2026-08-27.json",
+            "sha256": "53bfa7edc94d09273db4a1c65fe2f8689c3312b991f2888dbcb0b177c9fd86b2",
+            "jsonPointer": "/source/publisher",
+            "expectedValue": "Natural Resources Canada, Canadian Forest Service"
+          }
         },
         "datasetTitle": {
           "status": "missing",
           "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
         },
         "sourceUrl": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "https://cwfis.cfs.nrcan.gc.ca/downloads/nbac/NBAC_1972to2025_20260513_shp.zip",
+          "evidenceRefs": [
+            "data/phase1-nbac-profile-2026-08-27.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-nbac-profile-2026-08-27.json",
+            "sha256": "53bfa7edc94d09273db4a1c65fe2f8689c3312b991f2888dbcb0b177c9fd86b2",
+            "jsonPointer": "/source/artifactUrl",
+            "expectedValue": "https://cwfis.cfs.nrcan.gc.ca/downloads/nbac/NBAC_1972to2025_20260513_shp.zip"
+          }
         },
         "licence": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "Open Government Licence - Canada",
+          "evidenceRefs": [
+            "data/phase1-nbac-profile-2026-08-27.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-nbac-profile-2026-08-27.json",
+            "sha256": "53bfa7edc94d09273db4a1c65fe2f8689c3312b991f2888dbcb0b177c9fd86b2",
+            "jsonPointer": "/licence/name",
+            "expectedValue": "Open Government Licence - Canada"
+          }
         },
         "licenceUrl": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "https://open.canada.ca/en/open-government-licence-canada",
+          "evidenceRefs": [
+            "data/phase1-nbac-profile-2026-08-27.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-nbac-profile-2026-08-27.json",
+            "sha256": "53bfa7edc94d09273db4a1c65fe2f8689c3312b991f2888dbcb0b177c9fd86b2",
+            "jsonPointer": "/licence/url",
+            "expectedValue": "https://open.canada.ca/en/open-government-licence-canada"
+          }
         },
         "editionEffectiveDate": {
           "status": "missing",
           "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
         },
         "retrievalDate": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "2026-08-27",
+          "evidenceRefs": [
+            "data/phase1-nbac-profile-2026-08-27.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-nbac-profile-2026-08-27.json",
+            "sha256": "53bfa7edc94d09273db4a1c65fe2f8689c3312b991f2888dbcb0b177c9fd86b2",
+            "jsonPointer": "/retrievedAt",
+            "expectedValue": "2026-08-27"
+          }
         },
         "checksum": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "c42740eb9d2fe3991a27344d0c33927705ec3e78c277efc5311b502439cb2165",
+          "evidenceRefs": [
+            "data/phase1-nbac-profile-2026-08-27.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-nbac-profile-2026-08-27.json",
+            "sha256": "53bfa7edc94d09273db4a1c65fe2f8689c3312b991f2888dbcb0b177c9fd86b2",
+            "jsonPointer": "/artifacts/payload/sha256",
+            "expectedValue": "c42740eb9d2fe3991a27344d0c33927705ec3e78c277efc5311b502439cb2165"
+          }
         },
         "archiveVersion": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "NBAC 1972-2025, 20260513",
+          "evidenceRefs": [
+            "data/phase1-nbac-profile-2026-08-27.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-nbac-profile-2026-08-27.json",
+            "sha256": "53bfa7edc94d09273db4a1c65fe2f8689c3312b991f2888dbcb0b177c9fd86b2",
+            "jsonPointer": "/source/edition",
+            "expectedValue": "NBAC 1972-2025, 20260513"
+          }
         },
         "coverage": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": [
+            1972,
+            2025
+          ],
+          "evidenceRefs": [
+            "data/phase1-nbac-profile-2026-08-27.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-nbac-profile-2026-08-27.json",
+            "sha256": "53bfa7edc94d09273db4a1c65fe2f8689c3312b991f2888dbcb0b177c9fd86b2",
+            "jsonPointer": "/profile/yearRange",
+            "expectedValue": [
+              1972,
+              2025
+            ]
+          }
         },
         "schema": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": [
+            "YEAR",
+            "NFIREID",
+            "BASRC",
+            "FIREMAPS",
+            "FIREMAPM",
+            "FIRECAUS",
+            "HS_SDATE",
+            "HS_EDATE",
+            "AG_SDATE",
+            "AG_EDATE",
+            "CAPDATE",
+            "POLY_HA",
+            "ADJ_HA",
+            "ADJ_FLAG",
+            "ADMIN_NAME",
+            "ADMIN_DIV",
+            "PRESCRIBED",
+            "VERSION",
+            "GID"
+          ],
+          "evidenceRefs": [
+            "data/phase1-nbac-profile-2026-08-27.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-nbac-profile-2026-08-27.json",
+            "sha256": "53bfa7edc94d09273db4a1c65fe2f8689c3312b991f2888dbcb0b177c9fd86b2",
+            "jsonPointer": "/profile/fields",
+            "expectedValue": [
+              "YEAR",
+              "NFIREID",
+              "BASRC",
+              "FIREMAPS",
+              "FIREMAPM",
+              "FIRECAUS",
+              "HS_SDATE",
+              "HS_EDATE",
+              "AG_SDATE",
+              "AG_EDATE",
+              "CAPDATE",
+              "POLY_HA",
+              "ADJ_HA",
+              "ADJ_FLAG",
+              "ADMIN_NAME",
+              "ADMIN_DIV",
+              "PRESCRIBED",
+              "VERSION",
+              "GID"
+            ]
+          }
         },
         "transformations": {
           "status": "missing",
           "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
         },
         "requiredAttribution": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "Canadian Forest Service. National Burned Area Composite (NBAC). Natural Resources Canada, Canadian Forest Service, Northern Forestry Centre, Edmonton, Alberta. https://cwfis.cfs.nrcan.gc.ca.",
+          "evidenceRefs": [
+            "data/phase1-nbac-profile-2026-08-27.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-nbac-profile-2026-08-27.json",
+            "sha256": "53bfa7edc94d09273db4a1c65fe2f8689c3312b991f2888dbcb0b177c9fd86b2",
+            "jsonPointer": "/licence/requiredCitation",
+            "expectedValue": "Canadian Forest Service. National Burned Area Composite (NBAC). Natural Resources Canada, Canadian Forest Service, Northern Forestry Centre, Edmonton, Alberta. https://cwfis.cfs.nrcan.gc.ca."
+          }
         },
         "redistributionStatus": {
           "status": "missing",
@@ -1667,7 +1804,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "b723e214c32b6a6d897141b78aa0f26cbfa3d1d09d25733be593cbb84309f13c",
+            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
             "jsonPointer": "/entries/5/proof/productionAdmission",
             "expectedValue": false
           }
@@ -2083,7 +2220,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "b723e214c32b6a6d897141b78aa0f26cbfa3d1d09d25733be593cbb84309f13c",
+            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
             "jsonPointer": "/entries/6/proof/productionAdmission",
             "expectedValue": false
           }
@@ -2454,7 +2591,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "b723e214c32b6a6d897141b78aa0f26cbfa3d1d09d25733be593cbb84309f13c",
+            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
             "jsonPointer": "/entries/7/proof/productionAdmission",
             "expectedValue": false
           }
@@ -2812,7 +2949,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "b723e214c32b6a6d897141b78aa0f26cbfa3d1d09d25733be593cbb84309f13c",
+            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
             "jsonPointer": "/entries/8/proof/productionAdmission",
             "expectedValue": false
           }
@@ -2936,7 +3073,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "b723e214c32b6a6d897141b78aa0f26cbfa3d1d09d25733be593cbb84309f13c",
+            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
             "jsonPointer": "/entries/9/proof/productionAdmission",
             "expectedValue": false
           }
@@ -3046,7 +3183,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "b723e214c32b6a6d897141b78aa0f26cbfa3d1d09d25733be593cbb84309f13c",
+            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
             "jsonPointer": "/entries/10/proof/productionAdmission",
             "expectedValue": false
           }
@@ -3156,7 +3293,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "b723e214c32b6a6d897141b78aa0f26cbfa3d1d09d25733be593cbb84309f13c",
+            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
             "jsonPointer": "/entries/11/proof/productionAdmission",
             "expectedValue": false
           }
@@ -3266,7 +3403,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "b723e214c32b6a6d897141b78aa0f26cbfa3d1d09d25733be593cbb84309f13c",
+            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
             "jsonPointer": "/entries/12/proof/productionAdmission",
             "expectedValue": false
           }
@@ -3376,7 +3513,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "b723e214c32b6a6d897141b78aa0f26cbfa3d1d09d25733be593cbb84309f13c",
+            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
             "jsonPointer": "/entries/13/proof/productionAdmission",
             "expectedValue": false
           }
@@ -3486,7 +3623,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "b723e214c32b6a6d897141b78aa0f26cbfa3d1d09d25733be593cbb84309f13c",
+            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
             "jsonPointer": "/entries/14/proof/productionAdmission",
             "expectedValue": false
           }
@@ -3596,7 +3733,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "b723e214c32b6a6d897141b78aa0f26cbfa3d1d09d25733be593cbb84309f13c",
+            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
             "jsonPointer": "/entries/15/proof/productionAdmission",
             "expectedValue": false
           }
@@ -3762,7 +3899,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "b723e214c32b6a6d897141b78aa0f26cbfa3d1d09d25733be593cbb84309f13c",
+            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
             "jsonPointer": "/entries/16/proof/productionAdmission",
             "expectedValue": false
           }
@@ -4460,7 +4597,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "b723e214c32b6a6d897141b78aa0f26cbfa3d1d09d25733be593cbb84309f13c",
+            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
             "jsonPointer": "/entries/17/proof/productionAdmission",
             "expectedValue": false
           }
@@ -4762,7 +4899,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "b723e214c32b6a6d897141b78aa0f26cbfa3d1d09d25733be593cbb84309f13c",
+            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
             "jsonPointer": "/entries/18/proof/productionAdmission",
             "expectedValue": false
           }
@@ -5022,7 +5159,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "b723e214c32b6a6d897141b78aa0f26cbfa3d1d09d25733be593cbb84309f13c",
+            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
             "jsonPointer": "/entries/19/proof/productionAdmission",
             "expectedValue": false
           }
@@ -5283,7 +5420,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "b723e214c32b6a6d897141b78aa0f26cbfa3d1d09d25733be593cbb84309f13c",
+            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
             "jsonPointer": "/entries/20/proof/productionAdmission",
             "expectedValue": false
           }
@@ -5558,7 +5695,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "b723e214c32b6a6d897141b78aa0f26cbfa3d1d09d25733be593cbb84309f13c",
+            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
             "jsonPointer": "/entries/21/proof/productionAdmission",
             "expectedValue": false
           }
@@ -5677,7 +5814,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "b723e214c32b6a6d897141b78aa0f26cbfa3d1d09d25733be593cbb84309f13c",
+            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
             "jsonPointer": "/entries/22/proof/productionAdmission",
             "expectedValue": false
           }
@@ -5787,7 +5924,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "b723e214c32b6a6d897141b78aa0f26cbfa3d1d09d25733be593cbb84309f13c",
+            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
             "jsonPointer": "/entries/23/proof/productionAdmission",
             "expectedValue": false
           }
@@ -6196,7 +6333,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "b723e214c32b6a6d897141b78aa0f26cbfa3d1d09d25733be593cbb84309f13c",
+            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
             "jsonPointer": "/entries/24/proof/productionAdmission",
             "expectedValue": true
           }
@@ -6679,7 +6816,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "b723e214c32b6a6d897141b78aa0f26cbfa3d1d09d25733be593cbb84309f13c",
+            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
             "jsonPointer": "/entries/25/proof/productionAdmission",
             "expectedValue": true
           }
@@ -6867,7 +7004,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "b723e214c32b6a6d897141b78aa0f26cbfa3d1d09d25733be593cbb84309f13c",
+            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
             "jsonPointer": "/entries/26/proof/productionAdmission",
             "expectedValue": false
           }
@@ -6978,7 +7115,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "b723e214c32b6a6d897141b78aa0f26cbfa3d1d09d25733be593cbb84309f13c",
+            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
             "jsonPointer": "/entries/27/proof/productionAdmission",
             "expectedValue": false
           }
@@ -7088,7 +7225,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "b723e214c32b6a6d897141b78aa0f26cbfa3d1d09d25733be593cbb84309f13c",
+            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
             "jsonPointer": "/entries/28/proof/productionAdmission",
             "expectedValue": false
           }
@@ -7198,7 +7335,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "b723e214c32b6a6d897141b78aa0f26cbfa3d1d09d25733be593cbb84309f13c",
+            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
             "jsonPointer": "/entries/29/proof/productionAdmission",
             "expectedValue": false
           }
@@ -7309,7 +7446,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "b723e214c32b6a6d897141b78aa0f26cbfa3d1d09d25733be593cbb84309f13c",
+            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
             "jsonPointer": "/entries/30/proof/productionAdmission",
             "expectedValue": false
           }
