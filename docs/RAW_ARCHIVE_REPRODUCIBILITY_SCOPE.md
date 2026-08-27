@@ -1,5 +1,18 @@
 # Raw-archive reproducibility scope
 
+> **Outcome, added 2026-08-27.** The recommendation in this document was
+> carried out and the gate is closed. The federal electoral chain was
+> reproduced from its raw archived inputs and matched the admitted artifact
+> exactly, at SHA-256
+> `ca50eb02e1baee076ebec1b8e8511ca6697e8e48cef68bf5d1d74f5458681c05` and
+> 20525056 bytes. The record is
+> [`data/raw-archive-reproduction-drill.json`](../data/raw-archive-reproduction-drill.json),
+> validated by `npm run check:raw-archive-reproduction-drill`. Phase 8
+> `raw-archive-reproducibility` is now `pass`. Phase 1
+> `raw-file-archive-recovery` is unaffected and still `fail`, for the reason
+> section 1 gives: its requirement is universal, and one chain cannot satisfy
+> it. The body below is preserved as written, in its original discovery voice.
+
 Discovery only. Nothing in this document was executed. No AWS call was made, no
 evidence record was created or edited, and the external data volume was not
 read. Every factual claim below cites a repository file.
