@@ -351,6 +351,25 @@ by the main agent, never by a discovery agent.
    enforces that shape on every archive shell runner, so a new runner must follow
    it. The TOTP must never be echoed or recorded.
 
+   **Which role.** The restore runner defaults to the least-privilege read-only
+   `WitnessTreeArchiveVerifier`, and that default currently fails: the six-probe
+   diagnosis of 2026-08-26 found it returns 403 on this prefix even on an
+   unpinned head. Until the owner grants that role `s3:GetObject` here, the
+   reproduction has to run under a role that can read the prefix, which today
+   means one that also holds write permission:
+
+   ```
+   WT_REPRO_ROLE=WitnessTreeArchivePromotionUploader \
+     ./scripts/restore-federal-electoral-archive-reproduction-inputs.sh --restore
+   ```
+
+   Record the consequence rather than glossing it. Under a write-capable role
+   the runner still makes no mutating call, but the non-mutation guarantee for
+   that run rests on the runner's source rather than on the credential being
+   incapable of writing. The drill of 2026-08-26 carries exactly this caveat in
+   its `assumedRoleNote`, and any new drill record must carry it too for as long
+   as the read-only role is refused.
+
 3. **AWS.** Head the exact version, read-only, and confirm it before downloading.
 
    ```
