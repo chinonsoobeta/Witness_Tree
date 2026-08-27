@@ -146,6 +146,8 @@
     "check:phase4-provincial-matching-preflight": "node scripts/check-phase4-provincial-matching-preflight.mjs && tsx --test tests/phase4-provincial-matching.test.ts tests/phase4-provincial-matching-preflight.test.mjs",
     "check:phase5-live-wildfire-exit-status": "node scripts/check-phase5-live-wildfire-exit-status.mjs",
     "check:phase6-account-alert-exit-status": "node scripts/check-phase6-account-alert-exit-status.mjs",
+    "drill:postgres-tenant-isolation": "zsh scripts/run-postgres-tenant-isolation-drill.sh",
+    "drill:kill-switch-stop": "tsx scripts/rehearse-kill-switch.mts",
     "check:phase7-indigenous-explore-comparison-exit-status": "node scripts/check-phase7-indigenous-explore-comparison-exit-status.mjs",
     "check:phase8-launch-readiness-exit-status": "node scripts/check-phase8-launch-readiness-exit-status.mjs",
     "check:phase9-public-beta-launch-exit-status": "node scripts/check-phase9-public-beta-launch-exit-status.mjs",
