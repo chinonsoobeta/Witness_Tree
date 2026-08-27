@@ -64,11 +64,48 @@ is finished and merged.
 Steps 1 and 5 through 8 of the runbook in
 [RAW_ARCHIVE_REPRODUCIBILITY_SCOPE.md](RAW_ARCHIVE_REPRODUCIBILITY_SCOPE.md) are
 local and touch no credential. Steps 3 and 4 are read-only S3 calls,
-`head-object` and `get-object` with an explicit `--version-id`. Step 2 mints the
+`head-object` and `get-object`; see the access finding below for why they are
+not pinned with `--version-id` today. Step 2 mints the
 session by reading a six-digit TOTP, and engineering must never handle, echo, or
 record one. The session lasts 43,200 seconds, which is ample for every remaining
 step. The blocker is therefore not a decision and not a cost; it is one gesture
 that only the holder of the MFA device can perform.
+
+### The archive role cannot read object versions
+
+Diagnosed on 2026-08-26 with `scripts/diagnose-federal-electoral-archive-read-access.sh`,
+which assumes the role once and runs six read-only probes that differ by one
+variable each. The pattern of which probes fail is the diagnosis:
+
+| Probe | Result |
+| --- | --- |
+| `get-caller-identity` | ok |
+| `head-object` with `--version-id`, no checksum mode | 403 |
+| `head-object` with `--version-id` and `--checksum-mode ENABLED` | 403 |
+| `head-object` with no `--version-id` | ok |
+| `list-object-versions` on that key | AccessDenied |
+| `get-bucket-encryption` | AccessDenied |
+
+`WitnessTreeArchivePromotionUploader` therefore holds `s3:GetObject` but not
+`s3:GetObjectVersion` or `s3:ListBucketVersions`. Separately, the read-only
+`WitnessTreeArchiveVerifier` role returns 403 on this prefix even unpinned, so
+the reproduction currently requires a role that also holds write permission.
+Both are least-privilege defects. Neither is a blocker for the drill and neither
+was worked around by weakening a check.
+
+The runner responds by trying the pinned read first and falling back to an
+unpinned read that asserts the `VersionId` S3 reports on **both** the head and
+the get equals the recorded version. That is not a weaker binding. A pinned read
+proves you fetched version X; the fallback proves the bytes you received came
+from version X and hash to the admitted SHA-256. Where they differ is when the
+current version is not the recorded one, and there the fallback fails closed
+while a pinned read would have quietly succeeded against a superseded object.
+The local SHA-256 comparison against the admitted value is unchanged and remains
+the load-bearing check. Because the pinned path is attempted first, the runner
+strengthens itself with no code change once the IAM desired state is applied.
+
+Applying that desired state is an owner action: it needs an IAM policy change in
+the archive account.
 
 Once that session exists, `data/raw-archive-reproduction-drill.json` can be
 written from a real run and
