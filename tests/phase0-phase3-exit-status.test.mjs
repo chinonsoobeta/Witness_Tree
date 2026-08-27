@@ -11,8 +11,11 @@ const phase3 = () => load("phase3-frontend-foundation-exit-status.json");
 test("the recorded Phase 0 and Phase 3 status pass their own contract", async () => {
   const zero = await checkPhase0FoundationsExitStatus();
   assert.equal(zero.totalCriteria, 8);
-  assert.equal(zero.completedCriteria, 5);
-  assert.equal(zero.phaseComplete, false);
+  assert.equal(zero.completedCriteria, 7);
+  assert.equal(zero.excludedCriteria, 1);
+  assert.equal(zero.acceptedCriteria, 8);
+  assert.equal(zero.percentage, 87.5);
+  assert.equal(zero.phaseComplete, true);
   const three = await checkPhase3FrontendFoundationExitStatus();
   assert.equal(three.totalCriteria, 5);
   assert.equal(three.completedCriteria, 4);
@@ -21,9 +24,8 @@ test("the recorded Phase 0 and Phase 3 status pass their own contract", async ()
 
 test("a pass cannot be claimed without checksum-bound evidence", async () => {
   const record = await phase0();
-  const criterion = record.exitCriteria.find((item) => item.status === "fail");
-  criterion.status = "pass";
-  delete criterion.blockedBy;
+  const criterion = record.exitCriteria.find((item) => item.status === "pass");
+  criterion.evidence = [];
   await assert.rejects(() => validatePhase0FoundationsExitStatus(record), /requires checksum-bound local evidence/);
 });
 
@@ -43,11 +45,18 @@ test("evidence cannot be read from outside the repository", async () => {
 
 test("a failing criterion must name its blocker and may not carry completion evidence", async () => {
   const missingBlocker = await phase0();
-  delete missingBlocker.exitCriteria.find((item) => item.status === "fail").blockedBy;
+  const excluded = missingBlocker.exitCriteria.find((item) => item.status === "excluded");
+  excluded.status = "fail";
+  delete excluded.ownerApprovedExclusion;
+  delete excluded.testPerformed;
+  delete excluded.exclusionScope;
+  delete excluded.evidence;
   await assert.rejects(() => validatePhase0FoundationsExitStatus(missingBlocker), /blocked on the owner or on engineering/);
 
   const withEvidence = await phase0();
-  withEvidence.exitCriteria.find((item) => item.status === "fail").evidence = [];
+  const failed = withEvidence.exitCriteria.find((item) => item.status === "excluded");
+  failed.status = "fail";
+  failed.blockedBy = "owner";
   await assert.rejects(() => validatePhase0FoundationsExitStatus(withEvidence), /must not carry evidence of completion/);
 });
 
@@ -58,7 +67,7 @@ test("the percentage and completion flag are derived, never asserted", async () 
 
   const claimed = await phase3();
   claimed.phaseComplete = true;
-  await assert.rejects(() => validatePhase3FrontendFoundationExitStatus(claimed), /must be derived from the criteria/);
+  await assert.rejects(() => validatePhase3FrontendFoundationExitStatus(claimed), /must be derived from passed or explicitly owner-excluded criteria/);
 });
 
 test("criteria must match the published plan wording exactly", async () => {
@@ -73,11 +82,74 @@ test("criteria must match the published plan wording exactly", async () => {
 
 test("every unmet criterion is listed as a blocker", async () => {
   const record = await phase0();
-  record.ownerBlockers.pop();
+  const excluded = record.exitCriteria.find((item) => item.status === "excluded");
+  excluded.status = "fail";
+  excluded.blockedBy = "owner";
+  delete excluded.ownerApprovedExclusion;
+  delete excluded.testPerformed;
+  delete excluded.exclusionScope;
+  delete excluded.evidence;
+  delete record.excludedCriteria;
+  delete record.acceptedCriteria;
+  record.completedCriteria = 7;
+  record.percentage = 87.5;
+  record.phaseComplete = false;
   await assert.rejects(() => validatePhase0FoundationsExitStatus(record), /must list exactly its unmet criteria/);
 });
 
-test("the split Phase 0 name criterion still reconstructs the plan's sentence", async () => { const record = await phase0(); const halves = SPLIT_CLAUSES.map((id) => record.exitCriteria.find((item) => item.id === id)); assert.equal(halves.filter(Boolean).length, 2); assert.equal(`${halves[0].title}, and ${halves[1].title}`, PLAN_BULLET); assert.equal(halves[0].status, "fail"); assert.equal(halves[1].status, "pass"); });
+test("the split Phase 0 name criterion still reconstructs the plan's sentence", async () => { const record = await phase0(); const halves = SPLIT_CLAUSES.map((id) => record.exitCriteria.find((item) => item.id === id)); assert.equal(halves.filter(Boolean).length, 2); assert.equal(`${halves[0].title}, and ${halves[1].title}`, PLAN_BULLET); assert.equal(halves[0].status, "pass"); assert.equal(halves[1].status, "pass"); });
+
+test("the engagement criterion is excluded without fabricating its test", async () => {
+  const record = await phase0();
+  const criterion = record.exitCriteria.find((item) => item.id === "engagement-contact-route-answers-within-five-business-days");
+  assert.equal(criterion.status, "excluded");
+  assert.equal(criterion.ownerApprovedExclusion, true);
+  assert.equal(criterion.testPerformed, false);
+  assert.match(criterion.reason, /No route was opened, no test message was sent or answered, and no engagement occurred/);
+  const decision = await load("phase0-owner-scope-decisions-2026-08-27.json");
+  assert.equal(decision.claims.engagementCompleted, false);
+  assert.equal(decision.claims.engagementRequirementOwnerExcluded, true);
+});
+
+test("only the named Phase 0 engagement criterion may be excluded", async () => {
+  const wrongPhase0 = await phase0();
+  const criterion = wrongPhase0.exitCriteria.find((item) => item.status === "pass");
+  criterion.status = "excluded";
+  criterion.ownerApprovedExclusion = true;
+  criterion.testPerformed = false;
+  criterion.exclusionScope = "Owner exclusion.";
+  await assert.rejects(() => validatePhase0FoundationsExitStatus(wrongPhase0), /not an owner-excludable criterion/);
+
+  const wrongPhase3 = await phase3();
+  const phase3Criterion = wrongPhase3.exitCriteria.find((item) => item.status === "fail");
+  phase3Criterion.status = "excluded";
+  phase3Criterion.ownerApprovedExclusion = true;
+  phase3Criterion.testPerformed = false;
+  phase3Criterion.exclusionScope = "Owner exclusion.";
+  phase3Criterion.evidence = wrongPhase3.exitCriteria.find((item) => item.status === "pass").evidence;
+  delete phase3Criterion.blockedBy;
+  await assert.rejects(() => validatePhase3FrontendFoundationExitStatus(wrongPhase3), /not an owner-excludable criterion/);
+});
+
+test("an owner exclusion requires approval, a bounded scope, an unperformed test, and evidence", async () => {
+  for (const [mutate, expected] of [
+    [(criterion) => { delete criterion.ownerApprovedExclusion; }, /explicit owner-approved exclusion/],
+    [(criterion) => { delete criterion.exclusionScope; }, /exclusion scope is required/],
+    [(criterion) => { criterion.testPerformed = true; }, /test was not performed/],
+    [(criterion) => { criterion.evidence = []; }, /requires checksum-bound local evidence/],
+  ]) {
+    const record = await phase0();
+    mutate(record.exitCriteria.find((item) => item.status === "excluded"));
+    await assert.rejects(() => validatePhase0FoundationsExitStatus(record), expected);
+  }
+});
+
+test("an owner exclusion must bind the canonical owner-decision record", async () => {
+  const record = await phase0();
+  const criterion = record.exitCriteria.find((item) => item.status === "excluded");
+  criterion.evidence = record.exitCriteria.find((item) => item.status === "pass").evidence.slice(0, 1);
+  await assert.rejects(() => validatePhase0FoundationsExitStatus(record), /canonical owner-decision evidence record/);
+});
 
 test("the identifier half cannot pass without its gate", async () => { const record = await phase0(); const half = record.exitCriteria.find((item) => item.id === SPLIT_CLAUSES[1]); assert.ok(half.evidence.some((item) => item.path === "scripts/check-persistent-identifiers.mjs")); assert.ok(half.evidence.some((item) => item.path === "tests/persistent-identifiers.test.mjs")); half.evidence = []; await assert.rejects(() => validatePhase0FoundationsExitStatus(record), /evidence/i); });
 

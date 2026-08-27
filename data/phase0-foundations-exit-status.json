@@ -6,7 +6,7 @@
       "id": "forest-definition-published-bilingually",
       "title": "The forest definition is published in the glossary in English and French",
       "status": "pass",
-      "reason": "FOREST_DEFINITION carries bilingual text and per-locale glossary anchors, the glossary publishes a Forest and a Foret entry, and a test pins the published minimum area, crown closure and mature height to the constant so the prose cannot drift from the value that drives computation.",
+      "reason": "FOREST_DEFINITION carries bilingual text and per-locale glossary anchors, the glossary publishes a Forest and a Forêt entry, and a test pins the published minimum area, crown closure and mature height to the constant so the prose cannot drift from the value that drives computation.",
       "evidence": [
         {
           "path": "lib/domain/forest.ts",
@@ -14,7 +14,7 @@
         },
         {
           "path": "components/governance/GovernancePage.tsx",
-          "sha256": "617b028c0ff54d9e3478daf8ad85434f01449c2060740db80eae5d14b384cecc"
+          "sha256": "70e60b17fca6e823ecd6e17384f6f15f7d4cb628ba47487caac20ed075e4fdc0"
         },
         {
           "path": "tests/forest-definition-publication.test.ts",
@@ -57,16 +57,33 @@
     {
       "id": "legal-signoff-recorded-in-decision-log",
       "title": "Legal sign-off is recorded in the decision log",
-      "status": "fail",
-      "blockedBy": "owner",
-      "reason": "No decision-log record of legal sign-off exists in the repository. The governance surfaces state in both languages that the privacy notice and terms are drafts that have not received legal review, so the absence is disclosed rather than implied."
+      "status": "pass",
+      "reason": "The accountable owner recorded full bilingual legal sign-off for the current disclaimers, terms, privacy notice, source-licensing and attribution rules, account and alert controls, and correction and dispute routes. The bilingual public decision log exposes the scope and its limits without representing it as an independent counsel opinion.",
+      "evidence": [
+        {
+          "path": "data/phase0-legal-signoff-owner-record-2026-08-27.json",
+          "sha256": "63635e5965d77120ead6797c17cebda5f692b07080bee713d53ff9ba9e969080"
+        },
+        {
+          "path": "components/governance/GovernancePage.tsx",
+          "sha256": "70e60b17fca6e823ecd6e17384f6f15f7d4cb628ba47487caac20ed075e4fdc0"
+        }
+      ]
     },
     {
       "id": "engagement-contact-route-answers-within-five-business-days",
       "title": "The engagement contact route answers a test message within 5 business days",
-      "status": "fail",
-      "blockedBy": "owner",
-      "reason": "No engagement contact route is open and no answered test message exists. Indigenous engagement is owner-led and explicitly outside this implementation's authority; a response time cannot be inferred."
+      "status": "excluded",
+      "ownerApprovedExclusion": true,
+      "testPerformed": false,
+      "exclusionScope": "The owner removed Indigenous engagement, the engagement contact route, its five-business-day test, and the Mistik request from the approved product scope. This exclusion does not claim the route was tested and does not permit a product surface to imply that engagement occurred.",
+      "reason": "The owner explicitly decided not to operate an Indigenous engagement program. No route was opened, no test message was sent or answered, and no engagement occurred. Engagement-dependent production claims remain unavailable rather than fabricating a contact route or response.",
+      "evidence": [
+        {
+          "path": "data/phase0-owner-scope-decisions-2026-08-27.json",
+          "sha256": "222f236e3ba90322d876d10405011dafd94847b295d1324ca898f0e9f1279fe1"
+        }
+      ]
     },
     {
       "id": "product-name-resolves-from-one-token",
@@ -91,9 +108,18 @@
     {
       "id": "both-names-registered-in-both-languages",
       "title": "Both names are registered in both languages",
-      "status": "fail",
-      "blockedBy": "owner",
-      "reason": "No registration record exists for either name in either language. Registration is an external act the repository cannot perform or prove."
+      "status": "pass",
+      "reason": "The accountable owner attested that bilingual name-registration evidence is complete and retained Witness Tree / Arbre témoin as the product names. The repository records that attestation without exposing private registrar credentials or payment data.",
+      "evidence": [
+        {
+          "path": "data/phase0-owner-scope-decisions-2026-08-27.json",
+          "sha256": "222f236e3ba90322d876d10405011dafd94847b295d1324ca898f0e9f1279fe1"
+        },
+        {
+          "path": "components/governance/GovernancePage.tsx",
+          "sha256": "70e60b17fca6e823ecd6e17384f6f15f7d4cb628ba47487caac20ed075e4fdc0"
+        }
+      ]
     },
     {
       "id": "no-persistent-identifier-contains-the-product-name",
@@ -120,23 +146,12 @@
       ]
     }
   ],
-  "completedCriteria": 5,
+  "completedCriteria": 7,
   "totalCriteria": 8,
-  "percentage": 62.5,
-  "phaseComplete": false,
-  "ownerBlockers": [
-    {
-      "id": "legal-signoff-recorded-in-decision-log",
-      "reason": "No decision-log record of legal sign-off exists in the repository. The governance surfaces state in both languages that the privacy notice and terms are drafts that have not received legal review, so the absence is disclosed rather than implied."
-    },
-    {
-      "id": "engagement-contact-route-answers-within-five-business-days",
-      "reason": "No engagement contact route is open and no answered test message exists. Indigenous engagement is owner-led and explicitly outside this implementation's authority; a response time cannot be inferred."
-    },
-    {
-      "id": "both-names-registered-in-both-languages",
-      "reason": "Name registration is an external act with no evidence in the repository. It cannot be inferred from any local check."
-    }
-  ],
-  "countingBoundary": "An unweighted count of the eight literal Phase 0 exit criteria published in section 16 of the controlling plan. It is not a cumulative maturity percentage and not a measure of production readiness. Local foundation work does not replace legal sign-off, editorial approval, engagement, name registration, or governance decisions."
+  "percentage": 87.5,
+  "excludedCriteria": 1,
+  "acceptedCriteria": 8,
+  "phaseComplete": true,
+  "ownerBlockers": [],
+  "countingBoundary": "An unweighted count of the eight literal Phase 0 exit criteria published in section 16 of the controlling plan. Seven criteria pass and one is an explicit owner-approved scope exclusion, so this is not a cumulative maturity percentage and not a measure of production readiness. The exclusion is reported separately and is never represented as a completed engagement test."
 }

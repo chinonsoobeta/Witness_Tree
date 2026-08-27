@@ -13,8 +13,8 @@ function text(value, name) {
 // A passing criterion must be backed by checksum-bound files inside the repository. A failing one
 // cannot be: absence has nothing to hash. Failures instead name who the work is blocked on, so an
 // unmet criterion is recorded as unmet rather than quietly dropped or turned into a pass.
-async function verifyEvidence(evidence, id) {
-  if (!Array.isArray(evidence) || evidence.length === 0) throw new Error(`${id} passes, so it requires checksum-bound local evidence.`);
+async function verifyEvidence(evidence, id, outcome = "passes") {
+  if (!Array.isArray(evidence) || evidence.length === 0) throw new Error(`${id} ${outcome}, so it requires checksum-bound local evidence.`);
   for (const item of evidence) {
     text(item?.path, `${id} evidence path`);
     if (!SHA.test(item?.sha256 ?? "")) throw new Error(`${id} evidence SHA-256 is invalid.`);
@@ -25,21 +25,34 @@ async function verifyEvidence(evidence, id) {
   }
 }
 
-export async function validateExitStatus(record, { schemaVersion, phase, criteria }) {
+export async function validateExitStatus(record, { schemaVersion, phase, criteria, ownerExcludableCriteria = new Set(), ownerExclusionEvidence = new Map() }) {
   if (record?.schemaVersion !== schemaVersion || record.phase !== phase) throw new Error(`Phase ${phase} status must be a Version 2.1 record.`);
   if (!Array.isArray(record.exitCriteria) || record.exitCriteria.length !== criteria.size) throw new Error(`Phase ${phase} requires exactly the ${criteria.size} published exit criteria.`);
 
   const seen = new Set();
   let passed = 0;
+  let excluded = 0;
   for (const criterion of record.exitCriteria) {
     if (!criteria.has(criterion?.id) || seen.has(criterion.id) || criterion.title !== criteria.get(criterion.id)) {
       throw new Error(`Phase ${phase} exit criteria must exactly match the published plan wording.`);
     }
-    if (criterion.status !== "pass" && criterion.status !== "fail") throw new Error(`${criterion.id} must have an evidence-derived pass or fail status.`);
+    if (criterion.status !== "pass" && criterion.status !== "fail" && criterion.status !== "excluded") throw new Error(`${criterion.id} must have an evidence-derived pass, fail, or owner-approved exclusion status.`);
     text(criterion.reason, `${criterion.id} reason`);
     if (criterion.status === "pass") {
       await verifyEvidence(criterion.evidence, criterion.id);
       passed += 1;
+    } else if (criterion.status === "excluded") {
+      if (!ownerExcludableCriteria.has(criterion.id)) throw new Error(`${criterion.id} is not an owner-excludable criterion for Phase ${phase}.`);
+      if (criterion.ownerApprovedExclusion !== true) throw new Error(`${criterion.id} is excluded, so it must carry an explicit owner-approved exclusion.`);
+      if (criterion.testPerformed !== false) throw new Error(`${criterion.id} is excluded, so it must state that its test was not performed.`);
+      if (criterion.blockedBy !== undefined) throw new Error(`${criterion.id} is excluded, so it must not be listed as blocked.`);
+      text(criterion.exclusionScope, `${criterion.id} exclusion scope`);
+      await verifyEvidence(criterion.evidence, criterion.id, "is excluded");
+      const canonicalEvidencePath = ownerExclusionEvidence.get(criterion.id);
+      if (!canonicalEvidencePath || criterion.evidence?.length !== 1 || criterion.evidence[0]?.path !== canonicalEvidencePath) {
+        throw new Error(`${criterion.id} must bind the canonical owner-decision evidence record.`);
+      }
+      excluded += 1;
     } else {
       if (criterion.blockedBy !== "owner" && criterion.blockedBy !== "engineering") throw new Error(`${criterion.id} fails, so it must name whether it is blocked on the owner or on engineering.`);
       if (criterion.evidence !== undefined) throw new Error(`${criterion.id} fails, so it must not carry evidence of completion.`);
@@ -51,7 +64,13 @@ export async function validateExitStatus(record, { schemaVersion, phase, criteri
   if (record.completedCriteria !== passed || record.totalCriteria !== criteria.size || record.percentage !== percentage) {
     throw new Error(`Phase ${phase} percentage must equal the unweighted formal exit-criterion result.`);
   }
-  if (record.phaseComplete !== (passed === criteria.size)) throw new Error(`Phase ${phase} completion must be derived from the criteria, never asserted.`);
+  if (excluded > 0 && (record.excludedCriteria !== excluded || record.acceptedCriteria !== passed + excluded)) {
+    throw new Error(`Phase ${phase} must report its passed and owner-excluded criteria separately.`);
+  }
+  if (excluded === 0 && (record.excludedCriteria !== undefined || record.acceptedCriteria !== undefined)) {
+    throw new Error(`Phase ${phase} must not report owner exclusions when none exist.`);
+  }
+  if (record.phaseComplete !== (passed + excluded === criteria.size)) throw new Error(`Phase ${phase} completion must be derived from passed or explicitly owner-excluded criteria, never asserted.`);
 
   // The count is an unweighted tally of the literal published exit criteria. Version 2.1 forbids converting a
   // phase into an invented cumulative maturity score, and Phase 3 in particular is recorded by evidence rather

@@ -7,16 +7,17 @@ const record = JSON.parse(readFileSync(new URL("../data/phase7-indigenous-explor
 
 test("Phase 7 records the literal engineering and Indigenous-geometry gates without production inflation", async () => {
   assert.equal(await validatePhase7IndigenousExploreComparisonExitStatus(record), record);
-  assert.equal(record.completedCriteria, 13);
-  assert.equal(record.percentage, 81.25);
+  assert.equal(record.completedCriteria, 14);
+  assert.equal(record.percentage, 87.5);
   assert.equal(record.phaseComplete, false);
-  assert.deepEqual(record.exitCriteria.filter((item) => item.status === "fail").map((item) => item.id), ["reserve-and-treaty-layers-loaded", "right-of-reply-live", "mistik-request-recorded"]);
+  assert.deepEqual(record.exitCriteria.filter((item) => item.status === "fail").map((item) => item.id), ["reserve-and-treaty-layers-loaded", "right-of-reply-live"]);
+  assert.equal(record.exitCriteria.find((item) => item.id === "mistik-request-recorded").status, "pass");
 });
 
 test("Phase 7 rejects invented completion, altered status, missing blockers, and tampered evidence", async () => {
   await assert.rejects(validatePhase7IndigenousExploreComparisonExitStatus({ ...record, phaseComplete: true }), /cannot claim/);
   await assert.rejects(validatePhase7IndigenousExploreComparisonExitStatus({ ...record, percentage: 100 }), /unweighted/);
-  await assert.rejects(validatePhase7IndigenousExploreComparisonExitStatus({ ...record, externalBlockers: record.externalBlockers.slice(0, 2) }), /three external blockers/);
+  await assert.rejects(validatePhase7IndigenousExploreComparisonExitStatus({ ...record, externalBlockers: record.externalBlockers.slice(0, 1) }), /two external blockers/);
   const exitCriteria = record.exitCriteria.map((item, index) => index === 0 ? { ...item, evidence: [{ ...item.evidence[0], sha256: "0".repeat(64) }] } : item);
   await assert.rejects(validatePhase7IndigenousExploreComparisonExitStatus({ ...record, exitCriteria }), /checksum/);
 });

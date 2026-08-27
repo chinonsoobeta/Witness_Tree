@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "witness-tree/phase0-owner-scope-decisions/1",
+  "status": "owner-decisions-recorded",
+  "recordedOn": "2026-08-27",
+  "accountableOwner": "Chinonso Obeta",
+  "decisions": [
+    {
+      "id": "indigenous-engagement-owner-exclusion",
+      "ownerStatement": "We will not be doing Indigenous engagement.",
+      "decision": "exclude",
+      "scope": [
+        "Phase 0 engagement contact route and five-business-day test",
+        "Mistik name request, honorarium, terms, and engagement record",
+        "production engagement and right-of-reply operations that depend on a named Indigenous engagement lead"
+      ],
+      "productEffect": "Witness Tree will not claim that Indigenous engagement occurred. No engagement contact route, engagement register, or Mistik permission will be fabricated. Indigenous-geography production surfaces remain unavailable unless the owner later replaces this exclusion with a separately evidenced scope decision."
+    },
+    {
+      "id": "witness-tree-name-retained",
+      "ownerStatement": "I plan to keep the Witness Tree name.",
+      "decision": "approve",
+      "productName": {
+        "en": "Witness Tree",
+        "fr": "Arbre témoin"
+      },
+      "mistikStatus": "not-pursued"
+    },
+    {
+      "id": "bilingual-name-registration-complete",
+      "ownerStatement": "Assume that bilingual name-registration evidence is complete.",
+      "decision": "approve",
+      "evidenceStatus": "owner-attested-complete",
+      "names": [
+        { "locale": "en", "name": "Witness Tree", "registered": true },
+        { "locale": "fr", "name": "Arbre témoin", "registered": true }
+      ],
+      "limits": "This repository records the accountable owner's attestation. It does not contain or expose private registrar credentials, payment data, or registration documents."
+    }
+  ],
+  "claims": {
+    "engagementCompleted": false,
+    "engagementRequirementOwnerExcluded": true,
+    "mistikPermissionObtained": false,
+    "witnessTreeNameRetained": true,
+    "bilingualNameRegistrationOwnerAttestedComplete": true
+  }
+}

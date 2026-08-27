@@ -15,7 +15,7 @@
       "evidence": [
         {
           "path": "docs/EXTERNAL_GATES.md",
-          "sha256": "a001ca8a6084482d9bab130a2fb27a05dc0e7f628e4cc1110eb6e0b6e88d21b9"
+          "sha256": "51c55070eafd24a2c05cf43fbe903edb3af93068b6730baeb3fb8478a16ba2d9"
         }
       ]
     },
@@ -39,7 +39,7 @@
       "evidence": [
         {
           "path": "docs/PLAN_GAP_MATRIX.md",
-          "sha256": "c4f8724378ff6878e0d37e3826a5ae8f1219bc7372f98b1c53981c73ba6fadce"
+          "sha256": "a6a3dd2082b91b542276384352d16720306eb2852d6f4d6efa018e83eb88ed89"
         }
       ]
     },
@@ -79,11 +79,11 @@
       "id": "legal-licence-attribution-review",
       "title": "Legal, licence, and attribution review is complete",
       "status": "fail",
-      "reason": "Individual source records may carry attribution evidence, but no legal review or complete production-release licence and attribution sign-off exists.",
+      "reason": "The owner-recorded Phase 0 legal sign-off covers the current licensing and attribution rules, but it explicitly does not grant missing source rights. A complete production-release source-rights, licence, and attribution review therefore does not yet exist.",
       "evidence": [
         {
           "path": "docs/EXTERNAL_GATES.md",
-          "sha256": "a001ca8a6084482d9bab130a2fb27a05dc0e7f628e4cc1110eb6e0b6e88d21b9"
+          "sha256": "51c55070eafd24a2c05cf43fbe903edb3af93068b6730baeb3fb8478a16ba2d9"
         }
       ]
     },
@@ -119,7 +119,7 @@
         },
         {
           "path": "docs/PLAN_GAP_MATRIX.md",
-          "sha256": "c4f8724378ff6878e0d37e3826a5ae8f1219bc7372f98b1c53981c73ba6fadce"
+          "sha256": "a6a3dd2082b91b542276384352d16720306eb2852d6f4d6efa018e83eb88ed89"
         }
       ],
       "ownerAuthorization": {
@@ -136,7 +136,7 @@
       "evidence": [
         {
           "path": "docs/PLAN_GAP_MATRIX.md",
-          "sha256": "c4f8724378ff6878e0d37e3826a5ae8f1219bc7372f98b1c53981c73ba6fadce"
+          "sha256": "a6a3dd2082b91b542276384352d16720306eb2852d6f4d6efa018e83eb88ed89"
         }
       ]
     },
@@ -265,7 +265,7 @@
     {
       "id": "production-operations",
       "status": "blocked",
-      "reason": "An accountable operational owner must establish the handbook, on-call rota, monitoring, backups, and escalation procedures."
+      "reason": "The owner-approved handbook exists. An accountable operational owner must still establish the on-call rota, monitoring, backups, and staffed escalation operation."
     },
     {
       "id": "admitted-production-data-and-delivery",
