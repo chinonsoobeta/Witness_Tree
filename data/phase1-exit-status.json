@@ -21,7 +21,7 @@
         "requirement": "100 percent of production datasets have a complete ledger entry.",
         "evidence": [
           {"path": "data/phase1-production-source-ledger.json", "sha256": "b723e214c32b6a6d897141b78aa0f26cbfa3d1d09d25733be593cbb84309f13c"},
-          {"path": "data/phase1-source-ledger-field-audit.json", "sha256": "523e34944feef6afd1e4d029d655caf49be359901d26f2c3139953fd0ccc1c41"},
+          {"path": "data/phase1-source-ledger-field-audit.json", "sha256": "3d95857400a36436ffe6b7178f1105d93fdaeb6f5528607c5b00c44062c45f96"},
           {"path": "data/phase1-optional-enhancements.json", "sha256": "2617e8a975b2fe7d328b7cb43834cf89aa34f2df028a57d517168277c57d24be"},
           {"path": "data/phase1-current-state-completion-audit.json", "sha256": "f0c59e0f66a0cfdc26d4f97a4defd6ec09db4379623db303e09b1d9d5b2a3c07"}
         ],
