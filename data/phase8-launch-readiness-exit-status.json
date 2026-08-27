@@ -3,9 +3,9 @@
   "phase": 8,
   "localImplementationStatus": "incomplete",
   "phaseComplete": false,
-  "completedCriteria": 5,
+  "completedCriteria": 6,
   "totalCriteria": 16,
-  "percentage": 31.25,
+  "percentage": 37.5,
   "exitCriteria": [
     {
       "id": "professional-bilingual-review",
@@ -58,16 +58,20 @@
     {
       "id": "raw-archive-reproducibility",
       "title": "Reproducibility from the raw archive is demonstrated",
-      "status": "fail",
-      "reason": "A read-only, version-pinned restoration of three immutable raw snapshots recorded byte length, SHA-256, ZIP integrity, and temporary-copy removal, but no complete admitted output has been reproduced from its raw archived inputs. The drill is restoration evidence only.",
+      "status": "pass",
+      "reason": "The admitted federal electoral output was reproduced from its raw archived inputs. The two archive objects were restored read-only, with the recorded VersionId asserted on both head-object and get-object, and the recorded method version re-run against them produced federal-electoral-districts-2023.gpkg at SHA-256 ca50eb02e1baee076ebec1b8e8511ca6697e8e48cef68bf5d1d74f5458681c05 and 20525056 bytes, equal to the admitted artifact. Both temporary data roots were removed. Two limits are recorded in the drill itself and do not affect the byte match: the archive role lacks s3:GetObjectVersion, so the read was unpinned with the version asserted rather than pinned, and the read-only verifier role returns 403 on this prefix, so a write-capable role was used and the non-mutation guarantee rests on the runner source. This closes the depth gate for one chain only. Phase 1 raw-file-archive-recovery is a universal breadth gate and remains unaffected.",
       "evidence": [
         {
-          "path": "data/immutable-restore-drill.json",
-          "sha256": "666bdfbc9380b861a1cafa8d78eec213ca9e663e1037c949c6417c8aaa858c0e"
+          "path": "data/raw-archive-reproduction-drill.json",
+          "sha256": "21a9c67ea4eca1b44defbb11393ed0e295301d7e8877110a188b987baf1ea04d"
         },
         {
-          "path": "scripts/check-immutable-restore-drill.mjs",
-          "sha256": "95e11c86e39b90cde6324abd088157792b9dc953e81419f71bd311156429ab8c"
+          "path": "scripts/check-raw-archive-reproduction-drill.mjs",
+          "sha256": "498ec7ed1fc4580054e5b93bc0696bac479d91caebc58b6a04f4229e6192afb4"
+        },
+        {
+          "path": "data/phase1-federal-electoral-production-admission.json",
+          "sha256": "a8f7130e54210147845c7c3a77134a82bb88bf7e1814e261aa4bdd2c5a8492e2"
         }
       ]
     },
@@ -111,7 +115,7 @@
       "evidence": [
         {
           "path": "docs/OPERATIONS_HANDBOOK.md",
-          "sha256": "4eeb6dedff6854655f3611c9824b20714d9ea50cfadc44b15918db51a3c4f31d"
+          "sha256": "f920d0d976673f5c16e9b43ba244b8125601a9940b106999b2823045e21b955b"
         },
         {
           "path": "docs/PLAN_GAP_MATRIX.md",

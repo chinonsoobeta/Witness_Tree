@@ -522,9 +522,14 @@ data is gone and the only path back is to re-acquire and re-transform from the
 raw archive and from the original publishers. Establishing a second copy is an
 owner action and nothing in this repository substitutes for it.
 
-Note also that the restore drill proves readback, not reproducibility. Phase 8
-`raw-archive-reproducibility` remains `fail`: no complete admitted output has
-been reproduced from its raw archived inputs.
+Note also that the restore drill proves readback, not reproducibility. Those
+are separate claims, and the second one is now evidenced separately: Phase 8
+`raw-archive-reproducibility` passed on 2026-08-27, when the admitted federal
+electoral output was regenerated from its raw archived inputs and matched the
+admitted SHA-256 exactly. See [`data/raw-archive-reproduction-drill.json`](../data/raw-archive-reproduction-drill.json).
+That closes the depth gate for one chain. It says nothing about the other
+chains, and it does not close Phase 1 `raw-file-archive-recovery`, whose
+requirement is universal across every raw file in the ledger.
 
 ### 6.5 Kill switch
 

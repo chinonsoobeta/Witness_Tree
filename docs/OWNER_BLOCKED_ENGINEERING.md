@@ -56,7 +56,7 @@ is finished and merged.
 
 | Item | State of the engineering | The one thing needed | Who can do it |
 | --- | --- | --- | --- |
-| Phase 8 `raw-archive-reproducibility` | Runbook written, checker merged, record deliberately absent | One MFA-assumed role session | The owner, on the owner's own device |
+| Phase 8 `raw-archive-reproducibility` | **Closed on 2026-08-27.** The owner ran the restore, the reproduction matched the admitted SHA-256 exactly, and the gate now passes | Nothing further | Done |
 
 ### The QC original current inventory extraction checksum
 

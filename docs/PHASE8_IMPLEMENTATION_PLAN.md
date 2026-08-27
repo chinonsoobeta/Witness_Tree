@@ -213,6 +213,11 @@ sharpen the `reason` text, not the status.
 
 ## 2. `raw-archive-reproducibility`
 
+> **This gate is closed. This section is history, not work.** On 2026-08-27 the
+> gate was closed by the cheaper federal electoral route, not by the Phase 2
+> route described below. Nothing here needs doing. It is kept because it
+> records why the expensive route was considered and set aside.
+
 > **Read `docs/RAW_ARCHIVE_REPRODUCIBILITY_SCOPE.md` before acting on this
 > section.** That document was written in parallel with this one, and neither
 > author saw the other's work. It evaluates four reproduction candidates and
@@ -710,7 +715,7 @@ tiles.
 | Criterion | Verdict under ChatGPT Sites hosting |
 | --- | --- |
 | `load-testing` | Not achievable as written. The site tier is not the project's to test or to fix. Measure the AWS delivery tier, scope the claim to it, and leave the gate `fail`. |
-| `raw-archive-reproducibility` | Achievable, and hosting-independent. `docs/RAW_ARCHIVE_REPRODUCIBILITY_SCOPE.md` establishes a cheaper route than the one in section 2: a 10.3 MB federal electoral reproduction with no new promotion and no new retention commitment. Prefer it. The route in section 2 needs the StatCan boundary file promoted into the archive, then a version-pinned restore and re-run of the admitted Phase 2 chain. |
+| `raw-archive-reproducibility` | **Closed on 2026-08-27**, by the cheaper route, hosting-independent as predicted. `docs/RAW_ARCHIVE_REPRODUCIBILITY_SCOPE.md` establishes a cheaper route than the one in section 2: a 10.3 MB federal electoral reproduction with no new promotion and no new retention commitment. Prefer it. The route in section 2 needs the StatCan boundary file promoted into the archive, then a version-pinned restore and re-run of the admitted Phase 2 chain. |
 | `bulk-downloads` | Achievable with the artifacts in AWS `ca-central-1` behind CloudFront. The CSV is reachable now; a GeoPackage waits on an admitted geospatial output. |
 | `observability` | Achievable for the archive and delivery tiers in AWS. Not achievable for the site tier. Any flip must say so in its own reason text. |
 | `backups` | Achievable in full, today, with no external party. A Canadian recovery copy plus one recovery exercise closes it. |
@@ -746,12 +751,17 @@ These were discovered by reading, and none of them is repaired here.
    `data/immutable-promotions.json` record three promoted, compliance-locked
    snapshots and `data/vlce2-remote-promotion-evidence.json` records 39 more.
    The gate is still correctly open, but its stated reason is out of date.
-4. **The `raw-archive-reproducibility` gate is closer than its text implies.**
-   The gate's reason describes only the three-payload restore drill. It does
-   not mention that the admitted Phase 2 output of 2026-08-26 has 39 of its 40
-   raw inputs already locked in the Canadian archive. The single missing input
-   is the StatCan boundary file, which `data/boundary-editions.json` binds by
-   checksum but not by object key or version ID.
+4. **The `raw-archive-reproducibility` gate is closed.** **Resolved on
+   2026-08-27.** This entry said the gate was closer than its text implied,
+   and it was: the cheaper federal electoral route in
+   `docs/RAW_ARCHIVE_REPRODUCIBILITY_SCOPE.md` was taken instead of the Phase 2
+   route described in section 2, and it matched the admitted SHA-256 exactly.
+   Section 2 below is retained as history and no longer describes work to do.
+   The observation that the admitted Phase 2 output has 39 of its 40 raw inputs
+   locked in the Canadian archive still stands, and the single missing input is
+   still the StatCan boundary file, which `data/boundary-editions.json` binds by
+   checksum but not by object key or version ID. That matters for the Phase 2
+   route and for `backups`, not for this gate.
 5. **The runtime target is not ambiguous, and this entry was wrong.**
    **Corrected on 2026-08-27.** The original text said `.openai/hosting.json`
    and the Cloudflare Workers surface described two different deployments and
