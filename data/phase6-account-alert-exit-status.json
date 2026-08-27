@@ -11,10 +11,36 @@
       "id": "direct-database-tenant-isolation",
       "title": "One account cannot read another account’s saved areas, proven by a test that attempts it directly against the database",
       "status": "fail",
-      "reason": "The local policy filters by owner, but no managed Canadian database, row-level-security policy, or direct database isolation test exists. A policy-only test cannot prove database tenant isolation.",
+      "reason": "A row-level-security policy and a direct database isolation test now exist. db/postgres/0001-account-tenant-isolation.sql forces row level security on all three account tables, and scripts/check-postgres-tenant-isolation.mjs opens a second connection as a NOSUPERUSER NOBYPASSRLS role and attempts seventeen cross-tenant reads, writes and privilege escalations, all of which were refused when run on 2026-08-26. A negative control with row level security removed failed fourteen of the same seventeen probes, so the probes are falsifiable rather than vacuous. That run was against a throwaway local container that no longer exists, and no managed Canadian database has been provisioned or admitted, so the criterion is not met. The proof and the database it must be proven on are tracked together in the canadian-managed-service-and-direct-rls blocker.",
       "evidence": [
-        {"path": "lib/accounts/activation-gate.ts", "sha256": "d1631f99618c9a47c863860f70e18f3c4ea2a82d2fa448f6fb10cafc87a3d2bb"},
-        {"path": "tests/account-activation-gate.test.ts", "sha256": "a28b19710643384f7039dd6549a561a7b5e5aae051735cd2fd8e201b71694404"}
+        {
+          "path": "lib/accounts/activation-gate.ts",
+          "sha256": "d1631f99618c9a47c863860f70e18f3c4ea2a82d2fa448f6fb10cafc87a3d2bb"
+        },
+        {
+          "path": "tests/account-activation-gate.test.ts",
+          "sha256": "a28b19710643384f7039dd6549a561a7b5e5aae051735cd2fd8e201b71694404"
+        },
+        {
+          "path": "db/postgres/0001-account-tenant-isolation.sql",
+          "sha256": "716c05987c9a5e7be37ed437135b19cff8e148725bcbf2ab8e923ff5a4edb685"
+        },
+        {
+          "path": "scripts/check-postgres-tenant-isolation.mjs",
+          "sha256": "7a35c207bce81e45301fc6def29a562fcc9a417e11ca81dbce8a8e40f39c6ac7"
+        },
+        {
+          "path": "scripts/run-postgres-tenant-isolation-drill.sh",
+          "sha256": "1cdf400fc8e71d1d11dc8571ffc662a3cacd481543f6ec1d77599624d3286d87"
+        },
+        {
+          "path": "tests/postgres-tenant-isolation-harness.test.mjs",
+          "sha256": "91b58ec68f1b6205d526451659d0dcf5aa702de1c4aef0371cd0943ecd08e6a3"
+        },
+        {
+          "path": "docs/PHASE6_ISOLATION_AND_KILLSWITCH.md",
+          "sha256": "32a24706b51824176930710ceee6af7fb830b4d40df32a308c99226bda12a718"
+        }
       ]
     },
     {
@@ -23,18 +49,46 @@
       "status": "pass",
       "reason": "The deterministic local store policy removes the account, its saved areas, and its alert history at the 30-day deadline; the focused test exercises that boundary. This is local policy evidence only, not proof of a hosted deletion operation.",
       "evidence": [
-        {"path": "lib/accounts/policy.ts", "sha256": "31d5b08bcfe4cf32c6c3bc2bee9b1fcafdfc28beabdacca205d10ff2fbe41599"},
-        {"path": "tests/account-policy.test.ts", "sha256": "a6227af60129531367b9d2e63fd5c7123daa813ed653ca6b5124708731e00b32"}
+        {
+          "path": "lib/accounts/policy.ts",
+          "sha256": "31d5b08bcfe4cf32c6c3bc2bee9b1fcafdfc28beabdacca205d10ff2fbe41599"
+        },
+        {
+          "path": "tests/account-policy.test.ts",
+          "sha256": "a6227af60129531367b9d2e63fd5c7123daa813ed653ca6b5124708731e00b32"
+        }
       ]
     },
     {
       "id": "kill-switch-under-five-minutes",
       "title": "The kill switch stops all outbound alerts within 5 minutes",
       "status": "fail",
-      "reason": "The pure evaluator honours a local kill-switch flag, but no outbound queue or sender exists and no independent timed rehearsal has been observed. A unit test cannot establish a five-minute operational stop.",
+      "reason": "An outbound queue and a sender abstraction now exist in lib/alerts/outbound.ts, and scripts/rehearse-kill-switch.mts measured a stop well under one second from engaging the switch to the last refused send, with alerts still going out after engagement and counted separately. The drill times itself against a recording sender that reaches no recipient, and no independent observer witnessed it, so it is not the rehearsal this criterion requires. A self-timed local drill cannot establish a five-minute operational stop. Independent observation is tracked in the independent-live-rehearsal blocker.",
       "evidence": [
-        {"path": "lib/accounts/activation-gate.ts", "sha256": "d1631f99618c9a47c863860f70e18f3c4ea2a82d2fa448f6fb10cafc87a3d2bb"},
-        {"path": "tests/account-activation-gate.test.ts", "sha256": "a28b19710643384f7039dd6549a561a7b5e5aae051735cd2fd8e201b71694404"}
+        {
+          "path": "lib/accounts/activation-gate.ts",
+          "sha256": "d1631f99618c9a47c863860f70e18f3c4ea2a82d2fa448f6fb10cafc87a3d2bb"
+        },
+        {
+          "path": "tests/account-activation-gate.test.ts",
+          "sha256": "a28b19710643384f7039dd6549a561a7b5e5aae051735cd2fd8e201b71694404"
+        },
+        {
+          "path": "lib/alerts/outbound.ts",
+          "sha256": "80edc6636addf9b35d458ddc5c7bea672c5aa6ecac5bf23c27ccd27cf1074d9a"
+        },
+        {
+          "path": "scripts/rehearse-kill-switch.mts",
+          "sha256": "7ccfadf1250656fb4b4858ab5c038b2ca2d98b4c4999eace400ff7575a07a3a9"
+        },
+        {
+          "path": "tests/alert-outbound-kill-switch.test.ts",
+          "sha256": "5e7c1661fdbeca8a3fc2fe6791946d80f3c1c9650d945ecb86df45432fd271e8"
+        },
+        {
+          "path": "docs/PHASE6_ISOLATION_AND_KILLSWITCH.md",
+          "sha256": "32a24706b51824176930710ceee6af7fb830b4d40df32a308c99226bda12a718"
+        }
       ]
     },
     {
@@ -43,9 +97,18 @@
       "status": "pass",
       "reason": "The local evaluator refuses incomplete event metadata and constructs every bilingual payload with evidence-first-line text, data version, source agency, and observation time. The focused test exercises all seven trigger templates and required fields.",
       "evidence": [
-        {"path": "lib/alerts/triggers.ts", "sha256": "3041d9e5b6d4caa6a5abef3c502838ba98b193fd8ccfa39a9621bef939aa8c3d"},
-        {"path": "lib/alerts/templates.ts", "sha256": "cc5fe9e3031e6494154fc9299e2cbe3abf360641dd6c0ed763f87041ad21d814"},
-        {"path": "tests/alert-engine.test.ts", "sha256": "c2a2cbae28ab352a32feeb115ccd6ebbb80bd60e5e40d15ef028404679b91d9d"}
+        {
+          "path": "lib/alerts/triggers.ts",
+          "sha256": "3041d9e5b6d4caa6a5abef3c502838ba98b193fd8ccfa39a9621bef939aa8c3d"
+        },
+        {
+          "path": "lib/alerts/templates.ts",
+          "sha256": "cc5fe9e3031e6494154fc9299e2cbe3abf360641dd6c0ed763f87041ad21d814"
+        },
+        {
+          "path": "tests/alert-engine.test.ts",
+          "sha256": "c2a2cbae28ab352a32feeb115ccd6ebbb80bd60e5e40d15ef028404679b91d9d"
+        }
       ]
     },
     {
@@ -54,10 +117,22 @@
       "status": "pass",
       "reason": "The local policy selects every history entry for a restated figure and the evaluator permits correction alerts only for a previously notified saved area. Focused tests cover changed-only correction recipients and rejection of an unnotified correction.",
       "evidence": [
-        {"path": "lib/accounts/policy.ts", "sha256": "31d5b08bcfe4cf32c6c3bc2bee9b1fcafdfc28beabdacca205d10ff2fbe41599"},
-        {"path": "lib/alerts/triggers.ts", "sha256": "3041d9e5b6d4caa6a5abef3c502838ba98b193fd8ccfa39a9621bef939aa8c3d"},
-        {"path": "tests/account-policy.test.ts", "sha256": "a6227af60129531367b9d2e63fd5c7123daa813ed653ca6b5124708731e00b32"},
-        {"path": "tests/alert-engine.test.ts", "sha256": "c2a2cbae28ab352a32feeb115ccd6ebbb80bd60e5e40d15ef028404679b91d9d"}
+        {
+          "path": "lib/accounts/policy.ts",
+          "sha256": "31d5b08bcfe4cf32c6c3bc2bee9b1fcafdfc28beabdacca205d10ff2fbe41599"
+        },
+        {
+          "path": "lib/alerts/triggers.ts",
+          "sha256": "3041d9e5b6d4caa6a5abef3c502838ba98b193fd8ccfa39a9621bef939aa8c3d"
+        },
+        {
+          "path": "tests/account-policy.test.ts",
+          "sha256": "a6227af60129531367b9d2e63fd5c7123daa813ed653ca6b5124708731e00b32"
+        },
+        {
+          "path": "tests/alert-engine.test.ts",
+          "sha256": "c2a2cbae28ab352a32feeb115ccd6ebbb80bd60e5e40d15ef028404679b91d9d"
+        }
       ]
     }
   ],
@@ -65,12 +140,12 @@
     {
       "id": "canadian-managed-service-and-direct-rls",
       "status": "blocked",
-      "reason": "No Canadian managed account database, encryption-at-rest verification, or direct database row-level-security isolation test has been provisioned or admitted."
+      "reason": "A row-level-security policy and a direct isolation test now exist and were executed against a local Postgres 17 container. No Canadian managed account database, no encryption-at-rest verification, and no isolation test against a provisioned managed database has been provisioned or admitted."
     },
     {
       "id": "independent-live-rehearsal",
       "status": "blocked",
-      "reason": "The plan requires an independent live test of both deletion and the under-five-minute kill switch; no sender, queue, or independent rehearsal evidence exists."
+      "reason": "The plan requires an independent live test of both deletion and the under-five-minute kill switch. A local self-timed drill against a recording sender now exists; an independent observer, a sender that reaches a recipient, and rehearsal evidence from either do not."
     },
     {
       "id": "privacy-security-legal-signoff",
