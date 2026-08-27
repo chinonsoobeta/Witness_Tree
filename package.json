@@ -138,6 +138,7 @@
     "reconcile:qc-ecoforest-completed-object": "zsh scripts/reconcile-qc-ecoforest-completed-object.sh --run",
     "check:immutable-promotions": "node scripts/check-immutable-promotions.mjs",
     "check:immutable-restore-drill": "node scripts/check-immutable-restore-drill.mjs",
+    "check:raw-archive-reproduction-drill": "node scripts/check-raw-archive-reproduction-drill.mjs && node --test tests/raw-archive-reproduction-drill.test.mjs",
     "check:boundary-editions": "node scripts/check-boundary-editions.mjs",
     "check:french-boundary-acquisition": "node scripts/check-french-boundary-acquisition-targets.mjs",
     "check:phase1-optional-enhancements": "node scripts/check-phase1-optional-enhancements.mjs",
