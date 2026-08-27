@@ -1,0 +1,468 @@
+{
+  "schemaVersion": "witness-tree/phase1-ntems-transformation-readback-evidence/1",
+  "status": "complete-readback-verified",
+  "authorization": {
+    "path": "data/phase1-ntems-annual-land-cover-execution-authorization.json",
+    "sha256": "ab96a3eb7b001763e5dd9d78119c87ef1226d5317d4419f9d5f2ef88d4a54bd5",
+    "createdAt": "2026-08-26T00:55:28Z"
+  },
+  "runner": {
+    "path": "scripts/run-phase1-ntems-transform.mjs",
+    "sha256": "09b1016849e0709e46ebad908eec0f01252d5e5eeed3e5cd2fcb712c2042dc90"
+  },
+  "specifications": [
+    {
+      "id": "ntems-annual-land-cover-v1",
+      "path": "data/phase1-production-transformation-specifications-v1.json",
+      "sha256": "258ca3f94e30d484b53cc12e29c83beaf57998993edaea05e44f5a4924979efc"
+    }
+  ],
+  "outputs": [
+    {
+      "specification": "ntems-annual-land-cover-v1",
+      "input": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1984.zip",
+      "status": "verified",
+      "output": "ntems-annual-land-cover-v1/1e1f827df3b51b13143b490a204c59475e6ed4af7ce0de8af69d53f8a554c211/phase1-ntems-annual-land-cover-v1/annual-land-cover-1984.tif",
+      "outputSha256": "96b5e903ae11bd4851428f819c3863a94f7dc2350198fdfc67c02a0eeea024c6",
+      "outputByteLength": 1313364295,
+      "sidecarSha256": "0d0cd2eebf0269adba1d5623d03443ead3c25c04fd4ae166895d9397650910e0",
+      "sourcePixelChecksum": 30654,
+      "outputPixelChecksum": 30654
+    },
+    {
+      "specification": "ntems-annual-land-cover-v1",
+      "input": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1985.zip",
+      "status": "verified",
+      "output": "ntems-annual-land-cover-v1/1e1f827df3b51b13143b490a204c59475e6ed4af7ce0de8af69d53f8a554c211/phase1-ntems-annual-land-cover-v1/annual-land-cover-1985.tif",
+      "outputSha256": "941cc5b1c4fffcd862617aa5ef0e5fa3fbb0460ff2fdd371f75b22f71b118bfd",
+      "outputByteLength": 1307638329,
+      "sidecarSha256": "ce6218c9d24298a1322ed47cc91dc910bfc99fd65d0a3c4901bf9751ce7482cd",
+      "sourcePixelChecksum": 2841,
+      "outputPixelChecksum": 2841
+    },
+    {
+      "specification": "ntems-annual-land-cover-v1",
+      "input": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1986.zip",
+      "status": "verified",
+      "output": "ntems-annual-land-cover-v1/1e1f827df3b51b13143b490a204c59475e6ed4af7ce0de8af69d53f8a554c211/phase1-ntems-annual-land-cover-v1/annual-land-cover-1986.tif",
+      "outputSha256": "624e61e4bc394f0b800adcecf3442f9cf087e2fa683e0f0346f260691176a460",
+      "outputByteLength": 1301491730,
+      "sidecarSha256": "a1453a5cd113b91d693a0cb5a52ecd433d603a6f3bb33b2e7be8a5095a594e2a",
+      "sourcePixelChecksum": 34622,
+      "outputPixelChecksum": 34622
+    },
+    {
+      "specification": "ntems-annual-land-cover-v1",
+      "input": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1987.zip",
+      "status": "verified",
+      "output": "ntems-annual-land-cover-v1/1e1f827df3b51b13143b490a204c59475e6ed4af7ce0de8af69d53f8a554c211/phase1-ntems-annual-land-cover-v1/annual-land-cover-1987.tif",
+      "outputSha256": "a992da96838f0b4e511f2845f5260f0c77fab72dff5d407dd8b019a209d61e95",
+      "outputByteLength": 1297026964,
+      "sidecarSha256": "f05839f2059350c3682adeaba6adea6b0d4f85b51a6ab78b375ae4ecdd310199",
+      "sourcePixelChecksum": 34473,
+      "outputPixelChecksum": 34473
+    },
+    {
+      "specification": "ntems-annual-land-cover-v1",
+      "input": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1988.zip",
+      "status": "verified",
+      "output": "ntems-annual-land-cover-v1/1e1f827df3b51b13143b490a204c59475e6ed4af7ce0de8af69d53f8a554c211/phase1-ntems-annual-land-cover-v1/annual-land-cover-1988.tif",
+      "outputSha256": "52b5327d1ec5ee5f1dfce32e3086d237d99330ebc405a727dea07e501eac9039",
+      "outputByteLength": 1292730501,
+      "sidecarSha256": "8635ed400701c1145844284d06d7daac227e11563d047cd7e02842c527caf113",
+      "sourcePixelChecksum": 47306,
+      "outputPixelChecksum": 47306
+    },
+    {
+      "specification": "ntems-annual-land-cover-v1",
+      "input": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1989.zip",
+      "status": "verified",
+      "output": "ntems-annual-land-cover-v1/1e1f827df3b51b13143b490a204c59475e6ed4af7ce0de8af69d53f8a554c211/phase1-ntems-annual-land-cover-v1/annual-land-cover-1989.tif",
+      "outputSha256": "98d252b0d9a7fba80423a41d314b5e8de1a8545ab175024679f1a07f7a15f2de",
+      "outputByteLength": 1291277196,
+      "sidecarSha256": "9721c324eeb01000fcd2e5469e768d1b22a0888c5d5206f88d59ba52b57778ac",
+      "sourcePixelChecksum": 64142,
+      "outputPixelChecksum": 64142
+    },
+    {
+      "specification": "ntems-annual-land-cover-v1",
+      "input": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1990.zip",
+      "status": "verified",
+      "output": "ntems-annual-land-cover-v1/1e1f827df3b51b13143b490a204c59475e6ed4af7ce0de8af69d53f8a554c211/phase1-ntems-annual-land-cover-v1/annual-land-cover-1990.tif",
+      "outputSha256": "c1e3c8127889b039bfa55a2a01bf3b8bdec8e4b3de05c568d7c7c1cb0707dd75",
+      "outputByteLength": 1287262233,
+      "sidecarSha256": "4b24f51ad304eb4aaf6871e87d2144fcacf9975ca93959b8fe889e5c753a2a78",
+      "sourcePixelChecksum": 20015,
+      "outputPixelChecksum": 20015
+    },
+    {
+      "specification": "ntems-annual-land-cover-v1",
+      "input": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1991.zip",
+      "status": "verified",
+      "output": "ntems-annual-land-cover-v1/1e1f827df3b51b13143b490a204c59475e6ed4af7ce0de8af69d53f8a554c211/phase1-ntems-annual-land-cover-v1/annual-land-cover-1991.tif",
+      "outputSha256": "a5cd8f765c68ba28740fe6b61dd8a1bcff9f63b9fef303c7a07baa408cc50bba",
+      "outputByteLength": 1284436354,
+      "sidecarSha256": "4c40f21be0e2f0fe4c149baf2e8125b053849d660d52fb8d3a24ac7848aefee1",
+      "sourcePixelChecksum": 23592,
+      "outputPixelChecksum": 23592
+    },
+    {
+      "specification": "ntems-annual-land-cover-v1",
+      "input": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1992.zip",
+      "status": "verified",
+      "output": "ntems-annual-land-cover-v1/1e1f827df3b51b13143b490a204c59475e6ed4af7ce0de8af69d53f8a554c211/phase1-ntems-annual-land-cover-v1/annual-land-cover-1992.tif",
+      "outputSha256": "fad60fed5b2b770bc38265ef2dd36f130a2806f2c6d2d22d72b5a093e845674b",
+      "outputByteLength": 1281462145,
+      "sidecarSha256": "aba06500ead75e1cb2a8ca1e77e5a0a4fabb5cbffd5dc4d94e3b4317a33c4a0b",
+      "sourcePixelChecksum": 6327,
+      "outputPixelChecksum": 6327
+    },
+    {
+      "specification": "ntems-annual-land-cover-v1",
+      "input": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1993.zip",
+      "status": "verified",
+      "output": "ntems-annual-land-cover-v1/1e1f827df3b51b13143b490a204c59475e6ed4af7ce0de8af69d53f8a554c211/phase1-ntems-annual-land-cover-v1/annual-land-cover-1993.tif",
+      "outputSha256": "6702caedfaa35dd29cafcf69e1bc3c96f6b22cb27dcb38df5c1ba38b06d660df",
+      "outputByteLength": 1280623181,
+      "sidecarSha256": "e5a379ff5157e832cbc737a57e25dd6d90b1b77d488fae9fc0a8e14f9dcc8dc1",
+      "sourcePixelChecksum": 62257,
+      "outputPixelChecksum": 62257
+    },
+    {
+      "specification": "ntems-annual-land-cover-v1",
+      "input": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1994.zip",
+      "status": "verified",
+      "output": "ntems-annual-land-cover-v1/1e1f827df3b51b13143b490a204c59475e6ed4af7ce0de8af69d53f8a554c211/phase1-ntems-annual-land-cover-v1/annual-land-cover-1994.tif",
+      "outputSha256": "421494b5e645c35f39afb13608d695fbd8e7f195ebbb63759db2ab9f92d86a7b",
+      "outputByteLength": 1281972302,
+      "sidecarSha256": "43e6460d4b27a4cfc7f06aa43f9e4bcbaa0f6c5929873c7506fa1d2d2b4e5ac2",
+      "sourcePixelChecksum": 8486,
+      "outputPixelChecksum": 8486
+    },
+    {
+      "specification": "ntems-annual-land-cover-v1",
+      "input": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1995.zip",
+      "status": "verified",
+      "output": "ntems-annual-land-cover-v1/1e1f827df3b51b13143b490a204c59475e6ed4af7ce0de8af69d53f8a554c211/phase1-ntems-annual-land-cover-v1/annual-land-cover-1995.tif",
+      "outputSha256": "40547d9611b86b496c83406f322c1938721aab0d7a3f6b67ae08225f002b62e8",
+      "outputByteLength": 1286663968,
+      "sidecarSha256": "ca759df9c1d6a926a59b77fad953e339d2e026e3090e1e81b9f91351f0ad0689",
+      "sourcePixelChecksum": 11889,
+      "outputPixelChecksum": 11889
+    },
+    {
+      "specification": "ntems-annual-land-cover-v1",
+      "input": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1996.zip",
+      "status": "verified",
+      "output": "ntems-annual-land-cover-v1/1e1f827df3b51b13143b490a204c59475e6ed4af7ce0de8af69d53f8a554c211/phase1-ntems-annual-land-cover-v1/annual-land-cover-1996.tif",
+      "outputSha256": "ed4e51bab42bc3b5770c221ae9520fb30f4f0bdea9650b67c519fc53f967c4fb",
+      "outputByteLength": 1286613705,
+      "sidecarSha256": "a4adb7cb794dca2f59ff00f4f02f242c7945c9fb4d11fa75e1729a8980464122",
+      "sourcePixelChecksum": 63472,
+      "outputPixelChecksum": 63472
+    },
+    {
+      "specification": "ntems-annual-land-cover-v1",
+      "input": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1997.zip",
+      "status": "verified",
+      "output": "ntems-annual-land-cover-v1/1e1f827df3b51b13143b490a204c59475e6ed4af7ce0de8af69d53f8a554c211/phase1-ntems-annual-land-cover-v1/annual-land-cover-1997.tif",
+      "outputSha256": "5c43c35e7a80086bebb0f48de283ceb3c184917c8a714b95780f19d684a90c9f",
+      "outputByteLength": 1287568150,
+      "sidecarSha256": "fb3ff92702233932dfcc6c4f90c13ef737133f1243cc5be9573c88f5fbbe7cbc",
+      "sourcePixelChecksum": 11862,
+      "outputPixelChecksum": 11862
+    },
+    {
+      "specification": "ntems-annual-land-cover-v1",
+      "input": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1998.zip",
+      "status": "verified",
+      "output": "ntems-annual-land-cover-v1/1e1f827df3b51b13143b490a204c59475e6ed4af7ce0de8af69d53f8a554c211/phase1-ntems-annual-land-cover-v1/annual-land-cover-1998.tif",
+      "outputSha256": "4f12687d2942c8bdabc3b0258b470684c9b453bac130b00302003da4755b25db",
+      "outputByteLength": 1289666180,
+      "sidecarSha256": "e3633a97f068a88ebfb523b6c30384cc6b88ca90bf1abed70c82af6b69b5e9fd",
+      "sourcePixelChecksum": 4947,
+      "outputPixelChecksum": 4947
+    },
+    {
+      "specification": "ntems-annual-land-cover-v1",
+      "input": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1999.zip",
+      "status": "verified",
+      "output": "ntems-annual-land-cover-v1/1e1f827df3b51b13143b490a204c59475e6ed4af7ce0de8af69d53f8a554c211/phase1-ntems-annual-land-cover-v1/annual-land-cover-1999.tif",
+      "outputSha256": "623e42b50feec6ce5d80f1fe00e3e6fe9ca07b16a6cf36b6f5489cce8fae12fd",
+      "outputByteLength": 1290387087,
+      "sidecarSha256": "84e543e6bbe533184d8a0431b22cf7981cbfd63c33d070bb3dbb17f534679867",
+      "sourcePixelChecksum": 51837,
+      "outputPixelChecksum": 51837
+    },
+    {
+      "specification": "ntems-annual-land-cover-v1",
+      "input": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2000.zip",
+      "status": "verified",
+      "output": "ntems-annual-land-cover-v1/1e1f827df3b51b13143b490a204c59475e6ed4af7ce0de8af69d53f8a554c211/phase1-ntems-annual-land-cover-v1/annual-land-cover-2000.tif",
+      "outputSha256": "1210264af8570bfc2a56c12d334cff0ed27e190ba05e80e0ca1a9e41bc7b44cc",
+      "outputByteLength": 1291958890,
+      "sidecarSha256": "9bdee7f23a11435ba11b055b83ea999ff66347741bc4757116bc805e9f7e70d3",
+      "sourcePixelChecksum": 8135,
+      "outputPixelChecksum": 8135
+    },
+    {
+      "specification": "ntems-annual-land-cover-v1",
+      "input": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2001.zip",
+      "status": "verified",
+      "output": "ntems-annual-land-cover-v1/1e1f827df3b51b13143b490a204c59475e6ed4af7ce0de8af69d53f8a554c211/phase1-ntems-annual-land-cover-v1/annual-land-cover-2001.tif",
+      "outputSha256": "9922925fe4cad52261f1b32ad143a76222d7cb952d892abc2e1e1202190e8864",
+      "outputByteLength": 1291667192,
+      "sidecarSha256": "6370d2c218cd26c5b0742a92c831f0eb294c219fd64648c52328fb34e652ae4b",
+      "sourcePixelChecksum": 15198,
+      "outputPixelChecksum": 15198
+    },
+    {
+      "specification": "ntems-annual-land-cover-v1",
+      "input": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2002.zip",
+      "status": "verified",
+      "output": "ntems-annual-land-cover-v1/1e1f827df3b51b13143b490a204c59475e6ed4af7ce0de8af69d53f8a554c211/phase1-ntems-annual-land-cover-v1/annual-land-cover-2002.tif",
+      "outputSha256": "733b6e3fe9135e262a35457168ebe11e56b4504c77de06a7fc3031084b4b4b79",
+      "outputByteLength": 1291380385,
+      "sidecarSha256": "9a34c3df0d99487c5605635e0a13524a2410b0b905386fbab540c7761bb9986c",
+      "sourcePixelChecksum": 34142,
+      "outputPixelChecksum": 34142
+    },
+    {
+      "specification": "ntems-annual-land-cover-v1",
+      "input": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2003.zip",
+      "status": "verified",
+      "output": "ntems-annual-land-cover-v1/1e1f827df3b51b13143b490a204c59475e6ed4af7ce0de8af69d53f8a554c211/phase1-ntems-annual-land-cover-v1/annual-land-cover-2003.tif",
+      "outputSha256": "645a17a9ade711775aaedc8c281ce2134002c4f61c945f51f6af102197c56ef5",
+      "outputByteLength": 1290639386,
+      "sidecarSha256": "dc8d1e271a03bfc557f4ef4413fde973f6cc354a0993bf89d017275fd234a693",
+      "sourcePixelChecksum": 33794,
+      "outputPixelChecksum": 33794
+    },
+    {
+      "specification": "ntems-annual-land-cover-v1",
+      "input": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2004.zip",
+      "status": "verified",
+      "output": "ntems-annual-land-cover-v1/1e1f827df3b51b13143b490a204c59475e6ed4af7ce0de8af69d53f8a554c211/phase1-ntems-annual-land-cover-v1/annual-land-cover-2004.tif",
+      "outputSha256": "d5f7175ea0cefedbb87328a6d3bf150008743bf938fd2932cf3794fbe65bd6f1",
+      "outputByteLength": 1291331989,
+      "sidecarSha256": "1dd380b764447f6d1a2243135d13ca67df78f43be822af2725b441b26104a08b",
+      "sourcePixelChecksum": 9747,
+      "outputPixelChecksum": 9747
+    },
+    {
+      "specification": "ntems-annual-land-cover-v1",
+      "input": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2005.zip",
+      "status": "verified",
+      "output": "ntems-annual-land-cover-v1/1e1f827df3b51b13143b490a204c59475e6ed4af7ce0de8af69d53f8a554c211/phase1-ntems-annual-land-cover-v1/annual-land-cover-2005.tif",
+      "outputSha256": "9b314228d123481281934560df522b7efde56738ecd6728c63c1ef90e942d830",
+      "outputByteLength": 1292858043,
+      "sidecarSha256": "a7ff3a627077f70eebf5df4ed0603d368d88606ed7747552cf9b89a125c8da7e",
+      "sourcePixelChecksum": 33807,
+      "outputPixelChecksum": 33807
+    },
+    {
+      "specification": "ntems-annual-land-cover-v1",
+      "input": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2006.zip",
+      "status": "verified",
+      "output": "ntems-annual-land-cover-v1/1e1f827df3b51b13143b490a204c59475e6ed4af7ce0de8af69d53f8a554c211/phase1-ntems-annual-land-cover-v1/annual-land-cover-2006.tif",
+      "outputSha256": "40f5c0214c77ad1c4a96b961a6a4f8b702076d343143e7fed544036c2c081375",
+      "outputByteLength": 1294263873,
+      "sidecarSha256": "bdc8611e8fc2ebf4fdf062d68a10a5d4a2f2d7656764410a87f4ca32888014b6",
+      "sourcePixelChecksum": 36620,
+      "outputPixelChecksum": 36620
+    },
+    {
+      "specification": "ntems-annual-land-cover-v1",
+      "input": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2007.zip",
+      "status": "verified",
+      "output": "ntems-annual-land-cover-v1/1e1f827df3b51b13143b490a204c59475e6ed4af7ce0de8af69d53f8a554c211/phase1-ntems-annual-land-cover-v1/annual-land-cover-2007.tif",
+      "outputSha256": "7999d5c955cd52245c55653fa77732fb920085427a22168f045155bb4442754a",
+      "outputByteLength": 1292963816,
+      "sidecarSha256": "f87d6db0744d1193b693931f93873b1cf87dd957c5cb073c2592d44b1151bf1f",
+      "sourcePixelChecksum": 62420,
+      "outputPixelChecksum": 62420
+    },
+    {
+      "specification": "ntems-annual-land-cover-v1",
+      "input": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2008.zip",
+      "status": "verified",
+      "output": "ntems-annual-land-cover-v1/1e1f827df3b51b13143b490a204c59475e6ed4af7ce0de8af69d53f8a554c211/phase1-ntems-annual-land-cover-v1/annual-land-cover-2008.tif",
+      "outputSha256": "eeb574f48d8ea6742c4b9e4a81ec65d499ce2e5c4980b6433de069d28eca073a",
+      "outputByteLength": 1291211037,
+      "sidecarSha256": "8e7d9d7b442d46f1407a8bd1164f46ea5f0668eb2ee68d89fa7f5757ef0c0ae7",
+      "sourcePixelChecksum": 36395,
+      "outputPixelChecksum": 36395
+    },
+    {
+      "specification": "ntems-annual-land-cover-v1",
+      "input": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2009.zip",
+      "status": "verified",
+      "output": "ntems-annual-land-cover-v1/1e1f827df3b51b13143b490a204c59475e6ed4af7ce0de8af69d53f8a554c211/phase1-ntems-annual-land-cover-v1/annual-land-cover-2009.tif",
+      "outputSha256": "9fe0ce3d1dd220a3ab1dc136911a8ecdc5462314925ca8054cbe81928aed68ec",
+      "outputByteLength": 1290377470,
+      "sidecarSha256": "6825508fe566c03b0280cdf61d7d4473f09e5e45922a96626e42635e36460b99",
+      "sourcePixelChecksum": 41399,
+      "outputPixelChecksum": 41399
+    },
+    {
+      "specification": "ntems-annual-land-cover-v1",
+      "input": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2010.zip",
+      "status": "verified",
+      "output": "ntems-annual-land-cover-v1/1e1f827df3b51b13143b490a204c59475e6ed4af7ce0de8af69d53f8a554c211/phase1-ntems-annual-land-cover-v1/annual-land-cover-2010.tif",
+      "outputSha256": "2ed462e3bb9abcf515fd819c57113ee3abf4c32a0035ad0ee402cf29819e850e",
+      "outputByteLength": 1293669149,
+      "sidecarSha256": "2a15c78546cb8f514d0e522e739cf066bdc9753f33a25d425e3b60e31178b137",
+      "sourcePixelChecksum": 11534,
+      "outputPixelChecksum": 11534
+    },
+    {
+      "specification": "ntems-annual-land-cover-v1",
+      "input": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2011.zip",
+      "status": "verified",
+      "output": "ntems-annual-land-cover-v1/1e1f827df3b51b13143b490a204c59475e6ed4af7ce0de8af69d53f8a554c211/phase1-ntems-annual-land-cover-v1/annual-land-cover-2011.tif",
+      "outputSha256": "6dd0ef2f3935d68509681d73bf6061fb4893367febd9a6aee0720a2d0dc0c0c5",
+      "outputByteLength": 1297669614,
+      "sidecarSha256": "46931c2d80619a6dbed4ab8fc09b79fd9673a43e992d5782e0bfdc85dafd0c13",
+      "sourcePixelChecksum": 44280,
+      "outputPixelChecksum": 44280
+    },
+    {
+      "specification": "ntems-annual-land-cover-v1",
+      "input": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2012.zip",
+      "status": "verified",
+      "output": "ntems-annual-land-cover-v1/1e1f827df3b51b13143b490a204c59475e6ed4af7ce0de8af69d53f8a554c211/phase1-ntems-annual-land-cover-v1/annual-land-cover-2012.tif",
+      "outputSha256": "66549f2fb8b0863125dcea0b4e1a4388d69eb9a894b3252d247d55a124dfe499",
+      "outputByteLength": 1305427133,
+      "sidecarSha256": "e196a606e72f17b85287cf57dd8d17a3b539553d5a46a1717d0a7e10f09be87b",
+      "sourcePixelChecksum": 47300,
+      "outputPixelChecksum": 47300
+    },
+    {
+      "specification": "ntems-annual-land-cover-v1",
+      "input": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2013.zip",
+      "status": "verified",
+      "output": "ntems-annual-land-cover-v1/1e1f827df3b51b13143b490a204c59475e6ed4af7ce0de8af69d53f8a554c211/phase1-ntems-annual-land-cover-v1/annual-land-cover-2013.tif",
+      "outputSha256": "a5855f2861cb6f8e6167effc2e22bb3df1a9d26e2a889d858713c31c38f6cd36",
+      "outputByteLength": 1309015007,
+      "sidecarSha256": "116758d331e8895465506aac2a3b6fc3751f3812ccec0fee96602df3e9a4591a",
+      "sourcePixelChecksum": 54253,
+      "outputPixelChecksum": 54253
+    },
+    {
+      "specification": "ntems-annual-land-cover-v1",
+      "input": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2014.zip",
+      "status": "verified",
+      "output": "ntems-annual-land-cover-v1/1e1f827df3b51b13143b490a204c59475e6ed4af7ce0de8af69d53f8a554c211/phase1-ntems-annual-land-cover-v1/annual-land-cover-2014.tif",
+      "outputSha256": "bc060d23a0d5616709886d066c133fa3179c3d8f998b1a57669112309da35e80",
+      "outputByteLength": 1312466036,
+      "sidecarSha256": "e8bcaa2c0b9a5c3b1c948d8e63c9f3d7a0b043c05a664123a6f596d201e04acf",
+      "sourcePixelChecksum": 43882,
+      "outputPixelChecksum": 43882
+    },
+    {
+      "specification": "ntems-annual-land-cover-v1",
+      "input": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2015.zip",
+      "status": "verified",
+      "output": "ntems-annual-land-cover-v1/1e1f827df3b51b13143b490a204c59475e6ed4af7ce0de8af69d53f8a554c211/phase1-ntems-annual-land-cover-v1/annual-land-cover-2015.tif",
+      "outputSha256": "4bf7768c8bfb04dca9485e193f85ab0836234c712447a0cff7769a9b5d8524bc",
+      "outputByteLength": 1317392690,
+      "sidecarSha256": "d9af2f0a710b375f6fb05cc9ae27f2fd95f521be0300805668f2ecb750df1b73",
+      "sourcePixelChecksum": 41843,
+      "outputPixelChecksum": 41843
+    },
+    {
+      "specification": "ntems-annual-land-cover-v1",
+      "input": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2016.zip",
+      "status": "verified",
+      "output": "ntems-annual-land-cover-v1/1e1f827df3b51b13143b490a204c59475e6ed4af7ce0de8af69d53f8a554c211/phase1-ntems-annual-land-cover-v1/annual-land-cover-2016.tif",
+      "outputSha256": "c334f342e548cad2641e0cba216963835e3edd52f7e351215c8e31eed08a1498",
+      "outputByteLength": 1319278621,
+      "sidecarSha256": "239a0808856e207f2a70689ca615201463cd0cf6e10be1c383b3693bba1f0743",
+      "sourcePixelChecksum": 60058,
+      "outputPixelChecksum": 60058
+    },
+    {
+      "specification": "ntems-annual-land-cover-v1",
+      "input": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2017.zip",
+      "status": "verified",
+      "output": "ntems-annual-land-cover-v1/1e1f827df3b51b13143b490a204c59475e6ed4af7ce0de8af69d53f8a554c211/phase1-ntems-annual-land-cover-v1/annual-land-cover-2017.tif",
+      "outputSha256": "8569b22458e4cade3584ed3dcbddcb781e655d8d8747701a880bdb5b9a5930a2",
+      "outputByteLength": 1317029194,
+      "sidecarSha256": "8173e63f38ab6e79b905839e7321458e912d5ba024b6ba0096f3bfb7f830d892",
+      "sourcePixelChecksum": 56667,
+      "outputPixelChecksum": 56667
+    },
+    {
+      "specification": "ntems-annual-land-cover-v1",
+      "input": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2018.zip",
+      "status": "verified",
+      "output": "ntems-annual-land-cover-v1/1e1f827df3b51b13143b490a204c59475e6ed4af7ce0de8af69d53f8a554c211/phase1-ntems-annual-land-cover-v1/annual-land-cover-2018.tif",
+      "outputSha256": "46f67ebb555f191f994c6b3e945e6adf912c295582df39d6e1125bf33d6cfae6",
+      "outputByteLength": 1316361188,
+      "sidecarSha256": "ee40556045fa87b8ecb3c5565be3808ac4f08408194354d6cfe2d4738fe4506f",
+      "sourcePixelChecksum": 61355,
+      "outputPixelChecksum": 61355
+    },
+    {
+      "specification": "ntems-annual-land-cover-v1",
+      "input": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2019.zip",
+      "status": "verified",
+      "output": "ntems-annual-land-cover-v1/1e1f827df3b51b13143b490a204c59475e6ed4af7ce0de8af69d53f8a554c211/phase1-ntems-annual-land-cover-v1/annual-land-cover-2019.tif",
+      "outputSha256": "f9e94505c84546d2bbb57f02ae65b4ba1e7b84ca9e59ad960c18cb4c48153eee",
+      "outputByteLength": 1319036242,
+      "sidecarSha256": "aa1190d1b973d4de941efdb1bfe5a84773342d077c1d69e482863680206b5bf7",
+      "sourcePixelChecksum": 54317,
+      "outputPixelChecksum": 54317
+    },
+    {
+      "specification": "ntems-annual-land-cover-v1",
+      "input": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2020.zip",
+      "status": "verified",
+      "output": "ntems-annual-land-cover-v1/1e1f827df3b51b13143b490a204c59475e6ed4af7ce0de8af69d53f8a554c211/phase1-ntems-annual-land-cover-v1/annual-land-cover-2020.tif",
+      "outputSha256": "6b3fa992da453c2f45022c4308fb176bee1f8022ea72db55eda276adc62a9003",
+      "outputByteLength": 1319576685,
+      "sidecarSha256": "182f2b2641422412e318d242c8c630ea54128c3201773fcd5a80682a39befa66",
+      "sourcePixelChecksum": 43257,
+      "outputPixelChecksum": 43257
+    },
+    {
+      "specification": "ntems-annual-land-cover-v1",
+      "input": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2021.zip",
+      "status": "verified",
+      "output": "ntems-annual-land-cover-v1/1e1f827df3b51b13143b490a204c59475e6ed4af7ce0de8af69d53f8a554c211/phase1-ntems-annual-land-cover-v1/annual-land-cover-2021.tif",
+      "outputSha256": "d5302af42c74850586584956b7977ee7762b1f1ce0b651816c8557f93ee14d82",
+      "outputByteLength": 1317795162,
+      "sidecarSha256": "906f5bd575f861fa6bf56178816479c944ec2c9b2586d6ed681ab7c230f35d2a",
+      "sourcePixelChecksum": 57770,
+      "outputPixelChecksum": 57770
+    },
+    {
+      "specification": "ntems-annual-land-cover-v1",
+      "input": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2022.zip",
+      "status": "verified",
+      "output": "ntems-annual-land-cover-v1/1e1f827df3b51b13143b490a204c59475e6ed4af7ce0de8af69d53f8a554c211/phase1-ntems-annual-land-cover-v1/annual-land-cover-2022.tif",
+      "outputSha256": "c23f7ef046f6af90fd650a327adf591ebdadedd38f019beb357fa5bec2329892",
+      "outputByteLength": 1317641973,
+      "sidecarSha256": "9d4c0980f7ed001f30b79db77e4a0bc115a7e365143d2208ac49334f4225a636",
+      "sourcePixelChecksum": 61918,
+      "outputPixelChecksum": 61918
+    }
+  ],
+  "counts": {
+    "expected": 39,
+    "verified": 39,
+    "missing": 0
+  },
+  "claims": {
+    "transformed": true,
+    "ingested": false,
+    "released": false,
+    "productionAdmission": false,
+    "productionEligible": false,
+    "externalMutationPerformed": false
+  },
+  "sourceRecord": {
+    "path": "data/phase1-production-transformation-specifications-v1.json",
+    "sha256": "258ca3f94e30d484b53cc12e29c83beaf57998993edaea05e44f5a4924979efc"
+  }
+}

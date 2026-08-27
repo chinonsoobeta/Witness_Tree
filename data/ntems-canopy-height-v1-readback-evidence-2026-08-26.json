@@ -3,12 +3,12 @@
   "status": "complete-readback-verified",
   "authorization": {
     "path": "data/phase1-ntems-canopy-height-execution-authorization.json",
-    "sha256": "0815d5cfc9904fc9f4fd47214df1db2d292f0bf580f6f5e0625aa1f4c8ebc1da",
+    "sha256": "4e8af543686783d1643ac7851e4de2d9c87101eb148838371e6ea7ce452e1518",
     "createdAt": "2026-08-26T00:55:28Z"
   },
   "runner": {
     "path": "scripts/run-phase1-ntems-transform.mjs",
-    "sha256": "ecb3585a27c82119e2d18fbce3231e12f3c8a33abbf5973453db8d1b0cf2a511"
+    "sha256": "09b1016849e0709e46ebad908eec0f01252d5e5eeed3e5cd2fcb712c2042dc90"
   },
   "specifications": [
     {
