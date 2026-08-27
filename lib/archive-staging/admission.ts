@@ -1,5 +1,11 @@
 import type { LocalStagingRecord } from "./types";
-import { safeSegment, validateLocalStaging } from "./validate";
+// The explicit extension is required by Node's ESM resolver, which loads this
+// module directly from the .mjs checkers and does not rewrite extensionless
+// specifiers. tsconfig uses moduleResolution "bundler" without
+// allowImportingTsExtensions, and enabling that flag repo-wide surfaces 91
+// unrelated errors, so the exemption is kept to this one line.
+// @ts-expect-error TS5097: intentional, and this directive fails loudly if the constraint ever lifts
+import { safeSegment, validateLocalStaging } from "./validate.ts";
 
 const SHA_256 = /^[a-f\d]{64}$/i;
 const UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/;

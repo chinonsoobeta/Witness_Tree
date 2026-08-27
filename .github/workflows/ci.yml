@@ -112,6 +112,13 @@ jobs:
       - run: npm run check:source-review
       - run: npm run check:accessibility
       - run: npm run build
+      # The unit suite. CI previously ran four named test files, so the other 186
+      # could fail on main indefinitely, and #62 merged green while leaving three
+      # tests pinning exit-criteria counts it had just changed. This runs every
+      # test file except the three that read the owner's data root, which is named
+      # in scripts/run-ci-tests.mjs with the reason for each. It follows the build
+      # because the rendered-HTML tests import the build output.
+      - run: npm run test:suite
       - run: npm run check:claims
       - run: npm run check:style-tokens
       - run: npm run check:brand-token

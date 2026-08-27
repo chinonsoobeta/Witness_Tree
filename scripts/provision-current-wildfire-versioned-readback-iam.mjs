@@ -1,8 +1,17 @@
 #!/usr/bin/env node
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
 import { readFile } from "node:fs/promises";
+
+// /private/tmp is the owner's macOS device, where these runners actually execute
+// and where the private workspace is intended. The fallback exists only so the
+// tests can run where that path does not exist, such as a CI runner. It is
+// chosen from the filesystem, never from an environment variable, so nothing an
+// attacker sets can redirect a directory that briefly holds policy documents.
+const privateTmp = (prefix) => mkdtempSync(existsSync("/private/tmp") ? `/private/tmp/${prefix}` : path.join(tmpdir(), prefix));
 
 const ACCOUNT = "286853118812";
 const ROLE = "WitnessTreeCurrentWildfirePromotionUploader";
@@ -58,7 +67,7 @@ for (const statement of candidate.Statement) {
 }
 const basePolicySha256 = hash(current);
 const desiredPolicySha256 = hash(candidate);
-const directory = mkdtempSync("/private/tmp/witness-tree-current-wildfire-versioned-readback.");
+const directory = privateTmp("witness-tree-current-wildfire-versioned-readback.");
 try {
   const policyPath = `${directory}/policy.json`;
   writeFileSync(policyPath, `${JSON.stringify(candidate, null, 2)}\n`, { mode: 0o600, flag: "wx" });

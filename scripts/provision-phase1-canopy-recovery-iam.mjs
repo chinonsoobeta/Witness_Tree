@@ -1,14 +1,22 @@
 #!/usr/bin/env node
 import crypto from "node:crypto";
-import { chmodSync, lstatSync, mkdirSync, mkdtempSync, renameSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { chmodSync, existsSync, lstatSync, mkdirSync, mkdtempSync, renameSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
-import { dirname, isAbsolute } from "node:path";
+import { dirname, isAbsolute, join } from "node:path";
+import { tmpdir } from "node:os";
 import {
   desiredIamDelta,
   desiredRecoveryRetentionDelta,
   validateCanopyRecoveryReadbackProvisioningPolicy,
   validateCanopyRecoveryRetentionProvisioningPolicy
 } from "./check-phase1-canopy-completion-recovery.mjs";
+
+// /private/tmp is the owner's macOS device, where these runners actually execute
+// and where the private workspace is intended. The fallback exists only so the
+// tests can run where that path does not exist, such as a CI runner. It is
+// chosen from the filesystem, never from an environment variable, so nothing an
+// attacker sets can redirect a directory that briefly holds policy documents.
+const privateTmp = (prefix) => mkdtempSync(existsSync("/private/tmp") ? `/private/tmp/${prefix}` : join(tmpdir(), prefix));
 
 const ACCOUNT = desiredRecoveryRetentionDelta.account;
 const ROLE = desiredRecoveryRetentionDelta.role;
@@ -278,7 +286,7 @@ function main() {
   const { readbackCandidate, readbackChange, candidate, retentionChange } = buildCandidates(live);
   const prerequisitePolicySha256 = policyHash(readbackCandidate);
   const desiredPolicySha256 = policyHash(candidate);
-  const tempDir = mkdtempSync("/private/tmp/witness-tree-canopy-iam-provisioning.");
+  const tempDir = privateTmp("witness-tree-canopy-iam-provisioning.");
   let analyzer;
   let simulations;
   try {
