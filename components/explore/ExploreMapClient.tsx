@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import type { Map as MapLibreMap, StyleSpecification } from "maplibre-gl";
-import type { Locale } from "@/lib/domain";
+import { PRODUCT_NAME, type Locale } from "@/lib/domain";
 import {
   EXPLORE_MAP_COLOURS,
   EXPLORE_PRODUCTION_LAYER,
@@ -98,7 +98,7 @@ const lossColour = (value: number) =>
 
 const pmtilesStyle: StyleSpecification = {
   version: 8,
-  name: "Witness Tree verified province forest-loss map",
+  name: `${PRODUCT_NAME.en} verified province forest-loss map`,
   sources: {
     [EXPLORE_PRODUCTION_LAYER.sourceLayer]: {
       type: "vector",
