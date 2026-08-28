@@ -106,7 +106,7 @@ test("map/list and chart/table retain evidence, confidence, coverage, provenance
   assert.match(listTable, /Source attribution/);
   assert.equal(/>0<|caused by|logging|deforestation/i.test(listTable), false);
 });
-test("Explore integrates the exact browser-compatible release only on map routes", async () => {
+test("Explore uses the exact PMTiles release with a GeoJSON/SVG fallback on map routes", async () => {
   const { readFile } = await import("node:fs/promises");
   const map = await readFile(
     new URL("../components/explore/ExploreMapClient.tsx", import.meta.url),
@@ -124,10 +124,16 @@ test("Explore integrates the exact browser-compatible release only on map routes
     new URL("../app/fr/explorer/page.tsx", import.meta.url),
     "utf8",
   );
-  assert.match(map, /fetch\(EXPLORE_PRODUCTION_LAYER\.compatibilityGeoJsonUrl/);
+  assert.match(map, /fetch\(\s*EXPLORE_PRODUCTION_LAYER\.compatibilityGeoJsonUrl/);
+  assert.match(map, /import\("maplibre-gl"\)/);
+  assert.match(map, /import\("pmtiles"\)/);
+  assert.match(map, /pmtiles:\/\/\$\{EXPLORE_PRODUCTION_LAYER\.url\}/);
+  assert.match(map, /addProtocol\("pmtiles", protocol\.tile\)/);
+  assert.match(map, /"source-layer": EXPLORE_PRODUCTION_LAYER\.sourceLayer/);
+  assert.match(map, /data-map-source/);
+  assert.match(map, /geojson-fallback/);
   assert.match(map, /<svg\s+viewBox="0 0 1000 500"/);
   assert.match(map, /featurePath\(feature\)/);
-  assert.doesNotMatch(map, /import\("pmtiles"\)/);
   assert.doesNotMatch(map, /sources: \{ fixtures:/);
   assert.match(map, /role=\{state === "error" \? "alert" : "status"\}/);
   assert.match(map, /year >= 2022/);

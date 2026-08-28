@@ -39,7 +39,7 @@
       "evidence": [
         {
           "path": "docs/PLAN_GAP_MATRIX.md",
-          "sha256": "95f36dfdca87e3cfae5bd7d8ba7840ebba2083ad82527facc5ce57fe1c9f3b26"
+          "sha256": "174498d63a00e79fbdce69302a5b84ac31be9dbc4584a8be5d2b8befde80b530"
         }
       ]
     },
@@ -119,7 +119,7 @@
         },
         {
           "path": "docs/PLAN_GAP_MATRIX.md",
-          "sha256": "95f36dfdca87e3cfae5bd7d8ba7840ebba2083ad82527facc5ce57fe1c9f3b26"
+          "sha256": "174498d63a00e79fbdce69302a5b84ac31be9dbc4584a8be5d2b8befde80b530"
         }
       ],
       "ownerAuthorization": {
@@ -136,7 +136,7 @@
       "evidence": [
         {
           "path": "docs/PLAN_GAP_MATRIX.md",
-          "sha256": "95f36dfdca87e3cfae5bd7d8ba7840ebba2083ad82527facc5ce57fe1c9f3b26"
+          "sha256": "174498d63a00e79fbdce69302a5b84ac31be9dbc4584a8be5d2b8befde80b530"
         }
       ]
     },
@@ -252,11 +252,31 @@
       "id": "cdn-tile-validation",
       "title": "CDN and tile validation are complete",
       "status": "fail",
-      "reason": "No production CDN, admitted tiles, or live tile-validation evidence is recorded; the source-level artifact budget is not a substitute.",
+      "reason": "The admitted 2020-2022 province aggregate and authoritative boundary are bound to an immutable PMTiles archive in a private ca-central-1 delivery bucket behind CloudFront. Exact checksum and full readback, directory and tile ranges at three zooms, decoded province/value assertions, repeated CloudFront cache hits, CORS, origin isolation, immutable write controls, and a client PMTiles path with a verified GeoJSON fallback are implemented. The available in-app browser used the fallback rather than rendering PMTiles, so complete browser-side PMTiles validation is not recorded and the literal gate remains open.",
       "evidence": [
         {
-          "path": "docs/PERFORMANCE.md",
-          "sha256": "e60b5538236246b44d5e9a4e08ef076bb171991dbbb4a9ff8d95e64e496b3746"
+          "path": "data/phase8-province-map-release.json",
+          "sha256": "2c7a3000ff0b1724fce8c139f2166cecb6838b8d6624fa2172dc07abbb44a58e"
+        },
+        {
+          "path": "data/phase8-public-delivery-evidence.json",
+          "sha256": "87465dcbba49a9868caee51f55421b4071dc6465ca959720ac374dca3741fd25"
+        },
+        {
+          "path": "scripts/check-phase8-province-map-release.mjs",
+          "sha256": "66a6d6ace9a5e1e39764b4850ebea1b55974ddf68eb93778077e5e9e60a83204"
+        },
+        {
+          "path": "tests/phase8-province-map-release.test.mjs",
+          "sha256": "b8d96db5c806f2359bbc459031db80a9475640b89a66c26751b2d65b0dc44fde"
+        },
+        {
+          "path": "components/explore/ExploreMapClient.tsx",
+          "sha256": "72b6decb29d22e2922ad8b53d01f9c5a161d91986e6b7395bde6b753c1d8bfc0"
+        },
+        {
+          "path": "tests/explore.test.tsx",
+          "sha256": "0fba034f9c5010884e75e6e67075f126130193f8a05af69257ab14e56b253104"
         }
       ]
     }
@@ -290,8 +310,8 @@
     {
       "id": "admitted-production-data-and-delivery",
       "status": "blocked",
-      "reason": "Admitted real figures, bulk artifacts, CDN/tile deployment, and live validation are required before production delivery can open."
+      "reason": "The admitted province-level technical-preview tile has CDN deployment and complete delivery-tier validation. Complete browser-side PMTiles rendering evidence, admitted bulk artifacts, and the remaining production data gates are still required before production delivery can open."
     }
   ],
-  "nonProductionBoundary": "The existing public site remains a technical preview with illustrative data. This record does not claim a production deployment, production figure, reviewed translation, accessibility conformance, security review, load result, backup, live operations, bulk download, CDN, or tile validation."
+  "nonProductionBoundary": "The public site and the delivery-validated province-level CDN tile remain a technical preview. This record does not claim complete browser-side PMTiles rendering, per-cell production geometry, Phase 2 completion, reviewed translation, accessibility conformance, security review, load result, backup, live operations, bulk download, or general production readiness."
 }
