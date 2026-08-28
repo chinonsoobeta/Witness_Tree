@@ -11,7 +11,7 @@
   },
   "runner": {
     "path": "scripts/run-phase1-ntems-transform.mjs",
-    "sha256": "09b1016849e0709e46ebad908eec0f01252d5e5eeed3e5cd2fcb712c2042dc90"
+    "sha256": "99982d613a0ef908a88f1dfe468c541c61c2f9f09cad6fbf6768377543c5386d"
   },
   "specifications": [
     {

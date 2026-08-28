@@ -6,6 +6,10 @@ const root = new URL("../", import.meta.url);
 const read = (path) => JSON.parse(readFileSync(new URL(path, root), "utf8"));
 const hash = (path) => createHash("sha256").update(readFileSync(new URL(path, root))).digest("hex");
 const SHA = /^[a-f0-9]{64}$/;
+// This is the exact runner recorded by the completed readback. The active
+// runner now has a separate resume-capable method revision; historical
+// evidence remains bound to the implementation that actually produced it.
+const HISTORICAL_RUNNER_SHA256 = "c0c69cb071b998907737d3c8dceed74cde309398b34034fde556e4ba28e8660e";
 const snapshots = [1984, 1988, 1992, 1996, 2000, 2004, 2008, 2012, 2016, 2020, 2022];
 const intervals = snapshots.slice(0, -1).map((fromYear, index) => ({ fromYear, toYear: snapshots[index + 1] }));
 
@@ -15,7 +19,7 @@ export function validatePhase2V21RasterReadbackEvidence(evidence = read("data/ph
   assert.equal(evidence.batchId, "phase2-v21-raster-first-1984-2022-v1");
   assert.deepEqual(evidence.counts, { snapshots: 11, intervals: 10, outputs: 21 });
   assert.deepEqual(evidence.claims, { admitted: false, productionEligible: false, released: false, boundaryAggregationPerformed: false, externalAction: false, vectorsCreated: false });
-  assert.deepEqual(evidence.codeProvenance, { runnerSha256: hash("scripts/run-phase2-v21-raster-first.mjs"), workerSha256: hash("scripts/phase2_v21_raster_window.py") });
+  assert.deepEqual(evidence.codeProvenance, { runnerSha256: HISTORICAL_RUNNER_SHA256, workerSha256: hash("scripts/phase2_v21_raster_window.py") });
   assert.equal(evidence.lineage.path, "lineage.json");
   assert.ok(SHA.test(evidence.lineage.sha256) && Number.isSafeInteger(evidence.lineage.byteLength) && evidence.lineage.byteLength > 0);
   assert.equal(evidence.outputs.length, 21);

@@ -8,18 +8,20 @@
  */
 import { createHash } from "node:crypto";
 import { createReadStream } from "node:fs";
-import { access, link, lstat, mkdir, mkdtemp, readFile, rm, unlink, writeFile } from "node:fs/promises";
+import { link, lstat, mkdir, mkdtemp, readFile, rm, unlink, writeFile } from "node:fs/promises";
 import { spawn } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { resolveDataRoot } from "./data-root.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const DATA_ROOT = path.resolve(ROOT, "../../Witness_Tree-data");
+const DATA_ROOT = path.resolve(resolveDataRoot());
 const PACKET_REL = "data/phase1-downstream-admission-packet.json";
 const OWNER_REL = "data/phase1-transformation-scope-owner-approval-2026-08-25.json";
 const PACKET_SHA256 = "82c55e3bea87d1a3856b233b2e483cd9b5318afd3d998bd753867af944370520";
 const OWNER_SHA256 = "98c1becf3f4b392fdcfa57ae65a3e85e56a2b4b22d9671b418c300dc769d1be1";
 const METHOD_VERSION = "qc-stand-copy-runner-v1";
+const SIDECAR_SCHEMA = "witness-tree/qc-stand-copy-sidecar/1";
 const PYTHON_HELPER = path.join(ROOT, "scripts/qc-stand-copy-append.py");
 
 const SCOPES = {
@@ -81,6 +83,25 @@ async function regularFile(file, label) {
   const info = await lstat(file).catch(() => null);
   if (!info?.isFile() || info.isSymbolicLink()) throw new Error(`${label} must be a regular non-symlink file: ${file}`);
   return info;
+}
+async function presentRegularFile(file) {
+  let info;
+  try { info = await lstat(file); }
+  catch (error) {
+    if (error?.code === "ENOENT") return false;
+    throw new Error(`cannot safely inspect existing output: ${file}`);
+  }
+  if (!info.isFile() || info.isSymbolicLink()) throw new Error(`existing output path must be a regular non-symlink file: ${file}`);
+  return true;
+}
+async function ensureAbsent(file) {
+  let info;
+  try { info = await lstat(file); }
+  catch (error) {
+    if (error?.code === "ENOENT") return;
+    throw new Error(`cannot safely inspect output: ${file}`);
+  }
+  if (info) throw new Error(`refusing to overwrite existing artifact: ${file}`);
 }
 function run(command, args, { maxOutput = 32 * 1024 * 1024 } = {}) {
   return new Promise((resolve, reject) => {
@@ -178,6 +199,80 @@ export function validateExecutionApproval(record, binding, runnerSha256) {
   return true;
 }
 
+export async function resumeOutcome(plan, readSidecar = async (file) => JSON.parse(await readFile(file, "utf8")), hashOutput = async (file) => (await sha256File(file)).sha256, present = presentRegularFile) {
+  const { binding, artifact, sidecar, approvalSha256 } = plan;
+  const hasArtifact = await present(artifact);
+  const hasSidecar = await present(sidecar);
+  if (!hasArtifact && !hasSidecar) return { action: "produce" };
+  if (hasArtifact !== hasSidecar) {
+    throw new Error(`refusing resume: ${hasArtifact ? "artifact exists without its sidecar" : "sidecar exists without its artifact"}`);
+  }
+
+  let record;
+  try { record = await readSidecar(sidecar); }
+  catch { throw new Error(`refusing resume: prior sidecar is unreadable: ${sidecar}`); }
+
+  const expectedQa = {
+    exactInputBindings: true,
+    schemaCrsFeatureCountGeometryChecks: true,
+    joins: false,
+    reprojection: false,
+    repair: false,
+    simplify: false,
+    snap: false,
+    dissolve: false,
+    semanticInference: false,
+    losslessRowFingerprintMatch: true,
+    deterministicRerunArtifactMatch: true,
+  };
+  const output = record?.output;
+  const fingerprintsValid = [output?.sourceRowFingerprintSha256, output?.outputRowFingerprintSha256].every((value) => typeof value === "string" && /^[0-9a-f]{64}$/.test(value));
+  const outputHashValid = typeof output?.sha256 === "string" && /^[0-9a-f]{64}$/.test(output.sha256);
+  if (record?.schemaVersion !== SIDECAR_SCHEMA || record?.methodVersion !== METHOD_VERSION) throw new Error("refusing resume: prior sidecar is not for this runner");
+  if (record?.scopeId !== binding.scopeId || record?.specification?.id !== binding.spec.id || record?.specification?.sha256 !== binding.specSha256) throw new Error("refusing resume: prior sidecar specification identity differs");
+  if (record?.packetSha256 !== binding.packetSha256 || record?.ownerScopeApprovalSha256 !== binding.ownerSha256 || record?.executionApprovalSha256 !== approvalSha256) throw new Error("refusing resume: prior sidecar authorization identity differs");
+  if (!outputHashValid || !fingerprintsValid) throw new Error("refusing resume: prior sidecar output identity is incomplete");
+
+  const expectedSource = {
+    rawArchiveSha256: binding.expected.rawSha256,
+    rawArchiveBytes: binding.expected.rawBytes,
+    archiveMember: binding.expected.member,
+    archiveMemberSha256: binding.memberDigest?.sha256,
+    extractedGeoPackageSha256: binding.extractedDigest.sha256,
+  };
+  const expectedOutput = {
+    layer: binding.expected.outputLayer,
+    sha256: output.sha256,
+    schema: ["fid", "geom", ...(binding.spec.input.publishedAttributes ?? []), "source_fid", "output_record_id", "source_raw_sha256", "source_layer"],
+    featureCount: binding.expected.featureCount,
+    sourceRowFingerprintSha256: output.sourceRowFingerprintSha256,
+    outputRowFingerprintSha256: output.outputRowFingerprintSha256,
+    geometryByteCopy: true,
+  };
+  const expectedSidecar = {
+    schemaVersion: SIDECAR_SCHEMA,
+    methodVersion: METHOD_VERSION,
+    scopeId: binding.scopeId,
+    specification: { id: binding.spec.id, sha256: binding.specSha256 },
+    packetSha256: binding.packetSha256,
+    ownerScopeApprovalSha256: binding.ownerSha256,
+    executionApprovalSha256: approvalSha256,
+    source: expectedSource,
+    input: binding.profile,
+    output: expectedOutput,
+    qa: expectedQa,
+    prohibitedClaims: binding.spec.prohibitedClaims,
+  };
+  if (canonicalJson(record) !== canonicalJson(expectedSidecar)) throw new Error("refusing resume: prior sidecar identity or QA contract differs");
+
+  let actualHash;
+  try { actualHash = await hashOutput(artifact); }
+  catch { throw new Error(`refusing resume: prior artifact is unreadable: ${artifact}`); }
+  const actualSha256 = typeof actualHash === "string" ? actualHash : actualHash?.sha256;
+  if (actualSha256 !== output.sha256) throw new Error(`refusing resume: prior artifact no longer matches its sidecar SHA-256: ${artifact}`);
+  return { action: "skip", sha256: actualSha256 };
+}
+
 async function executeScope(binding, options, runnerSha256) {
   const approvalBytes = await readFile(options.executionApproval); const approval = JSON.parse(approvalBytes); const approvalSha256 = sha256Bytes(approvalBytes);
   validateExecutionApproval(approval, binding, runnerSha256);
@@ -185,7 +280,14 @@ async function executeScope(binding, options, runnerSha256) {
   const outputRoot = path.join(options.dataRoot || DATA_ROOT, "derived/phase1", binding.spec.id, binding.expected.rawSha256, METHOD_VERSION);
   await mkdir(outputRoot, { recursive: true });
   const artifact = path.join(outputRoot, `${binding.expected.outputLayer}.gpkg`); const sidecar = `${artifact}.json`;
-  for (const target of [artifact, sidecar]) if (await access(target).then(() => true).catch(() => false)) throw new Error(`refusing to overwrite existing artifact: ${target}`);
+  if (options.resume) {
+    const outcome = await resumeOutcome({ binding, artifact, sidecar, approvalSha256 });
+    if (outcome.action === "skip") {
+      const sidecarHash = await sha256File(sidecar);
+      return { mode: "execute-resume", scopeId: binding.scopeId, artifact, sidecar, artifactSha256: outcome.sha256, sidecarSha256: sidecarHash.sha256, resumed: true };
+    }
+  }
+  for (const target of [artifact, sidecar]) await ensureAbsent(target);
   const temporary = await mkdtemp(path.join(outputRoot, ".qc-stand-copy-"));
   const tempArtifact = path.join(temporary, "artifact.gpkg"); const rerunArtifact = path.join(temporary, "rerun.gpkg");
   let publishedArtifact = false;
@@ -199,7 +301,7 @@ async function executeScope(binding, options, runnerSha256) {
     const second = JSON.parse((await run(process.env.PYTHON_BIN || "python3", helperArgs(rerunArtifact))).stdout);
     const firstHash = await sha256File(tempArtifact), secondHash = await sha256File(rerunArtifact);
     if (firstHash.sha256 !== secondHash.sha256 || first.sourceRowFingerprintSha256 !== second.sourceRowFingerprintSha256 || first.outputRowFingerprintSha256 !== second.outputRowFingerprintSha256) throw new Error("deterministic rerun QA failed");
-    const record = { schemaVersion: "witness-tree/qc-stand-copy-sidecar/1", methodVersion: METHOD_VERSION, scopeId: binding.scopeId, specification: { id: binding.spec.id, sha256: binding.specSha256 }, packetSha256: binding.packetSha256, ownerScopeApprovalSha256: binding.ownerSha256, executionApprovalSha256: approvalSha256, source: { rawArchiveSha256: binding.rawDigest.sha256, rawArchiveBytes: binding.rawDigest.bytes, archiveMember: binding.expected.member, archiveMemberSha256: binding.memberDigest.sha256, extractedGeoPackageSha256: binding.extractedDigest.sha256 }, input: binding.profile, output: { layer: binding.expected.outputLayer, sha256: firstHash.sha256, schema: first.outputSchema, featureCount: first.featureCount, sourceRowFingerprintSha256: first.sourceRowFingerprintSha256, outputRowFingerprintSha256: first.outputRowFingerprintSha256, geometryByteCopy: first.geometryByteCopy }, qa: { exactInputBindings: true, schemaCrsFeatureCountGeometryChecks: true, joins: false, reprojection: false, repair: false, simplify: false, snap: false, dissolve: false, semanticInference: false, losslessRowFingerprintMatch: first.sourceRowFingerprintSha256 === first.outputRowFingerprintSha256, deterministicRerunArtifactMatch: true }, prohibitedClaims: binding.spec.prohibitedClaims };
+    const record = { schemaVersion: SIDECAR_SCHEMA, methodVersion: METHOD_VERSION, scopeId: binding.scopeId, specification: { id: binding.spec.id, sha256: binding.specSha256 }, packetSha256: binding.packetSha256, ownerScopeApprovalSha256: binding.ownerSha256, executionApprovalSha256: approvalSha256, source: { rawArchiveSha256: binding.rawDigest.sha256, rawArchiveBytes: binding.rawDigest.bytes, archiveMember: binding.expected.member, archiveMemberSha256: binding.memberDigest.sha256, extractedGeoPackageSha256: binding.extractedDigest.sha256 }, input: binding.profile, output: { layer: binding.expected.outputLayer, sha256: firstHash.sha256, schema: first.outputSchema, featureCount: first.featureCount, sourceRowFingerprintSha256: first.sourceRowFingerprintSha256, outputRowFingerprintSha256: first.outputRowFingerprintSha256, geometryByteCopy: first.geometryByteCopy }, qa: { exactInputBindings: true, schemaCrsFeatureCountGeometryChecks: true, joins: false, reprojection: false, repair: false, simplify: false, snap: false, dissolve: false, semanticInference: false, losslessRowFingerprintMatch: first.sourceRowFingerprintSha256 === first.outputRowFingerprintSha256, deterministicRerunArtifactMatch: true }, prohibitedClaims: binding.spec.prohibitedClaims };
     const tempSidecar = `${temporary}/sidecar.json`;
     await writeFile(tempSidecar, canonicalJson(record), { flag: "wx", mode: 0o600 });
     await link(tempArtifact, artifact); publishedArtifact = true;
@@ -221,13 +323,15 @@ export async function preflightScope({ root = ROOT, scopeId, dataRoot, raw, extr
 
 async function main(argv = process.argv.slice(2)) {
   const get = (name) => { const index = argv.indexOf(name); return index < 0 ? undefined : argv[index + 1]; };
-  if (argv.includes("--help")) { console.log("Usage: node scripts/run-qc-stand-copy.mjs --scope <qc-current-ecoforest|qc-original-current-inventory> [--preflight] [--execute --execution-approval FILE]"); return; }
+  if (argv.includes("--help")) { console.log("Usage: node scripts/run-qc-stand-copy.mjs --scope <qc-current-ecoforest|qc-original-current-inventory> [--preflight] [--execute --execution-approval FILE] [--resume]"); return; }
   const scopeId = get("--scope"); if (!scopeId || !SCOPES[scopeId]) throw new Error("--scope must name one approved Québec scope");
-  const execute = argv.includes("--execute"); if (execute && !get("--execution-approval")) throw new Error("--execute requires --execution-approval FILE");
+  const execute = argv.includes("--execute"); const resume = argv.includes("--resume");
+  if (resume && !execute) throw new Error("--resume requires --execute");
+  if (execute && !get("--execution-approval")) throw new Error("--execute requires --execution-approval FILE");
   const root = get("--root") || ROOT; const dataRoot = get("--data-root"); const binding = await loadScope(root, scopeId, { dataRoot, raw: get("--raw"), extracted: get("--extracted"), profile: get("--profile") });
   const runnerSha256 = (await sha256File(path.join(root, "scripts/run-qc-stand-copy.mjs"))).sha256;
   if (!execute) { console.log(canonicalJson({ schemaVersion: "witness-tree/qc-stand-copy-preflight/1", mode: "preflight", scopeId, specification: { id: binding.spec.id, sha256: binding.specSha256 }, packetSha256: binding.packetSha256, ownerScopeApprovalSha256: binding.ownerSha256, source: { rawArchiveSha256: binding.rawDigest.sha256, rawArchiveBytes: binding.rawDigest.bytes, archiveMember: binding.expected.member, archiveMemberSha256: binding.memberDigest.sha256, extractedGeoPackageSha256: binding.extractedDigest.sha256 }, input: binding.profile, operation: { kind: binding.spec.operation.kind, outputLayer: binding.expected.outputLayer, outputCrs: binding.spec.operation.outputCrs, joins: "none", geometry: "byte-for-byte copy; no reprojection, repair, simplify, snap, dissolve, buffer, or semantic inference" }, qa: { exactSourceShaAndBytes: true, exactArchiveMember: true, exactLayerSchemaCrsFeatureCount: true, exactGeometryValidity: true, executionAuthorized: false, transformed: false, ingested: false, released: false, productionAdmission: false } })); return; }
-  console.log(JSON.stringify(await executeScope(binding, { dataRoot, outputDir: get("--output-dir"), executionApproval: get("--execution-approval") }, runnerSha256)));
+  console.log(JSON.stringify(await executeScope(binding, { dataRoot, outputDir: get("--output-dir"), executionApproval: get("--execution-approval"), resume }, runnerSha256)));
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) main().catch((error) => { console.error(`Stopped: ${error.message}`); process.exitCode = 1; });

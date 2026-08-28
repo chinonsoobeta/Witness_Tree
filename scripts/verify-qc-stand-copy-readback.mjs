@@ -15,9 +15,10 @@ import { closeSync, lstatSync, openSync, readFileSync, readSync, statSync, write
 import { spawn } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { resolveDataRoot } from "./data-root.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const DEFAULT_DATA_ROOT = path.resolve(ROOT, "../../Witness_Tree-data");
+const DEFAULT_DATA_ROOT = path.resolve(resolveDataRoot());
 export const VERIFIER_PATH = "scripts/verify-qc-stand-copy-readback.mjs";
 export const VERIFIER_METHOD_VERSION = "qc-stand-copy-independent-readback-v1";
 export const SIDECAR_SCHEMA = "witness-tree/qc-stand-copy-sidecar/1";
