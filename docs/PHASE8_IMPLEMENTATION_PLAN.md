@@ -345,16 +345,16 @@ no real CSV or GeoPackage binary has been retrieved or published."
 CSV and GeoPackage pair is public behind the approved CloudFront delivery host,
 with exact owner-local public readback. That first receipt does not satisfy this
 section's requirement for retrieval independently of the producing machine.
-A corrected v2 candidate adds the required bilingual plain-language
-modification notice and an explicit bounded owner decision superseding the
-earlier no-release scope only for its exact artifacts. The gate remains open
-until the v2 objects are public and a GitHub-hosted runner independently
-retrieves and hashes them into a committed, validated receipt.
+A corrected v2 release adds the required bilingual plain-language modification
+notice and an explicit bounded owner decision superseding the earlier
+no-release scope only for its exact artifacts. It is public, and GitHub Actions
+run 33183420113 independently retrieved and hashed all three objects on a Linux
+runner. The committed receipt and repository validator close this bounded gate.
 
-By contrast [`lib/releases/manifest.ts`](../lib/releases/manifest.ts) has no
-URL field at all, and `scripts/verify-release.mjs` already hashes a real local
-artifact against its declared SHA-256. The release side is ready for real
-bytes; the download side is deliberately fenced to a fake host.
+`lib/downloads/generate.ts` retains the fixture host and adds only the exact
+approved CloudFront host. `tests/downloads.test.ts` keeps rejecting every other
+host. The production release contract is `lib/downloads/releases.ts`, while
+the exact public manifest and publication receipts carry the durable evidence.
 
 **Achievable on ChatGPT Sites.** Serving a small artifact as a static file is
 plausible, but nothing in the repository establishes a size limit, a range
@@ -416,19 +416,16 @@ the evidence file.
 release ID, per-artifact ID, kind, content type, licence ID, byte length,
 SHA-256, public URL, the retrieval instant in UTC, the retrieved byte length
 and SHA-256, and the admitted record the content came from with its checksum.
-Paired with `scripts/check-bulk-download-publication.mjs`, repository-only,
+Paired with `scripts/check-phase8-bulk-download-publication.mjs`, repository-only,
 which fails unless the published and retrieved digests are equal, unless the
 artifact's source binds to an admitted record, unless the URL host is on the
 approved allowlist, and unless both locales are present.
 
-**What would have to be true for the gate to flip.** A real CSV and a real
-GeoPackage, both derived from admitted outputs, published at stable URLs, and
-retrieved and hashed independently of the machine that produced them. The CSV
-is reachable now. The GeoPackage is not: the only geospatial candidate is the
-Québec lossless copy, which carries no owner admission, so a GeoPackage
-download waits on either an admission of that output or an admitted
-geospatial product from Phase 2. A partial flip is not available, because the
-criterion names both formats.
+**Recorded closure.** The v2 CSV and GeoPackage are derived from the exact
+bounded aggregate and display-geometry inputs named in the manifest, published
+at content-addressed CloudFront URLs, and retrieved and hashed independently by
+a GitHub-hosted Linux runner. The separate owner decision supersedes the earlier
+no-release scope only for these exact artifacts and does not complete Phase 2.
 
 ---
 
@@ -716,7 +713,7 @@ tiles.
 | --- | --- |
 | `load-testing` | Not achievable as written. The site tier is not the project's to test or to fix. Measure the AWS delivery tier, scope the claim to it, and leave the gate `fail`. |
 | `raw-archive-reproducibility` | **Closed on 2026-08-27**, by the cheaper route, hosting-independent as predicted. `docs/RAW_ARCHIVE_REPRODUCIBILITY_SCOPE.md` establishes a cheaper route than the one in section 2: a 10.3 MB federal electoral reproduction with no new promotion and no new retention commitment. Prefer it. The route in section 2 needs the StatCan boundary file promoted into the archive, then a version-pinned restore and re-run of the admitted Phase 2 chain. |
-| `bulk-downloads` | Achievable with admitted artifacts in AWS `ca-central-1` behind a project-controlled delivery tier. The first pair is public with owner-local readback; the corrected v2 pair and separate-machine receipt remain pending. |
+| `bulk-downloads` | Closed for the bounded v2 technical-preview release. The exact CSV, GeoPackage, and manifest are public in AWS `ca-central-1` and independently retrieved by a separate GitHub-hosted runner. |
 | `observability` | Achievable for the archive and delivery tiers in AWS. Not achievable for the site tier. Any flip must say so in its own reason text. |
 | `backups` | Achievable in full, today, with no external party. A Canadian recovery copy plus one recovery exercise closes it. |
 | `cdn-tile-validation` | Achievable with tiles and CDN in AWS, conditional on the host permitting a cross-origin range-request fetch. Unknown until probed. |

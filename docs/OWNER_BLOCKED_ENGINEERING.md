@@ -312,7 +312,7 @@ for today's state.
 | Phase 6 `direct-database-tenant-isolation` | `data/phase6-account-alert-exit-status.json` | Merged as `74c2b3f` (#62) |
 | QC stand-copy runner `-ro` removal | The owner's approval of the fixed runner, 2026-08-27 | Merged as `3faddce` (#63) |
 | QC original current inventory extraction and packet decoupling | The owner's instruction of 2026-08-27, "Do the full cascade now plus the coupling. You have my approval for the federal-electoral records." | Merged as `4779f3f` (#66) |
-| QC and Phase 2 identity-bound resume fixes | `data/phase1-runtime-runner-reauthorization-2026-08-28.json` | Merged as `8ad5120` (#84); the QC approvals bind the current runner |
+| QC and Phase 2 identity-bound resume fixes | `data/phase1-runtime-runner-reauthorization-2026-08-28.json` | Merged as `8ad5120` (#84); the owner record reauthorizes the QC runners only, while the Phase 2 repair required no owner rebinding |
 | Raw archive reproduction | `data/raw-archive-reproduction-drill.json` | Fresh owner-local run passed; the Phase 8 one-chain reproducibility gate is closed |
 
 Each code or document change above landed through its pull request with the
@@ -371,11 +371,12 @@ signature, and the gate that reported this became a required CI step so that
 the conflict was visible rather than discovered at execution time. The later
 owner reauthorization and `8ad5120` merge resolved that historical block.
 
-Three further records bind the runner as readback evidence, naming which runner
-produced verified outputs. Those should not be reissued when the owner
-re-authorizes. They correctly describe runs that already happened under the
-previous runner, and changing them would assert that the new runner produced
-rasters it never produced.
+At the time of the reauthorization, three further records bound the runner as
+readback evidence, naming which runner produced verified outputs. A fourth
+dated readback record was added later. All four remain historical and should
+not be reissued when the owner reauthorizes. They correctly describe runs that
+already happened under the previous runner, and changing them would assert that
+the new runner produced rasters it never produced.
 
 ## Historical federal-electoral block, and why it was the same defect twice
 

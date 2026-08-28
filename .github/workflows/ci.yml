@@ -79,6 +79,7 @@ jobs:
           path: /tmp/phase8-bulk-download-independent-retrieval.json
           if-no-files-found: error
           retention-days: 30
+      - run: npm run check:bulk-download-publication
       - run: npm run check:phase9-public-beta-launch-exit-status
       - run: npm run check:elections-canada-fed-2025
       - run: npm run check:elections-canada-fed-2025-promotion

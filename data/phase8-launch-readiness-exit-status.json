@@ -3,9 +3,9 @@
   "phase": 8,
   "localImplementationStatus": "incomplete",
   "phaseComplete": false,
-  "completedCriteria": 6,
+  "completedCriteria": 7,
   "totalCriteria": 16,
-  "percentage": 37.5,
+  "percentage": 43.75,
   "exitCriteria": [
     {
       "id": "professional-bilingual-review",
@@ -15,7 +15,7 @@
       "evidence": [
         {
           "path": "docs/EXTERNAL_GATES.md",
-          "sha256": "e3f0bcdd6832d0faad8edaf3ce89cd6e9d6f43a406bc02154ed8f7a4680849b5"
+          "sha256": "8a0579667934f07fe11500b5c19b3bf3173acdf4a0c3a167173b848f96e2bd80"
         }
       ]
     },
@@ -39,7 +39,7 @@
       "evidence": [
         {
           "path": "docs/PLAN_GAP_MATRIX.md",
-          "sha256": "8faa5e9cfac4e66fdc7b723980bba9207462c539111231952dc7b5aed54a02eb"
+          "sha256": "f5b854afa900bd83f16212184427c386f6f92b31d56b618456fd27c4a537f42a"
         }
       ]
     },
@@ -83,7 +83,7 @@
       "evidence": [
         {
           "path": "docs/EXTERNAL_GATES.md",
-          "sha256": "e3f0bcdd6832d0faad8edaf3ce89cd6e9d6f43a406bc02154ed8f7a4680849b5"
+          "sha256": "8a0579667934f07fe11500b5c19b3bf3173acdf4a0c3a167173b848f96e2bd80"
         }
       ]
     },
@@ -119,7 +119,7 @@
         },
         {
           "path": "docs/PLAN_GAP_MATRIX.md",
-          "sha256": "8faa5e9cfac4e66fdc7b723980bba9207462c539111231952dc7b5aed54a02eb"
+          "sha256": "f5b854afa900bd83f16212184427c386f6f92b31d56b618456fd27c4a537f42a"
         }
       ],
       "ownerAuthorization": {
@@ -136,19 +136,19 @@
       "evidence": [
         {
           "path": "docs/PLAN_GAP_MATRIX.md",
-          "sha256": "8faa5e9cfac4e66fdc7b723980bba9207462c539111231952dc7b5aed54a02eb"
+          "sha256": "f5b854afa900bd83f16212184427c386f6f92b31d56b618456fd27c4a537f42a"
         }
       ]
     },
     {
       "id": "bulk-downloads",
       "title": "Bulk downloads are complete",
-      "status": "fail",
-      "reason": "A bounded four-province 2020-2022 technical-preview CSV and GeoPackage pair is public at content-addressed CloudFront URLs, and the owner-local receipt proves exact full-object readback. The literal gate remains open because the controlling plan requires retrieval and hashing independently of the producing machine, the shipped public manifest still lacks the required plain-language modification notice, and the later bounded release authorization is not yet validated as an explicit superseding decision over the earlier no-release scope. These evidence defects must be repaired without replacing the existing immutable release.",
+      "status": "pass",
+      "reason": "The bounded four-province 2020-2022 v2 technical-preview CSV and GeoPackage pair is public at content-addressed CloudFront URLs. The v2 public manifest carries exact source and admission bindings, per-artifact provenance and licences, bilingual citations and plain-language modification notice, claim limits, and the explicit owner decision superseding the earlier no-release scope only for these artifacts. GitHub Actions run 33183420113 retrieved and hashed the exact CSV, GeoPackage, and manifest on a separate Linux runner; byte lengths, SHA-256 values, content types, and CORS all matched. This closes only the bounded bulk-download criterion and does not complete Phase 2 or authorize a general production launch.",
       "evidence": [
         {
           "path": "docs/DOWNLOADS.md",
-          "sha256": "b6bab53caeeafe4ef810b342d7b6e3702f90040310454d1dba329a3560daddb7"
+          "sha256": "d587bdc37c54de32fa9dfbcf9263e1045dc745441251c5862bd9aa8580fcf839"
         },
         {
           "path": "data/bulk-download-publication-v2-owner-local.json",
@@ -163,8 +163,12 @@
           "sha256": "a328aa5f2bc604b7c605bac3d0ba5a18883f59639235a18abe387b57c45bce90"
         },
         {
-          "path": "scripts/check-phase8-bulk-download-independent-retrieval.mjs",
-          "sha256": "6545199c71813246a73e917b0c6ea58117fc0a3b6dd77194290aa12e59e09047"
+          "path": "data/bulk-download-publication.json",
+          "sha256": "99a3f2d79eb2393b6567f6b3f0a7012753e60ffff7047a8764e755e551da3a3a"
+        },
+        {
+          "path": "scripts/check-phase8-bulk-download-publication.mjs",
+          "sha256": "9efd4faeb3d58f3e4958fcc405ab5b836312c1f680e564be0f5999dac9e350a7"
         }
       ]
     },

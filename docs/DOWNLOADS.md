@@ -1,13 +1,12 @@
 # Bulk downloads
 
-The first bounded four-province 2020-2022 technical-preview release is publicly
-available as an immutable CSV and GeoPackage pair. Its owner-local publication
-receipt proves exact public readback, but does not satisfy the controlling
-plan's separate-machine retrieval requirement. A corrected v2 release adds the
+The corrected bounded four-province 2020-2022 technical-preview v2 release is
+publicly available as an immutable CSV and GeoPackage pair. It carries the
 required bilingual modification notice and explicit bounded supersession
-decision. The formal bulk-download gate remains open until a GitHub-hosted
-runner independently retrieves and hashes that exact v2 release and the receipt
-is committed and validated.
+decision. A GitHub-hosted Linux runner, separate from the producing machine,
+retrieved and hashed the exact CSV, GeoPackage, and public manifest. The durable
+receipt is `data/bulk-download-publication.json`, and
+`npm run check:bulk-download-publication` validates the complete chain.
 
 The release contains province-level aggregates for Quebec, Ontario, Alberta,
 and British Columbia. It is not per-cell forest-loss geometry and does not
