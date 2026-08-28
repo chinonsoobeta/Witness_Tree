@@ -264,7 +264,7 @@
       "id": "cdn-tile-validation",
       "title": "CDN and tile validation are complete",
       "status": "fail",
-      "reason": "The admitted 2020-2022 province aggregate and authoritative boundary are bound to an immutable PMTiles archive in a private ca-central-1 delivery bucket behind CloudFront. Exact checksum and full readback, directory and tile ranges at three zooms, decoded province/value assertions, repeated CloudFront cache hits, CORS, origin isolation, immutable write controls, and a client PMTiles path with a verified GeoJSON fallback are implemented. The available in-app browser used the fallback rather than rendering PMTiles, so complete browser-side PMTiles validation is not recorded and the literal gate remains open.",
+      "reason": "The admitted 2020-2022 province aggregate and authoritative boundary are bound to an immutable PMTiles archive in a private ca-central-1 delivery bucket behind CloudFront. Exact checksum and full readback, directory and tile ranges at three zooms, decoded province/value assertions, repeated CloudFront cache hits, CORS, origin isolation, immutable write controls, and a client PMTiles path with a verified GeoJSON fallback are implemented. A defect was found and fixed on 2026-08-28: the bundler never emitted the sibling module MapLibre resolves as its worker, so that URL returned HTTP 404 on the deployed site and map initialization failed before any tile request was issued. The version-pinned worker is now published from public/maplibre/ and pinned by the client, proven byte-identical to the installed distribution by scripts/check-maplibre-worker-asset.mjs. Browser-side PMTiles rendering is still not recorded: the only browser available to this session never fires requestAnimationFrame, which MapLibre awaits during style load, so it cannot witness a rendered map. The literal gate remains open until a real browser records it.",
       "evidence": [
         {
           "path": "data/phase8-province-map-release.json",
@@ -284,7 +284,7 @@
         },
         {
           "path": "components/explore/ExploreMapClient.tsx",
-          "sha256": "cf3b22fe604c152d157cb3364c7cfd937e4873fbfd20b187806457c5b14f316d"
+          "sha256": "bd8b082a8e497b7aae52fd84a58fa528b9acbac2d7d5a49586a11fc8cd6c65f3"
         },
         {
           "path": "tests/explore.test.tsx",

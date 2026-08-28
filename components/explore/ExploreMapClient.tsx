@@ -62,6 +62,15 @@ type MapSource = "pmtiles" | "geojson";
 type MapState = "loading" | "ready" | "unavailable" | "error";
 type Position = [number, number];
 const PMTILES_LOAD_TIMEOUT_MS = 10_000;
+
+// MapLibre resolves its worker as `new URL("./maplibre-gl-worker.mjs",
+// import.meta.url)` relative to its own bundled chunk. The bundler does not
+// emit that sibling module, so the default URL 404s and the map fails before
+// any tile request is made. Serve the version-pinned worker from `public/`
+// instead. `scripts/check-maplibre-worker-asset.mjs` proves these files are
+// byte-identical to the installed maplibre-gl distribution.
+const MAPLIBRE_WORKER_VERSION = "6.3.0";
+const MAPLIBRE_WORKER_URL = `/maplibre/${MAPLIBRE_WORKER_VERSION}/maplibre-gl-worker.mjs`;
 type ProvinceFeature = {
   id: string;
   properties: {
@@ -235,6 +244,7 @@ export function ExploreMapClient({
           return;
         }
         maplibre = maplibreModule;
+        maplibre.setWorkerUrl(MAPLIBRE_WORKER_URL);
         const protocol = new Protocol();
         maplibre.addProtocol("pmtiles", protocol.tile);
         protocolRegistered = true;

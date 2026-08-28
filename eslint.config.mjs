@@ -14,6 +14,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Vendored, unmodified maplibre-gl worker distribution. Byte-identical to
+    // the installed package and proven so by check:maplibre-worker-asset.
+    "public/maplibre/**",
   ]),
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
