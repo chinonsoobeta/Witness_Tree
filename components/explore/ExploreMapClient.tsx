@@ -212,6 +212,17 @@ export function ExploreMapClient({
       }
     };
 
+    pmtilesTimeout = setTimeout(() => {
+      if (!active || pmtilesLoaded) return;
+      map?.remove();
+      map = null;
+      if (protocolRegistered) {
+        maplibre?.removeProtocol("pmtiles");
+        protocolRegistered = false;
+      }
+      void loadGeoJsonFallback();
+    }, 1000);
+
     const initializePmtiles = async () => {
       try {
         const [maplibreModule, { Protocol }] = await Promise.all([
@@ -252,16 +263,6 @@ export function ExploreMapClient({
           }
           void loadGeoJsonFallback();
         });
-        pmtilesTimeout = setTimeout(() => {
-          if (!active || pmtilesLoaded) return;
-          map?.remove();
-          map = null;
-          if (protocolRegistered) {
-            maplibre?.removeProtocol("pmtiles");
-            protocolRegistered = false;
-          }
-          void loadGeoJsonFallback();
-        }, 1000);
       } catch {
         if (active) void loadGeoJsonFallback();
       }
