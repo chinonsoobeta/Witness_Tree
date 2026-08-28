@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { existsSync, readFileSync } from "node:fs";
+import { lstatSync, readFileSync, realpathSync } from "node:fs";
 import { deepStrictEqual } from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
@@ -57,12 +57,34 @@ function assertCondition(condition, message) {
   if (!condition) throw new Error(message);
 }
 
+function repositoryDataFile(reference, root, label) {
+  assertCondition(typeof reference === "string" && reference.startsWith("data/"), `${label} references must be repository data paths.`);
+  assertCondition(!path.isAbsolute(reference) && !reference.includes("\0") && !reference.split(/[\\/]/).some((segment) => !segment || segment === "." || segment === ".."), `${label} references must be safe repository data paths.`);
+  const repositoryRoot = path.resolve(root);
+  const absolute = path.resolve(repositoryRoot, reference);
+  assertCondition(absolute.startsWith(`${repositoryRoot}${path.sep}`), `${label} references must stay inside the repository.`);
+  let info;
+  try {
+    info = lstatSync(absolute);
+  } catch {
+    throw new Error(`${label} references missing repository file ${reference}.`);
+  }
+  assertCondition(info.isFile() && !info.isSymbolicLink(), `${label} references must name a regular non-symlink repository file.`);
+  let resolvedRoot;
+  let resolvedFile;
+  try {
+    resolvedRoot = realpathSync(repositoryRoot);
+    resolvedFile = realpathSync(absolute);
+  } catch {
+    throw new Error(`${label} references an unreadable repository file ${reference}.`);
+  }
+  assertCondition(resolvedFile.startsWith(`${resolvedRoot}${path.sep}`), `${label} references must not traverse a symlink outside the repository.`);
+  return absolute;
+}
+
 function assertExistingDataReferences(references, root, label) {
   assertCondition(Array.isArray(references) && references.length > 0, `${label} needs at least one evidence reference.`);
-  for (const reference of references) {
-    assertCondition(typeof reference === "string" && reference.startsWith("data/"), `${label} references must be repository data paths.`);
-    assertCondition(existsSync(path.join(root, reference)), `${label} references missing repository file ${reference}.`);
-  }
+  for (const reference of references) repositoryDataFile(reference, root, label);
 }
 
 function readJsonPointer(document, pointer, label) {
@@ -80,10 +102,10 @@ function readJsonPointer(document, pointer, label) {
 function assertEvidenceBinding(field, fieldName, rowId, root) {
   const binding = field.evidenceBinding;
   assertCondition(binding && typeof binding === "object" && !Array.isArray(binding), `Verified ${fieldName} on ${rowId} needs a deterministic evidence binding.`);
+  assertCondition(Object.keys(binding).sort().join("\0") === ["expectedValue", "jsonPointer", "path", "sha256"].join("\0"), `Verified ${fieldName} on ${rowId} has an unexpected evidence-binding field.`);
   assertCondition(typeof binding.path === "string" && binding.path.startsWith("data/"), `Verified ${fieldName} on ${rowId} needs a repository-data binding path.`);
   assertCondition(field.evidenceRefs.includes(binding.path), `Verified ${fieldName} on ${rowId} must cite its binding path in evidenceRefs.`);
-  const absolutePath = path.join(root, binding.path);
-  assertCondition(existsSync(absolutePath), `Verified ${fieldName} on ${rowId} has a missing binding file.`);
+  const absolutePath = repositoryDataFile(binding.path, root, `Verified ${fieldName} on ${rowId}`);
   const bytes = readFileSync(absolutePath);
   const actualSha256 = createHash("sha256").update(bytes).digest("hex");
   assertCondition(binding.sha256 === actualSha256, `Verified ${fieldName} on ${rowId} has a stale evidence-file SHA-256.`);
@@ -111,12 +133,15 @@ function assertField(field, fieldName, rowId, root) {
     if (Object.hasOwn(field, "evidenceRefs")) {
       assertExistingDataReferences(field.evidenceRefs, root, `${rowId}.${fieldName}`);
     }
+    const allowedKeys = ["reason", "status", ...(Object.hasOwn(field, "evidenceRefs") ? ["evidenceRefs"] : [])].sort();
+    assertCondition(Object.keys(field).sort().join("\0") === allowedKeys.join("\0"), `Missing ${fieldName} on ${rowId} has unexpected fields.`);
     return;
   }
 
   assertCondition(Object.hasOwn(field, "value") && field.value !== null && field.value !== undefined, `Verified ${fieldName} on ${rowId} needs a value.`);
   if (typeof field.value === "string") assertCondition(field.value.trim(), `Verified ${fieldName} on ${rowId} needs a non-empty value.`);
   assertExistingDataReferences(field.evidenceRefs, root, `${rowId}.${fieldName}`);
+  assertCondition(Object.keys(field).sort().join("\0") === ["evidenceBinding", "evidenceRefs", "status", "value"].join("\0"), `Verified ${fieldName} on ${rowId} has unexpected fields.`);
   assertEvidenceBinding(field, fieldName, rowId, root);
   assertCondition(!Object.hasOwn(field, "reason"), `Verified ${fieldName} on ${rowId} cannot carry a missing reason.`);
 }

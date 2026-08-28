@@ -110,7 +110,13 @@ export function matchDetectedChange(
     }
   }
 
-  qualifying.sort((left, right) => right.overlapShare - left.overlapShare);
+  // The overlap is the primary choice rule.  The identifier tie-break keeps
+  // a tie reproducible when callers read candidates in a different order.
+  qualifying.sort((left, right) => {
+    const overlapOrder = right.overlapShare - left.overlapShare;
+    if (overlapOrder !== 0) return overlapOrder;
+    return left.candidate.id < right.candidate.id ? -1 : left.candidate.id > right.candidate.id ? 1 : 0;
+  });
   const selectedMatch = qualifying[0] ?? null;
   for (const rejected of qualifying.slice(1)) {
     rejectedCandidates.push({
@@ -119,6 +125,15 @@ export function matchDetectedChange(
       reason: "lower-overlap-than-selected",
     });
   }
+
+  // Rejection order is part of the deterministic audit result too.  The
+  // lower-overlap entries were appended above, so normalize all reasons
+  // after the selection decision is known.
+  rejectedCandidates.sort((left, right) => {
+    if (left.candidate.id < right.candidate.id) return -1;
+    if (left.candidate.id > right.candidate.id) return 1;
+    return left.reason < right.reason ? -1 : left.reason > right.reason ? 1 : 0;
+  });
 
   if (selectedMatch) {
     return { detectedChange, evidenceClass: "official-record", temporalToleranceYears: tolerance, selectedMatch, rejectedCandidates };

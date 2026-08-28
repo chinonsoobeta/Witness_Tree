@@ -105,7 +105,7 @@ function validateAvailability(record, dataRoot = comparisonDataRoot()) {
   const nbac = record.sources.find((source) => source.id === "nbac-1972-2025");
   assert.equal(nbac.comparisonStatus, "input-staged-not-admitted");
   assert.equal(nbac.evidence, "data/phase1-nbac-profile-2026-08-27.json");
-  assert.match(nbac.missing, /Immutable archive.*production admission.*49 invalid NBAC geometries/i);
+  assert.match(nbac.missing, /Recovery-replica proof.*production admission.*49 invalid NBAC geometries/i);
   assert.deepEqual(record.claims, { comparisonResultsExist: false, causalAttributionClaim: false, likeForLikeClaim: false, productAccuracyClaim: false, released: false });
   return record;
 }

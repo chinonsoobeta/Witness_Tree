@@ -126,7 +126,8 @@
       "evidenceRefs": [
         "data/nfdb-poly-current-profile.json",
         "data/phase1-nbac-owner-authorization-2026-08-27.json",
-        "data/phase1-nbac-profile-2026-08-27.json"
+        "data/phase1-nbac-profile-2026-08-27.json",
+        "data/nbac-archive-receipt-2026-08-27.json"
       ],
       "proof": {
         "licence": true,
@@ -140,7 +141,7 @@
       },
       "rawCredit": 0.75,
       "productionEligible": false,
-      "blocker": "The NFDB and exact NBAC 1972-2025 components are locally checksum-bound and profiled under the current official OGL Canada metadata. The 49 invalid NBAC geometries remain quarantined. Immutable archive proof, transformation, ingestion, release and production admission remain separately blocked."
+      "blocker": "The NFDB and exact NBAC 1972-2025 components are locally checksum-bound and profiled under the current official OGL Canada metadata. Exact-version primary payload/manifest readback is recorded for the NBAC component, with private evidence retained on the external SSD. The 49 invalid NBAC geometries remain quarantined. Recovery, full archive controls, transformation, ingestion, release and production admission remain separately blocked."
     },
     {
       "id": "bc-wildfire",

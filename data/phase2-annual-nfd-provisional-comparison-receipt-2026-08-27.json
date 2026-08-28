@@ -1,0 +1,69 @@
+{
+  "schemaVersion": "witness-tree/phase2-annual-nfd-provisional-comparison-receipt/1",
+  "status": "executed-validated-provisional-nonproduction",
+  "recordedAt": "2026-08-27",
+  "dataRoot": "Witness_Tree-data",
+  "annualZonalOutput": {
+    "relativePath": "derived/phase2-annual-province-zonal-v1/annual-province-zonal-1984-2022.json",
+    "byteLength": 70992,
+    "sha256": "adce54ec418f0866bc69718e04dfaa7da82b9b80cc79a28e367a5e57fffeae57"
+  },
+  "annualZonalProvenance": {
+    "relativePath": "derived/phase2-annual-province-zonal-v1/annual-province-zonal-1984-2022.provenance.json",
+    "byteLength": 121641,
+    "sha256": "07c9dde809497006d9984e83754e5fbf56d48f6d95af56db9623c4a9a5d158da",
+    "workerSha256": "04451f32124b94e63cd8badc31d17a9bcb56ac468637002306c5cc03df3c77f2",
+    "completedAt": "2026-08-27T20:54:27.265949Z",
+    "elapsedSeconds": 1653.4992332500042
+  },
+  "nfdProfile": {
+    "repositoryPath": "data/nfd-harvest-statistics-profile.json",
+    "byteLength": 103724,
+    "sha256": "d1349f62b5f9c944e21706420b007cb14154f0cb672017ac57c9f33a1b29a1f5"
+  },
+  "comparisonOutput": {
+    "relativePath": "derived/phase2-annual-nfd-comparison-v1/annual-nfd-comparison-1985-2022.json",
+    "byteLength": 193940,
+    "sha256": "8c0c93bf50e63588139472ba6e2a7b61468b893307e7897777078782b5ffabf4"
+  },
+  "comparisonProvenance": {
+    "relativePath": "derived/phase2-annual-nfd-comparison-v1/annual-nfd-comparison-1985-2022.provenance.json",
+    "byteLength": 1955,
+    "sha256": "31a02923594a42bb9dd880345948be59c24416c4b1fbbc189e45a9480818b28b"
+  },
+  "rows": {
+    "annualZonalStructuralRows": 156,
+    "baselineSnapshotsExcludedFromComparison": 4,
+    "comparisonRows": 152,
+    "computedRows": 34,
+    "pendingRows": 118,
+    "firstToYear": 1985,
+    "lastToYear": 2022,
+    "provinces": ["BC", "AB", "ON", "QC"]
+  },
+  "methodBoundary": {
+    "join": "Each adjacent Witness Tree interval is joined to the NFD row labelled by the interval toYear.",
+    "quantityRelationship": "Witness Tree observed forest loss and NFD reported harvest are non-like-for-like quantities; differences are descriptive only.",
+    "unknownPolicy": "A comparison remains pending with null differences when either complete total is unknown; known subtotals are not substituted and blanks are not converted to zero.",
+    "boundaryAreaMethod": "The annual zonal run used binary rasterized boundary masks, not the fractional-area cell-intersection method required by the formal comparison contract.",
+    "formalScheduleMismatch": "The worker emits four 1984 forest-mask baseline snapshots plus 152 adjacent annual intervals. A baseline snapshot is not relabelled as a 1984 annual-loss observation to manufacture the formal 156-row matrix."
+  },
+  "verification": {
+    "annualOutputCheckerPassed": true,
+    "comparisonValidatorPassed": true,
+    "exactOutputReadbackPassed": true
+  },
+  "claims": {
+    "comparisonComputed": true,
+    "provisional": true,
+    "likeForLike": false,
+    "causalAttribution": false,
+    "productAccuracy": false,
+    "formalIndependentComparisonGateComplete": false,
+    "published": false,
+    "admitted": false,
+    "released": false,
+    "productionEligible": false
+  },
+  "notice": "This receipt binds a local provisional annual observation run. It is not formal comparison-gate completion, source or output admission, publication, release, or production evidence."
+}

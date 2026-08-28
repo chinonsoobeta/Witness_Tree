@@ -51,6 +51,15 @@ test("local evidence cannot claim archive, transformation or admission", () => {
   }
 });
 
+test("NBAC profile distinguishes primary-object readback from immutable archive", () => {
+  assert.equal(record.evidenceState.primaryObjectReadback, true);
+  assert.equal(record.evidenceState.immutableArchive, false);
+  const missing = clone(); delete missing.evidenceState.primaryObjectReadback;
+  assert.throws(() => validatePhase1NbacProfile(missing), /evidence state/);
+  const upgraded = clone(); upgraded.evidenceState.immutableArchive = true;
+  assert.throws(() => validatePhase1NbacProfile(upgraded));
+});
+
 test("NBAC byte verification rejects relative, arbitrary and symlinked data roots before reading artifacts", () => {
   assert.throws(() => verifyPhase1NbacProfileBytes(record, "relative/root"), /absolute path/);
   const temporary = mkdtempSync(path.join(tmpdir(), "nbac-root-"));

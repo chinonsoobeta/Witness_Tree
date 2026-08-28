@@ -15,7 +15,7 @@
       "evidence": [
         {
           "path": "docs/EXTERNAL_GATES.md",
-          "sha256": "51c55070eafd24a2c05cf43fbe903edb3af93068b6730baeb3fb8478a16ba2d9"
+          "sha256": "6240c138cbc412ad530d7912215a75017a485afc1d88cc4911a356cc52395542"
         }
       ]
     },
@@ -39,7 +39,7 @@
       "evidence": [
         {
           "path": "docs/PLAN_GAP_MATRIX.md",
-          "sha256": "94077da717d964af14e9bd291117d1aa18431a0646d441b0cf789e0e8ee57bb4"
+          "sha256": "95f36dfdca87e3cfae5bd7d8ba7840ebba2083ad82527facc5ce57fe1c9f3b26"
         }
       ]
     },
@@ -83,7 +83,7 @@
       "evidence": [
         {
           "path": "docs/EXTERNAL_GATES.md",
-          "sha256": "51c55070eafd24a2c05cf43fbe903edb3af93068b6730baeb3fb8478a16ba2d9"
+          "sha256": "6240c138cbc412ad530d7912215a75017a485afc1d88cc4911a356cc52395542"
         }
       ]
     },
@@ -115,11 +115,11 @@
       "evidence": [
         {
           "path": "docs/OPERATIONS_HANDBOOK.md",
-          "sha256": "f920d0d976673f5c16e9b43ba244b8125601a9940b106999b2823045e21b955b"
+          "sha256": "404cb66143496bd81f6b23eb9e32fca3dad192c682b3223568a5a6270b08a6d6"
         },
         {
           "path": "docs/PLAN_GAP_MATRIX.md",
-          "sha256": "94077da717d964af14e9bd291117d1aa18431a0646d441b0cf789e0e8ee57bb4"
+          "sha256": "95f36dfdca87e3cfae5bd7d8ba7840ebba2083ad82527facc5ce57fe1c9f3b26"
         }
       ],
       "ownerAuthorization": {
@@ -136,7 +136,7 @@
       "evidence": [
         {
           "path": "docs/PLAN_GAP_MATRIX.md",
-          "sha256": "94077da717d964af14e9bd291117d1aa18431a0646d441b0cf789e0e8ee57bb4"
+          "sha256": "95f36dfdca87e3cfae5bd7d8ba7840ebba2083ad82527facc5ce57fe1c9f3b26"
         }
       ]
     },
@@ -196,11 +196,11 @@
       "id": "observability",
       "title": "Observability is complete",
       "status": "fail",
-      "reason": "The scheduled wildfire workflow provides limited job-failure notification and manual run-list review, but no deployed service monitor, retained operational logs, dashboard, or completed operational review is recorded.",
+      "reason": "The scheduled wildfire workflow provides limited job-failure notification, but no documented current service or delivery monitor, retained-log policy, dashboard, or completed operational review is recorded. Historical CloudTrail objects and workflow execution history do not by themselves establish operated site observability.",
       "evidence": [
         {
           "path": "docs/IMMUTABLE_STORAGE_PROVISIONING.md",
-          "sha256": "84fa8cbf80435104a1ad61e73e4d8fbdf1e8b43dacb85c4141105d1bbf109bb2"
+          "sha256": "b56456f0bbe253017a1d8d914b27a34d2c62095593457fd1a03bbd162327af6c"
         },
         {
           "path": ".github/workflows/wildfire-refresh.yml",
@@ -208,7 +208,7 @@
         },
         {
           "path": "docs/OPERATIONS_HANDBOOK.md",
-          "sha256": "f920d0d976673f5c16e9b43ba244b8125601a9940b106999b2823045e21b955b"
+          "sha256": "404cb66143496bd81f6b23eb9e32fca3dad192c682b3223568a5a6270b08a6d6"
         }
       ]
     },
@@ -220,7 +220,7 @@
       "evidence": [
         {
           "path": "docs/IMMUTABLE_STORAGE_PROVISIONING.md",
-          "sha256": "84fa8cbf80435104a1ad61e73e4d8fbdf1e8b43dacb85c4141105d1bbf109bb2"
+          "sha256": "b56456f0bbe253017a1d8d914b27a34d2c62095593457fd1a03bbd162327af6c"
         },
         {
           "path": "data/phase1-archive-live-readback-2026-08-20.json",

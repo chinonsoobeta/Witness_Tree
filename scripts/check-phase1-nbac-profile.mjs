@@ -86,8 +86,8 @@ export function validatePhase1NbacProfile(record) {
   assert.deepEqual([record.profile.missingGeometryCount, record.profile.emptyGeometryCount, record.profile.invalidGeometryCount], [0, 0, 49]);
   assert.deepEqual(record.profile.invalidGeometryReasons, { "Ring Self-intersection": 49 });
   assert.equal(record.profile.invalidGeometryPolicy, "quarantine; no silent repair");
-  exactKeys(record.evidenceState, ["checksumVerified", "downloaded", "immutableArchive", "ingested", "productionAdmitted", "productionEligible", "profiled", "published", "refetchable", "released", "transformed"], "NBAC evidence state");
-  assert.deepEqual(record.evidenceState, { downloaded: true, checksumVerified: true, profiled: true, refetchable: true, immutableArchive: false, transformed: false, ingested: false, released: false, published: false, productionAdmitted: false, productionEligible: false });
+  exactKeys(record.evidenceState, ["checksumVerified", "downloaded", "immutableArchive", "ingested", "primaryObjectReadback", "productionAdmitted", "productionEligible", "profiled", "published", "refetchable", "released", "transformed"], "NBAC evidence state");
+  assert.deepEqual(record.evidenceState, { downloaded: true, checksumVerified: true, profiled: true, refetchable: true, primaryObjectReadback: true, immutableArchive: false, transformed: false, ingested: false, released: false, published: false, productionAdmitted: false, productionEligible: false });
   return record;
 }
 

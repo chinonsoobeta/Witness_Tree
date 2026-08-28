@@ -76,6 +76,12 @@ test("canonical production ledger reconciles all 31 plan rows and only exact adm
   assert.equal(qcFourthInventory.proof.immutableArchive, true);
   assert.equal(qcFourthInventory.proof.productionAdmission, false);
   assert.equal(qcFourthInventory.productionEligible, false);
+  const nbac = ledger.entries.find((entry) => entry.id === "cwfis-historical");
+  assert.ok(nbac.evidenceRefs.includes("data/nbac-archive-receipt-2026-08-27.json"));
+  assert.equal(nbac.evidenceState, "local-verified-profiled");
+  assert.equal(nbac.rawCredit, 0.75);
+  assert.equal(nbac.proof.immutableArchive, false);
+  assert.equal(nbac.productionEligible, false);
 });
 
 test("every evidence reference stays inside the repository and names a regular non-symlink file", () => {
@@ -145,6 +151,17 @@ test("NBAC ledger proof is cross-validated against the exact profile", () => {
   const profileDrift = structuredClone(nbacProfile);
   profileDrift.artifacts.payload.sha256 = "0".repeat(64);
   assert.throws(() => validatePhase1ProductionSourceLedger(ledger, inventory, ROOT, profileDrift));
+});
+
+test("NBAC receipt is required but cannot upgrade the ledger archive proof", () => {
+  const missingReceipt = structuredClone(ledger);
+  const row = missingReceipt.entries.find(({ id }) => id === "cwfis-historical");
+  row.evidenceRefs = row.evidenceRefs.filter((reference) => !reference.includes("nbac-archive-receipt"));
+  assert.throws(() => validatePhase1ProductionSourceLedger(missingReceipt, inventory), /primary-readback receipt/i);
+
+  const archiveClaim = structuredClone(ledger);
+  archiveClaim.entries.find(({ id }) => id === "cwfis-historical").proof.immutableArchive = true;
+  assert.throws(() => validatePhase1ProductionSourceLedger(archiveClaim, inventory), /Local evidence must remain profile\/re-fetch evidence/i);
 });
 
 test("Ontario FRI is explicitly access-blocked by its official Term 2 record", () => {

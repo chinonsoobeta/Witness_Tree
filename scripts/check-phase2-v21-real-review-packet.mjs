@@ -18,6 +18,9 @@ for (const stratum of packet.selection.strata) assert.equal(packet.samples.filte
 assert.deepEqual(packet.expertReview, { status: "not-started", completedLocationsByProvince: { BC: 0, AB: 0, ON: 0, QC: 0 }, resultClaims: "none" });
 for (const sample of packet.samples) {
   assert.match(sample.raster.sha256, /^[a-f0-9]{64}$/); assert.match(sample.boundary.boundaryGeometrySha256, /^[a-f0-9]{64}$/);
+  assert.equal(Number.isFinite(sample.cell.longitude) && sample.cell.longitude >= -180 && sample.cell.longitude <= 180, true);
+  assert.equal(Number.isFinite(sample.cell.latitude) && sample.cell.latitude >= -90 && sample.cell.latitude <= 90, true);
+  assert.equal(sample.cell.longitude < -40 && sample.cell.longitude > -150 && sample.cell.latitude > 35 && sample.cell.latitude < 75, true, `${sample.id} must resolve to a plausible Canadian longitude/latitude.`);
   assert.equal(sample.review.status, "not-started"); assert.equal(sample.review.yearAndAttribution.en, ""); assert.equal(sample.review.yearAndAttribution.fr, "");
 }
 console.log("Phase 2 V2.1 real review packet passes; 400 candidates, zero review results, nonproduction.");

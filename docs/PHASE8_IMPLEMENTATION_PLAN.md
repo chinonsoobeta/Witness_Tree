@@ -531,17 +531,14 @@ writing the site-tier gap into the `reason` text itself.
 
 ## 5. `backups`
 
-**What the gate says.** "The immutable-storage record explicitly says that no
-Canadian recovery copy or documented provider durability/recovery evidence
-exists."
+**What the gate says.** The current status records bounded recovery readbacks
+for some objects, but no approved complete Canadian recovery copy for every
+relied-on object and no current complete durability and recovery record.
 
-**Current state.** Accurate and self-reported. The Recovery row of the mapping
-table in `docs/IMMUTABLE_STORAGE_PROVISIONING.md` reads "No Canadian recovery
-copy exists, and no provider durability or recovery evidence has been
-documented or tested." Cross-Region Replication reads "Not configured". The
-`openDecisions` list in `data/immutable-promotions.json` names the same gap:
-"Bucket deletion, account closure, and region loss are separate risks with no
-evidence here, and no Canadian recovery copy exists."
+**Current state.** Partial recovery evidence exists for a bounded subset of
+objects. It does not prove that every relied-on raw object, manifest, and
+derived artifact has a current recovery counterpart. No complete approved
+recovery design and reconciliation record closes that gap.
 
 **Hosting is irrelevant here.** This is object storage, start to finish.
 
@@ -716,7 +713,7 @@ tiles.
 | --- | --- |
 | `load-testing` | Not achievable as written. The site tier is not the project's to test or to fix. Measure the AWS delivery tier, scope the claim to it, and leave the gate `fail`. |
 | `raw-archive-reproducibility` | **Closed on 2026-08-27**, by the cheaper route, hosting-independent as predicted. `docs/RAW_ARCHIVE_REPRODUCIBILITY_SCOPE.md` establishes a cheaper route than the one in section 2: a 10.3 MB federal electoral reproduction with no new promotion and no new retention commitment. Prefer it. The route in section 2 needs the StatCan boundary file promoted into the archive, then a version-pinned restore and re-run of the admitted Phase 2 chain. |
-| `bulk-downloads` | Achievable with the artifacts in AWS `ca-central-1` behind CloudFront. The CSV is reachable now; a GeoPackage waits on an admitted geospatial output. |
+| `bulk-downloads` | Achievable with admitted artifacts in AWS `ca-central-1` behind a project-controlled delivery tier. No admitted public CSV and GeoPackage pair is currently published and independently verified. |
 | `observability` | Achievable for the archive and delivery tiers in AWS. Not achievable for the site tier. Any flip must say so in its own reason text. |
 | `backups` | Achievable in full, today, with no external party. A Canadian recovery copy plus one recovery exercise closes it. |
 | `cdn-tile-validation` | Achievable with tiles and CDN in AWS, conditional on the host permitting a cross-origin range-request fetch. Unknown until probed. |

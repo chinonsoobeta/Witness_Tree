@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "witness-tree/phase2-annual-nfd-fractional-comparison-receipt/1",
+  "status": "executed-validated-provisional-nonproduction",
+  "recordedAt": "2026-08-27",
+  "dataRoot": "Witness_Tree-data",
+  "annualZonalOutput": {
+    "relativePath": "derived/phase2-annual-province-zonal-fractional-v1/annual-province-zonal-fractional-1984-2022.json",
+    "byteLength": 72850,
+    "sha256": "1399d06cc02f0465b5f66894e0f4adf76387dd93c273b8d3253d41f8940b1c16"
+  },
+  "annualZonalProvenance": {
+    "relativePath": "derived/phase2-annual-province-zonal-fractional-v1/annual-province-zonal-fractional-1984-2022.provenance.json",
+    "byteLength": 131343,
+    "sha256": "e62b8777bd781c0117c7e876666f63cb131ff3e7209dfbee06a2e006e28e3871",
+    "workerSha256": "a31f15f62eb7294eb56ca95f47a613ed80a77c537b40565342a68ec318c9a54f",
+    "checkpointRunBindingSha256": "0a036b5d0a0cc38b6ab4befd3d2131cdbec29fc20425dcc8ac6a03a17f84d451",
+    "completedAt": "2026-08-28T04:36:34.119239Z",
+    "elapsedSeconds": 1022.0077196250058
+  },
+  "nfdProfile": {
+    "repositoryPath": "data/nfd-harvest-statistics-profile.json",
+    "byteLength": 103724,
+    "sha256": "d1349f62b5f9c944e21706420b007cb14154f0cb672017ac57c9f33a1b29a1f5"
+  },
+  "comparisonOutput": {
+    "relativePath": "derived/phase2-annual-nfd-comparison-fractional-v1/annual-nfd-comparison-fractional-1985-2022.json",
+    "byteLength": 195723,
+    "sha256": "0ee05abb0f1b76175dc42b6e3da362731a20bffd339e69c927c1fc2573ff4364"
+  },
+  "comparisonProvenance": {
+    "relativePath": "derived/phase2-annual-nfd-comparison-fractional-v1/annual-nfd-comparison-fractional-1985-2022.provenance.json",
+    "byteLength": 1999,
+    "sha256": "0491eee27cfd2b9d9e7331cf0c2d13c7bf952adf8f7c8b169b270e767b53bf97"
+  },
+  "rows": {
+    "annualZonalStructuralRows": 156,
+    "baselineSnapshotsExcludedFromComparison": 4,
+    "comparisonRows": 152,
+    "computedRows": 34,
+    "pendingRows": 118,
+    "firstToYear": 1985,
+    "lastToYear": 2022,
+    "provinces": ["BC", "AB", "ON", "QC"]
+  },
+  "fractionalCorrection": {
+    "tileSize": 1024,
+    "workers": 10,
+    "processedWindowCount": 1247,
+    "candidateCellCount": 5113929,
+    "fractionalCellCount": 5113667,
+    "changedCellCount": 1390497
+  },
+  "methodBoundary": {
+    "join": "The comparison joins the 152 adjacent annual Witness Tree rows to the NFD profile only by province and toYear.",
+    "quantityRelationship": "NFD reported harvest and Witness Tree observed forest loss are non-like-for-like quantities; all differences remain descriptive only.",
+    "unknownPolicy": "A row remains pending wherever required NFD values are absent, and unknown evidence is never replaced by zero or interpolated.",
+    "boundaryAreaMethod": "The Witness Tree annual rows apply exact polygon-cell intersection fractions only to boundary candidates while retaining the verified binary baseline for interior cells.",
+    "formalScheduleMismatch": "The 1984 baseline snapshots are excluded, adjacent-pair toYear labels are not relabelled, and the comparison is not a formal independent review gate."
+  },
+  "verification": {
+    "fractionalOutputCheckerPassed": true,
+    "checkpointReadbackPassed": true,
+    "comparisonValidatorPassed": true,
+    "exactOutputReadbackPassed": true
+  },
+  "claims": {
+    "comparisonComputed": true,
+    "fractionalCorrectionComputed": true,
+    "provisional": true,
+    "likeForLike": false,
+    "causalAttribution": false,
+    "productAccuracy": false,
+    "formalIndependentComparisonGateComplete": false,
+    "published": false,
+    "admitted": false,
+    "released": false,
+    "productionEligible": false
+  },
+  "notice": "This receipt proves a local exact fractional-boundary execution and a provisional descriptive comparison. It is not formal comparison-gate completion, publication, admission, release, or production eligibility."
+}

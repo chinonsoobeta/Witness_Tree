@@ -159,3 +159,17 @@ test("missing fields cannot carry asserted values or omit the missing reason", (
   delete unexplainedMissing.rows[0].fields.schema.reason;
   assert.throws(() => validatePhase1SourceLedgerFieldAudit(unexplainedMissing, ledger, inventory), /needs a reason/i);
 });
+
+test("field records and evidence bindings reject uncontracted or unsafe fields", () => {
+  const extraField = structuredClone(audit);
+  extraField.rows[0].fields.publisher.unreviewed = true;
+  assert.throws(() => validatePhase1SourceLedgerFieldAudit(extraField, ledger, inventory), /unexpected fields/i);
+
+  const extraBindingField = structuredClone(audit);
+  extraBindingField.rows[0].fields.publisher.evidenceBinding.provider = "filesystem";
+  assert.throws(() => validatePhase1SourceLedgerFieldAudit(extraBindingField, ledger, inventory), /unexpected evidence-binding field/i);
+
+  const traversal = structuredClone(audit);
+  traversal.rows[0].fields.publisher.evidenceRefs[0] = "data/../data/phase1-production-source-ledger.json";
+  assert.throws(() => validatePhase1SourceLedgerFieldAudit(traversal, ledger, inventory), /safe repository data paths/i);
+});
