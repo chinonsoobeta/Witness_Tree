@@ -82,12 +82,12 @@ const featurePath = (feature: ProvinceFeature) => {
 };
 const lossColour = (value: number) =>
   value >= 3
-    ? "#1f5f38"
+    ? EXPLORE_MAP_COLOURS.loss3
     : value >= 2
-      ? "#57935a"
+      ? EXPLORE_MAP_COLOURS.loss2
       : value >= 1
-        ? "#a9cf9b"
-        : "#e9f2e5";
+        ? EXPLORE_MAP_COLOURS.loss1
+        : EXPLORE_MAP_COLOURS.loss0;
 const symbol = (className: string) => (
   <i className={`loss-swatch ${className}`} aria-hidden="true" />
 );

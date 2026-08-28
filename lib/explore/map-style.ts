@@ -5,6 +5,10 @@ export const EXPLORE_MAP_COLOURS = Object.freeze({
   harvest: "#2a78d6",
   wildfire: "#eb6834",
   recovery: "#4a3aa7",
+  loss0: "#e9f2e5",
+  loss1: "#a9cf9b",
+  loss2: "#57935a",
+  loss3: "#1f5f38",
 } as const);
 
 export const EXPLORE_PRODUCTION_LAYER = Object.freeze({
