@@ -1,7 +1,7 @@
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
-const MAIN_COMPONENTS = new Set(["AccountStatusPage", "ComponentGallery", "DataPage", "GovernancePage", "LocationResult", "MethodologyPage", "PlacePage", "WildfireView"]);
+const MAIN_COMPONENTS = new Set(["AccountStatusPage", "ComponentGallery", "DataPage", "GovernancePage", "LocationResult", "MethodologyPage", "OfficialPublishedHarvestComparison", "PlacePage", "WildfireView"]);
 
 async function tsxFiles(root) {
   const entries = await readdir(root, { withFileTypes: true });

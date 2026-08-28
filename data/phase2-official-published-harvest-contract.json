@@ -1,0 +1,109 @@
+{
+  "schemaVersion": "witness-tree/phase2-official-published-harvest-contract/1",
+  "status": "approved-engineering-contract",
+  "trackId": "official-published-harvest-comparison-v1",
+  "recordedAt": "2026-08-27",
+  "purpose": "A separate descriptive comparison against official published harvest statistics with source-specific scope and precision. It is not a replacement for the strict NFD exact-total track.",
+  "strictNfdBoundary": {
+    "profile": {
+      "repositoryPath": "data/nfd-harvest-statistics-profile.json",
+      "byteLength": 103724,
+      "sha256": "d1349f62b5f9c944e21706420b007cb14154f0cb672017ac57c9f33a1b29a1f5"
+    },
+    "recoveryAudit": {
+      "repositoryPath": "data/phase2-nfd-official-recovery-audit-2026-08-27.json",
+      "byteLength": 12651,
+      "sha256": "00846f0cd2e8afa995cad8782e2463facc8b5ac15cb779ea49d5697217ea999b"
+    },
+    "pendingExactRows": 118,
+    "mustRemainNull": true,
+    "fallbackFromKnownSubtotalsForbidden": true,
+    "trackBMayModifyStrictTrack": false
+  },
+  "witnessTreeInput": {
+    "receipt": {
+      "repositoryPath": "data/phase2-annual-nfd-fractional-comparison-receipt-2026-08-27.json",
+      "byteLength": 3855,
+      "sha256": "6847e4d37c90a9de31e2c11191515085ad97eb87378649762f96adb5fb57ca4c"
+    },
+    "strictComparisonOutput": {
+      "relativePath": "derived/phase2-annual-nfd-comparison-fractional-v1/annual-nfd-comparison-fractional-1985-2022.json",
+      "byteLength": 195723,
+      "sha256": "0ee05abb0f1b76175dc42b6e3da362731a20bffd339e69c927c1fc2573ff4364"
+    },
+    "quantity": "Witness Tree observed forest loss",
+    "coverageRequirement": "complete",
+    "join": "province and toYear"
+  },
+  "referenceSources": [
+    {
+      "id": "statcan-table-2.10-2018",
+      "publisher": "Statistics Canada",
+      "title": "Table 2.10 Forest area harvested by province and territory, 1975 to 2015",
+      "sourceUrl": "https://www150.statcan.gc.ca/n1/pub/16-201-x/2018001/sec-2/tbl/tbl-2.10-eng.htm",
+      "licence": "Statistics Canada Open Licence",
+      "raw": {
+        "relativePath": "raw/nfd-recovery-official/2026-08-27/canada-legacy/table-2-10-forest-area-harvested-1975-2015.html",
+        "byteLength": 113443,
+        "sha256": "02126a57aa835ca8a2f006bcd7293ac58176ef92b36159555e43c42e27f2b7be"
+      },
+      "provinces": ["BC", "AB", "ON", "QC"],
+      "startYear": 1990,
+      "endYear": 2015,
+      "rowCount": 104,
+      "publishedUnit": "whole square kilometres",
+      "derivedDisplayUnit": "hectares",
+      "displayPrecisionHectares": 100,
+      "roundingHalfWidthHectares": 50,
+      "scope": "provincial, private and federal land",
+      "sourceFlagCounts": {
+        "preliminary": 6,
+        "revised": 13,
+        "agencyEstimated": 7,
+        "unflagged": 78
+      },
+      "publicationStatus": "publishable",
+      "attribution": "Adapted from Statistics Canada, Table 2.10 Forest area harvested by province and territory, 1975 to 2015, 2018. This does not constitute an endorsement by Statistics Canada of this product."
+    },
+    {
+      "id": "nrcan-forest-statistical-profile-f1e8c437",
+      "publisher": "Natural Resources Canada",
+      "title": "Forest Statistical Profile harvest aggregate",
+      "sourceUrl": "https://github.com/NRCan/statisticalprofile-datasets/tree/f1e8c4379afa50d4af574f5cfcd8727a2c54a6ae",
+      "licence": "Personal use only; all rights reserved",
+      "provincesAndYears": {
+        "BC": "2016-2019",
+        "AB": "2016-2019",
+        "ON": "2016-2018",
+        "QC": "2016-2018"
+      },
+      "rowCount": 14,
+      "scope": "displayed provincial or territorial Crown and private land; federal land omitted",
+      "publicationStatus": "withheld",
+      "withholdReason": "The source repository states personal use only and all rights reserved. Numeric values must not enter the public artifact."
+    }
+  ],
+  "outputContract": {
+    "rowCount": 118,
+    "statcanRoundedRows": 104,
+    "restrictedPendingRows": 14,
+    "safeExactNfdReplacementRows": 0,
+    "nfdExactTotalsRemainNull": 118,
+    "computedStatus": "computed-rounded-reference",
+    "pendingStatus": "pending-restricted-source",
+    "differenceType": "nominal descriptive difference from a rounded reference",
+    "uncertaintyTreatment": "Every computed row carries the 50 hectare rounding half-width. The nominal difference and relative difference are not promoted to exact observations.",
+    "publicationTarget": "bilingual public technical preview after exact receipt and deployment"
+  },
+  "claims": {
+    "likeForLike": false,
+    "causalAttribution": false,
+    "productAccuracy": false,
+    "equivalence": false,
+    "strictNfdRowsReplaced": false,
+    "formalIndependentComparisonGateComplete": false,
+    "published": false,
+    "released": false,
+    "productionEligible": false
+  }
+}

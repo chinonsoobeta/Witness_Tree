@@ -8,6 +8,7 @@ const COUNTERPARTS: Record<string, string> = {
   "/en/account": "/fr/compte", "/fr/compte": "/en/account",
   "/en/methods": "/fr/methodes", "/fr/methodes": "/en/methods",
   "/en/data": "/fr/donnees", "/fr/donnees": "/en/data",
+  "/en/data/official-harvest-comparison": "/fr/donnees/comparaison-recolte-officielle", "/fr/donnees/comparaison-recolte-officielle": "/en/data/official-harvest-comparison",
   "/en/terms": "/fr/conditions", "/fr/conditions": "/en/terms",
   "/en/privacy": "/fr/confidentialite", "/fr/confidentialite": "/en/privacy",
   "/en/corrections": "/fr/corrections", "/fr/corrections": "/en/corrections",
@@ -19,7 +20,7 @@ const COUNTERPARTS: Record<string, string> = {
   "/en/search": "/fr/recherche", "/fr/recherche": "/en/search",
 };
 
-const SAFE_QUERY_PARAMETERS = new Set(["q", "view", "mode", "presentation", "data", "year"]);
+const SAFE_QUERY_PARAMETERS = new Set(["q", "view", "mode", "presentation", "data", "year", "province"]);
 
 export function localeCounterpart(pathname: string, locale: Locale): string {
   const staticCounterpart = COUNTERPARTS[pathname];
