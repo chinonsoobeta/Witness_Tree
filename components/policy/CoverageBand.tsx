@@ -6,5 +6,5 @@ export type CoverageBandProps = Readonly<{
 }>;
 
 export function CoverageBand({ coverageGrade, locale }: CoverageBandProps) {
-  return <span>{COVERAGE_LABELS[coverageGrade][locale]}</span>;
+  return <span className="coverage-band">{COVERAGE_LABELS[coverageGrade][locale]}</span>;
 }

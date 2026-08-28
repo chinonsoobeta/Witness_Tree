@@ -15,13 +15,13 @@ const LABELS = {
 
 export function ProvenanceBlock({ provenance, locale }: ProvenanceBlockProps) {
   return (
-    <dl>
-      <div><dt>{LABELS.dataset[locale]}</dt><dd>{provenance.dataset}</dd></div>
-      <div><dt>{LABELS.version[locale]}</dt><dd>{provenance.version}</dd></div>
-      <div><dt>{LABELS.retrieved[locale]}</dt><dd>{provenance.retrievedDate}</dd></div>
-      <div><dt>{LABELS.licence[locale]}</dt><dd>{provenance.licence}</dd></div>
+    <dl className="provenance">
+      <div className="provenance-row"><dt>{LABELS.dataset[locale]}</dt><dd>{provenance.dataset}</dd></div>
+      <div className="provenance-row"><dt>{LABELS.version[locale]}</dt><dd>{provenance.version}</dd></div>
+      <div className="provenance-row"><dt>{LABELS.retrieved[locale]}</dt><dd>{provenance.retrievedDate}</dd></div>
+      <div className="provenance-row"><dt>{LABELS.licence[locale]}</dt><dd>{provenance.licence}</dd></div>
       {provenance.recordUrl ? (
-        <div><dt>{LABELS.record[locale]}</dt><dd><a href={provenance.recordUrl}>{provenance.recordUrl}</a></dd></div>
+        <div className="provenance-row"><dt>{LABELS.record[locale]}</dt><dd><a href={provenance.recordUrl}>{provenance.recordUrl}</a></dd></div>
       ) : null}
     </dl>
   );
