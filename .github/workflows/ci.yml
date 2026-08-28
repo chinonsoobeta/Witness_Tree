@@ -70,6 +70,7 @@ jobs:
       - run: npm run check:phase8-launch-readiness-exit-status
       - run: npm run check:site-hosting-capability-probe
       - run: npm run check:phase8-province-map-release
+      - run: npm run check:maplibre-worker-asset
       - name: Independently retrieve the Phase 8 bulk release
         run: node scripts/check-phase8-bulk-download-independent-retrieval.mjs --output /tmp/phase8-bulk-download-independent-retrieval.json
       - name: Preserve the independent Phase 8 retrieval receipt
