@@ -1,4 +1,48 @@
 import type { Locale } from "@/lib/domain";
 import { searchPlaces } from "@/lib/search";
 
-export function SearchPage({ locale, query }: Readonly<{ locale: Locale; query: string }>) { const results = searchPlaces(query); const text = locale === "en" ? { title: "Search places", guide: "Enter a place name or alias.", none: "– No illustrative place record matches this query.", fixture: "Illustrative fixtures only", input: "Place name or alias" } : { title: "Rechercher des lieux", guide: "Entrez un nom de lieu ou un alias.", none: "– Aucun dossier de lieu illustratif ne correspond à cette recherche.", fixture: "Exemples illustratifs seulement", input: "Nom de lieu ou alias" }; return <section className="page-wrap"><header><h1>{text.title}</h1><p>{text.fixture}</p></header><form method="get"><label htmlFor="q">{text.title}</label><input id="q" name="q" defaultValue={query} aria-label={text.input} /><button type="submit">{text.title}</button></form>{!query ? <p>{text.guide}</p> : results.length ? <ul>{results.map((place) => <li key={place.id}><a href={locale === "en" ? `/en/places/${place.id}` : `/fr/lieux/${place.id}`}>{place.name[locale]}</a></li>)}</ul> : <p>{text.none}</p>}</section>; }
+export function SearchPage({ locale, query }: Readonly<{ locale: Locale; query: string }>) {
+  const results = searchPlaces(query);
+  const text =
+    locale === "en"
+      ? {
+          title: "Search places",
+          guide: "Enter a place name or alias.",
+          none: "– No illustrative place record matches this query.",
+          fixture: "Illustrative fixtures only",
+          input: "Place name or alias",
+        }
+      : {
+          title: "Rechercher des lieux",
+          guide: "Entrez un nom de lieu ou un alias.",
+          none: "– Aucun dossier de lieu illustratif ne correspond à cette recherche.",
+          fixture: "Exemples illustratifs seulement",
+          input: "Nom de lieu ou alias",
+        };
+  return (
+    <section className="page-wrap">
+      <header>
+        <h1>{text.title}</h1>
+        <p>{text.fixture}</p>
+      </header>
+      <form method="get">
+        <label htmlFor="q">{text.title}</label>
+        <input id="q" name="q" defaultValue={query} aria-label={text.input} />
+        <button type="submit">{text.title}</button>
+      </form>
+      {!query ? (
+        <p>{text.guide}</p>
+      ) : results.length ? (
+        <ul>
+          {results.map((place) => (
+            <li key={place.id}>
+              <a href={locale === "en" ? `/en/places/${place.id}` : `/fr/lieux/${place.id}`}>{place.name[locale]}</a>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>{text.none}</p>
+      )}
+    </section>
+  );
+}
