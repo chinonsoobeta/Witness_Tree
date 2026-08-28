@@ -1,0 +1,125 @@
+{
+  "schemaVersion": "witness-tree/phase2-nfd-official-recovery-audit/1",
+  "status": "completed-no-safe-exact-replacements",
+  "recordedAt": "2026-08-27",
+  "dataRoot": "Witness_Tree-data",
+  "target": {
+    "nfdProfile": {
+      "repositoryPath": "data/nfd-harvest-statistics-profile.json",
+      "byteLength": 103724,
+      "sha256": "d1349f62b5f9c944e21706420b007cb14154f0cb672017ac57c9f33a1b29a1f5"
+    },
+    "fractionalComparisonReceipt": {
+      "repositoryPath": "data/phase2-annual-nfd-fractional-comparison-receipt-2026-08-27.json",
+      "byteLength": 3855,
+      "sha256": "6847e4d37c90a9de31e2c11191515085ad97eb87378649762f96adb5fb57ca4c"
+    },
+    "pendingRows": 118,
+    "byProvince": {"BC": 30, "AB": 30, "ON": 29, "QC": 29},
+    "years": {"BC": "1990-2019", "AB": "1990-2019", "ON": "1990-2018", "QC": "1990-2018"}
+  },
+  "officialSources": [
+    {
+      "id": "nfd-zenodo-3.0.0",
+      "publisher": "National Forestry Database / Canadian Council of Forest Ministers",
+      "sourceUrl": "https://zenodo.org/records/5148691",
+      "licence": "Open Government Licence - Canada",
+      "files": [
+        {"relativePath": "raw/nfd-recovery-official/2026-08-27/nfd-zenodo/NFD-BDNF_1_0_0.zip", "byteLength": 3415653, "sha256": "0710a936583d4468dd8acb091cd6d4699f52c8f05ebfa0469dbb6dff34bbaab0"},
+        {"relativePath": "raw/nfd-recovery-official/2026-08-27/nfd-zenodo/NFD-BDNF_2_0_0.zip", "byteLength": 2290447, "sha256": "0f2bc18bb0d3470b27414430253dfe46218c0791f1ac872b8529283b394ce0e3"},
+        {"relativePath": "raw/nfd-recovery-official/2026-08-27/nfd-zenodo/NFD-BDNF_3_0_0.zip", "byteLength": 12505693, "sha256": "6af36d0322eaff23b5903c1e8ad4eba4bd8b3d9b31c607f89867410125362ead"},
+        {"relativePath": "raw/nfd-recovery-official/2026-08-27/nfd-zenodo/zenodo-record-3690045.json", "byteLength": 11068, "sha256": "09863a8a8dcb208f5351e54b383c3f87afa1e700c41a44e6d19cc522f332d6e9"},
+        {"relativePath": "raw/nfd-recovery-official/2026-08-27/nfd-zenodo/extracted-v1/EN FR - Data - NFD - Area harvested by ownership and harvesting method.csv", "byteLength": 1149551, "sha256": "5b3a54f488c84db3cea0771bd1440f8a6252bdba30207e678998f65ee0c41900"},
+        {"relativePath": "raw/nfd-recovery-official/2026-08-27/nfd-zenodo/extracted-v2/NFD - Area harvested by ownership and harvesting method - EN FR.csv", "byteLength": 1188657, "sha256": "254249a58fee6ce442b2ac261903b97d6a80cee2529339f9ea8a64a1d5b0ebde"},
+        {"relativePath": "raw/nfd-recovery-official/2026-08-27/nfd-zenodo/extracted-v3/NFD - Area harvested by ownership and harvesting method - EN FR.csv", "byteLength": 1213241, "sha256": "c167b2ee5d45a0f79a6122b4103d1d022dd02c4ef80c23f9914dd672d9dc5f11"}
+      ],
+      "finding": "Versions 1.0.0 and 2.0.0 have no complete target totals. Version 3.0.0 has one complete target total, BC 2019, but the current official frame revises that row to a different known subtotal plus an unknown revised component; the superseded value is not a safe exact replacement.",
+      "versionFindings": [
+        {"version": "1.0.0", "archiveRelativePath": "raw/nfd-recovery-official/2026-08-27/nfd-zenodo/NFD-BDNF_1_0_0.zip", "archiveMember": "EN FR - Data - NFD - Area harvested by ownership and harvesting method.csv", "extractedFileRelativePath": "raw/nfd-recovery-official/2026-08-27/nfd-zenodo/extracted-v1/EN FR - Data - NFD - Area harvested by ownership and harvesting method.csv", "presentTargetRows": 112, "partialUnknownRows": 112, "completeRows": 0, "absentRows": 6, "unknownCellCount": 1096, "completeRowKeys": [], "completeRowTotals": {}, "safeExactReplacementRows": 0},
+        {"version": "2.0.0", "archiveRelativePath": "raw/nfd-recovery-official/2026-08-27/nfd-zenodo/NFD-BDNF_2_0_0.zip", "archiveMember": "NFD - Area harvested by ownership and harvesting method - EN FR.csv", "extractedFileRelativePath": "raw/nfd-recovery-official/2026-08-27/nfd-zenodo/extracted-v2/NFD - Area harvested by ownership and harvesting method - EN FR.csv", "presentTargetRows": 116, "partialUnknownRows": 116, "completeRows": 0, "absentRows": 2, "unknownCellCount": 1000, "completeRowKeys": [], "completeRowTotals": {}, "safeExactReplacementRows": 0},
+        {"version": "3.0.0", "archiveRelativePath": "raw/nfd-recovery-official/2026-08-27/nfd-zenodo/NFD-BDNF_3_0_0.zip", "archiveMember": "NFD - Area harvested by ownership and harvesting method - EN FR.csv", "extractedFileRelativePath": "raw/nfd-recovery-official/2026-08-27/nfd-zenodo/extracted-v3/NFD - Area harvested by ownership and harvesting method - EN FR.csv", "presentTargetRows": 118, "partialUnknownRows": 117, "completeRows": 1, "absentRows": 0, "unknownCellCount": 1005, "completeRowKeys": ["BC:2019"], "completeRowTotals": {"BC:2019": 137243}, "safeExactReplacementRows": 0}
+      ]
+    },
+    {
+      "id": "statcan-table-3.52-2009",
+      "publisher": "Statistics Canada",
+      "sourceUrl": "https://www150.statcan.gc.ca/n1/pub/16-201-x/2009000/t068-eng.htm",
+      "licence": "Statistics Canada Open Licence",
+      "files": [
+        {"relativePath": "raw/nfd-recovery-official/2026-08-27/canada-legacy/table-3-52-forest-area-harvested.html", "byteLength": 67183, "sha256": "039f18c0abc51cf3f33220fe380a39ef4d0bca513828a98490917a42c77051e7"}
+      ],
+      "finding": "The historical CCFM table supplies published hectare observations through 2007, but its older-vintage values do not resolve later revisions and unknown granular components."
+    },
+    {
+      "id": "statcan-table-2.10-2018",
+      "publisher": "Statistics Canada",
+      "sourceUrl": "https://www150.statcan.gc.ca/n1/pub/16-201-x/2018001/sec-2/tbl/tbl-2.10-eng.htm",
+      "licence": "Statistics Canada Open Licence",
+      "files": [
+        {"relativePath": "raw/nfd-recovery-official/2026-08-27/canada-legacy/table-2-10-forest-area-harvested-1975-2015.html", "byteLength": 113443, "sha256": "02126a57aa835ca8a2f006bcd7293ac58176ef92b36159555e43c42e27f2b7be"}
+      ],
+      "finding": "The updated table explicitly covers provincial, private and federal land from 1990 through 2015, but reports whole square kilometres; it is a rounded historical reference with plus-or-minus 50 hectare precision, not an exact replacement."
+    },
+    {
+      "id": "nrcan-forest-statistical-profile-f1e8c437",
+      "publisher": "Natural Resources Canada",
+      "sourceUrl": "https://github.com/NRCan/statisticalprofile-datasets/tree/f1e8c4379afa50d4af574f5cfcd8727a2c54a6ae",
+      "licence": "Repository README says personal use only and LICENSE says all rights reserved",
+      "files": [
+        {"relativePath": "raw/nfd-recovery-official/2026-08-27/federal-profile/StatProfile_Management_harvest_EN.csv", "byteLength": 8424, "sha256": "3091c806a021812426d723a46d89701d69f98e8d60ddf13ca239f625e7ebfbb5"},
+        {"relativePath": "raw/nfd-recovery-official/2026-08-27/federal-profile/StatProfile_Management_harvest_FR.csv", "byteLength": 8908, "sha256": "675efd1dab66d025870e5c73ba430b27e392010a9576ced3f2b01a2010287cb4"},
+        {"relativePath": "raw/nfd-recovery-official/2026-08-27/federal-profile/README.md", "byteLength": 1248, "sha256": "8c3986eb02deaf5765d554762fe98a862b2823af3ca48bdd851895011393b7c5"},
+        {"relativePath": "raw/nfd-recovery-official/2026-08-27/federal-profile/LICENSE.md", "byteLength": 293, "sha256": "7e289c805e499379efb09957cb23bfae8ba534db7ec498bc655a57884304cd6b"},
+        {"relativePath": "raw/nfd-recovery-official/2026-08-27/federal-profile/harvesting.html", "byteLength": 18589, "sha256": "057f5049646a660402fc5ada09af720b678f0b5fb6702da0074b5d2ed1646813"},
+        {"relativePath": "raw/nfd-recovery-official/2026-08-27/federal-profile/management-constants.js", "byteLength": 1276, "sha256": "671affdf6332993401b43f54ed9b62e8df873383d3b51eb4a082db5a1faff9b5"}
+      ],
+      "finding": "The 2000-2024 profile aggregate exactly matches the current detailed frame's known-area subtotal after whole-hectare rounding for overlapping pending rows; it does not prove unknown cells are zero, omits federal land from the displayed scope, and is not cleared for Witness Tree publication."
+    },
+    {
+      "id": "ontario-managed-crown-harvest-area",
+      "publisher": "Government of Ontario",
+      "sourceUrl": "https://data.ontario.ca/dataset/6889a142-7a14-4998-9095-5332bac40703/resource/9e23e979-f00d-489a-9e8f-b3eddcbab732/download/harvest_area.csv",
+      "licence": "Open Government Licence - Ontario",
+      "files": [
+        {"relativePath": "raw/nfd-recovery-official/2026-08-27/ontario/harvest_area.csv", "byteLength": 1007401, "sha256": "8a3591ba9b80f569535e26621e35e3ad65d1ddde5dee44aec5ba8b9030ef5765"},
+        {"relativePath": "raw/nfd-recovery-official/2026-08-27/ontario/package_show.json", "byteLength": 41621, "sha256": "1f08c7d6142426d2db7b166fe2b16287e1d4cd3243c365d74923692ea47e6833"}
+      ],
+      "finding": "The source covers managed Crown forest units rather than the provincial, private and federal scope required by the current NFD total contract."
+    }
+  ],
+  "periodFindings": [
+    {"province": "BC", "startYear": 1990, "endYear": 2015, "rowCount": 26, "candidate": "statcan-table-2.10-2018", "candidateScope": "provincial-private-federal", "precisionHectares": 50, "safeExactReplacement": false},
+    {"province": "AB", "startYear": 1990, "endYear": 2015, "rowCount": 26, "candidate": "statcan-table-2.10-2018", "candidateScope": "provincial-private-federal", "precisionHectares": 50, "safeExactReplacement": false},
+    {"province": "ON", "startYear": 1990, "endYear": 2015, "rowCount": 26, "candidate": "statcan-table-2.10-2018", "candidateScope": "provincial-private-federal", "precisionHectares": 50, "safeExactReplacement": false},
+    {"province": "QC", "startYear": 1990, "endYear": 2015, "rowCount": 26, "candidate": "statcan-table-2.10-2018", "candidateScope": "provincial-private-federal", "precisionHectares": 50, "safeExactReplacement": false},
+    {"province": "BC", "startYear": 2016, "endYear": 2019, "rowCount": 4, "candidate": "nrcan-forest-statistical-profile-f1e8c437", "candidateScope": "provincial-territorial-crown-private-displayed", "precisionHectares": 0.5, "safeExactReplacement": false},
+    {"province": "AB", "startYear": 2016, "endYear": 2019, "rowCount": 4, "candidate": "nrcan-forest-statistical-profile-f1e8c437", "candidateScope": "provincial-territorial-crown-private-displayed", "precisionHectares": 0.5, "safeExactReplacement": false},
+    {"province": "ON", "startYear": 2016, "endYear": 2018, "rowCount": 3, "candidate": "nrcan-forest-statistical-profile-f1e8c437", "candidateScope": "provincial-territorial-crown-private-displayed", "precisionHectares": 0.5, "safeExactReplacement": false},
+    {"province": "QC", "startYear": 2016, "endYear": 2018, "rowCount": 3, "candidate": "nrcan-forest-statistical-profile-f1e8c437", "candidateScope": "provincial-territorial-crown-private-displayed", "precisionHectares": 0.5, "safeExactReplacement": false}
+  ],
+  "rejectedProvincialSubstitutes": [
+    {"province": "BC", "source": "Harvest Billing System and consolidated cutblocks", "reason": "volume reporting or estimated spatial dates do not form a complete province-wide annual harvested-area statistic with the NFD scope"},
+    {"province": "AB", "source": "FOREST/as-built reporting and annual timber reports", "reason": "no complete public province-wide 1990-2019 annual harvested-hectare series was found"},
+    {"province": "ON", "source": "Ontario Harvest Area CSV", "reason": "managed Crown forest coverage excludes the private and federal components of the NFD scope"},
+    {"province": "QC", "source": "Recolte et autres interventions sylvicoles", "reason": "spatial intervention records require a separate overlap and coverage method and are not a published province-wide annual statistical aggregate"}
+  ],
+  "summary": {
+    "officialCandidateCoverageRows": 118,
+    "historicalAllTenureRoundedCandidateRows": 104,
+    "laterLimitedScopeCandidateRows": 14,
+    "safeExactReplacementRows": 0,
+    "remainingPendingRows": 118
+  },
+  "decision": "The official recovery pass is complete. No candidate is inserted into the current NFD exact-total frame. The 118 rows remain null until an authoritative source supplies an exact value under the same scope, or a separately approved comparison contract adopts a differently named source, scope and uncertainty model.",
+  "claims": {
+    "recoveryPassComplete": true,
+    "missingValuesImputed": false,
+    "nfdRowsReplaced": false,
+    "comparisonRecomputed": false,
+    "formalIndependentComparisonGateComplete": false,
+    "published": false,
+    "admitted": false,
+    "released": false,
+    "productionEligible": false
+  }
+}
