@@ -53,7 +53,6 @@ const text = {
   },
 } as const;
 
-type MapState = "loading" | "ready" | "unavailable" | "error";
 type Position = [number, number];
 type ProvinceFeature = {
   id: string;
@@ -98,17 +97,18 @@ export function ExploreMapClient({
   const statusId = useId();
   const attributionId = useId();
   const available = mode === "forest-change" && year >= 2022;
-  const [state, setState] = useState<MapState>(
-    available ? "loading" : "unavailable",
-  );
   const [features, setFeatures] = useState<ProvinceFeature[]>([]);
+  const [failed, setFailed] = useState(false);
+  const state = !available
+    ? "unavailable"
+    : failed
+      ? "error"
+      : features.length
+        ? "ready"
+        : "loading";
   useEffect(() => {
-    if (!available) {
-      setState("unavailable");
-      return;
-    }
+    if (!available) return;
     const controller = new AbortController();
-    setState("loading");
     fetch(EXPLORE_PRODUCTION_LAYER.compatibilityGeoJsonUrl, {
       signal: controller.signal,
     })
@@ -123,11 +123,11 @@ export function ExploreMapClient({
           throw new Error("Unexpected province feature count");
         }
         setFeatures(collection.features);
-        setState("ready");
+        setFailed(false);
       })
       .catch((error: unknown) => {
         if (!(error instanceof DOMException && error.name === "AbortError"))
-          setState("error");
+          setFailed(true);
       });
     return () => controller.abort();
   }, [available]);
