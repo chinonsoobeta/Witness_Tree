@@ -1,9 +1,12 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { join } from "node:path";
 import test from "node:test";
 import { tmpdir } from "node:os";
+
+import { resumeOutcome } from "../scripts/run-phase2-v21-raster-first.mjs";
 
 const runner = await readFile(new URL("../scripts/run-phase2-v21-raster-first.mjs", import.meta.url), "utf8");
 const worker = await readFile(new URL("../scripts/phase2_v21_raster_window.py", import.meta.url), "utf8");
@@ -13,7 +16,69 @@ test("V2.1 runner has the exact selected snapshots and every whole interval", ()
   assert.match(runner, /inputs\.length, interval\.toYear - interval\.fromYear/);
   assert.match(runner, /concurrency: 1/);
   assert.match(runner, /Refusing to use an existing V2\.1 output directory/);
+  assert.match(runner, /--resume/);
+  assert.match(runner, /identity-bound completed product/);
   assert.match(runner, /noPerCellPolygons: true/);
+});
+
+function resumeFixture() {
+  const crs = "V2.1 test WKT";
+  const grid = { gridId: "test-grid", crs, crsProj4: "+proj=longlat", geotransform: [0, 1, 0, 0, 0, -1], noDataValue: 255, width: 2, height: 2 };
+  const identity = {
+    schemaVersion: "witness-tree/phase2-v21-raster-sidecar/1",
+    batchId: "phase2-v21-raster-first-1984-2022-v1",
+    kind: "forest-mask-snapshot",
+    year: 2020,
+    inputs: [{ kind: "forest-mask", year: 2020, path: "/input.tif", byteLength: 7, sha256: "a".repeat(64) }],
+    ...grid,
+    methodVersion: "phase2-v21-whole-interval-raster-first/1",
+    codeProvenance: { runnerSha256: "b".repeat(64), workerSha256: "c".repeat(64) },
+    productionEligible: false,
+    released: false,
+  };
+  const telemetry = { outputGrid: { width: 2, height: 2, geotransform: grid.geotransform, crsProj4: grid.crsProj4, nodataValue: 255, dataType: "Byte", crs, crsSha256: "" }, elapsedSeconds: 1, peakRssBytes: 2, scratchDiskPeakBytes: 0, window: [2, 2] };
+  telemetry.outputGrid.crsSha256 = createHash("sha256").update(crs).digest("hex");
+  const plan = { output: "/output/forest-mask-snapshot-2020.tif", sidecar: "/output/sidecars/forest-mask-snapshot-2020-snapshot.json", relativeOutput: "forest-mask-snapshot-2020.tif", relativeSidecar: "sidecars/forest-mask-snapshot-2020-snapshot.json", identity };
+  const sidecar = { ...identity, output: { path: plan.relativeOutput, byteLength: 3, sha256: "d".repeat(64) }, telemetry };
+  return { plan, sidecar };
+}
+
+test("identity-bound resume produces missing pairs and skips only exact pairs", async () => {
+  const { plan, sidecar } = resumeFixture();
+  const files = new Set([plan.output, plan.sidecar]);
+  const present = (file) => files.has(file);
+  const readSidecar = () => structuredClone(sidecar);
+  const hashOutput = () => sidecar.output.sha256;
+  const sizeOutput = () => sidecar.output.byteLength;
+  assert.deepEqual(await resumeOutcome({ ...plan, output: "/output/missing.tif", sidecar: "/output/sidecars/missing.json" }, readSidecar, hashOutput, sizeOutput, () => false), { action: "produce" });
+  assert.deepEqual((await resumeOutcome(plan, readSidecar, hashOutput, sizeOutput, present)).action, "skip");
+  files.delete(plan.sidecar);
+  await assert.rejects(() => resumeOutcome(plan, readSidecar, hashOutput, sizeOutput, present), /incomplete prior output/);
+});
+
+test("identity-bound resume rejects foreign or byte-drifted pairs", async () => {
+  const { plan, sidecar } = resumeFixture();
+  const files = new Set([plan.output, plan.sidecar]);
+  const present = (file) => files.has(file);
+  const hashOutput = () => sidecar.output.sha256;
+  const sizeOutput = () => sidecar.output.byteLength;
+  const readSidecar = () => structuredClone(sidecar);
+  sidecar.batchId = "foreign-batch";
+  await assert.rejects(() => resumeOutcome(plan, readSidecar, hashOutput, sizeOutput, present), /identity field: batchId/);
+  sidecar.batchId = plan.identity.batchId;
+  await assert.rejects(() => resumeOutcome(plan, readSidecar, () => "e".repeat(64), sizeOutput, present), /SHA-256/);
+});
+
+test("identity-bound resume rejects extra claims and malformed window telemetry", async () => {
+  const { plan, sidecar } = resumeFixture();
+  const present = () => true;
+  const hashOutput = () => sidecar.output.sha256;
+  const sizeOutput = () => sidecar.output.byteLength;
+  sidecar.admitted = true;
+  await assert.rejects(() => resumeOutcome(plan, () => structuredClone(sidecar), hashOutput, sizeOutput, present), /unexpected or missing fields/);
+  delete sidecar.admitted;
+  sidecar.telemetry.window = [2048];
+  await assert.rejects(() => resumeOutcome(plan, () => structuredClone(sidecar), hashOutput, sizeOutput, present), /invalid window telemetry/);
 });
 
 test("V2.1 worker is windowed, raster-only, and preserves Unknown", () => {
