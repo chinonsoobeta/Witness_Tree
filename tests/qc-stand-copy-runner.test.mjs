@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
-import { validateExecutionApproval } from "../scripts/run-qc-stand-copy.mjs";
+import { resumeOutcome, validateExecutionApproval } from "../scripts/run-qc-stand-copy.mjs";
 
 const binding = {
   packetSha256: "p".repeat(64),
@@ -45,4 +45,73 @@ test("runner source contains no path to silently admit output", async () => {
   assert.match(source, /productionAdmissionAuthorized/);
   assert.match(source, /ST_IsValid/);
   assert.doesNotMatch(source, /--force/);
+});
+
+const resumeBinding = {
+  scopeId: "qc-current-ecoforest",
+  packetSha256: "p".repeat(64),
+  ownerSha256: "o".repeat(64),
+  specSha256: "s".repeat(64),
+  spec: {
+    id: "qc-current-ecoforest-stand-copy-v1",
+    input: { publishedAttributes: ["geocode", "origine"] },
+    prohibitedClaims: ["production admission"],
+  },
+  expected: { rawSha256: "r".repeat(64), rawBytes: 123, member: "source.gpkg", outputLayer: "qc_current_ecoforest_stands", featureCount: 7 },
+  memberDigest: { sha256: "m".repeat(64) },
+  extractedDigest: { sha256: "e".repeat(64) },
+  profile: { layer: "pee_maj_prov", geometryColumn: "geom", geometryType: "MultiPolygon", crs: 32198, featureCount: 7, fields: ["geocode", "origine"], qa: { feature_count: 7 } },
+};
+const resumeApprovalSha256 = "a".repeat(64);
+const resumeArtifactSha256 = "b".repeat(64);
+const resumeFingerprintSha256 = "f".repeat(64);
+const resumePlan = { binding: resumeBinding, artifact: "/tmp/qc-stand-copy.gpkg", sidecar: "/tmp/qc-stand-copy.gpkg.json", approvalSha256: resumeApprovalSha256 };
+function resumeSidecar() {
+  return {
+    schemaVersion: "witness-tree/qc-stand-copy-sidecar/1",
+    methodVersion: "qc-stand-copy-runner-v1",
+    scopeId: resumeBinding.scopeId,
+    specification: { id: resumeBinding.spec.id, sha256: resumeBinding.specSha256 },
+    packetSha256: resumeBinding.packetSha256,
+    ownerScopeApprovalSha256: resumeBinding.ownerSha256,
+    executionApprovalSha256: resumeApprovalSha256,
+    source: { rawArchiveSha256: resumeBinding.expected.rawSha256, rawArchiveBytes: resumeBinding.expected.rawBytes, archiveMember: resumeBinding.expected.member, archiveMemberSha256: resumeBinding.memberDigest.sha256, extractedGeoPackageSha256: resumeBinding.extractedDigest.sha256 },
+    input: resumeBinding.profile,
+    output: { layer: resumeBinding.expected.outputLayer, sha256: resumeArtifactSha256, schema: ["fid", "geom", "geocode", "origine", "source_fid", "output_record_id", "source_raw_sha256", "source_layer"], featureCount: resumeBinding.expected.featureCount, sourceRowFingerprintSha256: resumeFingerprintSha256, outputRowFingerprintSha256: resumeFingerprintSha256, geometryByteCopy: true },
+    qa: { exactInputBindings: true, schemaCrsFeatureCountGeometryChecks: true, joins: false, reprojection: false, repair: false, simplify: false, snap: false, dissolve: false, semanticInference: false, losslessRowFingerprintMatch: true, deterministicRerunArtifactMatch: true },
+    prohibitedClaims: resumeBinding.spec.prohibitedClaims,
+  };
+}
+
+test("resume produces when neither output exists and skips an exact identity-bound pair", async () => {
+  const absent = () => false;
+  assert.deepEqual(await resumeOutcome(resumePlan, undefined, undefined, absent), { action: "produce" });
+  assert.deepEqual(await resumeOutcome(resumePlan, () => resumeSidecar(), () => resumeArtifactSha256, () => true), { action: "skip", sha256: resumeArtifactSha256 });
+});
+
+test("resume refuses partial, stale, unreadable, and changed prior outputs", async () => {
+  const artifactOnly = (file) => file === resumePlan.artifact;
+  await assert.rejects(resumeOutcome(resumePlan, () => resumeSidecar(), () => resumeArtifactSha256, artifactOnly), /artifact exists without its sidecar/);
+
+  const sidecarOnly = (file) => file === resumePlan.sidecar;
+  await assert.rejects(resumeOutcome(resumePlan, () => resumeSidecar(), () => resumeArtifactSha256, sidecarOnly), /sidecar exists without its artifact/);
+
+  await assert.rejects(resumeOutcome(resumePlan, () => { throw new Error("bad JSON"); }, () => resumeArtifactSha256, () => true), /prior sidecar is unreadable/);
+
+  const staleApproval = resumeSidecar();
+  staleApproval.executionApprovalSha256 = "z".repeat(64);
+  await assert.rejects(resumeOutcome(resumePlan, () => staleApproval, () => resumeArtifactSha256, () => true), /authorization identity differs/);
+
+  const staleSource = resumeSidecar();
+  staleSource.source.rawArchiveSha256 = "x".repeat(64);
+  await assert.rejects(resumeOutcome(resumePlan, () => staleSource, () => resumeArtifactSha256, () => true), /identity or QA contract differs/);
+
+  await assert.rejects(resumeOutcome(resumePlan, () => resumeSidecar(), () => "d".repeat(64), () => true), /no longer matches its sidecar SHA-256/);
+});
+
+test("resume requires execution and remains absent from the preflight path", async () => {
+  const source = await readFile(new URL("../scripts/run-qc-stand-copy.mjs", import.meta.url), "utf8");
+  assert.match(source, /--resume requires --execute/);
+  assert.match(source, /resumeOutcome/);
+  assert.match(source, /refusing to overwrite existing artifact/);
 });
