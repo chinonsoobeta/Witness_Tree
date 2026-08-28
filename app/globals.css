@@ -1,21 +1,60 @@
 @import "tailwindcss";
 
+/* ==========================================================================
+   Token layer.
+   Five groups: ground and surface, ink, rules and edges, brand,
+   shape and depth. Plus the four semantic event colours, which are held
+   apart because they carry meaning rather than style, and the type and
+   measure tokens, which are unchanged.
+   Every contrast figure in a comment below is a measured WCAG 2.1 ratio
+   against the ground of the palette it sits in.
+   ========================================================================== */
+
 :root {
-  color-scheme: light;
-  --ground: #eeefe9;
-  --surface: #f8f8f5;
-  --surface-2: #e4e7df;
-  --ink: #14201a;
-  --ink-2: #3d4a43;
-  --muted: #64706a;
-  --rule: #c9cfc5;
-  --rule-soft: #dce0d7;
-  --accent: #2f5d46;
-  --accent-soft: #dbe6de;
+  color-scheme: light dark;
+
+  /* ground and surface */
+  --ground: #fdfcf8; /* rice paper */
+  --surface: #fefefa;
+  --surface-2: #f0ebe5; /* stone */
+  --sand: #e6dccd; /* section tint */
+
+  /* ink */
+  --ink: #2c2c24; /* 13.70:1 */
+  --ink-2: #4a4a40; /* 8.95:1 */
+  --muted: #67675c; /* 5.57:1 */
+
+  /* rules and edges */
+  --rule: #ded8cf; /* decorative hairline, 1.38:1, never a state cue */
+  --rule-strong: #948b7a; /* control edges, 3.28:1, clears the 3:1 minimum */
+  --rule-soft: #ede8e0;
+
+  /* brand */
+  --accent: #47593f; /* moss at link and small-text weight, 7.39:1 */
+  --accent-fill: #5d7052; /* moss as a large fill only, 5.24:1 */
+  --accent-soft: #e7ebe3;
+  --clay: #c18c5d; /* fill and decoration only, never text */
+  --clay-ink: #7e5228; /* clay at text weight, 6.55:1 */
+
+  /* semantic event colours: unchanged, they carry meaning */
   --harvest: #2a78d6;
   --fire: #eb6834;
   --insect: #4a3aa7;
   --unknown: #6b7670;
+
+  /* shape and depth */
+  --radius-sm: 12px;
+  --radius: 20px;
+  --radius-lg: 28px;
+  --blob: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  --shadow-soft: 0 4px 20px -2px rgb(71 89 63 / 15%);
+  --shadow-float: 0 10px 40px -10px rgb(193 140 93 / 20%);
+  --shadow-lift: 0 20px 40px -10px rgb(71 89 63 / 15%);
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --dur: 320ms;
+  --grain-opacity: 0.035;
+
+  /* type and measure */
   --mono:
     ui-monospace, "SF Mono", SFMono-Regular, Menlo, "DejaVu Sans Mono",
     monospace;
@@ -25,22 +64,106 @@
   --drawer: 420px;
 }
 
+/* ==========================================================================
+   Dark palette. Warm near-black rather than the previous cool green-black,
+   built by the same five-group construction. Moss and clay are lifted so
+   they clear AA as text on the dark ground, and the grain drops to .02
+   because multiply blending reads heavier over a dark field.
+
+   Cascade order, deliberately:
+     1. :root holds the light palette and is the default.
+     2. A dark system preference applies the dark palette to every root that
+        has not explicitly asked for light, so [data-theme="light"] still
+        wins over a dark system preference.
+     3. :root[data-theme="dark"] repeats the dark palette outside the media
+        query, so an explicit dark choice still wins over a light system
+        preference. It is authored after the media block, so on equal
+        specificity it also wins inside a dark system preference.
+   No toggle control is added here; that is chrome work.
+   ========================================================================== */
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+
+    /* ground and surface */
+    --ground: #16130f;
+    --surface: #1d1a15;
+    --surface-2: #262119;
+    --sand: #2f2820;
+
+    /* ink */
+    --ink: #f2ede3; /* 15.87:1 */
+    --ink-2: #d5ccbd; /* 11.64:1 */
+    --muted: #a79c8b; /* 6.85:1 */
+
+    /* rules and edges */
+    --rule: #3a3229;
+    --rule-strong: #6b6154; /* 3.05:1 */
+    --rule-soft: #2a241d;
+
+    /* brand */
+    --accent: #9cbe8c; /* 8.96:1 */
+    --accent-fill: #7fa26e; /* ink #16130F on it reads 6.43:1 */
+    --accent-soft: #23291f;
+    --clay: #d9a776;
+    --clay-ink: #e4b98c; /* 10.24:1 */
+
+    /* semantic event colours: unchanged, they carry meaning */
+    --harvest: #3987e5;
+    --fire: #d95926;
+    --insect: #9085e9;
+    --unknown: #93a099;
+
+    /* shape and depth */
+    --shadow-soft: 0 4px 20px -2px rgb(0 0 0 / 45%);
+    --shadow-float: 0 10px 40px -10px rgb(0 0 0 / 55%);
+    --shadow-lift: 0 20px 40px -10px rgb(0 0 0 / 55%);
+    --grain-opacity: 0.02;
+  }
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --ground: #0e1512;
-  --surface: #17211c;
-  --surface-2: #202b25;
-  --ink: #e4eae3;
-  --ink-2: #b4c0b8;
-  --muted: #8d9a93;
-  --rule: #2c3a33;
-  --rule-soft: #222e28;
-  --accent: #79b694;
-  --accent-soft: #1d2e25;
+
+  /* ground and surface */
+  --ground: #16130f;
+  --surface: #1d1a15;
+  --surface-2: #262119;
+  --sand: #2f2820;
+
+  /* ink */
+  --ink: #f2ede3; /* 15.87:1 */
+  --ink-2: #d5ccbd; /* 11.64:1 */
+  --muted: #a79c8b; /* 6.85:1 */
+
+  /* rules and edges */
+  --rule: #3a3229;
+  --rule-strong: #6b6154; /* 3.05:1 */
+  --rule-soft: #2a241d;
+
+  /* brand */
+  --accent: #9cbe8c; /* 8.96:1 */
+  --accent-fill: #7fa26e; /* ink #16130F on it reads 6.43:1 */
+  --accent-soft: #23291f;
+  --clay: #d9a776;
+  --clay-ink: #e4b98c; /* 10.24:1 */
+
+  /* semantic event colours: unchanged, they carry meaning */
   --harvest: #3987e5;
   --fire: #d95926;
   --insect: #9085e9;
   --unknown: #93a099;
+
+  /* shape and depth */
+  --shadow-soft: 0 4px 20px -2px rgb(0 0 0 / 45%);
+  --shadow-float: 0 10px 40px -10px rgb(0 0 0 / 55%);
+  --shadow-lift: 0 20px 40px -10px rgb(0 0 0 / 55%);
+  --grain-opacity: 0.02;
 }
 
 * {
@@ -61,10 +184,34 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Paper grain. A single fixed pseudo-element over the whole viewport.
+   pointer-events: none keeps it out of hit testing entirely, and nothing
+   in the document establishes a stacking context, so real content is
+   never pushed underneath it. The skip link sits at z-index 100 and so
+   still paints above the grain. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: var(--grain-opacity);
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNDAiIGhlaWdodD0iMTQwIj48ZmlsdGVyIGlkPSJnIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iLjkiIG51bU9jdGF2ZXM9IjMiIHN0aXRjaFRpbGVzPSJzdGl0Y2giLz48L2ZpbHRlcj48cmVjdCB3aWR0aD0iMTQwIiBoZWlnaHQ9IjE0MCIgZmlsdGVyPSJ1cmwoI2cpIi8+PC9zdmc+");
+  background-repeat: repeat;
+  background-size: 140px 140px;
+}
+
+/* Motion. Every transition in this file is expressed as
+   `var(--dur) var(--ease)` so the duration and the curve are one decision.
+   The prefers-reduced-motion block at the foot of the file forces
+   transition-duration to 0.01ms on every element and pseudo-element, which
+   neutralizes all of them. */
 a {
   color: var(--accent);
   text-decoration-thickness: 1px;
   text-underline-offset: 3px;
+  transition: color var(--dur) var(--ease);
 }
 a:focus-visible,
 button:focus-visible,
@@ -97,6 +244,7 @@ h4 {
   color: var(--ground);
   padding: 8px 12px;
   font-family: var(--ui);
+  transition: transform var(--dur) var(--ease);
 }
 .skip-link:focus {
   transform: translateY(0);
@@ -152,6 +300,11 @@ h4 {
   font-family: var(--ui);
   font-size: 14px;
   text-decoration: none;
+  transition:
+    background-color var(--dur) var(--ease),
+    color var(--dur) var(--ease),
+    border-color var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
 }
 .primary-link:first-child {
   background: var(--ink);
@@ -190,6 +343,7 @@ h4 {
 .global-nav a {
   color: var(--ink-2);
   text-decoration: none;
+  transition: color var(--dur) var(--ease);
 }
 .global-nav a:hover {
   color: var(--ink);
@@ -524,6 +678,10 @@ h4 {
   margin-bottom: 22px;
 }
 .comparison-filters a {
+  transition:
+    background-color var(--dur) var(--ease),
+    border-color var(--dur) var(--ease),
+    color var(--dur) var(--ease);
   min-width: 44px;
   padding: 6px 10px;
   border: 1px solid var(--rule);
@@ -607,5 +765,11 @@ h4 {
 @media (forced-colors: active) {
   * {
     forced-color-adjust: auto;
+  }
+
+  /* The grain is decoration and must not tint a forced-colours surface. */
+  body::after {
+    content: none;
+    display: none;
   }
 }
