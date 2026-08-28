@@ -7,6 +7,7 @@ export const REQUIRED_ROUTE_PAIRS = [
   { en: '/en/components', fr: '/fr/composants' },
   { en: '/en/methods', fr: '/fr/methodes' },
   { en: '/en/data', fr: '/fr/donnees' },
+  { en: '/en/data/official-harvest-comparison', fr: '/fr/donnees/comparaison-recolte-officielle' },
   { en: '/en/compare', fr: '/fr/comparer' },
   { en: '/en/wildfire', fr: '/fr/incendies' },
   { en: '/en/account', fr: '/fr/compte' },

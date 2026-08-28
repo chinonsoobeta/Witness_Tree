@@ -14,11 +14,11 @@
         },
         {
           "path": "scripts/check-accessibility-contracts.mjs",
-          "sha256": "db6a70f6d44180050e31b7235c5e03fecf17d934c2bff122b04a1292e987e411"
+          "sha256": "da4b511d4ed9f2484b9948dfec8ded6ad2d28a21612d6d4fb9063c4e20ed76ec"
         },
         {
           "path": ".github/workflows/ci.yml",
-          "sha256": "50f3899c2365a9cb3e24732d16aaf3261ab07bb46eda24f8e919c1d1185c7616"
+          "sha256": "527ed2466d620944939ccd4ede034034f8fc435d4bfc6b692976b3b6eb103c41"
         }
       ]
     },
@@ -37,11 +37,11 @@
       "evidence": [
         {
           "path": "scripts/check-bilingual.mjs",
-          "sha256": "8f04030327794264b13a05d2fd055a6b2639b5828be27fd68d4e31456c955ec4"
+          "sha256": "09a3363674eb8edefff1e6b4be7ff4c126404677edd8f3d3e850a05013d6bbc0"
         },
         {
           "path": ".github/workflows/ci.yml",
-          "sha256": "50f3899c2365a9cb3e24732d16aaf3261ab07bb46eda24f8e919c1d1185c7616"
+          "sha256": "527ed2466d620944939ccd4ede034034f8fc435d4bfc6b692976b3b6eb103c41"
         }
       ]
     },

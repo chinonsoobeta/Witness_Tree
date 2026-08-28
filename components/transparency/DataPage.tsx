@@ -14,6 +14,7 @@ const COPY = {
     stagingEvidence: "Review the staged-acquisition evidence",
     profileEvidence: "Review the geospatial profile",
     transformationEvidence: "Review the Québec transformation evidence",
+    comparison: "Open the official-source harvest comparison",
   },
   fr: {
     title: "Données et transparence",
@@ -28,6 +29,7 @@ const COPY = {
     stagingEvidence: "Consulter les preuves de mise en attente",
     profileEvidence: "Consulter le profil géospatial",
     transformationEvidence: "Consulter les preuves de transformation du Québec",
+    comparison: "Ouvrir la comparaison avec une source officielle sur la récolte",
   },
 } as const;
 
@@ -39,6 +41,7 @@ export function DataPage({ locale }: Readonly<{ locale: Locale }>) {
     <nav aria-label={copy.title}><ul>
       <li><a href="https://github.com/chinonsoobeta/Witness_Tree/blob/main/data/source-ledger.json">{copy.ledger}</a></li>
       <li><a href="https://github.com/chinonsoobeta/Witness_Tree/blob/main/docs/SOURCE_LEDGER.md">{copy.docs}</a></li>
+      <li><a href={locale === "en" ? "/en/data/official-harvest-comparison" : "/fr/donnees/comparaison-recolte-officielle"}>{copy.comparison}</a></li>
     </ul></nav>
   </section><section className="content-section prose-measure"><h2>{copy.stagingTitle}</h2><p>{copy.staging}</p><nav aria-label={copy.stagingTitle}><ul>
     <li><a href="https://github.com/chinonsoobeta/Witness_Tree/blob/main/data/staged-acquisitions.json">{copy.stagingEvidence}</a></li>

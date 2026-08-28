@@ -1,0 +1,72 @@
+{
+  "schemaVersion": "witness-tree/phase2-official-published-harvest-comparison-receipt/1",
+  "status": "executed-validated-public-artifact-prepared",
+  "recordedAt": "2026-08-28T05:35:00.000Z",
+  "dataRoot": "Witness_Tree-data",
+  "trackId": "official-published-harvest-comparison-v1",
+  "contract": {
+    "repositoryPath": "data/phase2-official-published-harvest-contract.json",
+    "byteLength": 4802,
+    "sha256": "a06a84df14502f557f45a2ccc3868df4c899209d4c13e0164098cde6f1bc3b93"
+  },
+  "runner": {
+    "repositoryPath": "scripts/run-phase2-official-published-harvest-comparison.mjs",
+    "byteLength": 6253,
+    "sha256": "453a8f261e6120e9df7496d8031203f3c741d06bc493ef01499976db28764c6f"
+  },
+  "externalOutput": {
+    "relativePath": "derived/phase2-official-published-harvest-comparison-v1/official-published-harvest-comparison-1990-2019.json",
+    "byteLength": 283062,
+    "sha256": "c896b5d63dcb5c2c12e45b2085174ba9e8371f3583785d4a344bf7b79fc506b0"
+  },
+  "externalProvenance": {
+    "relativePath": "derived/phase2-official-published-harvest-comparison-v1/official-published-harvest-comparison-1990-2019.provenance.json",
+    "byteLength": 2023,
+    "sha256": "8d66fdac66c4adeb2289a7d327f6f08812321031b7bbbb85d8816a147b5d4082"
+  },
+  "publicArtifact": {
+    "repositoryPath": "data/phase2-official-published-harvest-comparison.json",
+    "byteLength": 283062,
+    "sha256": "c896b5d63dcb5c2c12e45b2085174ba9e8371f3583785d4a344bf7b79fc506b0"
+  },
+  "summary": {
+    "rows": 118,
+    "computedRoundedRows": 104,
+    "restrictedPendingRows": 14,
+    "strictNfdExactTotalsRemainingNull": 118,
+    "safeExactNfdReplacementRows": 0,
+    "preliminaryRows": 6,
+    "revisedRows": 13,
+    "agencyEstimatedRows": 7,
+    "restrictedNumericValuesPublished": 0
+  },
+  "methodBoundary": {
+    "reference": "Statistics Canada whole-square-kilometre observations from 1990 through 2015 are converted nominally to hectares and retain a 50 hectare rounding half-width.",
+    "restricted": "The 14 later NRCan profile values remain absent because the source repository states personal use only and all rights reserved.",
+    "strictNfd": "The strict NFD exact-total track remains unchanged. Its 118 target values stay null and no known-area subtotal is substituted.",
+    "comparison": "Witness Tree observed forest loss and reported harvest are non-like-for-like quantities. Differences are descriptive only.",
+    "formalGate": "This harvest-only track does not complete the formal Phase 2 independent-comparison envelope."
+  },
+  "verification": {
+    "contractCheckerPassed": true,
+    "exactInputBindingsPassed": true,
+    "sourceParserPassed": true,
+    "comparisonValidatorPassed": true,
+    "restrictedValueLeakCheckPassed": true,
+    "externalOutputReadbackPassed": true,
+    "publicArtifactByteEqualityPassed": true
+  },
+  "claims": {
+    "comparisonComputed": true,
+    "publicArtifactPrepared": true,
+    "strictNfdRowsReplaced": false,
+    "likeForLike": false,
+    "causalAttribution": false,
+    "productAccuracy": false,
+    "equivalence": false,
+    "formalIndependentComparisonGateComplete": false,
+    "published": false,
+    "released": false,
+    "productionEligible": false
+  }
+}

@@ -101,6 +101,9 @@ jobs:
       - run: npm run check:phase2-owner-admission-packet
       - run: npm run check:phase2-admission-record-template
       - run: npm run check:phase2-independent-comparison-evidence
+      - run: npm run check:phase2-official-published-harvest-contract
+      - run: npm run check:phase2-official-published-harvest-receipt
+      - run: node --import tsx --test tests/official-published-harvest-page.test.tsx
       # Reads only repository records: no data root, no AWS call, no write path.
       - run: npm run check:raw-archive-reproduction-drill
       # Static half of the data-root inventory: it proves every inventoried
