@@ -25,9 +25,9 @@ export function ConfidenceBadge({ confidence, locale }: ConfidenceBadgeProps) {
   const filledBars = CONFIDENCE_BARS[confidence.level];
 
   return (
-    <button type="button" aria-label={`${label}: ${reason}`} title={reason} style={{ all: "unset", cursor: "help" }}>
+    <button type="button" className="confidence" aria-label={`${label}: ${reason}`} title={reason}>
       <span>{label}</span>{" "}
-      <span aria-hidden="true">
+      <span className="confidence-bars" aria-hidden="true">
         {[0, 1, 2].map((bar) => (
           <span key={bar}>{bar < filledBars ? "▮" : "▯"}</span>
         ))}

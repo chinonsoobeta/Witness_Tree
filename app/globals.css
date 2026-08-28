@@ -36,6 +36,10 @@
   --clay: #c18c5d; /* fill and decoration only, never text */
   --clay-ink: #7e5228; /* clay at text weight, 6.55:1 */
 
+  /* control fill: a wash of white so the paper grain still reads through the
+     pill inputs. --ink on the composited result is 13.93:1. */
+  --input-fill: color-mix(in srgb, white 55%, transparent);
+
   /* semantic event colours: unchanged, they carry meaning */
   --harvest: #2a78d6;
   --fire: #eb6834;
@@ -109,6 +113,11 @@
     --clay: #d9a776;
     --clay-ink: #e4b98c; /* 10.24:1 */
 
+    /* control fill: white drops to 8% on the dark ground, because the light
+       palette's 55% would composite to a near-white pill and strand --ink on
+       it. --ink on the composited result is 12.91:1. */
+    --input-fill: color-mix(in srgb, white 8%, transparent);
+
     /* semantic event colours: unchanged, they carry meaning */
     --harvest: #3987e5;
     --fire: #d95926;
@@ -152,6 +161,11 @@
   --accent-soft: #23291f;
   --clay: #d9a776;
   --clay-ink: #e4b98c; /* 10.24:1 */
+
+  /* control fill: white drops to 8% on the dark ground, because the light
+     palette's 55% would composite to a near-white pill and strand --ink on
+     it. --ink on the composited result is 12.91:1. */
+  --input-fill: color-mix(in srgb, white 8%, transparent);
 
   /* semantic event colours: unchanged, they carry meaning */
   --harvest: #3987e5;
@@ -289,26 +303,261 @@ h4 {
   margin-top: 30px;
 }
 
+/* ==========================================================================
+   Primitives.
+   A small CSS-only set: card, button, field, layout helpers, decorative
+   blob. No new components and no JavaScript. Every transition is written as
+   `var(--dur) var(--ease)`, so the prefers-reduced-motion block at the foot
+   of the file neutralizes all of them.
+
+   Contrast, measured as WCAG 2.1 ratios, light / dark:
+     ground on --accent-fill (primary button)        5.24 / 6.43
+     --ink on --sand (card--sand)                   10.37 / 12.45
+     --ink on --accent-soft (card--moss)            11.65 / 12.78
+     --ink on the composited --input-fill           13.93 / 12.91
+     --accent on --ground (ghost button)             7.39 / 8.96
+     --accent on --accent-soft (ghost, hovered)      6.28 / 7.21
+   Control edges are --accent-fill rather than --rule-strong, because
+   --rule-strong clears 3:1 only against the plain ground: on --sand it falls
+   to 2.48 / 2.40. --accent-fill holds 3.97 / 5.05 at its worst, on --sand.
+   --muted is deliberately not used on a tinted card: on --sand it is 4.22
+   in light, under the 4.5 text minimum.
+   ========================================================================== */
+
+/* Cards. */
+.card {
+  position: relative;
+  padding: 24px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-soft);
+  transition:
+    transform var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+.card--lift:hover,
+.card--lift:focus-within {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lift);
+}
+.card--sand {
+  background: var(--sand);
+}
+.card--moss {
+  background: var(--accent-soft);
+}
+
+/* Buttons. The gateway's .primary-link is the same control, so it is folded
+   in here rather than kept as a parallel rule: the first gateway link takes
+   the primary treatment and the second the outline, which is what the
+   markup already expressed and what tests/rendered-html.test.mjs pins. */
+.btn,
 .primary-link {
   display: inline-flex;
   align-items: center;
-  min-height: 44px;
-  padding: 8px 15px;
-  border: 1px solid var(--ink);
-  border-radius: 2px;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 32px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
   color: var(--ink);
   font-family: var(--ui);
-  font-size: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
   text-decoration: none;
+  cursor: pointer;
   transition:
+    transform var(--dur) var(--ease),
     background-color var(--dur) var(--ease),
     color var(--dur) var(--ease),
     border-color var(--dur) var(--ease),
     box-shadow var(--dur) var(--ease);
 }
+.btn:hover,
+.primary-link:hover {
+  transform: scale(1.03);
+}
+.btn:active,
+.primary-link:active {
+  transform: scale(0.97);
+}
+
+.btn--outline,
+.primary-link {
+  border-color: var(--accent-fill);
+  color: var(--ink);
+}
+.btn--outline:hover,
+.primary-link:hover {
+  background: var(--accent-soft);
+}
+
+.btn--ghost {
+  border-color: transparent;
+  color: var(--accent);
+}
+.btn--ghost:hover {
+  background: var(--accent-soft);
+}
+
+/* Authored last so a button carrying both modifier classes reads as primary.
+   .primary-link:first-child outranks the bare .primary-link rules above on
+   specificity, so gateway order is independent of source order. */
+.btn--primary,
 .primary-link:first-child {
-  background: var(--ink);
+  border-color: var(--accent-fill);
+  background: var(--accent-fill);
   color: var(--ground);
+  box-shadow: var(--shadow-soft);
+}
+.btn--primary:hover,
+.primary-link:first-child:hover {
+  box-shadow: var(--shadow-lift);
+}
+
+/* Fields. The focus treatment is a double ring: the outline is kept so that
+   forced-colours modes, which discard box-shadow, still show a ring, and the
+   soft moss halo is added on top for everyone else. */
+.field {
+  display: grid;
+  gap: 8px;
+}
+.field > label,
+.field-label {
+  color: var(--ink-2);
+  font-family: var(--ui);
+  font-size: 13px;
+  font-weight: 600;
+}
+.field-hint {
+  color: var(--ink-2);
+  font-size: 13px;
+}
+.input {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 20px;
+  border: 1px solid var(--accent-fill);
+  border-radius: 999px;
+  background: var(--input-fill);
+  color: var(--ink);
+  transition:
+    border-color var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+.input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 4px rgb(71 89 63 / 18%);
+}
+
+/* Confidence badge. Replaces the inline `all: unset`, which removed the
+   focus ring along with everything else. The edge is a wash of the inherited
+   text colour so it clears 3:1 on any ground the badge is dropped onto:
+   3.39 / 5.32 on --surface, 3.11 / 4.83 on --sand. */
+.confidence {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+  padding: 0 12px;
+  border: 1px solid color-mix(in srgb, currentColor 55%, transparent);
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font-family: var(--ui);
+  font-size: 13px;
+  cursor: help;
+  transition: background-color var(--dur) var(--ease);
+}
+.confidence:hover {
+  background: var(--accent-soft);
+}
+.confidence-bars {
+  letter-spacing: 0.12em;
+}
+
+/* Layout helpers. The stack numbers are the gap in quarter-steps of 4px. */
+.stack-2 {
+  display: grid;
+  gap: 8px;
+}
+.stack-3 {
+  display: grid;
+  gap: 12px;
+}
+.stack-4 {
+  display: grid;
+  gap: 16px;
+}
+.stack-6 {
+  display: grid;
+  gap: 24px;
+}
+.stack-8 {
+  display: grid;
+  gap: 32px;
+}
+.grid-2,
+.grid-3 {
+  display: grid;
+  gap: 20px;
+}
+/* Intrinsically responsive, so neither grid needs a breakpoint. */
+.grid-2 {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr));
+}
+.grid-3 {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+}
+.cluster {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Decorative blob washes. Always aria-hidden in markup, never a carrier of
+   meaning. A blob is absolutely positioned and sized in viewport units, so
+   its parent must be .blob-ground, which clips it: without the clip a mobile
+   viewport gains a horizontal scrollbar. */
+.blob-ground {
+  position: relative;
+  overflow: hidden;
+}
+.blob-ground > *:not(.blob) {
+  position: relative;
+  z-index: 1;
+}
+.blob {
+  position: absolute;
+  z-index: 0;
+  width: 44vmax;
+  aspect-ratio: 1;
+  border-radius: var(--blob);
+  filter: blur(64px);
+  opacity: 0.5;
+  pointer-events: none;
+}
+.blob--1 {
+  top: -16vmax;
+  left: -12vmax;
+  background: var(--accent-fill);
+}
+.blob--2 {
+  top: 8vmax;
+  right: -18vmax;
+  background: var(--clay);
+}
+.blob--3 {
+  bottom: -20vmax;
+  left: 28%;
+  background: var(--sand);
 }
 
 .site-shell {
@@ -524,7 +773,7 @@ h4 {
   font-size: 19px;
 }
 .gallery-panel article section > span,
-.gallery-panel article section > button {
+.gallery-panel article section > button:not(.confidence) {
   display: inline-block;
   margin: 0 10px 8px 0;
 }
@@ -541,7 +790,9 @@ h4 {
 .gallery-panel dd {
   margin: 0;
 }
-.gallery-panel button {
+/* The gallery's bare-button reset would otherwise outrank .confidence on
+   specificity and flatten the badge on the very page that showcases it. */
+.gallery-panel button:not(.confidence) {
   appearance: none;
   border: 0;
   border-radius: 3px;
@@ -550,7 +801,7 @@ h4 {
   font: inherit;
   padding: 2px 4px;
 }
-.gallery-panel button:focus-visible {
+.gallery-panel button:not(.confidence):focus-visible {
   outline: 3px solid var(--accent);
   outline-offset: 2px;
 }
@@ -770,6 +1021,12 @@ h4 {
   /* The grain is decoration and must not tint a forced-colours surface. */
   body::after {
     content: none;
+    display: none;
+  }
+
+  /* Same for the blob washes: blurred colour fields carry no meaning and a
+     forced palette must not have to render them. */
+  .blob {
     display: none;
   }
 }
