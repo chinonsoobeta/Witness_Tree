@@ -10,7 +10,7 @@
   "packet": {"path": "data/phase1-downstream-admission-packet.json", "sha256": "82c55e3bea87d1a3856b233b2e483cd9b5318afd3d998bd753867af944370520"},
   "ownerScopeApproval": {"path": "data/phase1-transformation-scope-owner-approval-2026-08-25.json", "sha256": "98c1becf3f4b392fdcfa57ae65a3e85e56a2b4b22d9671b418c300dc769d1be1"},
   "specification": {"id": "qc-current-ecoforest-stand-copy-v1", "path": "data/transformation-specs/qc-current-ecoforest-stand-copy-v1.json", "sha256": "44cdb08f033fc80040a7edf373189a0ce8c74bc3132d4e0892816fcf3f22bb1d"},
-  "runner": {"path": "scripts/run-qc-stand-copy.mjs", "methodVersion": "qc-stand-copy-runner-v1", "sha256": "e9627d6c15f037bbd60bef2c03b1a7bde5f4850f18e008e21407bfaa2e80d7f6"},
+  "runner": {"path": "scripts/run-qc-stand-copy.mjs", "methodVersion": "qc-stand-copy-runner-v1", "sha256": "8f8f848379137f790b2bfe22c2448f45e5c344a68063e1e92f841e93004b4117"},
   "approvedScopes": [{"specId": "qc-current-ecoforest-stand-copy-v1", "specSha256": "44cdb08f033fc80040a7edf373189a0ce8c74bc3132d4e0892816fcf3f22bb1d", "decision": "approve"}],
   "inputBinding": {
     "rawArchiveSha256": "c67c56b0c101e95bef4fbca53a06e2f1578fe38293961017f70d815209740cf1",

@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "witness-tree/phase1-runtime-runner-reauthorization/1",
+  "status": "approved-owner-runner-rebinding",
+  "decisionId": "phase1-runtime-runner-rebinding-2026-08-28",
+  "createdAt": "2026-08-28T08:04:00Z",
+  "ownerDecision": {
+    "decision": "approve",
+    "ownerName": "Chinonso Obeta",
+    "statement": "If there's anything that requires my approval, I am providing you with my clear and explicit blanket approval in advance so that you are not blocked by that.",
+    "channel": "Codex task",
+    "scope": "Rebind the existing four NTEMS and two Quebec stand-copy execution authorizations to the exact reviewed runner revisions that use the approved external-SSD data root and add fail-closed resume behavior. No transformation scope or claim boundary is expanded."
+  },
+  "runners": [
+    {
+      "path": "scripts/run-phase1-ntems-transform.mjs",
+      "supersededSha256": "09b1016849e0709e46ebad908eec0f01252d5e5eeed3e5cd2fcb712c2042dc90",
+      "sha256": "99982d613a0ef908a88f1dfe468c541c61c2f9f09cad6fbf6768377543c5386d"
+    },
+    {
+      "path": "scripts/run-qc-stand-copy.mjs",
+      "supersededSha256": "e9627d6c15f037bbd60bef2c03b1a7bde5f4850f18e008e21407bfaa2e80d7f6",
+      "sha256": "8f8f848379137f790b2bfe22c2448f45e5c344a68063e1e92f841e93004b4117"
+    }
+  ],
+  "rebound": [
+    "data/phase1-ntems-annual-land-cover-execution-authorization.json",
+    "data/phase1-ntems-forest-harvest-execution-authorization.json",
+    "data/phase1-ntems-canopy-cover-execution-authorization.json",
+    "data/phase1-ntems-canopy-height-execution-authorization.json",
+    "data/phase1-qc-current-ecoforest-execution-approval.json",
+    "data/phase1-qc-original-current-inventory-execution-approval.json"
+  ],
+  "historyBoundary": "Previously issued readbacks and sidecars remain bound to the runner and authorization bytes used when they were created. They are not rewritten by this rebinding.",
+  "boundary": {
+    "externalMutation": false,
+    "executionScopeExpanded": false,
+    "historicalEvidenceRewritten": false,
+    "releaseClaimAdded": false,
+    "productionAdmissionClaimAdded": false
+  }
+}
