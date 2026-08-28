@@ -483,10 +483,7 @@ h4 {
   margin-bottom: 12px;
   font-size: 13px;
 }
-.explore-map-legend strong {
-  flex-basis: 100%;
-}
-.explore-map-legend span {
+.explore-map-legend li {
   display: inline-flex;
   align-items: center;
   gap: 5px;

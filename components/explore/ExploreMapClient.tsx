@@ -88,6 +88,9 @@ const lossColour = (value: number) =>
       : value >= 1
         ? "#a9cf9b"
         : "#e9f2e5";
+const symbol = (className: string) => (
+  <i className={`loss-swatch ${className}`} aria-hidden="true" />
+);
 
 export function ExploreMapClient({
   locale,
@@ -187,25 +190,13 @@ export function ExploreMapClient({
       </p>
       {available ? (
         <div className="explore-map-data">
-          <div className="explore-map-legend" aria-label={text[locale].legend}>
-            <strong>{text[locale].legend}</strong>
-            <span>
-              <i className="loss-swatch loss-0" />
-              0–&lt;1%
-            </span>
-            <span>
-              <i className="loss-swatch loss-1" />
-              1–&lt;2%
-            </span>
-            <span>
-              <i className="loss-swatch loss-2" />
-              2–&lt;3%
-            </span>
-            <span>
-              <i className="loss-swatch loss-3" />
-              3%+
-            </span>
-          </div>
+          <strong>{text[locale].legend}</strong>
+          <ul className="explore-map-legend" aria-label={text[locale].legend}>
+            <li>{symbol("loss-0")}0–&lt;1%</li>
+            <li>{symbol("loss-1")}1–&lt;2%</li>
+            <li>{symbol("loss-2")}2–&lt;3%</li>
+            <li>{symbol("loss-3")}3%+</li>
+          </ul>
           <div className="table-scroll">
             <table>
               <caption>
