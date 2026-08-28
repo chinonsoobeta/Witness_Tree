@@ -12,9 +12,10 @@ import { access, link, lstat, mkdir, mkdtemp, readFile, rm, unlink, writeFile } 
 import { spawn } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { resolveDataRoot } from "./data-root.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const DATA_ROOT = path.resolve(ROOT, "../../Witness_Tree-data");
+const DATA_ROOT = path.resolve(resolveDataRoot());
 const PACKET_REL = "data/phase1-downstream-admission-packet.json";
 const OWNER_REL = "data/phase1-transformation-scope-owner-approval-2026-08-25.json";
 const PACKET_SHA256 = "82c55e3bea87d1a3856b233b2e483cd9b5318afd3d998bd753867af944370520";

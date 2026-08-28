@@ -4,12 +4,13 @@ import { execFileSync, spawnSync } from "node:child_process";
 import { existsSync, lstatSync, openSync, readFileSync, readSync, closeSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { resolveDataRoot } from "./data-root.mjs";
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SPEC_PATH = "data/phase1-production-transformation-specifications-v1.json";
 const GRID_PATH = "data/raster-grid.json";
 const DEFECTS_PATH = "data/raster-defects.json";
-const DEFAULT_DATA_ROOT = "/Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data";
+const DEFAULT_DATA_ROOT = path.resolve(resolveDataRoot());
 const AUTHORIZATION_BY_SPEC = {
   "ntems-annual-land-cover-v1": "data/phase1-ntems-annual-land-cover-execution-authorization.json",
   "ntems-forest-harvest-v1": "data/phase1-ntems-forest-harvest-execution-authorization.json",

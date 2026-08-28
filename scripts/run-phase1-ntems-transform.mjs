@@ -5,12 +5,13 @@ import { execFileSync, spawnSync } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { validatePhase1TransformationScopeOwnerApproval } from "./check-phase1-transformation-scope-owner-approval.mjs";
+import { resolveDataRoot } from "./data-root.mjs";
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const RUNNER_RELATIVE_PATH = "scripts/run-phase1-ntems-transform.mjs";
 const SCOPE_APPROVAL_PATH = "data/phase1-transformation-scope-owner-approval-2026-08-25.json";
 const SPEC_PATH = "data/phase1-production-transformation-specifications-v1.json";
-const DEFAULT_DATA_ROOT = "/Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data";
+const DEFAULT_DATA_ROOT = path.resolve(resolveDataRoot());
 const GRID_PATH = "data/raster-grid.json";
 const DEFECTS_PATH = "data/raster-defects.json";
 const UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/;
