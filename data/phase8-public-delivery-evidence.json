@@ -1,0 +1,51 @@
+{
+  "schemaVersion": "witness-tree/phase8-public-delivery-evidence/1",
+  "status": "deployed-and-externally-verified",
+  "region": "ca-central-1",
+  "stackName": "witness-tree-public-delivery",
+  "bucketName": "witness-tree-public-delivery-ca-central-1",
+  "distributionId": "E8C4KN1HY0DP6",
+  "distributionDomainName": "d3g1406o0uekin.cloudfront.net",
+  "objectKey": "releases/phase8-province-map-v1/8809a9d577c8b615b583fc0245eb1bdb20e534a6bd86188340b7c1abac56bd96/tiles/phase2-province-loss-2020-2022.pmtiles",
+  "publicUrl": "https://d3g1406o0uekin.cloudfront.net/releases/phase8-province-map-v1/8809a9d577c8b615b583fc0245eb1bdb20e534a6bd86188340b7c1abac56bd96/tiles/phase2-province-loss-2020-2022.pmtiles",
+  "browserCompatibilityObject": {
+    "publicUrl": "https://d3g1406o0uekin.cloudfront.net/releases/phase8-province-map-geojson-v2/101561ed48f511a3e65676fa084ee517c4fa722e14f4a3c844c698b247238505/map/phase2-province-loss-2020-2022.geojson",
+    "byteLength": 469712,
+    "sha256": "101561ed48f511a3e65676fa084ee517c4fa722e14f4a3c844c698b247238505",
+    "contentType": "application/geo+json",
+    "status": 200,
+    "accessControlAllowOrigin": "*",
+    "fullReadbackSha256": "101561ed48f511a3e65676fa084ee517c4fa722e14f4a3c844c698b247238505"
+  },
+  "object": {
+    "byteLength": 289166,
+    "sha256": "8809a9d577c8b615b583fc0245eb1bdb20e534a6bd86188340b7c1abac56bd96",
+    "providerChecksumSha256Base64": "iAmp1XfIthW1g/wCResb2yDlNKa9hhiDQLfBq6xWvZY=",
+    "contentType": "application/vnd.pmtiles",
+    "cacheControl": "public,max-age=31536000,immutable",
+    "serverSideEncryption": "AES256"
+  },
+  "externalVerification": {
+    "rangeStatus": 206,
+    "rangeRequested": "bytes=0-16383",
+    "contentRange": "bytes 0-16383/289166",
+    "contentLength": 16384,
+    "origin": "https://witness-tree-canada.r7bv67rgkk.chatgpt.site",
+    "accessControlAllowOrigin": "*",
+    "exposedHeaders": ["Accept-Ranges", "Content-Length", "Content-Range", "ETag"],
+    "repeatRangeCacheResult": "Hit from cloudfront",
+    "directS3ExactObjectStatus": 403,
+    "fullReadbackSha256": "8809a9d577c8b615b583fc0245eb1bdb20e534a6bd86188340b7c1abac56bd96",
+    "pmtilesVerifyPassed": true
+  },
+  "separation": {
+    "rawArchiveBucketIsOrigin": false,
+    "deliveryBucketPublicAccessBlockEnabled": true,
+    "deliveryBucketDirectPublicRead": false,
+    "cloudFrontOriginAccessControl": true,
+    "releasePutRequiresIfNoneMatch": true,
+    "unconditionalExistingKeyPutDenied": true,
+    "conditionalExistingKeyPutPreconditionFailed": true,
+    "releaseDeleteDenied": true
+  }
+}

@@ -164,6 +164,8 @@
     "drill:kill-switch-stop": "tsx scripts/rehearse-kill-switch.mts",
     "check:phase7-indigenous-explore-comparison-exit-status": "node scripts/check-phase7-indigenous-explore-comparison-exit-status.mjs",
     "check:phase8-launch-readiness-exit-status": "node scripts/check-phase8-launch-readiness-exit-status.mjs",
+    "check:site-hosting-capability-probe": "node scripts/check-site-hosting-capability-probe.mjs && node --test tests/site-hosting-capability-probe.test.mjs",
+    "check:phase8-province-map-release": "node scripts/check-phase8-province-map-release.mjs && node --test tests/phase8-province-map-release.test.mjs",
     "check:phase9-public-beta-launch-exit-status": "node scripts/check-phase9-public-beta-launch-exit-status.mjs",
     "check:elections-canada-fed-2025": "node scripts/check-elections-canada-fed-2025.mjs",
     "check:elections-canada-fed-2025-promotion": "tsx scripts/check-elections-canada-fed-2025-promotion-preparation.mjs",

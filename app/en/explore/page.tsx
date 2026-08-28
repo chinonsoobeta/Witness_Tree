@@ -11,5 +11,5 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ m
   const presentation = query.presentation === "list" ? "list" : "map";
   const year = parseExploreYear(query.year);
   const events = fixturesThroughYear(exploreFixtures, year);
-  return <SiteShell locale="en"><main id="main" className="page-wrap"><h1>Explore forest change</h1>{presentation === "map" ? <ExploreMapClient events={events.filter((event) => event.mode === mode)} locale="en" /> : null}<ExploreView events={events} locale="en" mode={mode} presentation={presentation} data={query.data === "table" ? "table" : "chart"} year={year} /></main></SiteShell>;
+  return <SiteShell locale="en"><main id="main" className="page-wrap"><h1>Explore forest change</h1>{presentation === "map" ? <ExploreMapClient locale="en" mode={mode} year={year} /> : null}<ExploreView events={events} locale="en" mode={mode} presentation={presentation} data={query.data === "table" ? "table" : "chart"} year={year} /></main></SiteShell>;
 }

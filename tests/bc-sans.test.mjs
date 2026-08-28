@@ -11,7 +11,7 @@ test("BC Sans is imported once at the root and used as the primary family", asyn
   assert.equal((shell.match(/@bcgov\/bc-sans\/css\/BC_Sans\.css/g) ?? []).length, 1);
   assert.match(styles, /--ui: "BC Sans", "Noto Sans", Verdana, Arial, sans-serif;/);
   assert.match(styles, /body \{[\s\S]*font-family: var\(--ui\);/);
-  assert.match(styles, /h1, h2, h3, h4 \{ font-family: var\(--ui\); \}/);
+  assert.match(styles, /h1,\s*h2,\s*h3,\s*h4\s*\{\s*font-family: var\(--ui\);\s*\}/);
   assert.equal(JSON.parse(manifest).dependencies["@bcgov/bc-sans"], "^2.1.0");
 });
 
