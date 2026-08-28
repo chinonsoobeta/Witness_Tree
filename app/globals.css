@@ -40,6 +40,24 @@
      pill inputs. --ink on the composited result is 13.93:1. */
   --input-fill: color-mix(in srgb, white 55%, transparent);
 
+  /* evidence tints, semantic layer. A tinted pill per evidence class, each
+     with an edge dark enough to be a control edge on its own tint.
+     Measured WCAG 2.1 ratios, --ink on the tint / edge on the tint:
+       record     11.11 / 4.25
+       satellite  11.14 / 4.15
+       derived    11.18 / 3.20
+       unknown    11.37 / 3.81
+     --muted is deliberately never used on these: it lands at 4.52-4.62 here,
+     too close to the 4.5 floor to be safe once the paper grain composites. */
+  --tint-record: #dfe7da;
+  --tint-satellite: #dbe6f4;
+  --tint-derived: #f2e3d1;
+  --tint-unknown: #e4e8e5;
+  --edge-record: #5d7052;
+  --edge-satellite: #3f6ea8;
+  --edge-derived: #a3763f;
+  --edge-unknown: #6b7670;
+
   /* semantic event colours: unchanged, they carry meaning */
   --harvest: #2a78d6;
   --fire: #eb6834;
@@ -118,7 +136,37 @@
        it. --ink on the composited result is 12.91:1. */
     --input-fill: color-mix(in srgb, white 8%, transparent);
 
-    /* semantic event colours: unchanged, they carry meaning */
+    /* evidence tints, semantic layer. Measured WCAG 2.1 ratios,
+       --ink on the tint / edge on the tint:
+         record     12.37 / 5.01
+         satellite  13.43 / 4.65
+         derived    12.65 / 4.96
+         unknown    12.66 / 4.82 */
+    --tint-record: #242c1f;
+    --tint-satellite: #1a2431;
+    --tint-derived: #31261a;
+    --tint-unknown: #242927;
+    --edge-record: #7fa26e;
+    --edge-satellite: #5c8fc9;
+    --edge-derived: #c08b52;
+    --edge-unknown: #8b968f;
+
+    /* evidence tints, semantic layer. Measured WCAG 2.1 ratios,
+     --ink on the tint / edge on the tint:
+       record     12.37 / 5.01
+       satellite  13.43 / 4.65
+       derived    12.65 / 4.96
+       unknown    12.66 / 4.82 */
+  --tint-record: #242c1f;
+  --tint-satellite: #1a2431;
+  --tint-derived: #31261a;
+  --tint-unknown: #242927;
+  --edge-record: #7fa26e;
+  --edge-satellite: #5c8fc9;
+  --edge-derived: #c08b52;
+  --edge-unknown: #8b968f;
+
+  /* semantic event colours: unchanged, they carry meaning */
     --harvest: #3987e5;
     --fire: #d95926;
     --insect: #9085e9;
@@ -767,22 +815,25 @@ h4 {
   padding-block: 14px;
   border-top: 1px solid currentColor;
 }
-.gallery-panel article output {
+/* Scoped away from the semantic layer: .reported now owns its own figure
+   type scale and its own chip-row layout, and the gallery must showcase that
+   treatment rather than flatten it back to the pre-phase-3 stack. */
+.gallery-panel article output:not(.reported-figure) {
   display: block;
   margin-bottom: 10px;
   font-size: 19px;
 }
-.gallery-panel article section > span,
-.gallery-panel article section > button:not(.confidence) {
+.gallery-panel article section:not(.reported) > span,
+.gallery-panel article section:not(.reported) > button:not(.confidence) {
   display: inline-block;
   margin: 0 10px 8px 0;
 }
-.gallery-panel dl {
+.gallery-panel dl:not(.provenance) {
   display: grid;
   gap: 8px;
   margin-top: 12px;
 }
-.gallery-panel dl div {
+.gallery-panel dl:not(.provenance) div {
   display: grid;
   grid-template-columns: 6rem minmax(0, 1fr);
   gap: 12px;
@@ -978,6 +1029,260 @@ h4 {
 .unknown-value {
   color: var(--unknown);
   font-style: italic;
+}
+
+/* ==========================================================================
+   Semantic layer: the five policy primitives.
+   These carry meaning, so colour is never the only cue. Every chip keeps its
+   glyph and its full text label; the confidence lozenges differ by fill
+   *and* by outline; the Unknown reported value keeps its en dash and its
+   reason and never gains a zero.
+
+   Asymmetric radius bound to meaning, so the shape carries information
+   rather than decoration:
+     official record        one squared corner
+     satellite observation  fully rounded
+     derived estimate       the soft --blob
+     unknown                fully rounded with a dashed hairline edge
+
+   Contrast, measured WCAG 2.1 ratios, light / dark:
+     --ink on --tint-record              11.11 / 12.37
+     --ink on --tint-satellite           11.14 / 13.43
+     --ink on --tint-derived             11.18 / 12.65
+     --ink on --tint-unknown             11.37 / 12.66
+     --edge-record on --tint-record       4.25 /  5.01
+     --edge-satellite on --tint-satellite 4.15 /  4.65
+     --edge-derived on --tint-derived     3.20 /  4.96
+     --edge-unknown on --tint-unknown     3.81 /  4.82
+     --ink on --sand (.coverage-band)    10.37 / 12.45
+     --accent-fill edge on --sand         3.97 /  5.05
+     --ink on --surface-2 (.provenance)  11.87 / 13.70
+     --ink-2 on --surface-2 (dt labels)   7.56 / 10.05
+     --accent-fill lozenge on --surface   5.32 /  6.03
+   Text pairs clear 4.5:1, control edges clear 3:1, in both palettes.
+   --muted appears on none of these tinted surfaces.
+   ========================================================================== */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 30px;
+  padding: 2px 13px 2px 3px;
+  border: 1px solid var(--edge-unknown);
+  border-radius: 999px;
+  background: var(--tint-unknown);
+  color: var(--ink);
+  font-family: var(--ui);
+  font-size: 13px;
+  line-height: 1.25;
+  transition:
+    background-color var(--dur) var(--ease),
+    border-color var(--dur) var(--ease);
+}
+/* The glyph sits in its own round well so it reads as a mark rather than as
+   a stray character in the label. The well is a wash of white over the tint,
+   which is the same --input-fill construction the pill inputs use, so it
+   composites correctly in both palettes. */
+.chip-glyph {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: var(--input-fill);
+  font-size: 11px;
+  line-height: 1;
+}
+
+.chip--official-record {
+  border-color: var(--edge-record);
+  background: var(--tint-record);
+  border-radius: 999px 999px 999px 6px;
+}
+.chip--satellite-observation {
+  border-color: var(--edge-satellite);
+  background: var(--tint-satellite);
+}
+.chip--derived-estimate {
+  border-color: var(--edge-derived);
+  background: var(--tint-derived);
+  border-radius: var(--blob);
+}
+.chip--unknown {
+  border-style: dashed;
+}
+
+/* Coverage. A sand band with the grade spelled out; it is never abbreviated
+   to a letter, because the grade is the reader's only signal of how much of
+   the country the number actually covers. */
+.coverage-band {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 2px 14px;
+  border: 1px solid var(--accent-fill);
+  border-radius: 999px;
+  background: var(--sand);
+  color: var(--ink);
+  font-family: var(--ui);
+  font-size: 13px;
+  line-height: 1.25;
+}
+
+/* Confidence. Three rounded lozenges: filled in moss, unfilled as a hairline
+   outline, so the difference is fill *and* outline rather than colour alone.
+   The ▮ / ▯ glyph stays in the DOM inside an aria-hidden wrapper and is
+   clipped out of view; forced-colours mode puts it back, because a forced
+   palette discards the fills that would otherwise carry the distinction. */
+.confidence-bars {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.confidence-bar {
+  display: inline-block;
+  width: 15px;
+  height: 8px;
+  border: 1px solid var(--accent-fill);
+  border-radius: 999px;
+  overflow: hidden;
+  text-indent: -100em;
+  transition: background-color var(--dur) var(--ease);
+}
+.confidence-bar.is-on {
+  background: var(--accent-fill);
+}
+.confidence-bar.is-off {
+  background: transparent;
+}
+
+/* Provenance. The most repeated block in the product: a stone card with mono
+   labels and a hairline between rows. The dl/dt/dd structure is unchanged. */
+.provenance {
+  display: grid;
+  margin: 14px 0 0;
+  padding: 6px 18px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+}
+.provenance-row {
+  display: grid;
+  grid-template-columns: 8.5rem minmax(0, 1fr);
+  gap: 6px 16px;
+  padding: 10px 0;
+  border-top: 1px solid var(--rule);
+}
+.provenance-row:first-child {
+  border-top: 0;
+}
+.provenance dt {
+  color: var(--ink-2);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.provenance dd {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+/* Reported value. The composed unit. The figure is the loudest thing on a
+   record page; the chips form a single row beneath it; the provenance is a
+   collapsed disclosure so the page stays scannable. No wrapper element is
+   introduced for the chip row: the section is the flex container and the
+   figure and the disclosure each take a full row of their own. */
+.reported {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 22px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+.reported--official-record {
+  border-radius: var(--radius-lg) var(--radius-lg) var(--radius-lg) 6px;
+}
+.reported--derived-estimate {
+  border-radius: var(--radius-lg) var(--radius-lg) var(--radius-lg) var(--radius-sm);
+}
+.reported--unknown {
+  border-style: dashed;
+  border-color: var(--rule-strong);
+}
+.reported-figure {
+  flex-basis: 100%;
+  font-family: var(--ui);
+  font-size: clamp(30px, 5vw, 46px);
+  font-weight: 600;
+  line-height: 1.06;
+  letter-spacing: -0.025em;
+  font-variant-numeric: tabular-nums;
+}
+/* The Unknown branch is a sentence, not a figure, so it is set at reading
+   size. The en dash and the reason are the value; there is no zero. */
+.reported-figure--unknown {
+  font-size: 19px;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0;
+  color: var(--ink-2);
+}
+.reported-provenance {
+  flex-basis: 100%;
+  margin-top: 4px;
+}
+.reported-provenance > summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 2px;
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.reported-provenance > summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+@media (min-width: 900px) {
+  .provenance-row {
+    grid-template-columns: 10rem minmax(0, 1fr);
+  }
+}
+
+@media (forced-colors: active) {
+  /* The tints are decoration: the glyph and the full text label carry the
+     evidence class, so dropping the fills costs the reader nothing. */
+  .chip,
+  .chip-glyph,
+  .coverage-band,
+  .provenance,
+  .reported {
+    background: none;
+  }
+  /* The lozenge fill is the one place a tint did carry meaning, so the
+     clipped glyph is restored to carry it instead. */
+  .confidence-bar {
+    width: auto;
+    height: auto;
+    border: 0;
+    border-radius: 0;
+    overflow: visible;
+    text-indent: 0;
+    background: none;
+  }
 }
 
 @media (max-width: 760px) {

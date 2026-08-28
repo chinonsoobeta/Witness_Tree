@@ -29,7 +29,9 @@ export function ConfidenceBadge({ confidence, locale }: ConfidenceBadgeProps) {
       <span>{label}</span>{" "}
       <span className="confidence-bars" aria-hidden="true">
         {[0, 1, 2].map((bar) => (
-          <span key={bar}>{bar < filledBars ? "▮" : "▯"}</span>
+          <span key={bar} className={bar < filledBars ? "confidence-bar is-on" : "confidence-bar is-off"}>
+            {bar < filledBars ? "▮" : "▯"}
+          </span>
         ))}
       </span>
       <span className="sr-only">{reason}</span>

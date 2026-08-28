@@ -57,7 +57,7 @@
         },
         {
           "path": "components/policy/ReportedValue.tsx",
-          "sha256": "6de008f69636b66ea528b47d109468eb7d25ea1c974d4a1a7f31c91a36569069"
+          "sha256": "4550d809fd276503ac0aae4d704abfd2a2e38cc84cf820a394100f73b2653f85"
         }
       ]
     },
@@ -73,7 +73,7 @@
         },
         {
           "path": "components/policy/ReportedValue.tsx",
-          "sha256": "6de008f69636b66ea528b47d109468eb7d25ea1c974d4a1a7f31c91a36569069"
+          "sha256": "4550d809fd276503ac0aae4d704abfd2a2e38cc84cf820a394100f73b2653f85"
         },
         {
           "path": "tests/reported-format.test.ts",

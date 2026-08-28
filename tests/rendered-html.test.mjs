@@ -52,7 +52,7 @@ test("renders localized place and location records with semantic content and pro
 
   for (const html of [englishPlace, frenchPlace, englishLocation, frenchLocation]) {
     assert.match(html, /<main\b[^>]*id="main"/);
-    assert.match(html, /<dl>|<table/);
+    assert.match(html, /<dl\b|<table/);
   }
 
   assert.match(englishPlace, /<html lang="en">/);
