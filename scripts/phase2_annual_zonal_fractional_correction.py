@@ -16,6 +16,7 @@ No admission, release, or production claim is accepted or emitted.
 from __future__ import annotations
 
 import argparse
+import concurrent.futures
 import copy
 import hashlib
 import json
@@ -39,10 +40,13 @@ ogr.UseExceptions()
 gdal.SetConfigOption("OGR_ORGANIZE_POLYGONS", "ONLY_CCW")
 GDAL_CACHE_BYTES = 256 * 1024 * 1024
 gdal.SetCacheMax(GDAL_CACHE_BYTES)
+WORKER_GDAL_CACHE_BYTES = 64 * 1024 * 1024
 
 NODATA = 255
-ROW_WINDOW = 2048
-COLUMN_WINDOW = 32768
+DEFAULT_TILE_SIZE = 1024
+MIN_TILE_SIZE = 1024
+MAX_TILE_SIZE = 2048
+DEFAULT_CHECKPOINT_INTERVAL = 16
 FRACTION_EPSILON = 1e-9
 FIRST_YEAR = 1984
 LAST_YEAR = 2022
@@ -56,6 +60,13 @@ BINARY_ALGORITHM = "windowed-bounded-batch-feature-mask-rasterization"
 CORRECTION_SCHEMA = "phase2-annual-province-zonal-fractional-correction-v1"
 CORRECTION_STATUS = "local-nonproduction-fractional-correction"
 CORRECTION_ALGORITHM = "center-membership-subtraction-exact-polygon-cell-intersection-addition"
+CHECKPOINT_SCHEMA = "phase2-annual-zonal-fractional-tile-checkpoint-v1"
+
+
+_WORKER_FOREST_DATASETS: list[gdal.Dataset] = []
+_WORKER_LOSS_DATASETS: list[gdal.Dataset] = []
+_WORKER_GEOMETRIES: dict[str, ogr.Geometry] = {}
+_WORKER_MASK_DATASETS: dict[str, gdal.Dataset] = {}
 
 
 def fail(message: str) -> None:
@@ -371,6 +382,253 @@ def category_weights(forest: int, loss: int | None = None) -> dict[str, float]:
 def add_delta(target: dict[str, float], exact: dict[str, float], center: dict[str, float], fraction: float) -> None:
     for key in exact:
         target[key] += fraction * exact[key] - center[key]
+
+
+def tile_key(boundary_id: str, global_column: int, global_row: int) -> str:
+    return f"{boundary_id}-r{global_row:08d}-c{global_column:08d}"
+
+
+def annual_key(from_year: int, to_year: int) -> str:
+    return f"{from_year}-{to_year}"
+
+
+def initialize_tile_worker(
+    geometry_wkbs: dict[str, bytes],
+    forest_paths: list[str],
+    loss_paths: list[str],
+) -> None:
+    """Open immutable inputs once in each spawned tile worker."""
+
+    global _WORKER_FOREST_DATASETS, _WORKER_LOSS_DATASETS, _WORKER_GEOMETRIES, _WORKER_MASK_DATASETS
+    gdal.SetCacheMax(WORKER_GDAL_CACHE_BYTES)
+    _WORKER_GEOMETRIES = {}
+    for boundary_id, geometry_wkb in geometry_wkbs.items():
+        geometry = ogr.CreateGeometryFromWkb(geometry_wkb)
+        if geometry is None or geometry.IsEmpty():
+            fail(f"worker cannot reconstruct boundary geometry {boundary_id}")
+        _WORKER_GEOMETRIES[boundary_id] = geometry
+    _WORKER_FOREST_DATASETS = [gdal.Open(path, gdal.GA_ReadOnly) for path in forest_paths]
+    _WORKER_LOSS_DATASETS = [gdal.Open(path, gdal.GA_ReadOnly) for path in loss_paths]
+    if any(dataset is None for dataset in _WORKER_FOREST_DATASETS + _WORKER_LOSS_DATASETS):
+        fail("tile worker cannot open an exact annual raster input")
+    _WORKER_MASK_DATASETS = {}
+
+
+def worker_mask(path: str) -> gdal.Dataset:
+    dataset = _WORKER_MASK_DATASETS.get(path)
+    if dataset is None:
+        dataset = gdal.Open(path, gdal.GA_ReadOnly)
+        if dataset is None:
+            fail(f"tile worker cannot open temporary boundary mask: {path}")
+        _WORKER_MASK_DATASETS[path] = dataset
+    return dataset
+
+
+def empty_tile_correction() -> dict[str, Any]:
+    return {
+        "baseline": {"known": 0.0, "unknown": 0.0},
+        "annual": {
+            annual_key(from_year, to_year): {"known": 0.0, "loss": 0.0, "unknown": 0.0, "outside": 0.0}
+            for from_year, to_year in PAIR_YEARS
+        },
+    }
+
+
+def process_tile(task: dict[str, Any]) -> dict[str, Any]:
+    """Return one deterministic tile aggregate; no child writes shared state."""
+
+    boundary_id = task["boundaryId"]
+    reference = _WORKER_FOREST_DATASETS[0]
+    edge = worker_mask(task["edgePath"]).GetRasterBand(1).ReadAsArray(
+        task["maskColumn"], task["maskRow"], task["width"], task["height"]
+    )
+    if edge is None:
+        fail(f"cannot read edge mask tile {task['tileKey']}")
+    candidate_positions = np.argwhere(edge.astype(bool))
+    if len(candidate_positions) == 0:
+        return {"tileKey": task["tileKey"], "hasCandidates": False}
+
+    center = worker_mask(task["centerPath"]).GetRasterBand(1).ReadAsArray(
+        task["maskColumn"], task["maskRow"], task["width"], task["height"]
+    )
+    if center is None:
+        fail(f"cannot read center mask tile {task['tileKey']}")
+    geometry = _WORKER_GEOMETRIES[boundary_id]
+    window_geometry = geometry.Intersection(
+        raster_window_polygon(
+            reference,
+            task["globalColumn"],
+            task["globalRow"],
+            task["width"],
+            task["height"],
+        )
+    )
+    if window_geometry is None:
+        fail(f"cannot clip target geometry for tile {task['tileKey']}")
+
+    forest_arrays = [
+        dataset.GetRasterBand(1).ReadAsArray(
+            task["globalColumn"], task["globalRow"], task["width"], task["height"]
+        )
+        for dataset in _WORKER_FOREST_DATASETS
+    ]
+    loss_arrays = [
+        dataset.GetRasterBand(1).ReadAsArray(
+            task["globalColumn"], task["globalRow"], task["width"], task["height"]
+        )
+        for dataset in _WORKER_LOSS_DATASETS
+    ]
+    if any(array is None for array in forest_arrays + loss_arrays):
+        fail(f"cannot read exact annual inputs for tile {task['tileKey']}")
+    for index, array in enumerate(forest_arrays):
+        validate_values(array, f"forest mask {PAIR_YEARS[index][0]}")
+    for index, array in enumerate(loss_arrays):
+        validate_values(array, f"annual loss {PAIR_YEARS[index][0]}-{PAIR_YEARS[index][1]}")
+
+    correction = empty_tile_correction()
+    stats = {
+        "candidateCellCount": 0,
+        "fractionalCellCount": 0,
+        "zeroIntersectionCellCount": 0,
+        "fullIntersectionCellCount": 0,
+        "changedCellCount": 0,
+    }
+    cell_area = abs(reference.GetGeoTransform()[1] * reference.GetGeoTransform()[5])
+    for relative_row, relative_column in candidate_positions:
+        local_row = int(relative_row)
+        local_column = int(relative_column)
+        global_row = task["globalRow"] + local_row
+        global_column = task["globalColumn"] + local_column
+        stats["candidateCellCount"] += 1
+        fraction = exact_fraction(window_geometry, reference, global_column, global_row, cell_area)
+        if fraction <= FRACTION_EPSILON:
+            stats["zeroIntersectionCellCount"] += 1
+        elif fraction >= 1 - FRACTION_EPSILON:
+            stats["fullIntersectionCellCount"] += 1
+        else:
+            stats["fractionalCellCount"] += 1
+        center_member = bool(center[local_row, local_column])
+        baseline_exact = category_weights(int(forest_arrays[0][local_row, local_column]))
+        baseline_center = {key: value * float(center_member) for key, value in baseline_exact.items()}
+        prior_baseline = dict(correction["baseline"])
+        add_delta(correction["baseline"], baseline_exact, baseline_center, fraction)
+        changed = any(
+            abs(correction["baseline"][key] - prior_baseline[key]) > FRACTION_EPSILON
+            for key in correction["baseline"]
+        )
+        for index, (from_year, to_year) in enumerate(PAIR_YEARS):
+            exact_weights = category_weights(
+                int(forest_arrays[index][local_row, local_column]),
+                int(loss_arrays[index][local_row, local_column]),
+            )
+            center_weights = {key: value * float(center_member) for key, value in exact_weights.items()}
+            key = annual_key(from_year, to_year)
+            prior = dict(correction["annual"][key])
+            add_delta(correction["annual"][key], exact_weights, center_weights, fraction)
+            if any(abs(correction["annual"][key][metric] - prior[metric]) > FRACTION_EPSILON for metric in prior):
+                changed = True
+        if changed:
+            stats["changedCellCount"] += 1
+
+    return {
+        "tileKey": task["tileKey"],
+        "hasCandidates": True,
+        "boundaryId": boundary_id,
+        "province": task["province"],
+        "globalColumn": task["globalColumn"],
+        "globalRow": task["globalRow"],
+        "width": task["width"],
+        "height": task["height"],
+        "stats": stats,
+        **correction,
+    }
+
+
+def atomic_write_json(path: str, value: Any) -> None:
+    parent = os.path.dirname(path)
+    os.makedirs(parent, exist_ok=True)
+    descriptor, temporary = tempfile.mkstemp(prefix=".witness-tree-checkpoint-", suffix=".json", dir=parent)
+    try:
+        with os.fdopen(descriptor, "w", encoding="utf-8") as stream:
+            stream.write(stable_json(value))
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(temporary, path)
+    except Exception:
+        if os.path.exists(temporary):
+            os.unlink(temporary)
+        raise
+
+
+def target_checkpoint_document(run_binding_sha256: str, province: str, boundary_id: str, windows: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "schemaVersion": CHECKPOINT_SCHEMA,
+        "runBindingSha256": run_binding_sha256,
+        "province": province,
+        "boundaryId": boundary_id,
+        "windowCount": len(windows),
+        "windowsSha256": hashlib.sha256(stable_json(windows).encode()).hexdigest(),
+        "windows": windows,
+    }
+
+
+def write_target_checkpoint(path: str, run_binding_sha256: str, province: str, boundary_id: str, windows: dict[str, Any]) -> None:
+    atomic_write_json(path, target_checkpoint_document(run_binding_sha256, province, boundary_id, windows))
+
+
+def load_target_checkpoint(path: str, run_binding_sha256: str, province: str, boundary_id: str) -> dict[str, Any]:
+    if not os.path.exists(path):
+        return {}
+    value, _raw = load_json(path, f"target checkpoint {boundary_id}")
+    if not isinstance(value, dict) or set(value) != {
+        "schemaVersion", "runBindingSha256", "province", "boundaryId", "windowCount", "windowsSha256", "windows"
+    }:
+        fail(f"target checkpoint {boundary_id} schema drifted")
+    if value["schemaVersion"] != CHECKPOINT_SCHEMA or value["runBindingSha256"] != run_binding_sha256:
+        fail(f"target checkpoint {boundary_id} does not bind this exact run")
+    if value["province"] != province or value["boundaryId"] != boundary_id:
+        fail(f"target checkpoint {boundary_id} identity drifted")
+    windows = value["windows"]
+    if not isinstance(windows, dict) or value["windowCount"] != len(windows):
+        fail(f"target checkpoint {boundary_id} window count drifted")
+    if value["windowsSha256"] != hashlib.sha256(stable_json(windows).encode()).hexdigest():
+        fail(f"target checkpoint {boundary_id} window digest drifted")
+    for key, result in windows.items():
+        if not isinstance(result, dict) or result.get("tileKey") != key or result.get("boundaryId") != boundary_id or result.get("province") != province or result.get("hasCandidates") is not True:
+            fail(f"target checkpoint {boundary_id} contains an invalid window result")
+        stats = result.get("stats")
+        if not isinstance(stats, dict) or set(stats) != {
+            "candidateCellCount", "fractionalCellCount", "zeroIntersectionCellCount", "fullIntersectionCellCount", "changedCellCount"
+        }:
+            fail(f"target checkpoint {boundary_id} window statistics drifted")
+        if stats["fractionalCellCount"] + stats["zeroIntersectionCellCount"] + stats["fullIntersectionCellCount"] != stats["candidateCellCount"]:
+            fail(f"target checkpoint {boundary_id} window counts do not reconcile")
+        annual = result.get("annual")
+        if not isinstance(annual, dict) or set(annual) != {annual_key(*pair) for pair in PAIR_YEARS}:
+            fail(f"target checkpoint {boundary_id} annual schedule drifted")
+    return windows
+
+
+def reduce_target_results(province: str, boundary_id: str, results: list[dict[str, Any]]) -> dict[str, Any]:
+    ordered = sorted(results, key=lambda result: result["tileKey"])
+    stats = {
+        key: sum(result["stats"][key] for result in ordered)
+        for key in ("candidateCellCount", "fractionalCellCount", "zeroIntersectionCellCount", "fullIntersectionCellCount", "changedCellCount")
+    }
+    correction = {
+        "baseline": {
+            key: math.fsum(result["baseline"][key] for result in ordered)
+            for key in ("known", "unknown")
+        },
+        "annual": {},
+    }
+    for from_year, to_year in PAIR_YEARS:
+        string_key = annual_key(from_year, to_year)
+        correction["annual"][(from_year, to_year)] = {
+            metric: math.fsum(result["annual"][string_key][metric] for result in ordered)
+            for metric in ("known", "loss", "unknown", "outside")
+        }
+    return {**correction, "stats": stats, "province": province, "boundaryId": boundary_id}
 
 
 def safe_round_area(value: float, label: str) -> float:
@@ -720,112 +978,191 @@ def main(args: argparse.Namespace) -> None:
         fail("exact raster grid does not match the binary sidecar grid binding")
 
     geometries, geometry_bindings, source_feature_count = read_boundaries(boundaries_path, input_binding, reference)
+    if not MIN_TILE_SIZE <= args.tile_size <= MAX_TILE_SIZE:
+        fail(f"tile size must be between {MIN_TILE_SIZE} and {MAX_TILE_SIZE} cells")
+    if args.workers is not None and args.workers < 1:
+        fail("workers must be a positive integer")
+    if args.checkpoint_interval < 1:
+        fail("checkpoint interval must be a positive integer")
+
     started_at = datetime.now(timezone.utc)
     started_monotonic = time.monotonic()
-    all_corrections: dict[str, dict[str, Any]] = {}
+    correction_worker_hash = sha256(os.path.realpath(__file__))
+    checkpoint_dir = str(Path(args.checkpoint_dir or f"{output_path}.checkpoints").expanduser().resolve())
+    os.makedirs(checkpoint_dir, exist_ok=True)
+    run_binding = {
+        "schemaVersion": CHECKPOINT_SCHEMA,
+        "algorithm": CORRECTION_ALGORITHM,
+        "workerSha256": correction_worker_hash,
+        "tileSize": args.tile_size,
+        "binaryOutputSha256": hashlib.sha256(binary_output_raw).hexdigest(),
+        "binarySidecarSha256": hashlib.sha256(binary_sidecar_raw).hexdigest(),
+        "boundaryPath": binding_path(boundaries_path),
+        "boundarySha256": sha256(boundaries_path),
+        "geometryBindings": geometry_bindings,
+        "forestMasks": input_binding["forestMasks"],
+        "annualLossRasters": input_binding["annualLossRasters"],
+        "targets": [{"province": province, "boundaryId": boundary_id} for province, boundary_id in TARGETS],
+    }
+    run_binding_sha256 = hashlib.sha256(stable_json(run_binding).encode()).hexdigest()
+    run_checkpoint_path = os.path.join(checkpoint_dir, "run.json")
+    run_checkpoint = {"runBindingSha256": run_binding_sha256, "runBinding": run_binding}
+    if os.path.exists(run_checkpoint_path):
+        existing_run, _raw = load_json(run_checkpoint_path, "checkpoint run binding")
+        if existing_run != run_checkpoint:
+            fail("checkpoint directory belongs to a different exact run")
+    else:
+        unrelated = [name for name in os.listdir(checkpoint_dir) if not name.startswith(".witness-tree-checkpoint-")]
+        if unrelated:
+            fail("checkpoint directory is non-empty but has no exact run binding")
+        atomic_write_json(run_checkpoint_path, run_checkpoint)
+
+    tasks: list[dict[str, Any]] = []
+    scratch_paths: list[str] = []
     maximum_scratch_bytes = 0
-    processed_window_count = 0
-    total_candidates = total_fractional = total_zero = total_full = total_changed = 0
-    for province, boundary_id in TARGETS:
-        geometry = geometries[boundary_id]
-        # Pad by one grid cell so an edge exactly on a grid line also checks
-        # the adjacent zero/full-area cell.  The boundary-line mask still
-        # limits exact intersections to edge candidates only.
-        left, top, width, height = pixel_window(reference, geometry.GetEnvelope(), padding=1)
-        correction = {
-            "baseline": {"known": 0.0, "unknown": 0.0},
-            "annual": {(from_year, to_year): {"known": 0.0, "loss": 0.0, "unknown": 0.0, "outside": 0.0} for from_year, to_year in PAIR_YEARS},
-        }
-        stats = {"candidateCellCount": 0, "fractionalCellCount": 0, "zeroIntersectionCellCount": 0, "fullIntersectionCellCount": 0, "changedCellCount": 0}
-        if width > 0 and height > 0:
-            center_path, center_dataset, center_scratch = create_mask(geometry, reference.GetProjection(), reference.GetGeoTransform(), left, top, width, height, all_touched=False)
+    checkpoint_paths: dict[str, str] = {}
+    checkpoint_windows: dict[str, dict[str, Any]] = {}
+    resumed_window_count = 0
+    try:
+        for target_index, (province, boundary_id) in enumerate(TARGETS):
+            geometry = geometries[boundary_id]
+            left, top, width, height = pixel_window(reference, geometry.GetEnvelope(), padding=1)
+            checkpoint_path = os.path.join(checkpoint_dir, f"target-{boundary_id}.json")
+            checkpoint_paths[boundary_id] = checkpoint_path
+            windows = load_target_checkpoint(checkpoint_path, run_binding_sha256, province, boundary_id)
+            checkpoint_windows[boundary_id] = windows
+            resumed_window_count += len(windows)
+            if width <= 0 or height <= 0:
+                continue
+            center_path, center_dataset, center_scratch = create_mask(
+                geometry,
+                reference.GetProjection(),
+                reference.GetGeoTransform(),
+                left,
+                top,
+                width,
+                height,
+                all_touched=False,
+            )
             boundary_geometry = geometry.Boundary()
-            edge_path, edge_dataset, edge_scratch = create_mask(boundary_geometry, reference.GetProjection(), reference.GetGeoTransform(), left, top, width, height, all_touched=True)
+            edge_path, edge_dataset, edge_scratch = create_mask(
+                boundary_geometry,
+                reference.GetProjection(),
+                reference.GetGeoTransform(),
+                left,
+                top,
+                width,
+                height,
+                all_touched=True,
+            )
+            center_dataset = edge_dataset = None
+            scratch_paths.extend((center_path, edge_path))
             maximum_scratch_bytes = max(maximum_scratch_bytes, center_scratch, edge_scratch)
-            try:
-                center_band = center_dataset.GetRasterBand(1)
-                edge_band = edge_dataset.GetRasterBand(1)
-                forest_bands = [dataset.GetRasterBand(1) for dataset in forest_datasets]
-                loss_bands = [dataset.GetRasterBand(1) for dataset in loss_datasets]
-                cell_area = abs(reference.GetGeoTransform()[1] * reference.GetGeoTransform()[5])
-                for window_row in range(0, height, ROW_WINDOW):
-                    for window_column in range(0, width, COLUMN_WINDOW):
-                        rows_in_window = min(ROW_WINDOW, height - window_row)
-                        columns_in_window = min(COLUMN_WINDOW, width - window_column)
-                        center = center_band.ReadAsArray(window_column, window_row, columns_in_window, rows_in_window)
-                        edge = edge_band.ReadAsArray(window_column, window_row, columns_in_window, rows_in_window)
-                        if center is None or edge is None:
-                            fail("cannot read temporary center or boundary mask")
-                        candidate_positions = np.argwhere(edge.astype(bool))
-                        if len(candidate_positions) == 0:
-                            continue
-                        processed_window_count += 1
-                        # Clip the province once per bounded raster window. Passing
-                        # the full province into every cell intersection forces
-                        # OGR to convert the complete geometry to GEOS repeatedly.
-                        # The window contains every candidate cell below, so this
-                        # changes only the cost, not the exact intersection area.
-                        window_geometry = geometry.Intersection(raster_window_polygon(
-                            reference,
-                            left + window_column,
-                            top + window_row,
-                            columns_in_window,
-                            rows_in_window,
-                        ))
-                        if window_geometry is None:
-                            fail("cannot clip target geometry to the exact raster window")
-                        forest_arrays = [band.ReadAsArray(left + window_column, top + window_row, columns_in_window, rows_in_window) for band in forest_bands]
-                        loss_arrays = [band.ReadAsArray(left + window_column, top + window_row, columns_in_window, rows_in_window) for band in loss_bands]
-                        if any(array is None for array in forest_arrays + loss_arrays):
-                            fail("cannot read exact annual input window")
-                        for index, array in enumerate(forest_arrays):
-                            validate_values(array, f"forest mask {PAIR_YEARS[index][0]}")
-                        for index, array in enumerate(loss_arrays):
-                            validate_values(array, f"annual loss {PAIR_YEARS[index][0]}-{PAIR_YEARS[index][1]}")
-                        for relative_row, relative_column in candidate_positions:
-                            local_row = int(relative_row)
-                            local_column = int(relative_column)
-                            global_row = top + window_row + local_row
-                            global_column = left + window_column + local_column
-                            stats["candidateCellCount"] += 1
-                            fraction = exact_fraction(window_geometry, reference, global_column, global_row, cell_area)
-                            if fraction <= FRACTION_EPSILON:
-                                stats["zeroIntersectionCellCount"] += 1
-                            elif fraction >= 1 - FRACTION_EPSILON:
-                                stats["fullIntersectionCellCount"] += 1
-                            else:
-                                stats["fractionalCellCount"] += 1
-                            center_member = bool(center[local_row, local_column])
-                            baseline_forest = int(forest_arrays[0][local_row, local_column])
-                            baseline_exact = category_weights(baseline_forest)
-                            baseline_center = {key: value * float(center_member) for key, value in baseline_exact.items()}
-                            prior_baseline = dict(correction["baseline"])
-                            add_delta(correction["baseline"], baseline_exact, baseline_center, fraction)
-                            changed = any(abs(correction["baseline"][key] - prior_baseline[key]) > FRACTION_EPSILON for key in correction["baseline"])
-                            for index, (from_year, to_year) in enumerate(PAIR_YEARS):
-                                forest_value = int(forest_arrays[index][local_row, local_column])
-                                loss_value = int(loss_arrays[index][local_row, local_column])
-                                exact_weights = category_weights(forest_value, loss_value)
-                                center_weights = {key: value * float(center_member) for key, value in exact_weights.items()}
-                                prior = dict(correction["annual"][(from_year, to_year)])
-                                add_delta(correction["annual"][(from_year, to_year)], exact_weights, center_weights, fraction)
-                                if any(abs(correction["annual"][(from_year, to_year)][key] - prior[key]) > FRACTION_EPSILON for key in prior):
-                                    changed = True
-                            if changed:
-                                stats["changedCellCount"] += 1
-            finally:
-                center_dataset = None
-                edge_dataset = None
-                if os.path.exists(center_path):
-                    os.unlink(center_path)
-                if os.path.exists(edge_path):
-                    os.unlink(edge_path)
-        total_candidates += stats["candidateCellCount"]
-        total_fractional += stats["fractionalCellCount"]
-        total_zero += stats["zeroIntersectionCellCount"]
-        total_full += stats["fullIntersectionCellCount"]
-        total_changed += stats["changedCellCount"]
-        all_corrections[boundary_id] = {**correction, "stats": stats, "province": province}
+            for mask_row in range(0, height, args.tile_size):
+                for mask_column in range(0, width, args.tile_size):
+                    tile_width = min(args.tile_size, width - mask_column)
+                    tile_height = min(args.tile_size, height - mask_row)
+                    global_column = left + mask_column
+                    global_row = top + mask_row
+                    key = tile_key(boundary_id, global_column, global_row)
+                    task = {
+                        "tileKey": key,
+                        "targetIndex": target_index,
+                        "province": province,
+                        "boundaryId": boundary_id,
+                        "globalColumn": global_column,
+                        "globalRow": global_row,
+                        "maskColumn": mask_column,
+                        "maskRow": mask_row,
+                        "width": tile_width,
+                        "height": tile_height,
+                        "centerPath": center_path,
+                        "edgePath": edge_path,
+                    }
+                    prior = windows.get(key)
+                    if prior is not None:
+                        for field in ("globalColumn", "globalRow", "width", "height"):
+                            if prior.get(field) != task[field]:
+                                fail(f"checkpoint tile {key} grid binding drifted")
+                    else:
+                        tasks.append(task)
+
+        worker_count = min(args.workers or (os.cpu_count() or 1), max(1, len(tasks)))
+        forest_paths = [forest_path for _year, forest_path in masks]
+        loss_paths = [loss_path for _from_year, _to_year, _forest_path, loss_path in pairs]
+        geometry_wkbs = {boundary_id: bytes(geometry.ExportToWkb()) for boundary_id, geometry in geometries.items()}
+        print(
+            f"Fractional correction: {len(tasks)} pending tiles, {resumed_window_count} resumed candidate tiles, "
+            f"tileSize={args.tile_size}, workers={worker_count}",
+            flush=True,
+        )
+        dirty_counts = {boundary_id: 0 for _province, boundary_id in TARGETS}
+        completed_tiles = 0
+        if tasks:
+            with concurrent.futures.ProcessPoolExecutor(
+                max_workers=worker_count,
+                initializer=initialize_tile_worker,
+                initargs=(geometry_wkbs, forest_paths, loss_paths),
+            ) as executor:
+                futures = {executor.submit(process_tile, task): task for task in tasks}
+                try:
+                    for future in concurrent.futures.as_completed(futures):
+                        task = futures[future]
+                        result = future.result()
+                        completed_tiles += 1
+                        if result.get("hasCandidates") is True:
+                            boundary_id = task["boundaryId"]
+                            checkpoint_windows[boundary_id][task["tileKey"]] = result
+                            dirty_counts[boundary_id] += 1
+                            if dirty_counts[boundary_id] >= args.checkpoint_interval:
+                                province = task["province"]
+                                write_target_checkpoint(
+                                    checkpoint_paths[boundary_id],
+                                    run_binding_sha256,
+                                    province,
+                                    boundary_id,
+                                    checkpoint_windows[boundary_id],
+                                )
+                                dirty_counts[boundary_id] = 0
+                        if completed_tiles % args.checkpoint_interval == 0 or completed_tiles == len(tasks):
+                            print(
+                                f"Fractional correction progress: {completed_tiles}/{len(tasks)} pending tiles complete; "
+                                f"{sum(len(value) for value in checkpoint_windows.values())} candidate tiles checkpointed",
+                                flush=True,
+                            )
+                finally:
+                    for province, boundary_id in TARGETS:
+                        write_target_checkpoint(
+                            checkpoint_paths[boundary_id],
+                            run_binding_sha256,
+                            province,
+                            boundary_id,
+                            checkpoint_windows[boundary_id],
+                        )
+
+        for province, boundary_id in TARGETS:
+            write_target_checkpoint(
+                checkpoint_paths[boundary_id],
+                run_binding_sha256,
+                province,
+                boundary_id,
+                checkpoint_windows[boundary_id],
+            )
+        all_corrections = {
+            boundary_id: reduce_target_results(province, boundary_id, list(checkpoint_windows[boundary_id].values()))
+            for province, boundary_id in TARGETS
+        }
+    finally:
+        for scratch_path in scratch_paths:
+            if os.path.exists(scratch_path):
+                os.unlink(scratch_path)
+
+    processed_window_count = sum(len(windows) for windows in checkpoint_windows.values())
+    total_candidates = sum(value["stats"]["candidateCellCount"] for value in all_corrections.values())
+    total_fractional = sum(value["stats"]["fractionalCellCount"] for value in all_corrections.values())
+    total_zero = sum(value["stats"]["zeroIntersectionCellCount"] for value in all_corrections.values())
+    total_full = sum(value["stats"]["fullIntersectionCellCount"] for value in all_corrections.values())
+    total_changed = sum(value["stats"]["changedCellCount"] for value in all_corrections.values())
 
     corrected_rows = update_rows(rows, all_corrections, cell_hectares)
     output_parent = os.path.dirname(output_path)
@@ -842,6 +1179,17 @@ def main(args: argparse.Namespace) -> None:
     for province, boundary_id in TARGETS:
         stats = all_corrections[boundary_id]["stats"]
         per_target.append({"province": province, "boundaryId": boundary_id, **stats, **geometry_bindings[boundary_id]})
+    checkpoint_targets = [
+        {
+            "province": province,
+            "boundaryId": boundary_id,
+            "path": checkpoint_paths[boundary_id],
+            "byteLength": file_bytes(checkpoint_paths[boundary_id]),
+            "sha256": sha256(checkpoint_paths[boundary_id]),
+            "candidateWindowCount": len(checkpoint_windows[boundary_id]),
+        }
+        for province, boundary_id in TARGETS
+    ]
     new_sidecar = {
         "schemaVersion": CORRECTION_SCHEMA,
         "status": CORRECTION_STATUS,
@@ -878,8 +1226,8 @@ def main(args: argparse.Namespace) -> None:
         "output": {"path": output_path, "byteLength": len(output_bytes), "sha256": hashlib.sha256(output_bytes).hexdigest()},
         "rows": corrected_rows,
         "execution": {
-            "codeVersion": "phase2-annual-zonal-fractional-correction-v1",
-            "workerSha256": sha256(os.path.realpath(__file__)),
+            "codeVersion": "phase2-annual-zonal-fractional-correction-v2",
+            "workerSha256": correction_worker_hash,
             "startedAt": started_at.isoformat().replace("+00:00", "Z"),
             "completedAt": completed_at.isoformat().replace("+00:00", "Z"),
             "elapsedSeconds": time.monotonic() - started_monotonic,
@@ -888,13 +1236,25 @@ def main(args: argparse.Namespace) -> None:
             "featureCount": len(TARGETS),
             "candidateCellCount": total_candidates,
             "processedWindowCount": processed_window_count,
+            "checkpoint": {
+                "schemaVersion": CHECKPOINT_SCHEMA,
+                "directory": checkpoint_dir,
+                "runBindingSha256": run_binding_sha256,
+                "resumedWindowCount": resumed_window_count,
+                "targets": checkpoint_targets,
+            },
             "parameters": {
-                "rowWindow": ROW_WINDOW,
-                "columnWindow": COLUMN_WINDOW,
+                "tileSize": args.tile_size,
+                "rowWindow": args.tile_size,
+                "columnWindow": args.tile_size,
+                "workers": worker_count,
+                "checkpointInterval": args.checkpoint_interval,
                 "gdalCacheBytes": GDAL_CACHE_BYTES,
+                "workerGdalCacheBytes": WORKER_GDAL_CACHE_BYTES,
                 "nodata": NODATA,
                 "cellHectares": cell_hectares,
                 "fractionEpsilon": FRACTION_EPSILON,
+                "reductionOrder": "target-order-then-global-row-column-with-math-fsum",
             },
             "environment": {"pythonVersion": sys.version.split()[0], "gdalVersion": gdal.VersionInfo("--version"), "numpyVersion": np.__version__},
         },
@@ -904,6 +1264,7 @@ def main(args: argparse.Namespace) -> None:
             "Only cells touched by a rasterized target boundary line are exact-intersected; interior cells inherit the binary baseline.",
             "North-up projected metre grids are required; rotated/geographic grids and raster resampling are unsupported.",
             "Exact OGR polygon-cell intersections are computed in the raster CRS; no national per-cell geometry or correction table is materialized.",
+            "Tile checkpoints contain deterministic aggregate deltas only and remain local, nonproduction execution evidence.",
         ],
     }
     try:
@@ -928,6 +1289,10 @@ def parser() -> argparse.ArgumentParser:
     command.add_argument("--boundaries", required=True)
     command.add_argument("--output", required=True)
     command.add_argument("--sidecar", required=True)
+    command.add_argument("--tile-size", type=int, default=DEFAULT_TILE_SIZE, help="Square tile width/height in cells (1024-2048)")
+    command.add_argument("--workers", type=int, help="Tile worker processes (default: all logical CPU cores)")
+    command.add_argument("--checkpoint-dir", help="Durable tile-checkpoint directory (default: OUTPUT.checkpoints)")
+    command.add_argument("--checkpoint-interval", type=int, default=DEFAULT_CHECKPOINT_INTERVAL, help="Candidate results per target checkpoint flush")
     command.add_argument("--production-claim", action="store_true")
     return command
 

@@ -11,9 +11,9 @@ const fixture = path.join(root, "tests", "fixtures", "phase2-annual-zonal-fracti
 const historicalWorker = path.join(root, "scripts", "phase2_annual_zonal_aggregate.py");
 const correctionWorker = path.join(root, "scripts", "phase2_annual_zonal_fractional_correction.py");
 
-function createFixture() {
+function createFixture({ wide = false } = {}) {
   const directory = mkdtempSync(path.join(os.tmpdir(), "witness-tree-annual-fractional-correction-"));
-  execFileSync("python3", [fixture, directory], { encoding: "utf8" });
+  execFileSync("python3", [fixture, directory, ...(wide ? ["--wide"] : [])], { encoding: "utf8" });
   const binaryOutput = path.join(directory, "binary.json");
   const binarySidecar = path.join(directory, "binary.sidecar.json");
   execFileSync("python3", [historicalWorker,
@@ -32,13 +32,20 @@ function createFixture() {
   ], { encoding: "utf8" });
   const output = path.join(directory, "corrected.json");
   const sidecar = path.join(directory, "corrected.sidecar.json");
-  const runCorrection = () => execFileSync("python3", [correctionWorker,
+  const runCorrection = ({
+    selectedOutput = output,
+    selectedSidecar = sidecar,
+    checkpointDir = path.join(directory, "checkpoints"),
+    workers = 2,
+  } = {}) => execFileSync("python3", [correctionWorker,
     "--binary-output", binaryOutput,
     "--binary-sidecar", binarySidecar,
     "--manifest", path.join(directory, "manifest.json"),
     "--boundaries", path.join(directory, "boundaries.geojson"),
-    "--output", output,
-    "--sidecar", sidecar,
+    "--output", selectedOutput,
+    "--sidecar", selectedSidecar,
+    "--checkpoint-dir", checkpointDir,
+    "--workers", String(workers),
   ], { encoding: "utf8" });
   return { directory, binaryOutput, binarySidecar, output, sidecar, runCorrection };
 }
@@ -99,6 +106,40 @@ test("exact correction proves zero, fractional, full, and hole cells while weigh
   }
 });
 
+test("square tiles are deterministic across worker counts and resume from bound checkpoints", () => {
+  const run = createFixture({ wide: true });
+  try {
+    const serialOutput = path.join(run.directory, "serial.json");
+    const serialSidecar = path.join(run.directory, "serial.sidecar.json");
+    const parallelOutput = path.join(run.directory, "parallel.json");
+    const parallelSidecar = path.join(run.directory, "parallel.sidecar.json");
+    const serialCheckpoints = path.join(run.directory, "serial-checkpoints");
+    const parallelCheckpoints = path.join(run.directory, "parallel-checkpoints");
+    run.runCorrection({ selectedOutput: serialOutput, selectedSidecar: serialSidecar, checkpointDir: serialCheckpoints, workers: 1 });
+    run.runCorrection({ selectedOutput: parallelOutput, selectedSidecar: parallelSidecar, checkpointDir: parallelCheckpoints, workers: 4 });
+    assert.equal(readFileSync(serialOutput, "utf8"), readFileSync(parallelOutput, "utf8"));
+    const parallelProvenance = JSON.parse(readFileSync(parallelSidecar, "utf8"));
+    assert.equal(parallelProvenance.execution.parameters.tileSize, 1024);
+    assert.equal(parallelProvenance.execution.parameters.rowWindow, 1024);
+    assert.equal(parallelProvenance.execution.parameters.columnWindow, 1024);
+    assert.equal(parallelProvenance.execution.parameters.workers, 4);
+    assert.ok(parallelProvenance.execution.processedWindowCount >= 2);
+    verify({ outputPath: parallelOutput, sidecarPath: parallelSidecar });
+
+    const originalBytes = readFileSync(parallelOutput);
+    rmSync(parallelOutput);
+    rmSync(parallelSidecar);
+    run.runCorrection({ selectedOutput: parallelOutput, selectedSidecar: parallelSidecar, checkpointDir: parallelCheckpoints, workers: 3 });
+    assert.deepEqual(readFileSync(parallelOutput), originalBytes);
+    const resumed = JSON.parse(readFileSync(parallelSidecar, "utf8"));
+    assert.equal(resumed.execution.checkpoint.resumedWindowCount, resumed.execution.processedWindowCount);
+    assert.ok(resumed.execution.parameters.workers >= 1 && resumed.execution.parameters.workers <= 3);
+    verify({ outputPath: parallelOutput, sidecarPath: parallelSidecar });
+  } finally {
+    rmSync(run.directory, { recursive: true, force: true });
+  }
+});
+
 test("correction fails closed when exact boundary binding changes and never overwrites", () => {
   const run = createFixture();
   try {
@@ -130,6 +171,19 @@ test("checker rejects a production claim on the corrected provenance", () => {
     sidecar.admitted = true;
     writeFileSync(run.sidecar, `${JSON.stringify(sidecar, null, 2)}\n`);
     assert.throws(() => verify({ outputPath: run.output, sidecarPath: run.sidecar }), /sidecar admitted must be false/);
+  } finally {
+    rmSync(run.directory, { recursive: true, force: true });
+  }
+});
+
+test("checker rejects checkpoint bytes that no longer match the sidecar", () => {
+  const run = createFixture();
+  try {
+    run.runCorrection();
+    const sidecar = JSON.parse(readFileSync(run.sidecar, "utf8"));
+    const checkpoint = sidecar.execution.checkpoint.targets[0].path;
+    writeFileSync(checkpoint, `${readFileSync(checkpoint, "utf8")}\n`);
+    assert.throws(() => verify({ outputPath: run.output, sidecarPath: run.sidecar }), /checkpoint target 59 bytes do not match/);
   } finally {
     rmSync(run.directory, { recursive: true, force: true });
   }

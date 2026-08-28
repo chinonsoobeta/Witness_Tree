@@ -192,6 +192,8 @@
     "check:phase2-annual-nfd-comparator-runner": "node --test tests/phase2-annual-nfd-comparator-runner.test.mjs",
     "check:phase2-annual-nfd-provisional-comparison-receipt": "node scripts/check-phase2-annual-nfd-provisional-comparison-receipt.mjs && node --test tests/phase2-annual-nfd-provisional-comparison-receipt.test.mjs",
     "check:phase2-annual-nfd-provisional-comparison-receipt-bytes": "node scripts/check-phase2-annual-nfd-provisional-comparison-receipt.mjs --verify-external --data-root /Volumes/Extended_SSD/Witness_Tree-data",
+    "check:phase2-annual-nfd-fractional-comparison-receipt": "node scripts/check-phase2-annual-nfd-fractional-comparison-receipt.mjs && node --test tests/phase2-annual-nfd-fractional-comparison-receipt.test.mjs",
+    "check:phase2-annual-nfd-fractional-comparison-receipt-bytes": "node scripts/check-phase2-annual-nfd-fractional-comparison-receipt.mjs --verify-external --data-root /Volumes/Extended_SSD/Witness_Tree-data",
     "check:phase2-real-review-packet": "node scripts/check-phase2-v21-real-review-packet.mjs && node --test tests/phase2-v21-real-review-packet.test.mjs",
     "check:phase2-expert-review-workflow": "node scripts/check-phase2-v21-expert-review-workflow.mjs && node --test tests/phase2-v21-expert-review-workflow.test.mjs",
     "check:phase2-expert-review-evidence": "node scripts/check-phase2-v21-expert-review-evidence.mjs && node --test tests/phase2-v21-expert-review-evidence.test.mjs",

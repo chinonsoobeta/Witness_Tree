@@ -23,6 +23,7 @@ from osgeo import gdal, osr
 
 
 directory = sys.argv[1]
+wide = "--wide" in sys.argv[2:]
 os.makedirs(directory, exist_ok=True)
 forest_dir = os.path.join(directory, "masks")
 loss_dir = os.path.join(directory, "loss")
@@ -33,10 +34,11 @@ driver = gdal.GetDriverByName("GTiff")
 spatial_ref = osr.SpatialReference()
 spatial_ref.ImportFromEPSG(3857)
 transform = [0, 10, 0, 20, 0, -10]
+width = 1030 if wide else 8
 
 
 def write_raster(path: str, values: list[list[int]]) -> None:
-    target = driver.Create(path, 8, 2, 1, gdal.GDT_Byte)
+    target = driver.Create(path, width, 2, 1, gdal.GDT_Byte)
     target.SetGeoTransform(transform)
     target.SetProjection(spatial_ref.ExportToWkt())
     band = target.GetRasterBand(1)
@@ -47,9 +49,9 @@ def write_raster(path: str, values: list[list[int]]) -> None:
     target = None
 
 
-zero_forest = [[0] * 8, [1, 255, 1, 1, 1, 1, 1, 1]]
-first_loss = [[0] * 8, [1, 0, 1, 0, 0, 0, 0, 1]]
-zero_loss = [[0] * 8, [0] * 8]
+zero_forest = [[0] * width, [1] * width] if wide else [[0] * 8, [1, 255, 1, 1, 1, 1, 1, 1]]
+first_loss = [[0] * width, [1 if index % 3 == 0 else 0 for index in range(width)]] if wide else [[0] * 8, [1, 0, 1, 0, 0, 0, 0, 1]]
+zero_loss = [[0] * width, [0] * width]
 for year in range(1984, 2022):
     write_raster(os.path.join(forest_dir, f"forest-mask-{year}.tif"), zero_forest)
     write_raster(os.path.join(loss_dir, f"detected-forest-loss-{year}-{year + 1}.tif"), first_loss if year == 1984 else zero_loss)
@@ -63,16 +65,24 @@ def ring(left: float, right: float, bottom: float = 0, top: float = 10) -> list[
     return [[left, bottom], [right, bottom], [right, top], [left, top], [left, bottom]]
 
 
-features = [
-    {"type": "Feature", "properties": {"PRUID": 59, "province": "BC"}, "geometry": polygon(ring(0, 14))},
-    {
-        "type": "Feature",
-        "properties": {"PRUID": 48, "province": "AB"},
-        "geometry": polygon(ring(20, 40), [[[24, 2], [24, 8], [36, 8], [36, 2], [24, 2]]]),
-    },
-    {"type": "Feature", "properties": {"PRUID": 35, "province": "ON"}, "geometry": polygon(ring(40, 60))},
-    {"type": "Feature", "properties": {"PRUID": 24, "province": "QC"}, "geometry": polygon(ring(60, 74))},
-]
+if wide:
+    features = [
+        {"type": "Feature", "properties": {"PRUID": 59, "province": "BC"}, "geometry": polygon(ring(0, 10244))},
+        {"type": "Feature", "properties": {"PRUID": 48, "province": "AB"}, "geometry": polygon(ring(10245, 10254))},
+        {"type": "Feature", "properties": {"PRUID": 35, "province": "ON"}, "geometry": polygon(ring(10255, 10264))},
+        {"type": "Feature", "properties": {"PRUID": 24, "province": "QC"}, "geometry": polygon(ring(10265, 10284))},
+    ]
+else:
+    features = [
+        {"type": "Feature", "properties": {"PRUID": 59, "province": "BC"}, "geometry": polygon(ring(0, 14))},
+        {
+            "type": "Feature",
+            "properties": {"PRUID": 48, "province": "AB"},
+            "geometry": polygon(ring(20, 40), [[[24, 2], [24, 8], [36, 8], [36, 2], [24, 2]]]),
+        },
+        {"type": "Feature", "properties": {"PRUID": 35, "province": "ON"}, "geometry": polygon(ring(40, 60))},
+        {"type": "Feature", "properties": {"PRUID": 24, "province": "QC"}, "geometry": polygon(ring(60, 74))},
+    ]
 boundaries = {
     "type": "FeatureCollection",
     "name": "phase2-annual-zonal-fractional-correction-fixture",

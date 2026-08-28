@@ -30,6 +30,7 @@ export const PAIR_COUNT = LAST_YEAR - FIRST_YEAR;
 export const CORRECTION_SCHEMA = "phase2-annual-province-zonal-fractional-correction-v1";
 export const CORRECTION_STATUS = "local-nonproduction-fractional-correction";
 export const CORRECTION_ALGORITHM = "center-membership-subtraction-exact-polygon-cell-intersection-addition";
+export const CHECKPOINT_SCHEMA = "phase2-annual-zonal-fractional-tile-checkpoint-v1";
 
 const SHA256 = /^[a-f0-9]{64}$/;
 const fail = (message) => { throw new Error(message); };
@@ -212,16 +213,42 @@ function validateCorrection(value, geometryBindings) {
   if (canonicalJson(value.perTarget) !== canonicalJson(geometryBindings.targets)) fail("correction per-target counts do not bind geometry target bindings");
 }
 
+function validateCheckpoint(value) {
+  exactKeys(value, ["directory", "resumedWindowCount", "runBindingSha256", "schemaVersion", "targets"], "execution checkpoint");
+  if (value.schemaVersion !== CHECKPOINT_SCHEMA) fail("execution checkpoint schema drifted");
+  requireText(value.directory, "execution checkpoint directory");
+  requireHash(value.runBindingSha256, "execution checkpoint run binding SHA-256");
+  requireInteger(value.resumedWindowCount, "execution checkpoint resumed window count");
+  const targets = requireArray(value.targets, "execution checkpoint targets");
+  if (targets.length !== TARGETS.length) fail("execution checkpoint must bind four target files");
+  targets.forEach((target, index) => {
+    exactKeys(target, ["boundaryId", "byteLength", "candidateWindowCount", "path", "province", "sha256"], `execution checkpoint target ${index}`);
+    if (target.province !== TARGETS[index].province || target.boundaryId !== TARGETS[index].boundaryId) fail("execution checkpoint target order or identity drifted");
+    requireText(target.path, `execution checkpoint target ${target.boundaryId} path`);
+    requireInteger(target.byteLength, `execution checkpoint target ${target.boundaryId} byte length`, 1);
+    requireInteger(target.candidateWindowCount, `execution checkpoint target ${target.boundaryId} candidate window count`);
+    requireHash(target.sha256, `execution checkpoint target ${target.boundaryId} SHA-256`);
+    if (path.dirname(bindingPath(target.path)) !== bindingPath(value.directory)) fail(`execution checkpoint target ${target.boundaryId} is outside the bound directory`);
+  });
+  return targets;
+}
+
 function validateExecution(value) {
-  exactKeys(value, ["candidateCellCount", "codeVersion", "completedAt", "elapsedSeconds", "environment", "featureCount", "maximumScratchAllocatedBytes", "parameters", "peakRssBytes", "processedWindowCount", "startedAt", "workerSha256"], "execution");
+  exactKeys(value, ["candidateCellCount", "checkpoint", "codeVersion", "completedAt", "elapsedSeconds", "environment", "featureCount", "maximumScratchAllocatedBytes", "parameters", "peakRssBytes", "processedWindowCount", "startedAt", "workerSha256"], "execution");
   requireText(value.codeVersion, "execution code version");
   requireHash(value.workerSha256, "execution worker SHA-256");
   for (const key of ["candidateCellCount", "featureCount", "maximumScratchAllocatedBytes", "peakRssBytes", "processedWindowCount"]) requireInteger(value[key], `execution ${key}`);
   if (value.featureCount !== TARGETS.length || value.candidateCellCount < 0) fail("execution counts drifted");
   if (typeof value.elapsedSeconds !== "number" || !Number.isFinite(value.elapsedSeconds) || value.elapsedSeconds <= 0) fail("execution elapsedSeconds must be positive");
+  validateCheckpoint(value.checkpoint);
   const parameters = requireObject(value.parameters, "execution parameters");
-  exactKeys(parameters, ["cellHectares", "columnWindow", "fractionEpsilon", "gdalCacheBytes", "nodata", "rowWindow"], "execution parameters");
-  if (parameters.rowWindow !== 2048 || parameters.columnWindow !== 32768 || parameters.gdalCacheBytes !== 256 * 1024 * 1024 || parameters.nodata !== 255 || parameters.fractionEpsilon !== 1e-9) fail("execution parameters drifted");
+  exactKeys(parameters, ["cellHectares", "checkpointInterval", "columnWindow", "fractionEpsilon", "gdalCacheBytes", "nodata", "reductionOrder", "rowWindow", "tileSize", "workerGdalCacheBytes", "workers"], "execution parameters");
+  if (!Number.isSafeInteger(parameters.tileSize) || parameters.tileSize < 1024 || parameters.tileSize > 2048) fail("execution tile size must be between 1024 and 2048 cells");
+  if (parameters.rowWindow !== parameters.tileSize || parameters.columnWindow !== parameters.tileSize) fail("execution windows must be square and equal the tile size");
+  requireInteger(parameters.workers, "execution workers", 1);
+  requireInteger(parameters.checkpointInterval, "execution checkpoint interval", 1);
+  if (parameters.gdalCacheBytes !== 256 * 1024 * 1024 || parameters.workerGdalCacheBytes !== 64 * 1024 * 1024 || parameters.nodata !== 255 || parameters.fractionEpsilon !== 1e-9) fail("execution parameters drifted");
+  if (parameters.reductionOrder !== "target-order-then-global-row-column-with-math-fsum") fail("execution reduction order drifted");
   requireFinite(parameters.cellHectares, "execution cellHectares");
   const environment = requireObject(value.environment, "execution environment");
   exactKeys(environment, ["gdalVersion", "numpyVersion", "pythonVersion"], "execution environment");
@@ -276,6 +303,12 @@ export function verify({ outputPath, sidecarPath, workerPath = WORKER_PATH } = {
   try { sidecar = JSON.parse(readFileSync(resolvedSidecar, "utf8")); } catch (error) { fail(`sidecar is not valid JSON: ${error instanceof Error ? error.message : String(error)}`); }
   const result = validateFractionalCorrectionDocuments(outputRows, sidecar, { outputSha256: sha256Bytes(outputBytes), outputByteLength: outputBytes.length, outputPath: resolvedOutput, workerPath });
   if (sidecar.execution.workerSha256 !== sha256File(workerPath)) fail("fractional correction sidecar worker hash does not match worker bytes");
+  for (const target of sidecar.execution.checkpoint.targets) {
+    const checkpointPath = path.resolve(target.path);
+    assertRegular(checkpointPath, `checkpoint target ${target.boundaryId}`);
+    const checkpointBytes = readFileSync(checkpointPath);
+    if (checkpointBytes.length !== target.byteLength || sha256Bytes(checkpointBytes) !== target.sha256) fail(`checkpoint target ${target.boundaryId} bytes do not match the sidecar binding`);
+  }
   return { ...result, output: { ...result.output, path: resolvedOutput }, sidecarPath: resolvedSidecar };
 }
 
