@@ -21,9 +21,9 @@ const COPY = {
   en: {
     eyebrow: "Phase 2 technical preview",
     title: "Official-source harvest comparison",
-    lead: "A separate descriptive comparison between Witness Tree observed forest loss and official published harvest statistics.",
+    lead: "A separate descriptive comparison between observed forest loss and official published harvest statistics.",
     scopeTitle: "Read these columns as different measurements",
-    scope: "Witness Tree measures observed forest loss. Statistics Canada reports forest area harvested across provincial, private and federal land. These quantities are not like-for-like and the difference is not an accuracy score or a causal claim.",
+    scope: "This project measures observed forest loss. Statistics Canada reports forest area harvested across provincial, private and federal land. These quantities are not like-for-like and the difference is not an accuracy score or a causal claim.",
     rounding: "The 104 available reference values were published as whole square kilometres. Their hectare values are nominal conversions with a ±50 ha rounding range, not exact NFD totals.",
     withheld: "Fourteen later reference values are not published here because their repository states personal use only and all rights reserved. They remain unknown, never zero.",
     gate: "This harvest-only track does not complete the formal Phase 2 independent-comparison gate.",
@@ -49,9 +49,9 @@ const COPY = {
   fr: {
     eyebrow: "Aperçu technique de la phase 2",
     title: "Comparaison avec une source officielle sur la récolte",
-    lead: "Une comparaison descriptive distincte entre la perte de forêt observée par Witness Tree et les statistiques officielles publiées sur la récolte.",
+    lead: "Une comparaison descriptive distincte entre la perte de forêt observée et les statistiques officielles publiées sur la récolte.",
     scopeTitle: "Lire ces colonnes comme des mesures différentes",
-    scope: "Witness Tree mesure la perte de forêt observée. Statistique Canada présente la superficie forestière récoltée sur les terres provinciales, privées et fédérales. Ces quantités ne sont pas directement comparables et l’écart n’est ni une mesure d’exactitude ni une affirmation causale.",
+    scope: "Ce projet mesure la perte de forêt observée. Statistique Canada présente la superficie forestière récoltée sur les terres provinciales, privées et fédérales. Ces quantités ne sont pas directement comparables et l’écart n’est ni une mesure d’exactitude ni une affirmation causale.",
     rounding: "Les 104 valeurs de référence disponibles ont été publiées en kilomètres carrés entiers. Les valeurs en hectares sont des conversions nominales assorties d’une plage d’arrondissement de ±50 ha, et non des totaux exacts de la BDNF.",
     withheld: "Quatorze valeurs de référence plus récentes ne sont pas publiées ici, car leur dépôt indique un usage personnel seulement et tous droits réservés. Elles demeurent inconnues, jamais zéro.",
     gate: "Ce volet sur la récolte ne satisfait pas à lui seul le critère formel de comparaison indépendante de la phase 2.",
