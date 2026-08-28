@@ -61,6 +61,7 @@ const text = {
 type MapSource = "pmtiles" | "geojson";
 type MapState = "loading" | "ready" | "unavailable" | "error";
 type Position = [number, number];
+const PMTILES_LOAD_TIMEOUT_MS = 10_000;
 type ProvinceFeature = {
   id: string;
   properties: {
@@ -221,7 +222,7 @@ export function ExploreMapClient({
         protocolRegistered = false;
       }
       void loadGeoJsonFallback();
-    }, 1000);
+    }, PMTILES_LOAD_TIMEOUT_MS);
 
     const initializePmtiles = async () => {
       try {

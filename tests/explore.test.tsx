@@ -129,6 +129,8 @@ test("Explore uses the exact PMTiles release with a GeoJSON/SVG fallback on map 
   assert.match(map, /import\("pmtiles"\)/);
   assert.match(map, /pmtiles:\/\/\$\{EXPLORE_PRODUCTION_LAYER\.url\}/);
   assert.match(map, /addProtocol\("pmtiles", protocol\.tile\)/);
+  assert.match(map, /const PMTILES_LOAD_TIMEOUT_MS = 10_000/);
+  assert.match(map, /}, PMTILES_LOAD_TIMEOUT_MS\);/);
   assert.ok(
     map.indexOf("pmtilesTimeout = setTimeout") <
       map.indexOf("const initializePmtiles"),
