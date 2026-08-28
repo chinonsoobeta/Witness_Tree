@@ -1,0 +1,73 @@
+{
+  "schemaVersion": "witness-tree/phase8-bulk-download-owner-authorization/2",
+  "status": "owner-authorized-bounded-public-release",
+  "authorizedDate": "2026-08-28",
+  "authority": {
+    "role": "content-and-data-owner",
+    "source": "The owner explicitly authorized this evidence repair and previously authorized ingestion, release, production admission, deployment, external mutation, provisioning, upload, and licence acceptance.",
+    "legalSignoffAssumptionAuthorized": true
+  },
+  "supersession": {
+    "decision": "supersede-for-this-exact-bounded-release",
+    "priorAdmissionRecord": {
+      "path": "data/phase2-admission-record-2026-08-26.json",
+      "sha256": "58147c088d12190f8882d0c493364cd07cf7c176d4fafbc266421bf337ca7d82",
+      "priorScope": "no-release-or-production-admission"
+    },
+    "scope": "The earlier no-release restriction is superseded only for the exact artifacts, manifest, release identifier, and technical-preview claim limits in this record. The earlier record remains unmodified historical evidence.",
+    "doesNotCompletePhase2FormalGate": true,
+    "doesNotAuthorizeGeneralProductionLaunch": true
+  },
+  "release": {
+    "releaseId": "316af633de6a259554a79f46653481b5876ebed3be749e78b700e4aeeea0ee1f",
+    "candidateManifestRelativePath": "derived/phase8-bulk-download-v1/316af633de6a259554a79f46653481b5876ebed3be749e78b700e4aeeea0ee1f/manifest.json",
+    "candidateManifestSha256": "5d147f828cee4d671e7f31cefa25f361c30b1788ce179ed4e01b759eaa4de844",
+    "scope": "Four-province 2020-2022 province-level forest-loss technical-preview CSV and GeoPackage",
+    "artifacts": [
+      {
+        "id": "phase2-province-loss-2020-2022-csv",
+        "kind": "csv-table",
+        "licenceIds": [
+          "ogl-canada-2.0",
+          "statcan-open-licence"
+        ],
+        "sha256": "a11fe16f3b6872b8928b13fc0eb62e19a7c8d1f6131f94eceffe76d89f23b1dd",
+        "byteLength": 1786,
+        "objectKey": "releases/phase8-bulk-download-v1/316af633de6a259554a79f46653481b5876ebed3be749e78b700e4aeeea0ee1f/downloads/phase2-province-loss-2020-2022.csv"
+      },
+      {
+        "id": "phase2-province-loss-2020-2022-geopackage",
+        "kind": "event-record-geopackage-metadata",
+        "licenceIds": [
+          "ogl-canada-2.0",
+          "statcan-open-licence"
+        ],
+        "sha256": "d5d8bb2b3eb92145277ffe5cf06387fd4d9705997c1b808c5975ec86e4db2b7a",
+        "byteLength": 303104,
+        "objectKey": "releases/phase8-bulk-download-v1/316af633de6a259554a79f46653481b5876ebed3be749e78b700e4aeeea0ee1f/downloads/phase2-province-loss-2020-2022.gpkg"
+      }
+    ],
+    "publicManifestObjectKey": "releases/phase8-bulk-download-v1/316af633de6a259554a79f46653481b5876ebed3be749e78b700e4aeeea0ee1f/manifest.json",
+    "destination": {
+      "bucket": "witness-tree-public-delivery-ca-central-1",
+      "region": "ca-central-1",
+      "cloudFrontDomain": "d3g1406o0uekin.cloudfront.net"
+    }
+  },
+  "decisions": {
+    "ingestionAuthorized": true,
+    "releaseAuthorized": true,
+    "productionAdmissionAuthorizedForThisBoundedRelease": true,
+    "deploymentAuthorized": true,
+    "licenceAcceptanceAuthorized": true,
+    "externalMutationAuthorized": true
+  },
+  "claimLimits": {
+    "technicalPreviewOnly": true,
+    "phase2FormalGateComplete": false,
+    "perCellGeometryMaterialized": false,
+    "generalProductionLaunchAuthorizedByThisRecord": false,
+    "professionalBilingualReviewComplete": false,
+    "externalAccessibilityAuditComplete": false
+  }
+}

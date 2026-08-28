@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "witness-tree/phase8-bulk-download-owner-authorization/1",
+  "status": "owner-authorized-bounded-public-release",
+  "authorizedDate": "2026-08-28",
+  "authority": {
+    "role": "content-and-data-owner",
+    "source": "The active owner instruction explicitly authorizes ingestion, release, production admission, and deployment, and earlier owner instructions authorize external mutation, registration, provisioning, upload, and licence acceptance.",
+    "legalSignoffAssumptionAuthorized": true
+  },
+  "release": {
+    "releaseId": "3c27065ba863ccf8a4391ce955951a358bafb3b05d522649e1c531405b7d45c4",
+    "candidateManifestRelativePath": "derived/phase8-bulk-download-v1/3c27065ba863ccf8a4391ce955951a358bafb3b05d522649e1c531405b7d45c4/manifest.json",
+    "candidateManifestSha256": "8e735892914ad332f267d4f495b0f6e81ad8f16159fe4321d131171fbbe96c8f",
+    "scope": "Four-province 2020-2022 province-level forest-loss technical-preview CSV and GeoPackage",
+    "artifacts": [
+      {
+        "kind": "csv",
+        "sha256": "f1578073a3fcf05bdc3320c7da4e7cc4626074ed88b03a01024daff521b23b46",
+        "byteLength": 1786,
+        "objectKey": "releases/phase8-bulk-download-v1/3c27065ba863ccf8a4391ce955951a358bafb3b05d522649e1c531405b7d45c4/downloads/phase2-province-loss-2020-2022.csv"
+      },
+      {
+        "kind": "geopackage",
+        "sha256": "d7b869d313f4344eee60950b3ade8658170877b3251c47b07ab7979cf7e368ed",
+        "byteLength": 303104,
+        "objectKey": "releases/phase8-bulk-download-v1/3c27065ba863ccf8a4391ce955951a358bafb3b05d522649e1c531405b7d45c4/downloads/phase2-province-loss-2020-2022.gpkg"
+      }
+    ],
+    "publicManifestObjectKey": "releases/phase8-bulk-download-v1/3c27065ba863ccf8a4391ce955951a358bafb3b05d522649e1c531405b7d45c4/manifest.json",
+    "destination": {
+      "bucket": "witness-tree-public-delivery-ca-central-1",
+      "region": "ca-central-1",
+      "cloudFrontDomain": "d3g1406o0uekin.cloudfront.net"
+    }
+  },
+  "decisions": {
+    "ingestionAuthorized": true,
+    "releaseAuthorized": true,
+    "productionAdmissionAuthorizedForThisBoundedRelease": true,
+    "deploymentAuthorized": true,
+    "licenceAcceptanceAuthorized": true,
+    "externalMutationAuthorized": true
+  },
+  "claimLimits": {
+    "technicalPreviewOnly": true,
+    "phase2FormalGateComplete": false,
+    "perCellGeometryMaterialized": false,
+    "generalProductionLaunchAuthorizedByThisRecord": false,
+    "professionalBilingualReviewComplete": false,
+    "externalAccessibilityAuditComplete": false
+  }
+}

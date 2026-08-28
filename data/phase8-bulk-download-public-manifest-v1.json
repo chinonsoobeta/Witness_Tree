@@ -1,0 +1,139 @@
+{
+  "schemaVersion": "witness-tree/phase8-bulk-download-public-manifest/1",
+  "status": "owner-authorized-public-technical-preview",
+  "releaseId": "3c27065ba863ccf8a4391ce955951a358bafb3b05d522649e1c531405b7d45c4",
+  "releasedDate": "2026-08-28",
+  "scope": {
+    "provinceIds": [
+      "24",
+      "35",
+      "48",
+      "59"
+    ],
+    "period": "2020-2022",
+    "rowCount": 4,
+    "boundaryEdition": "statcan-2021-provinces-territories-cbf"
+  },
+  "methodVersion": "phase8-province-bulk-download-v1",
+  "inputs": {
+    "boundarySha256": "d28bbb15d7b49e3d1828755a5f1b4ebcee699ad70efe8b0f1b902d29ebffd20b",
+    "aggregateRelativePath": "derived/phase2-v21-zonal-province-2021-cbf-v5/province-2020-2022.json",
+    "aggregateSha256": "ff1589029f30800021b52d9aa736b9aa9e122df70e3070d19a68f7aa45d9a16d",
+    "geojsonRelativePath": "derived/phase8-province-map-geojson-v1/101561ed48f511a3e65676fa084ee517c4fa722e14f4a3c844c698b247238505/phase2-province-loss-2020-2022.geojson",
+    "geojsonSha256": "101561ed48f511a3e65676fa084ee517c4fa722e14f4a3c844c698b247238505",
+    "admissionRecord": {
+      "path": "data/phase2-admission-record-2026-08-26.json",
+      "sha256": "58147c088d12190f8882d0c493364cd07cf7c176d4fafbc266421bf337ca7d82"
+    },
+    "zonalEvidence": {
+      "path": "data/phase2-v21-province-zonal-pilot-evidence.json",
+      "sha256": "4fb0efc6ec984025e91f0124e0347a2f0a08673ed1f606ba318c9ca732f5ce62",
+      "sidecarRelativePath": "derived/phase2-v21-zonal-province-2021-cbf-v5/province-2020-2022.sidecar.json",
+      "sidecarSha256": "20894a732a762fdbfd618e35f2b8934028727e6207ac9846732d9899e501c50c"
+    },
+    "displayGeometryManifest": {
+      "relativePath": "derived/phase8-province-map-geojson-v1/101561ed48f511a3e65676fa084ee517c4fa722e14f4a3c844c698b247238505/manifest.json",
+      "sha256": "47d4c6aad0400810e6233d83b53b560df9056e8168ed2b1e4c566d425e5969e4",
+      "parentSha256": "aec8513a57c2360bf5a4c6faecc750155ba16f16f588b28773414cebde1cbd11"
+    }
+  },
+  "geometryTransform": {
+    "source": "display_geometry_sha256",
+    "operation": "OGR -makevalid with PROMOTE_TO_MULTI",
+    "displayOnly": true,
+    "parentSimplifyToleranceMetres": 5000,
+    "minimumExteriorRingAreaSquareDegrees": 0.001,
+    "smallIslandsOmitted": true,
+    "gdalVersion": "GDAL 3.13.2 \"Iowa City\", released 2026/07/20",
+    "fixedGpkgTimestamp": "2000-01-01T00:00:00.000Z",
+    "outputFeatureCount": 4,
+    "allOutputGeometriesValid": true,
+    "allOutputGeometriesNonEmpty": true,
+    "outputGeometryType": "MULTIPOLYGON"
+  },
+  "artifacts": {
+    "csv": {
+      "fileName": "phase2-province-loss-2020-2022.csv",
+      "byteLength": 1786,
+      "sha256": "f1578073a3fcf05bdc3320c7da4e7cc4626074ed88b03a01024daff521b23b46",
+      "contentType": "text/csv; charset=utf-8",
+      "publicUrl": "https://d3g1406o0uekin.cloudfront.net/releases/phase8-bulk-download-v1/3c27065ba863ccf8a4391ce955951a358bafb3b05d522649e1c531405b7d45c4/downloads/phase2-province-loss-2020-2022.csv"
+    },
+    "geopackage": {
+      "fileName": "phase2-province-loss-2020-2022.gpkg",
+      "byteLength": 303104,
+      "sha256": "d7b869d313f4344eee60950b3ade8658170877b3251c47b07ab7979cf7e368ed",
+      "contentType": "application/geopackage+sqlite3",
+      "layer": "phase2_province_loss_2020_2022",
+      "fixedTimestamp": "2000-01-01T00:00:00.000Z",
+      "publicUrl": "https://d3g1406o0uekin.cloudfront.net/releases/phase8-bulk-download-v1/3c27065ba863ccf8a4391ce955951a358bafb3b05d522649e1c531405b7d45c4/downloads/phase2-province-loss-2020-2022.gpkg"
+    }
+  },
+  "licences": [
+    {
+      "id": "statcan-open-licence",
+      "name": "Statistics Canada Open Licence",
+      "version": "unversioned; page last modified 2025-07-10",
+      "url": "https://www.statcan.gc.ca/en/reference/licence",
+      "publisher": "Statistics Canada",
+      "appliesTo": "boundary geometry",
+      "redistributionStatus": "allowed with source acknowledgement and no implied endorsement",
+      "requiredAttribution": "Adapted from Statistics Canada, 2021 Census Province/Territory Cartographic Boundary File, reference date January 1, 2021. This does not constitute an endorsement by Statistics Canada of this product."
+    },
+    {
+      "id": "ogl-canada-2.0",
+      "name": "Open Government Licence - Canada",
+      "version": "2.0",
+      "url": "https://open.canada.ca/en/open-government-licence-canada",
+      "publisher": "Natural Resources Canada",
+      "appliesTo": "NRCan NTEMS-derived forest-change values",
+      "redistributionStatus": "allowed subject to licence requirements and exclusions",
+      "requiredAttribution": {
+        "en": "Contains information licensed under the Open Government Licence - Canada. Adapted from Natural Resources Canada, Annual High-resolution forest land cover for Canada (1984-2022). This does not constitute an endorsement by Natural Resources Canada.",
+        "fr": "Contient des informations octroyées sous licence en vertu de la Licence du gouvernement ouvert - Canada. Adapté de Ressources naturelles Canada, Couverture terrestre annuelle à haute résolution des forêts du Canada (1984-2022). Cela ne constitue pas une approbation de Ressources naturelles Canada."
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "statcan-2021-provinces-territories-cbf",
+      "publisher": "Statistics Canada",
+      "datasetTitle": "2021 Census Province/Territory Cartographic Boundary File",
+      "edition": "2021 Census, Cartographic Boundary File, ArcGIS Shapefile, English",
+      "referenceDate": "2021-01-01",
+      "retrievedAt": "2026-08-12T16:26:00Z",
+      "catalogueUrl": "https://www150.statcan.gc.ca/n1/en/catalogue/92-160-X",
+      "sourceUrl": "https://www12.statcan.gc.ca/census-recensement/2021/geo/sip-pis/boundary-limites/files-fichiers/lpr_000b21a_e.zip",
+      "sourceSha256": "d28bbb15d7b49e3d1828755a5f1b4ebcee699ad70efe8b0f1b902d29ebffd20b"
+    },
+    {
+      "id": "ntems-annual-land-cover",
+      "publisher": "Natural Resources Canada",
+      "datasetTitle": "Annual High-resolution forest land cover for Canada (1984-2022)",
+      "edition": "annual 2020-2022 derived interval",
+      "referenceDate": "2022-01-01",
+      "retrievedAt": "2026-08-14T00:00:00Z",
+      "catalogueUrl": "https://open.canada.ca/data/en/dataset/2785c103-9c2d-429b-9f3d-89f5cd9ea94d",
+      "sourceUrl": "https://opendata.nfis.org/downloads/forest_change/CA_forest_VLCE2_{YEAR}.zip",
+      "aggregateSha256": "ff1589029f30800021b52d9aa736b9aa9e122df70e3070d19a68f7aa45d9a16d"
+    }
+  ],
+  "authorization": {
+    "path": "data/phase8-bulk-download-owner-authorization-2026-08-28.json",
+    "sha256": "2513f47163c046650458c5b27a56ab41e9cd91d0642057d6c231505103c73dcd",
+    "status": "owner-authorized-bounded-public-release"
+  },
+  "citation": {
+    "en": "Witness Tree. Province forest-loss technical preview, 2020-2022. Release 3c27065ba863ccf8a4391ce955951a358bafb3b05d522649e1c531405b7d45c4. Statistics Canada 2021 province and territory cartographic boundaries; method phase8-province-bulk-download-v1.",
+    "fr": "Witness Tree. Aperçu technique de la perte de forêt par province, 2020-2022. Version 3c27065ba863ccf8a4391ce955951a358bafb3b05d522649e1c531405b7d45c4. Limites cartographiques des provinces et territoires de Statistique Canada de 2021; méthode phase8-province-bulk-download-v1."
+  },
+  "claims": {
+    "deterministicRegenerationVerified": true,
+    "technicalPreviewEligible": true,
+    "phase2ProductionGateComplete": false,
+    "perCellGeometryMaterialized": false,
+    "displayOnlyGeometry": true
+  },
+  "claimLimit": "This four-province bulk release is a technical preview of province-level 2020-2022 aggregates. It is not per-cell forest-loss geometry and does not complete the formal Phase 2 production gate.",
+  "claimLimitFr": "Cette version en bloc pour quatre provinces est un aperçu technique des agrégats provinciaux de 2020 à 2022. Elle ne représente pas une géométrie de perte de forêt par cellule et ne satisfait pas au critère formel de la phase 2."
+}

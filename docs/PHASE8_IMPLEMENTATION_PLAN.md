@@ -341,14 +341,15 @@ result to record, not a threshold to relax.
 **What the gate says.** "Only immutable illustrative-download contracts exist;
 no real CSV or GeoPackage binary has been retrieved or published."
 
-**Current state.** [`docs/DOWNLOADS.md`](DOWNLOADS.md) says the same thing in
-its own voice. [`lib/downloads/generate.ts`](../lib/downloads/generate.ts)
-enforces it in code: `exampleUrl` accepts a URL only when the protocol is
-`https:` and the hostname is exactly `example.local`, and `validateArtifact`
-throws otherwise. `tests/downloads.test.ts` asserts that
-`https://outside.example/file` is rejected as unsafe. The artifact kinds are
-`csv-table` and `event-record-geopackage-metadata`, with content types pinned
-to `text/csv` and `application/geopackage+sqlite3`.
+**Current state as of 2026-08-28.** A first immutable four-province 2020-2022
+CSV and GeoPackage pair is public behind the approved CloudFront delivery host,
+with exact owner-local public readback. That first receipt does not satisfy this
+section's requirement for retrieval independently of the producing machine.
+A corrected v2 candidate adds the required bilingual plain-language
+modification notice and an explicit bounded owner decision superseding the
+earlier no-release scope only for its exact artifacts. The gate remains open
+until the v2 objects are public and a GitHub-hosted runner independently
+retrieves and hashes them into a committed, validated receipt.
 
 By contrast [`lib/releases/manifest.ts`](../lib/releases/manifest.ts) has no
 URL field at all, and `scripts/verify-release.mjs` already hashes a real local
@@ -715,7 +716,7 @@ tiles.
 | --- | --- |
 | `load-testing` | Not achievable as written. The site tier is not the project's to test or to fix. Measure the AWS delivery tier, scope the claim to it, and leave the gate `fail`. |
 | `raw-archive-reproducibility` | **Closed on 2026-08-27**, by the cheaper route, hosting-independent as predicted. `docs/RAW_ARCHIVE_REPRODUCIBILITY_SCOPE.md` establishes a cheaper route than the one in section 2: a 10.3 MB federal electoral reproduction with no new promotion and no new retention commitment. Prefer it. The route in section 2 needs the StatCan boundary file promoted into the archive, then a version-pinned restore and re-run of the admitted Phase 2 chain. |
-| `bulk-downloads` | Achievable with admitted artifacts in AWS `ca-central-1` behind a project-controlled delivery tier. No admitted public CSV and GeoPackage pair is currently published and independently verified. |
+| `bulk-downloads` | Achievable with admitted artifacts in AWS `ca-central-1` behind a project-controlled delivery tier. The first pair is public with owner-local readback; the corrected v2 pair and separate-machine receipt remain pending. |
 | `observability` | Achievable for the archive and delivery tiers in AWS. Not achievable for the site tier. Any flip must say so in its own reason text. |
 | `backups` | Achievable in full, today, with no external party. A Canadian recovery copy plus one recovery exercise closes it. |
 | `cdn-tile-validation` | Achievable with tiles and CDN in AWS, conditional on the host permitting a cross-origin range-request fetch. Unknown until probed. |

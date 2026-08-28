@@ -63,7 +63,7 @@
     },
     {
      "path": "docs/PLAN_GAP_MATRIX.md",
-          "sha256": "174498d63a00e79fbdce69302a5b84ac31be9dbc4584a8be5d2b8befde80b530"
+          "sha256": "8faa5e9cfac4e66fdc7b723980bba9207462c539111231952dc7b5aed54a02eb"
     }
    ]
   },
@@ -128,7 +128,7 @@
     },
     {
      "path": "docs/EXTERNAL_GATES.md",
-     "sha256": "6240c138cbc412ad530d7912215a75017a485afc1d88cc4911a356cc52395542"
+     "sha256": "e3f0bcdd6832d0faad8edaf3ce89cd6e9d6f43a406bc02154ed8f7a4680849b5"
     }
    ]
   }

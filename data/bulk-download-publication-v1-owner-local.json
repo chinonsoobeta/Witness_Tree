@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "witness-tree/phase8-bulk-download-publication/1",
+  "status": "published-and-independently-retrieved",
+  "retrievedAt": "2026-08-28T14:44:22Z",
+  "releaseId": "3c27065ba863ccf8a4391ce955951a358bafb3b05d522649e1c531405b7d45c4",
+  "region": "ca-central-1",
+  "bucketName": "witness-tree-public-delivery-ca-central-1",
+  "distributionDomainName": "d3g1406o0uekin.cloudfront.net",
+  "artifacts": {
+    "csv": {
+      "publicUrl": "https://d3g1406o0uekin.cloudfront.net/releases/phase8-bulk-download-v1/3c27065ba863ccf8a4391ce955951a358bafb3b05d522649e1c531405b7d45c4/downloads/phase2-province-loss-2020-2022.csv",
+      "sha256": "f1578073a3fcf05bdc3320c7da4e7cc4626074ed88b03a01024daff521b23b46",
+      "byteLength": 1786,
+      "contentType": "text/csv; charset=utf-8",
+      "publicStatus": 200,
+      "retrievedByteLength": 1786,
+      "fullPublicReadbackSha256": "f1578073a3fcf05bdc3320c7da4e7cc4626074ed88b03a01024daff521b23b46",
+      "accessControlAllowOrigin": ""
+    },
+    "geopackage": {
+      "publicUrl": "https://d3g1406o0uekin.cloudfront.net/releases/phase8-bulk-download-v1/3c27065ba863ccf8a4391ce955951a358bafb3b05d522649e1c531405b7d45c4/downloads/phase2-province-loss-2020-2022.gpkg",
+      "sha256": "d7b869d313f4344eee60950b3ade8658170877b3251c47b07ab7979cf7e368ed",
+      "byteLength": 303104,
+      "contentType": "application/geopackage+sqlite3",
+      "publicStatus": 200,
+      "retrievedByteLength": 303104,
+      "fullPublicReadbackSha256": "d7b869d313f4344eee60950b3ade8658170877b3251c47b07ab7979cf7e368ed",
+      "accessControlAllowOrigin": ""
+    },
+    "manifest": {
+      "publicUrl": "https://d3g1406o0uekin.cloudfront.net/releases/phase8-bulk-download-v1/3c27065ba863ccf8a4391ce955951a358bafb3b05d522649e1c531405b7d45c4/manifest.json",
+      "sha256": "2ce9d49c525258a5d6bcbf571b76ecede572147b3264dbcb6760d1a1f7eb4ad7",
+      "byteLength": 8018,
+      "contentType": "application/json",
+      "publicStatus": 200,
+      "retrievedByteLength": 8018,
+      "fullPublicReadbackSha256": "2ce9d49c525258a5d6bcbf571b76ecede572147b3264dbcb6760d1a1f7eb4ad7",
+      "accessControlAllowOrigin": ""
+    }
+  },
+  "controls": {
+    "mfaGatedExactRole": true,
+    "exactObjectCount": 3,
+    "conditionalCreateOnly": true,
+    "deleteDenied": true,
+    "directPublicS3Read": false,
+    "cloudFrontReadback": true
+  },
+  "claims": {
+    "technicalPreviewEligible": true,
+    "phase2ProductionGateComplete": false,
+    "perCellGeometryMaterialized": false
+  },
+  "redaction": "No credentials, session material, MFA values, object version IDs, request IDs, ETags, or object bodies are recorded."
+}
