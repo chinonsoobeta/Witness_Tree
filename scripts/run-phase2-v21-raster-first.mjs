@@ -16,7 +16,7 @@ const sha = async (file) => { const hash = createHash("sha256"); for await (cons
 const json = async (file) => JSON.parse(await readFile(file, "utf8"));
 const codeProvenance = async () => ({ runnerSha256: await sha(new URL(import.meta.url)), workerSha256: await sha(PYTHON) });
 const mustExist = async (file) => { await access(file); return file; };
-const METHOD_VERSION = "phase2-v21-whole-interval-raster-first/1";
+const METHOD_VERSION = "phase2-v21-whole-interval-raster-first/2";
 const SIDECAR_SCHEMA = "witness-tree/phase2-v21-raster-sidecar/1";
 
 function fail(message) {

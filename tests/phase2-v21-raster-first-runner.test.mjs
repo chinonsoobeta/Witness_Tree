@@ -31,7 +31,7 @@ function resumeFixture() {
     year: 2020,
     inputs: [{ kind: "forest-mask", year: 2020, path: "/input.tif", byteLength: 7, sha256: "a".repeat(64) }],
     ...grid,
-    methodVersion: "phase2-v21-whole-interval-raster-first/1",
+    methodVersion: "phase2-v21-whole-interval-raster-first/2",
     codeProvenance: { runnerSha256: "b".repeat(64), workerSha256: "c".repeat(64) },
     productionEligible: false,
     released: false,
