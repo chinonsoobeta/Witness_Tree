@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
+import type { Map as MapLibreMap, StyleSpecification } from "maplibre-gl";
 import type { Locale } from "@/lib/domain";
 import {
   EXPLORE_MAP_COLOURS,
@@ -14,6 +15,8 @@ const text = {
     loading: "Loading the verified 2020–2022 province aggregate map.",
     ready:
       "Showing the verified 2020–2022 province aggregate. Display boundaries are simplified and omit small islands. This is a technical preview, not per-cell forest-loss geometry.",
+    fallback:
+      "The interactive PMTiles layer was unavailable, so this map is showing the verified GeoJSON compatibility fallback.",
     unavailable:
       "A verified geographic layer is not available for this mode. Choose Forest change to view the 2020–2022 province aggregate.",
     unavailableYear:
@@ -35,6 +38,8 @@ const text = {
       "Chargement de la carte vérifiée de l’agrégat provincial de 2020 à 2022.",
     ready:
       "Affichage de l’agrégat provincial vérifié de 2020 à 2022. Les limites d’affichage sont simplifiées et omettent les petites îles. Il s’agit d’un aperçu technique, et non d’une géométrie de perte forestière par cellule.",
+    fallback:
+      "La couche PMTiles interactive n’était pas disponible; cette carte affiche donc la solution de repli GeoJSON vérifiée.",
     unavailable:
       "Aucune couche géographique vérifiée n’est disponible pour ce mode. Choisissez Changement forestier pour voir l’agrégat provincial de 2020 à 2022.",
     unavailableYear:
@@ -53,6 +58,8 @@ const text = {
   },
 } as const;
 
+type MapSource = "pmtiles" | "geojson";
+type MapState = "loading" | "ready" | "unavailable" | "error";
 type Position = [number, number];
 type ProvinceFeature = {
   id: string;
@@ -88,6 +95,51 @@ const lossColour = (value: number) =>
       : value >= 1
         ? EXPLORE_MAP_COLOURS.loss1
         : EXPLORE_MAP_COLOURS.loss0;
+
+const pmtilesStyle: StyleSpecification = {
+  version: 8,
+  name: "Witness Tree verified province forest-loss map",
+  sources: {
+    [EXPLORE_PRODUCTION_LAYER.sourceLayer]: {
+      type: "vector",
+      url: `pmtiles://${EXPLORE_PRODUCTION_LAYER.url}`,
+      bounds: [-141, 41, -52, 70],
+    },
+  },
+  layers: [
+    {
+      id: `${EXPLORE_PRODUCTION_LAYER.sourceLayer}-fill`,
+      type: "fill",
+      source: EXPLORE_PRODUCTION_LAYER.sourceLayer,
+      "source-layer": EXPLORE_PRODUCTION_LAYER.sourceLayer,
+      paint: {
+        "fill-color": [
+          "step",
+          ["get", "observed_loss_percent"],
+          EXPLORE_MAP_COLOURS.loss0,
+          1,
+          EXPLORE_MAP_COLOURS.loss1,
+          2,
+          EXPLORE_MAP_COLOURS.loss2,
+          3,
+          EXPLORE_MAP_COLOURS.loss3,
+        ],
+        "fill-opacity": 0.88,
+      },
+    },
+    {
+      id: `${EXPLORE_PRODUCTION_LAYER.sourceLayer}-outline`,
+      type: "line",
+      source: EXPLORE_PRODUCTION_LAYER.sourceLayer,
+      "source-layer": EXPLORE_PRODUCTION_LAYER.sourceLayer,
+      paint: {
+        "line-color": EXPLORE_MAP_COLOURS.ink,
+        "line-width": 1.25,
+      },
+    },
+  ],
+};
+
 const symbol = (className: string) => (
   <i className={`loss-swatch ${className}`} aria-hidden="true" />
 );
@@ -99,45 +151,137 @@ export function ExploreMapClient({
 }: Readonly<{ locale: Locale; mode: ExploreMode; year: number }>) {
   const statusId = useId();
   const attributionId = useId();
+  const mapContainerRef = useRef<HTMLDivElement>(null);
   const available = mode === "forest-change" && year >= 2022;
   const [features, setFeatures] = useState<ProvinceFeature[]>([]);
+  const [source, setSource] = useState<MapSource | null>(null);
   const [failed, setFailed] = useState(false);
-  const state = !available
+  const state: MapState = !available
     ? "unavailable"
     : failed
       ? "error"
-      : features.length
+      : source
         ? "ready"
         : "loading";
   useEffect(() => {
     if (!available) return;
+
     const controller = new AbortController();
-    fetch(EXPLORE_PRODUCTION_LAYER.compatibilityGeoJsonUrl, {
-      signal: controller.signal,
-    })
-      .then((response) => {
+    let active = true;
+    let fallbackStarted = false;
+    let map: MapLibreMap | null = null;
+    let maplibre: typeof import("maplibre-gl") | null = null;
+    let protocolRegistered = false;
+    let pmtilesLoaded = false;
+    let pmtilesTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    void Promise.resolve().then(() => {
+      if (!active) return;
+      setFeatures([]);
+      setSource(null);
+      setFailed(false);
+    });
+
+    const loadGeoJsonFallback = async () => {
+      if (fallbackStarted) return;
+      fallbackStarted = true;
+      try {
+        const response = await fetch(
+          EXPLORE_PRODUCTION_LAYER.compatibilityGeoJsonUrl,
+          { signal: controller.signal },
+        );
         if (!response.ok) throw new Error(`Map response ${response.status}`);
-        return response.json() as Promise<{ features: ProvinceFeature[] }>;
-      })
-      .then((collection: { features: ProvinceFeature[] }) => {
+        const collection = (await response.json()) as {
+          features: ProvinceFeature[];
+        };
         if (
           collection.features.length !== EXPLORE_PRODUCTION_LAYER.rows.length
         ) {
           throw new Error("Unexpected province feature count");
         }
+        if (!active) return;
         setFeatures(collection.features);
+        setSource("geojson");
         setFailed(false);
-      })
-      .catch((error: unknown) => {
-        if (!(error instanceof DOMException && error.name === "AbortError"))
+      } catch (error: unknown) {
+        if (
+          active &&
+          !(error instanceof DOMException && error.name === "AbortError")
+        )
           setFailed(true);
-      });
-    return () => controller.abort();
+      }
+    };
+
+    const initializePmtiles = async () => {
+      try {
+        const [maplibreModule, { Protocol }] = await Promise.all([
+          import("maplibre-gl"),
+          import("pmtiles"),
+        ]);
+        if (!active || !mapContainerRef.current) {
+          if (active) void loadGeoJsonFallback();
+          return;
+        }
+        maplibre = maplibreModule;
+        const protocol = new Protocol();
+        maplibre.addProtocol("pmtiles", protocol.tile);
+        protocolRegistered = true;
+        map = new maplibre.Map({
+          container: mapContainerRef.current,
+          style: pmtilesStyle,
+          center: [-96, 56],
+          zoom: 2.6,
+          minZoom: 1.5,
+          maxZoom: 6,
+          attributionControl: false,
+        });
+        map.once("load", () => {
+          if (!active) return;
+          if (pmtilesTimeout) clearTimeout(pmtilesTimeout);
+          pmtilesLoaded = true;
+          setSource("pmtiles");
+          setFailed(false);
+        });
+        map.on("error", () => {
+          if (pmtilesLoaded) return;
+          map?.remove();
+          map = null;
+          if (protocolRegistered) {
+            maplibre?.removeProtocol("pmtiles");
+            protocolRegistered = false;
+          }
+          void loadGeoJsonFallback();
+        });
+        pmtilesTimeout = setTimeout(() => {
+          if (!active || pmtilesLoaded) return;
+          map?.remove();
+          map = null;
+          if (protocolRegistered) {
+            maplibre?.removeProtocol("pmtiles");
+            protocolRegistered = false;
+          }
+          void loadGeoJsonFallback();
+        }, 1000);
+      } catch {
+        if (active) void loadGeoJsonFallback();
+      }
+    };
+
+    void initializePmtiles();
+    return () => {
+      active = false;
+      controller.abort();
+      if (pmtilesTimeout) clearTimeout(pmtilesTimeout);
+      map?.remove();
+      if (protocolRegistered) maplibre?.removeProtocol("pmtiles");
+    };
   }, [available]);
   const message =
     state === "unavailable" && mode === "forest-change"
       ? text[locale].unavailableYear
-      : text[locale][state];
+      : source === "geojson"
+        ? text[locale].fallback
+        : text[locale][state];
   const number = new Intl.NumberFormat(locale === "fr" ? "fr-CA" : "en-CA", {
     maximumFractionDigits: 2,
   });
@@ -149,8 +293,20 @@ export function ExploreMapClient({
         aria-label={text[locale].label}
         aria-describedby={`${statusId} ${attributionId}`}
         data-state={state}
+        data-map-source={
+          source === "geojson" ? "geojson-fallback" : source ?? undefined
+        }
       >
-        {state === "ready" ? (
+        {available ? (
+          <>
+            <div
+              ref={mapContainerRef}
+              className="explore-map-canvas"
+              role="img"
+              aria-label={text[locale].label}
+              aria-hidden={state !== "ready" || source !== "pmtiles"}
+            />
+            {state === "ready" && source === "geojson" ? (
           <svg
             viewBox="0 0 1000 500"
             role="img"
@@ -170,6 +326,11 @@ export function ExploreMapClient({
               </path>
             ))}
           </svg>
+            ) : null}
+            {state !== "ready" ? (
+              <p className="explore-map-panel">{message}</p>
+            ) : null}
+          </>
         ) : (
           <p className="explore-map-panel">{message}</p>
         )}

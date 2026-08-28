@@ -55,15 +55,19 @@
       "id": "quarterly-reproducibility-test-passes",
       "title": "The quarterly reproducibility test passes",
       "status": "fail",
-      "reason": "Recomputation from the raw archive is now demonstrated, not merely restoration: the admitted federal electoral output was regenerated from its raw archived inputs and matched the admitted SHA-256 exactly, which is what closed Phase 8 raw-archive-reproducibility. That is not this criterion. The controlling plan requires that every published number be reproducible and that this be tested quarterly by recomputing a random sample and comparing. Two things are still missing and neither can be derived. Nothing real is published, so there is no population to sample from; and one reproduction is not a quarterly cadence, so no recurring test result exists.",
+      "reason": "Recomputation from the raw archive is demonstrated for the admitted federal electoral output, and an admitted province aggregate is published as a bounded technical preview. Neither result satisfies this criterion. The controlling plan requires a quarterly random-sample recomputation from the population of published production figures. No operated production population or quarterly cadence exists, so no recurring quarterly result can be derived.",
       "evidence": [
         {
           "path": "data/phase8-launch-readiness-exit-status.json",
-          "sha256": "39c2db37fd51166cf6ce074bf341909d207b3e731cd1cc19ca1081ab95f7a722"
+          "sha256": "b63fb9abed9847fc7e9ee4c5b08c9658cf161508b307913853dba49092e83d9c"
         },
         {
           "path": "data/raw-archive-reproduction-drill.json",
           "sha256": "21a9c67ea4eca1b44defbb11393ed0e295301d7e8877110a188b987baf1ea04d"
+        },
+        {
+          "path": "data/phase8-province-map-release.json",
+          "sha256": "2c7a3000ff0b1724fce8c139f2166cecb6838b8d6624fa2172dc07abbb44a58e"
         }
       ]
     }
