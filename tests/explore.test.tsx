@@ -129,6 +129,11 @@ test("Explore uses the exact PMTiles release with a GeoJSON/SVG fallback on map 
   assert.match(map, /import\("pmtiles"\)/);
   assert.match(map, /pmtiles:\/\/\$\{EXPLORE_PRODUCTION_LAYER\.url\}/);
   assert.match(map, /addProtocol\("pmtiles", protocol\.tile\)/);
+  assert.ok(
+    map.indexOf("pmtilesTimeout = setTimeout") <
+      map.indexOf("const initializePmtiles"),
+    "the fallback watchdog must start before the optional map libraries load",
+  );
   assert.match(map, /"source-layer": EXPLORE_PRODUCTION_LAYER\.sourceLayer/);
   assert.match(map, /data-map-source/);
   assert.match(map, /geojson-fallback/);
