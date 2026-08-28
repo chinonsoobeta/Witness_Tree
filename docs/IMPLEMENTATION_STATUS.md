@@ -39,7 +39,7 @@ Phase 0 is complete under its recorded scope: seven of its eight literal gates p
 | Phase 5 | **4/4 (100%) local; production blocked** | Simulation and safety controls do not establish real feed rights, operations, or deployment. |
 | Phase 6 | **4/5 (80%)** | Managed Canadian database isolation is proven. Sender infrastructure and the independent timed kill-switch rehearsal remain absent. |
 | Phase 7 | **14/16 (87.5%)** | The Mistik outcome is recorded as not pursued. Indigenous-source authority and a named tested reply operation remain missing. |
-| Phase 8 | **6/16 (37.5%)** | Raw-archive reproducibility and the operations handbook now pass. Independent review and operated production evidence remain incomplete. |
+| Phase 8 | **7/16 (43.75%)** | Raw-archive reproducibility, the operations handbook, and the province-level CDN/tile validation pass. Independent review and the remaining operated production evidence remain incomplete. |
 | Phase 9 | **0/4 (0%)** | No operated beta, real correction metrics, source-agency confirmation, or quarterly published-figure reproduction. |
 
 The underlying machine-checked records are [Phase 4](../data/phase4-exit-status.json), [Phase 5](../data/phase5-live-wildfire-exit-status.json), [Phase 6](../data/phase6-account-alert-exit-status.json), [Phase 7](../data/phase7-indigenous-explore-comparison-exit-status.json), [Phase 8](../data/phase8-launch-readiness-exit-status.json), and [Phase 9](../data/phase9-public-beta-launch-exit-status.json).

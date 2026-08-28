@@ -3,9 +3,9 @@
   "phase": 8,
   "localImplementationStatus": "incomplete",
   "phaseComplete": false,
-  "completedCriteria": 6,
+  "completedCriteria": 7,
   "totalCriteria": 16,
-  "percentage": 37.5,
+  "percentage": 43.75,
   "exitCriteria": [
     {
       "id": "professional-bilingual-review",
@@ -39,7 +39,7 @@
       "evidence": [
         {
           "path": "docs/PLAN_GAP_MATRIX.md",
-          "sha256": "95f36dfdca87e3cfae5bd7d8ba7840ebba2083ad82527facc5ce57fe1c9f3b26"
+          "sha256": "cbae13c6021afea7828a8779d0d828808d7582020099dfc7cd7aae129b4e80ff"
         }
       ]
     },
@@ -119,7 +119,7 @@
         },
         {
           "path": "docs/PLAN_GAP_MATRIX.md",
-          "sha256": "95f36dfdca87e3cfae5bd7d8ba7840ebba2083ad82527facc5ce57fe1c9f3b26"
+          "sha256": "cbae13c6021afea7828a8779d0d828808d7582020099dfc7cd7aae129b4e80ff"
         }
       ],
       "ownerAuthorization": {
@@ -136,7 +136,7 @@
       "evidence": [
         {
           "path": "docs/PLAN_GAP_MATRIX.md",
-          "sha256": "95f36dfdca87e3cfae5bd7d8ba7840ebba2083ad82527facc5ce57fe1c9f3b26"
+          "sha256": "cbae13c6021afea7828a8779d0d828808d7582020099dfc7cd7aae129b4e80ff"
         }
       ]
     },
@@ -251,12 +251,24 @@
     {
       "id": "cdn-tile-validation",
       "title": "CDN and tile validation are complete",
-      "status": "fail",
-      "reason": "No production CDN, admitted tiles, or live tile-validation evidence is recorded; the source-level artifact budget is not a substitute.",
+      "status": "pass",
+      "reason": "The admitted 2020-2022 province aggregate and authoritative boundary are bound to an immutable PMTiles archive in a private ca-central-1 delivery bucket behind CloudFront. Repository checks verify its exact checksum and byte length, a live cross-origin byte-range response, a full public readback, PMTiles structure, expected tile coverage, origin isolation, and immutable write controls. The released layer remains a province-level technical preview and does not claim per-cell geometry or Phase 2 completion.",
       "evidence": [
         {
-          "path": "docs/PERFORMANCE.md",
-          "sha256": "e60b5538236246b44d5e9a4e08ef076bb171991dbbb4a9ff8d95e64e496b3746"
+          "path": "data/phase8-province-map-release.json",
+          "sha256": "2c7a3000ff0b1724fce8c139f2166cecb6838b8d6624fa2172dc07abbb44a58e"
+        },
+        {
+          "path": "data/phase8-public-delivery-evidence.json",
+          "sha256": "87465dcbba49a9868caee51f55421b4071dc6465ca959720ac374dca3741fd25"
+        },
+        {
+          "path": "scripts/check-phase8-province-map-release.mjs",
+          "sha256": "50af33fd9241b2cf1c7947a0dd19f89a8dc2c3dbb277d251b88440b205875158"
+        },
+        {
+          "path": "tests/phase8-province-map-release.test.mjs",
+          "sha256": "9664610cccd1e9a7a7effd62db797d8699910c403c2795a5ebf6a19f456d9591"
         }
       ]
     }
@@ -290,8 +302,8 @@
     {
       "id": "admitted-production-data-and-delivery",
       "status": "blocked",
-      "reason": "Admitted real figures, bulk artifacts, CDN/tile deployment, and live validation are required before production delivery can open."
+      "reason": "The admitted province-level technical-preview tile has CDN deployment and live validation. Complete admitted bulk artifacts and the remaining production data gates are still required before production delivery can open."
     }
   ],
-  "nonProductionBoundary": "The existing public site remains a technical preview with illustrative data. This record does not claim a production deployment, production figure, reviewed translation, accessibility conformance, security review, load result, backup, live operations, bulk download, CDN, or tile validation."
+  "nonProductionBoundary": "The public site and the validated province-level CDN tile remain a technical preview. This record does not claim per-cell production geometry, Phase 2 completion, reviewed translation, accessibility conformance, security review, load result, backup, live operations, bulk download, or general production readiness."
 }
