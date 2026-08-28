@@ -1,0 +1,3208 @@
+{
+  "schemaVersion": "witness-tree/phase1-canonical-raw-inventory/1",
+  "status": "local-read-only-reconciled",
+  "observedAt": "2026-08-27T20:03:43.040Z",
+  "notice": "Local filesystem evidence only. Exact local existence, byte length and SHA-256 do not prove immutable archive, recovery replica, source-ledger admission, transformation admission, ingestion, release, production admission or production eligibility.",
+  "dataRoot": {
+    "canonicalPath": "/Volumes/Extended_SSD/Witness_Tree-data",
+    "resolvedPath": "/Volumes/Extended_SSD/Witness_Tree-data",
+    "externalOnly": true
+  },
+  "claims": {
+    "localBytesOnly": true,
+    "immutableArchive": false,
+    "recoveryReplica": false,
+    "sourceLedgerAdmission": false,
+    "transformationAdmission": false,
+    "ingestion": false,
+    "release": false,
+    "productionAdmission": false,
+    "productionEligible": false
+  },
+  "ledger": {
+    "path": "data/phase1-production-source-ledger.json",
+    "sha256": "4ffc278a2b0bfc6308f8d6af57fc1f2fe36466b1fba758538749a9e4dd2693ee",
+    "coreRowCount": 22,
+    "rowIds": [
+      "ntems-annual-land-cover",
+      "ntems-forest-harvest",
+      "ntems-canopy-cover",
+      "ntems-canopy-height",
+      "cwfis-current",
+      "cwfis-historical",
+      "bc-wildfire",
+      "ab-wildfire",
+      "on-fire-disturbance",
+      "qc-current-ecoforest",
+      "qc-original-current-inventory",
+      "qc-fourth-inventory",
+      "ab-avi-crown",
+      "ab-avi-post-harvest",
+      "ab-primary-land-vegetation",
+      "fed-2023-ridings",
+      "elections-canada-45th-files",
+      "provincial-electoral-boundaries",
+      "indian-reserves",
+      "first-nation-reserves",
+      "historic-treaties",
+      "modern-treaties"
+    ]
+  },
+  "rows": [
+    {
+      "id": "ntems-annual-land-cover",
+      "status": "matched-local-bytes",
+      "physicalArtifactCount": 39,
+      "canonicalPayloadCount": 39,
+      "matchedCanonicalPayloadCount": 39,
+      "artifactIds": [
+        "ntems-annual-land-cover-1984",
+        "ntems-annual-land-cover-1985",
+        "ntems-annual-land-cover-1986",
+        "ntems-annual-land-cover-1987",
+        "ntems-annual-land-cover-1988",
+        "ntems-annual-land-cover-1989",
+        "ntems-annual-land-cover-1990",
+        "ntems-annual-land-cover-1991",
+        "ntems-annual-land-cover-1992",
+        "ntems-annual-land-cover-1993",
+        "ntems-annual-land-cover-1994",
+        "ntems-annual-land-cover-1995",
+        "ntems-annual-land-cover-1996",
+        "ntems-annual-land-cover-1997",
+        "ntems-annual-land-cover-1998",
+        "ntems-annual-land-cover-1999",
+        "ntems-annual-land-cover-2000",
+        "ntems-annual-land-cover-2001",
+        "ntems-annual-land-cover-2002",
+        "ntems-annual-land-cover-2003",
+        "ntems-annual-land-cover-2004",
+        "ntems-annual-land-cover-2005",
+        "ntems-annual-land-cover-2006",
+        "ntems-annual-land-cover-2007",
+        "ntems-annual-land-cover-2008",
+        "ntems-annual-land-cover-2009",
+        "ntems-annual-land-cover-2010",
+        "ntems-annual-land-cover-2011",
+        "ntems-annual-land-cover-2012",
+        "ntems-annual-land-cover-2013",
+        "ntems-annual-land-cover-2014",
+        "ntems-annual-land-cover-2015",
+        "ntems-annual-land-cover-2016",
+        "ntems-annual-land-cover-2017",
+        "ntems-annual-land-cover-2018",
+        "ntems-annual-land-cover-2019",
+        "ntems-annual-land-cover-2020",
+        "ntems-annual-land-cover-2021",
+        "ntems-annual-land-cover-2022"
+      ],
+      "limitations": [
+        "Local bytes and checksums do not establish immutable archive, recovery, admission, release, or production eligibility."
+      ]
+    },
+    {
+      "id": "ntems-forest-harvest",
+      "status": "matched-local-bytes",
+      "physicalArtifactCount": 1,
+      "canonicalPayloadCount": 1,
+      "matchedCanonicalPayloadCount": 1,
+      "artifactIds": [
+        "nrcan-ca-forest-harvest-1985-2022-2026-08-14"
+      ],
+      "limitations": [
+        "Local bytes and checksums do not establish immutable archive, recovery, admission, release, or production eligibility."
+      ]
+    },
+    {
+      "id": "ntems-canopy-cover",
+      "status": "matched-local-bytes",
+      "physicalArtifactCount": 1,
+      "canonicalPayloadCount": 1,
+      "matchedCanonicalPayloadCount": 1,
+      "artifactIds": [
+        "nrcan-forest-canopy-cover-2022-2026-08-11"
+      ],
+      "limitations": [
+        "Local bytes and checksums do not establish immutable archive, recovery, admission, release, or production eligibility."
+      ]
+    },
+    {
+      "id": "ntems-canopy-height",
+      "status": "matched-local-bytes",
+      "physicalArtifactCount": 1,
+      "canonicalPayloadCount": 1,
+      "matchedCanonicalPayloadCount": 1,
+      "artifactIds": [
+        "nrcan-forest-canopy-height-2022-2026-08-14"
+      ],
+      "limitations": [
+        "Local bytes and checksums do not establish immutable archive, recovery, admission, release, or production eligibility."
+      ]
+    },
+    {
+      "id": "cwfis-current",
+      "status": "matched-local-bytes",
+      "physicalArtifactCount": 1,
+      "canonicalPayloadCount": 1,
+      "matchedCanonicalPayloadCount": 1,
+      "artifactIds": [
+        "cwfis-current-active-wildfires-2026-08-14T202242Z"
+      ],
+      "limitations": [
+        "Local bytes and checksums do not establish immutable archive, recovery, admission, release, or production eligibility."
+      ]
+    },
+    {
+      "id": "cwfis-historical",
+      "status": "matched-local-bytes",
+      "physicalArtifactCount": 5,
+      "canonicalPayloadCount": 2,
+      "matchedCanonicalPayloadCount": 2,
+      "artifactIds": [
+        "cwfis-nfdb-poly-current",
+        "cwfis-nbac-payload",
+        "cwfis-nbac-metadata",
+        "cwfis-nbac-catalogueSnapshot",
+        "cwfis-nbac-geospatialProfile"
+      ],
+      "limitations": [
+        "Local bytes and checksums do not establish immutable archive, recovery, admission, release, or production eligibility."
+      ]
+    },
+    {
+      "id": "bc-wildfire",
+      "status": "matched-local-bytes",
+      "physicalArtifactCount": 1,
+      "canonicalPayloadCount": 1,
+      "matchedCanonicalPayloadCount": 1,
+      "artifactIds": [
+        "bc-wildfire-current-perimeters-2026-08-14"
+      ],
+      "limitations": [
+        "Local bytes and checksums do not establish immutable archive, recovery, admission, release, or production eligibility."
+      ]
+    },
+    {
+      "id": "ab-wildfire",
+      "status": "matched-local-bytes",
+      "physicalArtifactCount": 1,
+      "canonicalPayloadCount": 1,
+      "matchedCanonicalPayloadCount": 1,
+      "artifactIds": [
+        "alberta-wildfire-locations-2026-08-14"
+      ],
+      "limitations": [
+        "Local bytes and checksums do not establish immutable archive, recovery, admission, release, or production eligibility."
+      ]
+    },
+    {
+      "id": "on-fire-disturbance",
+      "status": "matched-local-bytes",
+      "physicalArtifactCount": 1,
+      "canonicalPayloadCount": 1,
+      "matchedCanonicalPayloadCount": 1,
+      "artifactIds": [
+        "ontario-in-year-fire-perimeters-2026-08-14"
+      ],
+      "limitations": [
+        "Local bytes and checksums do not establish immutable archive, recovery, admission, release, or production eligibility."
+      ]
+    },
+    {
+      "id": "qc-current-ecoforest",
+      "status": "matched-local-bytes",
+      "physicalArtifactCount": 1,
+      "canonicalPayloadCount": 1,
+      "matchedCanonicalPayloadCount": 1,
+      "artifactIds": [
+        "qc-ecoforest-map-2026-08-14"
+      ],
+      "limitations": [
+        "Local bytes and checksums do not establish immutable archive, recovery, admission, release, or production eligibility."
+      ]
+    },
+    {
+      "id": "qc-original-current-inventory",
+      "status": "matched-local-bytes",
+      "physicalArtifactCount": 1,
+      "canonicalPayloadCount": 1,
+      "matchedCanonicalPayloadCount": 1,
+      "artifactIds": [
+        "qc-original-current-inventory-2026-08-14"
+      ],
+      "limitations": [
+        "Local bytes and checksums do not establish immutable archive, recovery, admission, release, or production eligibility."
+      ]
+    },
+    {
+      "id": "qc-fourth-inventory",
+      "status": "matched-local-bytes",
+      "physicalArtifactCount": 61,
+      "canonicalPayloadCount": 56,
+      "matchedCanonicalPayloadCount": 56,
+      "artifactIds": [
+        "qc-fourth-sheet-01",
+        "qc-fourth-sheet-02",
+        "qc-fourth-sheet-03",
+        "qc-fourth-sheet-04",
+        "qc-fourth-sheet-05",
+        "qc-fourth-sheet-06",
+        "qc-fourth-sheet-07",
+        "qc-fourth-sheet-08",
+        "qc-fourth-sheet-09",
+        "qc-fourth-sheet-10",
+        "qc-fourth-sheet-11",
+        "qc-fourth-sheet-12",
+        "qc-fourth-sheet-13",
+        "qc-fourth-sheet-14",
+        "qc-fourth-sheet-15",
+        "qc-fourth-sheet-16",
+        "qc-fourth-sheet-17",
+        "qc-fourth-sheet-18",
+        "qc-fourth-sheet-19",
+        "qc-fourth-sheet-20",
+        "qc-fourth-sheet-21",
+        "qc-fourth-sheet-22",
+        "qc-fourth-sheet-23",
+        "qc-fourth-sheet-24",
+        "qc-fourth-sheet-25",
+        "qc-fourth-sheet-26",
+        "qc-fourth-sheet-27",
+        "qc-fourth-sheet-28",
+        "qc-fourth-sheet-29",
+        "qc-fourth-sheet-30",
+        "qc-fourth-sheet-31",
+        "qc-fourth-sheet-32",
+        "qc-fourth-sheet-33",
+        "qc-fourth-sheet-34",
+        "qc-fourth-sheet-35",
+        "qc-fourth-sheet-36",
+        "qc-fourth-sheet-37",
+        "qc-fourth-sheet-38",
+        "qc-fourth-sheet-39",
+        "qc-fourth-sheet-40",
+        "qc-fourth-sheet-41",
+        "qc-fourth-sheet-42",
+        "qc-fourth-sheet-43",
+        "qc-fourth-sheet-44",
+        "qc-fourth-sheet-45",
+        "qc-fourth-sheet-46",
+        "qc-fourth-sheet-47",
+        "qc-fourth-sheet-48",
+        "qc-fourth-sheet-49",
+        "qc-fourth-sheet-50",
+        "qc-fourth-sheet-51",
+        "qc-fourth-sheet-52",
+        "qc-fourth-sheet-53",
+        "qc-fourth-sheet-54",
+        "qc-fourth-sheet-55",
+        "qc-fourth-sheet-56",
+        "qc-fourth-support-01",
+        "qc-fourth-support-02",
+        "qc-fourth-support-03",
+        "qc-fourth-support-04",
+        "qc-fourth-support-05"
+      ],
+      "limitations": [
+        "Local bytes and checksums do not establish immutable archive, recovery, admission, release, or production eligibility."
+      ]
+    },
+    {
+      "id": "ab-avi-crown",
+      "status": "matched-local-bytes",
+      "physicalArtifactCount": 1,
+      "canonicalPayloadCount": 1,
+      "matchedCanonicalPayloadCount": 1,
+      "artifactIds": [
+        "alberta-avi-crown-2026-08-11"
+      ],
+      "limitations": [
+        "Local bytes and checksums do not establish immutable archive, recovery, admission, release, or production eligibility."
+      ]
+    },
+    {
+      "id": "ab-avi-post-harvest",
+      "status": "matched-local-bytes",
+      "physicalArtifactCount": 1,
+      "canonicalPayloadCount": 1,
+      "matchedCanonicalPayloadCount": 1,
+      "artifactIds": [
+        "alberta-avi-crown-2026-08-11"
+      ],
+      "limitations": [
+        "Local bytes and checksums do not establish immutable archive, recovery, admission, release, or production eligibility."
+      ]
+    },
+    {
+      "id": "ab-primary-land-vegetation",
+      "status": "matched-local-bytes",
+      "physicalArtifactCount": 1,
+      "canonicalPayloadCount": 1,
+      "matchedCanonicalPayloadCount": 1,
+      "artifactIds": [
+        "alberta-primary-land-vegetation-2026-08-14"
+      ],
+      "limitations": [
+        "Local bytes and checksums do not establish immutable archive, recovery, admission, release, or production eligibility."
+      ]
+    },
+    {
+      "id": "fed-2023-ridings",
+      "status": "matched-local-bytes",
+      "physicalArtifactCount": 1,
+      "canonicalPayloadCount": 1,
+      "matchedCanonicalPayloadCount": 1,
+      "artifactIds": [
+        "elections-canada-federal-electoral-districts-45th-general-election-2025-shp"
+      ],
+      "limitations": [
+        "Local bytes and checksums do not establish immutable archive, recovery, admission, release, or production eligibility."
+      ]
+    },
+    {
+      "id": "elections-canada-45th-files",
+      "status": "matched-local-bytes",
+      "physicalArtifactCount": 1,
+      "canonicalPayloadCount": 1,
+      "matchedCanonicalPayloadCount": 1,
+      "artifactIds": [
+        "elections-canada-federal-electoral-districts-45th-general-election-2025-shp"
+      ],
+      "limitations": [
+        "Local bytes and checksums do not establish immutable archive, recovery, admission, release, or production eligibility."
+      ]
+    },
+    {
+      "id": "provincial-electoral-boundaries",
+      "status": "partial-local-components",
+      "physicalArtifactCount": 3,
+      "canonicalPayloadCount": 2,
+      "matchedCanonicalPayloadCount": 2,
+      "artifactIds": [
+        "provincial-boundaries-bc-2023",
+        "provincial-boundaries-ontario-2022",
+        "provincial-boundaries-quebec-2026-future"
+      ],
+      "limitations": [
+        "Local bytes and checksums do not establish immutable archive, recovery, admission, release, or production eligibility."
+      ]
+    },
+    {
+      "id": "indian-reserves",
+      "status": "not-staged",
+      "physicalArtifactCount": 0,
+      "canonicalPayloadCount": 0,
+      "matchedCanonicalPayloadCount": 0,
+      "artifactIds": [],
+      "limitations": [
+        "No exact local artifact is recorded under the current lawful source evidence."
+      ]
+    },
+    {
+      "id": "first-nation-reserves",
+      "status": "not-staged",
+      "physicalArtifactCount": 0,
+      "canonicalPayloadCount": 0,
+      "matchedCanonicalPayloadCount": 0,
+      "artifactIds": [],
+      "limitations": [
+        "No exact local artifact is recorded under the current lawful source evidence."
+      ]
+    },
+    {
+      "id": "historic-treaties",
+      "status": "not-staged",
+      "physicalArtifactCount": 0,
+      "canonicalPayloadCount": 0,
+      "matchedCanonicalPayloadCount": 0,
+      "artifactIds": [],
+      "limitations": [
+        "No exact local artifact is recorded under the current lawful source evidence."
+      ]
+    },
+    {
+      "id": "modern-treaties",
+      "status": "not-staged",
+      "physicalArtifactCount": 0,
+      "canonicalPayloadCount": 0,
+      "matchedCanonicalPayloadCount": 0,
+      "artifactIds": [],
+      "limitations": [
+        "No exact local artifact is recorded under the current lawful source evidence."
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "ntems-annual-land-cover-1984",
+      "rowIds": [
+        "ntems-annual-land-cover"
+      ],
+      "relativePath": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1984.zip",
+      "expectedByteLength": 1520973970,
+      "expectedSha256": "6da3aaa2181b3ab4c0a5ae6313776a298f1eea26a5a4f45f178984ae5cb17724",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/phase1-ntems-annual-land-cover-execution-authorization.json",
+          "jsonPointer": "/inputs/0"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 1520973970,
+      "sha256": "6da3aaa2181b3ab4c0a5ae6313776a298f1eea26a5a4f45f178984ae5cb17724",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "ntems-annual-land-cover-1985",
+      "rowIds": [
+        "ntems-annual-land-cover"
+      ],
+      "relativePath": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1985.zip",
+      "expectedByteLength": 1515795138,
+      "expectedSha256": "bab13422243844be74946c3fa51199f7c3816b1b43357bac645612dad15bcf18",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/phase1-ntems-annual-land-cover-execution-authorization.json",
+          "jsonPointer": "/inputs/1"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 1515795138,
+      "sha256": "bab13422243844be74946c3fa51199f7c3816b1b43357bac645612dad15bcf18",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "ntems-annual-land-cover-1986",
+      "rowIds": [
+        "ntems-annual-land-cover"
+      ],
+      "relativePath": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1986.zip",
+      "expectedByteLength": 1510230189,
+      "expectedSha256": "915f32af6b5250513a44eda7134c24803b1c4c95c87f111c726f2751012929f8",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/phase1-ntems-annual-land-cover-execution-authorization.json",
+          "jsonPointer": "/inputs/2"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 1510230189,
+      "sha256": "915f32af6b5250513a44eda7134c24803b1c4c95c87f111c726f2751012929f8",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "ntems-annual-land-cover-1987",
+      "rowIds": [
+        "ntems-annual-land-cover"
+      ],
+      "relativePath": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1987.zip",
+      "expectedByteLength": 1506185331,
+      "expectedSha256": "33c16553d73e5c6f38c8404724ad48ef1b874107c413553223cd3a961bc85ee5",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/phase1-ntems-annual-land-cover-execution-authorization.json",
+          "jsonPointer": "/inputs/3"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 1506185331,
+      "sha256": "33c16553d73e5c6f38c8404724ad48ef1b874107c413553223cd3a961bc85ee5",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "ntems-annual-land-cover-1988",
+      "rowIds": [
+        "ntems-annual-land-cover"
+      ],
+      "relativePath": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1988.zip",
+      "expectedByteLength": 1501993855,
+      "expectedSha256": "e51475a4a368a7f014cbbea84eefbce449632529e512064415afb5f868c58889",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/phase1-ntems-annual-land-cover-execution-authorization.json",
+          "jsonPointer": "/inputs/4"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 1501993855,
+      "sha256": "e51475a4a368a7f014cbbea84eefbce449632529e512064415afb5f868c58889",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "ntems-annual-land-cover-1989",
+      "rowIds": [
+        "ntems-annual-land-cover"
+      ],
+      "relativePath": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1989.zip",
+      "expectedByteLength": 1501339049,
+      "expectedSha256": "399ca35d03c7b38462e1bd4599cc5ba6dc4bbcf7763ea51f485f938f24fc8d63",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/phase1-ntems-annual-land-cover-execution-authorization.json",
+          "jsonPointer": "/inputs/5"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 1501339049,
+      "sha256": "399ca35d03c7b38462e1bd4599cc5ba6dc4bbcf7763ea51f485f938f24fc8d63",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "ntems-annual-land-cover-1990",
+      "rowIds": [
+        "ntems-annual-land-cover"
+      ],
+      "relativePath": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1990.zip",
+      "expectedByteLength": 1497437365,
+      "expectedSha256": "a62046969e278bc09f5aa8dba81ed3f27b83ef4ee28b03a5b78b1fca99362bbd",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/phase1-ntems-annual-land-cover-execution-authorization.json",
+          "jsonPointer": "/inputs/6"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 1497437365,
+      "sha256": "a62046969e278bc09f5aa8dba81ed3f27b83ef4ee28b03a5b78b1fca99362bbd",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "ntems-annual-land-cover-1991",
+      "rowIds": [
+        "ntems-annual-land-cover"
+      ],
+      "relativePath": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1991.zip",
+      "expectedByteLength": 1494487119,
+      "expectedSha256": "a977d0887ba2b7b2fe6fe6a24e0ff863703eb01d3463d5519944664b9a3de58f",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/phase1-ntems-annual-land-cover-execution-authorization.json",
+          "jsonPointer": "/inputs/7"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 1494487119,
+      "sha256": "a977d0887ba2b7b2fe6fe6a24e0ff863703eb01d3463d5519944664b9a3de58f",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "ntems-annual-land-cover-1992",
+      "rowIds": [
+        "ntems-annual-land-cover"
+      ],
+      "relativePath": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1992.zip",
+      "expectedByteLength": 1491133163,
+      "expectedSha256": "266faa58e29bdcff906bf577f3bbc80bbd36e2b2da1994f7a5c22a4e2aac088d",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/phase1-ntems-annual-land-cover-execution-authorization.json",
+          "jsonPointer": "/inputs/8"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 1491133163,
+      "sha256": "266faa58e29bdcff906bf577f3bbc80bbd36e2b2da1994f7a5c22a4e2aac088d",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "ntems-annual-land-cover-1993",
+      "rowIds": [
+        "ntems-annual-land-cover"
+      ],
+      "relativePath": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1993.zip",
+      "expectedByteLength": 1490251627,
+      "expectedSha256": "78e49dd3513b36d28a82efc23ebdf6d2c99cc7d412f0c61ab8bedbfe98aea9aa",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/phase1-ntems-annual-land-cover-execution-authorization.json",
+          "jsonPointer": "/inputs/9"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 1490251627,
+      "sha256": "78e49dd3513b36d28a82efc23ebdf6d2c99cc7d412f0c61ab8bedbfe98aea9aa",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "ntems-annual-land-cover-1994",
+      "rowIds": [
+        "ntems-annual-land-cover"
+      ],
+      "relativePath": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1994.zip",
+      "expectedByteLength": 1492328775,
+      "expectedSha256": "62eaba23ca60f4489873c7634ca9b91034986b0103e262adeac11f09236574ac",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/phase1-ntems-annual-land-cover-execution-authorization.json",
+          "jsonPointer": "/inputs/10"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 1492328775,
+      "sha256": "62eaba23ca60f4489873c7634ca9b91034986b0103e262adeac11f09236574ac",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "ntems-annual-land-cover-1995",
+      "rowIds": [
+        "ntems-annual-land-cover"
+      ],
+      "relativePath": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1995.zip",
+      "expectedByteLength": 1498053540,
+      "expectedSha256": "24798848d49183d0a39dd282a89830039acb6e4374056d86a0c4d0425d6884e9",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/phase1-ntems-annual-land-cover-execution-authorization.json",
+          "jsonPointer": "/inputs/11"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 1498053540,
+      "sha256": "24798848d49183d0a39dd282a89830039acb6e4374056d86a0c4d0425d6884e9",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "ntems-annual-land-cover-1996",
+      "rowIds": [
+        "ntems-annual-land-cover"
+      ],
+      "relativePath": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1996.zip",
+      "expectedByteLength": 1498624946,
+      "expectedSha256": "6da70b4f070b22799445580d03bd55e2b1a7e438fc9b171c6608ae6f5b7ee464",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/phase1-ntems-annual-land-cover-execution-authorization.json",
+          "jsonPointer": "/inputs/12"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 1498624946,
+      "sha256": "6da70b4f070b22799445580d03bd55e2b1a7e438fc9b171c6608ae6f5b7ee464",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "ntems-annual-land-cover-1997",
+      "rowIds": [
+        "ntems-annual-land-cover"
+      ],
+      "relativePath": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1997.zip",
+      "expectedByteLength": 1500301551,
+      "expectedSha256": "2e63621c57c1104ac8fb4d0ffd165e0b831d1301aba73df6b00c89088df345a1",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/phase1-ntems-annual-land-cover-execution-authorization.json",
+          "jsonPointer": "/inputs/13"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 1500301551,
+      "sha256": "2e63621c57c1104ac8fb4d0ffd165e0b831d1301aba73df6b00c89088df345a1",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "ntems-annual-land-cover-1998",
+      "rowIds": [
+        "ntems-annual-land-cover"
+      ],
+      "relativePath": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1998.zip",
+      "expectedByteLength": 1502974375,
+      "expectedSha256": "b48e47c197f1d87416a2528437c51e01a386c2b5f0206f11ecbd060e2ea19c9b",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/phase1-ntems-annual-land-cover-execution-authorization.json",
+          "jsonPointer": "/inputs/14"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 1502974375,
+      "sha256": "b48e47c197f1d87416a2528437c51e01a386c2b5f0206f11ecbd060e2ea19c9b",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "ntems-annual-land-cover-1999",
+      "rowIds": [
+        "ntems-annual-land-cover"
+      ],
+      "relativePath": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_1999.zip",
+      "expectedByteLength": 1504085117,
+      "expectedSha256": "0b5c53ba5effabc8c075871593cd410d24d67898054370d28c20b6a22fbdf2a2",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/phase1-ntems-annual-land-cover-execution-authorization.json",
+          "jsonPointer": "/inputs/15"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 1504085117,
+      "sha256": "0b5c53ba5effabc8c075871593cd410d24d67898054370d28c20b6a22fbdf2a2",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "ntems-annual-land-cover-2000",
+      "rowIds": [
+        "ntems-annual-land-cover"
+      ],
+      "relativePath": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2000.zip",
+      "expectedByteLength": 1506122428,
+      "expectedSha256": "36bbe9f63fdcc13355e21abcdab98af8fdc0016a910e9be8513a329fb13a40cc",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/phase1-ntems-annual-land-cover-execution-authorization.json",
+          "jsonPointer": "/inputs/16"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 1506122428,
+      "sha256": "36bbe9f63fdcc13355e21abcdab98af8fdc0016a910e9be8513a329fb13a40cc",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "ntems-annual-land-cover-2001",
+      "rowIds": [
+        "ntems-annual-land-cover"
+      ],
+      "relativePath": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2001.zip",
+      "expectedByteLength": 1505838178,
+      "expectedSha256": "aabec291d296ea3588ff0fb1d195d11189eaed921978edf4e5348a675919930e",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/phase1-ntems-annual-land-cover-execution-authorization.json",
+          "jsonPointer": "/inputs/17"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 1505838178,
+      "sha256": "aabec291d296ea3588ff0fb1d195d11189eaed921978edf4e5348a675919930e",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "ntems-annual-land-cover-2002",
+      "rowIds": [
+        "ntems-annual-land-cover"
+      ],
+      "relativePath": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2002.zip",
+      "expectedByteLength": 1505579245,
+      "expectedSha256": "d15ef4086be6fe53a7811fc34a6c1c3b9096c46855a9b6620b2ea0232ffd38a9",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/phase1-ntems-annual-land-cover-execution-authorization.json",
+          "jsonPointer": "/inputs/18"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 1505579245,
+      "sha256": "d15ef4086be6fe53a7811fc34a6c1c3b9096c46855a9b6620b2ea0232ffd38a9",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "ntems-annual-land-cover-2003",
+      "rowIds": [
+        "ntems-annual-land-cover"
+      ],
+      "relativePath": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2003.zip",
+      "expectedByteLength": 1504483054,
+      "expectedSha256": "7139f2e512508298bc00a16416a1177ca1ad0c771c3f852eba8a1f1d25ac1301",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/phase1-ntems-annual-land-cover-execution-authorization.json",
+          "jsonPointer": "/inputs/19"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 1504483054,
+      "sha256": "7139f2e512508298bc00a16416a1177ca1ad0c771c3f852eba8a1f1d25ac1301",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "ntems-annual-land-cover-2004",
+      "rowIds": [
+        "ntems-annual-land-cover"
+      ],
+      "relativePath": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2004.zip",
+      "expectedByteLength": 1505123532,
+      "expectedSha256": "7b3927642c11a2ae80c71651407a0142ad127cd7ce420bf35416e996487bcab4",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/phase1-ntems-annual-land-cover-execution-authorization.json",
+          "jsonPointer": "/inputs/20"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 1505123532,
+      "sha256": "7b3927642c11a2ae80c71651407a0142ad127cd7ce420bf35416e996487bcab4",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "ntems-annual-land-cover-2005",
+      "rowIds": [
+        "ntems-annual-land-cover"
+      ],
+      "relativePath": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2005.zip",
+      "expectedByteLength": 1506734685,
+      "expectedSha256": "802281cb3a4a7b0ff01370eba3e2e79f71b2cf96ccbf2e5967a8f41736a88ee4",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/phase1-ntems-annual-land-cover-execution-authorization.json",
+          "jsonPointer": "/inputs/21"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 1506734685,
+      "sha256": "802281cb3a4a7b0ff01370eba3e2e79f71b2cf96ccbf2e5967a8f41736a88ee4",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "ntems-annual-land-cover-2006",
+      "rowIds": [
+        "ntems-annual-land-cover"
+      ],
+      "relativePath": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2006.zip",
+      "expectedByteLength": 1508214599,
+      "expectedSha256": "611e6d0339dbf8f9934457dc5edb2761927329f9e33f07814d7fa9a1b329dc4c",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/phase1-ntems-annual-land-cover-execution-authorization.json",
+          "jsonPointer": "/inputs/22"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 1508214599,
+      "sha256": "611e6d0339dbf8f9934457dc5edb2761927329f9e33f07814d7fa9a1b329dc4c",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "ntems-annual-land-cover-2007",
+      "rowIds": [
+        "ntems-annual-land-cover"
+      ],
+      "relativePath": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2007.zip",
+      "expectedByteLength": 1506551890,
+      "expectedSha256": "9a2292d5169884bb41199ce7717ad87ff49dabbfd08c9ac3410b1902f6ccc02e",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/phase1-ntems-annual-land-cover-execution-authorization.json",
+          "jsonPointer": "/inputs/23"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 1506551890,
+      "sha256": "9a2292d5169884bb41199ce7717ad87ff49dabbfd08c9ac3410b1902f6ccc02e",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "ntems-annual-land-cover-2008",
+      "rowIds": [
+        "ntems-annual-land-cover"
+      ],
+      "relativePath": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2008.zip",
+      "expectedByteLength": 1504569657,
+      "expectedSha256": "098264bbd04fbe246c9caa9e2fe183b596e62574eb0abd3761b83e1de8f8e76b",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/phase1-ntems-annual-land-cover-execution-authorization.json",
+          "jsonPointer": "/inputs/24"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 1504569657,
+      "sha256": "098264bbd04fbe246c9caa9e2fe183b596e62574eb0abd3761b83e1de8f8e76b",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "ntems-annual-land-cover-2009",
+      "rowIds": [
+        "ntems-annual-land-cover"
+      ],
+      "relativePath": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2009.zip",
+      "expectedByteLength": 1503537551,
+      "expectedSha256": "d6431ef5b72a136d6ec6ed17c87b402ef15671bf01fafa0866ff92dbdd2c77e7",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/phase1-ntems-annual-land-cover-execution-authorization.json",
+          "jsonPointer": "/inputs/25"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 1503537551,
+      "sha256": "d6431ef5b72a136d6ec6ed17c87b402ef15671bf01fafa0866ff92dbdd2c77e7",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "ntems-annual-land-cover-2010",
+      "rowIds": [
+        "ntems-annual-land-cover"
+      ],
+      "relativePath": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2010.zip",
+      "expectedByteLength": 1507074555,
+      "expectedSha256": "30ed54e0f37190009c342a65462505594647f408e2d064473a2fd3d9de2471da",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/phase1-ntems-annual-land-cover-execution-authorization.json",
+          "jsonPointer": "/inputs/26"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 1507074555,
+      "sha256": "30ed54e0f37190009c342a65462505594647f408e2d064473a2fd3d9de2471da",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "ntems-annual-land-cover-2011",
+      "rowIds": [
+        "ntems-annual-land-cover"
+      ],
+      "relativePath": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2011.zip",
+      "expectedByteLength": 1511598018,
+      "expectedSha256": "f8a386793fd9c4d588388b98490f03e60242303cf14360a238b3dcbaba5eff9b",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/phase1-ntems-annual-land-cover-execution-authorization.json",
+          "jsonPointer": "/inputs/27"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 1511598018,
+      "sha256": "f8a386793fd9c4d588388b98490f03e60242303cf14360a238b3dcbaba5eff9b",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "ntems-annual-land-cover-2012",
+      "rowIds": [
+        "ntems-annual-land-cover"
+      ],
+      "relativePath": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2012.zip",
+      "expectedByteLength": 1520484319,
+      "expectedSha256": "2fe932f00881694f0fd36add97ad52614b32cb0944e4b23120cb5b88883ec6e7",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/phase1-ntems-annual-land-cover-execution-authorization.json",
+          "jsonPointer": "/inputs/28"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 1520484319,
+      "sha256": "2fe932f00881694f0fd36add97ad52614b32cb0944e4b23120cb5b88883ec6e7",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "ntems-annual-land-cover-2013",
+      "rowIds": [
+        "ntems-annual-land-cover"
+      ],
+      "relativePath": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2013.zip",
+      "expectedByteLength": 1524673952,
+      "expectedSha256": "37b2ef95a16c615e90dbfda9300e7f37436bb024482e616f867d8954924fb50d",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/phase1-ntems-annual-land-cover-execution-authorization.json",
+          "jsonPointer": "/inputs/29"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 1524673952,
+      "sha256": "37b2ef95a16c615e90dbfda9300e7f37436bb024482e616f867d8954924fb50d",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "ntems-annual-land-cover-2014",
+      "rowIds": [
+        "ntems-annual-land-cover"
+      ],
+      "relativePath": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2014.zip",
+      "expectedByteLength": 1528666741,
+      "expectedSha256": "56ea51e217ef5ebe393d826808e4558aa9b48c4b79c3eab7bb5322aa623fbc38",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/phase1-ntems-annual-land-cover-execution-authorization.json",
+          "jsonPointer": "/inputs/30"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 1528666741,
+      "sha256": "56ea51e217ef5ebe393d826808e4558aa9b48c4b79c3eab7bb5322aa623fbc38",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "ntems-annual-land-cover-2015",
+      "rowIds": [
+        "ntems-annual-land-cover"
+      ],
+      "relativePath": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2015.zip",
+      "expectedByteLength": 1533932205,
+      "expectedSha256": "abc3453125d3b76bab4d4cb54ad219a9c9d0c33c8bbb642e34886d4ecf66c8db",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/phase1-ntems-annual-land-cover-execution-authorization.json",
+          "jsonPointer": "/inputs/31"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 1533932205,
+      "sha256": "abc3453125d3b76bab4d4cb54ad219a9c9d0c33c8bbb642e34886d4ecf66c8db",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "ntems-annual-land-cover-2016",
+      "rowIds": [
+        "ntems-annual-land-cover"
+      ],
+      "relativePath": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2016.zip",
+      "expectedByteLength": 1535950872,
+      "expectedSha256": "2c6997eec4df23e36fdbc5b47b5756897614961f887be5114f883eeefd3125f3",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/phase1-ntems-annual-land-cover-execution-authorization.json",
+          "jsonPointer": "/inputs/32"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 1535950872,
+      "sha256": "2c6997eec4df23e36fdbc5b47b5756897614961f887be5114f883eeefd3125f3",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "ntems-annual-land-cover-2017",
+      "rowIds": [
+        "ntems-annual-land-cover"
+      ],
+      "relativePath": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2017.zip",
+      "expectedByteLength": 1533444187,
+      "expectedSha256": "b0cf041c1efa3e2ea5666aed05d6b9543ead180ec64ad6b0916ea8c4d17664fe",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/phase1-ntems-annual-land-cover-execution-authorization.json",
+          "jsonPointer": "/inputs/33"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 1533444187,
+      "sha256": "b0cf041c1efa3e2ea5666aed05d6b9543ead180ec64ad6b0916ea8c4d17664fe",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "ntems-annual-land-cover-2018",
+      "rowIds": [
+        "ntems-annual-land-cover"
+      ],
+      "relativePath": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2018.zip",
+      "expectedByteLength": 1532753141,
+      "expectedSha256": "e39f70e8482ed718fc3f2128dedf8014204a8f771d2a1a7f742508cec5b3c974",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/phase1-ntems-annual-land-cover-execution-authorization.json",
+          "jsonPointer": "/inputs/34"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 1532753141,
+      "sha256": "e39f70e8482ed718fc3f2128dedf8014204a8f771d2a1a7f742508cec5b3c974",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "ntems-annual-land-cover-2019",
+      "rowIds": [
+        "ntems-annual-land-cover"
+      ],
+      "relativePath": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2019.zip",
+      "expectedByteLength": 1535802581,
+      "expectedSha256": "a785a45513eb2248ca6d8536b0bf0e0ad72a214807372f715729263e2857e301",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/phase1-ntems-annual-land-cover-execution-authorization.json",
+          "jsonPointer": "/inputs/35"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 1535802581,
+      "sha256": "a785a45513eb2248ca6d8536b0bf0e0ad72a214807372f715729263e2857e301",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "ntems-annual-land-cover-2020",
+      "rowIds": [
+        "ntems-annual-land-cover"
+      ],
+      "relativePath": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2020.zip",
+      "expectedByteLength": 1536672675,
+      "expectedSha256": "e4a043d2a06adda4c87ad260579a1c97996d1f226fbf7591f83fae3a28368097",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/phase1-ntems-annual-land-cover-execution-authorization.json",
+          "jsonPointer": "/inputs/36"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 1536672675,
+      "sha256": "e4a043d2a06adda4c87ad260579a1c97996d1f226fbf7591f83fae3a28368097",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "ntems-annual-land-cover-2021",
+      "rowIds": [
+        "ntems-annual-land-cover"
+      ],
+      "relativePath": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2021.zip",
+      "expectedByteLength": 1535181282,
+      "expectedSha256": "96376658236c252ad27d6ecad4d2a76abd215d95905dec748617e6d861ae7a25",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/phase1-ntems-annual-land-cover-execution-authorization.json",
+          "jsonPointer": "/inputs/37"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 1535181282,
+      "sha256": "96376658236c252ad27d6ecad4d2a76abd215d95905dec748617e6d861ae7a25",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "ntems-annual-land-cover-2022",
+      "rowIds": [
+        "ntems-annual-land-cover"
+      ],
+      "relativePath": "raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2022.zip",
+      "expectedByteLength": 1535510211,
+      "expectedSha256": "53555f815ffa68adb7c5b6117dd15d7b5385771a36926691e8a41e5fc12b11dd",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/phase1-ntems-annual-land-cover-execution-authorization.json",
+          "jsonPointer": "/inputs/38"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 1535510211,
+      "sha256": "53555f815ffa68adb7c5b6117dd15d7b5385771a36926691e8a41e5fc12b11dd",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "nrcan-ca-forest-harvest-1985-2022-2026-08-14",
+      "rowIds": [
+        "ntems-forest-harvest"
+      ],
+      "relativePath": "raw/nrcan-ca-forest-harvest-1985-2022/2026-08-14/CA_Forest_Harvest_1985-2022.zip",
+      "expectedByteLength": 247945479,
+      "expectedSha256": "c6f41dff46d91812874672edb53233dac4126952132ad6d1131ad47b11ad7aad",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/staged-acquisitions.json",
+          "jsonPointer": "/entries/10"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 247945479,
+      "sha256": "c6f41dff46d91812874672edb53233dac4126952132ad6d1131ad47b11ad7aad",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "nrcan-forest-canopy-cover-2022-2026-08-11",
+      "rowIds": [
+        "ntems-canopy-cover"
+      ],
+      "relativePath": "raw/nrcan-forest-canopy-cover-2022/2026-08-11/CA_canopy_cover_2022.zip",
+      "expectedByteLength": 9954395939,
+      "expectedSha256": "80c37461f4deccfdfffc26124e9064d53a94dde660b9f96194445870393af130",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/staged-acquisitions.json",
+          "jsonPointer": "/entries/9"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 9954395939,
+      "sha256": "80c37461f4deccfdfffc26124e9064d53a94dde660b9f96194445870393af130",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "nrcan-forest-canopy-height-2022-2026-08-14",
+      "rowIds": [
+        "ntems-canopy-height"
+      ],
+      "relativePath": "raw/nrcan-forest-canopy-height-2022/2026-08-14/CA_canopy_height_2022.zip",
+      "expectedByteLength": 10347564066,
+      "expectedSha256": "86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/staged-acquisitions.json",
+          "jsonPointer": "/entries/2"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 10347564066,
+      "sha256": "86282401706ac1bd60fb3ed55c14ef6f2ae689decfbd9db178a725912522e124",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "cwfis-current-active-wildfires-2026-08-14T202242Z",
+      "rowIds": [
+        "cwfis-current"
+      ],
+      "relativePath": "raw/cwfis-current-active-fires/2026-08-14/cwfif_national_activefires_2026-08-14T202242Z.zip",
+      "expectedByteLength": 45917,
+      "expectedSha256": "fc3d4a0730f30d6f12782b16e9459c173dabd6e50d0715b27cddecd954097f86",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/staged-acquisitions.json",
+          "jsonPointer": "/entries/0"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 45917,
+      "sha256": "fc3d4a0730f30d6f12782b16e9459c173dabd6e50d0715b27cddecd954097f86",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "bc-wildfire-current-perimeters-2026-08-14",
+      "rowIds": [
+        "bc-wildfire"
+      ],
+      "relativePath": "raw/bc-wildfire-fire-perimeters/2026-08-14/bc-wildfire-fire-perimeters_2026-08-14.geojson",
+      "expectedByteLength": 4813292,
+      "expectedSha256": "46ee3a97ff83128630a030b5cfcc7f3c389fc94e3ca95d463595ab6f4fb57e83",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/staged-acquisitions.json",
+          "jsonPointer": "/entries/12"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 4813292,
+      "sha256": "46ee3a97ff83128630a030b5cfcc7f3c389fc94e3ca95d463595ab6f4fb57e83",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "alberta-wildfire-locations-2026-08-14",
+      "rowIds": [
+        "ab-wildfire"
+      ],
+      "relativePath": "raw/alberta-wildfire-locations/2026-08-14/alberta-wildfire-locations_2026-08-14.geojson",
+      "expectedByteLength": 423853,
+      "expectedSha256": "f0e86ea34a7624c365349b3a8fbb77967bb45ab73c507cf441efb8f6a8736ee0",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/staged-acquisitions.json",
+          "jsonPointer": "/entries/13"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 423853,
+      "sha256": "f0e86ea34a7624c365349b3a8fbb77967bb45ab73c507cf441efb8f6a8736ee0",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "ontario-in-year-fire-perimeters-2026-08-14",
+      "rowIds": [
+        "on-fire-disturbance"
+      ],
+      "relativePath": "raw/ontario-in-year-fire-perimeters/2026-08-14/ontario-in-year-fire-perimeters_2026-08-14.geojson",
+      "expectedByteLength": 19510504,
+      "expectedSha256": "99881f19a32068b5d66b244955f7b088e873ffe76eafebf1740f03e16f042f11",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/staged-acquisitions.json",
+          "jsonPointer": "/entries/15"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 19510504,
+      "sha256": "99881f19a32068b5d66b244955f7b088e873ffe76eafebf1740f03e16f042f11",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-original-current-inventory-2026-08-14",
+      "rowIds": [
+        "qc-original-current-inventory"
+      ],
+      "relativePath": "raw/qc-original-current-inventory/2026-08-14/CARTE_ECO_ORI_PROV_GPKG.zip",
+      "expectedByteLength": 11244667626,
+      "expectedSha256": "c10d691516569de76642dc1fc64e662f2569b5b58ab5d945b58b8b7834ba9c61",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/staged-acquisitions.json",
+          "jsonPointer": "/entries/14"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 11244667626,
+      "sha256": "c10d691516569de76642dc1fc64e662f2569b5b58ab5d945b58b8b7834ba9c61",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "alberta-avi-crown-2026-08-11",
+      "rowIds": [
+        "ab-avi-crown",
+        "ab-avi-post-harvest"
+      ],
+      "relativePath": "raw/alberta-avi-crown/2026-08-11/AlbertaVegetationInventoryCrown.zip",
+      "expectedByteLength": 557041258,
+      "expectedSha256": "e93572129f25c83911b73eadfacff12624ff6b08f2db4b311c1662196b665093",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/staged-acquisitions.json",
+          "jsonPointer": "/entries/6"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 557041258,
+      "sha256": "e93572129f25c83911b73eadfacff12624ff6b08f2db4b311c1662196b665093",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "alberta-primary-land-vegetation-2026-08-14",
+      "rowIds": [
+        "ab-primary-land-vegetation"
+      ],
+      "relativePath": "raw/alberta-primary-land-vegetation/2026-08-14/PrimaryLandAndVegetationInventoryPLVI.zip",
+      "expectedByteLength": 675544895,
+      "expectedSha256": "017a0a835c680ca1b6c1eb790322a28e1b4c0c64e36924da46d8bb99cb1571d3",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/staged-acquisitions.json",
+          "jsonPointer": "/entries/8"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 675544895,
+      "sha256": "017a0a835c680ca1b6c1eb790322a28e1b4c0c64e36924da46d8bb99cb1571d3",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "elections-canada-federal-electoral-districts-45th-general-election-2025-shp",
+      "rowIds": [
+        "fed-2023-ridings",
+        "elections-canada-45th-files"
+      ],
+      "relativePath": "raw/elections-canada-federal-electoral-districts/2026-08-14/FederalElectoralDistricts_2025_SHP.zip",
+      "expectedByteLength": 10301648,
+      "expectedSha256": "4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/staged-acquisitions.json",
+          "jsonPointer": "/entries/1"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 10301648,
+      "sha256": "4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-ecoforest-map-2026-08-14",
+      "rowIds": [
+        "qc-current-ecoforest"
+      ],
+      "relativePath": "raw/qc-current-ecoforest/2026-08-14/CARTE_ECO_MAJ_PROV_GPKG.zip",
+      "expectedByteLength": 12399475076,
+      "expectedSha256": "c67c56b0c101e95bef4fbca53a06e2f1578fe38293961017f70d815209740cf1",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-immutable-promotion-preparation.json",
+          "jsonPointer": "/artifacts/0"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 12399475076,
+      "sha256": "c67c56b0c101e95bef4fbca53a06e2f1578fe38293961017f70d815209740cf1",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "cwfis-nfdb-poly-current",
+      "rowIds": [
+        "cwfis-historical"
+      ],
+      "relativePath": "staging/nfdb-poly-current/NFDB_poly_verified.zip",
+      "expectedByteLength": 778498701,
+      "expectedSha256": "a0373a6dd8e341c3440ed9907f81e8ba6227135dacd9cdc07e4c6af0a59b1b4e",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/nfdb-poly-current-profile.json",
+          "jsonPointer": "/artifact"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 778498701,
+      "sha256": "a0373a6dd8e341c3440ed9907f81e8ba6227135dacd9cdc07e4c6af0a59b1b4e",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "cwfis-nbac-payload",
+      "rowIds": [
+        "cwfis-historical"
+      ],
+      "relativePath": "raw/nrcan-nbac-1972-2025/2026-08-27/NBAC_1972to2025_20260513_shp.zip",
+      "expectedByteLength": 1257052370,
+      "expectedSha256": "c42740eb9d2fe3991a27344d0c33927705ec3e78c277efc5311b502439cb2165",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/phase1-nbac-profile-2026-08-27.json",
+          "jsonPointer": "/artifacts/payload"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 1257052370,
+      "sha256": "c42740eb9d2fe3991a27344d0c33927705ec3e78c277efc5311b502439cb2165",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "cwfis-nbac-metadata",
+      "rowIds": [
+        "cwfis-historical"
+      ],
+      "relativePath": "raw/nrcan-nbac-1972-2025/2026-08-27/NBAC_1972to2025_20260513_shp_metadata.pdf",
+      "expectedByteLength": 3483845,
+      "expectedSha256": "cc04f0392921cf43723351ad1b1ed5e4794432724d95421db63dd92c33a4fca9",
+      "kind": "supporting-record",
+      "canonicalPayload": false,
+      "sourceRefs": [
+        {
+          "path": "data/phase1-nbac-profile-2026-08-27.json",
+          "jsonPointer": "/artifacts/metadata"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 3483845,
+      "sha256": "cc04f0392921cf43723351ad1b1ed5e4794432724d95421db63dd92c33a4fca9",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "cwfis-nbac-catalogueSnapshot",
+      "rowIds": [
+        "cwfis-historical"
+      ],
+      "relativePath": "raw/nrcan-nbac-1972-2025/2026-08-27/cwfis-catalogue-537a1fd0-698e-4a7b-85a1-e02581ae78b2.json",
+      "expectedByteLength": 73615,
+      "expectedSha256": "c38c3555da665884201e07c5c0b0a1dd46afb042b9b39466569ff6e39ac105c9",
+      "kind": "supporting-record",
+      "canonicalPayload": false,
+      "sourceRefs": [
+        {
+          "path": "data/phase1-nbac-profile-2026-08-27.json",
+          "jsonPointer": "/artifacts/catalogueSnapshot"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 73615,
+      "sha256": "c38c3555da665884201e07c5c0b0a1dd46afb042b9b39466569ff6e39ac105c9",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "cwfis-nbac-geospatialProfile",
+      "rowIds": [
+        "cwfis-historical"
+      ],
+      "relativePath": "raw/nrcan-nbac-1972-2025/2026-08-27/geospatial-profile.json",
+      "expectedByteLength": 3212,
+      "expectedSha256": "fb95cc162d23920008708ca856f147f7bd4eb9cd2e3234af2dd7e73990eab1a7",
+      "kind": "supporting-record",
+      "canonicalPayload": false,
+      "sourceRefs": [
+        {
+          "path": "data/phase1-nbac-profile-2026-08-27.json",
+          "jsonPointer": "/artifacts/geospatialProfile"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 3212,
+      "sha256": "fb95cc162d23920008708ca856f147f7bd4eb9cd2e3234af2dd7e73990eab1a7",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-01",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_11M_GPKG.zip",
+      "expectedByteLength": 675140,
+      "expectedSha256": "a30725db19106bac9612fc7e49d32e8f07eddc76e69c584b3c6281be5742ac2a",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/0"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 675140,
+      "sha256": "a30725db19106bac9612fc7e49d32e8f07eddc76e69c584b3c6281be5742ac2a",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-02",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_11N_GPKG.zip",
+      "expectedByteLength": 4936187,
+      "expectedSha256": "798c88fcc16fafa15b854a1a896afe405249b11dd10fa3fcdce8083b6c97fdf7",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/1"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 4936187,
+      "sha256": "798c88fcc16fafa15b854a1a896afe405249b11dd10fa3fcdce8083b6c97fdf7",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-03",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_12E_GPKG.zip",
+      "expectedByteLength": 219824382,
+      "expectedSha256": "e3d1a6205331f889be86fecb8753e528ebec73d480c49369478f5373d166610f",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/2"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 219824382,
+      "sha256": "e3d1a6205331f889be86fecb8753e528ebec73d480c49369478f5373d166610f",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-04",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_12F_GPKG.zip",
+      "expectedByteLength": 16364380,
+      "expectedSha256": "2358987916e58f4c1f814d79bbe9fc198202e61367fccfd67a1f4de262b22193",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/3"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 16364380,
+      "sha256": "2358987916e58f4c1f814d79bbe9fc198202e61367fccfd67a1f4de262b22193",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-05",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_12L_GPKG.zip",
+      "expectedByteLength": 434159,
+      "expectedSha256": "9e12e75f97e3bd34bbefd23566450b6090fdc4bd2442cc239ae9467d196c431b",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/4"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 434159,
+      "sha256": "9e12e75f97e3bd34bbefd23566450b6090fdc4bd2442cc239ae9467d196c431b",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-06",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_21E_GPKG.zip",
+      "expectedByteLength": 312305373,
+      "expectedSha256": "4ef331b0a813350c97fd41b5bef28ce448419b337d02217d23c5c8bd08b1965e",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/5"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 312305373,
+      "sha256": "4ef331b0a813350c97fd41b5bef28ce448419b337d02217d23c5c8bd08b1965e",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-07",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_21K_GPKG.zip",
+      "expectedByteLength": 10355048,
+      "expectedSha256": "dd871622c44508eb77f459c0941077ee07e5d47df0a72ec49a0644acea91762c",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/6"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 10355048,
+      "sha256": "dd871622c44508eb77f459c0941077ee07e5d47df0a72ec49a0644acea91762c",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-08",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_21L_GPKG.zip",
+      "expectedByteLength": 253236985,
+      "expectedSha256": "72e2ac5f661d2b974a6c75d0b0d75ca8e82258c2376c1c82c424618a92ca8e61",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/7"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 253236985,
+      "sha256": "72e2ac5f661d2b974a6c75d0b0d75ca8e82258c2376c1c82c424618a92ca8e61",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-09",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_21M_GPKG.zip",
+      "expectedByteLength": 308423213,
+      "expectedSha256": "65e4e573acb6fb98c948a23830e69e34caa32d9862f7271c39c7c698146ea8a1",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/8"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 308423213,
+      "sha256": "65e4e573acb6fb98c948a23830e69e34caa32d9862f7271c39c7c698146ea8a1",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-10",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_21N_GPKG.zip",
+      "expectedByteLength": 242287402,
+      "expectedSha256": "2193bb6c95385e3b7682d2217c30893f1e329d551084e8c2ec0967d6d16ac430",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/9"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 242287402,
+      "sha256": "2193bb6c95385e3b7682d2217c30893f1e329d551084e8c2ec0967d6d16ac430",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-11",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_21O_GPKG.zip",
+      "expectedByteLength": 15092565,
+      "expectedSha256": "61e3ff386525783bfdb36d048d4a37031b92fc5ffeb4b0f4a8950511911163b4",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/10"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 15092565,
+      "sha256": "61e3ff386525783bfdb36d048d4a37031b92fc5ffeb4b0f4a8950511911163b4",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-12",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_22A_GPKG.zip",
+      "expectedByteLength": 214758966,
+      "expectedSha256": "f689f9e2dacbb7f2de3303acd21136212297057b2b58f7afa6eff7e110ab4391",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/11"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 214758966,
+      "sha256": "f689f9e2dacbb7f2de3303acd21136212297057b2b58f7afa6eff7e110ab4391",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-13",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_22B_GPKG.zip",
+      "expectedByteLength": 281916900,
+      "expectedSha256": "fdb80deae977ba2c6e6cf3429eca8b7d8cfecfbbf9affb25a1d649529d37a112",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/12"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 281916900,
+      "sha256": "fdb80deae977ba2c6e6cf3429eca8b7d8cfecfbbf9affb25a1d649529d37a112",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-14",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_22C_GPKG.zip",
+      "expectedByteLength": 282354624,
+      "expectedSha256": "6334cd835a3f3b8ed4c2962ee80108b11d3e9b88a4abddbc60ec3048b9376394",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/13"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 282354624,
+      "sha256": "6334cd835a3f3b8ed4c2962ee80108b11d3e9b88a4abddbc60ec3048b9376394",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-15",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_22D_GPKG.zip",
+      "expectedByteLength": 399401794,
+      "expectedSha256": "99b116d636ef1928f95b3a549bfbf6453c41fc6a611c8bc81647ffc2de429c41",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/14"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 399401794,
+      "sha256": "99b116d636ef1928f95b3a549bfbf6453c41fc6a611c8bc81647ffc2de429c41",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-16",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_22E_GPKG.zip",
+      "expectedByteLength": 459354852,
+      "expectedSha256": "66fe11b25c78253f226c77584460c00c02d579bc95ee554a88a4ed448aa1a293",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/15"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 459354852,
+      "sha256": "66fe11b25c78253f226c77584460c00c02d579bc95ee554a88a4ed448aa1a293",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-17",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_22F_GPKG.zip",
+      "expectedByteLength": 569922696,
+      "expectedSha256": "b77adaadb8ca7e8bbce4f7b4c62204a6510cf2db4895ab49016df18379e692e3",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/16"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 569922696,
+      "sha256": "b77adaadb8ca7e8bbce4f7b4c62204a6510cf2db4895ab49016df18379e692e3",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-18",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_22G_GPKG.zip",
+      "expectedByteLength": 232409112,
+      "expectedSha256": "75f56e41f6d58ebddad087cdc60641a59f9070e4d7f5814f9de5d1025b56acd6",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/17"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 232409112,
+      "sha256": "75f56e41f6d58ebddad087cdc60641a59f9070e4d7f5814f9de5d1025b56acd6",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-19",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_22H_GPKG.zip",
+      "expectedByteLength": 86840140,
+      "expectedSha256": "ea30978c67d3ed2bc787a5e03b4930e064b9a4493e50d7945afe582b2b84f49d",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/18"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 86840140,
+      "sha256": "ea30978c67d3ed2bc787a5e03b4930e064b9a4493e50d7945afe582b2b84f49d",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-20",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_22I_GPKG.zip",
+      "expectedByteLength": 128287002,
+      "expectedSha256": "945a768f91a761e724e4753e281e155e0e59090d71e97786575e787c6c88ea4a",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/19"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 128287002,
+      "sha256": "945a768f91a761e724e4753e281e155e0e59090d71e97786575e787c6c88ea4a",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-21",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_22J_GPKG.zip",
+      "expectedByteLength": 464600595,
+      "expectedSha256": "f9e193e8782cbb1af18472dd495935221b4f747a0350aa4ff76a2d525a177dda",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/20"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 464600595,
+      "sha256": "f9e193e8782cbb1af18472dd495935221b4f747a0350aa4ff76a2d525a177dda",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-22",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_22K_GPKG.zip",
+      "expectedByteLength": 554851276,
+      "expectedSha256": "d10bca5002a6381f22051de1a02e5c24ee4d5027642b3d399d294cabdf3707ac",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/21"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 554851276,
+      "sha256": "d10bca5002a6381f22051de1a02e5c24ee4d5027642b3d399d294cabdf3707ac",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-23",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_22L_GPKG.zip",
+      "expectedByteLength": 533260668,
+      "expectedSha256": "bdb5a178027bff9a5acffa04577ee81338c9dd7f8edbb6351313ed4c37783194",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/22"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 533260668,
+      "sha256": "bdb5a178027bff9a5acffa04577ee81338c9dd7f8edbb6351313ed4c37783194",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-24",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_22M_GPKG.zip",
+      "expectedByteLength": 159555689,
+      "expectedSha256": "43f6bb954c8b116c2f7fcb9ae58b8ab880e8e4b7a0b94780e1eea5f5f161abe5",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/23"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 159555689,
+      "sha256": "43f6bb954c8b116c2f7fcb9ae58b8ab880e8e4b7a0b94780e1eea5f5f161abe5",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-25",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_22N_GPKG.zip",
+      "expectedByteLength": 303165572,
+      "expectedSha256": "1e031b614eb6ca89e1d35afeb407c2712ee2139fa779b1efd7dff79a97969dce",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/24"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 303165572,
+      "sha256": "1e031b614eb6ca89e1d35afeb407c2712ee2139fa779b1efd7dff79a97969dce",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-26",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_22O_GPKG.zip",
+      "expectedByteLength": 209230675,
+      "expectedSha256": "dfed25117f0c2551cabda1accd032d141723f1a1d240eb5761bb23a1137b933b",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/25"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 209230675,
+      "sha256": "dfed25117f0c2551cabda1accd032d141723f1a1d240eb5761bb23a1137b933b",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-27",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_23B_GPKG.zip",
+      "expectedByteLength": 3480169,
+      "expectedSha256": "d3d49b4b474fdd23bb3998ca07705ad78cfd537ed9bc0fed0782577dfe8c4d79",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/26"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 3480169,
+      "sha256": "d3d49b4b474fdd23bb3998ca07705ad78cfd537ed9bc0fed0782577dfe8c4d79",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-28",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_23C_GPKG.zip",
+      "expectedByteLength": 4325291,
+      "expectedSha256": "cd80bc5eefd820546ddd8e0a83871a6706220d355a3af70095dc47cf2b138a12",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/27"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 4325291,
+      "sha256": "cd80bc5eefd820546ddd8e0a83871a6706220d355a3af70095dc47cf2b138a12",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-29",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_31A_GPKG.zip",
+      "expectedByteLength": 718419,
+      "expectedSha256": "56a2991b3fbf9175332da1f48ead3fe3145082351b3b77d64b2fa004d1793db7",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/28"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 718419,
+      "sha256": "56a2991b3fbf9175332da1f48ead3fe3145082351b3b77d64b2fa004d1793db7",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-30",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_31B_GPKG.zip",
+      "expectedByteLength": 3051693,
+      "expectedSha256": "a3df1a722522664c5a9d15e2889d63da51d41076ac4445d8acd1ff569675ddad",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/29"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 3051693,
+      "sha256": "a3df1a722522664c5a9d15e2889d63da51d41076ac4445d8acd1ff569675ddad",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-31",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_31F_GPKG.zip",
+      "expectedByteLength": 123605796,
+      "expectedSha256": "4f646bf8c6450c644cc6b221547b23c8f3ce3df202d8b4e9b0062a5b82742d51",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/30"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 123605796,
+      "sha256": "4f646bf8c6450c644cc6b221547b23c8f3ce3df202d8b4e9b0062a5b82742d51",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-32",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_31G_GPKG.zip",
+      "expectedByteLength": 197987526,
+      "expectedSha256": "6466de84cb6b56c2323789c82f7cb518b1902561359ab9cfd6b78c946f7fb721",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/31"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 197987526,
+      "sha256": "6466de84cb6b56c2323789c82f7cb518b1902561359ab9cfd6b78c946f7fb721",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-33",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_31H_GPKG.zip",
+      "expectedByteLength": 268402525,
+      "expectedSha256": "81afa435d150132af47f8df3ad13269a7c45bf204fb6aba60b083a73c89e7338",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/32"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 268402525,
+      "sha256": "81afa435d150132af47f8df3ad13269a7c45bf204fb6aba60b083a73c89e7338",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-34",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_31I_GPKG.zip",
+      "expectedByteLength": 521060009,
+      "expectedSha256": "e89606eb0ba9228f9beef5999aabeb7864a8a1cdec9321d8347efb75e4d605db",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/33"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 521060009,
+      "sha256": "e89606eb0ba9228f9beef5999aabeb7864a8a1cdec9321d8347efb75e4d605db",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-35",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_31J_GPKG.zip",
+      "expectedByteLength": 876084262,
+      "expectedSha256": "3a96ccb1e3c1b898481b0d694ac4983b431af6d6fd5788426026f17d03a049da",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/34"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 876084262,
+      "sha256": "3a96ccb1e3c1b898481b0d694ac4983b431af6d6fd5788426026f17d03a049da",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-36",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_31K_GPKG.zip",
+      "expectedByteLength": 810754268,
+      "expectedSha256": "82baef7dc7e977c35c6674ac01b318907bcc627c27d67c39fef718f8dc38a50e",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/35"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 810754268,
+      "sha256": "82baef7dc7e977c35c6674ac01b318907bcc627c27d67c39fef718f8dc38a50e",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-37",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_31L_GPKG.zip",
+      "expectedByteLength": 164798953,
+      "expectedSha256": "28b287d3cb8c97c6085cf478ea1f4c45c8eb2ee1243898543ae0ac75d9c855e6",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/36"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 164798953,
+      "sha256": "28b287d3cb8c97c6085cf478ea1f4c45c8eb2ee1243898543ae0ac75d9c855e6",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-38",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_31M_GPKG.zip",
+      "expectedByteLength": 386589342,
+      "expectedSha256": "debbf9f8d6a3e1c87be417986aaf66acad86c3ad11cbec7b2762defaf6afce14",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/37"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 386589342,
+      "sha256": "debbf9f8d6a3e1c87be417986aaf66acad86c3ad11cbec7b2762defaf6afce14",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-39",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_31N_GPKG.zip",
+      "expectedByteLength": 366860017,
+      "expectedSha256": "8f4f3ac08f70a620bad4b0ed427bccb58954ba901926c9f9faf588cdbebe7011",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/38"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 366860017,
+      "sha256": "8f4f3ac08f70a620bad4b0ed427bccb58954ba901926c9f9faf588cdbebe7011",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-40",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_31O_GPKG.zip",
+      "expectedByteLength": 633765996,
+      "expectedSha256": "7f7a03c3a68a7f867852d6c743a08f1367b94d7821289def13b976cb977d1b4b",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/39"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 633765996,
+      "sha256": "7f7a03c3a68a7f867852d6c743a08f1367b94d7821289def13b976cb977d1b4b",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-41",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_31P_GPKG.zip",
+      "expectedByteLength": 637514545,
+      "expectedSha256": "5acb74f2292329fbf6b81dbaa188f31b8eb84ed95783cdedfc803df98492d2e1",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/40"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 637514545,
+      "sha256": "5acb74f2292329fbf6b81dbaa188f31b8eb84ed95783cdedfc803df98492d2e1",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-42",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_32A_GPKG.zip",
+      "expectedByteLength": 489890173,
+      "expectedSha256": "336cc2a7d0ee624da2f22d30f25e6d6badca0a7bd3ba9b34a20bad0594b37cb0",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/41"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 489890173,
+      "sha256": "336cc2a7d0ee624da2f22d30f25e6d6badca0a7bd3ba9b34a20bad0594b37cb0",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-43",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_32B_GPKG.zip",
+      "expectedByteLength": 516819658,
+      "expectedSha256": "273f7a58abcae4e7d8d1be647a7f1e1ab4904facd39fdd16393db4709dd6e796",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/42"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 516819658,
+      "sha256": "273f7a58abcae4e7d8d1be647a7f1e1ab4904facd39fdd16393db4709dd6e796",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-44",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_32C_GPKG.zip",
+      "expectedByteLength": 463005858,
+      "expectedSha256": "744bdbca599be16fbb78de9d9db98b3a09943e1677d7896993acc844289fe4d3",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/43"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 463005858,
+      "sha256": "744bdbca599be16fbb78de9d9db98b3a09943e1677d7896993acc844289fe4d3",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-45",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_32D_GPKG.zip",
+      "expectedByteLength": 326130629,
+      "expectedSha256": "3b19f7a332d4beedfee7dfc958f4d45613732f044f214a53fe0d511ff24845d7",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/44"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 326130629,
+      "sha256": "3b19f7a332d4beedfee7dfc958f4d45613732f044f214a53fe0d511ff24845d7",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-46",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_32E_GPKG.zip",
+      "expectedByteLength": 332000085,
+      "expectedSha256": "86a46ae106d36eb105ea76ed29396e6108106084de759b0c1c095ad815a56f6b",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/45"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 332000085,
+      "sha256": "86a46ae106d36eb105ea76ed29396e6108106084de759b0c1c095ad815a56f6b",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-47",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_32F_GPKG.zip",
+      "expectedByteLength": 511556453,
+      "expectedSha256": "81150110ad6ff4680f5ef19431282029d01e3f5a599797ce6530426e8f31a1ee",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/46"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 511556453,
+      "sha256": "81150110ad6ff4680f5ef19431282029d01e3f5a599797ce6530426e8f31a1ee",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-48",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_32G_GPKG.zip",
+      "expectedByteLength": 483062136,
+      "expectedSha256": "66d899554cae6f6931a1aa5c83c310b3f755fd9fde1f72180c4b390c671bced9",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/47"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 483062136,
+      "sha256": "66d899554cae6f6931a1aa5c83c310b3f755fd9fde1f72180c4b390c671bced9",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-49",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_32H_GPKG.zip",
+      "expectedByteLength": 442790960,
+      "expectedSha256": "f9278f443482931cce3b6098c6cee55911f98a32c6bcbd627e047657e922c774",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/48"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 442790960,
+      "sha256": "f9278f443482931cce3b6098c6cee55911f98a32c6bcbd627e047657e922c774",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-50",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_32I_GPKG.zip",
+      "expectedByteLength": 397235454,
+      "expectedSha256": "355c5fa962d32a99ec68b31c249be26d8c72c7ab3abbc3607e58ed07a0d61d39",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/49"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 397235454,
+      "sha256": "355c5fa962d32a99ec68b31c249be26d8c72c7ab3abbc3607e58ed07a0d61d39",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-51",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_32J_GPKG.zip",
+      "expectedByteLength": 426348072,
+      "expectedSha256": "1afa440d221a81b4254ca71cfaaf41b8bc9e04e4a86ccc6b47503fe5f3ed49cc",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/50"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 426348072,
+      "sha256": "1afa440d221a81b4254ca71cfaaf41b8bc9e04e4a86ccc6b47503fe5f3ed49cc",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-52",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_32K_GPKG.zip",
+      "expectedByteLength": 372011631,
+      "expectedSha256": "92c8c4e79f55a419b45dc8757fcd218ee8060bba705afcf6dd496417ece22be2",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/51"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 372011631,
+      "sha256": "92c8c4e79f55a419b45dc8757fcd218ee8060bba705afcf6dd496417ece22be2",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-53",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_32L_GPKG.zip",
+      "expectedByteLength": 37982736,
+      "expectedSha256": "8064ce5198e584fb0341b3aed46500a48dd937eca98745cfeabba3642a743062",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/52"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 37982736,
+      "sha256": "8064ce5198e584fb0341b3aed46500a48dd937eca98745cfeabba3642a743062",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-54",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_32N_GPKG.zip",
+      "expectedByteLength": 11660862,
+      "expectedSha256": "7eec71caec4d34c8eea2f6349b60528518c9cb2c923dda511f6c11baa80dc4de",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/53"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 11660862,
+      "sha256": "7eec71caec4d34c8eea2f6349b60528518c9cb2c923dda511f6c11baa80dc4de",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-55",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_32O_GPKG.zip",
+      "expectedByteLength": 9757639,
+      "expectedSha256": "d8a4fac724056dbf33ef521e5c1c2a333b095dadc0aa3f2ad6d854323f251b52",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/54"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 9757639,
+      "sha256": "d8a4fac724056dbf33ef521e5c1c2a333b095dadc0aa3f2ad6d854323f251b52",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-sheet-56",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/sheet-products/PRODUITS_IEQM_4_32P_GPKG.zip",
+      "expectedByteLength": 94210230,
+      "expectedSha256": "f95dcb82465dcd404ad19aff268eee8bdcd5e3bca4fd6ca6c0f1c8a8aa0f51e9",
+      "kind": "raw-payload",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/archiveSet/payloads/55"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 94210230,
+      "sha256": "f95dcb82465dcd404ad19aff268eee8bdcd5e3bca4fd6ca6c0f1c8a8aa0f51e9",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-support-01",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/donnees-quebec-package-show.json",
+      "expectedByteLength": 26567,
+      "expectedSha256": "eb78b91cb0c8ec05ad0b25e13a0a2569663e04abc6a6f42432f51b66e1676e60",
+      "kind": "supporting-record",
+      "canonicalPayload": false,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/evidenceArtifacts/0"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 26567,
+      "sha256": "eb78b91cb0c8ec05ad0b25e13a0a2569663e04abc6a6f42432f51b66e1676e60",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-support-02",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/LISEZ-MOI_carteco-ori-res-4_DQ.pdf",
+      "expectedByteLength": 612203,
+      "expectedSha256": "ffeacd42c75c27b019f4ea46e2bfd73e9b23a04b55be236259ecf6a2147e456c",
+      "kind": "supporting-record",
+      "canonicalPayload": false,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/evidenceArtifacts/1"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 612203,
+      "sha256": "ffeacd42c75c27b019f4ea46e2bfd73e9b23a04b55be236259ecf6a2147e456c",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-support-03",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/URL_4e.csv",
+      "expectedByteLength": 29104,
+      "expectedSha256": "8525f3153f2e4ea30b6be78f0c93019e80fb9f4570db53221badea4c4a4abadd",
+      "kind": "supporting-record",
+      "canonicalPayload": false,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/evidenceArtifacts/2"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 29104,
+      "sha256": "8525f3153f2e4ea30b6be78f0c93019e80fb9f4570db53221badea4c4a4abadd",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-support-04",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "raw/qc-fourth-inventory/2026-08-14/official-sheet-heads.tsv",
+      "expectedByteLength": 12661,
+      "expectedSha256": "cf8b068eb3164fd3d195ce6c84edd1057ff93dae3e844f50fbea54ceda700539",
+      "kind": "supporting-record",
+      "canonicalPayload": false,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/evidenceArtifacts/3"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 12661,
+      "sha256": "cf8b068eb3164fd3d195ce6c84edd1057ff93dae3e844f50fbea54ceda700539",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "qc-fourth-support-05",
+      "rowIds": [
+        "qc-fourth-inventory"
+      ],
+      "relativePath": "work/qc-fourth-inventory/2026-08-14/qc-fourth-inventory-profile.json",
+      "expectedByteLength": 1027637,
+      "expectedSha256": "5450a1beade6f8dbbf73320a8751a3131bede150d95bb8847d9522b10ad985f9",
+      "kind": "supporting-record",
+      "canonicalPayload": false,
+      "sourceRefs": [
+        {
+          "path": "data/qc-fourth-inventory-immutable-promotion-preparation.json",
+          "jsonPointer": "/evidenceArtifacts/4"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 1027637,
+      "sha256": "5450a1beade6f8dbbf73320a8751a3131bede150d95bb8847d9522b10ad985f9",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "provincial-boundaries-bc-2023",
+      "rowIds": [
+        "provincial-electoral-boundaries"
+      ],
+      "relativePath": "staging/bc-provincial-electoral-2023/bc-provincial-electoral-districts-2023.geojson",
+      "expectedByteLength": 21828718,
+      "expectedSha256": "d2403eeb488be4ef761f7dcbc72c25f8af3a046fce9980536307ba145993f193",
+      "kind": "partial-current-component",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/bc-provincial-electoral-2023-profile.json"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 21828718,
+      "sha256": "d2403eeb488be4ef761f7dcbc72c25f8af3a046fce9980536307ba145993f193",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "provincial-boundaries-ontario-2022",
+      "rowIds": [
+        "provincial-electoral-boundaries"
+      ],
+      "relativePath": "staging/on-provincial-electoral-2022/electoral-district-shapefile-2022.zip",
+      "expectedByteLength": 1847182,
+      "expectedSha256": "70fd809a4998147b228fd9275e34e569be8ae1fd67470e2f4a20761e5d1e7cae",
+      "kind": "partial-current-component",
+      "canonicalPayload": true,
+      "sourceRefs": [
+        {
+          "path": "data/on-electoral-2022-profile.json"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 1847182,
+      "sha256": "70fd809a4998147b228fd9275e34e569be8ae1fd67470e2f4a20761e5d1e7cae",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    },
+    {
+      "id": "provincial-boundaries-quebec-2026-future",
+      "rowIds": [
+        "provincial-electoral-boundaries"
+      ],
+      "relativePath": "staging/qc-electoral-2026/qc-electoral-2026.geojson",
+      "expectedByteLength": 2380742,
+      "expectedSha256": "5c22379acdffc6138eb77a5aaec265d7c301cffd04eb4c0bafede68ed8651503",
+      "kind": "future-edition-candidate",
+      "canonicalPayload": false,
+      "sourceRefs": [
+        {
+          "path": "data/qc-electoral-editions.json",
+          "jsonPointer": "/future"
+        }
+      ],
+      "status": "matched",
+      "exists": true,
+      "byteLength": 2380742,
+      "sha256": "5c22379acdffc6138eb77a5aaec265d7c301cffd04eb4c0bafede68ed8651503",
+      "expectedByteLengthMatches": true,
+      "expectedSha256Matches": true
+    }
+  ],
+  "summary": {
+    "coreRowCount": 22,
+    "matchedRowCount": 17,
+    "partialRowCount": 1,
+    "notStagedRowCount": 4,
+    "physicalArtifactCount": 120,
+    "matchedArtifactCount": 120,
+    "missingArtifactCount": 0,
+    "mismatchedOrUnreadableArtifactCount": 0,
+    "canonicalPayloadCount": 111
+  }
+}

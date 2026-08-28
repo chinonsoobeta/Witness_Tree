@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { exactPromotionObjects, validateQcFourthInventoryPromotionPreparation } from "./check-qc-fourth-inventory-immutable-promotion.mjs";
+import { NBAC_ARCHIVE_RECEIPT_PATH, validateNbacArchiveReceipt } from "./check-nbac-archive-receipt.mjs";
 import { validateNbacArchiveIamApplied } from "./check-nbac-archive-iam-applied.mjs";
 import { validatePhase1NbacOwnerAuthorization } from "./check-phase1-nbac-owner-authorization.mjs";
 import { validatePhase1NbacProfile } from "./check-phase1-nbac-profile.mjs";
@@ -15,7 +16,7 @@ const EXPECTED = [
   { id: "quebec-fourth-inventory-archive", rows: ["qc-fourth-inventory"], preflight: "node scripts/qc-fourth-inventory-immutable-promotion.mjs --preflight --data-root /Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data", commandKey: "ownerCommandTemplate", command: "node scripts/qc-fourth-inventory-immutable-promotion.mjs --execute --approve-exact-artifact-set --approve-iam-policy --approve-compliance-retention --approve-mfa-session --retention-until 2033-08-12T00:00:00Z --session-ready --data-root <controlled-absolute-path> --state-dir <controlled-absolute-path> --sidecar-dir <controlled-absolute-path>" },
 ];
 
-export function validatePhase1ImmutablePromotionReadiness(audit, ledger, national, wildfire, wildfireAdmission, quebec, fourthEvidence, fourthPlan, fourthIam, approvals, nbacProfile, nbacAuthorization, nbacPreparation, nbacIam) {
+export function validatePhase1ImmutablePromotionReadiness(audit, ledger, national, wildfire, wildfireAdmission, quebec, fourthEvidence, fourthPlan, fourthIam, approvals, nbacProfile, nbacAuthorization, nbacPreparation, nbacIam, nbacReceipt = read(NBAC_ARCHIVE_RECEIPT_PATH)) {
   assert.equal(audit.schemaVersion, 1); assert.equal(audit.status, "preparation-audit-only");
   assert.equal(audit.asOf, "2026-08-27");
   assert.match(audit.notice, /does not call AWS.*alter IAM.*production eligible/i);
@@ -60,6 +61,23 @@ export function validatePhase1ImmutablePromotionReadiness(audit, ledger, nationa
   validatePhase1NbacOwnerAuthorization(nbacAuthorization);
   validateNbacImmutablePromotionPreparation(nbacPreparation);
   validateNbacArchiveIamApplied(nbacIam);
+  validateNbacArchiveReceipt(nbacReceipt);
+  const nbacArtifact = nbacPreparation.artifact;
+  assert.equal(nbacArtifact.sourceId, nbacProfile.sourceId);
+  assert.equal(nbacArtifact.localPath, `${nbacProfile.dataRootRelativeDirectory}/${nbacProfile.artifacts.payload.filename}`);
+  assert.equal(nbacArtifact.byteLength, nbacProfile.artifacts.payload.byteLength);
+  assert.equal(nbacArtifact.sha256, nbacProfile.artifacts.payload.sha256);
+  assert.equal(nbacReceipt.ledgerSourceId, nbacProfile.sourceId);
+  assert.equal(nbacReceipt.physicalComponentId, nbacProfile.componentId);
+  assert.equal(nbacReceipt.storage.bucket, nbacPreparation.destination.bucket);
+  assert.equal(nbacReceipt.storage.region, nbacPreparation.destination.region);
+  assert.equal(nbacReceipt.storage.countryCode, nbacPreparation.destination.countryCode);
+  assert.equal(nbacReceipt.payload.key, nbacArtifact.payloadKey);
+  assert.equal(nbacReceipt.manifest.key, nbacArtifact.manifestKey);
+  assert.equal(nbacReceipt.payload.byteLength, nbacArtifact.byteLength);
+  assert.equal(nbacReceipt.payload.sha256, nbacArtifact.sha256);
+  assert.equal(nbacReceipt.claims.rawArchiveRefetch, nbacProfile.evidenceState.refetchable);
+  assert.equal(nbacReceipt.claims.primaryObjectReadback, nbacProfile.evidenceState.primaryObjectReadback);
   assert.deepEqual(nbacGroup, {
     id: "nbac-1972-2025",
     productionRowIds: ["cwfis-historical"],
@@ -69,20 +87,23 @@ export function validatePhase1ImmutablePromotionReadiness(audit, ledger, nationa
     preparation: "data/nbac-immutable-promotion-preparation.json",
     iamEvidence: "data/nbac-archive-iam-applied-2026-08-27.json",
     runner: "scripts/run-nbac-approved-promotion.sh",
-    status: "owner-authorized-exact-key-iam-applied-storage-evidence-pending",
-    blocker: "The exact local payload, profile, owner authorization, preparation and exact-key IAM readback are recorded, but no durable exact-version payload/manifest retention receipt exists. Immutable archive and all downstream admission states remain false.",
+    readback: NBAC_ARCHIVE_RECEIPT_PATH,
+    status: "primary-exact-version-readback-captured-recovery-and-archive-controls-pending",
+    blocker: "The durable receipt records exact-version primary NBAC payload/manifest readback and binds private evidence on the external SSD. It does not prove recovery, full archive controls, transformation, ingestion, release, or production admission; those states remain false.",
   });
   const nbacLedger = ledger.entries.find(({ id }) => id === "cwfis-historical");
   assert.equal(nbacLedger.evidenceState, "local-verified-profiled");
   assert.equal(nbacLedger.proof.immutableArchive, false);
   assert.equal(nbacLedger.productionEligible, false);
+  assert.ok(nbacLedger.evidenceRefs.includes(NBAC_ARCHIVE_RECEIPT_PATH));
+  assert.equal(nbacProfile.evidenceState.primaryObjectReadback, true);
   assert.equal(nbacPreparation.claims.immutableArchive, false);
   assert.equal(nbacIam.claims.archiveObjectWritten, false);
   return audit;
 }
 
 export function checkPhase1ImmutablePromotionReadiness() {
-  return validatePhase1ImmutablePromotionReadiness(read("data/phase1-immutable-promotion-readiness.json"), read("data/phase1-production-source-ledger.json"), read("data/phase1-local-profiled-promotion-preparation.json"), read("data/current-wildfire-immutable-promotion-preparation.json"), read("data/current-wildfire-owner-admission.json"), read("data/qc-immutable-promotion-preparation.json"), read("data/qc-fourth-inventory-evidence.json"), read("data/qc-fourth-inventory-immutable-promotion-preparation.json"), read("data/qc-fourth-inventory-immutable-promotion-iam-policy.json"), read("data/phase1-phase3-owner-approvals-2026-08-21.json"), read("data/phase1-nbac-profile-2026-08-27.json"), read("data/phase1-nbac-owner-authorization-2026-08-27.json"), read("data/nbac-immutable-promotion-preparation.json"), read("data/nbac-archive-iam-applied-2026-08-27.json"));
+  return validatePhase1ImmutablePromotionReadiness(read("data/phase1-immutable-promotion-readiness.json"), read("data/phase1-production-source-ledger.json"), read("data/phase1-local-profiled-promotion-preparation.json"), read("data/current-wildfire-immutable-promotion-preparation.json"), read("data/current-wildfire-owner-admission.json"), read("data/qc-immutable-promotion-preparation.json"), read("data/qc-fourth-inventory-evidence.json"), read("data/qc-fourth-inventory-immutable-promotion-preparation.json"), read("data/qc-fourth-inventory-immutable-promotion-iam-policy.json"), read("data/phase1-phase3-owner-approvals-2026-08-21.json"), read("data/phase1-nbac-profile-2026-08-27.json"), read("data/phase1-nbac-owner-authorization-2026-08-27.json"), read("data/nbac-immutable-promotion-preparation.json"), read("data/nbac-archive-iam-applied-2026-08-27.json"), read(NBAC_ARCHIVE_RECEIPT_PATH));
 }
 
 if (process.argv[1]?.endsWith("check-phase1-immutable-promotion-readiness.mjs")) {

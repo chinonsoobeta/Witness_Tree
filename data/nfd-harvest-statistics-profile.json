@@ -1,0 +1,3933 @@
+{
+  "schemaVersion": "witness-tree/nonproduction-nfd-harvest-statistics-profile/1",
+  "status": "nonproduction-profiled-transform",
+  "sourceId": "nfd-area-harvested-en-fr",
+  "profiledAt": "2026-08-27",
+  "source": {
+    "publisher": "National Forestry Database / Canadian Council of Forest Ministers",
+    "datasetTitle": "Area harvested by jurisdiction, tenure, management and harvesting method",
+    "dataUrl": "https://cfs.cloud.nrcan.gc.ca/statsprofile/management/harvesting.html",
+    "termsUrl": "https://nfdp.ccfm.org/en/terms.php",
+    "licence": "Open Government Licence – Canada version 2.0"
+  },
+  "raw": {
+    "dataRoot": "Witness_Tree-data",
+    "snapshot": "2026-08-27",
+    "files": [
+      {
+        "id": "nfd-area-harvested-csv",
+        "role": "official-bilingual-data",
+        "fileName": "nfd-area-harvested-en-fr.csv",
+        "relativePath": "raw/nfd-harvest-statistics/2026-08-27/nfd-area-harvested-en-fr.csv",
+        "mediaType": "text/csv",
+        "byteLength": 2033845,
+        "sha256": "1644b66e78a3e30d865f1425065de39350532ad96a131038ec77e1890f58f706"
+      },
+      {
+        "id": "nfd-area-harvested-data-dictionary",
+        "role": "official-data-dictionary",
+        "fileName": "nfd-area-harvested-data-dictionary-en-fr.xlsx",
+        "relativePath": "raw/nfd-harvest-statistics/2026-08-27/nfd-area-harvested-data-dictionary-en-fr.xlsx",
+        "mediaType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "byteLength": 17794,
+        "sha256": "bad12333a997fa643edced53f98dc76f77be03183805a5a6bf93098838195d3a"
+      },
+      {
+        "id": "nfd-terms",
+        "role": "official-terms-and-conditions",
+        "fileName": "nfd-terms.html",
+        "relativePath": "raw/nfd-harvest-statistics/2026-08-27/nfd-terms.html",
+        "mediaType": "text/html",
+        "byteLength": 21200,
+        "sha256": "65216d443123abf17812ccd7880a0ce43b3cc88f9e4e5cc09b9c15326667fb05"
+      }
+    ],
+    "csvRowCount": 12816,
+    "csvColumnCount": 15,
+    "dictionary": {
+      "qualifierCodes": [
+        "U",
+        "a",
+        "u",
+        "E",
+        "e",
+        "n",
+        "p",
+        "s",
+        "r"
+      ],
+      "qualifierDefinitionsBoundToDictionary": true
+    }
+  },
+  "method": {
+    "unit": "hectares",
+    "groupBy": [
+      "ISO",
+      "Year"
+    ],
+    "aggregation": "sum nonblank Area (hectares) cells across tenure, management, and harvesting method rows",
+    "knownArea": "Known numeric cells are retained exactly; decimal addition is performed with integer coefficients, not binary floating-point accumulation.",
+    "missingness": "n is not applicable and is excluded from the sum; blank u/U/s/r cells remain explicit unknown area and prevent a complete total; no blank is converted to zero.",
+    "yearSemantics": "The publisher year label is carried verbatim; calendar-versus-fiscal interpretation is not asserted by this profile.",
+    "bilingualValidation": "English/French paired fields must agree with the controlled mappings in the bound dictionary and source CSV.",
+    "duplicatePolicy": "A duplicate Year × ISO × Tenure × Management × Harvesting method key fails closed.",
+    "unknownQualifierPolicy": "Any qualifier outside the bound dictionary codes fails closed."
+  },
+  "frame": {
+    "provinces": [
+      "BC",
+      "AB",
+      "ON",
+      "QC"
+    ],
+    "startYear": 1984,
+    "endYear": 2022,
+    "expectedRowCount": 156,
+    "rows": [
+      {
+        "province": "BC",
+        "year": 1984,
+        "areaHectares": 198453,
+        "areaHectaresExact": "198453",
+        "knownAreaHectares": 198453,
+        "knownAreaHectaresExact": "198453",
+        "sourceRowCount": 4,
+        "knownAreaRowCount": 4,
+        "blankAreaRowCount": 0,
+        "qualifierCounts": {
+          "a": 1,
+          "E": 3
+        },
+        "missingness": {
+          "state": "complete",
+          "unknownAreaRowCount": 0,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": []
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "BC",
+        "year": 1985,
+        "areaHectares": 210397,
+        "areaHectaresExact": "210397",
+        "knownAreaHectares": 210397,
+        "knownAreaHectaresExact": "210397",
+        "sourceRowCount": 4,
+        "knownAreaRowCount": 4,
+        "blankAreaRowCount": 0,
+        "qualifierCounts": {
+          "a": 1,
+          "E": 3
+        },
+        "missingness": {
+          "state": "complete",
+          "unknownAreaRowCount": 0,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": []
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "BC",
+        "year": 1986,
+        "areaHectares": 239877,
+        "areaHectaresExact": "239877",
+        "knownAreaHectares": 239877,
+        "knownAreaHectaresExact": "239877",
+        "sourceRowCount": 4,
+        "knownAreaRowCount": 4,
+        "blankAreaRowCount": 0,
+        "qualifierCounts": {
+          "a": 1,
+          "E": 3
+        },
+        "missingness": {
+          "state": "complete",
+          "unknownAreaRowCount": 0,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": []
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "BC",
+        "year": 1987,
+        "areaHectares": 259982,
+        "areaHectaresExact": "259982",
+        "knownAreaHectares": 259982,
+        "knownAreaHectaresExact": "259982",
+        "sourceRowCount": 4,
+        "knownAreaRowCount": 4,
+        "blankAreaRowCount": 0,
+        "qualifierCounts": {
+          "a": 1,
+          "E": 3
+        },
+        "missingness": {
+          "state": "complete",
+          "unknownAreaRowCount": 0,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": []
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "BC",
+        "year": 1988,
+        "areaHectares": 270401,
+        "areaHectaresExact": "270401",
+        "knownAreaHectares": 270401,
+        "knownAreaHectaresExact": "270401",
+        "sourceRowCount": 4,
+        "knownAreaRowCount": 4,
+        "blankAreaRowCount": 0,
+        "qualifierCounts": {
+          "a": 1,
+          "E": 3
+        },
+        "missingness": {
+          "state": "complete",
+          "unknownAreaRowCount": 0,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": []
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "BC",
+        "year": 1989,
+        "areaHectares": 218384,
+        "areaHectaresExact": "218384",
+        "knownAreaHectares": 218384,
+        "knownAreaHectaresExact": "218384",
+        "sourceRowCount": 4,
+        "knownAreaRowCount": 4,
+        "blankAreaRowCount": 0,
+        "qualifierCounts": {
+          "a": 1,
+          "E": 3
+        },
+        "missingness": {
+          "state": "complete",
+          "unknownAreaRowCount": 0,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": []
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "BC",
+        "year": 1990,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 191917,
+        "knownAreaHectaresExact": "191917",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 15,
+        "blankAreaRowCount": 5,
+        "qualifierCounts": {
+          "a": 1,
+          "u": 5,
+          "E": 2,
+          "r": 12
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 5,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "BC",
+        "year": 1991,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 214355,
+        "knownAreaHectaresExact": "214355",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 15,
+        "blankAreaRowCount": 5,
+        "qualifierCounts": {
+          "u": 5,
+          "E": 2,
+          "e": 1,
+          "r": 12
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 5,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "BC",
+        "year": 1992,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 233305,
+        "knownAreaHectaresExact": "233305",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 15,
+        "blankAreaRowCount": 5,
+        "qualifierCounts": {
+          "a": 1,
+          "u": 5,
+          "E": 2,
+          "r": 12
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 5,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "BC",
+        "year": 1993,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 227836,
+        "knownAreaHectaresExact": "227836",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 15,
+        "blankAreaRowCount": 5,
+        "qualifierCounts": {
+          "a": 1,
+          "u": 5,
+          "E": 2,
+          "r": 12
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 5,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "BC",
+        "year": 1994,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 193817,
+        "knownAreaHectaresExact": "193817",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 15,
+        "blankAreaRowCount": 5,
+        "qualifierCounts": {
+          "a": 1,
+          "u": 5,
+          "E": 2,
+          "r": 12
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 5,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "BC",
+        "year": 1995,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 188372,
+        "knownAreaHectaresExact": "188372",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 16,
+        "blankAreaRowCount": 4,
+        "qualifierCounts": {
+          "a": 2,
+          "u": 4,
+          "E": 2,
+          "r": 12
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 4,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "BC",
+        "year": 1996,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 201338,
+        "knownAreaHectaresExact": "201338",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 15,
+        "blankAreaRowCount": 5,
+        "qualifierCounts": {
+          "a": 1,
+          "u": 5,
+          "E": 2,
+          "r": 12
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 5,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "BC",
+        "year": 1997,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 184776,
+        "knownAreaHectaresExact": "184776",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 15,
+        "blankAreaRowCount": 5,
+        "qualifierCounts": {
+          "a": 1,
+          "u": 5,
+          "E": 2,
+          "r": 12
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 5,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "BC",
+        "year": 1998,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 182109,
+        "knownAreaHectaresExact": "182109",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 15,
+        "blankAreaRowCount": 5,
+        "qualifierCounts": {
+          "a": 1,
+          "u": 5,
+          "E": 2,
+          "r": 12
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 5,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "BC",
+        "year": 1999,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 219559,
+        "knownAreaHectaresExact": "219559",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 15,
+        "blankAreaRowCount": 5,
+        "qualifierCounts": {
+          "a": 1,
+          "u": 5,
+          "E": 2,
+          "r": 12
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 5,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "BC",
+        "year": 2000,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 212563,
+        "knownAreaHectaresExact": "212563",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 14,
+        "blankAreaRowCount": 6,
+        "qualifierCounts": {
+          "u": 6,
+          "E": 2,
+          "r": 12
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 6,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "BC",
+        "year": 2001,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 196613,
+        "knownAreaHectaresExact": "196613",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 15,
+        "blankAreaRowCount": 5,
+        "qualifierCounts": {
+          "a": 1,
+          "u": 5,
+          "E": 2,
+          "r": 12
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 5,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "BC",
+        "year": 2002,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 221525,
+        "knownAreaHectaresExact": "221525",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 15,
+        "blankAreaRowCount": 5,
+        "qualifierCounts": {
+          "a": 1,
+          "u": 5,
+          "E": 2,
+          "r": 12
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 5,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "BC",
+        "year": 2003,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 218315,
+        "knownAreaHectaresExact": "218315",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 16,
+        "blankAreaRowCount": 4,
+        "qualifierCounts": {
+          "a": 2,
+          "u": 4,
+          "E": 2,
+          "r": 12
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 4,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "BC",
+        "year": 2004,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 225300,
+        "knownAreaHectaresExact": "225300",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 15,
+        "blankAreaRowCount": 5,
+        "qualifierCounts": {
+          "a": 1,
+          "u": 5,
+          "E": 2,
+          "r": 12
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 5,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "BC",
+        "year": 2005,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 255012,
+        "knownAreaHectaresExact": "255012",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 14,
+        "blankAreaRowCount": 6,
+        "qualifierCounts": {
+          "u": 6,
+          "E": 2,
+          "r": 12
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 6,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "BC",
+        "year": 2006,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 217920,
+        "knownAreaHectaresExact": "217920",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 14,
+        "blankAreaRowCount": 6,
+        "qualifierCounts": {
+          "u": 6,
+          "E": 2,
+          "r": 12
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 6,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "BC",
+        "year": 2007,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 203211,
+        "knownAreaHectaresExact": "203211",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 15,
+        "blankAreaRowCount": 5,
+        "qualifierCounts": {
+          "a": 1,
+          "u": 5,
+          "E": 2,
+          "r": 12
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 5,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "BC",
+        "year": 2008,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 170115,
+        "knownAreaHectaresExact": "170115",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 15,
+        "blankAreaRowCount": 5,
+        "qualifierCounts": {
+          "a": 1,
+          "u": 5,
+          "E": 2,
+          "r": 12
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 5,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "BC",
+        "year": 2009,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 151981,
+        "knownAreaHectaresExact": "151981",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 14,
+        "blankAreaRowCount": 6,
+        "qualifierCounts": {
+          "u": 6,
+          "E": 2,
+          "r": 12
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 6,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "BC",
+        "year": 2010,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 195219,
+        "knownAreaHectaresExact": "195219",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 14,
+        "blankAreaRowCount": 6,
+        "qualifierCounts": {
+          "u": 6,
+          "E": 2,
+          "r": 12
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 6,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "BC",
+        "year": 2011,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 207074,
+        "knownAreaHectaresExact": "207074",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 14,
+        "blankAreaRowCount": 6,
+        "qualifierCounts": {
+          "u": 6,
+          "E": 2,
+          "r": 12
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 6,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "BC",
+        "year": 2012,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 216812,
+        "knownAreaHectaresExact": "216812",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 14,
+        "blankAreaRowCount": 6,
+        "qualifierCounts": {
+          "u": 6,
+          "E": 2,
+          "r": 12
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 6,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "BC",
+        "year": 2013,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 226501,
+        "knownAreaHectaresExact": "226501",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 15,
+        "blankAreaRowCount": 5,
+        "qualifierCounts": {
+          "a": 1,
+          "u": 5,
+          "E": 2,
+          "r": 12
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 5,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "BC",
+        "year": 2014,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 199728,
+        "knownAreaHectaresExact": "199728",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 14,
+        "blankAreaRowCount": 6,
+        "qualifierCounts": {
+          "u": 6,
+          "E": 2,
+          "r": 12
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 6,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "BC",
+        "year": 2015,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 232875.274,
+        "knownAreaHectaresExact": "232875.274",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 13,
+        "blankAreaRowCount": 7,
+        "qualifierCounts": {
+          "u": 6,
+          "r": 14
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 7,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u",
+            "r"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "BC",
+        "year": 2016,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 207606.682,
+        "knownAreaHectaresExact": "207606.682",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 14,
+        "blankAreaRowCount": 6,
+        "qualifierCounts": {
+          "u": 6,
+          "r": 14
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 6,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "BC",
+        "year": 2017,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 203320.058,
+        "knownAreaHectaresExact": "203320.058",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 13,
+        "blankAreaRowCount": 7,
+        "qualifierCounts": {
+          "u": 6,
+          "E": 1,
+          "r": 13
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 7,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u",
+            "r"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "BC",
+        "year": 2018,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 199950.021,
+        "knownAreaHectaresExact": "199950.021",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 13,
+        "blankAreaRowCount": 7,
+        "qualifierCounts": {
+          "u": 6,
+          "r": 14
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 7,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u",
+            "r"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "BC",
+        "year": 2019,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 155573.8,
+        "knownAreaHectaresExact": "155573.8",
+        "sourceRowCount": 14,
+        "knownAreaRowCount": 13,
+        "blankAreaRowCount": 1,
+        "qualifierCounts": {
+          "a": 5,
+          "r": 9
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 1,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "r"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "BC",
+        "year": 2020,
+        "areaHectares": 155443.24,
+        "areaHectaresExact": "155443.24",
+        "knownAreaHectares": 155443.24,
+        "knownAreaHectaresExact": "155443.24",
+        "sourceRowCount": 84,
+        "knownAreaRowCount": 84,
+        "blankAreaRowCount": 0,
+        "qualifierCounts": {
+          "a": 84
+        },
+        "missingness": {
+          "state": "complete",
+          "unknownAreaRowCount": 0,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": []
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "BC",
+        "year": 2021,
+        "areaHectares": 142943.108,
+        "areaHectaresExact": "142943.108",
+        "knownAreaHectares": 142943.108,
+        "knownAreaHectaresExact": "142943.108",
+        "sourceRowCount": 84,
+        "knownAreaRowCount": 84,
+        "blankAreaRowCount": 0,
+        "qualifierCounts": {
+          "a": 84
+        },
+        "missingness": {
+          "state": "complete",
+          "unknownAreaRowCount": 0,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": []
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "BC",
+        "year": 2022,
+        "areaHectares": 112901.942,
+        "areaHectaresExact": "112901.942",
+        "knownAreaHectares": 112901.942,
+        "knownAreaHectaresExact": "112901.942",
+        "sourceRowCount": 84,
+        "knownAreaRowCount": 84,
+        "blankAreaRowCount": 0,
+        "qualifierCounts": {
+          "a": 84
+        },
+        "missingness": {
+          "state": "complete",
+          "unknownAreaRowCount": 0,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": []
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "AB",
+        "year": 1984,
+        "areaHectares": 32312,
+        "areaHectaresExact": "32312",
+        "knownAreaHectares": 32312,
+        "knownAreaHectaresExact": "32312",
+        "sourceRowCount": 7,
+        "knownAreaRowCount": 7,
+        "blankAreaRowCount": 0,
+        "qualifierCounts": {
+          "a": 5,
+          "E": 2
+        },
+        "missingness": {
+          "state": "complete",
+          "unknownAreaRowCount": 0,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": []
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "AB",
+        "year": 1985,
+        "areaHectares": 36159,
+        "areaHectaresExact": "36159",
+        "knownAreaHectares": 36159,
+        "knownAreaHectaresExact": "36159",
+        "sourceRowCount": 7,
+        "knownAreaRowCount": 7,
+        "blankAreaRowCount": 0,
+        "qualifierCounts": {
+          "a": 5,
+          "E": 2
+        },
+        "missingness": {
+          "state": "complete",
+          "unknownAreaRowCount": 0,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": []
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "AB",
+        "year": 1986,
+        "areaHectares": 41604,
+        "areaHectaresExact": "41604",
+        "knownAreaHectares": 41604,
+        "knownAreaHectaresExact": "41604",
+        "sourceRowCount": 7,
+        "knownAreaRowCount": 7,
+        "blankAreaRowCount": 0,
+        "qualifierCounts": {
+          "a": 5,
+          "E": 2
+        },
+        "missingness": {
+          "state": "complete",
+          "unknownAreaRowCount": 0,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": []
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "AB",
+        "year": 1987,
+        "areaHectares": 43490,
+        "areaHectaresExact": "43490",
+        "knownAreaHectares": 43490,
+        "knownAreaHectaresExact": "43490",
+        "sourceRowCount": 7,
+        "knownAreaRowCount": 7,
+        "blankAreaRowCount": 0,
+        "qualifierCounts": {
+          "a": 5,
+          "E": 2
+        },
+        "missingness": {
+          "state": "complete",
+          "unknownAreaRowCount": 0,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": []
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "AB",
+        "year": 1988,
+        "areaHectares": 50125,
+        "areaHectaresExact": "50125",
+        "knownAreaHectares": 50125,
+        "knownAreaHectaresExact": "50125",
+        "sourceRowCount": 7,
+        "knownAreaRowCount": 7,
+        "blankAreaRowCount": 0,
+        "qualifierCounts": {
+          "a": 5,
+          "E": 2
+        },
+        "missingness": {
+          "state": "complete",
+          "unknownAreaRowCount": 0,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": []
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "AB",
+        "year": 1989,
+        "areaHectares": 46820,
+        "areaHectaresExact": "46820",
+        "knownAreaHectares": 46820,
+        "knownAreaHectaresExact": "46820",
+        "sourceRowCount": 7,
+        "knownAreaRowCount": 7,
+        "blankAreaRowCount": 0,
+        "qualifierCounts": {
+          "a": 5,
+          "E": 2
+        },
+        "missingness": {
+          "state": "complete",
+          "unknownAreaRowCount": 0,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": []
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "AB",
+        "year": 1990,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 51869,
+        "knownAreaHectaresExact": "51869",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 7,
+        "blankAreaRowCount": 13,
+        "qualifierCounts": {
+          "a": 5,
+          "u": 13,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 13,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "AB",
+        "year": 1991,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 52314,
+        "knownAreaHectaresExact": "52314",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 8,
+        "blankAreaRowCount": 12,
+        "qualifierCounts": {
+          "a": 6,
+          "u": 12,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 12,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "AB",
+        "year": 1992,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 55569,
+        "knownAreaHectaresExact": "55569",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 7,
+        "blankAreaRowCount": 13,
+        "qualifierCounts": {
+          "a": 5,
+          "u": 13,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 13,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "AB",
+        "year": 1993,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 58074,
+        "knownAreaHectaresExact": "58074",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 7,
+        "blankAreaRowCount": 13,
+        "qualifierCounts": {
+          "a": 5,
+          "u": 13,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 13,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "AB",
+        "year": 1994,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 77507,
+        "knownAreaHectaresExact": "77507",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 7,
+        "blankAreaRowCount": 13,
+        "qualifierCounts": {
+          "a": 5,
+          "u": 13,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 13,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "AB",
+        "year": 1995,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 67979,
+        "knownAreaHectaresExact": "67979",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 7,
+        "blankAreaRowCount": 13,
+        "qualifierCounts": {
+          "a": 5,
+          "u": 13,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 13,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "AB",
+        "year": 1996,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 71322,
+        "knownAreaHectaresExact": "71322",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 7,
+        "blankAreaRowCount": 13,
+        "qualifierCounts": {
+          "a": 5,
+          "u": 13,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 13,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "AB",
+        "year": 1997,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 71899,
+        "knownAreaHectaresExact": "71899",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 7,
+        "blankAreaRowCount": 13,
+        "qualifierCounts": {
+          "a": 5,
+          "u": 13,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 13,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "AB",
+        "year": 1998,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 71076,
+        "knownAreaHectaresExact": "71076",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 9,
+        "blankAreaRowCount": 11,
+        "qualifierCounts": {
+          "a": 7,
+          "u": 11,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 11,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "AB",
+        "year": 1999,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 79161,
+        "knownAreaHectaresExact": "79161",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 7,
+        "blankAreaRowCount": 13,
+        "qualifierCounts": {
+          "a": 5,
+          "u": 13,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 13,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "AB",
+        "year": 2000,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 73488,
+        "knownAreaHectaresExact": "73488",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 7,
+        "blankAreaRowCount": 13,
+        "qualifierCounts": {
+          "a": 5,
+          "u": 13,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 13,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "AB",
+        "year": 2001,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 79357,
+        "knownAreaHectaresExact": "79357",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 7,
+        "blankAreaRowCount": 13,
+        "qualifierCounts": {
+          "a": 5,
+          "u": 13,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 13,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "AB",
+        "year": 2002,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 81965,
+        "knownAreaHectaresExact": "81965",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 9,
+        "blankAreaRowCount": 11,
+        "qualifierCounts": {
+          "a": 7,
+          "u": 11,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 11,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "AB",
+        "year": 2003,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 79707,
+        "knownAreaHectaresExact": "79707",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 7,
+        "blankAreaRowCount": 13,
+        "qualifierCounts": {
+          "a": 5,
+          "u": 13,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 13,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "AB",
+        "year": 2004,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 79979,
+        "knownAreaHectaresExact": "79979",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 7,
+        "blankAreaRowCount": 13,
+        "qualifierCounts": {
+          "a": 5,
+          "u": 13,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 13,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "AB",
+        "year": 2005,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 81889,
+        "knownAreaHectaresExact": "81889",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 7,
+        "blankAreaRowCount": 13,
+        "qualifierCounts": {
+          "a": 5,
+          "u": 13,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 13,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "AB",
+        "year": 2006,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 74674,
+        "knownAreaHectaresExact": "74674",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 8,
+        "blankAreaRowCount": 12,
+        "qualifierCounts": {
+          "a": 6,
+          "u": 12,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 12,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "AB",
+        "year": 2007,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 67834,
+        "knownAreaHectaresExact": "67834",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 8,
+        "blankAreaRowCount": 12,
+        "qualifierCounts": {
+          "a": 6,
+          "u": 12,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 12,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "AB",
+        "year": 2008,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 65036,
+        "knownAreaHectaresExact": "65036",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 7,
+        "blankAreaRowCount": 13,
+        "qualifierCounts": {
+          "a": 5,
+          "u": 13,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 13,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "AB",
+        "year": 2009,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 70064,
+        "knownAreaHectaresExact": "70064",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 8,
+        "blankAreaRowCount": 12,
+        "qualifierCounts": {
+          "a": 6,
+          "u": 12,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 12,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "AB",
+        "year": 2010,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 76697,
+        "knownAreaHectaresExact": "76697",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 8,
+        "blankAreaRowCount": 12,
+        "qualifierCounts": {
+          "a": 6,
+          "u": 12,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 12,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "AB",
+        "year": 2011,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 77811,
+        "knownAreaHectaresExact": "77811",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 8,
+        "blankAreaRowCount": 12,
+        "qualifierCounts": {
+          "a": 6,
+          "u": 12,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 12,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "AB",
+        "year": 2012,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 79720,
+        "knownAreaHectaresExact": "79720",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 7,
+        "blankAreaRowCount": 13,
+        "qualifierCounts": {
+          "a": 5,
+          "u": 13,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 13,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "AB",
+        "year": 2013,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 82675,
+        "knownAreaHectaresExact": "82675",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 7,
+        "blankAreaRowCount": 13,
+        "qualifierCounts": {
+          "a": 5,
+          "u": 13,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 13,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "AB",
+        "year": 2014,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 81509,
+        "knownAreaHectaresExact": "81509",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 7,
+        "blankAreaRowCount": 13,
+        "qualifierCounts": {
+          "a": 5,
+          "u": 13,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 13,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "AB",
+        "year": 2015,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 90628,
+        "knownAreaHectaresExact": "90628",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 7,
+        "blankAreaRowCount": 13,
+        "qualifierCounts": {
+          "a": 5,
+          "u": 13,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 13,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "AB",
+        "year": 2016,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 89381,
+        "knownAreaHectaresExact": "89381",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 7,
+        "blankAreaRowCount": 13,
+        "qualifierCounts": {
+          "a": 5,
+          "u": 13,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 13,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "AB",
+        "year": 2017,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 91347,
+        "knownAreaHectaresExact": "91347",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 9,
+        "blankAreaRowCount": 11,
+        "qualifierCounts": {
+          "a": 6,
+          "u": 11,
+          "E": 2,
+          "r": 1
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 11,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "AB",
+        "year": 2018,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 92373,
+        "knownAreaHectaresExact": "92373",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 9,
+        "blankAreaRowCount": 11,
+        "qualifierCounts": {
+          "a": 6,
+          "u": 11,
+          "E": 2,
+          "r": 1
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 11,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "AB",
+        "year": 2019,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 105685,
+        "knownAreaHectaresExact": "105685",
+        "sourceRowCount": 14,
+        "knownAreaRowCount": 7,
+        "blankAreaRowCount": 7,
+        "qualifierCounts": {
+          "u": 7,
+          "E": 2,
+          "p": 3,
+          "r": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 7,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "AB",
+        "year": 2020,
+        "areaHectares": 96317,
+        "areaHectaresExact": "96317",
+        "knownAreaHectares": 96317,
+        "knownAreaHectaresExact": "96317",
+        "sourceRowCount": 84,
+        "knownAreaRowCount": 2,
+        "blankAreaRowCount": 82,
+        "qualifierCounts": {
+          "n": 82,
+          "p": 2
+        },
+        "missingness": {
+          "state": "complete-with-not-applicable",
+          "unknownAreaRowCount": 0,
+          "notApplicableRowCount": 82,
+          "unknownQualifiers": []
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "AB",
+        "year": 2021,
+        "areaHectares": 85873,
+        "areaHectaresExact": "85873",
+        "knownAreaHectares": 85873,
+        "knownAreaHectaresExact": "85873",
+        "sourceRowCount": 84,
+        "knownAreaRowCount": 2,
+        "blankAreaRowCount": 82,
+        "qualifierCounts": {
+          "n": 82,
+          "p": 2
+        },
+        "missingness": {
+          "state": "complete-with-not-applicable",
+          "unknownAreaRowCount": 0,
+          "notApplicableRowCount": 82,
+          "unknownQualifiers": []
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "AB",
+        "year": 2022,
+        "areaHectares": 90810,
+        "areaHectaresExact": "90810",
+        "knownAreaHectares": 90810,
+        "knownAreaHectaresExact": "90810",
+        "sourceRowCount": 84,
+        "knownAreaRowCount": 2,
+        "blankAreaRowCount": 82,
+        "qualifierCounts": {
+          "n": 82,
+          "r": 2
+        },
+        "missingness": {
+          "state": "complete-with-not-applicable",
+          "unknownAreaRowCount": 0,
+          "notApplicableRowCount": 82,
+          "unknownQualifiers": []
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "ON",
+        "year": 1984,
+        "areaHectares": 0,
+        "areaHectaresExact": "0",
+        "knownAreaHectares": 0,
+        "knownAreaHectaresExact": "0",
+        "sourceRowCount": 2,
+        "knownAreaRowCount": 2,
+        "blankAreaRowCount": 0,
+        "qualifierCounts": {
+          "E": 2
+        },
+        "missingness": {
+          "state": "complete",
+          "unknownAreaRowCount": 0,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": []
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "ON",
+        "year": 1985,
+        "areaHectares": 0,
+        "areaHectaresExact": "0",
+        "knownAreaHectares": 0,
+        "knownAreaHectaresExact": "0",
+        "sourceRowCount": 2,
+        "knownAreaRowCount": 2,
+        "blankAreaRowCount": 0,
+        "qualifierCounts": {
+          "E": 2
+        },
+        "missingness": {
+          "state": "complete",
+          "unknownAreaRowCount": 0,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": []
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "ON",
+        "year": 1986,
+        "areaHectares": 0,
+        "areaHectaresExact": "0",
+        "knownAreaHectares": 0,
+        "knownAreaHectaresExact": "0",
+        "sourceRowCount": 2,
+        "knownAreaRowCount": 2,
+        "blankAreaRowCount": 0,
+        "qualifierCounts": {
+          "E": 2
+        },
+        "missingness": {
+          "state": "complete",
+          "unknownAreaRowCount": 0,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": []
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "ON",
+        "year": 1987,
+        "areaHectares": 0,
+        "areaHectaresExact": "0",
+        "knownAreaHectares": 0,
+        "knownAreaHectaresExact": "0",
+        "sourceRowCount": 2,
+        "knownAreaRowCount": 2,
+        "blankAreaRowCount": 0,
+        "qualifierCounts": {
+          "E": 2
+        },
+        "missingness": {
+          "state": "complete",
+          "unknownAreaRowCount": 0,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": []
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "ON",
+        "year": 1988,
+        "areaHectares": 0,
+        "areaHectaresExact": "0",
+        "knownAreaHectares": 0,
+        "knownAreaHectaresExact": "0",
+        "sourceRowCount": 2,
+        "knownAreaRowCount": 2,
+        "blankAreaRowCount": 0,
+        "qualifierCounts": {
+          "E": 2
+        },
+        "missingness": {
+          "state": "complete",
+          "unknownAreaRowCount": 0,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": []
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "ON",
+        "year": 1989,
+        "areaHectares": 0,
+        "areaHectaresExact": "0",
+        "knownAreaHectares": 0,
+        "knownAreaHectaresExact": "0",
+        "sourceRowCount": 2,
+        "knownAreaRowCount": 2,
+        "blankAreaRowCount": 0,
+        "qualifierCounts": {
+          "E": 2
+        },
+        "missingness": {
+          "state": "complete",
+          "unknownAreaRowCount": 0,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": []
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "ON",
+        "year": 1990,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 238213,
+        "knownAreaHectaresExact": "238213",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 8,
+        "blankAreaRowCount": 12,
+        "qualifierCounts": {
+          "a": 6,
+          "u": 12,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 12,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "ON",
+        "year": 1991,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 199720,
+        "knownAreaHectaresExact": "199720",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 9,
+        "blankAreaRowCount": 11,
+        "qualifierCounts": {
+          "a": 7,
+          "u": 11,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 11,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "ON",
+        "year": 1992,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 190676,
+        "knownAreaHectaresExact": "190676",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 8,
+        "blankAreaRowCount": 12,
+        "qualifierCounts": {
+          "a": 6,
+          "u": 12,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 12,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "ON",
+        "year": 1993,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 209370,
+        "knownAreaHectaresExact": "209370",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 8,
+        "blankAreaRowCount": 12,
+        "qualifierCounts": {
+          "a": 2,
+          "u": 12,
+          "E": 2,
+          "e": 2,
+          "r": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 12,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "ON",
+        "year": 1994,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 211474,
+        "knownAreaHectaresExact": "211474",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 8,
+        "blankAreaRowCount": 12,
+        "qualifierCounts": {
+          "a": 2,
+          "u": 12,
+          "E": 2,
+          "e": 2,
+          "r": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 12,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "ON",
+        "year": 1995,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 214086,
+        "knownAreaHectaresExact": "214086",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 4,
+        "blankAreaRowCount": 16,
+        "qualifierCounts": {
+          "a": 1,
+          "u": 16,
+          "E": 2,
+          "r": 1
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 16,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "ON",
+        "year": 1996,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 213235,
+        "knownAreaHectaresExact": "213235",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 6,
+        "blankAreaRowCount": 14,
+        "qualifierCounts": {
+          "a": 2,
+          "u": 14,
+          "E": 2,
+          "r": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 14,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "ON",
+        "year": 1997,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 209286,
+        "knownAreaHectaresExact": "209286",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 5,
+        "blankAreaRowCount": 15,
+        "qualifierCounts": {
+          "a": 1,
+          "u": 15,
+          "E": 2,
+          "r": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 15,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "ON",
+        "year": 1998,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 225132,
+        "knownAreaHectaresExact": "225132",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 7,
+        "blankAreaRowCount": 13,
+        "qualifierCounts": {
+          "a": 5,
+          "u": 13,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 13,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "ON",
+        "year": 1999,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 207671,
+        "knownAreaHectaresExact": "207671",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 5,
+        "blankAreaRowCount": 15,
+        "qualifierCounts": {
+          "a": 3,
+          "u": 15,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 15,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "ON",
+        "year": 2000,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 213260,
+        "knownAreaHectaresExact": "213260",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 5,
+        "blankAreaRowCount": 15,
+        "qualifierCounts": {
+          "a": 2,
+          "u": 15,
+          "E": 2,
+          "r": 1
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 15,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "ON",
+        "year": 2001,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 220607,
+        "knownAreaHectaresExact": "220607",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 6,
+        "blankAreaRowCount": 14,
+        "qualifierCounts": {
+          "u": 14,
+          "E": 2,
+          "r": 4
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 14,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "ON",
+        "year": 2002,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 194941,
+        "knownAreaHectaresExact": "194941",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 8,
+        "blankAreaRowCount": 12,
+        "qualifierCounts": {
+          "a": 6,
+          "u": 10,
+          "E": 2,
+          "n": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 10,
+          "notApplicableRowCount": 2,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "ON",
+        "year": 2003,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 231217,
+        "knownAreaHectaresExact": "231217",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 10,
+        "blankAreaRowCount": 10,
+        "qualifierCounts": {
+          "a": 6,
+          "u": 8,
+          "E": 2,
+          "n": 2,
+          "r": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 8,
+          "notApplicableRowCount": 2,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "ON",
+        "year": 2004,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 210226,
+        "knownAreaHectaresExact": "210226",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 10,
+        "blankAreaRowCount": 10,
+        "qualifierCounts": {
+          "a": 8,
+          "u": 8,
+          "E": 2,
+          "n": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 8,
+          "notApplicableRowCount": 2,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "ON",
+        "year": 2005,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 225213,
+        "knownAreaHectaresExact": "225213",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 9,
+        "blankAreaRowCount": 11,
+        "qualifierCounts": {
+          "a": 7,
+          "u": 11,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 11,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "ON",
+        "year": 2006,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 211874,
+        "knownAreaHectaresExact": "211874",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 11,
+        "blankAreaRowCount": 9,
+        "qualifierCounts": {
+          "a": 9,
+          "u": 9,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 9,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "ON",
+        "year": 2007,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 183985,
+        "knownAreaHectaresExact": "183985",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 12,
+        "blankAreaRowCount": 8,
+        "qualifierCounts": {
+          "a": 10,
+          "u": 8,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 8,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "ON",
+        "year": 2008,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 158651,
+        "knownAreaHectaresExact": "158651",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 10,
+        "blankAreaRowCount": 10,
+        "qualifierCounts": {
+          "a": 8,
+          "u": 10,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 10,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "ON",
+        "year": 2009,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 123965,
+        "knownAreaHectaresExact": "123965",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 9,
+        "blankAreaRowCount": 11,
+        "qualifierCounts": {
+          "a": 7,
+          "u": 11,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 11,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "ON",
+        "year": 2010,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 100100,
+        "knownAreaHectaresExact": "100100",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 7,
+        "blankAreaRowCount": 13,
+        "qualifierCounts": {
+          "a": 5,
+          "u": 13,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 13,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "ON",
+        "year": 2011,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 120884,
+        "knownAreaHectaresExact": "120884",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 8,
+        "blankAreaRowCount": 12,
+        "qualifierCounts": {
+          "a": 6,
+          "u": 12,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 12,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "ON",
+        "year": 2012,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 115358,
+        "knownAreaHectaresExact": "115358",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 7,
+        "blankAreaRowCount": 13,
+        "qualifierCounts": {
+          "a": 5,
+          "u": 13,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 13,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "ON",
+        "year": 2013,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 124857,
+        "knownAreaHectaresExact": "124857",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 7,
+        "blankAreaRowCount": 13,
+        "qualifierCounts": {
+          "u": 13,
+          "E": 2,
+          "e": 5
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 13,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "ON",
+        "year": 2014,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 117230,
+        "knownAreaHectaresExact": "117230",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 7,
+        "blankAreaRowCount": 13,
+        "qualifierCounts": {
+          "a": 5,
+          "u": 13,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 13,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "ON",
+        "year": 2015,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 131080.79,
+        "knownAreaHectaresExact": "131080.79",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 14,
+        "blankAreaRowCount": 6,
+        "qualifierCounts": {
+          "u": 6,
+          "E": 2,
+          "r": 12
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 6,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "ON",
+        "year": 2016,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 138221.6,
+        "knownAreaHectaresExact": "138221.6",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 14,
+        "blankAreaRowCount": 6,
+        "qualifierCounts": {
+          "u": 6,
+          "E": 9,
+          "r": 5
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 6,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "ON",
+        "year": 2017,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 137426.84,
+        "knownAreaHectaresExact": "137426.84",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 14,
+        "blankAreaRowCount": 6,
+        "qualifierCounts": {
+          "u": 6,
+          "E": 2,
+          "e": 7,
+          "r": 5
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 6,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "ON",
+        "year": 2018,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 126110.75,
+        "knownAreaHectaresExact": "126110.75",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 16,
+        "blankAreaRowCount": 4,
+        "qualifierCounts": {
+          "a": 2,
+          "u": 4,
+          "E": 2,
+          "e": 5,
+          "r": 7
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 4,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "ON",
+        "year": 2019,
+        "areaHectares": 130525.73,
+        "areaHectaresExact": "130525.73",
+        "knownAreaHectares": 130525.73,
+        "knownAreaHectaresExact": "130525.73",
+        "sourceRowCount": 14,
+        "knownAreaRowCount": 14,
+        "blankAreaRowCount": 0,
+        "qualifierCounts": {
+          "E": 2,
+          "e": 7,
+          "r": 5
+        },
+        "missingness": {
+          "state": "complete",
+          "unknownAreaRowCount": 0,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": []
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "ON",
+        "year": 2020,
+        "areaHectares": 125456,
+        "areaHectaresExact": "125456",
+        "knownAreaHectares": 125456,
+        "knownAreaHectaresExact": "125456",
+        "sourceRowCount": 84,
+        "knownAreaRowCount": 84,
+        "blankAreaRowCount": 0,
+        "qualifierCounts": {
+          "a": 84
+        },
+        "missingness": {
+          "state": "complete",
+          "unknownAreaRowCount": 0,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": []
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "ON",
+        "year": 2021,
+        "areaHectares": 119512,
+        "areaHectaresExact": "119512",
+        "knownAreaHectares": 119512,
+        "knownAreaHectaresExact": "119512",
+        "sourceRowCount": 84,
+        "knownAreaRowCount": 84,
+        "blankAreaRowCount": 0,
+        "qualifierCounts": {
+          "a": 84
+        },
+        "missingness": {
+          "state": "complete",
+          "unknownAreaRowCount": 0,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": []
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "ON",
+        "year": 2022,
+        "areaHectares": 111544,
+        "areaHectaresExact": "111544",
+        "knownAreaHectares": 111544,
+        "knownAreaHectaresExact": "111544",
+        "sourceRowCount": 84,
+        "knownAreaRowCount": 84,
+        "blankAreaRowCount": 0,
+        "qualifierCounts": {
+          "a": 84
+        },
+        "missingness": {
+          "state": "complete",
+          "unknownAreaRowCount": 0,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": []
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "QC",
+        "year": 1984,
+        "areaHectares": 0,
+        "areaHectaresExact": "0",
+        "knownAreaHectares": 0,
+        "knownAreaHectaresExact": "0",
+        "sourceRowCount": 2,
+        "knownAreaRowCount": 2,
+        "blankAreaRowCount": 0,
+        "qualifierCounts": {
+          "E": 2
+        },
+        "missingness": {
+          "state": "complete",
+          "unknownAreaRowCount": 0,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": []
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "QC",
+        "year": 1985,
+        "areaHectares": 0,
+        "areaHectaresExact": "0",
+        "knownAreaHectares": 0,
+        "knownAreaHectaresExact": "0",
+        "sourceRowCount": 2,
+        "knownAreaRowCount": 2,
+        "blankAreaRowCount": 0,
+        "qualifierCounts": {
+          "E": 2
+        },
+        "missingness": {
+          "state": "complete",
+          "unknownAreaRowCount": 0,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": []
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "QC",
+        "year": 1986,
+        "areaHectares": 0,
+        "areaHectaresExact": "0",
+        "knownAreaHectares": 0,
+        "knownAreaHectaresExact": "0",
+        "sourceRowCount": 2,
+        "knownAreaRowCount": 2,
+        "blankAreaRowCount": 0,
+        "qualifierCounts": {
+          "E": 2
+        },
+        "missingness": {
+          "state": "complete",
+          "unknownAreaRowCount": 0,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": []
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "QC",
+        "year": 1987,
+        "areaHectares": 0,
+        "areaHectaresExact": "0",
+        "knownAreaHectares": 0,
+        "knownAreaHectaresExact": "0",
+        "sourceRowCount": 2,
+        "knownAreaRowCount": 2,
+        "blankAreaRowCount": 0,
+        "qualifierCounts": {
+          "E": 2
+        },
+        "missingness": {
+          "state": "complete",
+          "unknownAreaRowCount": 0,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": []
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "QC",
+        "year": 1988,
+        "areaHectares": 0,
+        "areaHectaresExact": "0",
+        "knownAreaHectares": 0,
+        "knownAreaHectaresExact": "0",
+        "sourceRowCount": 2,
+        "knownAreaRowCount": 2,
+        "blankAreaRowCount": 0,
+        "qualifierCounts": {
+          "E": 2
+        },
+        "missingness": {
+          "state": "complete",
+          "unknownAreaRowCount": 0,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": []
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "QC",
+        "year": 1989,
+        "areaHectares": 0,
+        "areaHectaresExact": "0",
+        "knownAreaHectares": 0,
+        "knownAreaHectaresExact": "0",
+        "sourceRowCount": 2,
+        "knownAreaRowCount": 2,
+        "blankAreaRowCount": 0,
+        "qualifierCounts": {
+          "E": 2
+        },
+        "missingness": {
+          "state": "complete",
+          "unknownAreaRowCount": 0,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": []
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "QC",
+        "year": 1990,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 262027,
+        "knownAreaHectaresExact": "262027",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 13,
+        "blankAreaRowCount": 7,
+        "qualifierCounts": {
+          "a": 11,
+          "u": 7,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 7,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "QC",
+        "year": 1991,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 239009,
+        "knownAreaHectaresExact": "239009",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 13,
+        "blankAreaRowCount": 7,
+        "qualifierCounts": {
+          "a": 10,
+          "u": 7,
+          "E": 2,
+          "e": 1
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 7,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "QC",
+        "year": 1992,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 262928,
+        "knownAreaHectaresExact": "262928",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 12,
+        "blankAreaRowCount": 8,
+        "qualifierCounts": {
+          "a": 10,
+          "u": 8,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 8,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "QC",
+        "year": 1993,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 293239,
+        "knownAreaHectaresExact": "293239",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 12,
+        "blankAreaRowCount": 8,
+        "qualifierCounts": {
+          "a": 10,
+          "u": 8,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 8,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "QC",
+        "year": 1994,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 327838,
+        "knownAreaHectaresExact": "327838",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 12,
+        "blankAreaRowCount": 8,
+        "qualifierCounts": {
+          "a": 10,
+          "u": 8,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 8,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "QC",
+        "year": 1995,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 346258,
+        "knownAreaHectaresExact": "346258",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 15,
+        "blankAreaRowCount": 5,
+        "qualifierCounts": {
+          "a": 13,
+          "u": 5,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 5,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "QC",
+        "year": 1996,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 342328,
+        "knownAreaHectaresExact": "342328",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 14,
+        "blankAreaRowCount": 6,
+        "qualifierCounts": {
+          "a": 12,
+          "u": 6,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 6,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "QC",
+        "year": 1997,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 384370,
+        "knownAreaHectaresExact": "384370",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 15,
+        "blankAreaRowCount": 5,
+        "qualifierCounts": {
+          "a": 13,
+          "u": 5,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 5,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "QC",
+        "year": 1998,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 369907,
+        "knownAreaHectaresExact": "369907",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 17,
+        "blankAreaRowCount": 3,
+        "qualifierCounts": {
+          "a": 15,
+          "u": 3,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 3,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "QC",
+        "year": 1999,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 370236,
+        "knownAreaHectaresExact": "370236",
+        "sourceRowCount": 21,
+        "knownAreaRowCount": 14,
+        "blankAreaRowCount": 7,
+        "qualifierCounts": {
+          "a": 12,
+          "u": 7,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 7,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "QC",
+        "year": 2000,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 344137,
+        "knownAreaHectaresExact": "344137",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 17,
+        "blankAreaRowCount": 3,
+        "qualifierCounts": {
+          "a": 15,
+          "u": 3,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 3,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "QC",
+        "year": 2001,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 323609,
+        "knownAreaHectaresExact": "323609",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 17,
+        "blankAreaRowCount": 3,
+        "qualifierCounts": {
+          "a": 15,
+          "u": 3,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 3,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "QC",
+        "year": 2002,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 339064,
+        "knownAreaHectaresExact": "339064",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 15,
+        "blankAreaRowCount": 5,
+        "qualifierCounts": {
+          "a": 13,
+          "u": 5,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 5,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "QC",
+        "year": 2003,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 284563,
+        "knownAreaHectaresExact": "284563",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 17,
+        "blankAreaRowCount": 3,
+        "qualifierCounts": {
+          "a": 15,
+          "u": 3,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 3,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "QC",
+        "year": 2004,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 306321,
+        "knownAreaHectaresExact": "306321",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 15,
+        "blankAreaRowCount": 5,
+        "qualifierCounts": {
+          "a": 8,
+          "u": 5,
+          "E": 2,
+          "p": 5
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 5,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "QC",
+        "year": 2005,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 323642,
+        "knownAreaHectaresExact": "323642",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 17,
+        "blankAreaRowCount": 3,
+        "qualifierCounts": {
+          "a": 10,
+          "u": 3,
+          "E": 2,
+          "p": 5
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 3,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "QC",
+        "year": 2006,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 216058,
+        "knownAreaHectaresExact": "216058",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 16,
+        "blankAreaRowCount": 4,
+        "qualifierCounts": {
+          "a": 14,
+          "u": 4,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 4,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "QC",
+        "year": 2007,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 210492,
+        "knownAreaHectaresExact": "210492",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 12,
+        "blankAreaRowCount": 8,
+        "qualifierCounts": {
+          "a": 10,
+          "u": 8,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 8,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "QC",
+        "year": 2008,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 162302,
+        "knownAreaHectaresExact": "162302",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 15,
+        "blankAreaRowCount": 5,
+        "qualifierCounts": {
+          "a": 13,
+          "u": 5,
+          "E": 2
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 5,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "QC",
+        "year": 2009,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 153507,
+        "knownAreaHectaresExact": "153507",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 13,
+        "blankAreaRowCount": 7,
+        "qualifierCounts": {
+          "a": 6,
+          "u": 7,
+          "E": 2,
+          "p": 5
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 7,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "QC",
+        "year": 2010,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 201411,
+        "knownAreaHectaresExact": "201411",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 14,
+        "blankAreaRowCount": 6,
+        "qualifierCounts": {
+          "a": 2,
+          "u": 6,
+          "E": 2,
+          "p": 5,
+          "r": 5
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 6,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "QC",
+        "year": 2011,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 167897,
+        "knownAreaHectaresExact": "167897",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 15,
+        "blankAreaRowCount": 5,
+        "qualifierCounts": {
+          "a": 8,
+          "u": 5,
+          "E": 2,
+          "p": 5
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 5,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "QC",
+        "year": 2012,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 205495,
+        "knownAreaHectaresExact": "205495",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 15,
+        "blankAreaRowCount": 5,
+        "qualifierCounts": {
+          "a": 3,
+          "u": 5,
+          "E": 2,
+          "p": 10
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 5,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "QC",
+        "year": 2013,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 206774,
+        "knownAreaHectaresExact": "206774",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 16,
+        "blankAreaRowCount": 4,
+        "qualifierCounts": {
+          "a": 3,
+          "u": 4,
+          "E": 2,
+          "e": 5,
+          "p": 6
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 4,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "QC",
+        "year": 2014,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 205859,
+        "knownAreaHectaresExact": "205859",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 15,
+        "blankAreaRowCount": 5,
+        "qualifierCounts": {
+          "a": 2,
+          "u": 5,
+          "E": 2,
+          "e": 5,
+          "p": 6
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 5,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "QC",
+        "year": 2015,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 202054,
+        "knownAreaHectaresExact": "202054",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 16,
+        "blankAreaRowCount": 4,
+        "qualifierCounts": {
+          "a": 8,
+          "u": 4,
+          "E": 2,
+          "r": 6
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 4,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "QC",
+        "year": 2016,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 202124,
+        "knownAreaHectaresExact": "202124",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 15,
+        "blankAreaRowCount": 5,
+        "qualifierCounts": {
+          "a": 2,
+          "u": 5,
+          "E": 2,
+          "e": 5,
+          "r": 6
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 5,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "QC",
+        "year": 2017,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 213385,
+        "knownAreaHectaresExact": "213385",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 14,
+        "blankAreaRowCount": 6,
+        "qualifierCounts": {
+          "u": 6,
+          "E": 2,
+          "r": 12
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 6,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "QC",
+        "year": 2018,
+        "areaHectares": null,
+        "areaHectaresExact": null,
+        "knownAreaHectares": 225815,
+        "knownAreaHectaresExact": "225815",
+        "sourceRowCount": 20,
+        "knownAreaRowCount": 14,
+        "blankAreaRowCount": 6,
+        "qualifierCounts": {
+          "u": 6,
+          "E": 1,
+          "r": 13
+        },
+        "missingness": {
+          "state": "partial-unknown",
+          "unknownAreaRowCount": 6,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": [
+            "u"
+          ]
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "QC",
+        "year": 2019,
+        "areaHectares": 216919,
+        "areaHectaresExact": "216919",
+        "knownAreaHectares": 216919,
+        "knownAreaHectaresExact": "216919",
+        "sourceRowCount": 14,
+        "knownAreaRowCount": 14,
+        "blankAreaRowCount": 0,
+        "qualifierCounts": {
+          "E": 1,
+          "p": 2,
+          "r": 11
+        },
+        "missingness": {
+          "state": "complete",
+          "unknownAreaRowCount": 0,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": []
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "QC",
+        "year": 2020,
+        "areaHectares": 221709,
+        "areaHectaresExact": "221709",
+        "knownAreaHectares": 221709,
+        "knownAreaHectaresExact": "221709",
+        "sourceRowCount": 84,
+        "knownAreaRowCount": 84,
+        "blankAreaRowCount": 0,
+        "qualifierCounts": {
+          "a": 74,
+          "p": 9,
+          "r": 1
+        },
+        "missingness": {
+          "state": "complete",
+          "unknownAreaRowCount": 0,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": []
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "QC",
+        "year": 2021,
+        "areaHectares": 226840,
+        "areaHectaresExact": "226840",
+        "knownAreaHectares": 226840,
+        "knownAreaHectaresExact": "226840",
+        "sourceRowCount": 84,
+        "knownAreaRowCount": 84,
+        "blankAreaRowCount": 0,
+        "qualifierCounts": {
+          "a": 75,
+          "p": 6,
+          "r": 3
+        },
+        "missingness": {
+          "state": "complete",
+          "unknownAreaRowCount": 0,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": []
+        },
+        "likeForLikeClaim": false
+      },
+      {
+        "province": "QC",
+        "year": 2022,
+        "areaHectares": 215774,
+        "areaHectaresExact": "215774",
+        "knownAreaHectares": 215774,
+        "knownAreaHectaresExact": "215774",
+        "sourceRowCount": 84,
+        "knownAreaRowCount": 84,
+        "blankAreaRowCount": 0,
+        "qualifierCounts": {
+          "a": 75,
+          "p": 3,
+          "r": 6
+        },
+        "missingness": {
+          "state": "complete",
+          "unknownAreaRowCount": 0,
+          "notApplicableRowCount": 0,
+          "unknownQualifiers": []
+        },
+        "likeForLikeClaim": false
+      }
+    ],
+    "digest": {
+      "algorithm": "sha256",
+      "canonicalization": "UTF-8 JSON.stringify(frame.rows)",
+      "value": "2b96597cbf7ff54c9b1267050d3f528e7f6f482ce2539d3cb66e84d3433cdee4"
+    }
+  },
+  "comparison": {
+    "quantity": "reported area of forest land harvested",
+    "likeForLikeClaim": false,
+    "causalAttributionClaim": false,
+    "statement": "This NFD harvest-statistics frame is a separate reported-statistics reference and is not like-for-like with Version 2.1 observed loss; it does not establish wildfire attribution or product accuracy."
+  },
+  "limitations": [
+    "The profile preserves source qualifiers and does not impute unavailable cells.",
+    "Partial rows expose knownAreaHectares as a lower-bound-like known sum; areaHectares remains null when any non-not-applicable area is unknown.",
+    "The aggregate covers only BC, AB, ON, and QC for 1984–2022, even though the source CSV contains other jurisdictions and years.",
+    "No calendar/fiscal-year interpretation, causality, like-for-like agreement, accuracy result, release, or production eligibility is asserted."
+  ],
+  "localProfileTransform": true,
+  "immutableArchive": false,
+  "ingestionAdmitted": false,
+  "released": false,
+  "productionEligible": false
+}

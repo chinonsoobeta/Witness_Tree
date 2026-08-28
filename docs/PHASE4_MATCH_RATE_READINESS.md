@@ -1,9 +1,11 @@
 # Phase 4 match-rate readiness
 
-Discovery only. Nothing in this document was computed, admitted, or published.
-No file under `data/`, no methods page, and no check was changed to produce it.
-Where a fact could not be established from repository files it is written as
-"not determined" with the thing that would determine it.
+This remains a readiness and blocker document. No real provincial result in it
+was computed, admitted, or published. The repository now contains a bounded,
+deterministic nonproduction raster-to-vector and spatial-join foundation, but
+it has not been run against admitted provincial inputs and cannot move the
+Phase 4 gate. Where a fact could not be established from repository files it
+is written as "not determined" with the thing that would determine it.
 
 ## 1. What the criterion demands, exactly
 
@@ -44,7 +46,7 @@ files, all listed as criterion evidence:
 | `ADMISSION_SCHEMA` | `witness-tree/phase4-provincial-matching-admission/1` | `scripts/check-phase4-exit-status.mjs:14` |
 | `PUBLICATION_SCHEMA` | `witness-tree/phase4-provincial-matching-publication/1` | `scripts/check-phase4-exit-status.mjs:15` |
 | `RELEASE_SCHEMA` | `witness-tree/phase4-provincial-matching-release/1` | `scripts/check-phase4-exit-status.mjs:16` |
-| `REVIEW_SCHEMA` | `witness-tree/phase4-provincial-matching-outside-review/1` | `scripts/check-phase4-exit-status.mjs:17` |
+| `REVIEW_SCHEMA` | `witness-tree/phase4-provincial-matching-outside-review/1` | `scripts/check-phase4-exit-status.mjs` |
 
 What each must contain, in the checker's own terms:
 
@@ -79,27 +81,26 @@ What each must contain, in the checker's own terms:
   each of which must itself be criterion evidence. Its `matchRate` and
   `nonMatchRate` must equal the report's values exactly and its reason
   distribution must be identical as a set of pairs.
-* **Release** (`scripts/check-phase4-exit-status.mjs:221`). Status
+* **Release** (`scripts/check-phase4-exit-status.mjs`). Status
   `"released-production"`, a non-empty `version`, and the report, admission,
   publication, and outside-review hashes.
-* **Outside review** (`scripts/check-phase4-exit-status.mjs:222-227`). Status
+* **Outside review** (`scripts/check-phase4-exit-status.mjs`). Status
   `"approved"`, exactly two provinces `BC` and `QC`, and exactly two reviewers,
   one per province, each `isHuman: true`, `independent: true`,
   `noConflict: true`, `decision: "approved"`, with substantive name, role,
   qualification, affiliation, findings, notes, and a UTC `reviewedAt`
-  (`scripts/check-phase4-exit-status.mjs:136-154`).
+  (`scripts/check-phase4-exit-status.mjs`).
 * **Methods pages** (`scripts/check-phase4-exit-status.mjs:228-231`). For each of
   the two paths, the file text must **not** match `/not available|unavailable|not
   admitted/i`, and must match all three of `/match rate|taux d[’']appariement/i`,
   `/non-match rate|taux de non-appariement/i`, and
   `/non-match-reason distribution|répartition des motifs de non-appariement/i`.
 
-The same bundle also drives both blocked checkpoints
-(`scripts/check-phase4-exit-status.mjs:239-245`): `rights-and-admission` passes
-only when the admission's four source flags are true, and
-`outside-provincial-review` passes only when the review status is `"approved"`.
-So one valid bundle would flip the criterion and both checkpoints at once, which
-is what takes Phase 4 to `complete` (`scripts/check-phase4-exit-status.mjs:321`).
+The same bundle drives both blocked checkpoints: rights/admission passes only
+when the admission's four source flags are true, and outside review passes only
+when the review status is `"approved"`. A future valid bundle must provide the
+admitted numeric report, rights/admission, bilingual publication, outside
+review, and release evidence before Phase 4 can become complete.
 
 The exact intended shape of a passing bundle is modelled in
 `tests/phase4-exit-status.test.mjs:23-105` (`writePositiveBundle`), which is the
@@ -129,7 +130,8 @@ closest thing in the repository to a specification of the target artifacts.
 
 `matchDetectedChange` (`lib/pipeline/matching.ts:86-135`) classifies each
 candidate, sorts the qualifying ones by descending overlap, selects the highest,
-and demotes the rest. A matched change gets `evidenceClass:
+uses the candidate identifier as a deterministic tie-break, and demotes the
+rest. A matched change gets `evidenceClass:
 "official-record"`; an unmatched change gets `"satellite-observation"` and a
 `nonMatchReason` string defaulting to "No official record met the date and
 geometry matching tolerances." (`lib/pipeline/matching.ts:133`).
@@ -155,9 +157,10 @@ not the four codes above directly. For each unmatched change:
 
 * if the change had no candidates at all, the key is the literal
   `no-official-record-candidates`;
-* otherwise the key is every rejected candidate's reason, sorted
+* otherwise the key is the set of rejected reason codes, sorted
   alphabetically and joined with commas, so a change rejected on both grounds
-  produces the composite key `below-spatial-tolerance,outside-temporal-tolerance`;
+  produces the composite key `below-spatial-tolerance,outside-temporal-tolerance`
+  without repeating a code when several candidates fail for the same reason;
 * if that join is empty, the key is the literal `no-qualifying-official-record`.
 
 So the publishable key space is: `no-official-record-candidates`,
@@ -175,8 +178,8 @@ the mechanical keys alone.
 
 ### Where the outputs land
 
-Nowhere yet. `reportProvincialMatching`
-(`lib/phase4/provincial-matching.ts:37-78`) returns a value; it writes no file.
+`reportProvincialMatching`
+(`lib/phase4/provincial-matching.ts`) returns a value; it writes no file.
 Its five readiness flags (`lib/phase4/provincial-matching.ts:41-47`) each
 produce a blocker string, and a blocked report returns all-null values with
 `counts: null`, never zeroes (`lib/phase4/provincial-matching.ts:48-53`). Even a
@@ -190,15 +193,24 @@ whose `result` block is all null with `productionEligible: false`, and whose
 validator `scripts/check-phase4-provincial-matching-preflight.mjs:24` actively
 throws if any numeric value or production eligibility ever appears in it.
 
-### There is no caller
+### There is no production runner
 
-Grepping the whole repository, `matchDetectedChange` and
-`reportProvincialMatching` are referenced only by `lib/phase4/provincial-matching.ts`
-itself and by four test files (`tests/matching-precedence.test.ts`,
-`tests/phase1-corruption-gate.test.ts`, `tests/phase4-optional-enhancement.test.ts`,
-`tests/phase4-provincial-matching.test.ts`). No script, no route, and no pipeline
-stage feeds either function. Nothing in the repository constructs an
-`OfficialRecordCandidate` from real data.
+The pure integration seam in `lib/phase4/spatial-join.ts` now adapts a
+`computed-nonproduction` raster output into `ChangeGeometryInput` values and
+constructs `OfficialRecordCandidate` intersections. It preserves each patch's
+checksum and annual lineage, sorts identities deterministically, and rejects
+production-labelled or internally inconsistent output. The seam is exercised
+only by synthetic tests; there is still no production runner, real-data caller,
+or on-disk report. Nothing in the repository constructs an
+`OfficialRecordCandidate` from admitted provincial data.
+
+`reportProvincialMatching` also validates the candidate-set boundary before
+calculating a denominator. Missing readiness, malformed areas, duplicate
+identities, or impossible intersections return a blocked report with `null`
+counts/rates/reasons; they do not become a numeric zero. A runnable result is
+still explicitly `computed-nonproduction` with `productionEligible: false`,
+and its candidate/change ordering and reason keys are canonicalized for repeat
+readback.
 
 Two further code-level obstacles sit between real data and these functions:
 
@@ -208,8 +220,8 @@ Two further code-level obstacles sit between real data and these functions:
   Real Québec or BC events cannot pass through it without a type-contract change.
 * A `NormalizedForestEvent` (`lib/events/types.ts:29-39`) carries `hectares` but
   no geometry and no record identifier usable for a spatial join, so it is not
-  an `OfficialRecordCandidate`. The `intersectionHectares` value has to come from
-  a spatial operation that does not exist anywhere in this repository.
+  an `OfficialRecordCandidate`. The new local join still needs a separately
+  approved transformation that supplies real event geometry and identity.
 
 ## 3. What "an admitted, versioned provincial processing run" means here
 
@@ -289,7 +301,7 @@ verifying it means running the runner against the data root.
 | Artifact | State |
 | --- | --- |
 | Execution approval for a matching run | Does not exist. No file uses a Phase 4 matching execution-approval schema |
-| Runner | Does not exist. `lib/phase4/provincial-matching.ts` is a library function with no caller outside tests |
+| Runner | Does not exist. The local vector/join seam is a library foundation and has no real-data or production reporting caller |
 | Report (`.../phase4-provincial-matching-report/1`) | Does not exist. The string appears only in `scripts/check-phase4-exit-status.mjs` and `tests/phase4-exit-status.test.mjs` |
 | Admission, publication, release, outside review | None exist. Same finding for all four schema strings |
 | Preflight | Exists and is deliberately null-valued: `data/phase4-provincial-matching-preflight.json` |
@@ -410,12 +422,16 @@ or **[R]** requires an outside party beyond the owner.
    limitation "No patch vectorization or normalized events.", and
    `data/phase2-v21-province-zonal-pilot-evidence.json` records
    `nationalPerCellGeometryMaterialized: false`. The Phase 2 run produced 79
-   rasters and no vectors. Patch vectorization does not exist as code; grepping
-   for `vectoriz` finds only the strings asserting its absence.
+   rasters and no admitted vectors. A deterministic nonproduction vectorization
+   component now exists, but it has not been run against, admitted for, or
+   released with the real Phase 2 rasters.
 7. **[E] Build the spatial join that produces `OfficialRecordCandidate`.**
-   `lib/pipeline/matching.ts:82-85` deliberately leaves `intersectionHectares` to
-   the caller. There is no caller. This is the missing pipeline stage between
-   items 5, 6 and the matching policy.
+   **Complete as a nonproduction foundation.** `lib/phase4/spatial-join.ts`
+   validates projected polygon geometry, computes hectare intersections, and
+   emits deterministic candidate sets. Its
+   `rasterOutputToSpatialJoinChanges`/`spatialJoinRasterOutput` seam binds
+   vectorized patch checksums and annual lineage. It has not been run against,
+   admitted for, or released with real provincial data.
 8. **[E] Build a Phase 4 matching runner.** A script that consumes the above,
    calls `reportProvincialMatching`, and writes a
    `witness-tree/phase4-provincial-matching-report/1` record. Note that
@@ -431,16 +447,16 @@ or **[R]** requires an outside party beyond the owner.
     `witness-tree/phase4-provincial-matching-admission/1` record with a human
     `ownerDecision` block per `scripts/check-phase4-exit-status.mjs:126-134`.
 11. **[R] Outside provincial review, one reviewer for BC and one for QC.** The
-    `witness-tree/phase4-provincial-matching-outside-review/1` record. Named,
-    independent, no-conflict, with findings and notes.
-    `docs/EXTERNAL_GATES.md:25` records this as not started.
+    owner decided not to pursue this review. No review or reviewer sign-off is
+    claimed, so the checkpoint remains blocked rather than being waived into a
+    pass.
 12. **[E] Change the methods page** to publish the numbers, and split the copy so
     two distinct files each carry the wording (see section 6).
 13. **[O] Publication and release records.** The
     `.../publication/1` and `.../release/1` records, the latter with a version
     string and the four bound hashes.
-14. **[E] Update `data/phase4-exit-status.json`** to list the eight evidence
-    files with their SHA-256 values and set the criterion and both checkpoints,
+14. **[E] Update `data/phase4-exit-status.json`** to list the complete evidence
+    bundle with its SHA-256 values and set the criterion and both checkpoints,
     then re-run `scripts/check-phase4-exit-status.mjs`. It will refuse any status
     the bytes do not support.
 

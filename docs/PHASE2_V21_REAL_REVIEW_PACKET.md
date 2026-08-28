@@ -1,6 +1,6 @@
 # Phase 2 Version 2.1 real review packet
 
-The local packet at `../../Witness_Tree-data/derived/phase2-v21-review-packet-v1/packet.json` contains 400 real raster observations: 100 each in BC, Alberta, Ontario and Québec, split evenly across early/late interval and observed-loss/known-no-loss strata. Every selected location was re-read from its native 30 m V2.1 interval raster and verified inside the recorded provincial boundary geometry.
+The corrected local packet at `../../Witness_Tree-data/derived/phase2-v21-review-packet-v2/packet.json` contains 400 real raster observations: 100 each in BC, Alberta, Ontario and Québec, split evenly across early/late interval and observed-loss/known-no-loss strata. Every selected location was re-read from its native 30 m V2.1 interval raster and verified inside the recorded provincial boundary geometry. Version 2 explicitly uses GDAL's traditional GIS axis order for EPSG:4326 and the validator rejects implausible Canadian longitude/latitude values; it replaces the axis-swapped display coordinates in the superseded Version 1 packet.
 
 This is a deterministic nonproduction candidate packet, not a validation result. It carries the sample cell coordinates, latitude/longitude, interval, observed class, raster and boundary hashes, selection seed, and blank bilingual reviewer fields. The interval rasters do not establish harvest or wildfire causation, so the packet deliberately has no attribution stratum and does not infer attribution.
 

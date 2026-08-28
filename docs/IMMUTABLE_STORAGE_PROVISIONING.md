@@ -51,7 +51,7 @@ Three verified staged archives were uploaded to this bucket and locked. Each pay
 
 An earlier upload of the same three archives to a flat key layout is recorded there as superseded. It was never locked, and those object versions are still in the bucket.
 
-Default retention is still Disabled on the bucket, for the reason given below. Nothing in this section changes the unmet controls in the mapping table: there is still no dedicated service identity, no access logging, no recovery copy, and no replication decision.
+Default retention is still Disabled on the bucket, for the reason given below. Later bounded promotions, IAM evidence, archive logs, and recovery readbacks supersede the original three-object snapshot described here. They do not prove a complete recovery copy or replication design for every relied-on object; consult the current machine records before treating this historical provisioning note as current state.
 
 ## Why no default retention is set
 
@@ -75,7 +75,7 @@ Each row of the Required storage controls table in [IMMUTABLE_STORAGE_DECISION.m
 | Access | Not satisfied | Block all public access reads On and Object Ownership reads Bucket owner enforced, so there is no public or ACL-based access. There is no dedicated service identity, no least-privilege read policy, no bucket policy, no limited break-glass role for administering retention, and no access audit logging. No IAM user, role, or access key was created by this provisioning step. |
 | Encryption and audit | Not satisfied | Default encryption reads SSE-S3, which satisfies the explicit encryption-selection part of the row. Server access logging reads Disabled, no CloudTrail data events are configured for this bucket, and no retention or deletion-attempt log review process exists. |
 | Lifecycle | Owner decision pending | No lifecycle, expiration, transition, or replica rule exists, so no rule currently bypasses anything. The row cannot be satisfied until an approved retention period exists to measure rules against, and until a multipart cleanup rule is decided. |
-| Recovery | Not satisfied | No Canadian recovery copy exists, and no provider durability or recovery evidence has been documented or tested. |
+| Recovery | Not satisfied | Later bounded recovery readbacks cover some objects, but no approved complete Canadian recovery copy and current reconciliation record cover every relied-on object. |
 
 ## Standing limits
 

@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { validate as validateFederalAdmission } from "./check-phase1-federal-electoral-production-admission.mjs";
+import { NBAC_ARCHIVE_RECEIPT_PATH, validateNbacArchiveReceipt } from "./check-nbac-archive-receipt.mjs";
 import { validatePhase1NbacProfile } from "./check-phase1-nbac-profile.mjs";
 import { validateNtemsProductionAdmissionRecord } from "./check-phase1-ntems-production-admission-readiness.mjs";
 import { validateQcStandCopyProductionAdmissionRecord } from "./check-qc-stand-copy-production-admission-readiness.mjs";
@@ -115,8 +116,11 @@ export function validatePhase1ProductionSourceLedger(ledger, inventory, root = p
   const nbacEntry = ledger.entries.find(({ id }) => id === "cwfis-historical");
   const nbacProfileReference = "data/phase1-nbac-profile-2026-08-27.json";
   const nbacAuthorizationReference = "data/phase1-nbac-owner-authorization-2026-08-27.json";
-  if (!nbacEntry.evidenceRefs.includes(nbacProfileReference) || !nbacEntry.evidenceRefs.includes(nbacAuthorizationReference)) throw new Error("NBAC ledger row must bind the exact profile and owner-authorization records.");
+  if (!nbacEntry.evidenceRefs.includes(nbacProfileReference) || !nbacEntry.evidenceRefs.includes(nbacAuthorizationReference) || !nbacEntry.evidenceRefs.includes(NBAC_ARCHIVE_RECEIPT_PATH)) throw new Error("NBAC ledger row must bind the exact profile, owner-authorization, and primary-readback receipt records.");
   const nbacProfile = validatePhase1NbacProfile(suppliedNbacProfile ?? JSON.parse(readFileSync(validateEvidenceReference(root, nbacProfileReference), "utf8")));
+  const nbacReceipt = validateNbacArchiveReceipt(JSON.parse(readFileSync(validateEvidenceReference(root, NBAC_ARCHIVE_RECEIPT_PATH), "utf8")));
+  if (nbacProfile.evidenceState.primaryObjectReadback !== nbacReceipt.claims.primaryObjectReadback || nbacReceipt.claims.immutablePrimaryArchive || nbacReceipt.claims.universalArchiveRecovery || nbacReceipt.operationBoundary.recoveryReplicaVerified || nbacEntry.proof.immutableArchive) throw new Error("NBAC primary-readback receipt must remain separate from immutable archive and recovery proof.");
+  if (nbacReceipt.payload.byteLength !== nbacProfile.artifacts.payload.byteLength || nbacReceipt.payload.sha256 !== nbacProfile.artifacts.payload.sha256) throw new Error("NBAC primary-readback receipt must bind the exact profiled payload bytes.");
   const expectedNbacProof = {
     licence: true,
     attribution: true,

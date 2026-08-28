@@ -64,6 +64,7 @@
     "checksumVerified": true,
     "profiled": true,
     "refetchable": true,
+    "primaryObjectReadback": true,
     "immutableArchive": false,
     "transformed": false,
     "ingested": false,

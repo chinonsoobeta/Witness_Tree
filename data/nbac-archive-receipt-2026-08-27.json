@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "witness-tree/nbac-archive-receipt/2",
+  "status": "exact-version-primary-readback-verified-raw-only",
+  "verifiedAt": "2026-08-27T20:02:10.646Z",
+  "ledgerSourceId": "cwfis-historical",
+  "physicalComponentId": "nrcan-nbac-1972-2025",
+  "storage": {
+    "bucket": "witness-tree-raw-archive-ca-central-1",
+    "region": "ca-central-1",
+    "countryCode": "CA"
+  },
+  "payload": {
+    "key": "raw/nrcan-nbac-1972-2025/20260513/2026-08-27T18-17-41Z/c42740eb9d2fe3991a27344d0c33927705ec3e78c277efc5311b502439cb2165/payload/nbac_1972to2025_20260513_shp.zip",
+    "byteLength": 1257052370,
+    "sha256": "c42740eb9d2fe3991a27344d0c33927705ec3e78c277efc5311b502439cb2165",
+    "exactVersionDownload": {
+      "byteLengthMatches": true,
+      "sha256Matches": true
+    }
+  },
+  "manifest": {
+    "key": "raw/nrcan-nbac-1972-2025/20260513/2026-08-27T18-17-41Z/c42740eb9d2fe3991a27344d0c33927705ec3e78c277efc5311b502439cb2165/manifest.json",
+    "byteLength": 1702,
+    "sha256": "d61099efe58a5fa7c1353f6d3623405e4e0debd204ff7355a2763130f8ff1fa2",
+    "deterministicExpectedBytesMatch": true
+  },
+  "privateEvidence": {
+    "pathRelativeToExternalDataRoot": "evidence/nbac-archive-receipt-2026-08-27.private.json",
+    "sha256": "59a8eacf4718eaa7868cf44de4ae4ca4730a9e2f40d0606d9c7977eccf46b020"
+  },
+  "operationBoundary": {
+    "exactVersionReadbackPerformed": true,
+    "versionIdentifiersPrivatelyBound": true,
+    "replacementAttempted": false,
+    "recoveryReplicaVerified": false
+  },
+  "claims": {
+    "rawArchiveRefetch": true,
+    "primaryObjectReadback": true,
+    "immutablePrimaryArchive": false,
+    "universalArchiveRecovery": false,
+    "transformed": false,
+    "ingested": false,
+    "released": false,
+    "productionAdmission": false,
+    "productionEligible": false
+  },
+  "notice": "Durable redacted receipt cryptographically bound to private exact-version primary-object readback evidence; this is not recovery, storage-control, transformation, admission, release, or production evidence."
+}

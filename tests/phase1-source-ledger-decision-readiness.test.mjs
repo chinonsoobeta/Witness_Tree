@@ -19,6 +19,9 @@ test("decision-readiness matrix reconciles all rows and stays strictly non-admit
   assert.equal(audit.nonProduction.transformationAuthorized, false);
   assert.equal(audit.nonProduction.ingestionAuthorized, false);
   assert.equal(audit.nonProduction.releaseAuthorized, false);
+  const nbac = audit.entries.find(({ id }) => id === "cwfis-historical");
+  assert.equal(nbac.primaryObjectReadback, true);
+  assert.equal(nbac.primaryObjectReadbackEvidence, "data/nbac-archive-receipt-2026-08-27.json");
 });
 
 test("matrix fails closed for an inferred decision, a missing scope, or duplicate Elections archival work", () => {
@@ -59,4 +62,25 @@ test("the readiness matrix rejects a corrupted later federal admission", () => {
   const corrupted = structuredClone(ledger);
   corrupted.entries.find(({ id }) => id === "elections-canada-45th-files").proof.productionAdmission = false;
   assert.throws(() => validatePhase1SourceLedgerDecisionReadiness(audit, corrupted, decisions), /exact later federal admission state|later federal admission/i);
+});
+
+test("NBAC primary readback is evidence-bound without becoming archive readiness", () => {
+  const missing = structuredClone(audit);
+  delete missing.entries.find(({ id }) => id === "cwfis-historical").primaryObjectReadbackEvidence;
+  assert.throws(() => validatePhase1SourceLedgerDecisionReadiness(missing, ledger, decisions));
+
+  const claimed = structuredClone(audit);
+  claimed.entries.find(({ id }) => id === "cwfis-historical").primaryObjectReadback = false;
+  assert.throws(() => validatePhase1SourceLedgerDecisionReadiness(claimed, ledger, decisions));
+});
+
+test("NBAC readiness rejects a ledger receipt or refetch mismatch", () => {
+  const missingReceipt = structuredClone(ledger);
+  const missingReceiptRow = missingReceipt.entries.find(({ id }) => id === "cwfis-historical");
+  missingReceiptRow.evidenceRefs = missingReceiptRow.evidenceRefs.filter((reference) => reference !== "data/nbac-archive-receipt-2026-08-27.json");
+  assert.throws(() => validatePhase1SourceLedgerDecisionReadiness(audit, missingReceipt, decisions), /must cite the primary-readback receipt/i);
+
+  const mismatchedRefetch = structuredClone(ledger);
+  mismatchedRefetch.entries.find(({ id }) => id === "cwfis-historical").proof.rawArchiveRefetch = false;
+  assert.throws(() => validatePhase1SourceLedgerDecisionReadiness(audit, mismatchedRefetch, decisions), /agree on raw refetch evidence/i);
 });

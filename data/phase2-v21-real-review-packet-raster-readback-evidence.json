@@ -2,9 +2,9 @@
   "schemaVersion": "witness-tree/phase2-v21-real-review-packet-raster-readback-evidence/1",
   "status": "local-native-pixel-readback-passed-nonproduction",
   "packet": {
-    "path": "../../Witness_Tree-data/derived/phase2-v21-review-packet-v1/packet.json",
+    "path": "../../Witness_Tree-data/derived/phase2-v21-review-packet-v2/packet.json",
     "byteLength": 328499,
-    "sha256": "48151799249a442c828287897f0d504746b09fb72ef0663308d90339d47e091e"
+    "sha256": "030ed48f271277436e991263c386626969cb027457155b224b43704b69330906"
   },
   "runner": {
     "path": "scripts/readback-phase2-v21-real-review-packet.mjs",

@@ -36,7 +36,11 @@ def main():
   out=os.path.abspath(a.output); os.makedirs(out, exist_ok=False)
   raster_root=f"{ROOT}/derived/phase2-v21-raster-first-1984-2022-v1"
   samples=[]; provenance={}
-  to4326=osr.CoordinateTransformation(osr.SpatialReference(wkt=gdal.Open(f"{raster_root}/whole-interval-loss-2020-2022.tif").GetProjection()), osr.SpatialReference("EPSG:4326"))
+  source_crs=osr.SpatialReference(wkt=gdal.Open(f"{raster_root}/whole-interval-loss-2020-2022.tif").GetProjection())
+  source_crs.SetAxisMappingStrategy(osr.OAMS_TRADITIONAL_GIS_ORDER)
+  geographic_crs=osr.SpatialReference(); geographic_crs.ImportFromEPSG(4326)
+  geographic_crs.SetAxisMappingStrategy(osr.OAMS_TRADITIONAL_GIS_ORDER)
+  to4326=osr.CoordinateTransformation(source_crs, geographic_crs)
   for province,(boundary,layer,boundary_id,edition,boundary_sha) in BOUNDARIES.items():
     boundary_ds=ogr.Open(boundary); boundary_layer=boundary_ds.GetLayerByName(layer)
     feature=boundary_layer.GetNextFeature(); boundary_geometry=feature.GetGeometryRef().Clone()

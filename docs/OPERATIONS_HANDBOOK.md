@@ -512,15 +512,16 @@ claims a retained temporary copy.
 5. If an object is genuinely absent, this is a recovery, not a restore: go to
    section 7 and read the specific recovery runner's header before invoking it.
 
-**What restore cannot do.** The three promoted payloads are the only bytes with
-a second copy anywhere. **The data root has exactly one copy on one drive.**
-There is no backup, no replication, and no provider durability evidence; Phase
-8 `backups` is `fail` for precisely this reason and
+**What restore cannot do.** Bounded recovery replicas exist for some archived
+objects, but they do not form a complete second copy of every raw input,
+manifest, derived artifact, and data-root dependency. **The external data root
+still has no verified complete second copy.** Phase 8 `backups` is `fail` for
+precisely this reason and
 [ARCHIVE_OPERATIONS_READINESS.md](ARCHIVE_OPERATIONS_READINESS.md) records the
-Canadian recovery-copy decision as unevidenced. If that drive dies, the derived
-data is gone and the only path back is to re-acquire and re-transform from the
-raw archive and from the original publishers. Establishing a second copy is an
-owner action and nothing in this repository substitutes for it.
+Canadian recovery-copy decision as incomplete. If that drive dies, any derived
+data absent from recovery storage must be re-acquired or re-transformed from
+the raw archive and original publishers. Nothing in this repository substitutes
+for a complete recovery reconciliation and tested restore path.
 
 Note also that the restore drill proves readback, not reproducibility. Those
 are separate claims, and the second one is now evidenced separately: Phase 8

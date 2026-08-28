@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { validate as validateFederalAdmission } from "./check-phase1-federal-electoral-production-admission.mjs";
+import { NBAC_ARCHIVE_RECEIPT_PATH, validateNbacArchiveReceipt } from "./check-nbac-archive-receipt.mjs";
 
 const READINESS = new Set(["owner-decision-recorded", "immutable-archive-then-owner-decision", "owner-scope-decision-after-archive", "owner-scope-decision-recorded-awaiting-archive", "owner-scope-decision-ready", "external-evidence-blocked"]);
 const OWNER_SCOPE_EVIDENCE_BY_ROW = new Map([
@@ -120,6 +121,15 @@ export function validatePhase1SourceLedgerDecisionReadiness(audit, ledger, decis
   assert.match(plvi.scope, /179,087-feature closed-join derived artifact.*12 bounded repairs.*POLYGON_ID 41405.*scope-bound validation and ingestion preparation only/i);
   const nbac = audit.entries.find((candidate) => candidate.id === "cwfis-historical");
   assert.equal(nbac.readiness, "owner-scope-decision-recorded-awaiting-archive");
+  assert.equal(nbac.primaryObjectReadback, true);
+  assert.equal(nbac.primaryObjectReadbackEvidence, NBAC_ARCHIVE_RECEIPT_PATH);
+  const nbacReceipt = validateNbacArchiveReceipt(JSON.parse(readFileSync(new URL(`../${NBAC_ARCHIVE_RECEIPT_PATH}`, import.meta.url), "utf8")));
+  const nbacLedger = ledger.entries.find((candidate) => candidate.id === "cwfis-historical");
+  assert.ok(nbacLedger, "NBAC ledger row is required for readiness reconciliation.");
+  assert.ok(nbacLedger.evidenceRefs.includes(NBAC_ARCHIVE_RECEIPT_PATH), "NBAC ledger row must cite the primary-readback receipt.");
+  assert.equal(nbacLedger.proof.rawArchiveRefetch, nbacReceipt.claims.rawArchiveRefetch, "NBAC readiness and ledger must agree on raw refetch evidence.");
+  assert.equal(nbacLedger.proof.immutableArchive, false, "NBAC readiness cannot turn primary readback into immutable archive evidence.");
+  assert.equal(nbacLedger.proof.productionAdmission, false, "NBAC readiness cannot imply production admission.");
   assert.match(nbac.scope, /OGL Canada.*NFDB and NBAC.*49 invalid NBAC geometries.*quarantined/i);
   const elections = audit.entries.filter((entry) => entry.physicalArtifactGroup === "elections-canada-2025-shp");
   assert.deepEqual(elections.map(({ id }) => id), ["fed-2023-ridings", "elections-canada-45th-files"]);

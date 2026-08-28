@@ -20,8 +20,8 @@
         "status": "fail",
         "requirement": "100 percent of production datasets have a complete ledger entry.",
         "evidence": [
-          {"path": "data/phase1-production-source-ledger.json", "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351"},
-          {"path": "data/phase1-source-ledger-field-audit.json", "sha256": "3faa30c28bfb9e2cd9cbaa09b271af279f72ea1a984939cf38e23b9e715eeeaa"},
+          {"path": "data/phase1-production-source-ledger.json", "sha256": "4ffc278a2b0bfc6308f8d6af57fc1f2fe36466b1fba758538749a9e4dd2693ee"},
+          {"path": "data/phase1-source-ledger-field-audit.json", "sha256": "2a4b381219969580aa10d405f3131c971ce7bcd05e6095565a129f56475769a7"},
           {"path": "data/phase1-optional-enhancements.json", "sha256": "2617e8a975b2fe7d328b7cb43834cf89aa34f2df028a57d517168277c57d24be"},
           {"path": "data/phase1-current-state-completion-audit.json", "sha256": "f0c59e0f66a0cfdc26d4f97a4defd6ec09db4379623db303e09b1d9d5b2a3c07"}
         ],
@@ -38,9 +38,11 @@
           {"path": "data/federal-electoral-archive-recovery-evidence.json", "sha256": "18b9fbfa5e3eecdc33ad0098f5ffa55f7bfebb1a47d2e33b7f01a94e05a6ed32"},
           {"path": "data/current-wildfire-exact-raw-archive-capture-2026-08-25.json", "sha256": "6600c3b7eb00c80ae8220c976a5b4038c2c59c959dc14a239d1cacdb979b9990"},
           {"path": "data/qc-fourth-inventory-exact-archive-readback-2026-08-25.json", "sha256": "8624b6283177c5910d04a4933714e7bd4193e9c7becc821d04c4d64582d4c689"},
-          {"path": "data/phase1-nbac-profile-2026-08-27.json", "sha256": "53bfa7edc94d09273db4a1c65fe2f8689c3312b991f2888dbcb0b177c9fd86b2"}
+          {"path": "data/phase1-nbac-profile-2026-08-27.json", "sha256": "edc03f721a04427f06480e24e85b7d056eac2b9026a852ef11a6a571bcac8b42"},
+          {"path": "data/nbac-archive-receipt-2026-08-27.json", "sha256": "51fad635a0984a51807245de2f507d9a47f02c982e4d72a2c341eac7ffccb219"},
+          {"path": "data/phase1-canonical-raw-inventory-2026-08-27.json", "sha256": "0e262c5b3f3b9b9acb6299c09e1846115d67c2d8e152c42d46dd78eb44d061f8"}
         ],
-        "reason": "The federal raw payload/manifest, four current-wildfire raw payload/manifest pairs, and the Québec 62-object archive have checksum-bound exact-version evidence. The exact NBAC ZIP has local checksum and refetch proof but no durable immutable payload/manifest retention receipt. The requirement is universal, and other raw files also still lack all required archive-control proofs."
+        "reason": "The federal raw payload/manifest, four current-wildfire raw payload/manifest pairs, and the Québec 62-object archive have checksum-bound exact-version evidence. The exact NBAC payload now also has a durable exact-version primary readback and COMPLIANCE-retention receipt, but no recovery-replica proof. The canonical local inventory verifies 120 physical artifacts byte-for-byte across 17 complete local rows and one partial row, while four core rows remain unstaged. Local checksums do not prove archive restoration. The requirement is universal, and other raw files still lack the complete archive-and-recovery evidence needed to pass."
       },
       {
         "id": "coverage-geometry",
@@ -73,7 +75,7 @@
     "excludedFromFormalExitCalculation": true,
     "reason": "This is the current bounded raw-evidence tracking score recorded by the 31-row audit. It is not Phase 1 exit coverage or production completion.",
     "evidence": [
-      {"path": "data/phase1-production-source-ledger.json", "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351"}
+      {"path": "data/phase1-production-source-ledger.json", "sha256": "4ffc278a2b0bfc6308f8d6af57fc1f2fe36466b1fba758538749a9e4dd2693ee"}
     ]
   }
 }

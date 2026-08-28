@@ -59,11 +59,11 @@
     },
     {
      "path": "docs/PHASE4_OPTIONAL_ENHANCEMENT_GATE.md",
-     "sha256": "319025e978aa606a68b1930c44284cfd5776c75b740f8bed4f65c6c800587f62"
+     "sha256": "4fa2b8bf2427bd8fe53bdefe4370851d7b39ba3992725828789854c991a0ea5f"
     },
     {
      "path": "docs/PLAN_GAP_MATRIX.md",
-          "sha256": "94077da717d964af14e9bd291117d1aa18431a0646d441b0cf789e0e8ee57bb4"
+          "sha256": "95f36dfdca87e3cfae5bd7d8ba7840ebba2083ad82527facc5ce57fe1c9f3b26"
     }
    ]
   },
@@ -108,11 +108,11 @@
    "evidence": [
     {
      "path": "data/phase4-provincial-matching-preflight.json",
-          "sha256": "c86e516121adcae06a830f964f08633818d6ff3f5d7018dd6c39537b494503f0"
+          "sha256": "13da9b9d533f74b733c60eac712ed231cfc003b916baef033bc189e7f2afa726"
     },
     {
      "path": "docs/PHASE4_OPTIONAL_ENHANCEMENT_GATE.md",
-     "sha256": "319025e978aa606a68b1930c44284cfd5776c75b740f8bed4f65c6c800587f62"
+     "sha256": "4fa2b8bf2427bd8fe53bdefe4370851d7b39ba3992725828789854c991a0ea5f"
     }
    ]
   },
@@ -120,18 +120,18 @@
    "id": "outside-provincial-review",
    "title": "Outside provincial review",
    "status": "blocked",
-   "reason": "Outside provincial reviewer sign-off remains required for British Columbia and Québec.",
+   "reason": "The owner decided not to pursue BC or Québec human review. No outside provincial review or reviewer sign-off occurred, so this checkpoint remains blocked rather than treating a waiver as completed review.",
    "evidence": [
     {
      "path": "data/phase4-provincial-matching-preflight.json",
-          "sha256": "c86e516121adcae06a830f964f08633818d6ff3f5d7018dd6c39537b494503f0"
+     "sha256": "13da9b9d533f74b733c60eac712ed231cfc003b916baef033bc189e7f2afa726"
     },
     {
      "path": "docs/EXTERNAL_GATES.md",
-     "sha256": "51c55070eafd24a2c05cf43fbe903edb3af93068b6730baeb3fb8478a16ba2d9"
+     "sha256": "6240c138cbc412ad530d7912215a75017a485afc1d88cc4911a356cc52395542"
     }
    ]
   }
  ],
- "localControls": "The optional-enhancement availability gate protects absent optional data as bilingual Unknown; it does not substitute for the separate rights/admission or outside-review checkpoints."
+ "localControls": "The optional-enhancement availability gate protects absent optional data as bilingual Unknown; it does not substitute for the separate rights/admission or outside-review checkpoints. The owner's decision not to pursue human review is recorded as a continuing blocker, not as evidence that review occurred."
 }

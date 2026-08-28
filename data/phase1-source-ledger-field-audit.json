@@ -184,7 +184,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
+            "sha256": "4ffc278a2b0bfc6308f8d6af57fc1f2fe36466b1fba758538749a9e4dd2693ee",
             "jsonPointer": "/entries/0/proof/productionAdmission",
             "expectedValue": false
           }
@@ -557,7 +557,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
+            "sha256": "4ffc278a2b0bfc6308f8d6af57fc1f2fe36466b1fba758538749a9e4dd2693ee",
             "jsonPointer": "/entries/1/proof/productionAdmission",
             "expectedValue": false
           }
@@ -859,7 +859,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
+            "sha256": "4ffc278a2b0bfc6308f8d6af57fc1f2fe36466b1fba758538749a9e4dd2693ee",
             "jsonPointer": "/entries/2/proof/productionAdmission",
             "expectedValue": false
           }
@@ -1159,7 +1159,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
+            "sha256": "4ffc278a2b0bfc6308f8d6af57fc1f2fe36466b1fba758538749a9e4dd2693ee",
             "jsonPointer": "/entries/3/proof/productionAdmission",
             "expectedValue": false
           }
@@ -1530,7 +1530,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
+            "sha256": "4ffc278a2b0bfc6308f8d6af57fc1f2fe36466b1fba758538749a9e4dd2693ee",
             "jsonPointer": "/entries/4/proof/productionAdmission",
             "expectedValue": false
           }
@@ -1595,7 +1595,8 @@
       "canonicalEvidenceRefs": [
         "data/nfdb-poly-current-profile.json",
         "data/phase1-nbac-owner-authorization-2026-08-27.json",
-        "data/phase1-nbac-profile-2026-08-27.json"
+        "data/phase1-nbac-profile-2026-08-27.json",
+        "data/nbac-archive-receipt-2026-08-27.json"
       ],
       "canonicalProductionEligible": false,
       "canonicalProductionAdmission": false,
@@ -1608,7 +1609,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-nbac-profile-2026-08-27.json",
-            "sha256": "53bfa7edc94d09273db4a1c65fe2f8689c3312b991f2888dbcb0b177c9fd86b2",
+            "sha256": "edc03f721a04427f06480e24e85b7d056eac2b9026a852ef11a6a571bcac8b42",
             "jsonPointer": "/source/publisher",
             "expectedValue": "Natural Resources Canada, Canadian Forest Service"
           }
@@ -1625,7 +1626,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-nbac-profile-2026-08-27.json",
-            "sha256": "53bfa7edc94d09273db4a1c65fe2f8689c3312b991f2888dbcb0b177c9fd86b2",
+            "sha256": "edc03f721a04427f06480e24e85b7d056eac2b9026a852ef11a6a571bcac8b42",
             "jsonPointer": "/source/artifactUrl",
             "expectedValue": "https://cwfis.cfs.nrcan.gc.ca/downloads/nbac/NBAC_1972to2025_20260513_shp.zip"
           }
@@ -1638,7 +1639,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-nbac-profile-2026-08-27.json",
-            "sha256": "53bfa7edc94d09273db4a1c65fe2f8689c3312b991f2888dbcb0b177c9fd86b2",
+            "sha256": "edc03f721a04427f06480e24e85b7d056eac2b9026a852ef11a6a571bcac8b42",
             "jsonPointer": "/licence/name",
             "expectedValue": "Open Government Licence - Canada"
           }
@@ -1651,7 +1652,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-nbac-profile-2026-08-27.json",
-            "sha256": "53bfa7edc94d09273db4a1c65fe2f8689c3312b991f2888dbcb0b177c9fd86b2",
+            "sha256": "edc03f721a04427f06480e24e85b7d056eac2b9026a852ef11a6a571bcac8b42",
             "jsonPointer": "/licence/url",
             "expectedValue": "https://open.canada.ca/en/open-government-licence-canada"
           }
@@ -1668,7 +1669,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-nbac-profile-2026-08-27.json",
-            "sha256": "53bfa7edc94d09273db4a1c65fe2f8689c3312b991f2888dbcb0b177c9fd86b2",
+            "sha256": "edc03f721a04427f06480e24e85b7d056eac2b9026a852ef11a6a571bcac8b42",
             "jsonPointer": "/retrievedAt",
             "expectedValue": "2026-08-27"
           }
@@ -1681,7 +1682,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-nbac-profile-2026-08-27.json",
-            "sha256": "53bfa7edc94d09273db4a1c65fe2f8689c3312b991f2888dbcb0b177c9fd86b2",
+            "sha256": "edc03f721a04427f06480e24e85b7d056eac2b9026a852ef11a6a571bcac8b42",
             "jsonPointer": "/artifacts/payload/sha256",
             "expectedValue": "c42740eb9d2fe3991a27344d0c33927705ec3e78c277efc5311b502439cb2165"
           }
@@ -1694,7 +1695,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-nbac-profile-2026-08-27.json",
-            "sha256": "53bfa7edc94d09273db4a1c65fe2f8689c3312b991f2888dbcb0b177c9fd86b2",
+            "sha256": "edc03f721a04427f06480e24e85b7d056eac2b9026a852ef11a6a571bcac8b42",
             "jsonPointer": "/source/edition",
             "expectedValue": "NBAC 1972-2025, 20260513"
           }
@@ -1710,7 +1711,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-nbac-profile-2026-08-27.json",
-            "sha256": "53bfa7edc94d09273db4a1c65fe2f8689c3312b991f2888dbcb0b177c9fd86b2",
+            "sha256": "edc03f721a04427f06480e24e85b7d056eac2b9026a852ef11a6a571bcac8b42",
             "jsonPointer": "/profile/yearRange",
             "expectedValue": [
               1972,
@@ -1746,7 +1747,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-nbac-profile-2026-08-27.json",
-            "sha256": "53bfa7edc94d09273db4a1c65fe2f8689c3312b991f2888dbcb0b177c9fd86b2",
+            "sha256": "edc03f721a04427f06480e24e85b7d056eac2b9026a852ef11a6a571bcac8b42",
             "jsonPointer": "/profile/fields",
             "expectedValue": [
               "YEAR",
@@ -1783,7 +1784,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-nbac-profile-2026-08-27.json",
-            "sha256": "53bfa7edc94d09273db4a1c65fe2f8689c3312b991f2888dbcb0b177c9fd86b2",
+            "sha256": "edc03f721a04427f06480e24e85b7d056eac2b9026a852ef11a6a571bcac8b42",
             "jsonPointer": "/licence/requiredCitation",
             "expectedValue": "Canadian Forest Service. National Burned Area Composite (NBAC). Natural Resources Canada, Canadian Forest Service, Northern Forestry Centre, Edmonton, Alberta. https://cwfis.cfs.nrcan.gc.ca."
           }
@@ -1804,7 +1805,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
+            "sha256": "4ffc278a2b0bfc6308f8d6af57fc1f2fe36466b1fba758538749a9e4dd2693ee",
             "jsonPointer": "/entries/5/proof/productionAdmission",
             "expectedValue": false
           }
@@ -2220,7 +2221,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
+            "sha256": "4ffc278a2b0bfc6308f8d6af57fc1f2fe36466b1fba758538749a9e4dd2693ee",
             "jsonPointer": "/entries/6/proof/productionAdmission",
             "expectedValue": false
           }
@@ -2591,7 +2592,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
+            "sha256": "4ffc278a2b0bfc6308f8d6af57fc1f2fe36466b1fba758538749a9e4dd2693ee",
             "jsonPointer": "/entries/7/proof/productionAdmission",
             "expectedValue": false
           }
@@ -2949,7 +2950,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
+            "sha256": "4ffc278a2b0bfc6308f8d6af57fc1f2fe36466b1fba758538749a9e4dd2693ee",
             "jsonPointer": "/entries/8/proof/productionAdmission",
             "expectedValue": false
           }
@@ -3073,7 +3074,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
+            "sha256": "4ffc278a2b0bfc6308f8d6af57fc1f2fe36466b1fba758538749a9e4dd2693ee",
             "jsonPointer": "/entries/9/proof/productionAdmission",
             "expectedValue": false
           }
@@ -3183,7 +3184,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
+            "sha256": "4ffc278a2b0bfc6308f8d6af57fc1f2fe36466b1fba758538749a9e4dd2693ee",
             "jsonPointer": "/entries/10/proof/productionAdmission",
             "expectedValue": false
           }
@@ -3293,7 +3294,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
+            "sha256": "4ffc278a2b0bfc6308f8d6af57fc1f2fe36466b1fba758538749a9e4dd2693ee",
             "jsonPointer": "/entries/11/proof/productionAdmission",
             "expectedValue": false
           }
@@ -3403,7 +3404,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
+            "sha256": "4ffc278a2b0bfc6308f8d6af57fc1f2fe36466b1fba758538749a9e4dd2693ee",
             "jsonPointer": "/entries/12/proof/productionAdmission",
             "expectedValue": false
           }
@@ -3513,7 +3514,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
+            "sha256": "4ffc278a2b0bfc6308f8d6af57fc1f2fe36466b1fba758538749a9e4dd2693ee",
             "jsonPointer": "/entries/13/proof/productionAdmission",
             "expectedValue": false
           }
@@ -3623,7 +3624,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
+            "sha256": "4ffc278a2b0bfc6308f8d6af57fc1f2fe36466b1fba758538749a9e4dd2693ee",
             "jsonPointer": "/entries/14/proof/productionAdmission",
             "expectedValue": false
           }
@@ -3733,7 +3734,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
+            "sha256": "4ffc278a2b0bfc6308f8d6af57fc1f2fe36466b1fba758538749a9e4dd2693ee",
             "jsonPointer": "/entries/15/proof/productionAdmission",
             "expectedValue": false
           }
@@ -3899,7 +3900,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
+            "sha256": "4ffc278a2b0bfc6308f8d6af57fc1f2fe36466b1fba758538749a9e4dd2693ee",
             "jsonPointer": "/entries/16/proof/productionAdmission",
             "expectedValue": false
           }
@@ -4597,7 +4598,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
+            "sha256": "4ffc278a2b0bfc6308f8d6af57fc1f2fe36466b1fba758538749a9e4dd2693ee",
             "jsonPointer": "/entries/17/proof/productionAdmission",
             "expectedValue": false
           }
@@ -4899,7 +4900,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
+            "sha256": "4ffc278a2b0bfc6308f8d6af57fc1f2fe36466b1fba758538749a9e4dd2693ee",
             "jsonPointer": "/entries/18/proof/productionAdmission",
             "expectedValue": false
           }
@@ -5159,7 +5160,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
+            "sha256": "4ffc278a2b0bfc6308f8d6af57fc1f2fe36466b1fba758538749a9e4dd2693ee",
             "jsonPointer": "/entries/19/proof/productionAdmission",
             "expectedValue": false
           }
@@ -5420,7 +5421,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
+            "sha256": "4ffc278a2b0bfc6308f8d6af57fc1f2fe36466b1fba758538749a9e4dd2693ee",
             "jsonPointer": "/entries/20/proof/productionAdmission",
             "expectedValue": false
           }
@@ -5695,7 +5696,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
+            "sha256": "4ffc278a2b0bfc6308f8d6af57fc1f2fe36466b1fba758538749a9e4dd2693ee",
             "jsonPointer": "/entries/21/proof/productionAdmission",
             "expectedValue": false
           }
@@ -5814,7 +5815,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
+            "sha256": "4ffc278a2b0bfc6308f8d6af57fc1f2fe36466b1fba758538749a9e4dd2693ee",
             "jsonPointer": "/entries/22/proof/productionAdmission",
             "expectedValue": false
           }
@@ -5924,7 +5925,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
+            "sha256": "4ffc278a2b0bfc6308f8d6af57fc1f2fe36466b1fba758538749a9e4dd2693ee",
             "jsonPointer": "/entries/23/proof/productionAdmission",
             "expectedValue": false
           }
@@ -6333,7 +6334,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
+            "sha256": "4ffc278a2b0bfc6308f8d6af57fc1f2fe36466b1fba758538749a9e4dd2693ee",
             "jsonPointer": "/entries/24/proof/productionAdmission",
             "expectedValue": true
           }
@@ -6816,7 +6817,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
+            "sha256": "4ffc278a2b0bfc6308f8d6af57fc1f2fe36466b1fba758538749a9e4dd2693ee",
             "jsonPointer": "/entries/25/proof/productionAdmission",
             "expectedValue": true
           }
@@ -7004,7 +7005,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
+            "sha256": "4ffc278a2b0bfc6308f8d6af57fc1f2fe36466b1fba758538749a9e4dd2693ee",
             "jsonPointer": "/entries/26/proof/productionAdmission",
             "expectedValue": false
           }
@@ -7115,7 +7116,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
+            "sha256": "4ffc278a2b0bfc6308f8d6af57fc1f2fe36466b1fba758538749a9e4dd2693ee",
             "jsonPointer": "/entries/27/proof/productionAdmission",
             "expectedValue": false
           }
@@ -7225,7 +7226,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
+            "sha256": "4ffc278a2b0bfc6308f8d6af57fc1f2fe36466b1fba758538749a9e4dd2693ee",
             "jsonPointer": "/entries/28/proof/productionAdmission",
             "expectedValue": false
           }
@@ -7335,7 +7336,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
+            "sha256": "4ffc278a2b0bfc6308f8d6af57fc1f2fe36466b1fba758538749a9e4dd2693ee",
             "jsonPointer": "/entries/29/proof/productionAdmission",
             "expectedValue": false
           }
@@ -7446,7 +7447,7 @@
           ],
           "evidenceBinding": {
             "path": "data/phase1-production-source-ledger.json",
-            "sha256": "7fb9b39a8d98eb17314cfdd667f173d0a72393c6d7d5624859c02e5c68f44351",
+            "sha256": "4ffc278a2b0bfc6308f8d6af57fc1f2fe36466b1fba758538749a9e4dd2693ee",
             "jsonPointer": "/entries/30/proof/productionAdmission",
             "expectedValue": false
           }
