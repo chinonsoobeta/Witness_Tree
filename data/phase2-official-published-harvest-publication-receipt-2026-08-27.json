@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "witness-tree/phase2-official-published-harvest-publication-receipt/1",
+  "status": "published",
+  "publishedAt": "2026-08-28T05:45:21.353416Z",
+  "source": {
+    "repository": "https://github.com/chinonsoobeta/Witness_Tree",
+    "branch": "main",
+    "commitSha": "2ff85ad357418a363ac26dbd1341c54dce7f3e76",
+    "pullRequest": "https://github.com/chinonsoobeta/Witness_Tree/pull/79"
+  },
+  "preparedReceipt": {
+    "repositoryPath": "data/phase2-official-published-harvest-comparison-receipt-2026-08-27.json",
+    "byteLength": 3197,
+    "sha256": "7bdf5295f825c812a43de3da8e0f8fb38fb58676d26692ba529edf3ad326ded0"
+  },
+  "publicArtifact": {
+    "repositoryPath": "data/phase2-official-published-harvest-comparison.json",
+    "byteLength": 283062,
+    "sha256": "c896b5d63dcb5c2c12e45b2085174ba9e8371f3583785d4a344bf7b79fc506b0"
+  },
+  "site": {
+    "projectId": "appgprj_6a7bea9e59988191a9304d4c5a3f379d",
+    "versionId": "appgprj_6a7bea9e59988191a9304d4c5a3f379d~appgver_8c609c9c18f88191bc924fae80f19e37",
+    "versionNumber": 7,
+    "deploymentId": "appgdep_6a91206622a48191a49128d9b6d38aaa",
+    "deploymentStatus": "succeeded",
+    "productionUrl": "https://witness-tree-canada.r7bv67rgkk.chatgpt.site",
+    "englishRoute": "https://witness-tree-canada.r7bv67rgkk.chatgpt.site/en/data/official-harvest-comparison",
+    "frenchRoute": "https://witness-tree-canada.r7bv67rgkk.chatgpt.site/fr/donnees/comparaison-recolte-officielle"
+  },
+  "summary": {
+    "rows": 118,
+    "computedRoundedRows": 104,
+    "restrictedPendingRows": 14,
+    "strictNfdExactTotalsRemainingNull": 118,
+    "restrictedNumericValuesPublished": 0
+  },
+  "claims": {
+    "publicPreviewAvailable": true,
+    "published": true,
+    "released": true,
+    "productionEligible": false,
+    "strictNfdRowsReplaced": false,
+    "likeForLike": false,
+    "causalAttribution": false,
+    "productAccuracy": false,
+    "formalIndependentComparisonGateComplete": false
+  }
+}
