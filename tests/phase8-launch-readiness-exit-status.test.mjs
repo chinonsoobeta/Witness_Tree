@@ -7,11 +7,11 @@ const record = JSON.parse(readFileSync(new URL("../data/phase8-launch-readiness-
 
 test("Phase 8 records every literal launch-readiness gate without production inflation", async () => {
   assert.equal(await validatePhase8LaunchReadinessExitStatus(record), record);
-  assert.equal(record.completedCriteria, 6);
+  assert.equal(record.completedCriteria, 7);
   assert.equal(record.totalCriteria, 16);
-  assert.equal(record.percentage, 37.5);
+  assert.equal(record.percentage, 43.75);
   assert.equal(record.phaseComplete, false);
-  assert.deepEqual(record.exitCriteria.filter((item) => item.status === "pass").map((item) => item.id), ["raw-archive-reproducibility", "governance-and-corrections-procedures", "operations-handbook", "citation-format", "release-notes", "restore-tests"]);
+  assert.deepEqual(record.exitCriteria.filter((item) => item.status === "pass").map((item) => item.id), ["raw-archive-reproducibility", "governance-and-corrections-procedures", "operations-handbook", "bulk-downloads", "citation-format", "release-notes", "restore-tests"]);
 });
 
 test("Phase 8 rejects invented readiness, altered gates, blockers, and tampered evidence", async () => {

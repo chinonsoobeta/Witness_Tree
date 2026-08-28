@@ -68,6 +68,18 @@ jobs:
       - run: npm run check:phase6-account-alert-exit-status
       - run: npm run check:phase7-indigenous-explore-comparison-exit-status
       - run: npm run check:phase8-launch-readiness-exit-status
+      - run: npm run check:site-hosting-capability-probe
+      - run: npm run check:phase8-province-map-release
+      - name: Independently retrieve the Phase 8 bulk release
+        run: node scripts/check-phase8-bulk-download-independent-retrieval.mjs --output /tmp/phase8-bulk-download-independent-retrieval.json
+      - name: Preserve the independent Phase 8 retrieval receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase8-bulk-download-independent-retrieval
+          path: /tmp/phase8-bulk-download-independent-retrieval.json
+          if-no-files-found: error
+          retention-days: 30
+      - run: npm run check:bulk-download-publication
       - run: npm run check:phase9-public-beta-launch-exit-status
       - run: npm run check:elections-canada-fed-2025
       - run: npm run check:elections-canada-fed-2025-promotion
