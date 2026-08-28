@@ -1,0 +1,103 @@
+{
+  "schemaVersion": "witness-tree/site-hosting-capability-probe/1",
+  "status": "observed-partial",
+  "capturedAt": "2026-08-28T05:53:55Z",
+  "site": {
+    "projectId": "appgprj_6a7bea9e59988191a9304d4c5a3f379d",
+    "versionNumber": 8,
+    "sourceCommitSha": "a5f4bd504efddfb60303d26adc5c4bd58f9f6b62",
+    "productionUrl": "https://witness-tree-canada.r7bv67rgkk.chatgpt.site"
+  },
+  "requests": [
+    {
+      "id": "root-html",
+      "method": "GET",
+      "url": "https://witness-tree-canada.r7bv67rgkk.chatgpt.site/",
+      "requestHeaders": {},
+      "status": 200,
+      "responseHeaders": {
+        "contentType": "text/html; charset=utf-8",
+        "cacheControl": null,
+        "etag": null,
+        "age": null,
+        "contentSecurityPolicy": null,
+        "server": "cloudflare"
+      }
+    },
+    {
+      "id": "explore-html",
+      "method": "GET",
+      "url": "https://witness-tree-canada.r7bv67rgkk.chatgpt.site/en/explore?mode=forest-change&presentation=map&data=chart&year=1996",
+      "requestHeaders": {},
+      "status": 200,
+      "responseHeaders": {
+        "contentType": "text/html; charset=utf-8",
+        "cacheControl": "no-store, must-revalidate",
+        "etag": null,
+        "age": null,
+        "contentSecurityPolicy": null,
+        "server": "cloudflare"
+      }
+    },
+    {
+      "id": "static-asset-range",
+      "method": "GET",
+      "url": "https://witness-tree-canada.r7bv67rgkk.chatgpt.site/_next/static/css/site-metadata.Bs0VH_AK.css",
+      "requestHeaders": {
+        "range": "bytes=0-16383"
+      },
+      "status": 200,
+      "responseByteLength": 102206,
+      "responseHeaders": {
+        "contentType": "text/css",
+        "contentLength": "102206",
+        "contentRange": null,
+        "cacheControl": null,
+        "etag": "\"3d779d75982bdbc0f24581a93bb98653\"",
+        "age": null,
+        "cfCacheStatus": "HIT",
+        "server": "cloudflare"
+      }
+    }
+  ],
+  "capabilities": {
+    "cacheHeadersObserved": {
+      "state": "observed",
+      "result": "The Explore HTML response used no-store and the tested static asset carried an ETag plus a Cloudflare cache hit. No Age header was observed.",
+      "repositoryConfigurable": "unknown"
+    },
+    "staticAssetRangeRequests": {
+      "state": "not-supported-on-tested-asset",
+      "result": "The host ignored Range bytes=0-16383 for the tested 102206-byte static asset and returned status 200 with the complete 102206-byte representation instead of status 206.",
+      "pmtilesConsequence": "Do not host PMTiles on this static-asset path. PMTiles requires byte-range responses. A separate delivery origin must be tested independently."
+    },
+    "largestStaticAsset": {
+      "state": "unknown",
+      "result": "No published or observed maximum static-asset size was available from this probe."
+    },
+    "contentSecurityPolicy": {
+      "state": "observed-absent",
+      "result": "No Content-Security-Policy header was present on either tested HTML response. No connect-src restriction was observed; a separate origin must still provide suitable CORS and range responses."
+    },
+    "operationalSignals": {
+      "state": "partial",
+      "result": "The project owner can query recent production Worker logs through the Sites management connector. Request-count, error-rate, dashboard, alerting, and retention capabilities remain unknown."
+    },
+    "availabilityTargetOrStatusPage": {
+      "state": "unknown",
+      "result": "No project-visible documented availability target or host status-page binding was established by this probe."
+    },
+    "syntheticLoadTestPermission": {
+      "state": "unknown",
+      "result": "No terms evidence authorizing a synthetic load test against the host was established. No load test was attempted."
+    }
+  },
+  "claims": {
+    "hostFullyCharacterized": false,
+    "pmtilesOnSiteApproved": false,
+    "externalDeliveryOriginApproved": false,
+    "loadTestAuthorized": false,
+    "observabilityComplete": false,
+    "phase8GateMoved": false
+  }
+}

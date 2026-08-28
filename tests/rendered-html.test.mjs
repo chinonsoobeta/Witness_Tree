@@ -90,15 +90,15 @@ test("renders localized search results and Explore list/table alternatives witho
 
   assert.match(englishExplore, /<main\b[^>]*id="main"/);
   assert.match(englishExplore, /Explore forest change/);
-  // The dash in this notice is deliberately not pinned: the sentence must keep saying the
-  // fixtures are illustrative and that nothing live is shown, but the punctuation is copy.
-  assert.match(englishExplore, /Illustrative fixtures only\s*\S\s*no live data or geometry is shown\./);
+  assert.match(englishExplore, /This list, chart, and table use illustrative fixtures/);
+  assert.match(englishExplore, /No verified geographic layer is implied by this view/);
   assert.match(englishExplore, /Reported fire perimeter/);
   assert.match(englishExplore, /<table/);
   assert.match(englishExplore, /Source attribution/);
   assert.match(frenchExplore, /<main\b[^>]*id="main"/);
   assert.match(frenchExplore, /Explorer les changements forestiers/);
-  assert.match(frenchExplore, /Exemples illustratifs seulement\s*\S\s*aucune donnée ni géométrie en direct n’est affichée\./);
+  assert.match(frenchExplore, /Cette liste, ce graphique et ce tableau utilisent des exemples illustratifs/);
+  assert.match(frenchExplore, /Cette vue n’implique aucune couche géographique vérifiée/);
   assert.match(frenchExplore, /Périmètre d’incendie déclaré/);
   assert.match(frenchExplore, /<table/);
   assert.match(frenchExplore, /Attribution de la source/);

@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "witness-tree/phase8-province-map-release/1",
+  "status": "published-verified-technical-preview",
+  "scope": {
+    "layer": "phase2_province_loss_2020_2022",
+    "provinceIds": ["24", "35", "48", "59"],
+    "period": "2020-2022",
+    "featureCount": 4,
+    "geometryMeaning": "Statistics Canada 2021 province and territory cartographic boundaries joined to admitted province-level Phase 2 aggregate values"
+  },
+  "inputs": {
+    "boundary": {
+      "relativePath": "raw/statcan-boundaries/2026-08-12/lpr_000b21a_e.zip",
+      "byteLength": 133730024,
+      "sha256": "d28bbb15d7b49e3d1828755a5f1b4ebcee699ad70efe8b0f1b902d29ebffd20b"
+    },
+    "aggregate": {
+      "relativePath": "derived/phase2-v21-zonal-province-2021-cbf-v5/province-2020-2022.json",
+      "byteLength": 3131,
+      "sha256": "ff1589029f30800021b52d9aa736b9aa9e122df70e3070d19a68f7aa45d9a16d"
+    },
+    "admissionRecord": {
+      "path": "data/phase2-admission-record-2026-08-26.json",
+      "sha256": "58147c088d12190f8882d0c493364cd07cf7c176d4fafbc266421bf337ca7d82"
+    },
+    "zonalEvidence": {
+      "path": "data/phase2-v21-province-zonal-pilot-evidence.json",
+      "sha256": "4fb0efc6ec984025e91f0124e0347a2f0a08673ed1f606ba318c9ca732f5ce62",
+      "outputSha256": "ff1589029f30800021b52d9aa736b9aa9e122df70e3070d19a68f7aa45d9a16d"
+    },
+    "externalManifest": {
+      "relativePath": "derived/phase8-province-map-release-v1/8809a9d577c8b615b583fc0245eb1bdb20e534a6bd86188340b7c1abac56bd96/manifest.json",
+      "sha256": "8c17f975860609bd918c8f968b1aee6a266e334d748017eb930ef63eaf147803"
+    },
+    "browserCompatibilityManifest": {
+      "relativePath": "derived/phase8-province-map-geojson-v1/101561ed48f511a3e65676fa084ee517c4fa722e14f4a3c844c698b247238505/manifest.json",
+      "sha256": "47d4c6aad0400810e6233d83b53b560df9056e8168ed2b1e4c566d425e5969e4"
+    }
+  },
+  "output": {
+    "fileName": "phase2-province-loss-2020-2022.pmtiles",
+    "byteLength": 289166,
+    "sha256": "8809a9d577c8b615b583fc0245eb1bdb20e534a6bd86188340b7c1abac56bd96",
+    "contentType": "application/vnd.pmtiles",
+    "pmtilesSpecVersion": 3,
+    "minZoom": 0,
+    "maxZoom": 6,
+    "addressedTileCount": 95
+  },
+  "browserCompatibilityOutput": {
+    "fileName": "phase2-province-loss-2020-2022.geojson",
+    "byteLength": 469712,
+    "sha256": "101561ed48f511a3e65676fa084ee517c4fa722e14f4a3c844c698b247238505",
+    "contentType": "application/geo+json",
+    "featureCount": 4,
+    "displayGeometry": {
+      "purpose": "display-only province boundaries",
+      "parentSha256": "aec8513a57c2360bf5a4c6faecc750155ba16f16f588b28773414cebde1cbd11",
+      "parentSimplifyToleranceMetres": 5000,
+      "minimumExteriorRingAreaSquareDegrees": 0.001,
+      "smallIslandsOmitted": true
+    }
+  },
+  "transform": {
+    "boundaryFilter": "PRUID IN ('24','35','48','59')",
+    "sourceCrs": "EPSG:3347",
+    "outputCrs": "EPSG:4326/WebMercator vector tiles",
+    "simplifyToleranceSourceMetres": 1000,
+    "ogr2ogrVersion": "GDAL 3.13.2",
+    "tippecanoeVersion": "tippecanoe v2.79.0",
+    "pmtilesCliVersion": "1.31.2"
+  },
+  "claims": {
+    "exactInputsVerified": true,
+    "archiveStructureVerified": true,
+    "fullPublicReadbackChecksumVerified": true,
+    "technicalPreviewEligible": true,
+    "phase2ProductionGateComplete": false,
+    "perCellGeometryMaterialized": false
+  },
+  "claimLimit": "This published archive is a province-level technical preview. It is not per-cell forest-loss geometry and does not complete the formal Phase 2 production gate."
+}

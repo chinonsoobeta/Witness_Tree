@@ -103,15 +103,15 @@
    "id": "explore-modes-and-overlays",
    "title": "Explore provides the four required modes and the watershed, riding, reserve, and treaty-area overlays",
    "status": "pass",
-   "reason": "The bilingual illustrative Explore route renders forest change, recorded harvest, wildfire, and condition/recovery modes, plus all required overlay labels without claiming live geometry.",
+   "reason": "The bilingual Explore route renders forest change, recorded harvest, wildfire, and condition/recovery modes plus all required overlay labels. The overlays remain explicitly unavailable; the separate verified province aggregate is limited and claim-bounded.",
    "evidence": [
     {
      "path": "components/explore/ExploreView.tsx",
-     "sha256": "40366ba6c6699820b88ab3206e7e5ff664e9aae8b22161bb503031347123a30d"
+     "sha256": "4cdd6a837052c7a4224bd201be38b17c7f5b09026aaed1c07721270228ca337d"
     },
     {
      "path": "tests/explore.test.tsx",
-     "sha256": "edc3285de3f574e6578e9306d4c4d1fdb6037b3950110ecd31e2e91dc18197c4"
+     "sha256": "eb4ab6237ef6f523c467ce96fa3e9c92b72410cbbaf9567c6947bb393ed675a3"
     }
    ]
   },
@@ -123,11 +123,11 @@
    "evidence": [
     {
      "path": "components/explore/ExploreView.tsx",
-     "sha256": "40366ba6c6699820b88ab3206e7e5ff664e9aae8b22161bb503031347123a30d"
+     "sha256": "4cdd6a837052c7a4224bd201be38b17c7f5b09026aaed1c07721270228ca337d"
     },
     {
      "path": "tests/explore.test.tsx",
-     "sha256": "edc3285de3f574e6578e9306d4c4d1fdb6037b3950110ecd31e2e91dc18197c4"
+     "sha256": "eb4ab6237ef6f523c467ce96fa3e9c92b72410cbbaf9567c6947bb393ed675a3"
     }
    ]
   },
@@ -139,11 +139,11 @@
    "evidence": [
     {
      "path": "components/explore/ExploreView.tsx",
-     "sha256": "40366ba6c6699820b88ab3206e7e5ff664e9aae8b22161bb503031347123a30d"
+     "sha256": "4cdd6a837052c7a4224bd201be38b17c7f5b09026aaed1c07721270228ca337d"
     },
     {
      "path": "tests/explore.test.tsx",
-     "sha256": "edc3285de3f574e6578e9306d4c4d1fdb6037b3950110ecd31e2e91dc18197c4"
+     "sha256": "eb4ab6237ef6f523c467ce96fa3e9c92b72410cbbaf9567c6947bb393ed675a3"
     }
    ]
   },
