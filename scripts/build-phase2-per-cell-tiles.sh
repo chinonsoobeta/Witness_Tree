@@ -14,6 +14,18 @@
 #
 # The authoritative product is the run store, not these tiles. Nothing
 # downstream may count area from a tile.
+#
+# --preserve-input-order is kept, and the plan's separate Hilbert-sort stage
+# was not built, because both were measured rather than assumed. tippecanoe
+# orders features spatially by default, and that ordering matters only through
+# MVT delta encoding. Building 1984-1985 both ways gave 521,294,513 bytes with
+# the flag and 521,365,797 without it: a 0.014% difference, with the spatially
+# reordered archive marginally the larger of the two. The reason is that the
+# extractor already emits patches in component-id order, which is a row-major
+# scan of the grid and therefore already spatially coherent. A Hilbert sort
+# would have cost about seven minutes an interval to buy nothing measurable,
+# so the flag stays and the archive remains a deterministic function of the
+# store.
 set -euo pipefail
 
 interval="${1:?usage: build-phase2-per-cell-tiles.sh <interval-name> <geojson> <out.pmtiles>}"
