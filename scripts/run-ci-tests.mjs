@@ -60,7 +60,12 @@ const REQUIRES_MACOS_RUNNER = new Map([
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dir = path.join(root, "tests");
-const all = readdirSync(dir).filter((name) => name.endsWith(".test.mjs")).sort();
+// Discovery used to accept only .test.mjs, so the 54 TypeScript and TSX test
+// files were never run by CI at all. They were not excluded for a stated
+// reason; they simply fell outside the glob, which is the failure this runner
+// was written to end. They run under tsx because Node can strip types but
+// cannot transform JSX.
+const all = readdirSync(dir).filter((name) => /\.test\.(mjs|ts|tsx)$/.test(name)).sort();
 const reasonFor = (name) => REQUIRES_DATA_ROOT.get(name) ?? REQUIRES_MACOS_RUNNER.get(name);
 const labelFor = (name) => (REQUIRES_DATA_ROOT.has(name) ? "needs data root" : "needs macOS runner");
 const excluded = all.filter((name) => reasonFor(name) !== undefined);
@@ -75,5 +80,21 @@ if (missing.length > 0) {
 console.log(`Running ${selected.length} of ${all.length} test files.`);
 for (const name of excluded) console.log(`  skipped (${labelFor(name)}): ${name} - ${reasonFor(name)}`);
 
-const result = spawnSync(process.execPath, ["--test", ...selected.map((name) => path.join("tests", name))], { cwd: root, stdio: "inherit" });
-process.exit(result.status ?? 1);
+const inTests = (name) => path.join("tests", name);
+const node = selected.filter((name) => name.endsWith(".test.mjs")).map(inTests);
+const typed = selected.filter((name) => !name.endsWith(".test.mjs")).map(inTests);
+
+// Both halves always run, and the exit status is the worst of the two: a
+// failure in either must fail the job, and stopping at the first would hide
+// how much else is broken.
+let status = 0;
+if (node.length > 0) {
+  const result = spawnSync(process.execPath, ["--test", ...node], { cwd: root, stdio: "inherit" });
+  status = result.status ?? 1;
+}
+if (typed.length > 0) {
+  const tsx = path.join(root, "node_modules", ".bin", "tsx");
+  const result = spawnSync(tsx, ["--test", ...typed], { cwd: root, stdio: "inherit" });
+  status = status || (result.status ?? 1);
+}
+process.exit(status);
