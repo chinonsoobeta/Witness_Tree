@@ -137,6 +137,8 @@ jobs:
       - run: npm run test:suite
       - run: npm run check:claims
       - run: npm run check:style-tokens
+      - run: npm run check:contrast
+      - run: npm run check:hex-literals
       - run: npm run check:brand-token
       - run: npm run check:persistent-identifiers
       - run: npm run check:budgets
