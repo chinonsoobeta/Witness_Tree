@@ -47,5 +47,5 @@ test("the ramp is declared once, in the unthemed palette block", () => {
   // band 3 on purpose: a detected patch with nothing in the official record
   // is still observed loss, not a fifth category needing a fifth colour.
   assert.equal(css.match(/background: var\(--loss-\d\);/g).length, 5);
-  assert.equal(css.match(/\.patch-none \{\n  background: var\(--loss-3\);/g).length, 1);
+  assert.equal(css.match(/\.patch-none \{\n {2}background: var\(--loss-3\);/g).length, 1);
 });

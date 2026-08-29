@@ -2,7 +2,6 @@ import { createHash } from "node:crypto";
 import { createReadStream, createWriteStream } from "node:fs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { pipeline } from "node:stream/promises";
 import { PATCH_RECORD_BYTES, PatchAccumulator, RUN_RECORD_BYTES, writePatchRecord } from "../lib/phase2/patch-geometry.mjs";
 
 // One reader per volume. The SSD holding this data measures 137 MB/s on a
