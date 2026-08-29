@@ -42,7 +42,7 @@ test("localized routes use the shared shell and consistent main landmark", () =>
     assert.match(route, /alternates: \{ languages:/);
   }
   for (const path of ["../components/places/PlacePage.tsx", "../components/places/LocationResult.tsx"]) {
-    assert.match(readFileSync(new URL(path, import.meta.url), "utf8"), /<main id="main" className="page-wrap">/);
+    assert.match(readFileSync(new URL(path, import.meta.url), "utf8"), /<main id="main" className="page-wrap[ "]/);
   }
 });
 

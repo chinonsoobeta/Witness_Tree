@@ -29,63 +29,92 @@ export function PlacePage({
           denominator: "Hectares forestiers",
         };
   return (
-    <main id="main" className="page-wrap">
-      <header>
-        <p>{place.status === "example" ? (locale === "en" ? "Illustrative fixture" : "Exemple illustratif") : null}</p>
+    <main id="main" className="page-wrap record-page">
+      <header className="masthead">
+        {place.status === "example" ? (
+          <p className="eyebrow">
+            {locale === "en" ? "Illustrative fixture" : "Exemple illustratif"}
+          </p>
+        ) : null}
         <h1>{place.name[locale]}</h1>
-        <p>{place.aliases[locale]}</p>
+        <p className="dek">{place.aliases[locale]}</p>
       </header>
-      <dl>
-        <div>
+
+      <dl className="stat-row">
+        <div className="stat">
           <dt>{text.boundary}</dt>
           <dd>
             {place.boundaryEdition} ({place.boundaryVersion})
           </dd>
         </div>
-        <div>
+        <div className="stat">
           <dt>{text.denominator}</dt>
           <dd>{place.forestHectares}</dd>
         </div>
       </dl>
-      <section>
+
+      <section className="record-block">
         <h2>{text.coverage}</h2>
-        <ul>
+        <ul className="coverage-list">
           {place.coverage.map((item) => (
             <li key={item.grade}>
-              {item.grade}: {item.share * 100}%
+              <span className="coverage-band">
+                {item.grade}: {item.share * 100}%
+              </span>
             </li>
           ))}
         </ul>
       </section>
-      <section>
+
+      <section className="record-block">
         <h2>{text.stats}</h2>
-        {place.stats.map((reported, index) => (
-          <ReportedValue key={index} reported={reported} coverageGrade={place.coverage[0].grade} locale={locale} />
-        ))}
+        <div className="reported-stack">
+          {place.stats.map((reported, index) => (
+            <ReportedValue
+              key={index}
+              reported={reported}
+              coverageGrade={place.coverage[0].grade}
+              locale={locale}
+            />
+          ))}
+        </div>
       </section>
+
       <AnnualChangeChart annual={place.annual} locale={locale} view={view} />
+
       {place.safeguard ? (
-        <aside>
+        <aside className="notice card--sand record-safeguard">
           <p>{place.safeguard[locale]}</p>
         </aside>
       ) : null}
-      <section>
+
+      <section className="record-block">
         <h2>{text.sources}</h2>
-        <ul>
+        <ul className="source-list">
           {place.sources.map((source) => (
-            <li key={source}>
-              <a href="https://github.com/chinonsoobeta/Witness_Tree/blob/main/data/source-ledger.json">{source}</a>
+            <li className="card" key={source}>
+              <a href="https://github.com/chinonsoobeta/Witness_Tree/blob/main/data/source-ledger.json">
+                {source}
+              </a>
             </li>
           ))}
         </ul>
       </section>
+
       <p>
-        <a href={`data:text/csv;charset=utf-8,placeId%2Cyear%0A${place.id}%2C2024`}>{text.download}</a>
+        <a
+          className="btn btn--outline"
+          href={`data:text/csv;charset=utf-8,placeId%2Cyear%0A${place.id}%2C2024`}
+        >
+          {text.download}
+        </a>
       </p>
-      <footer>
+
+      <footer className="record-citation">
         <h2>{text.citation}</h2>
         <p>
-          {place.citation.timeRange}; {place.boundaryEdition}; {place.citation.dataVersion}; {text.denominator}:{" "}
+          {place.citation.timeRange}; {place.boundaryEdition};{" "}
+          {place.citation.dataVersion}; {text.denominator}:{" "}
           {place.forestHectares}; {place.citation.method}.
         </p>
       </footer>

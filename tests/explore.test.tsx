@@ -154,8 +154,8 @@ test("Explore uses the exact PMTiles release with a GeoJSON/SVG fallback on map 
     /101561ed48f511a3e65676fa084ee517c4fa722e14f4a3c844c698b247238505/,
   );
   for (const route of [enRoute, frRoute]) {
-    assert.match(route, /presentation === "map" \? <ExploreMapClient/);
-    assert.match(route, /mode=\{mode\} year=\{year\}/);
+    assert.match(route, /presentation === "map" \?\s*\(?\s*<ExploreMapClient/);
+    assert.match(route, /mode=\{mode\}\s+year=\{year\}/);
   }
 });
 
@@ -173,7 +173,7 @@ test("the year control is a real, shareable control rather than a decorative sli
 
   // The bug: the slider had no name and no form, so moving it changed nothing and the
   // chosen year could not be linked, bookmarked, or shared.
-  assert.match(en, /<form method="get">/);
+  assert.match(en, /<form[^>]*\bmethod="get"/);
   assert.match(en, /name="year"/);
   assert.match(en, /value="1995"/);
 

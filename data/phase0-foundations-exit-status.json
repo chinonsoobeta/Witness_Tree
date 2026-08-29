@@ -14,11 +14,11 @@
         },
         {
           "path": "components/governance/GovernancePage.tsx",
-          "sha256": "70e60b17fca6e823ecd6e17384f6f15f7d4cb628ba47487caac20ed075e4fdc0"
+          "sha256": "92f254ce90ba12cc592516351b8f2e7ff209988fafa2f2d27f20330f4fa396ec"
         },
         {
           "path": "tests/forest-definition-publication.test.ts",
-          "sha256": "88c5d7cdebaf9f1673f4f27fb09f25f1ab3aae96b827bcf49a9d39bbd3e544e7"
+          "sha256": "62efd67ed0d6b86ec710788ba9e25d2e74736b67dff47da7b49c2221c7e53754"
         }
       ]
     },
@@ -66,7 +66,7 @@
         },
         {
           "path": "components/governance/GovernancePage.tsx",
-          "sha256": "70e60b17fca6e823ecd6e17384f6f15f7d4cb628ba47487caac20ed075e4fdc0"
+          "sha256": "92f254ce90ba12cc592516351b8f2e7ff209988fafa2f2d27f20330f4fa396ec"
         }
       ]
     },
@@ -117,7 +117,7 @@
         },
         {
           "path": "components/governance/GovernancePage.tsx",
-          "sha256": "70e60b17fca6e823ecd6e17384f6f15f7d4cb628ba47487caac20ed075e4fdc0"
+          "sha256": "92f254ce90ba12cc592516351b8f2e7ff209988fafa2f2d27f20330f4fa396ec"
         }
       ]
     },
