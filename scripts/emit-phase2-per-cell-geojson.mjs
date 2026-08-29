@@ -134,12 +134,12 @@ function ringsToCoordinates(rings) {
 }
 
 async function emitInterval(intervalName, output) {
-  const patches = new RecordReader(path.join(STORE, `${intervalName}.patches.bin`), PATCH_RECORD_BYTES);
-  const runs = new RecordReader(path.join(STORE, `${intervalName}.runs.bin`), RUN_RECORD_BYTES);
   const manifest = JSON.parse(await readFile(path.join(STORE, "manifest.json"), "utf8"));
   const interval = manifest.intervals.find((entry) => entry.interval === intervalName);
   if (interval === undefined) throw new Error(`${intervalName} is not in the store manifest`);
-  const period = intervalName.replace("detected-forest-loss-", "");
+  const patches = new RecordReader(path.join(STORE, interval.patches.fileName), PATCH_RECORD_BYTES);
+  const runs = new RecordReader(path.join(STORE, interval.runs.fileName), RUN_RECORD_BYTES);
+  const period = intervalName;
 
   const sink = createWriteStream(output);
   const write = (line) =>

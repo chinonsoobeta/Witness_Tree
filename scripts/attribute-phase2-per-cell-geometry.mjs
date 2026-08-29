@@ -126,8 +126,8 @@ const yearsOf = (interval) => {
 };
 
 async function attributeInterval(entry, available) {
-  const patchFile = path.join(STORE, `${entry.interval}.patches.bin`);
-  const runFile = path.join(STORE, `${entry.interval}.runs.bin`);
+  const patchFile = path.join(STORE, entry.patches.fileName);
+  const runFile = path.join(STORE, entry.runs.fileName);
   const store = await readRunStore(runFile, entry.runCount);
   const { owner, cellCount } = await readPatchOwners(patchFile, entry.patchCount, entry.runCount);
   store.owner = owner;
@@ -164,7 +164,7 @@ async function attributeInterval(entry, available) {
     fireCells += f;
     if (h > 0 && f > 0) bothCells += 1;
   }
-  const out = path.join(STORE, `${entry.interval}.attrs.bin`);
+  const out = path.join(STORE, entry.runs.fileName.replace(".runs.bin", ".attrs.bin"));
   const handle = await open(out, "w");
   await handle.write(payload);
   await handle.close();
@@ -197,7 +197,7 @@ for (const entry of manifest.intervals) {
   const seconds = (Date.now() - started) / 1000;
   results.push(result);
   process.stdout.write(
-    `${entry.interval.replace("detected-forest-loss-", "")}  ` +
+    `${entry.interval}  ` +
       `${result.harvestCells.toLocaleString()} harvest cells  ` +
       `${result.fireCells.toLocaleString()} fire cells  ` +
       `${result.disturbanceYearsMissing.length} years unavailable  ${seconds.toFixed(1)}s\n`,

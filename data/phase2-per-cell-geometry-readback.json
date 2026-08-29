@@ -1,0 +1,1416 @@
+{
+  "schemaVersion": "witness-tree/phase2-per-cell-geometry-readback/1",
+  "status": "exact-readback-passed",
+  "productId": "phase2-per-cell-geometry-1984-2022-v1",
+  "sourceProductId": "phase2-real-loss-component-inventory-1984-2022-v1",
+  "method": "data/phase2-per-cell-geometry-method.json",
+  "authorization": "data/phase2-zonal-aggregation-contract-amendment-2026-08-29.json",
+  "grid": {
+    "width": 193936,
+    "height": 128340,
+    "pixelWidth": 30,
+    "pixelHeight": -30,
+    "originX": -2660910.524,
+    "originY": 2998848.1105
+  },
+  "patchRecordBytes": 40,
+  "runRecordBytes": 12,
+  "intervalCount": 38,
+  "totals": {
+    "patchCount": 303530909,
+    "runCount": 528596703,
+    "cellCount": 1384027417,
+    "harvestCells": 242732802,
+    "fireCells": 490179560,
+    "storedBytes": 18484396796
+  },
+  "disturbanceRecord": {
+    "harvest": {
+      "years": 38,
+      "runs": 53490530,
+      "cells": 292878030
+    },
+    "fire": {
+      "years": 38,
+      "runs": 66805772,
+      "cells": 700171803
+    },
+    "zeroMeaning": "nothing recorded; indistinguishable from outside the mapped area",
+    "firstRecordedYear": 1985,
+    "lossSeriesFirstYear": 1984
+  },
+  "released": false,
+  "productionEligible": false,
+  "expertReviewed": false,
+  "intervals": [
+    {
+      "interval": "1984-1985",
+      "source": {
+        "fileName": "detected-forest-loss-1984-1985.components.jsonl",
+        "sha256": "ed0b7fa96d1e895b0671036148a10d2ac55adf4a9204740ed974627e2fc28800",
+        "byteLength": 795594107
+      },
+      "patchCount": 3389250,
+      "runCount": 6310028,
+      "cellCount": 16638404,
+      "aliasCount": 156643,
+      "peakOpenComponents": 359,
+      "patches": {
+        "fileName": "detected-forest-loss-1984-1985.patches.bin",
+        "sha256": "be205bf93ea67c0ba5d0664b87851775537d3a5cc039076acfb04c9fd0068905",
+        "byteLength": 135570000
+      },
+      "runs": {
+        "fileName": "detected-forest-loss-1984-1985.runs.bin",
+        "sha256": "f305588f69fc475ffda0493aeede494f5b17404a187f676c7eab17901243879d",
+        "byteLength": 75720336
+      },
+      "attribution": {
+        "harvestCells": 3692984,
+        "fireCells": 4906296,
+        "patchesWithBoth": 0,
+        "disturbanceYearsUsed": [
+          "harvest-1985",
+          "fire-1985"
+        ],
+        "disturbanceYearsMissing": [
+          "harvest-1984",
+          "fire-1984"
+        ],
+        "sha256": "ca6ae92d88920747d905845dd781f4d3a4b550e4ea7a9c55dd5a0f8fb022f43d"
+      }
+    },
+    {
+      "interval": "1985-1986",
+      "source": {
+        "fileName": "detected-forest-loss-1985-1986.components.jsonl",
+        "sha256": "20c404c169f1e7e743cf81e0c3626ad7b0c8b401475bda57caef19c9f1ae9398",
+        "byteLength": 885003065
+      },
+      "patchCount": 3820902,
+      "runCount": 6938981,
+      "cellCount": 17652330,
+      "aliasCount": 170734,
+      "peakOpenComponents": 323,
+      "patches": {
+        "fileName": "detected-forest-loss-1985-1986.patches.bin",
+        "sha256": "60824a27b720b04b7e2ae11f9ea28f4007270e032bc481ad3287389c09013b66",
+        "byteLength": 152836080
+      },
+      "runs": {
+        "fileName": "detected-forest-loss-1985-1986.runs.bin",
+        "sha256": "1480f9fee2ad0fe8f228feebc0371e133690e112b52b18887b87fe7c8f55c022",
+        "byteLength": 83267772
+      },
+      "attribution": {
+        "harvestCells": 4934731,
+        "fireCells": 4662015,
+        "patchesWithBoth": 255,
+        "disturbanceYearsUsed": [
+          "harvest-1985",
+          "harvest-1986",
+          "fire-1985",
+          "fire-1986"
+        ],
+        "disturbanceYearsMissing": [],
+        "sha256": "045f17f4349fff2fcb740ad71415438c99453b5b3a74e5feb1ff9fc016c706f2"
+      }
+    },
+    {
+      "interval": "1986-1987",
+      "source": {
+        "fileName": "detected-forest-loss-1986-1987.components.jsonl",
+        "sha256": "567241af0545e889267764adb68aa245f72f7279a40224179de5b13b8ecf3277",
+        "byteLength": 1291275653
+      },
+      "patchCount": 5491045,
+      "runCount": 10240842,
+      "cellCount": 24837798,
+      "aliasCount": 253045,
+      "peakOpenComponents": 469,
+      "patches": {
+        "fileName": "detected-forest-loss-1986-1987.patches.bin",
+        "sha256": "5b4f528f98d02703a9d8cfa25e23458c187d65374a8af195365c1049c1c115df",
+        "byteLength": 219641800
+      },
+      "runs": {
+        "fileName": "detected-forest-loss-1986-1987.runs.bin",
+        "sha256": "ab01f547502f13f7c43705c34fcb2859e423d7cd82b9722b6709311c69ba6040",
+        "byteLength": 122890104
+      },
+      "attribution": {
+        "harvestCells": 5623685,
+        "fireCells": 5141001,
+        "patchesWithBoth": 266,
+        "disturbanceYearsUsed": [
+          "harvest-1986",
+          "harvest-1987",
+          "fire-1986",
+          "fire-1987"
+        ],
+        "disturbanceYearsMissing": [],
+        "sha256": "e0966a2d48416776b00580f7885ea37f120af18e3dae524f25326e83fa281de1"
+      }
+    },
+    {
+      "interval": "1987-1988",
+      "source": {
+        "fileName": "detected-forest-loss-1987-1988.components.jsonl",
+        "sha256": "57c63abe1f90ff626a8b58737f5c1dd3a306593d39f1840dab9034a13bf66338",
+        "byteLength": 1335405130
+      },
+      "patchCount": 5829853,
+      "runCount": 10427175,
+      "cellCount": 24731470,
+      "aliasCount": 237696,
+      "peakOpenComponents": 561,
+      "patches": {
+        "fileName": "detected-forest-loss-1987-1988.patches.bin",
+        "sha256": "9ac2d8feba48ce62f02c2810fb80dd9ac963d12543ae2f6f1aa8d11d65a4f728",
+        "byteLength": 233194120
+      },
+      "runs": {
+        "fileName": "detected-forest-loss-1987-1988.runs.bin",
+        "sha256": "83b0e8f90900afdb268ed0cdc6447f7de9eb64edf4b394aa7f271e2a0a325499",
+        "byteLength": 125126100
+      },
+      "attribution": {
+        "harvestCells": 6243216,
+        "fireCells": 4256731,
+        "patchesWithBoth": 326,
+        "disturbanceYearsUsed": [
+          "harvest-1987",
+          "harvest-1988",
+          "fire-1987",
+          "fire-1988"
+        ],
+        "disturbanceYearsMissing": [],
+        "sha256": "f52052e467d463ab40d1a4387447e41db340c3f20a06642c520e131f55ed2d0d"
+      }
+    },
+    {
+      "interval": "1988-1989",
+      "source": {
+        "fileName": "detected-forest-loss-1988-1989.components.jsonl",
+        "sha256": "18b0aaf018e745e3e87f0d82f26b9b8eb05319bf8dcf460cab2784c444a8fb41",
+        "byteLength": 1649286204
+      },
+      "patchCount": 6111857,
+      "runCount": 13888846,
+      "cellCount": 50315308,
+      "aliasCount": 492069,
+      "peakOpenComponents": 688,
+      "patches": {
+        "fileName": "detected-forest-loss-1988-1989.patches.bin",
+        "sha256": "3268aeba16c4a49aa36af96637d871c8cae588ab5a21ebfb5cbd983d89efc710",
+        "byteLength": 244474280
+      },
+      "runs": {
+        "fileName": "detected-forest-loss-1988-1989.runs.bin",
+        "sha256": "9f6ffa9cbd8786aa6c9089e767b4f89622af1d41ba5b1f64c5e3a4ae98af0e0a",
+        "byteLength": 166666152
+      },
+      "attribution": {
+        "harvestCells": 6533261,
+        "fireCells": 28736674,
+        "patchesWithBoth": 321,
+        "disturbanceYearsUsed": [
+          "harvest-1988",
+          "harvest-1989",
+          "fire-1988",
+          "fire-1989"
+        ],
+        "disturbanceYearsMissing": [],
+        "sha256": "d00e8f2f88310f665ce379143624a951f0d1950ba0e6bb49e4455c52eda7a668"
+      }
+    },
+    {
+      "interval": "1989-1990",
+      "source": {
+        "fileName": "detected-forest-loss-1989-1990.components.jsonl",
+        "sha256": "35b7494c19343461379cc857390e0d3309f1fc62fa3bf9c6bd4b4acd7e001a16",
+        "byteLength": 1554142715
+      },
+      "patchCount": 6296656,
+      "runCount": 12603952,
+      "cellCount": 38560305,
+      "aliasCount": 368713,
+      "peakOpenComponents": 675,
+      "patches": {
+        "fileName": "detected-forest-loss-1989-1990.patches.bin",
+        "sha256": "111ed1f50fed0ad3a094368ec435b9ebac46aee0c79d5effe7ee19f183ed62cc",
+        "byteLength": 251866240
+      },
+      "runs": {
+        "fileName": "detected-forest-loss-1989-1990.runs.bin",
+        "sha256": "448675e6a6b005b70b36d9267f55fabf29845adbb409036ca2454af070dbb673",
+        "byteLength": 151247424
+      },
+      "attribution": {
+        "harvestCells": 6430898,
+        "fireCells": 17944818,
+        "patchesWithBoth": 280,
+        "disturbanceYearsUsed": [
+          "harvest-1989",
+          "harvest-1990",
+          "fire-1989",
+          "fire-1990"
+        ],
+        "disturbanceYearsMissing": [],
+        "sha256": "2114dcd0efa8559b1368b93511ea494296efaabd7f8aa97d48f12819071591bc"
+      }
+    },
+    {
+      "interval": "1990-1991",
+      "source": {
+        "fileName": "detected-forest-loss-1990-1991.components.jsonl",
+        "sha256": "b4a7d0905c0b28167756a2297ef38a7f836386115ff5e68239ad632b04255514",
+        "byteLength": 1426675173
+      },
+      "patchCount": 6374848,
+      "runCount": 10981318,
+      "cellCount": 27618261,
+      "aliasCount": 232777,
+      "peakOpenComponents": 435,
+      "patches": {
+        "fileName": "detected-forest-loss-1990-1991.patches.bin",
+        "sha256": "db98efe9e3e5572871ddf9b026b7eee267d1ae81b733e319a12c45c8c5c5260d",
+        "byteLength": 254993920
+      },
+      "runs": {
+        "fileName": "detected-forest-loss-1990-1991.runs.bin",
+        "sha256": "8bc0de10386c126df8aa1663d50f058f1872e90fd274ba83925eac53c0919fb1",
+        "byteLength": 131775816
+      },
+      "attribution": {
+        "harvestCells": 5857925,
+        "fireCells": 8141216,
+        "patchesWithBoth": 283,
+        "disturbanceYearsUsed": [
+          "harvest-1990",
+          "harvest-1991",
+          "fire-1990",
+          "fire-1991"
+        ],
+        "disturbanceYearsMissing": [],
+        "sha256": "405759b0b08573871def679403094c286fa03330d344a88e06dc79d2d1cc3c96"
+      }
+    },
+    {
+      "interval": "1991-1992",
+      "source": {
+        "fileName": "detected-forest-loss-1991-1992.components.jsonl",
+        "sha256": "87ca8a5d77246268f536cc745537366c797cfe417ac03770fcd1f8aee1d119f8",
+        "byteLength": 1423052500
+      },
+      "patchCount": 6260105,
+      "runCount": 11078772,
+      "cellCount": 28223199,
+      "aliasCount": 243266,
+      "peakOpenComponents": 422,
+      "patches": {
+        "fileName": "detected-forest-loss-1991-1992.patches.bin",
+        "sha256": "21b72e7383190950632d21ab7b8ffd8a5a9ee8e52cb1b84f64564736ebe2a626",
+        "byteLength": 250404200
+      },
+      "runs": {
+        "fileName": "detected-forest-loss-1991-1992.runs.bin",
+        "sha256": "b0fcc11cba838877ba0f8ff1895d074b0282691172220eec670fa50fe730e0ad",
+        "byteLength": 132945264
+      },
+      "attribution": {
+        "harvestCells": 5214135,
+        "fireCells": 8753749,
+        "patchesWithBoth": 218,
+        "disturbanceYearsUsed": [
+          "harvest-1991",
+          "harvest-1992",
+          "fire-1991",
+          "fire-1992"
+        ],
+        "disturbanceYearsMissing": [],
+        "sha256": "dc95726c336b23da2d45663c5bce9cce4e67ddadf8c95afc95cc1bf127d1f465"
+      }
+    },
+    {
+      "interval": "1992-1993",
+      "source": {
+        "fileName": "detected-forest-loss-1992-1993.components.jsonl",
+        "sha256": "9115990f15a557726d346dbb6c64961f7560e792410fbd2e5397b15de052244a",
+        "byteLength": 1262350015
+      },
+      "patchCount": 5562067,
+      "runCount": 9794412,
+      "cellCount": 27093080,
+      "aliasCount": 235561,
+      "peakOpenComponents": 356,
+      "patches": {
+        "fileName": "detected-forest-loss-1992-1993.patches.bin",
+        "sha256": "95ac7badfe187c051836238348728425a388d24bd2027c98b084796934e19b4f",
+        "byteLength": 222482680
+      },
+      "runs": {
+        "fileName": "detected-forest-loss-1992-1993.runs.bin",
+        "sha256": "e94654216e5707199948b4acc847feab6e6802ee8d664cfba3369b234f363a96",
+        "byteLength": 117532944
+      },
+      "attribution": {
+        "harvestCells": 5743619,
+        "fireCells": 10178836,
+        "patchesWithBoth": 163,
+        "disturbanceYearsUsed": [
+          "harvest-1992",
+          "harvest-1993",
+          "fire-1992",
+          "fire-1993"
+        ],
+        "disturbanceYearsMissing": [],
+        "sha256": "bfb9b0e83f0d49e96b079dfe1f7a8b1c2e5cd374dbcf5edf279f05839b46819f"
+      }
+    },
+    {
+      "interval": "1993-1994",
+      "source": {
+        "fileName": "detected-forest-loss-1993-1994.components.jsonl",
+        "sha256": "b4e017b12146751b31594027631cb26c6a6f178ab59e23ba172b9486b0264332",
+        "byteLength": 1700190448
+      },
+      "patchCount": 7082651,
+      "runCount": 13608407,
+      "cellCount": 43063896,
+      "aliasCount": 385325,
+      "peakOpenComponents": 458,
+      "patches": {
+        "fileName": "detected-forest-loss-1993-1994.patches.bin",
+        "sha256": "4c7a3182226ae181130cbda698d94fa4884e6e3ea5d8a8c0f8a141d156e4761b",
+        "byteLength": 283306040
+      },
+      "runs": {
+        "fileName": "detected-forest-loss-1993-1994.runs.bin",
+        "sha256": "19ab81103e28893a024642651157f4e6825b8858a84c5084a328c34c4a255ae7",
+        "byteLength": 163300884
+      },
+      "attribution": {
+        "harvestCells": 5526848,
+        "fireCells": 20715844,
+        "patchesWithBoth": 193,
+        "disturbanceYearsUsed": [
+          "harvest-1993",
+          "harvest-1994",
+          "fire-1993",
+          "fire-1994"
+        ],
+        "disturbanceYearsMissing": [],
+        "sha256": "05b3e9133347d5d964c405d83b4d068b02305d590fbfabdd25f18516cfd8badc"
+      }
+    },
+    {
+      "interval": "1994-1995",
+      "source": {
+        "fileName": "detected-forest-loss-1994-1995.components.jsonl",
+        "sha256": "f33957ca759211200bd6d61dadeda2f2362238b1e4bffbb8b502ce5bbd5bed89",
+        "byteLength": 2073125166
+      },
+      "patchCount": 7763477,
+      "runCount": 17466402,
+      "cellCount": 69304156,
+      "aliasCount": 619640,
+      "peakOpenComponents": 648,
+      "patches": {
+        "fileName": "detected-forest-loss-1994-1995.patches.bin",
+        "sha256": "30477f4164faaae28e98d9ede716ee5fee7afcd9670ec7a64b0378732eb44228",
+        "byteLength": 310539080
+      },
+      "runs": {
+        "fileName": "detected-forest-loss-1994-1995.runs.bin",
+        "sha256": "5f803e91feacfb2c242b25913a29532b17966b119ab85404d22e109d26ddbba5",
+        "byteLength": 209596824
+      },
+      "attribution": {
+        "harvestCells": 6791292,
+        "fireCells": 45379104,
+        "patchesWithBoth": 301,
+        "disturbanceYearsUsed": [
+          "harvest-1994",
+          "harvest-1995",
+          "fire-1994",
+          "fire-1995"
+        ],
+        "disturbanceYearsMissing": [],
+        "sha256": "8dc703bb13316fe045526de0c7e28af4718797ba46051b91a85827efbe8ce9ae"
+      }
+    },
+    {
+      "interval": "1995-1996",
+      "source": {
+        "fileName": "detected-forest-loss-1995-1996.components.jsonl",
+        "sha256": "179d8e4876f1e6506b0fb7ca25d03404846e250aed3d50b0bd313d723c8932c6",
+        "byteLength": 1934670771
+      },
+      "patchCount": 8365343,
+      "runCount": 15178136,
+      "cellCount": 39520100,
+      "aliasCount": 375110,
+      "peakOpenComponents": 619,
+      "patches": {
+        "fileName": "detected-forest-loss-1995-1996.patches.bin",
+        "sha256": "18901e9ca3459048c9112e0bcf3ebe961c495774654228baf55a9dd9555a9631",
+        "byteLength": 334613720
+      },
+      "runs": {
+        "fileName": "detected-forest-loss-1995-1996.runs.bin",
+        "sha256": "91d2d9995335be87626296a28390aa1ca42c03da3f621e097440528ebec1b1ea",
+        "byteLength": 182137632
+      },
+      "attribution": {
+        "harvestCells": 6810724,
+        "fireCells": 13882601,
+        "patchesWithBoth": 557,
+        "disturbanceYearsUsed": [
+          "harvest-1995",
+          "harvest-1996",
+          "fire-1995",
+          "fire-1996"
+        ],
+        "disturbanceYearsMissing": [],
+        "sha256": "cb7a6a230426555d7e709180bdfdcd2087c490f348235fd0e746b7335a0caa5e"
+      }
+    },
+    {
+      "interval": "1996-1997",
+      "source": {
+        "fileName": "detected-forest-loss-1996-1997.components.jsonl",
+        "sha256": "42f79e8c01d2d70bbd0feb7a6096e441e3f012267b27ad8421b3cb5b0cca076a",
+        "byteLength": 1975836898
+      },
+      "patchCount": 9087257,
+      "runCount": 14960199,
+      "cellCount": 33513987,
+      "aliasCount": 298032,
+      "peakOpenComponents": 534,
+      "patches": {
+        "fileName": "detected-forest-loss-1996-1997.patches.bin",
+        "sha256": "8d52bf03ca7bb3139985db861c99ab5a7c0ce6ca8bf735a8e9a3109a4e3fea8e",
+        "byteLength": 363490280
+      },
+      "runs": {
+        "fileName": "detected-forest-loss-1996-1997.runs.bin",
+        "sha256": "173f9e54802049fb40ea5dace3e7662e281be1243727aa7adf93eaa881cd62b8",
+        "byteLength": 179522388
+      },
+      "attribution": {
+        "harvestCells": 6471652,
+        "fireCells": 7490027,
+        "patchesWithBoth": 261,
+        "disturbanceYearsUsed": [
+          "harvest-1996",
+          "harvest-1997",
+          "fire-1996",
+          "fire-1997"
+        ],
+        "disturbanceYearsMissing": [],
+        "sha256": "fdfa492abbd5b09ebc80035f130a352d85e11f567acaa676303185f409a5d105"
+      }
+    },
+    {
+      "interval": "1997-1998",
+      "source": {
+        "fileName": "detected-forest-loss-1997-1998.components.jsonl",
+        "sha256": "8b69c491882d7bd273e32a6bbba5953eb743ee3c038f3a516d4a6b1c4c2945c4",
+        "byteLength": 2043958846
+      },
+      "patchCount": 9136825,
+      "runCount": 15754610,
+      "cellCount": 41683439,
+      "aliasCount": 354286,
+      "peakOpenComponents": 520,
+      "patches": {
+        "fileName": "detected-forest-loss-1997-1998.patches.bin",
+        "sha256": "cfe2fd83e9eb75631c18f6e1f0d1b3c6b9a7debfd00634ccefc3f43422dae227",
+        "byteLength": 365473000
+      },
+      "runs": {
+        "fileName": "detected-forest-loss-1997-1998.runs.bin",
+        "sha256": "421b7b9ff41cf9fee8d181c42dab82d274ac30feda91f7bbe458dc0b356ba321",
+        "byteLength": 189055320
+      },
+      "attribution": {
+        "harvestCells": 7507528,
+        "fireCells": 15201884,
+        "patchesWithBoth": 223,
+        "disturbanceYearsUsed": [
+          "harvest-1997",
+          "harvest-1998",
+          "fire-1997",
+          "fire-1998"
+        ],
+        "disturbanceYearsMissing": [],
+        "sha256": "1d31a268247c25ed84d3a9fc98a4daa0802cda36846c3d8ada5311445b2c6c7e"
+      }
+    },
+    {
+      "interval": "1998-1999",
+      "source": {
+        "fileName": "detected-forest-loss-1998-1999.components.jsonl",
+        "sha256": "ac700be4c28d9048a9cebc58d04a4fa28dfa83e64af8ae491002e3f3235dc95e",
+        "byteLength": 1833777976
+      },
+      "patchCount": 8133319,
+      "runCount": 14193495,
+      "cellCount": 40625214,
+      "aliasCount": 340098,
+      "peakOpenComponents": 449,
+      "patches": {
+        "fileName": "detected-forest-loss-1998-1999.patches.bin",
+        "sha256": "817ee631e8f83895feaf05363f5cf833a86f7a327e62e8eb4495a533bcc14795",
+        "byteLength": 325332760
+      },
+      "runs": {
+        "fileName": "detected-forest-loss-1998-1999.runs.bin",
+        "sha256": "1ae4026afc9a5c4b4ce21f26d51dad976b420434f4771c19cc872809c81fd4da",
+        "byteLength": 170321940
+      },
+      "attribution": {
+        "harvestCells": 7168814,
+        "fireCells": 18506138,
+        "patchesWithBoth": 639,
+        "disturbanceYearsUsed": [
+          "harvest-1998",
+          "harvest-1999",
+          "fire-1998",
+          "fire-1999"
+        ],
+        "disturbanceYearsMissing": [],
+        "sha256": "0fd2109e29f4a9939556ad60ea6dc40708c90cf8f312bdad43ae4bd2155cd0b7"
+      }
+    },
+    {
+      "interval": "1999-2000",
+      "source": {
+        "fileName": "detected-forest-loss-1999-2000.components.jsonl",
+        "sha256": "e9395995f9833062463aba31e6369eec2c93fe5e88428d46cd52ba2f65bd4c17",
+        "byteLength": 1738953874
+      },
+      "patchCount": 8154594,
+      "runCount": 13019788,
+      "cellCount": 28682908,
+      "aliasCount": 242006,
+      "peakOpenComponents": 409,
+      "patches": {
+        "fileName": "detected-forest-loss-1999-2000.patches.bin",
+        "sha256": "03a972db578107ca1ca1c933c4f66c5493d83c068c7fd742b19bee41e6121ee3",
+        "byteLength": 326183760
+      },
+      "runs": {
+        "fileName": "detected-forest-loss-1999-2000.runs.bin",
+        "sha256": "a2c781b58cca7fdbbc50c90e7e7784fc366134d06e27f563fe883cfaebec030a",
+        "byteLength": 156237456
+      },
+      "attribution": {
+        "harvestCells": 8408112,
+        "fireCells": 4177306,
+        "patchesWithBoth": 269,
+        "disturbanceYearsUsed": [
+          "harvest-1999",
+          "harvest-2000",
+          "fire-1999",
+          "fire-2000"
+        ],
+        "disturbanceYearsMissing": [],
+        "sha256": "217e79a28071ff18f0014520b3fd028a4835db1ab189dc9ac347545c3edb2a9c"
+      }
+    },
+    {
+      "interval": "2000-2001",
+      "source": {
+        "fileName": "detected-forest-loss-2000-2001.components.jsonl",
+        "sha256": "7db134130067011d6aa2cb6838ba12d112908fe2609ad365dd856db2e745afca",
+        "byteLength": 1933507226
+      },
+      "patchCount": 8646415,
+      "runCount": 14901222,
+      "cellCount": 34009074,
+      "aliasCount": 319713,
+      "peakOpenComponents": 588,
+      "patches": {
+        "fileName": "detected-forest-loss-2000-2001.patches.bin",
+        "sha256": "8fc2b567b8df5de5afb0d84a3130388a7e5329723714c095ea7f6e36459d1d8b",
+        "byteLength": 345856600
+      },
+      "runs": {
+        "fileName": "detected-forest-loss-2000-2001.runs.bin",
+        "sha256": "2e6280c7189171c4223230b39e1ce13bcaac498fe53a570edb54a444495725c4",
+        "byteLength": 178814664
+      },
+      "attribution": {
+        "harvestCells": 7987872,
+        "fireCells": 5181822,
+        "patchesWithBoth": 44,
+        "disturbanceYearsUsed": [
+          "harvest-2000",
+          "harvest-2001",
+          "fire-2000",
+          "fire-2001"
+        ],
+        "disturbanceYearsMissing": [],
+        "sha256": "12366b40b3c127b3aac3493c6d98b40aefeaf96682053136432663025dc49609"
+      }
+    },
+    {
+      "interval": "2001-2002",
+      "source": {
+        "fileName": "detected-forest-loss-2001-2002.components.jsonl",
+        "sha256": "314b38362839f9312a5295fd3a502071ae295f825d806d6aa55fcc1cd13bb64a",
+        "byteLength": 2118536491
+      },
+      "patchCount": 8780335,
+      "runCount": 16993369,
+      "cellCount": 48262323,
+      "aliasCount": 454490,
+      "peakOpenComponents": 794,
+      "patches": {
+        "fileName": "detected-forest-loss-2001-2002.patches.bin",
+        "sha256": "0a9d02d9dfdf3037a5aa927478822343e90d6aeac7b3647375fd8cdbd4803e26",
+        "byteLength": 351213400
+      },
+      "runs": {
+        "fileName": "detected-forest-loss-2001-2002.runs.bin",
+        "sha256": "03669fb0c1183ae3b35d5cb897bc7aa07246ef537e4ff5756ab6b4ac69eb711a",
+        "byteLength": 203920428
+      },
+      "attribution": {
+        "harvestCells": 7686078,
+        "fireCells": 17421345,
+        "patchesWithBoth": 169,
+        "disturbanceYearsUsed": [
+          "harvest-2001",
+          "harvest-2002",
+          "fire-2001",
+          "fire-2002"
+        ],
+        "disturbanceYearsMissing": [],
+        "sha256": "b8f6dcc1d9c7c11524bf8bb7c50e199a126463cefcdf6d87faec09499b6c88d1"
+      }
+    },
+    {
+      "interval": "2002-2003",
+      "source": {
+        "fileName": "detected-forest-loss-2002-2003.components.jsonl",
+        "sha256": "6e5322de56b7bf9246c429b20cf7e58ca8ef24357ea9910ec4f6800b0faf9da9",
+        "byteLength": 1920251041
+      },
+      "patchCount": 8644929,
+      "runCount": 14730835,
+      "cellCount": 33930007,
+      "aliasCount": 304718,
+      "peakOpenComponents": 632,
+      "patches": {
+        "fileName": "detected-forest-loss-2002-2003.patches.bin",
+        "sha256": "7b5dd433abf4d9b0262044a6a7344f592e0c83f740b1a2ff925f37f2277372f2",
+        "byteLength": 345797160
+      },
+      "runs": {
+        "fileName": "detected-forest-loss-2002-2003.runs.bin",
+        "sha256": "ae4946fda0287d7e3ad3539c49c8fbd11dd2a64c49e66c1a61c5ccce60688402",
+        "byteLength": 176770020
+      },
+      "attribution": {
+        "harvestCells": 8420770,
+        "fireCells": 6336165,
+        "patchesWithBoth": 716,
+        "disturbanceYearsUsed": [
+          "harvest-2002",
+          "harvest-2003",
+          "fire-2002",
+          "fire-2003"
+        ],
+        "disturbanceYearsMissing": [],
+        "sha256": "0c137a85393c99b3fab0018e67cff90fae7a9711c72a229f8bae3382d856ba54"
+      }
+    },
+    {
+      "interval": "2003-2004",
+      "source": {
+        "fileName": "detected-forest-loss-2003-2004.components.jsonl",
+        "sha256": "71d7056addefad9ae85b5d4f333ed842e510041e087cea4c23e2acec34907991",
+        "byteLength": 1821480315
+      },
+      "patchCount": 8020744,
+      "runCount": 14150850,
+      "cellCount": 39145985,
+      "aliasCount": 347013,
+      "peakOpenComponents": 482,
+      "patches": {
+        "fileName": "detected-forest-loss-2003-2004.patches.bin",
+        "sha256": "127aa2c44cc7d7ab3921ed82d3465e1cf6059872defcc12b86123468de11d003",
+        "byteLength": 320829760
+      },
+      "runs": {
+        "fileName": "detected-forest-loss-2003-2004.runs.bin",
+        "sha256": "81dc4212e5c6a8677c42ca9f848c3ab431002650595c55deb1e991a0cee40044",
+        "byteLength": 169810200
+      },
+      "attribution": {
+        "harvestCells": 8044312,
+        "fireCells": 14980719,
+        "patchesWithBoth": 307,
+        "disturbanceYearsUsed": [
+          "harvest-2003",
+          "harvest-2004",
+          "fire-2003",
+          "fire-2004"
+        ],
+        "disturbanceYearsMissing": [],
+        "sha256": "256eb4e5ce21ff1e2a91821258f6131d02db510c446dec59a1a65a7ba57376df"
+      }
+    },
+    {
+      "interval": "2004-2005",
+      "source": {
+        "fileName": "detected-forest-loss-2004-2005.components.jsonl",
+        "sha256": "5464e06fb397bc80c6e61f0ca13d5171d9fe232322a353f74a92a476784b4ff6",
+        "byteLength": 1974238504
+      },
+      "patchCount": 8695341,
+      "runCount": 15336549,
+      "cellCount": 41572201,
+      "aliasCount": 366426,
+      "peakOpenComponents": 544,
+      "patches": {
+        "fileName": "detected-forest-loss-2004-2005.patches.bin",
+        "sha256": "78e4758cfe060a6c3e2293af667fe3f5e2bdf09b98227511537a2fe382897d11",
+        "byteLength": 347813640
+      },
+      "runs": {
+        "fileName": "detected-forest-loss-2004-2005.runs.bin",
+        "sha256": "7e031b01f3d8848f7b4477b84acc1f68182a57decacedbb9b33fb479a9c93585",
+        "byteLength": 184038588
+      },
+      "attribution": {
+        "harvestCells": 8719432,
+        "fireCells": 14517571,
+        "patchesWithBoth": 308,
+        "disturbanceYearsUsed": [
+          "harvest-2004",
+          "harvest-2005",
+          "fire-2004",
+          "fire-2005"
+        ],
+        "disturbanceYearsMissing": [],
+        "sha256": "991868eec6a655e6f1508fb95b2d3c10b9c38b2737a874ddfeba6288c464a12c"
+      }
+    },
+    {
+      "interval": "2005-2006",
+      "source": {
+        "fileName": "detected-forest-loss-2005-2006.components.jsonl",
+        "sha256": "7048a78eb20e5e3d65a3d48265e63101b1f33a998529799d8d5c6a5b077f1100",
+        "byteLength": 1984391551
+      },
+      "patchCount": 9010790,
+      "runCount": 15168726,
+      "cellCount": 40182788,
+      "aliasCount": 317266,
+      "peakOpenComponents": 549,
+      "patches": {
+        "fileName": "detected-forest-loss-2005-2006.patches.bin",
+        "sha256": "cea7bf87dea3b13b1a3e403e0330cad5a71c7b763bd0b8daf2efa553efc2d84d",
+        "byteLength": 360431600
+      },
+      "runs": {
+        "fileName": "detected-forest-loss-2005-2006.runs.bin",
+        "sha256": "8bf443e530e4c0331ece6e04f309e3da358b958ced1ac715fb8e1b1cb8b64596",
+        "byteLength": 182024712
+      },
+      "attribution": {
+        "harvestCells": 7919101,
+        "fireCells": 12898206,
+        "patchesWithBoth": 215,
+        "disturbanceYearsUsed": [
+          "harvest-2005",
+          "harvest-2006",
+          "fire-2005",
+          "fire-2006"
+        ],
+        "disturbanceYearsMissing": [],
+        "sha256": "1373c96c43dec51560923fbcdf78670bf2dc9b6984a7be5f3af71abf9882805a"
+      }
+    },
+    {
+      "interval": "2006-2007",
+      "source": {
+        "fileName": "detected-forest-loss-2006-2007.components.jsonl",
+        "sha256": "3a93546e49473cae1d5513b971cd39195db791c1606f7eac5ae47fc43d010087",
+        "byteLength": 1733831345
+      },
+      "patchCount": 8094418,
+      "runCount": 13022561,
+      "cellCount": 31357752,
+      "aliasCount": 252755,
+      "peakOpenComponents": 461,
+      "patches": {
+        "fileName": "detected-forest-loss-2006-2007.patches.bin",
+        "sha256": "5b40ec1aa460d83b2e79253077b153e7bf6a98affc4d457f3db66be8078ed858",
+        "byteLength": 323776720
+      },
+      "runs": {
+        "fileName": "detected-forest-loss-2006-2007.runs.bin",
+        "sha256": "3827d4955abe91ffc81b40ce51ec917bd415e7b64ef81c92fac94b6035a20689",
+        "byteLength": 156270732
+      },
+      "attribution": {
+        "harvestCells": 6652700,
+        "fireCells": 9708599,
+        "patchesWithBoth": 208,
+        "disturbanceYearsUsed": [
+          "harvest-2006",
+          "harvest-2007",
+          "fire-2006",
+          "fire-2007"
+        ],
+        "disturbanceYearsMissing": [],
+        "sha256": "9898800e38775dcd5a7a4a417cbf3865096e8a3bc397fe3da6f2e89c7d4ab4a2"
+      }
+    },
+    {
+      "interval": "2007-2008",
+      "source": {
+        "fileName": "detected-forest-loss-2007-2008.components.jsonl",
+        "sha256": "a7bc2d8987c9a241556bdf7aae7d6d9ea2854d5eb75383a2b4738d2e90c5b330",
+        "byteLength": 1781983463
+      },
+      "patchCount": 8463156,
+      "runCount": 13256510,
+      "cellCount": 31200626,
+      "aliasCount": 236123,
+      "peakOpenComponents": 512,
+      "patches": {
+        "fileName": "detected-forest-loss-2007-2008.patches.bin",
+        "sha256": "d63d58d0a422d34ef57a5141957e9e97ce23ef05b8a1cb4701b07778dd9c1da8",
+        "byteLength": 338526240
+      },
+      "runs": {
+        "fileName": "detected-forest-loss-2007-2008.runs.bin",
+        "sha256": "19ac5f3533dbd4d98d031fedc4821a5c0aa72f10791af1c3b9a9af1c2d0cf645",
+        "byteLength": 159078120
+      },
+      "attribution": {
+        "harvestCells": 5288279,
+        "fireCells": 9370911,
+        "patchesWithBoth": 209,
+        "disturbanceYearsUsed": [
+          "harvest-2007",
+          "harvest-2008",
+          "fire-2007",
+          "fire-2008"
+        ],
+        "disturbanceYearsMissing": [],
+        "sha256": "dc7616dd602c96aecccf629ab56688ccd46d2be169e141c910fe6a690ac1762b"
+      }
+    },
+    {
+      "interval": "2008-2009",
+      "source": {
+        "fileName": "detected-forest-loss-2008-2009.components.jsonl",
+        "sha256": "664287aafc58ff828bf7dd2c92b9570467907e2d5e3da4e3a54c9b136c4b1488",
+        "byteLength": 1834225491
+      },
+      "patchCount": 8951504,
+      "runCount": 13404638,
+      "cellCount": 27125705,
+      "aliasCount": 207223,
+      "peakOpenComponents": 556,
+      "patches": {
+        "fileName": "detected-forest-loss-2008-2009.patches.bin",
+        "sha256": "d666dd4cf8783b734d8c1ce3d4a62d9367ed2b675db42eef5661b104546b6070",
+        "byteLength": 358060160
+      },
+      "runs": {
+        "fileName": "detected-forest-loss-2008-2009.runs.bin",
+        "sha256": "28d887fc7e85dc6ff43cda19120a22f51d421791c5024b9cb067658f2505dc5f",
+        "byteLength": 160855656
+      },
+      "attribution": {
+        "harvestCells": 4705683,
+        "fireCells": 5713884,
+        "patchesWithBoth": 95,
+        "disturbanceYearsUsed": [
+          "harvest-2008",
+          "harvest-2009",
+          "fire-2008",
+          "fire-2009"
+        ],
+        "disturbanceYearsMissing": [],
+        "sha256": "54cc53b45ffe13fdc168ca32f579b998e56230b5376db38ce53b126a8308bb1f"
+      }
+    },
+    {
+      "interval": "2009-2010",
+      "source": {
+        "fileName": "detected-forest-loss-2009-2010.components.jsonl",
+        "sha256": "57c5f51d1f3dd4c5a96624dfb744ef31db2f96f816a857e2b95dae8f1ef3538c",
+        "byteLength": 2072760460
+      },
+      "patchCount": 9693355,
+      "runCount": 15552648,
+      "cellCount": 40251948,
+      "aliasCount": 308215,
+      "peakOpenComponents": 535,
+      "patches": {
+        "fileName": "detected-forest-loss-2009-2010.patches.bin",
+        "sha256": "c7f41689d8bb12400ccc6a04e94ec052a3c91add2f7ac0c3f71a1b712ba27b6e",
+        "byteLength": 387734200
+      },
+      "runs": {
+        "fileName": "detected-forest-loss-2009-2010.runs.bin",
+        "sha256": "99b52e2f9670f256fb9cd4d92f7fb726699cc39335c55949b12dcfee7eb527e6",
+        "byteLength": 186631776
+      },
+      "attribution": {
+        "harvestCells": 5323476,
+        "fireCells": 16310838,
+        "patchesWithBoth": 172,
+        "disturbanceYearsUsed": [
+          "harvest-2009",
+          "harvest-2010",
+          "fire-2009",
+          "fire-2010"
+        ],
+        "disturbanceYearsMissing": [],
+        "sha256": "3f24cc4b06c6424bc33e3184247bf2a5ea3cdb23faf38a456a6029561b6fa9ec"
+      }
+    },
+    {
+      "interval": "2010-2011",
+      "source": {
+        "fileName": "detected-forest-loss-2010-2011.components.jsonl",
+        "sha256": "39fb336e80937a79ae315e79ba4fb1da8cb9fd5d06f967672bb4efbf5140a478",
+        "byteLength": 2245652645
+      },
+      "patchCount": 10721989,
+      "runCount": 16659208,
+      "cellCount": 41867066,
+      "aliasCount": 310965,
+      "peakOpenComponents": 575,
+      "patches": {
+        "fileName": "detected-forest-loss-2010-2011.patches.bin",
+        "sha256": "dbab9e5b5ad96cb34fe51ffbf3fe321eeb29e06ce0c97c37a1282539f555a987",
+        "byteLength": 428879560
+      },
+      "runs": {
+        "fileName": "detected-forest-loss-2010-2011.runs.bin",
+        "sha256": "5ddfd7bcbba73138e674472b0c70df48809d5e052fa901ae927c58b03c260778",
+        "byteLength": 199910496
+      },
+      "attribution": {
+        "harvestCells": 5457941,
+        "fireCells": 16994093,
+        "patchesWithBoth": 271,
+        "disturbanceYearsUsed": [
+          "harvest-2010",
+          "harvest-2011",
+          "fire-2010",
+          "fire-2011"
+        ],
+        "disturbanceYearsMissing": [],
+        "sha256": "379f4b268a4c3768243441008115e5652ae0dab5e9724a16776211049960af5a"
+      }
+    },
+    {
+      "interval": "2011-2012",
+      "source": {
+        "fileName": "detected-forest-loss-2011-2012.components.jsonl",
+        "sha256": "9347f260152ee7bb7b76ff761f076a215902f4489e2acd319ceacba5f1b9f8dc",
+        "byteLength": 2612202453
+      },
+      "patchCount": 12737425,
+      "runCount": 19159736,
+      "cellCount": 39072848,
+      "aliasCount": 313655,
+      "peakOpenComponents": 693,
+      "patches": {
+        "fileName": "detected-forest-loss-2011-2012.patches.bin",
+        "sha256": "c1dd263b2c24b2ad3a17cb12c85a390678c9d0106cabcb126e60c93eb43d89b7",
+        "byteLength": 509497000
+      },
+      "runs": {
+        "fileName": "detected-forest-loss-2011-2012.runs.bin",
+        "sha256": "6d9848b29fc62ac92b792344b51f5b8fbf5eb73482351d97b9c8ab2a2803be09",
+        "byteLength": 229916832
+      },
+      "attribution": {
+        "harvestCells": 5099208,
+        "fireCells": 9838579,
+        "patchesWithBoth": 340,
+        "disturbanceYearsUsed": [
+          "harvest-2011",
+          "harvest-2012",
+          "fire-2011",
+          "fire-2012"
+        ],
+        "disturbanceYearsMissing": [],
+        "sha256": "435df3926a46001b3c567553a458d93ee471d163a9720127f2b49b765ab7d0fb"
+      }
+    },
+    {
+      "interval": "2012-2013",
+      "source": {
+        "fileName": "detected-forest-loss-2012-2013.components.jsonl",
+        "sha256": "33f8cfd90e472743f5850d8a4c7981b34624ffa861478b1f8fd41e588ca10428",
+        "byteLength": 2898102052
+      },
+      "patchCount": 13442827,
+      "runCount": 21931544,
+      "cellCount": 51232679,
+      "aliasCount": 435367,
+      "peakOpenComponents": 868,
+      "patches": {
+        "fileName": "detected-forest-loss-2012-2013.patches.bin",
+        "sha256": "d05f99446775d58f706e2e867cdc0fa3d8eb825db074ef71136b5870a0d6e6f6",
+        "byteLength": 537713080
+      },
+      "runs": {
+        "fileName": "detected-forest-loss-2012-2013.runs.bin",
+        "sha256": "705290994620e498dab12cc98c8dc240a78fdfd3628baab84d73cd94c959c11f",
+        "byteLength": 263178528
+      },
+      "attribution": {
+        "harvestCells": 5978537,
+        "fireCells": 18016817,
+        "patchesWithBoth": 175,
+        "disturbanceYearsUsed": [
+          "harvest-2012",
+          "harvest-2013",
+          "fire-2012",
+          "fire-2013"
+        ],
+        "disturbanceYearsMissing": [],
+        "sha256": "5db27ca9af5345cc489345fd737a3edaa777c39f33933e8e121005db9c10c2cd"
+      }
+    },
+    {
+      "interval": "2013-2014",
+      "source": {
+        "fileName": "detected-forest-loss-2013-2014.components.jsonl",
+        "sha256": "843f75079ad7975da8ddf8d6bd10cb17bb1c3d5142f562e6186a122e5058fa63",
+        "byteLength": 2281973795
+      },
+      "patchCount": 10234836,
+      "runCount": 17575769,
+      "cellCount": 45916559,
+      "aliasCount": 423406,
+      "peakOpenComponents": 582,
+      "patches": {
+        "fileName": "detected-forest-loss-2013-2014.patches.bin",
+        "sha256": "787b749f5d656d843bc32e9aa05f1af41d6588ce034f65ecbd4ab868981737ff",
+        "byteLength": 409393440
+      },
+      "runs": {
+        "fileName": "detected-forest-loss-2013-2014.runs.bin",
+        "sha256": "0adda877039beb521915262cec7526e5b21d1bfd3717ba2d8d00a74a830b5ca4",
+        "byteLength": 210909228
+      },
+      "attribution": {
+        "harvestCells": 6559395,
+        "fireCells": 18463236,
+        "patchesWithBoth": 182,
+        "disturbanceYearsUsed": [
+          "harvest-2013",
+          "harvest-2014",
+          "fire-2013",
+          "fire-2014"
+        ],
+        "disturbanceYearsMissing": [],
+        "sha256": "1c0cb98dbc0774826910c143df6ec17ac3f2d6ec2a60569b62de85f792b7b435"
+      }
+    },
+    {
+      "interval": "2014-2015",
+      "source": {
+        "fileName": "detected-forest-loss-2014-2015.components.jsonl",
+        "sha256": "b493be69ea90a07e98a869a5d6b318983d04b10e6e8dbdecbf8f1a3f195f5491",
+        "byteLength": 2245756183
+      },
+      "patchCount": 9620739,
+      "runCount": 17753344,
+      "cellCount": 54159940,
+      "aliasCount": 478928,
+      "peakOpenComponents": 569,
+      "patches": {
+        "fileName": "detected-forest-loss-2014-2015.patches.bin",
+        "sha256": "70ae06656420e39ca6393516840014a15be9d7b12c622c5bece432f3fc722e3e",
+        "byteLength": 384829560
+      },
+      "runs": {
+        "fileName": "detected-forest-loss-2014-2015.runs.bin",
+        "sha256": "471ad7ed857bd8b45886ee75ef8c3c2659c399338999c773300ccc955cbcf394",
+        "byteLength": 213040128
+      },
+      "attribution": {
+        "harvestCells": 6663573,
+        "fireCells": 27970555,
+        "patchesWithBoth": 259,
+        "disturbanceYearsUsed": [
+          "harvest-2014",
+          "harvest-2015",
+          "fire-2014",
+          "fire-2015"
+        ],
+        "disturbanceYearsMissing": [],
+        "sha256": "0d5c51ad8cbe6ffe67946e09a5ba88bf29d241442dc79a9ff95c8ec1b314e67d"
+      }
+    },
+    {
+      "interval": "2015-2016",
+      "source": {
+        "fileName": "detected-forest-loss-2015-2016.components.jsonl",
+        "sha256": "9c2742835ad58d7e1e770bd90a9c98b5c16d63c1f1440e2d2e4b410e32d659b8",
+        "byteLength": 1873613754
+      },
+      "patchCount": 8733920,
+      "runCount": 14091235,
+      "cellCount": 31652714,
+      "aliasCount": 275929,
+      "peakOpenComponents": 505,
+      "patches": {
+        "fileName": "detected-forest-loss-2015-2016.patches.bin",
+        "sha256": "7ee1669346b51692a04aee79e7e7a919ce64611ecb217b383e59b77129b2e4fd",
+        "byteLength": 349356800
+      },
+      "runs": {
+        "fileName": "detected-forest-loss-2015-2016.runs.bin",
+        "sha256": "a2a4b565610a54ce07cba0ae7d0ed1f1e45613cad228144fb7f79945d28a1081",
+        "byteLength": 169094820
+      },
+      "attribution": {
+        "harvestCells": 6751050,
+        "fireCells": 6586132,
+        "patchesWithBoth": 150,
+        "disturbanceYearsUsed": [
+          "harvest-2015",
+          "harvest-2016",
+          "fire-2015",
+          "fire-2016"
+        ],
+        "disturbanceYearsMissing": [],
+        "sha256": "d0bed643080219edf96ad86c229c3a54ad928303835ed3d10369213a5eb799e5"
+      }
+    },
+    {
+      "interval": "2016-2017",
+      "source": {
+        "fileName": "detected-forest-loss-2016-2017.components.jsonl",
+        "sha256": "c4bd8d929b2630126bc7886ce045de0c104e590c43bcb2c89552bbcdfdf2b561",
+        "byteLength": 2353055655
+      },
+      "patchCount": 10291674,
+      "runCount": 18386019,
+      "cellCount": 42038571,
+      "aliasCount": 429660,
+      "peakOpenComponents": 733,
+      "patches": {
+        "fileName": "detected-forest-loss-2016-2017.patches.bin",
+        "sha256": "c801c582ba103c2ca401dffe29d5ab887eb20847f1f3e08a6bfb038257a61ad6",
+        "byteLength": 411666960
+      },
+      "runs": {
+        "fileName": "detected-forest-loss-2016-2017.runs.bin",
+        "sha256": "42b49ed96f5ab311b5efb58b28c99ca575d2f0080ec11717264def8df26f0ea0",
+        "byteLength": 220632228
+      },
+      "attribution": {
+        "harvestCells": 7077375,
+        "fireCells": 6417021,
+        "patchesWithBoth": 125,
+        "disturbanceYearsUsed": [
+          "harvest-2016",
+          "harvest-2017",
+          "fire-2016",
+          "fire-2017"
+        ],
+        "disturbanceYearsMissing": [],
+        "sha256": "2c175a16889ac4e4bdfd9dbb6a22e9e296f435f4d620da3b887bdfbb05c39f9a"
+      }
+    },
+    {
+      "interval": "2017-2018",
+      "source": {
+        "fileName": "detected-forest-loss-2017-2018.components.jsonl",
+        "sha256": "fb2ce82814f7747be6629b2353cd85f6075ad7ba3f96cb79afd57729c685c057",
+        "byteLength": 1869302365
+      },
+      "patchCount": 8192661,
+      "runCount": 14581487,
+      "cellCount": 39612558,
+      "aliasCount": 340504,
+      "peakOpenComponents": 554,
+      "patches": {
+        "fileName": "detected-forest-loss-2017-2018.patches.bin",
+        "sha256": "7239b1e0633a2bf07dd95a0fe033a8557b244cf6c754f0164bd168a1d0da876d",
+        "byteLength": 327706440
+      },
+      "runs": {
+        "fileName": "detected-forest-loss-2017-2018.runs.bin",
+        "sha256": "579fb2ad51e22fc9bd733b8f55d646e9436309aab0ca899c9ecc98c27b2d136c",
+        "byteLength": 174977844
+      },
+      "attribution": {
+        "harvestCells": 6889472,
+        "fireCells": 14283812,
+        "patchesWithBoth": 310,
+        "disturbanceYearsUsed": [
+          "harvest-2017",
+          "harvest-2018",
+          "fire-2017",
+          "fire-2018"
+        ],
+        "disturbanceYearsMissing": [],
+        "sha256": "375c25782b4a82a52cb26afdd1309a62e038b3d8f96fa2d7f15a0e84ad3def99"
+      }
+    },
+    {
+      "interval": "2018-2019",
+      "source": {
+        "fileName": "detected-forest-loss-2018-2019.components.jsonl",
+        "sha256": "913fb46f2bb47ab2221ad4906bc9dbfc56de833e791e3bcba9a935251372468a",
+        "byteLength": 1555719614
+      },
+      "patchCount": 6782267,
+      "runCount": 12144056,
+      "cellCount": 33612333,
+      "aliasCount": 314288,
+      "peakOpenComponents": 413,
+      "patches": {
+        "fileName": "detected-forest-loss-2018-2019.patches.bin",
+        "sha256": "cbff5a4d30bb825c7d0be8a9fc9b2a9878316276242964b9b2cf37628cfcd61f",
+        "byteLength": 271290680
+      },
+      "runs": {
+        "fileName": "detected-forest-loss-2018-2019.runs.bin",
+        "sha256": "2fb3a1b05d0d5ada96f2534a9dd45eaf1b69ce224e70e0d1c76fa18f8662def2",
+        "byteLength": 145728672
+      },
+      "attribution": {
+        "harvestCells": 6347960,
+        "fireCells": 13189544,
+        "patchesWithBoth": 481,
+        "disturbanceYearsUsed": [
+          "harvest-2018",
+          "harvest-2019",
+          "fire-2018",
+          "fire-2019"
+        ],
+        "disturbanceYearsMissing": [],
+        "sha256": "f1fdf315b6a4c588ab2d0f7e70efd85ab405e6fec57f7862c95f927e128a6086"
+      }
+    },
+    {
+      "interval": "2019-2020",
+      "source": {
+        "fileName": "detected-forest-loss-2019-2020.components.jsonl",
+        "sha256": "50fc63ab66abb448f1b665250d6429ae2b2bb02ac7fc24a8da2be05598ae5b5f",
+        "byteLength": 1350907329
+      },
+      "patchCount": 6299100,
+      "runCount": 10155302,
+      "cellCount": 21695439,
+      "aliasCount": 188788,
+      "peakOpenComponents": 466,
+      "patches": {
+        "fileName": "detected-forest-loss-2019-2020.patches.bin",
+        "sha256": "1179c969a17b9f3fa730a1b6cb19cae7030959f85130d11795be8ab8cf8f73e6",
+        "byteLength": 251964000
+      },
+      "runs": {
+        "fileName": "detected-forest-loss-2019-2020.runs.bin",
+        "sha256": "b147b1e60cb379f7295e5cd022a3fc14bab5b6d1dafd78964c66f3988e642e66",
+        "byteLength": 121863624
+      },
+      "attribution": {
+        "harvestCells": 5530685,
+        "fireCells": 2348111,
+        "patchesWithBoth": 386,
+        "disturbanceYearsUsed": [
+          "harvest-2019",
+          "harvest-2020",
+          "fire-2019",
+          "fire-2020"
+        ],
+        "disturbanceYearsMissing": [],
+        "sha256": "8206ebbbed9a5c67f687ba0741272ab87f7eef8aabe26991cd028d6a809b9464"
+      }
+    },
+    {
+      "interval": "2020-2021",
+      "source": {
+        "fileName": "detected-forest-loss-2020-2021.components.jsonl",
+        "sha256": "5dfc6d7bf6d36c896bcde407f0dcfe8d09c53a2b3a628693acfdbe57d9bb16cc",
+        "byteLength": 1612473472
+      },
+      "patchCount": 6924761,
+      "runCount": 12738658,
+      "cellCount": 33581706,
+      "aliasCount": 303989,
+      "peakOpenComponents": 555,
+      "patches": {
+        "fileName": "detected-forest-loss-2020-2021.patches.bin",
+        "sha256": "b37e60fa75865a0daa3e69f8cd6ae894649ab99b124e55074ce6361f052f80c0",
+        "byteLength": 276990440
+      },
+      "runs": {
+        "fileName": "detected-forest-loss-2020-2021.runs.bin",
+        "sha256": "1e8755132a92f0c920f50c0018bd39c7ae74f904436ffc760d74cdf43eeaeb5f",
+        "byteLength": 152863896
+      },
+      "attribution": {
+        "harvestCells": 5956650,
+        "fireCells": 11039813,
+        "patchesWithBoth": 122,
+        "disturbanceYearsUsed": [
+          "harvest-2020",
+          "harvest-2021",
+          "fire-2020",
+          "fire-2021"
+        ],
+        "disturbanceYearsMissing": [],
+        "sha256": "3af602665de055b11c50dd19550bfe44eba41d9f1aec20aed1fdb90877a6fa79"
+      }
+    },
+    {
+      "interval": "2021-2022",
+      "source": {
+        "fileName": "detected-forest-loss-2021-2022.components.jsonl",
+        "sha256": "1bd236971edb5befdc557744504aef04b329b23b48986deb06ff244ad41c6295",
+        "byteLength": 1325628109
+      },
+      "patchCount": 5687674,
+      "runCount": 10457074,
+      "cellCount": 30482740,
+      "aliasCount": 264887,
+      "peakOpenComponents": 397,
+      "patches": {
+        "fileName": "detected-forest-loss-2021-2022.patches.bin",
+        "sha256": "f81ffd3616e5c8212e8a83fcd00fec26211438c6486b231b491df1b0d244a04f",
+        "byteLength": 227506960
+      },
+      "runs": {
+        "fileName": "detected-forest-loss-2021-2022.runs.bin",
+        "sha256": "bec0fee5034afc5ff13b27b1ccdf5ebf3895731fc5f03179c1a8e58a6e1b6c74",
+        "byteLength": 125484888
+      },
+      "attribution": {
+        "harvestCells": 4713829,
+        "fireCells": 14517547,
+        "patchesWithBoth": 232,
+        "disturbanceYearsUsed": [
+          "harvest-2021",
+          "harvest-2022",
+          "fire-2021",
+          "fire-2022"
+        ],
+        "disturbanceYearsMissing": [],
+        "sha256": "1f00a9f634784b0ed9271a20127072a54c13c5a6cf7b76ddb43f93a17c0786a7"
+      }
+    }
+  ]
+}
