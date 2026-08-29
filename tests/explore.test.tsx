@@ -58,15 +58,31 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
   assert.match(en, /presentation=list&amp;data=chart/);
   assert.match(en, /presentation=map&amp;data=table/);
   assert.match(en, /Boundary overlays/);
-  for (const label of [
-    "Watersheds",
-    "Federal ridings",
-    "Provincial ridings",
-    "Reserves",
-    "Treaty areas",
-  ])
+  for (const label of ["Watersheds", "Federal ridings", "Provincial ridings"])
     assert.match(en, new RegExp(label));
-  assert.match(en, /geometry unavailable/);
+  // The reserve and treaty-area overlays were removed rather than shown as
+  // pending. Their sources are authority-blocked, so a "not available yet"
+  // label would imply work in progress that is not happening.
+  assert.doesNotMatch(en, /Reserves/);
+  assert.doesNotMatch(en, /Treaty areas/);
+  // The ridings overlays are real layers now, so the blanket unavailable
+  // label is gone and each card offers a control instead.
+  assert.doesNotMatch(en, /geometry unavailable/);
+  assert.match(en, /overlays=federal-ridings/);
+  assert.match(en, /overlays=provincial-ridings/);
+  // Watersheds stays listed because it is genuinely planned, and it has to
+  // say why it is not here rather than showing a bare label.
+  assert.match(en, /Not available yet/);
+  assert.match(en, /No authoritative national watershed edition/);
+  // The provincial layer must never read as national coverage.
+  for (const province of [
+    "British Columbia",
+    "Alberta",
+    "Ontario",
+    "Québec",
+  ])
+    assert.match(en, new RegExp(province));
+  assert.match(en, /does not take effect until the 43rd legislature ends/);
   assert.match(listTable, /aria-label="List"/);
   assert.match(listTable, /<table/);
   assert.equal((listTable.match(/scope="col"/g) ?? []).length, 6);
@@ -74,6 +90,22 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
   assert.match(fr, /État et rétablissement/);
   assert.match(fr, /Cette liste, ce graphique et ce tableau/);
   assert.match(fr, /Superpositions de limites/);
+
+  const withOverlay = renderToStaticMarkup(
+    <ExploreView
+      events={exploreFixtures}
+      locale="en"
+      overlays={["federal-ridings"]}
+    />,
+  );
+  assert.match(withOverlay, /Shown on the map/);
+  // The active overlay's own control offers to remove it, and every other
+  // link on the page carries the selection forward rather than dropping it.
+  assert.match(withOverlay, /Hide<\/a>/);
+  for (const link of withOverlay.match(/href="\?[^"]*"/g) ?? []) {
+    if (/overlays=/.test(link)) continue;
+    assert.match(link, /mode=/);
+  }
 });
 test("map/list and chart/table retain evidence, confidence, coverage, provenance, and Unknown is never zero", () => {
   const mapChart = renderToStaticMarkup(

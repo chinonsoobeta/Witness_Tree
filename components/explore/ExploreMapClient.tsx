@@ -4,11 +4,13 @@ import { useEffect, useId, useRef, useState } from "react";
 import type { Map as MapLibreMap, StyleSpecification } from "maplibre-gl";
 import { PRODUCT_NAME, type Locale } from "@/lib/domain";
 import {
+  BOUNDARY_OVERLAYS,
   EXPLORE_MAP_COLOURS,
   EXPLORE_PER_CELL_LAYER,
   EXPLORE_PRODUCTION_LAYER,
   perCellArchiveForYear,
   perCellSourceLayer,
+  type BoundaryOverlayId,
   type ExploreMode,
   type PerCellArchive,
 } from "@/lib/explore";
@@ -172,6 +174,7 @@ const provinceLayers: StyleSpecification["layers"] = [
 const buildStyle = (
   province: boolean,
   archive: PerCellArchive | null,
+  overlays: readonly BoundaryOverlayId[],
 ): StyleSpecification => {
   const sources: StyleSpecification["sources"] = {};
   const layers: StyleSpecification["layers"] = [];
@@ -213,6 +216,36 @@ const buildStyle = (
       },
     });
   }
+  // Boundaries are drawn last so they sit above the data they frame, and as
+  // lines only. A filled boundary would compete with the loss ramp and invite
+  // reading a district's colour as a measurement of that district.
+  for (const id of overlays) {
+    const overlay = BOUNDARY_OVERLAYS[id];
+    if (!overlay.available || !overlay.url || !overlay.sourceLayer) continue;
+    const sourceId = `boundary-${id}`;
+    sources[sourceId] = {
+      type: "vector",
+      url: `pmtiles://${overlay.url}`,
+      bounds: [-141, 41, -52, 84],
+    };
+    layers.push({
+      id: `${sourceId}-line`,
+      type: "line",
+      source: sourceId,
+      "source-layer": overlay.sourceLayer,
+      paint: {
+        "line-color": overlay.colour ?? EXPLORE_MAP_COLOURS.ink,
+        // Reference geometry has to stay subordinate to the data it frames.
+        // At a national view the southern districts are only a few pixels
+        // across, so a constant-width line turns them into a solid mass that
+        // reads as the subject of the map rather than the frame around it.
+        "line-width": ["interpolate", ["linear"], ["zoom"], 0, 0.4, 5, 0.7, 10, 1.4],
+        "line-opacity": ["interpolate", ["linear"], ["zoom"], 0, 0.45, 5, 0.6, 10, 0.8],
+        ...(overlay.dash ? { "line-dasharray": [...overlay.dash] } : {}),
+      },
+    });
+  }
+
   return {
     version: 8,
     name: `${PRODUCT_NAME.en} verified province forest-loss map`,
@@ -229,7 +262,13 @@ export function ExploreMapClient({
   locale,
   mode,
   year,
-}: Readonly<{ locale: Locale; mode: ExploreMode; year: number }>) {
+  overlays = [],
+}: Readonly<{
+  locale: Locale;
+  mode: ExploreMode;
+  year: number;
+  overlays?: readonly BoundaryOverlayId[];
+}>) {
   const statusId = useId();
   const attributionId = useId();
   const mapContainerRef = useRef<HTMLDivElement>(null);
@@ -241,6 +280,9 @@ export function ExploreMapClient({
     mode === "forest-change" ? perCellArchiveForYear(year) : null;
   const provinceAvailable = mode === "forest-change" && year >= 2022;
   const available = provinceAvailable || perCellArchive !== null;
+  // A stable primitive, so the effect re-runs when the selection changes
+  // rather than on every render of a fresh array literal.
+  const overlayKey = overlays.join(",");
   const [features, setFeatures] = useState<ProvinceFeature[]>([]);
   const [source, setSource] = useState<MapSource | null>(null);
   const [failed, setFailed] = useState(false);
@@ -336,7 +378,7 @@ export function ExploreMapClient({
         protocolRegistered = true;
         map = new maplibre.Map({
           container: mapContainerRef.current,
-          style: buildStyle(provinceAvailable, perCellArchive),
+          style: buildStyle(provinceAvailable, perCellArchive, overlays),
           center: [-96, 56],
           zoom: 2.6,
           minZoom: 1.5,
@@ -376,7 +418,12 @@ export function ExploreMapClient({
       map?.remove();
       if (protocolRegistered) maplibre?.removeProtocol("pmtiles");
     };
-  }, [available, provinceAvailable, perCellArchive]);
+    // overlayKey stands in for `overlays`: the prop is a fresh array on every
+    // render of the server parent, so depending on it directly would tear down
+    // and rebuild the whole map each time. The key changes exactly when the
+    // selected overlay set changes, which is the only thing the style needs.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [available, provinceAvailable, perCellArchive, overlayKey]);
   const readyKey = provinceAvailable
     ? perCellArchive
       ? "readyBoth"

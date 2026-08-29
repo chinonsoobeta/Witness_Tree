@@ -5,6 +5,7 @@ import {
   exploreFixtures,
   EXPLORE_MODES,
   fixturesThroughYear,
+  parseBoundaryOverlays,
   parseExploreYear,
 } from "@/lib/explore";
 
@@ -21,6 +22,7 @@ export default async function Page({
     presentation?: string;
     data?: string;
     year?: string;
+    overlays?: string;
   }>;
 }) {
   const query = await searchParams;
@@ -31,6 +33,7 @@ export default async function Page({
     : "forest-change";
   const presentation = query.presentation === "list" ? "list" : "map";
   const year = parseExploreYear(query.year);
+  const overlays = parseBoundaryOverlays(query.overlays);
   const events = fixturesThroughYear(exploreFixtures, year);
   return (
     <SiteShell locale="en">
@@ -39,7 +42,12 @@ export default async function Page({
           <h1>Explore forest change</h1>
         </header>
         {presentation === "map" ? (
-          <ExploreMapClient locale="en" mode={mode} year={year} />
+          <ExploreMapClient
+            locale="en"
+            mode={mode}
+            year={year}
+            overlays={overlays}
+          />
         ) : null}
         <ExploreView
           events={events}
@@ -48,6 +56,7 @@ export default async function Page({
           presentation={presentation}
           data={query.data === "table" ? "table" : "chart"}
           year={year}
+          overlays={overlays}
         />
       </main>
     </SiteShell>

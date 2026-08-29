@@ -5,7 +5,8 @@ import {
   ProvenanceBlock,
 } from "@/components/policy";
 import {
-  EXPLORE_BOUNDARY_OVERLAYS,
+  BOUNDARY_OVERLAY_IDS,
+  BOUNDARY_OVERLAYS,
   EXPLORE_DEFAULT_YEAR,
   EXPLORE_PRODUCTION_LAYER,
   EXPLORE_MODES,
@@ -15,6 +16,9 @@ import {
   type ExploreEvent,
   type ExploreMode,
   type ExplorePresentation,
+  serializeBoundaryOverlays,
+  toggleBoundaryOverlay,
+  type BoundaryOverlayId,
 } from "@/lib/explore";
 import type { Locale } from "@/lib/domain";
 
@@ -35,7 +39,13 @@ const copy = {
     chart: "Chart",
     table: "Table",
     overlays: "Boundary overlays",
-    unavailable: "Illustrative fixture: geometry unavailable",
+    show: "Show",
+    hide: "Hide",
+    shown: "Shown on the map",
+    notAvailable: "Not available yet",
+    whyNot: "Why not",
+    overlaysNote:
+      "Reference boundaries drawn over the map. They show where something is and who represents it. They never carry a loss figure of their own.",
     event: "Event",
     evidence: "Evidence",
     confidence: "Confidence",
@@ -49,13 +59,6 @@ const copy = {
       "recorded-harvest": "Recorded harvest",
       wildfire: "Wildfire",
       "condition-recovery": "Condition and recovery",
-    },
-    boundaries: {
-      watersheds: "Watersheds",
-      "federal-ridings": "Federal ridings",
-      "provincial-ridings": "Provincial ridings",
-      reserves: "Reserves",
-      "treaty-areas": "Treaty areas",
     },
   },
   fr: {
@@ -74,7 +77,13 @@ const copy = {
     chart: "Graphique",
     table: "Tableau",
     overlays: "Superpositions de limites",
-    unavailable: "Exemple illustratif : géométrie non disponible",
+    show: "Afficher",
+    hide: "Masquer",
+    shown: "Affiché sur la carte",
+    notAvailable: "Pas encore disponible",
+    whyNot: "Pourquoi",
+    overlaysNote:
+      "Limites de référence tracées sur la carte. Elles indiquent où se trouve un lieu et qui le représente. Elles ne portent jamais de chiffre de perte.",
     event: "Événement",
     evidence: "Preuve",
     confidence: "Confiance",
@@ -88,13 +97,6 @@ const copy = {
       "recorded-harvest": "Récolte consignée",
       wildfire: "Incendies",
       "condition-recovery": "État et rétablissement",
-    },
-    boundaries: {
-      watersheds: "Bassins versants",
-      "federal-ridings": "Circonscriptions fédérales",
-      "provincial-ridings": "Circonscriptions provinciales",
-      reserves: "Réserves",
-      "treaty-areas": "Zones visées par un traité",
     },
   },
 } as const;
@@ -136,8 +138,12 @@ function href(
   presentation: ExplorePresentation,
   data: ExploreDataView,
   year: number,
+  overlays: readonly BoundaryOverlayId[] = [],
 ) {
-  return `?mode=${mode}&presentation=${presentation}&data=${data}&year=${year}`;
+  const base = `?mode=${mode}&presentation=${presentation}&data=${data}&year=${year}`;
+  return overlays.length === 0
+    ? base
+    : `${base}&overlays=${serializeBoundaryOverlays(overlays)}`;
 }
 function Details({ event, locale }: { event: ExploreEvent; locale: Locale }) {
   const text = copy[locale];
@@ -164,6 +170,7 @@ export function ExploreView({
   presentation = "map",
   data = "chart",
   year = EXPLORE_DEFAULT_YEAR,
+  overlays = [],
 }: {
   events: readonly ExploreEvent[];
   locale: Locale;
@@ -171,6 +178,7 @@ export function ExploreView({
   presentation?: ExplorePresentation;
   data?: ExploreDataView;
   year?: number;
+  overlays?: readonly BoundaryOverlayId[];
 }) {
   const text = copy[locale];
   const selected = events.filter((event) => event.mode === mode);
@@ -187,6 +195,13 @@ export function ExploreView({
         <input type="hidden" name="mode" value={mode} />
         <input type="hidden" name="presentation" value={presentation} />
         <input type="hidden" name="data" value={data} />
+        {overlays.length > 0 ? (
+          <input
+            type="hidden"
+            name="overlays"
+            value={serializeBoundaryOverlays(overlays)}
+          />
+        ) : null}
         <label className="explore-year-label">
           {text.yearControl}
           <input
@@ -209,7 +224,7 @@ export function ExploreView({
           <a
             key={item}
             className="segment-option"
-            href={href(item, presentation, data, year)}
+            href={href(item, presentation, data, year, overlays)}
             aria-current={item === mode ? "page" : undefined}
           >
             {text.modes[item]}
@@ -220,14 +235,14 @@ export function ExploreView({
         <legend>{text.presentation}</legend>
         <a
           className="segment-option"
-          href={href(mode, "map", data, year)}
+          href={href(mode, "map", data, year, overlays)}
           aria-current={presentation === "map" ? "page" : undefined}
         >
           {text.map}
         </a>{" "}
         <a
           className="segment-option"
-          href={href(mode, "list", data, year)}
+          href={href(mode, "list", data, year, overlays)}
           aria-current={presentation === "list" ? "page" : undefined}
         >
           {text.list}
@@ -237,14 +252,14 @@ export function ExploreView({
         <legend>{text.data}</legend>
         <a
           className="segment-option"
-          href={href(mode, presentation, "chart", year)}
+          href={href(mode, presentation, "chart", year, overlays)}
           aria-current={data === "chart" ? "page" : undefined}
         >
           {text.chart}
         </a>{" "}
         <a
           className="segment-option"
-          href={href(mode, presentation, "table", year)}
+          href={href(mode, presentation, "table", year, overlays)}
           aria-current={data === "table" ? "page" : undefined}
         >
           {text.table}
@@ -252,13 +267,48 @@ export function ExploreView({
       </fieldset>
       <section className="explore-overlays" aria-label={text.overlays}>
         <h2>{text.overlays}</h2>
+        <p className="explore-note">{text.overlaysNote}</p>
         <ul className="overlay-grid">
-          {EXPLORE_BOUNDARY_OVERLAYS.map((boundary) => (
-            <li className="card card--sand overlay-card" key={boundary}>
-              <span className="overlay-name">{text.boundaries[boundary]}</span>
-              <span className="overlay-state">{text.unavailable}</span>
-            </li>
-          ))}
+          {BOUNDARY_OVERLAY_IDS.map((id) => {
+            const overlay = BOUNDARY_OVERLAYS[id];
+            const active = overlays.includes(id);
+            return (
+              <li className="card card--sand overlay-card" key={id}>
+                <span className="overlay-name">{overlay.label[locale]}</span>
+                {overlay.available ? (
+                  <a
+                    className="segment-option overlay-toggle"
+                    href={href(
+                      mode,
+                      presentation,
+                      data,
+                      year,
+                      toggleBoundaryOverlay(overlays, id),
+                    )}
+                    aria-label={`${active ? text.hide : text.show}: ${overlay.label[locale]}`}
+                  >
+                    {active ? text.hide : text.show}
+                  </a>
+                ) : (
+                  <span className="overlay-state">{text.notAvailable}</span>
+                )}
+                {active ? (
+                  <span className="overlay-state">{text.shown}</span>
+                ) : null}
+                <p className="overlay-note">{overlay.note[locale]}</p>
+                {overlay.reason ? (
+                  <p className="overlay-note">
+                    {text.whyNot}: {overlay.reason[locale]}
+                  </p>
+                ) : null}
+                {overlay.attribution ? (
+                  <p className="overlay-attribution">
+                    {overlay.attribution[locale]}
+                  </p>
+                ) : null}
+              </li>
+            );
+          })}
         </ul>
       </section>
       {presentation === "list" ? (

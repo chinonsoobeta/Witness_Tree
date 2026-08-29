@@ -38,7 +38,7 @@ Phase 0 is complete under its recorded scope: seven of its eight literal gates p
 | Phase 4 | **3/4 (75%)** | Provincial safeguards exist; admitted enhancement inputs and published match results do not. |
 | Phase 5 | **4/4 (100%) local; production blocked** | Simulation and safety controls do not establish real feed rights, operations, or deployment. |
 | Phase 6 | **4/5 (80%)** | Managed Canadian database isolation is proven. Sender infrastructure and the independent timed kill-switch rehearsal remain absent. |
-| Phase 7 | **14/16 (87.5%)** | The Mistik outcome is recorded as not pursued. Indigenous-source authority and a named tested reply operation remain missing. |
+| Phase 7 | **13/16 (81.25%)** | The Mistik outcome is recorded as not pursued. Indigenous-source authority and a named tested reply operation remain missing. The modes-and-overlays gate was deliberately regressed when the reserve and treaty-area overlays were removed from Explore. |
 | Phase 8 | **6/16 (37.5%)** | Raw-archive reproducibility and the operations handbook pass. The province-level CDN release passed decoded delivery-tier validation, but complete browser-side PMTiles rendering and other operated production evidence remain incomplete. |
 | Phase 9 | **0/4 (0%)** | No operated beta, real correction metrics, source-agency confirmation, or quarterly published-figure reproduction. |
 

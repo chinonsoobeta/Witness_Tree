@@ -2244,13 +2244,16 @@ dd > a:only-child {
   padding: 0;
   display: grid;
   gap: 12px;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  /* The cards now carry a coverage note and an attribution rather than a
+     single label, so they need room to be read rather than skimmed. */
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 }
 
 .overlay-card {
   display: grid;
-  gap: 4px;
+  gap: 6px;
   padding: 14px 18px;
+  align-content: start;
 }
 
 .overlay-name {
@@ -2259,6 +2262,26 @@ dd > a:only-child {
 
 .overlay-state {
   font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.overlay-toggle {
+  justify-self: start;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.overlay-note {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--ink-2);
+  text-wrap: pretty;
+}
+
+.overlay-attribution {
+  margin: 0;
+  font-size: 0.8rem;
   color: var(--muted);
 }
 

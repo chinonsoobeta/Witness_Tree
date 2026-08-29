@@ -240,7 +240,8 @@
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "db:generate": "drizzle-kit generate",
     "check:qc-fourth-inventory-immutable-promotion": "node scripts/check-qc-fourth-inventory-immutable-promotion.mjs",
-    "dry-run:qc-fourth-inventory-immutable-promotion": "zsh scripts/run-qc-fourth-inventory-approved-promotion.sh"
+    "dry-run:qc-fourth-inventory-immutable-promotion": "zsh scripts/run-qc-fourth-inventory-approved-promotion.sh",
+    "check:boundary-overlays": "node scripts/check-boundary-overlays.mjs"
   },
   "dependencies": {
     "@bcgov/bc-sans": "^2.1.0",

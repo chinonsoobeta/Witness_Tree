@@ -1,0 +1,69 @@
+{
+  "schemaVersion": "witness-tree/boundary-overlay-release/1",
+  "productId": "boundary-overlays-v1",
+  "releaseId": "b7ae6917bcf8645f3bcc5eda441c38a41695cff407af8eb5451bd20d97d76ba5",
+  "base": "https://d3g1406o0uekin.cloudfront.net/releases/boundary-overlays-v1/b7ae6917bcf8645f3bcc5eda441c38a41695cff407af8eb5451bd20d97d76ba5/tiles",
+  "builtAt": "2026-08-29T14:27:08.738Z",
+  "sources": [
+    {
+      "id": "fed-2023-ridings",
+      "overlay": "federal-ridings",
+      "jurisdiction": "CA",
+      "sha256": "ca50eb02e1baee076ebec1b8e8511ca6697e8e48cef68bf5d1d74f5458681c05",
+      "featureCount": 352,
+      "districtCount": 343
+    },
+    {
+      "id": "bc-provincial-electoral-districts-2023",
+      "overlay": "provincial-ridings",
+      "jurisdiction": "BC",
+      "sha256": "d2403eeb488be4ef761f7dcbc72c25f8af3a046fce9980536307ba145993f193",
+      "featureCount": 93,
+      "districtCount": 93
+    },
+    {
+      "id": "ontario-electoral-districts-2022",
+      "overlay": "provincial-ridings",
+      "jurisdiction": "ON",
+      "sha256": "70fd809a4998147b228fd9275e34e569be8ae1fd67470e2f4a20761e5d1e7cae",
+      "featureCount": 124,
+      "districtCount": 124
+    },
+    {
+      "id": "ab-electoral-divisions-2019",
+      "overlay": "provincial-ridings",
+      "jurisdiction": "AB",
+      "sha256": "89d0393f8046fe9178f630012fbf4a68718e898f538523554e211fc8dae526a4",
+      "featureCount": 87,
+      "districtCount": 87
+    },
+    {
+      "id": "qc-electoral-districts-2026",
+      "overlay": "provincial-ridings",
+      "jurisdiction": "QC",
+      "sha256": "dd164f0ad5ff7e9f5366f26696d78b9c562ceb88b3a5ad664c22a8e158843677",
+      "featureCount": 127,
+      "districtCount": 127
+    }
+  ],
+  "archives": [
+    {
+      "overlay": "federal-ridings",
+      "layer": "federal_ridings",
+      "fileName": "federal-ridings-v1.pmtiles",
+      "featureCount": 352,
+      "byteLength": 2674670,
+      "sha256": "5aa14c2706e3bc3714a4eeabc2afeac5734f8840d9264ff17566a80c40e20990",
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/boundary-overlays-v1/b7ae6917bcf8645f3bcc5eda441c38a41695cff407af8eb5451bd20d97d76ba5/tiles/federal-ridings-v1.pmtiles"
+    },
+    {
+      "overlay": "provincial-ridings",
+      "layer": "provincial_ridings",
+      "fileName": "provincial-ridings-v1.pmtiles",
+      "featureCount": 431,
+      "byteLength": 2117945,
+      "sha256": "00a83c5bc383e46f5a6756328f83237246884a8bbbcb9bf5828d7db0b28db98c",
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/boundary-overlays-v1/b7ae6917bcf8645f3bcc5eda441c38a41695cff407af8eb5451bd20d97d76ba5/tiles/provincial-ridings-v1.pmtiles"
+    }
+  ]
+}
