@@ -22,7 +22,7 @@
   /* ink */
   --ink: #2c2c24; /* 13.70:1 */
   --ink-2: #4a4a40; /* 8.95:1 */
-  --muted: #67675c; /* 5.57:1 */
+  --muted: #615f54; /* 6.25:1 on ground, 4.73:1 on sand */
 
   /* rules and edges */
   --rule: #ded8cf; /* decorative hairline, 1.38:1, never a state cue */
@@ -73,6 +73,15 @@
   --fire: #eb6834;
   --insect: #4a3aa7;
   --unknown: #6b7670;
+
+  /* observed-loss ramp: held in :root only, and never themed, because the
+     legend swatch has to read as the same colour as the map fill beside it.
+     EXPLORE_MAP_COLOURS in lib/explore/map-style.ts is the source these
+     mirror; tests/explore-loss-ramp.test.mjs fails if the two drift. */
+  --loss-0: #e9f2e5;
+  --loss-1: #a9cf9b;
+  --loss-2: #57935a;
+  --loss-3: #1f5f38;
 
   /* shape and depth */
   --radius-sm: 12px;
@@ -136,7 +145,7 @@
 
     /* rules and edges */
     --rule: #3a3229;
-    --rule-strong: #6b6154; /* 3.05:1 */
+    --rule-strong: #7a6f60; /* 3.77:1 on ground, 3.53:1 on a card */
     --rule-soft: #2a241d;
 
     /* brand */
@@ -199,7 +208,7 @@
   /* ink */
   --ink: #2c2c24; /* 13.70:1 */
   --ink-2: #4a4a40; /* 8.95:1 */
-  --muted: #67675c; /* 5.57:1 */
+  --muted: #615f54; /* 6.25:1 on ground, 4.73:1 on sand */
 
   /* rules and edges */
   --rule: #ded8cf; /* decorative hairline, 1.38:1, never a state cue */
@@ -289,7 +298,7 @@
 
   /* rules and edges */
   --rule: #3a3229;
-  --rule-strong: #6b6154; /* 3.05:1 */
+  --rule-strong: #7a6f60; /* 3.77:1 on ground, 3.53:1 on a card */
   --rule-soft: #2a241d;
 
   /* brand */
@@ -673,7 +682,12 @@ h4 {
    focus ring along with everything else. The edge is a wash of the inherited
    text colour so it clears 3:1 on any ground the badge is dropped onto:
    3.39 / 5.32 on --surface, 3.11 / 4.83 on --sand. */
+/* The confidence pill and the provenance disclosure read at 32px and 26px,
+   which is the right visual weight beside body text and below the 44px
+   pointer target minimum. Both keep their size and grow an invisible target
+   around themselves instead. */
 .confidence {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -687,6 +701,15 @@ h4 {
   font-size: 13px;
   cursor: help;
   transition: background-color var(--dur) var(--ease);
+}
+.confidence::after,
+.reported-provenance > summary::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 50%;
+  height: 44px;
+  transform: translateY(-50%);
 }
 .confidence:hover {
   background: var(--accent-soft);
@@ -1050,8 +1073,10 @@ h4 {
   font-size: 15px;
 }
 .record-card a {
-  display: inline-block;
-  margin-top: 20px;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-top: 8px;
   font-family: var(--ui);
   font-size: 13px;
 }
@@ -1321,16 +1346,16 @@ h4 {
   border: 1px solid var(--ink);
 }
 .loss-0 {
-  background: #e9f2e5;
+  background: var(--loss-0);
 }
 .loss-1 {
-  background: #a9cf9b;
+  background: var(--loss-1);
 }
 .loss-2 {
-  background: #57935a;
+  background: var(--loss-2);
 }
 .loss-3 {
-  background: #1f5f38;
+  background: var(--loss-3);
 }
 
 .comparison-filters {
@@ -1344,7 +1369,11 @@ h4 {
     background-color var(--dur) var(--ease),
     border-color var(--dur) var(--ease),
     color var(--dur) var(--ease);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-width: 44px;
+  min-height: 44px;
   padding: 6px 10px;
   border: 1px solid var(--rule);
   text-align: center;
@@ -1601,6 +1630,7 @@ h4 {
   margin-top: 4px;
 }
 .reported-provenance > summary {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -1738,6 +1768,24 @@ h4 {
      forced palette must not have to render them. */
   .blob {
     display: none;
+  }
+
+  /* The map skeleton is a moving gradient, which a forced palette flattens
+     into a solid block that reads as content. Drop it; the panel still says
+     the map is loading. */
+  .explore-map[data-state="loading"]::before {
+    content: none;
+  }
+
+  /* The selected pill is marked only by an inverted fill, and a forced
+     palette flattens every fill to the same two colours. Highlight is the
+     one pair the user's own theme guarantees will differ. */
+  .segment-option[aria-current="page"],
+  .comparison-filters a[aria-current="page"] {
+    background: Highlight;
+    color: HighlightText;
+    border-color: HighlightText;
+    forced-color-adjust: none;
   }
 }
 
@@ -1884,7 +1932,20 @@ h4 {
   color: var(--ink);
 }
 .wildfire-emergency a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   color: var(--clay-ink);
+}
+
+/* A link that stands on its own line is a target, not prose: give it the
+   44px minimum. Links inside a sentence keep their inline flow, which the
+   pointer-target rule exempts. */
+.notice > a,
+dd > a:only-child {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
 }
 .wildfire-perimeter {
   color: var(--ink-2);
