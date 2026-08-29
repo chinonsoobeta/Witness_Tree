@@ -360,6 +360,14 @@
 
 html {
   background: var(--ground);
+  /* The header is sticky, so anything scrolled to the top of the viewport
+     lands underneath it: fragment links, scrollIntoView, and find-in-page
+     alike. Reserving the space here fixes all three at once, which
+     per-target scroll-margin would not. Measured on the running page rather
+     than derived: the header's bottom edge sits at 104px at desktop width and
+     108px at 375px, where the pill wraps taller, so 120px leaves 16px and 12px
+     of clearance respectively. Raise this if the header ever grows. */
+  scroll-padding-top: 120px;
 }
 
 body {
