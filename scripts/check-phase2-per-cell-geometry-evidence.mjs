@@ -111,10 +111,74 @@ export function validatePerCellGeometryEvidence({ record, summary, inventory, me
   return record;
 }
 
+// The release record is what the site actually reads, so it is gated too.
+// Nothing else binds it: without this, the record could name different
+// archives than the ones reconciled above, or flip `countable` to true, and
+// every other check here would still pass.
+export async function readPerCellTileRelease() {
+  return JSON.parse(await readFile(new URL("../data/phase2-per-cell-tile-release.json", import.meta.url), "utf8"));
+}
+
+export function validatePerCellTileRelease(release, record) {
+  assert.equal(release.schemaVersion, "witness-tree/phase2-per-cell-tile-release/1");
+  assert.equal(release.productId, record.productId, "the release names a different product than the readback");
+
+  // A published layer that no figure is counted from. These are the claims the
+  // amendment said this work does not earn, so they are refused here rather
+  // than left to whoever edits the record next.
+  assert.equal(release.countable, false, "the per-cell layer is not countable");
+  assert.equal(release.expertReviewed, false, "the per-cell layer is not expert reviewed");
+  assert.equal(release.productionEligible, false, "the per-cell layer is not production eligible");
+
+  // An unpublished record is a valid state: the site draws no per-cell layer
+  // at all. A partly published one is not, because a reader selecting a year
+  // in the gap would be shown nothing with no way to tell why.
+  if (release.intervals.length === 0) {
+    assert.equal(release.releaseId, "", "an unpublished record must not carry a release id");
+    assert.equal(release.totals.intervalCount, 0);
+    return release;
+  }
+  assert.equal(release.intervals.length, record.intervalCount, "the release does not cover every interval");
+
+  // The release id is the digest of the archives' own digests, so a path that
+  // served different bytes would have to change. Recomputing it here is what
+  // makes that true rather than merely intended.
+  const expectedId = createHash("sha256")
+    .update(release.intervals.map((entry) => `${entry.interval}:${entry.sha256}`).join("\n"))
+    .digest("hex");
+  assert.equal(release.releaseId, expectedId, "the release id is not the digest of its archives");
+  assert.ok(release.base.endsWith(`/${release.releaseId}/tiles`), "the base path does not carry the release id");
+
+  const byInterval = new Map(record.intervals.map((entry) => [entry.interval, entry]));
+  let byteLength = 0;
+  for (const entry of release.intervals) {
+    const reconciled = byInterval.get(entry.interval);
+    assert.ok(reconciled !== undefined, `${entry.interval} is not an interval the readback reconciled`);
+    assert.equal(entry.patchCount, reconciled.patchCount, `${entry.interval} patch count`);
+    assert.equal(entry.cellCount, reconciled.cellCount, `${entry.interval} cell count`);
+    assert.equal(entry.harvestCells, reconciled.attribution.harvestCells, `${entry.interval} harvest cells`);
+    assert.equal(entry.fireCells, reconciled.attribution.fireCells, `${entry.interval} fire cells`);
+    assert.equal(entry.fileName, `${entry.interval}.pmtiles`, `${entry.interval} file name`);
+    assert.equal(entry.url, `${release.base}/${entry.fileName}`, `${entry.interval} url`);
+    assert.ok(entry.byteLength > 0, `${entry.interval} byte length`);
+    byteLength += entry.byteLength;
+  }
+  assert.equal(release.totals.intervalCount, release.intervals.length);
+  assert.equal(release.totals.byteLength, byteLength);
+  return release;
+}
+
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const record = validatePerCellGeometryEvidence(await readPerCellGeometryEvidence());
+  const release = validatePerCellTileRelease(await readPerCellTileRelease(), record);
   console.log(
     `Per-cell geometry evidence passes: ${record.intervalCount} intervals, ` +
       `${record.totals.patchCount.toLocaleString()} patches, ${record.totals.cellCount.toLocaleString()} cells.`,
+  );
+  console.log(
+    release.intervals.length === 0
+      ? "Tile release: not published, so the site draws no per-cell layer."
+      : `Tile release ${release.releaseId.slice(0, 12)}: ${release.intervals.length} archives, ` +
+        `${(release.totals.byteLength / 1e9).toFixed(1)} GB.`,
   );
 }
