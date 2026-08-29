@@ -3,7 +3,7 @@
   "asOf": "2026-08-27",
   "requirementsEvidence": {
     "path": "docs/CONTROLLING_IMPLEMENTATION_PLAN.md",
-    "sha256": "7aa04bc77afc0d25546d33a8a195ce3c4b40fc62fca66f4d2d43f891f8005ca2",
+    "sha256": "8aac349f01a80a11cc34a46edba673d0200c78e99fac5e469fedc76e2d8574af",
     "sections": ["Phase 1 — Exit criteria", "Verified completion checkpoint through 2026-08-25"]
   },
   "formalExit": {

@@ -7,15 +7,20 @@ const record = JSON.parse(readFileSync(new URL("../data/phase7-indigenous-explor
 
 test("Phase 7 records the literal engineering and Indigenous-geometry gates without production inflation", async () => {
   assert.equal(await validatePhase7IndigenousExploreComparisonExitStatus(record), record);
-  assert.equal(record.completedCriteria, 13);
-  assert.equal(record.percentage, 81.25);
+  assert.equal(record.completedCriteria, 14);
+  assert.equal(record.percentage, 87.5);
   assert.equal(record.phaseComplete, false);
-  assert.deepEqual(record.exitCriteria.filter((item) => item.status === "fail").map((item) => item.id), ["reserve-and-treaty-layers-loaded", "right-of-reply-live", "explore-modes-and-overlays"]);
-  // The overlays gate was deliberately regressed rather than quietly rescoped:
-  // the reserve and treaty-area overlays were removed from Explore because
-  // their sources are authority blocked, so the criterion as written no longer
-  // holds even though the riding overlays became real drawn layers.
-  assert.match(record.exitCriteria.find((item) => item.id === "explore-modes-and-overlays").reason, /reserve and treaty-area overlays were removed/);
+  assert.deepEqual(record.exitCriteria.filter((item) => item.status === "fail").map((item) => item.id), ["reserve-and-treaty-layers-loaded", "right-of-reply-live"]);
+  // The overlays gate was narrowed to the overlays Explore actually ships, so
+  // it must not be readable as covering reserve or treaty geography. Two things
+  // keep the narrowing honest and both are asserted here: the criterion's own
+  // title no longer names those overlays, and the gate that does name them is
+  // still failed. If that gate ever passes without real federal geometry, this
+  // assertion is the one that should be revisited first.
+  const overlays = record.exitCriteria.find((item) => item.id === "explore-modes-and-overlays");
+  assert.doesNotMatch(overlays.title, /reserve|treaty/i);
+  assert.match(overlays.reason, /tracked\s+solely by reserve-and-treaty-layers-loaded/);
+  assert.equal(record.exitCriteria.find((item) => item.id === "reserve-and-treaty-layers-loaded").status, "fail");
   assert.equal(record.exitCriteria.find((item) => item.id === "mistik-request-recorded").status, "pass");
 });
 

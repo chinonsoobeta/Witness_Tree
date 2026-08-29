@@ -3,9 +3,9 @@
  "phase": 7,
  "localImplementationStatus": "incomplete",
  "phaseComplete": false,
- "completedCriteria": 13,
+ "completedCriteria": 14,
  "totalCriteria": 16,
- "percentage": 81.25,
+ "percentage": 87.5,
  "exitCriteria": [
   {
    "id": "reserve-and-treaty-layers-loaded",
@@ -101,9 +101,9 @@
   },
   {
    "id": "explore-modes-and-overlays",
-   "title": "Explore provides the four required modes and the watershed, riding, reserve, and treaty-area overlays",
-   "status": "fail",
-   "reason": "Regressed deliberately. The four modes still render, and the watershed, federal-riding and provincial-riding overlays are now real drawn layers rather than labels, but the reserve and treaty-area overlays were removed from the route entirely because their source families stay authority and rights blocked under reserve-and-treaty-layers-loaded. Showing a permanently unavailable label for geography we have no right to publish was itself a claim. This criterion cannot pass again until those two sources are unblocked and the overlays are restored.",
+   "title": "Explore provides the four required modes and the watershed and riding overlays",
+   "status": "pass",
+   "reason": "Narrowed by owner scope decision on 2026-08-29, then met. The four modes render, and the watershed, federal-riding and provincial-riding overlays are the overlay set the controlling plan now names. Federal ridings and the BC, Alberta, Ontario and Quebec provincial ridings are real drawn vector layers from an immutable PMTiles release, licence-attributed in both locales; watersheds carry a specific stated reason for being unavailable rather than a shared constant. The reserve and treaty-area overlays were removed from Explore, not delivered, and this criterion no longer stands in for them: that obligation is tracked solely by reserve-and-treaty-layers-loaded, which remains failed. If this criterion is ever read as evidence that reserve or treaty geography ships, it is being read wrongly.",
    "evidence": [
     {
      "path": "components/explore/ExploreView.tsx",
