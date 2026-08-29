@@ -7,8 +7,8 @@ export function SiteFooter({ locale }: { locale: Locale }) {
   return (
     <footer className="site-footer">
       <div className="site-footer-inner">
-        <p>1984–present · BC · AB · ON · QC</p>
-        <nav aria-label={locale === "en" ? "Record and governance" : "Registre et gouvernance"}>
+        <p className="footer-coverage">1984–present · BC · AB · ON · QC</p>
+        <nav className="footer-nav" aria-label={locale === "en" ? "Record and governance" : "Registre et gouvernance"}>
           {links.map(([label, href]) => <a key={href} href={href}>{label}</a>)}
         </nav>
       </div>
