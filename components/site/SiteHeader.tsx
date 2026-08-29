@@ -23,6 +23,13 @@ const NAV = {
   ],
 } as const;
 
+/**
+ * The one new string this phase introduces, kept bilingual like every other label in the file.
+ * It is the summary's visible text and therefore also its accessible name, so the visible label
+ * and the name cannot drift apart (WCAG 2.5.3).
+ */
+const MENU = { en: "Menu", fr: "Menu" } as const;
+
 export function SiteHeader({ locale }: { locale: Locale }) {
   return (
     <header className="site-header">
@@ -30,7 +37,18 @@ export function SiteHeader({ locale }: { locale: Locale }) {
       <div className="site-header-inner">
         <a className="wordmark" href={`/${locale}`}>{PRODUCT_NAME[locale]}</a>
         <nav className="global-nav" aria-label={locale === "en" ? "Primary navigation" : "Navigation principale"}>
-          {NAV[locale].map(([label, href]) => <a key={href} href={href}>{label}</a>)}
+          {/*
+            A real disclosure, not a horizontally scrolled row. <details> needs no JavaScript, so
+            the shared client bundle is untouched and the header stays a server component. Above
+            the nav breakpoint the summary is hidden and the panel is forced open by CSS, so the
+            same single list of links serves both layouts and nothing is duplicated in the DOM.
+          */}
+          <details className="nav-disclosure">
+            <summary className="nav-toggle">{MENU[locale]}</summary>
+            <div className="nav-panel">
+              {NAV[locale].map(([label, href]) => <a key={href} href={href}>{label}</a>)}
+            </div>
+          </details>
           <Suspense fallback={<LocaleAnchor locale={locale} href={locale === "en" ? "/fr" : "/en"} />}>
             <LocaleLink locale={locale} />
           </Suspense>

@@ -40,6 +40,15 @@
      pill inputs. --ink on the composited result is 13.93:1. */
   --input-fill: color-mix(in srgb, white 55%, transparent);
 
+  /* Header pill fill. Translucent so the blur reads, but only just: the pill
+     floats over the Explore map, whose tiles can be arbitrarily dark. Worst
+     case is pure black behind, where 88% white composites to rgb(224 224 224)
+     and --ink reads 10.70:1, --ink-2 6.81:1, --accent 5.77:1 and an
+     --accent-fill edge 4.09:1. --rule-strong would fall to 2.56:1 there, so
+     the header's control edges use --accent-fill instead. --surface is the
+     opaque fallback where backdrop-filter is unsupported. */
+  --header-fill: rgb(255 255 255 / 88%);
+
   /* evidence tints, semantic layer. A tinted pill per evidence class, each
      with an edge dark enough to be a control edge on its own tint.
      Measured WCAG 2.1 ratios, --ink on the tint / edge on the tint:
@@ -136,6 +145,12 @@
        it. --ink on the composited result is 12.91:1. */
     --input-fill: color-mix(in srgb, white 8%, transparent);
 
+    /* Header pill fill. Worst case here is a near-white map tile behind the
+       pill: at 88% that composites to rgb(56 53 50), on which --ink reads
+       10.40:1, --ink-2 7.62:1, --accent 5.87:1 and an --accent-fill edge
+       4.21:1. */
+    --header-fill: rgb(29 26 21 / 88%);
+
     /* evidence tints, semantic layer. Measured WCAG 2.1 ratios,
        --ink on the tint / edge on the tint:
          record     12.37 / 5.01
@@ -214,6 +229,10 @@
      palette's 55% would composite to a near-white pill and strand --ink on
      it. --ink on the composited result is 12.91:1. */
   --input-fill: color-mix(in srgb, white 8%, transparent);
+
+  /* Header pill fill. Worst case is a near-white map tile behind the pill: at
+     88% --ink reads 10.40:1 and an --accent-fill edge 4.21:1 on it. */
+  --header-fill: rgb(29 26 21 / 88%);
 
   /* semantic event colours: unchanged, they carry meaning */
   --harvest: #3987e5;
@@ -296,29 +315,68 @@ h4 {
   font-family: var(--ui);
 }
 
+/* The skip link keeps its exact reveal-on-focus mechanic: parked at
+   translateY(-160%) and brought to translateY(0) on focus, still fixed at
+   z-index 100 so it paints above the paper grain (z-index 1) and above the
+   sticky header pill (z-index 50). Only the shape changed, to the pill idiom.
+   --ground on --ink is 13.70:1 light and 15.87:1 dark. */
 .skip-link {
   position: fixed;
   z-index: 100;
-  top: 8px;
-  left: 8px;
+  top: 16px;
+  left: 16px;
   transform: translateY(-160%);
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 22px;
+  border-radius: 999px;
   background: var(--ink);
   color: var(--ground);
-  padding: 8px 12px;
+  box-shadow: var(--shadow-float);
   font-family: var(--ui);
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
   transition: transform var(--dur) var(--ease);
 }
 .skip-link:focus {
   transform: translateY(0);
 }
 
+/* The gateway is the showcase surface: two blurred washes behind the wordmark
+   on a grain-lit ground. .blob-ground clips them, so no narrow viewport gains
+   a horizontal scrollbar, and it lifts the real content to z-index 1. */
+/* The gateway runs full bleed and holds its text at the measure with padding
+   rather than a narrow box. .blob-ground clips the two washes, so if the
+   element were only as wide as the measure the clip would draw a hard
+   rectangle across the ground, which is what a narrow box produced when this
+   was first built. Full bleed lets the washes reach the viewport edges and
+   fade, and the clip still keeps them off the horizontal scroll axis. */
 .language-gateway {
-  width: min(var(--measure), calc(100% - 40px));
+  position: relative;
+  width: 100%;
   min-height: 100vh;
-  margin: 0 auto;
   display: grid;
   align-content: center;
-  padding: 80px 0;
+  justify-items: stretch;
+  grid-template-columns: minmax(0, var(--measure));
+  justify-content: center;
+  padding: 80px max(20px, calc((100% - var(--measure)) / 2));
+}
+/* The shared .blob opacity of 0.5 is too strong to run text over. At 0.30 the
+   worst pair on either wash clears AA in both themes:
+     --ink on the moss wash    9.13 light / 9.59 dark
+     --ink-2 on the moss wash  5.81 light / 7.03 dark
+     --ink on the clay wash   10.35 light / 8.55 dark
+     --ink-2 on the clay wash  6.59 light / 6.27 dark
+     --accent-fill edge on either wash, worst 3.47 (>= 3:1)
+   --muted is not used here: on the moss wash it would fall to 3.71 light. */
+.language-gateway > .blob {
+  opacity: 0.3;
+}
+.language-gateway .eyebrow {
+  color: var(--ink-2);
 }
 
 .eyebrow {
@@ -396,12 +454,13 @@ h4 {
   background: var(--accent-soft);
 }
 
-/* Buttons. The gateway's .primary-link is the same control, so it is folded
-   in here rather than kept as a parallel rule: the first gateway link takes
-   the primary treatment and the second the outline, which is what the
-   markup already expressed and what tests/rendered-html.test.mjs pins. */
-.btn,
-.primary-link {
+/* Buttons. The gateway used to carry a parallel .primary-link rule; phase 4
+   moved its two language links onto .btn--primary and .btn--outline, so the
+   alias is gone and there is one button implementation.
+     --ground on --accent-fill (primary)  5.24 light / 6.43 dark
+     --ink on --ground (outline label)   13.70 light / 15.87 dark
+     --accent-fill outline edge on --ground 5.24 / 6.43 */
+.btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -426,22 +485,18 @@ h4 {
     border-color var(--dur) var(--ease),
     box-shadow var(--dur) var(--ease);
 }
-.btn:hover,
-.primary-link:hover {
+.btn:hover {
   transform: scale(1.03);
 }
-.btn:active,
-.primary-link:active {
+.btn:active {
   transform: scale(0.97);
 }
 
-.btn--outline,
-.primary-link {
+.btn--outline {
   border-color: var(--accent-fill);
   color: var(--ink);
 }
-.btn--outline:hover,
-.primary-link:hover {
+.btn--outline:hover {
   background: var(--accent-soft);
 }
 
@@ -453,18 +508,14 @@ h4 {
   background: var(--accent-soft);
 }
 
-/* Authored last so a button carrying both modifier classes reads as primary.
-   .primary-link:first-child outranks the bare .primary-link rules above on
-   specificity, so gateway order is independent of source order. */
-.btn--primary,
-.primary-link:first-child {
+/* Authored last so a button carrying both modifier classes reads as primary. */
+.btn--primary {
   border-color: var(--accent-fill);
   background: var(--accent-fill);
   color: var(--ground);
   box-shadow: var(--shadow-soft);
 }
-.btn--primary:hover,
-.primary-link:first-child:hover {
+.btn--primary:hover {
   box-shadow: var(--shadow-lift);
 }
 
@@ -611,19 +662,59 @@ h4 {
 .site-shell {
   min-height: 100vh;
 }
+/* ==========================================================================
+   Chrome: the sticky header pill, its disclosure nav, and the footer band.
+
+   The header floats 16px below the top of the viewport on every page. z-index
+   50 puts it above the paper grain (z-index 1) and below the skip link
+   (z-index 100). Nothing between .site-shell and here establishes a clipping
+   ancestor, so position: sticky resolves against the viewport.
+
+   Measured WCAG 2.1 ratios on the composited pill, light / dark, taken at the
+   worst background the pill can float over (pure black behind it in light,
+   a pure white map tile behind it in dark):
+     --ink on the pill (wordmark, summary)     10.70 / 10.40
+     --ink-2 on the pill (nav links)            6.81 /  7.62
+     --accent on the pill (locale pill label)   5.77 /  5.87
+     --accent-fill as a control edge            4.09 /  4.21
+   Over the site's own --ground the same pairs read 13.96 / 15.16, 8.89 /
+   11.12, 7.53 / 8.56 and 5.34 / 6.14. --rule-strong is deliberately absent:
+   on the worst-case pill it is 2.56 / 2.00 and would miss the 3:1 control
+   minimum, so every edge in the header is --accent-fill.
+   ========================================================================== */
 .site-header {
-  border-bottom: 1px solid var(--ink);
+  position: sticky;
+  z-index: 50;
+  top: 16px;
+  padding: 16px 20px 0;
 }
 .site-header-inner {
-  width: min(var(--plate), calc(100% - 40px));
+  width: min(var(--plate), 100%);
   margin: 0 auto;
   min-height: 72px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 24px;
+  padding: 8px 12px 8px 26px;
+  border: 1px solid var(--accent-fill);
+  border-radius: 999px;
+  /* Opaque fallback first: a browser without backdrop-filter gets a solid
+     surface rather than an unreadable transparent bar. */
+  background: var(--surface);
+  box-shadow: var(--shadow-soft);
+}
+@supports ((backdrop-filter: blur(12px)) or (-webkit-backdrop-filter: blur(12px))) {
+  .site-header-inner {
+    background: var(--header-fill);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+  }
 }
 .wordmark {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   color: var(--ink);
   font-size: 23px;
   font-weight: 600;
@@ -633,24 +724,101 @@ h4 {
 .global-nav {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 12px;
   font-family: var(--ui);
   font-size: 13px;
 }
-.global-nav a {
+
+/* The disclosure. No JavaScript: <details> gives the open/close behaviour and
+   full keyboard operation from the platform, which keeps the shared client
+   bundle where it is and leaves SiteHeader a server component. Note that
+   Escape does NOT close a native <details>; that is a platform gap, and this
+   phase does not paper over it with an inline handler. */
+.nav-disclosure {
+  position: relative;
+}
+.nav-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 20px;
+  border: 1px solid var(--accent-fill);
+  border-radius: 999px;
+  color: var(--ink);
+  font-family: var(--ui);
+  font-size: 13px;
+  font-weight: 600;
+  list-style: none;
+  cursor: pointer;
+  transition:
+    background-color var(--dur) var(--ease),
+    color var(--dur) var(--ease);
+}
+.nav-toggle::-webkit-details-marker {
+  display: none;
+}
+.nav-toggle:hover {
+  background: var(--accent-soft);
+}
+.nav-toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+.nav-panel {
+  position: absolute;
+  z-index: 1;
+  top: calc(100% + 12px);
+  right: 0;
+  display: grid;
+  min-width: max(220px, 60vw);
+  padding: 10px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-float);
+}
+.nav-panel a {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: var(--radius-sm);
   color: var(--ink-2);
   text-decoration: none;
-  transition: color var(--dur) var(--ease);
+  transition:
+    color var(--dur) var(--ease),
+    background-color var(--dur) var(--ease);
 }
-.global-nav a:hover {
+.nav-panel a:hover {
+  background: var(--accent-soft);
   color: var(--ink);
-  text-decoration: underline;
 }
+
+/* The language switch: the one control every reader on a bilingual
+   federal-facing site has to be able to find, so it is a small outline pill
+   rather than a mono micro-link. */
 .locale-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid var(--accent-fill);
+  border-radius: 999px;
+  color: var(--accent);
   font-family: var(--mono);
   font-size: 11px;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
+  text-decoration: none;
+  transition:
+    background-color var(--dur) var(--ease),
+    color var(--dur) var(--ease);
+}
+.locale-link:hover {
+  background: var(--accent-soft);
 }
 
 .page-wrap {
@@ -877,23 +1045,72 @@ h4 {
   font-size: 15px;
 }
 
+/* The footer is a sand-tinted band with a moss wash blurred across its top
+   edge. The wash is a pseudo-element, so it costs no markup and cannot be
+   read by assistive technology. Measured at the wash's full 14% strength,
+   which is the worst the band gets, light / dark:
+     --ink on the washed sand      8.85 / 9.98
+     --ink-2 on the washed sand    5.63 / 7.32
+     --accent link on washed sand  4.77 / 5.63
+   On plain --sand the same pairs are 10.37 / 12.45, 6.60 / 9.13 and 5.59 /
+   7.03. --muted is not used here: on --sand it is only 4.22 in light. */
 .site-footer {
-  padding: 34px 0 60px;
+  position: relative;
+  overflow: hidden;
+  margin-top: 80px;
+  padding: 46px 0 60px;
+  background: var(--sand);
+}
+.site-footer::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: -30vmax;
+  left: 10%;
+  width: 44vmax;
+  aspect-ratio: 1;
+  border-radius: var(--blob);
+  background: var(--accent-fill);
+  opacity: 0.14;
+  filter: blur(64px);
+  pointer-events: none;
 }
 .site-footer-inner {
+  position: relative;
+  z-index: 1;
   width: min(var(--plate), calc(100% - 40px));
   margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  gap: 26px;
-  color: var(--muted);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  gap: 26px 40px;
+  color: var(--ink-2);
   font-family: var(--ui);
-  font-size: 12px;
+  font-size: 13px;
 }
-.site-footer nav {
+.footer-coverage {
+  margin: 0;
+  color: var(--ink-2);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.footer-nav {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2px 24px;
+}
+.footer-nav a {
   display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
+  align-items: center;
+  min-height: 44px;
+  color: var(--accent);
+  text-decoration: none;
+  transition: color var(--dur) var(--ease);
+}
+.footer-nav a:hover {
+  color: var(--ink);
+  text-decoration: underline;
 }
 
 .explore-map {
@@ -1285,16 +1502,63 @@ h4 {
   }
 }
 
-@media (max-width: 760px) {
-  .site-header-inner {
-    align-items: flex-start;
-    flex-direction: column;
-    padding: 18px 0;
+/* Above this width the disclosure stops being a disclosure: the summary is
+   hidden and the panel is forced open as an inline row, so one list of links
+   in the DOM serves both layouts and nothing is duplicated.
+
+   Forcing a closed <details> open takes two mechanisms because browsers
+   changed how the hiding is done. Older engines hide the content through the
+   internal slot, which the .nav-panel display declaration below overrides.
+   Chromium 131+ and Safari 18.4+ instead apply
+   `::details-content { content-visibility: hidden }`, which only the
+   pseudo-element rule can reach; browsers that do not recognise the pseudo
+   simply drop that rule and are covered by the first mechanism. */
+@media (min-width: 940px) {
+  .nav-disclosure > summary {
+    display: none;
   }
-  .global-nav {
-    width: 100%;
-    overflow-x: auto;
-    padding-bottom: 4px;
+  .nav-disclosure::details-content {
+    content-visibility: visible;
+    block-size: auto;
+  }
+  .nav-panel {
+    position: static;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+  }
+  .nav-panel a {
+    padding: 0 2px;
+    border-radius: 0;
+  }
+  .nav-panel a:hover {
+    background: none;
+    text-decoration: underline;
+  }
+}
+
+@media (max-width: 760px) {
+  .site-header {
+    padding: 12px 12px 0;
+  }
+  .site-header-inner {
+    gap: 10px;
+    padding: 8px 10px 8px 18px;
+  }
+  .wordmark {
+    font-size: 19px;
+  }
+  .site-footer-inner {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .footer-nav {
+    grid-template-columns: minmax(0, 1fr);
   }
   .record-grid {
     grid-template-columns: 1fr;
@@ -1302,9 +1566,6 @@ h4 {
   .principle {
     grid-template-columns: 1fr;
     gap: 7px;
-  }
-  .site-footer-inner {
-    flex-direction: column;
   }
 }
 
