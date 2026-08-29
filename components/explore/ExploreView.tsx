@@ -10,8 +10,7 @@ import {
   EXPLORE_DEFAULT_YEAR,
   EXPLORE_PRODUCTION_LAYER,
   EXPLORE_MODES,
-  EXPLORE_YEAR_MAX,
-  EXPLORE_YEAR_MIN,
+  exploreHref,
   type ExploreDataView,
   type ExploreEvent,
   type ExploreMode,
@@ -21,6 +20,7 @@ import {
   type BoundaryOverlayId,
 } from "@/lib/explore";
 import type { Locale } from "@/lib/domain";
+import { ExploreYearControl } from "./ExploreYearControl";
 
 const copy = {
   en: {
@@ -52,7 +52,8 @@ const copy = {
     coverage: "Coverage",
     observedLoss: "Observed loss (ha)",
     observedLossPercent: "Observed loss (%)",
-    complete: "Complete required-input coverage",
+    complete: "Every input pixel present",
+    partial: "Some pixels unknown, so this is a minimum",
     source: "Source attribution",
     modes: {
       "forest-change": "Forest change",
@@ -90,7 +91,8 @@ const copy = {
     coverage: "Couverture",
     observedLoss: "Perte observée (ha)",
     observedLossPercent: "Perte observée (%)",
-    complete: "Couverture complète des entrées requises",
+    complete: "Tous les pixels d’entrée sont présents",
+    partial: "Certains pixels sont inconnus; il s’agit donc d’un minimum",
     source: "Attribution de la source",
     modes: {
       "forest-change": "Changement forestier",
@@ -140,10 +142,7 @@ function href(
   year: number,
   overlays: readonly BoundaryOverlayId[] = [],
 ) {
-  const base = `?mode=${mode}&presentation=${presentation}&data=${data}&year=${year}`;
-  return overlays.length === 0
-    ? base
-    : `${base}&overlays=${serializeBoundaryOverlays(overlays)}`;
+  return exploreHref({ mode, presentation, data, year, overlays });
 }
 function Details({ event, locale }: { event: ExploreEvent; locale: Locale }) {
   const text = copy[locale];
@@ -202,22 +201,10 @@ export function ExploreView({
             value={serializeBoundaryOverlays(overlays)}
           />
         ) : null}
-        <label className="explore-year-label">
-          {text.yearControl}
-          <input
-            type="range"
-            name="year"
-            min={EXPLORE_YEAR_MIN}
-            max={EXPLORE_YEAR_MAX}
-            defaultValue={year}
-            className="explore-slider"
-            step="1"
-            aria-label={text.yearControl}
-          />
-        </label>
-        <button className="btn btn--primary" type="submit">
-          {text.update}
-        </button>
+        <ExploreYearControl
+          locale={locale}
+          state={{ mode, presentation, data, year, overlays }}
+        />
       </form>
       <nav className="segment" aria-label={text.title}>
         {EXPLORE_MODES.map((item) => (
@@ -323,7 +310,7 @@ export function ExploreView({
                     {number.format(row.observedLossHectares)} ·{" "}
                     {text.observedLossPercent}:{" "}
                     {number.format(row.observedLossPercent)} · {text.coverage}:{" "}
-                    {text.complete}
+                    {row.coverageGrade === "complete" ? text.complete : text.partial}
                   </p>
                   <p>
                     {text.source}:{" "}
@@ -425,7 +412,11 @@ export function ExploreView({
                   <td>{EXPLORE_PRODUCTION_LAYER.period}</td>
                   <td>{number.format(row.observedLossHectares)}</td>
                   <td>{number.format(row.observedLossPercent)}</td>
-                  <td>{text.complete}</td>
+                  <td>
+                    {row.coverageGrade === "complete"
+                      ? text.complete
+                      : text.partial}
+                  </td>
                   <td>
                     <a href={EXPLORE_PRODUCTION_LAYER.attribution.href}>
                       {EXPLORE_PRODUCTION_LAYER.attribution[locale]}

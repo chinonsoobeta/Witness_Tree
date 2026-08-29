@@ -15,7 +15,8 @@
     "types": ["@cloudflare/workers-types", "node"],
     "incremental": true,
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "next/navigation": ["./node_modules/vinext/dist/shims/navigation"]
     }
   },
   "include": [

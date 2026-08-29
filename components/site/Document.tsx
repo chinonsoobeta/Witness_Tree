@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import type { Locale } from "@/lib/domain";
+import { THEME_BOOT_SCRIPT } from "@/lib/theme";
 import "@bcgov/bc-sans/css/BC_Sans.css";
 import "maplibre-gl/dist/maplibre-gl.css";
 import "@/app/globals.css";
@@ -15,9 +16,25 @@ import "@/app/globals.css";
  * announcing French prose under `<html lang="en">` is the defect this fixes.
  */
 export function Document({ lang, children }: { lang: Locale; children: ReactNode }) {
+  // The boot script below sets data-theme on the root element before React
+  // hydrates, so the server markup and the live DOM differ there by design.
+  // Suppression is scoped to that one element's own attributes; its children
+  // are still checked.
   return (
-    <html lang={lang}>
-      <body>{children}</body>
+    <html lang={lang} suppressHydrationWarning>
+      <body>
+        {/*
+          The stored colour theme, applied before anything paints.
+
+          It is the first node in the body rather than a head script because this
+          shell owns no <head>; the framework composes that. Position still gets
+          what is needed: the script is synchronous and precedes every element it
+          affects, so the attribute is on the root element before the first paint
+          and no reader sees a flash of the palette they did not choose.
+        */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
+        {children}
+      </body>
     </html>
   );
 }

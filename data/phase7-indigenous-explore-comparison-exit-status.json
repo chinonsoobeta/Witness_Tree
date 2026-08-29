@@ -107,11 +107,11 @@
    "evidence": [
     {
      "path": "components/explore/ExploreView.tsx",
-     "sha256": "a32b1ac42c19f10c1e743c6fb6580b9a99e755c43683c1312514eb05d4b11eda"
+     "sha256": "b9fd931e92c7a8959ef69ea8aac777c03d92507427fc66acadb76d545a711d11"
     },
     {
      "path": "tests/explore.test.tsx",
-     "sha256": "0560daaf29b8ea62459b7cc9f617b35dd2740fa569aafdb715c48623c8477841"
+     "sha256": "c0895b0541941a060feaf3da9533cee750cb4ac03f2fbab31ab222da1bf6358a"
     }
    ]
   },
@@ -123,11 +123,11 @@
    "evidence": [
     {
      "path": "components/explore/ExploreView.tsx",
-     "sha256": "a32b1ac42c19f10c1e743c6fb6580b9a99e755c43683c1312514eb05d4b11eda"
+     "sha256": "b9fd931e92c7a8959ef69ea8aac777c03d92507427fc66acadb76d545a711d11"
     },
     {
      "path": "tests/explore.test.tsx",
-     "sha256": "0560daaf29b8ea62459b7cc9f617b35dd2740fa569aafdb715c48623c8477841"
+     "sha256": "c0895b0541941a060feaf3da9533cee750cb4ac03f2fbab31ab222da1bf6358a"
     }
    ]
   },
@@ -139,11 +139,11 @@
    "evidence": [
     {
      "path": "components/explore/ExploreView.tsx",
-     "sha256": "a32b1ac42c19f10c1e743c6fb6580b9a99e755c43683c1312514eb05d4b11eda"
+     "sha256": "b9fd931e92c7a8959ef69ea8aac777c03d92507427fc66acadb76d545a711d11"
     },
     {
      "path": "tests/explore.test.tsx",
-     "sha256": "0560daaf29b8ea62459b7cc9f617b35dd2740fa569aafdb715c48623c8477841"
+     "sha256": "c0895b0541941a060feaf3da9533cee750cb4ac03f2fbab31ab222da1bf6358a"
     }
    ]
   },

@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { PRODUCT_NAME, type Locale } from "@/lib/domain";
 import { LocaleAnchor, LocaleLink } from "./LocaleLink";
+import { ThemeToggle } from "./ThemeToggle";
 
 const NAV = {
   en: [
@@ -47,6 +48,14 @@ export function SiteHeader({ locale }: { locale: Locale }) {
             <summary className="nav-toggle">{MENU[locale]}</summary>
             <div className="nav-panel">
               {NAV[locale].map(([label, href]) => <a key={href} href={href}>{label}</a>)}
+              {/*
+                The colour-theme control lives in the same panel as the links, so one
+                node serves both layouts: below the nav breakpoint it is a labelled row
+                inside the menu, and above it the panel is forced open as an inline row
+                and the control sits at its end. Putting it in the header bar instead
+                would have overflowed the pill on a narrow screen.
+              */}
+              <ThemeToggle locale={locale} />
             </div>
           </details>
           <Suspense fallback={<LocaleAnchor locale={locale} href={locale === "en" ? "/fr" : "/en"} />}>

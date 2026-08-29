@@ -1,6 +1,40 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { renderToStaticMarkup } from "react-dom/server";
+import type { Context, ReactElement } from "react";
+import { renderToStaticMarkup as renderElement } from "react-dom/server";
+import type { AppRouterInstance } from "vinext/shims/internal/app-router-context";
+import { AppRouterContext } from "vinext/shims/internal/app-router-context";
+
+/*
+ * Explore now contains a client island that reads the app router. The framework
+ * mounts that router around every real render, server and browser alike; this
+ * bare harness does not, and the hook refuses to run without one. The stub below
+ * is the missing mount, not a stand-in for behaviour: no assertion here navigates,
+ * so the methods only have to exist, and every one of them records the call so a
+ * render that navigates on its own would be visible rather than silent.
+ */
+const routerCalls: string[] = [];
+const stubRouter = Object.fromEntries(
+  ["push", "replace", "back", "forward", "refresh", "prefetch"].map((method) => [
+    method,
+    (...args: unknown[]) => void routerCalls.push(`${method}(${args.join(", ")})`),
+  ]),
+) as unknown as AppRouterInstance;
+
+// The shim types the context as possibly absent, because a build without the
+// client runtime does not ship one. This file renders client islands, so an
+// absent context is a broken assumption rather than a case to handle. Failing
+// here says why; failing inside a hook would not.
+if (!AppRouterContext) throw new Error("vinext no longer exports AppRouterContext");
+const RouterContext: Context<AppRouterInstance | null> = AppRouterContext;
+
+function renderToStaticMarkup(element: ReactElement): string {
+  return renderElement(
+    <RouterContext.Provider value={stubRouter}>
+      {element}
+    </RouterContext.Provider>,
+  );
+}
 import {
   ExploreView,
   // @ts-expect-error -- Node's TypeScript runner requires explicit local extensions.
@@ -44,8 +78,9 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
   assert.match(en, /no figure on this site is counted from them/);
   assert.doesNotMatch(en, /not per-cell geometry/);
   assert.match(en, /type="range"/);
-  assert.match(en, /min="1984"/);
-  assert.match(en, /max="2026"/);
+  // One year means one annual interval, and the archives hold 1985 through 2022.
+  assert.match(en, /min="1985"/);
+  assert.match(en, /max="2022"/);
   assert.match(en, /name="year"/);
   for (const label of [
     "Forest change",
@@ -224,10 +259,34 @@ test("the year control is a real, shareable control rather than a decorative sli
   for (const link of en.match(/href="\?[^"]*"/g) ?? [])
     assert.match(link, /&amp;year=1995/);
 
+  // A year is an interval, and the control has to say so: 1995 is what changed
+  // between 1994 and 1995, not a snapshot of 1995.
+  assert.match(en, /Change between 1994 and 1995/);
+  assert.match(en, /aria-valuetext="Change between 1994 and 1995"/);
+
+  // The ends of the slider are the ends of the record, and the scale marks are
+  // years the archives actually cover.
+  assert.match(en, /min="1985"/);
+  assert.match(en, /max="2022"/);
+  for (const tick of [1985, 1990, 1995, 2000, 2005, 2010, 2015, 2020, 2022])
+    assert.match(en, new RegExp(`<option value="${tick}" label="${tick}">`));
+
+  /*
+   * Server markup is the no-JavaScript state, and every enhanced control is inert
+   * in it: the step and play buttons are disabled, and the submit button that the
+   * island hides once it mounts is still present. A control that looks live and
+   * does nothing is the failure this pins down.
+   */
+  for (const inert of [/class="year-step" disabled=""/, /class="year-play" disabled=""/])
+    assert.match(en, inert);
+  assert.match(en, /class="btn btn--primary year-submit" type="submit"/);
+  assert.doesNotMatch(en, /year-submit[^>]*hidden/);
+
   const fr = renderToStaticMarkup(
     <ExploreView events={exploreFixtures} locale="fr" year={1995} />,
   );
-  assert.match(fr, /Afficher les exemples illustratifs jusqu/);
+  assert.match(fr, /Changement entre 1994 et 1995/);
+  assert.match(fr, /Ann\u00e9e affich\u00e9e/u);
   assert.match(fr, /Mettre à jour/);
 });
 
@@ -238,7 +297,7 @@ test("the year query is parsed defensively and filters fixtures to that year and
   const { EXPLORE_DEFAULT_YEAR } =
     // @ts-expect-error -- Node's TypeScript runner requires explicit local extensions.
     await import("../lib/explore/types.ts");
-  assert.equal(EXPLORE_DEFAULT_YEAR, 2026);
+  assert.equal(EXPLORE_DEFAULT_YEAR, 2022);
 
   assert.equal(parseExploreYear("1995"), 1995);
   // Anything that is not an in-range ASCII four-digit year falls back rather than throwing
@@ -249,8 +308,8 @@ test("the year query is parsed defensively and filters fixtures to that year and
     "abc",
     "12",
     "20055",
-    "1983",
-    "2027",
+    "1984",
+    "2023",
     " 1995",
     "1995.0",
     "١٩٩٥",

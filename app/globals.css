@@ -951,6 +951,86 @@ h4 {
   color: var(--ink);
 }
 
+/* The colour-theme control. Three native radios in a segmented pill.
+
+   The inputs are not hidden with display:none or visibility:hidden, which would
+   remove them from the accessibility tree and from the tab order along with the
+   arrow-key group behaviour the platform gives radios for free. Each one is
+   instead stretched transparently over its own label, so the whole pill is the
+   hit target, the radio still receives focus, and the visible state is carried by
+   the sibling span through :checked and :focus-visible. */
+.theme-toggle {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 2px;
+  padding: 4px 0 0;
+}
+.theme-toggle-label {
+  padding: 10px 16px 4px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+/* Inside the menu panel the options stack as full-width rows, the same shape as
+   the links above them. Three pills side by side does not survive translation at
+   this width: "Système / Clair / Sombre" needs more room than the panel has, and
+   any arrangement that fits by shrinking clips a label in one language or the
+   other. Above the nav breakpoint the row has the room, and they sit inline. */
+.theme-option {
+  position: relative;
+  display: flex;
+}
+.theme-option input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.theme-option > span {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  color: var(--ink-2);
+  transition:
+    color var(--dur) var(--ease),
+    background-color var(--dur) var(--ease),
+    border-color var(--dur) var(--ease);
+}
+.theme-option input:hover + span {
+  background: var(--accent-soft);
+  color: var(--ink);
+}
+/* Checked state is an edge and a fill, not colour alone: the border survives
+   forced-colours mode and a monochrome display, where a tint does not. */
+.theme-option input:checked + span {
+  border-color: var(--accent-fill);
+  background: var(--accent-soft);
+  color: var(--ink);
+}
+.theme-option input:focus-visible + span {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+/* Server-rendered inert, until the island mounts and can actually change
+   anything. Muted rather than faded, because opacity on text lowers contrast
+   below the ratio the palette was measured at. */
+.theme-option input:disabled {
+  cursor: default;
+}
+.theme-option input:disabled + span {
+  color: var(--muted);
+}
+
 /* The language switch: the one control every reader on a bilingual
    federal-facing site has to be able to find, so it is a small outline pill
    rather than a mono micro-link. */
@@ -1705,6 +1785,18 @@ h4 {
    hidden and the panel is forced open as an inline row, so one list of links
    in the DOM serves both layouts and nothing is duplicated.
 
+   The width was 940px until the colour-theme control joined the panel. Measured
+   in the browser at 960px, the French row (seven links plus Système / Clair /
+   Sombre) came to 882px against 770px of usable pill, and the page scrolled
+   sideways. The breakpoint is now set from the widest locale rather than the
+   narrowest: the French row and the wordmark measure 1048px together, and the
+   plate stops growing at 1180px, so 1180px is where the inline layout starts and
+   the 46px it leaves is the most this layout will ever have (English leaves
+   144px; French is what has to fit). That margin is for
+   the fallback face, which is wider than BC Sans. The row gap and the control's
+   padding were tightened at the same time, for the same reason. French is the
+   constraint here, and one breakpoint has to serve both.
+
    Forcing a closed <details> open takes two mechanisms because browsers
    changed how the hiding is done. Older engines hide the content through the
    internal slot, which the .nav-panel display declaration below overrides.
@@ -1712,7 +1804,7 @@ h4 {
    `::details-content { content-visibility: hidden }`, which only the
    pseudo-element rule can reach; browsers that do not recognise the pseudo
    simply drop that rule and are covered by the first mechanism. */
-@media (min-width: 940px) {
+@media (min-width: 1180px) {
   .nav-disclosure > summary {
     display: none;
   }
@@ -1724,7 +1816,10 @@ h4 {
     position: static;
     display: flex;
     align-items: center;
-    gap: 18px;
+    /* 18px until the colour-theme control joined the row. The French row is the
+       widest the site has, and at 18px it cleared the pill by a single pixel,
+       which any font fallback would have swallowed. */
+    gap: 14px;
     min-width: 0;
     padding: 0;
     border: 0;
@@ -1739,6 +1834,35 @@ h4 {
   .nav-panel a:hover {
     background: none;
     text-decoration: underline;
+  }
+  /* In the inline row the group's name is carried by the accessible name alone.
+     It is clipped rather than removed, because aria-labelledby points at it and a
+     display:none element names nothing. */
+  .theme-toggle {
+    gap: 2px;
+    padding: 0;
+  }
+  .theme-toggle-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .theme-toggle {
+    flex-direction: row;
+    align-items: center;
+    gap: 2px;
+    padding: 0;
+  }
+  .theme-option {
+    display: inline-flex;
+  }
+  .theme-option > span {
+    width: auto;
+    padding: 0 8px;
   }
 }
 
@@ -2166,8 +2290,18 @@ dd > a:only-child {
    Phase 5 — explore
    ========================================================================== */
 
-.explore > * + * {
-  margin-block-start: 24px;
+/* One layout owner for the whole control stack.
+   This used to be `.explore > * + * { margin-block-start: 24px }`, which had
+   the same specificity as the `.segment, .segment-set { margin: 0 }` reset
+   further down and lost to it on source order. The mode pills and the two
+   fieldsets therefore sat flush against the year card, whose shadow bled into
+   them and read as an overlap. A gap on the container cannot be cancelled by
+   a child's own margin reset, so the spacing holds no matter what is added
+   here later. */
+.explore {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
 .explore-note {
@@ -2176,10 +2310,7 @@ dd > a:only-child {
 }
 
 .explore-year {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: end;
-  gap: 16px;
+  display: block;
   padding: 18px 20px;
   background: var(--surface);
   border: 1px solid var(--rule);
@@ -2187,17 +2318,115 @@ dd > a:only-child {
   box-shadow: var(--shadow-soft);
 }
 
-.explore-year-label {
+/* The year control. The slider owns a full row of its own, which is what lets
+   the tick scale below line up with it: when the stepping buttons shared the
+   row, every tick sat a button's width out of true. */
+.year-control {
   display: grid;
-  gap: 8px;
-  font-size: 0.9rem;
-  color: var(--ink-2);
+  gap: 10px;
+}
+
+.year-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 16px;
+}
+
+.year-legend {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* The interval, named in full. A year on this control is not a moment, it is the
+   change between two years, and the readout is where that is said outright. */
+.year-readout {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
 }
 
 .explore-slider {
   accent-color: var(--accent-fill);
-  min-width: 220px;
+  width: 100%;
+  min-width: 0;
   min-height: 44px;
+}
+
+.year-scale {
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
+  margin: -4px 0 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.year-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.year-step,
+.year-play {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--ui);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color var(--dur) var(--ease),
+    border-color var(--dur) var(--ease);
+}
+
+.year-step {
+  padding: 0;
+  font-size: 16px;
+}
+
+.year-step:hover:enabled,
+.year-play:hover:enabled {
+  background: var(--accent-soft);
+}
+
+.year-step:disabled,
+.year-play:disabled {
+  color: var(--muted);
+  cursor: default;
+}
+
+/* Pressed is an edge and a fill, not colour alone, so it survives forced-colours
+   mode and a monochrome display. */
+.year-play[aria-pressed="true"] {
+  border-color: var(--accent-fill);
+  background: var(--accent-soft);
+}
+
+.year-help {
+  flex: 1 1 320px;
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--muted);
 }
 
 .segment,
