@@ -37,11 +37,25 @@ It reports 0 hectares of forest, 0 hectares of loss, 0 hectares Unknown and a
 coverage grade of `complete`. Read plainly that says the place was measured and
 nothing was found. Nobody looked. This is the severe case, and it is not rare:
 187 of 343 federal districts, 101 of 124 Ontario, 71 of 127 Quebec and 62 of 87
-Alberta districts came back this way, including districts that are visibly
-forested. British Columbia is the exception at 2 of 93, which is itself
-informative: the product's extent tracks Canada's forested ecosystems, so a
-province that is nearly all inside it loses almost nothing, while the settled
-south and the prairies fall largely outside.
+Alberta districts came back reporting zero forest under a complete grade.
+
+Not every one of those is an unmapped district, and the distinction has to be
+drawn per district rather than assumed. A dense urban district can be inside
+the mapped extent and genuinely hold almost no forest, and reporting zero for
+it is correct. British Columbia's two, Richmond-Steveston and
+Vancouver-Yaletown, are exactly that case: sampling the 2020 source across
+their extents finds no value 0 at all, only water, urban and a trace of
+conifer. They were measured.
+
+Sampling the same way settles the others. Ajax reads 100.00% value 0.
+Stormont-Dundas-South Glengarry, which is farmland and woodlot, reads 99.98%.
+Huntingdon reads 100.00%, Granby 98.92%, Calgary-Acadia 100.00%. Those were
+not measured, and the product's own extent is why: it tracks Canada's forested
+ecosystems, so the settled south and the prairies fall largely outside it while
+British Columbia lies almost entirely within.
+
+This is the reason the corrected grade is three-way rather than two. `complete`
+and `none-mapped` are both answers of zero, and they mean opposite things.
 
 **A district lying partly outside it keeps correct numbers under an incorrect
 claim.** The known subtotals are read from the mapped part alone, so the extent

@@ -24,27 +24,48 @@ export const EXPLORE_PRODUCTION_LAYER = Object.freeze({
     fr: "Limites cartographiques de 2021 de Statistique Canada; agrégat provincial dérivé de VLCE2 de Ressources naturelles Canada.",
     href: "https://www150.statcan.gc.ca/n1/en/catalogue/92-160-X",
   },
+  /*
+   * The coverage grade says whether the province was measured end to end, and
+   * for three of these four it is not "complete".
+   *
+   * The land cover source writes 0 outside the extent it maps, and the derived
+   * forest masks cannot tell that apart from a mapped cell holding no forest,
+   * so the aggregate that produced these rows counted unmapped ground as
+   * measured and forest-free. Sampling the 2020 source inside districts these
+   * provinces contain settles it: Ajax reads 100% unmapped, Huntingdon 100%,
+   * Calgary-Acadia 100%, Stormont-Dundas-South Glengarry 99.98%, Granby 98.92%.
+   * British Columbia is left complete because nothing here shows otherwise:
+   * its two treeless districts sampled as fully mapped, and an unevidenced
+   * downgrade would be as much an invention as the overstatement it replaced.
+   *
+   * The hectares and the rate are unchanged, because they were always read
+   * from the mapped part alone. What changes is the claim made about them: a
+   * partial grade renders as a minimum rather than as a complete measurement,
+   * which is what these three are. The exact unmapped area per province
+   * replaces this sampling once the corrected aggregate has been run; see
+   * docs/PHASE2_MAPPED_EXTENT_COVERAGE_DEFECT.md.
+   */
   rows: [
     {
       id: "24",
       name: { en: "Quebec", fr: "Québec" },
       observedLossHectares: 680273.64,
       observedLossPercent: 0.9745108171576637,
-      coverageGrade: "complete",
+      coverageGrade: "partial",
     },
     {
       id: "35",
       name: { en: "Ontario", fr: "Ontario" },
       observedLossHectares: 714701.7,
       observedLossPercent: 1.4436948894155726,
-      coverageGrade: "complete",
+      coverageGrade: "partial",
     },
     {
       id: "48",
       name: { en: "Alberta", fr: "Alberta" },
       observedLossHectares: 748863.72,
       observedLossPercent: 2.8132686710314085,
-      coverageGrade: "complete",
+      coverageGrade: "partial",
     },
     {
       id: "59",
