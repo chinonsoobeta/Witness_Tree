@@ -8,9 +8,10 @@ const read = (path: string) => readFile(new URL(path, import.meta.url), "utf8");
 // The glossary publishes the forest definition as prose, separately from the constant that drives every
 // computation. Prose and constant can drift apart silently, so the published parameters are pinned here.
 const publishedParagraph = (source: string, heading: string): string => {
-  const start = source.indexOf(`{ heading: "${heading}", paragraphs: [`);
+  // Matched on structure, not on formatting: the entry may be written on one line or wrapped.
+  const start = source.search(new RegExp(`heading: "${heading}",\\s*paragraphs: \\[`));
   assert.notEqual(start, -1, `The glossary must publish a "${heading}" entry.`);
-  const end = source.indexOf("] }", start);
+  const end = source.indexOf("]", source.indexOf("paragraphs: [", start));
   assert.notEqual(end, -1, `The "${heading}" glossary entry must be well formed.`);
   return source.slice(start, end);
 };

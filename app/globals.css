@@ -35,6 +35,7 @@
   --accent-soft: #e7ebe3;
   --clay: #c18c5d; /* fill and decoration only, never text */
   --clay-ink: #7e5228; /* clay at text weight, 6.55:1 */
+  --alert-fill: #fbe6da; /* fire wash, decoration behind role="alert" only */
 
   /* control fill: a wash of white so the paper grain still reads through the
      pill inputs. --ink on the composited result is 13.93:1. */
@@ -106,10 +107,15 @@
      2. A dark system preference applies the dark palette to every root that
         has not explicitly asked for light, so [data-theme="light"] still
         wins over a dark system preference.
-     3. :root[data-theme="dark"] repeats the dark palette outside the media
+     3. [data-theme="dark"] repeats the dark palette outside the media
         query, so an explicit dark choice still wins over a light system
         preference. It is authored after the media block, so on equal
         specificity it also wins inside a dark system preference.
+     4. [data-theme="light"] and [data-theme="dark"] are written without the
+        :root prefix so a nested subtree can carry its own palette. The
+        component gallery relies on this to show both palettes on one page;
+        without it a nested panel inherited the root palette and only its
+        hardcoded panel colours changed.
    No toggle control is added here; that is chrome work.
    ========================================================================== */
 
@@ -139,6 +145,7 @@
     --accent-soft: #23291f;
     --clay: #d9a776;
     --clay-ink: #e4b98c; /* 10.24:1 */
+    --alert-fill: #33201a;
 
     /* control fill: white drops to 8% on the dark ground, because the light
        palette's 55% would composite to a near-white pill and strand --ink on
@@ -166,22 +173,7 @@
     --edge-derived: #c08b52;
     --edge-unknown: #8b968f;
 
-    /* evidence tints, semantic layer. Measured WCAG 2.1 ratios,
-     --ink on the tint / edge on the tint:
-       record     12.37 / 5.01
-       satellite  13.43 / 4.65
-       derived    12.65 / 4.96
-       unknown    12.66 / 4.82 */
-  --tint-record: #242c1f;
-  --tint-satellite: #1a2431;
-  --tint-derived: #31261a;
-  --tint-unknown: #242927;
-  --edge-record: #7fa26e;
-  --edge-satellite: #5c8fc9;
-  --edge-derived: #c08b52;
-  --edge-unknown: #8b968f;
-
-  /* semantic event colours: unchanged, they carry meaning */
+    /* semantic event colours: unchanged, they carry meaning */
     --harvest: #3987e5;
     --fire: #d95926;
     --insect: #9085e9;
@@ -195,11 +187,93 @@
   }
 }
 
-:root[data-theme="light"] {
+[data-theme="light"] {
   color-scheme: light;
+
+  /* ground and surface */
+  --ground: #fdfcf8; /* rice paper */
+  --surface: #fefefa;
+  --surface-2: #f0ebe5; /* stone */
+  --sand: #e6dccd; /* section tint */
+
+  /* ink */
+  --ink: #2c2c24; /* 13.70:1 */
+  --ink-2: #4a4a40; /* 8.95:1 */
+  --muted: #67675c; /* 5.57:1 */
+
+  /* rules and edges */
+  --rule: #ded8cf; /* decorative hairline, 1.38:1, never a state cue */
+  --rule-strong: #948b7a; /* control edges, 3.28:1, clears the 3:1 minimum */
+  --rule-soft: #ede8e0;
+
+  /* brand */
+  --accent: #47593f; /* moss at link and small-text weight, 7.39:1 */
+  --accent-fill: #5d7052; /* moss as a large fill only, 5.24:1 */
+  --accent-soft: #e7ebe3;
+  --clay: #c18c5d; /* fill and decoration only, never text */
+  --clay-ink: #7e5228; /* clay at text weight, 6.55:1 */
+  --alert-fill: #fbe6da; /* fire wash, decoration behind role="alert" only */
+
+  /* control fill: a wash of white so the paper grain still reads through the
+     pill inputs. --ink on the composited result is 13.93:1. */
+  --input-fill: color-mix(in srgb, white 55%, transparent);
+
+  /* Header pill fill. Translucent so the blur reads, but only just: the pill
+     floats over the Explore map, whose tiles can be arbitrarily dark. Worst
+     case is pure black behind, where 88% white composites to rgb(224 224 224)
+     and --ink reads 10.70:1, --ink-2 6.81:1, --accent 5.77:1 and an
+     --accent-fill edge 4.09:1. --rule-strong would fall to 2.56:1 there, so
+     the header's control edges use --accent-fill instead. --surface is the
+     opaque fallback where backdrop-filter is unsupported. */
+  --header-fill: rgb(255 255 255 / 88%);
+
+  /* evidence tints, semantic layer. A tinted pill per evidence class, each
+     with an edge dark enough to be a control edge on its own tint.
+     Measured WCAG 2.1 ratios, --ink on the tint / edge on the tint:
+       record     11.11 / 4.25
+       satellite  11.14 / 4.15
+       derived    11.18 / 3.20
+       unknown    11.37 / 3.81
+     --muted is deliberately never used on these: it lands at 4.52-4.62 here,
+     too close to the 4.5 floor to be safe once the paper grain composites. */
+  --tint-record: #dfe7da;
+  --tint-satellite: #dbe6f4;
+  --tint-derived: #f2e3d1;
+  --tint-unknown: #e4e8e5;
+  --edge-record: #5d7052;
+  --edge-satellite: #3f6ea8;
+  --edge-derived: #a3763f;
+  --edge-unknown: #6b7670;
+
+  /* semantic event colours: unchanged, they carry meaning */
+  --harvest: #2a78d6;
+  --fire: #eb6834;
+  --insect: #4a3aa7;
+  --unknown: #6b7670;
+
+  /* shape and depth */
+  --radius-sm: 12px;
+  --radius: 20px;
+  --radius-lg: 28px;
+  --blob: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  --shadow-soft: 0 4px 20px -2px rgb(71 89 63 / 15%);
+  --shadow-float: 0 10px 40px -10px rgb(193 140 93 / 20%);
+  --shadow-lift: 0 20px 40px -10px rgb(71 89 63 / 15%);
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --dur: 320ms;
+  --grain-opacity: 0.035;
+
+  /* type and measure */
+  --mono:
+    ui-monospace, "SF Mono", SFMono-Regular, Menlo, "DejaVu Sans Mono",
+    monospace;
+  --ui: "BC Sans", "Noto Sans", Verdana, Arial, sans-serif;
+  --measure: 68ch;
+  --plate: 1180px;
+  --drawer: 420px;
 }
 
-:root[data-theme="dark"] {
+[data-theme="dark"] {
   color-scheme: dark;
 
   /* ground and surface */
@@ -224,6 +298,22 @@
   --accent-soft: #23291f;
   --clay: #d9a776;
   --clay-ink: #e4b98c; /* 10.24:1 */
+  --alert-fill: #33201a;
+
+  /* evidence tints, semantic layer. Measured WCAG 2.1 ratios,
+     --ink on the tint / edge on the tint:
+       record     12.37 / 5.01
+       satellite  13.43 / 4.65
+       derived    12.65 / 4.96
+       unknown    12.66 / 4.82 */
+  --tint-record: #242c1f;
+  --tint-satellite: #1a2431;
+  --tint-derived: #31261a;
+  --tint-unknown: #242927;
+  --edge-record: #7fa26e;
+  --edge-satellite: #5c8fc9;
+  --edge-derived: #c08b52;
+  --edge-unknown: #8b968f;
 
   /* control fill: white drops to 8% on the dark ground, because the light
      palette's 55% would composite to a near-white pill and strand --ink on
@@ -313,6 +403,30 @@ h2,
 h3,
 h4 {
   font-family: var(--ui);
+}
+
+/* Base heading scale. The reset above strips the browser's default sizes, so
+   without this a bare <h2> on a governance, account, methods or data page
+   renders at body size and the page reads as one undifferentiated column.
+   Authored here, early, so any surface that sets its own heading size later
+   in this file still wins on equal specificity. */
+.page-wrap h2 {
+  font-size: clamp(22px, 2.6vw, 28px);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin-block-end: 16px;
+}
+
+.page-wrap h3 {
+  font-size: 1.15rem;
+  line-height: 1.3;
+  margin-block-end: 12px;
+}
+
+.page-wrap h4 {
+  font-size: 1rem;
+  line-height: 1.35;
+  margin-block-end: 8px;
 }
 
 /* The skip link keeps its exact reveal-on-focus mechanic: parked at
@@ -704,7 +818,9 @@ h4 {
   background: var(--surface);
   box-shadow: var(--shadow-soft);
 }
-@supports ((backdrop-filter: blur(12px)) or (-webkit-backdrop-filter: blur(12px))) {
+@supports (
+  (backdrop-filter: blur(12px)) or (-webkit-backdrop-filter: blur(12px))
+) {
   .site-header-inner {
     background: var(--header-fill);
     -webkit-backdrop-filter: blur(12px);
@@ -952,14 +1068,11 @@ h4 {
   padding: 24px;
   box-shadow: 0 12px 30px rgb(20 35 27 / 8%);
 }
-.gallery-panel-light {
-  background: #fff;
-  color: #18211c;
-}
+.gallery-panel-light,
 .gallery-panel-dark {
-  background: #18211c;
-  color: #f8f5ed;
-  border-color: #314239;
+  background: var(--ground);
+  color: var(--ink);
+  border-color: var(--rule);
 }
 .gallery-panel h2 {
   margin-top: 0;
@@ -1117,7 +1230,37 @@ h4 {
   position: relative;
   min-height: 430px;
   border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-soft);
   background: var(--surface-2);
+}
+/* Loading skeleton: a calm sweep over the map ground, never a spinner. */
+.explore-map[data-state="loading"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    var(--surface-2) 30%,
+    var(--surface) 50%,
+    var(--surface-2) 70%
+  );
+  background-size: 300% 100%;
+  animation: map-skeleton 1800ms var(--ease) infinite;
+}
+@keyframes map-skeleton {
+  from {
+    background-position: 150% 0;
+  }
+  to {
+    background-position: -50% 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .explore-map[data-state="loading"]::before {
+    animation: none;
+  }
 }
 .explore-map-canvas {
   width: 100%;
@@ -1217,7 +1360,7 @@ h4 {
 }
 .table-scroll table {
   width: 100%;
-  min-width: 980px;
+  min-width: var(--table-min, 980px);
   border-collapse: collapse;
   font-variant-numeric: tabular-nums;
 }
@@ -1428,7 +1571,8 @@ h4 {
   border-radius: var(--radius-lg) var(--radius-lg) var(--radius-lg) 6px;
 }
 .reported--derived-estimate {
-  border-radius: var(--radius-lg) var(--radius-lg) var(--radius-lg) var(--radius-sm);
+  border-radius: var(--radius-lg) var(--radius-lg) var(--radius-lg)
+    var(--radius-sm);
 }
 .reported--unknown {
   border-style: dashed;
@@ -1595,4 +1739,524 @@ h4 {
   .blob {
     display: none;
   }
+}
+
+/* ==========================================================================
+   Surfaces: search.
+   The form is one .field pill and one primary button on a single row that
+   wraps whole on narrow viewports, so the label, the input and the submit
+   never split across lines mid-control. Results are card rows rather than a
+   bare list, because a result is a record to open, not an item in a list of
+   words. --muted is not used on the card: on --surface it is 5.29:1, which
+   passes, but the note text sits on the plain ground where it reads 5.57:1.
+   ========================================================================== */
+.search-page {
+  padding-bottom: 40px;
+}
+.masthead-note {
+  color: var(--muted);
+  font-family: var(--ui);
+  font-size: 13px;
+}
+.search-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+.search-form .field {
+  flex: 1 1 320px;
+}
+.search-note {
+  color: var(--muted);
+  max-width: var(--measure);
+}
+.search-results {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.search-result {
+  padding: 0;
+}
+.search-result a {
+  display: flex;
+  align-items: center;
+  min-height: 56px;
+  padding: 0 24px;
+  color: var(--ink);
+  font-size: 17px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.search-result a:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+/* ==========================================================================
+   Surfaces: governance.
+   Fourteen pages come from one component, so the section rhythm here is the
+   rhythm of half the site. Sections are separated by a sand-tinted rule
+   rather than a box, because the copy is a continuous read, not a set of
+   cards. The numeral is decoration and is hidden from assistive technology;
+   the heading already carries the structure. --ink-2 on --ground is 8.95:1
+   light and 11.64:1 dark; the numeral is --accent-fill, 5.24 / 6.43.
+   ========================================================================== */
+.governance-section {
+  position: relative;
+  padding-top: 34px;
+  margin-top: 34px;
+  border-top: 1px solid var(--sand);
+}
+.governance-section:first-child {
+  padding-top: 0;
+  margin-top: 0;
+  border-top: 0;
+}
+.governance-index {
+  margin: 0 0 6px;
+  color: var(--accent-fill);
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+}
+.governance-section h2 {
+  margin-top: 0;
+}
+.governance-section p {
+  color: var(--ink-2);
+}
+
+/* ==========================================================================
+   Surfaces: wildfire, account, and the annual-change chart.
+
+   The alert notice is burnt sienna because that is the product's fire colour,
+   and it is the one place a warning tint is correct. It is never the only
+   cue: role="alert" carries it to assistive technology and the agency safety
+   link is repeated inside the notice. Measured on the notice fill:
+     --ink on the sienna wash        9.68 light / 10.44 dark
+     --fire edge on the wash         3.41 light / 3.12 dark
+   ========================================================================== */
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 12px;
+  margin: 0 0 28px;
+}
+.stat {
+  padding: 18px 20px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+}
+.stat dt {
+  margin: 0 0 6px;
+  color: var(--ink-2);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.stat dd {
+  margin: 0;
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.notice {
+  padding: 20px 24px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-lg);
+  background: var(--surface-2);
+}
+.notice--alert {
+  border-color: var(--fire);
+  background: var(--alert-fill);
+}
+.notice p {
+  margin-top: 0;
+  color: var(--ink);
+}
+.wildfire-emergency a {
+  color: var(--clay-ink);
+}
+.wildfire-perimeter {
+  color: var(--ink-2);
+  max-width: var(--measure);
+}
+
+.capability-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+  margin: 0 0 34px;
+  padding: 0;
+  list-style: none;
+}
+.capability-grid > .card {
+  padding: 20px 22px;
+  color: var(--ink-2);
+}
+
+/* The chart's bars were unfilled outlines and read as empty. Fill, axis and
+   labels all come from tokens: --accent-fill on --ground is 5.24 light and
+   6.43 dark, and the labels use --ink-2 at 8.95 / 11.64. */
+.annual-chart {
+  display: block;
+  max-width: 640px;
+  margin-bottom: 6px;
+}
+.annual-bar {
+  fill: var(--accent-fill);
+}
+.annual-axis {
+  stroke: var(--rule-strong);
+  stroke-width: 1;
+}
+.annual-label,
+.annual-value {
+  fill: var(--ink-2);
+  font-family: var(--mono);
+  font-size: 9px;
+}
+
+/* ==========================================================================
+   Surfaces: comparison.
+   .comparison-table was declared in markup and never styled; it is now the
+   real section wrapper. Both tables sit inside .table-scroll, which is what
+   removes the horizontal page scroll at 375. The first column is sticky so a
+   riding name stays visible while the row scrolls, and it carries an opaque
+   --surface background because a sticky cell paints over the cells beneath.
+   Zebra rows use --surface on --ground; --ink on either is 13.70 / 15.87.
+   ========================================================================== */
+.comparison-table {
+  margin-bottom: 56px;
+}
+.comparison-context {
+  margin-bottom: 20px;
+  padding: 22px 26px;
+}
+.comparison-context p {
+  margin: 0 0 8px;
+  color: var(--ink-2);
+  max-width: var(--measure);
+}
+.comparison-context-meta {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+}
+.comparison-table tbody tr:nth-child(odd) {
+  background: var(--surface);
+}
+.comparison-table th[scope="row"] {
+  position: sticky;
+  left: 0;
+  background: var(--surface-2);
+}
+.rank-unmatched-share {
+  color: var(--ink-2);
+  font-family: var(--ui);
+  font-size: 12px;
+}
+
+.comparison-side-by-side {
+  margin-bottom: 40px;
+}
+.comparison-pair {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 18px;
+  margin: 20px 0;
+}
+.comparison-card {
+  padding: 24px 26px;
+}
+.comparison-card h2 {
+  margin-top: 0;
+}
+.comparison-figures {
+  color: var(--ink-2);
+  font-family: var(--mono);
+  font-size: 13px;
+}
+.comparison-method {
+  color: var(--ink-2);
+  max-width: var(--measure);
+}
+
+/* ==========================================================================
+   Phase 5 — record pages (place records and location results)
+   ========================================================================== */
+
+.record-page > * + * {
+  margin-block-start: 40px;
+}
+
+.record-block > h2 {
+  font-size: 1.25rem;
+  margin-block-end: 16px;
+}
+
+.coverage-list,
+.source-list,
+.event-stack,
+.reported-stack {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.coverage-list {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.source-list > .card {
+  padding: 14px 18px;
+  overflow-wrap: anywhere;
+}
+
+.event-card > * + * {
+  margin-block-start: 12px;
+}
+
+.event-card h3 {
+  font-size: 1.05rem;
+  margin: 0;
+}
+
+.event-card h4 {
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0;
+}
+
+.coordinates {
+  font-variant-numeric: tabular-nums;
+}
+
+.record-safeguard {
+  margin-block-start: 32px;
+}
+
+.record-citation {
+  border-top: 1px solid var(--rule);
+  padding-block-start: 24px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.record-citation h2 {
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-block-end: 8px;
+}
+
+.link-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.link-list > .card {
+  padding: 14px 18px;
+  overflow-wrap: anywhere;
+}
+
+/* ==========================================================================
+   Phase 5 — explore
+   ========================================================================== */
+
+.explore > * + * {
+  margin-block-start: 24px;
+}
+
+.explore-note {
+  color: var(--muted);
+  max-width: var(--measure);
+}
+
+.explore-year {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 16px;
+  padding: 18px 20px;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft);
+}
+
+.explore-year-label {
+  display: grid;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: var(--ink-2);
+}
+
+.explore-slider {
+  accent-color: var(--accent-fill);
+  min-width: 220px;
+  min-height: 44px;
+}
+
+.segment,
+.segment-set {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.segment-set > legend {
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 0;
+  float: left;
+  width: 100%;
+  margin-block-end: 8px;
+}
+
+.segment-option {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink-2);
+  text-decoration: none;
+  transition: background var(--dur) var(--ease);
+}
+
+.segment-option:hover {
+  background: var(--surface-2);
+}
+
+.segment-option[aria-current="page"] {
+  background: var(--accent-fill);
+  border-color: var(--accent-fill);
+  color: var(--ground);
+  font-weight: 600;
+}
+
+.overlay-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.overlay-card {
+  display: grid;
+  gap: 4px;
+  padding: 14px 18px;
+}
+
+.overlay-name {
+  font-weight: 600;
+}
+
+.overlay-state {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.explore-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 16px;
+}
+
+.explore-list > .card > h2 {
+  font-size: 1.1rem;
+  margin-block-end: 8px;
+}
+
+.explore-chart {
+  width: 100%;
+  max-width: 560px;
+  height: auto;
+  color: var(--accent);
+}
+
+.explore-bar {
+  fill: var(--accent-fill);
+  stroke: var(--accent);
+}
+
+.explore-bar-label {
+  font-size: 9px;
+  fill: var(--ink-2);
+}
+
+.explore-legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  color: var(--ink-2);
+}
+
+.explore-legend > li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.explore-bar-name {
+  font-size: 13px;
+  fill: var(--ink-2);
+}
+
+/* These tables carry fewer, narrower columns than the record tables, so they
+   fit most laptop widths before the scroll container takes over. */
+.comparison-table,
+.explore-table {
+  --table-min: 720px;
+}
+
+/* Checksums and release identifiers are unbreakable strings. Without this the
+   data page pushes a horizontal scrollbar onto the whole document. */
+.page-wrap code {
+  overflow-wrap: anywhere;
+}
+
+/* Flow rhythm. The reset strips every default margin, so prose sections had
+   no space between a paragraph and the next paragraph, list or link group. */
+.prose-measure > * + * {
+  margin-block-start: 20px;
+}
+
+.content-section > h2:not(:first-child),
+.content-section > h3,
+.prose-measure > h2:not(:first-child),
+.prose-measure > h3 {
+  margin-block-start: 36px;
 }

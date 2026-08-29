@@ -179,13 +179,15 @@ export function ExploreView({
     maximumFractionDigits: 2,
   });
   return (
-    <section aria-label={text.title}>
-      <p>{productionAvailable ? text.production : text.fixtureList}</p>
-      <form method="get">
+    <section className="explore" aria-label={text.title}>
+      <p className="explore-note">
+        {productionAvailable ? text.production : text.fixtureList}
+      </p>
+      <form className="explore-year" method="get">
         <input type="hidden" name="mode" value={mode} />
         <input type="hidden" name="presentation" value={presentation} />
         <input type="hidden" name="data" value={data} />
-        <label>
+        <label className="explore-year-label">
           {text.yearControl}
           <input
             type="range"
@@ -193,16 +195,20 @@ export function ExploreView({
             min={EXPLORE_YEAR_MIN}
             max={EXPLORE_YEAR_MAX}
             defaultValue={year}
+            className="explore-slider"
             step="1"
             aria-label={text.yearControl}
           />
         </label>
-        <button type="submit">{text.update}</button>
+        <button className="btn btn--primary" type="submit">
+          {text.update}
+        </button>
       </form>
-      <nav aria-label={text.title}>
+      <nav className="segment" aria-label={text.title}>
         {EXPLORE_MODES.map((item) => (
           <a
             key={item}
+            className="segment-option"
             href={href(item, presentation, data, year)}
             aria-current={item === mode ? "page" : undefined}
           >
@@ -210,51 +216,56 @@ export function ExploreView({
           </a>
         ))}
       </nav>
-      <fieldset>
+      <fieldset className="segment-set">
         <legend>{text.presentation}</legend>
         <a
+          className="segment-option"
           href={href(mode, "map", data, year)}
           aria-current={presentation === "map" ? "page" : undefined}
         >
           {text.map}
         </a>{" "}
         <a
+          className="segment-option"
           href={href(mode, "list", data, year)}
           aria-current={presentation === "list" ? "page" : undefined}
         >
           {text.list}
         </a>
       </fieldset>
-      <fieldset>
+      <fieldset className="segment-set">
         <legend>{text.data}</legend>
         <a
+          className="segment-option"
           href={href(mode, presentation, "chart", year)}
           aria-current={data === "chart" ? "page" : undefined}
         >
           {text.chart}
         </a>{" "}
         <a
+          className="segment-option"
           href={href(mode, presentation, "table", year)}
           aria-current={data === "table" ? "page" : undefined}
         >
           {text.table}
         </a>
       </fieldset>
-      <section aria-label={text.overlays}>
+      <section className="explore-overlays" aria-label={text.overlays}>
         <h2>{text.overlays}</h2>
-        <ul>
+        <ul className="overlay-grid">
           {EXPLORE_BOUNDARY_OVERLAYS.map((boundary) => (
-            <li key={boundary}>
-              {text.boundaries[boundary]} — {text.unavailable}
+            <li className="card card--sand overlay-card" key={boundary}>
+              <span className="overlay-name">{text.boundaries[boundary]}</span>
+              <span className="overlay-state">{text.unavailable}</span>
             </li>
           ))}
         </ul>
       </section>
       {presentation === "list" ? (
-        <ul aria-label={text.list}>
+        <ul className="explore-list" aria-label={text.list}>
           {productionAvailable
             ? EXPLORE_PRODUCTION_LAYER.rows.map((row) => (
-                <li key={row.id}>
+                <li className="card card--lift" key={row.id}>
                   <h2>{row.name[locale]}</h2>
                   <p>{EXPLORE_PRODUCTION_LAYER.period}</p>
                   <p>
@@ -273,7 +284,7 @@ export function ExploreView({
                 </li>
               ))
             : selected.map((event) => (
-                <li key={event.id}>
+                <li className="card card--lift" key={event.id}>
                   <h2>{event.name[locale]}</h2>
                   <p>
                     {text.year}: {event.year}
@@ -284,113 +295,148 @@ export function ExploreView({
         </ul>
       ) : null}
       {data === "chart" ? (
-        <svg role="img" aria-label={text.chart} viewBox="0 0 300 120">
-          <title>{text.chart}</title>
-          {(productionAvailable ? EXPLORE_PRODUCTION_LAYER.rows : selected).map(
-            (item, index) => {
-              const isProduction = "observedLossPercent" in item;
-              const value = isProduction ? item.observedLossPercent : 3;
-              const label = item.name[locale];
-              const detail = isProduction
-                ? `${number.format(value)}%`
-                : String(item.year);
-              return (
-                <g key={item.id}>
-                  <title>{`${label}: ${detail}`}</title>
-                  <rect
-                    x={35 + index * 65}
-                    y={95 - value * 20}
-                    width="36"
-                    height={value * 20}
-                    fill="url(#hatch)"
-                    stroke="currentColor"
-                  />
-                  <text x={35 + index * 65} y={110}>
-                    {isProduction ? item.id : item.year}
-                  </text>
-                </g>
-              );
-            },
-          )}
-        </svg>
+        (() => {
+          const rows = productionAvailable
+            ? EXPLORE_PRODUCTION_LAYER.rows
+            : selected;
+          // A horizontal bar reads the province names without truncating them,
+          // and the scale is taken from the largest value present so a 1% bar
+          // is not a sliver in an empty box.
+          const values = rows.map((item) =>
+            "observedLossPercent" in item ? item.observedLossPercent : 1,
+          );
+          const scale = Math.max(...values, 1);
+          const rowHeight = 34;
+          const barX = 150;
+          const barMax = 300;
+          return (
+            <svg
+              className="explore-chart"
+              role="img"
+              aria-label={text.chart}
+              viewBox={`0 0 500 ${Math.max(rows.length, 1) * rowHeight + 12}`}
+            >
+              <title>{text.chart}</title>
+              {rows.map((item, index) => {
+                const isProduction = "observedLossPercent" in item;
+                const value = isProduction ? item.observedLossPercent : 1;
+                const label = item.name[locale];
+                const detail = isProduction
+                  ? `${number.format(value)}%`
+                  : String(item.year);
+                const y = index * rowHeight + 8;
+                return (
+                  <g key={item.id}>
+                    <title>{`${label}: ${detail}`}</title>
+                    <text className="explore-bar-name" x="0" y={y + 15}>
+                      {label}
+                    </text>
+                    <rect
+                      className="explore-bar"
+                      x={barX}
+                      y={y}
+                      width={Math.max((value / scale) * barMax, 2)}
+                      height="20"
+                      rx="6"
+                    />
+                    <text
+                      className="explore-bar-label"
+                      x={barX + Math.max((value / scale) * barMax, 2) + 8}
+                      y={y + 15}
+                    >
+                      {detail}
+                    </text>
+                  </g>
+                );
+              })}
+            </svg>
+          );
+        })()
       ) : productionAvailable ? (
-        <table>
-          <caption>
-            {text.table}: {EXPLORE_PRODUCTION_LAYER.period}
-          </caption>
-          <thead>
-            <tr>
-              <th scope="col">{text.event}</th>
-              <th scope="col">{text.year}</th>
-              <th scope="col">{text.observedLoss}</th>
-              <th scope="col">{text.observedLossPercent}</th>
-              <th scope="col">{text.coverage}</th>
-              <th scope="col">{text.source}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {EXPLORE_PRODUCTION_LAYER.rows.map((row) => (
-              <tr key={row.id}>
-                <th scope="row">{row.name[locale]}</th>
-                <td>{EXPLORE_PRODUCTION_LAYER.period}</td>
-                <td>{number.format(row.observedLossHectares)}</td>
-                <td>{number.format(row.observedLossPercent)}</td>
-                <td>{text.complete}</td>
-                <td>
-                  <a href={EXPLORE_PRODUCTION_LAYER.attribution.href}>
-                    {EXPLORE_PRODUCTION_LAYER.attribution[locale]}
-                  </a>
-                </td>
+        <div className="table-scroll">
+          <table className="explore-table">
+            <caption>
+              {text.table}: {EXPLORE_PRODUCTION_LAYER.period}
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">{text.event}</th>
+                <th scope="col">{text.year}</th>
+                <th scope="col">{text.observedLoss}</th>
+                <th scope="col">{text.observedLossPercent}</th>
+                <th scope="col">{text.coverage}</th>
+                <th scope="col">{text.source}</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {EXPLORE_PRODUCTION_LAYER.rows.map((row) => (
+                <tr key={row.id}>
+                  <th scope="row">{row.name[locale]}</th>
+                  <td>{EXPLORE_PRODUCTION_LAYER.period}</td>
+                  <td>{number.format(row.observedLossHectares)}</td>
+                  <td>{number.format(row.observedLossPercent)}</td>
+                  <td>{text.complete}</td>
+                  <td>
+                    <a href={EXPLORE_PRODUCTION_LAYER.attribution.href}>
+                      {EXPLORE_PRODUCTION_LAYER.attribution[locale]}
+                    </a>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       ) : (
-        <table>
-          <caption>{text.table}</caption>
-          <thead>
-            <tr>
-              <th scope="col">{text.event}</th>
-              <th scope="col">{text.year}</th>
-              <th scope="col">{text.coverage}</th>
-              <th scope="col">{text.evidence}</th>
-              <th scope="col">{text.confidence}</th>
-              <th scope="col">{text.source}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {selected.map((event) => (
-              <tr key={event.id}>
-                <th scope="row">{event.name[locale]}</th>
-                <td>{event.year}</td>
-                <td>
-                  <CoverageBand
-                    coverageGrade={event.coverageGrade}
-                    locale={locale}
-                  />
-                </td>
-                <td>
-                  <EvidenceChip evidence={event.evidence} locale={locale} />
-                </td>
-                <td>
-                  <ConfidenceBadge
-                    confidence={event.confidence}
-                    locale={locale}
-                  />
-                </td>
-                <td>
-                  <ProvenanceBlock
-                    provenance={event.provenance}
-                    locale={locale}
-                  />
-                </td>
+        <div className="table-scroll">
+          <table className="explore-table">
+            <caption>{text.table}</caption>
+            <thead>
+              <tr>
+                <th scope="col">{text.event}</th>
+                <th scope="col">{text.year}</th>
+                <th scope="col">{text.coverage}</th>
+                <th scope="col">{text.evidence}</th>
+                <th scope="col">{text.confidence}</th>
+                <th scope="col">{text.source}</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {selected.map((event) => (
+                <tr key={event.id}>
+                  <th scope="row">{event.name[locale]}</th>
+                  <td>{event.year}</td>
+                  <td>
+                    <CoverageBand
+                      coverageGrade={event.coverageGrade}
+                      locale={locale}
+                    />
+                  </td>
+                  <td>
+                    <EvidenceChip evidence={event.evidence} locale={locale} />
+                  </td>
+                  <td>
+                    <ConfidenceBadge
+                      confidence={event.confidence}
+                      locale={locale}
+                    />
+                  </td>
+                  <td>
+                    <ProvenanceBlock
+                      provenance={event.provenance}
+                      locale={locale}
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
       {!productionAvailable ? (
-        <ul aria-label={locale === "en" ? "Legend" : "Légende"}>
+        <ul
+          className="explore-legend"
+          aria-label={locale === "en" ? "Legend" : "Légende"}
+        >
           {EXPLORE_MODES.map((item) => (
             <li key={item}>
               <svg

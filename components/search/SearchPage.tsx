@@ -1,7 +1,10 @@
 import type { Locale } from "@/lib/domain";
 import { searchPlaces } from "@/lib/search";
 
-export function SearchPage({ locale, query }: Readonly<{ locale: Locale; query: string }>) {
+export function SearchPage({
+  locale,
+  query,
+}: Readonly<{ locale: Locale; query: string }>) {
   const results = searchPlaces(query);
   const text =
     locale === "en"
@@ -19,29 +22,52 @@ export function SearchPage({ locale, query }: Readonly<{ locale: Locale; query: 
           fixture: "Exemples illustratifs seulement",
           input: "Nom de lieu ou alias",
         };
+
   return (
-    <section className="page-wrap">
-      <header>
+    <section className="page-wrap search-page">
+      <header className="masthead">
         <h1>{text.title}</h1>
-        <p>{text.fixture}</p>
+        <p className="masthead-note">{text.fixture}</p>
       </header>
-      <form method="get">
-        <label htmlFor="q">{text.title}</label>
-        <input id="q" name="q" defaultValue={query} aria-label={text.input} />
-        <button type="submit">{text.title}</button>
+
+      <form className="search-form" method="get">
+        <div className="field">
+          <label className="field-label" htmlFor="q">
+            {text.title}
+          </label>
+          <input
+            className="input"
+            id="q"
+            name="q"
+            defaultValue={query}
+            aria-label={text.input}
+          />
+        </div>
+        <button className="btn btn--primary" type="submit">
+          {text.title}
+        </button>
       </form>
+
       {!query ? (
-        <p>{text.guide}</p>
+        <p className="search-note">{text.guide}</p>
       ) : results.length ? (
-        <ul>
+        <ul className="search-results">
           {results.map((place) => (
-            <li key={place.id}>
-              <a href={locale === "en" ? `/en/places/${place.id}` : `/fr/lieux/${place.id}`}>{place.name[locale]}</a>
+            <li className="card card--lift search-result" key={place.id}>
+              <a
+                href={
+                  locale === "en"
+                    ? `/en/places/${place.id}`
+                    : `/fr/lieux/${place.id}`
+                }
+              >
+                {place.name[locale]}
+              </a>
             </li>
           ))}
         </ul>
       ) : (
-        <p>{text.none}</p>
+        <p className="search-note">{text.none}</p>
       )}
     </section>
   );

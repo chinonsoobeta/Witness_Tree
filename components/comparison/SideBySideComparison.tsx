@@ -1,5 +1,143 @@
 import { CoverageBand, EvidenceChip } from "@/components/policy";
-import { comparePlaces, type ComparisonPlace, type RankingContext } from "@/lib/comparison";
+import {
+  comparePlaces,
+  type ComparisonPlace,
+  type RankingContext,
+} from "@/lib/comparison";
 import type { Locale } from "@/lib/domain";
-export function SideBySideComparison({ places, context, locale, view = "cards" }: { places: readonly ComparisonPlace[]; context: RankingContext; locale: Locale; view?: "cards" | "table" }) { const [left, right] = comparePlaces(places); const labels = locale === "en" ? { title: "Side-by-side comparison", table: "View as table", cards: "View as cards", measure: "Measure", share: "Detected change share", change: "Detected change", forest: "Forested area", coverage: "Coverage", evidence: "Evidence", method: "Method" } : { title: "Comparaison côte à côte", table: "Afficher en tableau", cards: "Afficher en cartes", measure: "Mesure", share: "Part du changement détecté", change: "Changement détecté", forest: "Superficie forestière", coverage: "Couverture", evidence: "Élément de preuve", method: "Méthode" }; const methodNote = <p>{labels.method}: {context.method[locale]}</p>; if (view === "table") return <section><a href="?view=cards">{labels.cards}</a><table aria-label={labels.title}><caption>{labels.title}</caption><thead><tr><th scope="col">{labels.measure}</th><th scope="col">{left.name[locale]}</th><th scope="col">{right.name[locale]}</th></tr></thead><tbody><tr><th scope="row">{labels.share}</th><td>{left.detectedChangePercent}%</td><td>{right.detectedChangePercent}%</td></tr><tr><th scope="row">{labels.change}</th><td>{left.detectedChangeHectares} ha</td><td>{right.detectedChangeHectares} ha</td></tr><tr><th scope="row">{labels.forest}</th><td>{left.forestedHectares} ha</td><td>{right.forestedHectares} ha</td></tr><tr><th scope="row">{labels.coverage}</th><td><CoverageBand coverageGrade={left.coverageGrade} locale={locale} /></td><td><CoverageBand coverageGrade={right.coverageGrade} locale={locale} /></td></tr><tr><th scope="row">{labels.evidence}</th><td><EvidenceChip evidence={left.evidence} locale={locale} /></td><td><EvidenceChip evidence={right.evidence} locale={locale} /></td></tr></tbody></table>{methodNote}</section>; return <section aria-label={labels.title}><a href="?view=table">{labels.table}</a><Place place={left} locale={locale} /><Place place={right} locale={locale} />{methodNote}</section>; }
-function Place({ place, locale }: { place: ComparisonPlace; locale: Locale }) { return <article><h2>{place.name[locale]}</h2><p>{place.detectedChangePercent}% · {place.detectedChangeHectares} ha · {place.forestedHectares} ha</p><CoverageBand coverageGrade={place.coverageGrade} locale={locale} /><EvidenceChip evidence={place.evidence} locale={locale} /></article>; }
+
+export function SideBySideComparison({
+  places,
+  context,
+  locale,
+  view = "cards",
+}: {
+  places: readonly ComparisonPlace[];
+  context: RankingContext;
+  locale: Locale;
+  view?: "cards" | "table";
+}) {
+  const [left, right] = comparePlaces(places);
+  const labels =
+    locale === "en"
+      ? {
+          title: "Side-by-side comparison",
+          table: "View as table",
+          cards: "View as cards",
+          measure: "Measure",
+          share: "Detected change share",
+          change: "Detected change",
+          forest: "Forested area",
+          coverage: "Coverage",
+          evidence: "Evidence",
+          method: "Method",
+        }
+      : {
+          title: "Comparaison côte à côte",
+          table: "Afficher en tableau",
+          cards: "Afficher en cartes",
+          measure: "Mesure",
+          share: "Part du changement détecté",
+          change: "Changement détecté",
+          forest: "Superficie forestière",
+          coverage: "Couverture",
+          evidence: "Élément de preuve",
+          method: "Méthode",
+        };
+  const methodNote = (
+    <p className="comparison-method">
+      {labels.method}: {context.method[locale]}
+    </p>
+  );
+
+  if (view === "table") {
+    return (
+      <section className="comparison-side-by-side">
+        <a className="btn btn--ghost" href="?view=cards">
+          {labels.cards}
+        </a>
+        <div className="table-scroll">
+          <table aria-label={labels.title}>
+            <caption>{labels.title}</caption>
+            <thead>
+              <tr>
+                <th scope="col">{labels.measure}</th>
+                <th scope="col">{left.name[locale]}</th>
+                <th scope="col">{right.name[locale]}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">{labels.share}</th>
+                <td>{left.detectedChangePercent}%</td>
+                <td>{right.detectedChangePercent}%</td>
+              </tr>
+              <tr>
+                <th scope="row">{labels.change}</th>
+                <td>{left.detectedChangeHectares} ha</td>
+                <td>{right.detectedChangeHectares} ha</td>
+              </tr>
+              <tr>
+                <th scope="row">{labels.forest}</th>
+                <td>{left.forestedHectares} ha</td>
+                <td>{right.forestedHectares} ha</td>
+              </tr>
+              <tr>
+                <th scope="row">{labels.coverage}</th>
+                <td>
+                  <CoverageBand
+                    coverageGrade={left.coverageGrade}
+                    locale={locale}
+                  />
+                </td>
+                <td>
+                  <CoverageBand
+                    coverageGrade={right.coverageGrade}
+                    locale={locale}
+                  />
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">{labels.evidence}</th>
+                <td>
+                  <EvidenceChip evidence={left.evidence} locale={locale} />
+                </td>
+                <td>
+                  <EvidenceChip evidence={right.evidence} locale={locale} />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        {methodNote}
+      </section>
+    );
+  }
+
+  return (
+    <section className="comparison-side-by-side" aria-label={labels.title}>
+      <a className="btn btn--ghost" href="?view=table">
+        {labels.table}
+      </a>
+      <div className="comparison-pair">
+        <Place place={left} locale={locale} />
+        <Place place={right} locale={locale} />
+      </div>
+      {methodNote}
+    </section>
+  );
+}
+
+function Place({ place, locale }: { place: ComparisonPlace; locale: Locale }) {
+  return (
+    <article className="card card--lift comparison-card">
+      <h2>{place.name[locale]}</h2>
+      <p className="comparison-figures">
+        {place.detectedChangePercent}% · {place.detectedChangeHectares} ha ·{" "}
+        {place.forestedHectares} ha
+      </p>
+      <CoverageBand coverageGrade={place.coverageGrade} locale={locale} />
+      <EvidenceChip evidence={place.evidence} locale={locale} />
+    </article>
+  );
+}
