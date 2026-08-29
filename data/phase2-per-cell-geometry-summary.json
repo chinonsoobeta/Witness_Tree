@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "witness-tree/phase2-per-cell-geometry-summary/1",
+  "evidence": {
+    "fileName": "phase2-per-cell-geometry-readback.json",
+    "byteLength": 47583,
+    "sha256": "99c31adbf5e3f1e4e18dc87212ce87fe104f8e585d03d7d07381319dac40cbf4"
+  },
+  "productId": "phase2-per-cell-geometry-1984-2022-v1",
+  "intervalCount": 38,
+  "patchCount": 303530909,
+  "cellCount": 1384027417,
+  "storedBytes": 18484396796,
+  "released": false,
+  "productionEligible": false,
+  "expertReviewed": false
+}
