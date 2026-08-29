@@ -295,46 +295,63 @@ export function ExploreView({
         </ul>
       ) : null}
       {data === "chart" ? (
-        <svg
-          className="explore-chart"
-          role="img"
-          aria-label={text.chart}
-          viewBox="0 0 300 120"
-        >
-          <title>{text.chart}</title>
-          {(productionAvailable ? EXPLORE_PRODUCTION_LAYER.rows : selected).map(
-            (item, index) => {
-              const isProduction = "observedLossPercent" in item;
-              const value = isProduction ? item.observedLossPercent : 3;
-              const label = item.name[locale];
-              const detail = isProduction
-                ? `${number.format(value)}%`
-                : String(item.year);
-              return (
-                <g key={item.id}>
-                  <title>{`${label}: ${detail}`}</title>
-                  <rect
-                    className="explore-bar"
-                    x={35 + index * 65}
-                    y={95 - value * 20}
-                    width="36"
-                    height={value * 20}
-                    rx="4"
-                    fill="url(#hatch)"
-                    stroke="currentColor"
-                  />
-                  <text
-                    className="explore-bar-label"
-                    x={35 + index * 65}
-                    y={110}
-                  >
-                    {isProduction ? item.id : item.year}
-                  </text>
-                </g>
-              );
-            },
-          )}
-        </svg>
+        (() => {
+          const rows = productionAvailable
+            ? EXPLORE_PRODUCTION_LAYER.rows
+            : selected;
+          // A horizontal bar reads the province names without truncating them,
+          // and the scale is taken from the largest value present so a 1% bar
+          // is not a sliver in an empty box.
+          const values = rows.map((item) =>
+            "observedLossPercent" in item ? item.observedLossPercent : 1,
+          );
+          const scale = Math.max(...values, 1);
+          const rowHeight = 34;
+          const barX = 150;
+          const barMax = 300;
+          return (
+            <svg
+              className="explore-chart"
+              role="img"
+              aria-label={text.chart}
+              viewBox={`0 0 500 ${Math.max(rows.length, 1) * rowHeight + 12}`}
+            >
+              <title>{text.chart}</title>
+              {rows.map((item, index) => {
+                const isProduction = "observedLossPercent" in item;
+                const value = isProduction ? item.observedLossPercent : 1;
+                const label = item.name[locale];
+                const detail = isProduction
+                  ? `${number.format(value)}%`
+                  : String(item.year);
+                const y = index * rowHeight + 8;
+                return (
+                  <g key={item.id}>
+                    <title>{`${label}: ${detail}`}</title>
+                    <text className="explore-bar-name" x="0" y={y + 15}>
+                      {label}
+                    </text>
+                    <rect
+                      className="explore-bar"
+                      x={barX}
+                      y={y}
+                      width={Math.max((value / scale) * barMax, 2)}
+                      height="20"
+                      rx="6"
+                    />
+                    <text
+                      className="explore-bar-label"
+                      x={barX + Math.max((value / scale) * barMax, 2) + 8}
+                      y={y + 15}
+                    >
+                      {detail}
+                    </text>
+                  </g>
+                );
+              })}
+            </svg>
+          );
+        })()
       ) : productionAvailable ? (
         <div className="table-scroll">
           <table className="explore-table">

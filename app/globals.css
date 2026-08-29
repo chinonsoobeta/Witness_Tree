@@ -173,21 +173,6 @@
     --edge-derived: #c08b52;
     --edge-unknown: #8b968f;
 
-    /* evidence tints, semantic layer. Measured WCAG 2.1 ratios,
-     --ink on the tint / edge on the tint:
-       record     12.37 / 5.01
-       satellite  13.43 / 4.65
-       derived    12.65 / 4.96
-       unknown    12.66 / 4.82 */
-    --tint-record: #242c1f;
-    --tint-satellite: #1a2431;
-    --tint-derived: #31261a;
-    --tint-unknown: #242927;
-    --edge-record: #7fa26e;
-    --edge-satellite: #5c8fc9;
-    --edge-derived: #c08b52;
-    --edge-unknown: #8b968f;
-
     /* semantic event colours: unchanged, they carry meaning */
     --harvest: #3987e5;
     --fire: #d95926;
@@ -315,6 +300,21 @@
   --clay-ink: #e4b98c; /* 10.24:1 */
   --alert-fill: #33201a;
 
+  /* evidence tints, semantic layer. Measured WCAG 2.1 ratios,
+     --ink on the tint / edge on the tint:
+       record     12.37 / 5.01
+       satellite  13.43 / 4.65
+       derived    12.65 / 4.96
+       unknown    12.66 / 4.82 */
+  --tint-record: #242c1f;
+  --tint-satellite: #1a2431;
+  --tint-derived: #31261a;
+  --tint-unknown: #242927;
+  --edge-record: #7fa26e;
+  --edge-satellite: #5c8fc9;
+  --edge-derived: #c08b52;
+  --edge-unknown: #8b968f;
+
   /* control fill: white drops to 8% on the dark ground, because the light
      palette's 55% would composite to a near-white pill and strand --ink on
      it. --ink on the composited result is 12.91:1. */
@@ -403,6 +403,30 @@ h2,
 h3,
 h4 {
   font-family: var(--ui);
+}
+
+/* Base heading scale. The reset above strips the browser's default sizes, so
+   without this a bare <h2> on a governance, account, methods or data page
+   renders at body size and the page reads as one undifferentiated column.
+   Authored here, early, so any surface that sets its own heading size later
+   in this file still wins on equal specificity. */
+.page-wrap h2 {
+  font-size: clamp(22px, 2.6vw, 28px);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin-block-end: 16px;
+}
+
+.page-wrap h3 {
+  font-size: 1.15rem;
+  line-height: 1.3;
+  margin-block-end: 12px;
+}
+
+.page-wrap h4 {
+  font-size: 1rem;
+  line-height: 1.35;
+  margin-block-end: 8px;
 }
 
 /* The skip link keeps its exact reveal-on-focus mechanic: parked at
@@ -1336,7 +1360,7 @@ h4 {
 }
 .table-scroll table {
   width: 100%;
-  min-width: 980px;
+  min-width: var(--table-min, 980px);
   border-collapse: collapse;
   font-variant-numeric: tabular-nums;
 }
@@ -2175,7 +2199,7 @@ h4 {
 
 .explore-chart {
   width: 100%;
-  max-width: 520px;
+  max-width: 560px;
   height: auto;
   color: var(--accent);
 }
@@ -2204,4 +2228,35 @@ h4 {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+}
+
+.explore-bar-name {
+  font-size: 13px;
+  fill: var(--ink-2);
+}
+
+/* These tables carry fewer, narrower columns than the record tables, so they
+   fit most laptop widths before the scroll container takes over. */
+.comparison-table,
+.explore-table {
+  --table-min: 720px;
+}
+
+/* Checksums and release identifiers are unbreakable strings. Without this the
+   data page pushes a horizontal scrollbar onto the whole document. */
+.page-wrap code {
+  overflow-wrap: anywhere;
+}
+
+/* Flow rhythm. The reset strips every default margin, so prose sections had
+   no space between a paragraph and the next paragraph, list or link group. */
+.prose-measure > * + * {
+  margin-block-start: 20px;
+}
+
+.content-section > h2:not(:first-child),
+.content-section > h3,
+.prose-measure > h2:not(:first-child),
+.prose-measure > h3 {
+  margin-block-start: 36px;
 }

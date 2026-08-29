@@ -92,7 +92,9 @@ export function RankedRidingsTable({
           <h3>{copy.insufficient}</h3>
           <div className="table-scroll">
             <table>
-              <caption>{copy.insufficient}</caption>
+              {/* The heading above already states this; the caption stays for
+                  the table's accessible name without repeating it on screen. */}
+              <caption className="sr-only">{copy.insufficient}</caption>
               <thead>
                 <TableHeaders locale={locale} copy={copy} />
               </thead>
