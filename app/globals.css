@@ -83,6 +83,14 @@
   --loss-2: #57935a;
   --loss-3: #1f5f38;
 
+  /* per-cell patch colours, on the same footing and for the same reason: the
+     legend swatch has to read as the same colour as the patch beside it.
+     "neither recorded" reuses --loss-3 rather than earning a colour of its
+     own, because it is a detected loss patch with nothing in the official
+     record, not a third kind of event. */
+  --patch-harvest: #2a78d6;
+  --patch-fire: #eb6834;
+
   /* shape and depth */
   --radius-sm: 12px;
   --radius: 20px;
@@ -1355,6 +1363,15 @@ h4 {
   background: var(--loss-2);
 }
 .loss-3 {
+  background: var(--loss-3);
+}
+.patch-harvest {
+  background: var(--patch-harvest);
+}
+.patch-fire {
+  background: var(--patch-fire);
+}
+.patch-none {
   background: var(--loss-3);
 }
 

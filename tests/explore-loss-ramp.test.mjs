@@ -28,7 +28,24 @@ test("the CSS loss ramp matches the map colours it sits beside", () => {
   }
 });
 
+test("the per-cell patch colours match the map fill they sit beside", () => {
+  for (const [token, paint] of [
+    ["patch-harvest", "harvest"],
+    ["patch-fire", "wildfire"],
+  ]) {
+    const declared = new RegExp(`--${token}: (#[0-9a-f]{6});`).exec(css);
+    const painted = new RegExp(`${paint}: "(#[0-9a-f]{6})"`).exec(source);
+    assert.ok(declared, `--${token} is not declared in the palette`);
+    assert.ok(painted, `${paint} is not declared in EXPLORE_MAP_COLOURS`);
+    assert.equal(declared[1], painted[1], `${token} drifted between the legend and the map`);
+  }
+});
+
 test("the ramp is declared once, in the unthemed palette block", () => {
   assert.equal(css.match(/--loss-0:/g).length, 1);
-  assert.equal(css.match(/background: var\(--loss-\d\);/g).length, 4);
+  // Four legend swatches for the four bands, plus .patch-none, which reuses
+  // band 3 on purpose: a detected patch with nothing in the official record
+  // is still observed loss, not a fifth category needing a fifth colour.
+  assert.equal(css.match(/background: var\(--loss-\d\);/g).length, 5);
+  assert.equal(css.match(/\.patch-none \{\n  background: var\(--loss-3\);/g).length, 1);
 });

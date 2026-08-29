@@ -24,7 +24,7 @@ const copy = {
     yearControl: "Show illustrative fixtures through year",
     update: "Update",
     production:
-      "The map, list, chart, and table use the same verified 2020–2022 province aggregate. This technical preview is not per-cell geometry.",
+      "The list, chart, and table use the same verified 2020–2022 province aggregate. The map adds per-cell detected loss patches for 1984–2022: they are traced from the 30 m grid, they have not been expert-reviewed, and no figure on this site is counted from them.",
     fixtureList:
       "This list, chart, and table use illustrative fixtures. No verified geographic layer is implied by this view.",
     year: "Year",
@@ -63,7 +63,7 @@ const copy = {
     yearControl: "Afficher les exemples illustratifs jusqu’à l’année",
     update: "Mettre à jour",
     production:
-      "La carte, la liste, le graphique et le tableau utilisent le même agrégat provincial vérifié de 2020 à 2022. Cet aperçu technique n’est pas une géométrie par cellule.",
+      "La liste, le graphique et le tableau utilisent le même agrégat provincial vérifié de 2020 à 2022. La carte y ajoute les parcelles de perte détectée par cellule de 1984 à 2022 : elles sont tracées à partir de la grille de 30 m, elles n’ont pas fait l’objet d’un examen par des experts, et aucun chiffre de ce site n’en est tiré.",
     fixtureList:
       "Cette liste, ce graphique et ce tableau utilisent des exemples illustratifs. Cette vue n’implique aucune couche géographique vérifiée.",
     year: "Année",

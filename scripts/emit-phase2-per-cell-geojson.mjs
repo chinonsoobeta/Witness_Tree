@@ -1,7 +1,7 @@
 import { createReadStream, createWriteStream } from "node:fs";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { CELL_HECTARES, PATCH_RECORD_BYTES, RUN_RECORD_BYTES, readPatchRecord } from "../lib/phase2/patch-geometry.mjs";
+import { PATCH_RECORD_BYTES, RUN_RECORD_BYTES, readPatchRecord } from "../lib/phase2/patch-geometry.mjs";
 import { inverseLcc } from "../lib/phase2/lcc.mjs";
 import { traceRings } from "../lib/phase2/rings.mjs";
 
@@ -139,7 +139,10 @@ async function emitInterval(intervalName, output) {
   if (interval === undefined) throw new Error(`${intervalName} is not in the store manifest`);
   const patches = new RecordReader(path.join(STORE, interval.patches.fileName), PATCH_RECORD_BYTES);
   const runs = new RecordReader(path.join(STORE, interval.runs.fileName), RUN_RECORD_BYTES);
-  const period = intervalName;
+  // Stage 3's counts ride along with the geometry. The interval itself is a
+  // property of the archive, not of every feature in it, and hectares are
+  // cells times 0.09, so neither is repeated three hundred million times.
+  const attributes = new RecordReader(path.join(STORE, interval.runs.fileName.replace(".runs.bin", ".attrs.bin")), 8);
 
   const sink = createWriteStream(output);
   const write = (line) =>
@@ -162,24 +165,26 @@ async function emitInterval(intervalName, output) {
       polygons.length === 1
         ? { type: "Polygon", coordinates: polygons[0] }
         : { type: "MultiPolygon", coordinates: polygons };
+    const attributeView = (await attributes.take(1)).view;
     await write(
       `${JSON.stringify({
         type: "Feature",
         properties: {
           id: Number(patch.componentId),
-          period,
           cells: patch.cellCount,
-          hectares: Number((patch.cellCount * CELL_HECTARES).toFixed(2)),
+          harvest: attributeView.getUint32(0, true),
+          fire: attributeView.getUint32(4, true),
         },
         geometry,
       })}\n`,
     );
     written += 1;
     cells += patch.cellCount;
-    if (written % 500000 === 0) process.stderr.write(`  ${period} ${written.toLocaleString()} features\n`);
+    if (written % 500000 === 0) process.stderr.write(`  ${intervalName} ${written.toLocaleString()} features\n`);
   }
   await patches.close();
   await runs.close();
+  await attributes.close();
   await new Promise((resolve) => sink.end(resolve));
   if (written !== interval.patchCount) throw new Error(`emitted ${written} of ${interval.patchCount} patches`);
   if (cells !== interval.cellCount) throw new Error(`emitted ${cells} cells against ${interval.cellCount} in the store`);

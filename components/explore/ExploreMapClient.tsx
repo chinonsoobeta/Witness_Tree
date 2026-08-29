@@ -5,8 +5,12 @@ import type { Map as MapLibreMap, StyleSpecification } from "maplibre-gl";
 import { PRODUCT_NAME, type Locale } from "@/lib/domain";
 import {
   EXPLORE_MAP_COLOURS,
+  EXPLORE_PER_CELL_LAYER,
   EXPLORE_PRODUCTION_LAYER,
+  perCellArchiveForYear,
+  perCellSourceLayer,
   type ExploreMode,
+  type PerCellArchive,
 } from "@/lib/explore";
 
 const text = {
@@ -14,7 +18,11 @@ const text = {
     label: "Verified province forest-loss map",
     loading: "Loading the verified 2020–2022 province aggregate map.",
     ready:
-      "Showing the verified 2020–2022 province aggregate. Display boundaries are simplified and omit small islands. This is a technical preview, not per-cell forest-loss geometry.",
+      "Showing the verified 2020–2022 province aggregate. Display boundaries are simplified and omit small islands.",
+    readyPerCell:
+      "Showing detected forest-loss patches for the selected interval, traced from the 30 m grid.",
+    readyBoth:
+      "Showing the verified 2020–2022 province aggregate, with detected forest-loss patches as you zoom in. Province display boundaries are simplified and omit small islands.",
     fallback:
       "The interactive PMTiles layer was unavailable, so this map is showing the verified GeoJSON compatibility fallback.",
     unavailable:
@@ -24,6 +32,15 @@ const text = {
     error:
       "The verified map layer could not be loaded. The list and table alternatives remain available.",
     attribution: "Map sources",
+    perCell:
+      "Zoom in to see individual patches of detected forest loss, traced from the 30 m grid rather than generalized from it.",
+    perCellLimits:
+      "These patches are drawn, not counted. Below the closest zoom the map simplifies them and leaves out the smallest ones, and no figure on this site is derived from them. They have not been expert-reviewed. An area with no patch is not a claim that no loss happened there.",
+    perCellLegend: "Detected loss patch, by what the official record shows",
+    perCellHarvest: "A harvest is recorded in the same interval",
+    perCellFire: "A fire is recorded in the same interval",
+    perCellNeither:
+      "Neither is recorded. The disturbance record cannot distinguish nothing recorded from outside the area it maps, so this is not evidence that neither happened.",
     legend: "Observed forest loss, percent of known forested hectares",
     province: "Province",
     period: "Period",
@@ -37,7 +54,11 @@ const text = {
     loading:
       "Chargement de la carte vérifiée de l’agrégat provincial de 2020 à 2022.",
     ready:
-      "Affichage de l’agrégat provincial vérifié de 2020 à 2022. Les limites d’affichage sont simplifiées et omettent les petites îles. Il s’agit d’un aperçu technique, et non d’une géométrie de perte forestière par cellule.",
+      "Affichage de l’agrégat provincial vérifié de 2020 à 2022. Les limites d’affichage sont simplifiées et omettent les petites îles.",
+    readyPerCell:
+      "Affichage des parcelles de perte forestière détectée pour l’intervalle choisi, tracées à partir de la grille de 30 m.",
+    readyBoth:
+      "Affichage de l’agrégat provincial vérifié de 2020 à 2022, avec les parcelles de perte forestière détectée au fur et à mesure du zoom. Les limites provinciales affichées sont simplifiées et omettent les petites îles.",
     fallback:
       "La couche PMTiles interactive n’était pas disponible; cette carte affiche donc la solution de repli GeoJSON vérifiée.",
     unavailable:
@@ -47,6 +68,15 @@ const text = {
     error:
       "La couche cartographique vérifiée n’a pas pu être chargée. Les autres présentations en liste et en tableau demeurent disponibles.",
     attribution: "Sources de la carte",
+    perCell:
+      "Faites un zoom avant pour voir chaque parcelle de perte forestière détectée, tracée à partir de la grille de 30 m plutôt que généralisée.",
+    perCellLimits:
+      "Ces parcelles sont dessinées, et non comptées. Sous le zoom le plus rapproché, la carte les simplifie et omet les plus petites, et aucun chiffre de ce site n’en est tiré. Elles n’ont pas fait l’objet d’un examen par des experts. Une zone sans parcelle n’affirme pas qu’aucune perte n’y est survenue.",
+    perCellLegend: "Parcelle de perte détectée, selon ce que montre le registre officiel",
+    perCellHarvest: "Une récolte est consignée pour le même intervalle",
+    perCellFire: "Un incendie est consigné pour le même intervalle",
+    perCellNeither:
+      "Ni l’un ni l’autre n’est consigné. Le registre des perturbations ne distingue pas l’absence de mention de l’extérieur de la zone qu’il cartographie; ce n’est donc pas une preuve que rien ne s’est produit.",
     legend:
       "Perte forestière observée, en pourcentage des hectares forestiers connus",
     province: "Province",
@@ -106,48 +136,89 @@ const lossColour = (value: number) =>
         ? EXPLORE_MAP_COLOURS.loss1
         : EXPLORE_MAP_COLOURS.loss0;
 
-const pmtilesStyle: StyleSpecification = {
-  version: 8,
-  name: `${PRODUCT_NAME.en} verified province forest-loss map`,
-  sources: {
-    [EXPLORE_PRODUCTION_LAYER.sourceLayer]: {
+const provinceLayers: StyleSpecification["layers"] = [
+  {
+    id: `${EXPLORE_PRODUCTION_LAYER.sourceLayer}-fill`,
+    type: "fill",
+    source: EXPLORE_PRODUCTION_LAYER.sourceLayer,
+    "source-layer": EXPLORE_PRODUCTION_LAYER.sourceLayer,
+    paint: {
+      "fill-color": [
+        "step",
+        ["get", "observed_loss_percent"],
+        EXPLORE_MAP_COLOURS.loss0,
+        1,
+        EXPLORE_MAP_COLOURS.loss1,
+        2,
+        EXPLORE_MAP_COLOURS.loss2,
+        3,
+        EXPLORE_MAP_COLOURS.loss3,
+      ],
+      "fill-opacity": 0.88,
+    },
+  },
+  {
+    id: `${EXPLORE_PRODUCTION_LAYER.sourceLayer}-outline`,
+    type: "line",
+    source: EXPLORE_PRODUCTION_LAYER.sourceLayer,
+    "source-layer": EXPLORE_PRODUCTION_LAYER.sourceLayer,
+    paint: {
+      "line-color": EXPLORE_MAP_COLOURS.ink,
+      "line-width": 1.25,
+    },
+  },
+];
+
+const buildStyle = (
+  province: boolean,
+  archive: PerCellArchive | null,
+): StyleSpecification => {
+  const sources: StyleSpecification["sources"] = {};
+  const layers: StyleSpecification["layers"] = [];
+  if (province) {
+    sources[EXPLORE_PRODUCTION_LAYER.sourceLayer] = {
       type: "vector",
       url: `pmtiles://${EXPLORE_PRODUCTION_LAYER.url}`,
       bounds: [-141, 41, -52, 70],
-    },
-  },
-  layers: [
-    {
-      id: `${EXPLORE_PRODUCTION_LAYER.sourceLayer}-fill`,
+    };
+    layers.push(...provinceLayers);
+  }
+  if (archive) {
+    sources[EXPLORE_PER_CELL_LAYER.sourceId] = {
+      type: "vector",
+      url: `pmtiles://${archive.url}`,
+      bounds: [-141, 41, -52, 84],
+    };
+    layers.push({
+      id: `${EXPLORE_PER_CELL_LAYER.sourceId}-fill`,
       type: "fill",
-      source: EXPLORE_PRODUCTION_LAYER.sourceLayer,
-      "source-layer": EXPLORE_PRODUCTION_LAYER.sourceLayer,
+      source: EXPLORE_PER_CELL_LAYER.sourceId,
+      "source-layer": perCellSourceLayer(archive.interval),
+      minzoom: EXPLORE_PER_CELL_LAYER.minZoom,
       paint: {
+        // A patch is coloured by what the official record shows for the same
+        // interval, not by what happened to it. "Neither recorded" gets its
+        // own colour and its own sentence in the legend, because the
+        // disturbance rasters encode nothing-recorded and
+        // outside-the-mapped-area identically and cannot tell them apart.
         "fill-color": [
-          "step",
-          ["get", "observed_loss_percent"],
-          EXPLORE_MAP_COLOURS.loss0,
-          1,
-          EXPLORE_MAP_COLOURS.loss1,
-          2,
-          EXPLORE_MAP_COLOURS.loss2,
-          3,
+          "case",
+          [">", ["get", "harvest"], 0],
+          EXPLORE_MAP_COLOURS.harvest,
+          [">", ["get", "fire"], 0],
+          EXPLORE_MAP_COLOURS.wildfire,
           EXPLORE_MAP_COLOURS.loss3,
         ],
-        "fill-opacity": 0.88,
+        "fill-opacity": 0.9,
       },
-    },
-    {
-      id: `${EXPLORE_PRODUCTION_LAYER.sourceLayer}-outline`,
-      type: "line",
-      source: EXPLORE_PRODUCTION_LAYER.sourceLayer,
-      "source-layer": EXPLORE_PRODUCTION_LAYER.sourceLayer,
-      paint: {
-        "line-color": EXPLORE_MAP_COLOURS.ink,
-        "line-width": 1.25,
-      },
-    },
-  ],
+    });
+  }
+  return {
+    version: 8,
+    name: `${PRODUCT_NAME.en} verified province forest-loss map`,
+    sources,
+    layers,
+  };
 };
 
 const symbol = (className: string) => (
@@ -162,7 +233,14 @@ export function ExploreMapClient({
   const statusId = useId();
   const attributionId = useId();
   const mapContainerRef = useRef<HTMLDivElement>(null);
-  const available = mode === "forest-change" && year >= 2022;
+  // The verified province aggregate covers 2020-2022 only. The per-cell
+  // detail covers every annual interval from 1984-1985 to 2021-2022, so the
+  // map is now offered for the whole series and the two layers are shown
+  // wherever each one actually has something to say.
+  const perCellArchive =
+    mode === "forest-change" ? perCellArchiveForYear(year) : null;
+  const provinceAvailable = mode === "forest-change" && year >= 2022;
+  const available = provinceAvailable || perCellArchive !== null;
   const [features, setFeatures] = useState<ProvinceFeature[]>([]);
   const [source, setSource] = useState<MapSource | null>(null);
   const [failed, setFailed] = useState(false);
@@ -195,6 +273,14 @@ export function ExploreMapClient({
     const loadGeoJsonFallback = async () => {
       if (fallbackStarted) return;
       fallbackStarted = true;
+      // The compatibility fallback is the province aggregate and nothing
+      // else. For a year the aggregate does not cover there is nothing to
+      // fall back to, and drawing 2020-2022 provinces under a 1995 label
+      // would be worse than showing the failure.
+      if (!provinceAvailable) {
+        if (active) setFailed(true);
+        return;
+      }
       try {
         const response = await fetch(
           EXPLORE_PRODUCTION_LAYER.compatibilityGeoJsonUrl,
@@ -250,11 +336,14 @@ export function ExploreMapClient({
         protocolRegistered = true;
         map = new maplibre.Map({
           container: mapContainerRef.current,
-          style: pmtilesStyle,
+          style: buildStyle(provinceAvailable, perCellArchive),
           center: [-96, 56],
           zoom: 2.6,
           minZoom: 1.5,
-          maxZoom: 6,
+          // The per-cell layer is only drawn from zoom 8, so the map has to
+          // reach it. Without an archive there is nothing past the province
+          // aggregate to magnify and the old ceiling still applies.
+          maxZoom: perCellArchive ? EXPLORE_PER_CELL_LAYER.maxZoom : 6,
           attributionControl: false,
         });
         map.once("load", () => {
@@ -287,13 +376,20 @@ export function ExploreMapClient({
       map?.remove();
       if (protocolRegistered) maplibre?.removeProtocol("pmtiles");
     };
-  }, [available]);
+  }, [available, provinceAvailable, perCellArchive]);
+  const readyKey = provinceAvailable
+    ? perCellArchive
+      ? "readyBoth"
+      : "ready"
+    : "readyPerCell";
   const message =
     state === "unavailable" && mode === "forest-change"
       ? text[locale].unavailableYear
       : source === "geojson"
         ? text[locale].fallback
-        : text[locale][state];
+        : state === "ready"
+          ? text[locale][readyKey]
+          : text[locale][state];
   const number = new Intl.NumberFormat(locale === "fr" ? "fr-CA" : "en-CA", {
     maximumFractionDigits: 2,
   });
@@ -361,7 +457,31 @@ export function ExploreMapClient({
           {EXPLORE_PRODUCTION_LAYER.attribution[locale]}
         </a>
       </p>
-      {available ? (
+      {perCellArchive ? (
+        <div className="explore-map-data">
+          <strong>{text[locale].perCellLegend}</strong>
+          <ul
+            className="explore-map-legend"
+            aria-label={text[locale].perCellLegend}
+          >
+            <li>
+              {symbol("patch-harvest")}
+              {text[locale].perCellHarvest}
+            </li>
+            <li>
+              {symbol("patch-fire")}
+              {text[locale].perCellFire}
+            </li>
+            <li>
+              {symbol("patch-none")}
+              {text[locale].perCellNeither}
+            </li>
+          </ul>
+          <p>{text[locale].perCell}</p>
+          <p>{text[locale].perCellLimits}</p>
+        </div>
+      ) : null}
+      {provinceAvailable ? (
         <div className="explore-map-data">
           <strong>{text[locale].legend}</strong>
           <ul className="explore-map-legend" aria-label={text[locale].legend}>
