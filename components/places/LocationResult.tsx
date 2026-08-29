@@ -1,4 +1,4 @@
-import type { Locale } from "@/lib/domain";
+import { colon, type Locale } from "@/lib/domain";
 import type { Location, Place } from "@/lib/places";
 import {
   ConfidenceBadge,
@@ -79,7 +79,11 @@ export function LocationResult({
                 />
               </p>
               <p>
-                <strong>{text.limitation}:</strong> {event.limitation[locale]}
+                <strong>
+                  {text.limitation}
+                  {colon(locale)}
+                </strong>{" "}
+                {event.limitation[locale]}
               </p>
               <h4>{text.provenance}</h4>
               <ProvenanceBlock provenance={event.provenance} locale={locale} />

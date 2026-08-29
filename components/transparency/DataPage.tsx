@@ -1,4 +1,4 @@
-import type { Locale } from "@/lib/domain";
+import { colon, type Locale } from "@/lib/domain";
 import {
   provinceBulkManifestUrl,
   provinceBulkRelease,
@@ -113,7 +113,11 @@ export function DataPage({ locale }: Readonly<{ locale: Locale }>) {
         <h2>{copy.bulkTitle}</h2>
         <p>{copy.bulkSummary}</p>
         <p>
-          <strong>{copy.release}:</strong> <code>{provinceBulkRelease.id}</code>
+          <strong>
+            {copy.release}
+            {colon(locale)}
+          </strong>{" "}
+          <code>{provinceBulkRelease.id}</code>
         </p>
         <ul className="link-list">
           <li className="card">
@@ -122,7 +126,8 @@ export function DataPage({ locale }: Readonly<{ locale: Locale }>) {
             </a>
             <br />
             <small>
-              {copy.checksum}: <code>{csv.sha256}</code>
+              {copy.checksum}
+              {colon(locale)} <code>{csv.sha256}</code>
             </small>
           </li>
           <li className="card">
@@ -131,7 +136,8 @@ export function DataPage({ locale }: Readonly<{ locale: Locale }>) {
             </a>
             <br />
             <small>
-              {copy.checksum}: <code>{geopackage.sha256}</code>
+              {copy.checksum}
+              {colon(locale)} <code>{geopackage.sha256}</code>
             </small>
           </li>
           <li className="card">

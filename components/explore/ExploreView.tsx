@@ -19,7 +19,7 @@ import {
   toggleBoundaryOverlay,
   type BoundaryOverlayId,
 } from "@/lib/explore";
-import type { Locale } from "@/lib/domain";
+import { colon, labelled, type Locale } from "@/lib/domain";
 import { ExploreYearControl } from "./ExploreYearControl";
 
 const copy = {
@@ -149,13 +149,18 @@ function Details({ event, locale }: { event: ExploreEvent; locale: Locale }) {
   return (
     <>
       <EvidenceChip evidence={event.evidence} locale={locale} /> ·{" "}
-      {text.confidence}:{" "}
+      {text.confidence}
+      {colon(locale)}{" "}
       <ConfidenceBadge confidence={event.confidence} locale={locale} /> ·{" "}
-      {text.coverage}:{" "}
+      {text.coverage}
+      {colon(locale)}{" "}
       <CoverageBand coverageGrade={event.coverageGrade} locale={locale} />
-      <span>{event.unknownReason ? `: ${event.unknownReason}` : ""}</span>
+      <span>
+        {event.unknownReason ? `${colon(locale)} ${event.unknownReason}` : ""}
+      </span>
       <p>
-        {text.source}:{" "}
+        {text.source}
+        {colon(locale)}{" "}
         <ProvenanceBlock provenance={event.provenance} locale={locale} />
       </p>
     </>
@@ -272,7 +277,11 @@ export function ExploreView({
                       year,
                       toggleBoundaryOverlay(overlays, id),
                     )}
-                    aria-label={`${active ? text.hide : text.show}: ${overlay.label[locale]}`}
+                    aria-label={labelled(
+                      locale,
+                      active ? text.hide : text.show,
+                      overlay.label[locale],
+                    )}
                   >
                     {active ? text.hide : text.show}
                   </a>
@@ -285,7 +294,8 @@ export function ExploreView({
                 <p className="overlay-note">{overlay.note[locale]}</p>
                 {overlay.reason ? (
                   <p className="overlay-note">
-                    {text.whyNot}: {overlay.reason[locale]}
+                    {text.whyNot}
+                    {colon(locale)} {overlay.reason[locale]}
                   </p>
                 ) : null}
                 {overlay.attribution ? (
@@ -306,14 +316,18 @@ export function ExploreView({
                   <h2>{row.name[locale]}</h2>
                   <p>{EXPLORE_PRODUCTION_LAYER.period}</p>
                   <p>
-                    {text.observedLoss}:{" "}
+                    {text.observedLoss}
+                    {colon(locale)}{" "}
                     {number.format(row.observedLossHectares)} ·{" "}
-                    {text.observedLossPercent}:{" "}
-                    {number.format(row.observedLossPercent)} · {text.coverage}:{" "}
+                    {text.observedLossPercent}
+                    {colon(locale)}{" "}
+                    {number.format(row.observedLossPercent)} · {text.coverage}
+                    {colon(locale)}{" "}
                     {row.coverageGrade === "complete" ? text.complete : text.partial}
                   </p>
                   <p>
-                    {text.source}:{" "}
+                    {text.source}
+                    {colon(locale)}{" "}
                     <a href={EXPLORE_PRODUCTION_LAYER.attribution.href}>
                       {EXPLORE_PRODUCTION_LAYER.attribution[locale]}
                     </a>
@@ -324,7 +338,8 @@ export function ExploreView({
                 <li className="card card--lift" key={event.id}>
                   <h2>{event.name[locale]}</h2>
                   <p>
-                    {text.year}: {event.year}
+                    {text.year}
+                    {colon(locale)} {event.year}
                   </p>
                   <Details event={event} locale={locale} />
                 </li>
@@ -364,7 +379,7 @@ export function ExploreView({
                 const y = index * rowHeight + 8;
                 return (
                   <g key={item.id}>
-                    <title>{`${label}: ${detail}`}</title>
+                    <title>{labelled(locale, label, detail)}</title>
                     <text className="explore-bar-name" x="0" y={y + 15}>
                       {label}
                     </text>
@@ -393,7 +408,8 @@ export function ExploreView({
         <div className="table-scroll">
           <table className="explore-table">
             <caption>
-              {text.table}: {EXPLORE_PRODUCTION_LAYER.period}
+              {text.table}
+              {colon(locale)} {EXPLORE_PRODUCTION_LAYER.period}
             </caption>
             <thead>
               <tr>

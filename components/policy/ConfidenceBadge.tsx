@@ -1,4 +1,4 @@
-import type { ConfidenceResult, Locale } from "@/lib/domain";
+import { labelled, type ConfidenceResult, type Locale } from "@/lib/domain";
 
 const CONFIDENCE_LABELS = {
   high: { en: "High", fr: "Élevée" },
@@ -25,7 +25,7 @@ export function ConfidenceBadge({ confidence, locale }: ConfidenceBadgeProps) {
   const filledBars = CONFIDENCE_BARS[confidence.level];
 
   return (
-    <button type="button" className="confidence" aria-label={`${label}: ${reason}`} title={reason}>
+    <button type="button" className="confidence" aria-label={labelled(locale, label, reason)} title={reason}>
       <span>{label}</span>{" "}
       <span className="confidence-bars" aria-hidden="true">
         {[0, 1, 2].map((bar) => (
@@ -34,7 +34,6 @@ export function ConfidenceBadge({ confidence, locale }: ConfidenceBadgeProps) {
           </span>
         ))}
       </span>
-      <span className="sr-only">{reason}</span>
     </button>
   );
 }

@@ -6,7 +6,7 @@ import {
   type RankedRiding,
   type RankingContext,
 } from "@/lib/comparison";
-import type { Locale } from "@/lib/domain";
+import { colon, type Locale } from "@/lib/domain";
 
 function TableHeaders({
   locale,
@@ -37,7 +37,8 @@ function RidingRow({ row, locale }: { row: RankedRiding; locale: Locale }) {
         {row.detectedChangePercent}%
         <span className="rank-unmatched-share">
           {" "}
-          · {copy.unmatched}: {row.unmatchedSharePercent}%
+          · {copy.unmatched}
+          {colon(locale)} {row.unmatchedSharePercent}%
         </span>
       </td>
       <td>{row.detectedChangeHectares} ha</td>

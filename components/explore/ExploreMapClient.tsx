@@ -6,7 +6,7 @@ import type {
   Map as MapLibreMap,
   StyleSpecification,
 } from "maplibre-gl";
-import { PRODUCT_NAME, type Locale } from "@/lib/domain";
+import { colon, labelled, PRODUCT_NAME, type Locale } from "@/lib/domain";
 import { chooseScaleBar, metresPerPixel, type ScaleBar } from "@/lib/explore/map-scale";
 import {
   BOUNDARY_OVERLAYS,
@@ -126,20 +126,6 @@ const text = {
     scaleBar: "Barre d’échelle",
   },
 } as const;
-
-/*
- * French sets a space before a colon, and the repository's own French copy
- * already does so. These two labels build their text at render time from a
- * translated fragment and a value, so the colon is composed here rather than
- * carried inside a translation, and it has to follow the same rule.
- *
- * The space is U+202F, the narrow no-break space French typography calls for:
- * a plain space would allow a line break to leave the colon stranded at the
- * start of a line.
- */
-function labelled(locale: Locale, label: string, value: string): string {
-  return locale === "fr" ? `${label}\u202f: ${value}` : `${label}: ${value}`;
-}
 
 type MapSource = "pmtiles" | "geojson";
 type MapState = "loading" | "ready" | "unavailable" | "error";
@@ -625,7 +611,15 @@ export function ExploreMapClient({
                 strokeWidth="1.5"
                 fillRule="evenodd"
               >
-                <title>{`${locale === "fr" ? feature.properties.province_name_fr : feature.properties.province_name_en}: ${number.format(feature.properties.observed_loss_percent)}%`}</title>
+                <title>
+                  {labelled(
+                    locale,
+                    locale === "fr"
+                      ? feature.properties.province_name_fr
+                      : feature.properties.province_name_en,
+                    `${number.format(feature.properties.observed_loss_percent)}%`,
+                  )}
+                </title>
               </path>
             ))}
           </svg>
@@ -700,7 +694,8 @@ export function ExploreMapClient({
         {message}
       </p>
       <p id={attributionId} className="explore-map-attribution">
-        {locale === "fr" ? `${text[locale].attribution}\u202f:` : `${text[locale].attribution}:`}{" "}
+        {text[locale].attribution}
+        {colon(locale)}{" "}
         <a href={EXPLORE_PRODUCTION_LAYER.attribution.href}>
           {EXPLORE_PRODUCTION_LAYER.attribution[locale]}
         </a>
