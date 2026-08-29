@@ -7,6 +7,7 @@ import type {
   StyleSpecification,
 } from "maplibre-gl";
 import { PRODUCT_NAME, type Locale } from "@/lib/domain";
+import { chooseScaleBar, metresPerPixel, type ScaleBar } from "@/lib/explore/map-scale";
 import {
   BOUNDARY_OVERLAYS,
   EXPLORE_MAP_COLOURS,
@@ -65,6 +66,12 @@ const text = {
     coverage: "Coverage",
     complete: "Every input pixel present",
     partial: "Some pixels unknown, so this is a minimum",
+    zoomIn: "Zoom in",
+    zoomOut: "Zoom out",
+    resetView: "Reset the view",
+    zoomControls: "Map zoom",
+    scale: "Scale",
+    scaleBar: "Scale bar",
   },
   fr: {
     label: "Carte vérifiée des pertes forestières provinciales",
@@ -111,8 +118,28 @@ const text = {
     coverage: "Couverture",
     complete: "Tous les pixels d’entrée sont présents",
     partial: "Certains pixels sont inconnus; il s’agit donc d’un minimum",
+    zoomIn: "Zoom avant",
+    zoomOut: "Zoom arrière",
+    resetView: "Réinitialiser la vue",
+    zoomControls: "Zoom de la carte",
+    scale: "Échelle",
+    scaleBar: "Barre d’échelle",
   },
 } as const;
+
+/*
+ * French sets a space before a colon, and the repository's own French copy
+ * already does so. These two labels build their text at render time from a
+ * translated fragment and a value, so the colon is composed here rather than
+ * carried inside a translation, and it has to follow the same rule.
+ *
+ * The space is U+202F, the narrow no-break space French typography calls for:
+ * a plain space would allow a line break to leave the colon stranded at the
+ * start of a line.
+ */
+function labelled(locale: Locale, label: string, value: string): string {
+  return locale === "fr" ? `${label}\u202f: ${value}` : `${label}: ${value}`;
+}
 
 type MapSource = "pmtiles" | "geojson";
 type MapState = "loading" | "ready" | "unavailable" | "error";
@@ -306,6 +333,21 @@ const buildStyle = (
   };
 };
 
+/*
+ * What the controls need to know about the map, refreshed as it moves. The
+ * scale depends on latitude as well as zoom, because Web Mercator stretches
+ * the ground more the further north the reader is looking, and Canada is read
+ * far enough north for that to matter.
+ */
+type MapView = Readonly<{
+  zoom: number;
+  latitude: number;
+  atMinZoom: boolean;
+  atMaxZoom: boolean;
+}>;
+
+const SCALE_MAX_PIXELS = 120;
+
 const symbol = (className: string) => (
   <i className={`loss-swatch ${className}`} aria-hidden="true" />
 );
@@ -324,6 +366,15 @@ export function ExploreMapClient({
   const statusId = useId();
   const attributionId = useId();
   const mapContainerRef = useRef<HTMLDivElement>(null);
+  /*
+   * The live map, so the zoom controls can drive it. MapLibre injects its own
+   * controls into the map container, which carries role="img"; anything inside
+   * that is presentational to assistive technology, so a zoom button placed
+   * there could not be reached. These controls are rendered as siblings and
+   * talk to the map through this ref instead.
+   */
+  const mapRef = useRef<MapLibreMap | null>(null);
+  const [view, setView] = useState<MapView | null>(null);
   // The verified province aggregate covers 2020-2022 only. The per-cell
   // detail covers every annual interval from 1984-1985 to 2021-2022, so the
   // map is now offered for the whole series and the two layers are shown
@@ -362,6 +413,7 @@ export function ExploreMapClient({
       setFeatures([]);
       setSource(null);
       setFailed(false);
+      setView(null);
     });
 
     const loadGeoJsonFallback = async () => {
@@ -406,6 +458,7 @@ export function ExploreMapClient({
       if (!active || pmtilesLoaded) return;
       map?.remove();
       map = null;
+      mapRef.current = null;
       if (protocolRegistered) {
         maplibre?.removeProtocol("pmtiles");
         protocolRegistered = false;
@@ -440,17 +493,33 @@ export function ExploreMapClient({
           maxZoom: perCellArchive ? EXPLORE_PER_CELL_LAYER.maxZoom : 6,
           attributionControl: false,
         });
+        mapRef.current = map;
+        const publishView = () => {
+          if (!active || !map) return;
+          setView({
+            zoom: map.getZoom(),
+            latitude: map.getCenter().lat,
+            // Compared with a tolerance rather than exactly: the zoom is a
+            // float that eases toward its limit and lands a hair short, which
+            // would leave a button enabled that can no longer do anything.
+            atMinZoom: map.getZoom() <= map.getMinZoom() + 1e-6,
+            atMaxZoom: map.getZoom() >= map.getMaxZoom() - 1e-6,
+          });
+        };
+        map.on("move", publishView);
         map.once("load", () => {
           if (!active) return;
           if (pmtilesTimeout) clearTimeout(pmtilesTimeout);
           pmtilesLoaded = true;
           setSource("pmtiles");
           setFailed(false);
+          publishView();
         });
         map.on("error", () => {
           if (pmtilesLoaded) return;
           map?.remove();
           map = null;
+          mapRef.current = null;
           if (protocolRegistered) {
             maplibre?.removeProtocol("pmtiles");
             protocolRegistered = false;
@@ -468,6 +537,7 @@ export function ExploreMapClient({
       controller.abort();
       if (pmtilesTimeout) clearTimeout(pmtilesTimeout);
       map?.remove();
+      mapRef.current = null;
       if (protocolRegistered) maplibre?.removeProtocol("pmtiles");
     };
     // overlayKey stands in for `overlays`: the prop is a fresh array on every
@@ -507,6 +577,17 @@ export function ExploreMapClient({
   const number = new Intl.NumberFormat(locale === "fr" ? "fr-CA" : "en-CA", {
     maximumFractionDigits: 2,
   });
+  /*
+   * Recomputed from the live view rather than stored, because it is a pure
+   * function of zoom and latitude: keeping it in state would give it a chance
+   * to disagree with the map it describes.
+   */
+  const scale: ScaleBar | null = view
+    ? chooseScaleBar(metresPerPixel(view.latitude, view.zoom), SCALE_MAX_PIXELS)
+    : null;
+  const scaleLabel = scale
+    ? `${number.format(scale.value)} ${scale.unit}`
+    : "";
   return (
     <section aria-label={text[locale].label}>
       <div
@@ -552,6 +633,59 @@ export function ExploreMapClient({
             {state !== "ready" ? (
               <p className="explore-map-panel">{message}</p>
             ) : null}
+            {scale && view ? (
+              <div className="explore-map-controls">
+                <div
+                  className="explore-map-zoom"
+                  role="group"
+                  aria-label={text[locale].zoomControls}
+                >
+                  <button
+                    type="button"
+                    className="explore-map-zoom-button"
+                    onClick={() => mapRef.current?.zoomIn()}
+                    disabled={view.atMaxZoom}
+                  >
+                    <span aria-hidden="true">+</span>
+                    <span className="sr-only">
+                      {text[locale].zoomIn}
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    className="explore-map-zoom-button"
+                    onClick={() => mapRef.current?.zoomOut()}
+                    disabled={view.atMinZoom}
+                  >
+                    {/*
+                      A minus sign (U+2212), not a hyphen. At button size the
+                      hyphen reads as a speck next to the plus. It is written as
+                      the character itself rather than as a numeric character
+                      reference, because the style-token gate reads a numeric
+                      reference as a hex colour literal.
+                    */}
+                    <span aria-hidden="true">−</span>
+                    <span className="sr-only">
+                      {text[locale].zoomOut}
+                    </span>
+                  </button>
+                </div>
+                <div
+                  className="explore-map-scale"
+                  // The bar is a picture of a distance, so it is labelled with
+                  // that distance rather than left for a reader to measure.
+                  role="img"
+                  aria-label={labelled(locale, text[locale].scaleBar, scaleLabel)}
+                >
+                  <span
+                    className="explore-map-scale-bar"
+                    style={{ width: `${Math.round(scale.pixels)}px` }}
+                    aria-hidden="true"
+                  />
+                  <span aria-hidden="true">{scaleLabel}</span>
+                </div>
+              </div>
+            ) : null}
           </>
         ) : (
           <p className="explore-map-panel">{message}</p>
@@ -566,7 +700,7 @@ export function ExploreMapClient({
         {message}
       </p>
       <p id={attributionId} className="explore-map-attribution">
-        {text[locale].attribution}:{" "}
+        {locale === "fr" ? `${text[locale].attribution}\u202f:` : `${text[locale].attribution}:`}{" "}
         <a href={EXPLORE_PRODUCTION_LAYER.attribution.href}>
           {EXPLORE_PRODUCTION_LAYER.attribution[locale]}
         </a>

@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
+// @ts-expect-error -- Node's TypeScript runner requires explicit local extensions.
 import { EXPLORE_PRODUCTION_LAYER } from "../lib/explore/map-style.ts";
 
 /*

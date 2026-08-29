@@ -284,7 +284,7 @@
         },
         {
           "path": "components/explore/ExploreMapClient.tsx",
-          "sha256": "a4448804c5dacff1f934916924ad96fbd4e41a63279804d7dd5ad3d65d596b68"
+          "sha256": "d8d9de7822d32ca7e227e0df0dac5aa0746ab7c7f81c84616e17b2e2b4362bcf"
         },
         {
           "path": "tests/explore.test.tsx",
