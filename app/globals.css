@@ -347,14 +347,22 @@ h4 {
 /* The gateway is the showcase surface: two blurred washes behind the wordmark
    on a grain-lit ground. .blob-ground clips them, so no narrow viewport gains
    a horizontal scrollbar, and it lifts the real content to z-index 1. */
+/* The gateway runs full bleed and holds its text at the measure with padding
+   rather than a narrow box. .blob-ground clips the two washes, so if the
+   element were only as wide as the measure the clip would draw a hard
+   rectangle across the ground, which is what a narrow box produced when this
+   was first built. Full bleed lets the washes reach the viewport edges and
+   fade, and the clip still keeps them off the horizontal scroll axis. */
 .language-gateway {
   position: relative;
-  width: min(var(--measure), calc(100% - 40px));
+  width: 100%;
   min-height: 100vh;
-  margin: 0 auto;
   display: grid;
   align-content: center;
-  padding: 80px 0;
+  justify-items: stretch;
+  grid-template-columns: minmax(0, var(--measure));
+  justify-content: center;
+  padding: 80px max(20px, calc((100% - var(--measure)) / 2));
 }
 /* The shared .blob opacity of 0.5 is too strong to run text over. At 0.30 the
    worst pair on either wash clears AA in both themes:
