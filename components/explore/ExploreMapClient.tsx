@@ -177,7 +177,15 @@ const buildStyle = (
   overlays: readonly BoundaryOverlayId[],
 ): StyleSpecification => {
   const sources: StyleSpecification["sources"] = {};
-  const layers: StyleSpecification["layers"] = [];
+  const layers: StyleSpecification["layers"] = [
+    // The palette is a fixed printed-map palette: every colour in it, including
+    // the near-black boundary ink, assumes it sits on this light ground. Without
+    // an explicit background the canvas is transparent wherever no polygon is
+    // drawn, so in dark mode the card showed through and boundary lines outside
+    // the province fills became invisible. The SVG fallback already paints the
+    // same ground, so this also makes the two paths agree.
+    { id: "ground", type: "background", paint: { "background-color": EXPLORE_MAP_COLOURS.ground } },
+  ];
   if (province) {
     sources[EXPLORE_PRODUCTION_LAYER.sourceLayer] = {
       type: "vector",
