@@ -1,0 +1,28 @@
+{
+  "schemaVersion": "witness-tree/phase2-zonal-aggregation-contract-amendment/1",
+  "id": "per-cell-geometry-materialization-2026-08-29",
+  "status": "recorded-amendment",
+  "base": {
+    "path": "data/phase2-zonal-aggregation-contract.json",
+    "sha256": "7eaf545359174c84a623c6df79e912fbab8f4f7c02c045d8af4796e1692869f7",
+    "note": "The base contract is left byte-identical because an owner-approved admission record binds it through data/phase2-owner-admission-packet.json. This amendment is a later record that reads on top of it; it does not edit it. If the base contract ever changes, this binding fails and the amendment stops applying."
+  },
+  "amends": "prohibitions",
+  "removedProhibition": "national per-cell geometry or polygon materialization",
+  "retainedProhibitions": [
+    "converting nodata/Unknown to observed non-loss",
+    "production claims using illustrative or unadmitted geometry"
+  ],
+  "authorizedBy": "owner",
+  "authorizedOn": "2026-08-29",
+  "authorizationText": "I give you authorization to override the prohibition and execute the plan in full, then implement it into the website.",
+  "scope": "Materialization and publication of per-cell forest-loss geometry for the 38 annual intervals 1984-1985 through 2021-2022, derived from the phase2-real-loss-component-inventory-1984-2022-v1 lineage.",
+  "unchangedByThisAmendment": [
+    "expert-review-100-per-province remains unsatisfied, and this amendment does not move it.",
+    "The published province and national loss rates are unchanged; no rate is restated from per-cell geometry.",
+    "phase2-formal-exit-status is unchanged, and no exit criterion moves because this work exists.",
+    "nationalPerCellGeometryMaterialized stays false in the zonal aggregation sidecar, because the province aggregate was not and is not computed from materialized per-cell geometry.",
+    "The prohibition on converting nodata or Unknown into observed non-loss is untouched and binds this work in full."
+  ],
+  "note": "An owner authorization permits the work. It is not evidence that any review, comparison, or admission occurred, and no gate is moved by this amendment."
+}

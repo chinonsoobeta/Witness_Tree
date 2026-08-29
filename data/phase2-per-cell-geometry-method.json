@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "phase2-per-cell-geometry-method-v1",
+  "authorizedBy": "data/phase2-zonal-aggregation-contract-amendment-2026-08-29.json",
+  "grid": {
+    "width": 193936,
+    "height": 128340,
+    "pixelWidth": 30,
+    "pixelHeight": -30,
+    "originX": -2660910.524,
+    "originY": 2998848.1105,
+    "crsWktSha256": "221435cb5f13c37ec9936a21dc113d2184e3f5fcb1e4eb1a21b891e39cfd6882"
+  },
+  "intervals": {
+    "first": [1984, 1985],
+    "last": [2021, 2022],
+    "count": 38
+  },
+  "connectivity": 4,
+  "minimumMappingUnit": {
+    "storedProducts": null,
+    "reason": "The stored cell and patch products keep every connected component, including the very many single-cell components at 0.09 ha. A minimum mapping unit applied at this layer would silently change every count derived downstream, and the component counts in phase2-real-loss-component-inventory-1984-2022-v1 would no longer reconcile against the geometry. Speckle is a display problem, so it is solved at display time.",
+    "displayOnly": "Tile generalization drops features below one rendered pixel at the zoom being written, which is a presentation parameter recorded per zoom in the tile manifest and never applied to the stored products."
+  },
+  "unknownRule": {
+    "statement": "A patch polygon covers exactly the union of the observed-loss cells of its component. Rings are traced along cell edges, holes are preserved, and no fill, buffer, snapping or simplification is applied in the stored products.",
+    "consequence": "The absence of a polygon means a cell was not observed as loss. It does not mean the cell was observed as non-loss, and it does not mean the cell was observed at all. Nodata cells lie outside every polygon and stay Unknown.",
+    "carriesInto": "Any surface that draws this geometry must state that blank is not a claim of no loss."
+  },
+  "simplification": {
+    "storedProducts": "none",
+    "reason": "The run store is the authoritative geometry and is exact by construction. Simplification exists only in the tile pyramid, where it is a rendering decision, and generalized tiles may be drawn but never counted."
+  },
+  "claims": {
+    "productionEligible": false,
+    "released": false,
+    "expertReviewed": false,
+    "reason": "expert-review-100-per-province stands at zero of 100 in every province and published-independent-comparisons is unpublished. This geometry is unreviewed detection. Authorization to produce and publish it is not evidence about how often it is right."
+  }
+}
