@@ -34,9 +34,15 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
   );
   assert.match(
     en,
-    /map, list, chart, and table use the same verified 2020–2022 province aggregate/,
+    /list, chart, and table use the same verified 2020–2022 province aggregate/,
   );
-  assert.match(en, /not per-cell geometry/);
+  // The per-cell layer exists now, so the copy no longer says it does not.
+  // What it must keep saying is what the layer has not been through: the
+  // patches are unreviewed, and nothing on the site is counted from them.
+  assert.match(en, /per-cell detected loss patches for 1984–2022/);
+  assert.match(en, /have not been expert-reviewed/);
+  assert.match(en, /no figure on this site is counted from them/);
+  assert.doesNotMatch(en, /not per-cell geometry/);
   assert.match(en, /type="range"/);
   assert.match(en, /min="1984"/);
   assert.match(en, /max="2026"/);

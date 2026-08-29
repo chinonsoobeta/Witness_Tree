@@ -33,6 +33,8 @@ tippecanoe \
   --preserve-input-order \
   --attribute-type=id:int \
   --attribute-type=cells:int \
+  --attribute-type=harvest:int \
+  --attribute-type=fire:int \
   --read-parallel \
   --quiet \
   "$input"

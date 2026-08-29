@@ -107,11 +107,11 @@
    "evidence": [
     {
      "path": "components/explore/ExploreView.tsx",
-     "sha256": "5c866e93ab2a14c88eb680bc578df3ae59dc99a36b5bc6801409f324ada5c833"
+     "sha256": "fca79a241ddcc1242d6169b183592f9b8cdd4add16a6a6080d0f153e787c48af"
     },
     {
      "path": "tests/explore.test.tsx",
-     "sha256": "cd6440fe71d36047c76b0175f5190bbb526711ade942d79b45da8c642845f1d4"
+     "sha256": "c61aa662afb3bb149bd8dd98a4b8852c1ea0501c31117a0fafebae6c8a7a9676"
     }
    ]
   },
@@ -123,11 +123,11 @@
    "evidence": [
     {
      "path": "components/explore/ExploreView.tsx",
-     "sha256": "5c866e93ab2a14c88eb680bc578df3ae59dc99a36b5bc6801409f324ada5c833"
+     "sha256": "fca79a241ddcc1242d6169b183592f9b8cdd4add16a6a6080d0f153e787c48af"
     },
     {
      "path": "tests/explore.test.tsx",
-     "sha256": "cd6440fe71d36047c76b0175f5190bbb526711ade942d79b45da8c642845f1d4"
+     "sha256": "c61aa662afb3bb149bd8dd98a4b8852c1ea0501c31117a0fafebae6c8a7a9676"
     }
    ]
   },
@@ -139,11 +139,11 @@
    "evidence": [
     {
      "path": "components/explore/ExploreView.tsx",
-     "sha256": "5c866e93ab2a14c88eb680bc578df3ae59dc99a36b5bc6801409f324ada5c833"
+     "sha256": "fca79a241ddcc1242d6169b183592f9b8cdd4add16a6a6080d0f153e787c48af"
     },
     {
      "path": "tests/explore.test.tsx",
-     "sha256": "cd6440fe71d36047c76b0175f5190bbb526711ade942d79b45da8c642845f1d4"
+     "sha256": "c61aa662afb3bb149bd8dd98a4b8852c1ea0501c31117a0fafebae6c8a7a9676"
     }
    ]
   },
