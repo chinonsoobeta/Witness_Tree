@@ -1,0 +1,89 @@
+{
+  "schemaVersion": "witness-tree/site-deployment-receipt/1",
+  "status": "succeeded",
+  "project": {
+    "projectId": "appgprj_6a7bea9e59988191a9304d4c5a3f379d",
+    "accessMode": "public",
+    "versionNumber": 15,
+    "versionId": "appgprj_6a7bea9e59988191a9304d4c5a3f379d~appgver_73401dc3b5d08191900eb93eddaa8a06",
+    "deploymentId": "appgdep_6a939e79d3b48191b6e8c843d0032341",
+    "sourceCommitSha": "4ed9eed684bde7b0eba34bee0c45e3b2458af68f",
+    "startedAt": "2026-08-30T03:07:37Z",
+    "completedAt": "2026-08-30T03:07:51Z",
+    "deploymentUrl": "https://witnesstree.r7bv67rgkk.chatgpt.site",
+    "canonicalUrl": "https://www.witnesstree.ca"
+  },
+  "buildArchive": {
+    "contentHash": "sha256:58feaca8e5a020bd3ec9b3c5b70cf80a8a1c4050388e8fb065c3d5e602dfff96",
+    "sizeBytes": 15646720,
+    "fileCount": 169
+  },
+  "verification": {
+    "englishRootStatus": 200,
+    "frenchRootStatus": 200,
+    "canonicalEnglishRootStatus": 200,
+    "canonicalFrenchRootStatus": 200,
+    "browserRoutes": [
+      "/en/explore",
+      "/fr/explorer",
+      "/en/compare",
+      "/fr/comparer",
+      "/en/search",
+      "/fr/recherche"
+    ],
+    "activeBoundaryOverlays": [
+      "federal-ridings",
+      "provincial-ridings",
+      "economic-regions",
+      "watersheds"
+    ],
+    "browserConsoleErrors": 0,
+    "mapLibreRendered": true,
+    "pmtilesRangeChecks": [
+      {
+        "file": "phase2-province-loss-2020-2022.pmtiles",
+        "status": 206,
+        "contentRange": "bytes 0-16383/289166",
+        "cors": "*",
+        "cache": "Hit from cloudfront"
+      },
+      {
+        "file": "federal-ridings-v2.pmtiles",
+        "status": 206,
+        "contentRange": "bytes 0-16383/2674670",
+        "cors": "*",
+        "cache": "Hit from cloudfront"
+      },
+      {
+        "file": "provincial-ridings-v2.pmtiles",
+        "status": 206,
+        "contentRange": "bytes 0-16383/2117944",
+        "cors": "*",
+        "cache": "Hit from cloudfront"
+      },
+      {
+        "file": "economic-regions-v2.pmtiles",
+        "status": 206,
+        "contentRange": "bytes 0-16383/2135557",
+        "cors": "*",
+        "cache": "Hit from cloudfront"
+      },
+      {
+        "file": "watersheds-v2.pmtiles",
+        "status": 206,
+        "contentRange": "bytes 0-16383/11921998",
+        "cors": "*",
+        "cache": "Hit from cloudfront"
+      }
+    ],
+    "livePmtilesFailureInduced": false,
+    "livePmtilesFailureReason": "The deployed map loaded from PMTiles without an error. The fallback remains contract-tested, but no production delivery failure was deliberately induced during this verification."
+  },
+  "claims": {
+    "deploymentCompleted": true,
+    "productionDataAdmitted": false,
+    "phase2Complete": false,
+    "phase8Complete": false,
+    "phase9Complete": false
+  }
+}
