@@ -11,6 +11,10 @@ import {
   EXPLORE_PRODUCTION_LAYER,
   EXPLORE_MODES,
   exploreHref,
+  formatUnknownSharePercent,
+  perCellAnnualForYear,
+  perCellArchiveForYear,
+  perCellCauseForMode,
   type ExploreDataView,
   type ExploreEvent,
   type ExploreMode,
@@ -28,8 +32,27 @@ const copy = {
     title: "Explore",
     yearControl: "Show illustrative fixtures through year",
     update: "Update",
+    /*
+     * Two captions, because the map on screen is not always the same map.
+     *
+     * The per-cell release is empty until its tiles are published, and while it
+     * is empty no patch layer is drawn at any year. One caption that always
+     * promised patches described a layer the reader could not see, which is the
+     * single thing this record must never do. The longer caption is used only
+     * where an archive actually exists for the year being shown.
+     */
     production:
-      "The list, chart, and table use the same provisional 2020–2022 province aggregate. The map adds per-cell detected loss patches for 1984–2022: they are traced from the 30 m grid, they have not been expert-reviewed, and no figure on this site is counted from them.",
+      "The list, chart, and table use the same provisional 2020–2022 province aggregate.",
+    productionWithPerCell:
+      "The list, chart, and table use the same provisional 2020–2022 province aggregate. The map adds per-cell detected loss patches for 1984–2022, traced from the 30 m grid. The annual figures below are counted from the exact cell inventory, not from the drawn patches, which are simplified for display and cannot be added up. Nothing here has been checked against conditions on the ground, and the source maps only part of the country, so every figure is a minimum.",
+    annualHeading: "Per-cell detected loss",
+    annualDetected: "Detected loss (ha)",
+    annualHarvest: "Recorded harvest (ha)",
+    annualFire: "Recorded fire (ha)",
+    annualUnattributed: "Cause not recorded (ha)",
+    annualBasis:
+      "Counted from the exact 30 m cell inventory behind the map. One cell is 0.09 ha.",
+    annualNone: "No per-cell interval covers this year.",
     fixtureList:
       "This list, chart, and table use illustrative fixtures. No verified geographic layer is implied by this view.",
     year: "Year",
@@ -69,7 +92,17 @@ const copy = {
     yearControl: "Afficher les exemples illustratifs jusqu’à l’année",
     update: "Mettre à jour",
     production:
-      "La liste, le graphique et le tableau utilisent le même agrégat provincial provisoire de 2020 à 2022. La carte y ajoute les parcelles de perte détectée par cellule de 1984 à 2022 : elles sont tracées à partir de la grille de 30 m, elles n’ont pas fait l’objet d’un examen par des experts, et aucun chiffre de ce site n’en est tiré.",
+      "La liste, le graphique et le tableau utilisent le même agrégat provincial provisoire de 2020 à 2022.",
+    productionWithPerCell:
+      "La liste, le graphique et le tableau utilisent le même agrégat provincial provisoire de 2020 à 2022. La carte y ajoute les parcelles de perte détectée par cellule de 1984 à 2022, tracées à partir de la grille de 30 m. Les chiffres annuels ci-dessous sont comptés à partir de l’inventaire exact des cellules, et non des parcelles dessinées, qui sont simplifiées pour l’affichage et ne peuvent pas être additionnées. Rien ici n’a été vérifié sur le terrain, et la source ne cartographie qu’une partie du pays : chaque chiffre est donc un minimum.",
+    annualHeading: "Perte détectée par cellule",
+    annualDetected: "Perte détectée (ha)",
+    annualHarvest: "Récoltes consignées (ha)",
+    annualFire: "Incendies consignés (ha)",
+    annualUnattributed: "Cause non consignée (ha)",
+    annualBasis:
+      "Comptée à partir de l’inventaire exact des cellules de 30 m derrière la carte. Une cellule représente 0,09 ha.",
+    annualNone: "Aucun intervalle par cellule ne couvre cette année.",
     fixtureList:
       "Cette liste, ce graphique et ce tableau utilisent des exemples illustratifs. Cette vue n’implique aucune couche géographique vérifiée.",
     year: "Année",
@@ -192,16 +225,66 @@ export function ExploreView({
   const text = copy[locale];
   const selected = events.filter((event) => event.mode === mode);
   const productionAvailable = mode === "forest-change" && year >= 2022;
+  /*
+   * Whether the map really draws per-cell patches right now, asked exactly the
+   * way the map itself asks it, so the caption cannot drift from what is on
+   * screen. Both halves matter: a mode with no per-cell cause draws nothing,
+   * and neither does a year the published release does not cover.
+   */
+  const perCellShown =
+    perCellCauseForMode(mode) !== null && perCellArchiveForYear(year) !== null;
+  const note = !productionAvailable
+    ? text.fixtureList
+    : perCellShown
+      ? text.productionWithPerCell
+      : text.production;
   const number = new Intl.NumberFormat(locale === "fr" ? "fr-CA" : "en-CA", {
     maximumFractionDigits: 2,
   });
+  /*
+   * The annual figure is shown only where the patches it describes are shown.
+   * The series covers every interval whether or not the tiles are published, so
+   * gating on the same condition as the drawing keeps a number from appearing
+   * beside an empty map and reading as a total of nothing.
+   */
+  const annual = perCellShown ? perCellAnnualForYear(year) : null;
   const provinceCoverageLabel = (row: (typeof EXPLORE_PRODUCTION_LAYER.rows)[number]) =>
-    `${text.partial} (${number.format(row.unknownSharePercent)}${locale === "fr" ? " %" : "%"}; ${number.format(row.unknownRequiredInputHectares)} ${text.unknownArea})`;
+    `${text.partial} (${formatUnknownSharePercent(row.unknownSharePercent, locale)}; ${number.format(row.unknownRequiredInputHectares)} ${text.unknownArea})`;
   return (
     <section className="explore" aria-label={text.title}>
       <p className="explore-note">
-        {productionAvailable ? text.production : text.fixtureList}
+        {note}
       </p>
+      {perCellShown ? (
+        <div className="explore-annual">
+          <h3>{`${text.annualHeading}, ${annual ? annual.interval : year}`}</h3>
+          {annual ? (
+            <>
+              <dl>
+                <div>
+                  <dt>{text.annualDetected}</dt>
+                  <dd>{`${number.format(annual.hectares)} (${text.partial})`}</dd>
+                </div>
+                <div>
+                  <dt>{text.annualHarvest}</dt>
+                  <dd>{number.format(annual.harvestHectares)}</dd>
+                </div>
+                <div>
+                  <dt>{text.annualFire}</dt>
+                  <dd>{number.format(annual.fireHectares)}</dd>
+                </div>
+                <div>
+                  <dt>{text.annualUnattributed}</dt>
+                  <dd>{number.format(annual.unattributedHectares)}</dd>
+                </div>
+              </dl>
+              <p className="explore-annual-basis">{text.annualBasis}</p>
+            </>
+          ) : (
+            <p className="explore-annual-basis">{text.annualNone}</p>
+          )}
+        </div>
+      ) : null}
       <PlaceFinder
         locale={locale}
         query={query}

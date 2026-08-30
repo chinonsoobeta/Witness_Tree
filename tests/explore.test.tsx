@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import test from "node:test";
 import type { Context, ReactElement } from "react";
 import { renderToStaticMarkup as renderElement } from "react-dom/server";
@@ -74,12 +75,51 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
     en,
     /list, chart, and table use the same provisional 2020–2022 province aggregate/,
   );
-  // The per-cell layer exists now, so the copy no longer says it does not.
-  // What it must keep saying is what the layer has not been through: the
-  // patches are unreviewed, and nothing on the site is counted from them.
-  assert.match(en, /per-cell detected loss patches for 1984–2022/);
-  assert.match(en, /have not been expert-reviewed/);
-  assert.match(en, /no figure on this site is counted from them/);
+  /*
+   * The per-cell half of the caption is a promise about a layer the reader can
+   * see, so it is checked against the release the map itself reads rather than
+   * pinned to one wording. While that release is empty no patch layer is drawn
+   * at any year, and a caption that still described patches would be doing the
+   * one thing this record must never do: describe evidence that is not there.
+   */
+  const perCellRelease = JSON.parse(
+    readFileSync(
+      new URL("../data/phase2-per-cell-tile-release.json", import.meta.url),
+      "utf8",
+    ),
+  ) as { intervals: { interval: string }[] };
+  // The default render is forest change at the latest year, so the caption can
+  // only promise patches if a published interval ends on that year.
+  const perCellShown = perCellRelease.intervals.some((entry) =>
+    entry.interval.endsWith("-2022"),
+  );
+  if (perCellShown) {
+    assert.match(en, /per-cell detected loss patches for 1984–2022/);
+    /*
+     * Figures are now counted from the exact cell inventory, so the copy may no
+     * longer say nothing is counted from the layer. What it must still carry is
+     * the reason the drawn patches are not the thing being counted, and the two
+     * limits that survive counting: nothing was checked on the ground, and the
+     * source maps only part of the country.
+     */
+    assert.match(en, /counted from the exact cell inventory/);
+    assert.match(en, /cannot be added up/);
+    assert.match(en, /checked against conditions on the ground/);
+    assert.match(en, /every figure is a minimum/);
+    // The claim that no figure is counted is now false and must be gone.
+    assert.doesNotMatch(en, /no figure on this site is counted from them/);
+    // Expert review was retired, so the copy must not imply one is pending.
+    assert.doesNotMatch(en, /expert-reviewed/);
+
+    // The figure itself is on the page, beside the patches it describes.
+    assert.match(en, /Per-cell detected loss, \d{4}-\d{4}/);
+    assert.match(en, /Detected loss \(ha\)/);
+    assert.match(en, /Cause not recorded \(ha\)/);
+    assert.match(en, /One cell is 0\.09 ha/);
+  } else {
+    assert.doesNotMatch(en, /per-cell detected loss patches/);
+    assert.doesNotMatch(en, /have not been expert-reviewed/);
+  }
   assert.doesNotMatch(en, /not per-cell geometry/);
   assert.match(en, /type="range"/);
   // One year means one annual interval, and the archives hold 1985 through 2022.

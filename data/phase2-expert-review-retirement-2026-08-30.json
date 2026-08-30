@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "witness-tree/phase2-expert-review-retirement/1",
+  "status": "retired-not-met",
+  "retiredAt": "2026-08-30",
+  "retiredBy": "owner",
+  "criterion": "expert-review-100-per-province",
+  "decision": "The owner retired the Phase 2 expert-review requirement. The requirement is withdrawn, not satisfied.",
+  "stateAtRetirement": {
+    "reviewStarted": false,
+    "completedLocationsByProvince": { "BC": 0, "AB": 0, "ON": 0, "QC": 0 },
+    "requiredCandidatesPerProvince": 100,
+    "candidatesInPacket": 400,
+    "reviewerRosterApproved": false,
+    "approvedReviewers": 0,
+    "reviewResultsRecorded": 0,
+    "packet": {
+      "path": "../../Witness_Tree-data/derived/phase2-v21-review-packet-v2/packet.json",
+      "sha256": "030ed48f271277436e991263c386626969cb027457155b224b43704b69330906",
+      "byteLength": 328499
+    }
+  },
+  "denominatorRule": "The criterion stays among the four Phase 2 formal exit criteria and is counted as not complete. Retirement withdraws a requirement; it cannot raise the completion percentage. Phase 2 formal exit remains 2/4.",
+  "consequences": [
+    "No expert review of the per-cell geometry was performed, and none is planned under this criterion.",
+    "The per-cell patches remain not countable and not production eligible. Expert review was the route by which they could have become countable, so retiring it closes that route.",
+    "Site copy must state the limitation without implying a review is pending."
+  ],
+  "claims": {
+    "expertReviewCompleted": false,
+    "expertReviewPerformedByAnyParty": false,
+    "productAccuracyClaim": false,
+    "countable": false,
+    "productionEligible": false,
+    "released": false
+  }
+}

@@ -1,1 +1,468 @@
-{"schemaVersion":"witness-tree/phase2-per-cell-tile-release/1","releaseId":"","base":"","productId":"phase2-per-cell-geometry-1984-2022-v1","readback":"data/phase2-per-cell-geometry-readback.json","minZoom":8,"maxZoom":14,"generalizedBelowZoom":14,"countable":false,"expertReviewed":false,"productionEligible":false,"intervals":[],"totals":{"intervalCount":0,"byteLength":0}}
+{
+  "schemaVersion": "witness-tree/phase2-per-cell-tile-release/1",
+  "releaseId": "c2af3e65489e3121d7024367cbc56191d9ffeed5bafc41f8d5c4625abcfc0809",
+  "base": "https://d3g1406o0uekin.cloudfront.net/releases/phase2-per-cell-geometry-v1/c2af3e65489e3121d7024367cbc56191d9ffeed5bafc41f8d5c4625abcfc0809/tiles",
+  "productId": "phase2-per-cell-geometry-1984-2022-v1",
+  "readback": "data/phase2-per-cell-geometry-readback.json",
+  "minZoom": 8,
+  "maxZoom": 14,
+  "generalizedBelowZoom": 14,
+  "countable": false,
+  "expertReviewed": false,
+  "productionEligible": false,
+  "coverageEvidence": {
+    "schemaVersion": "witness-tree/phase2-vlce2-mapped-extent-verification-receipt/1",
+    "status": "local-nonproduction-executed",
+    "claims": {
+      "admitted": false,
+      "released": false,
+      "productionEligible": false,
+      "externalAction": false
+    },
+    "verification": {
+      "path": "../Witness_Tree-data/derived/phase2-vlce2-mapped-extent-v1/mapped-extent.verification.json",
+      "byteLength": 29916,
+      "sha256": "5caea807db23d36a932ce8c78038d0bd2506d0e073e463408b2e5809dea4b4ae",
+      "schemaVersion": "phase2-vlce2-mapped-extent-verification-v1",
+      "verifiedYearCount": 39,
+      "firstYear": 1984,
+      "lastYear": 2022,
+      "allDifferingCellsZero": true
+    },
+    "mappedExtent": {
+      "path": "../Witness_Tree-data/derived/phase2-vlce2-mapped-extent-v1/mapped-extent.tif",
+      "byteLength": 86803748,
+      "sha256": "500b79baec7c7a1d4d7fc6fd9be46504a02981557ce862dfe846222273f8c0d1",
+      "mappedCells": 7669809117,
+      "unmappedCells": 17219937123
+    },
+    "perCellMeaning": {
+      "lossCellContainment": "Every emitted loss cell must lie inside the verified mapped extent.",
+      "blankMapArea": "The absence of a loss patch is not evidence that an area was observed with no loss."
+    }
+  },
+  "intervals": [
+    {
+      "interval": "1984-1985",
+      "fileName": "1984-1985.pmtiles",
+      "byteLength": 521294513,
+      "sha256": "62d848522f73fdfcbb648e9cf168285555f259ca13e09c5745f66621afe1f16e",
+      "patchCount": 3389250,
+      "cellCount": 16638404,
+      "harvestCells": 3692984,
+      "fireCells": 4906296,
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/phase2-per-cell-geometry-v1/c2af3e65489e3121d7024367cbc56191d9ffeed5bafc41f8d5c4625abcfc0809/tiles/1984-1985.pmtiles"
+    },
+    {
+      "interval": "1985-1986",
+      "fileName": "1985-1986.pmtiles",
+      "byteLength": 643543662,
+      "sha256": "ceb84ce681a413b754933545c9c5f989dd34eb1c35931a64a8d151486f7b08e9",
+      "patchCount": 3820902,
+      "cellCount": 17652330,
+      "harvestCells": 4934731,
+      "fireCells": 4662015,
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/phase2-per-cell-geometry-v1/c2af3e65489e3121d7024367cbc56191d9ffeed5bafc41f8d5c4625abcfc0809/tiles/1985-1986.pmtiles"
+    },
+    {
+      "interval": "1986-1987",
+      "fileName": "1986-1987.pmtiles",
+      "byteLength": 796324220,
+      "sha256": "1d799e9156290248e8c5cc52fba9aef505820aecbad2914035af47b4334e9667",
+      "patchCount": 5491045,
+      "cellCount": 24837798,
+      "harvestCells": 5623685,
+      "fireCells": 5141001,
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/phase2-per-cell-geometry-v1/c2af3e65489e3121d7024367cbc56191d9ffeed5bafc41f8d5c4625abcfc0809/tiles/1986-1987.pmtiles"
+    },
+    {
+      "interval": "1987-1988",
+      "fileName": "1987-1988.pmtiles",
+      "byteLength": 834886670,
+      "sha256": "f08ae5fec79a75b7cfc7ca8005fb2792b1dec816f74042165b73b9a9b7f7ec65",
+      "patchCount": 5829853,
+      "cellCount": 24731470,
+      "harvestCells": 6243216,
+      "fireCells": 4256731,
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/phase2-per-cell-geometry-v1/c2af3e65489e3121d7024367cbc56191d9ffeed5bafc41f8d5c4625abcfc0809/tiles/1987-1988.pmtiles"
+    },
+    {
+      "interval": "1988-1989",
+      "fileName": "1988-1989.pmtiles",
+      "byteLength": 951334286,
+      "sha256": "84d2b3aaf1bbe5bbce429f6b74094f78d829ee96308041dff478eedd48701f24",
+      "patchCount": 6111857,
+      "cellCount": 50315308,
+      "harvestCells": 6533261,
+      "fireCells": 28736674,
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/phase2-per-cell-geometry-v1/c2af3e65489e3121d7024367cbc56191d9ffeed5bafc41f8d5c4625abcfc0809/tiles/1988-1989.pmtiles"
+    },
+    {
+      "interval": "1989-1990",
+      "fileName": "1989-1990.pmtiles",
+      "byteLength": 986508981,
+      "sha256": "ea518e83ba0a1f320972b14a173297c0e8f4493bcc174c2d648077a4f08d15b4",
+      "patchCount": 6296656,
+      "cellCount": 38560305,
+      "harvestCells": 6430898,
+      "fireCells": 17944818,
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/phase2-per-cell-geometry-v1/c2af3e65489e3121d7024367cbc56191d9ffeed5bafc41f8d5c4625abcfc0809/tiles/1989-1990.pmtiles"
+    },
+    {
+      "interval": "1990-1991",
+      "fileName": "1990-1991.pmtiles",
+      "byteLength": 959895827,
+      "sha256": "01eb8ea73955cc652322cf1b0d2830fa491f25cb268b2d777c4a7baecb23087f",
+      "patchCount": 6374848,
+      "cellCount": 27618261,
+      "harvestCells": 5857925,
+      "fireCells": 8141216,
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/phase2-per-cell-geometry-v1/c2af3e65489e3121d7024367cbc56191d9ffeed5bafc41f8d5c4625abcfc0809/tiles/1990-1991.pmtiles"
+    },
+    {
+      "interval": "1991-1992",
+      "fileName": "1991-1992.pmtiles",
+      "byteLength": 915561135,
+      "sha256": "727c5f8c3a01db486efbaa8ac284ead84200064235a8831c0cc9dd25b30f564a",
+      "patchCount": 6260105,
+      "cellCount": 28223199,
+      "harvestCells": 5214135,
+      "fireCells": 8753749,
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/phase2-per-cell-geometry-v1/c2af3e65489e3121d7024367cbc56191d9ffeed5bafc41f8d5c4625abcfc0809/tiles/1991-1992.pmtiles"
+    },
+    {
+      "interval": "1992-1993",
+      "fileName": "1992-1993.pmtiles",
+      "byteLength": 870080629,
+      "sha256": "b966a6c309127459cb72df9df9ef77094613dc8aa40ac16eed6e4a23fd1b3270",
+      "patchCount": 5562067,
+      "cellCount": 27093080,
+      "harvestCells": 5743619,
+      "fireCells": 10178836,
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/phase2-per-cell-geometry-v1/c2af3e65489e3121d7024367cbc56191d9ffeed5bafc41f8d5c4625abcfc0809/tiles/1992-1993.pmtiles"
+    },
+    {
+      "interval": "1993-1994",
+      "fileName": "1993-1994.pmtiles",
+      "byteLength": 1086515697,
+      "sha256": "db9785d2ee753db781d792732e0d4922a0ec73f9c3e949b8d14ad2ed027ffa47",
+      "patchCount": 7082651,
+      "cellCount": 43063896,
+      "harvestCells": 5526848,
+      "fireCells": 20715844,
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/phase2-per-cell-geometry-v1/c2af3e65489e3121d7024367cbc56191d9ffeed5bafc41f8d5c4625abcfc0809/tiles/1993-1994.pmtiles"
+    },
+    {
+      "interval": "1994-1995",
+      "fileName": "1994-1995.pmtiles",
+      "byteLength": 1251901856,
+      "sha256": "a460c67db7a2a1cf1f91e96bbec4928a45b1c3e254bec33a2af963c1b0ca8c90",
+      "patchCount": 7763477,
+      "cellCount": 69304156,
+      "harvestCells": 6791292,
+      "fireCells": 45379104,
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/phase2-per-cell-geometry-v1/c2af3e65489e3121d7024367cbc56191d9ffeed5bafc41f8d5c4625abcfc0809/tiles/1994-1995.pmtiles"
+    },
+    {
+      "interval": "1995-1996",
+      "fileName": "1995-1996.pmtiles",
+      "byteLength": 1235485692,
+      "sha256": "e06549f18f87e932b796ef3d900c71ee36bd129a7264a86776ea0c51000fcaf0",
+      "patchCount": 8365343,
+      "cellCount": 39520100,
+      "harvestCells": 6810724,
+      "fireCells": 13882601,
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/phase2-per-cell-geometry-v1/c2af3e65489e3121d7024367cbc56191d9ffeed5bafc41f8d5c4625abcfc0809/tiles/1995-1996.pmtiles"
+    },
+    {
+      "interval": "1996-1997",
+      "fileName": "1996-1997.pmtiles",
+      "byteLength": 1277550643,
+      "sha256": "c139d16599fc51dba245435ccabbc3e2b0692ae2b3136ff50cb68123702f5582",
+      "patchCount": 9087257,
+      "cellCount": 33513987,
+      "harvestCells": 6471652,
+      "fireCells": 7490027,
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/phase2-per-cell-geometry-v1/c2af3e65489e3121d7024367cbc56191d9ffeed5bafc41f8d5c4625abcfc0809/tiles/1996-1997.pmtiles"
+    },
+    {
+      "interval": "1997-1998",
+      "fileName": "1997-1998.pmtiles",
+      "byteLength": 1309157763,
+      "sha256": "66d8370e2f5b0da21774f84335cd4f87408ff7a3f3c25cb3fb4908ec80894ea2",
+      "patchCount": 9136825,
+      "cellCount": 41683439,
+      "harvestCells": 7507528,
+      "fireCells": 15201884,
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/phase2-per-cell-geometry-v1/c2af3e65489e3121d7024367cbc56191d9ffeed5bafc41f8d5c4625abcfc0809/tiles/1997-1998.pmtiles"
+    },
+    {
+      "interval": "1998-1999",
+      "fileName": "1998-1999.pmtiles",
+      "byteLength": 1246980077,
+      "sha256": "21adcaa9f677cad6bcf9faed58eb73c829596150e364e4736e2b8fa07853c782",
+      "patchCount": 8133319,
+      "cellCount": 40625214,
+      "harvestCells": 7168814,
+      "fireCells": 18506138,
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/phase2-per-cell-geometry-v1/c2af3e65489e3121d7024367cbc56191d9ffeed5bafc41f8d5c4625abcfc0809/tiles/1998-1999.pmtiles"
+    },
+    {
+      "interval": "1999-2000",
+      "fileName": "1999-2000.pmtiles",
+      "byteLength": 1187274568,
+      "sha256": "2d430d801b8295d0832e5a1a878fc63182bd83f05cb51f51573055b839506d45",
+      "patchCount": 8154594,
+      "cellCount": 28682908,
+      "harvestCells": 8408112,
+      "fireCells": 4177306,
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/phase2-per-cell-geometry-v1/c2af3e65489e3121d7024367cbc56191d9ffeed5bafc41f8d5c4625abcfc0809/tiles/1999-2000.pmtiles"
+    },
+    {
+      "interval": "2000-2001",
+      "fileName": "2000-2001.pmtiles",
+      "byteLength": 1196966078,
+      "sha256": "31da561e84f2b7bfeb056f94cb0891e18ff97f9ab5170b6c4b40e606285677c0",
+      "patchCount": 8646415,
+      "cellCount": 34009074,
+      "harvestCells": 7987872,
+      "fireCells": 5181822,
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/phase2-per-cell-geometry-v1/c2af3e65489e3121d7024367cbc56191d9ffeed5bafc41f8d5c4625abcfc0809/tiles/2000-2001.pmtiles"
+    },
+    {
+      "interval": "2001-2002",
+      "fileName": "2001-2002.pmtiles",
+      "byteLength": 1233561511,
+      "sha256": "7f9ca5f1923c31e6bd5c21bf1f95aed2b3a4bc9251f09999678971c262516040",
+      "patchCount": 8780335,
+      "cellCount": 48262323,
+      "harvestCells": 7686078,
+      "fireCells": 17421345,
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/phase2-per-cell-geometry-v1/c2af3e65489e3121d7024367cbc56191d9ffeed5bafc41f8d5c4625abcfc0809/tiles/2001-2002.pmtiles"
+    },
+    {
+      "interval": "2002-2003",
+      "fileName": "2002-2003.pmtiles",
+      "byteLength": 1254780014,
+      "sha256": "0e743d95c566e8a6330d9c9c66e2644bffcb5131d6d67903103e49bcc51f98a1",
+      "patchCount": 8644929,
+      "cellCount": 33930007,
+      "harvestCells": 8420770,
+      "fireCells": 6336165,
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/phase2-per-cell-geometry-v1/c2af3e65489e3121d7024367cbc56191d9ffeed5bafc41f8d5c4625abcfc0809/tiles/2002-2003.pmtiles"
+    },
+    {
+      "interval": "2003-2004",
+      "fileName": "2003-2004.pmtiles",
+      "byteLength": 1205455076,
+      "sha256": "bfc6382cc3fd1306ca118a1a81573d6e0e1d70c9dffae465d1660c8d0e9be1cb",
+      "patchCount": 8020744,
+      "cellCount": 39145985,
+      "harvestCells": 8044312,
+      "fireCells": 14980719,
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/phase2-per-cell-geometry-v1/c2af3e65489e3121d7024367cbc56191d9ffeed5bafc41f8d5c4625abcfc0809/tiles/2003-2004.pmtiles"
+    },
+    {
+      "interval": "2004-2005",
+      "fileName": "2004-2005.pmtiles",
+      "byteLength": 1237241370,
+      "sha256": "5140a05d3b48e951620a7c0dc975f9bb8b81167821d45d0c290944b3e5475324",
+      "patchCount": 8695341,
+      "cellCount": 41572201,
+      "harvestCells": 8719432,
+      "fireCells": 14517571,
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/phase2-per-cell-geometry-v1/c2af3e65489e3121d7024367cbc56191d9ffeed5bafc41f8d5c4625abcfc0809/tiles/2004-2005.pmtiles"
+    },
+    {
+      "interval": "2005-2006",
+      "fileName": "2005-2006.pmtiles",
+      "byteLength": 1286198321,
+      "sha256": "d37c869cb9d42695d5c6c50163af2e41490cce4d6972ec7b8c6dde32364b2e49",
+      "patchCount": 9010790,
+      "cellCount": 40182788,
+      "harvestCells": 7919101,
+      "fireCells": 12898206,
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/phase2-per-cell-geometry-v1/c2af3e65489e3121d7024367cbc56191d9ffeed5bafc41f8d5c4625abcfc0809/tiles/2005-2006.pmtiles"
+    },
+    {
+      "interval": "2006-2007",
+      "fileName": "2006-2007.pmtiles",
+      "byteLength": 1189093519,
+      "sha256": "405dc965140e895338925fc1c4bc237927acfd58c88b8df25a0383e78922142c",
+      "patchCount": 8094418,
+      "cellCount": 31357752,
+      "harvestCells": 6652700,
+      "fireCells": 9708599,
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/phase2-per-cell-geometry-v1/c2af3e65489e3121d7024367cbc56191d9ffeed5bafc41f8d5c4625abcfc0809/tiles/2006-2007.pmtiles"
+    },
+    {
+      "interval": "2007-2008",
+      "fileName": "2007-2008.pmtiles",
+      "byteLength": 1166821555,
+      "sha256": "1ea3a4ad041fdb2d1e4e127fd587a1e29e926b2662ec9503a8ac2b097a5816f9",
+      "patchCount": 8463156,
+      "cellCount": 31200626,
+      "harvestCells": 5288279,
+      "fireCells": 9370911,
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/phase2-per-cell-geometry-v1/c2af3e65489e3121d7024367cbc56191d9ffeed5bafc41f8d5c4625abcfc0809/tiles/2007-2008.pmtiles"
+    },
+    {
+      "interval": "2008-2009",
+      "fileName": "2008-2009.pmtiles",
+      "byteLength": 1256802221,
+      "sha256": "150e48ed94611c70c6c9fc8c03dd9abeb0818de822ea2cbe02e9c4e981a70162",
+      "patchCount": 8951504,
+      "cellCount": 27125705,
+      "harvestCells": 4705683,
+      "fireCells": 5713884,
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/phase2-per-cell-geometry-v1/c2af3e65489e3121d7024367cbc56191d9ffeed5bafc41f8d5c4625abcfc0809/tiles/2008-2009.pmtiles"
+    },
+    {
+      "interval": "2009-2010",
+      "fileName": "2009-2010.pmtiles",
+      "byteLength": 1412389203,
+      "sha256": "f67bb0726368b24494111fda6d0ed54533035d3ce1cd94564b8e25125abaf17f",
+      "patchCount": 9693355,
+      "cellCount": 40251948,
+      "harvestCells": 5323476,
+      "fireCells": 16310838,
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/phase2-per-cell-geometry-v1/c2af3e65489e3121d7024367cbc56191d9ffeed5bafc41f8d5c4625abcfc0809/tiles/2009-2010.pmtiles"
+    },
+    {
+      "interval": "2010-2011",
+      "fileName": "2010-2011.pmtiles",
+      "byteLength": 1515568559,
+      "sha256": "f6ab0a53c0ee1e59712556b1d2dff4694eb7d1285cb38ddccaa5b4d8b29fa99c",
+      "patchCount": 10721989,
+      "cellCount": 41867066,
+      "harvestCells": 5457941,
+      "fireCells": 16994093,
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/phase2-per-cell-geometry-v1/c2af3e65489e3121d7024367cbc56191d9ffeed5bafc41f8d5c4625abcfc0809/tiles/2010-2011.pmtiles"
+    },
+    {
+      "interval": "2011-2012",
+      "fileName": "2011-2012.pmtiles",
+      "byteLength": 1720728548,
+      "sha256": "dc5c71773e4143411d40ac6d73e5c1fe81baca3a22a097ee57b76c32dfaf1ed0",
+      "patchCount": 12737425,
+      "cellCount": 39072848,
+      "harvestCells": 5099208,
+      "fireCells": 9838579,
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/phase2-per-cell-geometry-v1/c2af3e65489e3121d7024367cbc56191d9ffeed5bafc41f8d5c4625abcfc0809/tiles/2011-2012.pmtiles"
+    },
+    {
+      "interval": "2012-2013",
+      "fileName": "2012-2013.pmtiles",
+      "byteLength": 1737384756,
+      "sha256": "1bd98746cad86c8b31097cde419c6f3542e913859760342885c1945c9e087d49",
+      "patchCount": 13442827,
+      "cellCount": 51232679,
+      "harvestCells": 5978537,
+      "fireCells": 18016817,
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/phase2-per-cell-geometry-v1/c2af3e65489e3121d7024367cbc56191d9ffeed5bafc41f8d5c4625abcfc0809/tiles/2012-2013.pmtiles"
+    },
+    {
+      "interval": "2013-2014",
+      "fileName": "2013-2014.pmtiles",
+      "byteLength": 1433683615,
+      "sha256": "50b8220dee216ace513992a38620fd4ce93cddabf2dd4ce976e6e7118d364c43",
+      "patchCount": 10234836,
+      "cellCount": 45916559,
+      "harvestCells": 6559395,
+      "fireCells": 18463236,
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/phase2-per-cell-geometry-v1/c2af3e65489e3121d7024367cbc56191d9ffeed5bafc41f8d5c4625abcfc0809/tiles/2013-2014.pmtiles"
+    },
+    {
+      "interval": "2014-2015",
+      "fileName": "2014-2015.pmtiles",
+      "byteLength": 1438017771,
+      "sha256": "e657d8fc4a8900236b7a19fb4973006f230733d7fb9ca55d943cdf937fc5c208",
+      "patchCount": 9620739,
+      "cellCount": 54159940,
+      "harvestCells": 6663573,
+      "fireCells": 27970555,
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/phase2-per-cell-geometry-v1/c2af3e65489e3121d7024367cbc56191d9ffeed5bafc41f8d5c4625abcfc0809/tiles/2014-2015.pmtiles"
+    },
+    {
+      "interval": "2015-2016",
+      "fileName": "2015-2016.pmtiles",
+      "byteLength": 1250718225,
+      "sha256": "b03686887d6ccf2a303993649e945bdabdd588f6ec39345332a90245b3050087",
+      "patchCount": 8733920,
+      "cellCount": 31652714,
+      "harvestCells": 6751050,
+      "fireCells": 6586132,
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/phase2-per-cell-geometry-v1/c2af3e65489e3121d7024367cbc56191d9ffeed5bafc41f8d5c4625abcfc0809/tiles/2015-2016.pmtiles"
+    },
+    {
+      "interval": "2016-2017",
+      "fileName": "2016-2017.pmtiles",
+      "byteLength": 1390825997,
+      "sha256": "d03224af2ed1e9f0bfd047084ea0861e7007c379b046c1e5d3cc8a9dc4315b8b",
+      "patchCount": 10291674,
+      "cellCount": 42038571,
+      "harvestCells": 7077375,
+      "fireCells": 6417021,
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/phase2-per-cell-geometry-v1/c2af3e65489e3121d7024367cbc56191d9ffeed5bafc41f8d5c4625abcfc0809/tiles/2016-2017.pmtiles"
+    },
+    {
+      "interval": "2017-2018",
+      "fileName": "2017-2018.pmtiles",
+      "byteLength": 1206930599,
+      "sha256": "8013d3a84bf31f89ae508c561505ccae6f1a6718e5ae3fd3a2add0b9485e0bdf",
+      "patchCount": 8192661,
+      "cellCount": 39612558,
+      "harvestCells": 6889472,
+      "fireCells": 14283812,
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/phase2-per-cell-geometry-v1/c2af3e65489e3121d7024367cbc56191d9ffeed5bafc41f8d5c4625abcfc0809/tiles/2017-2018.pmtiles"
+    },
+    {
+      "interval": "2018-2019",
+      "fileName": "2018-2019.pmtiles",
+      "byteLength": 1039519177,
+      "sha256": "1ade853c9d987d61bfab8581045af260929dc647ea65aa70d4f6741f8e655dfd",
+      "patchCount": 6782267,
+      "cellCount": 33612333,
+      "harvestCells": 6347960,
+      "fireCells": 13189544,
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/phase2-per-cell-geometry-v1/c2af3e65489e3121d7024367cbc56191d9ffeed5bafc41f8d5c4625abcfc0809/tiles/2018-2019.pmtiles"
+    },
+    {
+      "interval": "2019-2020",
+      "fileName": "2019-2020.pmtiles",
+      "byteLength": 927258851,
+      "sha256": "57cae80cd7d835c3ece511128e331c8e543fdbec8752dd70e250a20ce26643cd",
+      "patchCount": 6299100,
+      "cellCount": 21695439,
+      "harvestCells": 5530685,
+      "fireCells": 2348111,
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/phase2-per-cell-geometry-v1/c2af3e65489e3121d7024367cbc56191d9ffeed5bafc41f8d5c4625abcfc0809/tiles/2019-2020.pmtiles"
+    },
+    {
+      "interval": "2020-2021",
+      "fileName": "2020-2021.pmtiles",
+      "byteLength": 1005263402,
+      "sha256": "8c555da25014dcef0e714a728640c9d9805a62718e3c0fd760bf0107dc231db0",
+      "patchCount": 6924761,
+      "cellCount": 33581706,
+      "harvestCells": 5956650,
+      "fireCells": 11039813,
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/phase2-per-cell-geometry-v1/c2af3e65489e3121d7024367cbc56191d9ffeed5bafc41f8d5c4625abcfc0809/tiles/2020-2021.pmtiles"
+    },
+    {
+      "interval": "2021-2022",
+      "fileName": "2021-2022.pmtiles",
+      "byteLength": 895644128,
+      "sha256": "c38de41881481e598bc1966721fbfecc0e0a02e943c84c2183bf8c40d49e68b3",
+      "patchCount": 5687674,
+      "cellCount": 30482740,
+      "harvestCells": 4713829,
+      "fireCells": 14517547,
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/phase2-per-cell-geometry-v1/c2af3e65489e3121d7024367cbc56191d9ffeed5bafc41f8d5c4625abcfc0809/tiles/2021-2022.pmtiles"
+    }
+  ],
+  "totals": {
+    "intervalCount": 38,
+    "byteLength": 44075148715
+  }
+}

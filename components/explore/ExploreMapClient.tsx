@@ -15,6 +15,7 @@ import {
   EXPLORE_MAP_VIEWS,
   EXPLORE_PER_CELL_LAYER,
   EXPLORE_PRODUCTION_LAYER,
+  formatUnknownSharePercent,
   perCellArchiveForYear,
   perCellCauseForMode,
   perCellSourceLayer,
@@ -56,7 +57,7 @@ const text = {
     perCell:
       "Zoom in to see individual patches of detected forest loss, traced from the 30 m grid rather than generalized from it.",
     perCellLimits:
-      "These patches are drawn, not counted. Below the closest zoom the map simplifies them and leaves out the smallest ones, and no figure on this site is derived from them. They have not been expert-reviewed. An area with no patch is not a claim that no loss happened there.",
+      "These patches are drawn, not counted. Below the closest zoom the map simplifies them and leaves out the smallest ones, so adding them up would come out short; the annual figures are counted from the exact cell inventory instead. Nobody has checked these patches against conditions on the ground. An area with no patch is not a claim that no loss happened there.",
     perCellLegend: "Detected loss patch, by what the official record shows",
     perCellLegendHarvest: "Detected loss patch with a recorded harvest",
     perCellLegendFire: "Detected loss patch with a recorded fire",
@@ -125,7 +126,7 @@ const text = {
     perCell:
       "Faites un zoom avant pour voir chaque parcelle de perte forestière détectée, tracée à partir de la grille de 30 m plutôt que généralisée.",
     perCellLimits:
-      "Ces parcelles sont dessinées, et non comptées. Sous le zoom le plus rapproché, la carte les simplifie et omet les plus petites, et aucun chiffre de ce site n’en est tiré. Elles n’ont pas fait l’objet d’un examen par des experts. Une zone sans parcelle n’affirme pas qu’aucune perte n’y est survenue.",
+      "Ces parcelles sont dessinées, et non comptées. Sous le zoom le plus rapproché, la carte les simplifie et omet les plus petites ; les additionner donnerait donc un total trop faible. Les chiffres annuels sont plutôt comptés à partir de l’inventaire exact des cellules. Personne n’a vérifié ces parcelles sur le terrain. Une zone sans parcelle n’affirme pas qu’aucune perte n’y est survenue.",
     perCellLegend: "Parcelle de perte détectée, selon ce que montre le registre officiel",
     perCellLegendHarvest: "Parcelle de perte détectée avec récolte consignée",
     perCellLegendFire: "Parcelle de perte détectée avec incendie consigné",
@@ -967,7 +968,7 @@ export function ExploreMapClient({
                     <td>{number.format(row.observedLossHectares)}</td>
                     <td>{number.format(row.observedLossPercent)}</td>
                     <td>
-                      {`${text[locale].partial} (${number.format(row.unknownSharePercent)}${locale === "fr" ? " %" : "%"}; ${number.format(row.unknownRequiredInputHectares)} ${text[locale].unknownArea})`}
+                      {`${text[locale].partial} (${formatUnknownSharePercent(row.unknownSharePercent, locale)}; ${number.format(row.unknownRequiredInputHectares)} ${text[locale].unknownArea})`}
                     </td>
                   </tr>
                 ))}

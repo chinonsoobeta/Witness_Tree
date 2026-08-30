@@ -84,3 +84,25 @@ export const EXPLORE_PRODUCTION_LAYER = Object.freeze({
     },
   ],
 } as const);
+
+/*
+ * A share that rounds to zero is the one number this column must never print.
+ * British Columbia's unknown area is 4,095.27 ha against 91.7 million, which at
+ * two decimal places renders as "0%": a flat claim of complete coverage sitting
+ * in the same sentence as the hectares that contradict it. Below the threshold
+ * the label says the share is smaller than the smallest figure the column can
+ * show, which is what the measurement actually supports and no more.
+ *
+ * Zero itself still prints as zero. A province with nothing unknown is a real
+ * result, and hiding it behind a "less than" would understate the evidence.
+ */
+export function formatUnknownSharePercent(percent: number, locale: "en" | "fr"): string {
+  const number = new Intl.NumberFormat(locale === "fr" ? "fr-CA" : "en-CA", {
+    maximumFractionDigits: 2,
+  });
+  const suffix = locale === "fr" ? " %" : "%";
+  // The exact rounding boundary for two decimals, tested on the measured value
+  // rather than on the formatted string, whose separators differ by locale.
+  if (percent > 0 && percent < 0.005) return `<${number.format(0.01)}${suffix}`;
+  return `${number.format(percent)}${suffix}`;
+}
