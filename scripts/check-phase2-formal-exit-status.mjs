@@ -23,6 +23,16 @@ const OPEN_EVIDENCE = {
   "expert-review-100-per-province": "data/phase2-v21-real-review-packet-evidence.json",
   "published-independent-comparisons": "data/phase2-real-comparison-availability.json",
 };
+/*
+ * A retired criterion is a requirement the owner withdrew, not one the project
+ * met. It keeps its place among the four so that withdrawing it cannot raise
+ * the completion percentage: the denominator below is CRITERIA.length, which
+ * does not move, and a retired criterion is derived as not complete every time.
+ */
+const RETIRED_EVIDENCE = {
+  "expert-review-100-per-province": "data/phase2-expert-review-retirement-2026-08-30.json",
+};
+const RETIREMENT_SCHEMA = "witness-tree/phase2-expert-review-retirement/1";
 const COMPLETION_SCHEMAS = {
   "expert-review-100-per-province": "witness-tree/phase2-v21-expert-review-evidence/1",
   "published-independent-comparisons": "witness-tree/phase2-independent-comparison-evidence/1",
@@ -108,7 +118,24 @@ function validateComparisonCompletion(path) {
   return true;
 }
 
+function validateRetiredCriterion(criterion) {
+  const path = requireEvidencePath(criterion);
+  assert.ok(RETIRED_EVIDENCE[criterion.id], `${criterion.id} is not a criterion that may be retired.`);
+  exact(resolveEvidencePath(path), resolveEvidencePath(RETIRED_EVIDENCE[criterion.id]), `${criterion.id} retirement evidence path`);
+  const record = readJsonAt(path);
+  assert.equal(record.schemaVersion, RETIREMENT_SCHEMA, `${criterion.id} retirement record schema drifted.`);
+  assert.equal(record.status, "retired-not-met", `${criterion.id} retirement must record the requirement as withdrawn, not met.`);
+  assert.equal(record.criterion, criterion.id, `${criterion.id} retirement record names a different criterion.`);
+  // Withdrawing a requirement can never assert the thing it required.
+  for (const [claim, value] of Object.entries(record.claims ?? {})) {
+    assert.equal(value, false, `${criterion.id} retirement asserts ${claim}; a withdrawn requirement proves nothing.`);
+  }
+  assert.equal(criterion.complete, false, `${criterion.id} is retired and can never be recorded complete.`);
+  return false;
+}
+
 function validateCompletionCriterion(criterion) {
+  if (criterion?.retired === true) return validateRetiredCriterion(criterion);
   const path = requireEvidencePath(criterion);
   const evidence = readJsonAt(path);
   const expectedSchema = COMPLETION_SCHEMAS[criterion.id];
@@ -141,6 +168,12 @@ export function validatePhase2FormalExitStatus(record) {
     admissionResults.boundary,
   ];
   exact(record.criteria.map((criterion) => criterion.complete), derived, "Phase 2 criterion completion");
+
+  // Retirement withdraws a requirement; it must never shrink the denominator.
+  assert.equal(record.criteria.length, CRITERIA.length, "Phase 2 formal exit denominator must stay at four whether or not a criterion is retired.");
+  for (const criterion of record.criteria) {
+    if (criterion?.retired === true) assert.equal(criterion.complete, false, `${criterion.id} is retired and cannot be complete.`);
+  }
 
   const completed = derived.filter(Boolean).length;
   exact(record.formalExit, { completed, total: CRITERIA.length, percentage: completed / CRITERIA.length * 100 }, "Phase 2 formal exit");

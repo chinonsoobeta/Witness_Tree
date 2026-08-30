@@ -5,7 +5,7 @@ import path from "node:path";
 import test from "node:test";
 
 // @ts-expect-error -- Node's TypeScript runner requires explicit local extensions.
-import { EXPLORE_PRODUCTION_LAYER } from "../lib/explore/map-style.ts";
+import { EXPLORE_PRODUCTION_LAYER, formatUnknownSharePercent } from "../lib/explore/map-style.ts";
 
 const receipt = JSON.parse(readFileSync(new URL("../data/phase2-annual-province-zonal-v2-receipt-2026-08-29.json", import.meta.url), "utf8"));
 const sha256 = (bytes: Buffer) => createHash("sha256").update(bytes).digest("hex");
@@ -81,4 +81,27 @@ test("a partial grade never carries a rate presented as the whole province", () 
     assert.ok(Number.isFinite(row.observedLossPercent), `${row.id} percent`);
     assert.ok(row.observedLossHectares > 0, `${row.id} hectares are positive`);
   }
+});
+
+test("a nonzero unknown share never renders as zero", () => {
+  /*
+   * British Columbia's unknown area is 4,095.27 ha, which is 0.0045% of the
+   * province. Rounded to the two decimals the column shows, that is "0" - a
+   * flat claim of complete coverage printed in the same sentence as the
+   * hectares that are not covered. The label has to stay a minimum claim at
+   * every magnitude, including the ones too small for the column to show.
+   */
+  const bc = EXPLORE_PRODUCTION_LAYER.rows.find((row) => row.id === "59");
+  assert.ok(bc, "British Columbia is missing from the production layer");
+  assert.ok(bc.unknownRequiredInputHectares > 0);
+  assert.equal(formatUnknownSharePercent(bc.unknownSharePercent, "en"), "<0.01%");
+  assert.equal(formatUnknownSharePercent(bc.unknownSharePercent, "fr"), "<0,01 %");
+
+  // Shares the column can show are shown, in both locales' own notation.
+  assert.equal(formatUnknownSharePercent(24.021462181301985, "en"), "24.02%");
+  assert.equal(formatUnknownSharePercent(9.03031065123395, "en"), "9.03%");
+
+  // A province with nothing unknown is a real result, not a rounded one, so it
+  // must not be dressed up as "less than": that would understate the evidence.
+  assert.equal(formatUnknownSharePercent(0, "en"), "0%");
 });

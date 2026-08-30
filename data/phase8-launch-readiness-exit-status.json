@@ -39,7 +39,7 @@
       "evidence": [
         {
           "path": "docs/PLAN_GAP_MATRIX.md",
-          "sha256": "a7d5f2663517bb5e4cd101451cf5e8a78a6d50095f6298cf86acf41a3afca99d"
+          "sha256": "bcf426f205d8f21b598ab500b35959d41fb5219722e46b9e182b5edd7ad95dd1"
         }
       ]
     },
@@ -119,7 +119,7 @@
         },
         {
           "path": "docs/PLAN_GAP_MATRIX.md",
-          "sha256": "a7d5f2663517bb5e4cd101451cf5e8a78a6d50095f6298cf86acf41a3afca99d"
+          "sha256": "bcf426f205d8f21b598ab500b35959d41fb5219722e46b9e182b5edd7ad95dd1"
         }
       ],
       "ownerAuthorization": {
@@ -136,7 +136,7 @@
       "evidence": [
         {
           "path": "docs/PLAN_GAP_MATRIX.md",
-          "sha256": "a7d5f2663517bb5e4cd101451cf5e8a78a6d50095f6298cf86acf41a3afca99d"
+          "sha256": "bcf426f205d8f21b598ab500b35959d41fb5219722e46b9e182b5edd7ad95dd1"
         }
       ]
     },
@@ -284,11 +284,11 @@
         },
         {
           "path": "components/explore/ExploreMapClient.tsx",
-          "sha256": "82ea55ddf01910e47c4970a83f6d24fd0b69970a9d6eac262b01cb171a562be9"
+          "sha256": "ab743feef2f3f1f3a5d6b083ac862b3b28fbc7efa64c8156f0872fbb5e8b2a98"
         },
         {
           "path": "tests/explore.test.tsx",
-          "sha256": "dd6a8542f6715a91b936bd481c4dcdffe520cc12546e4f8f649d11ae4a82ddcc"
+          "sha256": "9e7cefd27ac78510046564b094cf66dfd63e81826cc46c97a60a1b8cefeacc52"
         }
       ]
     }

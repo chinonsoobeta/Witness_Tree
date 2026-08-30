@@ -2498,6 +2498,49 @@ dd > a:only-child {
   max-width: var(--measure);
 }
 
+/* The countable annual figure, which sits beside the drawn patches it
+   describes. The numbers are tabular so the hectare column reads as a column
+   rather than as four unrelated figures. */
+.explore-annual {
+  padding: 18px 20px;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft);
+}
+
+.explore-annual h3 {
+  margin: 0 0 12px;
+}
+
+.explore-annual dl {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px 24px;
+  margin: 0;
+}
+
+.explore-annual dl > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.explore-annual dt {
+  color: var(--muted);
+}
+
+.explore-annual dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.explore-annual-basis {
+  color: var(--muted);
+  max-width: var(--measure);
+  margin: 12px 0 0;
+}
+
 .explore-year {
   display: block;
   padding: 18px 20px;
