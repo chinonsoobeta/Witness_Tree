@@ -7,11 +7,14 @@ const EXTERNAL_ROOT = "/Volumes/Extended_SSD/Witness_Tree-data";
 const ACTIVE_RUNTIME_SCRIPTS = [
   "run-phase1-ntems-transform.mjs",
   "verify-phase1-ntems-transform.mjs",
-  "run-phase1-federal-electoral-transformation.mjs",
   "check-phase2-real-national-execution-evidence.mjs",
   "run-qc-stand-copy.mjs",
   "verify-qc-stand-copy-readback.mjs",
 ];
+
+// The federal transformation and QC multipart runners are historical evidence:
+// dedicated gates bind their exact bytes to completed owner-run attestations.
+// Changing their defaults would invalidate those records rather than migrate them.
 
 test("active runtime scripts resolve their default data root through the shared helper", () => {
   for (const name of ACTIVE_RUNTIME_SCRIPTS) {
@@ -28,7 +31,7 @@ test("active shell runners and the phase2 review generator default to the extern
     "run-federal-electoral-approved-promotion.sh", "run-nbac-approved-promotion.sh",
     "run-phase1-approved-promotion.sh", "run-phase2-annual-riding-zonal.sh",
     "run-phase2-per-cell-tiles.sh", "run-phase8-bulk-download-publication.sh",
-    "run-qc-approved-multipart-promotion.sh", "run-qc-fourth-inventory-approved-promotion.sh",
+    "run-qc-fourth-inventory-approved-promotion.sh",
     "run-wildfire-derived-approved-promotion.sh", "run-wildfire-derived-manifest-retention.sh",
     "run-wildfire-derived-readback.sh", "run-wildfire-derived-recovery-owner.sh",
     "run-wildfire-derived-recovery.sh",
