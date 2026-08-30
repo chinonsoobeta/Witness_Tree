@@ -23,3 +23,42 @@ node scripts/verify-phase1-ntems-transform.mjs --spec-id ntems-forest-harvest-v1
 ```
 
 No evidence file is written without `--write-evidence`, and an existing evidence path is never replaced.
+
+## The 2026-08-30 re-verification
+
+Two sets of readback evidence are committed, dated 2026-08-26 and 2026-08-30.
+Both are real, and the older set is kept rather than replaced.
+
+Pull request #84 changed this repository's NTEMS transform runner and, in the
+same commit, rewrote the four owner-bound execution authorizations so their
+`runner.sha256` named the new file. It did not touch the readback evidence, which
+still named the pre-#84 runner. The checker re-verifies against the files as they
+are today, so it began reporting a contradiction: the committed record and a
+fresh verification disagreed.
+
+The disagreement was entirely in two fields. For every scope the fresh
+verification differs from the 2026-08-26 record in `runner.sha256` and
+`authorization.sha256` and in nothing else: output SHA-256, output byte length,
+sidecar bytes, GDAL structural metadata and source and output pixel checksums all
+match exactly, across all 42 outputs. The bytes on disk were never in question.
+
+That is what #84's runner change predicts. Its whole diff is one added import and
+`DEFAULT_DATA_ROOT` moving from a hardcoded path to `resolveDataRoot()`, which
+changes only the default value of `--data-root`. Nothing in the transform path
+moved, so the same inputs still produce the same bytes.
+
+The repair is therefore a re-verification, not a re-transform. Re-running the
+transform would have destroyed and rebuilt 78 GB of correct output to arrive at
+identical bytes. The 2026-08-30 records state what was actually established: on
+that date, the committed outputs were verified byte for byte and pixel checksum
+for pixel checksum against the runner and authorizations as they now stand.
+
+The 2026-08-26 records remain committed. They were true when written, and the
+outputs they describe were produced under the runner they name. Deleting them
+would erase the history that explains why two dates exist.
+
+Staleness of this kind is no longer invisible: the guarded set of
+`tests/phase1-ntems-readback-bytes.test.mjs` now includes the runner and all four
+authorizations, so a change to any of them fails
+`npm run check:data-root-test-currency` in CI until the data-root-bound suite is
+re-run. See [DATA_ROOT_TEST_CURRENCY.md](DATA_ROOT_TEST_CURRENCY.md).

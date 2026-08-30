@@ -34,10 +34,10 @@ import { verify } from "./verify-phase1-ntems-transform.mjs";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
 export const NTEMS_EVIDENCE = Object.freeze([
-  { specId: "ntems-forest-harvest-v1", evidencePath: "data/ntems-forest-harvest-v1-readback-evidence-2026-08-26.json" },
-  { specId: "ntems-canopy-cover-v1", evidencePath: "data/ntems-canopy-cover-v1-readback-evidence-2026-08-26.json" },
-  { specId: "ntems-canopy-height-v1", evidencePath: "data/ntems-canopy-height-v1-readback-evidence-2026-08-26.json" },
-  { specId: "ntems-annual-land-cover-v1", evidencePath: "data/ntems-annual-land-cover-v1-readback-evidence-2026-08-26.json" },
+  { specId: "ntems-forest-harvest-v1", evidencePath: "data/ntems-forest-harvest-v1-readback-evidence-2026-08-30.json" },
+  { specId: "ntems-canopy-cover-v1", evidencePath: "data/ntems-canopy-cover-v1-readback-evidence-2026-08-30.json" },
+  { specId: "ntems-canopy-height-v1", evidencePath: "data/ntems-canopy-height-v1-readback-evidence-2026-08-30.json" },
+  { specId: "ntems-annual-land-cover-v1", evidencePath: "data/ntems-annual-land-cover-v1-readback-evidence-2026-08-30.json" },
 ]);
 
 export function checkScope({ specId, evidencePath }, root = ROOT, dataRoot = undefined) {

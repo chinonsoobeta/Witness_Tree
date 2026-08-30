@@ -66,7 +66,7 @@ export const NTEMS_SCOPES = Object.freeze([
     rowId: "ntems-annual-land-cover",
     specId: "ntems-annual-land-cover-v1",
     authorizationPath: "data/phase1-ntems-annual-land-cover-execution-authorization.json",
-    readbackPath: "data/ntems-annual-land-cover-v1-readback-evidence-2026-08-26.json",
+    readbackPath: "data/ntems-annual-land-cover-v1-readback-evidence-2026-08-30.json",
     profilePaths: ["data/vlce2-remote-promotion-evidence.json", "data/raster-grid.json", "data/raster-defects.json"],
     rightsBindings: [
       ["data/vlce2-remote-promotion-evidence.json", "/source/licence/id", "ogl-canada"],
@@ -82,7 +82,7 @@ export const NTEMS_SCOPES = Object.freeze([
     rowId: "ntems-forest-harvest",
     specId: "ntems-forest-harvest-v1",
     authorizationPath: "data/phase1-ntems-forest-harvest-execution-authorization.json",
-    readbackPath: "data/ntems-forest-harvest-v1-readback-evidence-2026-08-26.json",
+    readbackPath: "data/ntems-forest-harvest-v1-readback-evidence-2026-08-30.json",
     profilePaths: ["data/nrcan-harvest-profile.json", "data/nrcan-harvest-remote-archive-evidence.json"],
     rightsBindings: [
       ["data/staged-acquisitions.json", "/entries/10/licenceId", "ogl-canada"],
@@ -97,7 +97,7 @@ export const NTEMS_SCOPES = Object.freeze([
     rowId: "ntems-canopy-cover",
     specId: "ntems-canopy-cover-v1",
     authorizationPath: "data/phase1-ntems-canopy-cover-execution-authorization.json",
-    readbackPath: "data/ntems-canopy-cover-v1-readback-evidence-2026-08-26.json",
+    readbackPath: "data/ntems-canopy-cover-v1-readback-evidence-2026-08-30.json",
     profilePaths: ["data/nrcan-canopy-cover-profile.json", "data/immutable-promotions.json"],
     rightsBindings: [
       ["data/staged-acquisitions.json", "/entries/9/licenceId", "ogl-canada"],
@@ -112,7 +112,7 @@ export const NTEMS_SCOPES = Object.freeze([
     rowId: "ntems-canopy-height",
     specId: "ntems-canopy-height-v1",
     authorizationPath: "data/phase1-ntems-canopy-height-execution-authorization.json",
-    readbackPath: "data/ntems-canopy-height-v1-readback-evidence-2026-08-26.json",
+    readbackPath: "data/ntems-canopy-height-v1-readback-evidence-2026-08-30.json",
     profilePaths: ["data/nrcan-canopy-height-profile.json", "data/nrcan-canopy-height-remote-archive-evidence.json"],
     rightsBindings: [
       ["data/staged-acquisitions.json", "/entries/2/licenceId", "ogl-canada"],
