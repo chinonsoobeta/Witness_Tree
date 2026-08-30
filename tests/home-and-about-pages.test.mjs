@@ -41,6 +41,13 @@ test("public coverage copy derives from the bounded Explore period", async () =>
   assert.match(french, /formatUnknownSharePercent\(row\.unknownSharePercent, "fr"\)/);
 });
 
+test("language choices use native document navigation", async () => {
+  const gateway = await read("../app/(gateway)/page.tsx");
+  assert.doesNotMatch(gateway, /next\/link|<Link\b/);
+  assert.match(gateway, /<a className="btn btn--primary" href="\/en">Continue in English<\/a>/);
+  assert.match(gateway, /<a className="btn btn--outline" href="\/fr" lang="fr">Continuer en français<\/a>/);
+});
+
 test("localized not-found pages use the site shell and offer three exits", async () => {
   const [english, french, englishCatchAll, frenchCatchAll] = await Promise.all([
     read("../app/en/not-found.tsx"),
