@@ -34,17 +34,17 @@ import {
 const text = {
   en: {
     label: "Verified province forest-loss map",
-    loading: "Loading the provisional 2020–2022 province aggregate map.",
+    loading: "Loading the map layers for the selected year.",
     ready:
-      "Showing the provisional 2020–2022 province aggregate. Display boundaries are simplified and omit small islands.",
+      "Showing the provisional province aggregate, which covers 2020 to 2022 and does not follow the year control. Display boundaries are simplified and omit small islands.",
     readyPerCell:
-      "Showing detected forest-loss patches for the selected interval, traced from the 30 m grid.",
+      "Showing detected forest-loss patches for the selected annual interval, traced from the 30 m grid. Patches are held for every interval from 1984–1985 to 2021–2022; the year control chooses which one is drawn.",
     readyHarvest:
       "Showing only the detected forest-loss patches that the national disturbance record marks as harvest in the selected interval.",
     readyFire:
       "Showing only the detected forest-loss patches that the national disturbance record marks as fire in the selected interval.",
     readyBoth:
-      "Showing the provisional 2020–2022 province aggregate, with detected forest-loss patches as you zoom in. Province display boundaries are simplified and omit small islands.",
+      "Showing two layers with different periods: detected forest-loss patches for the selected annual interval, drawn as you zoom in and available for every interval from 1984–1985 to 2021–2022, over the provisional province aggregate, which covers 2020 to 2022 and does not follow the year control. Province display boundaries are simplified and omit small islands.",
     fallback:
       "The interactive PMTiles layer was unavailable, so this map is showing the verified GeoJSON compatibility fallback.",
     unavailable:
@@ -55,7 +55,7 @@ const text = {
       "The verified map layer could not be loaded. The list and table alternatives remain available.",
     attribution: "Map sources",
     perCell:
-      "Zoom in to see individual patches of detected forest loss, traced from the 30 m grid rather than generalized from it.",
+      "Zoom in to see individual patches of detected forest loss, traced from the 30 m grid rather than generalized from it. One annual interval is drawn at a time, chosen by the year control, from the intervals running 1984–1985 to 2021–2022.",
     perCellLimits:
       "These patches are drawn, not counted. Below the closest zoom the map simplifies them and leaves out the smallest ones, so adding them up would come out short; the annual figures are counted from the exact cell inventory instead. Nobody has checked these patches against conditions on the ground. An area with no patch is not a claim that no loss happened there.",
     perCellLegend: "Detected loss patch, by what the official record shows",
@@ -103,17 +103,17 @@ const text = {
   fr: {
     label: "Carte vérifiée des pertes forestières provinciales",
     loading:
-      "Chargement de la carte provisoire de l’agrégat provincial de 2020 à 2022.",
+      "Chargement des couches cartographiques pour l’année choisie.",
     ready:
-      "Affichage de l’agrégat provincial provisoire de 2020 à 2022. Les limites d’affichage sont simplifiées et omettent les petites îles.",
+      "Affichage de l’agrégat provincial provisoire, qui couvre 2020 à 2022 et ne suit pas la commande d’année. Les limites d’affichage sont simplifiées et omettent les petites îles.",
     readyPerCell:
-      "Affichage des parcelles de perte forestière détectée pour l’intervalle choisi, tracées à partir de la grille de 30 m.",
+      "Affichage des parcelles de perte forestière détectée pour l’intervalle annuel choisi, tracées à partir de la grille de 30 m. Des parcelles existent pour chaque intervalle de 1984-1985 à 2021-2022; la commande d’année détermine celui qui est dessiné.",
     readyHarvest:
       "Affichage des seules parcelles de perte forestière détectée que le registre national des perturbations désigne comme récolte pour l’intervalle choisi.",
     readyFire:
       "Affichage des seules parcelles de perte forestière détectée que le registre national des perturbations désigne comme incendie pour l’intervalle choisi.",
     readyBoth:
-      "Affichage de l’agrégat provincial provisoire de 2020 à 2022, avec les parcelles de perte forestière détectée au fur et à mesure du zoom. Les limites provinciales affichées sont simplifiées et omettent les petites îles.",
+      "Affichage de deux couches aux périodes différentes : les parcelles de perte forestière détectée pour l’intervalle annuel choisi, dessinées au fur et à mesure du zoom et offertes pour chaque intervalle de 1984-1985 à 2021-2022, par-dessus l’agrégat provincial provisoire, qui couvre 2020 à 2022 et ne suit pas la commande d’année. Les limites provinciales affichées sont simplifiées et omettent les petites îles.",
     fallback:
       "La couche PMTiles interactive n’était pas disponible; cette carte affiche donc la solution de repli GeoJSON vérifiée.",
     unavailable:
@@ -124,7 +124,7 @@ const text = {
       "La couche cartographique vérifiée n’a pas pu être chargée. Les autres présentations en liste et en tableau demeurent disponibles.",
     attribution: "Sources de la carte",
     perCell:
-      "Faites un zoom avant pour voir chaque parcelle de perte forestière détectée, tracée à partir de la grille de 30 m plutôt que généralisée.",
+      "Faites un zoom avant pour voir chaque parcelle de perte forestière détectée, tracée à partir de la grille de 30 m plutôt que généralisée. Un seul intervalle annuel est dessiné à la fois, choisi par la commande d’année, parmi les intervalles allant de 1984-1985 à 2021-2022.",
     perCellLimits:
       "Ces parcelles sont dessinées, et non comptées. Sous le zoom le plus rapproché, la carte les simplifie et omet les plus petites ; les additionner donnerait donc un total trop faible. Les chiffres annuels sont plutôt comptés à partir de l’inventaire exact des cellules. Personne n’a vérifié ces parcelles sur le terrain. Une zone sans parcelle n’affirme pas qu’aucune perte n’y est survenue.",
     perCellLegend: "Parcelle de perte détectée, selon ce que montre le registre officiel",
@@ -789,7 +789,9 @@ export function ExploreMapClient({
                 <strong>{text[locale].mapLayers}</strong>
                 <ul className="explore-map-layer-list">
                   {provinceAvailable ? <li>{text[locale].provinceAggregate}</li> : null}
-                  {perCellArchive ? <li>{text[locale].detectedPatches}</li> : null}
+                  {perCellArchive ? (
+                    <li>{`${text[locale].detectedPatches}, ${perCellArchive.interval}`}</li>
+                  ) : null}
                   {overlays.map((id) => <li key={id}>{BOUNDARY_OVERLAYS[id].label[locale]}</li>)}
                 </ul>
                 {provinceAvailable ? (

@@ -42,16 +42,16 @@ const copy = {
      * where an archive actually exists for the year being shown.
      */
     production:
-      "The list, chart, and table use the same provisional 2020–2022 province aggregate.",
+      "Each layer on this page carries its own period, and this view is showing only one of them. The list, chart, and table use the same provisional 2020–2022 province aggregate, which is the only period that release covers. No per-cell patches are drawn for the selected year.",
     productionWithPerCell:
-      "The list, chart, and table use the same provisional 2020–2022 province aggregate. The map adds per-cell detected loss patches for 1984–2022, traced from the 30 m grid. The annual figures below are counted from the exact cell inventory, not from the drawn patches, which are simplified for display and cannot be added up. Nothing here has been checked against conditions on the ground, and the source maps only part of the country, so every figure is a minimum.",
+      "Each layer on this page carries its own period, so no single span describes the whole view. The map draws per-cell detected loss patches for 1984–2022, traced from the 30 m grid, and the heading below names the one annual interval the year control has selected. The list, chart, and table use the same provisional 2020–2022 province aggregate, which covers those years alone and does not move with the year control. The annual figures below are counted from the exact cell inventory, not from the drawn patches, which are simplified for display and cannot be added up. Nothing here has been checked against conditions on the ground, and the source maps only part of the country, so every figure is a minimum.",
     annualHeading: "Per-cell detected loss",
     annualDetected: "Detected loss (ha)",
     annualHarvest: "Recorded harvest (ha)",
     annualFire: "Recorded fire (ha)",
     annualUnattributed: "Cause not recorded (ha)",
     annualBasis:
-      "Counted from the exact 30 m cell inventory behind the map. One cell is 0.09 ha.",
+      "This is the single annual interval the year control has selected, not a total for 1984–2022 and not the 2020–2022 province aggregate. Counted from the exact 30 m cell inventory behind the map. One cell is 0.09 ha.",
     annualNone: "No per-cell interval covers this year.",
     fixtureList:
       "This list, chart, and table use illustrative fixtures. No verified geographic layer is implied by this view.",
@@ -92,16 +92,16 @@ const copy = {
     yearControl: "Afficher les exemples illustratifs jusqu’à l’année",
     update: "Mettre à jour",
     production:
-      "La liste, le graphique et le tableau utilisent le même agrégat provincial provisoire de 2020 à 2022.",
+      "Chaque couche de cette page porte sa propre période, et cette vue n’en affiche qu’une seule. La liste, le graphique et le tableau utilisent le même agrégat provincial provisoire de 2020 à 2022, seule période couverte par cette version. Aucune parcelle par cellule n’est dessinée pour l’année choisie.",
     productionWithPerCell:
-      "La liste, le graphique et le tableau utilisent le même agrégat provincial provisoire de 2020 à 2022. La carte y ajoute les parcelles de perte détectée par cellule de 1984 à 2022, tracées à partir de la grille de 30 m. Les chiffres annuels ci-dessous sont comptés à partir de l’inventaire exact des cellules, et non des parcelles dessinées, qui sont simplifiées pour l’affichage et ne peuvent pas être additionnées. Rien ici n’a été vérifié sur le terrain, et la source ne cartographie qu’une partie du pays : chaque chiffre est donc un minimum.",
+      "Chaque couche de cette page porte sa propre période ; aucune période unique ne décrit donc l’ensemble de la vue. La carte dessine les parcelles de perte détectée par cellule de 1984 à 2022, tracées à partir de la grille de 30 m, et le titre ci-dessous nomme le seul intervalle annuel choisi par la commande d’année. La liste, le graphique et le tableau utilisent le même agrégat provincial provisoire de 2020 à 2022, qui ne couvre que ces années et ne suit pas la commande d’année. Les chiffres annuels ci-dessous sont comptés à partir de l’inventaire exact des cellules, et non des parcelles dessinées, qui sont simplifiées pour l’affichage et ne peuvent pas être additionnées. Rien ici n’a été vérifié sur le terrain, et la source ne cartographie qu’une partie du pays : chaque chiffre est donc un minimum.",
     annualHeading: "Perte détectée par cellule",
     annualDetected: "Perte détectée (ha)",
     annualHarvest: "Récoltes consignées (ha)",
     annualFire: "Incendies consignés (ha)",
     annualUnattributed: "Cause non consignée (ha)",
     annualBasis:
-      "Comptée à partir de l’inventaire exact des cellules de 30 m derrière la carte. Une cellule représente 0,09 ha.",
+      "Il s’agit du seul intervalle annuel choisi par la commande d’année, et non d’un total pour 1984–2022 ni de l’agrégat provincial de 2020–2022. Comptée à partir de l’inventaire exact des cellules de 30 m derrière la carte. Une cellule représente 0,09 ha.",
     annualNone: "Aucun intervalle par cellule ne couvre cette année.",
     fixtureList:
       "Cette liste, ce graphique et ce tableau utilisent des exemples illustratifs. Cette vue n’implique aucune couche géographique vérifiée.",

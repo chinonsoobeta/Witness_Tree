@@ -1,284 +1,284 @@
 {
- "schemaVersion": "witness-tree/phase7-indigenous-explore-comparison-exit-status/1",
- "phase": 7,
- "localImplementationStatus": "incomplete",
- "phaseComplete": false,
- "completedCriteria": 14,
- "totalCriteria": 16,
- "percentage": 87.5,
- "exitCriteria": [
-  {
-   "id": "reserve-and-treaty-layers-loaded",
-   "title": "Every reserve and treaty area in the four provinces has a page with the correct official name and diacritics, checked against the federal source",
-   "status": "fail",
-   "reason": "All four authoritative source families remain access, authority, rights, precision, checksum, and engagement blocked. The illustrative reserve and treaty fixtures are deliberately not federal geography and cannot support page generation.",
-   "evidence": [
+  "schemaVersion": "witness-tree/phase7-indigenous-explore-comparison-exit-status/1",
+  "phase": 7,
+  "localImplementationStatus": "incomplete",
+  "phaseComplete": false,
+  "completedCriteria": 14,
+  "totalCriteria": 16,
+  "percentage": 87.5,
+  "exitCriteria": [
     {
-     "path": "data/indian-reserves-authority-access-block.json",
-     "sha256": "eeace407f3eb9971e8233b6ccd9759dd7ce9e698e9c8e86248c6aa8db7e722c7"
+      "id": "reserve-and-treaty-layers-loaded",
+      "title": "Every reserve and treaty area in the four provinces has a page with the correct official name and diacritics, checked against the federal source",
+      "status": "fail",
+      "reason": "All four authoritative source families remain access, authority, rights, precision, checksum, and engagement blocked. The illustrative reserve and treaty fixtures are deliberately not federal geography and cannot support page generation.",
+      "evidence": [
+        {
+          "path": "data/indian-reserves-authority-access-block.json",
+          "sha256": "eeace407f3eb9971e8233b6ccd9759dd7ce9e698e9c8e86248c6aa8db7e722c7"
+        },
+        {
+          "path": "data/modern-treaties-authority-access-block.json",
+          "sha256": "1f9058ac3f1a4658a83393ce1f8cebdc44173cc7f2079e378dffb9e71fccac50"
+        },
+        {
+          "path": "docs/PHASE1_INDIGENOUS_BOUNDARY_SOURCE_GATE.md",
+          "sha256": "0fd767e46ac2d01e2b8f1a8cd9b4683895b5f8f9c7e52b4f26c9d4f3a8bb5e1e"
+        }
+      ]
     },
     {
-     "path": "data/modern-treaties-authority-access-block.json",
-     "sha256": "1f9058ac3f1a4658a83393ce1f8cebdc44173cc7f2079e378dffb9e71fccac50"
+      "id": "right-of-reply-live",
+      "title": "Every reserve and treaty page carries a working right-of-reply route with a named recipient",
+      "status": "fail",
+      "reason": "The public engagement page accurately says that no named accountable recipient or tested intake channel has been appointed. An illustrative safeguard note is not a working reply route.",
+      "evidence": [
+        {
+          "path": "components/governance/GovernancePage.tsx",
+          "sha256": "92f254ce90ba12cc592516351b8f2e7ff209988fafa2f2d27f20330f4fa396ec"
+        }
+      ]
     },
     {
-     "path": "docs/PHASE1_INDIGENOUS_BOUNDARY_SOURCE_GATE.md",
-     "sha256": "0fd767e46ac2d01e2b8f1a8cd9b4683895b5f8f9c7e52b4f26c9d4f3a8bb5e1e"
+      "id": "minimum-area-rule",
+      "title": "A reserve below the admitted area threshold shows the raw record and declines to publish a rate, proven by a fixture",
+      "status": "pass",
+      "reason": "The pure guard preserves the supplied raw record, produces a bilingual Unknown instead of a rate below its caller-supplied admitted threshold, and fails invalid area inputs closed. It does not select a production threshold before an admitted source grid exists.",
+      "evidence": [
+        {
+          "path": "lib/indigenous/minimum-area.ts",
+          "sha256": "500ce379fe08b335c60a28547c9c2628b726ca1c995cee0f066afccfa25ea695"
+        },
+        {
+          "path": "tests/indigenous-minimum-area.test.ts",
+          "sha256": "fc67d46dfecc7a66131388336b450657dce3e796838250ba4c462dd00e4a0b3b"
+        }
+      ]
+    },
+    {
+      "id": "engagement-register-published",
+      "title": "A public register lists engagement contacts made and responses received while respecting confidentiality requests",
+      "status": "pass",
+      "reason": "The bilingual public register is published and truthfully lists zero contacts and zero responses, with a confidentiality rule. It is not evidence that the required outreach has occurred.",
+      "evidence": [
+        {
+          "path": "components/governance/GovernancePage.tsx",
+          "sha256": "92f254ce90ba12cc592516351b8f2e7ff209988fafa2f2d27f20330f4fa396ec"
+        }
+      ]
+    },
+    {
+      "id": "no-indigenous-ranking",
+      "title": "No ranked view accepts a reserve or treaty-area place type",
+      "status": "pass",
+      "reason": "The rankable union contains federal and provincial ridings only, and the type test explicitly rejects a reserve.",
+      "evidence": [
+        {
+          "path": "lib/comparison/ranking.ts",
+          "sha256": "eb38364937424d60bee33113e6a6b33faa2cab6c3ffc053fedc0294fbd8a5d0e"
+        },
+        {
+          "path": "tests/comparison.test.tsx",
+          "sha256": "559adf6e622f5609c7cc8744e45a3009002f99e37ae40ce7417dfab428485526"
+        }
+      ]
+    },
+    {
+      "id": "mistik-request-recorded",
+      "title": "The Mistik request, terms, honorarium, and outcome appear in the decision log and engagement register",
+      "status": "pass",
+      "reason": "The decision log and engagement register record the owner's final outcome: Mistik was not pursued, no request was made, no permission, honorarium, or terms exist, and Witness Tree / Arbre témoin remains the product name. The surfaces do not imply that engagement or permission occurred.",
+      "evidence": [
+        {
+          "path": "components/governance/GovernancePage.tsx",
+          "sha256": "92f254ce90ba12cc592516351b8f2e7ff209988fafa2f2d27f20330f4fa396ec"
+        },
+        {
+          "path": "data/phase0-owner-scope-decisions-2026-08-27.json",
+          "sha256": "222f236e3ba90322d876d10405011dafd94847b295d1324ca898f0e9f1279fe1"
+        }
+      ]
+    },
+    {
+      "id": "explore-modes-and-overlays",
+      "title": "Explore provides the four required modes and four reference-boundary overlays",
+      "status": "pass",
+      "reason": "Narrowed by owner scope decision on 2026-08-29, then met. The four modes render. Federal ridings, the BC, Alberta, Ontario and Quebec provincial ridings, all 76 Statistics Canada 2021 economic regions, and the 169 Canadian areas selected from NRCan's Water Survey of Canada version 6.0 rollup are drawn from one immutable v2 PMTiles release with exact remote readback and bilingual attribution. Economic regions and watersheds are boundary-only reference frameworks, not forest-loss aggregates. The reserve and treaty-area overlays were removed from Explore, not delivered, and this criterion no longer stands in for them: that obligation is tracked solely by reserve-and-treaty-layers-loaded, which remains failed. If this criterion is ever read as evidence that reserve or treaty geography ships, it is being read wrongly.",
+      "evidence": [
+        {
+          "path": "components/explore/ExploreView.tsx",
+          "sha256": "d1e82bef8394c685d9b51a738762e434e21b5b004e5a480839b7b929491bed75"
+        },
+        {
+          "path": "tests/explore.test.tsx",
+          "sha256": "9e7cefd27ac78510046564b094cf66dfd63e81826cc46c97a60a1b8cefeacc52"
+        }
+      ]
+    },
+    {
+      "id": "no-map-tabular-equivalence",
+      "title": "Explore map/list and chart/table presentations expose the same evidence-bearing records at the same route",
+      "status": "pass",
+      "reason": "The view retains evidence, confidence, coverage, provenance, and Unknown reasoning in its accessible table presentation and route parameters.",
+      "evidence": [
+        {
+          "path": "components/explore/ExploreView.tsx",
+          "sha256": "d1e82bef8394c685d9b51a738762e434e21b5b004e5a480839b7b929491bed75"
+        },
+        {
+          "path": "tests/explore.test.tsx",
+          "sha256": "9e7cefd27ac78510046564b094cf66dfd63e81826cc46c97a60a1b8cefeacc52"
+        }
+      ]
+    },
+    {
+      "id": "native-time-control",
+      "title": "Explore uses a native range input whose keyboard interaction advances the selected year",
+      "status": "pass",
+      "reason": "Explore renders an input of type range with bounded years, so native controls provide arrow-key stepping, and the focused route test pins the element and its range. The control is also operable rather than decorative: it is named, sits in a GET form that carries the mode, presentation, and data selections through a submit, and its year is reflected in every link on the page, so a chosen year can be linked, bookmarked, and shared. The route parses the year defensively and falls back to the default rather than throwing on any value the control could not have produced.",
+      "evidence": [
+        {
+          "path": "components/explore/ExploreView.tsx",
+          "sha256": "d1e82bef8394c685d9b51a738762e434e21b5b004e5a480839b7b929491bed75"
+        },
+        {
+          "path": "tests/explore.test.tsx",
+          "sha256": "9e7cefd27ac78510046564b094cf66dfd63e81826cc46c97a60a1b8cefeacc52"
+        }
+      ]
+    },
+    {
+      "id": "boundary-editioning",
+      "title": "Comparison and place aggregates retain and display a boundary edition rather than silently applying a current boundary",
+      "status": "pass",
+      "reason": "The boundary-edition validator retains staged editions as nonproduction, and aggregate tests reproduce a prior edition after loading a newer one. The validator is now fail-closed in both directions: it refuses the retired claim that the GDAL toolchain is absent, and it refuses any claim of geometry, CRS, or attribute-schema validation that a headers-only read cannot support.",
+      "evidence": [
+        {
+          "path": "data/boundary-editions.json",
+          "sha256": "2ee846edbd8230109342b0077f01bae9def20acef40e70f8970868df51db777c"
+        },
+        {
+          "path": "scripts/check-boundary-editions.mjs",
+          "sha256": "b8d49317083220b0b43e67b1b644eea3cbb4ab335d3179d29584a8b3d5c5db95"
+        },
+        {
+          "path": "tests/event-normalization.test.ts",
+          "sha256": "9c61878b0d111d7bee22d3a8d689b7f001b946d38d2205c314b1244814c52e36"
+        }
+      ]
+    },
+    {
+      "id": "normalisation-forced",
+      "title": "The riding ranking has no absolute-hectares-only sort and orders by detected-change share of forested area",
+      "status": "pass",
+      "reason": "The sole ranking function orders sufficient rows by detected-change percentage; no absolute-hectares sorting parameter exists.",
+      "evidence": [
+        {
+          "path": "lib/comparison/ranking.ts",
+          "sha256": "eb38364937424d60bee33113e6a6b33faa2cab6c3ffc053fedc0294fbd8a5d0e"
+        },
+        {
+          "path": "tests/comparison.test.tsx",
+          "sha256": "559adf6e622f5609c7cc8744e45a3009002f99e37ae40ce7417dfab428485526"
+        }
+      ]
+    },
+    {
+      "id": "comparison-row-context",
+      "title": "Every riding comparison row renders normalised and absolute values, forested-hectare denominator, coverage, and evidence",
+      "status": "pass",
+      "reason": "The comparison table and cards render percentage, hectares, forested hectares, coverage, and evidence in both locales, and the rank basis cell also carries the share with no matching official record, so a cropped screenshot cannot separate a rank from its caveat.",
+      "evidence": [
+        {
+          "path": "components/comparison/RankedRidingsTable.tsx",
+          "sha256": "b24bd8ed8b7e82ef088355c07d4e80e1cd568a62766d20a995c41d79e4a9fd17"
+        },
+        {
+          "path": "components/comparison/SideBySideComparison.tsx",
+          "sha256": "7b5a266c385fa5332c4e7f28372a3b2d7d31e1858384adf0dca5fa2eb1d46896"
+        },
+        {
+          "path": "tests/comparison.test.tsx",
+          "sha256": "559adf6e622f5609c7cc8744e45a3009002f99e37ae40ce7417dfab428485526"
+        }
+      ]
+    },
+    {
+      "id": "insufficient-coverage-separated",
+      "title": "Insufficient-coverage ridings are separated from the ranked table rather than represented as zero",
+      "status": "pass",
+      "reason": "The ranking result has a dedicated insufficient-coverage collection and the rendered component gives it a labelled separate table.",
+      "evidence": [
+        {
+          "path": "lib/comparison/ranking.ts",
+          "sha256": "eb38364937424d60bee33113e6a6b33faa2cab6c3ffc053fedc0294fbd8a5d0e"
+        },
+        {
+          "path": "components/comparison/RankedRidingsTable.tsx",
+          "sha256": "b24bd8ed8b7e82ef088355c07d4e80e1cd568a62766d20a995c41d79e4a9fd17"
+        },
+        {
+          "path": "tests/comparison.test.tsx",
+          "sha256": "559adf6e622f5609c7cc8744e45a3009002f99e37ae40ce7417dfab428485526"
+        }
+      ]
+    },
+    {
+      "id": "comparison-share-image-context",
+      "title": "The deterministic comparison share image includes time range, boundary edition, data version, and denominator",
+      "status": "pass",
+      "reason": "The localized SVG generation includes all required context and has deterministic and escaping tests.",
+      "evidence": [
+        {
+          "path": "lib/comparison/share-image.ts",
+          "sha256": "35c57ed30e89ebc774be8291d91cc8a9a1ca2fe9ba6bf9747de8aa6374aed2c7"
+        },
+        {
+          "path": "tests/comparison-share-image.test.ts",
+          "sha256": "fc74404ee15a298139b1e1649aeb4aeedb2bd503783d9608054d2172a8aaf35c"
+        }
+      ]
+    },
+    {
+      "id": "ranking-scope-enforced",
+      "title": "The ranked table type accepts federal and provincial ridings only",
+      "status": "pass",
+      "reason": "The RankablePlaceType union is limited to the two riding types and the type test rejects reserve input.",
+      "evidence": [
+        {
+          "path": "lib/comparison/ranking.ts",
+          "sha256": "eb38364937424d60bee33113e6a6b33faa2cab6c3ffc053fedc0294fbd8a5d0e"
+        },
+        {
+          "path": "tests/comparison.test.tsx",
+          "sha256": "559adf6e622f5609c7cc8744e45a3009002f99e37ae40ce7417dfab428485526"
+        }
+      ]
+    },
+    {
+      "id": "neutral-comparison-headers",
+      "title": "Comparison headers reject accusatory or superlative ranking language",
+      "status": "pass",
+      "reason": "The focused comparison test asserts the prohibited ranking vocabulary is absent from bilingual heading and context copy.",
+      "evidence": [
+        {
+          "path": "tests/comparison.test.tsx",
+          "sha256": "559adf6e622f5609c7cc8744e45a3009002f99e37ae40ce7417dfab428485526"
+        }
+      ]
     }
-   ]
-  },
-  {
-   "id": "right-of-reply-live",
-   "title": "Every reserve and treaty page carries a working right-of-reply route with a named recipient",
-   "status": "fail",
-   "reason": "The public engagement page accurately says that no named accountable recipient or tested intake channel has been appointed. An illustrative safeguard note is not a working reply route.",
-   "evidence": [
+  ],
+  "externalBlockers": [
     {
-     "path": "components/governance/GovernancePage.tsx",
-     "sha256": "92f254ce90ba12cc592516351b8f2e7ff209988fafa2f2d27f20330f4fa396ec"
-    }
-   ]
-  },
-  {
-   "id": "minimum-area-rule",
-   "title": "A reserve below the admitted area threshold shows the raw record and declines to publish a rate, proven by a fixture",
-   "status": "pass",
-   "reason": "The pure guard preserves the supplied raw record, produces a bilingual Unknown instead of a rate below its caller-supplied admitted threshold, and fails invalid area inputs closed. It does not select a production threshold before an admitted source grid exists.",
-   "evidence": [
-    {
-     "path": "lib/indigenous/minimum-area.ts",
-     "sha256": "500ce379fe08b335c60a28547c9c2628b726ca1c995cee0f066afccfa25ea695"
+      "id": "official-indigenous-boundary-admission",
+      "status": "blocked",
+      "reason": "Affected authorities and rights-holders must identify authoritative versioned reserve and treaty artifacts with exact terms, checksum-bound recovery, attribution, and approved use before any production acquisition or page generation."
     },
     {
-     "path": "tests/indigenous-minimum-area.test.ts",
-     "sha256": "fc67d46dfecc7a66131388336b450657dce3e796838250ba4c462dd00e4a0b3b"
+      "id": "owner-managed-right-of-reply-route",
+      "status": "blocked",
+      "reason": "A named accountable recipient, tested bilingual intake route, and owner-managed engagement process are required before a right-of-reply claim can be live."
     }
-   ]
-  },
-  {
-   "id": "engagement-register-published",
-   "title": "A public register lists engagement contacts made and responses received while respecting confidentiality requests",
-   "status": "pass",
-   "reason": "The bilingual public register is published and truthfully lists zero contacts and zero responses, with a confidentiality rule. It is not evidence that the required outreach has occurred.",
-   "evidence": [
-    {
-     "path": "components/governance/GovernancePage.tsx",
-     "sha256": "92f254ce90ba12cc592516351b8f2e7ff209988fafa2f2d27f20330f4fa396ec"
-    }
-   ]
-  },
-  {
-   "id": "no-indigenous-ranking",
-   "title": "No ranked view accepts a reserve or treaty-area place type",
-   "status": "pass",
-   "reason": "The rankable union contains federal and provincial ridings only, and the type test explicitly rejects a reserve.",
-   "evidence": [
-    {
-     "path": "lib/comparison/ranking.ts",
-     "sha256": "eb38364937424d60bee33113e6a6b33faa2cab6c3ffc053fedc0294fbd8a5d0e"
-    },
-    {
-     "path": "tests/comparison.test.tsx",
-     "sha256": "559adf6e622f5609c7cc8744e45a3009002f99e37ae40ce7417dfab428485526"
-    }
-   ]
-  },
-  {
-   "id": "mistik-request-recorded",
-   "title": "The Mistik request, terms, honorarium, and outcome appear in the decision log and engagement register",
-   "status": "pass",
-   "reason": "The decision log and engagement register record the owner's final outcome: Mistik was not pursued, no request was made, no permission, honorarium, or terms exist, and Witness Tree / Arbre témoin remains the product name. The surfaces do not imply that engagement or permission occurred.",
-   "evidence": [
-    {
-     "path": "components/governance/GovernancePage.tsx",
-     "sha256": "92f254ce90ba12cc592516351b8f2e7ff209988fafa2f2d27f20330f4fa396ec"
-    },
-    {
-     "path": "data/phase0-owner-scope-decisions-2026-08-27.json",
-     "sha256": "222f236e3ba90322d876d10405011dafd94847b295d1324ca898f0e9f1279fe1"
-    }
-   ]
-  },
-  {
-   "id": "explore-modes-and-overlays",
-   "title": "Explore provides the four required modes and four reference-boundary overlays",
-   "status": "pass",
-   "reason": "Narrowed by owner scope decision on 2026-08-29, then met. The four modes render. Federal ridings, the BC, Alberta, Ontario and Quebec provincial ridings, all 76 Statistics Canada 2021 economic regions, and the 169 Canadian areas selected from NRCan's Water Survey of Canada version 6.0 rollup are drawn from one immutable v2 PMTiles release with exact remote readback and bilingual attribution. Economic regions and watersheds are boundary-only reference frameworks, not forest-loss aggregates. The reserve and treaty-area overlays were removed from Explore, not delivered, and this criterion no longer stands in for them: that obligation is tracked solely by reserve-and-treaty-layers-loaded, which remains failed. If this criterion is ever read as evidence that reserve or treaty geography ships, it is being read wrongly.",
-   "evidence": [
-    {
-     "path": "components/explore/ExploreView.tsx",
-     "sha256": "86b2b288e90a909aa3f51eaf9ddc3246d95e169ec881981da2d86ecfde048057"
-    },
-    {
-     "path": "tests/explore.test.tsx",
-     "sha256": "9e7cefd27ac78510046564b094cf66dfd63e81826cc46c97a60a1b8cefeacc52"
-    }
-   ]
-  },
-  {
-   "id": "no-map-tabular-equivalence",
-   "title": "Explore map/list and chart/table presentations expose the same evidence-bearing records at the same route",
-   "status": "pass",
-   "reason": "The view retains evidence, confidence, coverage, provenance, and Unknown reasoning in its accessible table presentation and route parameters.",
-   "evidence": [
-    {
-     "path": "components/explore/ExploreView.tsx",
-     "sha256": "86b2b288e90a909aa3f51eaf9ddc3246d95e169ec881981da2d86ecfde048057"
-    },
-    {
-     "path": "tests/explore.test.tsx",
-     "sha256": "9e7cefd27ac78510046564b094cf66dfd63e81826cc46c97a60a1b8cefeacc52"
-    }
-   ]
-  },
-  {
-   "id": "native-time-control",
-   "title": "Explore uses a native range input whose keyboard interaction advances the selected year",
-   "status": "pass",
-   "reason": "Explore renders an input of type range with bounded years, so native controls provide arrow-key stepping, and the focused route test pins the element and its range. The control is also operable rather than decorative: it is named, sits in a GET form that carries the mode, presentation, and data selections through a submit, and its year is reflected in every link on the page, so a chosen year can be linked, bookmarked, and shared. The route parses the year defensively and falls back to the default rather than throwing on any value the control could not have produced.",
-   "evidence": [
-    {
-     "path": "components/explore/ExploreView.tsx",
-     "sha256": "86b2b288e90a909aa3f51eaf9ddc3246d95e169ec881981da2d86ecfde048057"
-    },
-    {
-     "path": "tests/explore.test.tsx",
-     "sha256": "9e7cefd27ac78510046564b094cf66dfd63e81826cc46c97a60a1b8cefeacc52"
-    }
-   ]
-  },
-  {
-   "id": "boundary-editioning",
-   "title": "Comparison and place aggregates retain and display a boundary edition rather than silently applying a current boundary",
-   "status": "pass",
-   "reason": "The boundary-edition validator retains staged editions as nonproduction, and aggregate tests reproduce a prior edition after loading a newer one. The validator is now fail-closed in both directions: it refuses the retired claim that the GDAL toolchain is absent, and it refuses any claim of geometry, CRS, or attribute-schema validation that a headers-only read cannot support.",
-   "evidence": [
-    {
-     "path": "data/boundary-editions.json",
-     "sha256": "2ee846edbd8230109342b0077f01bae9def20acef40e70f8970868df51db777c"
-    },
-    {
-     "path": "scripts/check-boundary-editions.mjs",
-     "sha256": "b8d49317083220b0b43e67b1b644eea3cbb4ab335d3179d29584a8b3d5c5db95"
-    },
-    {
-     "path": "tests/event-normalization.test.ts",
-     "sha256": "9c61878b0d111d7bee22d3a8d689b7f001b946d38d2205c314b1244814c52e36"
-    }
-   ]
-  },
-  {
-   "id": "normalisation-forced",
-   "title": "The riding ranking has no absolute-hectares-only sort and orders by detected-change share of forested area",
-   "status": "pass",
-   "reason": "The sole ranking function orders sufficient rows by detected-change percentage; no absolute-hectares sorting parameter exists.",
-   "evidence": [
-    {
-     "path": "lib/comparison/ranking.ts",
-     "sha256": "eb38364937424d60bee33113e6a6b33faa2cab6c3ffc053fedc0294fbd8a5d0e"
-    },
-    {
-     "path": "tests/comparison.test.tsx",
-     "sha256": "559adf6e622f5609c7cc8744e45a3009002f99e37ae40ce7417dfab428485526"
-    }
-   ]
-  },
-  {
-   "id": "comparison-row-context",
-   "title": "Every riding comparison row renders normalised and absolute values, forested-hectare denominator, coverage, and evidence",
-   "status": "pass",
-   "reason": "The comparison table and cards render percentage, hectares, forested hectares, coverage, and evidence in both locales, and the rank basis cell also carries the share with no matching official record, so a cropped screenshot cannot separate a rank from its caveat.",
-   "evidence": [
-    {
-     "path": "components/comparison/RankedRidingsTable.tsx",
-     "sha256": "b24bd8ed8b7e82ef088355c07d4e80e1cd568a62766d20a995c41d79e4a9fd17"
-    },
-    {
-     "path": "components/comparison/SideBySideComparison.tsx",
-     "sha256": "7b5a266c385fa5332c4e7f28372a3b2d7d31e1858384adf0dca5fa2eb1d46896"
-    },
-    {
-     "path": "tests/comparison.test.tsx",
-     "sha256": "559adf6e622f5609c7cc8744e45a3009002f99e37ae40ce7417dfab428485526"
-    }
-   ]
-  },
-  {
-   "id": "insufficient-coverage-separated",
-   "title": "Insufficient-coverage ridings are separated from the ranked table rather than represented as zero",
-   "status": "pass",
-   "reason": "The ranking result has a dedicated insufficient-coverage collection and the rendered component gives it a labelled separate table.",
-   "evidence": [
-    {
-     "path": "lib/comparison/ranking.ts",
-     "sha256": "eb38364937424d60bee33113e6a6b33faa2cab6c3ffc053fedc0294fbd8a5d0e"
-    },
-    {
-     "path": "components/comparison/RankedRidingsTable.tsx",
-     "sha256": "b24bd8ed8b7e82ef088355c07d4e80e1cd568a62766d20a995c41d79e4a9fd17"
-    },
-    {
-     "path": "tests/comparison.test.tsx",
-     "sha256": "559adf6e622f5609c7cc8744e45a3009002f99e37ae40ce7417dfab428485526"
-    }
-   ]
-  },
-  {
-   "id": "comparison-share-image-context",
-   "title": "The deterministic comparison share image includes time range, boundary edition, data version, and denominator",
-   "status": "pass",
-   "reason": "The localized SVG generation includes all required context and has deterministic and escaping tests.",
-   "evidence": [
-    {
-     "path": "lib/comparison/share-image.ts",
-     "sha256": "35c57ed30e89ebc774be8291d91cc8a9a1ca2fe9ba6bf9747de8aa6374aed2c7"
-    },
-    {
-     "path": "tests/comparison-share-image.test.ts",
-     "sha256": "fc74404ee15a298139b1e1649aeb4aeedb2bd503783d9608054d2172a8aaf35c"
-    }
-   ]
-  },
-  {
-   "id": "ranking-scope-enforced",
-   "title": "The ranked table type accepts federal and provincial ridings only",
-   "status": "pass",
-   "reason": "The RankablePlaceType union is limited to the two riding types and the type test rejects reserve input.",
-   "evidence": [
-    {
-     "path": "lib/comparison/ranking.ts",
-     "sha256": "eb38364937424d60bee33113e6a6b33faa2cab6c3ffc053fedc0294fbd8a5d0e"
-    },
-    {
-     "path": "tests/comparison.test.tsx",
-     "sha256": "559adf6e622f5609c7cc8744e45a3009002f99e37ae40ce7417dfab428485526"
-    }
-   ]
-  },
-  {
-   "id": "neutral-comparison-headers",
-   "title": "Comparison headers reject accusatory or superlative ranking language",
-   "status": "pass",
-   "reason": "The focused comparison test asserts the prohibited ranking vocabulary is absent from bilingual heading and context copy.",
-   "evidence": [
-    {
-     "path": "tests/comparison.test.tsx",
-     "sha256": "559adf6e622f5609c7cc8744e45a3009002f99e37ae40ce7417dfab428485526"
-    }
-   ]
-  }
- ],
- "externalBlockers": [
-  {
-   "id": "official-indigenous-boundary-admission",
-   "status": "blocked",
-   "reason": "Affected authorities and rights-holders must identify authoritative versioned reserve and treaty artifacts with exact terms, checksum-bound recovery, attribution, and approved use before any production acquisition or page generation."
-  },
-  {
-   "id": "owner-managed-right-of-reply-route",
-   "status": "blocked",
-   "reason": "A named accountable recipient, tested bilingual intake route, and owner-managed engagement process are required before a right-of-reply claim can be live."
-  }
- ],
- "nonProductionBoundary": "No official reserve or treaty geometry, Indigenous names, page, contact route, or engagement outcome is admitted to production. Indigenous fixtures remain illustrative and nonproduction. The federal riding comparison uses real extent-corrected 2021-2022 rows, but those rows remain explicitly local, non-admitted, non-released and nonproduction."
+  ],
+  "nonProductionBoundary": "No official reserve or treaty geometry, Indigenous names, page, contact route, or engagement outcome is admitted to production. Indigenous fixtures remain illustrative and nonproduction. The federal riding comparison uses real extent-corrected 2021-2022 rows, but those rows remain explicitly local, non-admitted, non-released and nonproduction."
 }
