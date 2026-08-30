@@ -12,7 +12,7 @@ ARTIFACT_ID="qc-ecoforest-map-2026-08-14"
 PART_SIZE=134217728
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 PLAN="$ROOT/data/qc-immutable-promotion-preparation.json"
-DATA_ROOT="/Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data"
+DATA_ROOT="${WITNESS_TREE_DATA_ROOT:-/Volumes/Extended_SSD/Witness_Tree-data}"
 STATE_ROOT="/private/tmp/witness-tree-qc-archive-promotion-state"
 
 cleanup() {

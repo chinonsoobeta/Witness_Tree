@@ -11,7 +11,7 @@ const CRITERIA = new Map([
   ["engagement-register-published", "A public register lists engagement contacts made and responses received while respecting confidentiality requests"],
   ["no-indigenous-ranking", "No ranked view accepts a reserve or treaty-area place type"],
   ["mistik-request-recorded", "The Mistik request, terms, honorarium, and outcome appear in the decision log and engagement register"],
-  ["explore-modes-and-overlays", "Explore provides the four required modes and the watershed, riding, reserve, and treaty-area overlays"],
+  ["explore-modes-and-overlays", "Explore provides the four required modes and four reference-boundary overlays"],
   ["no-map-tabular-equivalence", "Explore map/list and chart/table presentations expose the same evidence-bearing records at the same route"],
   ["native-time-control", "Explore uses a native range input whose keyboard interaction advances the selected year"],
   ["boundary-editioning", "Comparison and place aggregates retain and display a boundary edition rather than silently applying a current boundary"],

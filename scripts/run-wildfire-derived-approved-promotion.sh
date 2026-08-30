@@ -3,7 +3,7 @@
 # This contract intentionally has no AWS/IAM authority yet.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-DATA_ROOT="/Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data"
+DATA_ROOT="${WITNESS_TREE_DATA_ROOT:-/Volumes/Extended_SSD/Witness_Tree-data}"
 fail() { print -u2 -- "Stopped: $1"; exit "${2:-1}"; }
 [[ $# -le 1 && ( $# -eq 0 || "$1" == "--preflight" || "$1" == "--run" ) ]] || fail "Usage: $0 [--preflight|--run]" 64
 node "$ROOT/scripts/prepare-wildfire-derived-immutable-promotion.mjs" >/dev/null

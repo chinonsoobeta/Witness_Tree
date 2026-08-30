@@ -1,21 +1,28 @@
-import { CoverageBand, EvidenceChip } from "@/components/policy";
+import { EvidenceChip } from "@/components/policy";
 import {
   comparePlaces,
   type ComparisonPlace,
   type RankingContext,
 } from "@/lib/comparison";
 import type { Locale } from "@/lib/domain";
+import { MeasurementCoverage } from "./MeasurementCoverage";
 
 export function SideBySideComparison({
   places,
   context,
   locale,
   view = "cards",
+  leftId,
+  rightId,
+  sort,
 }: {
   places: readonly ComparisonPlace[];
   context: RankingContext;
   locale: Locale;
   view?: "cards" | "table";
+  leftId?: string;
+  rightId?: string;
+  sort?: string;
 }) {
   const [left, right] = comparePlaces(places);
   const labels =
@@ -49,11 +56,22 @@ export function SideBySideComparison({
       {labels.method}: {context.method[locale]}
     </p>
   );
+  const unknown = locale === "en" ? "Unknown" : "Inconnu";
+  const percent = (value: number | null) => value === null ? unknown : `${value}%`;
+  const hectares = (value: number | null) => value === null ? unknown : `${value} ha`;
+  const viewHref = (nextView: "cards" | "table") => {
+    const query = new URLSearchParams();
+    query.set("view", nextView);
+    if (leftId) query.set("left", leftId);
+    if (rightId) query.set("right", rightId);
+    if (sort) query.set("sort", sort);
+    return `?${query.toString()}`;
+  };
 
   if (view === "table") {
     return (
       <section className="comparison-side-by-side">
-        <a className="btn btn--ghost" href="?view=cards">
+        <a className="btn btn--ghost" href={viewHref("cards")}>
           {labels.cards}
         </a>
         <div className="table-scroll">
@@ -69,13 +87,13 @@ export function SideBySideComparison({
             <tbody>
               <tr>
                 <th scope="row">{labels.share}</th>
-                <td>{left.detectedChangePercent}%</td>
-                <td>{right.detectedChangePercent}%</td>
+                <td>{percent(left.detectedChangePercent)}</td>
+                <td>{percent(right.detectedChangePercent)}</td>
               </tr>
               <tr>
                 <th scope="row">{labels.change}</th>
-                <td>{left.detectedChangeHectares} ha</td>
-                <td>{right.detectedChangeHectares} ha</td>
+                <td>{hectares(left.detectedChangeHectares)}</td>
+                <td>{hectares(right.detectedChangeHectares)}</td>
               </tr>
               <tr>
                 <th scope="row">{labels.forest}</th>
@@ -85,16 +103,10 @@ export function SideBySideComparison({
               <tr>
                 <th scope="row">{labels.coverage}</th>
                 <td>
-                  <CoverageBand
-                    coverageGrade={left.coverageGrade}
-                    locale={locale}
-                  />
+                  <MeasurementCoverage place={left} locale={locale} />
                 </td>
                 <td>
-                  <CoverageBand
-                    coverageGrade={right.coverageGrade}
-                    locale={locale}
-                  />
+                  <MeasurementCoverage place={right} locale={locale} />
                 </td>
               </tr>
               <tr>
@@ -116,27 +128,29 @@ export function SideBySideComparison({
 
   return (
     <section className="comparison-side-by-side" aria-label={labels.title}>
-      <a className="btn btn--ghost" href="?view=table">
+      <a className="btn btn--ghost" href={viewHref("table")}>
         {labels.table}
       </a>
       <div className="comparison-pair">
-        <Place place={left} locale={locale} />
-        <Place place={right} locale={locale} />
+        <Place place={left} locale={locale} unknown={unknown} />
+        <Place place={right} locale={locale} unknown={unknown} />
       </div>
       {methodNote}
     </section>
   );
 }
 
-function Place({ place, locale }: { place: ComparisonPlace; locale: Locale }) {
+function Place({ place, locale, unknown }: { place: ComparisonPlace; locale: Locale; unknown: string }) {
+  const percent = place.detectedChangePercent === null ? unknown : `${place.detectedChangePercent}%`;
+  const hectares = place.detectedChangeHectares === null ? unknown : `${place.detectedChangeHectares} ha`;
   return (
     <article className="card card--lift comparison-card">
       <h2>{place.name[locale]}</h2>
       <p className="comparison-figures">
-        {place.detectedChangePercent}% · {place.detectedChangeHectares} ha ·{" "}
+        {percent} · {hectares} ·{" "}
         {place.forestedHectares} ha
       </p>
-      <CoverageBand coverageGrade={place.coverageGrade} locale={locale} />
+      <MeasurementCoverage place={place} locale={locale} />
       <EvidenceChip evidence={place.evidence} locale={locale} />
     </article>
   );

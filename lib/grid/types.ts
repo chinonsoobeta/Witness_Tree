@@ -87,7 +87,7 @@ export type GridDeviation = Readonly<{
 /**
  * The only reprojection this contract admits: boundary vectors move onto the raster grid.
  * `from` is pinned to the boundary CRS and `to` to the raster grid CRS, so the reverse
- * direction — warping the categorical raster into the boundary CRS — has no representable
+ * direction. Warping the categorical raster into the boundary CRS has no representable
  * value and cannot be requested.
  */
 export type ReprojectionDirection = Readonly<{

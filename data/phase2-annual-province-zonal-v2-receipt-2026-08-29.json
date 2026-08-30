@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "witness-tree/phase2-annual-province-zonal-v2-receipt/1",
+  "status": "local-nonproduction-executed",
+  "completedAt": "2026-08-30T01:08:03.498440Z",
+  "artifacts": {
+    "annualJson": {
+      "path": "../Witness_Tree-data/derived/phase2-annual-province-zonal-v2/annual-province-zonal-1984-2022.json",
+      "byteLength": 88613,
+      "sha256": "65b51ab93414e49a371901dab3a408fb8ab831e404f037395d28f1efa687c65d"
+    },
+    "sidecar": {
+      "path": "../Witness_Tree-data/derived/phase2-annual-province-zonal-v2/annual-province-zonal-1984-2022.provenance.json",
+      "byteLength": 143415,
+      "sha256": "df0ce293b025c75c0b791dd5c357ea4fa92600dfd3af6664193ecc459abfa36a"
+    },
+    "mappedExtent": {
+      "path": "../Witness_Tree-data/derived/phase2-vlce2-mapped-extent-v1/mapped-extent.tif",
+      "byteLength": 86803748,
+      "sha256": "500b79baec7c7a1d4d7fc6fd9be46504a02981557ce862dfe846222273f8c0d1"
+    },
+    "worker": {
+      "path": "scripts/phase2_annual_zonal_aggregate_v2.py",
+      "sha256": "44c86765b4f1a0ba527f7ed7cb91f95b1d490af404f9d783a84ffdf208a13958"
+    }
+  },
+  "execution": {
+    "featureCount": 4,
+    "annualPairCount": 38,
+    "rowCount": 156,
+    "coverageInvariantAcrossYears": true
+  },
+  "coverage": [
+    {
+      "boundaryId": "24",
+      "province": "QC",
+      "unknownRequiredInputHectares": 22204952.19,
+      "unmappedByProductExtentHectares": 22204952.19,
+      "districtHectares": 147544902,
+      "unknownSharePercent": 15.049623463100067,
+      "coverageGrade": "partial-with-unknown"
+    },
+    {
+      "boundaryId": "35",
+      "province": "ON",
+      "unknownRequiredInputHectares": 8843646.69,
+      "unmappedByProductExtentHectares": 8843646.69,
+      "districtHectares": 97932917.61,
+      "unknownSharePercent": 9.03031065123395,
+      "coverageGrade": "partial-with-unknown"
+    },
+    {
+      "boundaryId": "48",
+      "province": "AB",
+      "unknownRequiredInputHectares": 15372023.76,
+      "unmappedByProductExtentHectares": 15372023.76,
+      "districtHectares": 63992872.89,
+      "unknownSharePercent": 24.021462181301985,
+      "coverageGrade": "partial-with-unknown"
+    },
+    {
+      "boundaryId": "59",
+      "province": "BC",
+      "unknownRequiredInputHectares": 4095.27,
+      "unmappedByProductExtentHectares": 4095.27,
+      "districtHectares": 91730013.75,
+      "unknownSharePercent": 0.004464482051819162,
+      "coverageGrade": "partial-with-unknown"
+    }
+  ],
+  "claims": {
+    "admitted": false,
+    "released": false,
+    "productionEligible": false,
+    "externalAction": false
+  }
+}

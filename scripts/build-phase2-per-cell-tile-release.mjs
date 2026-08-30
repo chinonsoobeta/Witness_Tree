@@ -24,6 +24,7 @@ const digest = (file) =>
   });
 
 const readback = JSON.parse(await readFile(new URL("../data/phase2-per-cell-geometry-readback.json", import.meta.url), "utf8"));
+const coverageEvidence = JSON.parse(await readFile(new URL("../data/phase2-vlce2-mapped-extent-verification-receipt-2026-08-29.json", import.meta.url), "utf8"));
 const built = (await readdir(TILES)).filter((name) => name.endsWith(".pmtiles")).sort();
 
 const intervals = [];
@@ -61,6 +62,7 @@ await writeFile(
       countable: false,
       expertReviewed: false,
       productionEligible: false,
+      coverageEvidence,
       intervals: intervals.map((entry) => ({ ...entry, url: `${base}/${entry.fileName}` })),
       totals: {
         intervalCount: intervals.length,

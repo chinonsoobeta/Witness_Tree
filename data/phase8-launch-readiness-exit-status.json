@@ -15,7 +15,7 @@
       "evidence": [
         {
           "path": "docs/EXTERNAL_GATES.md",
-          "sha256": "8a0579667934f07fe11500b5c19b3bf3173acdf4a0c3a167173b848f96e2bd80"
+          "sha256": "ef9c0f7598db39ebb306c187cb4ba797479470bccb18352c7057cb3c46e0c828"
         }
       ]
     },
@@ -39,7 +39,7 @@
       "evidence": [
         {
           "path": "docs/PLAN_GAP_MATRIX.md",
-          "sha256": "f5b854afa900bd83f16212184427c386f6f92b31d56b618456fd27c4a537f42a"
+          "sha256": "a7d5f2663517bb5e4cd101451cf5e8a78a6d50095f6298cf86acf41a3afca99d"
         }
       ]
     },
@@ -83,7 +83,7 @@
       "evidence": [
         {
           "path": "docs/EXTERNAL_GATES.md",
-          "sha256": "8a0579667934f07fe11500b5c19b3bf3173acdf4a0c3a167173b848f96e2bd80"
+          "sha256": "ef9c0f7598db39ebb306c187cb4ba797479470bccb18352c7057cb3c46e0c828"
         }
       ]
     },
@@ -115,11 +115,11 @@
       "evidence": [
         {
           "path": "docs/OPERATIONS_HANDBOOK.md",
-          "sha256": "404cb66143496bd81f6b23eb9e32fca3dad192c682b3223568a5a6270b08a6d6"
+          "sha256": "5b349a56e049e5fabc3b03613b2f205cf01d54b4d7fd595d8fe51fc139548f6c"
         },
         {
           "path": "docs/PLAN_GAP_MATRIX.md",
-          "sha256": "f5b854afa900bd83f16212184427c386f6f92b31d56b618456fd27c4a537f42a"
+          "sha256": "a7d5f2663517bb5e4cd101451cf5e8a78a6d50095f6298cf86acf41a3afca99d"
         }
       ],
       "ownerAuthorization": {
@@ -136,7 +136,7 @@
       "evidence": [
         {
           "path": "docs/PLAN_GAP_MATRIX.md",
-          "sha256": "f5b854afa900bd83f16212184427c386f6f92b31d56b618456fd27c4a537f42a"
+          "sha256": "a7d5f2663517bb5e4cd101451cf5e8a78a6d50095f6298cf86acf41a3afca99d"
         }
       ]
     },
@@ -220,7 +220,7 @@
         },
         {
           "path": "docs/OPERATIONS_HANDBOOK.md",
-          "sha256": "404cb66143496bd81f6b23eb9e32fca3dad192c682b3223568a5a6270b08a6d6"
+          "sha256": "5b349a56e049e5fabc3b03613b2f205cf01d54b4d7fd595d8fe51fc139548f6c"
         }
       ]
     },
@@ -264,7 +264,7 @@
       "id": "cdn-tile-validation",
       "title": "CDN and tile validation are complete",
       "status": "fail",
-      "reason": "The admitted 2020-2022 province aggregate and authoritative boundary are bound to an immutable PMTiles archive in a private ca-central-1 delivery bucket behind CloudFront. Exact checksum and full readback, directory and tile ranges at three zooms, decoded province/value assertions, repeated CloudFront cache hits, CORS, origin isolation, immutable write controls, and a client PMTiles path with a verified GeoJSON fallback are implemented. A defect was found and fixed on 2026-08-28: the bundler never emitted the sibling module MapLibre resolves as its worker, so that URL returned HTTP 404 on the deployed site and map initialization failed before any tile request was issued. The version-pinned worker is now published from public/maplibre/ and pinned by the client, proven byte-identical to the installed distribution by scripts/check-maplibre-worker-asset.mjs. Browser-side PMTiles rendering is still not recorded: the only browser available to this session never fires requestAnimationFrame, which MapLibre awaits during style load, so it cannot witness a rendered map. The literal gate remains open until a real browser records it.",
+      "reason": "The admitted 2020-2022 province aggregate and authoritative boundary are bound to an immutable PMTiles archive in a private ca-central-1 delivery bucket behind CloudFront. Four additional boundary-only reference archives for federal ridings, provincial ridings, economic regions and watersheds have exact S3 and CloudFront byte-hash readback. The province archive has directory and tile ranges at three zooms, decoded province/value assertions, repeated CloudFront cache hits, CORS, origin isolation, immutable write controls, and a client PMTiles path with a verified GeoJSON fallback. A defect was found and fixed on 2026-08-28: the bundler never emitted the sibling module MapLibre resolves as its worker, so that URL returned HTTP 404 on the deployed site and map initialization failed before any tile request was issued. The version-pinned worker is now published from public/maplibre/ and pinned by the client, proven byte-identical to the installed distribution by scripts/check-maplibre-worker-asset.mjs. Browser-side PMTiles rendering has now been witnessed, but not where this criterion requires it. Driving a real Chromium through playwright-core on 2026-08-29 produced HTTP 206 PMTiles range responses, no GeoJSON fallback fetch, the component's own ready copy rather than its fallback copy, and a composited canvas whose sampled pixels matched the loss ramp. That run was against a local build of an unmerged branch, not the deployed Site, and this criterion is scoped to the deployed Site. The earlier note that no browser here could fire requestAnimationFrame described the browser this session had at the time and is superseded. The literal gate remains open until the deployed Site is recorded the same way.",
       "evidence": [
         {
           "path": "data/phase8-province-map-release.json",
@@ -284,11 +284,11 @@
         },
         {
           "path": "components/explore/ExploreMapClient.tsx",
-          "sha256": "c41a58e732d1416329e1db14cc2b85b9bb7152cd28037b9392e523643e9f78a5"
+          "sha256": "82ea55ddf01910e47c4970a83f6d24fd0b69970a9d6eac262b01cb171a562be9"
         },
         {
           "path": "tests/explore.test.tsx",
-          "sha256": "c61aa662afb3bb149bd8dd98a4b8852c1ea0501c31117a0fafebae6c8a7a9676"
+          "sha256": "dd6a8542f6715a91b936bd481c4dcdffe520cc12546e4f8f649d11ae4a82ddcc"
         }
       ]
     }
@@ -322,8 +322,8 @@
     {
       "id": "admitted-production-data-and-delivery",
       "status": "blocked",
-      "reason": "The admitted province-level technical-preview tile has CDN deployment and complete delivery-tier validation, and the bounded CSV and GeoPackage release is public and independently verified. Complete browser-side PMTiles rendering evidence and the remaining production data gates are still required before production delivery can open."
+      "reason": "The admitted province-level technical-preview tile and four boundary-only reference archives have CDN deployment and exact delivery/readback evidence, and the bounded CSV and GeoPackage release is public and independently verified. Complete deployed-browser PMTiles rendering evidence and the remaining production data gates are still required before production delivery can open."
     }
   ],
-  "nonProductionBoundary": "The public site, delivery-validated province-level CDN tile, and bounded bulk release remain a technical preview. This record does not claim complete browser-side PMTiles rendering, per-cell production geometry, Phase 2 completion, reviewed translation, accessibility conformance, security review, load result, backup, live operations, or general production readiness."
+  "nonProductionBoundary": "The public site, delivery-validated province-level CDN tile, four exact-readback reference-boundary archives, and bounded bulk release remain a technical preview. This record does not claim complete deployed-browser PMTiles rendering, per-cell production geometry, Phase 2 completion, reviewed translation, accessibility conformance, security review, load result, backup, live operations, or general production readiness."
 }

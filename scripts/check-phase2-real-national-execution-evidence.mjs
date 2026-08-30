@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
+import { resolve } from "node:path";
+import { resolveDataRoot } from "./data-root.mjs";
 
 export const CANONICAL_REAL_EXECUTION = Object.freeze({
   batchId: "phase2-real-national-1984-2022-v1",
@@ -52,5 +54,5 @@ export function validateRealExecutionEvidence(evidence,lineageSummary){
   assert.equal(evidence.boundaryAggregationPerformed,false); assert.equal(evidence.released,false); assert.equal(evidence.productionEligible,false); assert.equal(evidence.externalAction,false); assert.doesNotMatch(JSON.stringify(evidence),/productionEligible"\s*:\s*true|"released"\s*:\s*true/i);
   return evidence;
 }
-export async function check(){const evidence=JSON.parse(await readFile(new URL("../data/phase2-real-national-execution-evidence.json",import.meta.url),"utf8"));const lineageFile="/Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data/derived/phase2-real-national-1984-2022-v1/lineage.json";const lineageBytes=await readFile(lineageFile);const lineage=JSON.parse(lineageBytes);validateRealExecutionEvidence(evidence,{lineageSha256:createHash("sha256").update(lineageBytes).digest("hex"),inputSetSha256:lineage.sourceVerification.inputSetSha256,preflightSha256:lineage.preflight.sha256,executionEvidenceCoreSha256:lineage.execution.executionEvidenceCoreSha256});}
+export async function check(){const evidence=JSON.parse(await readFile(new URL("../data/phase2-real-national-execution-evidence.json",import.meta.url),"utf8"));const lineageFile=resolve(resolveDataRoot(),"derived/phase2-real-national-1984-2022-v1/lineage.json");const lineageBytes=await readFile(lineageFile);const lineage=JSON.parse(lineageBytes);validateRealExecutionEvidence(evidence,{lineageSha256:createHash("sha256").update(lineageBytes).digest("hex"),inputSetSha256:lineage.sourceVerification.inputSetSha256,preflightSha256:lineage.preflight.sha256,executionEvidenceCoreSha256:lineage.execution.executionEvidenceCoreSha256});}
 if(import.meta.url===`file://${process.argv[1]}`){await check();console.log("Phase 2 real execution evidence passed.");}

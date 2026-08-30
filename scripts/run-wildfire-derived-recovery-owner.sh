@@ -10,7 +10,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 CHECKER="$SCRIPT_DIR/check-wildfire-derived-recovery.mjs"
 CAPTURE="$SCRIPT_DIR/capture-wildfire-derived-recovery-state.mjs"
 RUNNER="$SCRIPT_DIR/run-wildfire-derived-recovery.sh"
-DATA_ROOT="${WITNESS_TREE_DATA_ROOT:-/Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data}"
+DATA_ROOT="${WITNESS_TREE_DATA_ROOT:-/Volumes/Extended_SSD/Witness_Tree-data}"
 
 fail() {
   local message="$1" exit_status=1

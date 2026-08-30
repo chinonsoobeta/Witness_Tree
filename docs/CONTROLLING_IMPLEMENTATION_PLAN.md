@@ -1036,7 +1036,7 @@ The core screen, reached by clicking the map or searching an address. It is orga
 
 - Four view modes: Forest change, Recorded harvest, Wildfire, Condition and recovery.
 
-- Boundary overlays: watersheds, federal ridings, provincial ridings, reserves, treaty areas.
+- Released reference-boundary overlays: federal ridings, provincial ridings, Statistics Canada 2021 economic regions and NRCan Water Survey of Canada version 6.0 sub-drainage areas. Economic regions and watersheds are boundary-only reference frameworks, not forest-loss aggregates. Reserves and treaty areas were removed from the Explore overlay set by owner scope decision on 2026-08-29, because their source families remain authority and rights blocked and a permanently unavailable label is itself a claim about geography Witness Tree has no right to publish. The obligation to publish them is not withdrawn. It is tracked solely by the Phase 7 reserve-and-treaty-layers-loaded gate, which stays failed until those sources are released, at which point both overlays return to this list.
 
 - A Presentation toggle of Map or List, and a Chart or Table toggle, so every spatial view has a tabular equivalent at the same URL. That is the accessibility answer and it also makes the product usable on a train.
 

@@ -5,18 +5,23 @@ import {
   ProvenanceBlock,
 } from "@/components/policy";
 import {
-  EXPLORE_BOUNDARY_OVERLAYS,
+  BOUNDARY_OVERLAY_IDS,
+  BOUNDARY_OVERLAYS,
   EXPLORE_DEFAULT_YEAR,
   EXPLORE_PRODUCTION_LAYER,
   EXPLORE_MODES,
-  EXPLORE_YEAR_MAX,
-  EXPLORE_YEAR_MIN,
+  exploreHref,
   type ExploreDataView,
   type ExploreEvent,
   type ExploreMode,
   type ExplorePresentation,
+  serializeBoundaryOverlays,
+  toggleBoundaryOverlay,
+  type BoundaryOverlayId,
 } from "@/lib/explore";
-import type { Locale } from "@/lib/domain";
+import { colon, labelled, type Locale } from "@/lib/domain";
+import { PlaceFinder } from "@/components/search";
+import { ExploreYearControl } from "./ExploreYearControl";
 
 const copy = {
   en: {
@@ -24,7 +29,7 @@ const copy = {
     yearControl: "Show illustrative fixtures through year",
     update: "Update",
     production:
-      "The list, chart, and table use the same verified 2020–2022 province aggregate. The map adds per-cell detected loss patches for 1984–2022: they are traced from the 30 m grid, they have not been expert-reviewed, and no figure on this site is counted from them.",
+      "The list, chart, and table use the same provisional 2020–2022 province aggregate. The map adds per-cell detected loss patches for 1984–2022: they are traced from the 30 m grid, they have not been expert-reviewed, and no figure on this site is counted from them.",
     fixtureList:
       "This list, chart, and table use illustrative fixtures. No verified geographic layer is implied by this view.",
     year: "Year",
@@ -35,14 +40,22 @@ const copy = {
     chart: "Chart",
     table: "Table",
     overlays: "Boundary overlays",
-    unavailable: "Illustrative fixture: geometry unavailable",
+    show: "Show",
+    hide: "Hide",
+    shown: "Shown on the map",
+    notAvailable: "Not available yet",
+    whyNot: "Why not",
+    overlaysNote:
+      "Reference boundaries drawn over the map. They show where something is and who represents it. They never carry a loss figure of their own.",
     event: "Event",
     evidence: "Evidence",
     confidence: "Confidence",
     coverage: "Coverage",
     observedLoss: "Observed loss (ha)",
     observedLossPercent: "Observed loss (%)",
-    complete: "Complete required-input coverage",
+    complete: "Every input pixel present",
+    partial: "Some pixels unknown, so this is a minimum",
+    unknownArea: "ha unknown",
     source: "Source attribution",
     modes: {
       "forest-change": "Forest change",
@@ -50,20 +63,13 @@ const copy = {
       wildfire: "Wildfire",
       "condition-recovery": "Condition and recovery",
     },
-    boundaries: {
-      watersheds: "Watersheds",
-      "federal-ridings": "Federal ridings",
-      "provincial-ridings": "Provincial ridings",
-      reserves: "Reserves",
-      "treaty-areas": "Treaty areas",
-    },
   },
   fr: {
     title: "Explorer",
     yearControl: "Afficher les exemples illustratifs jusqu’à l’année",
     update: "Mettre à jour",
     production:
-      "La liste, le graphique et le tableau utilisent le même agrégat provincial vérifié de 2020 à 2022. La carte y ajoute les parcelles de perte détectée par cellule de 1984 à 2022 : elles sont tracées à partir de la grille de 30 m, elles n’ont pas fait l’objet d’un examen par des experts, et aucun chiffre de ce site n’en est tiré.",
+      "La liste, le graphique et le tableau utilisent le même agrégat provincial provisoire de 2020 à 2022. La carte y ajoute les parcelles de perte détectée par cellule de 1984 à 2022 : elles sont tracées à partir de la grille de 30 m, elles n’ont pas fait l’objet d’un examen par des experts, et aucun chiffre de ce site n’en est tiré.",
     fixtureList:
       "Cette liste, ce graphique et ce tableau utilisent des exemples illustratifs. Cette vue n’implique aucune couche géographique vérifiée.",
     year: "Année",
@@ -74,27 +80,28 @@ const copy = {
     chart: "Graphique",
     table: "Tableau",
     overlays: "Superpositions de limites",
-    unavailable: "Exemple illustratif : géométrie non disponible",
+    show: "Afficher",
+    hide: "Masquer",
+    shown: "Affiché sur la carte",
+    notAvailable: "Pas encore disponible",
+    whyNot: "Pourquoi",
+    overlaysNote:
+      "Limites de référence tracées sur la carte. Elles indiquent où se trouve un lieu et qui le représente. Elles ne portent jamais de chiffre de perte.",
     event: "Événement",
     evidence: "Preuve",
     confidence: "Confiance",
     coverage: "Couverture",
     observedLoss: "Perte observée (ha)",
     observedLossPercent: "Perte observée (%)",
-    complete: "Couverture complète des entrées requises",
+    complete: "Tous les pixels d’entrée sont présents",
+    partial: "Certains pixels sont inconnus; il s’agit donc d’un minimum",
+    unknownArea: "ha inconnus",
     source: "Attribution de la source",
     modes: {
       "forest-change": "Changement forestier",
       "recorded-harvest": "Récolte consignée",
       wildfire: "Incendies",
       "condition-recovery": "État et rétablissement",
-    },
-    boundaries: {
-      watersheds: "Bassins versants",
-      "federal-ridings": "Circonscriptions fédérales",
-      "provincial-ridings": "Circonscriptions provinciales",
-      reserves: "Réserves",
-      "treaty-areas": "Zones visées par un traité",
     },
   },
 } as const;
@@ -136,21 +143,27 @@ function href(
   presentation: ExplorePresentation,
   data: ExploreDataView,
   year: number,
+  overlays: readonly BoundaryOverlayId[] = [],
 ) {
-  return `?mode=${mode}&presentation=${presentation}&data=${data}&year=${year}`;
+  return exploreHref({ mode, presentation, data, year, overlays });
 }
 function Details({ event, locale }: { event: ExploreEvent; locale: Locale }) {
   const text = copy[locale];
   return (
     <>
       <EvidenceChip evidence={event.evidence} locale={locale} /> ·{" "}
-      {text.confidence}:{" "}
+      {text.confidence}
+      {colon(locale)}{" "}
       <ConfidenceBadge confidence={event.confidence} locale={locale} /> ·{" "}
-      {text.coverage}:{" "}
+      {text.coverage}
+      {colon(locale)}{" "}
       <CoverageBand coverageGrade={event.coverageGrade} locale={locale} />
-      <span>{event.unknownReason ? `: ${event.unknownReason}` : ""}</span>
+      <span>
+        {event.unknownReason ? `${colon(locale)} ${event.unknownReason}` : ""}
+      </span>
       <p>
-        {text.source}:{" "}
+        {text.source}
+        {colon(locale)}{" "}
         <ProvenanceBlock provenance={event.provenance} locale={locale} />
       </p>
     </>
@@ -164,6 +177,8 @@ export function ExploreView({
   presentation = "map",
   data = "chart",
   year = EXPLORE_DEFAULT_YEAR,
+  overlays = [],
+  query = "",
 }: {
   events: readonly ExploreEvent[];
   locale: Locale;
@@ -171,6 +186,8 @@ export function ExploreView({
   presentation?: ExplorePresentation;
   data?: ExploreDataView;
   year?: number;
+  overlays?: readonly BoundaryOverlayId[];
+  query?: string;
 }) {
   const text = copy[locale];
   const selected = events.filter((event) => event.mode === mode);
@@ -178,38 +195,49 @@ export function ExploreView({
   const number = new Intl.NumberFormat(locale === "fr" ? "fr-CA" : "en-CA", {
     maximumFractionDigits: 2,
   });
+  const provinceCoverageLabel = (row: (typeof EXPLORE_PRODUCTION_LAYER.rows)[number]) =>
+    `${text.partial} (${number.format(row.unknownSharePercent)}${locale === "fr" ? " %" : "%"}; ${number.format(row.unknownRequiredInputHectares)} ${text.unknownArea})`;
   return (
     <section className="explore" aria-label={text.title}>
       <p className="explore-note">
         {productionAvailable ? text.production : text.fixtureList}
       </p>
+      <PlaceFinder
+        locale={locale}
+        query={query}
+        context="explore"
+        parameters={[
+          { name: "mode", value: mode },
+          { name: "presentation", value: presentation },
+          { name: "data", value: data },
+          { name: "year", value: String(year) },
+          ...(overlays.length > 0
+            ? [{ name: "overlays", value: serializeBoundaryOverlays(overlays) }]
+            : []),
+        ]}
+      />
       <form className="explore-year" method="get">
         <input type="hidden" name="mode" value={mode} />
         <input type="hidden" name="presentation" value={presentation} />
         <input type="hidden" name="data" value={data} />
-        <label className="explore-year-label">
-          {text.yearControl}
+        {overlays.length > 0 ? (
           <input
-            type="range"
-            name="year"
-            min={EXPLORE_YEAR_MIN}
-            max={EXPLORE_YEAR_MAX}
-            defaultValue={year}
-            className="explore-slider"
-            step="1"
-            aria-label={text.yearControl}
+            type="hidden"
+            name="overlays"
+            value={serializeBoundaryOverlays(overlays)}
           />
-        </label>
-        <button className="btn btn--primary" type="submit">
-          {text.update}
-        </button>
+        ) : null}
+        <ExploreYearControl
+          locale={locale}
+          state={{ mode, presentation, data, year, overlays }}
+        />
       </form>
       <nav className="segment" aria-label={text.title}>
         {EXPLORE_MODES.map((item) => (
           <a
             key={item}
             className="segment-option"
-            href={href(item, presentation, data, year)}
+            href={href(item, presentation, data, year, overlays)}
             aria-current={item === mode ? "page" : undefined}
           >
             {text.modes[item]}
@@ -220,14 +248,14 @@ export function ExploreView({
         <legend>{text.presentation}</legend>
         <a
           className="segment-option"
-          href={href(mode, "map", data, year)}
+          href={href(mode, "map", data, year, overlays)}
           aria-current={presentation === "map" ? "page" : undefined}
         >
           {text.map}
         </a>{" "}
         <a
           className="segment-option"
-          href={href(mode, "list", data, year)}
+          href={href(mode, "list", data, year, overlays)}
           aria-current={presentation === "list" ? "page" : undefined}
         >
           {text.list}
@@ -237,14 +265,14 @@ export function ExploreView({
         <legend>{text.data}</legend>
         <a
           className="segment-option"
-          href={href(mode, presentation, "chart", year)}
+          href={href(mode, presentation, "chart", year, overlays)}
           aria-current={data === "chart" ? "page" : undefined}
         >
           {text.chart}
         </a>{" "}
         <a
           className="segment-option"
-          href={href(mode, presentation, "table", year)}
+          href={href(mode, presentation, "table", year, overlays)}
           aria-current={data === "table" ? "page" : undefined}
         >
           {text.table}
@@ -252,13 +280,53 @@ export function ExploreView({
       </fieldset>
       <section className="explore-overlays" aria-label={text.overlays}>
         <h2>{text.overlays}</h2>
+        <p className="explore-note">{text.overlaysNote}</p>
         <ul className="overlay-grid">
-          {EXPLORE_BOUNDARY_OVERLAYS.map((boundary) => (
-            <li className="card card--sand overlay-card" key={boundary}>
-              <span className="overlay-name">{text.boundaries[boundary]}</span>
-              <span className="overlay-state">{text.unavailable}</span>
-            </li>
-          ))}
+          {BOUNDARY_OVERLAY_IDS.map((id) => {
+            const overlay = BOUNDARY_OVERLAYS[id];
+            const active = overlays.includes(id);
+            return (
+              <li className="card card--sand overlay-card" key={id}>
+                <span className="overlay-name">{overlay.label[locale]}</span>
+                {overlay.available ? (
+                  <a
+                    className="segment-option overlay-toggle"
+                    href={href(
+                      mode,
+                      presentation,
+                      data,
+                      year,
+                      toggleBoundaryOverlay(overlays, id),
+                    )}
+                    aria-label={labelled(
+                      locale,
+                      active ? text.hide : text.show,
+                      overlay.label[locale],
+                    )}
+                  >
+                    {active ? text.hide : text.show}
+                  </a>
+                ) : (
+                  <span className="overlay-state">{text.notAvailable}</span>
+                )}
+                {active ? (
+                  <span className="overlay-state">{text.shown}</span>
+                ) : null}
+                <p className="overlay-note">{overlay.note[locale]}</p>
+                {overlay.reason ? (
+                  <p className="overlay-note">
+                    {text.whyNot}
+                    {colon(locale)} {overlay.reason[locale]}
+                  </p>
+                ) : null}
+                {overlay.attribution ? (
+                  <p className="overlay-attribution">
+                    {overlay.attribution[locale]}
+                  </p>
+                ) : null}
+              </li>
+            );
+          })}
         </ul>
       </section>
       {presentation === "list" ? (
@@ -269,14 +337,18 @@ export function ExploreView({
                   <h2>{row.name[locale]}</h2>
                   <p>{EXPLORE_PRODUCTION_LAYER.period}</p>
                   <p>
-                    {text.observedLoss}:{" "}
+                    {text.observedLoss}
+                    {colon(locale)}{" "}
                     {number.format(row.observedLossHectares)} ·{" "}
-                    {text.observedLossPercent}:{" "}
-                    {number.format(row.observedLossPercent)} · {text.coverage}:{" "}
-                    {text.complete}
+                    {text.observedLossPercent}
+                    {colon(locale)}{" "}
+                    {number.format(row.observedLossPercent)} · {text.coverage}
+                    {colon(locale)}{" "}
+                    {provinceCoverageLabel(row)}
                   </p>
                   <p>
-                    {text.source}:{" "}
+                    {text.source}
+                    {colon(locale)}{" "}
                     <a href={EXPLORE_PRODUCTION_LAYER.attribution.href}>
                       {EXPLORE_PRODUCTION_LAYER.attribution[locale]}
                     </a>
@@ -287,7 +359,8 @@ export function ExploreView({
                 <li className="card card--lift" key={event.id}>
                   <h2>{event.name[locale]}</h2>
                   <p>
-                    {text.year}: {event.year}
+                    {text.year}
+                    {colon(locale)} {event.year}
                   </p>
                   <Details event={event} locale={locale} />
                 </li>
@@ -327,7 +400,7 @@ export function ExploreView({
                 const y = index * rowHeight + 8;
                 return (
                   <g key={item.id}>
-                    <title>{`${label}: ${detail}`}</title>
+                    <title>{labelled(locale, label, detail)}</title>
                     <text className="explore-bar-name" x="0" y={y + 15}>
                       {label}
                     </text>
@@ -356,7 +429,8 @@ export function ExploreView({
         <div className="table-scroll">
           <table className="explore-table">
             <caption>
-              {text.table}: {EXPLORE_PRODUCTION_LAYER.period}
+              {text.table}
+              {colon(locale)} {EXPLORE_PRODUCTION_LAYER.period}
             </caption>
             <thead>
               <tr>
@@ -375,7 +449,9 @@ export function ExploreView({
                   <td>{EXPLORE_PRODUCTION_LAYER.period}</td>
                   <td>{number.format(row.observedLossHectares)}</td>
                   <td>{number.format(row.observedLossPercent)}</td>
-                  <td>{text.complete}</td>
+                  <td>
+                    {provinceCoverageLabel(row)}
+                  </td>
                   <td>
                     <a href={EXPLORE_PRODUCTION_LAYER.attribution.href}>
                       {EXPLORE_PRODUCTION_LAYER.attribution[locale]}

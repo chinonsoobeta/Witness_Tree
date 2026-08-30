@@ -28,12 +28,13 @@ export async function readPerCellGeometryEvidence() {
     summary: await read("data/phase2-per-cell-geometry-summary.json"),
     inventory: await read("data/phase2-real-loss-component-inventory-readback.json"),
     method: await read("data/phase2-per-cell-geometry-method.json"),
+    extentReceipt: await read("data/phase2-vlce2-mapped-extent-verification-receipt-2026-08-29.json"),
     serializedSha256: createHash("sha256").update(raw).digest("hex"),
     serializedBytes: Buffer.byteLength(raw),
   };
 }
 
-export function validatePerCellGeometryEvidence({ record, summary, inventory, method, serializedSha256, serializedBytes }) {
+export function validatePerCellGeometryEvidence({ record, summary, inventory, method, extentReceipt, serializedSha256, serializedBytes }) {
   assert.equal(record.schemaVersion, "witness-tree/phase2-per-cell-geometry-readback/1");
   assert.equal(record.status, "exact-readback-passed");
   assert.equal(record.productId, "phase2-per-cell-geometry-1984-2022-v1");
@@ -46,6 +47,15 @@ export function validatePerCellGeometryEvidence({ record, summary, inventory, me
   assert.equal(record.productionEligible, false);
   assert.equal(record.expertReviewed, false);
   assert.equal(method.claims.productionEligible ?? false, false);
+  assert.equal(extentReceipt.schemaVersion, "witness-tree/phase2-vlce2-mapped-extent-verification-receipt/1");
+  assert.equal(extentReceipt.status, "local-nonproduction-executed");
+  assert.deepEqual(extentReceipt.claims, { admitted: false, released: false, productionEligible: false, externalAction: false });
+  assert.equal(extentReceipt.verification.verifiedYearCount, 39);
+  assert.equal(extentReceipt.verification.firstYear, 1984);
+  assert.equal(extentReceipt.verification.lastYear, 2022);
+  assert.equal(extentReceipt.verification.allDifferingCellsZero, true);
+  assert.match(extentReceipt.verification.sha256, /^[0-9a-f]{64}$/);
+  assert.match(extentReceipt.mappedExtent.sha256, /^[0-9a-f]{64}$/);
 
   assert.equal(summary.evidence.fileName, "phase2-per-cell-geometry-readback.json");
   assert.equal(summary.evidence.sha256, serializedSha256, "the summary is bound to a different readback than the one on disk");
@@ -119,7 +129,7 @@ export async function readPerCellTileRelease() {
   return JSON.parse(await readFile(new URL("../data/phase2-per-cell-tile-release.json", import.meta.url), "utf8"));
 }
 
-export function validatePerCellTileRelease(release, record) {
+export function validatePerCellTileRelease(release, record, extentReceipt) {
   assert.equal(release.schemaVersion, "witness-tree/phase2-per-cell-tile-release/1");
   assert.equal(release.productId, record.productId, "the release names a different product than the readback");
 
@@ -139,6 +149,7 @@ export function validatePerCellTileRelease(release, record) {
     return release;
   }
   assert.equal(release.intervals.length, record.intervalCount, "the release does not cover every interval");
+  assert.deepEqual(release.coverageEvidence, extentReceipt, "the release is not bound to the verified mapped extent");
 
   // The release id is the digest of the archives' own digests, so a path that
   // served different bytes would have to change. Recomputing it here is what
@@ -170,7 +181,7 @@ export function validatePerCellTileRelease(release, record) {
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const record = validatePerCellGeometryEvidence(await readPerCellGeometryEvidence());
-  const release = validatePerCellTileRelease(await readPerCellTileRelease(), record);
+  const release = validatePerCellTileRelease(await readPerCellTileRelease(), record, (await readPerCellGeometryEvidence()).extentReceipt);
   console.log(
     `Per-cell geometry evidence passes: ${record.intervalCount} intervals, ` +
       `${record.totals.patchCount.toLocaleString()} patches, ${record.totals.cellCount.toLocaleString()} cells.`,

@@ -1,12 +1,14 @@
-import { CoverageBand, EvidenceChip } from "@/components/policy";
+import { EvidenceChip } from "@/components/policy";
 import {
   RANKING_COPY,
   RANKING_METRIC,
   rankRidings,
+  type RankingSort,
   type RankedRiding,
   type RankingContext,
 } from "@/lib/comparison";
-import type { Locale } from "@/lib/domain";
+import { colon, type Locale } from "@/lib/domain";
+import { MeasurementCoverage } from "./MeasurementCoverage";
 
 function TableHeaders({
   locale,
@@ -30,20 +32,23 @@ function TableHeaders({
 /** The rank basis and its denominator share the one cell, so a cropped screenshot cannot separate them. */
 function RidingRow({ row, locale }: { row: RankedRiding; locale: Locale }) {
   const copy = RANKING_COPY[locale];
+  const percent = row.detectedChangePercent === null ? copy.unknown : `${row.detectedChangePercent}%`;
+  const hectares = row.detectedChangeHectares === null ? copy.unknown : `${row.detectedChangeHectares} ha`;
   return (
     <tr>
       <th scope="row">{row.name[locale]}</th>
       <td>
-        {row.detectedChangePercent}%
+        {percent}
         <span className="rank-unmatched-share">
           {" "}
-          · {copy.unmatched}: {row.unmatchedSharePercent}%
+          · {copy.unmatched}
+          {colon(locale)} {row.unmatchedSharePercent == null ? copy.unknown : `${row.unmatchedSharePercent}%`}
         </span>
       </td>
-      <td>{row.detectedChangeHectares} ha</td>
+      <td>{hectares}</td>
       <td>{row.forestedHectares} ha</td>
       <td>
-        <CoverageBand coverageGrade={row.coverageGrade} locale={locale} />
+        <MeasurementCoverage place={row} locale={locale} />
       </td>
       <td>
         <EvidenceChip evidence={row.evidence} locale={locale} />
@@ -56,13 +61,29 @@ export function RankedRidingsTable({
   rows,
   context,
   locale,
+  sort = "share-desc",
+  leftId,
+  rightId,
+  view,
 }: {
   rows: readonly RankedRiding[];
   context: RankingContext;
   locale: Locale;
+  sort?: RankingSort;
+  leftId?: string;
+  rightId?: string;
+  view?: "cards" | "table";
 }) {
-  const result = rankRidings(rows);
+  const result = rankRidings(rows, sort);
   const copy = RANKING_COPY[locale];
+  const sortHref = (nextSort: RankingSort) => {
+    const query = new URLSearchParams();
+    query.set("sort", nextSort);
+    if (leftId) query.set("left", leftId);
+    if (rightId) query.set("right", rightId);
+    if (view) query.set("view", view);
+    return `?${query.toString()}`;
+  };
   return (
     <section className="comparison-table" aria-label={copy.metric}>
       <header className="card card--sand comparison-context">
@@ -74,6 +95,14 @@ export function RankedRidingsTable({
         <p>{context.method[locale]}</p>
         <EvidenceChip evidence={context.evidence} locale={locale} />
       </header>
+      <nav className="segment" aria-label={locale === "en" ? "Ranking order" : "Ordre du classement"}>
+        <a className="segment-option" href={sortHref("share-desc")} aria-current={sort === "share-desc" ? "page" : undefined}>
+          {locale === "en" ? "Highest share first" : "Part la plus élevée en premier"}
+        </a>
+        <a className="segment-option" href={sortHref("share-asc")} aria-current={sort === "share-asc" ? "page" : undefined}>
+          {locale === "en" ? "Lowest share first" : "Part la plus faible en premier"}
+        </a>
+      </nav>
       <div className="table-scroll">
         <table>
           <caption>{copy.metric}</caption>

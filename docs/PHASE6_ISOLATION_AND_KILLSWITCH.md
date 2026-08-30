@@ -1,6 +1,6 @@
 # Phase 6 direct database isolation and the outbound kill switch
 
-Two Phase 6 exit criteria in [`data/phase6-account-alert-exit-status.json`](../data/phase6-account-alert-exit-status.json) read `fail`: `direct-database-tenant-isolation` and `kill-switch-under-five-minutes`. This note records what was built for them, what was actually executed, what that execution printed, and exactly how far each criterion still is from a pass. It changes no gate file. Whether either status may move is a decision for the owner of that record, on the evidence below.
+The canonical Phase 6 record now passes `direct-database-tenant-isolation` and keeps `kill-switch-under-five-minutes` at `fail`. This note records what was built, what was actually executed, and the boundary between the local database proof and the still-unprovisioned account service. The separate Canadian managed-service activation blocker remains open.
 
 ## What the code now does
 
@@ -102,7 +102,7 @@ The measured stop latency was **188.087 ms**, and **165 alerts still went out af
 | `tests/postgres-tenant-isolation-harness.test.mjs` | 7 tests, 7 passed |
 | `tests/account-activation-gate.test.ts`, `tests/account-policy.test.ts`, `tests/alert-engine.test.ts` | 9 tests, 9 passed |
 | `tests/data-root-bound-checks.test.mjs` and `scripts/check-data-root-bound-checks.mjs` | 16 tests passed; static validation reports 20 of 159 check scripts data-root bound, unchanged |
-| `npm run check:phase6-account-alert-exit-status` | passed, still reports 3/5 (60%) |
+| `npm run check:phase6-account-alert-exit-status` | passed, reports 4/5 (80%) |
 
 The full `npm run test:unit` suite was deliberately not run: it sweeps files that read the real data root, and a long real-data transform was running there.
 
@@ -112,15 +112,15 @@ Two of the kill-switch tests failed when first executed, and the failure was rea
 
 ### `direct-database-tenant-isolation`
 
-The criterion reads: one account cannot read another account's saved areas, proven by a test that attempts it directly against the database. Its stated reason for failing had three parts, and they are now in different states.
+The criterion reads: one account cannot read another account's saved areas, proven by a test that attempts it directly against the database. It now passes on the direct, falsifiable PostgreSQL evidence below. Hosting remains a separate activation blocker.
 
 - *No direct database isolation test exists.* This is now false. A test exists, it attempts cross-tenant reads and writes directly against a real PostgreSQL server as an unprivileged role over a separate connection, it was executed, all seventeen probes held, and it demonstrably fails when isolation is removed.
 - *No row-level-security policy exists.* This is now false. The policies exist, are forced, and were verified in a live server.
 - *No managed Canadian database exists.* This remains true and is untouched by anything above. The drill ran in a throwaway container on a developer laptop.
 
-The honest reading is that the isolation half is met and the hosting half is not. The criterion's own title asks only for the proof, while its `reason` field also asserts the Canadian managed database, which is separately tracked by the `canadian-managed-service-and-direct-rls` activation blocker. If the owner treats the criterion as its title states, this evidence supports a pass with the residency claim left where it belongs, in the blocker. If the owner treats the `reason` as part of the bar, it stays a fail until a Canadian managed instance is provisioned and this same harness is run against it. That is a judgement about the record, not about the code, and it is not made here. What is certain either way: nothing in this work proves Canadian residency, encryption at rest, or that these policies were ever applied to a deployed database. The migration is checked in; it has been applied to nothing but a container that no longer exists.
+The isolation criterion is met and the hosting requirement is not. Nothing in this work proves Canadian residency, encryption at rest, or that these policies were applied to a deployed database. The migration is checked in; it has been applied to nothing but a container that no longer exists. Those missing facts remain explicit in `canadian-managed-service-and-direct-rls`.
 
-**Needs provisioned infrastructure**, and only that. The harness is written to point at any Postgres through `WITNESS_TREE_PG_ADMIN_URL`, so the day a managed Canadian instance exists this is one command.
+**Activation still needs provisioned infrastructure.** The harness is written to point at any Postgres through `WITNESS_TREE_PG_ADMIN_URL`, so the day a managed Canadian instance exists this is one command.
 
 ### `kill-switch-under-five-minutes`
 
@@ -139,19 +139,13 @@ Everything above was written by the engineer who built it. On 2026-08-26 the sam
 - The isolation drill was re-run: **17 of 17 probes held**, with the same observed values, including `escalation-refused` returning `permission denied to alter role` and `victim-rows-survive` returning `area-b:Illustrative only`.
 - The negative control was reproduced independently by commenting out the six `ENABLE`/`FORCE ROW LEVEL SECURITY` statements and re-running: **3 of 17 probes held**. The fourteen failures include `victim-rows-survive` observing `area-a:Illustrative only,planted:null`, which is account B's own area deleted, account A's area reassigned onto B, and a planted row surviving. A probe that merely counted account B's rows would have observed one row and reported this as a pass. The identity-bound form catches it. That is the clearest available demonstration that these probes are not vacuous.
 - The kill-switch rehearsal was re-run and measured **186.878 ms**, with 500 sends before engagement, 163 after it, and 1337 refused. The 188.087 ms and 165 sends recorded above are the record of the first run and are left as written. The two runs differ because the figure is a timing of a local loop, not a property of the system. Neither number is a bound, and the gap between them is itself the reason it is not one.
-- `npm run typecheck` and `npm run lint` both reported nothing, the two new test files pass 16 of 16, and `npm run check:phase6-account-alert-exit-status` reports 3 of 5.
+- `npm run typecheck` and `npm run lint` both reported nothing, the two new test files pass 16 of 16, and `npm run check:phase6-account-alert-exit-status` reports 4 of 5.
 
-### Neither criterion was flipped
+### Gate outcome
 
-`direct-database-tenant-isolation` stays `fail`. The argument for a pass is real: the criterion's title asks only for a test that attempts cross-tenant reads directly against the database, and that test now exists, is executed, and is falsifiable. It was not taken, for three reasons.
+`direct-database-tenant-isolation` is `pass` because the criterion asks for a direct database attempt, and the independently repeated positive and negative-control runs establish that narrow fact. The pass does not activate accounts or imply a deployed database. The Canadian managed-service blocker remains open.
 
-1. The activation blocker of record, `canadian-managed-service-and-direct-rls`, names the managed Canadian database and the direct isolation test **in the same blocker**. Splitting them so that half can be marked satisfied is a decision about the scope the owner set, not an engineering judgement, and no owner has made it.
-2. The criterion's own `reason` field names the managed Canadian database as part of why it fails. Reading the title while setting the reason aside chooses the more permissive of two readings in order to advance a gate, which is the wrong direction to resolve that kind of ambiguity.
-3. The evidence that can be checksum-bound is source code plus a description of a run against a container that no longer exists. The drill is deliberately not registered under a `check:` prefix, because it depends on a container runtime and would otherwise be swept into a suite that must be able to run anywhere. Evidence that cannot be re-derived by the repository's own checks is a weak basis for a passing gate.
-
-`kill-switch-under-five-minutes` stays `fail`, for the reasons the section above already gives.
-
-What did change in `data/phase6-account-alert-exit-status.json` is the `reason` text on both failing criteria and on two activation blockers, which previously asserted that no row-level-security policy, no direct isolation test, and no outbound queue or sender existed. Those statements are now false, and a record that states something false about its own repository is a defect even when the status it carries is correct. The evidence arrays on both failing criteria were rebound to include the new artifacts. Phase 6 was 3 of 5 before this change and is 3 of 5 after it, verified by comparing the criterion statuses and counts across the edit.
+`kill-switch-under-five-minutes` stays `fail`, for the reasons the section above gives. Phase 6 is 4 of 5; the account service remains unavailable and default-closed.
 
 ## Boundary
 

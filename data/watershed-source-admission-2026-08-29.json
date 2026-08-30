@@ -1,0 +1,73 @@
+{
+  "schemaVersion": "witness-tree/framework-source-admission/1",
+  "sourceId": "nrcan-wsc-sub-drainage-v6",
+  "status": "evidence-based-source-admission",
+  "decisionDate": "2026-08-29",
+  "decisionBasis": "A single official bilingual NRCan archive provides stable Water Survey of Canada sub-drainage codes and national geometry covering all four initial provinces.",
+  "publisher": "Natural Resources Canada",
+  "product": "Atlas of Canada 1,000,000 National Frameworks Data, Hydrology - Drainage Areas",
+  "edition": "Version 6.0",
+  "publicationYear": 2008,
+  "scale": "1:1,000,000",
+  "archiveDirectoryUrl": "https://ftp.maps.canada.ca/pub/nrcan_rncan/archive/vector/framework_cadre/drainage_areas/wsc_rollup/",
+  "downloadUrl": "https://ftp.maps.canada.ca/pub/nrcan_rncan/archive/vector/framework_cadre/drainage_areas/wsc_rollup/canadwscsda_1m_v6-0_shp.zip",
+  "metadataUrl": "https://www.download-telecharger.services.geo.ca/pub/nrcan_rncan/archive/vector/framework_cadre/drainage_areas/1M_DRAINAGE_AREAS_EN_2008.doc",
+  "licence": {
+    "id": "ogl-canada-2.0",
+    "url": "https://open.canada.ca/en/open-government-licence-canada",
+    "attribution": "Contains information licensed under the Open Government Licence - Canada: Natural Resources Canada, Atlas of Canada 1,000,000 National Frameworks Data, Hydrology - Drainage Areas, version 6.0 (2008). Adapted by Witness Tree."
+  },
+  "artifact": {
+    "path": "../Witness_Tree-data/raw/nrcan-wsc-sub-drainage-v6/2026-08-29/canadwscsda_1m_v6-0_shp.zip",
+    "byteLength": 50896154,
+    "sha256": "9afc4f505cc7d86e20c1296b7695b6ccae94fd085ed94f7be3178811583d8213",
+    "format": "ZIP",
+    "polygonPayload": {
+      "member": "canadwscsda_p_1m_v6-0_shp.zip",
+      "storedPath": "../Witness_Tree-data/raw/nrcan-wsc-sub-drainage-v6/2026-08-29/canadwscsda_p_1m_v6-0_shp.zip",
+      "byteLength": 23489341,
+      "sha256": "0108bb97466e4fe43f59bbda27744e19d8a969bc8a40e9a20880d3ff9ca50fad",
+      "shapefile": "canadwscsda_p.shp",
+      "crs": "EPSG:4269"
+    },
+    "featureCount": 184,
+    "distinctWscsdaCount": 184,
+    "idField": "WSCSDA",
+    "englishNameField": "WSCSDA_EN",
+    "frenchNameField": "WSCSDA_FR",
+    "missingGeometryCount": 0,
+    "missingIdentifierCount": 0,
+    "missingEnglishNameCount": 0,
+    "missingFrenchNameCount": 0
+  },
+  "canadianOverlaySelection": {
+    "rule": "WSCSDA NOT LIKE 'U%'",
+    "excludedUsaOnlyFeatureCount": 15,
+    "selectedFeatureCount": 169,
+    "selectedDistinctWscsdaCount": 169,
+    "targetCoverage": ["BC", "AB", "ON", "QC"]
+  },
+  "overlayRelease": {
+    "productId": "boundary-overlays-v2",
+    "releaseId": "2c3667c5e23d4f976791cc30ae8246f63e2aa03b4c4829a7006952cdd43f7ff8",
+    "fileName": "watersheds-v2.pmtiles",
+    "byteLength": 11921998,
+    "sha256": "c6d6596172e7b74973e54e4c993670afed7f190e8223fc5964b8cf3d69a18617",
+    "url": "https://d3g1406o0uekin.cloudfront.net/releases/boundary-overlays-v2/2c3667c5e23d4f976791cc30ae8246f63e2aa03b4c4829a7006952cdd43f7ff8/tiles/watersheds-v2.pmtiles",
+    "exactRemoteReadback": true
+  },
+  "claims": {
+    "sourceAdmitted": true,
+    "geometryAdmitted": true,
+    "immutableOverlayReleased": true,
+    "watershedAggregateReleased": false,
+    "productionEligible": false
+  },
+  "limitations": [
+    "The Water Survey of Canada hierarchy is a drainage-area reporting framework; an area does not necessarily represent a classic single-outlet watershed.",
+    "The source is intended for national-scale use at 1:1,000,000 and is unsuitable for cadastral, legal, surveying, digitizing, or engineering use.",
+    "Statistics Canada did not adopt NRCan version 6.0 for SDAC dissemination, so this source is not described as the current Statistics Canada SDAC.",
+    "The source archive remains byte-for-byte unchanged. The public Canadian overlay excludes 15 records whose codes begin with U and whose official names explicitly mark them as USA-only.",
+    "The boundary overlay release does not admit a forest-loss aggregate or comparison result."
+  ]
+}

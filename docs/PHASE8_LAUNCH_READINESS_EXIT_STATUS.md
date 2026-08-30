@@ -8,4 +8,4 @@ Nine gates remain closed: professional bilingual review, independent accessibili
 
 The current reasons distinguish partial evidence from completion. The scheduled wildfire workflow is a limited failure signal rather than deployed observability, and bounded same-region replica readbacks do not establish complete recovery coverage for every relied-on archive object.
 
-The public site, delivery-validated province-level CDN tile, and bounded bulk release remain a technical preview. No complete browser-side PMTiles rendering, per-cell production geometry, Phase 2 completion, reviewed translation, accessibility conformance, security review, load result, backup, live operations, or general production readiness is claimed by this record.
+The public site, delivery-validated province-level CDN tile, four exact-readback reference-boundary archives, and bounded bulk release remain a technical preview. No complete deployed-browser PMTiles rendering, per-cell production geometry, Phase 2 completion, reviewed translation, accessibility conformance, security review, load result, backup, live operations, or general production readiness is claimed by this record.

@@ -74,7 +74,7 @@ const VAT_1991: VatSidecar = { year: 1991, byteLength: 98, recordCount: 0, count
 const VAT_2005: VatSidecar = { year: 2005, byteLength: 98, recordCount: 0, counts: {} };
 
 // ---------------------------------------------------------------------------
-// Hazard (a) — reprojection
+// Hazard (a): reprojection
 // ---------------------------------------------------------------------------
 
 test("a vector layer that has not been reprojected onto the grid cannot be intersected", () => {
@@ -123,7 +123,7 @@ test("a layer already in the grid CRS is not laundered through the reprojection 
 });
 
 // ---------------------------------------------------------------------------
-// Hazard (b) — the empty 1991 and 2005 raster attribute tables
+// Hazard (b): the empty 1991 and 2005 raster attribute tables
 // ---------------------------------------------------------------------------
 
 test("the 1991 class area is Unknown with a reason and is never 0", () => {
@@ -256,7 +256,7 @@ test("no Unknown reason ever shows a reader the words undefined, null, or NaN, i
 });
 
 // ---------------------------------------------------------------------------
-// Hazard (c) — grid conformance
+// Hazard (c): grid conformance
 // ---------------------------------------------------------------------------
 
 test("a year off the canonical grid cannot enter a change comparison", () => {

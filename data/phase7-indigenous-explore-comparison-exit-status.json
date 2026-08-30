@@ -75,11 +75,11 @@
    "evidence": [
     {
      "path": "lib/comparison/ranking.ts",
-     "sha256": "6464bd504c30dd074cc95c805e67992e4880423d7865166e1401481c944e3302"
+     "sha256": "eb38364937424d60bee33113e6a6b33faa2cab6c3ffc053fedc0294fbd8a5d0e"
     },
     {
      "path": "tests/comparison.test.tsx",
-     "sha256": "c42ef3544a4ec49f25fa0833cb04bdac38ce970c77bc54fab7f251dc1130926b"
+     "sha256": "559adf6e622f5609c7cc8744e45a3009002f99e37ae40ce7417dfab428485526"
     }
    ]
   },
@@ -101,17 +101,17 @@
   },
   {
    "id": "explore-modes-and-overlays",
-   "title": "Explore provides the four required modes and the watershed, riding, reserve, and treaty-area overlays",
+   "title": "Explore provides the four required modes and four reference-boundary overlays",
    "status": "pass",
-   "reason": "The bilingual Explore route renders forest change, recorded harvest, wildfire, and condition/recovery modes plus all required overlay labels. The overlays remain explicitly unavailable; the separate verified province aggregate is limited and claim-bounded.",
+   "reason": "Narrowed by owner scope decision on 2026-08-29, then met. The four modes render. Federal ridings, the BC, Alberta, Ontario and Quebec provincial ridings, all 76 Statistics Canada 2021 economic regions, and the 169 Canadian areas selected from NRCan's Water Survey of Canada version 6.0 rollup are drawn from one immutable v2 PMTiles release with exact remote readback and bilingual attribution. Economic regions and watersheds are boundary-only reference frameworks, not forest-loss aggregates. The reserve and treaty-area overlays were removed from Explore, not delivered, and this criterion no longer stands in for them: that obligation is tracked solely by reserve-and-treaty-layers-loaded, which remains failed. If this criterion is ever read as evidence that reserve or treaty geography ships, it is being read wrongly.",
    "evidence": [
     {
      "path": "components/explore/ExploreView.tsx",
-     "sha256": "fca79a241ddcc1242d6169b183592f9b8cdd4add16a6a6080d0f153e787c48af"
+     "sha256": "a404b05637f297a9f1e2894393d5d10304690da567a949f36ec11f8912dd39d5"
     },
     {
      "path": "tests/explore.test.tsx",
-     "sha256": "c61aa662afb3bb149bd8dd98a4b8852c1ea0501c31117a0fafebae6c8a7a9676"
+     "sha256": "dd6a8542f6715a91b936bd481c4dcdffe520cc12546e4f8f649d11ae4a82ddcc"
     }
    ]
   },
@@ -123,11 +123,11 @@
    "evidence": [
     {
      "path": "components/explore/ExploreView.tsx",
-     "sha256": "fca79a241ddcc1242d6169b183592f9b8cdd4add16a6a6080d0f153e787c48af"
+     "sha256": "a404b05637f297a9f1e2894393d5d10304690da567a949f36ec11f8912dd39d5"
     },
     {
      "path": "tests/explore.test.tsx",
-     "sha256": "c61aa662afb3bb149bd8dd98a4b8852c1ea0501c31117a0fafebae6c8a7a9676"
+     "sha256": "dd6a8542f6715a91b936bd481c4dcdffe520cc12546e4f8f649d11ae4a82ddcc"
     }
    ]
   },
@@ -139,11 +139,11 @@
    "evidence": [
     {
      "path": "components/explore/ExploreView.tsx",
-     "sha256": "fca79a241ddcc1242d6169b183592f9b8cdd4add16a6a6080d0f153e787c48af"
+     "sha256": "a404b05637f297a9f1e2894393d5d10304690da567a949f36ec11f8912dd39d5"
     },
     {
      "path": "tests/explore.test.tsx",
-     "sha256": "c61aa662afb3bb149bd8dd98a4b8852c1ea0501c31117a0fafebae6c8a7a9676"
+     "sha256": "dd6a8542f6715a91b936bd481c4dcdffe520cc12546e4f8f649d11ae4a82ddcc"
     }
    ]
   },
@@ -175,11 +175,11 @@
    "evidence": [
     {
      "path": "lib/comparison/ranking.ts",
-     "sha256": "6464bd504c30dd074cc95c805e67992e4880423d7865166e1401481c944e3302"
+     "sha256": "eb38364937424d60bee33113e6a6b33faa2cab6c3ffc053fedc0294fbd8a5d0e"
     },
     {
      "path": "tests/comparison.test.tsx",
-     "sha256": "c42ef3544a4ec49f25fa0833cb04bdac38ce970c77bc54fab7f251dc1130926b"
+     "sha256": "559adf6e622f5609c7cc8744e45a3009002f99e37ae40ce7417dfab428485526"
     }
    ]
   },
@@ -191,15 +191,15 @@
    "evidence": [
     {
      "path": "components/comparison/RankedRidingsTable.tsx",
-     "sha256": "5ce5dadca4b4ebc23e52de7d6fcdb9f2ee54360d4d9fb9ab642d0114fff29b6f"
+     "sha256": "b24bd8ed8b7e82ef088355c07d4e80e1cd568a62766d20a995c41d79e4a9fd17"
     },
     {
      "path": "components/comparison/SideBySideComparison.tsx",
-     "sha256": "be1517d07a34cc8a51fa633d8956cc2c8777f5fee004486cba86ba2f61373275"
+     "sha256": "7b5a266c385fa5332c4e7f28372a3b2d7d31e1858384adf0dca5fa2eb1d46896"
     },
     {
      "path": "tests/comparison.test.tsx",
-     "sha256": "c42ef3544a4ec49f25fa0833cb04bdac38ce970c77bc54fab7f251dc1130926b"
+     "sha256": "559adf6e622f5609c7cc8744e45a3009002f99e37ae40ce7417dfab428485526"
     }
    ]
   },
@@ -211,15 +211,15 @@
    "evidence": [
     {
      "path": "lib/comparison/ranking.ts",
-     "sha256": "6464bd504c30dd074cc95c805e67992e4880423d7865166e1401481c944e3302"
+     "sha256": "eb38364937424d60bee33113e6a6b33faa2cab6c3ffc053fedc0294fbd8a5d0e"
     },
     {
      "path": "components/comparison/RankedRidingsTable.tsx",
-     "sha256": "5ce5dadca4b4ebc23e52de7d6fcdb9f2ee54360d4d9fb9ab642d0114fff29b6f"
+     "sha256": "b24bd8ed8b7e82ef088355c07d4e80e1cd568a62766d20a995c41d79e4a9fd17"
     },
     {
      "path": "tests/comparison.test.tsx",
-     "sha256": "c42ef3544a4ec49f25fa0833cb04bdac38ce970c77bc54fab7f251dc1130926b"
+     "sha256": "559adf6e622f5609c7cc8744e45a3009002f99e37ae40ce7417dfab428485526"
     }
    ]
   },
@@ -247,11 +247,11 @@
    "evidence": [
     {
      "path": "lib/comparison/ranking.ts",
-     "sha256": "6464bd504c30dd074cc95c805e67992e4880423d7865166e1401481c944e3302"
+     "sha256": "eb38364937424d60bee33113e6a6b33faa2cab6c3ffc053fedc0294fbd8a5d0e"
     },
     {
      "path": "tests/comparison.test.tsx",
-     "sha256": "c42ef3544a4ec49f25fa0833cb04bdac38ce970c77bc54fab7f251dc1130926b"
+     "sha256": "559adf6e622f5609c7cc8744e45a3009002f99e37ae40ce7417dfab428485526"
     }
    ]
   },
@@ -263,7 +263,7 @@
    "evidence": [
     {
      "path": "tests/comparison.test.tsx",
-     "sha256": "c42ef3544a4ec49f25fa0833cb04bdac38ce970c77bc54fab7f251dc1130926b"
+     "sha256": "559adf6e622f5609c7cc8744e45a3009002f99e37ae40ce7417dfab428485526"
     }
    ]
   }
@@ -280,5 +280,5 @@
    "reason": "A named accountable recipient, tested bilingual intake route, and owner-managed engagement process are required before a right-of-reply claim can be live."
   }
  ],
- "nonProductionBoundary": "No official reserve or treaty geometry, Indigenous names, page, contact route, or engagement outcome is admitted to production. Existing Explore, comparison, and Indigenous fixtures remain illustrative and nonproduction."
+ "nonProductionBoundary": "No official reserve or treaty geometry, Indigenous names, page, contact route, or engagement outcome is admitted to production. Indigenous fixtures remain illustrative and nonproduction. The federal riding comparison uses real extent-corrected 2021-2022 rows, but those rows remain explicitly local, non-admitted, non-released and nonproduction."
 }

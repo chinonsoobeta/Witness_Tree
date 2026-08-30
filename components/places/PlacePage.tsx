@@ -1,4 +1,4 @@
-import type { Locale } from "@/lib/domain";
+import { colon, semicolon, type Locale } from "@/lib/domain";
 import type { Place } from "@/lib/places";
 import { ReportedValue } from "@/components/policy";
 import { AnnualChangeChart } from "./AnnualChangeChart";
@@ -113,9 +113,12 @@ export function PlacePage({
       <footer className="record-citation">
         <h2>{text.citation}</h2>
         <p>
-          {place.citation.timeRange}; {place.boundaryEdition};{" "}
-          {place.citation.dataVersion}; {text.denominator}:{" "}
-          {place.forestHectares}; {place.citation.method}.
+          {place.citation.timeRange}
+          {semicolon(locale)} {place.boundaryEdition}
+          {semicolon(locale)} {place.citation.dataVersion}
+          {semicolon(locale)} {text.denominator}
+          {colon(locale)} {place.forestHectares}
+          {semicolon(locale)} {place.citation.method}.
         </p>
       </footer>
     </main>

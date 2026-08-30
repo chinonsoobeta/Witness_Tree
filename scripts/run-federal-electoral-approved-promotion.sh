@@ -42,7 +42,7 @@ BYTES="$(jq -er '.snapshot.byteLength' "$PLAN")" || fail "Federal plan byte leng
 SHA256="$(jq -er '.snapshot.sha256' "$PLAN")" || fail "Federal plan SHA-256 is unavailable" 65
 [[ "$BYTES" == "10301648" && "$SHA256" == "4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93" ]] || fail "Federal plan identity is not the exact approved artifact" 65
 [[ "$SOURCE_LOCAL_PATH" == ../Witness_Tree-data/raw/elections-canada-federal-electoral-districts/2026-08-14/FederalElectoralDistricts_2025_SHP.zip ]] || fail "Federal plan local path is outside the exact approved artifact" 65
-DATA_ROOT="${FEDERAL_DATA_ROOT:-$ROOT/../Witness_Tree-data}"
+DATA_ROOT="${FEDERAL_DATA_ROOT:-/Volumes/Extended_SSD/Witness_Tree-data}"
 [[ "$DATA_ROOT" == /* && "$(basename "$DATA_ROOT")" == "Witness_Tree-data" && -d "$DATA_ROOT" && ! -L "$DATA_ROOT" ]] || fail "Federal data root is not the controlled Witness_Tree-data directory" 65
 PAYLOAD="$DATA_ROOT/${SOURCE_LOCAL_PATH#../Witness_Tree-data/}"
 node "$ROOT/scripts/federal-electoral-stable-file.mjs" --verify-source --source "$PAYLOAD" --bytes "$BYTES" --sha256 "$SHA256" >/dev/null \

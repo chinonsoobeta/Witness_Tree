@@ -24,34 +24,63 @@ export const EXPLORE_PRODUCTION_LAYER = Object.freeze({
     fr: "Limites cartographiques de 2021 de Statistique Canada; agrégat provincial dérivé de VLCE2 de Ressources naturelles Canada.",
     href: "https://www150.statcan.gc.ca/n1/en/catalogue/92-160-X",
   },
+  /*
+   * A corrected 1984-2022 execution measured the product's unmapped extent
+   * inside each province. All four provinces are partial. British Columbia's
+   * gap is small but non-zero: 4,095.27 hectares, or 0.00446% of the
+   * cartographic province area. The other unmapped shares are 24.02% for
+   * Alberta, 9.03% for Ontario and 15.05% for Quebec.
+   *
+   * The displayed 2020-2022 hectares and mapped-part rate are unchanged,
+   * because they were always read from the mapped part alone. The measured
+   * coverage fields below change the claim: each figure is a minimum rather
+   * than a complete-province total. Exact execution and limitations are in
+   * docs/PHASE2_MAPPED_EXTENT_COVERAGE_DEFECT.md.
+   */
   rows: [
     {
       id: "24",
       name: { en: "Quebec", fr: "Québec" },
       observedLossHectares: 680273.64,
       observedLossPercent: 0.9745108171576637,
-      coverageGrade: "complete",
+      unknownRequiredInputHectares: 22204952.19,
+      unmappedByProductExtentHectares: 22204952.19,
+      districtHectares: 147544902,
+      unknownSharePercent: 15.049623463100067,
+      coverageGrade: "partial",
     },
     {
       id: "35",
       name: { en: "Ontario", fr: "Ontario" },
       observedLossHectares: 714701.7,
       observedLossPercent: 1.4436948894155726,
-      coverageGrade: "complete",
+      unknownRequiredInputHectares: 8843646.69,
+      unmappedByProductExtentHectares: 8843646.69,
+      districtHectares: 97932917.61,
+      unknownSharePercent: 9.03031065123395,
+      coverageGrade: "partial",
     },
     {
       id: "48",
       name: { en: "Alberta", fr: "Alberta" },
       observedLossHectares: 748863.72,
       observedLossPercent: 2.8132686710314085,
-      coverageGrade: "complete",
+      unknownRequiredInputHectares: 15372023.76,
+      unmappedByProductExtentHectares: 15372023.76,
+      districtHectares: 63992872.89,
+      unknownSharePercent: 24.021462181301985,
+      coverageGrade: "partial",
     },
     {
       id: "59",
       name: { en: "British Columbia", fr: "Colombie-Britannique" },
       observedLossHectares: 800473.32,
       observedLossPercent: 1.3917693193039167,
-      coverageGrade: "complete",
+      unknownRequiredInputHectares: 4095.27,
+      unmappedByProductExtentHectares: 4095.27,
+      districtHectares: 91730013.75,
+      unknownSharePercent: 0.004464482051819162,
+      coverageGrade: "partial",
     },
   ],
 } as const);

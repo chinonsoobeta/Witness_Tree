@@ -47,7 +47,7 @@ test("English and French wildfire views independently render", () => {
 
 test("healthy, degraded, and stale views render the correct safe states", () => {
   const healthy = renderToStaticMarkup(<WildfireView locale="en" feed={ILLUSTRATIVE_WILDFIRE_FEED} now={new Date("2026-08-11T20:00:00Z")} />);
-  assert.match(healthy, /Illustrative fixture — not live wildfire data/);
+  assert.match(healthy, /Illustrative fixture, not live wildfire data/);
   assert.match(healthy, /Illustrative derived estimate/);
   assert.match(healthy, /not a damage or mortality map/);
   const degraded = renderToStaticMarkup(<WildfireView locale="en" feed={{ ...ILLUSTRATIVE_WILDFIRE_FEED, status: "degraded" }} now={new Date("2026-08-11T20:00:00Z")} />);

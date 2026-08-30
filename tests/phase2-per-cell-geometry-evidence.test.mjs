@@ -1,4 +1,8 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
+import { existsSync } from "node:fs";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 import test from "node:test";
 import {
   readPerCellGeometryEvidence,
@@ -15,6 +19,26 @@ test("the per-cell geometry readback reconciles with the component inventory", (
   assert.equal(record.intervalCount, 38);
   assert.equal(record.totals.patchCount, 303_530_909);
   assert.equal(record.totals.cellCount, 1_384_027_417);
+});
+
+test("the mapped-extent receipt matches the completed external verification", async (context) => {
+  const root = process.env.WITNESS_TREE_DATA_ROOT ?? "/Volumes/Extended_SSD/Witness_Tree-data";
+  const descriptor = inputs.extentReceipt.verification;
+  const file = path.join(root, descriptor.path.replace(/^\.\.\/Witness_Tree-data\//u, ""));
+  if (!existsSync(file)) return context.skip("external Witness Tree data root is not attached");
+  const bytes = await readFile(file);
+  assert.equal(bytes.length, descriptor.byteLength);
+  assert.equal(createHash("sha256").update(bytes).digest("hex"), descriptor.sha256);
+  const verification = JSON.parse(bytes);
+  assert.equal(verification.schemaVersion, descriptor.schemaVersion);
+  assert.equal(verification.extentInvariance.years.length, descriptor.verifiedYearCount);
+  assert.equal(verification.extentInvariance.years.some((year) => year.differingCells !== 0), false);
+});
+
+test("incomplete mapped-extent verification fails the per-cell gate", () => {
+  const args = clone();
+  args.extentReceipt.verification.allDifferingCellsZero = false;
+  assert.throws(() => validatePerCellGeometryEvidence(args));
 });
 
 test("a patch that appears from nowhere fails the gate", () => {
@@ -82,9 +106,33 @@ test("the record keeps saying that a zero is not an observation of absence", () 
 const releaseInputs = await readPerCellTileRelease();
 const record = validatePerCellGeometryEvidence(clone());
 const release = () => structuredClone(releaseInputs);
+const publishedRelease = () => {
+  const intervals = record.intervals.map((entry, index) => ({
+    interval: entry.interval,
+    fileName: `${entry.interval}.pmtiles`,
+    byteLength: index + 1,
+    sha256: createHash("sha256").update(entry.interval).digest("hex"),
+    patchCount: entry.patchCount,
+    cellCount: entry.cellCount,
+    harvestCells: entry.attribution.harvestCells,
+    fireCells: entry.attribution.fireCells,
+  }));
+  const releaseId = createHash("sha256")
+    .update(intervals.map((entry) => `${entry.interval}:${entry.sha256}`).join("\n"))
+    .digest("hex");
+  const base = `https://example.test/releases/${releaseId}/tiles`;
+  return {
+    ...release(),
+    releaseId,
+    base,
+    coverageEvidence: structuredClone(inputs.extentReceipt),
+    intervals: intervals.map((entry) => ({ ...entry, url: `${base}/${entry.fileName}` })),
+    totals: { intervalCount: intervals.length, byteLength: intervals.reduce((sum, entry) => sum + entry.byteLength, 0) },
+  };
+};
 
 test("the tile release record passes its own gate", () => {
-  const checked = validatePerCellTileRelease(release(), record);
+  const checked = validatePerCellTileRelease(release(), record, inputs.extentReceipt);
   assert.equal(checked.countable, false);
   assert.equal(checked.expertReviewed, false);
   assert.equal(checked.productionEligible, false);
@@ -93,13 +141,13 @@ test("the tile release record passes its own gate", () => {
 test("a release that claims to be countable fails the gate", () => {
   const args = release();
   args.countable = true;
-  assert.throws(() => validatePerCellTileRelease(args, record), /not countable/);
+  assert.throws(() => validatePerCellTileRelease(args, record, inputs.extentReceipt), /not countable/);
 });
 
 test("a release that claims expert review fails the gate", () => {
   const args = release();
   args.expertReviewed = true;
-  assert.throws(() => validatePerCellTileRelease(args, record), /not expert reviewed/);
+  assert.throws(() => validatePerCellTileRelease(args, record, inputs.extentReceipt), /not expert reviewed/);
 });
 
 test("an unpublished record may not carry a release id", (t) => {
@@ -108,7 +156,7 @@ test("an unpublished record may not carry a release id", (t) => {
   // mistaken for a check that ran.
   if (args.intervals.length > 0) return t.skip("the release is published");
   args.releaseId = "0".repeat(64);
-  assert.throws(() => validatePerCellTileRelease(args, record), /must not carry a release id/);
+  assert.throws(() => validatePerCellTileRelease(args, record, inputs.extentReceipt), /must not carry a release id/);
 });
 
 test("a published release must cover every reconciled interval", (t) => {
@@ -116,7 +164,7 @@ test("a published release must cover every reconciled interval", (t) => {
   if (args.intervals.length === 0) return t.skip("nothing is published yet");
   args.intervals.pop();
   args.totals.intervalCount -= 1;
-  assert.throws(() => validatePerCellTileRelease(args, record), /does not cover every interval/);
+  assert.throws(() => validatePerCellTileRelease(args, record, inputs.extentReceipt), /does not cover every interval/);
 });
 
 test("swapping an archive without changing the release id fails the gate", (t) => {
@@ -125,12 +173,18 @@ test("swapping an archive without changing the release id fails the gate", (t) =
   // The published path is the digest of the archives' digests, so serving
   // different bytes from the same path is exactly what this must catch.
   args.intervals[0].sha256 = "f".repeat(64);
-  assert.throws(() => validatePerCellTileRelease(args, record), /not the digest of its archives/);
+  assert.throws(() => validatePerCellTileRelease(args, record, inputs.extentReceipt), /not the digest of its archives/);
 });
 
 test("a release that restates an interval's counts fails the gate", (t) => {
   const args = release();
   if (args.intervals.length === 0) return t.skip("nothing is published yet");
   args.intervals[3].cellCount += 1;
-  assert.throws(() => validatePerCellTileRelease(args, record), /cell count/);
+  assert.throws(() => validatePerCellTileRelease(args, record, inputs.extentReceipt), /cell count/);
+});
+
+test("a published release without exact mapped-extent evidence fails", () => {
+  const args = publishedRelease();
+  delete args.coverageEvidence;
+  assert.throws(() => validatePerCellTileRelease(args, record, inputs.extentReceipt), /verified mapped extent/);
 });

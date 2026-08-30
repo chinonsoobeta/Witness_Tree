@@ -90,6 +90,7 @@ jobs:
       - run: npm run check:phase2-v21-raster-readback
       - run: npm run check:phase2-zonal-aggregation
       - run: npm run check:phase2-per-cell-geometry
+      - run: npm run check:boundary-overlays
       - run: npm run check:phase2-v21-province-zonal-pilot
       - run: npm run check:phase2-expert-review-workflow
       - run: npm run check:phase2-validation-comparison

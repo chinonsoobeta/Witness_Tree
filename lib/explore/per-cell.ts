@@ -1,4 +1,5 @@
 import releaseRecord from "@/data/phase2-per-cell-tile-release.json";
+import type { ExploreMode } from "./types";
 
 /** One published archive: the tiles for a single annual interval. */
 export type PerCellArchive = Readonly<{
@@ -61,9 +62,55 @@ export const EXPLORE_PER_CELL_LAYER = Object.freeze({
  * for the pair of years they span, so 1999 is shown by 1999-2000 and the last
  * year of the series falls back to the interval that ends on it.
  */
+/**
+ * What the per-cell layer draws for a given Explore mode.
+ *
+ * Every patch in the archives carries a `harvest` and a `fire` count taken
+ * from the national disturbance rasters for the same interval, so the harvest
+ * and wildfire modes are the same tiles filtered, not different tiles. There
+ * is nothing to acquire and nothing to admit for them.
+ *
+ * `condition-recovery` returns null, and that is a different kind of absence:
+ * it needs the annual land-cover class series, which is a separate product
+ * that has never been acquired. The interface has to say which of the two
+ * kinds of absence it is looking at, because "we have not wired this yet" and
+ * "this data does not exist here" are not the same statement to a reader.
+ */
+export type PerCellCause = "all" | "harvest" | "fire";
+
+export function perCellCauseForMode(mode: ExploreMode): PerCellCause | null {
+  switch (mode) {
+    case "forest-change":
+      return "all";
+    case "recorded-harvest":
+      return "harvest";
+    case "wildfire":
+      return "fire";
+    default:
+      return null;
+  }
+}
+
 export function perCellArchiveForYear(year: number): PerCellArchive | null {
-  const intervals = EXPLORE_PER_CELL_LAYER.intervals;
-  if (intervals.length === 0) return null;
+  return archiveForYear(EXPLORE_PER_CELL_LAYER.intervals, year);
+}
+
+/**
+ * The mapping itself, separated from the published release so it can be tested
+ * against a known interval list. The release is empty until the tiles are
+ * built, and a test that reads it would pass vacuously in that state, which is
+ * exactly the kind of green that means nothing.
+ *
+ * Preferring the interval that starts on the year keeps the common case honest:
+ * a reader who picks 1999 is shown loss detected between 1999 and 2000, not
+ * loss that predates their selection. Only the final year of the series has no
+ * such interval, and it falls back to the one that ends on it.
+ */
+export function archiveForYear(
+  intervals: readonly PerCellArchive[],
+  year: number,
+): PerCellArchive | null {
+  if (!Number.isInteger(year)) return null;
   return (
     intervals.find((entry) => entry.interval === `${year}-${year + 1}`) ??
     intervals.find((entry) => entry.interval === `${year - 1}-${year}`) ??
