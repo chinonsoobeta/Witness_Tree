@@ -62,3 +62,21 @@ Staleness of this kind is no longer invisible: the guarded set of
 authorizations, so a change to any of them fails
 `npm run check:data-root-test-currency` in CI until the data-root-bound suite is
 re-run. See [DATA_ROOT_TEST_CURRENCY.md](DATA_ROOT_TEST_CURRENCY.md).
+
+## A known defect, deliberately not fixed here
+
+`scripts/verify-phase1-ntems-transform.mjs` line 20 and line 303 build the
+default evidence filename from the frozen literal `2026-08-26`. A future
+`--write-evidence` run that omits `--evidence-path` would therefore write a
+record whose name claims a date the run did not happen on. Nothing reaches that
+default today: no script invokes the verifier with `--write-evidence`, and every
+documented invocation above passes `--evidence-path` explicitly.
+
+It is left alone because the verifier's SHA-256 is bound as
+`evidence.readbackVerifier` in the production source ledger, which lives outside
+this repository and is validated by
+`scripts/check-phase1-ntems-production-admission-readiness.mjs`. Editing the file
+to fix a latent naming defect would invalidate that binding and require an
+admission-side refresh, which is a larger and unrelated change than the drift
+this document records. Fix it with the next change that legitimately moves the
+verifier, and pass `--evidence-path` until then.
