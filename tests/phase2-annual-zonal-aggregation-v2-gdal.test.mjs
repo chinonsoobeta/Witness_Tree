@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
@@ -123,6 +123,26 @@ test("v2 still summarizes the four province targets when no jurisdiction is give
       [["BC", "59"], ["AB", "48"], ["ON", "35"], ["QC", "24"]]);
     assert.ok(rows.every((row) => row.unmappedByProductExtentHectares === 0));
     assert.ok(rows.every((row) => row.districtHectares === 1));
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("v2 rejects conflicting names across multipart features", () => {
+  const dir = mkdtempSync(path.join(os.tmpdir(), "witness-tree-annual-zonal-v2-multipart-name-"));
+  try {
+    execFileSync("python3", [fixture, dir], { encoding: "utf8" });
+    const boundaryPath = path.join(dir, "boundaries.geojson");
+    const boundaries = JSON.parse(readFileSync(boundaryPath, "utf8"));
+    boundaries.features.push({
+      ...boundaries.features[0],
+      properties: { ...boundaries.features[0].properties, ED_NAME: "Conflicting district name" },
+    });
+    writeFileSync(boundaryPath, JSON.stringify(boundaries));
+    assert.throws(
+      () => run(dir, path.join(dir, "conflict.json"), path.join(dir, "conflict.sidecar.json"), allFeatures),
+      /Multipart boundary 59 has conflicting values in ED_NAME/,
+    );
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }

@@ -8,7 +8,7 @@ verifiers and readbacks must be able to name their data root instead of hard-cod
 `scripts/data-root.mjs` is the single source of truth:
 
 - `WITNESS_TREE_DATA_ROOT` overrides the root for any run.
-- `DEFAULT_DATA_ROOT` is now `SSD_DATA_ROOT`; the migration cutover is complete.
+- `DEFAULT_DATA_ROOT` and `SSD_DATA_ROOT` are `/Volumes/Extended_SSD/Witness_Tree-data`; the migration cutover is complete.
   The internal root remains only as a compatibility symlink for historical evidence.
 - `relocateToDataRoot(recordedPath)` re-roots a path that a durable record captured against
   the internal root. The record keeps the directory the run actually wrote to; only the
@@ -20,6 +20,10 @@ verifiers and readbacks must be able to name their data root instead of hard-cod
 Durable records are never rewritten by any of this. Owner-command templates keep the absolute
 `--data-root` the owner actually approved, and evidence files keep the paths they were written
 with. Overriding the root changes only where a job reads and writes, never what a record claims.
+
+For ordinary current operations, use `/Volumes/Extended_SSD/Witness_Tree-data`.
+Do not replace an absolute path in a recorded command, receipt, authorization,
+or other historical evidence: it documents where that action actually ran.
 
 ## Converted
 

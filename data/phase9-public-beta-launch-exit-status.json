@@ -47,7 +47,7 @@
       "evidence": [
         {
           "path": "docs/EXTERNAL_GATES.md",
-          "sha256": "8a0579667934f07fe11500b5c19b3bf3173acdf4a0c3a167173b848f96e2bd80"
+          "sha256": "ef9c0f7598db39ebb306c187cb4ba797479470bccb18352c7057cb3c46e0c828"
         }
       ]
     },
@@ -59,7 +59,7 @@
       "evidence": [
         {
           "path": "data/phase8-launch-readiness-exit-status.json",
-          "sha256": "79e60153330824b7e35cc934fc7f043eb8e9268d9474b2b4fd94fe8e44667eea"
+          "sha256": "c9e97a17f7285344ba083c224b99cba8483b226c3b40608a3dc6d2cbe6bb681a"
         },
         {
           "path": "data/raw-archive-reproduction-drill.json",

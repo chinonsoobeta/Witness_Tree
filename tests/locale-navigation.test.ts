@@ -23,11 +23,12 @@ test("maps static and dynamic routes to their locale counterpart", () => {
   assert.equal(localeCounterpart("/fr/methodes", "fr"), "/en/methods");
   assert.equal(localeCounterpart("/en/places/example", "en"), "/fr/lieux/example");
   assert.equal(localeCounterpart("/fr/emplacement/example", "fr"), "/en/location/example");
+  assert.equal(localeCounterpart("/en/about", "en"), "/fr/a-propos");
 });
 
 test("preserves only safe query parameters on locale changes", () => {
-  const query = new URLSearchParams("q=cedar&view=table&redirect=https%3A%2F%2Fevil.example");
-  assert.equal(localeHref("/en/search", query, "en"), "/fr/recherche?q=cedar&view=table");
+  const query = new URLSearchParams("q=cedar&view=table&left=35001&right=35002&sort=share&overlays=watersheds&district=Ajax&redirect=https%3A%2F%2Fevil.example");
+  assert.equal(localeHref("/en/search", query, "en"), "/fr/recherche?q=cedar&view=table&left=35001&right=35002&sort=share&overlays=watersheds&district=Ajax");
 });
 
 test("shared navigation exposes localized search and dynamic pages publish record-specific alternates", () => {

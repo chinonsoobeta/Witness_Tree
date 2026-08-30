@@ -1,6 +1,6 @@
 import type { ConfidenceResult, CoverageGrade, EvidenceClass, LocalizedString, Provenance, Reported } from "@/lib/domain";
 
-export const PLACE_TYPES = ["province", "watershed", "forest-district", "municipality", "provincial-riding", "federal-riding", "reserve", "treaty-area"] as const;
+export const PLACE_TYPES = ["province", "economic-region", "watershed", "forest-district", "municipality", "provincial-riding", "federal-riding", "reserve", "treaty-area"] as const;
 export const PLACE_PROVINCES = ["BC", "AB", "ON", "QC"] as const;
 export type PlaceType = (typeof PLACE_TYPES)[number];
 export type PlaceProvince = (typeof PLACE_PROVINCES)[number];

@@ -55,7 +55,7 @@
    "evidence": [
     {
      "path": "components/transparency/MethodologyPage.tsx",
-     "sha256": "5d68880803db916a1d8e44a9194b4094f93e92da83610d2a99b3dedd0f0c837a"
+     "sha256": "1d540f47b31f5161c50446d676e2ecd3c9b6b15f34a04fe4ce97918ad9b36417"
     },
     {
      "path": "docs/PHASE4_OPTIONAL_ENHANCEMENT_GATE.md",
@@ -63,7 +63,7 @@
     },
     {
      "path": "docs/PLAN_GAP_MATRIX.md",
-          "sha256": "1f44e9cb814374b9bc5ae915449c2596c9ae6fb8cac3a4bf3555a84be989160b"
+          "sha256": "a7d5f2663517bb5e4cd101451cf5e8a78a6d50095f6298cf86acf41a3afca99d"
     }
    ]
   },
@@ -128,7 +128,7 @@
     },
     {
      "path": "docs/EXTERNAL_GATES.md",
-     "sha256": "8a0579667934f07fe11500b5c19b3bf3173acdf4a0c3a167173b848f96e2bd80"
+     "sha256": "ef9c0f7598db39ebb306c187cb4ba797479470bccb18352c7057cb3c46e0c828"
     }
    ]
   }

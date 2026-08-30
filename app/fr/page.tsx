@@ -1,20 +1,35 @@
 import type { Metadata } from "next";
 import { SiteShell } from "@/components/site";
 import { PRODUCT_NAME } from "@/lib/domain";
+import { EXPLORE_PRODUCTION_LAYER } from "@/lib/explore";
 
 export const metadata: Metadata = { title: "Registre public des changements forestiers", alternates: { languages: { en: "/en", fr: "/fr" } } };
+
+function coverageLabel(row: (typeof EXPLORE_PRODUCTION_LAYER.rows)[number]) {
+  const number = new Intl.NumberFormat("fr-CA", { maximumFractionDigits: 2 });
+  return `Minimum de la zone cartographiée; ${number.format(row.unknownSharePercent)} % (${number.format(row.unknownRequiredInputHectares)} ha) de la superficie est inconnue`;
+}
 
 export default function FrenchHome() {
   return <SiteShell locale="fr"><main id="main" className="page-wrap">
     <header className="masthead">
-      <p className="eyebrow">Registre de preuves · 1984 à aujourd’hui</p>
+      <p className="eyebrow">Registre de preuves · 1984 à 2022</p>
       <h1>Qu’est-il arrivé à la forêt ici?</h1>
       <p className="dek">{PRODUCT_NAME.fr} aide à comprendre les changements forestiers consignés et observés dans quatre provinces. Chaque résultat indique ce que montrent les preuves, leur provenance, leur actualité et ce qu’elles ne permettent pas d’établir.</p>
       <div className="meta-row"><span>Colombie-Britannique</span><span>Alberta</span><span>Ontario</span><span>Québec</span></div>
     </header>
+    <section className="content-section prose-measure" aria-labelledby="registre-actuel">
+      <div className="section-heading"><span className="num">01</span><h2 id="registre-actuel">Commencer par le registre actuel</h2></div>
+      <p className="lead">L’agrégat provincial provisoire et limité de {EXPLORE_PRODUCTION_LAYER.period} est prêt à explorer. Il présente la perte forestière détectée avec un état de couverture pour chaque province. Une vérification complète de l’étendue cartographiée de 1984 à 2022 régit maintenant la classification des zones inconnues.</p>
+      <dl className="principles">
+        {EXPLORE_PRODUCTION_LAYER.rows.map((row) => <div className="principle" key={row.id}><dt>{row.name.fr}</dt><dd>{new Intl.NumberFormat("fr-CA", { maximumFractionDigits: 2 }).format(row.observedLossHectares)} ha de perte détectée ({new Intl.NumberFormat("fr-CA", { maximumFractionDigits: 2 }).format(row.observedLossPercent)} %) · {coverageLabel(row)}</dd></div>)}
+      </dl>
+      <p><a className="btn btn--primary" href="/fr/explorer">Explorer l’agrégat provincial</a></p>
+      <p><small>Portée : la Colombie-Britannique, l’Alberta, l’Ontario et le Québec passent d’abord. Cet aperçu technique limité à quatre provinces ne constitue pas une affirmation au sujet des autres provinces ou des territoires.</small></p>
+    </section>
     <section className="content-section prose-measure">
-      <div className="section-heading"><span className="num">01</span><h2>Un registre, pas un tableau de bord</h2></div>
-      <p className="lead">Cherchez un lieu ou ouvrez un dossier. Consultez l’historique daté des récoltes consignées, des incendies, des perturbations et des changements observés par satellite—avec la source jointe à chaque affirmation.</p>
+      <div className="section-heading"><span className="num">02</span><h2>Un registre, pas un tableau de bord</h2></div>
+      <p className="lead">Cherchez un lieu ou ouvrez un dossier. Consultez l’historique daté des récoltes consignées, des incendies, des perturbations et des changements observés par satellite, avec la source jointe à chaque affirmation.</p>
       <dl className="principles">
         <div className="principle"><dt>Registre officiel</dt><dd>Une autorité publique consigne un événement, un périmètre, une intervention ou un rôle désigné.</dd></div>
         <div className="principle"><dt>Observation satellitaire</dt><dd>Les images montrent une réduction du couvert arboré ou une reprise ultérieure du couvert. À elles seules, elles n’en établissent pas la cause.</dd></div>
@@ -23,13 +38,19 @@ export default function FrenchHome() {
       </dl>
     </section>
     <section className="content-section">
-      <div className="section-heading"><span className="num">02</span><h2>Consulter le registre</h2></div>
+      <div className="section-heading"><span className="num">03</span><h2>Consulter le registre</h2></div>
       <div className="record-grid">
         <article className="record-card"><p className="eyebrow">Composants</p><h3>Les preuves avant les chiffres</h3><p>Examinez la présentation des valeurs, des inconnues, de la confiance, de la couverture et de la provenance dans le registre public.</p><a href="/fr/composants">Ouvrir la galerie de composants</a></article>
         <article className="record-card"><p className="eyebrow">Méthodes</p><h3>Les définitions avant les chiffres</h3><p>Consultez le dénominateur forestier, les catégories de preuves, les règles de confiance, les niveaux de couverture et la méthode d’appariement.</p><a href="/fr/methodes">Lire les méthodes</a></article>
-        <article className="record-card"><p className="eyebrow">État des données</p><h3>Sources illustratives seulement</h3><p>Aucun jeu de données de production n’est encore intégré. Consultez le contrat strict du registre des sources et les conditions à remplir avant publication.</p><a href="/fr/donnees">Consulter la transparence des données</a></article>
+        <article className="record-card"><p className="eyebrow">État des données</p><h3>Version provinciale limitée</h3><p>L’agrégat provincial de 2020 à 2022 est publié avec sa source, son état de couverture et ses limites. D’autres vues peuvent encore utiliser des exemples clairement identifiés.</p><a href="/fr/donnees">Consulter la transparence des données</a></article>
       </div>
       <aside className="notice"><h3>Ce que ce registre n’affirme pas</h3><p>{PRODUCT_NAME.fr} n’estime pas le bois marchand, ne prédit pas la propagation des incendies, ne qualifie pas un changement détecté d’exploitation ou de déforestation, ne formule aucune conclusion juridique ou de conformité et ne déduit aucune responsabilité de la proximité.</p></aside>
+    </section>
+    <section className="content-section prose-measure" aria-labelledby="consequences">
+      <div className="section-heading"><span className="num">04</span><h2 id="consequences">Pourquoi le contexte importe</h2></div>
+      <p>La perte forestière observée est une mesure dérivée de l’observation satellitaire, et non une conclusion sur la cause. Une réduction détectée du couvert arboré n’établit pas à elle seule l’exploitation, la déforestation, la responsabilité ou la conformité. <a href="/fr/methodes">Lire les définitions de méthode et de preuve</a>.</p>
+      <p>La version disponible est un aperçu technique déterministe au niveau provincial, limité à quatre provinces, pour 2020 à 2022. Elle ne fournit pas une géométrie par cellule et ne satisfait pas au critère formel de la phase 2. <a href="/fr/donnees">Lire la portée de la version, la provenance et l’attribution de licence</a>.</p>
+      <p><small>Source du contexte : {EXPLORE_PRODUCTION_LAYER.attribution.fr} <a href={EXPLORE_PRODUCTION_LAYER.attribution.href}>Catalogue source</a>.</small></p>
     </section>
   </main></SiteShell>;
 }

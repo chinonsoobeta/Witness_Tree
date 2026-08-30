@@ -4,14 +4,30 @@ import { RANKING_METRIC, type ComparisonPlace, type RankedRiding, type RankingCo
 from "./types.ts";
 
 export type RankedRidingsResult = Readonly<{ ranked: readonly RankedRiding[]; insufficientCoverage: readonly RankedRiding[] }>;
+export type RankingSort = "share-desc" | "share-asc";
 export const RANKING_COPY = {
-  en: { metric: "Detected change as a share of forested area", insufficient: "Insufficient coverage — not ranked", hectares: "Detected change (ha)", forested: "Forested area (ha)", unmatched: "No matching official record" },
-  fr: { metric: "Changement détecté en part de la superficie forestière", insufficient: "Couverture insuffisante — non classée", hectares: "Changement détecté (ha)", forested: "Superficie forestière (ha)", unmatched: "Sans registre officiel correspondant" },
+  en: { metric: "Detected change as a share of forested area", insufficient: "Insufficient coverage, not ranked", hectares: "Detected change (ha)", forested: "Forested area (ha)", unmatched: "No matching official record", unknown: "Unknown" },
+  fr: { metric: "Changement détecté en part de la superficie forestière", insufficient: "Couverture insuffisante, non classée", hectares: "Changement détecté (ha)", forested: "Superficie forestière (ha)", unmatched: "Sans registre officiel correspondant", unknown: "Inconnu" },
 } as const;
 
-export function rankRidings(rows: readonly RankedRiding[]): RankedRidingsResult {
-  const sufficient = rows.filter((row) => row.sufficientCoverage).sort((a, b) => b.detectedChangePercent - a.detectedChangePercent);
-  return Object.freeze({ ranked: sufficient, insufficientCoverage: rows.filter((row) => !row.sufficientCoverage) });
+export function parseRankingSort(value: string | undefined): RankingSort {
+  return value === "share-asc" ? "share-asc" : "share-desc";
+}
+
+export function rankRidings(rows: readonly RankedRiding[], sort: RankingSort = "share-desc"): RankedRidingsResult {
+  const sufficient = rows
+    .filter((row): row is RankedRiding & { detectedChangePercent: number; detectedChangeHectares: number } =>
+      row.sufficientCoverage && row.detectedChangePercent !== null && row.detectedChangeHectares !== null,
+    )
+    .sort((a, b) => sort === "share-asc"
+      ? a.detectedChangePercent - b.detectedChangePercent
+      : b.detectedChangePercent - a.detectedChangePercent);
+  return Object.freeze({
+    ranked: sufficient,
+    insufficientCoverage: rows.filter((row) =>
+      !row.sufficientCoverage || row.detectedChangePercent === null || row.detectedChangeHectares === null,
+    ),
+  });
 }
 
 export function rankingContextLines(context: RankingContext, locale: Locale): readonly string[] {

@@ -5,7 +5,7 @@ umask 077
 source "${0:A:h}/aws-direct-mfa-role-session.sh"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 CHECKER="$SCRIPT_DIR/check-wildfire-derived-manifest-retention.mjs"
-DATA_ROOT="${WITNESS_TREE_DATA_ROOT:-/Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data}"
+DATA_ROOT="${WITNESS_TREE_DATA_ROOT:-/Volumes/Extended_SSD/Witness_Tree-data}"
 PROFILE="WitnessTreeArchiveOperator" ROLE="WitnessTreeWildfireDerivedPromotionUploader" ACCOUNT="286853118812" REGION="ca-central-1" BUCKET="witness-tree-raw-archive-ca-central-1" RETAIN_UNTIL="2033-08-12T00:00:00Z"
 BC_PAYLOAD="derived/bc-wildfire/bc-wildfire-geometry-policy-v1-2026-08-14/2026-08-14T20-31-39Z/8ee36cc6bdfb5ef267340537e4cf822df7cc886873c7fcf65a1b2b12006d34ce/payload/bc-wildfire-216-feature-release.gpkg"
 BC_MANIFEST="derived/bc-wildfire/bc-wildfire-geometry-policy-v1-2026-08-14/2026-08-14T20-31-39Z/8ee36cc6bdfb5ef267340537e4cf822df7cc886873c7fcf65a1b2b12006d34ce/manifest.json"

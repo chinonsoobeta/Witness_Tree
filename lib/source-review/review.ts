@@ -145,7 +145,7 @@ const LICENCE_FIELDS: ReadonlyArray<Readonly<{ field: ReviewField; read: (licenc
  * storage write, ingestion, or publication.
  *
  * A `throw` means the input is malformed or self-contradictory. Every other
- * result — including "there is not enough evidence to decide" — is a returned
+ * result, including "there is not enough evidence to decide", is a returned
  * decision that carries its own reasons.
  */
 export function reviewSource(

@@ -27,7 +27,7 @@ them is the fastest way to waste an incident.
 
 | System | What it is | Where it runs | Who can break it |
 | --- | --- | --- | --- |
-| **The public site** | A bilingual read-only Next-style app compiled by `vinext` into a Cloudflare Worker | ChatGPT Sites, project `appgprj_6a7bea9e59988191a9304d4c5a3f379d`, served at `witness-tree-canada.r7bv67rgkk.chatgpt.site` | a bad deploy, or the host |
+| **The public site** | A bilingual read-only Next-style app compiled by `vinext` into a Cloudflare Worker | ChatGPT Sites, project `appgprj_6a7bea9e59988191a9304d4c5a3f379d`, served at `www.witnesstree.ca` | a bad deploy, or the host |
 | **The raw archive** | S3 bucket `witness-tree-raw-archive-ca-central-1`, versioned, Object Lock enabled, public access blocked | AWS `ca-central-1` | an owner running a mutating runner |
 | **The data root** | `Witness_Tree-data` on a single external drive: every real source and derived byte | one physical disk | disk loss, detachment, or corruption |
 
@@ -136,9 +136,9 @@ locale roots and compare.** These are the only probes that exist:
 
 ```sh
 curl -sS -o /dev/null -w '%{http_code} %{time_total}s\n' \
-  https://witness-tree-canada.r7bv67rgkk.chatgpt.site/en
+  https://www.witnesstree.ca/en
 curl -sS -o /dev/null -w '%{http_code} %{time_total}s\n' \
-  https://witness-tree-canada.r7bv67rgkk.chatgpt.site/fr
+  https://www.witnesstree.ca/fr
 ```
 
 A non-2xx from both, with the same shape, points at the host or the deploy. A

@@ -7,7 +7,7 @@ import { PRODUCT_NAME, PRODUCT_PURPOSE, type Locale } from "@/lib/domain";
  * is correct, which means each root layout has to export the whole record.
  */
 export const siteMetadata: Metadata = {
-  metadataBase: new URL("https://witness-tree-canada.r7bv67rgkk.chatgpt.site"),
+  metadataBase: new URL("https://www.witnesstree.ca"),
   title: {
     default: PRODUCT_NAME.en,
     template: `%s · ${PRODUCT_NAME.en}`,

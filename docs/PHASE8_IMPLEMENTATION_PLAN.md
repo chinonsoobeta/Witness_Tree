@@ -1,6 +1,6 @@
 # Phase 8 implementation plan: six launch-readiness gates under ChatGPT Sites hosting
 
-> Execution update, 2026-08-28: the CDN/tile section of this planning record has now been implemented for the admitted province-level technical-preview layer. The immutable PMTiles archive is delivered from a private Canadian AWS origin through CloudFront, and its exact live range/readback evidence is recorded in `data/phase8-public-delivery-evidence.json`. Statements below that describe tiles or a CDN as absent are retained as the pre-execution rationale, not the current state.
+> Execution update, 2026-08-29: the CDN/tile section of this planning record has been implemented for the admitted province-level technical-preview layer, and four immutable reference-boundary archives now have exact S3 and CloudFront readback. Statements below that describe tiles or a CDN as absent are retained as the pre-execution rationale, not the current state. Complete deployed-browser PMTiles validation remains open.
 
 This is a plan. It implements nothing, records no evidence, and changes no
 file under `data/`. Every statement about current state cites a file in this

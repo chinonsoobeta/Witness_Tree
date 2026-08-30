@@ -11,7 +11,7 @@ from osgeo import gdal, ogr, osr
 
 gdal.UseExceptions()
 SEED = "witness-tree-phase2-v21-real-review-packet-v1"
-ROOT = os.environ.get("WITNESS_TREE_DATA_ROOT") or "/Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data"
+ROOT = os.environ.get("WITNESS_TREE_DATA_ROOT") or "/Volumes/Extended_SSD/Witness_Tree-data"
 RASTERS = {
   "early-loss-observed": ("whole-interval-loss-2000-2004.tif", 1, "2000-2004"),
   "early-known-no-loss": ("whole-interval-loss-2000-2004.tif", 0, "2000-2004"),

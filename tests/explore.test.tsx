@@ -43,6 +43,10 @@ import {
   exploreFixtures,
   // @ts-expect-error -- Node's TypeScript runner requires explicit local extensions.
 } from "../lib/explore/fixtures.ts";
+import {
+  ExploreMapClient,
+  // @ts-expect-error -- Node's TypeScript runner requires explicit local extensions.
+} from "../components/explore/ExploreMapClient.tsx";
 
 test("renders four plan modes, independent same-url controls, fixture boundaries, and native time control", () => {
   const en = renderToStaticMarkup(
@@ -68,7 +72,7 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
   );
   assert.match(
     en,
-    /list, chart, and table use the same verified 2020–2022 province aggregate/,
+    /list, chart, and table use the same provisional 2020–2022 province aggregate/,
   );
   // The per-cell layer exists now, so the copy no longer says it does not.
   // What it must keep saying is what the layer has not been through: the
@@ -105,10 +109,12 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
   assert.doesNotMatch(en, /geometry unavailable/);
   assert.match(en, /overlays=federal-ridings/);
   assert.match(en, /overlays=provincial-ridings/);
-  // Watersheds stays listed because it is genuinely planned, and it has to
-  // say why it is not here rather than showing a bare label.
-  assert.match(en, /Not available yet/);
-  assert.match(en, /No authoritative national watershed edition/);
+  // Both admitted reference frameworks are selectable, while their copy
+  // still refuses to imply that a forest-loss aggregate was released.
+  assert.match(en, /overlays=economic-regions/);
+  assert.match(en, /overlays=watersheds/);
+  assert.match(en, /not a regional forest-loss aggregate/);
+  assert.match(en, /not a watershed forest-loss aggregate/);
   // The provincial layer must never read as national coverage.
   for (const province of [
     "British Columbia",
@@ -229,7 +235,67 @@ test("Explore uses the exact PMTiles release with a GeoJSON/SVG fallback on map 
   for (const route of [enRoute, frRoute]) {
     assert.match(route, /presentation === "map" \?\s*\(?\s*<ExploreMapClient/);
     assert.match(route, /mode=\{mode\}\s+year=\{year\}/);
+    assert.match(route, /ridingMeasurements=\{ridingMeasurements\}/);
   }
+});
+
+test("the map uses fixed hydration-safe status and attribution ids", async () => {
+  const mapSource = await (await import("node:fs/promises")).readFile(
+    new URL("../components/explore/ExploreMapClient.tsx", import.meta.url),
+    "utf8",
+  );
+  const first = renderToStaticMarkup(
+    <ExploreMapClient locale="en" mode="condition-recovery" year={2022} />,
+  );
+  const second = renderToStaticMarkup(
+    <ExploreMapClient locale="en" mode="condition-recovery" year={2022} />,
+  );
+
+  // useId() is position-derived, which can differ across the server and client
+  // trees for this island. These cross-boundary descriptions must remain fixed.
+  assert.doesNotMatch(mapSource, /\buseId\s*\(/);
+  assert.match(mapSource, /const STATUS_ID = "explore-map-status"/);
+  assert.match(mapSource, /const ATTRIBUTION_ID = "explore-map-attribution"/);
+  assert.match(first, /aria-describedby="explore-map-status explore-map-attribution"/);
+  assert.match(first, /<p id="explore-map-status"[^>]*role="status"/);
+  assert.match(first, /<p id="explore-map-attribution"/);
+  assert.equal(first, second, "the server markup must retain the same fixed ids");
+});
+
+test("the map identifies active boundary lines and uses the riding readout contract", async () => {
+  const mapSource = await (await import("node:fs/promises")).readFile(
+    new URL("../components/explore/ExploreMapClient.tsx", import.meta.url),
+    "utf8",
+  );
+
+  assert.match(mapSource, /aria-label=\{text\[locale\]\.mapPanel\}/);
+  assert.match(mapSource, /\{source === "pmtiles" \? \(/);
+  assert.match(mapSource, /<legend>\{text\[locale\]\.mapView\}<\/legend>/);
+  assert.match(mapSource, /aria-pressed=\{selectedMapView === mapView\}/);
+  assert.match(mapSource, /mapRef\.current\?\.fitBounds\(MAP_VIEW_BOUNDS\[mapView\]/);
+  for (const mapView of ["national", "bc", "ab", "on", "qc"])
+    assert.match(mapSource, new RegExp(`${mapView}:`));
+  assert.match(mapSource, /boundaryLineLayerIds\(overlays\)/);
+  assert.match(mapSource, /map\?\.on\("mouseenter", layerId/);
+  assert.match(mapSource, /map\?\.on\("mouseleave", layerId/);
+  assert.match(mapSource, /map\?\.on\("click", layerId/);
+  assert.match(mapSource, /properties\?\.\[locale === "fr" \? "name_fr" : "name_en"\]/);
+  assert.match(mapSource, /properties\?\.id/);
+  assert.match(mapSource, /properties\?\.juris/);
+  const measurementsSource = await (await import("node:fs/promises")).readFile(
+    new URL("../lib/explore/riding-measurements.ts", import.meta.url),
+    "utf8",
+  );
+  assert.match(measurementsSource, /const tileBoundaryId = `\$\{jurisdiction\}-\$\{boundaryId\}`/);
+  assert.match(mapSource, /map\.getCanvas\(\)\.style\.cursor = "pointer"/);
+  assert.match(mapSource, /setHoveredBoundary\(null\)/);
+  assert.match(mapSource, /setPinnedBoundary\(selection\)/);
+  assert.match(mapSource, /className="explore-map-boundary-status" role="status"/);
+  assert.match(mapSource, /boundaryReadout\(boundary, ridingMeasurements, locale\)/);
+  assert.match(mapSource, /readout\?\.kind === "boundary-only"/);
+  assert.match(mapSource, /readout\?\.kind === "riding-measurement"/);
+  assert.match(mapSource, /text\[locale\]\.normalizedShare/);
+  assert.match(mapSource, /text\[locale\]\.totalLoss/);
 });
 
 test("the year control is a real, shareable control rather than a decorative slider", () => {

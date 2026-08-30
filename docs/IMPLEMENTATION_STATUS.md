@@ -25,6 +25,45 @@ The local Version 2.1 implementation contract specifies **11 national snapshots*
 
 Real Version 2.1 execution and readback are complete for all **21/21 outputs**: 11 selected snapshots and 10 whole-interval rasters. The exact limited admission record binds those outputs and sidecars, all 39 versioned VLCE2 source archives, the method, and the exact Statistics Canada 2021 boundary plus 13-row 2020–2022 aggregate. This closes the baseline and boundary-aggregate gates without granting release or production eligibility. Phase 2 remains **2/4** because expert review is 0/100 in every province and no formal published independent-comparison envelope exists. A separate historical annual run now has an exact fractional-boundary correction across 5,113,929 candidate cells and a checksum-bound 152-row NFD comparison: 34 descriptive rows are computed and 118 remain pending. The official recovery pass for those NFD rows is complete: candidate coverage is **118/118**, with **0 safe exact replacements**, **104 rounded all-tenure historical candidates**, and **14 later limited-scope candidates**. The strict NFD values remain null. A separate official-source public artifact now presents the 104 Statistics Canada values with their 50-hectare rounding half-width and leaves the 14 restricted later values unpublished. It does not mix the rounded series into the exact NFD track. The comparison remains non-like-for-like and does not close the formal independent-comparison gate. See the [official published comparison receipt](../data/phase2-official-published-harvest-comparison-receipt-2026-08-27.json), [official recovery audit](../data/phase2-nfd-official-recovery-audit-2026-08-27.json), [formal status](PHASE2_FORMAL_EXIT_STATUS.md), [fractional comparison receipt](../data/phase2-annual-nfd-fractional-comparison-receipt-2026-08-27.json), [earlier binary comparison receipt](../data/phase2-annual-nfd-provisional-comparison-receipt-2026-08-27.json), [owner admission packet](PHASE2_OWNER_ADMISSION_PACKET.md), [V2.1 interval contract](PHASE2_V21_INTERVAL_RASTER_CONTRACT.md), [readback evidence](PHASE2_V21_RASTER_READBACK.md), and [zonal aggregation](PHASE2_ZONAL_AGGREGATION.md). The earlier binary-mask receipt remains preserved as superseded method evidence. Historical 39-mask/38-loss artifacts remain audit-only and may not be represented as Version 2.1 outputs.
 
+The corrected annual province execution now measures the mapped-extent defect rather than relying on district samples. All four provinces have partial coverage: the unknown shares are 0.004464% in British Columbia, 24.021462% in Alberta, 9.030311% in Ontario and 15.049623% in Quebec. Public mapped-part figures are therefore labelled as minima. The exact local, nonproduction output pair and coverage rows are bound in [`data/phase2-annual-province-zonal-v2-receipt-2026-08-29.json`](../data/phase2-annual-province-zonal-v2-receipt-2026-08-29.json); this correction does not move a formal Phase 2 gate.
+
+The local federal riding comparison now uses the corrected 2021-2022 interval for all 343 districts under the 2023 Representation Order. Exactly 69 complete districts are rankable by detected-loss share, 91 retain partial coverage and 183 have no mapped coverage; the latter 274 keep total loss and share Unknown. The 205,107-byte generated comparison record has SHA-256 `488df3094b35a77eb6393da29cf7d7b2ed40216074fe2e480bf6a304d162fc53` and binds the exact annual output, sidecar, mapped-extent verification and bilingual Elections Canada geometry.
+
+The corrected district execution is also complete for the four provincial editions. The final 774-row map join contains 188 complete, 171 partial and 415 none-mapped districts. Every one of the 586 incomplete rows retains null total loss and share. The 517,447-byte checked-in record has SHA-256 `b0a3c6fb715ebd37630154b277b443f41078dcd4d44c140f30634317a25f2c92`; its converter requires all five exact output/sidecar/marker sets before writing. Both localized Explore maps consume it through a runtime validator and expose only complete normalized shares and totals, while keeping known mapped-part loss separately labelled. These riding records remain local, non-admitted, non-released and nonproduction, and they do not satisfy the separate formal independent-comparison gate.
+
+### VLCE accuracy boundary
+
+The publisher cites the predecessor VLCE 2005 land-cover classification
+accuracy as **70.3% +/- 2.5 percentage points (95% CI)**
+([DOI: 10.1080/07038992.2018.1437719](https://doi.org/10.1080/07038992.2018.1437719)).
+It is not detected-loss, district, every-year, or current VLCE2 validation.
+Directly applicable detection accuracy remains **Unknown**.
+
+### Comparison frameworks
+
+The exact Statistics Canada 2021 economic-region geometry is source-admitted:
+76 features and 76 distinct DGUIDs, including 44 regions in the four initial
+provinces. The bilingual immutable v2 tile archive is released with exact
+remote readback. A regional forest-loss aggregate remains unreleased.
+
+The source-admitted watershed geometry is NRCan's national Water Survey of Canada
+sub-drainage-area rollup archive, version 6.0 at 1:1,000,000 scale. It is a
+single 50.9 MB federal ZIP with stable WSCSDA codes and bilingual names, and it
+covers all four initial provinces. Exact staging found 184 coded features,
+including 15 explicitly USA-only `U*` records; the recorded Canadian overlay
+selection therefore contains 169. Its immutable v2 boundary archive passed
+exact remote readback; no watershed forest-loss aggregate is claimed. The
+older 164-area narrative is not being
+substituted for the archive's measured contents. Statistics Canada did not
+adopt NRCan version 6.0 for SDAC dissemination, so the released reference
+overlay retains the NRCan version label rather than being called the current
+SDAC.
+
+Province flags remain omitted. British Columbia, Alberta and Québec publish
+reusable official artwork under conditions, but Ontario requires prior written
+authorization to reproduce its Red Ensign. A text-only switcher is retained so
+the interface does not imply a permission that has not been obtained.
+
 ## Other formal phase counts
 
 Version 2.1 does not assign Phase 3 a cumulative percentage. Its five literal published exit criteria are nonetheless gated and counted, at 4/5 with moderated bilingual usability testing owner-blocked; that count is not a maturity score and does not mean the phase is four fifths complete. Its historical checkpoint records four completed technical-foundation evidence groups and one execution-ready, empty external-checkpoint envelope; that shorthand is not a Phase 3 exit result or a production-readiness measure.
@@ -38,8 +77,8 @@ Phase 0 is complete under its recorded scope: seven of its eight literal gates p
 | Phase 4 | **3/4 (75%)** | Provincial safeguards exist; admitted enhancement inputs and published match results do not. |
 | Phase 5 | **4/4 (100%) local; production blocked** | Simulation and safety controls do not establish real feed rights, operations, or deployment. |
 | Phase 6 | **4/5 (80%)** | Managed Canadian database isolation is proven. Sender infrastructure and the independent timed kill-switch rehearsal remain absent. |
-| Phase 7 | **14/16 (87.5%)** | The Mistik outcome is recorded as not pursued. Indigenous-source authority and a named tested reply operation remain missing. The modes-and-overlays gate was narrowed on 2026-08-29 to the watershed and riding overlays; reserve and treaty geography is tracked only by the still-failed reserve-and-treaty gate. |
-| Phase 8 | **6/16 (37.5%)** | Raw-archive reproducibility and the operations handbook pass. The province-level CDN release passed decoded delivery-tier validation, but complete browser-side PMTiles rendering and other operated production evidence remain incomplete. |
+| Phase 7 | **14/16 (87.5%)** | The Mistik outcome is recorded as not pursued. Indigenous-source authority and a named tested reply operation remain missing. The modes-and-overlays gate now covers the released federal-riding, provincial-riding, economic-region and watershed reference boundaries; reserve and treaty geography is tracked only by the still-failed reserve-and-treaty gate. |
+| Phase 8 | **7/16 (43.75%)** | Raw-archive reproducibility, the operations handbook and bounded independently retrieved bulk downloads pass. The province tile and four reference-boundary archives have exact delivery/readback evidence, but deployed-browser PMTiles validation and other operated production evidence remain incomplete. |
 | Phase 9 | **0/4 (0%)** | No operated beta, real correction metrics, source-agency confirmation, or quarterly published-figure reproduction. |
 
 The underlying machine-checked records are [Phase 4](../data/phase4-exit-status.json), [Phase 5](../data/phase5-live-wildfire-exit-status.json), [Phase 6](../data/phase6-account-alert-exit-status.json), [Phase 7](../data/phase7-indigenous-explore-comparison-exit-status.json), [Phase 8](../data/phase8-launch-readiness-exit-status.json), and [Phase 9](../data/phase9-public-beta-launch-exit-status.json).

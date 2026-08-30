@@ -15,7 +15,7 @@ PLAN="$ROOT/data/alberta-plvi-immutable-promotion-preparation.json"
 LEGACY_MANIFEST_COMPARATOR="$ROOT/scripts/check-alberta-plvi-legacy-manifest-audit.mjs"
 # The approved owner-local workspace data root is deliberately absolute. The
 # promotion worktree lives under /private/tmp and is not a sibling of this data.
-DATA_ROOT="/Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data"
+DATA_ROOT="${WITNESS_TREE_DATA_ROOT:-/Volumes/Extended_SSD/Witness_Tree-data}"
 if [[ "${1:-}" == "--preflight" && -n "${WITNESS_TREE_PLVI_PREFLIGHT_DATA_ROOT:-}" ]]; then DATA_ROOT="$WITNESS_TREE_PLVI_PREFLIGHT_DATA_ROOT"; fi
 RAW="$DATA_ROOT/raw/alberta-primary-land-vegetation/2026-08-14/PrimaryLandAndVegetationInventoryPLVI.zip"
 DERIVED="$DATA_ROOT/derived/alberta-plvi-full-repair-v1/2026-08-14/alberta-plvi-full-repaired-closed-join.gpkg"

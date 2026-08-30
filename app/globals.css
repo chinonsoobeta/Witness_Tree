@@ -1413,6 +1413,84 @@ h4 {
   width: 100%;
   min-height: 430px;
 }
+.explore-map-layer-panel {
+  position: absolute;
+  inset-block-start: 12px;
+  inset-inline-start: 12px;
+  z-index: 1;
+  max-width: min(340px, calc(100% - 24px));
+  padding: 10px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 12px;
+  pointer-events: auto;
+}
+.explore-map-layer-panel fieldset {
+  min-width: 0;
+  margin: 0 0 8px;
+  padding: 0;
+  border: 0;
+}
+.explore-map-layer-panel legend {
+  margin-bottom: 4px;
+  font-weight: 700;
+}
+.explore-map-view-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.explore-map-view-options button {
+  min-height: 30px;
+  padding: 3px 7px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.explore-map-view-options button[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--ground);
+}
+.explore-map-layer-list {
+  margin: 4px 0 8px;
+  padding-inline-start: 18px;
+}
+.explore-map-layer-panel .explore-map-legend {
+  margin: 4px 0 0;
+  gap: 4px 8px;
+}
+.explore-map-boundary-status {
+  position: absolute;
+  inset-block-end: 72px;
+  inset-inline-end: 12px;
+  z-index: 1;
+  max-width: min(260px, calc(100% - 24px));
+  padding: 10px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 12px;
+  pointer-events: auto;
+}
+.explore-map-boundary-status p {
+  margin: 4px 0;
+}
+.explore-map-boundary-status button {
+  min-height: 30px;
+  padding: 3px 7px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
 /*
  * Zoom buttons and a scale bar, floated over the map.
  *
@@ -2081,6 +2159,15 @@ h4 {
   color: var(--accent);
   text-decoration: underline;
 }
+.explore-finder {
+  margin: 24px 0 32px;
+}
+.explore-finder h2 {
+  margin-bottom: 8px;
+}
+.explore-finder .masthead-note {
+  max-width: var(--measure);
+}
 
 /* ==========================================================================
    Surfaces: governance.
@@ -2267,6 +2354,20 @@ dd > a:only-child {
 .comparison-side-by-side {
   margin-bottom: 40px;
 }
+.comparison-picker {
+  align-items: end;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.comparison-picker label {
+  display: grid;
+  gap: 6px;
+}
+.comparison-picker select {
+  min-width: 220px;
+}
 .comparison-pair {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -2290,7 +2391,7 @@ dd > a:only-child {
 }
 
 /* ==========================================================================
-   Phase 5 — record pages (place records and location results)
+   Phase 5: record pages (place records and location results)
    ========================================================================== */
 
 .record-page > * + * {
@@ -2375,7 +2476,7 @@ dd > a:only-child {
 }
 
 /* ==========================================================================
-   Phase 5 — explore
+   Phase 5: explore
    ========================================================================== */
 
 /* One layout owner for the whole control stack.

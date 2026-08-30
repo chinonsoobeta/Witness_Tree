@@ -5,6 +5,12 @@ and verify their SHA-256 against a bound checksum. They live in
 [`data/data-root-bound-checks.json`](../data/data-root-bound-checks.json) and
 are validated by `npm run check:data-root-bound-checks`.
 
+The current operational default is `/Volumes/Extended_SSD/Witness_Tree-data`.
+This inventory still names the internal compatibility path because its purpose
+is to classify historical checks when that recorded path is unavailable; the
+path currently resolves to the approved SSD. Historical evidence is not
+rewritten.
+
 ## Why this record exists
 
 When the drive holding `Witness_Tree-data` is detached, those twenty checks

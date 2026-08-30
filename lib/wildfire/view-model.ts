@@ -58,7 +58,7 @@ export function buildWildfireViewModel(feed: WildfireFeedState, now = new Date()
 
 export const wildfireText = (locale: Locale) => locale === "en" ? {
   title: "Wildfire context",
-  fixture: "Illustrative fixture — not live wildfire data.",
+  fixture: "Illustrative fixture, not live wildfire data.",
   sourceUpdated: "Source updated",
   lastRefresh: `Last successful ${PRODUCT_NAME.en} refresh`,
   agency: "Source agency",
@@ -71,7 +71,7 @@ export const wildfireText = (locale: Locale) => locale === "en" ? {
   perimeter: "A fire perimeter is not a damage or mortality map.",
 } : {
   title: "Contexte des incendies",
-  fixture: "Exemple illustratif — ces données sur les incendies ne sont pas en direct.",
+  fixture: "Exemple illustratif; ces données sur les incendies ne sont pas en direct.",
   sourceUpdated: "Mise à jour de la source",
   lastRefresh: `Dernière actualisation réussie de ${PRODUCT_NAME.fr}`,
   agency: "Organisme source",

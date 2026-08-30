@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
 import { ExploreMapClient, ExploreView } from "@/components/explore";
+import { FederalDistrictFinder } from "@/components/search";
 import { SiteShell } from "@/components/site";
+import { federalRidingComparison } from "@/lib/comparison";
 import {
   exploreFixtures,
   EXPLORE_MODES,
   fixturesThroughYear,
   parseBoundaryOverlays,
   parseExploreYear,
+  ridingMeasurements,
 } from "@/lib/explore";
 
 export const metadata: Metadata = {
@@ -23,6 +26,8 @@ export default async function Page({
     data?: string;
     year?: string;
     overlays?: string;
+    q?: string;
+    district?: string;
   }>;
 }) {
   const query = await searchParams;
@@ -41,12 +46,25 @@ export default async function Page({
         <header className="masthead">
           <h1>Explore forest change</h1>
         </header>
+        <FederalDistrictFinder
+          locale="en"
+          query={query.district ?? ""}
+          rows={federalRidingComparison.places}
+          parameters={[
+            { name: "mode", value: mode },
+            { name: "presentation", value: presentation },
+            { name: "data", value: query.data === "table" ? "table" : "chart" },
+            { name: "year", value: String(year) },
+            ...(overlays.length > 0 ? [{ name: "overlays", value: overlays.join(",") }] : []),
+          ]}
+        />
         {presentation === "map" ? (
           <ExploreMapClient
             locale="en"
             mode={mode}
             year={year}
             overlays={overlays}
+            ridingMeasurements={ridingMeasurements}
           />
         ) : null}
         <ExploreView
@@ -57,6 +75,7 @@ export default async function Page({
           data={query.data === "table" ? "table" : "chart"}
           year={year}
           overlays={overlays}
+          query={query.q ?? ""}
         />
       </main>
     </SiteShell>

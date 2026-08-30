@@ -11,19 +11,15 @@ The live Canadian Trademarks Database reported that it was updated 2026-08-05. E
 
 Source: [Canadian Trademarks Database](https://ised-isde.canada.ca/cipo/trademark-search/srch?lang=eng). CIPO recommends the TM lookup field for name searches and explains broader Boolean/wildcard searching in its [basic-search guidance](https://ised-isde.canada.ca/site/canadian-intellectual-property-office/en/trademarks/basic-search).
 
-## Domains
+## Domain
 
-Registry/WHOIS and DNS checks on 2026-08-11 found:
+`witnesstree.ca` is registered and is the project's public domain. A DNS and
+TLS readback on 2026-08-29 found that the apex resolved, `www.witnesstree.ca`
+was delegated to `custom-domains.chatgpt.site`, and HTTPS requests to both
+hosts returned HTTP 200 with valid certificates. The custom-hostname
+validation TXT record was present at `_cf-custom-hostname.witnesstree.ca`.
 
-| Exact domain | Signal | Interpretation |
-| --- | --- | --- |
-| `witnesstree.ca` | CIRA WHOIS: `Not found`; no DNS records | Appeared unregistered at check time. |
-| `witnesstree.com` | Registered 2003-07-23; expiry 2027-07-23; listed for sale; active DNS | Not available for ordinary registration. |
-| `witnesstree.org` | Registry WHOIS/RDAP: not found / 404; no DNS records | Appeared unregistered at check time. |
-| `witnesstree.app` | Google Registry RDAP: 404; no DNS records | Appeared unregistered at check time. |
-| `witnesstree.io` | `.io` WHOIS: `Domain not found`; no DNS records | Appeared unregistered at check time. |
-
-Availability can change immediately, and a registrar may apply eligibility, premium-price, reserved-name, or policy restrictions. A domain being unregistered does not establish trademark rights.
+Domain registration does not establish trademark rights.
 
 ## Other uses and risk
 
@@ -32,4 +28,6 @@ Availability can change immediately, and a registrar may apply eligibility, prem
 
 ## Preliminary conclusion
 
-No exact Canadian register hit was found for the English or French name. The exact `.ca`, `.org`, `.app`, and `.io` domains appeared unregistered; `.com` is registered and offered for sale. The name is not cleared for launch or filing until a broader professional search and legal review are completed.
+No exact Canadian register hit was found for the English or French name, and
+`witnesstree.ca` is registered. The name is not legally cleared until a broader
+professional search and legal review are completed.

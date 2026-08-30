@@ -7,13 +7,14 @@
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 
 const DATA_ROOT = process.env.WITNESS_TREE_DATA_ROOT ?? "/Volumes/Extended_SSD/Witness_Tree-data";
-const OUT_DIR = path.join(DATA_ROOT, "derived/boundary-overlays-v1");
+const OUT_DIR = path.join(DATA_ROOT, "derived/boundary-overlays-v2");
 const BUCKET = "witness-tree-public-delivery-ca-central-1";
 const DISTRIBUTION = "https://d3g1406o0uekin.cloudfront.net";
-const RELEASE = "boundary-overlays-v1";
+const RELEASE = "boundary-overlays-v2";
 
 const aws = (args) => execFileSync("aws", args, { encoding: "utf8", maxBuffer: 1 << 26 });
 const manifest = JSON.parse(fs.readFileSync(path.join(OUT_DIR, "manifest.json"), "utf8"));
@@ -24,6 +25,7 @@ const releaseId = createHash("sha256")
 const prefix = `releases/${RELEASE}/${releaseId}/tiles`;
 
 const published = [];
+const readbackDir = fs.mkdtempSync(path.join(os.tmpdir(), "boundary-overlay-readback-"));
 for (const archive of manifest.archives) {
   const local = path.join(OUT_DIR, archive.fileName);
   const actual = createHash("sha256").update(fs.readFileSync(local)).digest("hex");
@@ -61,8 +63,16 @@ for (const archive of manifest.archives) {
   if (head.ContentLength !== archive.byteLength) {
     throw new Error(`${key}: published length ${head.ContentLength} does not match ${archive.byteLength}`);
   }
+  const readback = path.join(readbackDir, archive.fileName);
+  aws(["s3api", "get-object", "--bucket", BUCKET, "--key", key, readback, "--output", "json"]);
+  const remoteLength = fs.statSync(readback).size;
+  const remoteSha256 = createHash("sha256").update(fs.readFileSync(readback)).digest("hex");
+  if (remoteLength !== archive.byteLength || remoteSha256 !== archive.sha256) {
+    throw new Error(`${key}: exact remote readback does not match the local archive`);
+  }
   published.push({ ...archive, url: `${DISTRIBUTION}/${prefix}/${archive.fileName}` });
 }
+fs.rmSync(readbackDir, { recursive: true, force: true });
 
 const release = {
   schemaVersion: "witness-tree/boundary-overlay-release/1",

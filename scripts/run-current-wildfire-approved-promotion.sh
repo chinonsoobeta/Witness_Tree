@@ -12,7 +12,7 @@ BUCKET="witness-tree-raw-archive-ca-central-1"
 REGION="ca-central-1"
 RETAIN_UNTIL="2033-08-12T00:00:00Z"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-DATA_ROOT="/Users/chinonsoobeta/Documents/Codex/2026-08-11/go/Witness_Tree-data"
+DATA_ROOT="${WITNESS_TREE_DATA_ROOT:-/Volumes/Extended_SSD/Witness_Tree-data}"
 [[ "${1:-}" == "--preflight" && -n "${WITNESS_TREE_CURRENT_WILDFIRE_PREFLIGHT_DATA_ROOT:-}" ]] && DATA_ROOT="$WITNESS_TREE_CURRENT_WILDFIRE_PREFLIGHT_DATA_ROOT"
 TMP=""
 cleanup() { unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN bootstrap creds totp; [[ -n "$TMP" && -d "$TMP" ]] && rm -rf "$TMP"; }

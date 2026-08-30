@@ -20,6 +20,7 @@ import {
   type BoundaryOverlayId,
 } from "@/lib/explore";
 import { colon, labelled, type Locale } from "@/lib/domain";
+import { PlaceFinder } from "@/components/search";
 import { ExploreYearControl } from "./ExploreYearControl";
 
 const copy = {
@@ -28,7 +29,7 @@ const copy = {
     yearControl: "Show illustrative fixtures through year",
     update: "Update",
     production:
-      "The list, chart, and table use the same verified 2020–2022 province aggregate. The map adds per-cell detected loss patches for 1984–2022: they are traced from the 30 m grid, they have not been expert-reviewed, and no figure on this site is counted from them.",
+      "The list, chart, and table use the same provisional 2020–2022 province aggregate. The map adds per-cell detected loss patches for 1984–2022: they are traced from the 30 m grid, they have not been expert-reviewed, and no figure on this site is counted from them.",
     fixtureList:
       "This list, chart, and table use illustrative fixtures. No verified geographic layer is implied by this view.",
     year: "Year",
@@ -54,6 +55,7 @@ const copy = {
     observedLossPercent: "Observed loss (%)",
     complete: "Every input pixel present",
     partial: "Some pixels unknown, so this is a minimum",
+    unknownArea: "ha unknown",
     source: "Source attribution",
     modes: {
       "forest-change": "Forest change",
@@ -67,7 +69,7 @@ const copy = {
     yearControl: "Afficher les exemples illustratifs jusqu’à l’année",
     update: "Mettre à jour",
     production:
-      "La liste, le graphique et le tableau utilisent le même agrégat provincial vérifié de 2020 à 2022. La carte y ajoute les parcelles de perte détectée par cellule de 1984 à 2022 : elles sont tracées à partir de la grille de 30 m, elles n’ont pas fait l’objet d’un examen par des experts, et aucun chiffre de ce site n’en est tiré.",
+      "La liste, le graphique et le tableau utilisent le même agrégat provincial provisoire de 2020 à 2022. La carte y ajoute les parcelles de perte détectée par cellule de 1984 à 2022 : elles sont tracées à partir de la grille de 30 m, elles n’ont pas fait l’objet d’un examen par des experts, et aucun chiffre de ce site n’en est tiré.",
     fixtureList:
       "Cette liste, ce graphique et ce tableau utilisent des exemples illustratifs. Cette vue n’implique aucune couche géographique vérifiée.",
     year: "Année",
@@ -93,6 +95,7 @@ const copy = {
     observedLossPercent: "Perte observée (%)",
     complete: "Tous les pixels d’entrée sont présents",
     partial: "Certains pixels sont inconnus; il s’agit donc d’un minimum",
+    unknownArea: "ha inconnus",
     source: "Attribution de la source",
     modes: {
       "forest-change": "Changement forestier",
@@ -175,6 +178,7 @@ export function ExploreView({
   data = "chart",
   year = EXPLORE_DEFAULT_YEAR,
   overlays = [],
+  query = "",
 }: {
   events: readonly ExploreEvent[];
   locale: Locale;
@@ -183,6 +187,7 @@ export function ExploreView({
   data?: ExploreDataView;
   year?: number;
   overlays?: readonly BoundaryOverlayId[];
+  query?: string;
 }) {
   const text = copy[locale];
   const selected = events.filter((event) => event.mode === mode);
@@ -190,11 +195,27 @@ export function ExploreView({
   const number = new Intl.NumberFormat(locale === "fr" ? "fr-CA" : "en-CA", {
     maximumFractionDigits: 2,
   });
+  const provinceCoverageLabel = (row: (typeof EXPLORE_PRODUCTION_LAYER.rows)[number]) =>
+    `${text.partial} (${number.format(row.unknownSharePercent)}${locale === "fr" ? " %" : "%"}; ${number.format(row.unknownRequiredInputHectares)} ${text.unknownArea})`;
   return (
     <section className="explore" aria-label={text.title}>
       <p className="explore-note">
         {productionAvailable ? text.production : text.fixtureList}
       </p>
+      <PlaceFinder
+        locale={locale}
+        query={query}
+        context="explore"
+        parameters={[
+          { name: "mode", value: mode },
+          { name: "presentation", value: presentation },
+          { name: "data", value: data },
+          { name: "year", value: String(year) },
+          ...(overlays.length > 0
+            ? [{ name: "overlays", value: serializeBoundaryOverlays(overlays) }]
+            : []),
+        ]}
+      />
       <form className="explore-year" method="get">
         <input type="hidden" name="mode" value={mode} />
         <input type="hidden" name="presentation" value={presentation} />
@@ -323,7 +344,7 @@ export function ExploreView({
                     {colon(locale)}{" "}
                     {number.format(row.observedLossPercent)} · {text.coverage}
                     {colon(locale)}{" "}
-                    {row.coverageGrade === "complete" ? text.complete : text.partial}
+                    {provinceCoverageLabel(row)}
                   </p>
                   <p>
                     {text.source}
@@ -429,9 +450,7 @@ export function ExploreView({
                   <td>{number.format(row.observedLossHectares)}</td>
                   <td>{number.format(row.observedLossPercent)}</td>
                   <td>
-                    {row.coverageGrade === "complete"
-                      ? text.complete
-                      : text.partial}
+                    {provinceCoverageLabel(row)}
                   </td>
                   <td>
                     <a href={EXPLORE_PRODUCTION_LAYER.attribution.href}>

@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type {
   FilterSpecification,
   Map as MapLibreMap,
+  MapLayerMouseEvent,
   StyleSpecification,
 } from "maplibre-gl";
 import { colon, labelled, PRODUCT_NAME, type Locale } from "@/lib/domain";
@@ -11,23 +12,30 @@ import { chooseScaleBar, metresPerPixel, type ScaleBar } from "@/lib/explore/map
 import {
   BOUNDARY_OVERLAYS,
   EXPLORE_MAP_COLOURS,
+  EXPLORE_MAP_VIEWS,
   EXPLORE_PER_CELL_LAYER,
   EXPLORE_PRODUCTION_LAYER,
   perCellArchiveForYear,
   perCellCauseForMode,
   perCellSourceLayer,
   type BoundaryOverlayId,
+  type ExploreMapView,
   type ExploreMode,
   type PerCellArchive,
   type PerCellCause,
 } from "@/lib/explore";
+import {
+  boundaryReadout,
+  type BoundarySelection,
+  type RidingBoundaryMeasurement,
+} from "@/lib/explore/boundary-readout";
 
 const text = {
   en: {
     label: "Verified province forest-loss map",
-    loading: "Loading the verified 2020–2022 province aggregate map.",
+    loading: "Loading the provisional 2020–2022 province aggregate map.",
     ready:
-      "Showing the verified 2020–2022 province aggregate. Display boundaries are simplified and omit small islands.",
+      "Showing the provisional 2020–2022 province aggregate. Display boundaries are simplified and omit small islands.",
     readyPerCell:
       "Showing detected forest-loss patches for the selected interval, traced from the 30 m grid.",
     readyHarvest:
@@ -35,7 +43,7 @@ const text = {
     readyFire:
       "Showing only the detected forest-loss patches that the national disturbance record marks as fire in the selected interval.",
     readyBoth:
-      "Showing the verified 2020–2022 province aggregate, with detected forest-loss patches as you zoom in. Province display boundaries are simplified and omit small islands.",
+      "Showing the provisional 2020–2022 province aggregate, with detected forest-loss patches as you zoom in. Province display boundaries are simplified and omit small islands.",
     fallback:
       "The interactive PMTiles layer was unavailable, so this map is showing the verified GeoJSON compatibility fallback.",
     unavailable:
@@ -66,19 +74,37 @@ const text = {
     coverage: "Coverage",
     complete: "Every input pixel present",
     partial: "Some pixels unknown, so this is a minimum",
+    unknownArea: "ha unknown",
     zoomIn: "Zoom in",
     zoomOut: "Zoom out",
     resetView: "Reset the view",
     zoomControls: "Map zoom",
     scale: "Scale",
     scaleBar: "Scale bar",
+    mapPanel: "Map layers and legend",
+    mapLayers: "Layers shown",
+    boundary: "Boundary",
+    jurisdiction: "Jurisdiction",
+    clearBoundary: "Clear boundary",
+    interval: "Interval",
+    normalizedShare: "Observed loss share",
+    totalLoss: "Observed loss",
+    knownObservedSubtotal: "Known observed subtotal",
+    provinceAggregate: "Provisional province aggregate, 2020 to 2022",
+    detectedPatches: "Detected forest-loss patches",
+    mapView: "Map view",
+    national: "National",
+    bc: "British Columbia",
+    ab: "Alberta",
+    on: "Ontario",
+    qc: "Québec",
   },
   fr: {
     label: "Carte vérifiée des pertes forestières provinciales",
     loading:
-      "Chargement de la carte vérifiée de l’agrégat provincial de 2020 à 2022.",
+      "Chargement de la carte provisoire de l’agrégat provincial de 2020 à 2022.",
     ready:
-      "Affichage de l’agrégat provincial vérifié de 2020 à 2022. Les limites d’affichage sont simplifiées et omettent les petites îles.",
+      "Affichage de l’agrégat provincial provisoire de 2020 à 2022. Les limites d’affichage sont simplifiées et omettent les petites îles.",
     readyPerCell:
       "Affichage des parcelles de perte forestière détectée pour l’intervalle choisi, tracées à partir de la grille de 30 m.",
     readyHarvest:
@@ -86,7 +112,7 @@ const text = {
     readyFire:
       "Affichage des seules parcelles de perte forestière détectée que le registre national des perturbations désigne comme incendie pour l’intervalle choisi.",
     readyBoth:
-      "Affichage de l’agrégat provincial vérifié de 2020 à 2022, avec les parcelles de perte forestière détectée au fur et à mesure du zoom. Les limites provinciales affichées sont simplifiées et omettent les petites îles.",
+      "Affichage de l’agrégat provincial provisoire de 2020 à 2022, avec les parcelles de perte forestière détectée au fur et à mesure du zoom. Les limites provinciales affichées sont simplifiées et omettent les petites îles.",
     fallback:
       "La couche PMTiles interactive n’était pas disponible; cette carte affiche donc la solution de repli GeoJSON vérifiée.",
     unavailable:
@@ -118,19 +144,52 @@ const text = {
     coverage: "Couverture",
     complete: "Tous les pixels d’entrée sont présents",
     partial: "Certains pixels sont inconnus; il s’agit donc d’un minimum",
+    unknownArea: "ha inconnus",
     zoomIn: "Zoom avant",
     zoomOut: "Zoom arrière",
     resetView: "Réinitialiser la vue",
     zoomControls: "Zoom de la carte",
     scale: "Échelle",
     scaleBar: "Barre d’échelle",
+    mapPanel: "Couches et légende de la carte",
+    mapLayers: "Couches affichées",
+    boundary: "Limite",
+    jurisdiction: "Autorité compétente",
+    clearBoundary: "Effacer la limite",
+    interval: "Intervalle",
+    normalizedShare: "Part de perte observée",
+    totalLoss: "Perte observée",
+    knownObservedSubtotal: "Sous-total observé connu",
+    provinceAggregate: "Agrégat provincial provisoire, de 2020 à 2022",
+    detectedPatches: "Parcelles de perte forestière détectée",
+    mapView: "Vue de la carte",
+    national: "National",
+    bc: "Colombie-Britannique",
+    ab: "Alberta",
+    on: "Ontario",
+    qc: "Québec",
   },
 } as const;
 
 type MapSource = "pmtiles" | "geojson";
 type MapState = "loading" | "ready" | "unavailable" | "error";
 type Position = [number, number];
+type MapBounds = [west: number, south: number, east: number, north: number];
 const PMTILES_LOAD_TIMEOUT_MS = 10_000;
+// This route renders one map. Fixed ids avoid the hydration instability caused
+// by the server and client trees having different positions around this island.
+const STATUS_ID = "explore-map-status";
+const ATTRIBUTION_ID = "explore-map-attribution";
+
+// These are only camera extents for the view buttons. They neither filter a
+// layer nor imply that a layer supplies a provincial measurement there.
+const MAP_VIEW_BOUNDS: Readonly<Record<ExploreMapView, MapBounds>> = {
+  national: [-141, 41, -52, 70],
+  bc: [-139.1, 48.2, -114, 60.1],
+  ab: [-120, 48.9, -109, 60.1],
+  on: [-95.2, 41.5, -74.1, 56.9],
+  qc: [-79.9, 45, -57, 62.1],
+};
 
 // MapLibre resolves its worker as `new URL("./maplibre-gl-worker.mjs",
 // import.meta.url)` relative to its own bundled chunk. The bundler does not
@@ -174,6 +233,23 @@ const lossColour = (value: number) =>
       : value >= 1
         ? EXPLORE_MAP_COLOURS.loss1
         : EXPLORE_MAP_COLOURS.loss0;
+
+const boundaryLineLayerIds = (overlays: readonly BoundaryOverlayId[]) =>
+  overlays.flatMap((id) => {
+    const overlay = BOUNDARY_OVERLAYS[id];
+    return overlay.available && overlay.url && overlay.sourceLayer
+      ? [`boundary-${id}-line`]
+      : [];
+  });
+
+const boundaryJurisdiction = (locale: Locale, jurisdiction: string) =>
+  ({
+    CA: { en: "Canada", fr: "Canada" },
+    AB: { en: "Alberta", fr: "Alberta" },
+    BC: { en: "British Columbia", fr: "Colombie-Britannique" },
+    ON: { en: "Ontario", fr: "Ontario" },
+    QC: { en: "Quebec", fr: "Québec" },
+  })[jurisdiction]?.[locale] ?? jurisdiction;
 
 const provinceLayers: StyleSpecification["layers"] = [
   {
@@ -313,7 +389,7 @@ const buildStyle = (
 
   return {
     version: 8,
-    name: `${PRODUCT_NAME.en} verified province forest-loss map`,
+    name: `${PRODUCT_NAME.en} provisional province forest-loss map`,
     sources,
     layers,
   };
@@ -343,14 +419,17 @@ export function ExploreMapClient({
   mode,
   year,
   overlays = [],
+  ridingMeasurements = [],
 }: Readonly<{
   locale: Locale;
   mode: ExploreMode;
   year: number;
   overlays?: readonly BoundaryOverlayId[];
+  /** Optional until the completed local riding dataset is wired into this map. */
+  ridingMeasurements?: readonly RidingBoundaryMeasurement[];
 }>) {
-  const statusId = useId();
-  const attributionId = useId();
+  const statusId = STATUS_ID;
+  const attributionId = ATTRIBUTION_ID;
   const mapContainerRef = useRef<HTMLDivElement>(null);
   /*
    * The live map, so the zoom controls can drive it. MapLibre injects its own
@@ -361,7 +440,8 @@ export function ExploreMapClient({
    */
   const mapRef = useRef<MapLibreMap | null>(null);
   const [view, setView] = useState<MapView | null>(null);
-  // The verified province aggregate covers 2020-2022 only. The per-cell
+  const [selectedMapView, setSelectedMapView] = useState<ExploreMapView>("national");
+  // The provisional province aggregate covers 2020-2022 only. The per-cell
   // detail covers every annual interval from 1984-1985 to 2021-2022, so the
   // map is now offered for the whole series and the two layers are shown
   // wherever each one actually has something to say.
@@ -375,6 +455,8 @@ export function ExploreMapClient({
   const [features, setFeatures] = useState<ProvinceFeature[]>([]);
   const [source, setSource] = useState<MapSource | null>(null);
   const [failed, setFailed] = useState(false);
+  const [hoveredBoundary, setHoveredBoundary] = useState<BoundarySelection | null>(null);
+  const [pinnedBoundary, setPinnedBoundary] = useState<BoundarySelection | null>(null);
   const state: MapState = !available
     ? "unavailable"
     : failed
@@ -400,6 +482,8 @@ export function ExploreMapClient({
       setSource(null);
       setFailed(false);
       setView(null);
+      setHoveredBoundary(null);
+      setPinnedBoundary(null);
     });
 
     const loadGeoJsonFallback = async () => {
@@ -500,6 +584,47 @@ export function ExploreMapClient({
           setSource("pmtiles");
           setFailed(false);
           publishView();
+          const selectBoundary = (
+            event: MapLayerMouseEvent,
+            persistent: boolean,
+            overlay: BoundaryOverlayId,
+          ) => {
+            const properties = event.features?.[0]?.properties;
+            const boundaryId = properties?.id;
+            const name = properties?.[locale === "fr" ? "name_fr" : "name_en"];
+            const jurisdiction = properties?.juris;
+            if (
+              typeof boundaryId !== "string" ||
+              typeof name !== "string" ||
+              typeof jurisdiction !== "string"
+            )
+              return;
+            const selection: BoundarySelection = {
+              overlay,
+              boundaryId,
+              name,
+              jurisdiction,
+            };
+            if (persistent) setPinnedBoundary(selection);
+            else setHoveredBoundary(selection);
+          };
+          for (const layerId of boundaryLineLayerIds(overlays)) {
+            const overlay = overlays.find((candidate) => `boundary-${candidate}-line` === layerId);
+            if (!overlay) continue;
+            map?.on("mouseenter", layerId, (event) => {
+              if (!active || !map) return;
+              map.getCanvas().style.cursor = "pointer";
+              selectBoundary(event, false, overlay);
+            });
+            map?.on("mouseleave", layerId, () => {
+              if (!active || !map) return;
+              map.getCanvas().style.cursor = "";
+              setHoveredBoundary(null);
+            });
+            map?.on("click", layerId, (event) => {
+              if (active) selectBoundary(event, true, overlay);
+            });
+          }
         });
         map.on("error", () => {
           if (pmtilesLoaded) return;
@@ -574,6 +699,17 @@ export function ExploreMapClient({
   const scaleLabel = scale
     ? `${number.format(scale.value)} ${scale.unit}`
     : "";
+  const boundary = hoveredBoundary ?? pinnedBoundary;
+  const readout = boundary
+    ? boundaryReadout(boundary, ridingMeasurements, locale)
+    : null;
+  const fitMapToView = (mapView: ExploreMapView) => {
+    mapRef.current?.fitBounds(MAP_VIEW_BOUNDS[mapView], {
+      padding: 36,
+      duration: 350,
+      maxZoom: mapView === "national" ? 2.6 : 6,
+    });
+  };
   return (
     <section aria-label={text[locale].label}>
       <div
@@ -626,6 +762,76 @@ export function ExploreMapClient({
             ) : null}
             {state !== "ready" ? (
               <p className="explore-map-panel">{message}</p>
+            ) : null}
+            {state === "ready" ? (
+              <aside className="explore-map-layer-panel" aria-label={text[locale].mapPanel}>
+                {source === "pmtiles" ? (
+                  <fieldset>
+                    <legend>{text[locale].mapView}</legend>
+                    <div className="explore-map-view-options">
+                      {EXPLORE_MAP_VIEWS.map((mapView) => (
+                        <button
+                          key={mapView}
+                          type="button"
+                          aria-pressed={selectedMapView === mapView}
+                          onClick={() => {
+                            setSelectedMapView(mapView);
+                            fitMapToView(mapView);
+                          }}
+                        >
+                          {text[locale][mapView]}
+                        </button>
+                      ))}
+                    </div>
+                  </fieldset>
+                ) : null}
+                <strong>{text[locale].mapLayers}</strong>
+                <ul className="explore-map-layer-list">
+                  {provinceAvailable ? <li>{text[locale].provinceAggregate}</li> : null}
+                  {perCellArchive ? <li>{text[locale].detectedPatches}</li> : null}
+                  {overlays.map((id) => <li key={id}>{BOUNDARY_OVERLAYS[id].label[locale]}</li>)}
+                </ul>
+                {provinceAvailable ? (
+                  <ul className="explore-map-legend" aria-label={text[locale].legend}>
+                    <li>{symbol("loss-0")}0–&lt;1%</li>
+                    <li>{symbol("loss-1")}1–&lt;2%</li>
+                    <li>{symbol("loss-2")}2–&lt;3%</li>
+                    <li>{symbol("loss-3")}3%+</li>
+                  </ul>
+                ) : null}
+                {perCellArchive ? (
+                  <ul className="explore-map-legend" aria-label={legendTitle}>
+                    {cause === "fire" ? null : <li>{symbol("patch-harvest")}{text[locale].perCellHarvest}</li>}
+                    {cause === "harvest" ? null : <li>{symbol("patch-fire")}{text[locale].perCellFire}</li>}
+                    {cause === "all" ? <li>{symbol("patch-none")}{text[locale].perCellNeither}</li> : null}
+                  </ul>
+                ) : null}
+              </aside>
+            ) : null}
+            {state === "ready" && source === "pmtiles" && boundary ? (
+              <aside className="explore-map-boundary-status" role="status">
+                <strong>{text[locale].boundary}</strong>
+                <p>{boundary.name}</p>
+                <p>
+                  {text[locale].jurisdiction}
+                  {colon(locale)} {boundaryJurisdiction(locale, boundary.jurisdiction)}
+                </p>
+                {readout?.kind === "boundary-only" ? <p>{readout.note}</p> : null}
+                {readout?.kind === "riding-measurement" ? (
+                  <>
+                    <p>{text[locale].interval}{colon(locale)} {readout.interval}</p>
+                    <p>{text[locale].coverage}{colon(locale)} {readout.coverage}</p>
+                    <p>{text[locale].normalizedShare}{colon(locale)} {readout.normalizedShare}</p>
+                    <p>{text[locale].totalLoss}{colon(locale)} {readout.absoluteLoss}</p>
+                    {readout.knownObservedSubtotal ? <p>{text[locale].knownObservedSubtotal}{colon(locale)} {readout.knownObservedSubtotal}</p> : null}
+                  </>
+                ) : null}
+                {pinnedBoundary ? (
+                  <button type="button" onClick={() => setPinnedBoundary(null)}>
+                    {text[locale].clearBoundary}
+                  </button>
+                ) : null}
+              </aside>
             ) : null}
             {scale && view ? (
               <div className="explore-map-controls">
@@ -761,9 +967,7 @@ export function ExploreMapClient({
                     <td>{number.format(row.observedLossHectares)}</td>
                     <td>{number.format(row.observedLossPercent)}</td>
                     <td>
-                      {row.coverageGrade === "complete"
-                        ? text[locale].complete
-                        : text[locale].partial}
+                      {`${text[locale].partial} (${number.format(row.unknownSharePercent)}${locale === "fr" ? " %" : "%"}; ${number.format(row.unknownRequiredInputHectares)} ${text[locale].unknownArea})`}
                     </td>
                   </tr>
                 ))}

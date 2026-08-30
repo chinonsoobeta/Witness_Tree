@@ -24,6 +24,16 @@ test("methodology states the required definitions, matching and neutral limits",
   assert.match(page, /taux d’appariement, le taux de non-appariement et la répartition des motifs de non-appariement ne sont pas disponibles/i);
 });
 
+test("methodology publishes predecessor VLCE accuracy with its VLCE2 non-applicability boundary", async () => {
+  const page = await read("../components/transparency/MethodologyPage.tsx");
+  assert.match(page, /predecessor VLCE land-cover map for 2005: 70\.3% overall classification accuracy with a 95% confidence interval of ±2\.5 percentage points/);
+  assert.match(page, /not a validation of this record’s derived forest-loss detections, a district-specific accuracy, or a validation of every VLCE2 year/);
+  assert.match(page, /directly applicable detected-loss accuracy estimate is therefore Unknown/);
+  assert.match(page, /carte de couverture terrestre VLCE antérieure pour 2005 : une exactitude globale de classification de 70,3 %, avec un intervalle de confiance à 95 % de ±2,5 points de pourcentage/);
+  assert.match(page, /ne valide ni les détections dérivées de perte forestière de ce registre, ni une exactitude propre à une circonscription, ni chaque année de VLCE2/);
+  assert.match(page, /directement applicable de l’exactitude de la perte détectée demeure donc inconnue/);
+});
+
 test("data page labels examples and links the ledger and documentation", async () => {
   const page = await read("../components/transparency/DataPage.tsx");
   assert.match(page, /source-ledger examples remain illustrative/i);

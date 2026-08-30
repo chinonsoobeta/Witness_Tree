@@ -11,6 +11,7 @@ const NAV = {
     ["Account", "/en/account"],
     ["Methods", "/en/methods"],
     ["Data", "/en/data"],
+    ["About", "/en/about"],
     ["Search", "/en/search"],
   ],
   fr: [
@@ -20,6 +21,7 @@ const NAV = {
     ["Compte", "/fr/compte"],
     ["Méthodes", "/fr/methodes"],
     ["Données", "/fr/donnees"],
+    ["À propos", "/fr/a-propos"],
     ["Recherche", "/fr/recherche"],
   ],
 } as const;

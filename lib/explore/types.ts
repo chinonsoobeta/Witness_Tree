@@ -21,4 +21,5 @@ export type ExploreDataView = "chart" | "table";
 export const EXPLORE_YEAR_MIN = 1985;
 export const EXPLORE_YEAR_MAX = 2022;
 export const EXPLORE_DEFAULT_YEAR = EXPLORE_YEAR_MAX;
-export const EXPLORE_BOUNDARY_OVERLAYS = ["watersheds", "federal-ridings", "provincial-ridings", "reserves", "treaty-areas"] as const;
+export const EXPLORE_MAP_VIEWS = ["national", "bc", "ab", "on", "qc"] as const;
+export type ExploreMapView = (typeof EXPLORE_MAP_VIEWS)[number];

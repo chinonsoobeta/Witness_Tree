@@ -9,6 +9,7 @@ import { EXPLORE_MAP_COLOURS } from "./map-style";
 export const BOUNDARY_OVERLAY_IDS = [
   "federal-ridings",
   "provincial-ridings",
+  "economic-regions",
   "watersheds",
 ] as const;
 export type BoundaryOverlayId = (typeof BOUNDARY_OVERLAY_IDS)[number];
@@ -17,8 +18,8 @@ export type BoundaryOverlayId = (typeof BOUNDARY_OVERLAY_IDS)[number];
 // scripts/publish-boundary-overlay-release.mjs. scripts/check-boundary-overlays.mjs
 // fails if this drifts from data/boundary-overlay-release.json.
 export const BOUNDARY_OVERLAY_RELEASE = Object.freeze({
-  releaseId: "b7ae6917bcf8645f3bcc5eda441c38a41695cff407af8eb5451bd20d97d76ba5",
-  base: "https://d3g1406o0uekin.cloudfront.net/releases/boundary-overlays-v1/b7ae6917bcf8645f3bcc5eda441c38a41695cff407af8eb5451bd20d97d76ba5/tiles",
+  releaseId: "2c3667c5e23d4f976791cc30ae8246f63e2aa03b4c4829a7006952cdd43f7ff8",
+  base: "https://d3g1406o0uekin.cloudfront.net/releases/boundary-overlays-v2/2c3667c5e23d4f976791cc30ae8246f63e2aa03b4c4829a7006952cdd43f7ff8/tiles",
 } as const);
 
 type Bilingual = Readonly<Record<"en" | "fr", string>>;
@@ -47,7 +48,7 @@ export const BOUNDARY_OVERLAYS: Readonly<Record<BoundaryOverlayId, BoundaryOverl
       id: "federal-ridings",
       label: { en: "Federal ridings", fr: "Circonscriptions fédérales" },
       available: true,
-      url: url("federal-ridings-v1.pmtiles"),
+      url: url("federal-ridings-v2.pmtiles"),
       sourceLayer: "federal_ridings",
       colour: EXPLORE_MAP_COLOURS.ink,
       note: {
@@ -63,7 +64,7 @@ export const BOUNDARY_OVERLAYS: Readonly<Record<BoundaryOverlayId, BoundaryOverl
       id: "provincial-ridings",
       label: { en: "Provincial ridings", fr: "Circonscriptions provinciales" },
       available: true,
-      url: url("provincial-ridings-v1.pmtiles"),
+      url: url("provincial-ridings-v2.pmtiles"),
       sourceLayer: "provincial_ridings",
       colour: EXPLORE_MAP_COLOURS.observation,
       dash: [3, 2],
@@ -80,17 +81,38 @@ export const BOUNDARY_OVERLAYS: Readonly<Record<BoundaryOverlayId, BoundaryOverl
         fr: "Elections BC; Licence du gouvernement ouvert – Alberta; Élections Ontario; Élections Québec.",
       },
     },
+    "economic-regions": {
+      id: "economic-regions",
+      label: { en: "Economic regions", fr: "Régions économiques" },
+      available: true,
+      url: url("economic-regions-v2.pmtiles"),
+      sourceLayer: "economic_regions",
+      colour: EXPLORE_MAP_COLOURS.observation,
+      dash: [5, 2],
+      note: {
+        en: "All 76 Statistics Canada 2021 economic regions are drawn as a bilingual reference framework. This boundary layer is not a regional forest-loss aggregate.",
+        fr: "Les 76 régions économiques de Statistique Canada de 2021 sont tracées comme cadre de référence bilingue. Cette couche de limites n'est pas un agrégat régional de perte forestière.",
+      },
+      attribution: {
+        en: "Statistics Canada, 2021 Economic Region Boundary File.",
+        fr: "Statistique Canada, Fichier des limites des régions économiques de 2021.",
+      },
+    },
     watersheds: {
       id: "watersheds",
       label: { en: "Watersheds", fr: "Bassins versants" },
-      available: false,
+      available: true,
+      url: url("watersheds-v2.pmtiles"),
+      sourceLayer: "watersheds",
+      colour: EXPLORE_MAP_COLOURS.ink,
+      dash: [2, 2],
       note: {
-        en: "Planned as an aggregation unit, so that forest loss can be reported per watershed rather than only outlined.",
-        fr: "Prévu comme unité d'agrégation, afin que la perte forestière soit déclarée par bassin versant et non seulement tracée.",
+        en: "The 169 Canadian areas in NRCan's bilingual Water Survey of Canada sub-drainage rollup, version 6.0, are drawn as a reference framework. This boundary layer is not a watershed forest-loss aggregate.",
+        fr: "Les 169 aires canadiennes du regroupement bilingue des sous-aires de drainage de la Division des relevés hydrologiques du Canada de RNCan, version 6.0, sont tracées comme cadre de référence. Cette couche de limites n'est pas un agrégat de perte forestière par bassin versant.",
       },
-      reason: {
-        en: "No authoritative national watershed edition has been chosen yet. The framework is nested, so the level to report at is a decision rather than a lookup, and an outline with no figure attached to it would add nothing this map does not already show.",
-        fr: "Aucune édition nationale faisant autorité n'a encore été retenue. Le cadre est imbriqué : le niveau de déclaration est une décision et non une simple recherche, et un tracé sans chiffre associé n'ajouterait rien à cette carte.",
+      attribution: {
+        en: "Natural Resources Canada, Atlas of Canada drainage areas, version 6.0 (2008).",
+        fr: "Ressources naturelles Canada, aires de drainage de l'Atlas du Canada, version 6.0 (2008).",
       },
     },
   });

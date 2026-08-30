@@ -49,8 +49,8 @@ function vatTableSubject(year: number): LocalizedString {
 function emptyVatReason(year: number): LocalizedString {
   const subject = vatTableSubject(year);
   return localized(
-    `${subject.en} was published empty — ${EMPTY_VAT_BYTE_LENGTH} bytes of header with 0 records, against ${POPULATED_VAT_BYTE_LENGTH} bytes and ${POPULATED_VAT_RECORD_COUNT} records in the neighbouring control years. The pixels are sound and carry all ${POPULATED_VAT_RECORD_COUNT} classes, but no class statistic can be read from this sidecar.`,
-    `${subject.fr} a été publiée vide — ${EMPTY_VAT_BYTE_LENGTH} octets d'en-tête avec 0 enregistrement, contre ${POPULATED_VAT_BYTE_LENGTH} octets et ${POPULATED_VAT_RECORD_COUNT} enregistrements pour les années témoins voisines. Les pixels sont valides et portent les ${POPULATED_VAT_RECORD_COUNT} classes, mais aucune statistique de classe ne peut être lue dans ce fichier annexe.`,
+    `${subject.en} was published empty: ${EMPTY_VAT_BYTE_LENGTH} bytes of header with 0 records, against ${POPULATED_VAT_BYTE_LENGTH} bytes and ${POPULATED_VAT_RECORD_COUNT} records in the neighbouring control years. The pixels are sound and carry all ${POPULATED_VAT_RECORD_COUNT} classes, but no class statistic can be read from this sidecar.`,
+    `${subject.fr} a été publiée vide : ${EMPTY_VAT_BYTE_LENGTH} octets d'en-tête avec 0 enregistrement, contre ${POPULATED_VAT_BYTE_LENGTH} octets et ${POPULATED_VAT_RECORD_COUNT} enregistrements pour les années témoins voisines. Les pixels sont valides et portent les ${POPULATED_VAT_RECORD_COUNT} classes, mais aucune statistique de classe ne peut être lue dans ce fichier annexe.`,
   );
 }
 

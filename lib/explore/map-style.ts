@@ -25,24 +25,16 @@ export const EXPLORE_PRODUCTION_LAYER = Object.freeze({
     href: "https://www150.statcan.gc.ca/n1/en/catalogue/92-160-X",
   },
   /*
-   * The coverage grade says whether the province was measured end to end, and
-   * for three of these four it is not "complete".
+   * A corrected 1984-2022 execution measured the product's unmapped extent
+   * inside each province. All four provinces are partial. British Columbia's
+   * gap is small but non-zero: 4,095.27 hectares, or 0.00446% of the
+   * cartographic province area. The other unmapped shares are 24.02% for
+   * Alberta, 9.03% for Ontario and 15.05% for Quebec.
    *
-   * The land cover source writes 0 outside the extent it maps, and the derived
-   * forest masks cannot tell that apart from a mapped cell holding no forest,
-   * so the aggregate that produced these rows counted unmapped ground as
-   * measured and forest-free. Sampling the 2020 source inside districts these
-   * provinces contain settles it: Ajax reads 100% unmapped, Huntingdon 100%,
-   * Calgary-Acadia 100%, Stormont-Dundas-South Glengarry 99.98%, Granby 98.92%.
-   * British Columbia is left complete because nothing here shows otherwise:
-   * its two treeless districts sampled as fully mapped, and an unevidenced
-   * downgrade would be as much an invention as the overstatement it replaced.
-   *
-   * The hectares and the rate are unchanged, because they were always read
-   * from the mapped part alone. What changes is the claim made about them: a
-   * partial grade renders as a minimum rather than as a complete measurement,
-   * which is what these three are. The exact unmapped area per province
-   * replaces this sampling once the corrected aggregate has been run; see
+   * The displayed 2020-2022 hectares and mapped-part rate are unchanged,
+   * because they were always read from the mapped part alone. The measured
+   * coverage fields below change the claim: each figure is a minimum rather
+   * than a complete-province total. Exact execution and limitations are in
    * docs/PHASE2_MAPPED_EXTENT_COVERAGE_DEFECT.md.
    */
   rows: [
@@ -51,6 +43,10 @@ export const EXPLORE_PRODUCTION_LAYER = Object.freeze({
       name: { en: "Quebec", fr: "Québec" },
       observedLossHectares: 680273.64,
       observedLossPercent: 0.9745108171576637,
+      unknownRequiredInputHectares: 22204952.19,
+      unmappedByProductExtentHectares: 22204952.19,
+      districtHectares: 147544902,
+      unknownSharePercent: 15.049623463100067,
       coverageGrade: "partial",
     },
     {
@@ -58,6 +54,10 @@ export const EXPLORE_PRODUCTION_LAYER = Object.freeze({
       name: { en: "Ontario", fr: "Ontario" },
       observedLossHectares: 714701.7,
       observedLossPercent: 1.4436948894155726,
+      unknownRequiredInputHectares: 8843646.69,
+      unmappedByProductExtentHectares: 8843646.69,
+      districtHectares: 97932917.61,
+      unknownSharePercent: 9.03031065123395,
       coverageGrade: "partial",
     },
     {
@@ -65,6 +65,10 @@ export const EXPLORE_PRODUCTION_LAYER = Object.freeze({
       name: { en: "Alberta", fr: "Alberta" },
       observedLossHectares: 748863.72,
       observedLossPercent: 2.8132686710314085,
+      unknownRequiredInputHectares: 15372023.76,
+      unmappedByProductExtentHectares: 15372023.76,
+      districtHectares: 63992872.89,
+      unknownSharePercent: 24.021462181301985,
       coverageGrade: "partial",
     },
     {
@@ -72,7 +76,11 @@ export const EXPLORE_PRODUCTION_LAYER = Object.freeze({
       name: { en: "British Columbia", fr: "Colombie-Britannique" },
       observedLossHectares: 800473.32,
       observedLossPercent: 1.3917693193039167,
-      coverageGrade: "complete",
+      unknownRequiredInputHectares: 4095.27,
+      unmappedByProductExtentHectares: 4095.27,
+      districtHectares: 91730013.75,
+      unknownSharePercent: 0.004464482051819162,
+      coverageGrade: "partial",
     },
   ],
 } as const);

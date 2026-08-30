@@ -550,21 +550,26 @@ def main(args: argparse.Namespace) -> None:
             geometry = repaired
         if transformer is not None:
             geometry.Transform(transformer)
+        feature_name = None
+        if args.boundary_name_field:
+            raw = feature.GetField(args.boundary_name_field)
+            if raw is None or not str(raw).strip():
+                fail(f"Boundary {boundary_id} has no value in {args.boundary_name_field}")
+            feature_name = str(raw).strip()
         if boundary_id in geometries:
             # Multipart districts are published as one feature per part in some
             # sources. Union rather than refuse, so a district split across
             # islands is summarized once, as one district.
             merged = geometries[boundary_id].Union(geometry)
-            if merged is None or merged.IsEmpty():
+            if merged is None or merged.IsEmpty() or not merged.IsValid():
                 fail(f"Boundary {boundary_id} appears more than once and could not be merged")
+            if feature_name != names.get(boundary_id):
+                fail(f"Multipart boundary {boundary_id} has conflicting values in {args.boundary_name_field}")
             geometries[boundary_id] = merged
             continue
         geometries[boundary_id] = geometry
-        if args.boundary_name_field:
-            raw = feature.GetField(args.boundary_name_field)
-            if raw is None or not str(raw).strip():
-                fail(f"Boundary {boundary_id} has no value in {args.boundary_name_field}")
-            names[boundary_id] = str(raw).strip()
+        if feature_name is not None:
+            names[boundary_id] = feature_name
     if args.all_features:
         if not geometries:
             fail("No boundary features were read")

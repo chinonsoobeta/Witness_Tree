@@ -78,8 +78,8 @@ export function joinFederalRidingAttributes<Boundary extends FederalRidingBounda
     districtCount: DISTRICT_COUNT_BY_ORDER[boundary.representationOrder],
     requiredAttributions: requiredAttributions(used),
     limitation: localized(
-      "Container-level evidence only. Geometry, coordinate reference system, and attribute schema are Unknown — no vector content has been opened.",
-      "Preuve au niveau du conteneur seulement. La géométrie, le système de référence des coordonnées et le schéma des attributs sont inconnus — aucun contenu vectoriel n'a été ouvert.",
+      "Container-level evidence only. Geometry, coordinate reference system, and attribute schema are Unknown because no vector content has been opened.",
+      "Preuve au niveau du conteneur seulement. La géométrie, le système de référence des coordonnées et le schéma des attributs sont inconnus, car aucun contenu vectoriel n'a été ouvert.",
     ),
     productionEligible: false,
   });

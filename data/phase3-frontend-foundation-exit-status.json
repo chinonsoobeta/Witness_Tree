@@ -81,7 +81,7 @@
         },
         {
           "path": "tests/raster-grid-hazards.test.ts",
-          "sha256": "6bad607d3efb96fa22b85556908c058060e0d734bcfb6901e116f36ff492e7ae"
+          "sha256": "4d1f3c5e7467bd9ce8769293e0383fcf245b78376dab49e68d5e2b70f372d9dc"
         }
       ]
     }

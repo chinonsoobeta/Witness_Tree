@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "witness-tree/phase2-vlce2-mapped-extent-verification-receipt/1",
+  "status": "local-nonproduction-executed",
+  "claims": {
+    "admitted": false,
+    "released": false,
+    "productionEligible": false,
+    "externalAction": false
+  },
+  "verification": {
+    "path": "../Witness_Tree-data/derived/phase2-vlce2-mapped-extent-v1/mapped-extent.verification.json",
+    "byteLength": 29916,
+    "sha256": "5caea807db23d36a932ce8c78038d0bd2506d0e073e463408b2e5809dea4b4ae",
+    "schemaVersion": "phase2-vlce2-mapped-extent-verification-v1",
+    "verifiedYearCount": 39,
+    "firstYear": 1984,
+    "lastYear": 2022,
+    "allDifferingCellsZero": true
+  },
+  "mappedExtent": {
+    "path": "../Witness_Tree-data/derived/phase2-vlce2-mapped-extent-v1/mapped-extent.tif",
+    "byteLength": 86803748,
+    "sha256": "500b79baec7c7a1d4d7fc6fd9be46504a02981557ce862dfe846222273f8c0d1",
+    "mappedCells": 7669809117,
+    "unmappedCells": 17219937123
+  },
+  "perCellMeaning": {
+    "lossCellContainment": "Every emitted loss cell must lie inside the verified mapped extent.",
+    "blankMapArea": "The absence of a loss patch is not evidence that an area was observed with no loss."
+  }
+}

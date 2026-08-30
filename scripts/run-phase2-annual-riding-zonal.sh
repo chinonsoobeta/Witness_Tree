@@ -35,12 +35,36 @@ if [ ! -e "$EXTENT" ]; then
 fi
 
 mkdir -p "$OUT"
+if [ -L "$OUT" ]; then
+  echo "refusing a symlinked riding v2 output directory: $OUT" >&2
+  exit 1
+fi
+
+pair_digest() {
+  shasum -a 256 "$1" "$2" | shasum -a 256 | awk '{print $1}'
+}
 
 run_one() {
   local slug="$1" jurisdiction="$2" boundaries="$3" id_field="$4" name_field="$5" edition="$6"
-  if [ -e "$OUT/$slug.json" ]; then
+  local output="$OUT/$slug.json" sidecar="$OUT/$slug.provenance.json" marker="$OUT/$slug.complete.sha256"
+  if [ -L "$output" ] || [ -L "$sidecar" ] || [ -L "$marker" ]; then
+    echo "$slug has a symlinked output, sidecar, or completion marker" >&2
+    return 1
+  fi
+  if [ -e "$output" ] && [ -e "$sidecar" ] && [ -e "$marker" ]; then
+    local recorded actual
+    recorded="$(tr -d '\n' < "$marker")"
+    actual="$(pair_digest "$output" "$sidecar")"
+    if [ "$recorded" != "$actual" ]; then
+      echo "$slug completion marker does not match its output pair" >&2
+      return 1
+    fi
     echo "$(date +%H:%M:%S) $slug already summarized, left untouched"
     return 0
+  fi
+  if [ -e "$output" ] || [ -e "$sidecar" ] || [ -e "$marker" ]; then
+    echo "$slug has an incomplete output set; refusing to overwrite or skip it" >&2
+    return 1
   fi
   echo "$(date +%H:%M:%S) starting $slug"
   python3 "$WORKER" \
@@ -52,8 +76,8 @@ run_one() {
     --boundary-name-field "$name_field" \
     --all-features \
     --jurisdiction "$jurisdiction" \
-    --output "$OUT/$slug.json" \
-    --sidecar "$OUT/$slug.provenance.json" \
+    --output "$output" \
+    --sidecar "$sidecar" \
     --boundary-edition "$edition" \
     --boundary-classification authoritative-boundary \
     --forest-mask-version phase2-real-national-1984-2022-v1 \
@@ -61,6 +85,9 @@ run_one() {
     --time-version annual-1984-baseline-plus-1985-2022-intervals-v1 \
     --source-version ntems-annual-land-cover-historical-batch-2026-08-12 \
     --code-version "$CODE_VERSION"
+  local digest
+  digest="$(pair_digest "$output" "$sidecar")"
+  (set -C; printf '%s\n' "$digest" > "$marker")
   echo "$(date +%H:%M:%S) finished $slug"
 }
 

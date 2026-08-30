@@ -18,11 +18,20 @@ const source = await readFile(
   new URL("../lib/explore/boundaries.ts", import.meta.url),
   "utf8",
 );
+const readback = JSON.parse(
+  await readFile(new URL("../data/boundary-overlay-release-readback.json", import.meta.url), "utf8"),
+);
 
 test("the published release reconciles with what the app pins", () => {
-  const result = validateBoundaryOverlays(release, source);
-  assert.equal(result.archives, 2);
+  const result = validateBoundaryOverlays(release, source, readback);
+  assert.equal(result.archives, 4);
   assert.equal(result.provincial, 4);
+});
+
+test("the release checker rejects a remote byte mismatch", () => {
+  const drifted = structuredClone(readback);
+  drifted.archives[0].sha256 = "0".repeat(64);
+  assert.throws(() => validateBoundaryOverlays(release, source, drifted), /does not match/);
 });
 
 test("the checker rejects drift that would draw nothing or claim too much", () => {
@@ -59,8 +68,8 @@ test("the checker rejects drift that would draw nothing or claim too much", () =
   // An unavailable overlay that quietly gained a URL would be published
   // without any of the evidence an available one has to carry.
   const smuggled = source.replace(
-    'available: false,',
-    'available: false,\n      url: url("watersheds-v1.pmtiles"),',
+    'available: true,\n      url: url("economic-regions-v2.pmtiles"),',
+    'available: false,\n      url: url("economic-regions-v2.pmtiles"),',
   );
   assert.throws(() => validateBoundaryOverlays(release, smuggled), /must not declare a tile URL/);
 });
@@ -90,7 +99,7 @@ test("unavailable overlays carry a reason and no tiles", () => {
       assert.ok(overlay.reason, `${id} is unavailable but gives no reason`);
     }
   }
-  assert.deepEqual([...AVAILABLE_BOUNDARY_OVERLAYS], ["federal-ridings", "provincial-ridings"]);
+  assert.deepEqual([...AVAILABLE_BOUNDARY_OVERLAYS], [...BOUNDARY_OVERLAY_IDS]);
 });
 
 test("reserves and treaty areas are absent rather than shown as unavailable", () => {
@@ -108,14 +117,13 @@ test("the overlay query parameter is parsed defensively and round-trips", () => 
     [...parseBoundaryOverlays("provincial-ridings,federal-ridings")],
     ["federal-ridings", "provincial-ridings"],
   );
-  // Unknown, unavailable and malformed values degrade to no overlay rather
+  // Unknown and malformed values degrade to no overlay rather
   // than to an error page.
-  for (const bad of [undefined, "", "reserves", "watersheds", "  ", "federal-ridings;drop"]) {
+  for (const bad of [undefined, "", "reserves", "  ", "federal-ridings;drop"]) {
     const parsed = parseBoundaryOverlays(bad as string | undefined);
     assert.equal(parsed.includes("reserves" as never), false);
-    assert.equal(parsed.includes("watersheds" as never), false);
   }
-  assert.deepEqual([...parseBoundaryOverlays(" federal-ridings , watersheds ")], ["federal-ridings"]);
+  assert.deepEqual([...parseBoundaryOverlays(" federal-ridings , watersheds ")], ["federal-ridings", "watersheds"]);
 });
 
 test("toggling preserves declaration order so links are stable", () => {

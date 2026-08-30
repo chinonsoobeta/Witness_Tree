@@ -19,6 +19,7 @@ const provinceNames: Record<PlaceProvince, LocalizedString> = {
 
 const typeNames: Record<PlaceType, LocalizedString> = {
   province: local("province", "province"),
+  "economic-region": local("economic region", "région économique"),
   watershed: local("watershed", "bassin versant"),
   "forest-district": local("forest district", "district forestier"),
   municipality: local("municipality", "municipalité"),
@@ -32,7 +33,7 @@ const specs: ReadonlyArray<readonly [string, PlaceType, PlaceProvince, Localized
   `${province.toLowerCase()}-${type}`,
   type,
   province,
-  local(`Illustrative ${provinceNames[province].en} ${typeNames[type].en}`, `${provinceNames[province].fr} illustrative — ${typeNames[type].fr}`),
+  local(`Illustrative ${provinceNames[province].en} ${typeNames[type].en}`, `${provinceNames[province].fr} illustrative : ${typeNames[type].fr}`),
 ] as const));
 
 export const PLACES: readonly Place[] = specs.map(([id, type, province, name], index) => {

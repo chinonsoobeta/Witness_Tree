@@ -10,7 +10,7 @@ const JURISDICTION_NAMES = new Map([
   ["QC", { en: "Québec", fr: "Québec" }],
 ]);
 
-export function validateBoundaryOverlays(release, source) {
+export function validateBoundaryOverlays(release, source, readback) {
   if (release?.schemaVersion !== "witness-tree/boundary-overlay-release/1") {
     throw new Error("Boundary overlay release must be a version 1 record.");
   }
@@ -29,6 +29,24 @@ export function validateBoundaryOverlays(release, source) {
 
   if (!Array.isArray(release.archives) || release.archives.length === 0) {
     throw new Error("Boundary overlay release must publish at least one archive.");
+  }
+  if (readback) {
+    if (readback.schemaVersion !== "witness-tree/boundary-overlay-release-readback/1" || readback.releaseId !== release.releaseId) {
+      throw new Error("Boundary overlay readback does not bind the published release.");
+    }
+    if (readback.s3ExactReadback !== true || readback.cloudFrontExactReadback !== true) {
+      throw new Error("Boundary overlay release has not passed both exact remote readbacks.");
+    }
+    const observed = new Map(readback.archives.map((archive) => [archive.fileName, archive]));
+    for (const archive of release.archives) {
+      const match = observed.get(archive.fileName);
+      if (!match || match.byteLength !== archive.byteLength || match.sha256 !== archive.sha256) {
+        throw new Error(`Boundary overlay readback does not match ${archive.fileName}.`);
+      }
+    }
+    if (observed.size !== release.archives.length) {
+      throw new Error("Boundary overlay readback contains an unexpected archive.");
+    }
   }
   for (const archive of release.archives) {
     if (!/^[a-f0-9]{64}$/.test(archive?.sha256 ?? "")) {
@@ -95,8 +113,9 @@ export function validateBoundaryOverlays(release, source) {
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   const release = JSON.parse(await readFile(new URL("../data/boundary-overlay-release.json", import.meta.url), "utf8"));
+  const readback = JSON.parse(await readFile(new URL("../data/boundary-overlay-release-readback.json", import.meta.url), "utf8"));
   const source = await readFile(new URL("../lib/explore/boundaries.ts", import.meta.url), "utf8");
-  const result = validateBoundaryOverlays(release, source);
+  const result = validateBoundaryOverlays(release, source, readback);
   process.stdout.write(
     `Boundary overlays: ${result.archives} archives, ${result.provincial} provincial sources, release ${result.releaseId.slice(0, 12)}.\n`,
   );
