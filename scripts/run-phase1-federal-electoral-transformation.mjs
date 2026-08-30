@@ -14,7 +14,6 @@ import { execFileSync } from "node:child_process";
 import { existsSync, lstatSync, linkSync, mkdirSync, readFileSync, realpathSync, writeFileSync, rmSync, unlinkSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { resolveDataRoot as configuredDataRoot } from "./data-root.mjs";
 
 export const RUNNER_VERSION = "phase1-federal-electoral-transformation-runner-v1";
 export const SPEC_ID = "federal-electoral-districts-2023-v1";
@@ -50,7 +49,7 @@ export const REPO_ROOT = path.resolve(HERE, "..");
  * symlink through: everything below the resolved root is still walked.
  */
 export const resolveDataRoot = (target) => (existsSync(target) ? realpathSync(target) : path.resolve(target));
-export const DEFAULT_DATA_ROOT = resolveDataRoot(configuredDataRoot());
+export const DEFAULT_DATA_ROOT = resolveDataRoot(path.resolve(REPO_ROOT, "../../Witness_Tree-data"));
 const SELECTED_FIELDS = ["FED_NUM", "ED_NAMEE", "ED_NAMEF", "REPORDER"];
 const REQUIRED_OUTPUT_FIELDS = [
   ...SELECTED_FIELDS,
