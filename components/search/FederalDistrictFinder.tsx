@@ -4,12 +4,14 @@ import type { Locale } from "@/lib/domain";
 const copy = {
   en: {
     title: "Find a federal electoral district",
+    submit: "Find",
     guide: "Enter a district name in English or French.",
     none: "No local federal district measurement matches this query.",
     boundary: "Local nonproduction measurements. Not a published release.",
   },
   fr: {
     title: "Trouver une circonscription fédérale",
+    submit: "Trouver",
     guide: "Entrez un nom de circonscription en français ou en anglais.",
     none: "Aucune mesure locale non productive de circonscription fédérale ne correspond à cette recherche.",
     boundary: "Mesures locales non productives. Il ne s’agit pas d’une publication.",
@@ -70,10 +72,10 @@ export function FederalDistrictFinder({
           <input key={parameter.name} type="hidden" name={parameter.name} value={parameter.value} />
         ))}
         <div className="field">
-          <label className="field-label" id="federal-district-label" htmlFor="federal-district-q">{text.title}</label>
+          <label className="field-label sr-only" id="federal-district-label" htmlFor="federal-district-q">{text.title}</label>
           <input className="input" id="federal-district-q" name="district" defaultValue={query} aria-labelledby="federal-district-label" />
         </div>
-        <button className="btn btn--primary" type="submit">{text.title}</button>
+        <button className="btn btn--primary" type="submit">{text.submit}</button>
       </form>
       {!query ? <p className="search-note">{text.guide}</p> : results.length ? (
         <ul className="search-results">

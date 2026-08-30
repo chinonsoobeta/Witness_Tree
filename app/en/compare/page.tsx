@@ -37,19 +37,10 @@ export default async function ComparePage({
         <FederalRidingPicker
           rows={federalRidingComparison.places}
           locale="en"
-          leftId={selected.left.id}
-          rightId={selected.right.id}
+          leftId={parameters.left}
+          rightId={parameters.right}
           view={view}
           sort={sort}
-        />
-        <RankedRidingsTable
-          rows={federalRidingComparison.rows}
-          context={federalRidingComparison.context}
-          locale="en"
-          sort={sort}
-          leftId={selected.left.id}
-          rightId={selected.right.id}
-          view={view}
         />
         <SideBySideComparison
           places={[selected.left, selected.right]}
@@ -59,6 +50,15 @@ export default async function ComparePage({
           leftId={selected.left.id}
           rightId={selected.right.id}
           sort={sort}
+        />
+        <RankedRidingsTable
+          rows={federalRidingComparison.rankingRows}
+          context={federalRidingComparison.context}
+          locale="en"
+          sort={sort}
+          leftId={selected.left.id}
+          rightId={selected.right.id}
+          view={view}
         />
       </main>
     </SiteShell>

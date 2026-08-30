@@ -52,26 +52,55 @@ export function FederalRidingPicker({
   const selected = selectFederalRidings(rows, leftId, rightId);
   const candidates = federalRidings(rows);
   const labels = locale === "en"
-    ? { title: "Choose ridings to compare", left: "Left riding", right: "Right riding", submit: "Compare" }
-    : { title: "Choisir les circonscriptions à comparer", left: "Circonscription de gauche", right: "Circonscription de droite", submit: "Comparer" };
+    ? {
+        title: "Choose ridings to compare",
+        left: "Left riding",
+        right: "Right riding",
+        submit: "Compare",
+        fallback: (side: string, requested: string, shown: string) =>
+          `Requested ${side} riding “${requested}” was not found. Showing ${shown} instead.`,
+      }
+    : {
+        title: "Choisir les circonscriptions à comparer",
+        left: "Circonscription de gauche",
+        right: "Circonscription de droite",
+        submit: "Comparer",
+        fallback: (side: string, requested: string, shown: string) =>
+          `La circonscription de ${side} demandée « ${requested} » est introuvable. ${shown} est affichée à la place.`,
+      };
+  const missing = [
+    leftId && !candidates.some((row) => row.id === leftId)
+      ? labels.fallback(locale === "en" ? "left" : "gauche", leftId, selected.left.name[locale])
+      : null,
+    rightId && !candidates.some((row) => row.id === rightId)
+      ? labels.fallback(locale === "en" ? "right" : "droite", rightId, selected.right.name[locale])
+      : null,
+  ].filter((message): message is string => message !== null);
 
   return (
-    <form className="comparison-picker" method="get" aria-label={labels.title}>
-      {view && <input type="hidden" name="view" value={view} />}
-      {sort && <input type="hidden" name="sort" value={sort} />}
-      <label>
-        {labels.left}
-        <select name="left" defaultValue={selected.left.id}>
-          {candidates.map((row) => <option key={row.id} value={row.id}>{row.name[locale]}</option>)}
-        </select>
-      </label>
-      <label>
-        {labels.right}
-        <select name="right" defaultValue={selected.right.id}>
-          {candidates.map((row) => <option key={row.id} value={row.id}>{row.name[locale]}</option>)}
-        </select>
-      </label>
-      <button className="btn btn--primary" type="submit">{labels.submit}</button>
-    </form>
+    <>
+      <form className="comparison-picker" method="get" aria-label={labels.title}>
+        {view && <input type="hidden" name="view" value={view} />}
+        {sort && <input type="hidden" name="sort" value={sort} />}
+        <label>
+          {labels.left}
+          <select name="left" defaultValue={selected.left.id}>
+            {candidates.map((row) => <option key={row.id} value={row.id}>{row.name[locale]}</option>)}
+          </select>
+        </label>
+        <label>
+          {labels.right}
+          <select name="right" defaultValue={selected.right.id}>
+            {candidates.map((row) => <option key={row.id} value={row.id}>{row.name[locale]}</option>)}
+          </select>
+        </label>
+        <button className="btn btn--primary" type="submit">{labels.submit}</button>
+      </form>
+      {missing.length > 0 ? (
+        <aside className="notice comparison-selection-notice" role="status">
+          {missing.map((message) => <p key={message}>{message}</p>)}
+        </aside>
+      ) : null}
+    </>
   );
 }

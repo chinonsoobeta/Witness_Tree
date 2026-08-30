@@ -69,7 +69,7 @@
       "evidence": [
         {
           "path": "lib/domain/reported.ts",
-          "sha256": "31886e817043cd239a4bbacdc6b5dead1272da21f3121eaac8070c64b74257ec"
+          "sha256": "1c5eb3549a0d8e12386411af1c178177ef15a194de90c93fb4eaa0b237d65cc8"
         },
         {
           "path": "components/policy/ReportedValue.tsx",
@@ -77,7 +77,7 @@
         },
         {
           "path": "tests/reported-format.test.ts",
-          "sha256": "bbcb90d582726dd8460e3acc458096f9140604ae0c582782e3dbbcbc5732b3ee"
+          "sha256": "0249dae7035663ee575794c1833a5f42230a0c64bf08331f66b089fcb7f20377"
         },
         {
           "path": "tests/raster-grid-hazards.test.ts",

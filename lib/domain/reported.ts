@@ -3,6 +3,7 @@ import type { CoverageGrade } from "./coverage";
 import type { EvidenceClass } from "./evidence";
 import type { LicenceId } from "./source-ledger";
 import type { LocalizedString, Locale } from "./localized";
+import { formatNumber } from "./number";
 
 export type Provenance = Readonly<{
   dataset: string;
@@ -32,5 +33,5 @@ export type Reported = Figure | Unknown;
 
 export function formatReported(value: Reported, locale: Locale = "en"): string {
   if (value.kind === "unknown") return `– ${value.reason[locale]}`;
-  return new Intl.NumberFormat(locale === "fr" ? "fr-CA" : "en-CA", { maximumFractionDigits: 1 }).format(value.value);
+  return formatNumber(value.value, locale, 1);
 }

@@ -1,14 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteShell } from "@/components/site";
-import { PRODUCT_NAME } from "@/lib/domain";
+import { formatHectares, formatPercent, PRODUCT_NAME } from "@/lib/domain";
 import { EXPLORE_COVERAGE_PERIOD, EXPLORE_PRODUCTION_LAYER, formatUnknownSharePercent } from "@/lib/explore";
 
 export const metadata: Metadata = { title: "Registre public des changements forestiers", alternates: { languages: { en: "/en", fr: "/fr" } } };
 
 function coverageLabel(row: (typeof EXPLORE_PRODUCTION_LAYER.rows)[number]) {
-  const number = new Intl.NumberFormat("fr-CA", { maximumFractionDigits: 2 });
-  return `Minimum de la zone cartographiée; ${formatUnknownSharePercent(row.unknownSharePercent, "fr")} (${number.format(row.unknownRequiredInputHectares)} ha) de la superficie est inconnue`;
+  return `Minimum de la zone cartographiée; ${formatUnknownSharePercent(row.unknownSharePercent, "fr")} (${formatHectares(row.unknownRequiredInputHectares, "fr")}) de la superficie est inconnue`;
 }
 
 export default function FrenchHome() {
@@ -23,7 +22,7 @@ export default function FrenchHome() {
       <div className="section-heading"><span className="num">01</span><h2 id="registre-actuel">Commencer par le registre actuel</h2></div>
       <p className="lead">L’agrégat provincial provisoire et limité de {EXPLORE_PRODUCTION_LAYER.period} est prêt à explorer. Il présente la perte forestière détectée avec un état de couverture pour chaque province. Une vérification complète de l’étendue cartographiée de {EXPLORE_COVERAGE_PERIOD.fr} régit maintenant la classification des zones inconnues.</p>
       <dl className="principles">
-        {EXPLORE_PRODUCTION_LAYER.rows.map((row) => <div className="principle" key={row.id}><dt>{row.name.fr}</dt><dd>{new Intl.NumberFormat("fr-CA", { maximumFractionDigits: 2 }).format(row.observedLossHectares)} ha de perte détectée ({new Intl.NumberFormat("fr-CA", { maximumFractionDigits: 2 }).format(row.observedLossPercent)} %) · {coverageLabel(row)}</dd></div>)}
+        {EXPLORE_PRODUCTION_LAYER.rows.map((row) => <div className="principle" key={row.id}><dt>{row.name.fr}</dt><dd>{formatHectares(row.observedLossHectares, "fr")} de perte détectée ({formatPercent(row.observedLossPercent, "fr")}) · {coverageLabel(row)}</dd></div>)}
       </dl>
       <p><Link className="btn btn--primary" href="/fr/explorer">Explorer l’agrégat provincial</Link></p>
       <p><small>Portée : la Colombie-Britannique, l’Alberta, l’Ontario et le Québec passent d’abord. Cet aperçu technique limité à quatre provinces ne constitue pas une affirmation au sujet des autres provinces ou des territoires.</small></p>

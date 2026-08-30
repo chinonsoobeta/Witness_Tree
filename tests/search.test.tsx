@@ -40,14 +40,16 @@ test("Search exposes one field behind a labelled places or districts scope", () 
   assert.match(districts, /href="\/en\/compare\?left=/);
   assert.doesNotMatch(districts, /<h2>Search places<\/h2>/);
 });
-test("renders the bilingual place finder with its visible label as the accessible name", () => {
+test("renders the bilingual place finder with a hidden label and compact submit text", () => {
   const en = renderToStaticMarkup(<PlaceFinder locale="en" query="alias de municipalite quebecoise" />);
   const fr = renderToStaticMarkup(<PlaceFinder locale="fr" query="alias de municipalite quebecoise" />);
   assert.match(en, /Search places/);
-  assert.match(en, /<label[^>]*id="search-label"[^>]*>Search places<\/label>/);
+  assert.match(en, /<label[^>]*class="field-label sr-only"[^>]*id="search-label"[^>]*>Search places<\/label>/);
   assert.match(en, /<input[^>]*aria-labelledby="search-label"/);
   assert.doesNotMatch(en, /<input[^>]*aria-label=/);
+  assert.match(en, /<button[^>]*>Find<\/button>/);
   assert.match(en, /href="\/en\/places\//);
   assert.match(fr, /Rechercher des lieux/);
+  assert.match(fr, /<button[^>]*>Trouver<\/button>/);
   assert.match(fr, /href="\/fr\/lieux\//);
 });

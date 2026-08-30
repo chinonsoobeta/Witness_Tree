@@ -1,4 +1,4 @@
-import { colon, COVERAGE_LABELS, semicolon, type Locale } from "@/lib/domain";
+import { colon, COVERAGE_LABELS, formatHectares, formatPercent, semicolon, type Locale } from "@/lib/domain";
 import type { Place } from "@/lib/places";
 import { ReportedValue } from "@/components/policy";
 import { AnnualChangeChart } from "./AnnualChangeChart";
@@ -28,10 +28,6 @@ export function PlacePage({
           boundary: "Édition de limite",
           denominator: "Hectares forestiers",
         };
-  const percent = new Intl.NumberFormat(locale === "fr" ? "fr-CA" : "en-CA", {
-    style: "percent",
-    maximumFractionDigits: 2,
-  });
   return (
     <main id="main" className="page-wrap record-page">
       <header className="masthead">
@@ -53,7 +49,7 @@ export function PlacePage({
         </div>
         <div className="stat">
           <dt>{text.denominator}</dt>
-          <dd>{place.forestHectares}</dd>
+          <dd>{formatHectares(place.forestHectares, locale)}</dd>
         </div>
       </dl>
 
@@ -63,7 +59,7 @@ export function PlacePage({
           {place.coverage.map((item) => (
             <li key={item.grade}>
               <span className="coverage-band">
-                {COVERAGE_LABELS[item.grade][locale]}: {percent.format(item.share)}
+                {COVERAGE_LABELS[item.grade][locale]}{colon(locale)} {formatPercent(item.share * 100, locale)}
               </span>
             </li>
           ))}
@@ -121,7 +117,7 @@ export function PlacePage({
           {semicolon(locale)} {place.boundaryEdition}
           {semicolon(locale)} {place.citation.dataVersion}
           {semicolon(locale)} {text.denominator}
-          {colon(locale)} {place.forestHectares}
+          {colon(locale)} {formatHectares(place.forestHectares, locale)}
           {semicolon(locale)} {place.citation.method}.
         </p>
       </footer>

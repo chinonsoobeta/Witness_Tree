@@ -18,6 +18,12 @@ test("the bilingual public table discloses rounding, withholding, and non-compar
   assert.match(french, /ne sont pas directement comparables/i);
   assert.match(french, /Non publiée/);
   assert.match(french, /jamais zéro/i);
+  assert.doesNotMatch(english, /Nominal relative difference|no additional source flag/);
+  assert.doesNotMatch(french, /Écart relatif nominal|aucun indicateur supplémentaire/);
+  assert.match(english, /<small>–<\/small>/);
+  assert.match(french, /<small>–<\/small>/);
+  assert.equal((english.match(/scope="col"/g) ?? []).length, 6);
+  assert.equal((french.match(/scope="col"/g) ?? []).length, 6);
 });
 
 test("the checked-in public artifact contains 104 rounded rows, 14 withheld rows, and no restricted values", () => {

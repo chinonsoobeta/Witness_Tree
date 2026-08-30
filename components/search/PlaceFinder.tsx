@@ -4,11 +4,13 @@ import { searchPlaces } from "@/lib/search";
 const copy = {
   en: {
     title: "Search places",
+    submit: "Find",
     guide: "Enter a place name or alias.",
     none: "No illustrative place record matches this query.",
   },
   fr: {
     title: "Rechercher des lieux",
+    submit: "Trouver",
     guide: "Entrez un nom de lieu ou un alias.",
     none: "Aucun dossier de lieu illustratif ne correspond à cette recherche.",
   },
@@ -29,7 +31,7 @@ export function PlaceFinder({
       <h2>{text.title}</h2>
       <form className="search-form" method="get">
         <div className="field">
-          <label className="field-label" id="search-label" htmlFor="search-q">
+          <label className="field-label sr-only" id="search-label" htmlFor="search-q">
             {text.title}
           </label>
           <input
@@ -41,7 +43,7 @@ export function PlaceFinder({
           />
         </div>
         <button className="btn btn--primary" type="submit">
-          {text.title}
+          {text.submit}
         </button>
       </form>
       {!query ? (

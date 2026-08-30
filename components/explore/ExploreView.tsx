@@ -7,7 +7,7 @@ import {
   EvidenceChip,
   ProvenanceBlock,
 } from "@/components/policy";
-import { colon, labelled, type Locale } from "@/lib/domain";
+import { colon, formatNumber, formatPercent, labelled, type Locale } from "@/lib/domain";
 import {
   BOUNDARY_OVERLAY_IDS,
   BOUNDARY_OVERLAYS,
@@ -261,12 +261,9 @@ export function ExploreView({
     : perCellShown
       ? text.productionWithPerCell
       : text.production;
-  const number = new Intl.NumberFormat(locale === "fr" ? "fr-CA" : "en-CA", {
-    maximumFractionDigits: 2,
-  });
   const annual = perCellShown ? perCellAnnualForYear(activeYear) : null;
   const provinceCoverageLabel = (row: (typeof EXPLORE_PRODUCTION_LAYER.rows)[number]) =>
-    `${text.partial} (${formatUnknownSharePercent(row.unknownSharePercent, locale)}; ${number.format(row.unknownRequiredInputHectares)} ${text.unknownArea})`;
+    `${text.partial} (${formatUnknownSharePercent(row.unknownSharePercent, locale)}; ${formatNumber(row.unknownRequiredInputHectares, locale)} ${text.unknownArea})`;
   const nearestYear = modeEvents.reduce(
     (nearest, event) =>
       Math.abs(event.year - activeYear) < Math.abs(nearest - activeYear)
@@ -354,19 +351,19 @@ export function ExploreView({
               <dl>
                 <div>
                   <dt>{text.annualDetected}</dt>
-                  <dd>{`${number.format(annual.hectares)} (${text.partial})`}</dd>
+                  <dd>{`${formatNumber(annual.hectares, locale)} (${text.partial})`}</dd>
                 </div>
                 <div>
                   <dt>{text.annualHarvest}</dt>
-                  <dd>{number.format(annual.harvestHectares)}</dd>
+                  <dd>{formatNumber(annual.harvestHectares, locale)}</dd>
                 </div>
                 <div>
                   <dt>{text.annualFire}</dt>
-                  <dd>{number.format(annual.fireHectares)}</dd>
+                  <dd>{formatNumber(annual.fireHectares, locale)}</dd>
                 </div>
                 <div>
                   <dt>{text.annualUnattributed}</dt>
-                  <dd>{number.format(annual.unattributedHectares)}</dd>
+                  <dd>{formatNumber(annual.unattributedHectares, locale)}</dd>
                 </div>
               </dl>
               <p className="explore-annual-basis">{text.annualBasis}</p>
@@ -462,9 +459,9 @@ export function ExploreView({
                       <p>{EXPLORE_PRODUCTION_LAYER.period}</p>
                       <p>
                         {text.observedLoss}
-                        {colon(locale)} {number.format(row.observedLossHectares)} ·{" "}
+                        {colon(locale)} {formatNumber(row.observedLossHectares, locale)} ·{" "}
                         {text.observedLossPercent}
-                        {colon(locale)} {number.format(row.observedLossPercent)} ·{" "}
+                        {colon(locale)} {formatNumber(row.observedLossPercent, locale)} ·{" "}
                         {text.coverage}
                         {colon(locale)} {provinceCoverageLabel(row)}
                       </p>
@@ -512,7 +509,7 @@ export function ExploreView({
                     const isProduction = "observedLossPercent" in item;
                     const value = isProduction ? item.observedLossPercent : 1;
                     const label = item.name[locale];
-                    const detail = isProduction ? `${number.format(value)}%` : String(item.year);
+                    const detail = isProduction ? formatPercent(value, locale) : String(item.year);
                     const y = index * rowHeight + 8;
                     return (
                       <g key={item.id}>
@@ -575,8 +572,8 @@ export function ExploreView({
                       <tr key={row.id}>
                         <th scope="row">{row.name[locale]}</th>
                         <td>{EXPLORE_PRODUCTION_LAYER.period}</td>
-                        <td>{number.format(row.observedLossHectares)}</td>
-                        <td>{number.format(row.observedLossPercent)}</td>
+                        <td>{formatNumber(row.observedLossHectares, locale)}</td>
+                        <td>{formatNumber(row.observedLossPercent, locale)}</td>
                         <td>{provinceCoverageLabel(row)}</td>
                         <td>
                           <a href={EXPLORE_PRODUCTION_LAYER.attribution.href}>

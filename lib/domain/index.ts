@@ -4,5 +4,6 @@ export * from "./coverage";
 export * from "./evidence";
 export * from "./forest";
 export * from "./localized";
+export * from "./number";
 export * from "./reported";
 export * from "./source-ledger";

@@ -16,6 +16,7 @@ const LATEST_FROM_YEAR = 2021;
 const LATEST_TO_YEAR = 2022;
 const FEDERAL_SOURCE_FEATURES = 352;
 const FEDERAL_DISTRICTS = 343;
+const MINIMUM_RANKED_FOREST_HECTARES = 500;
 const SHA256 = /^[a-f0-9]{64}$/;
 
 const fail = (message) => { throw new Error(message); };
@@ -156,7 +157,7 @@ function buildRows(annualRows, names) {
     if (complete !== (unknownRequiredInputHectares === 0)) fail(`${boundaryId} coverage grade conflicts with unknown required input`);
     if (!complete && (lossHectares !== null || observedLossPercent !== null)) fail(`${boundaryId} incomplete coverage must retain null total loss and percent`);
     if (complete && lossHectares === null) fail(`${boundaryId} complete coverage must have total loss`);
-    const rankable = complete && observedLossPercent !== null && knownForestedHectares > 0;
+    const rankable = complete && observedLossPercent !== null && knownForestedHectares >= MINIMUM_RANKED_FOREST_HECTARES;
     rows.push({ boundaryId, boundaryName: names.get(boundaryId), fromYear: LATEST_FROM_YEAR, toYear: LATEST_TO_YEAR, knownForestedHectares, knownObservedLossHectares, lossHectares, observedLossPercent, unknownRequiredInputHectares, unmappedByProductExtentHectares, districtHectares, coverageGrade: source.coverageGrade, rankable, rank: null, unmatchedOfficialShare: null });
   }
   rows.sort((a, b) => a.boundaryId.localeCompare(b.boundaryId, "en", { numeric: true }));

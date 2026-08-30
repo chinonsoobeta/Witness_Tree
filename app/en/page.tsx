@@ -1,14 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteShell } from "@/components/site";
-import { PRODUCT_NAME } from "@/lib/domain";
+import { formatHectares, formatPercent, PRODUCT_NAME } from "@/lib/domain";
 import { EXPLORE_COVERAGE_PERIOD, EXPLORE_PRODUCTION_LAYER, formatUnknownSharePercent } from "@/lib/explore";
 
 export const metadata: Metadata = { title: "Public forest-change record", alternates: { languages: { en: "/en", fr: "/fr" } } };
 
 function coverageLabel(row: (typeof EXPLORE_PRODUCTION_LAYER.rows)[number]) {
-  const number = new Intl.NumberFormat("en-CA", { maximumFractionDigits: 2 });
-  return `Minimum from the mapped area; ${formatUnknownSharePercent(row.unknownSharePercent, "en")} (${number.format(row.unknownRequiredInputHectares)} ha) is unknown`;
+  return `Minimum from the mapped area; ${formatUnknownSharePercent(row.unknownSharePercent, "en")} (${formatHectares(row.unknownRequiredInputHectares, "en")}) is unknown`;
 }
 
 export default function EnglishHome() {
@@ -23,7 +22,7 @@ export default function EnglishHome() {
       <div className="section-heading"><span className="num">01</span><h2 id="current-record">Start with the current record</h2></div>
       <p className="lead">The bounded, provisional {EXPLORE_PRODUCTION_LAYER.period} province aggregate is available to explore. It reports detected forest loss with a coverage state for each province. A complete {EXPLORE_COVERAGE_PERIOD.en} mapped-extent verification now governs how unknown areas are classified.</p>
       <dl className="principles">
-        {EXPLORE_PRODUCTION_LAYER.rows.map((row) => <div className="principle" key={row.id}><dt>{row.name.en}</dt><dd>{new Intl.NumberFormat("en-CA", { maximumFractionDigits: 2 }).format(row.observedLossHectares)} ha detected loss ({new Intl.NumberFormat("en-CA", { maximumFractionDigits: 2 }).format(row.observedLossPercent)}%) · {coverageLabel(row)}</dd></div>)}
+        {EXPLORE_PRODUCTION_LAYER.rows.map((row) => <div className="principle" key={row.id}><dt>{row.name.en}</dt><dd>{formatHectares(row.observedLossHectares, "en")} detected loss ({formatPercent(row.observedLossPercent, "en")}) · {coverageLabel(row)}</dd></div>)}
       </dl>
       <p><Link className="btn btn--primary" href="/en/explore">Explore the province aggregate</Link></p>
       <p><small>Scope: British Columbia, Alberta, Ontario and Quebec come first. This bounded four-province technical preview is not a claim about other provinces or the territories.</small></p>

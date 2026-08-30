@@ -48,6 +48,8 @@ test("place coverage uses reader labels and confidence reasons are labelled hone
   );
   assert.match(placeMarkup, /National baseline: 70%/);
   assert.match(placeMarkup, /National baseline plus local context: 30%/);
+  assert.match(placeMarkup, /Forested hectares<\/dt><dd>1,000 ha<\/dd>/);
+  assert.match(placeMarkup, /Forested hectares: 1,000 ha/);
   assert.doesNotMatch(placeMarkup, /national-baseline(?:-plus-local-context)?:/);
 
   const locationMarkup = renderToStaticMarkup(

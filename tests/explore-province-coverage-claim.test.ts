@@ -95,7 +95,7 @@ test("a nonzero unknown share never renders as zero", () => {
   assert.ok(bc, "British Columbia is missing from the production layer");
   assert.ok(bc.unknownRequiredInputHectares > 0);
   assert.equal(formatUnknownSharePercent(bc.unknownSharePercent, "en"), "<0.01%");
-  assert.equal(formatUnknownSharePercent(bc.unknownSharePercent, "fr"), "<0,01 %");
+  assert.equal(formatUnknownSharePercent(bc.unknownSharePercent, "fr"), "<0,01\u00a0%");
 
   // Shares the column can show are shown, in both locales' own notation.
   assert.equal(formatUnknownSharePercent(24.021462181301985, "en"), "24.02%");

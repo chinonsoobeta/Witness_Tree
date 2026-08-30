@@ -7,7 +7,7 @@ import type {
   MapLayerMouseEvent,
   StyleSpecification,
 } from "maplibre-gl";
-import { colon, labelled, PRODUCT_NAME, type Locale } from "@/lib/domain";
+import { colon, formatNumber, formatPercent, labelled, PRODUCT_NAME, type Locale } from "@/lib/domain";
 import { chooseScaleBar, metresPerPixel, type ScaleBar } from "@/lib/explore/map-scale";
 import {
   BOUNDARY_OVERLAYS,
@@ -778,9 +778,6 @@ export function ExploreMapClient({
       : cause === "fire"
         ? text[locale].perCellLegendFire
         : text[locale].perCellLegend;
-  const number = new Intl.NumberFormat(locale === "fr" ? "fr-CA" : "en-CA", {
-    maximumFractionDigits: 2,
-  });
   /*
    * Recomputed from the live view rather than stored, because it is a pure
    * function of zoom and latitude: keeping it in state would give it a chance
@@ -790,7 +787,7 @@ export function ExploreMapClient({
     ? chooseScaleBar(metresPerPixel(view.latitude, view.zoom), SCALE_MAX_PIXELS)
     : null;
   const scaleLabel = scale
-    ? `${number.format(scale.value)} ${scale.unit}`
+    ? `${formatNumber(scale.value, locale)} ${scale.unit}`
     : "";
   const boundary = hoveredBoundary ?? pinnedBoundary;
   const readout = boundary
@@ -863,7 +860,7 @@ export function ExploreMapClient({
                     locale === "fr"
                       ? feature.properties.province_name_fr
                       : feature.properties.province_name_en,
-                    `${number.format(feature.properties.observed_loss_percent)}%`,
+                    formatPercent(feature.properties.observed_loss_percent, locale),
                   )}
                 </title>
               </path>
@@ -1093,10 +1090,10 @@ export function ExploreMapClient({
                   <tr key={row.id}>
                     <th scope="row">{row.name[locale]}</th>
                     <td>{EXPLORE_PRODUCTION_LAYER.period}</td>
-                    <td>{number.format(row.observedLossHectares)}</td>
-                    <td>{number.format(row.observedLossPercent)}</td>
+                    <td>{formatNumber(row.observedLossHectares, locale)}</td>
+                    <td>{formatNumber(row.observedLossPercent, locale)}</td>
                     <td>
-                      {`${text[locale].partial} (${formatUnknownSharePercent(row.unknownSharePercent, locale)}; ${number.format(row.unknownRequiredInputHectares)} ${text[locale].unknownArea})`}
+                      {`${text[locale].partial} (${formatUnknownSharePercent(row.unknownSharePercent, locale)}; ${formatNumber(row.unknownRequiredInputHectares, locale)} ${text[locale].unknownArea})`}
                     </td>
                   </tr>
                 ))}
