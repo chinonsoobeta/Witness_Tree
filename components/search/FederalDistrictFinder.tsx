@@ -5,14 +5,12 @@ const copy = {
   en: {
     title: "Find a federal electoral district",
     guide: "Enter a district name in English or French.",
-    input: "Federal electoral district",
     none: "No local federal district measurement matches this query.",
     boundary: "Local nonproduction measurements. Not a published release.",
   },
   fr: {
     title: "Trouver une circonscription fédérale",
     guide: "Entrez un nom de circonscription en français ou en anglais.",
-    input: "Circonscription fédérale",
     none: "Aucune mesure locale non productive de circonscription fédérale ne correspond à cette recherche.",
     boundary: "Mesures locales non productives. Il ne s’agit pas d’une publication.",
   },
@@ -70,8 +68,8 @@ export function FederalDistrictFinder({
           <input key={parameter.name} type="hidden" name={parameter.name} value={parameter.value} />
         ))}
         <div className="field">
-          <label className="field-label" htmlFor="federal-district-q">{text.title}</label>
-          <input className="input" id="federal-district-q" name="district" defaultValue={query} aria-label={text.input} />
+          <label className="field-label" id="federal-district-label" htmlFor="federal-district-q">{text.title}</label>
+          <input className="input" id="federal-district-q" name="district" defaultValue={query} aria-labelledby="federal-district-label" />
         </div>
         <button className="btn btn--primary" type="submit">{text.title}</button>
       </form>

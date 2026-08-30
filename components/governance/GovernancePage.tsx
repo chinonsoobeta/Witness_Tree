@@ -1,4 +1,13 @@
 import { PRODUCT_NAME, type Locale } from "@/lib/domain";
+import {
+  EXPLORE_COVERAGE_PERIOD,
+  EXPLORE_DEFAULT_YEAR,
+  EXPLORE_YEAR_MIN,
+} from "@/lib/explore";
+import {
+  provinceBulkManifestUrl,
+  provinceBulkRelease,
+} from "@/lib/downloads/releases";
 
 export type GovernancePageKind =
   | "glossary"
@@ -9,7 +18,11 @@ export type GovernancePageKind =
   | "terms"
   | "releases";
 
-type Section = Readonly<{ heading: string; paragraphs: readonly string[] }>;
+type Section = Readonly<{
+  heading: string;
+  paragraphs: readonly string[];
+  links?: readonly Readonly<{ label: string; href: string }>[];
+}>;
 type PageCopy = Readonly<{
   title: string;
   status: string;
@@ -18,6 +31,7 @@ type PageCopy = Readonly<{
 
 const enBrand = PRODUCT_NAME.en;
 const frBrand = PRODUCT_NAME.fr;
+const [provinceCsv, provinceGeoPackage] = provinceBulkRelease.artifacts;
 
 const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
   glossary: {
@@ -145,7 +159,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Product",
           paragraphs: [
-            `Working name: ${enBrand}. Record starts in 1984; the default view starts in 2000. Scope is British Columbia, Alberta, Ontario and Quebec.`,
+            `Working name: ${enBrand}. The record covers ${EXPLORE_COVERAGE_PERIOD.en}; the year control starts at ${EXPLORE_YEAR_MIN} because that is the first annual interval, and the default view is ${EXPLORE_DEFAULT_YEAR}. Scope is British Columbia, Alberta, Ontario and Quebec.`,
             "NTEMS is the satellite spine. Live wildfire, riding comparison, accounts and alerts, reserve and treaty pages are in version 1. Advanced layer controls and asserted traditional territories are excluded.",
           ],
         },
@@ -177,7 +191,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Produit",
           paragraphs: [
-            `Nom de travail : ${frBrand}. Le registre commence en 1984; la vue par défaut commence en 2000. La portée comprend la Colombie-Britannique, l’Alberta, l’Ontario et le Québec.`,
+            `Nom de travail : ${frBrand}. Le registre couvre la période de ${EXPLORE_COVERAGE_PERIOD.fr}; la commande d’année commence à ${EXPLORE_YEAR_MIN}, soit le premier intervalle annuel, et la vue par défaut est ${EXPLORE_DEFAULT_YEAR}. La portée comprend la Colombie-Britannique, l’Alberta, l’Ontario et le Québec.`,
             "NTEMS constitue la base satellitaire. Les incendies actuels, la comparaison des circonscriptions, les comptes et alertes ainsi que les pages de réserves et de traités sont prévus dans la version 1. Les commandes avancées de couches et les territoires traditionnels revendiqués sont exclus.",
           ],
         },
@@ -374,18 +388,30 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
     en: {
       title: "Data releases",
       status:
-        "No production data release exists. The current repository contains only an illustrative source-ledger fixture.",
+        "One bounded technical-preview release is published and indexed here. It is not the production release required to close the formal Phase 2 gate.",
       sections: [
         {
-          heading: "Future manifests",
+          heading: "Published bounded release",
           paragraphs: [
-            "Every release will state its ID and date, latest data end year, boundary edition, method version, bilingual note, corrections link and stale or degraded state. Every artifact requires a licence ID and immutable SHA-256.",
+            `Release ${provinceBulkRelease.id} contains the bounded 2020 to 2022 province aggregate for British Columbia, Alberta, Ontario and Quebec as a CSV and GeoPackage. Each artifact has a published SHA-256, licence attribution, boundary edition and method version.`,
+            "This release is a province-level technical preview, not per-cell geometry. All four provinces have some unknown mapped area, so its detected-loss figures are minima. It does not complete the formal Phase 2 gate.",
+          ],
+          links: [
+            { label: "Download the province CSV", href: provinceCsv.url },
+            { label: "Download the province GeoPackage", href: provinceGeoPackage.url },
+            { label: "Open the machine-readable release manifest", href: provinceBulkManifestUrl },
+          ],
+        },
+        {
+          heading: "Formal Phase 2 gate",
+          paragraphs: [
+            "No production data release satisfying the formal Phase 2 gate exists. The published technical-preview release does not supply the still-missing independent-comparison envelope or turn local per-cell outputs into an admitted production release.",
           ],
         },
         {
           heading: "Citation format",
           paragraphs: [
-            `${enBrand}, place or record title, time range, boundary edition, data release ID, method version, retrieval date and stable URL. No production citation can be generated until a verified release exists.`,
+            `${enBrand}, province aggregate, 2020 to 2022, ${provinceCsv.boundaryEdition}, release ${provinceBulkRelease.id}, method ${provinceCsv.methodVersion}, retrieval date and stable artifact URL. Cite it as a bounded technical preview. A production citation for the formal Phase 2 release cannot be generated until that specific gate has a verified release.`,
           ],
         },
       ],
@@ -393,18 +419,30 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
     fr: {
       title: "Versions des données",
       status:
-        "Aucune version de données de production n’existe. Le dépôt actuel ne contient qu’un exemple illustratif de registre des sources.",
+        "Une version d’aperçu technique limitée est publiée et répertoriée ici. Elle n’est pas la version de production exigée pour satisfaire au critère formel de la phase 2.",
       sections: [
         {
-          heading: "Manifestes futurs",
+          heading: "Version limitée publiée",
           paragraphs: [
-            "Chaque version indiquera son identifiant et sa date, la dernière année de données, l’édition de limite, la version de méthode, une note bilingue, le lien de correction et l’état périmé ou dégradé. Chaque artefact exige un identifiant de licence et une somme SHA-256 immuable.",
+            `La version ${provinceBulkRelease.id} contient l’agrégat provincial limité de 2020 à 2022 pour la Colombie-Britannique, l’Alberta, l’Ontario et le Québec, en formats CSV et GeoPackage. Chaque artefact possède une somme SHA-256 publiée, une attribution de licence, une édition de limite et une version de méthode.`,
+            "Cette version est un aperçu technique au niveau provincial, et non une géométrie par cellule. Les quatre provinces comportent une superficie cartographiée inconnue; les valeurs de perte détectée sont donc des minimums. Cette version ne satisfait pas au critère formel de la phase 2.",
+          ],
+          links: [
+            { label: "Télécharger le CSV provincial", href: provinceCsv.url },
+            { label: "Télécharger le GeoPackage provincial", href: provinceGeoPackage.url },
+            { label: "Ouvrir le manifeste de version lisible par machine", href: provinceBulkManifestUrl },
+          ],
+        },
+        {
+          heading: "Critère formel de la phase 2",
+          paragraphs: [
+            "Aucune version de données de production satisfaisant au critère formel de la phase 2 n’existe. La version d’aperçu technique publiée ne fournit pas l’enveloppe de comparaison indépendante encore manquante et ne transforme pas les sorties locales par cellule en une version de production admise.",
           ],
         },
         {
           heading: "Format de citation",
           paragraphs: [
-            `${frBrand}, titre du lieu ou du dossier, période, édition de limite, identifiant de version des données, version de méthode, date de consultation et URL stable. Aucune citation de production ne peut être générée avant l’existence d’une version vérifiée.`,
+            `${frBrand}, agrégat provincial, 2020 à 2022, ${provinceCsv.boundaryEdition}, version ${provinceBulkRelease.id}, méthode ${provinceCsv.methodVersion}, date de consultation et URL stable de l’artefact. La citation doit préciser qu’il s’agit d’un aperçu technique limité. Une citation de production pour la version formelle de la phase 2 ne peut être générée avant qu’une version vérifiée ne satisfasse précisément à ce critère.`,
           ],
         },
       ],
@@ -446,6 +484,15 @@ export function GovernancePage({
             {section.paragraphs.map((paragraph) => (
               <p key={paragraph}>{paragraph}</p>
             ))}
+            {section.links ? (
+              <ul className="link-list">
+                {section.links.map((link) => (
+                  <li className="card card--lift" key={link.href}>
+                    <a href={link.href}>{link.label}</a>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
           </section>
         ))}
       </div>

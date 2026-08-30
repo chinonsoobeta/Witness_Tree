@@ -1,8 +1,13 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
+import { renderToStaticMarkup } from "react-dom/server";
 // @ts-expect-error -- Node's TypeScript runner requires explicit local extensions.
 import { LOCATIONS, PLACE_TYPES, PLACES } from "../lib/places/index.ts";
+// @ts-expect-error -- Node's TypeScript runner requires explicit local extensions.
+import { PlacePage } from "../components/places/PlacePage.tsx";
+// @ts-expect-error -- Node's TypeScript runner requires explicit local extensions.
+import { LocationResult } from "../components/places/LocationResult.tsx";
 
 test("illustrative fixtures cover all place types and provinces", () => {
   assert.deepEqual(new Set(PLACES.map((place) => place.type)), new Set(PLACE_TYPES));
@@ -32,6 +37,24 @@ test("server markup includes provenance without requiring client code", () => {
   const locationResult = readFileSync(new URL("../components/places/LocationResult.tsx", import.meta.url), "utf8");
   assert.match(placePage, /<ReportedValue/);
   assert.match(locationResult, /<ProvenanceBlock/);
+});
+
+test("place coverage uses reader labels and confidence reasons are labelled honestly", () => {
+  const place = PLACES[0];
+  const location = LOCATIONS[0];
+  assert.ok(place && location);
+  const placeMarkup = renderToStaticMarkup(
+    <PlacePage locale="en" place={place} view="chart" />,
+  );
+  assert.match(placeMarkup, /National baseline: 70%/);
+  assert.match(placeMarkup, /National baseline plus local context: 30%/);
+  assert.doesNotMatch(placeMarkup, /national-baseline(?:-plus-local-context)?:/);
+
+  const locationMarkup = renderToStaticMarkup(
+    <LocationResult locale="en" location={location} places={[place]} />,
+  );
+  assert.match(locationMarkup, /Why this confidence:/);
+  assert.doesNotMatch(locationMarkup, />Limitation:/);
 });
 
 test("localized routes use the shared shell and consistent main landmark", () => {

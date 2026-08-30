@@ -35,7 +35,7 @@
       "evidence": [
         {
           "path": "components/governance/GovernancePage.tsx",
-          "sha256": "92f254ce90ba12cc592516351b8f2e7ff209988fafa2f2d27f20330f4fa396ec"
+          "sha256": "5fe785e9407379419ece09a082973bf4a7019090dd2cfb7dad7ae8a3c7212d5c"
         }
       ]
     },
@@ -63,7 +63,7 @@
       "evidence": [
         {
           "path": "components/governance/GovernancePage.tsx",
-          "sha256": "92f254ce90ba12cc592516351b8f2e7ff209988fafa2f2d27f20330f4fa396ec"
+          "sha256": "5fe785e9407379419ece09a082973bf4a7019090dd2cfb7dad7ae8a3c7212d5c"
         }
       ]
     },
@@ -91,7 +91,7 @@
       "evidence": [
         {
           "path": "components/governance/GovernancePage.tsx",
-          "sha256": "92f254ce90ba12cc592516351b8f2e7ff209988fafa2f2d27f20330f4fa396ec"
+          "sha256": "5fe785e9407379419ece09a082973bf4a7019090dd2cfb7dad7ae8a3c7212d5c"
         },
         {
           "path": "data/phase0-owner-scope-decisions-2026-08-27.json",

@@ -33,7 +33,7 @@ import {
 
 const text = {
   en: {
-    label: "Verified province forest-loss map",
+    label: "Forest change map",
     loading: "Loading the map layers for the selected year.",
     ready:
       "Showing the provisional province aggregate, which covers 2020 to 2022 and does not follow the year control. Display boundaries are simplified and omit small islands.",
@@ -46,13 +46,13 @@ const text = {
     readyBoth:
       "Showing two layers with different periods: detected forest-loss patches for the selected annual interval, drawn as you zoom in and available for every interval from 1984–1985 to 2021–2022, over the provisional province aggregate, which covers 2020 to 2022 and does not follow the year control. Province display boundaries are simplified and omit small islands.",
     fallback:
-      "The interactive PMTiles layer was unavailable, so this map is showing the verified GeoJSON compatibility fallback.",
+      "The interactive PMTiles layer was unavailable, so this map is showing the published GeoJSON compatibility fallback.",
     unavailable:
       "Condition and recovery needs the annual land-cover class series, which has not been acquired or admitted. It is not shown for any year. Forest change, Recorded harvest and Wildfire are unaffected.",
     unavailableYear:
       "Detected patches cover the annual intervals from 1984–1985 to 2021–2022. Choose 2022 or an earlier year to see this mode.",
     error:
-      "The verified map layer could not be loaded. The list and table alternatives remain available.",
+      "The map layer could not be loaded. The list and table alternatives remain available.",
     attribution: "Map sources",
     perCell:
       "Zoom in to see individual patches of detected forest loss, traced from the 30 m grid rather than generalized from it. One annual interval is drawn at a time, chosen by the year control, from the intervals running 1984–1985 to 2021–2022.",
@@ -101,7 +101,7 @@ const text = {
     qc: "Québec",
   },
   fr: {
-    label: "Carte vérifiée des pertes forestières provinciales",
+    label: "Carte des changements forestiers",
     loading:
       "Chargement des couches cartographiques pour l’année choisie.",
     ready:
@@ -115,13 +115,13 @@ const text = {
     readyBoth:
       "Affichage de deux couches aux périodes différentes : les parcelles de perte forestière détectée pour l’intervalle annuel choisi, dessinées au fur et à mesure du zoom et offertes pour chaque intervalle de 1984-1985 à 2021-2022, par-dessus l’agrégat provincial provisoire, qui couvre 2020 à 2022 et ne suit pas la commande d’année. Les limites provinciales affichées sont simplifiées et omettent les petites îles.",
     fallback:
-      "La couche PMTiles interactive n’était pas disponible; cette carte affiche donc la solution de repli GeoJSON vérifiée.",
+      "La couche PMTiles interactive n’était pas disponible; cette carte affiche donc la solution de repli GeoJSON publiée.",
     unavailable:
       "L’état et le rétablissement exigent la série annuelle des classes de couverture terrestre, qui n’a été ni acquise ni admise. Ce mode n’est affiché pour aucune année. Le changement forestier, les récoltes consignées et les incendies ne sont pas touchés.",
     unavailableYear:
       "Les parcelles détectées couvrent les intervalles annuels de 1984-1985 à 2021-2022. Choisissez 2022 ou une année antérieure pour voir ce mode.",
     error:
-      "La couche cartographique vérifiée n’a pas pu être chargée. Les autres présentations en liste et en tableau demeurent disponibles.",
+      "La couche cartographique n’a pas pu être chargée. Les autres présentations en liste et en tableau demeurent disponibles.",
     attribution: "Sources de la carte",
     perCell:
       "Faites un zoom avant pour voir chaque parcelle de perte forestière détectée, tracée à partir de la grille de 30 m plutôt que généralisée. Un seul intervalle annuel est dessiné à la fois, choisi par la commande d’année, parmi les intervalles allant de 1984-1985 à 2021-2022.",

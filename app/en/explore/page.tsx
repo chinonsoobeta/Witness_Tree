@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { ExploreMapClient, ExploreView } from "@/components/explore";
 import { FederalDistrictFinder } from "@/components/search";
 import { SiteShell } from "@/components/site";
@@ -45,6 +46,7 @@ export default async function Page({
       <main id="main" className="page-wrap">
         <header className="masthead">
           <h1>Explore forest change</h1>
+          <p className="masthead-note">Release scope, downloads and limitations are indexed in <Link href="/en/releases">Data releases</Link>.</p>
         </header>
         <FederalDistrictFinder
           locale="en"

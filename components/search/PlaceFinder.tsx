@@ -10,7 +10,6 @@ const copy = {
       guide: "Enter a place name or alias.",
       none: "No illustrative place record matches this query.",
       fixture: "Illustrative fixtures only",
-      input: "Place name or alias",
     },
     explore: {
       title: "Find a district or place",
@@ -18,7 +17,6 @@ const copy = {
       none: "No illustrative district or place record matches this query.",
       fixture:
         "Illustrative directory only. These results are not admitted measurements.",
-      input: "District or place name or alias",
     },
   },
   fr: {
@@ -27,7 +25,6 @@ const copy = {
       guide: "Entrez un nom de lieu ou un alias.",
       none: "Aucun dossier de lieu illustratif ne correspond à cette recherche.",
       fixture: "Exemples illustratifs seulement",
-      input: "Nom de lieu ou alias",
     },
     explore: {
       title: "Trouver une circonscription ou un lieu",
@@ -35,7 +32,6 @@ const copy = {
       none: "Aucun dossier illustratif de circonscription ou de lieu ne correspond à cette recherche.",
       fixture:
         "Répertoire illustratif seulement. Ces résultats ne sont pas des mesures admises.",
-      input: "Nom ou alias d’une circonscription ou d’un lieu",
     },
   },
 } as const;
@@ -68,7 +64,7 @@ export function PlaceFinder({
           />
         ))}
         <div className="field">
-          <label className="field-label" htmlFor={`${context}-q`}>
+          <label className="field-label" id={`${context}-label`} htmlFor={`${context}-q`}>
             {text.title}
           </label>
           <input
@@ -76,7 +72,7 @@ export function PlaceFinder({
             id={`${context}-q`}
             name="q"
             defaultValue={query}
-            aria-label={text.input}
+            aria-labelledby={`${context}-label`}
           />
         </div>
         <button className="btn btn--primary" type="submit">

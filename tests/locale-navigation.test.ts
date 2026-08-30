@@ -47,6 +47,9 @@ test("every route in the app has a counterpart, so a new page cannot silently fa
   const routes = readdirRoutes(new URL("../app/", import.meta.url));
   assert.equal(routes.length > 30, true, `Expected the full route set, found ${routes.length}.`);
   for (const route of routes) {
+    // Locale catch-alls intentionally return their segment's not-found UI; they are
+    // boundaries rather than destinations for the language switch.
+    if (route.endsWith("/[...not-found]")) continue;
     const locale = route.startsWith("/fr") ? "fr" : "en";
     const other = locale === "en" ? "fr" : "en";
     const counterpart = localeCounterpart(route.replace("[placeId]", "sample").replace("[locationId]", "sample"), locale);
@@ -67,4 +70,17 @@ test("the language switch is an island, so the header is not shipped to the brow
   // useSearchParams suspends during static rendering. Without the boundary every page using this
   // header would opt into client rendering.
   assert.match(header, /<Suspense fallback=/);
+});
+
+test("the custom Vite config retains vinext's single-React development contract", () => {
+  const config = readFileSync(new URL("../vite.config.ts", import.meta.url), "utf8");
+  for (const dependency of [
+    "react",
+    "react-dom",
+    "react/jsx-runtime",
+    "react/jsx-dev-runtime",
+  ]) {
+    assert.match(config, new RegExp(`"${dependency.replace("/", "\\/")}"`));
+  }
+  assert.match(config, /resolve:\s*\{\s*dedupe:/);
 });

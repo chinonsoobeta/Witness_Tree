@@ -16,8 +16,17 @@ test("bilingual methodology and data routes select their locale", async () => {
 });
 
 test("methodology states the required definitions, matching and neutral limits", async () => {
-  const page = await read("../components/transparency/MethodologyPage.tsx");
-  for (const requirement of ["1 hectare", "10% crown closure", "5 metres", "1984", "2000", "British Columbia", "north of 52", "50%", "±2 years", "±3 years before 1995"]) assert.ok(page.includes(requirement));
+  const [page, exploreTypes] = await Promise.all([
+    read("../components/transparency/MethodologyPage.tsx"),
+    read("../lib/explore/types.ts"),
+  ]);
+  for (const requirement of ["1 hectare", "10% crown closure", "5 metres", "British Columbia", "north of 52", "50%", "±2 years", "±3 years before 1995"]) assert.ok(page.includes(requirement));
+  assert.match(page, /EXPLORE_COVERAGE_PERIOD/);
+  assert.match(exploreTypes, /EXPLORE_YEAR_MIN = 1985/);
+  assert.match(exploreTypes, /EXPLORE_YEAR_MIN - 1/);
+  assert.match(page, /EXPLORE_DEFAULT_YEAR/);
+  assert.match(exploreTypes, /EXPLORE_DEFAULT_YEAR = EXPLORE_YEAR_MAX/);
+  assert.match(exploreTypes, /EXPLORE_YEAR_MAX = 2022/);
   assert.match(page, /fire; recorded harvest; recorded insect or disease disturbance; other recorded intervention; then detected change with no matching record/);
   assert.match(page, /Match rate, non-match rate, and the non-match-reason distribution are not available/);
   assert.match(page, /No provincial enhancement dataset has been admitted for processing/);

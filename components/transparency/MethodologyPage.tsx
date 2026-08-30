@@ -1,4 +1,9 @@
 import type { Locale } from "@/lib/domain";
+import {
+  EXPLORE_COVERAGE_PERIOD,
+  EXPLORE_DEFAULT_YEAR,
+  EXPLORE_YEAR_MIN,
+} from "@/lib/explore";
 
 const COPY = {
   en: {
@@ -8,7 +13,7 @@ const COPY = {
       "Forest is land of at least 1 hectare, with at least 10% crown closure, carrying trees capable of reaching 5 metres at maturity.",
     denominator: "Denominator and period",
     denominatorText:
-      "Percentages use forested hectares inside the applicable boundary edition, with the forest mask from the first year of the requested range. Coverage begins in 1984; the default view begins in 2000. Total land area is not a denominator.",
+      `Percentages use forested hectares inside the applicable boundary edition, with the forest mask from the first year of the requested range. Coverage spans ${EXPLORE_COVERAGE_PERIOD.en}; the year control starts at ${EXPLORE_YEAR_MIN} because each selected year names the interval ending in that year (${EXPLORE_YEAR_MIN} is the ${EXPLORE_YEAR_MIN - 1} to ${EXPLORE_YEAR_MIN} change). The default view is ${EXPLORE_DEFAULT_YEAR}. Total land area is not a denominator.`,
     coverage: "Geographic coverage",
     coverageText:
       "The national baseline covers British Columbia, Alberta, Ontario and Quebec. Quebec north of 52° is shown as national baseline, not as enhanced local coverage. Coverage is intersected from mapped geometry, not inferred from a province label.",
@@ -36,7 +41,7 @@ const COPY = {
       "La forêt est une terre d’au moins 1 hectare, présentant un couvert de cimes d’au moins 10 %, avec des arbres capables d’atteindre 5 mètres à maturité.",
     denominator: "Dénominateur et période",
     denominatorText:
-      "Les pourcentages utilisent les hectares forestiers à l’intérieur de l’édition de limite applicable, avec le masque forestier de la première année de la période demandée. La couverture commence en 1984; la vue par défaut commence en 2000. La superficie totale des terres n’est pas un dénominateur.",
+      `Les pourcentages utilisent les hectares forestiers à l’intérieur de l’édition de limite applicable, avec le masque forestier de la première année de la période demandée. La couverture s’étend de ${EXPLORE_COVERAGE_PERIOD.fr}; la commande d’année commence à ${EXPLORE_YEAR_MIN}, car chaque année choisie désigne l’intervalle qui se termine cette année-là (${EXPLORE_YEAR_MIN} correspond au changement de ${EXPLORE_YEAR_MIN - 1} à ${EXPLORE_YEAR_MIN}). La vue par défaut est ${EXPLORE_DEFAULT_YEAR}. La superficie totale des terres n’est pas un dénominateur.`,
     coverage: "Couverture géographique",
     coverageText:
       "La référence nationale couvre la Colombie-Britannique, l’Alberta, l’Ontario et le Québec. Le Québec au nord du 52e degré est présenté comme référence nationale, et non comme couverture locale enrichie. La couverture est intersectée à partir d’une géométrie cartographiée, et non déduite d’une étiquette provinciale.",

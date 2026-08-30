@@ -32,6 +32,9 @@ test("renders a bilingual Explore finder that preserves controls and labels illu
   const fr = renderToStaticMarkup(<PlaceFinder locale="fr" query="alias de municipalite quebecoise" context="explore" />);
   assert.match(en, /Find a district or place/);
   assert.match(en, /Illustrative directory only\. These results are not admitted measurements\./);
+  assert.match(en, /<label[^>]*id="explore-label"[^>]*>Find a district or place<\/label>/);
+  assert.match(en, /<input[^>]*aria-labelledby="explore-label"/);
+  assert.doesNotMatch(en, /<input[^>]*aria-label=/);
   assert.match(en, /name="mode" value="forest-change"/);
   assert.match(en, /name="presentation" value="list"/);
   assert.match(en, /href="\/en\/places\//);

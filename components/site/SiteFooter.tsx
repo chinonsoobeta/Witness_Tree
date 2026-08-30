@@ -1,4 +1,5 @@
 import type { Locale } from "@/lib/domain";
+import { EXPLORE_COVERAGE_PERIOD } from "@/lib/explore";
 
 export function SiteFooter({ locale }: { locale: Locale }) {
   const links = locale === "en"
@@ -7,7 +8,7 @@ export function SiteFooter({ locale }: { locale: Locale }) {
   return (
     <footer className="site-footer">
       <div className="site-footer-inner">
-        <p className="footer-coverage">1984–present · BC · AB · ON · QC</p>
+        <p className="footer-coverage">{EXPLORE_COVERAGE_PERIOD.compact} · BC · AB · ON · QC</p>
         <nav className="footer-nav" aria-label={locale === "en" ? "Record and governance" : "Registre et gouvernance"}>
           {links.map(([label, href]) => <a key={href} href={href}>{label}</a>)}
         </nav>

@@ -55,7 +55,7 @@
    "evidence": [
     {
      "path": "components/transparency/MethodologyPage.tsx",
-     "sha256": "1d540f47b31f5161c50446d676e2ecd3c9b6b15f34a04fe4ce97918ad9b36417"
+     "sha256": "0300165fe257c09cbfe4beeb17dc4d815ee7cd403145021c0c30ce7071c4cb54"
     },
     {
      "path": "docs/PHASE4_OPTIONAL_ENHANCEMENT_GATE.md",

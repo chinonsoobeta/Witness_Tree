@@ -23,6 +23,7 @@ const COPY = {
     profileEvidence: "Review the geospatial profile",
     transformationEvidence: "Review the Québec transformation evidence",
     comparison: "Open the official-source harvest comparison",
+    releases: "Open the canonical release index",
     bulkTitle: "Province bulk download",
     bulkSummary:
       "This deterministic release contains the same four province-level technical-preview values in CSV and GeoPackage formats. It is not per-cell geometry and does not complete the formal Phase 2 gate.",
@@ -54,6 +55,7 @@ const COPY = {
     transformationEvidence: "Consulter les preuves de transformation du Québec",
     comparison:
       "Ouvrir la comparaison avec une source officielle sur la récolte",
+    releases: "Ouvrir l’index canonique des versions",
     bulkTitle: "Téléchargement en bloc par province",
     bulkSummary:
       "Cette version déterministe contient les mêmes valeurs d’aperçu technique au niveau provincial pour quatre provinces, en formats CSV et GeoPackage. Elle ne fournit pas une géométrie par cellule et ne satisfait pas au critère formel de la phase 2.",
@@ -103,6 +105,11 @@ export function DataPage({ locale }: Readonly<{ locale: Locale }>) {
                 }
               >
                 {copy.comparison}
+              </a>
+            </li>
+            <li className="card card--lift">
+              <a href={locale === "en" ? "/en/releases" : "/fr/versions"}>
+                {copy.releases}
               </a>
             </li>
           </ul>
