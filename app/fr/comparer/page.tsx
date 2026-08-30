@@ -10,12 +10,13 @@ import {
   parseRankingSort,
 } from "@/lib/comparison";
 import { SiteShell } from "@/components/site";
+import { localizedAlternates } from "@/lib/site-metadata";
 
 const TITRE = "Comparaison des circonscriptions";
 
 export const metadata: Metadata = {
   title: TITRE,
-  alternates: { languages: { en: "/en/compare", fr: "/fr/comparer" } },
+  alternates: localizedAlternates("fr", { en: "/en/compare", fr: "/fr/comparer" }),
 };
 
 export default async function ComparerPage({

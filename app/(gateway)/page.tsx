@@ -2,10 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PRODUCT_NAME } from "@/lib/domain";
 import { EXPLORE_COVERAGE_PERIOD } from "@/lib/explore";
+import { gatewayAlternates } from "@/lib/site-metadata";
 
 export const metadata: Metadata = {
   title: PRODUCT_NAME.en,
   description: "Choose English or French to enter the public forest-change record.",
+  alternates: gatewayAlternates,
 };
 
 export default function Home() {

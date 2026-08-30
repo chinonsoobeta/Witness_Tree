@@ -66,8 +66,12 @@ test("about routes are bilingual and reserve owner statements for owner copy", a
   assert.match(french, /Texte du propriétaire à venir/);
   assert.match(french, /Aucune déclaration du propriétaire n’a été fournie/);
   assert.match(french, /en: "\/en\/about"/);
-  assert.match(header, /\["About", "\/en\/about"\]/);
-  assert.match(header, /\["À propos", "\/fr\/a-propos"\]/);
+  assert.doesNotMatch(header, /\["About", "\/en\/about"\]/);
+  assert.doesNotMatch(header, /\["À propos", "\/fr\/a-propos"\]/);
   assert.match(footer, /\["About", "\/en\/about"\]/);
   assert.match(footer, /\["À propos", "\/fr\/a-propos"\]/);
+  assert.doesNotMatch(header, /\["Account", "\/en\/account"\]|\["Wildfire", "\/en\/wildfire"\]/);
+  assert.doesNotMatch(header, /\["Compte", "\/fr\/compte"\]|\["Incendies", "\/fr\/incendies"\]/);
+  assert.match(footer, /\["Account", "\/en\/account"\]/);
+  assert.match(footer, /\["Compte", "\/fr\/compte"\]/);
 });

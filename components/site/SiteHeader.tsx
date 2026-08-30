@@ -7,21 +7,15 @@ const NAV = {
   en: [
     ["Explore", "/en/explore"],
     ["Compare", "/en/compare"],
-    ["Wildfire", "/en/wildfire"],
-    ["Account", "/en/account"],
     ["Methods", "/en/methods"],
     ["Data", "/en/data"],
-    ["About", "/en/about"],
     ["Search", "/en/search"],
   ],
   fr: [
     ["Explorer", "/fr/explorer"],
     ["Comparer", "/fr/comparer"],
-    ["Incendies", "/fr/incendies"],
-    ["Compte", "/fr/compte"],
     ["Méthodes", "/fr/methodes"],
     ["Données", "/fr/donnees"],
-    ["À propos", "/fr/a-propos"],
     ["Recherche", "/fr/recherche"],
   ],
 } as const;

@@ -38,7 +38,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
     en: {
       title: "Glossary",
       status:
-        "Draft terminology; professional forestry terminology review is pending.",
+        "Terms used in Explore and Compare; professional forestry terminology review is pending.",
       sections: [
         {
           heading: "Forest",
@@ -55,13 +55,56 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Coverage",
           paragraphs: [
-            "National baseline, extended record with sparse official matching, or national baseline plus local context. Coverage is a property of mapped area and time, not a province-wide promise.",
+            "Event coverage grades describe the records and context available for an event or reported value: enhanced local records, national baseline plus local context, national baseline, extended record with sparse official matching, or not applicable. These grades appear with event-level evidence and do not say that a whole province or riding was measured.",
+            "Province and riding measurement coverage states describe whether the required mapped inputs cover the selected boundary: complete, partial with unknown area, or none mapped. Explore labels these as “Every input pixel present” or “Some pixels unknown, so this is a minimum”; Compare uses “Complete mapped coverage”, “Partial mapped coverage; unknown area remains” and “No mapped coverage”. These states determine whether a boundary total or percentage can be reported. The two taxonomies answer different questions and are not interchangeable.",
           ],
         },
         {
-          heading: "Detected change",
+          heading: "Per-cell",
           paragraphs: [
-            "A satellite-observed change in tree cover. It is not, by itself, a claim of logging, deforestation, illegality or responsibility.",
+            "The most detailed published loss geometry. Each record represents one connected component traced from 30 metre source cells for one annual interval. Per-cell geometry is distinct from a province or riding aggregate.",
+          ],
+        },
+        {
+          heading: "Annual interval",
+          paragraphs: [
+            "The period between two annual observations. The year control names the ending year, so 1985 means the interval from 1984 to 1985 rather than the 1985 calendar year.",
+          ],
+        },
+        {
+          heading: "Province aggregate",
+          paragraphs: [
+            "A summary calculated for an entire provincial boundary. The available 2020 to 2022 province aggregate is a separate layer from the annual per-cell map and does not change when the year control moves.",
+          ],
+        },
+        {
+          heading: "Provisional",
+          paragraphs: [
+            "Published with stated limits for review and use, but not admitted as the formal Phase 2 production release. A provisional figure remains subject to the stated coverage, comparison and ground-verification limits.",
+          ],
+        },
+        {
+          heading: "Mapped extent",
+          paragraphs: [
+            "The area where the required source inputs are present and their extent has been checked. It may be smaller than the administrative boundary and does not imply complete coverage outside it.",
+          ],
+        },
+        {
+          heading: "Unknown share",
+          paragraphs: [
+            "The portion of a province or riding for which a required mapped input is unavailable. A non-zero unknown share means a detected-loss value is a known-area minimum, not a complete boundary total.",
+          ],
+        },
+        {
+          heading: "Representation order",
+          paragraphs: [
+            "The official Elections Canada boundary edition that defines federal electoral districts for an election. Compare uses the named order so results are tied to a specific set of riding boundaries rather than a generic current riding.",
+          ],
+        },
+        {
+          heading: "Detected loss patch",
+          paragraphs: [
+            "A simplified map shape traced from connected source cells where satellite data detected forest loss in one annual interval. Display patches cannot be added to recover exact area, and a patch alone does not establish logging, fire, deforestation, illegality or responsibility.",
           ],
         },
       ],
@@ -69,7 +112,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
     fr: {
       title: "Glossaire",
       status:
-        "Terminologie provisoire; la révision professionnelle de la terminologie forestière reste à faire.",
+        "Termes employés dans Explorer et Comparer; la révision professionnelle de la terminologie forestière reste à faire.",
       sections: [
         {
           heading: "Forêt",
@@ -86,13 +129,56 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Couverture",
           paragraphs: [
-            "Référence nationale, registre étendu avec appariement officiel limité, ou référence nationale avec contexte local. La couverture est une propriété de la zone cartographiée et de la période, et non une promesse à l’échelle provinciale.",
+            "Les catégories de couverture des événements décrivent les registres et le contexte disponibles pour un événement ou une valeur rapportée : registres locaux enrichis, référence nationale avec contexte local, référence nationale, registre prolongé avec appariement officiel limité, ou sans objet. Elles accompagnent les preuves au niveau de l’événement et n’indiquent pas qu’une province ou une circonscription entière a été mesurée.",
+            "Les états de couverture des mesures provinciales et des circonscriptions indiquent si les intrants cartographiés requis couvrent la limite choisie : couverture complète, couverture partielle avec zone inconnue, ou aucune couverture cartographiée. Explorer affiche « Tous les pixels d’entrée sont présents » ou « Certains pixels sont inconnus; il s’agit donc d’un minimum »; Comparer emploie « Couverture cartographiée complète », « Couverture cartographiée partielle; une zone inconnue demeure » et « Aucune couverture cartographiée ». Ces états déterminent si un total ou un pourcentage peut être rapporté pour la limite. Les deux taxonomies répondent à des questions différentes et ne sont pas interchangeables.",
           ],
         },
         {
-          heading: "Changement détecté",
+          heading: "Par cellule",
           paragraphs: [
-            "Changement du couvert arboré observé par satellite. À lui seul, il ne constitue pas une affirmation d’exploitation, de déforestation, d’illégalité ou de responsabilité.",
+            "La géométrie de perte publiée la plus détaillée. Chaque enregistrement représente une composante connectée tracée à partir de cellules sources de 30 mètres pour un intervalle annuel. La géométrie par cellule est distincte d’un agrégat provincial ou de circonscription.",
+          ],
+        },
+        {
+          heading: "Intervalle annuel",
+          paragraphs: [
+            "La période entre deux observations annuelles. Le contrôle de l’année nomme l’année de fin; 1985 désigne donc l’intervalle de 1984 à 1985 et non l’année civile 1985.",
+          ],
+        },
+        {
+          heading: "Agrégat provincial",
+          paragraphs: [
+            "Un résumé calculé pour toute une limite provinciale. L’agrégat provincial disponible de 2020 à 2022 constitue une couche distincte de la carte annuelle par cellule et ne change pas lorsque le contrôle de l’année est déplacé.",
+          ],
+        },
+        {
+          heading: "Provisoire",
+          paragraphs: [
+            "Publié avec des limites déclarées pour examen et utilisation, mais non admis comme version de production formelle de la phase 2. Une valeur provisoire demeure assujettie aux limites indiquées de couverture, de comparaison et de vérification sur le terrain.",
+          ],
+        },
+        {
+          heading: "Étendue cartographiée",
+          paragraphs: [
+            "La zone où les intrants sources requis sont présents et dont l’étendue a été vérifiée. Elle peut être plus petite que la limite administrative et n’implique pas une couverture complète à l’extérieur.",
+          ],
+        },
+        {
+          heading: "Part inconnue",
+          paragraphs: [
+            "La portion d’une province ou d’une circonscription pour laquelle un intrant cartographié requis n’est pas disponible. Une part inconnue non nulle signifie qu’une valeur de perte détectée est un minimum pour la zone connue, et non un total complet pour la limite.",
+          ],
+        },
+        {
+          heading: "Décret de représentation",
+          paragraphs: [
+            "L’édition officielle des limites d’Élections Canada qui définit les circonscriptions fédérales pour une élection. Comparer utilise le décret nommé afin de rattacher les résultats à un ensemble précis de limites plutôt qu’à une circonscription actuelle générique.",
+          ],
+        },
+        {
+          heading: "Zone de perte détectée",
+          paragraphs: [
+            "Une forme cartographique simplifiée tracée à partir de cellules sources connectées où les données satellitaires ont détecté une perte forestière pendant un intervalle annuel. Les zones affichées ne peuvent pas être additionnées pour retrouver la superficie exacte et, à elles seules, n’établissent ni exploitation, ni incendie, ni déforestation, ni illégalité, ni responsabilité.",
           ],
         },
       ],
@@ -117,9 +203,15 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
           ],
         },
         {
+          heading: "Interim instructions",
+          paragraphs: [
+            `If the concern is with an underlying public record, follow its source link and use the publisher’s own correction route. For a ${enBrand} display or transcription concern, keep the page URL, exact wording or value, date and time, displayed language, why it appears wrong, and any supporting official source link, then return here for the verified intake channel. Do not send personal or sensitive information to an address that is not published on this page. Preparing this record does not file a case or start a service-level clock.`,
+          ],
+        },
+        {
           heading: "Contact status",
           paragraphs: [
-            "A named accountable recipient and tested intake channel have not yet been appointed. The route will not claim to accept cases until that external governance gate is complete.",
+            "Owner action is still required to appoint a named accountable recipient and publish a tested intake channel. No correction address or submission form is currently authorized, and this route will not claim to accept cases until that governance gate is complete.",
           ],
         },
       ],
@@ -142,9 +234,15 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
           ],
         },
         {
+          heading: "Instructions provisoires",
+          paragraphs: [
+            `Si le problème concerne un registre public sous-jacent, suivez son lien source et utilisez la voie de correction de l’éditeur. Pour un problème d’affichage ou de transcription d’${frBrand}, conservez l’URL de la page, le libellé ou la valeur exacte, la date et l’heure, la langue affichée, la raison pour laquelle l’information semble erronée et tout lien vers une source officielle à l’appui, puis revenez ici pour connaître le canal de réception vérifié. N’envoyez aucun renseignement personnel ou sensible à une adresse qui n’est pas publiée sur cette page. La préparation de ce dossier ne dépose pas de demande et ne déclenche aucun délai de service.`,
+          ],
+        },
+        {
           heading: "État du contact",
           paragraphs: [
-            "Un destinataire responsable désigné et un canal de réception testé n’ont pas encore été établis. Cette route ne prétendra pas accepter des dossiers avant la réalisation de cette condition de gouvernance externe.",
+            "Le propriétaire doit encore désigner un destinataire responsable et publier un canal de réception testé. Aucune adresse de correction ni aucun formulaire de soumission n’est actuellement autorisé, et cette route ne prétendra pas accepter des dossiers avant la réalisation de cette condition de gouvernance.",
           ],
         },
       ],

@@ -3,8 +3,9 @@ import Link from "next/link";
 import { SiteShell } from "@/components/site";
 import { formatHectares, formatPercent, PRODUCT_NAME } from "@/lib/domain";
 import { EXPLORE_COVERAGE_PERIOD, EXPLORE_PRODUCTION_LAYER, formatUnknownSharePercent } from "@/lib/explore";
+import { localizedAlternates } from "@/lib/site-metadata";
 
-export const metadata: Metadata = { title: "Public forest-change record", alternates: { languages: { en: "/en", fr: "/fr" } } };
+export const metadata: Metadata = { title: "Public forest-change record", alternates: localizedAlternates("en", { en: "/en", fr: "/fr" }) };
 
 function coverageLabel(row: (typeof EXPLORE_PRODUCTION_LAYER.rows)[number]) {
   return `Minimum from the mapped area; ${formatUnknownSharePercent(row.unknownSharePercent, "en")} (${formatHectares(row.unknownRequiredInputHectares, "en")}) is unknown`;

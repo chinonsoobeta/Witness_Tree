@@ -11,10 +11,11 @@ import {
   parseExploreYear,
   ridingMeasurements,
 } from "@/lib/explore";
+import { localizedAlternates } from "@/lib/site-metadata";
 
 export const metadata: Metadata = {
   title: "Explorer",
-  alternates: { languages: { en: "/en/explore", fr: "/fr/explorer" } },
+  alternates: localizedAlternates("fr", { en: "/en/explore", fr: "/fr/explorer" }),
 };
 
 export default async function Page({

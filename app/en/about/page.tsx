@@ -2,10 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteShell } from "@/components/site";
 import { PRODUCT_NAME } from "@/lib/domain";
+import { localizedAlternates } from "@/lib/site-metadata";
 
 export const metadata: Metadata = {
   title: "About",
-  alternates: { languages: { en: "/en/about", fr: "/fr/a-propos" } },
+  alternates: localizedAlternates("en", { en: "/en/about", fr: "/fr/a-propos" }),
 };
 
 export default function EnglishAboutPage() {

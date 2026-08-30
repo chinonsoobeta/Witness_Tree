@@ -3,8 +3,9 @@ import Link from "next/link";
 import { SiteShell } from "@/components/site";
 import { formatHectares, formatPercent, PRODUCT_NAME } from "@/lib/domain";
 import { EXPLORE_COVERAGE_PERIOD, EXPLORE_PRODUCTION_LAYER, formatUnknownSharePercent } from "@/lib/explore";
+import { localizedAlternates } from "@/lib/site-metadata";
 
-export const metadata: Metadata = { title: "Registre public des changements forestiers", alternates: { languages: { en: "/en", fr: "/fr" } } };
+export const metadata: Metadata = { title: "Registre public des changements forestiers", alternates: localizedAlternates("fr", { en: "/en", fr: "/fr" }) };
 
 function coverageLabel(row: (typeof EXPLORE_PRODUCTION_LAYER.rows)[number]) {
   return `Minimum de la zone cartographiée; ${formatUnknownSharePercent(row.unknownSharePercent, "fr")} (${formatHectares(row.unknownRequiredInputHectares, "fr")}) de la superficie est inconnue`;

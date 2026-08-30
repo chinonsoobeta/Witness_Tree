@@ -45,8 +45,8 @@ test("methodology publishes predecessor VLCE accuracy with its VLCE2 non-applica
 
 test("data page labels examples and links the ledger and documentation", async () => {
   const page = await read("../components/transparency/DataPage.tsx");
-  assert.match(page, /source-ledger examples remain illustrative/i);
-  assert.match(page, /bounded four-province 2020-2022 technical-preview release/i);
+  assert.match(page, /examples remain illustrative/i);
+  assert.match(page, /bounded four-province technical preview for 2020 to 2022/i);
   assert.match(page, /provinceBulkManifestUrl/);
   assert.match(page, /provinceBulkRelease\.artifacts/);
   assert.match(page, /href="https:\/\/github\.com\/chinonsoobeta\/Witness_Tree\/blob\/main\/data\/source-ledger\.json"/);
@@ -57,6 +57,19 @@ test("data page labels examples and links the ledger and documentation", async (
   assert.match(page, /href="https:\/\/github\.com\/chinonsoobeta\/Witness_Tree\/blob\/main\/data\/staged-acquisitions\.json"/);
   assert.match(page, /href="https:\/\/github\.com\/chinonsoobeta\/Witness_Tree\/blob\/main\/data\/staged-geospatial-profile\.json"/);
   assert.match(page, /href="https:\/\/github\.com\/chinonsoobeta\/Witness_Tree\/blob\/main\/data\/transformation-runs\/qc-historic-wildfire-v1-2026-08-12\.json"/);
+});
+
+test("data page puts reader downloads and limits before technical identifiers", async () => {
+  const page = await read("../components/transparency/DataPage.tsx");
+  const access = page.indexOf("<h2>{copy.accessTitle}</h2>");
+  const limits = page.indexOf("<h2>{copy.limitsTitle}</h2>");
+  const technical = page.indexOf("<h2>{copy.technicalTitle}</h2>");
+  const staging = page.indexOf("<h2>{copy.stagingTitle}</h2>");
+  assert.ok(access >= 0 && access < limits && limits < technical && technical < staging);
+  assert.match(page, /Download province values \(CSV\)/);
+  assert.match(page, /Télécharger les valeurs provinciales \(GeoPackage\)/);
+  assert.match(page, /All four provinces include some area where a required mapped input is unknown/);
+  assert.match(page, /does not complete the formal Phase 2 production gate/);
 });
 
 test("transparency pages do not make prohibited product claims or turn unknown into zero", async () => {

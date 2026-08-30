@@ -40,8 +40,8 @@ test("both routes are independently citable and link from the data page", () => 
   const dataPage = readFileSync(new URL("../components/transparency/DataPage.tsx", import.meta.url), "utf8");
   assert.match(en, /locale="en"/);
   assert.match(fr, /locale="fr"/);
-  assert.match(en, /alternates: \{ languages:/);
-  assert.match(fr, /alternates: \{ languages:/);
+  assert.match(en, /localizedAlternates\("en"/);
+  assert.match(fr, /localizedAlternates\("fr"/);
   assert.match(dataPage, /official-harvest-comparison/);
   assert.match(dataPage, /comparaison-recolte-officielle/);
 });

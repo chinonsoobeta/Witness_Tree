@@ -3,10 +3,14 @@ import { notFound } from "next/navigation";
 import { LocationResult } from "@/components/places";
 import { SiteShell } from "@/components/site";
 import { LOCATIONS, PLACES, locationById } from "@/lib/places";
+import { localizedAlternates } from "@/lib/site-metadata";
 
 export async function generateMetadata({ params }: { params: Promise<{ locationId: string }> }): Promise<Metadata> {
   const { locationId } = await params;
-  return { alternates: { languages: { en: `/en/location/${locationId}`, fr: `/fr/emplacement/${locationId}` } } };
+  return {
+    alternates: localizedAlternates("fr", { en: `/en/location/${locationId}`, fr: `/fr/emplacement/${locationId}` }),
+    robots: { index: false, follow: false },
+  };
 }
 
 export function generateStaticParams() { return LOCATIONS.map(({ id: locationId }) => ({ locationId })); }
