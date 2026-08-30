@@ -184,6 +184,7 @@
     "check:phase2-v21-raster-contract": "node scripts/check-phase2-v21-raster-contract.mjs && tsx --test tests/phase2-v21-interval-raster.test.ts tests/phase2-v21-raster-contract.test.mjs",
     "check:phase2-per-cell-geometry": "node scripts/check-phase2-per-cell-geometry-evidence.mjs && node --test tests/phase2-per-cell-geometry-evidence.test.mjs tests/phase2-patch-geometry.test.mjs tests/phase2-rings.test.mjs tests/phase2-lcc.test.mjs tests/phase2-per-cell-geojson.test.mjs",
     "check:phase2-per-cell-annual-series": "node scripts/check-phase2-per-cell-annual-series.mjs && node --test tests/phase2-per-cell-annual-series.test.mjs",
+    "check:bc-ften-cutblock-corroboration": "node scripts/check-bc-ften-cutblock-corroboration.mjs && node --test tests/bc-ften-cutblock-corroboration.test.mjs",
     "check:phase2-zonal-aggregation": "node scripts/check-phase2-zonal-aggregation-contract.mjs && tsx --test tests/phase2-zonal-aggregation.test.ts && node --test tests/phase2-zonal-aggregation-contract.test.mjs tests/phase2-zonal-aggregation-gdal.test.mjs",
     "check:phase2-v21-province-zonal-pilot": "node scripts/check-phase2-v21-province-zonal-pilot-evidence.mjs && node --test tests/phase2-v21-province-zonal-pilot-evidence.test.mjs",
     "check:phase2-v21-province-zonal-pilot-v6": "node scripts/check-phase2-v21-province-zonal-pilot-v6-evidence.mjs && node --test tests/phase2-v21-province-zonal-pilot-v6-evidence.test.mjs",

@@ -1,0 +1,2344 @@
+{
+  "schemaVersion": "witness-tree/bc-ften-cutblock-corroboration/1",
+  "status": "as-of-query-time-corroboration",
+  "published": false,
+  "productionEligible": false,
+  "isEdition": false,
+  "isSnapshot": false,
+  "purpose": "An internal check on whether the per-cell detected-loss candidates in British Columbia line up with the province's own forest tenure record. It exists to inform engineering judgement. It is not shown on the site, does not stand in for review, and moves no gate.",
+  "source": {
+    "sourceId": "bc-fta-4-cutblocks",
+    "title": "Forest Tenure Cutblock Polygons (FTA 4.0)",
+    "publisher": "Province of British Columbia, Forest Tenures Branch",
+    "catalogueUrl": "https://catalogue.data.gov.bc.ca/dataset/dfb8b498-fa4b-4286-b3ec-58db88aca1cf",
+    "wfsEndpoint": "https://openmaps.gov.bc.ca/geo/pub/wfs",
+    "typeName": "pub:WHSE_FOREST_TENURE.FTEN_CUT_BLOCK_POLY_SVW",
+    "licence": {
+      "id": "ogl-british-columbia",
+      "title": "Open Government Licence - British Columbia",
+      "url": "https://www2.gov.bc.ca/gov/content?id=A519A56BC2BF44E4A008B33FCF527F61"
+    },
+    "attribution": "Contains information licensed under the Open Government Licence - British Columbia."
+  },
+  "queryTime": {
+    "startedAt": "2026-08-30T07:33:57.193Z",
+    "completedAt": "2026-08-30T07:34:48.781Z"
+  },
+  "layerObservation": {
+    "numberMatchedWholeLayer": 222607,
+    "note": "Recorded only to show that the layer moves. It was 222,198 on 2026-08-14 and is not a stable edition marker. Nothing downstream may treat this number as a version."
+  },
+  "method": {
+    "boxHalfMetres": 45,
+    "pageLimit": 10000,
+    "pagingTransactionSafe": false,
+    "whyBounded": "Every query returns far fewer features than one page, so unsafe paging is never exercised. A box that reached the page limit would abort the run rather than record a partial count.",
+    "axisOrder": "bbox is sent as minLon,minLat,maxLon,maxLat with the short EPSG:4326 form, which this service reads lon,lat. The URN form reads lat,lon and silently returns zero for the same numbers.",
+    "positiveControl": {
+      "reason": "A box over known cutblock ground. Zero here means the query is wrong, not that the ground is clear.",
+      "bbox": [
+        -121.9455,
+        52.711,
+        -121.9445,
+        52.712
+      ],
+      "numberMatched": 3
+    },
+    "intervalRule": "A cutblock corroborates an interval when its disturbance window overlaps that interval at all. Blocks with no parseable start date are counted separately and treated as neither match nor miss."
+  },
+  "packet": {
+    "path": "../../Witness_Tree-data/derived/phase2-v21-review-packet-v2/packet.json",
+    "sha256": "030ed48f271277436e991263c386626969cb027457155b224b43704b69330906",
+    "byteLength": 328499
+  },
+  "summary": {
+    "lossObserved": {
+      "candidates": 50,
+      "withAnyCutblock": 34,
+      "withCutblockInInterval": 18,
+      "anyCutblockRate": 0.68,
+      "inIntervalRate": 0.36
+    },
+    "knownNoLoss": {
+      "candidates": 50,
+      "withAnyCutblock": 23,
+      "withCutblockInInterval": 4,
+      "anyCutblockRate": 0.46,
+      "inIntervalRate": 0.08
+    },
+    "contrast": {
+      "anyCutblock": {
+        "lossObserved": "34/50",
+        "knownNoLoss": "23/50",
+        "fisherExactTwoTailedP": 0.04282
+      },
+      "cutblockInInterval": {
+        "lossObserved": "18/50",
+        "knownNoLoss": "4/50",
+        "fisherExactTwoTailedP": 0.001313
+      },
+      "reading": "Tenure ground stays tenure ground for decades, so the any-cutblock contrast is the weaker of the two and should not be leaned on. The in-interval contrast is the one that speaks to timing.",
+      "doesNotShow": "A p value here says the two strata differ. It does not say the detection is correct, does not measure an error rate, and cannot stand in for inspection of the imagery."
+    }
+  },
+  "results": [
+    {
+      "id": "BC-early-known-no-loss-001",
+      "interval": "2000-2004",
+      "observedClass": "known-no-loss",
+      "stratum": "early-known-no-loss",
+      "cell": {
+        "longitude": -127.73500830045224,
+        "latitude": 50.129204301321174
+      },
+      "bbox": [
+        -127.73563888255812,
+        50.12880006129243,
+        -127.73437771834635,
+        50.12960854134992
+      ],
+      "cutblocksIntersecting": 0,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": []
+    },
+    {
+      "id": "BC-early-known-no-loss-002",
+      "interval": "2000-2004",
+      "observedClass": "known-no-loss",
+      "stratum": "early-known-no-loss",
+      "cell": {
+        "longitude": -120.33836503780394,
+        "latitude": 56.40959203410391
+      },
+      "bbox": [
+        -120.33909569933915,
+        56.409187794075166,
+        -120.33763437626872,
+        56.40999627413265
+      ],
+      "cutblocksIntersecting": 2,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 2,
+      "lifeCycleStatusCodes": [
+        "ACTIVE"
+      ]
+    },
+    {
+      "id": "BC-early-known-no-loss-003",
+      "interval": "2000-2004",
+      "observedClass": "known-no-loss",
+      "stratum": "early-known-no-loss",
+      "cell": {
+        "longitude": -124.04517668764791,
+        "latitude": 54.561590357455806
+      },
+      "bbox": [
+        -124.04587386058374,
+        54.56118611742706,
+        -124.04447951471208,
+        54.56199459748455
+      ],
+      "cutblocksIntersecting": 2,
+      "inInterval": 0,
+      "outsideInterval": 1,
+      "datesMissing": 1,
+      "lifeCycleStatusCodes": [
+        "RETIRED"
+      ]
+    },
+    {
+      "id": "BC-early-known-no-loss-004",
+      "interval": "2000-2004",
+      "observedClass": "known-no-loss",
+      "stratum": "early-known-no-loss",
+      "cell": {
+        "longitude": -126.83958811750892,
+        "latitude": 52.47620338705944
+      },
+      "bbox": [
+        -126.84025179520047,
+        52.4757991470307,
+        -126.83892443981738,
+        52.476607627088185
+      ],
+      "cutblocksIntersecting": 0,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": []
+    },
+    {
+      "id": "BC-early-known-no-loss-005",
+      "interval": "2000-2004",
+      "observedClass": "known-no-loss",
+      "stratum": "early-known-no-loss",
+      "cell": {
+        "longitude": -117.19002713208174,
+        "latitude": 51.44379286442888
+      },
+      "bbox": [
+        -117.19067569882992,
+        51.443388624400136,
+        -117.18937856533356,
+        51.44419710445762
+      ],
+      "cutblocksIntersecting": 2,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 2,
+      "lifeCycleStatusCodes": [
+        "ACTIVE",
+        "PENDING"
+      ]
+    },
+    {
+      "id": "BC-early-known-no-loss-006",
+      "interval": "2000-2004",
+      "observedClass": "known-no-loss",
+      "stratum": "early-known-no-loss",
+      "cell": {
+        "longitude": -121.51551033537301,
+        "latitude": 55.440613202465364
+      },
+      "bbox": [
+        -121.51622295380604,
+        55.44020896243662,
+        -121.51479771693998,
+        55.44101744249411
+      ],
+      "cutblocksIntersecting": 7,
+      "inInterval": 0,
+      "outsideInterval": 2,
+      "datesMissing": 5,
+      "lifeCycleStatusCodes": [
+        "ACTIVE",
+        "RETIRED"
+      ]
+    },
+    {
+      "id": "BC-early-known-no-loss-007",
+      "interval": "2000-2004",
+      "observedClass": "known-no-loss",
+      "stratum": "early-known-no-loss",
+      "cell": {
+        "longitude": -119.44694563780142,
+        "latitude": 50.08281204853555
+      },
+      "bbox": [
+        -119.447575609425,
+        50.08240780850681,
+        -119.44631566617784,
+        50.083216288564294
+      ],
+      "cutblocksIntersecting": 0,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": []
+    },
+    {
+      "id": "BC-early-known-no-loss-008",
+      "interval": "2000-2004",
+      "observedClass": "known-no-loss",
+      "stratum": "early-known-no-loss",
+      "cell": {
+        "longitude": -120.67256904029492,
+        "latitude": 51.568303102220646
+      },
+      "bbox": [
+        -120.67321938172272,
+        51.5678988621919,
+        -120.67191869886712,
+        51.56870734224939
+      ],
+      "cutblocksIntersecting": 3,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 3,
+      "lifeCycleStatusCodes": [
+        "ACTIVE",
+        "PENDING"
+      ]
+    },
+    {
+      "id": "BC-early-known-no-loss-009",
+      "interval": "2000-2004",
+      "observedClass": "known-no-loss",
+      "stratum": "early-known-no-loss",
+      "cell": {
+        "longitude": -127.24761281348614,
+        "latitude": 57.321899903099904
+      },
+      "bbox": [
+        -127.24836151894495,
+        57.32149566307116,
+        -127.24686410802734,
+        57.32230414312865
+      ],
+      "cutblocksIntersecting": 1,
+      "inInterval": 0,
+      "outsideInterval": 1,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": [
+        "RETIRED"
+      ]
+    },
+    {
+      "id": "BC-early-known-no-loss-010",
+      "interval": "2000-2004",
+      "observedClass": "known-no-loss",
+      "stratum": "early-known-no-loss",
+      "cell": {
+        "longitude": -116.96689312880395,
+        "latitude": 51.44216664762925
+      },
+      "bbox": [
+        -116.96754167245753,
+        51.44176240760051,
+        -116.96624458515036,
+        51.44257088765799
+      ],
+      "cutblocksIntersecting": 0,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": []
+    },
+    {
+      "id": "BC-early-known-no-loss-011",
+      "interval": "2000-2004",
+      "observedClass": "known-no-loss",
+      "stratum": "early-known-no-loss",
+      "cell": {
+        "longitude": -125.77283035345953,
+        "latitude": 53.231629837669104
+      },
+      "bbox": [
+        -125.77350568346986,
+        53.23122559764036,
+        -125.77215502344919,
+        53.23203407769785
+      ],
+      "cutblocksIntersecting": 0,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": []
+    },
+    {
+      "id": "BC-early-known-no-loss-012",
+      "interval": "2000-2004",
+      "observedClass": "known-no-loss",
+      "stratum": "early-known-no-loss",
+      "cell": {
+        "longitude": -125.84446828319513,
+        "latitude": 51.11979503090831
+      },
+      "bbox": [
+        -125.8451122911586,
+        51.119390790879564,
+        -125.84382427523165,
+        51.12019927093705
+      ],
+      "cutblocksIntersecting": 0,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": []
+    },
+    {
+      "id": "BC-early-known-no-loss-013",
+      "interval": "2000-2004",
+      "observedClass": "known-no-loss",
+      "stratum": "early-known-no-loss",
+      "cell": {
+        "longitude": -123.63179598612034,
+        "latitude": 52.72623662403304
+      },
+      "bbox": [
+        -123.63246346293312,
+        52.7258323840043,
+        -123.63112850930756,
+        52.726640864061785
+      ],
+      "cutblocksIntersecting": 0,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": []
+    },
+    {
+      "id": "BC-early-known-no-loss-014",
+      "interval": "2000-2004",
+      "observedClass": "known-no-loss",
+      "stratum": "early-known-no-loss",
+      "cell": {
+        "longitude": -123.92597710821909,
+        "latitude": 52.8308388017001
+      },
+      "bbox": [
+        -123.9266461911349,
+        52.83043456167135,
+        -123.92530802530327,
+        52.83124304172884
+      ],
+      "cutblocksIntersecting": 0,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": []
+    },
+    {
+      "id": "BC-early-known-no-loss-015",
+      "interval": "2000-2004",
+      "observedClass": "known-no-loss",
+      "stratum": "early-known-no-loss",
+      "cell": {
+        "longitude": -114.6794804823946,
+        "latitude": 49.33608357653513
+      },
+      "bbox": [
+        -114.68010084321959,
+        49.33567933650639,
+        -114.6788601215696,
+        49.336487816563874
+      ],
+      "cutblocksIntersecting": 0,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": []
+    },
+    {
+      "id": "BC-early-known-no-loss-016",
+      "interval": "2000-2004",
+      "observedClass": "known-no-loss",
+      "stratum": "early-known-no-loss",
+      "cell": {
+        "longitude": -123.06689736623828,
+        "latitude": 51.02767288343377
+      },
+      "bbox": [
+        -123.06754009342173,
+        51.02726864340503,
+        -123.06625463905483,
+        51.028077123462516
+      ],
+      "cutblocksIntersecting": 0,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": []
+    },
+    {
+      "id": "BC-early-known-no-loss-017",
+      "interval": "2000-2004",
+      "observedClass": "known-no-loss",
+      "stratum": "early-known-no-loss",
+      "cell": {
+        "longitude": -121.85331560446588,
+        "latitude": 58.47455594864997
+      },
+      "bbox": [
+        -121.85408871154144,
+        58.47415170862123,
+        -121.85254249739032,
+        58.474960188678715
+      ],
+      "cutblocksIntersecting": 0,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": []
+    },
+    {
+      "id": "BC-early-known-no-loss-018",
+      "interval": "2000-2004",
+      "observedClass": "known-no-loss",
+      "stratum": "early-known-no-loss",
+      "cell": {
+        "longitude": -123.18345890260086,
+        "latitude": 50.8215238742573
+      },
+      "bbox": [
+        -123.1840987880262,
+        50.82111963422856,
+        -123.18281901717552,
+        50.821928114286045
+      ],
+      "cutblocksIntersecting": 0,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": []
+    },
+    {
+      "id": "BC-early-known-no-loss-019",
+      "interval": "2000-2004",
+      "observedClass": "known-no-loss",
+      "stratum": "early-known-no-loss",
+      "cell": {
+        "longitude": -120.5839281639469,
+        "latitude": 52.58708927913882
+      },
+      "bbox": [
+        -120.58459351957659,
+        52.58668503911008,
+        -120.5832628083172,
+        52.587493519167566
+      ],
+      "cutblocksIntersecting": 3,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 3,
+      "lifeCycleStatusCodes": [
+        "ACTIVE",
+        "PENDING"
+      ]
+    },
+    {
+      "id": "BC-early-known-no-loss-020",
+      "interval": "2000-2004",
+      "observedClass": "known-no-loss",
+      "stratum": "early-known-no-loss",
+      "cell": {
+        "longitude": -115.81244616810469,
+        "latitude": 50.72056637283722
+      },
+      "bbox": [
+        -115.81308467398712,
+        50.720162132808476,
+        -115.81180766222225,
+        50.72097061286596
+      ],
+      "cutblocksIntersecting": 0,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": []
+    },
+    {
+      "id": "BC-early-known-no-loss-021",
+      "interval": "2000-2004",
+      "observedClass": "known-no-loss",
+      "stratum": "early-known-no-loss",
+      "cell": {
+        "longitude": -120.30032176247076,
+        "latitude": 49.380793885689314
+      },
+      "bbox": [
+        -120.30094268752559,
+        49.38038964566057,
+        -120.29970083741593,
+        49.38119812571806
+      ],
+      "cutblocksIntersecting": 3,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 3,
+      "lifeCycleStatusCodes": [
+        "ACTIVE",
+        "PENDING"
+      ]
+    },
+    {
+      "id": "BC-early-known-no-loss-022",
+      "interval": "2000-2004",
+      "observedClass": "known-no-loss",
+      "stratum": "early-known-no-loss",
+      "cell": {
+        "longitude": -131.63681274582433,
+        "latitude": 58.71760237383065
+      },
+      "bbox": [
+        -131.63759124347558,
+        58.71719813380191,
+        -131.63603424817308,
+        58.718006613859394
+      ],
+      "cutblocksIntersecting": 0,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": []
+    },
+    {
+      "id": "BC-early-known-no-loss-023",
+      "interval": "2000-2004",
+      "observedClass": "known-no-loss",
+      "stratum": "early-known-no-loss",
+      "cell": {
+        "longitude": -125.70561197179863,
+        "latitude": 50.93564119418898
+      },
+      "bbox": [
+        -125.70625342618897,
+        50.93523695416024,
+        -125.7049705174083,
+        50.936045434217725
+      ],
+      "cutblocksIntersecting": 0,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": []
+    },
+    {
+      "id": "BC-early-known-no-loss-024",
+      "interval": "2000-2004",
+      "observedClass": "known-no-loss",
+      "stratum": "early-known-no-loss",
+      "cell": {
+        "longitude": -128.74815293715125,
+        "latitude": 55.65796479372083
+      },
+      "bbox": [
+        -128.74886950712556,
+        55.657560553692086,
+        -128.74743636717693,
+        55.65836903374957
+      ],
+      "cutblocksIntersecting": 2,
+      "inInterval": 0,
+      "outsideInterval": 1,
+      "datesMissing": 1,
+      "lifeCycleStatusCodes": [
+        "ACTIVE",
+        "RETIRED"
+      ]
+    },
+    {
+      "id": "BC-early-known-no-loss-025",
+      "interval": "2000-2004",
+      "observedClass": "known-no-loss",
+      "stratum": "early-known-no-loss",
+      "cell": {
+        "longitude": -126.74069269029913,
+        "latitude": 55.335759664333686
+      },
+      "bbox": [
+        -126.74140342163786,
+        55.33535542430494,
+        -126.7399819589604,
+        55.33616390436243
+      ],
+      "cutblocksIntersecting": 6,
+      "inInterval": 0,
+      "outsideInterval": 3,
+      "datesMissing": 3,
+      "lifeCycleStatusCodes": [
+        "ACTIVE",
+        "RETIRED"
+      ]
+    },
+    {
+      "id": "BC-early-loss-observed-001",
+      "interval": "2000-2004",
+      "observedClass": "loss-observed",
+      "stratum": "early-loss-observed",
+      "cell": {
+        "longitude": -119.25424463888153,
+        "latitude": 49.73029707644327
+      },
+      "bbox": [
+        -119.25487002336855,
+        49.72989283641453,
+        -119.25361925439451,
+        49.730701316472015
+      ],
+      "cutblocksIntersecting": 0,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": []
+    },
+    {
+      "id": "BC-early-loss-observed-002",
+      "interval": "2000-2004",
+      "observedClass": "loss-observed",
+      "stratum": "early-loss-observed",
+      "cell": {
+        "longitude": -127.33947906166286,
+        "latitude": 50.62559663693362
+      },
+      "bbox": [
+        -127.34011627704355,
+        50.62519239690488,
+        -127.33884184628216,
+        50.626000876962365
+      ],
+      "cutblocksIntersecting": 1,
+      "inInterval": 1,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": [
+        "RETIRED"
+      ]
+    },
+    {
+      "id": "BC-early-loss-observed-003",
+      "interval": "2000-2004",
+      "observedClass": "loss-observed",
+      "stratum": "early-loss-observed",
+      "cell": {
+        "longitude": -121.24632220304832,
+        "latitude": 59.61217194283838
+      },
+      "bbox": [
+        -121.24712133246078,
+        59.61176770280964,
+        -121.24552307363587,
+        59.61257618286712
+      ],
+      "cutblocksIntersecting": 1,
+      "inInterval": 0,
+      "outsideInterval": 1,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": [
+        "ACTIVE"
+      ]
+    },
+    {
+      "id": "BC-early-loss-observed-004",
+      "interval": "2000-2004",
+      "observedClass": "loss-observed",
+      "stratum": "early-loss-observed",
+      "cell": {
+        "longitude": -124.4263309402577,
+        "latitude": 53.955491607050995
+      },
+      "bbox": [
+        -124.42701794014043,
+        53.95508736702225,
+        -124.42564394037497,
+        53.95589584707974
+      ],
+      "cutblocksIntersecting": 0,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": []
+    },
+    {
+      "id": "BC-early-loss-observed-005",
+      "interval": "2000-2004",
+      "observedClass": "loss-observed",
+      "stratum": "early-loss-observed",
+      "cell": {
+        "longitude": -123.78064455278792,
+        "latitude": 54.15173251562767
+      },
+      "bbox": [
+        -123.78133480537576,
+        54.15132827559893,
+        -123.77995430020007,
+        54.152136755656414
+      ],
+      "cutblocksIntersecting": 15,
+      "inInterval": 2,
+      "outsideInterval": 4,
+      "datesMissing": 9,
+      "lifeCycleStatusCodes": [
+        "ACTIVE",
+        "RETIRED"
+      ]
+    },
+    {
+      "id": "BC-early-loss-observed-006",
+      "interval": "2000-2004",
+      "observedClass": "loss-observed",
+      "stratum": "early-loss-observed",
+      "cell": {
+        "longitude": -121.10623394637676,
+        "latitude": 56.064787434450295
+      },
+      "bbox": [
+        -121.10695805981975,
+        56.06438319442155,
+        -121.10550983293378,
+        56.06519167447904
+      ],
+      "cutblocksIntersecting": 5,
+      "inInterval": 0,
+      "outsideInterval": 1,
+      "datesMissing": 4,
+      "lifeCycleStatusCodes": [
+        "ACTIVE",
+        "PENDING",
+        "RETIRED"
+      ]
+    },
+    {
+      "id": "BC-early-loss-observed-007",
+      "interval": "2000-2004",
+      "observedClass": "loss-observed",
+      "stratum": "early-loss-observed",
+      "cell": {
+        "longitude": -119.52756292454855,
+        "latitude": 50.49171095976163
+      },
+      "bbox": [
+        -119.52819833240942,
+        50.49130671973289,
+        -119.52692751668768,
+        50.492115199790376
+      ],
+      "cutblocksIntersecting": 0,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": []
+    },
+    {
+      "id": "BC-early-loss-observed-008",
+      "interval": "2000-2004",
+      "observedClass": "loss-observed",
+      "stratum": "early-loss-observed",
+      "cell": {
+        "longitude": -122.82250161181385,
+        "latitude": 54.13753505942984
+      },
+      "bbox": [
+        -122.82319162777277,
+        54.137130819401094,
+        -122.82181159585492,
+        54.13793929945858
+      ],
+      "cutblocksIntersecting": 1,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 1,
+      "lifeCycleStatusCodes": [
+        "ACTIVE"
+      ]
+    },
+    {
+      "id": "BC-early-loss-observed-009",
+      "interval": "2000-2004",
+      "observedClass": "loss-observed",
+      "stratum": "early-loss-observed",
+      "cell": {
+        "longitude": -123.86168876790583,
+        "latitude": 52.32141571801832
+      },
+      "bbox": [
+        -123.86235012156439,
+        52.32101147798958,
+        -123.86102741424727,
+        52.321819958047065
+      ],
+      "cutblocksIntersecting": 0,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": []
+    },
+    {
+      "id": "BC-early-loss-observed-010",
+      "interval": "2000-2004",
+      "observedClass": "loss-observed",
+      "stratum": "early-loss-observed",
+      "cell": {
+        "longitude": -119.44601060779995,
+        "latitude": 50.3197679623037
+      },
+      "bbox": [
+        -119.44664371438914,
+        50.31936372227496,
+        -119.44537750121076,
+        50.320172202332444
+      ],
+      "cutblocksIntersecting": 0,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": []
+    },
+    {
+      "id": "BC-early-loss-observed-011",
+      "interval": "2000-2004",
+      "observedClass": "loss-observed",
+      "stratum": "early-loss-observed",
+      "cell": {
+        "longitude": -125.83964705372073,
+        "latitude": 50.118673475478154
+      },
+      "bbox": [
+        -125.84027749710991,
+        50.11826923544941,
+        -125.83901661033154,
+        50.1190777155069
+      ],
+      "cutblocksIntersecting": 3,
+      "inInterval": 1,
+      "outsideInterval": 1,
+      "datesMissing": 1,
+      "lifeCycleStatusCodes": [
+        "RETIRED"
+      ]
+    },
+    {
+      "id": "BC-early-loss-observed-012",
+      "interval": "2000-2004",
+      "observedClass": "loss-observed",
+      "stratum": "early-loss-observed",
+      "cell": {
+        "longitude": -120.9052937673782,
+        "latitude": 56.68055699151283
+      },
+      "bbox": [
+        -120.9060296772805,
+        56.68015275148409,
+        -120.9045578574759,
+        56.68096123154157
+      ],
+      "cutblocksIntersecting": 1,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 1,
+      "lifeCycleStatusCodes": [
+        "ACTIVE"
+      ]
+    },
+    {
+      "id": "BC-early-loss-observed-013",
+      "interval": "2000-2004",
+      "observedClass": "loss-observed",
+      "stratum": "early-loss-observed",
+      "cell": {
+        "longitude": -120.67455235997112,
+        "latitude": 55.773649691617884
+      },
+      "bbox": [
+        -120.67527105530056,
+        55.77324545158914,
+        -120.67383366464168,
+        55.77405393164663
+      ],
+      "cutblocksIntersecting": 2,
+      "inInterval": 0,
+      "outsideInterval": 2,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": [
+        "ACTIVE"
+      ]
+    },
+    {
+      "id": "BC-early-loss-observed-014",
+      "interval": "2000-2004",
+      "observedClass": "loss-observed",
+      "stratum": "early-loss-observed",
+      "cell": {
+        "longitude": -125.36328665998583,
+        "latitude": 53.50741643675737
+      },
+      "bbox": [
+        -125.36396637630999,
+        53.507012196728624,
+        -125.36260694366167,
+        53.50782067678611
+      ],
+      "cutblocksIntersecting": 2,
+      "inInterval": 1,
+      "outsideInterval": 1,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": [
+        "RETIRED"
+      ]
+    },
+    {
+      "id": "BC-early-loss-observed-015",
+      "interval": "2000-2004",
+      "observedClass": "loss-observed",
+      "stratum": "early-loss-observed",
+      "cell": {
+        "longitude": -122.57252897589919,
+        "latitude": 54.368935883866406
+      },
+      "bbox": [
+        -122.57322287428639,
+        54.36853164383766,
+        -122.57183507751199,
+        54.36934012389515
+      ],
+      "cutblocksIntersecting": 4,
+      "inInterval": 1,
+      "outsideInterval": 0,
+      "datesMissing": 3,
+      "lifeCycleStatusCodes": [
+        "ACTIVE",
+        "RETIRED"
+      ]
+    },
+    {
+      "id": "BC-early-loss-observed-016",
+      "interval": "2000-2004",
+      "observedClass": "loss-observed",
+      "stratum": "early-loss-observed",
+      "cell": {
+        "longitude": -125.9670715258123,
+        "latitude": 50.516941482263704
+      },
+      "bbox": [
+        -125.96770727324729,
+        50.51653724223496,
+        -125.96643577837732,
+        50.51734572229245
+      ],
+      "cutblocksIntersecting": 3,
+      "inInterval": 2,
+      "outsideInterval": 1,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": [
+        "RETIRED"
+      ]
+    },
+    {
+      "id": "BC-early-loss-observed-017",
+      "interval": "2000-2004",
+      "observedClass": "loss-observed",
+      "stratum": "early-loss-observed",
+      "cell": {
+        "longitude": -122.20257954944108,
+        "latitude": 49.056202471319565
+      },
+      "bbox": [
+        -122.20319640992535,
+        49.05579823129082,
+        -122.20196268895681,
+        49.05660671134831
+      ],
+      "cutblocksIntersecting": 0,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": []
+    },
+    {
+      "id": "BC-early-loss-observed-018",
+      "interval": "2000-2004",
+      "observedClass": "loss-observed",
+      "stratum": "early-loss-observed",
+      "cell": {
+        "longitude": -124.99182640310633,
+        "latitude": 55.70046355284576
+      },
+      "bbox": [
+        -124.9925437520629,
+        55.70005931281702,
+        -124.99110905414976,
+        55.700867792874504
+      ],
+      "cutblocksIntersecting": 1,
+      "inInterval": 1,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": [
+        "RETIRED"
+      ]
+    },
+    {
+      "id": "BC-early-loss-observed-019",
+      "interval": "2000-2004",
+      "observedClass": "loss-observed",
+      "stratum": "early-loss-observed",
+      "cell": {
+        "longitude": -120.24205962609904,
+        "latitude": 55.49186565427396
+      },
+      "bbox": [
+        -120.24277317146657,
+        55.491461414245215,
+        -120.2413460807315,
+        55.4922698943027
+      ],
+      "cutblocksIntersecting": 1,
+      "inInterval": 0,
+      "outsideInterval": 1,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": [
+        "RETIRED"
+      ]
+    },
+    {
+      "id": "BC-early-loss-observed-020",
+      "interval": "2000-2004",
+      "observedClass": "loss-observed",
+      "stratum": "early-loss-observed",
+      "cell": {
+        "longitude": -121.46807060055636,
+        "latitude": 56.31912606444277
+      },
+      "bbox": [
+        -121.46879953008569,
+        56.31872182441403,
+        -121.46734167102703,
+        56.31953030447151
+      ],
+      "cutblocksIntersecting": 2,
+      "inInterval": 0,
+      "outsideInterval": 1,
+      "datesMissing": 1,
+      "lifeCycleStatusCodes": [
+        "ACTIVE",
+        "RETIRED"
+      ]
+    },
+    {
+      "id": "BC-early-loss-observed-021",
+      "interval": "2000-2004",
+      "observedClass": "loss-observed",
+      "stratum": "early-loss-observed",
+      "cell": {
+        "longitude": -115.78072430223028,
+        "latitude": 50.813374676799
+      },
+      "bbox": [
+        -115.7813640760053,
+        50.81297043677026,
+        -115.78008452845526,
+        50.813778916827744
+      ],
+      "cutblocksIntersecting": 1,
+      "inInterval": 1,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": [
+        "RETIRED"
+      ]
+    },
+    {
+      "id": "BC-early-loss-observed-022",
+      "interval": "2000-2004",
+      "observedClass": "loss-observed",
+      "stratum": "early-loss-observed",
+      "cell": {
+        "longitude": -122.25874463686533,
+        "latitude": 57.18485279013121
+      },
+      "bbox": [
+        -122.25949056294857,
+        57.184448550102466,
+        -122.25799871078209,
+        57.18525703015995
+      ],
+      "cutblocksIntersecting": 0,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": []
+    },
+    {
+      "id": "BC-early-loss-observed-023",
+      "interval": "2000-2004",
+      "observedClass": "loss-observed",
+      "stratum": "early-loss-observed",
+      "cell": {
+        "longitude": -131.65949555663784,
+        "latitude": 59.878573523103995
+      },
+      "bbox": [
+        -131.66030108164884,
+        59.87816928307525,
+        -131.65869003162683,
+        59.87897776313274
+      ],
+      "cutblocksIntersecting": 0,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": []
+    },
+    {
+      "id": "BC-early-loss-observed-024",
+      "interval": "2000-2004",
+      "observedClass": "loss-observed",
+      "stratum": "early-loss-observed",
+      "cell": {
+        "longitude": -123.0956272386506,
+        "latitude": 53.53491364653649
+      },
+      "bbox": [
+        -123.0963073963026,
+        53.534509406507745,
+        -123.09494708099858,
+        53.53531788656523
+      ],
+      "cutblocksIntersecting": 1,
+      "inInterval": 0,
+      "outsideInterval": 1,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": [
+        "RETIRED"
+      ]
+    },
+    {
+      "id": "BC-early-loss-observed-025",
+      "interval": "2000-2004",
+      "observedClass": "loss-observed",
+      "stratum": "early-loss-observed",
+      "cell": {
+        "longitude": -125.64722686797177,
+        "latitude": 54.13317596815228
+      },
+      "bbox": [
+        -125.6479168113188,
+        54.13277172812354,
+        -125.64653692462474,
+        54.13358020818102
+      ],
+      "cutblocksIntersecting": 3,
+      "inInterval": 0,
+      "outsideInterval": 1,
+      "datesMissing": 2,
+      "lifeCycleStatusCodes": [
+        "RETIRED"
+      ]
+    },
+    {
+      "id": "BC-late-known-no-loss-001",
+      "interval": "2020-2022",
+      "observedClass": "known-no-loss",
+      "stratum": "late-known-no-loss",
+      "cell": {
+        "longitude": -126.87255706936014,
+        "latitude": 49.797555643033164
+      },
+      "bbox": [
+        -126.87318332206466,
+        49.79715140300442,
+        -126.87193081665562,
+        49.79795988306191
+      ],
+      "cutblocksIntersecting": 1,
+      "inInterval": 0,
+      "outsideInterval": 1,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": [
+        "RETIRED"
+      ]
+    },
+    {
+      "id": "BC-late-known-no-loss-002",
+      "interval": "2020-2022",
+      "observedClass": "known-no-loss",
+      "stratum": "late-known-no-loss",
+      "cell": {
+        "longitude": -128.4014879903577,
+        "latitude": 55.23812773166662
+      },
+      "bbox": [
+        -128.40219697566542,
+        55.23772349163788,
+        -128.40077900505,
+        55.238531971695366
+      ],
+      "cutblocksIntersecting": 2,
+      "inInterval": 1,
+      "outsideInterval": 0,
+      "datesMissing": 1,
+      "lifeCycleStatusCodes": [
+        "ACTIVE",
+        "RETIRED"
+      ]
+    },
+    {
+      "id": "BC-late-known-no-loss-003",
+      "interval": "2020-2022",
+      "observedClass": "known-no-loss",
+      "stratum": "late-known-no-loss",
+      "cell": {
+        "longitude": -115.7871382655553,
+        "latitude": 50.090517701184126
+      },
+      "bbox": [
+        -115.7877683384682,
+        50.09011346115538,
+        -115.7865081926424,
+        50.09092194121287
+      ],
+      "cutblocksIntersecting": 0,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": []
+    },
+    {
+      "id": "BC-late-known-no-loss-004",
+      "interval": "2020-2022",
+      "observedClass": "known-no-loss",
+      "stratum": "late-known-no-loss",
+      "cell": {
+        "longitude": -125.63237718635578,
+        "latitude": 55.699483937263
+      },
+      "bbox": [
+        -125.63309451733295,
+        55.699079697234254,
+        -125.63165985537862,
+        55.69988817729174
+      ],
+      "cutblocksIntersecting": 0,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": []
+    },
+    {
+      "id": "BC-late-known-no-loss-005",
+      "interval": "2020-2022",
+      "observedClass": "known-no-loss",
+      "stratum": "late-known-no-loss",
+      "cell": {
+        "longitude": -125.79174765263204,
+        "latitude": 49.50211824495845
+      },
+      "bbox": [
+        -125.79237011585914,
+        49.50171400492971,
+        -125.79112518940494,
+        49.502522484987196
+      ],
+      "cutblocksIntersecting": 0,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": []
+    },
+    {
+      "id": "BC-late-known-no-loss-006",
+      "interval": "2020-2022",
+      "observedClass": "known-no-loss",
+      "stratum": "late-known-no-loss",
+      "cell": {
+        "longitude": -123.7217768906136,
+        "latitude": 56.101473814166035
+      },
+      "bbox": [
+        -123.72250169392817,
+        56.10106957413729,
+        -123.72105208729903,
+        56.10187805419478
+      ],
+      "cutblocksIntersecting": 1,
+      "inInterval": 0,
+      "outsideInterval": 1,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": [
+        "RETIRED"
+      ]
+    },
+    {
+      "id": "BC-late-known-no-loss-007",
+      "interval": "2020-2022",
+      "observedClass": "known-no-loss",
+      "stratum": "late-known-no-loss",
+      "cell": {
+        "longitude": -116.03173160830096,
+        "latitude": 49.873681672097995
+      },
+      "bbox": [
+        -116.03235884764727,
+        49.87327743206925,
+        -116.03110436895464,
+        49.87408591212674
+      ],
+      "cutblocksIntersecting": 0,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": []
+    },
+    {
+      "id": "BC-late-known-no-loss-008",
+      "interval": "2020-2022",
+      "observedClass": "known-no-loss",
+      "stratum": "late-known-no-loss",
+      "cell": {
+        "longitude": -125.261627550668,
+        "latitude": 50.33935483162871
+      },
+      "bbox": [
+        -125.2622609182771,
+        50.33895059159997,
+        -125.2609941830589,
+        50.339759071657454
+      ],
+      "cutblocksIntersecting": 1,
+      "inInterval": 0,
+      "outsideInterval": 1,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": [
+        "RETIRED"
+      ]
+    },
+    {
+      "id": "BC-late-known-no-loss-009",
+      "interval": "2020-2022",
+      "observedClass": "known-no-loss",
+      "stratum": "late-known-no-loss",
+      "cell": {
+        "longitude": -132.36126114228702,
+        "latitude": 59.64569078872853
+      },
+      "bbox": [
+        -132.36206106985856,
+        59.64528654869979,
+        -132.36046121471549,
+        59.64609502875727
+      ],
+      "cutblocksIntersecting": 0,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": []
+    },
+    {
+      "id": "BC-late-known-no-loss-010",
+      "interval": "2020-2022",
+      "observedClass": "known-no-loss",
+      "stratum": "late-known-no-loss",
+      "cell": {
+        "longitude": -123.67412438729932,
+        "latitude": 59.33567963200924
+      },
+      "bbox": [
+        -123.6749170033593,
+        59.335275391980495,
+        -123.67333177123933,
+        59.33608387203798
+      ],
+      "cutblocksIntersecting": 2,
+      "inInterval": 2,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": [
+        "ACTIVE",
+        "RETIRED"
+      ]
+    },
+    {
+      "id": "BC-late-known-no-loss-011",
+      "interval": "2020-2022",
+      "observedClass": "known-no-loss",
+      "stratum": "late-known-no-loss",
+      "cell": {
+        "longitude": -123.0638832102389,
+        "latitude": 55.364075335734086
+      },
+      "bbox": [
+        -123.0645944499665,
+        55.36367109570534,
+        -123.06317197051129,
+        55.36447957576283
+      ],
+      "cutblocksIntersecting": 6,
+      "inInterval": 0,
+      "outsideInterval": 1,
+      "datesMissing": 5,
+      "lifeCycleStatusCodes": [
+        "ACTIVE",
+        "RETIRED"
+      ]
+    },
+    {
+      "id": "BC-late-known-no-loss-012",
+      "interval": "2020-2022",
+      "observedClass": "known-no-loss",
+      "stratum": "late-known-no-loss",
+      "cell": {
+        "longitude": -117.78972182102355,
+        "latitude": 50.748296007376474
+      },
+      "bbox": [
+        -117.79036070502967,
+        50.74789176734773,
+        -117.78908293701743,
+        50.74870024740522
+      ],
+      "cutblocksIntersecting": 5,
+      "inInterval": 0,
+      "outsideInterval": 2,
+      "datesMissing": 3,
+      "lifeCycleStatusCodes": [
+        "RETIRED"
+      ]
+    },
+    {
+      "id": "BC-late-known-no-loss-013",
+      "interval": "2020-2022",
+      "observedClass": "known-no-loss",
+      "stratum": "late-known-no-loss",
+      "cell": {
+        "longitude": -115.81618320699125,
+        "latitude": 49.28738729804172
+      },
+      "bbox": [
+        -115.81680295487918,
+        49.28698305801298,
+        -115.81556345910333,
+        49.287791538070465
+      ],
+      "cutblocksIntersecting": 1,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 1,
+      "lifeCycleStatusCodes": [
+        "ACTIVE"
+      ]
+    },
+    {
+      "id": "BC-late-known-no-loss-014",
+      "interval": "2020-2022",
+      "observedClass": "known-no-loss",
+      "stratum": "late-known-no-loss",
+      "cell": {
+        "longitude": -119.42300683300483,
+        "latitude": 52.614241811249656
+      },
+      "bbox": [
+        -119.4236726011843,
+        52.61383757122091,
+        -119.42234106482537,
+        52.6146460512784
+      ],
+      "cutblocksIntersecting": 13,
+      "inInterval": 1,
+      "outsideInterval": 0,
+      "datesMissing": 12,
+      "lifeCycleStatusCodes": [
+        "ACTIVE",
+        "PENDING"
+      ]
+    },
+    {
+      "id": "BC-late-known-no-loss-015",
+      "interval": "2020-2022",
+      "observedClass": "known-no-loss",
+      "stratum": "late-known-no-loss",
+      "cell": {
+        "longitude": -121.94049633075124,
+        "latitude": 49.73883565360277
+      },
+      "bbox": [
+        -121.94112182527861,
+        49.73843141357403,
+        -121.93987083622388,
+        49.73923989363151
+      ],
+      "cutblocksIntersecting": 2,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 2,
+      "lifeCycleStatusCodes": [
+        "RETIRED"
+      ]
+    },
+    {
+      "id": "BC-late-known-no-loss-016",
+      "interval": "2020-2022",
+      "observedClass": "known-no-loss",
+      "stratum": "late-known-no-loss",
+      "cell": {
+        "longitude": -123.56661326393267,
+        "latitude": 49.41576738720962
+      },
+      "bbox": [
+        -123.5672346313218,
+        49.41536314718088,
+        -123.56599189654354,
+        49.41617162723836
+      ],
+      "cutblocksIntersecting": 3,
+      "inInterval": 0,
+      "outsideInterval": 2,
+      "datesMissing": 1,
+      "lifeCycleStatusCodes": [
+        "RETIRED"
+      ]
+    },
+    {
+      "id": "BC-late-known-no-loss-017",
+      "interval": "2020-2022",
+      "observedClass": "known-no-loss",
+      "stratum": "late-known-no-loss",
+      "cell": {
+        "longitude": -119.69335101803301,
+        "latitude": 50.49254345566515
+      },
+      "bbox": [
+        -119.69398643709059,
+        50.492139215636406,
+        -119.69271559897544,
+        50.49294769569389
+      ],
+      "cutblocksIntersecting": 3,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 3,
+      "lifeCycleStatusCodes": [
+        "ACTIVE",
+        "PENDING"
+      ]
+    },
+    {
+      "id": "BC-late-known-no-loss-018",
+      "interval": "2020-2022",
+      "observedClass": "known-no-loss",
+      "stratum": "late-known-no-loss",
+      "cell": {
+        "longitude": -120.36868163541884,
+        "latitude": 58.83844855587339
+      },
+      "bbox": [
+        -120.36946284667668,
+        58.83804431584465,
+        -120.367900424161,
+        58.838852795902135
+      ],
+      "cutblocksIntersecting": 0,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": []
+    },
+    {
+      "id": "BC-late-known-no-loss-019",
+      "interval": "2020-2022",
+      "observedClass": "known-no-loss",
+      "stratum": "late-known-no-loss",
+      "cell": {
+        "longitude": -126.46788974183771,
+        "latitude": 50.133557492551546
+      },
+      "bbox": [
+        -126.4685203813098,
+        50.1331532525228,
+        -126.46725910236562,
+        50.13396173258029
+      ],
+      "cutblocksIntersecting": 0,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": []
+    },
+    {
+      "id": "BC-late-known-no-loss-020",
+      "interval": "2020-2022",
+      "observedClass": "known-no-loss",
+      "stratum": "late-known-no-loss",
+      "cell": {
+        "longitude": -121.63210870095526,
+        "latitude": 55.691132944194294
+      },
+      "bbox": [
+        -121.63282587870728,
+        55.69072870416555,
+        -121.63139152320323,
+        55.69153718422304
+      ],
+      "cutblocksIntersecting": 5,
+      "inInterval": 1,
+      "outsideInterval": 0,
+      "datesMissing": 4,
+      "lifeCycleStatusCodes": [
+        "ACTIVE"
+      ]
+    },
+    {
+      "id": "BC-late-known-no-loss-021",
+      "interval": "2020-2022",
+      "observedClass": "known-no-loss",
+      "stratum": "late-known-no-loss",
+      "cell": {
+        "longitude": -116.86460236023737,
+        "latitude": 49.59843717249476
+      },
+      "bbox": [
+        -116.86522605204632,
+        49.59803293246602,
+        -116.86397866842842,
+        49.598841412523505
+      ],
+      "cutblocksIntersecting": 0,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": []
+    },
+    {
+      "id": "BC-late-known-no-loss-022",
+      "interval": "2020-2022",
+      "observedClass": "known-no-loss",
+      "stratum": "late-known-no-loss",
+      "cell": {
+        "longitude": -128.91877083909458,
+        "latitude": 58.80173457598822
+      },
+      "bbox": [
+        -128.9195512235725,
+        58.80133033595948,
+        -128.91799045461664,
+        58.802138816016964
+      ],
+      "cutblocksIntersecting": 0,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": []
+    },
+    {
+      "id": "BC-late-known-no-loss-023",
+      "interval": "2020-2022",
+      "observedClass": "known-no-loss",
+      "stratum": "late-known-no-loss",
+      "cell": {
+        "longitude": -129.61289124138705,
+        "latitude": 53.55716434803453
+      },
+      "bbox": [
+        -129.61357175669545,
+        53.55676010800579,
+        -129.61221072607864,
+        53.557568588063276
+      ],
+      "cutblocksIntersecting": 0,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": []
+    },
+    {
+      "id": "BC-late-known-no-loss-024",
+      "interval": "2020-2022",
+      "observedClass": "known-no-loss",
+      "stratum": "late-known-no-loss",
+      "cell": {
+        "longitude": -126.89639189643023,
+        "latitude": 56.21912740076544
+      },
+      "bbox": [
+        -126.89711892308007,
+        56.218723160736694,
+        -126.89566486978039,
+        56.21953164079418
+      ],
+      "cutblocksIntersecting": 0,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": []
+    },
+    {
+      "id": "BC-late-known-no-loss-025",
+      "interval": "2020-2022",
+      "observedClass": "known-no-loss",
+      "stratum": "late-known-no-loss",
+      "cell": {
+        "longitude": -129.17309227156744,
+        "latitude": 58.472307151462886
+      },
+      "bbox": [
+        -129.17386532917982,
+        58.47190291143414,
+        -129.17231921395506,
+        58.47271139149163
+      ],
+      "cutblocksIntersecting": 0,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": []
+    },
+    {
+      "id": "BC-late-loss-observed-001",
+      "interval": "2020-2022",
+      "observedClass": "loss-observed",
+      "stratum": "late-loss-observed",
+      "cell": {
+        "longitude": -115.74458822884277,
+        "latitude": 49.12370549469952
+      },
+      "bbox": [
+        -115.74520592858848,
+        49.12330125467078,
+        -115.74397052909707,
+        49.124109734728265
+      ],
+      "cutblocksIntersecting": 1,
+      "inInterval": 1,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": [
+        "RETIRED"
+      ]
+    },
+    {
+      "id": "BC-late-loss-observed-002",
+      "interval": "2020-2022",
+      "observedClass": "loss-observed",
+      "stratum": "late-loss-observed",
+      "cell": {
+        "longitude": -123.73964840845983,
+        "latitude": 48.75829974976694
+      },
+      "bbox": [
+        -123.74026160233574,
+        48.7578955097382,
+        -123.73903521458392,
+        48.758703989795684
+      ],
+      "cutblocksIntersecting": 0,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": []
+    },
+    {
+      "id": "BC-late-loss-observed-003",
+      "interval": "2020-2022",
+      "observedClass": "loss-observed",
+      "stratum": "late-loss-observed",
+      "cell": {
+        "longitude": -124.60412967400603,
+        "latitude": 55.044988190136195
+      },
+      "bbox": [
+        -124.60483523640305,
+        55.04458395010745,
+        -124.60342411160902,
+        55.04539243016494
+      ],
+      "cutblocksIntersecting": 7,
+      "inInterval": 1,
+      "outsideInterval": 0,
+      "datesMissing": 6,
+      "lifeCycleStatusCodes": [
+        "ACTIVE",
+        "RETIRED"
+      ]
+    },
+    {
+      "id": "BC-late-loss-observed-004",
+      "interval": "2020-2022",
+      "observedClass": "loss-observed",
+      "stratum": "late-loss-observed",
+      "cell": {
+        "longitude": -122.56952997957718,
+        "latitude": 56.013940905151706
+      },
+      "bbox": [
+        -122.57025313953125,
+        56.01353666512296,
+        -122.56880681962312,
+        56.01434514518045
+      ],
+      "cutblocksIntersecting": 3,
+      "inInterval": 1,
+      "outsideInterval": 1,
+      "datesMissing": 1,
+      "lifeCycleStatusCodes": [
+        "ACTIVE",
+        "RETIRED"
+      ]
+    },
+    {
+      "id": "BC-late-loss-observed-005",
+      "interval": "2020-2022",
+      "observedClass": "loss-observed",
+      "stratum": "late-loss-observed",
+      "cell": {
+        "longitude": -120.08206829940151,
+        "latitude": 50.17879611434191
+      },
+      "bbox": [
+        -120.08269953586102,
+        50.178391874313164,
+        -120.081437062942,
+        50.17920035437065
+      ],
+      "cutblocksIntersecting": 3,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 3,
+      "lifeCycleStatusCodes": [
+        "ACTIVE",
+        "PENDING"
+      ]
+    },
+    {
+      "id": "BC-late-loss-observed-006",
+      "interval": "2020-2022",
+      "observedClass": "loss-observed",
+      "stratum": "late-loss-observed",
+      "cell": {
+        "longitude": -119.78101479188653,
+        "latitude": 50.328951609507044
+      },
+      "bbox": [
+        -119.78164802082348,
+        50.3285473694783,
+        -119.78038156294959,
+        50.32935584953579
+      ],
+      "cutblocksIntersecting": 5,
+      "inInterval": 2,
+      "outsideInterval": 0,
+      "datesMissing": 3,
+      "lifeCycleStatusCodes": [
+        "ACTIVE",
+        "PENDING",
+        "RETIRED"
+      ]
+    },
+    {
+      "id": "BC-late-loss-observed-007",
+      "interval": "2020-2022",
+      "observedClass": "loss-observed",
+      "stratum": "late-loss-observed",
+      "cell": {
+        "longitude": -122.41867880476553,
+        "latitude": 51.93671709148137
+      },
+      "bbox": [
+        -122.41933447290113,
+        51.93631285145263,
+        -122.41802313662994,
+        51.93712133151011
+      ],
+      "cutblocksIntersecting": 3,
+      "inInterval": 0,
+      "outsideInterval": 2,
+      "datesMissing": 1,
+      "lifeCycleStatusCodes": [
+        "ACTIVE",
+        "RETIRED"
+      ]
+    },
+    {
+      "id": "BC-late-loss-observed-008",
+      "interval": "2020-2022",
+      "observedClass": "loss-observed",
+      "stratum": "late-loss-observed",
+      "cell": {
+        "longitude": -121.89411511513589,
+        "latitude": 52.35308432441392
+      },
+      "bbox": [
+        -121.89477694255925,
+        52.35268008438518,
+        -121.89345328771253,
+        52.353488564442664
+      ],
+      "cutblocksIntersecting": 2,
+      "inInterval": 1,
+      "outsideInterval": 1,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": [
+        "ACTIVE",
+        "RETIRED"
+      ]
+    },
+    {
+      "id": "BC-late-loss-observed-009",
+      "interval": "2020-2022",
+      "observedClass": "loss-observed",
+      "stratum": "late-loss-observed",
+      "cell": {
+        "longitude": -122.38675620227414,
+        "latitude": 52.42282989679807
+      },
+      "bbox": [
+        -122.38741907620907,
+        52.42242565676933,
+        -122.38609332833921,
+        52.423234136826814
+      ],
+      "cutblocksIntersecting": 0,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": []
+    },
+    {
+      "id": "BC-late-loss-observed-010",
+      "interval": "2020-2022",
+      "observedClass": "loss-observed",
+      "stratum": "late-loss-observed",
+      "cell": {
+        "longitude": -124.98904486534565,
+        "latitude": 56.442970406955396
+      },
+      "bbox": [
+        -124.98977616846425,
+        56.44256616692665,
+        -124.98831356222705,
+        56.44337464698414
+      ],
+      "cutblocksIntersecting": 0,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": []
+    },
+    {
+      "id": "BC-late-loss-observed-011",
+      "interval": "2020-2022",
+      "observedClass": "loss-observed",
+      "stratum": "late-loss-observed",
+      "cell": {
+        "longitude": -119.3732418563442,
+        "latitude": 50.39995343755541
+      },
+      "bbox": [
+        -119.3738760333412,
+        50.39954919752667,
+        -119.37260767934718,
+        50.400357677584154
+      ],
+      "cutblocksIntersecting": 0,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": []
+    },
+    {
+      "id": "BC-late-loss-observed-012",
+      "interval": "2020-2022",
+      "observedClass": "loss-observed",
+      "stratum": "late-loss-observed",
+      "cell": {
+        "longitude": -129.3386650601236,
+        "latitude": 58.536485418145126
+      },
+      "bbox": [
+        -129.33943953232375,
+        58.53608117811638,
+        -129.33789058792343,
+        58.53688965817387
+      ],
+      "cutblocksIntersecting": 0,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": []
+    },
+    {
+      "id": "BC-late-loss-observed-013",
+      "interval": "2020-2022",
+      "observedClass": "loss-observed",
+      "stratum": "late-loss-observed",
+      "cell": {
+        "longitude": -118.8867237139998,
+        "latitude": 49.4587107459852
+      },
+      "bbox": [
+        -118.88734562570355,
+        49.45830650595646,
+        -118.88610180229605,
+        49.459114986013944
+      ],
+      "cutblocksIntersecting": 3,
+      "inInterval": 1,
+      "outsideInterval": 0,
+      "datesMissing": 2,
+      "lifeCycleStatusCodes": [
+        "RETIRED"
+      ]
+    },
+    {
+      "id": "BC-late-loss-observed-014",
+      "interval": "2020-2022",
+      "observedClass": "loss-observed",
+      "stratum": "late-loss-observed",
+      "cell": {
+        "longitude": -119.79066745913757,
+        "latitude": 50.34399504813931
+      },
+      "bbox": [
+        -119.79130088862583,
+        50.34359080811057,
+        -119.7900340296493,
+        50.344399288168056
+      ],
+      "cutblocksIntersecting": 4,
+      "inInterval": 1,
+      "outsideInterval": 0,
+      "datesMissing": 3,
+      "lifeCycleStatusCodes": [
+        "ACTIVE",
+        "PENDING",
+        "RETIRED"
+      ]
+    },
+    {
+      "id": "BC-late-loss-observed-015",
+      "interval": "2020-2022",
+      "observedClass": "loss-observed",
+      "stratum": "late-loss-observed",
+      "cell": {
+        "longitude": -116.30235947717918,
+        "latitude": 51.07063069373954
+      },
+      "bbox": [
+        -116.30300280076635,
+        51.070226453710795,
+        -116.30171615359201,
+        51.07103493376828
+      ],
+      "cutblocksIntersecting": 2,
+      "inInterval": 1,
+      "outsideInterval": 1,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": [
+        "RETIRED"
+      ]
+    },
+    {
+      "id": "BC-late-loss-observed-016",
+      "interval": "2020-2022",
+      "observedClass": "loss-observed",
+      "stratum": "late-loss-observed",
+      "cell": {
+        "longitude": -124.08608176091536,
+        "latitude": 49.13309403260534
+      },
+      "bbox": [
+        -124.08669957763715,
+        49.1326897925766,
+        -124.08546394419358,
+        49.133498272634085
+      ],
+      "cutblocksIntersecting": 0,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": []
+    },
+    {
+      "id": "BC-late-loss-observed-017",
+      "interval": "2020-2022",
+      "observedClass": "loss-observed",
+      "stratum": "late-loss-observed",
+      "cell": {
+        "longitude": -121.47210575659479,
+        "latitude": 50.31830307877476
+      },
+      "bbox": [
+        -121.47273884367416,
+        50.31789883874602,
+        -121.4714726695154,
+        50.318707318803504
+      ],
+      "cutblocksIntersecting": 2,
+      "inInterval": 0,
+      "outsideInterval": 1,
+      "datesMissing": 1,
+      "lifeCycleStatusCodes": [
+        "ACTIVE",
+        "RETIRED"
+      ]
+    },
+    {
+      "id": "BC-late-loss-observed-018",
+      "interval": "2020-2022",
+      "observedClass": "loss-observed",
+      "stratum": "late-loss-observed",
+      "cell": {
+        "longitude": -119.4058722351599,
+        "latitude": 49.36720006020466
+      },
+      "bbox": [
+        -119.40649298851643,
+        49.366795820175916,
+        -119.40525148180338,
+        49.3676043002334
+      ],
+      "cutblocksIntersecting": 1,
+      "inInterval": 0,
+      "outsideInterval": 1,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": [
+        "RETIRED"
+      ]
+    },
+    {
+      "id": "BC-late-loss-observed-019",
+      "interval": "2020-2022",
+      "observedClass": "loss-observed",
+      "stratum": "late-loss-observed",
+      "cell": {
+        "longitude": -125.67846827138983,
+        "latitude": 54.32783008128573
+      },
+      "bbox": [
+        -125.67916147609165,
+        54.32742584125699,
+        -125.67777506668801,
+        54.328234321314476
+      ],
+      "cutblocksIntersecting": 0,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": []
+    },
+    {
+      "id": "BC-late-loss-observed-020",
+      "interval": "2020-2022",
+      "observedClass": "loss-observed",
+      "stratum": "late-loss-observed",
+      "cell": {
+        "longitude": -122.3261572980195,
+        "latitude": 49.33083806674378
+      },
+      "bbox": [
+        -122.32677759273979,
+        49.33043382671504,
+        -122.3255370032992,
+        49.33124230677252
+      ],
+      "cutblocksIntersecting": 3,
+      "inInterval": 1,
+      "outsideInterval": 1,
+      "datesMissing": 1,
+      "lifeCycleStatusCodes": [
+        "ACTIVE",
+        "RETIRED"
+      ]
+    },
+    {
+      "id": "BC-late-loss-observed-021",
+      "interval": "2020-2022",
+      "observedClass": "loss-observed",
+      "stratum": "late-loss-observed",
+      "cell": {
+        "longitude": -126.43363947390841,
+        "latitude": 50.12696493977105
+      },
+      "bbox": [
+        -126.43427002650954,
+        50.126560699742306,
+        -126.43300892130729,
+        50.12736917979979
+      ],
+      "cutblocksIntersecting": 4,
+      "inInterval": 0,
+      "outsideInterval": 3,
+      "datesMissing": 1,
+      "lifeCycleStatusCodes": [
+        "ACTIVE",
+        "RETIRED"
+      ]
+    },
+    {
+      "id": "BC-late-loss-observed-022",
+      "interval": "2020-2022",
+      "observedClass": "loss-observed",
+      "stratum": "late-loss-observed",
+      "cell": {
+        "longitude": -123.6203877341958,
+        "latitude": 48.70667147848504
+      },
+      "bbox": [
+        -123.62100029873345,
+        48.7062672384563,
+        -123.61977516965815,
+        48.707075718513785
+      ],
+      "cutblocksIntersecting": 0,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": []
+    },
+    {
+      "id": "BC-late-loss-observed-023",
+      "interval": "2020-2022",
+      "observedClass": "loss-observed",
+      "stratum": "late-loss-observed",
+      "cell": {
+        "longitude": -118.86881625788953,
+        "latitude": 51.114758295160755
+      },
+      "bbox": [
+        -118.86946019565201,
+        51.11435405513201,
+        -118.86817232012706,
+        51.1151625351895
+      ],
+      "cutblocksIntersecting": 1,
+      "inInterval": 0,
+      "outsideInterval": 1,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": [
+        "RETIRED"
+      ]
+    },
+    {
+      "id": "BC-late-loss-observed-024",
+      "interval": "2020-2022",
+      "observedClass": "loss-observed",
+      "stratum": "late-loss-observed",
+      "cell": {
+        "longitude": -121.65821890691234,
+        "latitude": 51.567542312487426
+      },
+      "bbox": [
+        -121.65886923745757,
+        51.56713807245868,
+        -121.65756857636711,
+        51.56794655251617
+      ],
+      "cutblocksIntersecting": 2,
+      "inInterval": 2,
+      "outsideInterval": 0,
+      "datesMissing": 0,
+      "lifeCycleStatusCodes": [
+        "RETIRED"
+      ]
+    },
+    {
+      "id": "BC-late-loss-observed-025",
+      "interval": "2020-2022",
+      "observedClass": "loss-observed",
+      "stratum": "late-loss-observed",
+      "cell": {
+        "longitude": -120.75732655595682,
+        "latitude": 56.61659363537974
+      },
+      "bbox": [
+        -120.75806121867144,
+        56.616189395351,
+        -120.7565918932422,
+        56.61699787540849
+      ],
+      "cutblocksIntersecting": 1,
+      "inInterval": 0,
+      "outsideInterval": 0,
+      "datesMissing": 1,
+      "lifeCycleStatusCodes": [
+        "ACTIVE"
+      ]
+    }
+  ],
+  "claims": {
+    "corroboratesGroundTruth": false,
+    "constitutesReview": false,
+    "provesHarvestOccurred": false,
+    "absenceProvesNoHarvest": false,
+    "isPublisherEdition": false,
+    "movesAnyGate": false
+  },
+  "limits": [
+    "A cutblock polygon records a harvesting authority, not a completed harvest.",
+    "Private land and some licence types are never reported to this layer, so an absent cutblock is not evidence that nothing happened.",
+    "The layer is mutable and unversioned; a rerun on another day may return different counts for the same ground.",
+    "A bounding-box intersection is a proxy for containment. A polygon that clips the tolerance ring counts as an intersection.",
+    "Fire is out of scope entirely: this layer records tenure, so it can say nothing about the fire-attributed cells."
+  ]
+}
