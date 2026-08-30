@@ -17,14 +17,14 @@ export function LocationResult({
           coordinates: "Coordinates and accuracy",
           contains: "Containing geographies",
           events: "Events",
-          limitation: "Limitation",
+          limitation: "Why this confidence",
           provenance: "Provenance",
         }
       : {
           coordinates: "Coordonnées et précision",
           contains: "Géographies contenantes",
           events: "Événements",
-          limitation: "Limite",
+          limitation: "Pourquoi ce niveau de confiance",
           provenance: "Provenance",
         };
   return (

@@ -21,6 +21,50 @@ test("landing pages use the production aggregate and retain the bounded scope", 
   assert.match(french, /Colombie-Britannique, l’Alberta, l’Ontario et le Québec passent d’abord/);
 });
 
+test("public coverage copy derives from the bounded Explore period", async () => {
+  const [gateway, english, french, footer, brand, fixtures, period] = await Promise.all([
+    read("../app/(gateway)/page.tsx"),
+    read("../app/en/page.tsx"),
+    read("../app/fr/page.tsx"),
+    read("../components/site/SiteFooter.tsx"),
+    read("../lib/domain/brand.ts"),
+    read("../lib/places/fixtures.ts"),
+    read("../lib/explore/types.ts"),
+  ]);
+  for (const source of [gateway, english, french, footer, brand, fixtures]) {
+    assert.match(source, /EXPLORE_COVERAGE_PERIOD/);
+    assert.doesNotMatch(source, /1984(?:–| to )present|1984–2025|depuis 1984/i);
+  }
+  assert.match(period, /EXPLORE_YEAR_MAX = 2022/);
+  assert.match(period, /EXPLORE_COVERAGE_PERIOD/);
+  assert.match(english, /formatUnknownSharePercent\(row\.unknownSharePercent, "en"\)/);
+  assert.match(french, /formatUnknownSharePercent\(row\.unknownSharePercent, "fr"\)/);
+});
+
+test("language choices use native document navigation", async () => {
+  const gateway = await read("../app/(gateway)/page.tsx");
+  assert.doesNotMatch(gateway, /next\/link|<Link\b/);
+  assert.match(gateway, /<a className="btn btn--primary" href="\/en">Continue in English<\/a>/);
+  assert.match(gateway, /<a className="btn btn--outline" href="\/fr" lang="fr">Continuer en français<\/a>/);
+});
+
+test("localized not-found pages use the site shell and offer three exits", async () => {
+  const [english, french, englishCatchAll, frenchCatchAll] = await Promise.all([
+    read("../app/en/not-found.tsx"),
+    read("../app/fr/not-found.tsx"),
+    read("../app/en/[...not-found]/page.tsx"),
+    read("../app/fr/[...not-found]/page.tsx"),
+  ]);
+  assert.match(english, /<SiteShell locale="en">/);
+  assert.match(french, /<SiteShell locale="fr">/);
+  for (const route of ["/en/explore", "/en/search", "/en"]) assert.match(english, new RegExp(route));
+  for (const route of ["/fr/explorer", "/fr/recherche", "/fr"]) assert.match(french, new RegExp(route));
+  assert.match(english, /Page not found/);
+  assert.match(french, /Page introuvable/);
+  assert.match(englishCatchAll, /notFound\(\)/);
+  assert.match(frenchCatchAll, /notFound\(\)/);
+});
+
 test("about routes are bilingual and reserve owner statements for owner copy", async () => {
   const [english, french, header, footer] = await Promise.all([read("../app/en/about/page.tsx"), read("../app/fr/a-propos/page.tsx"), read("../components/site/SiteHeader.tsx"), read("../components/site/SiteFooter.tsx")]);
   assert.match(english, /Owner copy pending/);
@@ -29,8 +73,12 @@ test("about routes are bilingual and reserve owner statements for owner copy", a
   assert.match(french, /Texte du propriétaire à venir/);
   assert.match(french, /Aucune déclaration du propriétaire n’a été fournie/);
   assert.match(french, /en: "\/en\/about"/);
-  assert.match(header, /\["About", "\/en\/about"\]/);
-  assert.match(header, /\["À propos", "\/fr\/a-propos"\]/);
+  assert.doesNotMatch(header, /\["About", "\/en\/about"\]/);
+  assert.doesNotMatch(header, /\["À propos", "\/fr\/a-propos"\]/);
   assert.match(footer, /\["About", "\/en\/about"\]/);
   assert.match(footer, /\["À propos", "\/fr\/a-propos"\]/);
+  assert.doesNotMatch(header, /\["Account", "\/en\/account"\]|\["Wildfire", "\/en\/wildfire"\]/);
+  assert.doesNotMatch(header, /\["Compte", "\/fr\/compte"\]|\["Incendies", "\/fr\/incendies"\]/);
+  assert.match(footer, /\["Account", "\/en\/account"\]/);
+  assert.match(footer, /\["Compte", "\/fr\/compte"\]/);
 });

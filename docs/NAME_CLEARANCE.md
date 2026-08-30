@@ -19,6 +19,10 @@ was delegated to `custom-domains.chatgpt.site`, and HTTPS requests to both
 hosts returned HTTP 200 with valid certificates. The custom-hostname
 validation TXT record was present at `_cf-custom-hostname.witnesstree.ca`.
 
+`witnesstree.com` is not controlled by the project. On 2026-08-30 it resolved
+to a HugeDomains parking and sale page. Acquiring that domain, or configuring
+any redirect from it, remains an owner decision; no action was taken.
+
 Domain registration does not establish trademark rights.
 
 ## Other uses and risk

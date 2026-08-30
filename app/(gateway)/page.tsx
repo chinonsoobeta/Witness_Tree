@@ -1,9 +1,14 @@
 import type { Metadata } from "next";
 import { PRODUCT_NAME } from "@/lib/domain";
+import { EXPLORE_COVERAGE_PERIOD } from "@/lib/explore";
+import { gatewayAlternates } from "@/lib/site-metadata";
+
+/* eslint-disable @next/next/no-html-link-for-pages -- Vinext client links throw before gateway navigation in Sites. */
 
 export const metadata: Metadata = {
   title: PRODUCT_NAME.en,
   description: "Choose English or French to enter the public forest-change record.",
+  alternates: gatewayAlternates,
 };
 
 export default function Home() {
@@ -15,7 +20,7 @@ export default function Home() {
       <p className="eyebrow">Public forest-change record · Registre public des changements forestiers</p>
       <h1>{PRODUCT_NAME.en}</h1>
       <p className="gateway-lead">
-        Evidence about recorded and observed forest change in four Canadian provinces, from 1984 to the present.
+        Evidence about recorded and observed forest change in four Canadian provinces, from {EXPLORE_COVERAGE_PERIOD.en}.
       </p>
       <nav aria-label="Choose a language" className="language-choices">
         <a className="btn btn--primary" href="/en">Continue in English</a>

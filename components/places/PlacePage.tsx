@@ -1,4 +1,4 @@
-import { colon, semicolon, type Locale } from "@/lib/domain";
+import { colon, COVERAGE_LABELS, formatHectares, formatPercent, semicolon, type Locale } from "@/lib/domain";
 import type { Place } from "@/lib/places";
 import { ReportedValue } from "@/components/policy";
 import { AnnualChangeChart } from "./AnnualChangeChart";
@@ -49,7 +49,7 @@ export function PlacePage({
         </div>
         <div className="stat">
           <dt>{text.denominator}</dt>
-          <dd>{place.forestHectares}</dd>
+          <dd>{formatHectares(place.forestHectares, locale)}</dd>
         </div>
       </dl>
 
@@ -59,7 +59,7 @@ export function PlacePage({
           {place.coverage.map((item) => (
             <li key={item.grade}>
               <span className="coverage-band">
-                {item.grade}: {item.share * 100}%
+                {COVERAGE_LABELS[item.grade][locale]}{colon(locale)} {formatPercent(item.share * 100, locale)}
               </span>
             </li>
           ))}
@@ -117,7 +117,7 @@ export function PlacePage({
           {semicolon(locale)} {place.boundaryEdition}
           {semicolon(locale)} {place.citation.dataVersion}
           {semicolon(locale)} {text.denominator}
-          {colon(locale)} {place.forestHectares}
+          {colon(locale)} {formatHectares(place.forestHectares, locale)}
           {semicolon(locale)} {place.citation.method}.
         </p>
       </footer>

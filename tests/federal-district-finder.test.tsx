@@ -40,9 +40,14 @@ test("links exact district names to the locale comparison route with the left se
   const english = renderToStaticMarkup(<FederalDistrictFinder locale="en" query="Quebec" rows={rows} />);
   const french = renderToStaticMarkup(<FederalDistrictFinder locale="fr" query="Quebec" rows={rows} />);
   assert.match(english, /Local nonproduction measurements\. Not a published release\./);
+  assert.match(english, /<label[^>]*class="field-label sr-only"[^>]*id="federal-district-label"[^>]*>Find a federal electoral district<\/label>/);
+  assert.match(english, /<input[^>]*aria-labelledby="federal-district-label"/);
+  assert.doesNotMatch(english, /<input[^>]*aria-label=/);
+  assert.match(english, /<button[^>]*>Find<\/button>/);
   assert.match(english, /href="\/en\/compare\?left=35001"/);
   assert.match(english, />Québec</);
   assert.doesNotMatch(english, /illustrative/i);
   assert.match(french, /Mesures locales non productives\. Il ne s’agit pas d’une publication\./);
+  assert.match(french, /<button[^>]*>Trouver<\/button>/);
   assert.match(french, /href="\/fr\/comparer\?left=35001"/);
 });

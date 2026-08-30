@@ -4,7 +4,7 @@ import {
   type ComparisonPlace,
   type RankingContext,
 } from "@/lib/comparison";
-import type { Locale } from "@/lib/domain";
+import { formatHectares, formatPercent, type Locale } from "@/lib/domain";
 import { MeasurementCoverage } from "./MeasurementCoverage";
 
 export function SideBySideComparison({
@@ -57,8 +57,8 @@ export function SideBySideComparison({
     </p>
   );
   const unknown = locale === "en" ? "Unknown" : "Inconnu";
-  const percent = (value: number | null) => value === null ? unknown : `${value}%`;
-  const hectares = (value: number | null) => value === null ? unknown : `${value} ha`;
+  const percent = (value: number | null) => value === null ? unknown : formatPercent(value, locale);
+  const hectares = (value: number | null) => value === null ? unknown : formatHectares(value, locale);
   const viewHref = (nextView: "cards" | "table") => {
     const query = new URLSearchParams();
     query.set("view", nextView);
@@ -97,8 +97,8 @@ export function SideBySideComparison({
               </tr>
               <tr>
                 <th scope="row">{labels.forest}</th>
-                <td>{left.forestedHectares} ha</td>
-                <td>{right.forestedHectares} ha</td>
+                <td>{formatHectares(left.forestedHectares, locale)}</td>
+                <td>{formatHectares(right.forestedHectares, locale)}</td>
               </tr>
               <tr>
                 <th scope="row">{labels.coverage}</th>
@@ -141,14 +141,14 @@ export function SideBySideComparison({
 }
 
 function Place({ place, locale, unknown }: { place: ComparisonPlace; locale: Locale; unknown: string }) {
-  const percent = place.detectedChangePercent === null ? unknown : `${place.detectedChangePercent}%`;
-  const hectares = place.detectedChangeHectares === null ? unknown : `${place.detectedChangeHectares} ha`;
+  const percent = place.detectedChangePercent === null ? unknown : formatPercent(place.detectedChangePercent, locale);
+  const hectares = place.detectedChangeHectares === null ? unknown : formatHectares(place.detectedChangeHectares, locale);
   return (
     <article className="card card--lift comparison-card">
       <h2>{place.name[locale]}</h2>
       <p className="comparison-figures">
         {percent} · {hectares} ·{" "}
-        {place.forestedHectares} ha
+        {formatHectares(place.forestedHectares, locale)}
       </p>
       <MeasurementCoverage place={place} locale={locale} />
       <EvidenceChip evidence={place.evidence} locale={locale} />

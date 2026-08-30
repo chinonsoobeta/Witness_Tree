@@ -10,12 +10,13 @@ import {
   parseRankingSort,
 } from "@/lib/comparison";
 import { SiteShell } from "@/components/site";
+import { localizedAlternates } from "@/lib/site-metadata";
 
 const TITLE = "Riding comparison";
 
 export const metadata: Metadata = {
   title: TITLE,
-  alternates: { languages: { en: "/en/compare", fr: "/fr/comparer" } },
+  alternates: localizedAlternates("en", { en: "/en/compare", fr: "/fr/comparer" }),
 };
 
 export default async function ComparePage({
@@ -37,19 +38,10 @@ export default async function ComparePage({
         <FederalRidingPicker
           rows={federalRidingComparison.places}
           locale="en"
-          leftId={selected.left.id}
-          rightId={selected.right.id}
+          leftId={parameters.left}
+          rightId={parameters.right}
           view={view}
           sort={sort}
-        />
-        <RankedRidingsTable
-          rows={federalRidingComparison.rows}
-          context={federalRidingComparison.context}
-          locale="en"
-          sort={sort}
-          leftId={selected.left.id}
-          rightId={selected.right.id}
-          view={view}
         />
         <SideBySideComparison
           places={[selected.left, selected.right]}
@@ -59,6 +51,15 @@ export default async function ComparePage({
           leftId={selected.left.id}
           rightId={selected.right.id}
           sort={sort}
+        />
+        <RankedRidingsTable
+          rows={federalRidingComparison.rankingRows}
+          context={federalRidingComparison.context}
+          locale="en"
+          sort={sort}
+          leftId={selected.left.id}
+          rightId={selected.right.id}
+          view={view}
         />
       </main>
     </SiteShell>

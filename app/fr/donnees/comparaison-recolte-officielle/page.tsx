@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import comparison from "@/data/phase2-official-published-harvest-comparison.json";
 import { OfficialPublishedHarvestComparison } from "@/components/transparency/OfficialPublishedHarvestComparison";
 import { SiteShell } from "@/components/site";
+import { localizedAlternates } from "@/lib/site-metadata";
 
-export const metadata: Metadata = { title: "Comparaison avec une source officielle sur la récolte", alternates: { languages: { en: "/en/data/official-harvest-comparison", fr: "/fr/donnees/comparaison-recolte-officielle" } } };
+export const metadata: Metadata = { title: "Comparaison avec une source officielle sur la récolte", alternates: localizedAlternates("fr", { en: "/en/data/official-harvest-comparison", fr: "/fr/donnees/comparaison-recolte-officielle" }) };
 
 export default async function FrenchOfficialHarvestComparisonPage({ searchParams }: { searchParams: Promise<{ province?: string }> }) {
   const query = await searchParams;

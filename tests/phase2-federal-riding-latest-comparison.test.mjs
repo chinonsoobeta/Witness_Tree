@@ -35,7 +35,7 @@ function fixture(dir) {
   execFileSync("ogr2ogr", ["-f", "GPKG", gpkg, geojson, "-nln", "federal_electoral_districts_2023"]);
   const rows = Array.from({ length: 343 }, (_, index) => index + 1).flatMap((boundaryId) => [
     { boundaryId: String(boundaryId), rowType: "annual", fromYear: 2020, toYear: 2021 },
-    { boundaryId: String(boundaryId), rowType: "annual", fromYear: 2021, toYear: 2022, knownForestedHectares: boundaryId === 1 ? 100 : 0, knownObservedLossHectares: boundaryId === 1 ? 5 : 0, lossHectares: boundaryId === 1 ? 5 : 0, observedLossPercent: boundaryId === 1 ? 5 : null, unknownRequiredInputHectares: 0, unmappedByProductExtentHectares: 0, districtHectares: 110, coverageGrade: "complete" },
+    { boundaryId: String(boundaryId), rowType: "annual", fromYear: 2021, toYear: 2022, knownForestedHectares: boundaryId === 1 ? 500 : boundaryId === 2 ? 499.99 : 0, knownObservedLossHectares: boundaryId === 1 ? 25 : boundaryId === 2 ? 1 : 0, lossHectares: boundaryId === 1 ? 25 : boundaryId === 2 ? 1 : 0, observedLossPercent: boundaryId === 1 ? 5 : boundaryId === 2 ? 0.2 : null, unknownRequiredInputHectares: 0, unmappedByProductExtentHectares: 0, districtHectares: 1000, coverageGrade: "complete" },
   ]);
   const annual = path.join(dir, "annual.json"); writeFileSync(annual, JSON.stringify(rows));
   const bytes = readFileSync(annual); const gpkgBytes = readFileSync(gpkg);
@@ -50,14 +50,14 @@ function fixture(dir) {
 
 function run(paths) { return execFileSync(process.execPath, [runner, "--annual", paths.annual, "--annual-sidecar", paths.sidecar, "--mapped-extent-verification", paths.extentVerification, "--federal-gpkg", paths.gpkg, "--output", paths.output], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }); }
 
-test("creates deterministic bilingual 2021-2022 rows with only valid ranking", () => {
+test("creates deterministic bilingual 2021-2022 rows with a 500-hectare ranking floor", () => {
   const dir = mkdtempSync(path.join(os.tmpdir(), "federal-latest-comparison-"));
   try {
     const paths = fixture(dir); const summary = JSON.parse(run(paths)); const result = JSON.parse(readFileSync(paths.output));
     assert.equal(summary.rowCount, 343); assert.equal(result.context.interval.fromYear, 2021); assert.equal(result.context.officialComparison.unmatchedOfficialShare, null);
     assert.deepEqual(result.rows.slice(0, 2).map(({ boundaryId, boundaryName, rankable, rank, observedLossPercent, unmatchedOfficialShare }) => ({ boundaryId, boundaryName, rankable, rank, observedLossPercent, unmatchedOfficialShare })), [
       { boundaryId: "1", boundaryName: { en: "Alpha", fr: "Alpha français" }, rankable: true, rank: 1, observedLossPercent: 5, unmatchedOfficialShare: null },
-      { boundaryId: "2", boundaryName: { en: "Bravo", fr: "Bravo français" }, rankable: false, rank: null, observedLossPercent: null, unmatchedOfficialShare: null },
+      { boundaryId: "2", boundaryName: { en: "Bravo", fr: "Bravo français" }, rankable: false, rank: null, observedLossPercent: 0.2, unmatchedOfficialShare: null },
     ]);
     assert.equal(result.sources.annualJson.sha256, sha256(readFileSync(paths.annual)));
   } finally { rmSync(dir, { recursive: true, force: true }); }

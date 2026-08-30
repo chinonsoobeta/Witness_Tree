@@ -1,4 +1,5 @@
 import { localized } from "../domain/localized";
+import { formatHectares } from "../domain/number";
 import { LAND_COVER_CLASS_VALUES } from "./types";
 import type { ClassArea, ClassList, LandCoverClassValue, VatSidecar } from "./types";
 import type { LocalizedString } from "../domain/localized";
@@ -171,8 +172,8 @@ export function formatClassArea(area: ClassArea): LocalizedString {
     }
     return localized(`Unknown – ${area.reason.en}`, `Inconnu – ${area.reason.fr}`);
   }
-  const en = `${area.hectares.toLocaleString("en-CA")} ha`;
-  const fr = `${area.hectares.toLocaleString("fr-CA")} ha`;
+  const en = formatHectares(area.hectares, "en");
+  const fr = formatHectares(area.hectares, "fr");
   return localized(en, fr);
 }
 

@@ -1456,6 +1456,29 @@ h4 {
   background: var(--ink);
   color: var(--ground);
 }
+.explore-map-note,
+.explore-map-action p {
+  margin: 6px 0;
+  color: var(--muted);
+}
+.explore-map-action {
+  margin-bottom: 8px;
+  padding: 7px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+.explore-map-action button {
+  min-height: 36px;
+  padding: 4px 9px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
 .explore-map-layer-list {
   margin: 4px 0 8px;
   padding-inline-start: 18px;
@@ -1577,6 +1600,9 @@ h4 {
   margin-top: 8px;
   color: var(--muted);
   font-size: 14px;
+}
+.explore-map-retry {
+  margin-top: 4px;
 }
 .explore-map[data-state="error"] {
   border-color: var(--unknown);
@@ -2498,6 +2524,44 @@ dd > a:only-child {
   max-width: var(--measure);
 }
 
+.explore-section {
+  display: grid;
+  gap: 16px;
+}
+
+.explore-section > h2,
+.explore-section > h3 {
+  margin: 0;
+}
+
+.explore-modes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.explore-mode {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.explore-mode-status {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.explore-empty {
+  max-width: var(--measure);
+  margin: 0;
+  padding: 18px 20px;
+  border-inline-start: 4px solid var(--unknown);
+  background: var(--surface-2);
+  color: var(--ink-2);
+}
+
 /* The countable annual figure, which sits beside the drawn patches it
    describes. The numbers are tabular so the hectare column reads as a column
    rather than as four unrelated figures. */
@@ -2659,6 +2723,13 @@ dd > a:only-child {
   margin: 0;
   font-size: 0.82rem;
   color: var(--muted);
+}
+
+.year-play-status {
+  margin: 0;
+  color: var(--ink-2);
+  font-size: 0.82rem;
+  font-weight: 600;
 }
 
 .segment,

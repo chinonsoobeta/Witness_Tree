@@ -1,3 +1,5 @@
+import { formatPercent } from "@/lib/domain";
+
 export const EXPLORE_MAP_COLOURS = Object.freeze({
   ground: "#eeefe9",
   ink: "#14201a",
@@ -97,12 +99,8 @@ export const EXPLORE_PRODUCTION_LAYER = Object.freeze({
  * result, and hiding it behind a "less than" would understate the evidence.
  */
 export function formatUnknownSharePercent(percent: number, locale: "en" | "fr"): string {
-  const number = new Intl.NumberFormat(locale === "fr" ? "fr-CA" : "en-CA", {
-    maximumFractionDigits: 2,
-  });
-  const suffix = locale === "fr" ? " %" : "%";
   // The exact rounding boundary for two decimals, tested on the measured value
   // rather than on the formatted string, whose separators differ by locale.
-  if (percent > 0 && percent < 0.005) return `<${number.format(0.01)}${suffix}`;
-  return `${number.format(percent)}${suffix}`;
+  if (percent > 0 && percent < 0.005) return `<${formatPercent(0.01, locale)}`;
+  return formatPercent(percent, locale);
 }

@@ -21,5 +21,10 @@ export type ExploreDataView = "chart" | "table";
 export const EXPLORE_YEAR_MIN = 1985;
 export const EXPLORE_YEAR_MAX = 2022;
 export const EXPLORE_DEFAULT_YEAR = EXPLORE_YEAR_MAX;
+export const EXPLORE_COVERAGE_PERIOD = Object.freeze({
+  en: `${EXPLORE_YEAR_MIN - 1} to ${EXPLORE_YEAR_MAX}`,
+  fr: `${EXPLORE_YEAR_MIN - 1} à ${EXPLORE_YEAR_MAX}`,
+  compact: `${EXPLORE_YEAR_MIN - 1}–${EXPLORE_YEAR_MAX}`,
+});
 export const EXPLORE_MAP_VIEWS = ["national", "bc", "ab", "on", "qc"] as const;
 export type ExploreMapView = (typeof EXPLORE_MAP_VIEWS)[number];

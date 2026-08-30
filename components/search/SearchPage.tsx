@@ -3,20 +3,67 @@ import { federalRidingComparison } from "@/lib/comparison";
 import { FederalDistrictFinder } from "./FederalDistrictFinder";
 import { PlaceFinder } from "./PlaceFinder";
 
+export type SearchScope = "places" | "districts";
+
+const copy = {
+  en: {
+    title: "Search",
+    scope: "Search scope",
+    places: "Places",
+    districts: "Federal districts",
+    notice:
+      "Place results are illustrative fixtures, and district results are local nonproduction measurements. Neither is a published release.",
+  },
+  fr: {
+    title: "Recherche",
+    scope: "Portée de la recherche",
+    places: "Lieux",
+    districts: "Circonscriptions fédérales",
+    notice:
+      "Les résultats de lieux sont des exemples illustratifs, et ceux des circonscriptions sont des mesures locales non productives. Aucun ne constitue une publication.",
+  },
+} as const;
+
 export function SearchPage({
   locale,
   query,
-  districtQuery = "",
-}: Readonly<{ locale: Locale; query: string; districtQuery?: string }>) {
-  const title = locale === "en" ? "Search places" : "Rechercher des lieux";
+  scope = "places",
+}: Readonly<{ locale: Locale; query: string; scope?: SearchScope }>) {
+  const text = copy[locale];
   return (
     <section className="page-wrap search-page">
       <header className="masthead">
-        <h1>{title}</h1>
+        <h1>{text.title}</h1>
       </header>
 
-      <PlaceFinder locale={locale} query={query} />
-      <FederalDistrictFinder locale={locale} query={districtQuery} rows={federalRidingComparison.places} />
+      <nav className="segment" aria-label={text.scope}>
+        <a
+          className="segment-option"
+          href="?scope=places"
+          aria-current={scope === "places" ? "page" : undefined}
+        >
+          {text.places}
+        </a>
+        <a
+          className="segment-option"
+          href="?scope=districts"
+          aria-current={scope === "districts" ? "page" : undefined}
+        >
+          {text.districts}
+        </a>
+      </nav>
+      <p className="masthead-note">{text.notice}</p>
+
+      {scope === "places" ? (
+        <PlaceFinder locale={locale} query={query} />
+      ) : (
+        <FederalDistrictFinder
+          locale={locale}
+          query={query}
+          rows={federalRidingComparison.places}
+          showBoundary={false}
+        />
+      )}
     </section>
   );
 }

@@ -34,7 +34,7 @@ test("the gate fails closed if a transformation, output, or credit is invented",
   assert.equal(validateNrcanCanopyCoverProfile(JSON.parse(readFileSync(new URL("../data/nrcan-canopy-cover-profile.json", import.meta.url), "utf8"))).productionEligible, false);
 });
 
-test("the gate keeps its bound historical baseline after the later federal admission", () => {
+test("the gate keeps its bound historical baseline after the later NBAC profile and federal admission", () => {
   assert.equal(validatePhase1NrcanCoverProcessingGate(audit, ledger), audit);
   assert.deepEqual(audit.baseline, {
     productionRows: 31,
@@ -46,6 +46,12 @@ test("the gate keeps its bound historical baseline after the later federal admis
     productionEligibleRows: 0,
     scoreDelta: { rawCredit: 0, formalPercentagePoints: 0 },
   });
+});
+
+test("the gate rejects a corrupted later NBAC ledger transition", () => {
+  const corrupted = structuredClone(ledger);
+  corrupted.entries.find(({ id }) => id === "cwfis-historical").rawCredit = 0.5;
+  assert.throws(() => validatePhase1NrcanCoverProcessingGate(audit, corrupted), /bound historical state|verified later state/i);
 });
 
 test("the gate rejects a corrupted later federal admission instead of treating it as historical state", () => {

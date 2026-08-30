@@ -1,5 +1,8 @@
 import type { ComparisonPlace, RankedRiding, RankingContext } from "./types";
 
+export const MINIMUM_RANKED_FOREST_HECTARES = 500;
+const COVERED_FEDERAL_DISTRICT_PREFIXES = ["24", "35", "48", "59"] as const;
+
 type RawRow = Readonly<{
   boundaryId: string;
   boundaryName: Readonly<{ en: string; fr: string }>;
@@ -23,6 +26,7 @@ type RawComparison = Readonly<{
 export type RealFederalRidingComparison = Readonly<{
   context: RankingContext;
   rows: readonly RankedRiding[];
+  rankingRows: readonly RankedRiding[];
   places: readonly ComparisonPlace[];
 }>;
 
@@ -41,7 +45,7 @@ export function adaptFederalRidingComparison(input: RawComparison): RealFederalR
     ids.add(source.boundaryId);
     if (source.fromYear !== 2021 || source.toYear !== 2022) throw new Error("Federal-riding comparison interval must be 2021 to 2022.");
     const complete = source.coverageGrade === "complete";
-    if (source.rankable !== (complete && source.observedLossPercent !== null && source.lossHectares !== null && source.knownForestedHectares > 0)) {
+    if (source.rankable !== (complete && source.observedLossPercent !== null && source.lossHectares !== null && source.knownForestedHectares >= MINIMUM_RANKED_FOREST_HECTARES)) {
       throw new Error(`Federal district ${source.boundaryId} has inconsistent rankability.`);
     }
     if (!complete && (source.observedLossPercent !== null || source.lossHectares !== null)) {
@@ -72,9 +76,12 @@ export function adaptFederalRidingComparison(input: RawComparison): RealFederalR
       fr: "Part des hectares forestiers connus dans le masque forestier de la première année, 2021.",
     },
     method: {
-      en: "Only districts with complete mapped coverage and a positive forest denominator are ranked by detected-loss share.",
-      fr: "Seules les circonscriptions ayant une couverture cartographiée complète et un dénominateur forestier positif sont classées selon la part de perte détectée.",
+      en: "Only federal districts in British Columbia, Alberta, Ontario and Quebec with complete mapped coverage and at least 500 forested hectares are ranked by detected-loss share.",
+      fr: "Seules les circonscriptions fédérales de la Colombie-Britannique, de l’Alberta, de l’Ontario et du Québec ayant une couverture cartographiée complète et au moins 500 hectares forestiers sont classées selon la part de perte détectée.",
     },
   };
-  return { context, rows, places: rows };
+  const rankingRows = rows.filter((row) =>
+    COVERED_FEDERAL_DISTRICT_PREFIXES.some((prefix) => row.id === `federal-${prefix}` || row.id.startsWith(`federal-${prefix}`)),
+  );
+  return { context, rows, rankingRows, places: rows };
 }

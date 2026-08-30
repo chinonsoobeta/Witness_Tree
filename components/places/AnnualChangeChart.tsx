@@ -1,4 +1,4 @@
-import type { Locale } from "@/lib/domain";
+import { formatNumber, type Locale } from "@/lib/domain";
 import type { AnnualSummary } from "@/lib/places";
 
 const CHART_WIDTH = 300;
@@ -41,7 +41,7 @@ export function AnnualChangeChart({
               {rows.map((row) => (
                 <tr key={row.year}>
                   <td>{row.year}</td>
-                  <td>{row.hectares}</td>
+                  <td>{formatNumber(row.hectares, locale)}</td>
                   <td>{row.eventIds.join(", ")}</td>
                 </tr>
               ))}
@@ -100,7 +100,7 @@ export function AnnualChangeChart({
                 y={BASELINE_Y - height - 6}
                 textAnchor="middle"
               >
-                {row.hectares}
+                {formatNumber(row.hectares, locale)}
               </text>
             </g>
           );

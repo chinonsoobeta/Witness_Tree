@@ -1,4 +1,5 @@
 import type { ConfidenceResult, LocalizedString, Provenance } from "@/lib/domain";
+import { EXPLORE_COVERAGE_PERIOD } from "@/lib/explore/types";
 import { PLACE_PROVINCES, PLACE_TYPES, type Location, type Place, type PlaceEvent, type PlaceProvince, type PlaceType } from "./types";
 
 const local = (en: string, fr: string): LocalizedString => ({ en, fr });
@@ -49,7 +50,7 @@ export const PLACES: readonly Place[] = specs.map(([id, type, province, name], i
     stats: [
       { kind: "figure", value: 13 + index, unit: "ha", evidence: "official-record", confidence: high, provenance },
       { kind: "unknown", evidence: "unknown", reason: local("No authoritative public record has been integrated for this question.", "Aucun registre public faisant autorité n’a été intégré pour cette question."), coverageGrade: "national-baseline-plus-local-context" },
-    ], sources: ["example-official-record", "example-satellite-observation"], citation: { timeRange: "1984–2025 (illustrative)", dataVersion: "example-1.0", method: "example-method-1" },
+    ], sources: ["example-official-record", "example-satellite-observation"], citation: { timeRange: `${EXPLORE_COVERAGE_PERIOD.compact} (illustrative)`, dataVersion: "example-1.0", method: "example-method-1" },
     ...(type === "reserve" || type === "treaty-area" ? { safeguard: local("Illustrative geography only. This example does not identify a community contact or speak for rights holders; a right of reply is retained before publication.", "Géographie illustrative seulement. Cet exemple ne désigne aucun contact communautaire et ne parle pas au nom des titulaires de droits; un droit de réponse est maintenu avant publication.") } : {}),
   };
 });

@@ -7,7 +7,7 @@ import {
   type RankedRiding,
   type RankingContext,
 } from "@/lib/comparison";
-import { colon, type Locale } from "@/lib/domain";
+import { formatHectares, formatPercent, type Locale } from "@/lib/domain";
 import { MeasurementCoverage } from "./MeasurementCoverage";
 
 function TableHeaders({
@@ -29,24 +29,17 @@ function TableHeaders({
   );
 }
 
-/** The rank basis and its denominator share the one cell, so a cropped screenshot cannot separate them. */
+/** Each measurement keeps a scoped column, and unavailable values remain textual. */
 function RidingRow({ row, locale }: { row: RankedRiding; locale: Locale }) {
   const copy = RANKING_COPY[locale];
-  const percent = row.detectedChangePercent === null ? copy.unknown : `${row.detectedChangePercent}%`;
-  const hectares = row.detectedChangeHectares === null ? copy.unknown : `${row.detectedChangeHectares} ha`;
+  const percent = row.detectedChangePercent === null ? copy.unknown : formatPercent(row.detectedChangePercent, locale);
+  const hectares = row.detectedChangeHectares === null ? copy.unknown : formatHectares(row.detectedChangeHectares, locale);
   return (
     <tr>
       <th scope="row">{row.name[locale]}</th>
-      <td>
-        {percent}
-        <span className="rank-unmatched-share">
-          {" "}
-          · {copy.unmatched}
-          {colon(locale)} {row.unmatchedSharePercent == null ? copy.unknown : `${row.unmatchedSharePercent}%`}
-        </span>
-      </td>
+      <td>{percent}</td>
       <td>{hectares}</td>
-      <td>{row.forestedHectares} ha</td>
+      <td>{formatHectares(row.forestedHectares, locale)}</td>
       <td>
         <MeasurementCoverage place={row} locale={locale} />
       </td>
@@ -93,6 +86,7 @@ export function RankedRidingsTable({
         </p>
         <p>{context.denominatorDefinition[locale]}</p>
         <p>{context.method[locale]}</p>
+        <p>{copy.officialMatching}</p>
         <EvidenceChip evidence={context.evidence} locale={locale} />
       </header>
       <nav className="segment" aria-label={locale === "en" ? "Ranking order" : "Ordre du classement"}>

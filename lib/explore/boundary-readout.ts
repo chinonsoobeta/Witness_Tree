@@ -1,4 +1,4 @@
-import type { Locale } from "@/lib/domain";
+import { formatHectares, formatPercent, type Locale } from "@/lib/domain";
 import type { BoundaryOverlayId } from "./boundaries";
 
 export type BoundaryMeasurementCoverage =
@@ -43,7 +43,6 @@ const words = {
     none: "No mapped coverage",
     unavailable: "No local riding measurement",
     unknown: "Unknown",
-    hectares: "ha",
   },
   fr: {
     boundaryOnly: "Limite de référence seulement. Aucune mesure de perte forestière n’est disponible pour cette géographie.",
@@ -52,7 +51,6 @@ const words = {
     none: "Aucune couverture cartographiée",
     unavailable: "Aucune mesure locale pour cette circonscription",
     unknown: "Inconnu",
-    hectares: "ha",
   },
 } as const;
 
@@ -103,9 +101,6 @@ export function boundaryReadout(
     };
   }
   assertMeasurement(measurement);
-  const formatter = new Intl.NumberFormat(locale === "fr" ? "fr-CA" : "en-CA", {
-    maximumFractionDigits: 2,
-  });
   const coverage = measurement.coverage === "complete"
     ? copy.complete
     : measurement.coverage === "partial-with-unknown"
@@ -116,10 +111,10 @@ export function boundaryReadout(
     kind: "riding-measurement",
     interval: "2021–2022",
     coverage,
-    normalizedShare: complete ? `${formatter.format(measurement.observedLossPercent!)}%` : copy.unknown,
-    absoluteLoss: complete ? `${formatter.format(measurement.observedLossHectares!)} ${copy.hectares}` : copy.unknown,
+    normalizedShare: complete ? formatPercent(measurement.observedLossPercent!, locale) : copy.unknown,
+    absoluteLoss: complete ? formatHectares(measurement.observedLossHectares!, locale) : copy.unknown,
     ...(finiteNonNegative(measurement.knownObservedSubtotalHectares)
-      ? { knownObservedSubtotal: `${formatter.format(measurement.knownObservedSubtotalHectares!)} ${copy.hectares}` }
+      ? { knownObservedSubtotal: formatHectares(measurement.knownObservedSubtotalHectares!, locale) }
       : {}),
   };
 }

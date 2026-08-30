@@ -15,36 +15,9 @@
 import { spawnSync } from "node:child_process";
 import { readdirSync } from "node:fs";
 import path from "node:path";
+import { REQUIRES_DATA_ROOT } from "./lib/data-root-bound-tests.mjs";
 import { fileURLToPath } from "node:url";
 
-// The Witness Tree data root lives on the owner's SSD and cannot exist on a runner.
-const REQUIRES_DATA_ROOT = new Map([
-  ["phase1-owner-decision-queue.test.mjs", "Reads recorded artifacts under the data root to confirm the queue matches bytes on disk."],
-  ["phase1-phase3-owner-approvals.test.mjs", "Resolves approval evidence paths through the data root."],
-  ["wildfire-derived-readback.test.mjs", "Reads derived wildfire outputs from the data root."],
-  ["federal-electoral-approved-promotion.test.mjs", "Resolves the approved data root at module load through approvedDataRootRealPath, and drives the promotion runner against it."],
-  ["phase1-federal-electoral-output-verification.test.mjs", "Verifies the federal electoral GeoPackage under the data root, including a byte-for-byte deterministic regeneration."],
-  ["phase1-nrcan-cover-processing-gate.test.mjs", "Profiles the NRCan canopy cover raster from the data root."],
-  ["phase2-v21-expert-review-evidence.test.mjs", "Reads raw/nrcan-ca-forest-harvest-1985-2022 from the data root."],
-  ["phase2-v21-real-review-packet-raster-readback-evidence.test.mjs", "Reads derived/phase2-v21-review-packet-v2 from the data root."],
-  ["phase1-bc-ontario-row-audit.test.mjs", "Stats the admitted federal-electoral GeoPackage under the data root."],
-  ["phase1-current-state-completion-audit.test.mjs", "Stats the admitted federal-electoral GeoPackage under the data root."],
-  ["phase1-production-source-ledger.test.mjs", "Stats the admitted federal-electoral GeoPackage under the data root."],
-  ["phase1-source-ledger-decision-readiness.test.mjs", "Stats the admitted federal-electoral GeoPackage under the data root."],
-  ["phase1-ntems-readback-bytes.test.mjs", "Reads raw/nrcan-ca-forest-harvest-1985-2022 from the data root."],
-  ["phase2-real-comparison-availability.test.mjs", "Its checker opens comparison inputs under the data root."],
-  ["phase2-v21-real-review-packet.test.mjs", "Its checker opens the v21 review packet under the data root."],
-  ["nfd-harvest-statistics.test.mjs", "Reads and re-derives the checksum-bound official NFD CSV profile from the owner SSD data root."],
-  ["phase1-approved-promotion-runner.test.mjs", "Drives run-phase1-approved-promotion.sh, which resolves the data root."],
-  ["alberta-plvi-immutable-promotion-preparation.test.mjs", "Drives run-alberta-plvi-approved-promotion.sh, which resolves the data root."],
-  ["current-wildfire-immutable-promotion-preparation.test.mjs", "Drives run-current-wildfire-approved-promotion.sh, which resolves the data root."],
-  ["phase1-remaining-actions-audit.test.mjs", "Its checker resolves recorded artifacts through the data root."],
-  ["qc-ecoforest-reconciliation.test.mjs", "Resolves the data root and reconciles against bytes under it."],
-  ["qc-immutable-promotion-preparation.test.mjs", "Resolves the data root and prepares against bytes under it."],
-  ["qc-reconciled-main-runner.test.mjs", "Resolves the data root and runs against bytes under it."],
-  ["wildfire-derived-recovery.test.mjs", "Reads derived wildfire outputs from the data root."],
-  ["wildfire-derived-recovery-owner-wrapper.test.mjs", "Resolves the data root before invoking the recovery runner."],
-]);
 
 // These drive owner-run zsh runners written for the owner's macOS device against
 // real AWS. They use BSD-only tooling such as `stat -f %z` and depend on macOS

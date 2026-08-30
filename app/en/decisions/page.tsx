@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { GovernancePage, governancePageTitle } from "@/components/governance";
 import { SiteShell } from "@/components/site";
+import { localizedAlternates } from "@/lib/site-metadata";
 
 export const metadata: Metadata = {
   title: governancePageTitle("decisions", "en"),
-  alternates: { languages: { en: "/en/decisions", fr: "/fr/decisions" } },
+  alternates: localizedAlternates("en", { en: "/en/decisions", fr: "/fr/decisions" }),
 };
 
 export default function Page() {

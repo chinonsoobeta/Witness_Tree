@@ -58,11 +58,6 @@ export const EXPLORE_PER_CELL_LAYER = Object.freeze({
 });
 
 /**
- * The interval a selected year falls in. The intervals are annual and named
- * for the pair of years they span, so 1999 is shown by 1999-2000 and the last
- * year of the series falls back to the interval that ends on it.
- */
-/**
  * What the per-cell layer draws for a given Explore mode.
  *
  * Every patch in the archives carries a `harvest` and a `fire` count taken
@@ -101,21 +96,16 @@ export function perCellArchiveForYear(year: number): PerCellArchive | null {
  * built, and a test that reads it would pass vacuously in that state, which is
  * exactly the kind of green that means nothing.
  *
- * Preferring the interval that starts on the year keeps the common case honest:
- * a reader who picks 1999 is shown loss detected between 1999 and 2000, not
- * loss that predates their selection. Only the final year of the series has no
- * such interval, and it falls back to the one that ends on it.
+ * A selected year names the end of one annual interval: 1999 means change
+ * between 1998 and 1999. This is the same meaning the slider announces and
+ * gives the 1985–2022 control a one-to-one mapping to the 38 archives.
  */
 export function archiveForYear(
   intervals: readonly PerCellArchive[],
   year: number,
 ): PerCellArchive | null {
   if (!Number.isInteger(year)) return null;
-  return (
-    intervals.find((entry) => entry.interval === `${year}-${year + 1}`) ??
-    intervals.find((entry) => entry.interval === `${year - 1}-${year}`) ??
-    null
-  );
+  return intervals.find((entry) => entry.interval === `${year - 1}-${year}`) ?? null;
 }
 
 /** The source layer tippecanoe wrote inside an archive. */

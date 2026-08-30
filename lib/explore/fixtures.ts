@@ -15,7 +15,7 @@ export function parseExploreYear(value: string | undefined): number {
   return year >= EXPLORE_YEAR_MIN && year <= EXPLORE_YEAR_MAX ? year : EXPLORE_DEFAULT_YEAR;
 }
 
-/** Fixtures are illustrative only. This never represents a source-data query. */
-export function fixturesThroughYear(events: readonly ExploreEvent[], year: number): readonly ExploreEvent[] {
-  return events.filter((event) => event.year <= year);
+/** Fixtures are illustrative only. One selected year means one interval, never a cumulative view. */
+export function fixturesForYear(events: readonly ExploreEvent[], year: number): readonly ExploreEvent[] {
+  return events.filter((event) => event.year === year);
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useSyncExternalStore } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import {
   EXPLORE_YEAR_MAX,
   EXPLORE_YEAR_MIN,
@@ -13,7 +13,7 @@ import type { Locale } from "@/lib/domain";
 const TEXT = {
   en: {
     legend: "Year shown",
-    help: "Each year is one annual interval: what changed between that year and the year before it. The record runs from 1985 to 2022.",
+    help: "Each year is one annual interval: what changed between that year and the year before it. Play begins at 1985 and stops at 2022.",
     interval: (year: number) => `Change between ${year - 1} and ${year}`,
     previous: "Previous year",
     next: "Next year",
@@ -21,11 +21,13 @@ const TEXT = {
     pause: "Stop playing",
     playShort: "Play",
     pauseShort: "Pause",
+    playing: "Playing from the beginning of the record.",
+    complete: "Playback reached the end of the record.",
     update: "Update",
   },
   fr: {
     legend: "Année affichée",
-    help: "Chaque année est un intervalle annuel : ce qui a changé entre cette année et la précédente. Le relevé va de 1985 à 2022.",
+    help: "Chaque année est un intervalle annuel : ce qui a changé entre cette année et la précédente. La lecture commence en 1985 et s’arrête en 2022.",
     interval: (year: number) => `Changement entre ${year - 1} et ${year}`,
     previous: "Année précédente",
     next: "Année suivante",
@@ -33,6 +35,8 @@ const TEXT = {
     pause: "Arrêter le défilement",
     playShort: "Lecture",
     pauseShort: "Pause",
+    playing: "Lecture depuis le début du relevé.",
+    complete: "La lecture a atteint la fin du relevé.",
     update: "Mettre à jour",
   },
 } as const;
@@ -46,6 +50,14 @@ const TICKS = (() => {
 })();
 
 const STEP_MS = 1500;
+
+function writeHistory(method: "push" | "replace", url: string) {
+  // Vinext patches the instance methods to start an RSC navigation. Calling
+  // the browser's native prototype method keeps this client-owned control
+  // shareable without remounting the map for every annual source swap.
+  const write = method === "push" ? History.prototype.pushState : History.prototype.replaceState;
+  write.call(window.history, null, "", url);
+}
 
 /*
  * Fixed ids rather than useId(), for the reason recorded in ThemeToggle: the id
@@ -104,12 +116,13 @@ const neverReady = () => false;
 export function ExploreYearControl({
   locale,
   state,
+  onYearChange,
 }: {
   locale: Locale;
   state: ExploreQueryState;
+  onYearChange: (year: number) => void;
 }) {
   const text = TEXT[locale];
-  const router = useRouter();
   const pathname = usePathname();
 
   const isPlaying = useSyncExternalStore(subscribePlaying, readPlaying, notPlaying);
@@ -124,10 +137,11 @@ export function ExploreYearControl({
    * it costs one extra render rather than an effect and a second commit.
    */
   const [draft, setDraft] = useState<{ from: number; value: number } | null>(null);
+  const [playStatus, setPlayStatus] = useState<"idle" | "playing" | "complete">("idle");
   if (draft && draft.from !== state.year) setDraft(null);
   const shown = draft && draft.from === state.year ? draft.value : state.year;
 
-  const go = (year: number) => {
+  const updateYear = (year: number, history: "push" | "replace") => {
     const next = Math.min(EXPLORE_YEAR_MAX, Math.max(EXPLORE_YEAR_MIN, year));
     // Releasing the thumb where it started, or clicking the track on the current
     // year, is not a change. Pushing the same URL would reload the map for nothing.
@@ -136,7 +150,15 @@ export function ExploreYearControl({
       return;
     }
     setDraft({ from: state.year, value: next });
-    router.push(`${pathname}${exploreHref({ ...state, year: next })}`);
+    onYearChange(next);
+    const nextUrl = `${pathname}${exploreHref({ ...state, year: next })}`;
+    writeHistory(history, nextUrl);
+  };
+
+  const go = (year: number) => {
+    setPlaying(false);
+    setPlayStatus("idle");
+    updateYear(year, "push");
   };
 
   /*
@@ -145,19 +167,38 @@ export function ExploreYearControl({
    * every server render, and depending on the object would restart the clock on
    * every unrelated re-render, so the years would never advance while dragging.
    */
+  const nextYear = Math.min(EXPLORE_YEAR_MAX, state.year + 1);
   const nextHref = `${pathname}${exploreHref({
     ...state,
-    year: state.year >= EXPLORE_YEAR_MAX ? EXPLORE_YEAR_MIN : state.year + 1,
+    year: nextYear,
   })}`;
 
-  // The player is a subscription to a clock, which is what an effect is for.
-  // It wraps rather than stopping at the end: a control that keeps its Pause
-  // label while nothing moves is a control that looks broken.
+  // Playback changes only the active source and URL state. It neither asks the
+  // App Router for a new page nor silently wraps at the end of the record.
   useEffect(() => {
-    if (!isPlaying) return;
-    const timer = setTimeout(() => router.push(nextHref), STEP_MS);
+    if (!isPlaying || state.year >= EXPLORE_YEAR_MAX) return;
+    const timer = setTimeout(() => {
+      setDraft({ from: state.year, value: nextYear });
+      onYearChange(nextYear);
+      writeHistory("replace", nextHref);
+      if (nextYear === EXPLORE_YEAR_MAX) {
+        setPlaying(false);
+        setPlayStatus("complete");
+      }
+    }, STEP_MS);
     return () => clearTimeout(timer);
-  }, [isPlaying, nextHref, router]);
+  }, [isPlaying, nextHref, nextYear, onYearChange, state.year]);
+
+  const togglePlayback = () => {
+    if (isPlaying) {
+      setPlaying(false);
+      setPlayStatus("idle");
+      return;
+    }
+    setPlayStatus("playing");
+    setPlaying(true);
+    updateYear(EXPLORE_YEAR_MIN, "replace");
+  };
 
   return (
     <div className="year-control">
@@ -217,7 +258,7 @@ export function ExploreYearControl({
         <button
           type="button"
           className="year-play"
-          onClick={() => setPlaying(!isPlaying)}
+          onClick={togglePlayback}
           disabled={!ready}
           aria-pressed={isPlaying}
           aria-label={isPlaying ? text.pause : text.play}
@@ -229,6 +270,11 @@ export function ExploreYearControl({
         </button>
         <p className="year-help" id={HELP_ID}>{text.help}</p>
       </div>
+      {playStatus !== "idle" ? (
+        <p className="year-play-status" role="status">
+          {playStatus === "playing" ? text.playing : text.complete}
+        </p>
+      ) : null}
     </div>
   );
 }

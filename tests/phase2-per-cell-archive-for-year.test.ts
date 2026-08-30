@@ -28,27 +28,21 @@ const intervals: readonly PerCellArchive[] = Array.from({ length: 38 }, (_, inde
   };
 });
 
-test("a year is shown by the interval that starts on it", () => {
-  assert.equal(archiveForYear(intervals, 1984)?.interval, "1984-1985");
-  assert.equal(archiveForYear(intervals, 1999)?.interval, "1999-2000");
-  assert.equal(archiveForYear(intervals, 2021)?.interval, "2021-2022");
-  // Every year but the last resolves to the interval it opens, so a reader is
-  // never shown loss that predates the year they selected.
-  for (const entry of intervals) {
-    const start = Number(entry.interval.split("-")[0]);
-    assert.equal(archiveForYear(intervals, start)?.interval, entry.interval);
-  }
-});
-
-test("the final year falls back to the interval that ends on it", () => {
-  // 2022 opens no interval because the series stops there. It must show
-  // 2021-2022 rather than nothing, which is the only case where the interval
-  // shown predates the selected year.
+test("a year is shown by the interval that ends on it", () => {
+  assert.equal(archiveForYear(intervals, 1985)?.interval, "1984-1985");
+  assert.equal(archiveForYear(intervals, 1999)?.interval, "1998-1999");
   assert.equal(archiveForYear(intervals, 2022)?.interval, "2021-2022");
+  // Every selectable year resolves to exactly the interval named by the
+  // slider: change between the preceding year and the selected year.
+  for (const entry of intervals) {
+    const end = Number(entry.interval.split("-")[1]);
+    assert.equal(archiveForYear(intervals, end)?.interval, entry.interval);
+  }
 });
 
 test("a year outside the series has no archive rather than a nearest one", () => {
   assert.equal(archiveForYear(intervals, 2023), null);
+  assert.equal(archiveForYear(intervals, 1984), null);
   assert.equal(archiveForYear(intervals, 1983), null);
   assert.equal(archiveForYear(intervals, 1900), null);
   assert.equal(archiveForYear(intervals, 3000), null);
@@ -79,8 +73,8 @@ test("the exported function reads the published release", () => {
     return;
   }
   assert.equal(published.length, 38);
-  assert.equal(perCellArchiveForYear(1984)?.interval, "1984-1985");
-  assert.equal(perCellArchiveForYear(2021)?.interval, "2021-2022");
+  assert.equal(perCellArchiveForYear(1985)?.interval, "1984-1985");
+  assert.equal(perCellArchiveForYear(2021)?.interval, "2020-2021");
   assert.equal(perCellArchiveForYear(2022)?.interval, "2021-2022");
   assert.equal(perCellArchiveForYear(2023), null);
 });

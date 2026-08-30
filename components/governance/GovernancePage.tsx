@@ -1,4 +1,13 @@
 import { PRODUCT_NAME, type Locale } from "@/lib/domain";
+import {
+  EXPLORE_COVERAGE_PERIOD,
+  EXPLORE_DEFAULT_YEAR,
+  EXPLORE_YEAR_MIN,
+} from "@/lib/explore";
+import {
+  provinceBulkManifestUrl,
+  provinceBulkRelease,
+} from "@/lib/downloads/releases";
 
 export type GovernancePageKind =
   | "glossary"
@@ -9,7 +18,11 @@ export type GovernancePageKind =
   | "terms"
   | "releases";
 
-type Section = Readonly<{ heading: string; paragraphs: readonly string[] }>;
+type Section = Readonly<{
+  heading: string;
+  paragraphs: readonly string[];
+  links?: readonly Readonly<{ label: string; href: string }>[];
+}>;
 type PageCopy = Readonly<{
   title: string;
   status: string;
@@ -18,13 +31,14 @@ type PageCopy = Readonly<{
 
 const enBrand = PRODUCT_NAME.en;
 const frBrand = PRODUCT_NAME.fr;
+const [provinceCsv, provinceGeoPackage] = provinceBulkRelease.artifacts;
 
 const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
   glossary: {
     en: {
       title: "Glossary",
       status:
-        "Draft terminology; professional forestry terminology review is pending.",
+        "Terms used in Explore and Compare; professional forestry terminology review is pending.",
       sections: [
         {
           heading: "Forest",
@@ -41,13 +55,56 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Coverage",
           paragraphs: [
-            "National baseline, extended record with sparse official matching, or national baseline plus local context. Coverage is a property of mapped area and time, not a province-wide promise.",
+            "Event coverage grades describe the records and context available for an event or reported value: enhanced local records, national baseline plus local context, national baseline, extended record with sparse official matching, or not applicable. These grades appear with event-level evidence and do not say that a whole province or riding was measured.",
+            "Province and riding measurement coverage states describe whether the required mapped inputs cover the selected boundary: complete, partial with unknown area, or none mapped. Explore labels these as “Every input pixel present” or “Some pixels unknown, so this is a minimum”; Compare uses “Complete mapped coverage”, “Partial mapped coverage; unknown area remains” and “No mapped coverage”. These states determine whether a boundary total or percentage can be reported. The two taxonomies answer different questions and are not interchangeable.",
           ],
         },
         {
-          heading: "Detected change",
+          heading: "Per-cell",
           paragraphs: [
-            "A satellite-observed change in tree cover. It is not, by itself, a claim of logging, deforestation, illegality or responsibility.",
+            "The most detailed published loss geometry. Each record represents one connected component traced from 30 metre source cells for one annual interval. Per-cell geometry is distinct from a province or riding aggregate.",
+          ],
+        },
+        {
+          heading: "Annual interval",
+          paragraphs: [
+            "The period between two annual observations. The year control names the ending year, so 1985 means the interval from 1984 to 1985 rather than the 1985 calendar year.",
+          ],
+        },
+        {
+          heading: "Province aggregate",
+          paragraphs: [
+            "A summary calculated for an entire provincial boundary. The available 2020 to 2022 province aggregate is a separate layer from the annual per-cell map and does not change when the year control moves.",
+          ],
+        },
+        {
+          heading: "Provisional",
+          paragraphs: [
+            "Published with stated limits for review and use, but not admitted as the formal Phase 2 production release. A provisional figure remains subject to the stated coverage, comparison and ground-verification limits.",
+          ],
+        },
+        {
+          heading: "Mapped extent",
+          paragraphs: [
+            "The area where the required source inputs are present and their extent has been checked. It may be smaller than the administrative boundary and does not imply complete coverage outside it.",
+          ],
+        },
+        {
+          heading: "Unknown share",
+          paragraphs: [
+            "The portion of a province or riding for which a required mapped input is unavailable. A non-zero unknown share means a detected-loss value is a known-area minimum, not a complete boundary total.",
+          ],
+        },
+        {
+          heading: "Representation order",
+          paragraphs: [
+            "The official Elections Canada boundary edition that defines federal electoral districts for an election. Compare uses the named order so results are tied to a specific set of riding boundaries rather than a generic current riding.",
+          ],
+        },
+        {
+          heading: "Detected loss patch",
+          paragraphs: [
+            "A simplified map shape traced from connected source cells where satellite data detected forest loss in one annual interval. Display patches cannot be added to recover exact area, and a patch alone does not establish logging, fire, deforestation, illegality or responsibility.",
           ],
         },
       ],
@@ -55,7 +112,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
     fr: {
       title: "Glossaire",
       status:
-        "Terminologie provisoire; la révision professionnelle de la terminologie forestière reste à faire.",
+        "Termes employés dans Explorer et Comparer; la révision professionnelle de la terminologie forestière reste à faire.",
       sections: [
         {
           heading: "Forêt",
@@ -72,13 +129,56 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Couverture",
           paragraphs: [
-            "Référence nationale, registre étendu avec appariement officiel limité, ou référence nationale avec contexte local. La couverture est une propriété de la zone cartographiée et de la période, et non une promesse à l’échelle provinciale.",
+            "Les catégories de couverture des événements décrivent les registres et le contexte disponibles pour un événement ou une valeur rapportée : registres locaux enrichis, référence nationale avec contexte local, référence nationale, registre prolongé avec appariement officiel limité, ou sans objet. Elles accompagnent les preuves au niveau de l’événement et n’indiquent pas qu’une province ou une circonscription entière a été mesurée.",
+            "Les états de couverture des mesures provinciales et des circonscriptions indiquent si les intrants cartographiés requis couvrent la limite choisie : couverture complète, couverture partielle avec zone inconnue, ou aucune couverture cartographiée. Explorer affiche « Tous les pixels d’entrée sont présents » ou « Certains pixels sont inconnus; il s’agit donc d’un minimum »; Comparer emploie « Couverture cartographiée complète », « Couverture cartographiée partielle; une zone inconnue demeure » et « Aucune couverture cartographiée ». Ces états déterminent si un total ou un pourcentage peut être rapporté pour la limite. Les deux taxonomies répondent à des questions différentes et ne sont pas interchangeables.",
           ],
         },
         {
-          heading: "Changement détecté",
+          heading: "Par cellule",
           paragraphs: [
-            "Changement du couvert arboré observé par satellite. À lui seul, il ne constitue pas une affirmation d’exploitation, de déforestation, d’illégalité ou de responsabilité.",
+            "La géométrie de perte publiée la plus détaillée. Chaque enregistrement représente une composante connectée tracée à partir de cellules sources de 30 mètres pour un intervalle annuel. La géométrie par cellule est distincte d’un agrégat provincial ou de circonscription.",
+          ],
+        },
+        {
+          heading: "Intervalle annuel",
+          paragraphs: [
+            "La période entre deux observations annuelles. Le contrôle de l’année nomme l’année de fin; 1985 désigne donc l’intervalle de 1984 à 1985 et non l’année civile 1985.",
+          ],
+        },
+        {
+          heading: "Agrégat provincial",
+          paragraphs: [
+            "Un résumé calculé pour toute une limite provinciale. L’agrégat provincial disponible de 2020 à 2022 constitue une couche distincte de la carte annuelle par cellule et ne change pas lorsque le contrôle de l’année est déplacé.",
+          ],
+        },
+        {
+          heading: "Provisoire",
+          paragraphs: [
+            "Publié avec des limites déclarées pour examen et utilisation, mais non admis comme version de production formelle de la phase 2. Une valeur provisoire demeure assujettie aux limites indiquées de couverture, de comparaison et de vérification sur le terrain.",
+          ],
+        },
+        {
+          heading: "Étendue cartographiée",
+          paragraphs: [
+            "La zone où les intrants sources requis sont présents et dont l’étendue a été vérifiée. Elle peut être plus petite que la limite administrative et n’implique pas une couverture complète à l’extérieur.",
+          ],
+        },
+        {
+          heading: "Part inconnue",
+          paragraphs: [
+            "La portion d’une province ou d’une circonscription pour laquelle un intrant cartographié requis n’est pas disponible. Une part inconnue non nulle signifie qu’une valeur de perte détectée est un minimum pour la zone connue, et non un total complet pour la limite.",
+          ],
+        },
+        {
+          heading: "Décret de représentation",
+          paragraphs: [
+            "L’édition officielle des limites d’Élections Canada qui définit les circonscriptions fédérales pour une élection. Comparer utilise le décret nommé afin de rattacher les résultats à un ensemble précis de limites plutôt qu’à une circonscription actuelle générique.",
+          ],
+        },
+        {
+          heading: "Zone de perte détectée",
+          paragraphs: [
+            "Une forme cartographique simplifiée tracée à partir de cellules sources connectées où les données satellitaires ont détecté une perte forestière pendant un intervalle annuel. Les zones affichées ne peuvent pas être additionnées pour retrouver la superficie exacte et, à elles seules, n’établissent ni exploitation, ni incendie, ni déforestation, ni illégalité, ni responsabilité.",
           ],
         },
       ],
@@ -103,9 +203,15 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
           ],
         },
         {
+          heading: "Interim instructions",
+          paragraphs: [
+            `If the concern is with an underlying public record, follow its source link and use the publisher’s own correction route. For a ${enBrand} display or transcription concern, keep the page URL, exact wording or value, date and time, displayed language, why it appears wrong, and any supporting official source link, then return here for the verified intake channel. Do not send personal or sensitive information to an address that is not published on this page. Preparing this record does not file a case or start a service-level clock.`,
+          ],
+        },
+        {
           heading: "Contact status",
           paragraphs: [
-            "A named accountable recipient and tested intake channel have not yet been appointed. The route will not claim to accept cases until that external governance gate is complete.",
+            "Owner action is still required to appoint a named accountable recipient and publish a tested intake channel. No correction address or submission form is currently authorized, and this route will not claim to accept cases until that governance gate is complete.",
           ],
         },
       ],
@@ -128,9 +234,15 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
           ],
         },
         {
+          heading: "Instructions provisoires",
+          paragraphs: [
+            `Si le problème concerne un registre public sous-jacent, suivez son lien source et utilisez la voie de correction de l’éditeur. Pour un problème d’affichage ou de transcription d’${frBrand}, conservez l’URL de la page, le libellé ou la valeur exacte, la date et l’heure, la langue affichée, la raison pour laquelle l’information semble erronée et tout lien vers une source officielle à l’appui, puis revenez ici pour connaître le canal de réception vérifié. N’envoyez aucun renseignement personnel ou sensible à une adresse qui n’est pas publiée sur cette page. La préparation de ce dossier ne dépose pas de demande et ne déclenche aucun délai de service.`,
+          ],
+        },
+        {
           heading: "État du contact",
           paragraphs: [
-            "Un destinataire responsable désigné et un canal de réception testé n’ont pas encore été établis. Cette route ne prétendra pas accepter des dossiers avant la réalisation de cette condition de gouvernance externe.",
+            "Le propriétaire doit encore désigner un destinataire responsable et publier un canal de réception testé. Aucune adresse de correction ni aucun formulaire de soumission n’est actuellement autorisé, et cette route ne prétendra pas accepter des dossiers avant la réalisation de cette condition de gouvernance.",
           ],
         },
       ],
@@ -145,7 +257,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Product",
           paragraphs: [
-            `Working name: ${enBrand}. Record starts in 1984; the default view starts in 2000. Scope is British Columbia, Alberta, Ontario and Quebec.`,
+            `Working name: ${enBrand}. The record covers ${EXPLORE_COVERAGE_PERIOD.en}; the year control starts at ${EXPLORE_YEAR_MIN} because that is the first annual interval, and the default view is ${EXPLORE_DEFAULT_YEAR}. Scope is British Columbia, Alberta, Ontario and Quebec.`,
             "NTEMS is the satellite spine. Live wildfire, riding comparison, accounts and alerts, reserve and treaty pages are in version 1. Advanced layer controls and asserted traditional territories are excluded.",
           ],
         },
@@ -177,7 +289,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Produit",
           paragraphs: [
-            `Nom de travail : ${frBrand}. Le registre commence en 1984; la vue par défaut commence en 2000. La portée comprend la Colombie-Britannique, l’Alberta, l’Ontario et le Québec.`,
+            `Nom de travail : ${frBrand}. Le registre couvre la période de ${EXPLORE_COVERAGE_PERIOD.fr}; la commande d’année commence à ${EXPLORE_YEAR_MIN}, soit le premier intervalle annuel, et la vue par défaut est ${EXPLORE_DEFAULT_YEAR}. La portée comprend la Colombie-Britannique, l’Alberta, l’Ontario et le Québec.`,
             "NTEMS constitue la base satellitaire. Les incendies actuels, la comparaison des circonscriptions, les comptes et alertes ainsi que les pages de réserves et de traités sont prévus dans la version 1. Les commandes avancées de couches et les territoires traditionnels revendiqués sont exclus.",
           ],
         },
@@ -374,18 +486,30 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
     en: {
       title: "Data releases",
       status:
-        "No production data release exists. The current repository contains only an illustrative source-ledger fixture.",
+        "One bounded technical-preview release is published and indexed here. It is not the production release required to close the formal Phase 2 gate.",
       sections: [
         {
-          heading: "Future manifests",
+          heading: "Published bounded release",
           paragraphs: [
-            "Every release will state its ID and date, latest data end year, boundary edition, method version, bilingual note, corrections link and stale or degraded state. Every artifact requires a licence ID and immutable SHA-256.",
+            `Release ${provinceBulkRelease.id} contains the bounded 2020 to 2022 province aggregate for British Columbia, Alberta, Ontario and Quebec as a CSV and GeoPackage. Each artifact has a published SHA-256, licence attribution, boundary edition and method version.`,
+            "This release is a province-level technical preview, not per-cell geometry. All four provinces have some unknown mapped area, so its detected-loss figures are minima. It does not complete the formal Phase 2 gate.",
+          ],
+          links: [
+            { label: "Download the province CSV", href: provinceCsv.url },
+            { label: "Download the province GeoPackage", href: provinceGeoPackage.url },
+            { label: "Open the machine-readable release manifest", href: provinceBulkManifestUrl },
+          ],
+        },
+        {
+          heading: "Formal Phase 2 gate",
+          paragraphs: [
+            "No production data release satisfying the formal Phase 2 gate exists. The published technical-preview release does not supply the still-missing independent-comparison envelope or turn local per-cell outputs into an admitted production release.",
           ],
         },
         {
           heading: "Citation format",
           paragraphs: [
-            `${enBrand}, place or record title, time range, boundary edition, data release ID, method version, retrieval date and stable URL. No production citation can be generated until a verified release exists.`,
+            `${enBrand}, province aggregate, 2020 to 2022, ${provinceCsv.boundaryEdition}, release ${provinceBulkRelease.id}, method ${provinceCsv.methodVersion}, retrieval date and stable artifact URL. Cite it as a bounded technical preview. A production citation for the formal Phase 2 release cannot be generated until that specific gate has a verified release.`,
           ],
         },
       ],
@@ -393,18 +517,30 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
     fr: {
       title: "Versions des données",
       status:
-        "Aucune version de données de production n’existe. Le dépôt actuel ne contient qu’un exemple illustratif de registre des sources.",
+        "Une version d’aperçu technique limitée est publiée et répertoriée ici. Elle n’est pas la version de production exigée pour satisfaire au critère formel de la phase 2.",
       sections: [
         {
-          heading: "Manifestes futurs",
+          heading: "Version limitée publiée",
           paragraphs: [
-            "Chaque version indiquera son identifiant et sa date, la dernière année de données, l’édition de limite, la version de méthode, une note bilingue, le lien de correction et l’état périmé ou dégradé. Chaque artefact exige un identifiant de licence et une somme SHA-256 immuable.",
+            `La version ${provinceBulkRelease.id} contient l’agrégat provincial limité de 2020 à 2022 pour la Colombie-Britannique, l’Alberta, l’Ontario et le Québec, en formats CSV et GeoPackage. Chaque artefact possède une somme SHA-256 publiée, une attribution de licence, une édition de limite et une version de méthode.`,
+            "Cette version est un aperçu technique au niveau provincial, et non une géométrie par cellule. Les quatre provinces comportent une superficie cartographiée inconnue; les valeurs de perte détectée sont donc des minimums. Cette version ne satisfait pas au critère formel de la phase 2.",
+          ],
+          links: [
+            { label: "Télécharger le CSV provincial", href: provinceCsv.url },
+            { label: "Télécharger le GeoPackage provincial", href: provinceGeoPackage.url },
+            { label: "Ouvrir le manifeste de version lisible par machine", href: provinceBulkManifestUrl },
+          ],
+        },
+        {
+          heading: "Critère formel de la phase 2",
+          paragraphs: [
+            "Aucune version de données de production satisfaisant au critère formel de la phase 2 n’existe. La version d’aperçu technique publiée ne fournit pas l’enveloppe de comparaison indépendante encore manquante et ne transforme pas les sorties locales par cellule en une version de production admise.",
           ],
         },
         {
           heading: "Format de citation",
           paragraphs: [
-            `${frBrand}, titre du lieu ou du dossier, période, édition de limite, identifiant de version des données, version de méthode, date de consultation et URL stable. Aucune citation de production ne peut être générée avant l’existence d’une version vérifiée.`,
+            `${frBrand}, agrégat provincial, 2020 à 2022, ${provinceCsv.boundaryEdition}, version ${provinceBulkRelease.id}, méthode ${provinceCsv.methodVersion}, date de consultation et URL stable de l’artefact. La citation doit préciser qu’il s’agit d’un aperçu technique limité. Une citation de production pour la version formelle de la phase 2 ne peut être générée avant qu’une version vérifiée ne satisfasse précisément à ce critère.`,
           ],
         },
       ],
@@ -446,6 +582,15 @@ export function GovernancePage({
             {section.paragraphs.map((paragraph) => (
               <p key={paragraph}>{paragraph}</p>
             ))}
+            {section.links ? (
+              <ul className="link-list">
+                {section.links.map((link) => (
+                  <li className="card card--lift" key={link.href}>
+                    <a href={link.href}>{link.label}</a>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
           </section>
         ))}
       </div>

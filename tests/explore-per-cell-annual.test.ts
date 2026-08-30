@@ -21,7 +21,7 @@ test("the annual figure describes the same interval the map draws, for every yea
    */
   assert.ok(EXPLORE_PER_CELL_LAYER.intervals.length > 0, "the release is empty, so this would pass vacuously");
 
-  for (let year = 1984; year <= 2022; year += 1) {
+  for (let year = 1985; year <= 2022; year += 1) {
     const archive = perCellArchiveForYear(year);
     const annual = perCellAnnualForYear(year);
     assert.equal(
@@ -57,6 +57,7 @@ test("the series is countable and the drawing layer is not", () => {
 });
 
 test("a year outside the series resolves to nothing rather than to a neighbour", () => {
+  assert.equal(perCellAnnualForYear(1984), null);
   assert.equal(perCellAnnualForYear(1983), null);
   assert.equal(perCellAnnualForYear(2023), null);
   assert.equal(perCellAnnualForYear(2000.5), null);

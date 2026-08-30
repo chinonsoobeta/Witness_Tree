@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/no-noninteractive-tabindex -- The horizontally scrollable table region must be keyboard-focusable. */
-import type { Locale } from "@/lib/domain";
+import { formatNumber, type Locale } from "@/lib/domain";
 
 type SourceFlags = Readonly<{ preliminary: boolean; revised: boolean; agencyEstimated: boolean }>;
 type OfficialPublishedHarvestRow = Readonly<{
@@ -13,7 +13,6 @@ type OfficialPublishedHarvestRow = Readonly<{
   referenceSourceFlags: SourceFlags | null;
   comparisonStatus: string;
   nominalSignedDifferenceHectares: number | null;
-  nominalRelativeDifference: number | null;
   withholdReason: string | null;
 }>;
 
@@ -33,7 +32,6 @@ const COPY = {
     witness: "Observed forest loss (ha)",
     reference: "Reported harvest, nominal (ha)",
     difference: "Nominal difference (ha)",
-    relative: "Nominal relative difference",
     status: "Reference status",
     rounded: "Rounded official value, ±50 ha",
     notPublished: "Not published",
@@ -41,7 +39,7 @@ const COPY = {
     preliminary: "preliminary",
     revised: "revised",
     agency: "agency estimate",
-    none: "no additional source flag",
+    none: "–",
     caption: "Official-source harvest comparison rows",
     source: "Source and attribution",
     attribution: "Adapted from Statistics Canada, Table 2.10 Forest area harvested by province and territory, 1975 to 2015, 2018. This does not constitute an endorsement by Statistics Canada of this product.",
@@ -61,7 +59,6 @@ const COPY = {
     witness: "Perte de forêt observée (ha)",
     reference: "Récolte déclarée, valeur nominale (ha)",
     difference: "Écart nominal (ha)",
-    relative: "Écart relatif nominal",
     status: "État de la référence",
     rounded: "Valeur officielle arrondie, ±50 ha",
     notPublished: "Non publiée",
@@ -69,7 +66,7 @@ const COPY = {
     preliminary: "provisoire",
     revised: "révisée",
     agency: "estimation de l’organisme",
-    none: "aucun indicateur supplémentaire",
+    none: "–",
     caption: "Lignes de comparaison avec une source officielle sur la récolte",
     source: "Source et attribution",
     attribution: "Adapté de Statistique Canada, tableau 2.10, Superficie forestière récoltée selon la province et le territoire, 1975 à 2015, 2018. Cela ne constitue pas une approbation de ce produit par Statistique Canada.",
@@ -78,9 +75,9 @@ const COPY = {
 
 const PROVINCES = ["BC", "AB", "ON", "QC"] as const;
 
-function number(value: number | null, locale: Locale, maximumFractionDigits = 2) {
+function number(value: number | null, locale: Locale, maximumFractionDigits: 0 | 1 | 2 = 2) {
   if (value === null) return null;
-  return new Intl.NumberFormat(locale === "fr" ? "fr-CA" : "en-CA", { maximumFractionDigits }).format(value);
+  return formatNumber(value, locale, maximumFractionDigits);
 }
 
 function flags(value: SourceFlags | null, locale: Locale) {
@@ -100,9 +97,9 @@ export function OfficialPublishedHarvestComparison({ rows, locale, province }: R
     <section className="content-section prose-measure"><h2>{text.scopeTitle}</h2><p>{text.scope}</p><p>{text.rounding}</p><p>{text.withheld}</p><p><strong>{text.gate}</strong></p></section>
     <section className="content-section">
       <nav aria-label={text.province} className="comparison-filters"><a href={base} aria-current={selectedProvince === null ? "page" : undefined}>{text.all}</a>{PROVINCES.map((item) => <a key={item} href={`${base}?province=${item}`} aria-current={selectedProvince === item ? "page" : undefined}>{item}</a>)}</nav>
-      <div className="table-scroll" tabIndex={0} role="region" aria-label={text.caption}><table><caption>{text.caption}{selectedProvince ? `: ${selectedProvince}` : ""}</caption><thead><tr><th scope="col">{text.province}</th><th scope="col">{text.interval}</th><th scope="col">{text.witness}</th><th scope="col">{text.reference}</th><th scope="col">{text.difference}</th><th scope="col">{text.relative}</th><th scope="col">{text.status}</th></tr></thead><tbody>{visible.map((row) => {
+      <div className="table-scroll" tabIndex={0} role="region" aria-label={text.caption}><table><caption>{text.caption}{selectedProvince ? `: ${selectedProvince}` : ""}</caption><thead><tr><th scope="col">{text.province}</th><th scope="col">{text.interval}</th><th scope="col">{text.witness}</th><th scope="col">{text.reference}</th><th scope="col">{text.difference}</th><th scope="col">{text.status}</th></tr></thead><tbody>{visible.map((row) => {
         const computed = row.comparisonStatus === "computed-rounded-reference";
-        return <tr key={`${row.province}:${row.toYear}`}><th scope="row">{row.province}</th><td>{row.fromYear}–{row.toYear}</td><td>{number(row.witnessTreeObservedForestLossHectares, locale)}</td><td>{computed ? number(row.referenceHectaresNominal, locale, 0) : <span className="unknown-value">{text.notPublished}</span>}</td><td>{computed ? number(row.nominalSignedDifferenceHectares, locale) : <span className="unknown-value">{text.notPublished}</span>}</td><td>{computed && row.nominalRelativeDifference !== null ? number(row.nominalRelativeDifference * 100, locale, 1) + "%" : <span className="unknown-value">{text.notPublished}</span>}</td><td>{computed ? <>{text.rounded}<br /><small>{flags(row.referenceSourceFlags, locale)}</small></> : <><strong>{text.notPublished}</strong><br /><small>{text.restrictedDetail}</small></>}</td></tr>;
+        return <tr key={`${row.province}:${row.toYear}`}><th scope="row">{row.province}</th><td>{row.fromYear}–{row.toYear}</td><td>{number(row.witnessTreeObservedForestLossHectares, locale)}</td><td>{computed ? number(row.referenceHectaresNominal, locale, 0) : <span className="unknown-value">{text.notPublished}</span>}</td><td>{computed ? number(row.nominalSignedDifferenceHectares, locale) : <span className="unknown-value">{text.notPublished}</span>}</td><td>{computed ? <>{text.rounded}<br /><small>{flags(row.referenceSourceFlags, locale)}</small></> : <><strong>{text.notPublished}</strong><br /><small>{text.restrictedDetail}</small></>}</td></tr>;
       })}</tbody></table></div>
     </section>
     <section className="content-section prose-measure"><h2>{text.source}</h2><p>{text.attribution}</p><p><a href={locale === "en" ? "https://www150.statcan.gc.ca/n1/pub/16-201-x/2018001/sec-2/tbl/tbl-2.10-eng.htm" : "https://www150.statcan.gc.ca/n1/pub/16-201-x/2018001/sec-2/tbl/tbl-2.10-fra.htm"}>{locale === "en" ? "Open Statistics Canada Table 2.10" : "Ouvrir le tableau 2.10 de Statistique Canada"}</a></p></section>

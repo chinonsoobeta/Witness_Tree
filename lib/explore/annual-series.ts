@@ -71,9 +71,5 @@ export const EXPLORE_PER_CELL_ANNUAL_SERIES = Object.freeze(
 export function perCellAnnualForYear(year: number): PerCellAnnualInterval | null {
   if (!Number.isInteger(year)) return null;
   const intervals = EXPLORE_PER_CELL_ANNUAL_SERIES.intervals;
-  return (
-    intervals.find((entry) => entry.interval === `${year}-${year + 1}`) ??
-    intervals.find((entry) => entry.interval === `${year - 1}-${year}`) ??
-    null
-  );
+  return intervals.find((entry) => entry.interval === `${year - 1}-${year}`) ?? null;
 }
