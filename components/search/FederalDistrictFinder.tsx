@@ -50,11 +50,13 @@ export function FederalDistrictFinder({
   query,
   rows,
   parameters = [],
+  showBoundary = true,
 }: Readonly<{
   locale: Locale;
   query: string;
   rows: readonly ComparisonPlace[];
   parameters?: readonly Readonly<{ name: string; value: string }>[];
+  showBoundary?: boolean;
 }>) {
   const text = copy[locale];
   const results = findFederalDistricts(query, rows);
@@ -62,7 +64,7 @@ export function FederalDistrictFinder({
   return (
     <section className="federal-district-finder">
       <h2>{text.title}</h2>
-      <p className="masthead-note">{text.boundary}</p>
+      {showBoundary ? <p className="masthead-note">{text.boundary}</p> : null}
       <form className="search-form" method="get">
         {parameters.map((parameter) => (
           <input key={parameter.name} type="hidden" name={parameter.name} value={parameter.value} />

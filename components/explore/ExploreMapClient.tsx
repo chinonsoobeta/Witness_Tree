@@ -45,14 +45,19 @@ const text = {
       "Showing only the detected forest-loss patches that the national disturbance record marks as fire in the selected interval.",
     readyBoth:
       "Showing two layers with different periods: detected forest-loss patches for the selected annual interval, drawn as you zoom in and available for every interval from 1984–1985 to 2021–2022, over the provisional province aggregate, which covers 2020 to 2022 and does not follow the year control. Province display boundaries are simplified and omit small islands.",
-    fallback:
-      "The interactive PMTiles layer was unavailable, so this map is showing the published GeoJSON compatibility fallback.",
+    fallbackTimeout:
+      "The interactive PMTiles layer did not become ready within 10 seconds, so this map is showing the published GeoJSON compatibility fallback.",
+    fallbackError:
+      "The interactive PMTiles layer reported an error, so this map is showing the published GeoJSON compatibility fallback.",
     unavailable:
       "Condition and recovery needs the annual land-cover class series, which has not been acquired or admitted. It is not shown for any year. Forest change, Recorded harvest and Wildfire are unaffected.",
     unavailableYear:
       "Detected patches cover the annual intervals from 1984–1985 to 2021–2022. Choose 2022 or an earlier year to see this mode.",
     error:
-      "The map layer could not be loaded. The list and table alternatives remain available.",
+      "The map layer reported an error and could not be loaded. The list and table alternatives remain available.",
+    errorTimeout:
+      "The map layer did not become ready within 10 seconds and no compatibility fallback covers this selection. The list and table alternatives remain available.",
+    retry: "Retry the interactive map",
     attribution: "Map sources",
     perCell:
       "Zoom in to see individual patches of detected forest loss, traced from the 30 m grid rather than generalized from it. One annual interval is drawn at a time, chosen by the year control, from the intervals running 1984–1985 to 2021–2022.",
@@ -94,6 +99,11 @@ const text = {
     provinceAggregate: "Provisional province aggregate, 2020 to 2022",
     detectedPatches: "Detected forest-loss patches",
     mapView: "Map view",
+    framingViews:
+      "These buttons are framing views only; use Zoom to patches to reach the patch layer.",
+    patchesBelowZoom:
+      "Detected-loss patches begin at zoom 8. The current view is below that threshold.",
+    zoomToPatches: "Zoom to patches",
     national: "National",
     bc: "British Columbia",
     ab: "Alberta",
@@ -114,14 +124,19 @@ const text = {
       "Affichage des seules parcelles de perte forestière détectée que le registre national des perturbations désigne comme incendie pour l’intervalle choisi.",
     readyBoth:
       "Affichage de deux couches aux périodes différentes : les parcelles de perte forestière détectée pour l’intervalle annuel choisi, dessinées au fur et à mesure du zoom et offertes pour chaque intervalle de 1984-1985 à 2021-2022, par-dessus l’agrégat provincial provisoire, qui couvre 2020 à 2022 et ne suit pas la commande d’année. Les limites provinciales affichées sont simplifiées et omettent les petites îles.",
-    fallback:
-      "La couche PMTiles interactive n’était pas disponible; cette carte affiche donc la solution de repli GeoJSON publiée.",
+    fallbackTimeout:
+      "La couche PMTiles interactive n’était pas prête après 10 secondes; cette carte affiche donc la solution de repli GeoJSON publiée.",
+    fallbackError:
+      "La couche PMTiles interactive a signalé une erreur; cette carte affiche donc la solution de repli GeoJSON publiée.",
     unavailable:
       "L’état et le rétablissement exigent la série annuelle des classes de couverture terrestre, qui n’a été ni acquise ni admise. Ce mode n’est affiché pour aucune année. Le changement forestier, les récoltes consignées et les incendies ne sont pas touchés.",
     unavailableYear:
       "Les parcelles détectées couvrent les intervalles annuels de 1984-1985 à 2021-2022. Choisissez 2022 ou une année antérieure pour voir ce mode.",
     error:
-      "La couche cartographique n’a pas pu être chargée. Les autres présentations en liste et en tableau demeurent disponibles.",
+      "La couche cartographique a signalé une erreur et n’a pas pu être chargée. Les autres présentations en liste et en tableau demeurent disponibles.",
+    errorTimeout:
+      "La couche cartographique n’était pas prête après 10 secondes et aucune solution de repli ne couvre cette sélection. Les autres présentations en liste et en tableau demeurent disponibles.",
+    retry: "Réessayer la carte interactive",
     attribution: "Sources de la carte",
     perCell:
       "Faites un zoom avant pour voir chaque parcelle de perte forestière détectée, tracée à partir de la grille de 30 m plutôt que généralisée. Un seul intervalle annuel est dessiné à la fois, choisi par la commande d’année, parmi les intervalles allant de 1984-1985 à 2021-2022.",
@@ -164,6 +179,11 @@ const text = {
     provinceAggregate: "Agrégat provincial provisoire, de 2020 à 2022",
     detectedPatches: "Parcelles de perte forestière détectée",
     mapView: "Vue de la carte",
+    framingViews:
+      "Ces boutons servent seulement au cadrage; utilisez Zoomer vers les parcelles pour atteindre la couche de parcelles.",
+    patchesBelowZoom:
+      "Les parcelles de perte détectée commencent au zoom 8. La vue actuelle est sous ce seuil.",
+    zoomToPatches: "Zoomer vers les parcelles",
     national: "National",
     bc: "Colombie-Britannique",
     ab: "Alberta",
@@ -174,6 +194,7 @@ const text = {
 
 type MapSource = "pmtiles" | "geojson";
 type MapState = "loading" | "ready" | "unavailable" | "error";
+type MapFailureKind = "timeout" | "error";
 type Position = [number, number];
 type MapBounds = [west: number, south: number, east: number, north: number];
 const PMTILES_LOAD_TIMEOUT_MS = 10_000;
@@ -285,6 +306,67 @@ const provinceLayers: StyleSpecification["layers"] = [
   },
 ];
 
+const PER_CELL_LAYER_ID = `${EXPLORE_PER_CELL_LAYER.sourceId}-fill`;
+
+const perCellStyle = (archive: PerCellArchive, cause: PerCellCause) => {
+  const source: StyleSpecification["sources"][string] = {
+    type: "vector",
+    url: `pmtiles://${archive.url}`,
+    bounds: [-141, 41, -52, 84],
+  };
+  const causeFilter: FilterSpecification | undefined =
+    cause === "harvest"
+      ? [">", ["get", "harvest"], 0]
+      : cause === "fire"
+        ? [">", ["get", "fire"], 0]
+        : undefined;
+  const layer: StyleSpecification["layers"][number] = {
+    id: PER_CELL_LAYER_ID,
+    type: "fill",
+    source: EXPLORE_PER_CELL_LAYER.sourceId,
+    "source-layer": perCellSourceLayer(archive.interval),
+    minzoom: EXPLORE_PER_CELL_LAYER.minZoom,
+    ...(causeFilter ? { filter: causeFilter } : {}),
+    paint: {
+      "fill-color":
+        cause === "harvest"
+          ? EXPLORE_MAP_COLOURS.harvest
+          : cause === "fire"
+            ? EXPLORE_MAP_COLOURS.wildfire
+            : [
+                "case",
+                [">", ["get", "harvest"], 0],
+                EXPLORE_MAP_COLOURS.harvest,
+                [">", ["get", "fire"], 0],
+                EXPLORE_MAP_COLOURS.wildfire,
+                EXPLORE_MAP_COLOURS.loss3,
+              ],
+      "fill-opacity": 0.9,
+    },
+  };
+  return { source, layer };
+};
+
+/** Replace only the selected annual patch source; the map and camera stay live. */
+function swapPerCellLayer(
+  map: MapLibreMap,
+  archive: PerCellArchive | null,
+  cause: PerCellCause,
+  beforeLayerId?: string,
+) {
+  if (map.getLayer(PER_CELL_LAYER_ID)) map.removeLayer(PER_CELL_LAYER_ID);
+  if (map.getSource(EXPLORE_PER_CELL_LAYER.sourceId))
+    map.removeSource(EXPLORE_PER_CELL_LAYER.sourceId);
+  if (!archive) return;
+
+  const { source, layer } = perCellStyle(archive, cause);
+  map.addSource(EXPLORE_PER_CELL_LAYER.sourceId, source);
+  map.addLayer(
+    layer,
+    beforeLayerId && map.getLayer(beforeLayerId) ? beforeLayerId : undefined,
+  );
+}
+
 const buildStyle = (
   province: boolean,
   archive: PerCellArchive | null,
@@ -310,53 +392,13 @@ const buildStyle = (
     layers.push(...provinceLayers);
   }
   if (archive) {
-    sources[EXPLORE_PER_CELL_LAYER.sourceId] = {
-      type: "vector",
-      url: `pmtiles://${archive.url}`,
-      bounds: [-141, 41, -52, 84],
-    };
+    const perCell = perCellStyle(archive, cause);
+    sources[EXPLORE_PER_CELL_LAYER.sourceId] = perCell.source;
     // Every patch carries the harvest and fire counts the disturbance record
     // holds for its own interval, so the harvest and wildfire modes are this
     // same archive filtered rather than a second layer to load. Filtering in
     // the style keeps one network request serving all three modes.
-    const causeFilter: FilterSpecification | undefined =
-      cause === "harvest"
-        ? [">", ["get", "harvest"], 0]
-        : cause === "fire"
-          ? [">", ["get", "fire"], 0]
-          : undefined;
-    layers.push({
-      id: `${EXPLORE_PER_CELL_LAYER.sourceId}-fill`,
-      type: "fill",
-      source: EXPLORE_PER_CELL_LAYER.sourceId,
-      "source-layer": perCellSourceLayer(archive.interval),
-      minzoom: EXPLORE_PER_CELL_LAYER.minZoom,
-      ...(causeFilter ? { filter: causeFilter } : {}),
-      paint: {
-        // In forest change a patch is coloured by what the official record
-        // shows for the same interval, not by what happened to it. "Neither
-        // recorded" gets its own colour and its own sentence in the legend,
-        // because the disturbance rasters encode nothing-recorded and
-        // outside-the-mapped-area identically and cannot tell them apart.
-        // In the two filtered modes every drawn patch is the recorded cause
-        // by construction, so a single colour is the honest one: a ramp
-        // would imply a magnitude these patches cannot carry.
-        "fill-color":
-          cause === "harvest"
-            ? EXPLORE_MAP_COLOURS.harvest
-            : cause === "fire"
-              ? EXPLORE_MAP_COLOURS.wildfire
-              : [
-                  "case",
-                  [">", ["get", "harvest"], 0],
-                  EXPLORE_MAP_COLOURS.harvest,
-                  [">", ["get", "fire"], 0],
-                  EXPLORE_MAP_COLOURS.wildfire,
-                  EXPLORE_MAP_COLOURS.loss3,
-                ],
-        "fill-opacity": 0.9,
-      },
-    });
+    layers.push(perCell.layer);
   }
   // Boundaries are drawn last so they sit above the data they frame, and as
   // lines only. A filled boundary would compete with the loss ramp and invite
@@ -448,7 +490,7 @@ export function ExploreMapClient({
   // wherever each one actually has something to say.
   const cause = perCellCauseForMode(mode);
   const perCellArchive = cause ? perCellArchiveForYear(year) : null;
-  const provinceAvailable = mode === "forest-change" && year >= 2022;
+  const provinceAvailable = mode === "forest-change" && year === 2022;
   const available = provinceAvailable || perCellArchive !== null;
   // A stable primitive, so the effect re-runs when the selection changes
   // rather than on every render of a fresh array literal.
@@ -456,6 +498,9 @@ export function ExploreMapClient({
   const [features, setFeatures] = useState<ProvinceFeature[]>([]);
   const [source, setSource] = useState<MapSource | null>(null);
   const [failed, setFailed] = useState(false);
+  const [failureKind, setFailureKind] = useState<MapFailureKind | null>(null);
+  const [mapReady, setMapReady] = useState(false);
+  const [retryNonce, setRetryNonce] = useState(0);
   const [hoveredBoundary, setHoveredBoundary] = useState<BoundarySelection | null>(null);
   const [pinnedBoundary, setPinnedBoundary] = useState<BoundarySelection | null>(null);
   const state: MapState = !available
@@ -482,14 +527,17 @@ export function ExploreMapClient({
       setFeatures([]);
       setSource(null);
       setFailed(false);
+      setFailureKind(null);
+      setMapReady(false);
       setView(null);
       setHoveredBoundary(null);
       setPinnedBoundary(null);
     });
 
-    const loadGeoJsonFallback = async () => {
+    const loadGeoJsonFallback = async (kind: MapFailureKind) => {
       if (fallbackStarted) return;
       fallbackStarted = true;
+      if (active) setFailureKind(kind);
       // The compatibility fallback is the province aggregate and nothing
       // else. For a year the aggregate does not cover there is nothing to
       // fall back to, and drawing 2020-2022 provinces under a 1995 label
@@ -517,16 +565,24 @@ export function ExploreMapClient({
         setSource("geojson");
         setFailed(false);
       } catch (error: unknown) {
+        if (!(error instanceof DOMException && error.name === "AbortError"))
+          console.error("Explore GeoJSON fallback error", error);
         if (
           active &&
           !(error instanceof DOMException && error.name === "AbortError")
-        )
+        ) {
+          setFailureKind("error");
           setFailed(true);
+        }
       }
     };
 
     pmtilesTimeout = setTimeout(() => {
       if (!active || pmtilesLoaded) return;
+      console.warn(
+        `Explore PMTiles map timed out after ${PMTILES_LOAD_TIMEOUT_MS} ms`,
+      );
+      setFailureKind("timeout");
       map?.remove();
       map = null;
       mapRef.current = null;
@@ -534,7 +590,7 @@ export function ExploreMapClient({
         maplibre?.removeProtocol("pmtiles");
         protocolRegistered = false;
       }
-      void loadGeoJsonFallback();
+      void loadGeoJsonFallback("timeout");
     }, PMTILES_LOAD_TIMEOUT_MS);
 
     const initializePmtiles = async () => {
@@ -544,7 +600,7 @@ export function ExploreMapClient({
           import("pmtiles"),
         ]);
         if (!active || !mapContainerRef.current) {
-          if (active) void loadGeoJsonFallback();
+          if (active) void loadGeoJsonFallback("error");
           return;
         }
         maplibre = maplibreModule;
@@ -554,14 +610,14 @@ export function ExploreMapClient({
         protocolRegistered = true;
         map = new maplibre.Map({
           container: mapContainerRef.current,
-          style: buildStyle(provinceAvailable, perCellArchive, overlays, cause ?? "all"),
+          style: buildStyle(provinceAvailable, null, overlays, "all"),
           center: [-96, 56],
           zoom: 2.6,
           minZoom: 1.5,
           // The per-cell layer is only drawn from zoom 8, so the map has to
           // reach it. Without an archive there is nothing past the province
           // aggregate to magnify and the old ceiling still applies.
-          maxZoom: perCellArchive ? EXPLORE_PER_CELL_LAYER.maxZoom : 6,
+          maxZoom: cause !== null ? EXPLORE_PER_CELL_LAYER.maxZoom : 6,
           attributionControl: false,
         });
         mapRef.current = map;
@@ -584,6 +640,8 @@ export function ExploreMapClient({
           pmtilesLoaded = true;
           setSource("pmtiles");
           setFailed(false);
+          setFailureKind(null);
+          setMapReady(true);
           publishView();
           const selectBoundary = (
             event: MapLayerMouseEvent,
@@ -627,8 +685,10 @@ export function ExploreMapClient({
             });
           }
         });
-        map.on("error", () => {
+        map.on("error", (event) => {
+          console.error("Explore PMTiles map error", event.error ?? event);
           if (pmtilesLoaded) return;
+          setFailureKind("error");
           map?.remove();
           map = null;
           mapRef.current = null;
@@ -636,10 +696,11 @@ export function ExploreMapClient({
             maplibre?.removeProtocol("pmtiles");
             protocolRegistered = false;
           }
-          void loadGeoJsonFallback();
+          void loadGeoJsonFallback("error");
         });
-      } catch {
-        if (active) void loadGeoJsonFallback();
+      } catch (error: unknown) {
+        console.error("Explore PMTiles initialization error", error);
+        if (active) void loadGeoJsonFallback("error");
       }
     };
 
@@ -650,6 +711,7 @@ export function ExploreMapClient({
       if (pmtilesTimeout) clearTimeout(pmtilesTimeout);
       map?.remove();
       mapRef.current = null;
+      setMapReady(false);
       if (protocolRegistered) maplibre?.removeProtocol("pmtiles");
     };
     // overlayKey stands in for `overlays`: the prop is a fresh array on every
@@ -657,7 +719,33 @@ export function ExploreMapClient({
     // and rebuild the whole map each time. The key changes exactly when the
     // selected overlay set changes, which is the only thing the style needs.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [available, provinceAvailable, perCellArchive, overlayKey, cause]);
+  }, [available, provinceAvailable, overlayKey, retryNonce]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!mapReady || !map) return;
+    let active = true;
+    try {
+      swapPerCellLayer(
+        map,
+        perCellArchive,
+        cause ?? "all",
+        boundaryLineLayerIds(overlays)[0],
+      );
+    } catch (error: unknown) {
+      console.error("Explore annual patch source swap error", error);
+      void Promise.resolve().then(() => {
+        if (!active) return;
+        setFailureKind("error");
+        setFailed(true);
+      });
+    }
+    return () => {
+      active = false;
+    };
+    // overlayKey stands in for the fresh overlays array.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mapReady, perCellArchive, cause, overlayKey]);
   const readyKey = provinceAvailable
     ? perCellArchive
       ? "readyBoth"
@@ -676,10 +764,14 @@ export function ExploreMapClient({
         ? text[locale].unavailable
         : text[locale].unavailableYear
       : source === "geojson"
-        ? text[locale].fallback
+        ? failureKind === "timeout"
+          ? text[locale].fallbackTimeout
+          : text[locale].fallbackError
         : state === "ready"
           ? text[locale][readyKey]
-          : text[locale][state];
+          : state === "error" && failureKind === "timeout"
+            ? text[locale].errorTimeout
+            : text[locale][state];
   const legendTitle =
     cause === "harvest"
       ? text[locale].perCellLegendHarvest
@@ -710,6 +802,23 @@ export function ExploreMapClient({
       duration: 350,
       maxZoom: mapView === "national" ? 2.6 : 6,
     });
+  };
+  const zoomToPatches = () => {
+    const map = mapRef.current;
+    if (!map) return;
+    map.easeTo({
+      center: map.getCenter(),
+      zoom: EXPLORE_PER_CELL_LAYER.minZoom,
+      duration: 350,
+    });
+  };
+  const retryMap = () => {
+    setFeatures([]);
+    setSource(null);
+    setFailed(false);
+    setFailureKind(null);
+    setMapReady(false);
+    setRetryNonce((attempt) => attempt + 1);
   };
   return (
     <section aria-label={text[locale].label}>
@@ -784,7 +893,19 @@ export function ExploreMapClient({
                         </button>
                       ))}
                     </div>
+                    <p className="explore-map-note">{text[locale].framingViews}</p>
                   </fieldset>
+                ) : null}
+                {source === "pmtiles" &&
+                perCellArchive &&
+                view &&
+                view.zoom < EXPLORE_PER_CELL_LAYER.minZoom ? (
+                  <div className="explore-map-action">
+                    <p>{text[locale].patchesBelowZoom}</p>
+                    <button type="button" onClick={zoomToPatches}>
+                      {text[locale].zoomToPatches}
+                    </button>
+                  </div>
                 ) : null}
                 <strong>{text[locale].mapLayers}</strong>
                 <ul className="explore-map-layer-list">
@@ -902,6 +1023,11 @@ export function ExploreMapClient({
       >
         {message}
       </p>
+      {state === "error" || source === "geojson" ? (
+        <button className="btn btn--secondary explore-map-retry" type="button" onClick={retryMap}>
+          {text[locale].retry}
+        </button>
+      ) : null}
       <p id={attributionId} className="explore-map-attribution">
         {text[locale].attribution}
         {colon(locale)}{" "}

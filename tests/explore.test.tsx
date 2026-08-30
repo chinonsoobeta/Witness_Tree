@@ -60,6 +60,7 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
       mode="recorded-harvest"
       presentation="list"
       data="table"
+      year={2012}
     />,
   );
   const fr = renderToStaticMarkup(
@@ -69,6 +70,7 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
       mode="condition-recovery"
       presentation="list"
       data="chart"
+      year={1988}
     />,
   );
   assert.match(
@@ -169,7 +171,7 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
   assert.equal((listTable.match(/scope="col"/g) ?? []).length, 6);
   assert.match(listTable, /scope="row"/);
   assert.match(fr, /État et rétablissement/);
-  assert.match(fr, /Cette liste, ce graphique et ce tableau/);
+  assert.match(fr, /La liste, le graphique et le tableau/);
   assert.match(fr, /Superpositions de limites/);
 
   const withOverlay = renderToStaticMarkup(
@@ -188,6 +190,81 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
     assert.match(link, /mode=/);
   }
 });
+
+test("Explore puts explanation and controls before the map, then layers and data views", () => {
+  const en = renderToStaticMarkup(
+    <ExploreView events={exploreFixtures} locale="en" year={1990} />,
+  );
+  const fr = renderToStaticMarkup(
+    <ExploreView events={exploreFixtures} locale="fr" year={1990} />,
+  );
+  const orderedMarkers = [
+    "explore-note",
+    "explore-modes",
+    'id="explore-year-heading"',
+    'id="explore-map-heading"',
+    'id="explore-layers-heading"',
+    'id="explore-data-heading"',
+  ];
+  for (const markup of [en, fr]) {
+    const positions = orderedMarkers.map((marker) => markup.indexOf(marker));
+    assert.ok(positions.every((position) => position >= 0));
+    assert.deepEqual(positions, [...positions].sort((a, b) => a - b));
+  }
+  assert.ok(
+    en.indexOf("Per-cell detected loss,") >
+      en.indexOf('id="explore-map-heading"'),
+  );
+  assert.ok(
+    en.indexOf("Per-cell detected loss,") <
+      en.indexOf('id="explore-layers-heading"'),
+  );
+  assert.match(en, /Real map intervals: 1985–2022/);
+  assert.match(en, /Illustrative data view: 2012/);
+  assert.match(en, /No real map data\. Illustrative data view: 1988/);
+  assert.equal((en.match(/<h2/g) ?? []).length, (fr.match(/<h2/g) ?? []).length);
+});
+
+test("list, chart, and table share one explanatory empty state", () => {
+  const empty =
+    "No illustrative data-view record exists for Wildfire in 1990. The nearest illustrative year is 2020.";
+  const chart = renderToStaticMarkup(
+    <ExploreView
+      events={exploreFixtures}
+      locale="en"
+      mode="wildfire"
+      presentation="list"
+      data="chart"
+      year={1990}
+    />,
+  );
+  const table = renderToStaticMarkup(
+    <ExploreView
+      events={exploreFixtures}
+      locale="en"
+      mode="wildfire"
+      presentation="list"
+      data="table"
+      year={1990}
+    />,
+  );
+  assert.equal((chart.match(new RegExp(empty, "g")) ?? []).length, 1);
+  assert.equal((table.match(new RegExp(empty, "g")) ?? []).length, 1);
+  assert.doesNotMatch(chart, /class="explore-list"|class="explore-chart"/);
+  assert.doesNotMatch(table, /class="explore-list"|class="explore-table"/);
+  const fr = renderToStaticMarkup(
+    <ExploreView
+      events={exploreFixtures}
+      locale="fr"
+      mode="wildfire"
+      presentation="list"
+      data="chart"
+      year={1990}
+    />,
+  );
+  assert.match(fr, /L’année illustrative la plus proche est 2020/);
+});
+
 test("map/list and chart/table retain evidence, confidence, coverage, provenance, and Unknown is never zero", () => {
   const mapChart = renderToStaticMarkup(
     <ExploreView
@@ -205,6 +282,7 @@ test("map/list and chart/table retain evidence, confidence, coverage, provenance
       mode="recorded-harvest"
       presentation="list"
       data="chart"
+      year={2012}
     />,
   );
   const listTable = renderToStaticMarkup(
@@ -214,10 +292,11 @@ test("map/list and chart/table retain evidence, confidence, coverage, provenance
       mode="condition-recovery"
       presentation="list"
       data="table"
+      year={1988}
     />,
   );
   assert.match(mapChart, /aria-label="Chart"/);
-  assert.doesNotMatch(mapChart, /aria-label="Map"/);
+  assert.match(mapChart, /aria-label="Forest change map"/);
   assert.match(listChart, /Official record/);
   assert.match(listChart, /Source attribution/);
   assert.match(listTable, /No authoritative public record/);
@@ -233,6 +312,10 @@ test("Explore uses the exact PMTiles release with a GeoJSON/SVG fallback on map 
   );
   const style = await readFile(
     new URL("../lib/explore/map-style.ts", import.meta.url),
+    "utf8",
+  );
+  const view = await readFile(
+    new URL("../components/explore/ExploreView.tsx", import.meta.url),
     "utf8",
   );
   const enRoute = await readFile(
@@ -262,7 +345,7 @@ test("Explore uses the exact PMTiles release with a GeoJSON/SVG fallback on map 
   assert.match(map, /featurePath\(feature\)/);
   assert.doesNotMatch(map, /sources: \{ fixtures:/);
   assert.match(map, /role=\{state === "error" \? "alert" : "status"\}/);
-  assert.match(map, /year >= 2022/);
+  assert.match(map, /year === 2022/);
   assert.match(map, /unavailableYear/);
   assert.match(map, /EXPLORE_PRODUCTION_LAYER\.rows\.map/);
   assert.match(map, /Observed loss \(%\)/);
@@ -272,11 +355,68 @@ test("Explore uses the exact PMTiles release with a GeoJSON/SVG fallback on map 
     style,
     /101561ed48f511a3e65676fa084ee517c4fa722e14f4a3c844c698b247238505/,
   );
+  assert.match(view, /presentation === "map" \? \(/);
+  assert.match(view, /<ExploreMapClient/);
+  assert.match(view, /year=\{activeYear\}/);
+  assert.match(view, /ridingMeasurements=\{ridingMeasurements\}/);
   for (const route of [enRoute, frRoute]) {
-    assert.match(route, /presentation === "map" \?\s*\(?\s*<ExploreMapClient/);
-    assert.match(route, /mode=\{mode\}\s+year=\{year\}/);
+    assert.equal((route.match(/<FederalDistrictFinder/g) ?? []).length, 1);
+    assert.doesNotMatch(route, /PlaceFinder/);
+    assert.match(route, /<ExploreView/);
     assert.match(route, /ridingMeasurements=\{ridingMeasurements\}/);
   }
+});
+
+test("map failures retain diagnostics, retry, and a reachable patch zoom", async () => {
+  const map = await (await import("node:fs/promises")).readFile(
+    new URL("../components/explore/ExploreMapClient.tsx", import.meta.url),
+    "utf8",
+  );
+  assert.match(map, /map\.on\("error", \(event\) =>/);
+  assert.match(map, /event\.error \?\? event/);
+  assert.match(map, /catch \(error: unknown\)/);
+  assert.match(map, /console\.error\("Explore PMTiles/);
+  assert.match(map, /console\.warn\(/);
+  assert.match(map, /fallbackTimeout/);
+  assert.match(map, /fallbackError/);
+  assert.match(map, /errorTimeout/);
+  assert.match(map, /retryMap/);
+  assert.match(map, /Retry the interactive map/);
+  assert.match(map, /Zoom to patches/);
+  assert.match(map, /zoom: EXPLORE_PER_CELL_LAYER\.minZoom/);
+  assert.match(map, /center: map\.getCenter\(\)/);
+  assert.match(map, /view\.zoom < EXPLORE_PER_CELL_LAYER\.minZoom/);
+  assert.match(map, /framing views only/);
+});
+
+test("playback swaps only the annual source, starts at 1985, and stops visibly", async () => {
+  const { readFile } = await import("node:fs/promises");
+  const map = await readFile(
+    new URL("../components/explore/ExploreMapClient.tsx", import.meta.url),
+    "utf8",
+  );
+  const yearControl = await readFile(
+    new URL("../components/explore/ExploreYearControl.tsx", import.meta.url),
+    "utf8",
+  );
+  assert.match(map, /function swapPerCellLayer/);
+  assert.match(map, /map\.removeLayer\(PER_CELL_LAYER_ID\)/);
+  assert.match(map, /map\.removeSource\(EXPLORE_PER_CELL_LAYER\.sourceId\)/);
+  assert.match(map, /map\.addSource\(EXPLORE_PER_CELL_LAYER\.sourceId, source\)/);
+  assert.match(map, /\[available, provinceAvailable, overlayKey, retryNonce\]/);
+  assert.doesNotMatch(
+    map,
+    /\[available, provinceAvailable, perCellArchive, overlayKey, cause\]/,
+  );
+  assert.doesNotMatch(yearControl, /useRouter|router\.push/);
+  assert.match(yearControl, /History\.prototype\.pushState/);
+  assert.match(yearControl, /History\.prototype\.replaceState/);
+  assert.match(yearControl, /write\.call\(window\.history/);
+  assert.match(yearControl, /updateYear\(EXPLORE_YEAR_MIN, "replace"\)/);
+  assert.match(yearControl, /if \(nextYear === EXPLORE_YEAR_MAX\)/);
+  assert.match(yearControl, /setPlaying\(false\)/);
+  assert.match(yearControl, /year-play-status/);
+  assert.match(yearControl, /Playback reached the end of the record/);
 });
 
 test("the map uses fixed hydration-safe status and attribution ids", async () => {
@@ -396,8 +536,8 @@ test("the year control is a real, shareable control rather than a decorative sli
   assert.match(fr, /Mettre à jour/);
 });
 
-test("the year query is parsed defensively and filters fixtures to that year and earlier", async () => {
-  const { parseExploreYear, fixturesThroughYear } =
+test("the year query is parsed defensively and fixtures use one selected interval", async () => {
+  const { parseExploreYear, fixturesForYear } =
     // @ts-expect-error -- Node's TypeScript runner requires explicit local extensions.
     await import("../lib/explore/fixtures.ts");
   const { EXPLORE_DEFAULT_YEAR } =
@@ -430,27 +570,24 @@ test("the year query is parsed defensively and filters fixtures to that year and
 
   // Fixture years are 1988, 2004, 2012, 2020.
   assert.deepEqual(
-    fixturesThroughYear(exploreFixtures, 1987).map(
+    fixturesForYear(exploreFixtures, 1987).map(
       (event: { id: string }) => event.id,
     ),
     [],
   );
   assert.deepEqual(
-    fixturesThroughYear(exploreFixtures, 1988).map(
+    fixturesForYear(exploreFixtures, 1988).map(
       (event: { id: string }) => event.id,
     ),
     ["condition"],
   );
   assert.deepEqual(
-    fixturesThroughYear(exploreFixtures, 2012).map(
+    fixturesForYear(exploreFixtures, 2012).map(
       (event: { id: string }) => event.id,
     ),
-    ["change", "harvest", "condition"],
+    ["harvest"],
   );
-  assert.equal(
-    fixturesThroughYear(exploreFixtures, EXPLORE_DEFAULT_YEAR).length,
-    exploreFixtures.length,
-  );
+  assert.deepEqual(fixturesForYear(exploreFixtures, EXPLORE_DEFAULT_YEAR), []);
 });
 
 test("switching language keeps the selected year", async () => {

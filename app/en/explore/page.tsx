@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ExploreMapClient, ExploreView } from "@/components/explore";
+import { ExploreView } from "@/components/explore";
 import { FederalDistrictFinder } from "@/components/search";
 import { SiteShell } from "@/components/site";
 import { federalRidingComparison } from "@/lib/comparison";
 import {
   exploreFixtures,
   EXPLORE_MODES,
-  fixturesThroughYear,
   parseBoundaryOverlays,
   parseExploreYear,
   ridingMeasurements,
@@ -27,7 +26,6 @@ export default async function Page({
     data?: string;
     year?: string;
     overlays?: string;
-    q?: string;
     district?: string;
   }>;
 }) {
@@ -40,7 +38,6 @@ export default async function Page({
   const presentation = query.presentation === "list" ? "list" : "map";
   const year = parseExploreYear(query.year);
   const overlays = parseBoundaryOverlays(query.overlays);
-  const events = fixturesThroughYear(exploreFixtures, year);
   return (
     <SiteShell locale="en">
       <main id="main" className="page-wrap">
@@ -48,6 +45,16 @@ export default async function Page({
           <h1>Explore forest change</h1>
           <p className="masthead-note">Release scope, downloads and limitations are indexed in <Link href="/en/releases">Data releases</Link>.</p>
         </header>
+        <ExploreView
+          events={exploreFixtures}
+          locale="en"
+          mode={mode}
+          presentation={presentation}
+          data={query.data === "table" ? "table" : "chart"}
+          year={year}
+          overlays={overlays}
+          ridingMeasurements={ridingMeasurements}
+        />
         <FederalDistrictFinder
           locale="en"
           query={query.district ?? ""}
@@ -59,25 +66,6 @@ export default async function Page({
             { name: "year", value: String(year) },
             ...(overlays.length > 0 ? [{ name: "overlays", value: overlays.join(",") }] : []),
           ]}
-        />
-        {presentation === "map" ? (
-          <ExploreMapClient
-            locale="en"
-            mode={mode}
-            year={year}
-            overlays={overlays}
-            ridingMeasurements={ridingMeasurements}
-          />
-        ) : null}
-        <ExploreView
-          events={events}
-          locale="en"
-          mode={mode}
-          presentation={presentation}
-          data={query.data === "table" ? "table" : "chart"}
-          year={year}
-          overlays={overlays}
-          query={query.q ?? ""}
         />
       </main>
     </SiteShell>

@@ -26,19 +26,28 @@ test("renders alias results with locale-correct links and keeps Explore in heade
   assert.match(header, /\["Explore", "\/en\/explore"\]/);
   assert.match(header, /\["Explorer", "\/fr\/explorer"\]/);
 });
-test("renders a bilingual Explore finder that preserves controls and labels illustrative results", () => {
-  const parameters = [{ name: "mode", value: "forest-change" }, { name: "presentation", value: "list" }, { name: "data", value: "table" }, { name: "year", value: "2022" }];
-  const en = renderToStaticMarkup(<PlaceFinder locale="en" query="alias de municipalite quebecoise" context="explore" parameters={parameters} />);
-  const fr = renderToStaticMarkup(<PlaceFinder locale="fr" query="alias de municipalite quebecoise" context="explore" />);
-  assert.match(en, /Find a district or place/);
-  assert.match(en, /Illustrative directory only\. These results are not admitted measurements\./);
-  assert.match(en, /<label[^>]*id="explore-label"[^>]*>Find a district or place<\/label>/);
-  assert.match(en, /<input[^>]*aria-labelledby="explore-label"/);
+test("Search exposes one field behind a labelled places or districts scope", () => {
+  const places = renderToStaticMarkup(<SearchPage locale="en" scope="places" query="illustrative" />);
+  const districts = renderToStaticMarkup(<SearchPage locale="en" scope="districts" query="Abbotsford" />);
+  for (const markup of [places, districts]) {
+    assert.equal((markup.match(/<input class="input"/g) ?? []).length, 1);
+    assert.match(markup, /aria-label="Search scope"/);
+    assert.match(markup, /Neither is a published release/);
+  }
+  assert.match(places, /href="\/en\/places\//);
+  assert.doesNotMatch(places, /Find a federal electoral district/);
+  assert.match(districts, /Find a federal electoral district/);
+  assert.match(districts, /href="\/en\/compare\?left=/);
+  assert.doesNotMatch(districts, /<h2>Search places<\/h2>/);
+});
+test("renders the bilingual place finder with its visible label as the accessible name", () => {
+  const en = renderToStaticMarkup(<PlaceFinder locale="en" query="alias de municipalite quebecoise" />);
+  const fr = renderToStaticMarkup(<PlaceFinder locale="fr" query="alias de municipalite quebecoise" />);
+  assert.match(en, /Search places/);
+  assert.match(en, /<label[^>]*id="search-label"[^>]*>Search places<\/label>/);
+  assert.match(en, /<input[^>]*aria-labelledby="search-label"/);
   assert.doesNotMatch(en, /<input[^>]*aria-label=/);
-  assert.match(en, /name="mode" value="forest-change"/);
-  assert.match(en, /name="presentation" value="list"/);
   assert.match(en, /href="\/en\/places\//);
-  assert.match(fr, /Trouver une circonscription ou un lieu/);
-  assert.match(fr, /Répertoire illustratif seulement\. Ces résultats ne sont pas des mesures admises\./);
+  assert.match(fr, /Rechercher des lieux/);
   assert.match(fr, /href="\/fr\/lieux\//);
 });
