@@ -20,6 +20,7 @@ const BASELINE = {
 };
 
 const FEDERAL_IDS = ["fed-2023-ridings", "elections-canada-45th-files"];
+const NBAC_ID = "cwfis-historical";
 const HISTORICAL_TRANSITION_IDS = [
   "cwfis-current",
   "bc-wildfire",
@@ -28,6 +29,7 @@ const HISTORICAL_TRANSITION_IDS = [
   "qc-current-ecoforest",
   "qc-original-current-inventory",
   "qc-fourth-inventory",
+  NBAC_ID,
   ...FEDERAL_IDS,
 ];
 const HISTORICAL_ROW_STATE = {
@@ -50,6 +52,20 @@ const LATER_FEDERAL_STATE = {
   immutableArchive: true,
   productionAdmission: true,
   productionEligible: true,
+};
+const HISTORICAL_NBAC_STATE = {
+  evidenceState: "partial-component",
+  rawCredit: 0.25,
+  immutableArchive: false,
+  productionAdmission: false,
+  productionEligible: false,
+};
+const LATER_NBAC_STATE = {
+  evidenceState: "local-verified-profiled",
+  rawCredit: 0.75,
+  immutableArchive: false,
+  productionAdmission: false,
+  productionEligible: false,
 };
 const HISTORICAL_LEDGER_FIELDS_SHA256 = "3606c9f0e989a2995129fa9b7f565d3272cbf4279eb3af01c6ad944977de4eef";
 
@@ -100,17 +116,19 @@ function projectHistoricalLedger(ledger) {
     if (!transitionIds.has(entry.id)) return entry;
 
     const observed = ledgerFields(entry);
-    const historical = { id: entry.id, ...HISTORICAL_ROW_STATE };
-    const later = { id: entry.id, ...(FEDERAL_IDS.includes(entry.id) ? LATER_FEDERAL_STATE : LATER_ARCHIVE_STATE) };
+    const historicalState = entry.id === NBAC_ID ? HISTORICAL_NBAC_STATE : HISTORICAL_ROW_STATE;
+    const laterState = FEDERAL_IDS.includes(entry.id) ? LATER_FEDERAL_STATE : entry.id === NBAC_ID ? LATER_NBAC_STATE : LATER_ARCHIVE_STATE;
+    const historical = { id: entry.id, ...historicalState };
+    const later = { id: entry.id, ...laterState };
     if (JSON.stringify(observed) === JSON.stringify(historical)) return entry;
     assert.deepEqual(observed, later, `${entry.id} must be either the bound historical state or a verified later state.`);
     if (FEDERAL_IDS.includes(entry.id)) admittedFederalRows += 1;
     return {
       ...entry,
-      evidenceState: HISTORICAL_ROW_STATE.evidenceState,
-      rawCredit: HISTORICAL_ROW_STATE.rawCredit,
-      proof: { ...entry.proof, immutableArchive: HISTORICAL_ROW_STATE.immutableArchive, productionAdmission: HISTORICAL_ROW_STATE.productionAdmission },
-      productionEligible: HISTORICAL_ROW_STATE.productionEligible,
+      evidenceState: historicalState.evidenceState,
+      rawCredit: historicalState.rawCredit,
+      proof: { ...entry.proof, immutableArchive: historicalState.immutableArchive, productionAdmission: historicalState.productionAdmission },
+      productionEligible: historicalState.productionEligible,
     };
   });
 
