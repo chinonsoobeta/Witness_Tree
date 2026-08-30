@@ -244,7 +244,9 @@
     "db:generate": "drizzle-kit generate",
     "check:qc-fourth-inventory-immutable-promotion": "node scripts/check-qc-fourth-inventory-immutable-promotion.mjs",
     "dry-run:qc-fourth-inventory-immutable-promotion": "zsh scripts/run-qc-fourth-inventory-approved-promotion.sh",
-    "check:boundary-overlays": "node scripts/check-boundary-overlays.mjs"
+    "check:boundary-overlays": "node scripts/check-boundary-overlays.mjs",
+    "test:data-root": "node scripts/run-data-root-tests.mjs",
+    "check:data-root-test-currency": "node scripts/check-data-root-test-currency.mjs"
   },
   "dependencies": {
     "@bcgov/bc-sans": "^2.1.0",

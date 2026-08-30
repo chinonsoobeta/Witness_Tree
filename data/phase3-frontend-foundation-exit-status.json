@@ -18,7 +18,7 @@
         },
         {
           "path": ".github/workflows/ci.yml",
-          "sha256": "dc85381c38ee6e9d69b6f0b6fa177aee16595df91eaf5761466031c9305f6380"
+          "sha256": "dedc62d9fe36c441dbe8ac719d3289d84cb0e97d94f050d147d8efa147e2a445"
         }
       ]
     },
@@ -41,7 +41,7 @@
         },
         {
           "path": ".github/workflows/ci.yml",
-          "sha256": "dc85381c38ee6e9d69b6f0b6fa177aee16595df91eaf5761466031c9305f6380"
+          "sha256": "dedc62d9fe36c441dbe8ac719d3289d84cb0e97d94f050d147d8efa147e2a445"
         }
       ]
     },
@@ -88,7 +88,7 @@
   ],
   "completedCriteria": 4,
   "totalCriteria": 5,
-  "percentage": 80.0,
+  "percentage": 80,
   "phaseComplete": false,
   "ownerBlockers": [
     {

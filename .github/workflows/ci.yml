@@ -139,6 +139,12 @@ jobs:
       # in scripts/run-ci-tests.mjs with the reason for each. It follows the build
       # because the rendered-HTML tests import the build output.
       - run: npm run test:suite
+      # Nothing above can run the 25 data-root-bound tests, so this gate checks
+      # instead that they are not stale: it recomputes each one's guarded file set
+      # from the tree and compares it to the receipt of the owner's last local run.
+      # #84 edited the NTEMS runner and four owner-bound execution authorizations
+      # and merged green because the only test reading them needs the SSD.
+      - run: npm run check:data-root-test-currency
       - run: npm run check:claims
       - run: npm run check:style-tokens
       - run: npm run check:contrast
@@ -159,3 +165,5 @@ jobs:
       # check:phase1-federal-electoral-production-admission and
       # check:phase2-historical-national-execution. They remain required local
       # release gates and are the reason the local suite is not optional.
+      # Their staleness, however, is no longer invisible: see
+      # check:data-root-test-currency above.
