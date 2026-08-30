@@ -14,6 +14,7 @@ export const PUBLIC_LOCALE_ROUTE_PAIRS = [
   { en: "/en/wildfire", fr: "/fr/incendies" },
   { en: "/en/about", fr: "/fr/a-propos" },
   { en: "/en/account", fr: "/fr/compte" },
+  { en: "/en/components", fr: "/fr/composants" },
   { en: "/en/glossary", fr: "/fr/glossaire" },
   { en: "/en/corrections", fr: "/fr/corrections" },
   { en: "/en/decisions", fr: "/fr/decisions" },

@@ -73,6 +73,8 @@ test("robots and sitemap expose both locales without fixture routes", () => {
     assert.ok(urls.includes(SITE_ORIGIN + paths.en));
     assert.ok(urls.includes(SITE_ORIGIN + paths.fr));
   }
+  assert.ok(urls.includes(SITE_ORIGIN + "/en/components"));
+  assert.ok(urls.includes(SITE_ORIGIN + "/fr/composants"));
   assert.equal(urls.some((url) => /\/(?:places|lieux|location|emplacement)\//.test(url)), false);
   assert.equal(entries[0]?.alternates?.languages?.["x-default"], SITE_ORIGIN);
 });

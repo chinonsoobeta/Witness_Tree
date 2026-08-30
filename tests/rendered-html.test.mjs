@@ -75,30 +75,32 @@ test("renders localized search results and Explore list/table alternatives witho
   const [englishSearch, frenchSearch, englishExplore, frenchExplore] = await Promise.all([
     render("/en/search?q=British%20Columbia").then((response) => response.text()),
     render("/fr/recherche?q=Colombie-Britannique").then((response) => response.text()),
-    render("/en/explore?mode=wildfire&presentation=list&data=table").then((response) => response.text()),
-    render("/fr/explorer?mode=wildfire&presentation=list&data=table").then((response) => response.text()),
+    render("/en/explore?mode=wildfire&presentation=list&data=table&year=2020").then((response) => response.text()),
+    render("/fr/explorer?mode=wildfire&presentation=list&data=table&year=2020").then((response) => response.text()),
   ]);
 
   assert.match(englishSearch, /<main\b[^>]*id="main"/);
   assert.match(englishSearch, /Search places/);
-  assert.match(englishSearch, /Illustrative fixtures only/);
+  assert.match(englishSearch, /Place results are illustrative fixtures/);
+  assert.match(englishSearch, /district results are local nonproduction measurements/);
   assert.match(englishSearch, /Illustrative British Columbia/);
   assert.match(frenchSearch, /<main\b[^>]*id="main"/);
   assert.match(frenchSearch, /Rechercher des lieux/);
-  assert.match(frenchSearch, /Exemples illustratifs seulement/);
+  assert.match(frenchSearch, /Les résultats de lieux sont des exemples illustratifs/);
+  assert.match(frenchSearch, /circonscriptions sont des mesures locales non productives/);
   assert.match(frenchSearch, /Colombie-Britannique illustrative/);
 
   assert.match(englishExplore, /<main\b[^>]*id="main"/);
   assert.match(englishExplore, /Explore forest change/);
-  assert.match(englishExplore, /This list, chart, and table use illustrative fixtures/);
-  assert.match(englishExplore, /No verified geographic layer is implied by this view/);
+  assert.match(englishExplore, /The list, chart, and table use illustrative fixtures/);
+  assert.match(englishExplore, /This view does not imply a production geographic layer/);
   assert.match(englishExplore, /Reported fire perimeter/);
   assert.match(englishExplore, /<table/);
   assert.match(englishExplore, /Source attribution/);
   assert.match(frenchExplore, /<main\b[^>]*id="main"/);
   assert.match(frenchExplore, /Explorer les changements forestiers/);
-  assert.match(frenchExplore, /Cette liste, ce graphique et ce tableau utilisent des exemples illustratifs/);
-  assert.match(frenchExplore, /Cette vue n’implique aucune couche géographique vérifiée/);
+  assert.match(frenchExplore, /La liste, le graphique et le tableau utilisent des exemples illustratifs/);
+  assert.match(frenchExplore, /Cette vue n’implique aucune couche géographique de production/);
   assert.match(frenchExplore, /Périmètre d’incendie déclaré/);
   assert.match(frenchExplore, /<table/);
   assert.match(frenchExplore, /Attribution de la source/);
