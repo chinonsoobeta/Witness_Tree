@@ -70,6 +70,11 @@ jobs:
       - run: npm run check:phase8-launch-readiness-exit-status
       - run: npm run check:site-hosting-capability-probe
       - run: npm run check:phase8-province-map-release
+      # The repository half of the deployed-Site render observation. The run
+      # itself needs a browser and the public origin, so it is done by hand;
+      # this fails when the record is missing, records a failure, or has gone
+      # stale because a file it bound has changed since the Site was observed.
+      - run: npm run check:deployed-map-render
       - run: npm run check:maplibre-worker-asset
       - name: Independently retrieve the Phase 8 bulk release
         run: node scripts/check-phase8-bulk-download-independent-retrieval.mjs --output /tmp/phase8-bulk-download-independent-retrieval.json

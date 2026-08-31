@@ -1,137 +1,137 @@
 {
- "schemaVersion": "witness-tree/phase4-exit-status/1",
- "phase": 4,
- "status": "incomplete",
- "exitCriteria": [
-  {
-   "id": "pending-or-uncorroborated-active-not-recorded-harvest",
-   "title": "PENDING or uncorroborated ACTIVE never renders as recorded harvest",
-   "status": "pass",
-   "reason": "The lifecycle normalizer maps PENDING to planned and ACTIVE to authorised; only RETIRED maps to recorded-harvest. Fixtures exercise every lifecycle.",
-   "evidence": [
+  "schemaVersion": "witness-tree/phase4-exit-status/1",
+  "phase": 4,
+  "status": "incomplete",
+  "exitCriteria": [
     {
-     "path": "lib/events/normalize.ts",
-     "sha256": "fdc5fc5568b12b4ac58da51932f387a6167f9daa4bfdfc03d995eb54d4514d40"
+      "id": "pending-or-uncorroborated-active-not-recorded-harvest",
+      "title": "PENDING or uncorroborated ACTIVE never renders as recorded harvest",
+      "status": "pass",
+      "reason": "The lifecycle normalizer maps PENDING to planned and ACTIVE to authorised; only RETIRED maps to recorded-harvest. Fixtures exercise every lifecycle.",
+      "evidence": [
+        {
+          "path": "lib/events/normalize.ts",
+          "sha256": "fdc5fc5568b12b4ac58da51932f387a6167f9daa4bfdfc03d995eb54d4514d40"
+        },
+        {
+          "path": "tests/event-normalization.test.ts",
+          "sha256": "9c61878b0d111d7bee22d3a8d689b7f001b946d38d2205c314b1244814c52e36"
+        },
+        {
+          "path": "docs/EVENT_NORMALIZATION.md",
+          "sha256": "3588ec3b90e90033d53a7da7bbe03e61163222190019bbf0e23c67945e469a6c"
+        }
+      ]
     },
     {
-     "path": "tests/event-normalization.test.ts",
-     "sha256": "9c61878b0d111d7bee22d3a8d689b7f001b946d38d2205c314b1244814c52e36"
+      "id": "quebec-north-of-52-national-baseline",
+      "title": "Québec north of 52 grades national baseline, not enhanced",
+      "status": "pass",
+      "reason": "The coverage resolver returns national-baseline for Québec at latitude 52 or greater before considering local periods; the coverage query test exercises a latitude of 53.",
+      "evidence": [
+        {
+          "path": "lib/coverage/resolve.ts",
+          "sha256": "5e7b25e069fdd82e602a868362703ee38fc83e53c261f0d4dc20eda61cf72488"
+        },
+        {
+          "path": "lib/coverage/fixtures.ts",
+          "sha256": "748a567bb0722b858b3548af1b28c8841b0998cd08258df339a7636c1fc47152"
+        },
+        {
+          "path": "tests/coverage.test.ts",
+          "sha256": "cd86a8d1199130dcfe6472050ba20b025a2f2f30cffec234e1f29ceb5a04267c"
+        },
+        {
+          "path": "docs/COVERAGE.md",
+          "sha256": "ceaedf4810263931b24dd85e2b5ae29ef65a311bb518b364330bc7e60c4b39dc"
+        }
+      ]
     },
     {
-     "path": "docs/EVENT_NORMALIZATION.md",
-     "sha256": "3588ec3b90e90033d53a7da7bbe03e61163222190019bbf0e23c67945e469a6c"
+      "id": "published-match-and-non-match-rates",
+      "title": "Match rate, non-match rate, and non-match-reason distribution are published on the methods page",
+      "status": "fail",
+      "reason": "The methods page explicitly reports these results as unavailable; no admitted, versioned provincial processing run exists from which numeric rates or a reason distribution can be published.",
+      "evidence": [
+        {
+          "path": "components/transparency/MethodologyPage.tsx",
+          "sha256": "0300165fe257c09cbfe4beeb17dc4d815ee7cd403145021c0c30ce7071c4cb54"
+        },
+        {
+          "path": "docs/PHASE4_OPTIONAL_ENHANCEMENT_GATE.md",
+          "sha256": "4fa2b8bf2427bd8fe53bdefe4370851d7b39ba3992725828789854c991a0ea5f"
+        },
+        {
+          "path": "docs/PLAN_GAP_MATRIX.md",
+          "sha256": "4ab5068bb6a950b5c71451c9d83ac06d705ed8a4dab13c7d1845bb7815516039"
+        }
+      ]
+    },
+    {
+      "id": "subtypes-distinguished-or-undetermined",
+      "title": "Salvage, partial cut, and thinning are distinguished where supported and undetermined otherwise",
+      "status": "pass",
+      "reason": "The event subtype contract allows salvage, partial-cut, and thinning, defaults an omitted source subtype to undetermined, and fixtures/test assertions exercise all four outcomes.",
+      "evidence": [
+        {
+          "path": "lib/events/types.ts",
+          "sha256": "5d4bfe1696d8f0d771be03c6a6ff487ef03a2b72bfcbef7273a3e58ec35718b5"
+        },
+        {
+          "path": "lib/events/normalize.ts",
+          "sha256": "fdc5fc5568b12b4ac58da51932f387a6167f9daa4bfdfc03d995eb54d4514d40"
+        },
+        {
+          "path": "lib/events/fixtures.ts",
+          "sha256": "d3a6741b72b58ca752848a78253a4292a05e0f6809de25cbe979dc2fb8a8c11d"
+        },
+        {
+          "path": "tests/event-normalization.test.ts",
+          "sha256": "9c61878b0d111d7bee22d3a8d689b7f001b946d38d2205c314b1244814c52e36"
+        },
+        {
+          "path": "docs/EVENT_NORMALIZATION.md",
+          "sha256": "3588ec3b90e90033d53a7da7bbe03e61163222190019bbf0e23c67945e469a6c"
+        }
+      ]
     }
-   ]
-  },
-  {
-   "id": "quebec-north-of-52-national-baseline",
-   "title": "Québec north of 52 grades national baseline, not enhanced",
-   "status": "pass",
-   "reason": "The coverage resolver returns national-baseline for Québec at latitude 52 or greater before considering local periods; the coverage query test exercises a latitude of 53.",
-   "evidence": [
+  ],
+  "completedCriteria": 3,
+  "totalCriteria": 4,
+  "percentage": 75,
+  "checkpoints": [
     {
-     "path": "lib/coverage/resolve.ts",
-     "sha256": "5e7b25e069fdd82e602a868362703ee38fc83e53c261f0d4dc20eda61cf72488"
-    },
-    {
-     "path": "lib/coverage/fixtures.ts",
-     "sha256": "748a567bb0722b858b3548af1b28c8841b0998cd08258df339a7636c1fc47152"
-    },
-    {
-     "path": "tests/coverage.test.ts",
-     "sha256": "cd86a8d1199130dcfe6472050ba20b025a2f2f30cffec234e1f29ceb5a04267c"
-    },
-    {
-     "path": "docs/COVERAGE.md",
-     "sha256": "ceaedf4810263931b24dd85e2b5ae29ef65a311bb518b364330bc7e60c4b39dc"
-    }
-   ]
-  },
-  {
-   "id": "published-match-and-non-match-rates",
-   "title": "Match rate, non-match rate, and non-match-reason distribution are published on the methods page",
-   "status": "fail",
-   "reason": "The methods page explicitly reports these results as unavailable; no admitted, versioned provincial processing run exists from which numeric rates or a reason distribution can be published.",
-   "evidence": [
-    {
-     "path": "components/transparency/MethodologyPage.tsx",
-     "sha256": "0300165fe257c09cbfe4beeb17dc4d815ee7cd403145021c0c30ce7071c4cb54"
-    },
-    {
-     "path": "docs/PHASE4_OPTIONAL_ENHANCEMENT_GATE.md",
-     "sha256": "4fa2b8bf2427bd8fe53bdefe4370851d7b39ba3992725828789854c991a0ea5f"
-    },
-    {
-     "path": "docs/PLAN_GAP_MATRIX.md",
-          "sha256": "bcf426f205d8f21b598ab500b35959d41fb5219722e46b9e182b5edd7ad95dd1"
-    }
-   ]
-  },
-  {
-   "id": "subtypes-distinguished-or-undetermined",
-   "title": "Salvage, partial cut, and thinning are distinguished where supported and undetermined otherwise",
-   "status": "pass",
-   "reason": "The event subtype contract allows salvage, partial-cut, and thinning, defaults an omitted source subtype to undetermined, and fixtures/test assertions exercise all four outcomes.",
-   "evidence": [
-    {
-     "path": "lib/events/types.ts",
-     "sha256": "5d4bfe1696d8f0d771be03c6a6ff487ef03a2b72bfcbef7273a3e58ec35718b5"
-    },
-    {
-     "path": "lib/events/normalize.ts",
-     "sha256": "fdc5fc5568b12b4ac58da51932f387a6167f9daa4bfdfc03d995eb54d4514d40"
-    },
-    {
-     "path": "lib/events/fixtures.ts",
-     "sha256": "d3a6741b72b58ca752848a78253a4292a05e0f6809de25cbe979dc2fb8a8c11d"
-    },
-    {
-     "path": "tests/event-normalization.test.ts",
-     "sha256": "9c61878b0d111d7bee22d3a8d689b7f001b946d38d2205c314b1244814c52e36"
-    },
-    {
-     "path": "docs/EVENT_NORMALIZATION.md",
-     "sha256": "3588ec3b90e90033d53a7da7bbe03e61163222190019bbf0e23c67945e469a6c"
-    }
-   ]
-  }
- ],
- "completedCriteria": 3,
- "totalCriteria": 4,
- "percentage": 75,
- "checkpoints": [
-  {
-   "id": "rights-and-admission",
-   "title": "Rights/admission",
-   "status": "blocked",
-   "reason": "No BC or Québec optional source has both verified rights and production-admitted evidence.",
-   "evidence": [
-    {
-     "path": "data/phase4-provincial-matching-preflight.json",
+      "id": "rights-and-admission",
+      "title": "Rights/admission",
+      "status": "blocked",
+      "reason": "No BC or Québec optional source has both verified rights and production-admitted evidence.",
+      "evidence": [
+        {
+          "path": "data/phase4-provincial-matching-preflight.json",
           "sha256": "13da9b9d533f74b733c60eac712ed231cfc003b916baef033bc189e7f2afa726"
+        },
+        {
+          "path": "docs/PHASE4_OPTIONAL_ENHANCEMENT_GATE.md",
+          "sha256": "4fa2b8bf2427bd8fe53bdefe4370851d7b39ba3992725828789854c991a0ea5f"
+        }
+      ]
     },
     {
-     "path": "docs/PHASE4_OPTIONAL_ENHANCEMENT_GATE.md",
-     "sha256": "4fa2b8bf2427bd8fe53bdefe4370851d7b39ba3992725828789854c991a0ea5f"
+      "id": "outside-provincial-review",
+      "title": "Outside provincial review",
+      "status": "blocked",
+      "reason": "The owner decided not to pursue BC or Québec human review. No outside provincial review or reviewer sign-off occurred, so this checkpoint remains blocked rather than treating a waiver as completed review.",
+      "evidence": [
+        {
+          "path": "data/phase4-provincial-matching-preflight.json",
+          "sha256": "13da9b9d533f74b733c60eac712ed231cfc003b916baef033bc189e7f2afa726"
+        },
+        {
+          "path": "docs/EXTERNAL_GATES.md",
+          "sha256": "ef9c0f7598db39ebb306c187cb4ba797479470bccb18352c7057cb3c46e0c828"
+        }
+      ]
     }
-   ]
-  },
-  {
-   "id": "outside-provincial-review",
-   "title": "Outside provincial review",
-   "status": "blocked",
-   "reason": "The owner decided not to pursue BC or Québec human review. No outside provincial review or reviewer sign-off occurred, so this checkpoint remains blocked rather than treating a waiver as completed review.",
-   "evidence": [
-    {
-     "path": "data/phase4-provincial-matching-preflight.json",
-     "sha256": "13da9b9d533f74b733c60eac712ed231cfc003b916baef033bc189e7f2afa726"
-    },
-    {
-     "path": "docs/EXTERNAL_GATES.md",
-     "sha256": "ef9c0f7598db39ebb306c187cb4ba797479470bccb18352c7057cb3c46e0c828"
-    }
-   ]
-  }
- ],
- "localControls": "The optional-enhancement availability gate protects absent optional data as bilingual Unknown; it does not substitute for the separate rights/admission or outside-review checkpoints. The owner's decision not to pursue human review is recorded as a continuing blocker, not as evidence that review occurred."
+  ],
+  "localControls": "The optional-enhancement availability gate protects absent optional data as bilingual Unknown; it does not substitute for the separate rights/admission or outside-review checkpoints. The owner's decision not to pursue human review is recorded as a continuing blocker, not as evidence that review occurred."
 }

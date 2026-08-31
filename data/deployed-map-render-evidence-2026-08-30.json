@@ -1,0 +1,138 @@
+{
+  "schemaVersion": "witness-tree/deployed-map-render-evidence/1",
+  "status": "deployed-site-browser-observation",
+  "published": false,
+  "productionEligible": false,
+  "admissionClaim": false,
+  "productionAdmission": false,
+  "observedAt": "2026-08-31T02:33:08Z",
+  "url": "https://www.witnesstree.ca/en/explore",
+  "browser": {
+    "path": "/Users/chinonsoobeta/Library/Caches/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-mac-arm64/chrome-headless-shell",
+    "build": "chromium_headless_shell-1234"
+  },
+  "archives": {
+    "pmtilesUrl": "https://d3g1406o0uekin.cloudfront.net/releases/phase8-province-map-v1/8809a9d577c8b615b583fc0245eb1bdb20e534a6bd86188340b7c1abac56bd96/tiles/phase2-province-loss-2020-2022.pmtiles",
+    "geojsonUrl": "https://d3g1406o0uekin.cloudfront.net/releases/phase8-province-map-geojson-v2/101561ed48f511a3e65676fa084ee517c4fa722e14f4a3c844c698b247238505/map/phase2-province-loss-2020-2022.geojson"
+  },
+  "sources": [
+    {
+      "path": "lib/explore/map-style.ts",
+      "sha256": "3d94e515a4a4f3398f44ba2b28a0dac693d91a98d41919b0af579ee65b3d895f"
+    },
+    {
+      "path": "components/explore/ExploreMapClient.tsx",
+      "sha256": "b3d9166a6f31dcf53a4a074054873eee4f0179627b7cdc7f7aaec7f3db8d77e3"
+    }
+  ],
+  "settled": {
+    "state": "ready",
+    "source": "pmtiles",
+    "status": "Showing two layers with different periods: detected forest-loss patches for the selected annual interval, drawn as you zoom in and available for every interval from 1984–1985 to 2021–2022, over the provisional province aggregate, which covers 2020 to 2022 and does not follow the year control. Province display boundaries are simplified and omit small islands."
+  },
+  "canvas": {
+    "context": true,
+    "width": 1178,
+    "height": 430,
+    "opaquePixels": 506540,
+    "rampPixels": 2620,
+    "samples": [
+      [
+        173,
+        166,
+        152,
+        255
+      ],
+      [
+        156,
+        148,
+        132,
+        255
+      ],
+      [
+        148,
+        139,
+        122,
+        255
+      ],
+      [
+        148,
+        139,
+        122,
+        255
+      ],
+      [
+        148,
+        139,
+        122,
+        255
+      ],
+      [
+        148,
+        139,
+        122,
+        255
+      ],
+      [
+        148,
+        139,
+        122,
+        255
+      ],
+      [
+        148,
+        139,
+        122,
+        255
+      ]
+    ],
+    "present": true,
+    "box": {
+      "present": true,
+      "x": 51,
+      "y": 1160,
+      "width": 1178,
+      "height": 430
+    }
+  },
+  "requestCounts": {
+    "total": 32,
+    "pmtiles": 3,
+    "pmtilesRange": 3,
+    "geojsonFallback": 0
+  },
+  "consoleErrors": [],
+  "checks": [
+    {
+      "id": "pmtiles-range-responses",
+      "requirement": "The deployed page fetched the immutable PMTiles archive and the origin answered with HTTP 206 range responses.",
+      "observed": "3 of 3 responses were 206",
+      "pass": true
+    },
+    {
+      "id": "no-geojson-fallback",
+      "requirement": "The published GeoJSON compatibility fallback was never fetched.",
+      "observed": "0 fallback fetches",
+      "pass": true
+    },
+    {
+      "id": "ready-from-pmtiles",
+      "requirement": "The map region settled on data-state=\"ready\" with data-map-source=\"pmtiles\".",
+      "observed": "state=ready source=pmtiles",
+      "pass": true
+    },
+    {
+      "id": "status-copy-is-not-a-fallback",
+      "requirement": "The status copy is the ready copy, not either compatibility fallback copy.",
+      "observed": "Showing two layers with different periods: detected forest-loss patches for the selected annual interval, drawn as you z",
+      "pass": true
+    },
+    {
+      "id": "canvas-painted-loss-ramp",
+      "requirement": "The composited canvas contains pixels on the loss ramp, so tiles were decoded and painted.",
+      "observed": "2620 ramp pixels of 506540 opaque",
+      "pass": true
+    }
+  ],
+  "allChecksPassed": true
+}

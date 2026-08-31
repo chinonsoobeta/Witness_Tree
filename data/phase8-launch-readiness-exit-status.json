@@ -3,9 +3,9 @@
   "phase": 8,
   "localImplementationStatus": "incomplete",
   "phaseComplete": false,
-  "completedCriteria": 7,
+  "completedCriteria": 8,
   "totalCriteria": 16,
-  "percentage": 43.75,
+  "percentage": 50,
   "exitCriteria": [
     {
       "id": "professional-bilingual-review",
@@ -39,7 +39,7 @@
       "evidence": [
         {
           "path": "docs/PLAN_GAP_MATRIX.md",
-          "sha256": "bcf426f205d8f21b598ab500b35959d41fb5219722e46b9e182b5edd7ad95dd1"
+          "sha256": "4ab5068bb6a950b5c71451c9d83ac06d705ed8a4dab13c7d1845bb7815516039"
         }
       ]
     },
@@ -119,7 +119,7 @@
         },
         {
           "path": "docs/PLAN_GAP_MATRIX.md",
-          "sha256": "bcf426f205d8f21b598ab500b35959d41fb5219722e46b9e182b5edd7ad95dd1"
+          "sha256": "4ab5068bb6a950b5c71451c9d83ac06d705ed8a4dab13c7d1845bb7815516039"
         }
       ],
       "ownerAuthorization": {
@@ -136,7 +136,7 @@
       "evidence": [
         {
           "path": "docs/PLAN_GAP_MATRIX.md",
-          "sha256": "bcf426f205d8f21b598ab500b35959d41fb5219722e46b9e182b5edd7ad95dd1"
+          "sha256": "4ab5068bb6a950b5c71451c9d83ac06d705ed8a4dab13c7d1845bb7815516039"
         }
       ]
     },
@@ -263,8 +263,8 @@
     {
       "id": "cdn-tile-validation",
       "title": "CDN and tile validation are complete",
-      "status": "fail",
-      "reason": "The admitted 2020-2022 province aggregate and authoritative boundary are bound to an immutable PMTiles archive in a private ca-central-1 delivery bucket behind CloudFront. Four additional boundary-only reference archives for federal ridings, provincial ridings, economic regions and watersheds have exact S3 and CloudFront byte-hash readback. The province archive has directory and tile ranges at three zooms, decoded province/value assertions, repeated CloudFront cache hits, CORS, origin isolation, immutable write controls, and a client PMTiles path with a verified GeoJSON fallback. A defect was found and fixed on 2026-08-28: the bundler never emitted the sibling module MapLibre resolves as its worker, so that URL returned HTTP 404 on the deployed site and map initialization failed before any tile request was issued. The version-pinned worker is now published from public/maplibre/ and pinned by the client, proven byte-identical to the installed distribution by scripts/check-maplibre-worker-asset.mjs. Browser-side PMTiles rendering has now been witnessed, but not where this criterion requires it. Driving a real Chromium through playwright-core on 2026-08-29 produced HTTP 206 PMTiles range responses, no GeoJSON fallback fetch, the component's own ready copy rather than its fallback copy, and a composited canvas whose sampled pixels matched the loss ramp. That run was against a local build of an unmerged branch, not the deployed Site, and this criterion is scoped to the deployed Site. The earlier note that no browser here could fire requestAnimationFrame described the browser this session had at the time and is superseded. The literal gate remains open until the deployed Site is recorded the same way.",
+      "status": "pass",
+      "reason": "The admitted 2020-2022 province aggregate and authoritative boundary are bound to an immutable PMTiles archive in a private ca-central-1 delivery bucket behind CloudFront. Four additional boundary-only reference archives for federal ridings, provincial ridings, economic regions and watersheds have exact S3 and CloudFront byte-hash readback. The province archive has directory and tile ranges at three zooms, decoded province/value assertions, repeated CloudFront cache hits, CORS, origin isolation, immutable write controls, and a client PMTiles path with a verified GeoJSON fallback. A defect was found and fixed on 2026-08-28: the bundler never emitted the sibling module MapLibre resolves as its worker, so that URL returned HTTP 404 on the deployed site and map initialization failed before any tile request was issued. The version-pinned worker is now published from public/maplibre/ and pinned by the client, proven byte-identical to the installed distribution by scripts/check-maplibre-worker-asset.mjs. Browser-side PMTiles rendering was first witnessed on 2026-08-29 against a local build of an unmerged branch, which did not satisfy this criterion because the criterion is scoped to the deployed Site. The earlier note that no browser here could fire requestAnimationFrame described the browser this session had at the time and is superseded. The deployed Site has now been recorded the same way. On 2026-08-30 scripts/verify-deployed-map-render.mjs drove Chromium over the DevTools Protocol against https://www.witnesstree.ca/en/explore and wrote data/deployed-map-render-evidence-2026-08-30.json, which records three HTTP 206 range responses from the exact immutable PMTiles URL the client pins, zero fetches of the published GeoJSON compatibility fallback, a map region that settled on data-state=\"ready\" with data-map-source=\"pmtiles\", the component's own ready copy rather than either compatibility fallback copy, 2620 loss-ramp pixels among 506540 opaque pixels in the composited canvas, and no console errors. That record binds lib/explore/map-style.ts and components/explore/ExploreMapClient.tsx by SHA-256, so changing the archive URL or the client makes the observation stale rather than leaving this gate silently green; scripts/check-deployed-map-render.mjs enforces that on every branch. This criterion covers delivery and rendering only. It asserts no production admission, and the admitted-production-data-and-delivery external blocker remains blocked.",
       "evidence": [
         {
           "path": "data/phase8-province-map-release.json",
@@ -289,6 +289,26 @@
         {
           "path": "tests/explore.test.tsx",
           "sha256": "bc7298bf69db0997a7ee80bb68cdd2df5a223da7dbfa80b05613e4b2efcc58b3"
+        },
+        {
+          "path": "data/deployed-map-render-evidence-2026-08-30.json",
+          "sha256": "d00a83917e00627c4cab83d288feb842b4de3b022e574d97ef95115febbed0d2"
+        },
+        {
+          "path": "scripts/verify-deployed-map-render.mjs",
+          "sha256": "995f7ddfd7fb0b02ff1fcde86ecd2ec7e69520257b4e07f572e79cb708dc98fe"
+        },
+        {
+          "path": "scripts/check-deployed-map-render.mjs",
+          "sha256": "43c754764493560fa0f9ba3f4416734f7ea9c556cd94f1b4be8fa6223eb14be3"
+        },
+        {
+          "path": "tests/deployed-map-render.test.mjs",
+          "sha256": "7bde1f227c076add9e6801dd701573180b2384a575659dc789f8aa47a4eceb23"
+        },
+        {
+          "path": "lib/explore/map-style.ts",
+          "sha256": "3d94e515a4a4f3398f44ba2b28a0dac693d91a98d41919b0af579ee65b3d895f"
         }
       ]
     }

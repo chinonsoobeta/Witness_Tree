@@ -1,6 +1,6 @@
 # Phase 8 launch-readiness exit status
 
-The checksum-verified record at [`data/phase8-launch-readiness-exit-status.json`](../data/phase8-launch-readiness-exit-status.json) defines all **16** literal Phase 8 launch-readiness gates and records **7/16 (43.75%)** as currently satisfied. This is an unweighted engineering/evidence fraction, not a production-readiness or launch claim.
+The checksum-verified record at [`data/phase8-launch-readiness-exit-status.json`](../data/phase8-launch-readiness-exit-status.json) defines all **16** literal Phase 8 launch-readiness gates and records **8/16 (50%)** as currently satisfied. This is an unweighted engineering/evidence fraction, not a production-readiness or launch claim.
 
 The seven supported controls are: the documented governance and corrections procedure; the owner-approved operations handbook; deterministic citation generation; checksum-bound bilingual release-note validation; the recorded raw-archive restore test; the accepted raw-archive reproducibility drill; and the bounded independently retrieved bulk CSV and GeoPackage release.
 
