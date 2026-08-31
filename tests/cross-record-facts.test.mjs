@@ -48,7 +48,12 @@ test("the numeric facts cover every committed JSON record that asserts either ba
 
 test("C-4 binds the claimed specification, run, and exact output through a dated supersession", async () => {
   const register = await load();
-  for (const fact of register.facts.filter(({ contradiction }) => contradiction === "C-4")) {
+  const facts = register.facts.filter(({ contradiction }) => contradiction === "C-4");
+  assert.deepEqual(
+    facts.map(({ id }) => id),
+    ["ntems-canopy-cover-production-specification", "ntems-canopy-cover-transformation-run", "ntems-canopy-cover-derived-output"],
+  );
+  for (const fact of facts) {
     assert.deepEqual(fact.exceptions ?? [], []);
     assert.deepEqual(fact.supersessions, [{ olderAssertion: "historical-gate", newerAssertion: "successor" }]);
     assert.equal(fact.assertions.find(({ id }) => id === "successor").record, "data/phase1-nrcan-cover-processing-gate-supersession-2026-08-31.json");
