@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 export const evidencePath = path.join(ROOT, "data/phase1-manifest-retention-iam-applied-2026-08-25.json");
 export const evidenceSha256 = "66cbf83b2bd87a1ef0b2ba213944e0dbe694e6429d875ed67938ce387f2768f5";
+export const verifies = "Checks the committed manifest-retention IAM application record for internally consistent policy-only claims; it does not query AWS.";
 
 const expected = [
   ["federal-general-promotion", "WitnessTreeArchivePromotionUploader", "ExactApprovedPromotionOnly", "c945a08c64aa0c55ae5bda1c9da30b70b0ce36a32241e08f2bdd15978b6a10e9", "bd7ac28a69383e8633d632e4d34659d24f33c073bf6ccc7d5e4fb3567895bb74", { primary: 6, recovery: 2 }],
@@ -37,7 +38,7 @@ export function validateAppliedManifestRetentionIam(raw = readFileSync(evidenceP
   return true;
 }
 
-if (process.argv[1]?.endsWith("check-phase1-manifest-retention-iam-applied.mjs")) {
+if (process.argv[1]?.endsWith("check-phase1-manifest-retention-iam-applied-record-consistency.mjs")) {
   validateAppliedManifestRetentionIam();
-  console.log("Applied manifest-retention IAM evidence checksum and exact policy-only boundaries passed.");
+  console.log(verifies);
 }

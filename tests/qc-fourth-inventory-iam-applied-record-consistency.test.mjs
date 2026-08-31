@@ -1,12 +1,15 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
-import { validateQcFourthInventoryIamAppliedReadback } from "../scripts/check-qc-fourth-inventory-iam-applied-readback.mjs";
+import { verifies, validateQcFourthInventoryIamAppliedReadback } from "../scripts/check-qc-fourth-inventory-iam-applied-record-consistency.mjs";
 
 const evidence = JSON.parse(readFileSync(new URL("../data/qc-fourth-inventory-iam-applied-readback-2026-08-25.json", import.meta.url), "utf8"));
+const checkerSource = readFileSync(new URL("../scripts/check-qc-fourth-inventory-iam-applied-record-consistency.mjs", import.meta.url), "utf8");
 
 test("IAM readback evidence keeps MFA at role assumption and S3 permissions unconditional", () => {
   assert.equal(validateQcFourthInventoryIamAppliedReadback(evidence), evidence);
+  assert.match(verifies, /does not query AWS/);
+  assert.doesNotMatch(checkerSource, /node:child_process|@aws-sdk|from ["']aws-sdk|\bspawn(?:Sync)?\s*\(|\bexec(?:File|Sync)?\s*\(|\bfetch\s*\(/);
   assert.deepEqual(evidence.roles.map((role) => role.exactObjectCount), [31, 31]);
   assert.equal(evidence.mfaEnforcement.roleObjectPoliciesConditional, false);
   assert.doesNotMatch(JSON.stringify(evidence), /AccessKeyId|SecretAccessKey|SessionToken|RoleId|VersionId/i);

@@ -10,6 +10,7 @@ const stable = (value) => Array.isArray(value) ? value.map(stable) : value && ty
 const sha = (value) => createHash("sha256").update(JSON.stringify(stable(value))).digest("hex");
 const rawSha = (value) => createHash("sha256").update(value).digest("hex");
 const SHA = /^[a-f0-9]{64}$/;
+export const verifies = "Checks the committed Québec fourth-inventory IAM application record and preparation record for internally consistent policy-only claims; it does not query AWS.";
 
 export function validateQcFourthInventoryIamAppliedReadback(evidence = read("data/qc-fourth-inventory-iam-applied-readback-2026-08-25.json"), preparation = read("data/qc-fourth-inventory-immutable-promotion-preparation.json")) {
   const expected = policies();
@@ -43,5 +44,5 @@ export function validateQcFourthInventoryIamAppliedReadback(evidence = read("dat
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   validateQcFourthInventoryIamAppliedReadback();
-  console.log("Québec fourth-inventory IAM applied readback evidence is internally consistent.");
+  console.log(verifies);
 }

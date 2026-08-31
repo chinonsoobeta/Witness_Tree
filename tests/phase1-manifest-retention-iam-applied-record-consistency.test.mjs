@@ -1,10 +1,15 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
-import { evidencePath, validateAppliedManifestRetentionIam } from "../scripts/check-phase1-manifest-retention-iam-applied.mjs";
+import { verifies, evidencePath, validateAppliedManifestRetentionIam } from "../scripts/check-phase1-manifest-retention-iam-applied-record-consistency.mjs";
 
 const raw = () => readFileSync(evidencePath, "utf8");
-test("applied IAM record is exact and policy-only", () => assert.equal(validateAppliedManifestRetentionIam(), true));
+const checkerSource = readFileSync(new URL("../scripts/check-phase1-manifest-retention-iam-applied-record-consistency.mjs", import.meta.url), "utf8");
+test("applied IAM record is exact and policy-only", () => {
+  assert.equal(validateAppliedManifestRetentionIam(), true);
+  assert.match(verifies, /does not query AWS/);
+  assert.doesNotMatch(checkerSource, /node:child_process|@aws-sdk|from ["']aws-sdk|\bspawn(?:Sync)?\s*\(|\bexec(?:File|Sync)?\s*\(|\bfetch\s*\(/);
+});
 for (const [name, from, to] of [
   ["retention action", "s3:GetObjectRetention", "s3:DeleteObject"],
   ["analyzer finding", "securityWarningFindings\": 0", "securityWarningFindings\": 1"],

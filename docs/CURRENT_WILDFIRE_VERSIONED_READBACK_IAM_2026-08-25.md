@@ -1,4 +1,4 @@
-# Current-wildfire exact-version read IAM evidence — 2026-08-25
+# Current-wildfire exact-version read IAM evidence: 2026-08-25
 
 The inline policy `WitnessTreeCurrentWildfireExactObjectAccess` on
 `WitnessTreeCurrentWildfirePromotionUploader` received one additive action:
@@ -17,7 +17,7 @@ continues to verify IAM scope even when unrelated archive/admission metadata is
 later clarified. Verify its internal bindings without contacting AWS:
 
 ```sh
-npm run check:current-wildfire-versioned-readback-iam-applied
+npm run check:current-wildfire-versioned-readback-iam-applied-record-consistency
 ```
 
 This is an IAM-boundary record only. It is not evidence that any archive object

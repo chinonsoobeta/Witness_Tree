@@ -44,20 +44,20 @@ jobs:
       - run: npm run check:phase0-foundations-exit-status
       - run: npm run check:phase3-frontend-foundation-exit-status
       - run: npm run check:phase1-exit-status
-      - run: npm run check:phase1-manifest-retention-iam-applied
+      - run: npm run check:phase1-manifest-retention-iam-applied-record-consistency
       - run: npm run check:phase1-source-ledger-field-audit
       - run: npm run check:phase1-downstream-admission-packet
       - run: npm run check:staged-geospatial-profile
       - run: npm run check:qc-immutable-promotion-iam
-      - run: npm run check:qc-fourth-inventory-iam-applied-readback
+      - run: npm run check:qc-fourth-inventory-iam-applied-record-consistency
       - run: npm run check:qc-fourth-inventory-exact-archive-readback
       - run: npm run check:alberta-wildfire-locations
       - run: npm run check:ontario-in-year-fire-perimeters
       - run: npm run check:alberta-plvi-full-release-readiness
       - run: npm run check:alberta-plvi-immutable-promotion-preparation
-      - run: npm run check:alberta-plvi-versioned-readback-iam-applied
+      - run: npm run check:alberta-plvi-versioned-readback-iam-applied-record-consistency
       - run: npm run check:current-wildfire-immutable-promotion-preparation
-      - run: npm run check:current-wildfire-versioned-readback-iam-applied
+      - run: npm run check:current-wildfire-versioned-readback-iam-applied-record-consistency
       - run: npm run check:current-wildfire-exact-raw-archive-capture
       - run: npm run check:phase1-immutable-promotion-readiness
       - run: npm run check:immutable-promotions

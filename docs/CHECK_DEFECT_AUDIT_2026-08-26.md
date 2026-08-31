@@ -40,6 +40,9 @@ reporting nothing at the path is absence, and anything unreadable stays `null`.
 The two existence-only modes now carry a `verifies` sentence stating in plain
 words what was and was not read.
 
+The four IAM application record checkers now state the same boundary in their
+names and output: they check committed record consistency and do not query AWS.
+
 `approvedDataRootRealPathSync` was added to `scripts/data-root.mjs` so the
 one-approved-link rule lives in a single place. Re-deriving that rule per
 script is how three runners diverged in the first place.
@@ -75,11 +78,10 @@ compares canonical JSON across every field, succeeds only on an exact match,
 and fails without overwriting on drift. Its evidence schema has no volatile
 fields to strip. A missing record is still created exclusively with `wx`.
 
-**`check-*-versioned-readback-iam-applied.mjs`, marginal.** The filenames
-assert an applied IAM change; the scripts make no AWS call and rest the central
-fact on a regex over an operator-written sentence. Flagged as marginal because
-the console output is honest where the name is not: it says "internally
-consistent", not "verified".
+**`check-*-iam-applied-record-consistency.mjs`, fixed.** The
+four record-only checkers are named for what they establish and say explicitly
+that they do not query AWS. The live-readback NBAC checker remains separately
+named and retains its explicit `--verify-live` AWS mode.
 
 ## The coverage gap, now closed
 
