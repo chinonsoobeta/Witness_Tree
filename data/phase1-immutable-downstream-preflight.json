@@ -4,6 +4,7 @@
   "asOf": "2026-08-22",
   "notice": "This is a read-only preparation contract for the nine immutable Phase 1 rows. It does not transform data, authorize transformation or ingestion, ingest, release, admit a production source, change eligibility, or perform an external mutation.",
   "baseline": {
+    "asOf": "2026-08-22",
     "immutableRows": 9,
     "rawEvidenceNumerator": 14.75,
     "rawEvidenceDenominator": 31,

@@ -13,6 +13,7 @@ test("owner approval packet binds all 16 queue rows in dependency order without 
   assert.equal(packet.claims.ownerApprovalsGranted, false);
   assert.equal(packet.claims.productionEligible, false);
   assert.deepEqual(packet.decisionOrder.map((step) => step.step), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+  assert.equal(Object.hasOwn(packet.baseline, "asOf"), false);
 });
 
 test("packet rejects row omission, phase collapse, approval claims, and exact-key drift", async () => {
@@ -29,6 +30,10 @@ test("packet rejects row omission, phase collapse, approval claims, and exact-ke
   const approval = structuredClone(original);
   approval.claims.ownerApprovalsGranted = true;
   await assert.rejects(() => checkPhase1OwnerApprovalPacketWith(approval), /fail-closed|false/);
+
+  const rewrittenHistoricalBaseline = structuredClone(original);
+  rewrittenHistoricalBaseline.baseline.asOf = "2026-08-22";
+  await assert.rejects(() => checkPhase1OwnerApprovalPacketWith(rewrittenHistoricalBaseline), /historical owner queue baseline/);
 
   const keyDrift = structuredClone(original);
   keyDrift.exactBindings["current-wildfire-archive-gate"].objectKeys[0] = "raw/cwfis-current/not-the-approved-key.zip";

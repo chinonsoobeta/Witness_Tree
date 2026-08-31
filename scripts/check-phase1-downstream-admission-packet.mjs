@@ -9,6 +9,23 @@ const READY = ["ntems-annual-land-cover", "ntems-forest-harvest", "ntems-canopy-
 const BLOCKED = ["qc-fourth-inventory", "ab-avi-crown", "ab-avi-post-harvest", "ab-primary-land-vegetation", "cwfis-current", "bc-wildfire", "ab-wildfire", "on-fire-disturbance"];
 const claims = { ownerDecisionCreated: false, transformed: false, ingested: false, released: false, productionAdmission: false, productionEligible: false, externalMutationPerformed: false };
 const sha256 = async (root, relativePath) => createHash("sha256").update(await readFile(path.join(root, relativePath))).digest("hex");
+const HISTORICAL_IMMUTABLE_PREFLIGHT_PATH = "data/phase1-immutable-downstream-preflight.json";
+const HISTORICAL_IMMUTABLE_PREFLIGHT_SHA256 = "215314493e5c0c5fb4ced7ab667f4ee9eb0bede9ed6bd3f5ca832b96d8919319";
+
+export async function validateHistoricalImmutablePreflightBinding(root, expected = HISTORICAL_IMMUTABLE_PREFLIGHT_SHA256) {
+  const bytes = await readFile(path.join(root, HISTORICAL_IMMUTABLE_PREFLIGHT_PATH), "utf8");
+  const historicalBaselineOpening = '  "baseline": {\n';
+  const qualifiedBaselineOpening = `${historicalBaselineOpening}    "asOf": "2026-08-22",\n`;
+  assert.equal(bytes.split(qualifiedBaselineOpening).length, 2, "The immutable preflight must retain exactly one established date qualifier inside its baseline.");
+  const record = JSON.parse(bytes);
+  assert.equal(record.asOf, "2026-08-22", "The immutable preflight record date changed.");
+  assert.equal(record.baseline?.asOf, record.asOf, "The immutable preflight baseline must carry its established record date.");
+  assert.equal(
+    createHash("sha256").update(bytes.replace(qualifiedBaselineOpening, historicalBaselineOpening)).digest("hex"),
+    expected,
+    "The immutable preflight may differ from the owner-bound historical bytes only by its established baseline date qualifier.",
+  );
+}
 
 function specFor(record, specId) {
   const [fileId, rowId] = specId.split("#");
@@ -40,7 +57,8 @@ export async function validatePhase1DownstreamAdmissionPacket(packet, root) {
     }
   }
   for (const [relativePath, expected] of Object.entries(packet.evidenceBindings)) {
-    if (relativePath !== "data/phase1-production-source-ledger.json") assert.equal(await sha256(root, relativePath), expected, `Checksum binding drift: ${relativePath}`);
+    if (relativePath === HISTORICAL_IMMUTABLE_PREFLIGHT_PATH) await validateHistoricalImmutablePreflightBinding(root, expected);
+    else if (relativePath !== "data/phase1-production-source-ledger.json") assert.equal(await sha256(root, relativePath), expected, `Checksum binding drift: ${relativePath}`);
   }
   const evolutionPath = "data/phase1-ledger-post-scope-approval-evolution.json";
   const evolution = JSON.parse(await readFile(path.join(root, evolutionPath), "utf8"));

@@ -134,6 +134,7 @@ export function validatePhase1AlbertaTransformIngestionAudit(audit, context) {
   assert.deepEqual(audit.scope, ROW_IDS);
   assert.deepEqual(audit.rows.map(({ id }) => id), ROW_IDS);
   assert.deepEqual(audit.baseline, {
+    auditedAt: "2026-08-21T15:40:24Z",
     productionRows: 31,
     rawEvidenceNumerator: 14.25,
     rawEvidenceDenominator: 31,

@@ -16,6 +16,7 @@ test("consolidates every local/remote Phase 1 row into an owner-decision queue",
   const queue = read("data/phase1-owner-decision-queue.json");
   assert.equal(validatePhase1OwnerDecisionQueue(queue, context), queue);
   assert.equal(queue.queueRows.length, 16);
+  assert.equal(queue.baseline.asOf, "2026-08-22");
   assert.deepEqual(queue.queueRows.filter((row) => row.decisionBundle === "current-wildfire-archive-gate").map((row) => row.id), [
     "cwfis-current",
     "bc-wildfire",
@@ -38,6 +39,10 @@ test("rejects fabricated approvals, production claims, or omission of a required
   const production = structuredClone(queue);
   production.claims.productionEligible = true;
   assert.throws(() => validatePhase1OwnerDecisionQueue(production, context), /deep-equal|false/);
+
+  const baselineDate = structuredClone(queue);
+  baselineDate.baseline.asOf = "2026-08-23";
+  assert.throws(() => validatePhase1OwnerDecisionQueue(baselineDate, context), /deep-equal/);
 
   const omission = structuredClone(queue);
   omission.queueRows = omission.queueRows.filter((row) => row.id !== "ntems-canopy-height");

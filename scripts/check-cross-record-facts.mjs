@@ -64,6 +64,7 @@ function assertionPair(left, right) {
 
 function validateSupersessions(fact, byId, records, values) {
   const coveredPairs = new Set();
+  const laterByAssertion = new Map();
   for (const relation of fact.supersessions ?? []) {
     assert.deepEqual(Object.keys(relation).sort(), ["newerAssertion", "olderAssertion"], `${fact.id} supersession has unsupported fields.`);
     const older = byId.get(relation.olderAssertion);
@@ -79,8 +80,28 @@ function validateSupersessions(fact, byId, records, values) {
     const pair = assertionPair(older.id, newer.id);
     assert.ok(!coveredPairs.has(pair), `${fact.id} has a duplicate supersession relationship.`);
     coveredPairs.add(pair);
+    const later = laterByAssertion.get(older.id) ?? new Set();
+    later.add(newer.id);
+    laterByAssertion.set(older.id, later);
   }
-  return coveredPairs;
+  return { coveredPairs, laterByAssertion };
+}
+
+function reaches(assertionId, targetId, laterByAssertion, visited = new Set()) {
+  if (assertionId === targetId) return true;
+  if (visited.has(assertionId)) return false;
+  visited.add(assertionId);
+  return [...(laterByAssertion.get(assertionId) ?? [])].some((later) => reaches(later, targetId, laterByAssertion, visited));
+}
+
+function hasDatedSupersessionCoverage(left, right, supersessions, assertions, values) {
+  if (supersessions.coveredPairs.has(assertionPair(left.id, right.id))) return true;
+  if (reaches(left.id, right.id, supersessions.laterByAssertion) || reaches(right.id, left.id, supersessions.laterByAssertion)) return true;
+  return assertions.some((candidate) => {
+    const leftAtCandidate = values.get(left.id) === values.get(candidate.id) || reaches(left.id, candidate.id, supersessions.laterByAssertion);
+    const rightAtCandidate = values.get(right.id) === values.get(candidate.id) || reaches(right.id, candidate.id, supersessions.laterByAssertion);
+    return leftAtCandidate && rightAtCandidate && (reaches(left.id, candidate.id, supersessions.laterByAssertion) || reaches(right.id, candidate.id, supersessions.laterByAssertion));
+  });
 }
 
 function ledgerHasEntry(ledger, entry) {
@@ -135,7 +156,7 @@ export function validateCrossRecordFacts(register, readRecord = read) {
     }
 
     const byId = new Map(fact.assertions.map((assertion) => [assertion.id, assertion]));
-    const coveredPairs = validateSupersessions(fact, byId, records, values);
+    const supersessions = validateSupersessions(fact, byId, records, values);
     if (exceptions.length > 0) {
       assert.equal(exceptions.length, 1, `${fact.id} must use one exact current exception.`);
       assert.deepEqual(exceptions[0], { ledgerEntry: fact.contradiction }, `${fact.id} exception must cite its own ledger contradiction.`);
@@ -148,7 +169,7 @@ export function validateCrossRecordFacts(register, readRecord = read) {
         const left = fact.assertions[leftIndex];
         const right = fact.assertions[rightIndex];
         if (values.get(left.id) === values.get(right.id)) continue;
-        assert.ok(coveredPairs.has(assertionPair(left.id, right.id)), `${fact.id} disagreement ${left.id}/${right.id} lacks a dated supersession or declared current exception.`);
+        assert.ok(hasDatedSupersessionCoverage(left, right, supersessions, fact.assertions, values), `${fact.id} disagreement ${left.id}/${right.id} lacks a dated supersession or declared current exception.`);
       }
     }
   }

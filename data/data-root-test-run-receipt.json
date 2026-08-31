@@ -5,11 +5,11 @@
   "productionEligible": false,
   "isEdition": false,
   "isSnapshot": false,
-  "runAt": "2026-08-31T06:07:36Z",
-  "commit": "5f9f65926ff4789433bee380b3ea78c1288a2e3c",
+  "runAt": "2026-08-31T15:16:06Z",
+  "commit": "2a13ad6746d5bffe785b303fe756564338eb5aba",
   "workingTreeClean": true,
   "dataRootPresent": true,
-  "node": "v22.23.0",
+  "node": "v26.5.0",
   "counts": {
     "total": 25,
     "passed": 25,
@@ -21,7 +21,7 @@
       "reason": "Drives run-alberta-plvi-approved-promotion.sh, which resolves the data root.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 15886,
+      "durationMs": 16244,
       "guardedPaths": [
         "scripts/prepare-alberta-plvi-immutable-promotion.mjs",
         "tests/alberta-plvi-immutable-promotion-preparation.test.mjs"
@@ -37,7 +37,7 @@
       "reason": "Drives run-current-wildfire-approved-promotion.sh, which resolves the data root.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 686,
+      "durationMs": 785,
       "guardedPaths": [
         "data/current-wildfire-immutable-promotion-preparation.json",
         "data/staged-acquisitions.json",
@@ -57,7 +57,7 @@
       "reason": "Resolves the approved data root at module load through approvedDataRootRealPath, and drives the promotion runner against it.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 511,
+      "durationMs": 730,
       "guardedPaths": [
         "data/archive-operations-readiness.json",
         "data/elections-canada-fed-2025-profile.json",
@@ -105,7 +105,7 @@
       "reason": "Reads and re-derives the checksum-bound official NFD CSV profile from the owner SSD data root.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 220,
+      "durationMs": 255,
       "guardedPaths": [
         "data/nfd-harvest-statistics-profile.json",
         "lib/phase2/nfd-harvest-statistics.mjs",
@@ -125,7 +125,7 @@
       "reason": "Drives run-phase1-approved-promotion.sh, which resolves the data root.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 10108,
+      "durationMs": 10738,
       "guardedPaths": [
         "tests/phase1-approved-promotion-runner.test.mjs"
       ],
@@ -139,7 +139,7 @@
       "reason": "Stats the admitted federal-electoral GeoPackage under the data root.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 619,
+      "durationMs": 648,
       "guardedPaths": [
         "data/current-wildfire-derived-archive-evidence.json",
         "data/current-wildfire-derived-live-recovery-guard-2026-08-20.json",
@@ -221,7 +221,7 @@
       "reason": "Stats the admitted federal-electoral GeoPackage under the data root.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 63,
+      "durationMs": 85,
       "guardedPaths": [
         "data/current-wildfire-owner-admission.json",
         "data/partial-ledger-owner-review-outreach-package.json",
@@ -267,7 +267,7 @@
       "reason": "Verifies the federal electoral GeoPackage under the data root, including a byte-for-byte deterministic regeneration.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 60,
+      "durationMs": 82,
       "guardedPaths": [
         "data/elections-canada-fed-2025-profile.json",
         "data/elections-canada-fed-2025-source-ledger.json",
@@ -319,7 +319,7 @@
       "reason": "Profiles the NRCan canopy cover raster from the data root.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 136,
+      "durationMs": 159,
       "guardedPaths": [
         "data/elections-canada-fed-2025-profile.json",
         "data/elections-canada-fed-2025-source-ledger.json",
@@ -366,7 +366,7 @@
         "data/phase1-federal-electoral-execution-approval.json": "93d6bb6c9dbb1f8d83302212a1975a2b7a21fa5c64db1a5a29dfdaae2d874138",
         "data/phase1-federal-electoral-output-verification-evidence.json": "934a4381ab1ef23d913092e6c34da544e4c75326ae2c9ec172c63d33e34e5d17",
         "data/phase1-federal-electoral-production-admission.json": "a8f7130e54210147845c7c3a77134a82bb88bf7e1814e261aa4bdd2c5a8492e2",
-        "data/phase1-nrcan-cover-processing-gate.json": "a0ffa2fd7e5330f3aa39e1941c3d2b92f46c3a6f1047dde2488b18e36caa3bde",
+        "data/phase1-nrcan-cover-processing-gate.json": "c52043f1190b0778a4efd34c9e1e9f6b8e6f9a3d08494ec69b54a19d46c0adac",
         "data/phase1-production-source-ledger.json": "4ffc278a2b0bfc6308f8d6af57fc1f2fe36466b1fba758538749a9e4dd2693ee",
         "data/phase1-production-transformation-specifications-v1.json": "258ca3f94e30d484b53cc12e29c83beaf57998993edaea05e44f5a4924979efc",
         "data/phase1-transformation-scope-owner-approval-2026-08-25.json": "98c1becf3f4b392fdcfa57ae65a3e85e56a2b4b22d9671b418c300dc769d1be1",
@@ -378,20 +378,20 @@
         "scripts/check-immutable-promotions.mjs": "be6697fb7ec488d637cbffcd240f29da8dff648a6dd0e6879903733696c441c8",
         "scripts/check-nrcan-canopy-cover-profile.mjs": "65922ab0bd4988d768ea5bcf18fe58b76a280ed06ad4b060ba1f4c89942e0781",
         "scripts/check-phase1-federal-electoral-production-admission.mjs": "13273db484df58730334129c4139f87145bad21d1c9dc916f83ec7617c7cfb8f",
-        "scripts/check-phase1-nrcan-cover-processing-gate.mjs": "85f87e32c1f66a9bd360977173e0fd82d64b0a67af9b15251b75b4622bc12cd5",
+        "scripts/check-phase1-nrcan-cover-processing-gate.mjs": "8223bc2bd8c19cab45640bfefad7b8acc920b7dce777a974c2865842a11af906",
         "scripts/check-raster-grid.mjs": "299ca41743f9fb3da2b1b109cf5ac53598d80d51b461e3edd0e3245b36454674",
         "scripts/check-vlce2-remote-promotion-evidence.mjs": "1842dc1c51e31db201abfdd1038a991aeae2f5379e474dbfae918b29c6716c00",
         "scripts/run-phase1-federal-electoral-transformation.mjs": "e333b27cab488a53b5c7a27db7236c5792129482ec8e93fe5af75a94b3c8734b",
-        "tests/phase1-nrcan-cover-processing-gate.test.mjs": "1dd58a8783c3a6967da0fab51f24677fc8585e6c224c9680d7dc63fd495d5fea"
+        "tests/phase1-nrcan-cover-processing-gate.test.mjs": "e4fda19b1d95cda57510295895f92ae21c5eed8df34bc23f0be2b8eecef4aeff"
       },
-      "guardedFingerprint": "8c879cd4f74458e47a530c361df74de50abb2449db79c0dfbb48c435de4066b1"
+      "guardedFingerprint": "b9e175e687bc5112e60e5347e293340afb670e2c8bc5cf17f6009594c8993cbd"
     },
     {
       "test": "phase1-ntems-readback-bytes.test.mjs",
       "reason": "Reads raw/nrcan-ca-forest-harvest-1985-2022 from the data root.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 162469,
+      "durationMs": 172371,
       "guardedPaths": [
         "data/elections-canada-fed-2025-profile.json",
         "data/elections-canada-fed-2025-source-ledger.json",
@@ -457,7 +457,7 @@
       "reason": "Reads recorded artifacts under the data root to confirm the queue matches bytes on disk.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 419,
+      "durationMs": 496,
       "guardedPaths": [
         "data/current-wildfire-derived-archive-evidence.json",
         "data/current-wildfire-derived-readback-owner-approval.json",
@@ -521,7 +521,7 @@
         "data/phase1-federal-electoral-execution-approval.json": "93d6bb6c9dbb1f8d83302212a1975a2b7a21fa5c64db1a5a29dfdaae2d874138",
         "data/phase1-federal-electoral-output-verification-evidence.json": "934a4381ab1ef23d913092e6c34da544e4c75326ae2c9ec172c63d33e34e5d17",
         "data/phase1-federal-electoral-production-admission.json": "a8f7130e54210147845c7c3a77134a82bb88bf7e1814e261aa4bdd2c5a8492e2",
-        "data/phase1-owner-decision-queue.json": "fbf1e22fb6f92a828fab16820b28920437c13d9c144ffe143ad1f1f688028bb7",
+        "data/phase1-owner-decision-queue.json": "a21ead834f3526c7a5d3ba18b1884619238f9586475f4ae466f9e596c64255b0",
         "data/phase1-permission-outreach-package.json": "b5ca2d4032361621b693c4960d89711d89f1b1f1881dccbfdd3e116ac47bd83d",
         "data/phase1-phase3-owner-approvals-2026-08-21.json": "de60079cb1ae1165937e2fa40a357d0346486cd5b80fd7ede6a55fe68165f019",
         "data/phase1-production-source-ledger.json": "4ffc278a2b0bfc6308f8d6af57fc1f2fe36466b1fba758538749a9e4dd2693ee",
@@ -537,23 +537,23 @@
         "data/wildfire-derived-immutable-promotion-iam-desired-state.json": "ae91c26c9100e62d8b2db771d36de7f3ea66975dd7158b3bbad88f455896e86b",
         "data/wildfire-derived-immutable-promotion-preparation.json": "6e258d9bce391981be54ac09c43ebb185de7b943ff509269ab30742a8a47265f",
         "scripts/check-phase1-federal-electoral-production-admission.mjs": "13273db484df58730334129c4139f87145bad21d1c9dc916f83ec7617c7cfb8f",
-        "scripts/check-phase1-owner-decision-queue.mjs": "53cc6f9d9fe3d36d1953f6c014c01e8aae7cf536ceb9099971352d6c3d7371bf",
+        "scripts/check-phase1-owner-decision-queue.mjs": "be8217a67fda841e919d1bb4fd35604640e87cb1da2e5186be13ac8d6c0f57f5",
         "scripts/check-phase1-phase3-owner-approvals.mjs": "40dd56b17125eef44dd13159c07d2f5c029dddd08e16ab7361fdbc64ead4d3cd",
         "scripts/check-wildfire-derived-readback.mjs": "e2667038b6771385d07fc54f826da097b63ac1917502ab2d285be568c19193ac",
         "scripts/data-root.mjs": "38c1110d0ff02f17a3933d200e9114697b7f7e354d8ddf538a49db5dd158831e",
         "scripts/prepare-wildfire-derived-immutable-promotion.mjs": "5bcb0b926b27690fe85d193708f0582e3d6ab6aab7e91efeb31d693da548655a",
         "scripts/run-phase1-federal-electoral-transformation.mjs": "e333b27cab488a53b5c7a27db7236c5792129482ec8e93fe5af75a94b3c8734b",
         "scripts/run-wildfire-derived-readback.sh": "98662de8837c4b9e058d467497d51d3a5fefa84a310d9c48ca8f526742e2c5a6",
-        "tests/phase1-owner-decision-queue.test.mjs": "ac9722015d7dd15aeeaad2cab9b73e751e59f59ec893180af35aa9a9e87340f8"
+        "tests/phase1-owner-decision-queue.test.mjs": "23985726d81cb74eca250dcd3fd75733cd60623f5acf5b0038ebb28a906c7681"
       },
-      "guardedFingerprint": "31ca187f923fcc15ed721551fe50266f86b35a5e45d2b7b5cc1bfbb6503a07a5"
+      "guardedFingerprint": "63ea71aab19a6b19b16b969c9e5aeb59cdf2d6e7213f104f4502ca211eaeeec5"
     },
     {
       "test": "phase1-phase3-owner-approvals.test.mjs",
       "reason": "Resolves approval evidence paths through the data root.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 114,
+      "durationMs": 152,
       "guardedPaths": [
         "data/current-wildfire-derived-readback-owner-approval.json",
         "data/partial-ledger-owner-review-outreach-package.json",
@@ -589,7 +589,7 @@
       "reason": "Stats the admitted federal-electoral GeoPackage under the data root.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 153,
+      "durationMs": 192,
       "guardedPaths": [
         "data/alberta-plvi-immutable-promotion-evidence.json",
         "data/alberta-plvi-immutable-promotion-preparation.json",
@@ -741,7 +741,7 @@
       "reason": "Its checker resolves recorded artifacts through the data root.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 65,
+      "durationMs": 92,
       "guardedPaths": [
         "data/current-wildfire-owner-admission.json",
         "data/partial-ledger-owner-review-outreach-package.json",
@@ -799,7 +799,7 @@
       "reason": "Stats the admitted federal-electoral GeoPackage under the data root.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 123,
+      "durationMs": 156,
       "guardedPaths": [
         "data/current-wildfire-owner-admission.json",
         "data/elections-canada-fed-2025-profile.json",
@@ -863,7 +863,7 @@
       "reason": "Its checker opens comparison inputs under the data root.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 20896,
+      "durationMs": 20519,
       "guardedPaths": [
         "data/phase1-nbac-profile-2026-08-27.json",
         "data/phase2-hansen-gfc-v1.12-sample-profile.json",
@@ -887,7 +887,7 @@
       "reason": "Reads raw/nrcan-ca-forest-harvest-1985-2022 from the data root.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 645,
+      "durationMs": 809,
       "guardedPaths": [
         "data/phase2-v21-expert-review-workflow.json",
         "scripts/check-phase2-v21-expert-review-evidence.mjs",
@@ -907,7 +907,7 @@
       "reason": "Reads derived/phase2-v21-review-packet-v2 from the data root.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 97,
+      "durationMs": 126,
       "guardedPaths": [
         "data/phase2-v21-real-review-packet-evidence.json",
         "data/phase2-v21-real-review-packet-raster-readback-evidence.json",
@@ -929,7 +929,7 @@
       "reason": "Its checker opens the v21 review packet under the data root.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 78,
+      "durationMs": 110,
       "guardedPaths": [
         "scripts/check-phase2-v21-real-review-packet.mjs",
         "tests/phase2-v21-real-review-packet.test.mjs"
@@ -945,7 +945,7 @@
       "reason": "Resolves the data root and reconciles against bytes under it.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 2737,
+      "durationMs": 2820,
       "guardedPaths": [
         "tests/qc-ecoforest-reconciliation.test.mjs"
       ],
@@ -959,7 +959,7 @@
       "reason": "Resolves the data root and prepares against bytes under it.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 11020,
+      "durationMs": 12295,
       "guardedPaths": [
         "lib/archive-staging/types.ts",
         "lib/archive-staging/validate.ts",
@@ -979,7 +979,7 @@
       "reason": "Resolves the data root and runs against bytes under it.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 1744,
+      "durationMs": 1863,
       "guardedPaths": [
         "tests/qc-reconciled-main-runner.test.mjs"
       ],
@@ -993,7 +993,7 @@
       "reason": "Reads derived wildfire outputs from the data root.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 1052,
+      "durationMs": 1108,
       "guardedPaths": [
         "data/wildfire-derived-immutable-promotion-iam-desired-state.json",
         "data/wildfire-derived-immutable-promotion-preparation.json",
@@ -1017,7 +1017,7 @@
       "reason": "Resolves the data root before invoking the recovery runner.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 87,
+      "durationMs": 120,
       "guardedPaths": [
         "tests/wildfire-derived-recovery-owner-wrapper.test.mjs"
       ],
@@ -1031,7 +1031,7 @@
       "reason": "Reads derived wildfire outputs from the data root.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 2691,
+      "durationMs": 3106,
       "guardedPaths": [
         "data/wildfire-derived-immutable-promotion-iam-desired-state.json",
         "data/wildfire-derived-immutable-promotion-preparation.json",

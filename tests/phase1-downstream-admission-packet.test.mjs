@@ -3,7 +3,7 @@ import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, symlinkSync,
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
-import { validatePhase1DownstreamAdmissionPacket } from "../scripts/check-phase1-downstream-admission-packet.mjs";
+import { validateHistoricalImmutablePreflightBinding, validatePhase1DownstreamAdmissionPacket } from "../scripts/check-phase1-downstream-admission-packet.mjs";
 
 const root = new URL("..", import.meta.url).pathname;
 const read = () => JSON.parse(readFileSync(new URL("../data/phase1-downstream-admission-packet.json", import.meta.url), "utf8"));
@@ -40,6 +40,25 @@ async function withTamperedRegistry(mutate, assertion) {
   }
 }
 
+async function withTamperedImmutablePreflight(mutate, assertion) {
+  const repoData = path.join(root, "data");
+  const temporaryRoot = mkdtempSync(path.join(os.tmpdir(), "downstream-packet-preflight-"));
+  try {
+    const temporaryData = path.join(temporaryRoot, "data");
+    mkdirSync(temporaryData);
+    const recordName = "phase1-immutable-downstream-preflight.json";
+    for (const entry of readdirSync(repoData)) {
+      if (entry !== recordName) symlinkSync(path.join(repoData, entry), path.join(temporaryData, entry));
+    }
+    const tampered = JSON.parse(readFileSync(path.join(repoData, recordName), "utf8"));
+    mutate(tampered);
+    writeFileSync(path.join(temporaryData, recordName), `${JSON.stringify(tampered, null, 2)}\n`);
+    await assertion(temporaryRoot);
+  } finally {
+    rmSync(temporaryRoot, { recursive: true, force: true });
+  }
+}
+
 test("binds every audited spec record while exposing only the seven ready transformation scopes", async () => {
   const packet = read();
   await validatePhase1DownstreamAdmissionPacket(packet, root);
@@ -62,4 +81,16 @@ test("rejects approval claims, a missing row, and evidence-binding drift", async
   );
   const premature = read(); premature.bundles.find(({ id }) => id === "qc-fourth-inventory").ownerDecisionNow = "Approve, reject, or defer this transformation.";
   await assert.rejects(validatePhase1DownstreamAdmissionPacket(premature, root));
+});
+
+test("permits only the established baseline date qualifier beyond the owner-bound immutable-preflight bytes", async () => {
+  await validateHistoricalImmutablePreflightBinding(root);
+  await withTamperedImmutablePreflight(
+    (record) => { record.baseline.rawEvidenceNumerator = 14.5; },
+    (tamperedRoot) => assert.rejects(validateHistoricalImmutablePreflightBinding(tamperedRoot), /only by its established baseline date qualifier/),
+  );
+  await withTamperedImmutablePreflight(
+    (record) => { record.baseline.asOf = "2026-08-23"; },
+    (tamperedRoot) => assert.rejects(validateHistoricalImmutablePreflightBinding(tamperedRoot), /established date qualifier inside its baseline/),
+  );
 });

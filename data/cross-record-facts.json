@@ -2,7 +2,7 @@
   "schemaVersion": "witness-tree/cross-record-fact-register/1",
   "asOf": "2026-08-31",
   "ledger": {"path": "docs/RECORD_CONTRADICTION_LEDGER.md"},
-  "declaredCurrentExceptions": ["C-1", "C-2", "C-3", "C-4", "C-5", "C-6", "C-7"],
+  "declaredCurrentExceptions": ["C-1", "C-2", "C-3", "C-4", "C-5", "C-6"],
   "facts": [
     {
       "id": "ntems-forest-harvest-transformation-status",
@@ -104,18 +104,18 @@
         {"id":"ledger","record":"data/phase1-production-source-ledger.json","valuePath":"/rawEvidenceNumerator","expected":17,"factValue":"17","datePath":"/asOf"},
         {"id":"current-state-audit","record":"data/phase1-current-state-completion-audit.json","valuePath":"/ledger/rawEvidenceNumerator","expected":16.5,"factValue":"16.5","datePath":"/asOf"},
         {"id":"remaining-actions","record":"data/phase1-remaining-actions-audit.json","valuePath":"/baseline/rawEvidenceNumerator","expected":16.5,"factValue":"16.5","datePath":"/asOf"},
-        {"id":"owner-queue","record":"data/phase1-owner-decision-queue.json","valuePath":"/baseline/rawEvidenceNumerator","expected":14.75,"factValue":"14.75"},
-        {"id":"immutable-preflight","record":"data/phase1-immutable-downstream-preflight.json","valuePath":"/baseline/rawEvidenceNumerator","expected":14.75,"factValue":"14.75"},
+        {"id":"owner-queue","record":"data/phase1-owner-decision-queue.json","valuePath":"/baseline/rawEvidenceNumerator","expected":14.75,"factValue":"14.75","datePath":"/baseline/asOf"},
+        {"id":"immutable-preflight","record":"data/phase1-immutable-downstream-preflight.json","valuePath":"/baseline/rawEvidenceNumerator","expected":14.75,"factValue":"14.75","datePath":"/baseline/asOf"},
         {"id":"owner-approval-packet","record":"data/phase1-owner-approval-packet.json","valuePath":"/baseline/rawEvidenceNumerator","expected":14.75,"factValue":"14.75","datePath":"/asOf"},
         {"id":"archive-live-readback","record":"data/phase1-archive-live-readback-2026-08-20.json","valuePath":"/percentageImpact/baselineRawEvidenceNumerator","expected":14.75,"factValue":"14.75","datePath":"/percentageImpact/baselineAsOf"},
-        {"id":"nrcan-gate","record":"data/phase1-nrcan-cover-processing-gate.json","valuePath":"/baseline/rawEvidenceNumerator","expected":14.25,"factValue":"14.25"},
-        {"id":"alberta-audit","record":"data/phase1-alberta-transform-ingestion-audit.json","valuePath":"/baseline/rawEvidenceNumerator","expected":14.25,"factValue":"14.25"},
+        {"id":"nrcan-gate","record":"data/phase1-nrcan-cover-processing-gate.json","valuePath":"/baseline/rawEvidenceNumerator","expected":14.25,"factValue":"14.25","datePath":"/baseline/auditedAt"},
+        {"id":"alberta-audit","record":"data/phase1-alberta-transform-ingestion-audit.json","valuePath":"/baseline/rawEvidenceNumerator","expected":14.25,"factValue":"14.25","datePath":"/baseline/auditedAt"},
         {"id":"bc-ontario-audit","record":"data/phase1-bc-ontario-row-audit.json","valuePath":"/baseline/rawEvidenceNumerator","expected":14.25,"factValue":"14.25","datePath":"/auditedAt"},
         {"id":"phase1-phase3-owner-approvals","record":"data/phase1-phase3-owner-approvals-2026-08-21.json","valuePath":"/baseline/rawEvidenceNumerator","expected":14.25,"factValue":"14.25","datePath":"/recordedOn"},
         {"id":"scope-bound-preparation","record":"data/phase1-scope-bound-validation-preparation.json","valuePath":"/baseline/rawEvidenceNumerator","expected":14.25,"factValue":"14.25","datePath":"/asOf"},
         {"id":"partial-route-exhaustion","record":"data/phase1-partial-source-route-exhaustion.json","fields":{"before":{"pointer":"/impact/rawEvidenceNumeratorBefore"},"after":{"pointer":"/impact/rawEvidenceNumeratorAfter"}},"expected":{"before":14.25,"after":14.25},"factValue":"14.25","datePath":"/auditedAt"}
       ],
-      "exceptions": [{"ledgerEntry":"C-7"}]
+      "supersessions": [{"olderAssertion":"current-state-audit","newerAssertion":"ledger"},{"olderAssertion":"remaining-actions","newerAssertion":"ledger"},{"olderAssertion":"owner-queue","newerAssertion":"ledger"},{"olderAssertion":"immutable-preflight","newerAssertion":"ledger"},{"olderAssertion":"owner-approval-packet","newerAssertion":"ledger"},{"olderAssertion":"archive-live-readback","newerAssertion":"ledger"},{"olderAssertion":"nrcan-gate","newerAssertion":"ledger"},{"olderAssertion":"alberta-audit","newerAssertion":"ledger"},{"olderAssertion":"bc-ontario-audit","newerAssertion":"ledger"},{"olderAssertion":"phase1-phase3-owner-approvals","newerAssertion":"ledger"},{"olderAssertion":"scope-bound-preparation","newerAssertion":"ledger"},{"olderAssertion":"partial-route-exhaustion","newerAssertion":"ledger"}]
     },
     {
       "id": "phase1-immutable-archive-row-count",
@@ -124,17 +124,17 @@
         {"id":"ledger","record":"data/phase1-production-source-ledger.json","fields":{"immutableArchiveRows":{"arrayCount":{"arrayPath":"/entries","where":{"/proof/immutableArchive":true}}}},"expected":{"immutableArchiveRows":16},"factValue":"16","datePath":"/asOf"},
         {"id":"current-state-audit","record":"data/phase1-current-state-completion-audit.json","valuePath":"/ledger/immutableArchiveCompleteRows","expected":16,"factValue":"16","datePath":"/asOf"},
         {"id":"remaining-actions","record":"data/phase1-remaining-actions-audit.json","valuePath":"/baseline/immutableArchiveCompleteRows","expected":16,"factValue":"16","datePath":"/asOf"},
-        {"id":"owner-queue","record":"data/phase1-owner-decision-queue.json","valuePath":"/baseline/immutableArchiveCompleteRows","expected":9,"factValue":"9"},
-        {"id":"immutable-preflight","record":"data/phase1-immutable-downstream-preflight.json","valuePath":"/baseline/immutableRows","expected":9,"factValue":"9"},
+        {"id":"owner-queue","record":"data/phase1-owner-decision-queue.json","valuePath":"/baseline/immutableArchiveCompleteRows","expected":9,"factValue":"9","datePath":"/baseline/asOf"},
+        {"id":"immutable-preflight","record":"data/phase1-immutable-downstream-preflight.json","valuePath":"/baseline/immutableRows","expected":9,"factValue":"9","datePath":"/baseline/asOf"},
         {"id":"owner-approval-packet","record":"data/phase1-owner-approval-packet.json","valuePath":"/baseline/immutableArchiveCompleteRows","expected":9,"factValue":"9","datePath":"/asOf"},
-        {"id":"nrcan-gate","record":"data/phase1-nrcan-cover-processing-gate.json","valuePath":"/baseline/immutableArchiveCompleteRows","expected":7,"factValue":"7"},
-        {"id":"alberta-audit","record":"data/phase1-alberta-transform-ingestion-audit.json","valuePath":"/baseline/immutableArchiveCompleteRows","expected":7,"factValue":"7"},
+        {"id":"nrcan-gate","record":"data/phase1-nrcan-cover-processing-gate.json","valuePath":"/baseline/immutableArchiveCompleteRows","expected":7,"factValue":"7","datePath":"/baseline/auditedAt"},
+        {"id":"alberta-audit","record":"data/phase1-alberta-transform-ingestion-audit.json","valuePath":"/baseline/immutableArchiveCompleteRows","expected":7,"factValue":"7","datePath":"/baseline/auditedAt"},
         {"id":"bc-ontario-audit","record":"data/phase1-bc-ontario-row-audit.json","valuePath":"/baseline/immutableArchiveCompleteRows","expected":7,"factValue":"7","datePath":"/auditedAt"},
         {"id":"phase1-phase3-owner-approvals","record":"data/phase1-phase3-owner-approvals-2026-08-21.json","valuePath":"/baseline/immutableRows","expected":7,"factValue":"7","datePath":"/recordedOn"},
         {"id":"scope-bound-preparation","record":"data/phase1-scope-bound-validation-preparation.json","valuePath":"/baseline/immutableArchiveCompleteRows","expected":7,"factValue":"7","datePath":"/asOf"},
         {"id":"partial-route-exhaustion","record":"data/phase1-partial-source-route-exhaustion.json","valuePath":"/impact/immutableArchiveCompleteRows","expected":7,"factValue":"7","datePath":"/auditedAt"}
       ],
-      "exceptions": [{"ledgerEntry":"C-7"}]
+      "supersessions": [{"olderAssertion":"owner-queue","newerAssertion":"ledger"},{"olderAssertion":"immutable-preflight","newerAssertion":"ledger"},{"olderAssertion":"owner-approval-packet","newerAssertion":"ledger"},{"olderAssertion":"nrcan-gate","newerAssertion":"ledger"},{"olderAssertion":"alberta-audit","newerAssertion":"ledger"},{"olderAssertion":"bc-ontario-audit","newerAssertion":"ledger"},{"olderAssertion":"phase1-phase3-owner-approvals","newerAssertion":"ledger"},{"olderAssertion":"scope-bound-preparation","newerAssertion":"ledger"},{"olderAssertion":"partial-route-exhaustion","newerAssertion":"ledger"}]
     }
   ]
 }

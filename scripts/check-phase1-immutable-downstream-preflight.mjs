@@ -73,6 +73,7 @@ export function validatePhase1ImmutableDownstreamPreflight(record, context) {
   assert.equal(record.status, "owner-independent-audit-complete-plvi-schema-blocked");
   assert.match(record.notice, /read-only preparation contract.*does not transform.*ingest.*production source/i);
   assert.deepEqual(record.baseline, {
+    asOf: "2026-08-22",
     immutableRows: 9,
     rawEvidenceNumerator: 14.75,
     rawEvidenceDenominator: 31,

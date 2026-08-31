@@ -103,7 +103,7 @@ This is probably intentional layering: the specification file holds no
 approval, and the approval lives in a separate record bound to it. Recorded for
 completeness, not asserted as an error.
 
-## C-7. Stale numeric baselines
+## C-7. Dated historical numeric baselines
 
 The current ledger records `rawEvidenceNumerator: 17` with 16 rows at
 `immutableArchive: true`.
@@ -115,6 +115,11 @@ The current ledger records `rawEvidenceNumerator: 17` with 16 rows at
 | `phase1-nrcan-cover-processing-gate.json` (2026-08-21) | 14.25, 7 archive rows, 38.7903226% | 2.75 credits, 9 archive rows |
 | `phase1-alberta-transform-ingestion-audit.json` (2026-08-21) | 14.25, 7 archive rows | same |
 
+Each listed record now carries its established record/checker date inside its
+own `baseline` object. The historical numbers were not changed. The
+cross-record register covers every disagreement through dated supersession, so
+C-7 is no longer a current exception.
+
 ## What must not be done with this file
 
 These contradictions must not be cleared by editing whichever record is more
@@ -125,4 +130,5 @@ the same defect class as rebinding a record of what a past run produced.
 
 The available honest moves are to supersede a stale record with a new dated one
 that cites it, or to add the missing date qualifier to a record that is already
-scoped by date in its checker but not in its own JSON. Neither is done here.
+scoped by date in its checker but not in its own JSON. C-7 uses the latter;
+other entries remain unresolved unless their own record evidence says otherwise.

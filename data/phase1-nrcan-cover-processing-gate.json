@@ -5,6 +5,7 @@
   "derivedFromHead": "71925af03fc08b052d12077de2ba4acb9239006b",
   "notice": "This gate reconciles the locally supported NTEMS annual land-cover and canopy-cover evidence. It records passed raw/profile validation and the absence of a Phase 1 production-admission target transformation, checksum-bound output, ingestion batch, release approval, or production admission. A separately approved Phase 2 nonproduction method does not close these Phase 1 gates. It performs no AWS call, archive mutation, external contact, transformation, ingestion, release, or production-eligibility change.",
   "baseline": {
+    "auditedAt": "2026-08-21T15:45:00Z",
     "productionRows": 31,
     "rawEvidenceNumerator": 14.25,
     "rawEvidenceDenominator": 31,
