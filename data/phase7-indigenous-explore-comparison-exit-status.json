@@ -75,11 +75,11 @@
       "evidence": [
         {
           "path": "lib/comparison/ranking.ts",
-          "sha256": "7c7bc7fd63cf37a1e6ceeba1ec2136ca018af3279fd511d11523c430e22ed507"
+          "sha256": "3cb80a7bd67016dda5f3d052152e9a44685b2b358e7301b35aaccf6ccb84971e"
         },
         {
           "path": "tests/comparison.test.tsx",
-          "sha256": "d300a0170a4d6f2e97cc5de69dcd05f1112c0a0625779e35507038f1570b8801"
+          "sha256": "19bd90bbb9de819ca08ab51f45313c4f1d2826e45c07cbcf3a88543663e4af2a"
         }
       ]
     },
@@ -175,11 +175,11 @@
       "evidence": [
         {
           "path": "lib/comparison/ranking.ts",
-          "sha256": "7c7bc7fd63cf37a1e6ceeba1ec2136ca018af3279fd511d11523c430e22ed507"
+          "sha256": "3cb80a7bd67016dda5f3d052152e9a44685b2b358e7301b35aaccf6ccb84971e"
         },
         {
           "path": "tests/comparison.test.tsx",
-          "sha256": "d300a0170a4d6f2e97cc5de69dcd05f1112c0a0625779e35507038f1570b8801"
+          "sha256": "19bd90bbb9de819ca08ab51f45313c4f1d2826e45c07cbcf3a88543663e4af2a"
         }
       ]
     },
@@ -191,7 +191,7 @@
       "evidence": [
         {
           "path": "components/comparison/RankedRidingsTable.tsx",
-          "sha256": "efa58bcf5725968edf8a5f6f1035ead95207e09552078a991d8118fc2c71fc8b"
+          "sha256": "04c7784e227a324a82dec766fa41330dda0184abae8adad757e594b90e7d6239"
         },
         {
           "path": "components/comparison/SideBySideComparison.tsx",
@@ -199,7 +199,7 @@
         },
         {
           "path": "tests/comparison.test.tsx",
-          "sha256": "d300a0170a4d6f2e97cc5de69dcd05f1112c0a0625779e35507038f1570b8801"
+          "sha256": "19bd90bbb9de819ca08ab51f45313c4f1d2826e45c07cbcf3a88543663e4af2a"
         }
       ]
     },
@@ -207,19 +207,19 @@
       "id": "insufficient-coverage-separated",
       "title": "Insufficient-coverage ridings are separated from the ranked table rather than represented as zero",
       "status": "pass",
-      "reason": "The ranking result has a dedicated insufficient-coverage collection and the rendered component gives it a labelled separate table.",
+      "reason": "The ranking result has a dedicated unranked collection and the rendered component separates its rows into labelled tables for no mapped coverage, partial mapped coverage, and complete mapped coverage below the forest-area floor.",
       "evidence": [
         {
           "path": "lib/comparison/ranking.ts",
-          "sha256": "7c7bc7fd63cf37a1e6ceeba1ec2136ca018af3279fd511d11523c430e22ed507"
+          "sha256": "3cb80a7bd67016dda5f3d052152e9a44685b2b358e7301b35aaccf6ccb84971e"
         },
         {
           "path": "components/comparison/RankedRidingsTable.tsx",
-          "sha256": "efa58bcf5725968edf8a5f6f1035ead95207e09552078a991d8118fc2c71fc8b"
+          "sha256": "04c7784e227a324a82dec766fa41330dda0184abae8adad757e594b90e7d6239"
         },
         {
           "path": "tests/comparison.test.tsx",
-          "sha256": "d300a0170a4d6f2e97cc5de69dcd05f1112c0a0625779e35507038f1570b8801"
+          "sha256": "19bd90bbb9de819ca08ab51f45313c4f1d2826e45c07cbcf3a88543663e4af2a"
         }
       ]
     },
@@ -247,11 +247,11 @@
       "evidence": [
         {
           "path": "lib/comparison/ranking.ts",
-          "sha256": "7c7bc7fd63cf37a1e6ceeba1ec2136ca018af3279fd511d11523c430e22ed507"
+          "sha256": "3cb80a7bd67016dda5f3d052152e9a44685b2b358e7301b35aaccf6ccb84971e"
         },
         {
           "path": "tests/comparison.test.tsx",
-          "sha256": "d300a0170a4d6f2e97cc5de69dcd05f1112c0a0625779e35507038f1570b8801"
+          "sha256": "19bd90bbb9de819ca08ab51f45313c4f1d2826e45c07cbcf3a88543663e4af2a"
         }
       ]
     },
@@ -263,7 +263,7 @@
       "evidence": [
         {
           "path": "tests/comparison.test.tsx",
-          "sha256": "d300a0170a4d6f2e97cc5de69dcd05f1112c0a0625779e35507038f1570b8801"
+          "sha256": "19bd90bbb9de819ca08ab51f45313c4f1d2826e45c07cbcf3a88543663e4af2a"
         }
       ]
     }

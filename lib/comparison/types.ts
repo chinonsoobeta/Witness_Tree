@@ -18,7 +18,7 @@ export type RankedRiding = Readonly<{
   /** Share with no matching official record. Absent means no admitted matching run exists, never zero. */
   unmatchedSharePercent?: number | null;
   coverageGrade: CoverageGrade;
-  measurementCoverage?: "complete" | "partial-with-unknown" | "none-mapped";
+  measurementCoverage: "complete" | "partial-with-unknown" | "none-mapped";
   evidence: EvidenceClass;
   sufficientCoverage: boolean;
 }>;
