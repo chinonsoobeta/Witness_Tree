@@ -17,7 +17,6 @@ const AUTHORIZATION_BY_SPEC = {
   "ntems-canopy-cover-v1": "data/phase1-ntems-canopy-cover-execution-authorization.json",
   "ntems-canopy-height-v1": "data/phase1-ntems-canopy-height-execution-authorization.json",
 };
-const DEFAULT_COMPOSITE_EVIDENCE = "data/phase1-ntems-transformation-readback-evidence-2026-08-26.json";
 const UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/;
 
 const readJson = (root, relativePath) => JSON.parse(readFileSync(path.join(root, relativePath), "utf8"));
@@ -280,6 +279,12 @@ function verifyOne(root, dataRoot, authorization, specification, input, grid, de
 }
 
 export function verify(options, root = REPO_ROOT) {
+  // Checked before anything is read or hashed. A run that cannot legally write
+  // its record should say so in the first millisecond, not after re-reading
+  // every derived raster on the data root.
+  if (options.writeEvidence && !options.evidencePath) {
+    fail("--write-evidence requires an explicit --evidence-path; a defaulted filename can name a date the run did not happen on.");
+  }
   const authorizationPath = options.authorization ?? (options.specId ? AUTHORIZATION_BY_SPEC[options.specId] : undefined);
   if (!authorizationPath) fail("provide --authorization, or provide a supported --spec-id so the matching per-scope authorization can be selected.");
   const authorization = readJson(root, authorizationPath);
@@ -300,7 +305,14 @@ export function verify(options, root = REPO_ROOT) {
   validateEvidenceRecord(result);
   if (options.writeEvidence) {
     if (!verified.length) fail("cannot write evidence without a verified output.");
-    const evidencePath = options.evidencePath ?? (result.specifications.length === 1 ? `data/${result.specifications[0].id}-readback-evidence-2026-08-26.json` : DEFAULT_COMPOSITE_EVIDENCE);
+    // The destination is never defaulted. It used to fall back to a filename
+    // with 2026-08-26 frozen into it, so a run on any other day wrote its
+    // readback under a name asserting a date it did not happen on. The wx flag
+    // below stopped that from overwriting the original, which is why the defect
+    // stayed latent, but a deleted or moved file would have let it through. A
+    // caller who wants a record has to say what day it is recording. The
+    // refusal itself is at the top of this function, before any work.
+    const { evidencePath } = options;
     if (path.isAbsolute(evidencePath) || evidencePath.includes("..")) fail("--evidence-path must be a repository-relative path.");
     const destination = path.join(root, evidencePath);
     writeFileSync(destination, `${JSON.stringify(result, null, 2)}\n`, { flag: "wx", mode: 0o600 });

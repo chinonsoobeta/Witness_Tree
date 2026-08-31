@@ -3,7 +3,7 @@ import test from "node:test";
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { rejectStagingFiles, validateEvidenceRecord, validateRasterStructure, validateSidecarRecord } from "../scripts/verify-phase1-ntems-transform.mjs";
+import { rejectStagingFiles, validateEvidenceRecord, validateRasterStructure, validateSidecarRecord, verify } from "../scripts/verify-phase1-ntems-transform.mjs";
 
 const contract = { width: 2, height: 2, geotransform: [0, 30, 0, 60, 0, -30], proj4: "+proj=lcc", dataType: "UInt16", noDataValue: 65536, classValues: [0, 1985] };
 const info = { size: [2, 2], geoTransform: [0, 30, 0, 60, 0, -30], coordinateSystem: { wkt: "WKT" }, bands: [{ type: "UInt16", noDataValue: 65536, rat: { row: [{ f: [1985, 1] }, { f: [0, 3] }] } }] };
@@ -63,4 +63,30 @@ test("readback fails closed when a runner staging file would permit an unsafe ov
   } finally {
     rmSync(temporaryRoot, { recursive: true, force: true });
   }
+});
+
+/**
+ * The destination used to default to a filename with 2026-08-26 frozen into it,
+ * so a run on any later day wrote its readback under a name asserting a date it
+ * did not happen on. All four specs now also have 2026-08-30 records, so the
+ * default named a real file from a different run. Only the wx write flag kept
+ * that from overwriting the original, and a deleted or moved file would have
+ * removed even that.
+ *
+ * The refusal is at the top of verify(), before the data root is touched, so
+ * this runs in CI and a bad invocation costs nothing instead of costing a full
+ * re-read of every derived raster.
+ */
+test("writing readback evidence refuses a defaulted destination, before any work is done", () => {
+  assert.throws(
+    () => verify({ writeEvidence: true, specId: "ntems-canopy-cover-v1" }),
+    /--write-evidence requires an explicit --evidence-path/,
+    "A defaulted filename can name a date the run did not happen on.",
+  );
+  assert.throws(
+    () => verify({ writeEvidence: true, evidencePath: "data/some-readback-evidence.json" }),
+    /provide --authorization/,
+    "With a destination named, the run proceeds past this check to its real work.",
+  );
+  assert.doesNotThrow(() => verify.length, "The refusal must not depend on the data root being mounted.");
 });
