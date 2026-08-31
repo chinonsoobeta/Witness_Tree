@@ -10,6 +10,7 @@ const ledger = JSON.parse(readFileSync(new URL("../data/phase1-production-source
 test("the NTEMS cover gate binds both rows to existing local/archive checks", () => {
   assert.equal(audit.rows.length, 2);
   assert.equal(audit.baseline.rawEvidenceNumerator, 14.25);
+  assert.equal(audit.baseline.auditedAt, "2026-08-21T15:45:00Z");
   assert.equal(audit.baseline.formalEvidenceTrackingPercentage, 38.7903226);
   assert.deepEqual(audit.rows.map(({ transformation }) => transformation.status), [
     "blocked-no-phase1-production-named-specification-and-output",
@@ -28,6 +29,7 @@ test("the gate fails closed if a transformation, output, or credit is invented",
   rejects((candidate) => { candidate.rows[1].transformation.output = { sha256: "a".repeat(64) }; });
   rejects((candidate) => { candidate.rows[0].productionEligible = true; });
   rejects((candidate) => { candidate.baseline.scoreDelta.rawCredit = 1; });
+  rejects((candidate) => { candidate.baseline.auditedAt = "2026-08-21T15:45:01Z"; });
   rejects((candidate) => { candidate.notice = candidate.notice.replace("Phase 1 production-admission", "approved").replace("A separately approved Phase 2 nonproduction method does not close these Phase 1 gates. ", ""); });
   rejects((candidate) => { candidate.rows[0].transformation.requiredBeforeExecution[0] = "Record and approve a versioned forest-mask method."; });
   rejects((candidate) => { candidate.rows[1].transformation.blockers[0] = "No approved canopy-cover method exists."; });
@@ -37,6 +39,7 @@ test("the gate fails closed if a transformation, output, or credit is invented",
 test("the gate keeps its bound historical baseline after the later NBAC profile and federal admission", () => {
   assert.equal(validatePhase1NrcanCoverProcessingGate(audit, ledger), audit);
   assert.deepEqual(audit.baseline, {
+    auditedAt: "2026-08-21T15:45:00Z",
     productionRows: 31,
     rawEvidenceNumerator: 14.25,
     rawEvidenceDenominator: 31,

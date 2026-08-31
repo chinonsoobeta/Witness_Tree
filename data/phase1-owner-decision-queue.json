@@ -6,6 +6,7 @@
   "notice": "This consolidated queue restates existing Phase 1 owner boundaries, including the separately recorded archive approvals in data/phase1-phase3-owner-approvals-2026-08-21.json. This queue creates no new approval, performs no AWS or remote-storage action, submits no form, sends no email, and does not transform, ingest, release, admit, or make any row production eligible.",
   "selectionRule": "Include every canonical production row whose evidenceState is local-verified-profiled or remote-verified-archived-profiled and whose productionAdmission remains false. These rows have a next owner-controlled source-scope, transformation, ingestion, release, archive-promotion, or production-admission decision. Exclude partial-component and access-blocked rows because their next gate is external artifact, rights, authority, or permission resolution before this owner pipeline.",
   "baseline": {
+    "asOf": "2026-08-22",
     "productionRows": 31,
     "rawEvidenceNumerator": 14.75,
     "rawEvidenceDenominator": 31,

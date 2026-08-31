@@ -24,7 +24,7 @@ function containsKey(value, keys) {
 test("the register binds every currently declared cross-record contradiction", async () => {
   const register = await load();
   assert.doesNotThrow(() => validateCrossRecordFacts(register));
-  assert.deepEqual(register.declaredCurrentExceptions, ["C-1", "C-2", "C-3", "C-4", "C-5", "C-6", "C-7"]);
+  assert.deepEqual(register.declaredCurrentExceptions, ["C-1", "C-2", "C-3", "C-4", "C-5", "C-6"]);
 });
 
 test("the numeric facts cover every committed JSON record that asserts either baseline", async () => {
@@ -59,6 +59,31 @@ test("C-5 includes the direct admission and append-only evolution records", asyn
   const records = new Set(register.facts.filter(({ contradiction }) => contradiction === "C-5").flatMap(({ assertions }) => assertions.map(({ record }) => record)));
   assert.ok(records.has("data/phase1-federal-electoral-production-admission.json"));
   assert.ok(records.has("data/phase1-ledger-post-scope-approval-evolution.json"));
+});
+
+test("C-7 numeric disagreements are completely covered by dated baseline supersessions", async () => {
+  const register = await load();
+  for (const fact of register.facts.filter(({ contradiction }) => contradiction === "C-7")) {
+    assert.deepEqual(fact.exceptions ?? [], []);
+    for (const assertion of fact.assertions) assert.ok(assertion.datePath, `${fact.id}/${assertion.id} needs its own date qualifier`);
+  }
+});
+
+test("C-7 common-later supersession fails closed for a missing or non-later edge", async () => {
+  const register = await load();
+  const raw = register.facts.find(({ id }) => id === "phase1-raw-credit-numerator");
+  raw.supersessions = raw.supersessions.filter(({ olderAssertion }) => olderAssertion !== "owner-queue");
+  assert.throws(() => validateCrossRecordFacts(register), /lacks a dated supersession/);
+
+  const reversed = await load();
+  const archive = reversed.facts.find(({ id }) => id === "phase1-immutable-archive-row-count");
+  archive.supersessions[0] = { olderAssertion: "ledger", newerAssertion: "owner-queue" };
+  assert.throws(() => validateCrossRecordFacts(reversed), /must run from an older record to a later record/);
+
+  const sameDate = await load();
+  const sameDateRaw = sameDate.facts.find(({ id }) => id === "phase1-raw-credit-numerator");
+  sameDateRaw.supersessions.find(({ olderAssertion }) => olderAssertion === "owner-queue").newerAssertion = "remaining-actions";
+  assert.throws(() => validateCrossRecordFacts(sameDate), /must run from an older record to a later record/);
 });
 
 test("a disagreement without its ledger exception or supersession fails closed", async () => {

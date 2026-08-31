@@ -290,7 +290,9 @@ export async function checkPhase1OwnerApprovalPacket(root = path.resolve(path.di
     scope: "The two national and two Quebec rows are accepted source-ledger-only; PLVI is admitted only as the exact raw/derived scope for scope-bound validation and ingestion preparation.",
   });
   same(packet.phaseOrder, ["reversible-source-scope", "irreversible-archive-retention", "release-production-admission"]);
-  same(packet.baseline, queue.baseline, "Packet baseline must reuse the owner queue baseline.");
+  const { asOf: queueBaselineAsOf, ...historicalQueueBaseline } = queue.baseline;
+  assert.equal(queueBaselineAsOf, "2026-08-22", "The owner queue baseline needs its exact historical date qualifier.");
+  same(packet.baseline, historicalQueueBaseline, "Packet baseline must reuse the historical owner queue baseline without rewriting the owner packet.");
   same(packet.rows, QUEUE_ROWS, "Packet must cover the authoritative 16-row queue once.");
   same(packet.rows, queue.queueRows.map((row) => row.id), "Packet rows must match the queue rows.");
   same(packet.excludedRows, queue.excludedRows, "Partial/access exclusions must be preserved exactly.");

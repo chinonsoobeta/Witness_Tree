@@ -278,6 +278,7 @@ export function validatePhase1OwnerDecisionQueue(queue, context) {
   assert.match(queue.notice, /creates no new approval.*AWS.*transform.*production eligible/i);
   assert.match(queue.selectionRule, /local-verified-profiled.*remote-verified-archived-profiled/);
   assert.deepEqual(queue.baseline, {
+    asOf: "2026-08-22",
     productionRows: 31,
     rawEvidenceNumerator: 14.75,
     rawEvidenceDenominator: 31,

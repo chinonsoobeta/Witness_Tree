@@ -29,6 +29,7 @@ test("audits all nine immutable rows and keeps the PLVI schema preflight blocked
   ]);
   assert.equal(record.claims.rawEvidenceDelta, 0);
   assert.equal(record.claims.productionAdmission, false);
+  assert.equal(record.baseline.asOf, "2026-08-22");
 });
 
 test("rejects output, method, schema, row-set, and downstream claim drift", () => {
@@ -51,6 +52,7 @@ test("rejects output, method, schema, row-set, and downstream claim drift", () =
     (copy) => { copy.auditedRows[4].reason = "Plausible but non-canonical blocker."; },
     (copy) => { copy.claims.ingestionAuthorized = true; },
     (copy) => { copy.claims.productionEligible = true; },
+    (copy) => { copy.baseline.asOf = "2026-08-23"; },
   ];
   for (const corrupt of corruptions) {
     const copy = structuredClone(record);

@@ -21,6 +21,7 @@ test("reconciles the three Alberta local transform/preflight records without dow
   assert.equal(validatePhase1AlbertaTransformIngestionAudit(audit, context), audit);
   assert.deepEqual(audit.rows.map((row) => row.id), ["ab-avi-crown", "ab-avi-post-harvest", "ab-primary-land-vegetation"]);
   assert.equal(audit.rows[2].ingestionPreflight.status, "scope-bound-ingestion-preflight-blocked-schema-drift-not-ingested");
+  assert.equal(audit.baseline.auditedAt, "2026-08-21T15:40:24Z");
 });
 
 test("rejects an AVI derived-payload claim or a PLVI owner-admission claim", () => {
@@ -51,4 +52,8 @@ test("rejects PLVI output drift, lost duplicate identity, or a nonzero progress 
   const scoreDrift = structuredClone(audit);
   scoreDrift.delta.rawEvidenceNumerator = 1;
   assert.throws(() => validatePhase1AlbertaTransformIngestionAudit(scoreDrift, context), /deep-equal|equal/i);
+
+  const baselineDateDrift = structuredClone(audit);
+  baselineDateDrift.baseline.auditedAt = "2026-08-21T15:40:25Z";
+  assert.throws(() => validatePhase1AlbertaTransformIngestionAudit(baselineDateDrift, context), /deep-equal|equal/i);
 });

@@ -147,7 +147,7 @@ export function validatePhase1NrcanCoverProcessingGate(audit, ledger = read("dat
   assert.match(audit.notice, /no AWS call.*archive mutation.*transformation.*production-eligibility change/i);
   assert.match(audit.notice, /absence of a Phase 1 production-admission target transformation.*separately approved Phase 2 nonproduction method does not close/i);
   assert.equal(audit.derivedFromHead, "71925af03fc08b052d12077de2ba4acb9239006b");
-  assert.deepEqual(audit.baseline, { ...BASELINE, scoreDelta: { rawCredit: 0, formalPercentagePoints: 0 } });
+  assert.deepEqual(audit.baseline, { auditedAt: "2026-08-21T15:45:00Z", ...BASELINE, scoreDelta: { rawCredit: 0, formalPercentagePoints: 0 } });
   assert.deepEqual(audit.claims, {
     rawArchiveMutation: false,
     transformed: false,
