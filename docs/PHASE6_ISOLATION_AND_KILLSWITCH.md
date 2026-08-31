@@ -20,7 +20,7 @@ The two new npm scripts are named `drill:`, not `check:`. `scripts/check-data-ro
 
 A refused alert is recorded as `refused` with its reason and is never silently dropped. `drainQueue` also refuses any sender whose `deliversOutbound` is true while the activation gate is incomplete, and the kill switch takes precedence over that gate when both would refuse. The only sender in the repository is a recording sender that delivers nothing.
 
-`createPolledKillSwitch` models the realistic case: the operator's flag lives elsewhere and is read at most once per poll interval, so sends already inside the current interval still go out. `measureKillSwitchStop` engages the switch part way through a real drain and reports the observed elapsed time from that engagement to the last refused send, along with `sentAfterEngagement`, the count of sends that leaked past it. Nothing in that path compares a constant to five minutes.
+`createPolledKillSwitch` models the realistic case: the operator's flag lives elsewhere and is read at most once per poll interval, so sends already inside the current interval still go out. `measureKillSwitchStop` engages the switch part way through a real drain and reports the observed elapsed time from that engagement to **the last alert that still went out**, along with `sentAfterEngagement`, the count of sends that leaked past it. It separately reports `queueDrainAfterEngagementMs`, the time to the last refusal, which is when the drain finished walking what remained. Only the first is the stop, and only the first is what `underFiveMinutes` reads. Nothing in that path compares a constant to five minutes.
 
 ## What was actually executed
 
@@ -91,6 +91,39 @@ That control found a real defect in the harness as it was written. The original 
 ```
 
 The measured stop latency was **188.087 ms**, and **165 alerts still went out after the operator engaged the switch** before the next poll observed it. That leak is the honest shape of the mechanism and is reported rather than hidden.
+
+#### The metric that number was computed with was wrong, and was corrected on 2026-08-30
+
+The run above is left exactly as it was recorded. What has changed is what `stopLatencyMs` means.
+
+It was timed to the **last refusal**, which is the moment the drain finished walking the rest of the queue, not the moment sending stopped. Those two are only close when the queue is short. Holding the switch's behaviour fixed at a 250 ms poll and engagement after 500 sends, and multiplying the queue by ten, the old figure went from 184 ms to 349 ms while the switch did exactly the same thing. The number named stop latency has to answer how long alerts kept reaching people, and that question is not sensitive to how much was queued behind them.
+
+`stopLatencyMs` is now timed to the last send that went out after engagement, and `underFiveMinutes` reads it. The old quantity is still reported, under the name `queueDrainAfterEngagementMs`, because an operator watching the process does see it.
+
+The 2026-08-26 run above happens to be unaffected in substance: its `lastSendAfterEngagementAtMs` and `lastRefusalAtMs` are 0.5 ms apart, so under the corrected metric its stop latency is **187.573 ms** rather than 188.087 ms. The defect was latent at that queue size rather than absent, which is why it is pinned by a test rather than only fixed.
+
+A fresh run on 2026-08-30 with the same defaults, output copied verbatim:
+
+```
+"measurement": {
+  "queued": 2000,
+  "sentBeforeEngagement": 500,
+  "sentAfterEngagement": 148,
+  "refusedByKillSwitch": 1352,
+  "pollIntervalMs": 250,
+  "engagedAtMs": 650.879666,
+  "firstRefusalAtMs": 823.56375,
+  "lastRefusalAtMs": 825.949208,
+  "lastSendAfterEngagementAtMs": 823.508833,
+  "stopLatencyMs": 172.62916699999994,
+  "queueDrainAfterEngagementMs": 175.06954199999996,
+  "underFiveMinutes": true
+},
+"independentlyObserved": false,
+"deliversToRecipients": false
+```
+
+None of this moves the gate. The criterion asks for an operable kill switch stopping real outbound alerts, timed by someone who did not build it. There is still no sender that reaches a person, and this process still timed itself.
 
 ### Typecheck, lint and tests
 

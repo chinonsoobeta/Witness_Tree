@@ -185,7 +185,21 @@ export type KillSwitchStopMeasurement = Readonly<{
   firstRefusalAtMs: number;
   lastRefusalAtMs: number;
   lastSendAfterEngagementAtMs?: number;
+  /**
+   * Engagement to the last alert that still went out. This is the stop: the
+   * moment after which nothing further reached anyone. Zero when the switch
+   * was read before any further send, which is an immediate stop, not a
+   * missing measurement.
+   */
   stopLatencyMs: number;
+  /**
+   * Engagement to the last refusal, which is when the drain finished walking
+   * the rest of the queue. It is reported because an operator watching the
+   * process sees it, but it grows with queue length at a fixed stop latency,
+   * so it answers "how long until the queue was empty", not "how long until
+   * sending stopped". Nothing may gate on it.
+   */
+  queueDrainAfterEngagementMs: number;
   underFiveMinutes: boolean;
 }>;
 
@@ -199,10 +213,17 @@ export type MeasureKillSwitchStopOptions = Readonly<{
 }>;
 
 /**
- * Engages the switch part way through a real drain and measures the elapsed
- * time from that engagement to the last send the drain refused. The returned
- * duration is observed, not declared: nothing here compares a constant to five
- * minutes and calls that a rehearsal.
+ * Engages the switch part way through a real drain and measures how long
+ * outbound sending continued past that engagement. The returned duration is
+ * observed, not declared: nothing here compares a constant to five minutes and
+ * calls that a rehearsal.
+ *
+ * The stop is the last send, not the last refusal. Refusals continue for as
+ * long as the queue has entries left to walk, so timing to the last refusal
+ * measures queue length rather than switch responsiveness: at one fixed poll
+ * interval, a ten times longer queue reported roughly double the "latency"
+ * while the switch behaved identically. Both numbers are returned, only the
+ * first is the stop, and underFiveMinutes reads the first.
  */
 export async function measureKillSwitchStop(options: MeasureKillSwitchStopOptions): Promise<KillSwitchStopMeasurement> {
   if (options.alerts.length === 0) throw new Error("A stop measurement needs queued alerts to stop.");
@@ -233,7 +254,8 @@ export async function measureKillSwitchStop(options: MeasureKillSwitchStopOption
     },
   });
   if (engagedAtMs === undefined || refusals.length === 0) throw new Error("The drain finished without the kill switch stopping a send; nothing was measured.");
-  const stopLatencyMs = refusals[refusals.length - 1]! - engagedAtMs;
+  const stopLatencyMs = lastSendAfterEngagementAtMs === undefined ? 0 : lastSendAfterEngagementAtMs - engagedAtMs;
+  const queueDrainAfterEngagementMs = refusals[refusals.length - 1]! - engagedAtMs;
   return Object.freeze({
     queued: options.alerts.length,
     sentBeforeEngagement: sent - sentAfterEngagement,
@@ -245,6 +267,7 @@ export async function measureKillSwitchStop(options: MeasureKillSwitchStopOption
     lastRefusalAtMs: refusals[refusals.length - 1]!,
     ...(lastSendAfterEngagementAtMs === undefined ? {} : { lastSendAfterEngagementAtMs }),
     stopLatencyMs,
+    queueDrainAfterEngagementMs,
     underFiveMinutes: stopLatencyMs < FIVE_MINUTES_MS,
   });
 }
