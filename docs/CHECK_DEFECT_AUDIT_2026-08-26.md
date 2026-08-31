@@ -64,14 +64,16 @@ a design change to a producer, not a guard repair, and it should be made
 together with the QC runner above under one re-authorization rather than
 piecemeal.
 
-**Two readbacks refuse to re-emit evidence.**
-`readback-phase2-v21-real-review-packet.mjs:66` asserts the output does not
-exist, and `readback-phase2-v21-raster-first.mjs` writes with flag `wx`.
-Neither compares recorded evidence against freshly computed evidence, so
-re-running a successful readback fails. `check-phase1-federal-electoral-output.mjs:236-241`
-already shows the correct form: read the recorded evidence, strip the volatile
-`verifiedAt`, compare canonical JSON, fail only on real drift. Lower severity
-because these are small repository JSON files rather than a multi-hour batch.
+**One checksum-bound readback still refuses to re-emit evidence.**
+`readback-phase2-v21-real-review-packet.mjs:66` still asserts that the output
+does not exist. Its runner SHA-256 is bound by historical completed-readback
+evidence, so changing it requires owner reauthorization and a new evidence
+model rather than rebinding the past run.
+
+The unbound `readback-phase2-v21-raster-first.mjs` now reads an existing record,
+compares canonical JSON across every field, succeeds only on an exact match,
+and fails without overwriting on drift. Its evidence schema has no volatile
+fields to strip. A missing record is still created exclusively with `wx`.
 
 **`check-*-versioned-readback-iam-applied.mjs`, marginal.** The filenames
 assert an applied IAM change; the scripts make no AWS call and rest the central
