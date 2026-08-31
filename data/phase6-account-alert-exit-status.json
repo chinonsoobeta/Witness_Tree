@@ -31,7 +31,7 @@
         },
         {
           "path": "docs/PHASE6_ISOLATION_AND_KILLSWITCH.md",
-          "sha256": "a4875ca13e24f85009f52b727599e3a77b1e858bf6bd4f049f534f21a865f839"
+          "sha256": "eb2e7613277937eb155214416ac3ac839f72932ee122dada40e07f2917b25eb4"
         },
         {
           "path": "lib/accounts/activation-gate.ts",
@@ -63,7 +63,7 @@
       "id": "kill-switch-under-five-minutes",
       "title": "The kill switch stops all outbound alerts within 5 minutes",
       "status": "fail",
-      "reason": "An outbound queue and a sender abstraction now exist in lib/alerts/outbound.ts, and scripts/rehearse-kill-switch.mts measured a stop well under one second from engaging the switch to the last refused send, with alerts still going out after engagement and counted separately. The drill times itself against a recording sender that reaches no recipient, and no independent observer witnessed it, so it is not the rehearsal this criterion requires. A self-timed local drill cannot establish a five-minute operational stop. Independent observation is tracked in the independent-live-rehearsal blocker.",
+      "reason": "An outbound queue and a sender abstraction now exist in lib/alerts/outbound.ts, and scripts/rehearse-kill-switch.mts measures a real stop against a polled switch, with the alerts that still go out after engagement counted rather than assumed away. The measurement was corrected on 2026-08-30. stopLatencyMs had been timed to the last refusal, which is when the drain finished walking the rest of the queue rather than when sending stopped; holding the switch's behaviour fixed and multiplying the queue by ten moved that figure from 184 ms to 349 ms. It is now timed to the last alert that still went out, underFiveMinutes reads that value, and the old quantity is reported separately as queueDrainAfterEngagementMs. The 2026-08-26 run recorded in docs/PHASE6_ISOLATION_AND_KILLSWITCH.md is left as recorded; under the corrected metric its stop latency is 187.573 ms rather than 188.087 ms, so the defect was latent at that queue size rather than absent. None of this moves the criterion. The drill times itself against a recording sender that reaches no recipient, and no independent observer witnessed it, so it is not the rehearsal this criterion requires. A self-timed local drill cannot establish a five-minute operational stop. Independent observation is tracked in the independent-live-rehearsal blocker.",
       "evidence": [
         {
           "path": "lib/accounts/activation-gate.ts",
@@ -75,19 +75,19 @@
         },
         {
           "path": "lib/alerts/outbound.ts",
-          "sha256": "80edc6636addf9b35d458ddc5c7bea672c5aa6ecac5bf23c27ccd27cf1074d9a"
+          "sha256": "b86b673e84c1d0762bd460b6bbaa40d5e45a160e3d91bbef5a0915b5b41c1e21"
         },
         {
           "path": "scripts/rehearse-kill-switch.mts",
-          "sha256": "7ccfadf1250656fb4b4858ab5c038b2ca2d98b4c4999eace400ff7575a07a3a9"
+          "sha256": "4936b6f7582e2f3eb25fac4b0a5d1beeafddd37b62ce01ce94088d35f1769d22"
         },
         {
           "path": "tests/alert-outbound-kill-switch.test.ts",
-          "sha256": "5e7c1661fdbeca8a3fc2fe6791946d80f3c1c9650d945ecb86df45432fd271e8"
+          "sha256": "79aca0ffd8ed0d096b28ab4b1688cce5a1e5487c89fce59cc0e5120b2c7f3151"
         },
         {
           "path": "docs/PHASE6_ISOLATION_AND_KILLSWITCH.md",
-          "sha256": "a4875ca13e24f85009f52b727599e3a77b1e858bf6bd4f049f534f21a865f839"
+          "sha256": "eb2e7613277937eb155214416ac3ac839f72932ee122dada40e07f2917b25eb4"
         }
       ]
     },

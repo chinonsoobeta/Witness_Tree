@@ -111,13 +111,15 @@ test("a polled switch reads the operator flag at most once per interval and reje
  * reported on its own. What is asserted here is the arithmetic and the
  * accounting.
  */
-const steppingClock = () => { let now = 0; return () => (now += 1); };
+const steppingClockBy = (stepMs: number) => { let now = 0; return () => (now += stepMs); };
+const steppingClock = () => steppingClockBy(1);
 
 test("the stop measurement reports a real observed duration, not a constant compared to five minutes", async () => {
   const sender = createRecordingSender();
-  const measurement = await measureKillSwitchStop({ alerts: alerts(200), sender, pollIntervalMs: 5, engageAfterSends: 20, clock: steppingClock() });
+  const measurement = await measureKillSwitchStop({ alerts: alerts(200), sender, pollIntervalMs: 50, engageAfterSends: 20, clock: steppingClock() });
   assert.ok(measurement.stopLatencyMs > 0, "A measured stop takes a positive amount of time.");
-  assert.equal(measurement.stopLatencyMs, measurement.lastRefusalAtMs - measurement.engagedAtMs);
+  assert.equal(measurement.stopLatencyMs, measurement.lastSendAfterEngagementAtMs! - measurement.engagedAtMs, "The stop is timed to the last alert that went out, not to the last refusal.");
+  assert.equal(measurement.queueDrainAfterEngagementMs, measurement.lastRefusalAtMs - measurement.engagedAtMs);
   assert.ok(measurement.refusedByKillSwitch > 0);
   assert.equal(measurement.sentBeforeEngagement, 20);
   assert.ok(measurement.sentAfterEngagement >= 0, "Sends already under way when the switch is engaged still go out; that is the latency being measured.");
@@ -132,7 +134,8 @@ test("a slow poll lets sends continue after engagement, and those sends are coun
   const measurement = await measureKillSwitchStop({ alerts: alerts(400), sender, pollIntervalMs: 50, engageAfterSends: 10, clock: steppingClock() });
   assert.equal(measurement.sentBeforeEngagement, 10);
   assert.ok(measurement.sentAfterEngagement > 0, "A switch read once per interval cannot stop the sends already inside that interval.");
-  assert.ok(measurement.stopLatencyMs >= measurement.pollIntervalMs, "The stop cannot be observed sooner than the next poll.");
+  assert.ok(measurement.queueDrainAfterEngagementMs >= measurement.pollIntervalMs, "The switch cannot bite before the next poll.");
+  assert.ok(measurement.stopLatencyMs < measurement.queueDrainAfterEngagementMs, "Sending stops before the drain finishes refusing what is left.");
   assert.equal(measurement.lastSendAfterEngagementAtMs !== undefined, measurement.sentAfterEngagement > 0);
   assert.ok(measurement.firstRefusalAtMs >= measurement.engagedAtMs);
   assert.ok(measurement.lastRefusalAtMs >= measurement.firstRefusalAtMs);
@@ -141,4 +144,49 @@ test("a slow poll lets sends continue after engagement, and those sends are coun
 test("a measurement that never stopped a send refuses to report a duration", async () => {
   await assert.rejects(measureKillSwitchStop({ alerts: [], sender: createRecordingSender(), pollIntervalMs: 1, engageAfterSends: 1 }), /queued alerts/);
   await assert.rejects(measureKillSwitchStop({ alerts: alerts(3), sender: createRecordingSender(), pollIntervalMs: 1, engageAfterSends: 3 }), /before the queue empties/);
+});
+
+/**
+ * The defect this pins. stopLatencyMs used to be timed to the last refusal,
+ * which is when the drain finished walking the queue. At one fixed poll
+ * interval a ten times longer queue reported roughly double the "stop latency"
+ * while the switch behaved identically: 184 ms against 349 ms on a real clock.
+ * The number named stop latency has to answer how long alerts kept reaching
+ * people, so it is timed to the last send, and the drain figure is reported
+ * separately under its own name.
+ */
+test("the stop latency is a property of the switch, not of how much was queued", async () => {
+  const settings = { pollIntervalMs: 20, engageAfterSends: 10 } as const;
+  const short = await measureKillSwitchStop({ ...settings, alerts: alerts(200), sender: createRecordingSender(), clock: steppingClock() });
+  const long = await measureKillSwitchStop({ ...settings, alerts: alerts(2_000), sender: createRecordingSender(), clock: steppingClock() });
+
+  assert.equal(short.stopLatencyMs, long.stopLatencyMs, "Ten times the queue, same switch, same stop.");
+  assert.equal(short.sentAfterEngagement, long.sentAfterEngagement);
+  assert.ok(
+    long.queueDrainAfterEngagementMs > short.queueDrainAfterEngagementMs * 5,
+    "The drain figure does scale with queue length, which is exactly why it cannot be the stop.",
+  );
+  assert.equal(short.underFiveMinutes, true);
+  assert.equal(long.underFiveMinutes, true);
+});
+
+test("a switch read before any further send reports an immediate stop rather than a missing one", async () => {
+  const sender = createRecordingSender();
+  const measurement = await measureKillSwitchStop({ alerts: alerts(50), sender, pollIntervalMs: 0, engageAfterSends: 5, clock: steppingClock() });
+  assert.equal(measurement.sentAfterEngagement, 0);
+  assert.equal(measurement.lastSendAfterEngagementAtMs, undefined);
+  assert.equal(measurement.stopLatencyMs, 0, "Nothing went out after engagement, so the stop took no time.");
+  assert.ok(measurement.queueDrainAfterEngagementMs > 0, "The queue still had to be walked and refused.");
+  assert.equal(measurement.underFiveMinutes, true);
+});
+
+test("underFiveMinutes reads the stop, so a long refusal walk cannot fail a switch that stopped at once", async () => {
+  const sender = createRecordingSender();
+  const measurement = await measureKillSwitchStop({ alerts: alerts(400), sender, pollIntervalMs: 0, engageAfterSends: 1, clock: steppingClockBy(1_000) });
+  assert.equal(measurement.stopLatencyMs, 0);
+  assert.ok(
+    measurement.queueDrainAfterEngagementMs > FIVE_MINUTES_MS,
+    "On this clock the refusal walk alone exceeds five minutes, which the old metric would have reported as a failed stop.",
+  );
+  assert.equal(measurement.underFiveMinutes, true);
 });
