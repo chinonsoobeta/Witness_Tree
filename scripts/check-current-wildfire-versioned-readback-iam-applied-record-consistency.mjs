@@ -7,6 +7,7 @@ const root = new URL("../", import.meta.url);
 const read = (path) => JSON.parse(readFileSync(new URL(path, root), "utf8"));
 const hash = (value) => createHash("sha256").update(value).digest("hex");
 const SHA = /^[a-f0-9]{64}$/;
+export const verifies = "Checks the committed current-wildfire IAM application record and preparation record for internally consistent policy-only claims; it does not query AWS.";
 const evidence = read("data/current-wildfire-versioned-readback-iam-applied-2026-08-25.json");
 const preparation = read("data/current-wildfire-immutable-promotion-preparation.json");
 
@@ -28,4 +29,4 @@ assert.ok(Object.values(evidence.checksums).every((value) => SHA.test(value)));
 assert.deepEqual(evidence.validation, { accessAnalyzerBlockingFindings: 0, exactVersionRead: "allowed", outOfScopeVersionRead: "implicitDeny" });
 assert.match(evidence.operatorDiagnostic, /403 Forbidden.*recovery correctly refused.*no replacement write/i);
 assert.match(evidence.redaction, /No credentials.*object version IDs.*object bodies/i);
-console.log("current-wildfire versioned-readback IAM applied evidence is internally consistent");
+console.log(verifies);

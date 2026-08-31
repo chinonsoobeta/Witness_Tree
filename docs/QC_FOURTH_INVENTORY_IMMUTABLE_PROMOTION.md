@@ -20,7 +20,7 @@ commit preparation is
 
 The applied IAM state is separately recorded in
 `data/qc-fourth-inventory-iam-applied-readback-2026-08-25.json` and checked by
-`npm run check:qc-fourth-inventory-iam-applied-readback`. It binds the two
+`npm run check:qc-fourth-inventory-iam-applied-record-consistency`. It binds the two
 MFA-trusted, 12-hour roles, their two exact 31-object inline-policy hashes, and
 the MFA-gated operator assume-role policy in account `286853118812` / region
 `ca-central-1`. It is IAM evidence only: it does not establish any upload,

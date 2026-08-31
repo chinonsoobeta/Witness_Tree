@@ -5,12 +5,15 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
 
-const checker = new URL("../scripts/check-current-wildfire-versioned-readback-iam-applied.mjs", import.meta.url).pathname;
+const checker = new URL("../scripts/check-current-wildfire-versioned-readback-iam-applied-record-consistency.mjs", import.meta.url).pathname;
+const checkerSource = readFileSync(checker, "utf8");
 const evidence = JSON.parse(readFileSync(new URL("../data/current-wildfire-versioned-readback-iam-applied-2026-08-25.json", import.meta.url), "utf8"));
 
 test("current-wildfire exact-version IAM evidence stays redacted and checksum-bound", () => {
   const result = spawnSync(process.execPath, [checker], { encoding: "utf8" });
   assert.equal(result.status, 0, result.stdout + result.stderr);
+  assert.match(result.stdout, /does not query AWS/);
+  assert.doesNotMatch(checkerSource, /node:child_process|@aws-sdk|from ["']aws-sdk|\bspawn(?:Sync)?\s*\(|\bexec(?:File|Sync)?\s*\(|\bfetch\s*\(/);
   assert.equal(evidence.checksums.desiredPolicySha256, evidence.checksums.readbackPolicySha256);
   assert.equal(evidence.validation.exactVersionRead, "allowed");
   assert.equal(evidence.validation.outOfScopeVersionRead, "implicitDeny");

@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 
 const read = (path) => JSON.parse(readFileSync(new URL(`../${path}`, import.meta.url), "utf8"));
+export const verifies = "Checks the committed Alberta PLVI IAM application record and preparation record for internally consistent policy-only claims; it does not query AWS.";
 export function validateAlbertaPlviVersionedReadbackIamApplied(evidence = read("data/alberta-plvi-versioned-readback-iam-applied-2026-08-25.json"), plan = read("data/alberta-plvi-immutable-promotion-preparation.json")) {
   assert.equal(evidence.schemaVersion, "witness-tree/alberta-plvi-versioned-readback-iam-applied/1");
   assert.equal(evidence.status, "applied-readback-attested");
@@ -20,4 +21,4 @@ export function validateAlbertaPlviVersionedReadbackIamApplied(evidence = read("
   assert.match(evidence.redaction, /No credentials.*MFA values.*object version IDs/i);
   return evidence;
 }
-if (import.meta.url === `file://${process.argv[1]}`) { validateAlbertaPlviVersionedReadbackIamApplied(); console.log("Alberta PLVI exact-version IAM evidence is internally consistent."); }
+if (import.meta.url === `file://${process.argv[1]}`) { validateAlbertaPlviVersionedReadbackIamApplied(); console.log(verifies); }
