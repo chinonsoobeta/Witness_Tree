@@ -105,14 +105,14 @@ completeness, not asserted as an error.
 
 ## C-7. Stale numeric baselines
 
-The current ledger records `rawEvidenceNumerator: 16.5` with 16 rows at
+The current ledger records `rawEvidenceNumerator: 17` with 16 rows at
 `immutableArchive: true`.
 
 | record | its baseline | disagreement |
 | --- | --- | --- |
-| `phase1-owner-decision-queue.json` (2026-08-22) | 14.75, 9 archive rows, 39.2741935% | 1.75 credits, 7 archive rows, plus a `local-verified-profiled` state the ledger no longer uses |
+| `phase1-owner-decision-queue.json` (2026-08-22) | 14.75, 9 archive rows, 39.2741935% | 2.25 credits, 7 archive rows, plus a `local-verified-profiled` state the ledger no longer uses |
 | `phase1-immutable-downstream-preflight.json` (2026-08-22) | 14.75, 9 archive rows | same |
-| `phase1-nrcan-cover-processing-gate.json` (2026-08-21) | 14.25, 7 archive rows, 38.7903226% | 2.25 credits, 9 archive rows |
+| `phase1-nrcan-cover-processing-gate.json` (2026-08-21) | 14.25, 7 archive rows, 38.7903226% | 2.75 credits, 9 archive rows |
 | `phase1-alberta-transform-ingestion-audit.json` (2026-08-21) | 14.25, 7 archive rows | same |
 
 ## What must not be done with this file

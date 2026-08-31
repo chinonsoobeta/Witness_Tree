@@ -21,6 +21,7 @@ jobs:
       - run: npm run check:bilingual
       - run: npm run check:ci-check-coverage
       - run: npm run check:exit-code-taxonomy
+      - run: npm run check:cross-record-facts
       - run: npm run check:source-candidates
       - run: npm run check:archive-direct-mfa-runners
       - run: npm run check:indian-reserves-authority-access

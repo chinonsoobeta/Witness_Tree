@@ -1,0 +1,140 @@
+{
+  "schemaVersion": "witness-tree/cross-record-fact-register/1",
+  "asOf": "2026-08-31",
+  "ledger": {"path": "docs/RECORD_CONTRADICTION_LEDGER.md"},
+  "declaredCurrentExceptions": ["C-1", "C-2", "C-3", "C-4", "C-5", "C-6", "C-7"],
+  "facts": [
+    {
+      "id": "ntems-forest-harvest-transformation-status",
+      "contradiction": "C-1",
+      "assertions": [
+        {"id":"queue","record":"data/phase1-owner-decision-queue.json","selector":{"arrayPath":"/queueRows","where":{"id":"ntems-forest-harvest"}},"fields":{"transformation":{"pointer":"/ownerDecisionStatus/transformation"}},"expected":{"transformation":"pending"},"factValue":"not-transformed"},
+        {"id":"readback","record":"data/ntems-forest-harvest-v1-readback-evidence-2026-08-26.json","fields":{"status":{"pointer":"/status"},"transformed":{"pointer":"/claims/transformed"}},"expected":{"status":"complete-readback-verified","transformed":true},"factValue":"transformed"}
+      ],
+      "exceptions": [{"ledgerEntry":"C-1"}]
+    },
+    {
+      "id": "ntems-canopy-cover-transformation-status",
+      "contradiction": "C-2",
+      "assertions": [
+        {"id":"queue","record":"data/phase1-owner-decision-queue.json","selector":{"arrayPath":"/queueRows","where":{"id":"ntems-canopy-cover"}},"fields":{"transformation":{"pointer":"/ownerDecisionStatus/transformation"}},"expected":{"transformation":"pending"},"factValue":"not-transformed"},
+        {"id":"readback","record":"data/ntems-canopy-cover-v1-readback-evidence-2026-08-26.json","fields":{"status":{"pointer":"/status"},"transformed":{"pointer":"/claims/transformed"}},"expected":{"status":"complete-readback-verified","transformed":true},"factValue":"transformed"}
+      ],
+      "exceptions": [{"ledgerEntry":"C-2"}]
+    },
+    {
+      "id": "ntems-canopy-height-transformation-status",
+      "contradiction": "C-3",
+      "assertions": [
+        {"id":"queue","record":"data/phase1-owner-decision-queue.json","selector":{"arrayPath":"/queueRows","where":{"id":"ntems-canopy-height"}},"fields":{"transformation":{"pointer":"/ownerDecisionStatus/transformation"}},"expected":{"transformation":"pending"},"factValue":"not-transformed"},
+        {"id":"readback","record":"data/ntems-canopy-height-v1-readback-evidence-2026-08-26.json","fields":{"status":{"pointer":"/status"},"transformed":{"pointer":"/claims/transformed"}},"expected":{"status":"complete-readback-verified","transformed":true},"factValue":"transformed"}
+      ],
+      "exceptions": [{"ledgerEntry":"C-3"}]
+    },
+    {
+      "id": "ntems-canopy-cover-production-specification",
+      "contradiction": "C-4",
+      "assertions": [
+        {"id":"gate","record":"data/phase1-nrcan-cover-processing-gate.json","selector":{"arrayPath":"/rows","where":{"id":"ntems-canopy-cover"}},"fields":{"specification":{"pointer":"/transformation/specification"}},"expected":{"specification":null},"factValue":"absent"},
+        {"id":"specification","record":"data/phase1-production-transformation-specifications-v1.json","selector":{"arrayPath":"/specifications","where":{"id":"ntems-canopy-cover-v1"}},"fields":{"id":{"pointer":"/id"}},"expected":{"id":"ntems-canopy-cover-v1"},"factValue":"present"}
+      ],
+      "exceptions": [{"ledgerEntry":"C-4"}]
+    },
+    {
+      "id": "ntems-canopy-cover-transformation-run",
+      "contradiction": "C-4",
+      "assertions": [
+        {"id":"gate","record":"data/phase1-nrcan-cover-processing-gate.json","selector":{"arrayPath":"/rows","where":{"id":"ntems-canopy-cover"}},"fields":{"run":{"pointer":"/transformation/run"}},"expected":{"run":null},"factValue":"absent"},
+        {"id":"readback","record":"data/ntems-canopy-cover-v1-readback-evidence-2026-08-26.json","fields":{"status":{"pointer":"/status"},"authorization":{"pointer":"/authorization/path"},"runner":{"pointer":"/runner/path"}},"expected":{"status":"complete-readback-verified","authorization":"data/phase1-ntems-canopy-cover-execution-authorization.json","runner":"scripts/run-phase1-ntems-transform.mjs"},"factValue":"present"}
+      ],
+      "exceptions": [{"ledgerEntry":"C-4"}]
+    },
+    {
+      "id": "ntems-canopy-cover-derived-output",
+      "contradiction": "C-4",
+      "assertions": [
+        {"id":"gate","record":"data/phase1-nrcan-cover-processing-gate.json","selector":{"arrayPath":"/rows","where":{"id":"ntems-canopy-cover"}},"fields":{"output":{"pointer":"/transformation/output"}},"expected":{"output":null},"factValue":"absent"},
+        {"id":"readback","record":"data/ntems-canopy-cover-v1-readback-evidence-2026-08-26.json","selector":{"arrayPath":"/outputs","where":{"specification":"ntems-canopy-cover-v1"}},"fields":{"status":{"pointer":"/status"},"output":{"pointer":"/output"},"outputSha256":{"pointer":"/outputSha256"}},"expected":{"status":"verified","output":"ntems-canopy-cover-v1/80c37461f4deccfdfffc26124e9064d53a94dde660b9f96194445870393af130/phase1-ntems-canopy-cover-v1/canopy-cover-2022.tif","outputSha256":"18cb7904cf9ec16ef602f7cb57c788dcdb49c2ef0719992abdc3366e4be1079e"},"factValue":"present"}
+      ],
+      "exceptions": [{"ledgerEntry":"C-4"}]
+    },
+    {
+      "id": "federal-electoral-evidence-state",
+      "contradiction": "C-5",
+      "assertions": [
+        {"id":"ledger-ridings","record":"data/phase1-production-source-ledger.json","selector":{"arrayPath":"/entries","where":{"id":"fed-2023-ridings"}},"valuePath":"/evidenceState","expected":"production-admitted","factValue":"admitted"},
+        {"id":"ledger-files","record":"data/phase1-production-source-ledger.json","selector":{"arrayPath":"/entries","where":{"id":"elections-canada-45th-files"}},"valuePath":"/evidenceState","expected":"production-admitted","factValue":"admitted"},
+        {"id":"admission-record","record":"data/phase1-federal-electoral-production-admission.json","fields":{"status":{"pointer":"/status"},"rows":{"pointer":"/rows"},"productionAdmission":{"pointer":"/decisions/productionAdmission"}},"expected":{"status":"owner-approved-admitted-and-release-approved","rows":["fed-2023-ridings","elections-canada-45th-files"],"productionAdmission":true},"factValue":"admitted"},
+        {"id":"evolution-record","record":"data/phase1-ledger-post-scope-approval-evolution.json","fields":{"status":{"pointer":"/status"},"rows":{"pointer":"/authorizedChange/rows"},"change":{"pointer":"/authorizedChange/change"}},"expected":{"status":"append-only-post-decision-evolution","rows":["fed-2023-ridings","elections-canada-45th-files"],"change":"The two exact federal rows advanced from archived/profiled and non-admitted to explicitly production-admitted after transformation, deterministic output verification, rights review, complete field facts, and owner authorization."},"factValue":"admitted"},
+        {"id":"queue-ridings","record":"data/phase1-owner-decision-queue.json","selector":{"arrayPath":"/queueRows","where":{"id":"fed-2023-ridings"}},"fields":{"evidenceState":{"pointer":"/evidenceState"},"productionAdmission":{"pointer":"/ownerDecisionStatus/productionAdmission"}},"expected":{"evidenceState":"local-verified-profiled","productionAdmission":"pending"},"factValue":"not-admitted"},
+        {"id":"queue-files","record":"data/phase1-owner-decision-queue.json","selector":{"arrayPath":"/queueRows","where":{"id":"elections-canada-45th-files"}},"fields":{"evidenceState":{"pointer":"/evidenceState"},"productionAdmission":{"pointer":"/ownerDecisionStatus/productionAdmission"}},"expected":{"evidenceState":"local-verified-profiled","productionAdmission":"pending"},"factValue":"not-admitted"},
+        {"id":"completion-audit","record":"data/phase1-current-state-completion-audit.json","fields":{"evidenceStateCounts":{"pointer":"/ledger/evidenceStateCounts"},"productionAdmissionCompleteRows":{"pointer":"/ledger/productionAdmissionCompleteRows"}},"expected":{"evidenceStateCounts":{"remote-verified-archived-profiled":16,"partial-component":2,"access-blocked":13},"productionAdmissionCompleteRows":0},"factValue":"not-admitted"},
+        {"id":"remaining-actions","record":"data/phase1-remaining-actions-audit.json","fields":{"rowsWithoutProductionAdmission":{"pointer":"/scope/rowsWithoutProductionAdmission"},"allProductionRowsRemainNonAdmitted":{"pointer":"/scope/allProductionRowsRemainNonAdmitted"}},"expected":{"rowsWithoutProductionAdmission":31,"allProductionRowsRemainNonAdmitted":true},"factValue":"not-admitted"}
+      ],
+      "exceptions": [{"ledgerEntry":"C-5"}]
+    },
+    {
+      "id": "federal-electoral-production-eligibility",
+      "contradiction": "C-5",
+      "assertions": [
+        {"id":"ledger-ridings","record":"data/phase1-production-source-ledger.json","selector":{"arrayPath":"/entries","where":{"id":"fed-2023-ridings"}},"valuePath":"/productionEligible","expected":true,"factValue":"eligible"},
+        {"id":"ledger-files","record":"data/phase1-production-source-ledger.json","selector":{"arrayPath":"/entries","where":{"id":"elections-canada-45th-files"}},"valuePath":"/productionEligible","expected":true,"factValue":"eligible"},
+        {"id":"admission-record","record":"data/phase1-federal-electoral-production-admission.json","fields":{"rows":{"pointer":"/rows"},"productionEligible":{"pointer":"/decisions/productionEligible"}},"expected":{"rows":["fed-2023-ridings","elections-canada-45th-files"],"productionEligible":true},"factValue":"eligible"},
+        {"id":"queue-ridings","record":"data/phase1-owner-decision-queue.json","selector":{"arrayPath":"/queueRows","where":{"id":"fed-2023-ridings"}},"valuePath":"/productionEligible","expected":false,"factValue":"ineligible"},
+        {"id":"queue-files","record":"data/phase1-owner-decision-queue.json","selector":{"arrayPath":"/queueRows","where":{"id":"elections-canada-45th-files"}},"valuePath":"/productionEligible","expected":false,"factValue":"ineligible"},
+        {"id":"completion-audit","record":"data/phase1-current-state-completion-audit.json","valuePath":"/ledger/productionEligibleRows","expected":0,"factValue":"ineligible"},
+        {"id":"remaining-actions","record":"data/phase1-remaining-actions-audit.json","fields":{"allProductionRowsRemainIneligible":{"pointer":"/scope/allProductionRowsRemainIneligible"},"productionEligible":{"pointer":"/claims/productionEligible"}},"expected":{"allProductionRowsRemainIneligible":true,"productionEligible":false},"factValue":"ineligible"},
+        {"id":"archive-readiness","record":"data/federal-electoral-archive-readiness-owner-evidence.json","fields":{"ownerApprovalRef":{"pointer":"/ownerApprovalRef"},"productionEligible":{"pointer":"/claims/productionEligible"}},"expected":{"ownerApprovalRef":null,"productionEligible":false},"factValue":"ineligible"}
+      ],
+      "exceptions": [{"ledgerEntry":"C-5"}]
+    },
+    {
+      "id": "transformation-specification-approval-status",
+      "contradiction": "C-6",
+      "assertions": [
+        {"id":"specifications","record":"data/phase1-production-transformation-specifications-v1.json","fields":{"status":{"pointer":"/status"},"specificationCount":{"arrayCount":{"arrayPath":"/specifications"}}},"expected":{"status":"unapproved-specification-only","specificationCount":5},"factValue":"unapproved"},
+        {"id":"owner-approval","record":"data/phase1-transformation-scope-owner-approval-2026-08-25.json","fields":{"status":{"pointer":"/status"},"approvedCentralSpecificationCount":{"arrayCount":{"arrayPath":"/approvedScopes","where":{"/specPath":"data/phase1-production-transformation-specifications-v1.json","/decision":"approve"}}}},"expected":{"status":"owner-approved-transformation-scope-only","approvedCentralSpecificationCount":5},"factValue":"approved"}
+      ],
+      "exceptions": [{"ledgerEntry":"C-6"}]
+    },
+    {
+      "id": "phase1-raw-credit-numerator",
+      "contradiction": "C-7",
+      "assertions": [
+        {"id":"ledger","record":"data/phase1-production-source-ledger.json","valuePath":"/rawEvidenceNumerator","expected":17,"factValue":"17","datePath":"/asOf"},
+        {"id":"current-state-audit","record":"data/phase1-current-state-completion-audit.json","valuePath":"/ledger/rawEvidenceNumerator","expected":16.5,"factValue":"16.5","datePath":"/asOf"},
+        {"id":"remaining-actions","record":"data/phase1-remaining-actions-audit.json","valuePath":"/baseline/rawEvidenceNumerator","expected":16.5,"factValue":"16.5","datePath":"/asOf"},
+        {"id":"owner-queue","record":"data/phase1-owner-decision-queue.json","valuePath":"/baseline/rawEvidenceNumerator","expected":14.75,"factValue":"14.75"},
+        {"id":"immutable-preflight","record":"data/phase1-immutable-downstream-preflight.json","valuePath":"/baseline/rawEvidenceNumerator","expected":14.75,"factValue":"14.75"},
+        {"id":"owner-approval-packet","record":"data/phase1-owner-approval-packet.json","valuePath":"/baseline/rawEvidenceNumerator","expected":14.75,"factValue":"14.75","datePath":"/asOf"},
+        {"id":"archive-live-readback","record":"data/phase1-archive-live-readback-2026-08-20.json","valuePath":"/percentageImpact/baselineRawEvidenceNumerator","expected":14.75,"factValue":"14.75","datePath":"/percentageImpact/baselineAsOf"},
+        {"id":"nrcan-gate","record":"data/phase1-nrcan-cover-processing-gate.json","valuePath":"/baseline/rawEvidenceNumerator","expected":14.25,"factValue":"14.25"},
+        {"id":"alberta-audit","record":"data/phase1-alberta-transform-ingestion-audit.json","valuePath":"/baseline/rawEvidenceNumerator","expected":14.25,"factValue":"14.25"},
+        {"id":"bc-ontario-audit","record":"data/phase1-bc-ontario-row-audit.json","valuePath":"/baseline/rawEvidenceNumerator","expected":14.25,"factValue":"14.25","datePath":"/auditedAt"},
+        {"id":"phase1-phase3-owner-approvals","record":"data/phase1-phase3-owner-approvals-2026-08-21.json","valuePath":"/baseline/rawEvidenceNumerator","expected":14.25,"factValue":"14.25","datePath":"/recordedOn"},
+        {"id":"scope-bound-preparation","record":"data/phase1-scope-bound-validation-preparation.json","valuePath":"/baseline/rawEvidenceNumerator","expected":14.25,"factValue":"14.25","datePath":"/asOf"},
+        {"id":"partial-route-exhaustion","record":"data/phase1-partial-source-route-exhaustion.json","fields":{"before":{"pointer":"/impact/rawEvidenceNumeratorBefore"},"after":{"pointer":"/impact/rawEvidenceNumeratorAfter"}},"expected":{"before":14.25,"after":14.25},"factValue":"14.25","datePath":"/auditedAt"}
+      ],
+      "exceptions": [{"ledgerEntry":"C-7"}]
+    },
+    {
+      "id": "phase1-immutable-archive-row-count",
+      "contradiction": "C-7",
+      "assertions": [
+        {"id":"ledger","record":"data/phase1-production-source-ledger.json","fields":{"immutableArchiveRows":{"arrayCount":{"arrayPath":"/entries","where":{"/proof/immutableArchive":true}}}},"expected":{"immutableArchiveRows":16},"factValue":"16","datePath":"/asOf"},
+        {"id":"current-state-audit","record":"data/phase1-current-state-completion-audit.json","valuePath":"/ledger/immutableArchiveCompleteRows","expected":16,"factValue":"16","datePath":"/asOf"},
+        {"id":"remaining-actions","record":"data/phase1-remaining-actions-audit.json","valuePath":"/baseline/immutableArchiveCompleteRows","expected":16,"factValue":"16","datePath":"/asOf"},
+        {"id":"owner-queue","record":"data/phase1-owner-decision-queue.json","valuePath":"/baseline/immutableArchiveCompleteRows","expected":9,"factValue":"9"},
+        {"id":"immutable-preflight","record":"data/phase1-immutable-downstream-preflight.json","valuePath":"/baseline/immutableRows","expected":9,"factValue":"9"},
+        {"id":"owner-approval-packet","record":"data/phase1-owner-approval-packet.json","valuePath":"/baseline/immutableArchiveCompleteRows","expected":9,"factValue":"9","datePath":"/asOf"},
+        {"id":"nrcan-gate","record":"data/phase1-nrcan-cover-processing-gate.json","valuePath":"/baseline/immutableArchiveCompleteRows","expected":7,"factValue":"7"},
+        {"id":"alberta-audit","record":"data/phase1-alberta-transform-ingestion-audit.json","valuePath":"/baseline/immutableArchiveCompleteRows","expected":7,"factValue":"7"},
+        {"id":"bc-ontario-audit","record":"data/phase1-bc-ontario-row-audit.json","valuePath":"/baseline/immutableArchiveCompleteRows","expected":7,"factValue":"7","datePath":"/auditedAt"},
+        {"id":"phase1-phase3-owner-approvals","record":"data/phase1-phase3-owner-approvals-2026-08-21.json","valuePath":"/baseline/immutableRows","expected":7,"factValue":"7","datePath":"/recordedOn"},
+        {"id":"scope-bound-preparation","record":"data/phase1-scope-bound-validation-preparation.json","valuePath":"/baseline/immutableArchiveCompleteRows","expected":7,"factValue":"7","datePath":"/asOf"},
+        {"id":"partial-route-exhaustion","record":"data/phase1-partial-source-route-exhaustion.json","valuePath":"/impact/immutableArchiveCompleteRows","expected":7,"factValue":"7","datePath":"/auditedAt"}
+      ],
+      "exceptions": [{"ledgerEntry":"C-7"}]
+    }
+  ]
+}
