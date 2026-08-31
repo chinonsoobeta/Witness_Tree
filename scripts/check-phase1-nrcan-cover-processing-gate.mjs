@@ -68,6 +68,31 @@ const LATER_NBAC_STATE = {
   productionEligible: false,
 };
 const HISTORICAL_LEDGER_FIELDS_SHA256 = "3606c9f0e989a2995129fa9b7f565d3272cbf4279eb3af01c6ad944977de4eef";
+const HISTORICAL_GATE_SHA256 = "c52043f1190b0778a4efd34c9e1e9f6b8e6f9a3d08494ec69b54a19d46c0adac";
+const CANOPY_AUTHORIZATION_SHA256 = "aee18d23ddc3766d6c6b9f1becaccef9bc70b19c59adc22a9c57d9e8ceeb10db";
+const CANOPY_SPECIFICATION_SHA256 = "258ca3f94e30d484b53cc12e29c83beaf57998993edaea05e44f5a4924979efc";
+const CANOPY_READBACK_SHA256 = "93e2d55f2de8763372f8d5c57a8a26fd109dd63dc842438b3b842bdb0f66dcd4";
+const CANOPY_RUNNER_SHA256 = "99982d613a0ef908a88f1dfe468c541c61c2f9f09cad6fbf6768377543c5386d";
+const CANOPY_OUTPUT = {
+  specification: "ntems-canopy-cover-v1",
+  path: "ntems-canopy-cover-v1/80c37461f4deccfdfffc26124e9064d53a94dde660b9f96194445870393af130/phase1-ntems-canopy-cover-v1/canopy-cover-2022.tif",
+  sha256: "18cb7904cf9ec16ef602f7cb57c788dcdb49c2ef0719992abdc3366e4be1079e",
+  byteLength: 13110248051,
+  status: "verified",
+};
+const WHAT_CHANGED = [
+  "The historical canopy-cover row recorded specification, run, and output as null before the later execution records existed.",
+  "The repository now contains the unapproved ntems-canopy-cover-v1 execution specification, an owner-approved local execution authorization, the recorded runner binding, and a complete readback for one exact derived output.",
+  "This successor corrects only those later specification, run, and output facts. It does not convert the execution specification into a production-admission target specification or admit the source or output.",
+];
+const REMAINING_BLOCKERS = [
+  "Record and approve a distinct production-admission target canopy-cover specification before considering ingestion, release, production admission, or production eligibility.",
+  "Complete the target specification's required validation and create separate ingestion, release, and production-admission records.",
+];
+
+function sha256(file) {
+  return createHash("sha256").update(readFileSync(new URL(`../${file}`, import.meta.url))).digest("hex");
+}
 
 function existingReferences(refs) {
   assert.ok(Array.isArray(refs));
@@ -211,11 +236,82 @@ export function validatePhase1NrcanCoverProcessingGate(audit, ledger = read("dat
   return audit;
 }
 
+export function validatePhase1NrcanCoverProcessingGateSupersession(supersession, historicalGate = read("data/phase1-nrcan-cover-processing-gate.json")) {
+  assert.deepEqual(Object.keys(supersession).sort(), ["auditedAt", "canopyCover", "remainingBlockers", "schemaVersion", "status", "supersedes", "whatChanged"].sort());
+  assert.equal(supersession.schemaVersion, "witness-tree/phase1-nrcan-cover-processing-gate-supersession/1");
+  assert.equal(supersession.status, "supersedes-historical-gate-with-nonproduction-execution-evidence");
+  assert.equal(supersession.auditedAt, "2026-08-31T00:00:00Z");
+  assert.deepEqual(supersession.supersedes, {
+    path: "data/phase1-nrcan-cover-processing-gate.json",
+    sha256: HISTORICAL_GATE_SHA256,
+    auditedAt: "2026-08-21T15:45:00Z",
+    scope: "Historical Phase 1 NRCan cover processing snapshot. It remains unchanged.",
+  });
+  assert.equal(sha256(supersession.supersedes.path), supersession.supersedes.sha256);
+  assert.equal(historicalGate.auditedAt, supersession.supersedes.auditedAt);
+  assert.deepEqual(supersession.whatChanged, WHAT_CHANGED);
+
+  const canopy = supersession.canopyCover;
+  assert.deepEqual(Object.keys(canopy).sort(), ["executionAuthorization", "executionSpecification", "output", "productionAdmission", "productionAdmissionTargetSpecification", "productionEligible", "readback", "runner", "sourceRow"].sort());
+  assert.equal(canopy.sourceRow, "ntems-canopy-cover");
+  assert.deepEqual(canopy.executionSpecification, {
+    id: "ntems-canopy-cover-v1",
+    path: "data/phase1-production-transformation-specifications-v1.json",
+    sha256: CANOPY_SPECIFICATION_SHA256,
+    status: "unapproved-specification-only",
+    meaning: "A checksum-bound proposed execution specification. Its file status does not make it a production-admission target specification.",
+  });
+  assert.equal(sha256(canopy.executionSpecification.path), canopy.executionSpecification.sha256);
+  assert.deepEqual(canopy.productionAdmissionTargetSpecification, {
+    present: false,
+    meaning: "No production-admission target canopy-cover specification has been recorded or approved. The existing ntems-canopy-cover-v1 execution specification is not a substitute.",
+  });
+  assert.deepEqual(canopy.executionAuthorization, {
+    path: "data/phase1-ntems-canopy-cover-execution-authorization.json",
+    sha256: CANOPY_AUTHORIZATION_SHA256,
+    status: "approved-owner-local-execution",
+    readbackBoundSha256: "f0e1486a7817db5cdf7af3c13898073a202f1db4919320fa2b287c9e2103e47c",
+    meaning: "The readback preserves the authorization bytes that applied when it was created; the current authorization checksum is recorded separately and does not rewrite that history.",
+  });
+  assert.equal(sha256(canopy.executionAuthorization.path), canopy.executionAuthorization.sha256);
+  assert.deepEqual(canopy.runner, {
+    path: "scripts/run-phase1-ntems-transform.mjs",
+    sha256: CANOPY_RUNNER_SHA256,
+    readbackBoundSha256: "09b1016849e0709e46ebad908eec0f01252d5e5eeed3e5cd2fcb712c2042dc90",
+    meaning: "The readback preserves the runner bytes that produced the output; the current runner checksum is not retroactively bound to that run.",
+  });
+  assert.equal(sha256(canopy.runner.path), canopy.runner.sha256);
+  assert.deepEqual(canopy.readback, {
+    path: "data/ntems-canopy-cover-v1-readback-evidence-2026-08-26.json",
+    sha256: CANOPY_READBACK_SHA256,
+    status: "complete-readback-verified",
+    claims: { transformed: true, ingested: false, released: false, productionAdmission: false, productionEligible: false, externalMutationPerformed: false },
+  });
+  assert.equal(sha256(canopy.readback.path), canopy.readback.sha256);
+  const readback = read(canopy.readback.path);
+  assert.equal(readback.status, canopy.readback.status);
+  assert.deepEqual(readback.claims, canopy.readback.claims);
+  assert.equal(readback.authorization.path, canopy.executionAuthorization.path);
+  assert.equal(readback.authorization.sha256, canopy.executionAuthorization.readbackBoundSha256);
+  assert.equal(readback.runner.path, canopy.runner.path);
+  assert.equal(readback.runner.sha256, canopy.runner.readbackBoundSha256);
+  assert.deepEqual(canopy.output, CANOPY_OUTPUT);
+  const output = readback.outputs.find(({ specification }) => specification === canopy.output.specification);
+  assert.ok(output);
+  assert.deepEqual({ specification: output.specification, path: output.output, sha256: output.outputSha256, byteLength: output.outputByteLength, status: output.status }, canopy.output);
+  assert.equal(canopy.productionAdmission, false);
+  assert.equal(canopy.productionEligible, false);
+  assert.deepEqual(supersession.remainingBlockers, REMAINING_BLOCKERS);
+  return supersession;
+}
+
 export function checkPhase1NrcanCoverProcessingGate() {
-  return validatePhase1NrcanCoverProcessingGate(read("data/phase1-nrcan-cover-processing-gate.json"));
+  const historicalGate = read("data/phase1-nrcan-cover-processing-gate.json");
+  validatePhase1NrcanCoverProcessingGate(historicalGate);
+  return validatePhase1NrcanCoverProcessingGateSupersession(read("data/phase1-nrcan-cover-processing-gate-supersession-2026-08-31.json"), historicalGate);
 }
 
 if (process.argv[1]?.endsWith("check-phase1-nrcan-cover-processing-gate.mjs")) {
-  const audit = checkPhase1NrcanCoverProcessingGate();
-  console.log(`Phase 1 NRCan cover processing gate passed: ${audit.rows.length} rows profiled; transformations and ingestion remain blocked; baseline ${audit.baseline.formalEvidenceTrackingPercentage}%.`);
+  const supersession = checkPhase1NrcanCoverProcessingGate();
+  console.log(`Phase 1 NRCan cover processing gate passed: ${supersession.supersedes.path} remains historical; its canopy-cover absence facts are superseded by execution evidence without production admission.`);
 }
