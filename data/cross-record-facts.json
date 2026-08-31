@@ -2,7 +2,7 @@
   "schemaVersion": "witness-tree/cross-record-fact-register/1",
   "asOf": "2026-08-31",
   "ledger": {"path": "docs/RECORD_CONTRADICTION_LEDGER.md"},
-  "declaredCurrentExceptions": ["C-1", "C-2", "C-3", "C-4", "C-5", "C-6"],
+  "declaredCurrentExceptions": ["C-1", "C-2", "C-3", "C-5", "C-6"],
   "facts": [
     {
       "id": "ntems-forest-harvest-transformation-status",
@@ -35,28 +35,31 @@
       "id": "ntems-canopy-cover-production-specification",
       "contradiction": "C-4",
       "assertions": [
-        {"id":"gate","record":"data/phase1-nrcan-cover-processing-gate.json","selector":{"arrayPath":"/rows","where":{"id":"ntems-canopy-cover"}},"fields":{"specification":{"pointer":"/transformation/specification"}},"expected":{"specification":null},"factValue":"absent"},
+        {"id":"historical-gate","record":"data/phase1-nrcan-cover-processing-gate.json","selector":{"arrayPath":"/rows","where":{"id":"ntems-canopy-cover"}},"fields":{"specification":{"pointer":"/transformation/specification"}},"expected":{"specification":null},"factValue":"absent","datePath":"/auditedAt"},
+        {"id":"successor","record":"data/phase1-nrcan-cover-processing-gate-supersession-2026-08-31.json","fields":{"specification":{"pointer":"/canopyCover/executionSpecification/id"},"targetPresent":{"pointer":"/canopyCover/productionAdmissionTargetSpecification/present"}},"expected":{"specification":"ntems-canopy-cover-v1","targetPresent":false},"factValue":"present","datePath":"/auditedAt"},
         {"id":"specification","record":"data/phase1-production-transformation-specifications-v1.json","selector":{"arrayPath":"/specifications","where":{"id":"ntems-canopy-cover-v1"}},"fields":{"id":{"pointer":"/id"}},"expected":{"id":"ntems-canopy-cover-v1"},"factValue":"present"}
       ],
-      "exceptions": [{"ledgerEntry":"C-4"}]
+      "supersessions": [{"olderAssertion":"historical-gate","newerAssertion":"successor"}]
     },
     {
       "id": "ntems-canopy-cover-transformation-run",
       "contradiction": "C-4",
       "assertions": [
-        {"id":"gate","record":"data/phase1-nrcan-cover-processing-gate.json","selector":{"arrayPath":"/rows","where":{"id":"ntems-canopy-cover"}},"fields":{"run":{"pointer":"/transformation/run"}},"expected":{"run":null},"factValue":"absent"},
+        {"id":"historical-gate","record":"data/phase1-nrcan-cover-processing-gate.json","selector":{"arrayPath":"/rows","where":{"id":"ntems-canopy-cover"}},"fields":{"run":{"pointer":"/transformation/run"}},"expected":{"run":null},"factValue":"absent","datePath":"/auditedAt"},
+        {"id":"successor","record":"data/phase1-nrcan-cover-processing-gate-supersession-2026-08-31.json","fields":{"authorization":{"pointer":"/canopyCover/executionAuthorization/path"},"runner":{"pointer":"/canopyCover/runner/path"},"readback":{"pointer":"/canopyCover/readback/path"}},"expected":{"authorization":"data/phase1-ntems-canopy-cover-execution-authorization.json","runner":"scripts/run-phase1-ntems-transform.mjs","readback":"data/ntems-canopy-cover-v1-readback-evidence-2026-08-26.json"},"factValue":"present","datePath":"/auditedAt"},
         {"id":"readback","record":"data/ntems-canopy-cover-v1-readback-evidence-2026-08-26.json","fields":{"status":{"pointer":"/status"},"authorization":{"pointer":"/authorization/path"},"runner":{"pointer":"/runner/path"}},"expected":{"status":"complete-readback-verified","authorization":"data/phase1-ntems-canopy-cover-execution-authorization.json","runner":"scripts/run-phase1-ntems-transform.mjs"},"factValue":"present"}
       ],
-      "exceptions": [{"ledgerEntry":"C-4"}]
+      "supersessions": [{"olderAssertion":"historical-gate","newerAssertion":"successor"}]
     },
     {
       "id": "ntems-canopy-cover-derived-output",
       "contradiction": "C-4",
       "assertions": [
-        {"id":"gate","record":"data/phase1-nrcan-cover-processing-gate.json","selector":{"arrayPath":"/rows","where":{"id":"ntems-canopy-cover"}},"fields":{"output":{"pointer":"/transformation/output"}},"expected":{"output":null},"factValue":"absent"},
+        {"id":"historical-gate","record":"data/phase1-nrcan-cover-processing-gate.json","selector":{"arrayPath":"/rows","where":{"id":"ntems-canopy-cover"}},"fields":{"output":{"pointer":"/transformation/output"}},"expected":{"output":null},"factValue":"absent","datePath":"/auditedAt"},
+        {"id":"successor","record":"data/phase1-nrcan-cover-processing-gate-supersession-2026-08-31.json","fields":{"output":{"pointer":"/canopyCover/output/path"},"outputSha256":{"pointer":"/canopyCover/output/sha256"},"productionAdmission":{"pointer":"/canopyCover/productionAdmission"},"productionEligible":{"pointer":"/canopyCover/productionEligible"}},"expected":{"output":"ntems-canopy-cover-v1/80c37461f4deccfdfffc26124e9064d53a94dde660b9f96194445870393af130/phase1-ntems-canopy-cover-v1/canopy-cover-2022.tif","outputSha256":"18cb7904cf9ec16ef602f7cb57c788dcdb49c2ef0719992abdc3366e4be1079e","productionAdmission":false,"productionEligible":false},"factValue":"present","datePath":"/auditedAt"},
         {"id":"readback","record":"data/ntems-canopy-cover-v1-readback-evidence-2026-08-26.json","selector":{"arrayPath":"/outputs","where":{"specification":"ntems-canopy-cover-v1"}},"fields":{"status":{"pointer":"/status"},"output":{"pointer":"/output"},"outputSha256":{"pointer":"/outputSha256"}},"expected":{"status":"verified","output":"ntems-canopy-cover-v1/80c37461f4deccfdfffc26124e9064d53a94dde660b9f96194445870393af130/phase1-ntems-canopy-cover-v1/canopy-cover-2022.tif","outputSha256":"18cb7904cf9ec16ef602f7cb57c788dcdb49c2ef0719992abdc3366e4be1079e"},"factValue":"present"}
       ],
-      "exceptions": [{"ledgerEntry":"C-4"}]
+      "supersessions": [{"olderAssertion":"historical-gate","newerAssertion":"successor"}]
     },
     {
       "id": "federal-electoral-evidence-state",

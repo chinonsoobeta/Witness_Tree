@@ -2,9 +2,10 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 import { validateNrcanCanopyCoverProfile } from "../scripts/check-nrcan-canopy-cover-profile.mjs";
-import { checkPhase1NrcanCoverProcessingGate, validatePhase1NrcanCoverProcessingGate } from "../scripts/check-phase1-nrcan-cover-processing-gate.mjs";
+import { checkPhase1NrcanCoverProcessingGate, validatePhase1NrcanCoverProcessingGate, validatePhase1NrcanCoverProcessingGateSupersession } from "../scripts/check-phase1-nrcan-cover-processing-gate.mjs";
 
-const audit = checkPhase1NrcanCoverProcessingGate();
+const supersession = checkPhase1NrcanCoverProcessingGate();
+const audit = JSON.parse(readFileSync(new URL("../data/phase1-nrcan-cover-processing-gate.json", import.meta.url), "utf8"));
 const ledger = JSON.parse(readFileSync(new URL("../data/phase1-production-source-ledger.json", import.meta.url), "utf8"));
 
 test("the NTEMS cover gate binds both rows to existing local/archive checks", () => {
@@ -16,6 +17,32 @@ test("the NTEMS cover gate binds both rows to existing local/archive checks", ()
     "blocked-no-phase1-production-named-specification-and-output",
     "blocked-no-phase1-production-named-specification-and-output",
   ]);
+});
+
+test("the dated successor binds the later canopy-cover execution evidence without production admission", () => {
+  assert.equal(supersession.supersedes.auditedAt, "2026-08-21T15:45:00Z");
+  assert.equal(supersession.canopyCover.executionSpecification.id, "ntems-canopy-cover-v1");
+  assert.equal(supersession.canopyCover.executionSpecification.status, "unapproved-specification-only");
+  assert.equal(supersession.canopyCover.productionAdmissionTargetSpecification.present, false);
+  assert.equal(supersession.canopyCover.readback.claims.transformed, true);
+  assert.equal(supersession.canopyCover.output.sha256, "18cb7904cf9ec16ef602f7cb57c788dcdb49c2ef0719992abdc3366e4be1079e");
+  assert.equal(supersession.canopyCover.productionAdmission, false);
+  assert.equal(supersession.canopyCover.productionEligible, false);
+});
+
+test("the successor fails closed if it blurs execution evidence into production admission", () => {
+  const rejects = (mutate) => assert.throws(() => {
+    const candidate = structuredClone(supersession);
+    mutate(candidate);
+    validatePhase1NrcanCoverProcessingGateSupersession(candidate, audit);
+  });
+  rejects((candidate) => { candidate.canopyCover.productionAdmissionTargetSpecification.present = true; });
+  rejects((candidate) => { candidate.canopyCover.productionEligible = true; });
+  rejects((candidate) => { candidate.canopyCover.output.sha256 = "a".repeat(64); });
+  rejects((candidate) => { candidate.canopyCover.readback.sha256 = "a".repeat(64); });
+  rejects((candidate) => { candidate.whatChanged[0] = "Something changed."; });
+  rejects((candidate) => { candidate.remainingBlockers = []; });
+  rejects((candidate) => { candidate.canopyCover.productionRelease = true; });
 });
 
 test("the gate fails closed if a transformation, output, or credit is invented", () => {
