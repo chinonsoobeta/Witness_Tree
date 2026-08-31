@@ -21,6 +21,31 @@ function fail(message) { throw new Error(`Phase 2 V2.1 readback failed: ${messag
 function exact(value, expected, label) { try { assert.deepEqual(value, expected); } catch { fail(`${label} does not exactly match the Version 2.1 contract.`); } }
 function safeRelative(value, label) { if (typeof value !== "string" || isAbsolute(value) || value.includes("..")) fail(`${label} must be a safe relative path.`); return value; }
 function positive(value, label) { if (!(typeof value === "number" && Number.isFinite(value) && value > 0)) fail(`${label} must be positive.`); }
+function sortKeys(value) {
+  if (Array.isArray(value)) return value.map(sortKeys);
+  if (value !== null && typeof value === "object") {
+    return Object.fromEntries(Object.keys(value).sort().map((key) => [key, sortKeys(value[key])]));
+  }
+  return value;
+}
+function canonicalJson(value) { return JSON.stringify(sortKeys(value)); }
+
+export async function writeOrVerifyEvidence(evidence, target = evidencePath) {
+  let recorded;
+  try {
+    recorded = await json(target);
+  } catch (error) {
+    if (error?.code !== "ENOENT") throw error;
+    await writeFile(target, `${JSON.stringify(evidence, null, 2)}\n`, { flag: "wx" });
+    return "written";
+  }
+  // This evidence schema has no timestamps, host paths, durations captured by
+  // readback, or other volatile fields. Every recorded field is compared.
+  if (canonicalJson(recorded) !== canonicalJson(evidence)) {
+    fail("recorded evidence differs from the fresh readback.");
+  }
+  return "matched";
+}
 
 export function validateV21LineageShape(lineage) {
   if (lineage?.schemaVersion !== "witness-tree/phase2-v21-raster-first-lineage/1") fail("unexpected lineage schema.");
@@ -99,7 +124,7 @@ async function main() {
   const [, , flag, dataRoot, output] = process.argv;
   if (flag !== "--write-repo-evidence" || !dataRoot || !output) throw new Error("Usage: readback-phase2-v21-raster-first --write-repo-evidence <absolute-Witness_Tree-data> <approved-V2.1-output-directory>");
   const evidence = await readbackV21RasterFirst(dataRoot, output);
-  await writeFile(evidencePath, `${JSON.stringify(evidence, null, 2)}\n`, { flag: "wx" });
-  console.log(JSON.stringify({ status: evidence.status, outputCount: evidence.counts.outputs, evidencePath, productionEligible: false }, null, 2));
+  const evidenceDisposition = await writeOrVerifyEvidence(evidence);
+  console.log(JSON.stringify({ status: evidence.status, outputCount: evidence.counts.outputs, evidencePath, evidenceDisposition, productionEligible: false }, null, 2));
 }
 if (import.meta.url === `file://${process.argv[1]}`) await main();
