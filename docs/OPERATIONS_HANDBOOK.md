@@ -448,11 +448,19 @@ them.
   function. A URL alone is not a cleared feed.
 - The workflow retries once after 900 seconds and then exits 1.
 
-**This means the scheduled job is expected to fail, four times a day, by
-design.** That is S4, not an incident. It becomes S3 the day a cleared feed is
-configured and it still fails, and it becomes S2 if it ever *succeeds* while no
-feed has actually been cleared, because that would mean a source is being
-fetched without rights.
+The 100 most recent scheduled runs were inspected on 2026-08-31 and are
+recorded in
+[`data/wildfire-refresh-run-history-2026-08-31.json`](../data/wildfire-refresh-run-history-2026-08-31.json).
+The snapshot contains 56 successful DST-gated no-ops and 44 failed attempted
+refreshes; it contains no successful real refresh. A successful workflow run is
+not evidence of a refresh when the gate skipped the refresh step. The observed
+attempted-refresh failures include a direct push rejected by protected `main`,
+so the workflow conclusion alone is not a feed-health signal.
+
+An attempted refresh that fails while no cleared feed is configured is S4, not
+an incident. It becomes S3 the day a cleared feed is configured and it still
+fails, and it becomes S2 if it ever *succeeds* while no feed has actually been
+cleared, because that would mean a source is being fetched without rights.
 
 `scripts/wildfire/snapshot-store.mjs` defines the state machine if a refresh
 ever does run: immutable per-source snapshots written with `wx` so a snapshot
@@ -725,7 +733,6 @@ contradicts this list.
 | **G9** | **The data root has one copy.** No second copy, no replication, no provider durability evidence | Drive loss loses every derived byte. Phase 8 `backups` is `fail` |
 | **G10** | **No incident has ever been rehearsed.** No drill of a site outage, a rollback, a host degradation, or an escalation has been performed or timed | Every timing target in this document is a target, not an observed result |
 | **G11** | **No public communication channel exists.** No status page, no operator-driven banner, no monitored intake address; the corrections workflow is policy and fixtures only | Telling the public anything requires a code change and a deploy |
-| **G12** | **The scheduled wildfire job's real run history has not been inspected.** The code path is verified to refuse without a cleared feed, and no commit produced by that workflow exists in this repository's history, but the Actions run records themselves were not read | Section 6.3's claim that the job fails four times a day is derived from the code and the absent commits, not from observed run logs |
 | **G13** | **Exit codes are not a tidy taxonomy.** Codes `64`, `73`, and `75` each carry more than one distinct meaning, and consistency across all nineteen scripts is unverified | Read the message. Do not infer the situation from the code alone |
 
 ---

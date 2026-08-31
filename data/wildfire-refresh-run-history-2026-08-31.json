@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "recordType": "github-actions-workflow-history",
+  "repository": "chinonsoobeta/Witness_Tree",
+  "workflowPath": ".github/workflows/wildfire-refresh.yml",
+  "retrieval": {
+    "retrievedAt": "2026-08-31T04:24:28Z",
+    "runListCommand": "gh run list --repo chinonsoobeta/Witness_Tree --workflow wildfire-refresh.yml --limit 100 --json databaseId,createdAt,updatedAt,conclusion,status,event,headSha,url",
+    "stepClassificationCommand": "gh run view <run-id> --repo chinonsoobeta/Witness_Tree --json databaseId,conclusion,jobs",
+    "limit": 100
+  },
+  "window": {
+    "oldestCreatedAt": "2026-08-15T23:18:30Z",
+    "newestCreatedAt": "2026-08-31T01:05:36Z"
+  },
+  "conclusionCounts": {
+    "failure": 44,
+    "success": 56
+  },
+  "classificationRule": {
+    "dstGatedNoOp": "The refresh step was skipped. The workflow's gate prevented a refresh attempt.",
+    "attemptedRefresh": "The refresh step ran. Its step conclusion is success because the workflow uses continue-on-error; the workflow conclusion records the run as failure.",
+    "realRefreshSuccess": "A run whose refresh step ran and whose workflow conclusion was success."
+  },
+  "classifications": {
+    "dstGatedNoOpSuccesses": {
+      "count": 56,
+      "workflowConclusion": "success",
+      "refreshStepConclusion": "skipped",
+      "runIds": [31919056197, 31929027502, 31949986839, 31970225744, 31984189581, 31998321098, 32036067237, 32065692082, 32087124550, 32102952241, 32143744523, 32181828032, 32203933247, 32219533741, 32259603917, 32298429334, 32319970114, 32335758080, 32376026391, 32414068352, 32435493905, 32450805719, 32488339120, 32523326462, 32542560437, 32554290337, 32575952497, 32596387857, 32609871985, 32620397756, 32642585292, 32664119544, 32679049745, 32694147266, 32735029412, 32774082839, 32796535680, 32813083231, 32855634009, 32895370529, 32918127719, 32934467432, 32976924975, 33016428170, 33091414661, 33135852904, 33187433275, 33227785909, 33248690725, 33262420434, 33276247658, 33284825584, 33304798903, 33321485354, 33337502152, 33346513142]
+    },
+    "attemptedRefreshFailures": {
+      "count": 44,
+      "workflowConclusion": "failure",
+      "refreshStepConclusion": "success",
+      "runIds": [31914393119, 31926955236, 31947493268, 31967256721, 31978741426, 31995297823, 32031026890, 32060400567, 32080055751, 32099598342, 32138212693, 32176556056, 32196742142, 32216308510, 32254073675, 32292734814, 32312839155, 32332414648, 32370518045, 32408962494, 32428470950, 32447529186, 32483224333, 32518332031, 32536586203, 32551926705, 32573409198, 32593446184, 32604889543, 32618234624, 32639883820, 32660928915, 32673255308, 32691017731, 32728949653, 32768304563, 32788919354, 32809655397, 32849182398, 32889946557, 32910582093, 32930944010, 32970649341, 33038835516]
+    },
+    "realRefreshSuccesses": {
+      "count": 0,
+      "runIds": []
+    }
+  },
+  "representativeRuns": [
+    {
+      "runId": 33346513142,
+      "url": "https://github.com/chinonsoobeta/Witness_Tree/actions/runs/33346513142",
+      "observations": [
+        "The gate logged run=false.",
+        "The refresh, retry, commit, and final-exit steps were skipped."
+      ]
+    },
+    {
+      "runId": 33038835516,
+      "url": "https://github.com/chinonsoobeta/Witness_Tree/actions/runs/33038835516",
+      "observations": [
+        "The gate logged run=true.",
+        "The refresh command and its 900-second retry each exited with code 1 under continue-on-error.",
+        "The workflow then attempted a direct push to main, which GitHub rejected with GH006 because the branch requires pull requests and the verify check."
+      ]
+    }
+  ],
+  "limitations": [
+    "This is a time-bounded snapshot of the 100 most recent runs at retrieval time.",
+    "A successful workflow conclusion is not evidence of a successful refresh unless the refresh step ran.",
+    "Run metadata and logs do not establish that a feed was cleared or that a refreshed file is consumed by a public route.",
+    "GitHub Actions log availability can expire after this record was made."
+  ]
+}
