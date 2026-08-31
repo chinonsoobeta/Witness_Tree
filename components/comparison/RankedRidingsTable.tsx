@@ -1,5 +1,6 @@
 import { EvidenceChip } from "@/components/policy";
 import {
+  MINIMUM_RANKED_FOREST_HECTARES,
   RANKING_COPY,
   RANKING_METRIC,
   rankRidings,
@@ -9,6 +10,23 @@ import {
 } from "@/lib/comparison";
 import { formatHectares, formatPercent, type Locale } from "@/lib/domain";
 import { MeasurementCoverage } from "./MeasurementCoverage";
+
+const UNRANKED_COPY = {
+  en: {
+    noneMapped: "No mapped coverage, not ranked",
+    partial: "Partial mapped coverage, not ranked",
+    belowFloor: `Complete mapped coverage below ${MINIMUM_RANKED_FOREST_HECTARES} forested hectares, not ranked`,
+    summary: (ranked: number, total: number, noneMapped: number, partial: number, belowFloor: number) =>
+      `${ranked} of ${total} federal districts are ranked. ${noneMapped} have no mapped coverage; ${partial} have partial mapped coverage; ${belowFloor} have complete mapped coverage but less than ${MINIMUM_RANKED_FOREST_HECTARES} forested hectares.`,
+  },
+  fr: {
+    noneMapped: "Aucune couverture cartographiée, non classée",
+    partial: "Couverture cartographiée partielle, non classée",
+    belowFloor: `Couverture cartographiée complète sous le seuil de ${MINIMUM_RANKED_FOREST_HECTARES} hectares forestiers, non classée`,
+    summary: (ranked: number, total: number, noneMapped: number, partial: number, belowFloor: number) =>
+      `${ranked} des ${total} circonscriptions fédérales sont classées. ${noneMapped} n’ont aucune couverture cartographiée; ${partial} ont une couverture cartographiée partielle; ${belowFloor} ont une couverture cartographiée complète, mais moins de ${MINIMUM_RANKED_FOREST_HECTARES} hectares forestiers.`,
+  },
+} as const;
 
 function TableHeaders({
   locale,
@@ -50,6 +68,39 @@ function RidingRow({ row, locale }: { row: RankedRiding; locale: Locale }) {
   );
 }
 
+function UnrankedTable({
+  rows,
+  label,
+  locale,
+  copy,
+}: {
+  rows: readonly RankedRiding[];
+  label: string;
+  locale: Locale;
+  copy: (typeof RANKING_COPY)[Locale];
+}) {
+  if (rows.length === 0) return null;
+  const accessibleLabel = `${label} (${rows.length})`;
+  return (
+    <section aria-label={accessibleLabel}>
+      <h3>{accessibleLabel}</h3>
+      <div className="table-scroll">
+        <table>
+          <caption className="sr-only">{accessibleLabel}</caption>
+          <thead>
+            <TableHeaders locale={locale} copy={copy} />
+          </thead>
+          <tbody>
+            {rows.map((row) => (
+              <RidingRow key={row.id} row={row} locale={locale} />
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+}
+
 export function RankedRidingsTable({
   rows,
   context,
@@ -69,6 +120,15 @@ export function RankedRidingsTable({
 }) {
   const result = rankRidings(rows, sort);
   const copy = RANKING_COPY[locale];
+  const unrankedCopy = UNRANKED_COPY[locale];
+  const noneMapped = result.unranked.filter((row) => row.measurementCoverage === "none-mapped");
+  const partial = result.unranked.filter((row) => row.measurementCoverage === "partial-with-unknown");
+  const belowFloor = result.unranked.filter((row) =>
+    row.measurementCoverage === "complete" && row.forestedHectares < MINIMUM_RANKED_FOREST_HECTARES,
+  );
+  if (noneMapped.length + partial.length + belowFloor.length !== result.unranked.length) {
+    throw new Error("Every unranked riding must have an explicit, truthful reason.");
+  }
   const sortHref = (nextSort: RankingSort) => {
     const query = new URLSearchParams();
     query.set("sort", nextSort);
@@ -86,6 +146,7 @@ export function RankedRidingsTable({
         </p>
         <p>{context.denominatorDefinition[locale]}</p>
         <p>{context.method[locale]}</p>
+        <p>{unrankedCopy.summary(result.ranked.length, rows.length, noneMapped.length, partial.length, belowFloor.length)}</p>
         <p>{copy.officialMatching}</p>
         <EvidenceChip evidence={context.evidence} locale={locale} />
       </header>
@@ -110,26 +171,9 @@ export function RankedRidingsTable({
           </tbody>
         </table>
       </div>
-      {result.insufficientCoverage.length > 0 && (
-        <section aria-label={copy.insufficient}>
-          <h3>{copy.insufficient}</h3>
-          <div className="table-scroll">
-            <table>
-              {/* The heading above already states this; the caption stays for
-                  the table's accessible name without repeating it on screen. */}
-              <caption className="sr-only">{copy.insufficient}</caption>
-              <thead>
-                <TableHeaders locale={locale} copy={copy} />
-              </thead>
-              <tbody>
-                {result.insufficientCoverage.map((row) => (
-                  <RidingRow key={row.id} row={row} locale={locale} />
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
-      )}
+      <UnrankedTable rows={noneMapped} label={unrankedCopy.noneMapped} locale={locale} copy={copy} />
+      <UnrankedTable rows={partial} label={unrankedCopy.partial} locale={locale} copy={copy} />
+      <UnrankedTable rows={belowFloor} label={unrankedCopy.belowFloor} locale={locale} copy={copy} />
       <data value={RANKING_METRIC} />
     </section>
   );

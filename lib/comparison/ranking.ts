@@ -3,11 +3,11 @@ import { RANKING_METRIC, type ComparisonPlace, type RankedRiding, type RankingCo
 // @ts-expect-error -- Node's TypeScript runner requires explicit local extensions.
 from "./types.ts";
 
-export type RankedRidingsResult = Readonly<{ ranked: readonly RankedRiding[]; insufficientCoverage: readonly RankedRiding[] }>;
+export type RankedRidingsResult = Readonly<{ ranked: readonly RankedRiding[]; unranked: readonly RankedRiding[] }>;
 export type RankingSort = "share-desc" | "share-asc";
 export const RANKING_COPY = {
-  en: { metric: "Detected change as a share of forested area", insufficient: "Insufficient coverage, not ranked", hectares: "Detected change (ha)", forested: "Forested area (ha)", officialMatching: "Official matching: no district-level official matching run has been admitted, so this value is Unknown for every row.", unknown: "Unknown" },
-  fr: { metric: "Changement détecté en part de la superficie forestière", insufficient: "Couverture insuffisante, non classée", hectares: "Changement détecté (ha)", forested: "Superficie forestière (ha)", officialMatching: "Appariement officiel : aucun appariement officiel au niveau des circonscriptions n’a été admis. Cette valeur est donc inconnue pour chaque ligne.", unknown: "Inconnu" },
+  en: { metric: "Detected change as a share of forested area", hectares: "Detected change (ha)", forested: "Forested area (ha)", officialMatching: "Official matching: no district-level official matching run has been admitted, so this value is Unknown for every row.", unknown: "Unknown" },
+  fr: { metric: "Changement détecté en part de la superficie forestière", hectares: "Changement détecté (ha)", forested: "Superficie forestière (ha)", officialMatching: "Appariement officiel : aucun appariement officiel au niveau des circonscriptions n’a été admis. Cette valeur est donc inconnue pour chaque ligne.", unknown: "Inconnu" },
 } as const;
 
 export function parseRankingSort(value: string | undefined): RankingSort {
@@ -24,7 +24,7 @@ export function rankRidings(rows: readonly RankedRiding[], sort: RankingSort = "
       : b.detectedChangePercent - a.detectedChangePercent);
   return Object.freeze({
     ranked: sufficient,
-    insufficientCoverage: rows.filter((row) =>
+    unranked: rows.filter((row) =>
       !row.sufficientCoverage || row.detectedChangePercent === null || row.detectedChangeHectares === null,
     ),
   });

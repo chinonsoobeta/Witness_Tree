@@ -53,7 +53,7 @@ export default async function ComparerPage({
           sort={sort}
         />
         <RankedRidingsTable
-          rows={federalRidingComparison.rankingRows}
+          rows={federalRidingComparison.rows}
           context={federalRidingComparison.context}
           locale="fr"
           sort={sort}

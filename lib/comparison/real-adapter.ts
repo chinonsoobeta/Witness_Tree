@@ -1,7 +1,6 @@
 import type { ComparisonPlace, RankedRiding, RankingContext } from "./types";
 
 export const MINIMUM_RANKED_FOREST_HECTARES = 500;
-const COVERED_FEDERAL_DISTRICT_PREFIXES = ["24", "35", "48", "59"] as const;
 
 type RawRow = Readonly<{
   boundaryId: string;
@@ -26,7 +25,6 @@ type RawComparison = Readonly<{
 export type RealFederalRidingComparison = Readonly<{
   context: RankingContext;
   rows: readonly RankedRiding[];
-  rankingRows: readonly RankedRiding[];
   places: readonly ComparisonPlace[];
 }>;
 
@@ -76,12 +74,9 @@ export function adaptFederalRidingComparison(input: RawComparison): RealFederalR
       fr: "Part des hectares forestiers connus dans le masque forestier de la première année, 2021.",
     },
     method: {
-      en: "Only federal districts in British Columbia, Alberta, Ontario and Quebec with complete mapped coverage and at least 500 forested hectares are ranked by detected-loss share.",
-      fr: "Seules les circonscriptions fédérales de la Colombie-Britannique, de l’Alberta, de l’Ontario et du Québec ayant une couverture cartographiée complète et au moins 500 hectares forestiers sont classées selon la part de perte détectée.",
+      en: "Federal districts with complete mapped coverage and at least 500 forested hectares are ranked by detected-loss share.",
+      fr: "Les circonscriptions fédérales ayant une couverture cartographiée complète et au moins 500 hectares forestiers sont classées selon la part de perte détectée.",
     },
   };
-  const rankingRows = rows.filter((row) =>
-    COVERED_FEDERAL_DISTRICT_PREFIXES.some((prefix) => row.id === `federal-${prefix}` || row.id.startsWith(`federal-${prefix}`)),
-  );
-  return { context, rows, rankingRows, places: rows };
+  return { context, rows, places: rows };
 }
