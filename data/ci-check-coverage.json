@@ -1,0 +1,551 @@
+{
+  "schemaVersion": "witness-tree/ci-check-coverage/1",
+  "status": "engineering-derived-inventory",
+  "exclusions": [
+    {
+      "check": "check:alberta-electoral-block",
+      "category": "owner-invoked",
+      "reason": "This access-block status gate is reviewed in the owner-run local gate set; it is not an always-green portable branch predicate."
+    },
+    {
+      "check": "check:alberta-plvi-geometry-repair",
+      "category": "owner-invoked",
+      "reason": "This point-in-time geometry-repair evidence gate is reviewed in the owner-run local gate set."
+    },
+    {
+      "check": "check:alberta-plvi-immutable-promotion-evidence",
+      "category": "owner-invoked",
+      "reason": "This owner promotion-evidence gate is reviewed in the local gate set, not implied to have queried AWS in CI."
+    },
+    {
+      "check": "check:alberta-plvi-legacy-manifest-audit",
+      "category": "owner-invoked",
+      "reason": "This historical owner audit remains an explicit local release gate."
+    },
+    {
+      "check": "check:archive-operations-readiness",
+      "category": "owner-invoked",
+      "reason": "This owner readiness decision can remain blocked and is evaluated in the local release gate set."
+    },
+    {
+      "check": "check:archive-recovery-copy",
+      "category": "owner-invoked",
+      "reason": "This owner recovery configuration and evidence gate is evaluated in the local release gate set."
+    },
+    {
+      "check": "check:bc-bec-snapshot",
+      "category": "owner-invoked",
+      "reason": "This source-snapshot evidence gate is reviewed in the owner-run local gate set."
+    },
+    {
+      "check": "check:bc-consolidated-cutblocks-access",
+      "category": "owner-invoked",
+      "reason": "This point-in-time source-access observation is reviewed in the owner-run local gate set."
+    },
+    {
+      "check": "check:bc-forest-tenure-foi-catalogue-response",
+      "category": "owner-invoked",
+      "reason": "This owner correspondence and catalogue observation is reviewed in the local gate set."
+    },
+    {
+      "check": "check:bc-fta-operational-sources",
+      "category": "owner-invoked",
+      "reason": "This source-access status gate is reviewed in the owner-run local gate set."
+    },
+    {
+      "check": "check:bc-harvesting-authority-access",
+      "category": "owner-invoked",
+      "reason": "This source-access status gate is reviewed in the owner-run local gate set."
+    },
+    {
+      "check": "check:bc-provincial-electoral",
+      "category": "owner-invoked",
+      "reason": "This source-edition evidence gate is reviewed in the owner-run local gate set."
+    },
+    {
+      "check": "check:bc-tap-priority-deferral",
+      "category": "owner-invoked",
+      "reason": "This owner deferral decision is reviewed in the local gate set."
+    },
+    {
+      "check": "check:bc-vri-access",
+      "category": "owner-invoked",
+      "reason": "This source-access status gate is reviewed in the owner-run local gate set."
+    },
+    {
+      "check": "check:bulk-download-independent-retrieval",
+      "category": "environment-bound",
+      "reason": "The command performs an independent retrieval from the live publication endpoint; CI runs the repository-side publication check separately."
+    },
+    {
+      "check": "check:coverage-geometry-admission",
+      "category": "owner-invoked",
+      "reason": "This admission decision can remain blocked and is reviewed in the owner-run local gate set."
+    },
+    {
+      "check": "check:cpcad-acquisition-block",
+      "category": "owner-invoked",
+      "reason": "This source-acquisition block is reviewed in the owner-run local gate set."
+    },
+    {
+      "check": "check:current-wildfire-derived-archive-evidence",
+      "category": "suite-covered",
+      "reason": "The portable test file invoked by this alias is already selected by npm run test:suite in CI."
+    },
+    {
+      "check": "check:federal-electoral-promotion-iam",
+      "category": "owner-invoked",
+      "reason": "This owner IAM evidence gate is reviewed locally and does not claim a live AWS verification in CI."
+    },
+    {
+      "check": "check:immutable-restore-drill",
+      "category": "owner-invoked",
+      "reason": "This point-in-time owner restore-drill record is reviewed in the local gate set."
+    },
+    {
+      "check": "check:local-staging-admission",
+      "category": "environment-bound",
+      "reason": "The command reads owner-local staging state that is not present on the branch runner."
+    },
+    {
+      "check": "check:nbac-approved-promotion-runner",
+      "category": "owner-invoked",
+      "reason": "This MFA-bearing owner promotion runner is syntax- and contract-checked in the local gate set."
+    },
+    {
+      "check": "check:nbac-archive-iam",
+      "category": "owner-invoked",
+      "reason": "This point-in-time owner IAM record is reviewed in the local gate set."
+    },
+    {
+      "check": "check:nbac-archive-receipt",
+      "category": "owner-invoked",
+      "reason": "This point-in-time owner archive receipt is reviewed in the local gate set."
+    },
+    {
+      "check": "check:nbac-archive-receipt-private",
+      "category": "environment-bound",
+      "reason": "The private receipt verification requires owner AWS access that is not present on the branch runner."
+    },
+    {
+      "check": "check:nbac-immutable-promotion-preparation",
+      "category": "owner-invoked",
+      "reason": "This owner promotion preparation is evaluated locally and is not run as a branch mutation."
+    },
+    {
+      "check": "check:nfd-harvest-statistics-profile",
+      "category": "owner-invoked",
+      "reason": "This point-in-time source profile is reviewed in the owner-run local gate set."
+    },
+    {
+      "check": "check:nrcan-canopy-cover-profile",
+      "category": "owner-invoked",
+      "reason": "This point-in-time source profile is reviewed in the owner-run local gate set."
+    },
+    {
+      "check": "check:nrcan-canopy-height-remote-archive-evidence",
+      "category": "owner-invoked",
+      "reason": "This point-in-time remote archive record is reviewed in the owner-run local gate set."
+    },
+    {
+      "check": "check:nrcan-harvest-profile",
+      "category": "owner-invoked",
+      "reason": "This point-in-time source profile is reviewed in the owner-run local gate set."
+    },
+    {
+      "check": "check:nrcan-harvest-remote-archive-evidence",
+      "category": "owner-invoked",
+      "reason": "This point-in-time remote archive record is reviewed in the owner-run local gate set."
+    },
+    {
+      "check": "check:nrcan-wildfire-profile",
+      "category": "owner-invoked",
+      "reason": "This point-in-time source profile is reviewed in the owner-run local gate set."
+    },
+    {
+      "check": "check:observability-deployment",
+      "category": "owner-invoked",
+      "reason": "This deployment-evidence status gate is reviewed in the owner-run local gate set."
+    },
+    {
+      "check": "check:ontario-electoral",
+      "category": "owner-invoked",
+      "reason": "This source-edition evidence gate is reviewed in the owner-run local gate set."
+    },
+    {
+      "check": "check:ontario-fri-term2-access",
+      "category": "owner-invoked",
+      "reason": "This source-access status gate is reviewed in the owner-run local gate set."
+    },
+    {
+      "check": "check:ontario-in-year-fire-geometry-policy",
+      "category": "owner-invoked",
+      "reason": "This owner policy decision is reviewed in the local gate set."
+    },
+    {
+      "check": "check:partial-ledger-evidence-audit",
+      "category": "owner-invoked",
+      "reason": "This ledger status audit can remain blocked and is reviewed in the owner-run local gate set."
+    },
+    {
+      "check": "check:partial-ledger-owner-review-outreach",
+      "category": "owner-invoked",
+      "reason": "This owner outreach evidence is reviewed in the local gate set."
+    },
+    {
+      "check": "check:phase1-access-blocker-resolution",
+      "category": "owner-invoked",
+      "reason": "This blocker-resolution status gate is reviewed in the owner-run local gate set."
+    },
+    {
+      "check": "check:phase1-bc-ontario-row-audit",
+      "category": "data-root-bound",
+      "reason": "This check reads source or derived bytes on the only external SSD copy and is inventoried in data/data-root-bound-checks.json."
+    },
+    {
+      "check": "check:phase1-bec-custom-download-route-audit",
+      "category": "owner-invoked",
+      "reason": "This source-route evidence audit is reviewed in the owner-run local gate set."
+    },
+    {
+      "check": "check:phase1-bec-public-alternative-exhaustion",
+      "category": "owner-invoked",
+      "reason": "This source-route exhaustion evidence is reviewed in the owner-run local gate set."
+    },
+    {
+      "check": "check:phase1-canonical-raw-inventory",
+      "category": "owner-invoked",
+      "reason": "The repository-record validation is retained in the owner-run local gate set; the byte-verification alias is declared separately."
+    },
+    {
+      "check": "check:phase1-canonical-raw-inventory-bytes",
+      "category": "data-root-bound",
+      "reason": "The --verify-bytes mode reads the canonical external SSD data root and cannot run on the branch runner."
+    },
+    {
+      "check": "check:phase1-canopy-completion-recovery",
+      "category": "environment-bound",
+      "reason": "The test drives a macOS owner-and-mode safety path and is excluded from the Linux suite with that platform reason."
+    },
+    {
+      "check": "check:phase1-current-state-completion-audit",
+      "category": "data-root-bound",
+      "reason": "This check reads source or derived bytes on the only external SSD copy and is inventoried in data/data-root-bound-checks.json."
+    },
+    {
+      "check": "check:phase1-federal-electoral-output",
+      "category": "data-root-bound",
+      "reason": "This check reads source or derived bytes on the only external SSD copy and is inventoried in data/data-root-bound-checks.json."
+    },
+    {
+      "check": "check:phase1-federal-electoral-production-admission",
+      "category": "data-root-bound",
+      "reason": "This check reads source or derived bytes on the only external SSD copy and is inventoried in data/data-root-bound-checks.json."
+    },
+    {
+      "check": "check:phase1-federal-electoral-transformation",
+      "category": "data-root-bound",
+      "reason": "This check reads source or derived bytes on the only external SSD copy and is inventoried in data/data-root-bound-checks.json."
+    },
+    {
+      "check": "check:phase1-national-archive-finalization-audit",
+      "category": "owner-invoked",
+      "reason": "This archive-finalization status gate can remain blocked and is reviewed in the local gate set."
+    },
+    {
+      "check": "check:phase1-nbac-outreach-sent",
+      "category": "owner-invoked",
+      "reason": "This owner outreach evidence is reviewed in the local gate set."
+    },
+    {
+      "check": "check:phase1-nbac-owner-authorization",
+      "category": "owner-invoked",
+      "reason": "This owner authorization record is reviewed in the local gate set."
+    },
+    {
+      "check": "check:phase1-nbac-profile",
+      "category": "owner-invoked",
+      "reason": "This repository-side source profile is reviewed locally; its external bytes alias is declared separately."
+    },
+    {
+      "check": "check:phase1-nbac-profile-bytes",
+      "category": "data-root-bound",
+      "reason": "This check reads source bytes on the only external SSD copy and is inventoried in data/data-root-bound-checks.json."
+    },
+    {
+      "check": "check:phase1-nrcan-cover-processing-gate",
+      "category": "data-root-bound",
+      "reason": "This check reads source or derived bytes on the only external SSD copy and is inventoried in data/data-root-bound-checks.json."
+    },
+    {
+      "check": "check:phase1-ntems-readback-bytes",
+      "category": "data-root-bound",
+      "reason": "This check reads derived bytes on the only external SSD copy and is inventoried in data/data-root-bound-checks.json."
+    },
+    {
+      "check": "check:phase1-ntems-transform-readback",
+      "category": "suite-covered",
+      "reason": "The portable test file invoked by this alias is already selected by npm run test:suite in CI."
+    },
+    {
+      "check": "check:phase1-ontario-fri-term2-route-exhaustion",
+      "category": "owner-invoked",
+      "reason": "This source-route exhaustion evidence is reviewed in the owner-run local gate set."
+    },
+    {
+      "check": "check:phase1-outreach-reply-audit",
+      "category": "owner-invoked",
+      "reason": "This owner outreach evidence is reviewed in the local gate set."
+    },
+    {
+      "check": "check:phase1-owner-decision-queue",
+      "category": "data-root-bound",
+      "reason": "This check reads source bytes on the only external SSD copy and is inventoried in data/data-root-bound-checks.json."
+    },
+    {
+      "check": "check:phase1-partial-source-route-exhaustion",
+      "category": "owner-invoked",
+      "reason": "This source-route exhaustion evidence is reviewed in the owner-run local gate set."
+    },
+    {
+      "check": "check:phase1-permission-outreach-package",
+      "category": "owner-invoked",
+      "reason": "This owner outreach package is reviewed in the local gate set."
+    },
+    {
+      "check": "check:phase1-phase3-owner-approvals",
+      "category": "data-root-bound",
+      "reason": "This check reads source or derived bytes on the only external SSD copy and is inventoried in data/data-root-bound-checks.json."
+    },
+    {
+      "check": "check:phase1-production-source-ledger",
+      "category": "data-root-bound",
+      "reason": "This check reads source bytes on the only external SSD copy and is inventoried in data/data-root-bound-checks.json."
+    },
+    {
+      "check": "check:phase1-remaining-actions-audit",
+      "category": "data-root-bound",
+      "reason": "This check reads source or derived bytes on the only external SSD copy and is inventoried in data/data-root-bound-checks.json."
+    },
+    {
+      "check": "check:phase1-remote-source-admission-decisions",
+      "category": "owner-invoked",
+      "reason": "This owner admission decision set is reviewed in the local gate set."
+    },
+    {
+      "check": "check:phase1-scope-bound-validation-preparation",
+      "category": "owner-invoked",
+      "reason": "This owner preparation record is reviewed in the local gate set."
+    },
+    {
+      "check": "check:phase1-source-inventory",
+      "category": "owner-invoked",
+      "reason": "This point-in-time source inventory is reviewed in the owner-run local gate set."
+    },
+    {
+      "check": "check:phase1-source-ledger-decision-readiness",
+      "category": "data-root-bound",
+      "reason": "This check reads source bytes on the only external SSD copy and is inventoried in data/data-root-bound-checks.json."
+    },
+    {
+      "check": "check:phase2-annual-nfd-comparator",
+      "category": "suite-covered",
+      "reason": "The portable test file invoked by this alias is already selected by npm run test:suite in CI."
+    },
+    {
+      "check": "check:phase2-annual-nfd-comparator-runner",
+      "category": "suite-covered",
+      "reason": "The portable test file invoked by this alias is already selected by npm run test:suite in CI."
+    },
+    {
+      "check": "check:phase2-annual-nfd-fractional-comparison-receipt",
+      "category": "owner-invoked",
+      "reason": "This repository-side historical receipt is reviewed locally; the external byte check is declared separately."
+    },
+    {
+      "check": "check:phase2-annual-nfd-fractional-comparison-receipt-bytes",
+      "category": "data-root-bound",
+      "reason": "The npm command explicitly reads external receipt bytes from the only SSD data root."
+    },
+    {
+      "check": "check:phase2-annual-nfd-provisional-comparison-receipt",
+      "category": "owner-invoked",
+      "reason": "This repository-side historical receipt is reviewed locally; the external byte check is declared separately."
+    },
+    {
+      "check": "check:phase2-annual-nfd-provisional-comparison-receipt-bytes",
+      "category": "data-root-bound",
+      "reason": "The npm command explicitly reads external receipt bytes from the only SSD data root."
+    },
+    {
+      "check": "check:phase2-annual-zonal-aggregation",
+      "category": "suite-covered",
+      "reason": "The portable test file invoked by this alias is already selected by npm run test:suite in CI."
+    },
+    {
+      "check": "check:phase2-annual-zonal-aggregation-v2",
+      "category": "suite-covered",
+      "reason": "The portable test file invoked by this alias is already selected by npm run test:suite in CI."
+    },
+    {
+      "check": "check:phase2-annual-zonal-fractional-correction",
+      "category": "suite-covered",
+      "reason": "The portable test file invoked by this alias is already selected by npm run test:suite in CI."
+    },
+    {
+      "check": "check:phase2-annual-zonal-output",
+      "category": "suite-covered",
+      "reason": "The portable test file invoked by this alias is already selected by npm run test:suite in CI."
+    },
+    {
+      "check": "check:phase2-expert-review-evidence",
+      "category": "data-root-bound",
+      "reason": "This check reads derived bytes on the only external SSD copy and is inventoried in data/data-root-bound-checks.json."
+    },
+    {
+      "check": "check:phase2-historical-evidence-status",
+      "category": "data-root-bound",
+      "reason": "This check reads derived bytes on the only external SSD copy and is inventoried in data/data-root-bound-checks.json."
+    },
+    {
+      "check": "check:phase2-historical-national-execution",
+      "category": "data-root-bound",
+      "reason": "The npm command explicitly reads a derived directory from the only SSD data root."
+    },
+    {
+      "check": "check:phase2-nfd-official-recovery-audit",
+      "category": "owner-invoked",
+      "reason": "This repository-side historical audit is reviewed locally; the external byte check is declared separately."
+    },
+    {
+      "check": "check:phase2-nfd-official-recovery-audit-bytes",
+      "category": "data-root-bound",
+      "reason": "The npm command explicitly reads external audit bytes from the only SSD data root."
+    },
+    {
+      "check": "check:phase2-official-published-harvest-comparator",
+      "category": "suite-covered",
+      "reason": "The portable test file invoked by this alias is already selected by npm run test:suite in CI."
+    },
+    {
+      "check": "check:phase2-official-published-harvest-contract-bytes",
+      "category": "data-root-bound",
+      "reason": "The npm command explicitly reads external contract bytes from the only SSD data root."
+    },
+    {
+      "check": "check:phase2-official-published-harvest-receipt-bytes",
+      "category": "data-root-bound",
+      "reason": "The npm command explicitly reads external receipt bytes from the only SSD data root."
+    },
+    {
+      "check": "check:phase2-official-published-harvest-runner",
+      "category": "suite-covered",
+      "reason": "The portable test file invoked by this alias is already selected by npm run test:suite in CI."
+    },
+    {
+      "check": "check:phase2-real-comparison-availability",
+      "category": "data-root-bound",
+      "reason": "This check reads derived bytes on the only external SSD copy and is inventoried in data/data-root-bound-checks.json."
+    },
+    {
+      "check": "check:phase2-real-review-packet",
+      "category": "data-root-bound",
+      "reason": "This check reads derived bytes on the only external SSD copy and is inventoried in data/data-root-bound-checks.json."
+    },
+    {
+      "check": "check:phase2-real-review-packet-raster-readback",
+      "category": "data-root-bound",
+      "reason": "This check reads derived bytes on the only external SSD copy and is inventoried in data/data-root-bound-checks.json."
+    },
+    {
+      "check": "check:phase2-v21-province-zonal-pilot-v6",
+      "category": "owner-invoked",
+      "reason": "This point-in-time pilot evidence is reviewed in the owner-run local gate set."
+    },
+    {
+      "check": "check:phase4-provincial-matching-preflight",
+      "category": "owner-invoked",
+      "reason": "This owner preflight gate is evaluated in the local gate set."
+    },
+    {
+      "check": "check:phase8-bulk-download-release",
+      "category": "owner-invoked",
+      "reason": "This owner release evidence gate is reviewed in the local gate set."
+    },
+    {
+      "check": "check:postgres-tenant-isolation",
+      "category": "environment-bound",
+      "reason": "The harness requires an explicitly offered Postgres instance and exits NOT EXECUTED when none exists; the owner runs the throwaway-container drill separately."
+    },
+    {
+      "check": "check:qc-electoral",
+      "category": "owner-invoked",
+      "reason": "This source-edition evidence gate is reviewed in the owner-run local gate set."
+    },
+    {
+      "check": "check:qc-fourth-inventory",
+      "category": "owner-invoked",
+      "reason": "This point-in-time inventory evidence is reviewed in the owner-run local gate set."
+    },
+    {
+      "check": "check:qc-fourth-inventory-immutable-promotion",
+      "category": "owner-invoked",
+      "reason": "This owner promotion-evidence gate is reviewed in the local gate set."
+    },
+    {
+      "check": "check:qc-immutable-promotion-attestation",
+      "category": "owner-invoked",
+      "reason": "This owner attestation record is reviewed in the local gate set."
+    },
+    {
+      "check": "check:qc-original-current-inventory",
+      "category": "owner-invoked",
+      "reason": "This point-in-time inventory evidence is reviewed in the owner-run local gate set."
+    },
+    {
+      "check": "check:qc-stand-copy",
+      "category": "suite-covered",
+      "reason": "The portable test file invoked by this alias is already selected by npm run test:suite in CI."
+    },
+    {
+      "check": "check:qc-stand-copy-readback",
+      "category": "suite-covered",
+      "reason": "The portable test file invoked by this alias is already selected by npm run test:suite in CI."
+    },
+    {
+      "check": "check:sopfeu-wildfire-access",
+      "category": "owner-invoked",
+      "reason": "This source-access status gate is reviewed in the owner-run local gate set."
+    },
+    {
+      "check": "check:vlce2-promotion",
+      "category": "owner-invoked",
+      "reason": "This owner promotion-preparation record is reviewed in the local gate set."
+    },
+    {
+      "check": "check:vlce2-remote-promotion",
+      "category": "owner-invoked",
+      "reason": "This point-in-time remote promotion evidence is reviewed in the local gate set."
+    },
+    {
+      "check": "check:wildfire-derived-manifest-retention",
+      "category": "suite-covered",
+      "reason": "The portable test file invoked by this alias is already selected by npm run test:suite in CI."
+    },
+    {
+      "check": "check:wildfire-derived-readback",
+      "category": "data-root-bound",
+      "reason": "This check reads derived bytes on the only external SSD copy and is inventoried in data/data-root-bound-checks.json."
+    },
+    {
+      "check": "check:wildfire-derived-readback-iam",
+      "category": "owner-invoked",
+      "reason": "This owner IAM evidence gate is reviewed locally and does not claim a live AWS verification in CI."
+    },
+    {
+      "check": "check:wildfire-derived-recovery",
+      "category": "data-root-bound",
+      "reason": "This check reads derived bytes on the only external SSD copy and is inventoried in data/data-root-bound-checks.json."
+    }
+  ]
+}
