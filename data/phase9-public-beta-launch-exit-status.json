@@ -59,7 +59,7 @@
       "evidence": [
         {
           "path": "data/phase8-launch-readiness-exit-status.json",
-          "sha256": "13f78157185bed4b869207f6ee5aff15d1916382677a5aa75822c7384be4d3cf"
+          "sha256": "8101e0ecf88b7244a4d7a7d9220e6ee7de7df4d8840f8ce4f988a599b421526d"
         },
         {
           "path": "data/raw-archive-reproduction-drill.json",

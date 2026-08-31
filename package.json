@@ -170,6 +170,8 @@
     "check:site-hosting-capability-probe": "node scripts/check-site-hosting-capability-probe.mjs && node --test tests/site-hosting-capability-probe.test.mjs",
     "check:phase8-province-map-release": "node scripts/check-phase8-province-map-release.mjs && node --test tests/phase8-province-map-release.test.mjs",
     "check:maplibre-worker-asset": "node scripts/check-maplibre-worker-asset.mjs && node --test tests/maplibre-worker-asset.test.mjs",
+    "check:deployed-map-render": "node scripts/check-deployed-map-render.mjs && node --test tests/deployed-map-render.test.mjs",
+    "verify:deployed-map-render": "node scripts/verify-deployed-map-render.mjs",
     "check:observability-deployment": "node scripts/check-observability-deployment.mjs && node --test tests/observability-deployment.test.mjs",
     "check:phase9-public-beta-launch-exit-status": "node scripts/check-phase9-public-beta-launch-exit-status.mjs",
     "check:elections-canada-fed-2025": "node scripts/check-elections-canada-fed-2025.mjs",
