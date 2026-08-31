@@ -1,0 +1,101 @@
+{
+  "schemaVersion": "witness-tree/bc-ften-endpoint-divergence/1",
+  "status": "as-of-query-time-observation",
+  "published": false,
+  "productionEligible": false,
+  "isEdition": false,
+  "isSnapshot": false,
+  "purpose": "Records what two official BC endpoints report for the same forest tenure feature classes, so that any argument resting on a feature count states which endpoint produced it. It resolves nothing about which endpoint is authoritative and moves no gate.",
+  "startedAt": "2026-08-31T02:55:12Z",
+  "completedAt": "2026-08-31T02:55:15Z",
+  "endpoints": {
+    "arcgis": {
+      "url": "https://delivery.maps.gov.bc.ca/arcgis/rest/services/whse/bcgw_pub_whse_forest_tenure/MapServer",
+      "serviceDescription": "This service has been built for a specific purpose and may change at any time",
+      "currentVersion": 10.91
+    },
+    "wfs": {
+      "url": "https://openmaps.gov.bc.ca/geo/pub/wfs",
+      "version": "2.0.0"
+    }
+  },
+  "control": {
+    "rule": "Each endpoint's total must equal the sum of its PENDING, ACTIVE and RETIRED counts. A total that does not reconcile is capped or paged, and the run fails rather than reporting it.",
+    "held": true
+  },
+  "layers": [
+    {
+      "id": "ften-harvest-authority",
+      "title": "Forest Tenure Harvesting Authority Polygons",
+      "featureClass": "WHSE_FOREST_TENURE.FTEN_HARVEST_AUTH_POLY_SVW",
+      "arcgis": {
+        "total": 46833,
+        "byStatus": {
+          "PENDING": 1370,
+          "ACTIVE": 19649,
+          "RETIRED": 25814
+        },
+        "sumsToTotal": true,
+        "layer": 12,
+        "definitionExpression": null,
+        "maxRecordCount": 1000
+      },
+      "wfs": {
+        "total": 71869,
+        "byStatus": {
+          "PENDING": 1137,
+          "ACTIVE": 13493,
+          "RETIRED": 57239
+        },
+        "sumsToTotal": true,
+        "typeName": "pub:WHSE_FOREST_TENURE.FTEN_HARVEST_AUTH_POLY_SVW",
+        "serverTimeStamp": "2026-08-31T02:55:13.210Z"
+      },
+      "delta": {
+        "wfsMinusArcgis": 25036,
+        "byStatus": {
+          "PENDING": -233,
+          "ACTIVE": -6156,
+          "RETIRED": 31425
+        }
+      }
+    },
+    {
+      "id": "ften-cutblock-fta4",
+      "title": "Forest Tenure Cutblock Polygons (FTA 4.0)",
+      "featureClass": "WHSE_FOREST_TENURE.FTEN_CUT_BLOCK_POLY_SVW",
+      "arcgis": {
+        "total": 149371,
+        "byStatus": {
+          "PENDING": 3244,
+          "ACTIVE": 60658,
+          "RETIRED": 85469
+        },
+        "sumsToTotal": true,
+        "layer": 8,
+        "definitionExpression": null,
+        "maxRecordCount": 1000
+      },
+      "wfs": {
+        "total": 222607,
+        "byStatus": {
+          "PENDING": 2764,
+          "ACTIVE": 37007,
+          "RETIRED": 182836
+        },
+        "sumsToTotal": true,
+        "typeName": "pub:WHSE_FOREST_TENURE.FTEN_CUT_BLOCK_POLY_SVW",
+        "serverTimeStamp": "2026-08-31T02:55:15.447Z"
+      },
+      "delta": {
+        "wfsMinusArcgis": 73236,
+        "byStatus": {
+          "PENDING": -480,
+          "ACTIVE": -23651,
+          "RETIRED": 97367
+        }
+      }
+    }
+  ],
+  "doesNotShow": "Which endpoint is authoritative, when either was last refreshed, or that either is complete. BC publishes both and states an as-of time for neither."
+}

@@ -97,6 +97,11 @@ jobs:
       - run: npm run check:phase2-per-cell-geometry
       - run: npm run check:phase2-per-cell-annual-series
       - run: npm run check:bc-ften-cutblock-corroboration
+      # The repository half of the BC endpoint comparison. The probe itself
+      # needs the two BC services, so it is run by hand; this validates the
+      # committed observation and keeps it from claiming an authoritative
+      # endpoint that BC does not name.
+      - run: npm run check:bc-ften-endpoint-divergence
       - run: npm run check:boundary-overlays
       - run: npm run check:phase2-v21-province-zonal-pilot
       - run: npm run check:phase2-expert-review-workflow
