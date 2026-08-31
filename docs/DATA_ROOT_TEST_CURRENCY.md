@@ -36,19 +36,38 @@ names the files that moved.
 ## How the guarded set is derived
 
 `scripts/lib/guarded-paths.mjs` derives it, so it cannot fall behind the code it
-guards. Starting at the test file it follows every repository-local import
-transitively, then collects every repository-relative path literal any of those
-modules mention. The second half is what reaches the JSON evidence records,
-which are read by string rather than imported.
+guards. It closes over three kinds of edge:
 
-For `tests/phase1-ntems-readback-bytes.test.mjs` that yields 21 files, including
-all four execution authorizations, all four readback evidence records, and the
-transform runner. Every file #84 touched is in that set, so the gate would have
-failed the moment #84 was opened.
+1. repository-local imports, followed transitively;
+2. every repository-relative path literal any of those modules mention, which is
+   how the JSON evidence records are reached, since they are read by string
+   rather than imported;
+3. evidence bindings: a `{ path, sha256 }` pair inside a guarded record, whose
+   target is itself guarded, repeated to a fixpoint.
 
-`EXTRA_GUARDED_PATHS` covers what a static read cannot see. It has one entry
-today: the transform runner, whose SHA-256 is recorded *inside* the readback
-evidence but which no module names by path. Each entry states its reason.
+The third edge is the #84 shape exactly. The readback evidence records the runner
+as `{ path: "scripts/run-phase1-ntems-transform.mjs", sha256 }`, and no module
+names that runner by path, so the first two edges both miss it.
+
+That edge was originally a hand-written exception for the one case found by
+inspection. A scan on 2026-08-30 showed the same shape in **7 of the 25**
+data-root-bound tests, reached through records such as
+`data/phase1-federal-electoral-production-admission.json` and
+`data/phase1-production-transformation-specifications-v1.json`, which bind
+further repository files that nothing imports or names. Deriving the edge closes
+all seven and makes the hand-written entry unnecessary; `EXTRA_GUARDED_PATHS` is
+now empty.
+
+For `tests/phase1-ntems-readback-bytes.test.mjs` the closure is 27 files,
+including all four execution authorizations, all four readback evidence records,
+and the transform runner. Every file #84 touched is in that set, so the gate
+would have failed the moment #84 was opened.
+
+Two tests keep this honest. One asserts that no guarded record binds a
+repository file the closure has missed, so narrowing the derivation fails the
+build and no maintenance is needed when records gain bindings. The other requires
+any future `EXTRA_GUARDED_PATHS` entry to name a real file and state why the
+derivation cannot reach it.
 
 ## Clearing a failure
 

@@ -7,13 +7,23 @@
 // that reads those files is data-root-bound. The drift sat on main for days.
 //
 // The guarded set is derived, never hand-listed, so it cannot fall behind the
-// code it guards: start at the test file, follow every repository-local import
-// transitively, and collect every repository-relative path literal any of those
-// modules mention. That second half is what reaches the JSON evidence records,
-// which are referenced by string rather than imported.
+// code it guards. It closes over three kinds of edge:
 //
-// EXTRA_GUARDED_PATHS covers the one thing a static read cannot see: a file that
-// a module names only indirectly. Each entry states why.
+//   1. repository-local imports, followed transitively;
+//   2. repository-relative path literals any of those modules mention, which is
+//      how the JSON evidence records are reached, since they are read by string
+//      rather than imported;
+//   3. evidence bindings: a { path, sha256 } pair inside a guarded record, whose
+//      target is itself guarded, transitively to a fixpoint.
+//
+// The third edge is the #84 shape exactly. The readback evidence records the
+// runner as { path: "scripts/run-phase1-ntems-transform.mjs", sha256 }, and no
+// module names that runner by path, so edges 1 and 2 both miss it. It used to be
+// covered by a hand-written exception. It is now derived, along with the same
+// blind spot in six other data-root-bound tests, where records such as
+// data/phase1-federal-electoral-production-admission.json and
+// data/phase1-production-transformation-specifications-v1.json bind further
+// repository files that nothing imports or names.
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
@@ -23,19 +33,16 @@ export const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url
 
 const SOURCE_DIRECTORIES = ["scripts", "lib", "data", "tests", "app", "components"];
 
-const EXTRA_GUARDED_PATHS = new Map([
-  [
-    "phase1-ntems-readback-bytes.test.mjs",
-    {
-      "scripts/run-phase1-ntems-transform.mjs":
-        "The readback evidence records the SHA-256 of the runner that produced the bytes, so a runner edit invalidates the evidence without any module naming the runner by path.",
-    },
-  ],
-]);
+// Reserved for a dependency no static read can see. It is empty: the evidence
+// binding rule below now derives the NTEMS runner that was once listed here.
+// Prefer extending the derivation over adding an entry; a hand-written list is
+// exactly what falls behind the code it guards.
+const EXTRA_GUARDED_PATHS = new Map([]);
 
 const RELATIVE_IMPORT = /(?:^|[\s;])(?:import|export)\s[^;]*?from\s*"(\.[^"]+)"/g;
 const DYNAMIC_IMPORT = /import\(\s*"(\.[^"]+)"\s*\)/g;
 const REPO_PATH_LITERAL = new RegExp(`"((?:${SOURCE_DIRECTORIES.join("|")})/[A-Za-z0-9._/-]+)"`, "g");
+const SHA256 = /^[0-9a-f]{64}$/;
 
 function isReadableFile(absolute) {
   return existsSync(absolute) && statSync(absolute).isFile();
@@ -51,6 +58,32 @@ function resolveImport(fromAbsolute, specifier) {
 
 function repoRelative(absolute) {
   return path.relative(REPO_ROOT, absolute).split(path.sep).join("/");
+}
+
+// Yields every { path, sha256 } binding in a record, whatever shape nests it.
+// The field names vary across schemas, so all three spellings are accepted.
+function* evidenceBindings(node) {
+  if (Array.isArray(node)) {
+    for (const value of node) yield* evidenceBindings(value);
+    return;
+  }
+  if (!node || typeof node !== "object") return;
+  const named = node.path ?? node.file ?? node.relativePath;
+  const digest = node.sha256 ?? node.digest ?? node.hash;
+  if (typeof named === "string" && typeof digest === "string" && SHA256.test(digest)) yield named;
+  for (const value of Object.values(node)) yield* evidenceBindings(value);
+}
+
+// A bound path counts only when it names a real file inside this repository.
+// Records also bind artifacts on the owner's data root and objects in remote
+// buckets; those are not repository files and cannot be fingerprinted here.
+function boundRepositoryFile(named) {
+  if (typeof named !== "string" || named.length === 0) return null;
+  const clean = named.replace(/^\.\//, "");
+  if (path.isAbsolute(clean) || clean.split("/").includes("..")) return null;
+  const absolute = path.join(REPO_ROOT, clean);
+  if (!absolute.startsWith(`${REPO_ROOT}${path.sep}`)) return null;
+  return isReadableFile(absolute) ? repoRelative(absolute) : null;
 }
 
 // Returns every repository file whose contents can change what `testFile` proves,
@@ -85,10 +118,32 @@ export function computeGuardedPaths(testFile) {
       const relative = repoRelative(absolute);
       if (guarded.has(relative)) continue;
       guarded.add(relative);
-      // Data records are leaves: they are read, not executed, so they add no edges.
+      // Data records are leaves for import and literal purposes: they are read,
+      // not executed. Their evidence bindings are followed separately below.
       if (!relative.startsWith("data/") && !visited.has(absolute)) {
         visited.add(absolute);
         queue.push(absolute);
+      }
+    }
+  }
+
+  // Evidence bindings, to a fixpoint. A record that binds another record can
+  // bind further files through it, so this repeats until nothing new appears.
+  const scanned = new Set();
+  for (;;) {
+    const pending = [...guarded].filter((relative) => relative.startsWith("data/") && relative.endsWith(".json") && !scanned.has(relative));
+    if (pending.length === 0) break;
+    for (const relative of pending) {
+      scanned.add(relative);
+      let record;
+      try {
+        record = JSON.parse(readFileSync(path.join(REPO_ROOT, relative), "utf8"));
+      } catch {
+        continue; // A record that does not parse binds nothing; its own digest still guards it.
+      }
+      for (const named of evidenceBindings(record)) {
+        const bound = boundRepositoryFile(named);
+        if (bound) guarded.add(bound);
       }
     }
   }

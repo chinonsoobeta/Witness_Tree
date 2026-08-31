@@ -2,12 +2,12 @@
 //
 // These tests run in CI: they read the repository only, never the data root.
 import assert from "node:assert/strict";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import test from "node:test";
 
 import { REQUIRES_DATA_ROOT, RECEIPT_PATH, RECEIPT_SCHEMA } from "../scripts/lib/data-root-bound-tests.mjs";
-import { REPO_ROOT, computeGuardedPaths, digestOf, guardedFingerprint } from "../scripts/lib/guarded-paths.mjs";
+import { REPO_ROOT, computeGuardedPaths, digestOf, extraGuardedReasons, guardedFingerprint } from "../scripts/lib/guarded-paths.mjs";
 import { validateDataRootTestCurrency } from "../scripts/check-data-root-test-currency.mjs";
 
 function receiptEntry(name, overrides = {}) {
@@ -144,4 +144,65 @@ test("a receipt naming a test that is no longer data-root-bound is refused", () 
 
 test("the committed receipt path is the one the runner writes", () => {
   assert.equal(RECEIPT_PATH, "data/data-root-test-run-receipt.json");
+});
+
+// The blind spot #84 exploited, generalized. A record the test reads can bind a
+// further repository file by { path, sha256 }; nothing imports that file and no
+// module names it, so an import-and-literal closure misses it. A scan on
+// 2026-08-30 found this shape in 7 of the 25 data-root-bound tests, including
+// the NTEMS runner that was previously covered by a hand-written exception.
+//
+// This asserts the closure is complete: no guarded record may bind a repository
+// file that the closure does not already contain. It fails if someone narrows
+// the derivation, and it needs no maintenance when records gain new bindings.
+test("no data-root-bound test leaves an evidence-bound repository file unguarded", () => {
+  const SHA256 = /^[0-9a-f]{64}$/;
+
+  function* bindings(node) {
+    if (Array.isArray(node)) {
+      for (const value of node) yield* bindings(value);
+      return;
+    }
+    if (!node || typeof node !== "object") return;
+    const named = node.path ?? node.file ?? node.relativePath;
+    const digest = node.sha256 ?? node.digest ?? node.hash;
+    if (typeof named === "string" && typeof digest === "string" && SHA256.test(digest)) yield named;
+    for (const value of Object.values(node)) yield* bindings(value);
+  }
+
+  const unguarded = [];
+  for (const name of REQUIRES_DATA_ROOT.keys()) {
+    const guarded = computeGuardedPaths(name);
+    const set = new Set(guarded);
+    for (const relative of guarded.filter((entry) => entry.startsWith("data/") && entry.endsWith(".json"))) {
+      let record;
+      try {
+        record = JSON.parse(readFileSync(path.join(REPO_ROOT, relative), "utf8"));
+      } catch {
+        continue;
+      }
+      for (const named of bindings(record)) {
+        const clean = named.replace(/^\.\//, "");
+        if (path.isAbsolute(clean) || clean.split("/").includes("..")) continue;
+        if (!existsSync(path.join(REPO_ROOT, clean))) continue;
+        if (!statSync(path.join(REPO_ROOT, clean)).isFile()) continue;
+        if (set.has(clean)) continue;
+        unguarded.push(`${name}: ${relative} binds ${clean}, which is not guarded`);
+      }
+    }
+  }
+
+  assert.deepEqual(unguarded, []);
+});
+
+// The hand-written exception list is meant to stay empty. An entry is not
+// forbidden, but it must name a real file and state why the derivation cannot
+// reach it, because a list like this is what falls behind the code it guards.
+test("every hand-written guarded-path exception names a real file and states a reason", () => {
+  for (const name of REQUIRES_DATA_ROOT.keys()) {
+    for (const [relative, reason] of Object.entries(extraGuardedReasons(name))) {
+      assert.ok(existsSync(path.join(REPO_ROOT, relative)), `${name} exception names a missing file: ${relative}`);
+      assert.ok(typeof reason === "string" && reason.length > 40, `${name} exception for ${relative} has no stated reason`);
+    }
+  }
 });
