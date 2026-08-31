@@ -18,7 +18,8 @@ jobs:
       - run: npm ci
       - run: npx tsc --noEmit
       - run: npm run lint
-      - run: node scripts/check-bilingual.mjs
+      - run: npm run check:bilingual
+      - run: npm run check:ci-check-coverage
       - run: npm run check:source-candidates
       - run: npm run check:archive-direct-mfa-runners
       - run: npm run check:indian-reserves-authority-access
