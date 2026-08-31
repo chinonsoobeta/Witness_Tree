@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { chmodSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { tmpdir } from "node:os";
@@ -60,6 +60,24 @@ expect {
 }`;
   return spawnSync("expect", ["-c", program], { encoding: "utf8", timeout: 120_000, env: { ...process.env, PATH: `${dir}:${process.env.PATH}` } });
 }
+
+test("Québec multipart preflight reaches no AWS command when its controlled data root is absent", () => {
+  const dir = mkdtempSync(join(tmpdir(), "qc-preflight-no-aws-"));
+  const marker = join(dir, "aws-called");
+  const isolatedRunner = join(dir, "runner.sh");
+  const isolatedSource = readFileSync(runnerPath, "utf8")
+    .replace(/^ROOT=.*$/m, `ROOT=${JSON.stringify(repositoryRoot)}`)
+    .replace(/^DATA_ROOT=.*$/m, `DATA_ROOT=${JSON.stringify(join(dir, "absent-data"))}`);
+  writeFileSync(isolatedRunner, isolatedSource, { mode: 0o700 });
+  writeFileSync(join(dir, "aws-direct-mfa-role-session.sh"), directMfaHelper, { mode: 0o700 });
+  writeFileSync(join(dir, "aws"), `#!/bin/zsh\ntouch ${JSON.stringify(marker)}\nexit 91\n`, { mode: 0o700 });
+  try {
+    const run = spawnSync("zsh", [isolatedRunner, "--preflight"], { encoding: "utf8", env: { ...process.env, PATH: `${dir}:${process.env.PATH}` } });
+    assert.equal(run.status, 65, run.stdout + run.stderr);
+    assert.match(run.stderr, /Approved Québec artifact is missing at the controlled workspace-data path; no TOTP or AWS call was made/);
+    assert.equal(existsSync(marker), false);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
 
 test("Québec immutable preparation binds only the two completed raw archives to safe append-only keys", () => {
   assert.equal(validateQcImmutablePromotionPreparation(plan), plan);

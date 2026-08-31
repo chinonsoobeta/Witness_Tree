@@ -1,5 +1,8 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import test from "node:test";
 
 const source = readFileSync(new URL("../scripts/run-nbac-approved-promotion.sh", import.meta.url), "utf8");
@@ -57,9 +60,29 @@ test("NBAC no-write preflight exits before live IAM verification or AWS availabi
   assert.ok(preflightExit < source.indexOf('node "$ROOT/scripts/check-nbac-archive-iam-applied.mjs" --verify-live'));
 });
 
+test("NBAC preflight reaches no AWS command whether the governed payload is attached or absent", () => {
+  const dir = mkdtempSync(join(tmpdir(), "nbac-preflight-no-aws-"));
+  const marker = join(dir, "aws-called");
+  const runner = new URL("../scripts/run-nbac-approved-promotion.sh", import.meta.url).pathname;
+  writeFileSync(join(dir, "aws"), `#!/bin/zsh\ntouch ${JSON.stringify(marker)}\nexit 91\n`, { mode: 0o700 });
+  try {
+    const run = spawnSync("zsh", [runner, "--preflight"], { encoding: "utf8", env: { ...process.env, PATH: `${dir}:${process.env.PATH}` } });
+    if (existsSync("/Volumes/Extended_SSD/Witness_Tree-data/raw/nrcan-nbac-1972-2025/2026-08-27/NBAC_1972to2025_20260513_shp.zip")) {
+      assert.equal(run.status, 0, run.stdout + run.stderr);
+      assert.match(run.stdout, /PRECHECK passed:.*no TOTP or storage call was made/);
+    } else {
+      assert.equal(run.status, 65, run.stdout + run.stderr);
+      assert.match(run.stderr, /Exact NBAC payload is absent from the external data root; no TOTP or AWS call was made/);
+    }
+    assert.equal(existsSync(marker), false);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
 test("NBAC live verification is pinned to the approved operator identity and offline tools do not inherit session credentials", () => {
   assert.match(source, /AWS_PROFILE="\$PROFILE" aws sts get-caller-identity/);
   assert.match(source, /arn:aws:iam::286853118812:user\/WitnessTreeArchiveOperator/);
+  assert.match(source, /Could not verify the approved operator identity[^\n]* 77/);
+  assert.match(source, /AWS caller is not the approved WitnessTreeArchiveOperator identity[^\n]* 77/);
   assert.match(source, /AWS_PROFILE="\$PROFILE" node "\$ROOT\/scripts\/check-nbac-archive-iam-applied\.mjs" --verify-live/);
   assert.equal((source.match(/env -u AWS_ACCESS_KEY_ID -u AWS_SECRET_ACCESS_KEY -u AWS_SESSION_TOKEN node/g) ?? []).length, 2);
   assert.match(source, /jq -er '\.Credentials\.AccessKeyId/);

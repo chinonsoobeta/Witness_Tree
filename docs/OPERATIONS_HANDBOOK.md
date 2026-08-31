@@ -448,11 +448,19 @@ them.
   function. A URL alone is not a cleared feed.
 - The workflow retries once after 900 seconds and then exits 1.
 
-**This means the scheduled job is expected to fail, four times a day, by
-design.** That is S4, not an incident. It becomes S3 the day a cleared feed is
-configured and it still fails, and it becomes S2 if it ever *succeeds* while no
-feed has actually been cleared, because that would mean a source is being
-fetched without rights.
+The 100 most recent scheduled runs were inspected on 2026-08-31 and are
+recorded in
+[`data/wildfire-refresh-run-history-2026-08-31.json`](../data/wildfire-refresh-run-history-2026-08-31.json).
+The snapshot contains 56 successful DST-gated no-ops and 44 failed attempted
+refreshes; it contains no successful real refresh. A successful workflow run is
+not evidence of a refresh when the gate skipped the refresh step. The observed
+attempted-refresh failures include a direct push rejected by protected `main`,
+so the workflow conclusion alone is not a feed-health signal.
+
+An attempted refresh that fails while no cleared feed is configured is S4, not
+an incident. It becomes S3 the day a cleared feed is configured and it still
+fails, and it becomes S2 if it ever *succeeds* while no feed has actually been
+cleared, because that would mean a source is being fetched without rights.
 
 `scripts/wildfire/snapshot-store.mjs` defines the state machine if a refresh
 ever does run: immutable per-source snapshots written with `wx` so a snapshot
@@ -600,42 +608,49 @@ thirteen accept `--preflight`, and preflight comes first.**
 | --- | --- |
 | `run-alberta-plvi-approved-promotion.sh` | `--preflight` `--run` |
 | `run-current-wildfire-approved-promotion.sh` | `--preflight` `--run` |
-| `run-federal-electoral-approved-promotion.sh` | `--preflight` `--run` |
+| `run-nbac-approved-promotion.sh` | `--preflight` `--run` |
 | `run-phase1-approved-promotion.sh` | `--preflight` `--run` `--run-federal` `--resume` `--validate-resume-state` |
 | `run-phase1-archive-owner-exercise.sh` | `--preflight` `--run` `--recover` |
 | `run-phase1-canopy-completion-recovery.sh` | `--preflight` `--recover-canopy` |
+| `run-phase8-bulk-download-publication.sh` | `--preflight` `--run` |
 | `run-qc-approved-multipart-promotion.sh` | `--preflight` `--run` |
 | `run-qc-fourth-inventory-approved-promotion.sh` | `--preflight` `--run` `--resume-batch-two` |
-| `run-wildfire-derived-approved-promotion.sh` | `--preflight` `--run` |
 | `run-wildfire-derived-manifest-retention.sh` | `--preflight` `--run` |
 | `run-wildfire-derived-readback.sh` | `--preflight` `--readback` |
 | `run-wildfire-derived-recovery.sh` | `--preflight` `--dry-run` `--recover` |
 | `run-wildfire-derived-recovery-owner.sh` | `--preflight` `--dry-run` `--recover` |
 
-Preflight validates the approval file, the private state, the IAM attestation,
-and the local artifact checksums before anything is prompted or called. Two
-runners are covered by tests that assert this directly:
-`tests/wildfire-derived-recovery.test.mjs` ("preflight makes no AWS call and
-blocks already-completed evidence") and
-`tests/federal-electoral-approved-promotion.test.mjs` ("federal preflight is
-local-only and `--run` remains blocked"). Whether all thirteen carry such a
-test is unproven (gap G7); the presence of the mode is verified, the assertion
-that it makes no call is not.
+Preflight validates each runner's applicable approval, private state, IAM
+attestation, and local artifact checksums before prompting for a TOTP or making
+a storage call. As of 2026-08-31, all thirteen AWS-bearing runners have a
+direct runner-level preflight test. Each test invokes the real shell runner
+with a mutation-trapping fake `aws` executable and asserts that the executable
+is not reached. The coverage includes both successful local-only preflights and
+fail-closed local-precondition paths; the latter also assert the intended
+refusal status where the runner owns that status.
 
 ### 7.3 The refusal contract
 
-Nineteen shell scripts contain 384 explicit refusals across seven exit codes.
-This table describes them as they behave, not as they might have been designed.
+The checked inventory in
+[`data/exit-code-taxonomy.json`](../data/exit-code-taxonomy.json) binds the
+intentional exit sites in all nineteen `scripts/run-*.sh` operator runners.
+It covers literal shell exits, explicit and default `fail` calls, forwarded
+status exits, and inline Node predicates. It is deliberately not a claim that
+every child process status is in this taxonomy: an unwrapped command stopped by
+`errexit` or `pipefail` can surface its native status, and its own diagnostic
+must be read.
 
-| Code | Count | What it means | What the operator does |
-| --- | --- | --- | --- |
-| `64` | 26 | Wrong invocation, a path outside the exact authorization, or a malformed or non-interactive TOTP prompt | Fix the invocation. Nothing happened. Do not widen a path to make it fit |
-| `65` | 62 | A local precondition failed: approval, private state, IAM attestation, file mode, data root, or a local checksum. Most say "no TOTP or AWS call was made" | Repair the local input. Nothing remote happened. A failed checksum is a real finding, not a file to rebind |
-| `69` | 38 | The environment is unusable: `aws`, `jq`, `node`, or `shasum` missing, a private directory could not be created, or the configured MFA serial is not the approved account serial | Repair the workstation. A wrong MFA serial is S1, not a configuration nuisance |
-| `70` | 150 | A remote call, conditional write, retention application, or readback failed after the session began. Messages name the stage and usually name what was not attempted next | Stop. Read the message for what was *not* attempted. Do not retry blind; see 7.4 |
-| `73` | 35 | Recovery is ambiguous, or another preflight holds the owner-only lock. Typically a manifest exists without its approved payload, or an approved key already has a version | Do not attempt a write. Preserve the diagnostic and request a version-specific audit |
-| `75` | 51 | The AWS session expired mid-run with private resume state preserved unchanged, or a readiness record is not approved so execution stays disabled | If resumable, the message names the exact resume command. Use that command, not a fresh `--run` |
-| `77` | 22 | An identity or account boundary failed: the assumed role is not the approved role, is outside the approved account, or the role response was incomplete | S1. Stop, treat as a security finding, do not re-run |
+| Code | What it means | What the operator does |
+| --- | --- | --- |
+| `0` | Successful completion or approved no-op | Continue only with the stated next procedure |
+| `1` | Generic unclassified batch or precondition failure | Read the command diagnostic; do not infer an operator refusal category |
+| `64` | Invalid invocation or operator input | Fix the invocation. Nothing happened. Do not widen a path to make it fit |
+| `65` | Local approval, artifact, state, or checksum precondition failed | Repair the local input. Nothing remote happened. A failed checksum is a real finding, not a file to rebind |
+| `69` | Local execution environment or MFA configuration is unusable | Repair the workstation. A wrong MFA serial is S1, not a configuration nuisance |
+| `70` | Controlled remote operation, readback, or integrity stage failed | Stop. Read the message for what was *not* attempted. Do not retry blind; see 7.4 |
+| `73` | Recovery or ownership state is ambiguous and requires audit | Do not attempt a write. Preserve the diagnostic and request a version-specific audit |
+| `75` | Execution cannot safely proceed or continue | Preserve state. If resumable, use the exact resume command; otherwise obtain the required readiness or environment correction |
+| `77` | Identity or authorization boundary is not established | S1. Stop, treat as a security finding, do not re-run |
 
 The invariant worth internalising: **a refusal tells you what did not happen.**
 Messages end with clauses like "no TOTP or AWS call was made", "no recovery
@@ -644,10 +659,14 @@ preserved unchanged". Code `70` refusals more often name the failing stage
 instead. Either way the message, and not a guess, is what establishes where the
 run stopped.
 
-Every runner also traps `EXIT` and unsets `AWS_ACCESS_KEY_ID`,
-`AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`, the TOTP, and the MFA serial, and
-removes its temporary directory. A crashed shell does not leave credentials in
-the environment.
+Every runner that establishes or owns an AWS session traps `EXIT` and clears
+its exported AWS session credentials. Each runner's cleanup also clears the
+private variables and temporary paths that it owns. The three Phase 2 batch
+runners never establish such a session; the local-only
+`run-wildfire-derived-approved-promotion.sh` has no authorized AWS path; and
+`run-wildfire-derived-recovery-owner.sh` delegates session ownership to its
+child recovery runner. A crashed session-owning shell does not leave its
+exported session credentials in the environment.
 
 ### 7.4 Interrupted runs
 
@@ -673,10 +692,17 @@ the same boundary.
 Only the two `run-wildfire-derived-recovery*.sh` runners provide `--dry-run`
 between preflight and `--recover`. Where it exists, use it.
 
-**A partial checkpoint requires owner review before any retry.** In
-`run-wildfire-derived-recovery.sh` this is enforced rather than advisory.
-Whether the other recovery runners carry the same refusal is unconfirmed (gap
-G8), so treat the rule as binding on the operator regardless. Do not delete the
+**A partial checkpoint requires owner review before any retry.** As audited on
+2026-08-31, all three recovery runners with a local checkpoint or evidence
+interface refuse it before an AWS call: `run-phase1-canopy-completion-recovery.sh`
+requires the exact complete 155-part private state,
+`run-wildfire-derived-recovery.sh` refuses its partial checkpoint, and
+`run-wildfire-derived-recovery-owner.sh` refuses any preexisting evidence,
+including partial evidence, before root/default capture. The fourth recovery
+runner, `run-phase1-archive-owner-exercise.sh --recover-latest`, has no local
+checkpoint interface: it locates the newest remote legal-hold exercise version
+and is not applicable to this count. The count was derived by reading all four
+recovery runners and their direct runner-level refusal tests. Do not delete a
 checkpoint to clear a refusal. The checkpoint is the record of what a past run
 produced, and deleting it destroys the only account of where the remote state
 actually stands.
@@ -716,13 +742,9 @@ contradicts this list.
 | **G4** | **No host support relationship is established.** No recorded support route, entitlement, contact, or expected response time for ChatGPT Sites; no record of who may open a case or what may be disclosed | Section 5.3 escalation to the host has no defined channel |
 | **G5** | **The deploy and rollback mechanics of the host are outside this repository.** No deploy script, workflow, or credential exists here; whether the control plane offers a one-click revert is unverified | Sections 6.1 and 6.2 describe the repository half of the procedure completely and the control-plane half by reference only |
 | **G6** | **There is no operational kill switch.** The flag exists in pure policy code with no persisted store, no setter, and no deployed sender. No timed rehearsal has been performed | The account service cannot be activated. Phase 6 `killSwitchRehearsalUnderFiveMinutes` and `namedIncidentOwnerAndRunbook` remain open |
-| **G7** | **Preflight non-mutation is proven for two of thirteen runners.** Every runner accepts `--preflight`; only two are covered by a test asserting it makes no AWS call | Treat preflight as intended behaviour, verified for two runners and assumed for eleven |
-| **G8** | **Partial-checkpoint refusal is proven for one recovery runner.** `run-wildfire-derived-recovery.sh` enforces it; the other three are unchecked for that specific refusal | The rule binds the operator by policy, not by enforcement, on three runners |
 | **G9** | **The data root has one copy.** No second copy, no replication, no provider durability evidence | Drive loss loses every derived byte. Phase 8 `backups` is `fail` |
 | **G10** | **No incident has ever been rehearsed.** No drill of a site outage, a rollback, a host degradation, or an escalation has been performed or timed | Every timing target in this document is a target, not an observed result |
 | **G11** | **No public communication channel exists.** No status page, no operator-driven banner, no monitored intake address; the corrections workflow is policy and fixtures only | Telling the public anything requires a code change and a deploy |
-| **G12** | **The scheduled wildfire job's real run history has not been inspected.** The code path is verified to refuse without a cleared feed, and no commit produced by that workflow exists in this repository's history, but the Actions run records themselves were not read | Section 6.3's claim that the job fails four times a day is derived from the code and the absent commits, not from observed run logs |
-| **G13** | **Exit codes are not a tidy taxonomy.** Codes `64`, `73`, and `75` each carry more than one distinct meaning, and consistency across all nineteen scripts is unverified | Read the message. Do not infer the situation from the code alone |
 
 ---
 

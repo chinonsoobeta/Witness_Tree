@@ -39,9 +39,9 @@ MANIFEST_TYPE="application/json"
 MANIFEST_KEY="releases/phase8-bulk-download-v1/$RELEASE_ID/manifest.json"
 
 fail() {
-  local message="$1" status="${2:-1}"
+  local message="$1" exit_code="${2:-1}"
   print -u2 -- "Stopped: $message"
-  exit "$status"
+  exit "$exit_code"
 }
 
 cleanup() {

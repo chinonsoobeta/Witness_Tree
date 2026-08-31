@@ -1,5 +1,8 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import test from "node:test";
 import { approvalTemplate, buildEvidence, validateApproval, validateEvidence, validateHead, validateRetention } from "../scripts/check-wildfire-derived-manifest-retention.mjs";
 import { expectedObjects } from "../scripts/check-wildfire-derived-recovery.mjs";
@@ -14,6 +17,22 @@ test("manifest-retention approval is limited to the two exact manifests", () => 
   assert.deepEqual(value.targetObjectNames, ["bcManifest", "ontarioManifest"]);
   value.targetObjectNames.push("bcPayload");
   assert.throws(() => validateApproval(value), /targetObjectNames is not exact/);
+});
+
+test("manifest-retention preflight reaches no AWS command when the controlled data root is absent", () => {
+  const dir = mkdtempSync(join(tmpdir(), "manifest-retention-preflight-no-aws-"));
+  const marker = join(dir, "aws-called");
+  const runner = new URL("../scripts/run-wildfire-derived-manifest-retention.sh", import.meta.url).pathname;
+  const approval = join(dir, "approval.json");
+  const evidence = join(dir, "evidence.json");
+  writeFileSync(approval, "{}\n", { mode: 0o600 });
+  writeFileSync(join(dir, "aws"), `#!/bin/zsh\ntouch ${JSON.stringify(marker)}\nexit 91\n`, { mode: 0o700 });
+  try {
+    const run = spawnSync("zsh", [runner, "--preflight", approval, evidence], { encoding: "utf8", env: { ...process.env, PATH: `${dir}:${process.env.PATH}`, WITNESS_TREE_DATA_ROOT: join(dir, "absent-data") } });
+    assert.equal(run.status, 65, run.stdout + run.stderr);
+    assert.match(run.stderr, /Paths must be absolute and the data root must exist; no TOTP or AWS call was made/);
+    assert.equal(existsSync(marker), false);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
 test("heads and retention fail closed on drift", () => {
