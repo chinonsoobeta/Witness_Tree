@@ -1,5 +1,8 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import test from "node:test";
 
 const source = readFileSync(new URL("../scripts/run-nbac-approved-promotion.sh", import.meta.url), "utf8");
@@ -55,6 +58,19 @@ test("NBAC no-write preflight exits before live IAM verification or AWS availabi
   assert.ok(preflightExit > source.indexOf("node \"$ROOT/scripts/check-nbac-archive-iam-applied.mjs\" >/dev/null"));
   assert.ok(preflightExit < source.indexOf('command -v aws >/dev/null'));
   assert.ok(preflightExit < source.indexOf('node "$ROOT/scripts/check-nbac-archive-iam-applied.mjs" --verify-live'));
+});
+
+test("NBAC preflight completes without reaching an AWS command", () => {
+  const dir = mkdtempSync(join(tmpdir(), "nbac-preflight-no-aws-"));
+  const marker = join(dir, "aws-called");
+  const runner = new URL("../scripts/run-nbac-approved-promotion.sh", import.meta.url).pathname;
+  writeFileSync(join(dir, "aws"), `#!/bin/zsh\ntouch ${JSON.stringify(marker)}\nexit 91\n`, { mode: 0o700 });
+  try {
+    const run = spawnSync("zsh", [runner, "--preflight"], { encoding: "utf8", env: { ...process.env, PATH: `${dir}:${process.env.PATH}` } });
+    assert.equal(run.status, 0, run.stdout + run.stderr);
+    assert.match(run.stdout, /PRECHECK passed:.*no TOTP or storage call was made/);
+    assert.equal(existsSync(marker), false);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
 test("NBAC live verification is pinned to the approved operator identity and offline tools do not inherit session credentials", () => {

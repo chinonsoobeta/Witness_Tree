@@ -46,3 +46,18 @@ test("owner wrapper refuses a stale private state before root/default capture", 
     rmSync(dir, { recursive: true, force: true });
   }
 });
+
+test("owner-wrapper preflight reaches no AWS command when the controlled data root is absent", () => {
+  const dir = mkdtempSync(join(tmpdir(), "wildfire-derived-owner-preflight-no-aws-"));
+  try {
+    const bin = join(dir, "bin");
+    const marker = join(dir, "aws-called");
+    mkdirSync(bin);
+    writeFileSync(join(bin, "aws"), `#!/bin/zsh\ntouch ${JSON.stringify(marker)}\nexit 91\n`, { mode: 0o700 });
+    const paths = ["approval.json", "state.json", "attestation.json", "evidence.json"].map((name) => join(dir, name));
+    const run = spawnSync("zsh", [wrapperPath, "--preflight", ...paths], { encoding: "utf8", env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, WITNESS_TREE_DATA_ROOT: join(dir, "absent-data") } });
+    assert.equal(run.status, 65, run.stdout + run.stderr);
+    assert.match(run.stderr, /Derived data root is absent or not absolute; no root or AWS call was made/);
+    assert.equal(existsSync(marker), false);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});

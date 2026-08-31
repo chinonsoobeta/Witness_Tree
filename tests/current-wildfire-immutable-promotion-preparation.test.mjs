@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
@@ -42,6 +42,19 @@ test("MFA runner defaults to dry run and excludes prohibited operations", () => 
   assert.doesNotMatch(runner, /aws s3 cp|DeleteObject|BypassGovernanceRetention|PutObjectLegalHold|ReplicateObject|aws iam /i);
   assert.match(readFileSync(new URL("../scripts/aws-direct-mfa-role-session.sh", import.meta.url), "utf8"), /aws configure get mfa_serial --profile/);
   assert.doesNotMatch(runner, /list-mfa-devices|iam list/i);
+});
+
+test("current-wildfire preflight reaches no AWS command when its controlled local root is absent", () => {
+  const dir = mkdtempSync(join(tmpdir(), "current-wildfire-preflight-no-aws-"));
+  const marker = join(dir, "aws-called");
+  const runner = new URL("../scripts/run-current-wildfire-approved-promotion.sh", import.meta.url).pathname;
+  writeFileSync(join(dir, "aws"), `#!/bin/zsh\ntouch ${JSON.stringify(marker)}\nexit 91\n`, { mode: 0o700 });
+  try {
+    const run = spawnSync("zsh", [runner, "--preflight"], { encoding: "utf8", env: { ...process.env, PATH: `${dir}:${process.env.PATH}`, WITNESS_TREE_CURRENT_WILDFIRE_PREFLIGHT_DATA_ROOT: join(dir, "absent-data") } });
+    assert.equal(run.status, 65, run.stdout + run.stderr);
+    assert.match(run.stderr, /artifact drifted or is missing; no TOTP or AWS call was made/);
+    assert.equal(existsSync(marker), false);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
 test("hostile ambiguous existing current-wildfire key stops before any replacement write", () => {

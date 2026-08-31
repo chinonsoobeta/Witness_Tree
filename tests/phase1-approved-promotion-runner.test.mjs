@@ -16,6 +16,19 @@ test("the three-artifact runner is preflight-first and binds every approved chec
   assert.doesNotMatch(runner, /list-mfa-devices|aws iam |DeleteObject|BypassGovernanceRetention/i);
 });
 
+test("phase-one preflight reaches no AWS command when an approved local payload is absent", () => {
+  const dir = mkdtempSync(join(tmpdir(), "phase1-preflight-no-aws-"));
+  const marker = join(dir, "aws-called");
+  const executable = new URL("../scripts/run-phase1-approved-promotion.sh", import.meta.url).pathname;
+  writeFileSync(join(dir, "aws"), `#!/bin/zsh\ntouch ${JSON.stringify(marker)}\nexit 91\n`, { mode: 0o700 });
+  try {
+    const run = spawnSync("zsh", [executable, "--preflight"], { encoding: "utf8", env: { ...process.env, PATH: `${dir}:${process.env.PATH}`, WITNESS_TREE_DATA_ROOT: join(dir, "absent-data") } });
+    assert.equal(run.status, 65, run.stdout + run.stderr);
+    assert.match(run.stderr, /Approved local payload is missing; no TOTP or AWS call was made/);
+    assert.equal(existsSync(marker), false);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
 test("federal-only mode cannot revisit the archived harvest or preserved canopy prefix", () => {
   assert.match(runner, /MODE.*run-federal/);
   assert.match(runner, /PROMOTION_INDICES=\(3\)/);

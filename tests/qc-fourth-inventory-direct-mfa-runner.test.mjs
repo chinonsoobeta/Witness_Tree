@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -36,6 +36,18 @@ test("hostile wrapper invocation stops before MFA, STS, or storage", () => {
     assert.match(`${result.stdout}${result.stderr}`, /Usage:/);
     assert.doesNotMatch(`${result.stdout}${result.stderr}`, /Current MFA TOTP/);
     assert.throws(() => readFileSync(marker, "utf8"), /ENOENT/);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("fourth-inventory preflight reaches no AWS command when the data root is absent", () => {
+  const dir = mkdtempSync(join(tmpdir(), "qc-fourth-preflight-no-aws-"));
+  const marker = join(dir, "calls");
+  writeFileSync(join(dir, "aws"), `#!/bin/zsh\ntouch ${JSON.stringify(marker)}\nexit 91\n`, { mode: 0o700 });
+  try {
+    const run = spawnSync("zsh", [runner, "--preflight"], { encoding: "utf8", env: { ...process.env, PATH: `${dir}:${process.env.PATH}`, WITNESS_TREE_DATA_ROOT: join(dir, "absent-data") } });
+    assert.equal(run.status, 1, run.stdout + run.stderr);
+    assert.match(run.stderr, /ENOENT/);
+    assert.equal(existsSync(marker), false);
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
