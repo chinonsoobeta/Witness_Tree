@@ -354,6 +354,30 @@ test("preflight accepts only an applied attestation and makes no AWS call", () =
   }
 });
 
+test("preflight refuses a shortened private checkpoint before any AWS call", () => {
+  const dir = mkdtempSync(join(tmpdir(), "canopy-recovery-partial-checkpoint-"));
+  try {
+    const fixture = writeFixture(dir);
+    const fake = writeFakeAws(dir, policy());
+    const partial = JSON.parse(readFileSync(fixture.statePath, "utf8"));
+    partial.parts.pop();
+    writeFileSync(fixture.statePath, JSON.stringify(partial) + "\n", { mode: 0o600 });
+    chmodSync(fixture.statePath, 0o600);
+
+    const run = spawnSync("zsh", [runnerPath, "--preflight", fixture.approvalPath, fixture.statePath, fixture.attestationPath], {
+      encoding: "utf8",
+      env: { ...process.env, PATH: dir + ":" + process.env.PATH }
+    });
+
+    assert.equal(run.status, 65, run.stdout + run.stderr);
+    assert.match(run.stderr, /private state failed closed/i);
+    assert.doesNotMatch(run.stdout + run.stderr, /Current MFA TOTP/);
+    assert.equal(existsSync(fake.marker), false);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
 test("PTY recovery succeeds with exact heads and retention while making no unrelated storage call", () => {
   const dir = mkdtempSync(join(tmpdir(), "canopy-recovery-success-"));
   try {

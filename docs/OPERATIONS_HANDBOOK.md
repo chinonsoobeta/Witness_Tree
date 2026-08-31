@@ -672,10 +672,17 @@ the same boundary.
 Only the two `run-wildfire-derived-recovery*.sh` runners provide `--dry-run`
 between preflight and `--recover`. Where it exists, use it.
 
-**A partial checkpoint requires owner review before any retry.** In
-`run-wildfire-derived-recovery.sh` this is enforced rather than advisory.
-Whether the other recovery runners carry the same refusal is unconfirmed (gap
-G8), so treat the rule as binding on the operator regardless. Do not delete the
+**A partial checkpoint requires owner review before any retry.** As audited on
+2026-08-31, all three recovery runners with a local checkpoint or evidence
+interface refuse it before an AWS call: `run-phase1-canopy-completion-recovery.sh`
+requires the exact complete 155-part private state,
+`run-wildfire-derived-recovery.sh` refuses its partial checkpoint, and
+`run-wildfire-derived-recovery-owner.sh` refuses any preexisting evidence,
+including partial evidence, before root/default capture. The fourth recovery
+runner, `run-phase1-archive-owner-exercise.sh --recover-latest`, has no local
+checkpoint interface: it locates the newest remote legal-hold exercise version
+and is not applicable to this count. The count was derived by reading all four
+recovery runners and their direct runner-level refusal tests. Do not delete a
 checkpoint to clear a refusal. The checkpoint is the record of what a past run
 produced, and deleting it destroys the only account of where the remote state
 actually stands.
@@ -715,7 +722,6 @@ contradicts this list.
 | **G4** | **No host support relationship is established.** No recorded support route, entitlement, contact, or expected response time for ChatGPT Sites; no record of who may open a case or what may be disclosed | Section 5.3 escalation to the host has no defined channel |
 | **G5** | **The deploy and rollback mechanics of the host are outside this repository.** No deploy script, workflow, or credential exists here; whether the control plane offers a one-click revert is unverified | Sections 6.1 and 6.2 describe the repository half of the procedure completely and the control-plane half by reference only |
 | **G6** | **There is no operational kill switch.** The flag exists in pure policy code with no persisted store, no setter, and no deployed sender. No timed rehearsal has been performed | The account service cannot be activated. Phase 6 `killSwitchRehearsalUnderFiveMinutes` and `namedIncidentOwnerAndRunbook` remain open |
-| **G8** | **Partial-checkpoint refusal is proven for one recovery runner.** `run-wildfire-derived-recovery.sh` enforces it; the other three are unchecked for that specific refusal | The rule binds the operator by policy, not by enforcement, on three runners |
 | **G9** | **The data root has one copy.** No second copy, no replication, no provider durability evidence | Drive loss loses every derived byte. Phase 8 `backups` is `fail` |
 | **G10** | **No incident has ever been rehearsed.** No drill of a site outage, a rollback, a host degradation, or an escalation has been performed or timed | Every timing target in this document is a target, not an observed result |
 | **G11** | **No public communication channel exists.** No status page, no operator-driven banner, no monitored intake address; the corrections workflow is policy and fixtures only | Telling the public anything requires a code change and a deploy |
