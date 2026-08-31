@@ -49,7 +49,7 @@ test("a drifted digest in an otherwise valid record is a contradiction", () => {
   const relative = `data/.test-drifted-readback-${process.pid}.json`;
   const absolute = path.join(REPO_ROOT, relative);
   try {
-    const source = path.join(REPO_ROOT, "data/ntems-forest-harvest-v1-readback-evidence-2026-08-26.json");
+    const source = path.join(REPO_ROOT, "data/ntems-forest-harvest-v1-readback-evidence-2026-08-30.json");
     const record = JSON.parse(readFileSync(source, "utf8"));
     record.outputs[0].outputSha256 = "0".repeat(64);
     writeFileSync(absolute, `${JSON.stringify(record, null, 2)}\n`);
