@@ -76,6 +76,8 @@ test("NBAC preflight completes without reaching an AWS command", () => {
 test("NBAC live verification is pinned to the approved operator identity and offline tools do not inherit session credentials", () => {
   assert.match(source, /AWS_PROFILE="\$PROFILE" aws sts get-caller-identity/);
   assert.match(source, /arn:aws:iam::286853118812:user\/WitnessTreeArchiveOperator/);
+  assert.match(source, /Could not verify the approved operator identity[^\n]* 77/);
+  assert.match(source, /AWS caller is not the approved WitnessTreeArchiveOperator identity[^\n]* 77/);
   assert.match(source, /AWS_PROFILE="\$PROFILE" node "\$ROOT\/scripts\/check-nbac-archive-iam-applied\.mjs" --verify-live/);
   assert.equal((source.match(/env -u AWS_ACCESS_KEY_ID -u AWS_SECRET_ACCESS_KEY -u AWS_SESSION_TOKEN node/g) ?? []).length, 2);
   assert.match(source, /jq -er '\.Credentials\.AccessKeyId/);

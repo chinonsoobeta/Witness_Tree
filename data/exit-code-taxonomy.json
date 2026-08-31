@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "witness-tree/operator-runner-exit-taxonomy/1",
+  "status": "engineering-derived-static-inventory",
+  "boundary": "Explicit shell refusals, literal exits, forwarded-status exits, and inline Node predicates in the nineteen scripts/run-*.sh operator runners. Native child statuses propagated by errexit or pipefail are outside the intentional taxonomy and require the child diagnostic.",
+  "codes": [
+    { "code": 0, "meaning": "successful completion or approved no-op" },
+    { "code": 1, "meaning": "generic unclassified batch or precondition failure" },
+    { "code": 64, "meaning": "invalid invocation or operator input" },
+    { "code": 65, "meaning": "local approval, artifact, state, or checksum precondition failed" },
+    { "code": 69, "meaning": "local execution environment or MFA configuration is unusable" },
+    { "code": 70, "meaning": "controlled remote operation, readback, or integrity stage failed" },
+    { "code": 73, "meaning": "recovery or ownership state is ambiguous and requires audit" },
+    { "code": 75, "meaning": "execution cannot safely proceed or continue" },
+    { "code": 77, "meaning": "identity or authorization boundary is not established" }
+  ],
+  "runners": {
+    "scripts/run-alberta-plvi-approved-promotion.sh": { "codes": { "0": 2, "64": 1, "65": 4, "69": 3, "70": 4, "73": 1 }, "defaultFailCode": 1, "siteContractSha256": "cb815b8e3be52693445f5ebd2237db3ff3ee7bbdbd8d142688f10d9ac2bb0a89" },
+    "scripts/run-current-wildfire-approved-promotion.sh": { "codes": { "0": 2, "64": 1, "65": 1, "69": 3, "70": 4, "73": 1 }, "defaultFailCode": 1, "siteContractSha256": "59df310e5962e227ebac08780ece4d352aa4929719aeb10f4b58a84a2d3f7a48" },
+    "scripts/run-federal-electoral-approved-promotion.sh": { "codes": { "0": 1, "64": 1, "65": 7, "69": 1, "73": 1, "75": 3 }, "defaultFailCode": 1, "siteContractSha256": "cda0e2332496100bd93998741b24fc30468f4069405110c12ffb41f3940879a6" },
+    "scripts/run-nbac-approved-promotion.sh": { "codes": { "0": 1, "64": 1, "65": 6, "69": 3, "70": 11, "73": 1, "77": 2 }, "defaultFailCode": 1, "siteContractSha256": "6f1034f2a91fe4851116a95b529fe70d311d53e067fa1ce53151794302da5bc9" },
+    "scripts/run-phase1-approved-promotion.sh": { "codes": { "0": 4, "64": 2, "65": 5, "69": 3, "70": 41, "73": 14, "75": 1, "77": 1 }, "defaultFailCode": 1, "siteContractSha256": "08e42f543a3621d507c77f5a8df07f88b68a577d9cfd6a1c865972226f3d4350" },
+    "scripts/run-phase1-archive-owner-exercise.sh": { "codes": { "0": 2, "1": 11, "64": 3, "65": 1, "69": 2, "70": 1, "75": 1, "77": 2 }, "defaultFailCode": 1, "siteContractSha256": "c575b76f551879dfd105765cffa5105a23ced4d2d98cb056492cdf97088fd1d4" },
+    "scripts/run-phase1-canopy-completion-recovery.sh": { "codes": { "0": 1, "64": 1, "65": 6, "69": 4, "70": 13, "77": 2 }, "defaultFailCode": null, "siteContractSha256": "45a21126bac8e91a71eb5ace3733c8e76bc091f1db1a3b33e8020037fa4410c3" },
+    "scripts/run-phase2-annual-province-zonal-v2.sh": { "codes": { "1": 3 }, "defaultFailCode": null, "siteContractSha256": "60193d1c8d5b799d96c6aea7744ad9bd51485811be5f9cf1c4a331df2eb5e30b" },
+    "scripts/run-phase2-annual-riding-zonal.sh": { "codes": { "1": 2 }, "defaultFailCode": null, "siteContractSha256": "15683394f795d018dbe9021ad7a08798dc019dab9ce6ef851dff685df9fe663c" },
+    "scripts/run-phase2-per-cell-tiles.sh": { "codes": {}, "defaultFailCode": null, "siteContractSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" },
+    "scripts/run-phase8-bulk-download-publication.sh": { "codes": { "0": 1, "64": 1, "65": 3, "69": 3, "70": 7, "77": 2 }, "defaultFailCode": null, "siteContractSha256": "49446d152e6a73c9b49cd4cdde76e1a4c29f0b8b7f0345c880a8546c88f12af9" },
+    "scripts/run-postgres-tenant-isolation-drill.sh": { "codes": { "75": 4 }, "defaultFailCode": 1, "siteContractSha256": "f0b7411dce56dda820efa07389319487fcdadff6f31d4d558ae300aaac51bb22" },
+    "scripts/run-qc-approved-multipart-promotion.sh": { "codes": { "0": 2, "64": 1, "65": 2, "69": 1, "70": 29, "75": 16 }, "defaultFailCode": 1, "siteContractSha256": "a475e09e25532e579bb1f2ded2c31ccea135918cc0b6acf0a78b6a13f3da6050" },
+    "scripts/run-qc-fourth-inventory-approved-promotion.sh": { "codes": { "0": 2, "64": 1, "69": 2, "73": 1 }, "defaultFailCode": 1, "siteContractSha256": "399eaea8b87a46757978c4eb801fd1c8ac5bff4227e92cae6c0bc46b532de5f1" },
+    "scripts/run-wildfire-derived-approved-promotion.sh": { "codes": { "0": 1, "64": 1, "65": 1, "77": 1 }, "defaultFailCode": 1, "siteContractSha256": "d1d9067c42f6bfd8b77b88120ae3452fedbb0752d0709fe684a952b2ec25bfa7" },
+    "scripts/run-wildfire-derived-manifest-retention.sh": { "codes": { "0": 1, "64": 1, "65": 6, "70": 13 }, "defaultFailCode": 65, "siteContractSha256": "e494dcedc6d6df9188e9c87a90abbe371d3bafda92bf62a9507dfafcb2da3c1b" },
+    "scripts/run-wildfire-derived-readback.sh": { "codes": { "0": 1, "64": 1, "65": 4, "69": 4, "70": 6 }, "defaultFailCode": null, "siteContractSha256": "4b65da1784a4d94492bb7d2bce2a243406c40242dd16cef6a032bb6485a5d8d2" },
+    "scripts/run-wildfire-derived-recovery-owner.sh": { "codes": { "0": 1, "64": 1, "65": 8, "69": 3 }, "defaultFailCode": null, "siteContractSha256": "602f61782d89d4614789449dcbca67d21b85e1154ab7ea0b37e218e7b2cf8854" },
+    "scripts/run-wildfire-derived-recovery.sh": { "codes": { "0": 1, "64": 1, "65": 10, "69": 4, "70": 26, "77": 2 }, "defaultFailCode": null, "siteContractSha256": "2377676a7b39d05e57a8e985b60edea3fea1938cd94c0558e208328ca21caf3d" }
+  }
+}

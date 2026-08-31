@@ -40,8 +40,8 @@ print -- "PRECHECK passed: the exact NBAC payload, manifest key, approved profil
 [[ "$1" == "--preflight" ]] && exit 0
 
 command -v aws >/dev/null || fail "aws CLI is required" 69
-caller="$(AWS_PROFILE="$PROFILE" aws sts get-caller-identity --output json)" || fail "Could not verify the approved operator identity; no TOTP or storage call was made" 70
-jq -e '.Account == "286853118812" and .Arn == "arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator"' <<<"$caller" >/dev/null || fail "AWS caller is not the approved WitnessTreeArchiveOperator identity; no TOTP or storage call was made" 70
+caller="$(AWS_PROFILE="$PROFILE" aws sts get-caller-identity --output json)" || fail "Could not verify the approved operator identity; no TOTP or storage call was made" 77
+jq -e '.Account == "286853118812" and .Arn == "arn:aws:iam::286853118812:user/WitnessTreeArchiveOperator"' <<<"$caller" >/dev/null || fail "AWS caller is not the approved WitnessTreeArchiveOperator identity; no TOTP or storage call was made" 77
 unset caller
 AWS_PROFILE="$PROFILE" node "$ROOT/scripts/check-nbac-archive-iam-applied.mjs" --verify-live >/dev/null
 

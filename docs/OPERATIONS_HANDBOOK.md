@@ -631,18 +631,26 @@ refusal status where the runner owns that status.
 
 ### 7.3 The refusal contract
 
-Nineteen shell scripts contain 384 explicit refusals across seven exit codes.
-This table describes them as they behave, not as they might have been designed.
+The checked inventory in
+[`data/exit-code-taxonomy.json`](../data/exit-code-taxonomy.json) binds the
+intentional exit sites in all nineteen `scripts/run-*.sh` operator runners.
+It covers literal shell exits, explicit and default `fail` calls, forwarded
+status exits, and inline Node predicates. It is deliberately not a claim that
+every child process status is in this taxonomy: an unwrapped command stopped by
+`errexit` or `pipefail` can surface its native status, and its own diagnostic
+must be read.
 
-| Code | Count | What it means | What the operator does |
-| --- | --- | --- | --- |
-| `64` | 26 | Wrong invocation, a path outside the exact authorization, or a malformed or non-interactive TOTP prompt | Fix the invocation. Nothing happened. Do not widen a path to make it fit |
-| `65` | 62 | A local precondition failed: approval, private state, IAM attestation, file mode, data root, or a local checksum. Most say "no TOTP or AWS call was made" | Repair the local input. Nothing remote happened. A failed checksum is a real finding, not a file to rebind |
-| `69` | 38 | The environment is unusable: `aws`, `jq`, `node`, or `shasum` missing, a private directory could not be created, or the configured MFA serial is not the approved account serial | Repair the workstation. A wrong MFA serial is S1, not a configuration nuisance |
-| `70` | 150 | A remote call, conditional write, retention application, or readback failed after the session began. Messages name the stage and usually name what was not attempted next | Stop. Read the message for what was *not* attempted. Do not retry blind; see 7.4 |
-| `73` | 35 | Recovery is ambiguous, or another preflight holds the owner-only lock. Typically a manifest exists without its approved payload, or an approved key already has a version | Do not attempt a write. Preserve the diagnostic and request a version-specific audit |
-| `75` | 51 | The AWS session expired mid-run with private resume state preserved unchanged, or a readiness record is not approved so execution stays disabled | If resumable, the message names the exact resume command. Use that command, not a fresh `--run` |
-| `77` | 22 | An identity or account boundary failed: the assumed role is not the approved role, is outside the approved account, or the role response was incomplete | S1. Stop, treat as a security finding, do not re-run |
+| Code | What it means | What the operator does |
+| --- | --- | --- |
+| `0` | Successful completion or approved no-op | Continue only with the stated next procedure |
+| `1` | Generic unclassified batch or precondition failure | Read the command diagnostic; do not infer an operator refusal category |
+| `64` | Invalid invocation or operator input | Fix the invocation. Nothing happened. Do not widen a path to make it fit |
+| `65` | Local approval, artifact, state, or checksum precondition failed | Repair the local input. Nothing remote happened. A failed checksum is a real finding, not a file to rebind |
+| `69` | Local execution environment or MFA configuration is unusable | Repair the workstation. A wrong MFA serial is S1, not a configuration nuisance |
+| `70` | Controlled remote operation, readback, or integrity stage failed | Stop. Read the message for what was *not* attempted. Do not retry blind; see 7.4 |
+| `73` | Recovery or ownership state is ambiguous and requires audit | Do not attempt a write. Preserve the diagnostic and request a version-specific audit |
+| `75` | Execution cannot safely proceed or continue | Preserve state. If resumable, use the exact resume command; otherwise obtain the required readiness or environment correction |
+| `77` | Identity or authorization boundary is not established | S1. Stop, treat as a security finding, do not re-run |
 
 The invariant worth internalising: **a refusal tells you what did not happen.**
 Messages end with clauses like "no TOTP or AWS call was made", "no recovery
@@ -651,10 +659,14 @@ preserved unchanged". Code `70` refusals more often name the failing stage
 instead. Either way the message, and not a guess, is what establishes where the
 run stopped.
 
-Every runner also traps `EXIT` and unsets `AWS_ACCESS_KEY_ID`,
-`AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`, the TOTP, and the MFA serial, and
-removes its temporary directory. A crashed shell does not leave credentials in
-the environment.
+Every runner that establishes or owns an AWS session traps `EXIT` and clears
+its exported AWS session credentials. Each runner's cleanup also clears the
+private variables and temporary paths that it owns. The three Phase 2 batch
+runners never establish such a session; the local-only
+`run-wildfire-derived-approved-promotion.sh` has no authorized AWS path; and
+`run-wildfire-derived-recovery-owner.sh` delegates session ownership to its
+child recovery runner. A crashed session-owning shell does not leave its
+exported session credentials in the environment.
 
 ### 7.4 Interrupted runs
 
@@ -733,7 +745,6 @@ contradicts this list.
 | **G9** | **The data root has one copy.** No second copy, no replication, no provider durability evidence | Drive loss loses every derived byte. Phase 8 `backups` is `fail` |
 | **G10** | **No incident has ever been rehearsed.** No drill of a site outage, a rollback, a host degradation, or an escalation has been performed or timed | Every timing target in this document is a target, not an observed result |
 | **G11** | **No public communication channel exists.** No status page, no operator-driven banner, no monitored intake address; the corrections workflow is policy and fixtures only | Telling the public anything requires a code change and a deploy |
-| **G13** | **Exit codes are not a tidy taxonomy.** Codes `64`, `73`, and `75` each carry more than one distinct meaning, and consistency across all nineteen scripts is unverified | Read the message. Do not infer the situation from the code alone |
 
 ---
 
