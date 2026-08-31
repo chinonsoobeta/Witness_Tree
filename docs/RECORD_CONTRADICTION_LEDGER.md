@@ -46,7 +46,7 @@ The queue is `"asOf": "2026-08-22"`; the readback records are 2026-08-26. The
 queue's `"pending"` was true when written. It is a committed record that
 presently asserts a false state, and its checker passes.
 
-## C-4. A green check asserting the non-existence of a file that exists
+## C-4. Historical absence claim superseded by later execution evidence
 
 `data/phase1-nrcan-cover-processing-gate.json` records for `ntems-canopy-cover`:
 
@@ -62,11 +62,16 @@ Both blockers are contradicted by committed records.
 the derived output and output checksum the gate says do not exist. The
 canopy-cover raster is present on disk at the recorded byte length.
 
-The gate is `"auditedAt": "2026-08-21T15:45:00Z"`, and
-`npm run check:phase1-nrcan-cover-processing-gate` exits 0 today.
+The gate is `"auditedAt": "2026-08-21T15:45:00Z"`. It is retained unchanged as
+the historical record. `data/phase1-nrcan-cover-processing-gate-supersession-2026-08-31.json`
+dated 2026-08-31 supersedes its canopy-cover specification, run, and output facts
+with the later authorization, runner, specification, readback, and exact output
+binding. The successor is explicit that `ntems-canopy-cover-v1` remains an
+unapproved execution specification, not a production-admission target
+specification. It keeps `productionAdmission` and `productionEligible` false.
 
-This is the most consequential entry, because the failure direction is the
-dangerous one: a passing check is asserting an absence that is false.
+C-4 is no longer a current exception: `npm run check:phase1-nrcan-cover-processing-gate`
+validates both the unchanged historical snapshot and its dated successor.
 
 ## C-5. The two federal rows: admitted in the ledger, pending everywhere else
 

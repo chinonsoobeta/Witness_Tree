@@ -1,0 +1,69 @@
+{
+  "schemaVersion": "witness-tree/phase1-nrcan-cover-processing-gate-supersession/1",
+  "status": "supersedes-historical-gate-with-nonproduction-execution-evidence",
+  "auditedAt": "2026-08-31T00:00:00Z",
+  "supersedes": {
+    "path": "data/phase1-nrcan-cover-processing-gate.json",
+    "sha256": "c52043f1190b0778a4efd34c9e1e9f6b8e6f9a3d08494ec69b54a19d46c0adac",
+    "auditedAt": "2026-08-21T15:45:00Z",
+    "scope": "Historical Phase 1 NRCan cover processing snapshot. It remains unchanged."
+  },
+  "whatChanged": [
+    "The historical canopy-cover row recorded specification, run, and output as null before the later execution records existed.",
+    "The repository now contains the unapproved ntems-canopy-cover-v1 execution specification, an owner-approved local execution authorization, the recorded runner binding, and a complete readback for one exact derived output.",
+    "This successor corrects only those later specification, run, and output facts. It does not convert the execution specification into a production-admission target specification or admit the source or output."
+  ],
+  "canopyCover": {
+    "sourceRow": "ntems-canopy-cover",
+    "executionSpecification": {
+      "id": "ntems-canopy-cover-v1",
+      "path": "data/phase1-production-transformation-specifications-v1.json",
+      "sha256": "258ca3f94e30d484b53cc12e29c83beaf57998993edaea05e44f5a4924979efc",
+      "status": "unapproved-specification-only",
+      "meaning": "A checksum-bound proposed execution specification. Its file status does not make it a production-admission target specification."
+    },
+    "productionAdmissionTargetSpecification": {
+      "present": false,
+      "meaning": "No production-admission target canopy-cover specification has been recorded or approved. The existing ntems-canopy-cover-v1 execution specification is not a substitute."
+    },
+    "executionAuthorization": {
+      "path": "data/phase1-ntems-canopy-cover-execution-authorization.json",
+      "sha256": "aee18d23ddc3766d6c6b9f1becaccef9bc70b19c59adc22a9c57d9e8ceeb10db",
+      "status": "approved-owner-local-execution",
+      "readbackBoundSha256": "f0e1486a7817db5cdf7af3c13898073a202f1db4919320fa2b287c9e2103e47c",
+      "meaning": "The readback preserves the authorization bytes that applied when it was created; the current authorization checksum is recorded separately and does not rewrite that history."
+    },
+    "runner": {
+      "path": "scripts/run-phase1-ntems-transform.mjs",
+      "sha256": "99982d613a0ef908a88f1dfe468c541c61c2f9f09cad6fbf6768377543c5386d",
+      "readbackBoundSha256": "09b1016849e0709e46ebad908eec0f01252d5e5eeed3e5cd2fcb712c2042dc90",
+      "meaning": "The readback preserves the runner bytes that produced the output; the current runner checksum is not retroactively bound to that run."
+    },
+    "readback": {
+      "path": "data/ntems-canopy-cover-v1-readback-evidence-2026-08-26.json",
+      "sha256": "93e2d55f2de8763372f8d5c57a8a26fd109dd63dc842438b3b842bdb0f66dcd4",
+      "status": "complete-readback-verified",
+      "claims": {
+        "transformed": true,
+        "ingested": false,
+        "released": false,
+        "productionAdmission": false,
+        "productionEligible": false,
+        "externalMutationPerformed": false
+      }
+    },
+    "output": {
+      "specification": "ntems-canopy-cover-v1",
+      "path": "ntems-canopy-cover-v1/80c37461f4deccfdfffc26124e9064d53a94dde660b9f96194445870393af130/phase1-ntems-canopy-cover-v1/canopy-cover-2022.tif",
+      "sha256": "18cb7904cf9ec16ef602f7cb57c788dcdb49c2ef0719992abdc3366e4be1079e",
+      "byteLength": 13110248051,
+      "status": "verified"
+    },
+    "productionAdmission": false,
+    "productionEligible": false
+  },
+  "remainingBlockers": [
+    "Record and approve a distinct production-admission target canopy-cover specification before considering ingestion, release, production admission, or production eligibility.",
+    "Complete the target specification's required validation and create separate ingestion, release, and production-admission records."
+  ]
+}
