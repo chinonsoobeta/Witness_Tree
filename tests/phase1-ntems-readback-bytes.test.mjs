@@ -12,9 +12,10 @@ test("every NTEMS scope is covered exactly once", () => {
   assert.equal(NTEMS_EVIDENCE.length, 4);
   const ids = NTEMS_EVIDENCE.map(({ specId }) => specId);
   assert.equal(new Set(ids).size, ids.length);
-  for (const { specId, evidencePath } of NTEMS_EVIDENCE) {
+  for (const { specId, evidencePath, committedEvidence } of NTEMS_EVIDENCE) {
     assert.match(specId, /^ntems-[a-z0-9-]+-v1$/);
     assert.ok(evidencePath.startsWith("data/") && evidencePath.endsWith(".json"));
+    assert.equal(committedEvidence, true);
   }
 });
 
@@ -28,6 +29,20 @@ test("a scope with no committed evidence is reported, not silently passed", () =
     assert.equal(result.state, "no-committed-evidence");
     assert.equal(result.bytesRead, false);
     assert.equal(result.outputs, undefined);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("deleting evidence recorded as committed fails hard", () => {
+  const root = mkdtempSync(path.join(tmpdir(), "ntems-readback-bytes-deleted-"));
+  const scope = NTEMS_EVIDENCE[0];
+  const evidenceFile = path.join(root, scope.evidencePath);
+  try {
+    mkdirSync(path.dirname(evidenceFile), { recursive: true });
+    writeFileSync(evidenceFile, "{}\n");
+    rmSync(evidenceFile);
+    assert.throws(() => checkScope(scope, root), /recorded with committed readback evidence.*file is missing/);
   } finally {
     rmSync(root, { recursive: true, force: true });
   }
