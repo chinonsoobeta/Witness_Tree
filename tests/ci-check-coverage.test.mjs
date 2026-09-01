@@ -10,6 +10,7 @@ import {
 const register = readRepositoryJson(REGISTER_PATH);
 const packageDocument = readRepositoryJson("package.json");
 const ci = readRepositoryJson(".github/workflows/ci.yml", false);
+const wildfire = readRepositoryJson(".github/workflows/wildfire-refresh.yml", false);
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
@@ -20,6 +21,18 @@ test("every package check is either a direct CI step or a reviewed exclusion", (
   assert.equal(result.total, result.ci + result.excluded);
   assert.ok(result.ci > 0);
   assert.ok(result.excluded > 0);
+});
+
+test("workflows use current action runtimes and preserve their concurrency policy", () => {
+  assert.ok(ci.includes("concurrency:\n  group: ${{ github.workflow }}-${{ github.ref }}\n  cancel-in-progress: true"));
+  assert.ok(wildfire.includes("concurrency:\n  group: ${{ github.workflow }}-${{ github.ref }}\n  cancel-in-progress: false"));
+  assert.match(ci, /actions\/checkout@v7/);
+  assert.match(ci, /actions\/setup-node@v7/);
+  assert.match(ci, /actions\/upload-artifact@v7/);
+  assert.match(ci, /if-no-files-found: error/);
+  assert.match(wildfire, /actions\/checkout@v7/);
+  assert.match(wildfire, /actions\/setup-node@v7/);
+  assert.doesNotMatch(`${ci}\n${wildfire}`, /actions\/(?:checkout|setup-node|upload-artifact)@v[1-6]\b/);
 });
 
 test("a new unwired and undeclared check fails closed", () => {
