@@ -39,6 +39,18 @@ test("workflows use current action runtimes and preserve their concurrency polic
   assert.doesNotMatch(`${ci}\n${wildfire}`, /actions\/(?:checkout|setup-node|upload-artifact)@v[1-6]\b/);
 });
 
+test("the dependency advisory gate blocks what ships and never hides the rest", () => {
+  // The production tree is the blocking surface: an advisory reaching a shipped
+  // dependency fails the branch at high. The build toolchain is audited too, but at
+  // critical, because its advisories cannot reach a viewer of the site. The third
+  // command is informational and must stay non-blocking so nothing is suppressed.
+  assert.match(ci, /npm audit --omit=dev --audit-level=high/);
+  assert.match(ci, /npm audit --audit-level=critical/);
+  assert.match(ci, /npm audit \|\| true/);
+  // The scoped gate is not a lowered threshold: production stays at high.
+  assert.doesNotMatch(ci, /npm audit --omit=dev --audit-level=(critical|moderate|low|none)/);
+});
+
 test("a new unwired and undeclared check fails closed", () => {
   const changed = clone(packageDocument);
   changed.scripts["check:unreviewed"] = "node scripts/check-unreviewed.mjs";
