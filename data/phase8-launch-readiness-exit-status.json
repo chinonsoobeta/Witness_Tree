@@ -216,7 +216,7 @@
         },
         {
           "path": ".github/workflows/wildfire-refresh.yml",
-          "sha256": "308505801e9a3be0e5407fe6c710598e6501078095c94c38d256db7b14789308"
+          "sha256": "1d093e679d95a11f8b60b1f81afa0324c6db10dca133bfe86169fd50cafe8dcd"
         },
         {
           "path": "docs/OPERATIONS_HANDBOOK.md",
