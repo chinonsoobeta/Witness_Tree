@@ -1,12 +1,13 @@
-// Makes every package-level check visible: it must either be a direct CI step
-// or carry a reviewed reason in the closed exclusion register. An absent CI
-// line is never treated as evidence that a check passed.
+// Makes every executable checker file visible: it must be reached by a direct
+// CI step, named by a package-level check, or carry a reviewed reason in the
+// closed exclusion register. A file omitted from package.json is never absent
+// from this universe.
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 export const REGISTER_PATH = "data/ci-check-coverage.json";
-export const REGISTER_SCHEMA = "witness-tree/ci-check-coverage/1";
+export const REGISTER_SCHEMA = "witness-tree/ci-check-coverage/2";
 export const CATEGORIES = Object.freeze(new Set([
   "data-root-bound",
   "environment-bound",
@@ -17,6 +18,7 @@ export const CATEGORIES = Object.freeze(new Set([
 const root = new URL("../", import.meta.url);
 const EXPECTED_TOP_LEVEL_KEYS = ["exclusions", "schemaVersion", "status"];
 const EXPECTED_ENTRY_KEYS = ["category", "check", "reason"];
+const CHECK_PATH = /scripts\/(check-[A-Za-z0-9._-]+)/g;
 
 function exactKeys(value, expected, label) {
   assert.deepEqual(Object.keys(value).sort(), [...expected].sort(), `${label} contains missing or unexpected fields`);
@@ -27,23 +29,47 @@ export function readRepositoryJson(relativePath, parse = true) {
   return parse ? JSON.parse(contents) : contents;
 }
 
-export function packageChecks(packageDocument) {
+export function repositoryCheckFiles() {
+  return readdirSync(new URL("scripts/", root), { withFileTypes: true })
+    .filter((entry) => entry.isFile() && entry.name.startsWith("check-"))
+    .map((entry) => `scripts/${entry.name}`)
+    .sort();
+}
+
+function packageCheckCommands(packageDocument) {
   const scripts = packageDocument?.scripts;
   assert.ok(scripts && typeof scripts === "object" && !Array.isArray(scripts), "package scripts are required");
-  const checks = Object.entries(scripts)
+  return Object.entries(scripts)
     .filter(([name]) => name.startsWith("check:"))
     .map(([name, command]) => {
       assert.equal(typeof command, "string", `${name} command must be a string`);
       assert.ok(command.trim().length > 0, `${name} command must not be empty`);
-      return name;
+      return [name, command];
     });
-  assert.equal(new Set(checks).size, checks.length, "package check names contain a duplicate");
-  return checks.sort();
+}
+
+function referencedCheckFiles(command, availableSet, label) {
+  const referenced = [];
+  for (const match of String(command).matchAll(CHECK_PATH)) {
+    const path = `scripts/${match[1]}`;
+    assert.ok(availableSet.has(path), `${label} references a checker file missing from scripts/: ${path}`);
+    referenced.push(path);
+  }
+  return referenced;
+}
+
+export function packageCheckFiles(packageDocument, availableFiles) {
+  const availableSet = new Set(availableFiles);
+  const files = new Set();
+  for (const [name, command] of packageCheckCommands(packageDocument)) {
+    for (const file of referencedCheckFiles(command, availableSet, name)) files.add(file);
+  }
+  return [...files].sort();
 }
 
 // Count executable workflow steps only. A name in a comment is documentation,
 // not execution, and cannot satisfy this gate.
-export function ciChecks(ciText) {
+export function ciPackageChecks(ciText) {
   const names = [];
   for (const line of String(ciText).split("\n")) {
     const match = line.match(/^\s*-\s+run:\s+npm run (check:[A-Za-z0-9:_-]+)\s*$/);
@@ -53,40 +79,68 @@ export function ciChecks(ciText) {
   return names.sort();
 }
 
-export function validateCoverage(document, packageDocument, ciText) {
+function ciRunCommands(ciText) {
+  return String(ciText)
+    .split("\n")
+    .map((line) => line.match(/^\s*-\s+run:\s+(.+)$/)?.[1])
+    .filter((command) => command && command !== "|" && command !== ">");
+}
+
+export function ciCheckFiles(ciText, packageDocument, availableFiles) {
+  const availableSet = new Set(availableFiles);
+  const commands = new Map(packageCheckCommands(packageDocument));
+  const packageNames = ciPackageChecks(ciText);
+  const unknown = packageNames.filter((name) => !commands.has(name));
+  assert.deepEqual(unknown, [], `CI names checks missing from package.json: ${unknown.join(", ")}`);
+
+  const files = new Set();
+  for (const name of packageNames) {
+    for (const file of referencedCheckFiles(commands.get(name), availableSet, name)) files.add(file);
+  }
+  for (const [index, command] of ciRunCommands(ciText).entries()) {
+    for (const file of referencedCheckFiles(command, availableSet, `CI run step ${index}`)) files.add(file);
+  }
+  return [...files].sort();
+}
+
+export function validateCoverage(document, packageDocument, ciText, availableFiles = repositoryCheckFiles()) {
   assert.ok(document && typeof document === "object" && !Array.isArray(document), "coverage register is required");
   exactKeys(document, EXPECTED_TOP_LEVEL_KEYS, "coverage register");
   assert.equal(document.schemaVersion, REGISTER_SCHEMA, "coverage register schema differs");
   assert.equal(document.status, "engineering-derived-inventory", "coverage register status differs");
   assert.ok(Array.isArray(document.exclusions), "coverage register exclusions are required");
 
-  const available = packageChecks(packageDocument);
-  const availableSet = new Set(available);
-  const wired = ciChecks(ciText);
-  const wiredSet = new Set(wired);
-  const unknownWired = wired.filter((name) => !availableSet.has(name));
-  assert.deepEqual(unknownWired, [], `CI names checks missing from package.json: ${unknownWired.join(", ")}`);
+  assert.ok(Array.isArray(availableFiles) && availableFiles.length > 0, "checker file inventory is required");
+  assert.equal(new Set(availableFiles).size, availableFiles.length, "checker file inventory contains a duplicate");
+  assert.deepEqual(availableFiles, [...availableFiles].sort(), "checker file inventory must be sorted");
+  for (const file of availableFiles) assert.match(file, /^scripts\/check-[A-Za-z0-9._-]+$/, `invalid checker file path: ${file}`);
+
+  const availableSet = new Set(availableFiles);
+  const direct = ciCheckFiles(ciText, packageDocument, availableFiles);
+  const directSet = new Set(direct);
+  const named = packageCheckFiles(packageDocument, availableFiles).filter((file) => !directSet.has(file));
+  const namedSet = new Set(named);
 
   const registered = [];
   for (const [index, entry] of document.exclusions.entries()) {
     assert.ok(entry && typeof entry === "object" && !Array.isArray(entry), `exclusion ${index} must be an object`);
     exactKeys(entry, EXPECTED_ENTRY_KEYS, `exclusion ${index}`);
-    assert.ok(availableSet.has(entry.check), `${entry.check} is excluded but missing from package.json`);
+    assert.ok(availableSet.has(entry.check), `${entry.check} is excluded but missing from scripts/`);
     assert.ok(CATEGORIES.has(entry.category), `${entry.check} category must be one of ${[...CATEGORIES].join(", ")}`);
     assert.ok(typeof entry.reason === "string" && entry.reason.trim().length > 0, `${entry.check} reason is required`);
     registered.push(entry.check);
   }
   assert.equal(new Set(registered).size, registered.length, "coverage register contains a duplicate check");
-  assert.deepEqual(registered, [...registered].sort(), "coverage register exclusions must be sorted by check name");
+  assert.deepEqual(registered, [...registered].sort(), "coverage register exclusions must be sorted by checker file path");
 
-  const required = available.filter((name) => !wiredSet.has(name));
+  const required = availableFiles.filter((file) => !directSet.has(file) && !namedSet.has(file));
   const registeredSet = new Set(registered);
-  const missing = required.filter((name) => !registeredSet.has(name));
-  const stale = registered.filter((name) => wiredSet.has(name));
+  const missing = required.filter((file) => !registeredSet.has(file));
+  const stale = registered.filter((file) => directSet.has(file) || namedSet.has(file));
   assert.deepEqual(missing, [], `missing reviewed exclusions: ${missing.join(", ")}`);
-  assert.deepEqual(stale, [], `registered exclusions that now run in CI: ${stale.join(", ")}`);
+  assert.deepEqual(stale, [], `registered exclusions that are now CI-reached or npm-named: ${stale.join(", ")}`);
 
-  return { total: available.length, ci: wired.length, excluded: registered.length };
+  return { total: availableFiles.length, ci: direct.length, npmNamed: named.length, excluded: registered.length };
 }
 
 function main() {
@@ -95,7 +149,7 @@ function main() {
     readRepositoryJson("package.json"),
     readRepositoryJson(".github/workflows/ci.yml", false),
   );
-  console.log(`${REGISTER_PATH}: ${result.total} package checks; ${result.ci} direct CI steps; ${result.excluded} reviewed exclusions.`);
+  console.log(`${REGISTER_PATH}: ${result.total} checker files; ${result.ci} CI-reached; ${result.npmNamed} npm-named; ${result.excluded} reviewed exclusions.`);
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) main();
