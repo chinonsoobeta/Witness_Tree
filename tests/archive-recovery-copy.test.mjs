@@ -11,7 +11,7 @@ import {
   primaryObjectIdentity,
   validateArchiveRecoveryCopy,
 } from "../scripts/check-archive-recovery-copy.mjs";
-import { runArchiveRecoveryCopy } from "../scripts/run-archive-recovery-copy.mjs";
+import { READ_ONLY_OPERATIONS, runArchiveRecoveryCopy } from "../scripts/run-archive-recovery-copy.mjs";
 
 /**
  * These tests build the record the checker expects and mutate one field at a time, so a rule is
@@ -622,4 +622,26 @@ test("an empty admitted primary set is refused rather than passing vacuously", (
   assert.throws(() => validateArchiveRecoveryCopy(fixture(), { admittedPrimaries: new Map() }), /admitted primary object versions are required/);
   assert.throws(() => validateArchiveRecoveryCopy(fixture(), {}), /admitted primary object versions are required/);
   assert.throws(() => validate(broken((record) => { record.objects = []; })), /must record every destination object version/);
+});
+
+test("every AWS operation the runner can reach is a read operation", () => {
+  // The runner's whole claim is that it observes a copy someone else made. That claim is
+  // only as good as the operation set, so the set and the call sites are both checked here
+  // rather than trusted: a future edit that reaches for a mutating verb fails this test.
+  const source = readFileSync(new URL("../scripts/run-archive-recovery-copy.mjs", import.meta.url), "utf8");
+  const invoked = [...source.matchAll(/\binvoke\("([a-z-]+)"/g)].map(([, operation]) => operation);
+  assert.ok(invoked.length > 0);
+  for (const operation of invoked) {
+    assert.ok(READ_ONLY_OPERATIONS.has(operation), `${operation} is invoked but is not in the read-only set`);
+  }
+  for (const operation of READ_ONLY_OPERATIONS) {
+    assert.doesNotMatch(operation, /^(?:put|post|create|delete|copy|write|restore|upload|abort|complete|set|update|tag)-/, `${operation} is not a read operation`);
+  }
+  // The transport is the other way an operation could reach AWS. Its dynamic sites forward
+  // the name the gate above already admitted; any literal it hard-codes bypasses that gate,
+  // so every hard-coded one has to be read-only too.
+  const dispatched = [...source.matchAll(/json\(\["s3(?:api|control)", "([a-z-]+)"/g)].map(([, operation]) => operation);
+  for (const operation of dispatched) {
+    assert.ok(READ_ONLY_OPERATIONS.has(operation), `${operation} is dispatched by the transport but is not read-only`);
+  }
 });

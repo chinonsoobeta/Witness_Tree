@@ -30,7 +30,7 @@ import { validateArchiveOperationsReadiness } from "./check-archive-operations-r
 
 const INPUT_SCHEMA = "witness-tree/archive-recovery-copy-run-input/1";
 const CANADIAN_REGIONS = new Set(["ca-central-1", "ca-west-1"]);
-const READ_ONLY_OPERATIONS = new Set([
+export const READ_ONLY_OPERATIONS = new Set([
   "describe-job",
   "get-bucket-location",
   "get-bucket-replication",
