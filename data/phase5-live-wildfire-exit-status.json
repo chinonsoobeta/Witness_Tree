@@ -23,7 +23,7 @@
     },
     {
      "path": ".github/workflows/wildfire-refresh.yml",
-     "sha256": "c619db93908af4595c699db3983b3eefb36337dff8c907721ab3c8d5ad0ee1d5"
+     "sha256": "bcaf4f1321ffb759493cbbd5f29f46e9e1f984a34c2f516b295ed908dea17295"
     },
     {
      "path": "data/wildfire-refresh-run-history-2026-08-31.json",
