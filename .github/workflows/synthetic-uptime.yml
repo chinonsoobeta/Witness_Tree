@@ -1,0 +1,33 @@
+name: Synthetic uptime
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - name: Probe bilingual public routes
+        run: node scripts/run-synthetic-uptime.mjs --origin https://www.witnesstree.ca --output synthetic-uptime-result.json
+      - name: Preserve the run receipt
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: synthetic-uptime-result
+          path: synthetic-uptime-result.json
+          if-no-files-found: error
+          retention-days: 90
