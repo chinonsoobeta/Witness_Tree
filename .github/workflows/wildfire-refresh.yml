@@ -13,6 +13,7 @@ jobs:
   refresh:
     permissions:
       contents: write
+      pull-requests: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -35,12 +36,25 @@ jobs:
         env:
           WILDFIRE_DATA_DIR: public/wildfire
           WILDFIRE_SOURCE_URLS: ${{ vars.WILDFIRE_SOURCE_URLS }}
-      - if: steps.gate.outputs.run == 'true'
+      - name: Open a pull request for refreshed files
+        if: steps.gate.outputs.run == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add public/wildfire
-          git diff --cached --quiet || git commit -m 'chore: refresh wildfire data'
-          git push
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          BRANCH="automation/wildfire-refresh-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git switch -c "$BRANCH"
+          git commit -m 'chore: refresh wildfire data'
+          git push --set-upstream origin "$BRANCH"
+          gh pr create \
+            --base main \
+            --head "$BRANCH" \
+            --title 'chore: refresh wildfire data' \
+            --body "Automated output from workflow run ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}."
       - if: steps.gate.outputs.run == 'true' && steps.refresh.outcome == 'failure' && steps.retry.outcome == 'failure'
         run: exit 1

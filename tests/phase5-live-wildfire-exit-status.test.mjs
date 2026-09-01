@@ -5,17 +5,31 @@ import { validatePhase5LiveWildfireExitStatus } from "../scripts/check-phase5-li
 
 const record = JSON.parse(readFileSync(new URL("../data/phase5-live-wildfire-exit-status.json", import.meta.url), "utf8"));
 
-test("Phase 5 records four exact local criteria and keeps production blockers distinct", async () => {
+test("Phase 5 records three of four local criteria and keeps production blockers distinct", async () => {
   assert.equal(await validatePhase5LiveWildfireExitStatus(record), record);
-  assert.equal(record.completedCriteria, 4);
-  assert.equal(record.percentage, 100);
+  assert.equal(record.completedCriteria, 3);
+  assert.equal(record.percentage, 75);
+  assert.equal(record.localImplementationStatus, "incomplete");
+  assert.equal(record.exitCriteria[0].status, "fail");
+  assert.ok(record.exitCriteria[0].evidence.some(({ path }) => path === "data/wildfire-refresh-run-history-2026-08-31.json"));
   assert.equal(record.phaseComplete, false);
   assert.deepEqual(record.productionBlockers.map(({ id, status }) => [id, status]), [["cleared-feeds", "blocked"], ["operations-rehearsal", "blocked"]]);
 });
 
 test("Phase 5 rejects a premature phase completion, changed percentage, or evidence tampering", async () => {
   await assert.rejects(validatePhase5LiveWildfireExitStatus({ ...record, phaseComplete: true }), /cannot claim/);
-  await assert.rejects(validatePhase5LiveWildfireExitStatus({ ...record, percentage: 75 }), /percentage/);
+  await assert.rejects(validatePhase5LiveWildfireExitStatus({ ...record, percentage: 100 }), /percentage/);
   const criteria = record.exitCriteria.map((item, index) => index === 0 ? { ...item, evidence: [{ ...item.evidence[0], sha256: "0".repeat(64) }] } : item);
   await assert.rejects(validatePhase5LiveWildfireExitStatus({ ...record, exitCriteria: criteria }), /checksum/);
+});
+
+test("Phase 5 cannot claim the scheduled-job criterion passed with zero real refresh successes", async () => {
+  const exitCriteria = record.exitCriteria.map((criterion) => criterion.id === "pacific-dst-schedule" ? { ...criterion, status: "pass" } : criterion);
+  await assert.rejects(validatePhase5LiveWildfireExitStatus({
+    ...record,
+    localImplementationStatus: "complete",
+    completedCriteria: 4,
+    percentage: 100,
+    exitCriteria,
+  }), /zero observed real refresh successes/);
 });
