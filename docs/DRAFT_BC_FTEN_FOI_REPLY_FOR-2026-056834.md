@@ -1,8 +1,10 @@
-# Unsent owner reply draft for FOR-2026-056834
+# Superseded unsent owner reply draft for FOR-2026-056834
 
-Status: **DRAFT, NOT SENT. OWNER REVIEW AND SENDING ONLY.**
+Status: **SUPERSEDED. THIS DRAFT WAS NEVER SENT.**
 
-Response deadline: **2026-09-01. Time-sensitive.**
+The owner sent a different reply on 2026-09-01 at 08:21:13 PDT. The sent reply confirmed successful retrieval of both complete provincial layers, described the timestamp limitation as feedback and expressly not as a continued request, and did not explicitly authorize withdrawal. The verified non-sensitive send facts are recorded in data/bc-forest-tenure-foi-catalogue-response-2026-08-27.json.
+
+Historical response deadline: **2026-09-01.**
 
 Subject: FOI Request FOR-2026-056834 - public export verification and remaining timestamp question
 
@@ -30,6 +32,6 @@ Regards,
 
 [Owner name]
 
-## Owner action
+## Historical boundary
 
-Review the factual wording, add the owner's signature details, and send only through the official FOI correspondence channel if approved. Do not mark the repository record as sent without recording the actual send timestamp.
+Do not send this draft. It is retained only to distinguish the prepared wording from the materially different reply the owner actually sent.

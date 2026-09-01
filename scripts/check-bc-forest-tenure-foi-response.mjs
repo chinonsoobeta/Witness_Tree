@@ -4,7 +4,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const SCHEMA = "witness-tree/bc-forest-tenure-foi-catalogue-response/2";
-const STATUS = "official-response-received-public-wfs-export-profiled-single-timestamp-unverified";
+const STATUS = "official-response-received-public-wfs-export-profiled-owner-reply-sent-withdrawal-not-explicitly-authorized";
 const CATALOGUE_API = "https://catalogue.data.gov.bc.ca/api/3/action/package_show";
 const LICENCE_TITLE = "Open Government Licence - British Columbia";
 const LICENCE_URL = "https://www2.gov.bc.ca/gov/content?id=A519A56BC2BF44E4A008B33FCF527F61";
@@ -235,6 +235,19 @@ export function validateBcForestTenureFoiResponse(record) {
   } else {
     assert.equal(request.outboundReplySentAt, undefined, "An unsent reply must not carry a send date.");
   }
+  assert.equal(request.outboundReplySent, true, "The verified owner reply must remain recorded as sent.");
+  assert.equal(request.outboundReplySentAt, "2026-09-01T08:21:13-07:00");
+  assert.deepEqual(request.outboundReplyProvenance, {
+    channel: "official email",
+    recipientDomain: "gov.bc.ca",
+    subject: "Re: FOI Request FOR-2026-056834 - Withdrawal request",
+    verificationBasis: "Read-only mailbox readback of the sent message's Date header, recipient, subject and body.",
+  });
+  assert.match(request.outboundReplySummary ?? "", /complete provincial layers/i);
+  assert.match(request.outboundReplySummary ?? "", /not as a continued request/i);
+  assert.match(request.outboundReplySummary ?? "", /did not explicitly authorize withdrawal/i);
+  assert.equal(request.outboundReplyContinuesRequest, false);
+  assert.equal(request.outboundReplyExplicitlyAuthorizesWithdrawal, false);
   noMailboxIdentifiers(record);
 
   const catalogue = record.catalogueReadback;
@@ -294,9 +307,10 @@ export function validateBcForestTenureFoiResponse(record) {
   }
   assert.match(assessment.reason ?? "", /31 distinct response timestamps/i);
   assert.match(assessment.reason ?? "", /no direct full-province package/i);
-  assert.match(assessment.ownerDecision ?? "", /do not recommend withdrawal/i);
-  assert.match(record.nextSafeStep ?? "", /owner review/i);
-  assert.match(record.nextSafeStep ?? "", /one-timestamp extract/i);
+  assert.match(assessment.ownerDecision ?? "", /did not explicitly authorize withdrawal/i);
+  assert.match(assessment.ownerDecision ?? "", /does not infer/i);
+  assert.match(record.nextSafeStep ?? "", /await any ministry acknowledgment or closure notice/i);
+  assert.match(record.nextSafeStep ?? "", /do not infer/i);
   return record;
 }
 
@@ -307,5 +321,5 @@ export async function checkBcForestTenureFoiResponse(file = new URL("../data/bc-
 if (import.meta.url === `file://${process.argv[1]}`) {
   const file = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../data/bc-forest-tenure-foi-catalogue-response-2026-08-27.json");
   const record = await checkBcForestTenureFoiResponse(file);
-  console.log(`BC FTA FOI response passed: ${record.exportProfile.views.length} public WFS views reconcile, while one-timestamp coherence remains unverified.`);
+  console.log(`BC FTA FOI response passed: ${record.exportProfile.views.length} public WFS views reconcile, the owner reply is verified sent, and withdrawal remains unconfirmed.`);
 }

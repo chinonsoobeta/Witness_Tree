@@ -17,7 +17,10 @@ test("BC FOI response preserves the observed complete WFS profile without claimi
     [222618, 71876],
   );
   assert.deepEqual(record.exportProfile.views[1].nullGeometryLifecycle, { RETIRED: 21, ACTIVE: 4 });
-  assert.equal(record.request.outboundReplySent, false);
+  assert.equal(record.request.outboundReplySent, true);
+  assert.equal(record.request.outboundReplySentAt, "2026-09-01T08:21:13-07:00");
+  assert.equal(record.request.outboundReplyContinuesRequest, false);
+  assert.equal(record.request.outboundReplyExplicitlyAuthorizesWithdrawal, false);
 });
 
 test("BC FOI response rejects identity, provenance, and evidence drift", () => {
@@ -25,6 +28,7 @@ test("BC FOI response rejects identity, provenance, and evidence drift", () => {
     ["status", { ...record, status: "resolved" }],
     ["request summary", { ...record, request: { ...record.request, requestedOutcomeIsSummary: false } }],
     ["response provenance", { ...record, request: { ...record.request, responseProvenance: { ...record.request.responseProvenance, senderDomain: "example.invalid" } } }],
+    ["outbound provenance", { ...record, request: { ...record.request, outboundReplyProvenance: { ...record.request.outboundReplyProvenance, recipientDomain: "example.invalid" } } }],
     ["catalogue identity", { ...record, catalogueReadback: { ...record.catalogueReadback, datasets: [{ ...record.catalogueReadback.datasets[0], objectName: "WRONG" }, record.catalogueReadback.datasets[1]] } }],
     ["resource set", { ...record, catalogueReadback: { ...record.catalogueReadback, datasets: [{ ...record.catalogueReadback.datasets[0], resources: ["direct-download"] }, record.catalogueReadback.datasets[1]] } }],
     ["manifest digest", { ...record, exportProfile: { ...record.exportProfile, manifest: { ...record.exportProfile.manifest, sha256: "0".repeat(64) } } }],
@@ -62,13 +66,16 @@ test("BC FOI response rejects withdrawal while any verification remains false", 
   );
 });
 
-test("BC FOI response requires a send date only after an outbound reply is sent", () => {
+test("BC FOI response requires the verified send date and rejects mailbox identifiers", () => {
   const missingDate = structuredClone(record);
-  missingDate.request.outboundReplySent = true;
+  delete missingDate.request.outboundReplySentAt;
   assert.throws(() => validateBcForestTenureFoiResponse(missingDate), /outboundReplySentAt/);
 
-  const sent = structuredClone(record);
-  sent.request.outboundReplySent = true;
-  sent.request.outboundReplySentAt = "2026-09-01T18:00:00Z";
-  assert.equal(validateBcForestTenureFoiResponse(sent), sent);
+  const wrongDate = structuredClone(record);
+  wrongDate.request.outboundReplySentAt = "2026-09-01T18:00:00Z";
+  assert.throws(() => validateBcForestTenureFoiResponse(wrongDate));
+
+  const mailboxIdentifier = structuredClone(record);
+  mailboxIdentifier.request.message_id = "must-not-be-retained";
+  assert.throws(() => validateBcForestTenureFoiResponse(mailboxIdentifier), /mailbox message or thread identifiers/i);
 });
