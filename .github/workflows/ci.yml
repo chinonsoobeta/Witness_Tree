@@ -21,6 +21,17 @@ jobs:
       - name: Install geospatial test dependencies
         run: sudo apt-get update && sudo apt-get install -y gdal-bin python3-gdal python3-numpy zsh
       - run: npm ci
+      # The production tree is what a viewer of the site executes, so it is the blocking
+      # surface and it is held at high. The build toolchain is audited separately at
+      # critical: its advisories are real but reach only this runner and the owner's
+      # machine, and the only available fix is a breaking Cloudflare upgrade recorded in
+      # docs/DEPENDENCY_AUDIT.md. The third command hides nothing.
+      - name: Reject high-severity advisories in shipped dependencies
+        run: npm audit --omit=dev --audit-level=high
+      - name: Reject critical advisories anywhere in the tree
+        run: npm audit --audit-level=critical
+      - name: Report every dependency advisory, including build tooling
+        run: npm audit || true
       - run: npx tsc --noEmit
       - run: npm run lint
       - run: npm run check:bilingual
