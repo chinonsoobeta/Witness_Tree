@@ -1,8 +1,8 @@
-// The single list of tests that need the owner SSD data root.
+// The shared inventory of tests that portable CI cannot execute.
 //
 // It lives in its own module because scripts/run-ci-tests.mjs executes the whole
 // suite at import time, and scripts/check-data-root-test-currency.mjs needs the
-// list without running anything.
+// same inventory without running anything.
 
 // The Witness Tree data root lives on the owner's SSD and cannot exist on a runner.
 export const REQUIRES_DATA_ROOT = new Map([
@@ -33,8 +33,38 @@ export const REQUIRES_DATA_ROOT = new Map([
   ["wildfire-derived-recovery-owner-wrapper.test.mjs", "Resolves the data root before invoking the recovery runner."],
 ]);
 
+// These drive owner-run zsh runners written for the owner's macOS device. They
+// depend on BSD tooling and macOS file ownership or mode semantics, so Linux CI
+// cannot execute them without changing the environment they are meant to test.
+export const REQUIRES_MACOS_RUNNER = new Map([
+  ["archive-existing-key-recovery.test.mjs", "archive-existing-key-recovery.sh reads sizes with the BSD-only `stat -f %z`."],
+  ["phase1-archive-owner-exercise.test.mjs", "Drives run-phase1-archive-owner-exercise.sh, which depends on macOS shell tooling."],
+  ["phase1-canopy-completion-recovery.test.mjs", "Asserts on an attestation failure that a macOS owner-and-mode-600 check reaches first."],
+]);
+
+export const TEST_REQUIREMENTS = Object.freeze({
+  dataRoot: "data-root",
+  macosRunner: "macos-runner",
+});
+
+export const OWNER_BOUND_TEST_GROUPS = Object.freeze([
+  Object.freeze({ requirement: TEST_REQUIREMENTS.dataRoot, tests: REQUIRES_DATA_ROOT }),
+  Object.freeze({ requirement: TEST_REQUIREMENTS.macosRunner, tests: REQUIRES_MACOS_RUNNER }),
+]);
+
+export function ownerBoundTestInventory() {
+  const inventory = new Map();
+  for (const { requirement, tests } of OWNER_BOUND_TEST_GROUPS) {
+    for (const [name, reason] of tests) {
+      if (inventory.has(name)) throw new Error(`${name} is listed under more than one owner-bound test requirement`);
+      inventory.set(name, Object.freeze({ requirement, reason }));
+    }
+  }
+  return new Map([...inventory].sort(([left], [right]) => left.localeCompare(right)));
+}
+
 // Where the owner-local run of those tests records what it proved. Declared here,
 // not in the runner, so the CI-side currency gate can read the receipt without
 // importing a module that resolves the data root.
 export const RECEIPT_PATH = "data/data-root-test-run-receipt.json";
-export const RECEIPT_SCHEMA = "witness-tree/data-root-test-run-receipt/1";
+export const RECEIPT_SCHEMA = "witness-tree/data-root-test-run-receipt/2";

@@ -9,15 +9,13 @@ import {
   repositoryCheckFiles,
   validateCoverage,
 } from "../scripts/check-ci-check-coverage.mjs";
-import { REQUIRES_DATA_ROOT } from "../scripts/lib/data-root-bound-tests.mjs";
+import { REQUIRES_DATA_ROOT, REQUIRES_MACOS_RUNNER } from "../scripts/lib/data-root-bound-tests.mjs";
 
 const register = readRepositoryJson(REGISTER_PATH);
 const packageDocument = readRepositoryJson("package.json");
 const ci = readRepositoryJson(".github/workflows/ci.yml", false);
 const wildfire = readRepositoryJson(".github/workflows/wildfire-refresh.yml", false);
 const checkerFiles = repositoryCheckFiles();
-const runCiTests = readRepositoryJson("scripts/run-ci-tests.mjs", false);
-const macosExcluded = new Set([...runCiTests.matchAll(/^\s*\["([^"]+\.test\.(?:mjs|ts|tsx))",/gm)].map((match) => match[1]));
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
@@ -121,7 +119,7 @@ test("suite-covered exclusions name a portable test that imports the checker", (
     const testName = namedTest(entry);
     assert.ok(testName, `${entry.check} must name its suite test`);
     assert.equal(REQUIRES_DATA_ROOT.has(testName), false, `${testName} is data-root-bound`);
-    assert.equal(macosExcluded.has(testName), false, `${testName} is macOS-bound`);
+    assert.equal(REQUIRES_MACOS_RUNNER.has(testName), false, `${testName} is macOS-bound`);
     assert.match(readFileSync(new URL(`../tests/${testName}`, import.meta.url), "utf8"), new RegExp(entry.check.split("/").at(-1).replaceAll(".", "\\.")));
   }
 });
@@ -137,7 +135,7 @@ test("a cited test in an environment or data-root exclusion sits in the matching
   }
   for (const entry of register.exclusions.filter(({ category }) => category === "environment-bound")) {
     const testName = namedTest(entry);
-    if (testName) assert.equal(macosExcluded.has(testName), true, `${entry.check} cites ${testName}, which is not macOS-bound`);
+    if (testName) assert.equal(REQUIRES_MACOS_RUNNER.has(testName), true, `${entry.check} cites ${testName}, which is not macOS-bound`);
   }
 });
 

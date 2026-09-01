@@ -15,21 +15,8 @@
 import { spawnSync } from "node:child_process";
 import { readdirSync } from "node:fs";
 import path from "node:path";
-import { REQUIRES_DATA_ROOT } from "./lib/data-root-bound-tests.mjs";
+import { REQUIRES_DATA_ROOT, REQUIRES_MACOS_RUNNER } from "./lib/data-root-bound-tests.mjs";
 import { fileURLToPath } from "node:url";
-
-
-// These drive owner-run zsh runners written for the owner's macOS device against
-// real AWS. They use BSD-only tooling such as `stat -f %z` and depend on macOS
-// file-mode and ownership semantics, so they cannot pass on a Linux runner. The
-// runners are not made portable: they only ever execute on that one machine, and
-// rewriting a security-sensitive runner for an environment it never runs in would
-// add risk for no benefit.
-const REQUIRES_MACOS_RUNNER = new Map([
-  ["archive-existing-key-recovery.test.mjs", "archive-existing-key-recovery.sh reads sizes with the BSD-only `stat -f %z`."],
-  ["phase1-archive-owner-exercise.test.mjs", "Drives run-phase1-archive-owner-exercise.sh, which depends on macOS shell tooling."],
-  ["phase1-canopy-completion-recovery.test.mjs", "Asserts on an attestation failure that a macOS owner-and-mode-600 check reaches first."],
-]);
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dir = path.join(root, "tests");
