@@ -1,37 +1,42 @@
-# Superseded unsent owner reply draft for FOR-2026-056834
+# Owner reply to FOR-2026-056834, as sent
 
-Status: **SUPERSEDED. THIS DRAFT WAS NEVER SENT.**
+Status: **SENT on 2026-09-01 (owner-stated date; no mailbox was read, so the send time is unknown).**
 
-The owner sent a different reply on 2026-09-01 at 08:21:13 PDT. The sent reply confirmed successful retrieval of both complete provincial layers, described the timestamp limitation as feedback and expressly not as a continued request, and did not explicitly authorize withdrawal. The verified non-sensitive send facts are recorded in data/bc-forest-tenure-foi-catalogue-response-2026-08-27.json.
+The owner sent the reply below on 2026-09-01. It confirms the catalogue links satisfy the
+substance of the request, states the reconciled record counts, asks to withdraw
+FOR-2026-056834, and raises the single-timestamp limitation as feedback only, expressly not
+as a continued request. The ministry has not acknowledged or confirmed the withdrawal, so
+the request is not recorded as closed. The non-sensitive send facts are in
+[`data/bc-forest-tenure-foi-catalogue-response-2026-08-27.json`](../data/bc-forest-tenure-foi-catalogue-response-2026-08-27.json).
 
-Historical response deadline: **2026-09-01.**
+Stated response deadline: **2026-09-01.**
 
-Subject: FOI Request FOR-2026-056834 - public export verification and remaining timestamp question
+## Text as sent
 
-Hello,
+Subject: Re: FOI Request FOR-2026-056834 - Withdrawal request
 
-Thank you for identifying the BC Data Catalogue records for:
+Thank you for the response and for pointing me to the catalogue records.
 
-- WHSE_FOREST_TENURE.FTEN_CUT_BLOCK_POLY_SVW
-- WHSE_FOREST_TENURE.FTEN_HARVEST_AUTH_POLY_SVW
+I have now confirmed that the two records carry the exact warehouse objects I requested,
+WHSE_FOREST_TENURE.FTEN_CUT_BLOCK_POLY_SVW and WHSE_FOREST_TENURE.FTEN_HARVEST_AUTH_POLY_SVW,
+under the Open Government Licence - British Columbia. Working from the public WFS endpoint
+published on those records, I retrieved the complete provincial extent of both layers on
+2026-09-01: 222,618 cutblock polygons and 71,876 harvesting authority polygons, with the
+full published attribute set for each layer and no missing or duplicated records.
 
-I verified that both records are published under the Open Government Licence - British Columbia. I also completed a read-only WFS 2.0 profile of the exact public views in EPSG:3005, using JSON pages of 10,000 records sorted by OBJECTID.
+That satisfies the substance of my request, so I am content to withdraw FOR-2026-056834.
 
-The public WFS returned 222,618 cutblock records and 71,876 harvesting-authority records. For each view, the result count was unchanged before and after paging and matched both the retrieved feature count and distinct OBJECTID count, with zero duplicate IDs and zero missing records. The DescribeFeatureType definitions matched the catalogue schema exactly for both views. The extract contained the published attribute set and geometries, with province-wide extents and all 23 reported administrative districts. Two cutblocks and 25 harvesting authorities had null geometry; the latter comprised 21 retired and 4 active records. The profile establishes exact schema equality, but does not independently prove that every declared column was non-null somewhere in the extract.
+One note for your records, offered only as feedback and not as a continued request. The
+catalogue's "BC Geographic Warehouse Custom Download" resource carries no direct URL and is
+an indirect order form, and the WFS service timestamps each response page separately rather
+than issuing one snapshot. So the public route does not produce an extract captured at a
+single stated timestamp, which was the one element of my request it does not meet. I was
+able to work around this by recording my own capture window and checksums.
 
-This substantially satisfies the substance of the request for complete machine-readable records, attributes, geometry, and provincial coverage. It does not verify the requested one-timestamp coherence. The 31 WFS pages carried 31 distinct response timestamps, from 2026-09-01T15:04:49.139Z through 2026-09-01T15:10:41.229Z. The catalogue Custom Download resource is indirect and exposes no direct package URL, so I could not verify a direct full-province package or a coherent extract captured at one stated timestamp.
+Thank you for your help.
 
-Could the ministry please:
+## Boundary
 
-1. provide one extract of both exact views captured at a single stated timestamp; or
-2. confirm that no one-timestamp extract exists and that the separately timestamped public WFS pages are the most coherent complete export available?
-
-Until that point is clarified, I am not confirming withdrawal of FOR-2026-056834.
-
-Regards,
-
-[Owner name]
-
-## Historical boundary
-
-Do not send this draft. It is retained only to distinguish the prepared wording from the materially different reply the owner actually sent.
+This file records correspondence that has already been sent. Do not re-send it. The
+withdrawal it requests is not effective until the ministry confirms it, and no such
+confirmation has been recorded.

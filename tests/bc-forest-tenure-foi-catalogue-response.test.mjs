@@ -18,9 +18,11 @@ test("BC FOI response preserves the observed complete WFS profile without claimi
   );
   assert.deepEqual(record.exportProfile.views[1].nullGeometryLifecycle, { RETIRED: 21, ACTIVE: 4 });
   assert.equal(record.request.outboundReplySent, true);
-  assert.equal(record.request.outboundReplySentAt, "2026-09-01T08:21:13-07:00");
+  assert.equal(record.request.outboundReplySentOn, "2026-09-01");
+  assert.equal(record.request.outboundReplySentAt, undefined);
   assert.equal(record.request.outboundReplyContinuesRequest, false);
-  assert.equal(record.request.outboundReplyExplicitlyAuthorizesWithdrawal, false);
+  assert.equal(record.request.withdrawalRequestedByRequester, true);
+  assert.equal(record.request.withdrawalConfirmedByMinistry, false);
 });
 
 test("BC FOI response rejects identity, provenance, and evidence drift", () => {
@@ -66,16 +68,39 @@ test("BC FOI response rejects withdrawal while any verification remains false", 
   );
 });
 
-test("BC FOI response requires the verified send date and rejects mailbox identifiers", () => {
+test("BC FOI response requires the owner-stated send date and rejects mailbox identifiers", () => {
   const missingDate = structuredClone(record);
-  delete missingDate.request.outboundReplySentAt;
-  assert.throws(() => validateBcForestTenureFoiResponse(missingDate), /outboundReplySentAt/);
+  delete missingDate.request.outboundReplySentOn;
+  assert.throws(() => validateBcForestTenureFoiResponse(missingDate), /outboundReplySentOn|send date/i);
 
   const wrongDate = structuredClone(record);
-  wrongDate.request.outboundReplySentAt = "2026-09-01T18:00:00Z";
+  wrongDate.request.outboundReplySentOn = "2026-09-02";
   assert.throws(() => validateBcForestTenureFoiResponse(wrongDate));
 
   const mailboxIdentifier = structuredClone(record);
   mailboxIdentifier.request.message_id = "must-not-be-retained";
   assert.throws(() => validateBcForestTenureFoiResponse(mailboxIdentifier), /mailbox message or thread identifiers/i);
+});
+
+test("BC FOI response refuses a send time nobody observed", () => {
+  // No mailbox was read. A clock-precise send time could only have been invented,
+  // and pinning one in the gate would promote the invention to a required fact.
+  const invented = structuredClone(record);
+  invented.request.outboundReplySentAt = "2026-09-01T08:21:13-07:00";
+  assert.throws(() => validateBcForestTenureFoiResponse(invented), /send time was never observed/i);
+});
+
+test("BC FOI response separates the requester's withdrawal from ministry closure", () => {
+  const unconfirmed = structuredClone(record);
+  unconfirmed.request.withdrawalConfirmedByMinistry = true;
+  assert.throws(() => validateBcForestTenureFoiResponse(unconfirmed), /confirmation date/i);
+
+  const noChannel = structuredClone(record);
+  noChannel.request.withdrawalConfirmedByMinistry = true;
+  noChannel.request.withdrawalConfirmedOn = "2026-09-02";
+  assert.throws(() => validateBcForestTenureFoiResponse(noChannel), /channel/i);
+
+  const claimsClosure = structuredClone(record);
+  claimsClosure.status = `${record.status}-withdrawn`;
+  assert.throws(() => validateBcForestTenureFoiResponse(claimsClosure), /must not claim closure/i);
 });

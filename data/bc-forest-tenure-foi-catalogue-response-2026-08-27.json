@@ -1,6 +1,6 @@
 {
   "schemaVersion": "witness-tree/bc-forest-tenure-foi-catalogue-response/2",
-  "status": "official-response-received-public-wfs-export-profiled-owner-reply-sent-withdrawal-not-explicitly-authorized",
+  "status": "official-response-received-public-wfs-export-profiled-owner-reply-sent-requesting-withdrawal-ministry-confirmation-pending",
   "recordedOn": "2026-08-27",
   "request": {
     "reference": "FOR-2026-056834",
@@ -20,16 +20,17 @@
       "subject": "FOI Request FOR-2026-056834 - Withdrawal request"
     },
     "outboundReplySent": true,
-    "outboundReplySentAt": "2026-09-01T08:21:13-07:00",
+    "outboundReplySentOn": "2026-09-01",
     "outboundReplyProvenance": {
       "channel": "official email",
       "recipientDomain": "gov.bc.ca",
       "subject": "Re: FOI Request FOR-2026-056834 - Withdrawal request",
-      "verificationBasis": "Read-only mailbox readback of the sent message's Date header, recipient, subject and body."
+      "verificationBasis": "Owner report in the working session. No mailbox was accessed, so the send date is owner-stated and the exact send time is unknown."
     },
-    "outboundReplySummary": "The owner confirmed the two exact warehouse objects, OGL-BC coverage and successful retrieval of both complete provincial layers. The reply described the indirect custom-download route and separately timestamped WFS pages as feedback, expressly not as a continued request, and did not explicitly authorize withdrawal.",
+    "outboundReplySummary": "The owner confirmed the two exact warehouse objects, OGL-BC coverage and successful retrieval of both complete provincial layers, stated the reconciled record counts, and asked to withdraw FOR-2026-056834. The reply raised the indirect custom-download route and the separately timestamped WFS pages as feedback only, expressly not as a continued request.",
     "outboundReplyContinuesRequest": false,
-    "outboundReplyExplicitlyAuthorizesWithdrawal": false
+    "withdrawalRequestedByRequester": true,
+    "withdrawalConfirmedByMinistry": false
   },
   "catalogueReadback": {
     "retrievedAt": "2026-08-27T17:00:00Z",
@@ -101,7 +102,7 @@
       "basis": "For both views, WFS result counts before and after paging were unchanged and matched every retrieved feature and distinct OBJECTID, with zero duplicates and zero missing records. This verifies a stable read window, not a one-timestamp snapshot."
     },
     "reason": "The exact public OGL-BC WFS surfaces yielded complete province-wide paged extracts with reconciled feature and OBJECTID counts during a stable read window. The catalogue custom-download resource remains indirect with no direct package URL, and the 31 pages expose 31 distinct response timestamps, so no direct full-province package or coherent one-timestamp extract is verified.",
-    "ownerDecision": "The owner sent a reply treating the timestamp limitation as feedback and expressly not as a continued request. The reply did not explicitly authorize withdrawal, so this record does not infer a withdrawal decision or ministry closure."
+    "ownerDecision": "The owner sent a reply treating the timestamp limitation as feedback and expressly not as a continued request, and asked to withdraw FOR-2026-056834. The ministry has not acknowledged or confirmed the withdrawal, so this record does not treat the request as closed."
   },
   "exportProfile": {
     "evidenceRoot": "/Volumes/Extended_SSD/Witness_Tree-data/work/bc-ften-foi-profile-2026-09-01",

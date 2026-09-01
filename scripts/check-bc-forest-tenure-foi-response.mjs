@@ -4,7 +4,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const SCHEMA = "witness-tree/bc-forest-tenure-foi-catalogue-response/2";
-const STATUS = "official-response-received-public-wfs-export-profiled-owner-reply-sent-withdrawal-not-explicitly-authorized";
+const STATUS = "official-response-received-public-wfs-export-profiled-owner-reply-sent-requesting-withdrawal-ministry-confirmation-pending";
 const CATALOGUE_API = "https://catalogue.data.gov.bc.ca/api/3/action/package_show";
 const LICENCE_TITLE = "Open Government Licence - British Columbia";
 const LICENCE_URL = "https://www2.gov.bc.ca/gov/content?id=A519A56BC2BF44E4A008B33FCF527F61";
@@ -208,6 +208,15 @@ function validateExportProfile(profile) {
 export function validateBcForestTenureFoiResponse(record) {
   assert.ok(record && typeof record === "object" && !Array.isArray(record), "The FOI response record must be an object.");
   assert.equal(record.schemaVersion, SCHEMA);
+  // Order matters: this runs before the exact status pin below, so a status that
+  // claims closure fails for the reason it is wrong rather than for drifting.
+  if (!record.request?.withdrawalConfirmedByMinistry) {
+    assert.doesNotMatch(
+      record.status ?? "",
+      /\b(closed|withdrawn)\b/i,
+      "The record must not claim closure while the ministry confirmation is absent.",
+    );
+  }
   assert.equal(record.status, STATUS);
   assert.equal(record.recordedOn, "2026-08-27");
 
@@ -231,23 +240,45 @@ export function validateBcForestTenureFoiResponse(record) {
   });
   requiredBoolean(request.outboundReplySent, "request.outboundReplySent");
   if (request.outboundReplySent) {
-    exactTimestamp(request.outboundReplySentAt, "request.outboundReplySentAt");
+    assert.match(
+      request.outboundReplySentOn ?? "",
+      /^\d{4}-\d{2}-\d{2}$/,
+      "A sent reply records the owner-stated send date only.",
+    );
   } else {
-    assert.equal(request.outboundReplySentAt, undefined, "An unsent reply must not carry a send date.");
+    assert.equal(request.outboundReplySentOn, undefined, "An unsent reply must not carry a send date.");
   }
-  assert.equal(request.outboundReplySent, true, "The verified owner reply must remain recorded as sent.");
-  assert.equal(request.outboundReplySentAt, "2026-09-01T08:21:13-07:00");
+  // No mailbox was read, so no clock-precise send time can be attested. A time of
+  // day here would be an invention, and pinning one would make the invention a gate.
+  assert.equal(request.outboundReplySentAt, undefined, "The send time was never observed and must not be recorded.");
+  assert.equal(request.outboundReplySent, true, "The owner-reported reply must remain recorded as sent.");
+  assert.equal(request.outboundReplySentOn, "2026-09-01");
   assert.deepEqual(request.outboundReplyProvenance, {
     channel: "official email",
     recipientDomain: "gov.bc.ca",
     subject: "Re: FOI Request FOR-2026-056834 - Withdrawal request",
-    verificationBasis: "Read-only mailbox readback of the sent message's Date header, recipient, subject and body.",
+    verificationBasis: "Owner report in the working session. No mailbox was accessed, so the send date is owner-stated and the exact send time is unknown.",
   });
   assert.match(request.outboundReplySummary ?? "", /complete provincial layers/i);
   assert.match(request.outboundReplySummary ?? "", /not as a continued request/i);
-  assert.match(request.outboundReplySummary ?? "", /did not explicitly authorize withdrawal/i);
+  assert.match(request.outboundReplySummary ?? "", /withdraw FOR-2026-056834/i);
   assert.equal(request.outboundReplyContinuesRequest, false);
-  assert.equal(request.outboundReplyExplicitlyAuthorizesWithdrawal, false);
+  requiredBoolean(request.withdrawalRequestedByRequester, "request.withdrawalRequestedByRequester");
+  requiredBoolean(request.withdrawalConfirmedByMinistry, "request.withdrawalConfirmedByMinistry");
+  assert.equal(request.withdrawalRequestedByRequester, true);
+  // The requester asking to withdraw is not the ministry closing the file. Only a
+  // recorded acknowledgement, with its own date and channel, may close it.
+  if (request.withdrawalConfirmedByMinistry) {
+    assert.match(
+      request.withdrawalConfirmedOn ?? "",
+      /^\d{4}-\d{2}-\d{2}$/,
+      "A confirmed withdrawal records the confirmation date.",
+    );
+    assert.ok(
+      (request.withdrawalConfirmationProvenance ?? {}).channel,
+      "A confirmed withdrawal records the channel it arrived on.",
+    );
+  }
   noMailboxIdentifiers(record);
 
   const catalogue = record.catalogueReadback;
@@ -307,8 +338,8 @@ export function validateBcForestTenureFoiResponse(record) {
   }
   assert.match(assessment.reason ?? "", /31 distinct response timestamps/i);
   assert.match(assessment.reason ?? "", /no direct full-province package/i);
-  assert.match(assessment.ownerDecision ?? "", /did not explicitly authorize withdrawal/i);
-  assert.match(assessment.ownerDecision ?? "", /does not infer/i);
+  assert.match(assessment.ownerDecision ?? "", /asked to withdraw FOR-2026-056834/i);
+  assert.match(assessment.ownerDecision ?? "", /has not acknowledged or confirmed/i);
   assert.match(record.nextSafeStep ?? "", /await any ministry acknowledgment or closure notice/i);
   assert.match(record.nextSafeStep ?? "", /do not infer/i);
   return record;
@@ -321,5 +352,5 @@ export async function checkBcForestTenureFoiResponse(file = new URL("../data/bc-
 if (import.meta.url === `file://${process.argv[1]}`) {
   const file = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../data/bc-forest-tenure-foi-catalogue-response-2026-08-27.json");
   const record = await checkBcForestTenureFoiResponse(file);
-  console.log(`BC FTA FOI response passed: ${record.exportProfile.views.length} public WFS views reconcile, the owner reply is verified sent, and withdrawal remains unconfirmed.`);
+  console.log(`BC FTA FOI response passed: ${record.exportProfile.views.length} public WFS views reconcile, the owner-reported reply is recorded as sent, and withdrawal remains unconfirmed.`);
 }
