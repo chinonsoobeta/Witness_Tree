@@ -53,11 +53,6 @@
       "reason": "This point-in-time source-access observation is reviewed in the owner-run local gate set."
     },
     {
-      "check": "scripts/check-bc-forest-tenure-foi-catalogue-response.mjs",
-      "category": "owner-invoked",
-      "reason": "This owner correspondence and catalogue observation is reviewed in the local gate set."
-    },
-    {
       "check": "scripts/check-bc-fta-operational-sources.mjs",
       "category": "owner-invoked",
       "reason": "This source-access status gate is reviewed in the owner-run local gate set."
