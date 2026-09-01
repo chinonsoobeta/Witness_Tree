@@ -34,19 +34,18 @@ import { verify } from "./verify-phase1-ntems-transform.mjs";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
 export const NTEMS_EVIDENCE = Object.freeze([
-  { specId: "ntems-forest-harvest-v1", evidencePath: "data/ntems-forest-harvest-v1-readback-evidence-2026-08-30.json" },
-  { specId: "ntems-canopy-cover-v1", evidencePath: "data/ntems-canopy-cover-v1-readback-evidence-2026-08-30.json" },
-  { specId: "ntems-canopy-height-v1", evidencePath: "data/ntems-canopy-height-v1-readback-evidence-2026-08-30.json" },
-  { specId: "ntems-annual-land-cover-v1", evidencePath: "data/ntems-annual-land-cover-v1-readback-evidence-2026-08-30.json" },
+  { specId: "ntems-forest-harvest-v1", evidencePath: "data/ntems-forest-harvest-v1-readback-evidence-2026-08-30.json", committedEvidence: true },
+  { specId: "ntems-canopy-cover-v1", evidencePath: "data/ntems-canopy-cover-v1-readback-evidence-2026-08-30.json", committedEvidence: true },
+  { specId: "ntems-canopy-height-v1", evidencePath: "data/ntems-canopy-height-v1-readback-evidence-2026-08-30.json", committedEvidence: true },
+  { specId: "ntems-annual-land-cover-v1", evidencePath: "data/ntems-annual-land-cover-v1-readback-evidence-2026-08-30.json", committedEvidence: true },
 ]);
 
-export function checkScope({ specId, evidencePath }, root = ROOT, dataRoot = undefined) {
+export function checkScope({ specId, evidencePath, committedEvidence = false }, root = ROOT, dataRoot = undefined) {
   const evidenceFile = path.join(root, evidencePath);
-  // A scope with no committed evidence is not a failure here. It means the
-  // transformation has not been read back yet, which the readiness check
-  // reports. Silently passing a missing file would be the defect; naming it
-  // as not-yet-evidenced is the honest result.
-  if (!existsSync(evidenceFile)) return { specId, evidencePath, state: "no-committed-evidence", bytesRead: false };
+  if (!existsSync(evidenceFile)) {
+    if (committedEvidence) throw new Error(`${specId} is recorded with committed readback evidence at ${evidencePath}, but that evidence file is missing.`);
+    return { specId, evidencePath, state: "no-committed-evidence", bytesRead: false };
+  }
   const committed = JSON.parse(readFileSync(evidenceFile, "utf8"));
   const recomputed = verify({ specId, ...(dataRoot ? { dataRoot } : {}) }, root);
   assert.deepEqual(
