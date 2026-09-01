@@ -1,17 +1,17 @@
 {
  "schemaVersion": "witness-tree/phase5-live-wildfire-exit-status/1",
  "phase": 5,
- "localImplementationStatus": "complete",
+ "localImplementationStatus": "incomplete",
  "phaseComplete": false,
- "completedCriteria": 4,
+ "completedCriteria": 3,
  "totalCriteria": 4,
- "percentage": 100,
+ "percentage": 75,
  "exitCriteria": [
   {
    "id": "pacific-dst-schedule",
-   "title": "Four Pacific refresh slots preserve daylight-saving behaviour",
-   "status": "pass",
-   "reason": "The schedule gate resolves America/Vancouver local hours 05:00, 12:00, 16:00, and 21:00 across Pacific standard and daylight time; the workflow invokes the gate before refresh.",
+   "title": "The scheduled job runs exactly four times daily in both halves of the year, verified across a daylight saving transition",
+   "status": "fail",
+   "reason": "The schedule gate selects the four required America/Vancouver hours, but the dated 100-run receipt records 56 gated no-ops, 44 attempted-refresh failures, and zero real refresh successes. The workflow now writes through a bot branch and pull request; this code change is not evidence that a scheduled run has succeeded.",
    "evidence": [
     {
      "path": "scripts/wildfire/dst-gate.mjs",
@@ -19,7 +19,15 @@
     },
     {
      "path": "tests/wildfire-workflow.test.mjs",
-     "sha256": "23661f1a24ee6c8352b07d017fabcde0cc34caa5bf895b7cc3e1454c1fb9627c"
+     "sha256": "ab9684e7d7649719c3ec51a0baf4f2b5f008b7f2e2c08eeb05c0b5929cebc835"
+    },
+    {
+     "path": ".github/workflows/wildfire-refresh.yml",
+     "sha256": "c619db93908af4595c699db3983b3eefb36337dff8c907721ab3c8d5ad0ee1d5"
+    },
+    {
+     "path": "data/wildfire-refresh-run-history-2026-08-31.json",
+     "sha256": "1ccaad0722e9b9a590aad4dad87a678f1ab2a180b959ccc90e242fb46f49b5c7"
     }
    ]
   },
@@ -43,7 +51,7 @@
    "evidence": [
     {
      "path": "tests/wildfire-workflow.test.mjs",
-     "sha256": "23661f1a24ee6c8352b07d017fabcde0cc34caa5bf895b7cc3e1454c1fb9627c"
+     "sha256": "ab9684e7d7649719c3ec51a0baf4f2b5f008b7f2e2c08eeb05c0b5929cebc835"
     },
     {
      "path": "tests/wildfire-routes.test.tsx",
@@ -63,7 +71,7 @@
     },
     {
      "path": "tests/wildfire-workflow.test.mjs",
-     "sha256": "23661f1a24ee6c8352b07d017fabcde0cc34caa5bf895b7cc3e1454c1fb9627c"
+     "sha256": "ab9684e7d7649719c3ec51a0baf4f2b5f008b7f2e2c08eeb05c0b5929cebc835"
     }
    ]
   }

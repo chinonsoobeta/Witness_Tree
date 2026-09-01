@@ -37,6 +37,16 @@ test('workflow cron covers both Pacific UTC offsets', async () => {
   assert.match(workflow, /run: sleep 900 && node scripts\/wildfire\/refresh\.mjs/);
 });
 
+test('workflow writes through a bot branch and pull request instead of protected main', async () => {
+  const workflow = await readFile(new URL('../.github/workflows/wildfire-refresh.yml', import.meta.url), 'utf8');
+  assert.match(workflow, /permissions:\n {6}contents: write\n {6}pull-requests: write/);
+  assert.match(workflow, /BRANCH="automation\/wildfire-refresh-\$\{GITHUB_RUN_ID\}-\$\{GITHUB_RUN_ATTEMPT\}"/);
+  assert.match(workflow, /git push --set-upstream origin "\$BRANCH"/);
+  assert.match(workflow, /gh pr create[\s\S]*--base main[\s\S]*--head "\$BRANCH"/);
+  const pushLines = workflow.split('\n').map((line) => line.trim()).filter((line) => line.startsWith('git push'));
+  assert.deepEqual(pushLines, ['git push --set-upstream origin "$BRANCH"']);
+});
+
 test('an existing timestamped snapshot is never overwritten', async () => {
   const directory = await root();
   const store = createSnapshotStore(directory);

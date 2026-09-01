@@ -4,8 +4,10 @@ import { fileURLToPath } from "node:url";
 import { relative, resolve } from "node:path";
 
 const ROOT = fileURLToPath(new URL("../", import.meta.url));
+const RUN_HISTORY_PATH = new URL("../data/wildfire-refresh-run-history-2026-08-31.json", import.meta.url);
+const RUN_HISTORY_EVIDENCE_PATH = "data/wildfire-refresh-run-history-2026-08-31.json";
 const CRITERIA = new Map([
-  ["pacific-dst-schedule", "Four Pacific refresh slots preserve daylight-saving behaviour"],
+  ["pacific-dst-schedule", "The scheduled job runs exactly four times daily in both halves of the year, verified across a daylight saving transition"],
   ["five-required-display-fields", "Both public routes retain the five required safety display fields and block deployment if one is absent"],
   ["stale-25-hour-safe-state", "At 25 hours without a successful refresh, the static route shows unavailable guidance and an agency link"],
   ["simulated-season-history", "A full simulated season of immutable snapshots is retained and queryable by bounded time range"],
@@ -40,6 +42,12 @@ export async function validatePhase5LiveWildfireExitStatus(record) {
     seen.add(criterion.id);
     if (criterion.status === "pass") passed += 1;
   }
+  const scheduledJob = record.exitCriteria.find(({ id }) => id === "pacific-dst-schedule");
+  if (!scheduledJob.evidence.some(({ path }) => path === RUN_HISTORY_EVIDENCE_PATH)) throw new Error("The scheduled-job criterion must cite the dated workflow run history.");
+  const runHistory = JSON.parse(await readFile(RUN_HISTORY_PATH, "utf8"));
+  const realRefreshSuccesses = runHistory?.classifications?.realRefreshSuccesses?.count;
+  if (!Number.isInteger(realRefreshSuccesses) || realRefreshSuccesses < 0) throw new Error("The workflow run history must report a non-negative real-refresh success count.");
+  if (realRefreshSuccesses === 0 && scheduledJob.status !== "fail") throw new Error("The scheduled-job criterion cannot pass with zero observed real refresh successes.");
   const percentage = passed / CRITERIA.size * 100;
   if (record.completedCriteria !== passed || record.totalCriteria !== CRITERIA.size || record.percentage !== percentage) throw new Error("Phase 5 percentage must equal the unweighted formal exit-criterion result.");
   if (record.localImplementationStatus !== (passed === CRITERIA.size ? "complete" : "incomplete")) throw new Error("Local implementation status must be derived from the four criteria.");
