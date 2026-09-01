@@ -5,6 +5,11 @@
   "sourceProductId": "phase2-real-loss-component-inventory-1984-2022-v1",
   "method": "data/phase2-per-cell-geometry-method.json",
   "authorization": "data/phase2-zonal-aggregation-contract-amendment-2026-08-29.json",
+  "runner": {
+    "path": "scripts/build-phase2-per-cell-geometry.mjs",
+    "sha256": "5a77f4b632a1c5f3b0bc2c3b8873a8f628bb6e8b593a62fb77218e37c72e2fda",
+    "readbackBoundSha256": "0b7945bed1ce47172054a0066dabf38f71b17271e328676b6f8cb46c6e820798"
+  },
   "grid": {
     "width": 193936,
     "height": 128340,
