@@ -20,6 +20,11 @@ import { fileURLToPath } from "node:url";
 
 const here = (file) => new URL(`../${file}`, import.meta.url);
 const read = async (file) => JSON.parse(await readFile(here(file), "utf8"));
+const RUNNER_PATH = "scripts/build-phase2-per-cell-geometry.mjs";
+// The readback was introduced at 484cbec before 0bbe7e5 removed one unused
+// import from the runner. This is the checksum of the bytes that produced the
+// recorded geometry, not a claim that today's runner was executed again.
+const READBACK_BOUND_RUNNER_SHA256 = "0b7945bed1ce47172054a0066dabf38f71b17271e328676b6f8cb46c6e820798";
 
 export async function readPerCellGeometryEvidence() {
   const raw = await readFile(here("data/phase2-per-cell-geometry-readback.json"), "utf8");
@@ -29,17 +34,21 @@ export async function readPerCellGeometryEvidence() {
     inventory: await read("data/phase2-real-loss-component-inventory-readback.json"),
     method: await read("data/phase2-per-cell-geometry-method.json"),
     extentReceipt: await read("data/phase2-vlce2-mapped-extent-verification-receipt-2026-08-29.json"),
+    runnerSha256: createHash("sha256").update(await readFile(here(RUNNER_PATH))).digest("hex"),
     serializedSha256: createHash("sha256").update(raw).digest("hex"),
     serializedBytes: Buffer.byteLength(raw),
   };
 }
 
-export function validatePerCellGeometryEvidence({ record, summary, inventory, method, extentReceipt, serializedSha256, serializedBytes }) {
+export function validatePerCellGeometryEvidence({ record, summary, inventory, method, extentReceipt, runnerSha256, serializedSha256, serializedBytes }) {
   assert.equal(record.schemaVersion, "witness-tree/phase2-per-cell-geometry-readback/1");
   assert.equal(record.status, "exact-readback-passed");
   assert.equal(record.productId, "phase2-per-cell-geometry-1984-2022-v1");
   assert.equal(record.sourceProductId, "phase2-real-loss-component-inventory-1984-2022-v1");
   assert.equal(record.authorization, "data/phase2-zonal-aggregation-contract-amendment-2026-08-29.json");
+  assert.equal(record.runner.path, RUNNER_PATH, "the readback names a different geometry runner");
+  assert.equal(record.runner.sha256, runnerSha256, "the current geometry runner checksum drifted");
+  assert.equal(record.runner.readbackBoundSha256, READBACK_BOUND_RUNNER_SHA256, "the readback-bound geometry runner checksum drifted");
 
   // The product exists. It has not been reviewed, released, or admitted, and
   // an owner authorization to build it is not any of those things.

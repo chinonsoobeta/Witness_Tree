@@ -4,8 +4,8 @@
   "productId": "phase2-per-cell-geometry-1984-2022-v1",
   "source": {
     "path": "data/phase2-per-cell-geometry-readback.json",
-    "sha256": "99c31adbf5e3f1e4e18dc87212ce87fe104f8e585d03d7d07381319dac40cbf4",
-    "byteLength": 47583
+    "sha256": "167d959eb01a3552224b4d277e81c15f821204d283a9bd7b853261a41de844d9",
+    "byteLength": 47836
   },
   "cellHectares": 0.09,
   "countable": true,

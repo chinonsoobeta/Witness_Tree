@@ -12,6 +12,7 @@ import { PATCH_RECORD_BYTES, PatchAccumulator, RUN_RECORD_BYTES, writePatchRecor
 const DATA_ROOT = process.env.WITNESS_TREE_DATA_ROOT ?? "/Volumes/Extended_SSD/Witness_Tree-data";
 const LINEAGE = path.join(DATA_ROOT, "derived/phase2-real-loss-component-inventory-1984-2022-v1");
 const OUT = path.join(DATA_ROOT, "derived/phase2-per-cell-geometry-1984-2022-v1");
+const RUNNER_PATH = "scripts/build-phase2-per-cell-geometry.mjs";
 
 const KEY_RECORD = Buffer.from('"record":"');
 const KEY_ROW = Buffer.from('"row":');
@@ -198,6 +199,10 @@ if (process.argv[1]?.endsWith("build-phase2-per-cell-geometry.mjs")) {
   const manifest = {
     schemaVersion: "witness-tree/phase2-per-cell-geometry/1",
     method: "data/phase2-per-cell-geometry-method.json",
+    runner: {
+      path: RUNNER_PATH,
+      sha256: createHash("sha256").update(await readFile(new URL(import.meta.url))).digest("hex"),
+    },
     grid: { width: 193936, height: 128340, pixelWidth: 30, pixelHeight: -30, originX: -2660910.524, originY: 2998848.1105 },
     patchRecordBytes: PATCH_RECORD_BYTES,
     runRecordBytes: RUN_RECORD_BYTES,

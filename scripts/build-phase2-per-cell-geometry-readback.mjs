@@ -10,6 +10,7 @@ import path from "node:path";
 
 const DATA_ROOT = process.env.WITNESS_TREE_DATA_ROOT ?? "/Volumes/Extended_SSD/Witness_Tree-data";
 const STORE = path.join(DATA_ROOT, "derived/phase2-per-cell-geometry-1984-2022-v1");
+const RUNNER_PATH = "scripts/build-phase2-per-cell-geometry.mjs";
 const here = (file) => new URL(`../${file}`, import.meta.url);
 
 const read = async (file) => JSON.parse(await readFile(file, "utf8"));
@@ -18,6 +19,10 @@ const attribution = await read(path.join(STORE, "attribution-manifest.json"));
 const harvest = await read(path.join(STORE, "disturbance/harvest-manifest.json"));
 const fire = await read(path.join(STORE, "disturbance/fire-manifest.json"));
 const inventory = await read(here("data/phase2-real-loss-component-inventory-readback.json"));
+const runnerSha256 = createHash("sha256").update(await readFile(here(RUNNER_PATH))).digest("hex");
+if (manifest.runner?.path !== RUNNER_PATH || !/^[0-9a-f]{64}$/u.test(manifest.runner.sha256)) {
+  throw new Error(`the geometry manifest does not bind ${RUNNER_PATH} to a SHA-256`);
+}
 
 const attributionByInterval = new Map(attribution.intervals.map((entry) => [entry.interval, entry]));
 const intervals = manifest.intervals.map((entry, index) => {
@@ -56,6 +61,11 @@ const record = {
   sourceProductId: "phase2-real-loss-component-inventory-1984-2022-v1",
   method: "data/phase2-per-cell-geometry-method.json",
   authorization: "data/phase2-zonal-aggregation-contract-amendment-2026-08-29.json",
+  runner: {
+    path: RUNNER_PATH,
+    sha256: runnerSha256,
+    readbackBoundSha256: manifest.runner.sha256,
+  },
   grid: manifest.grid,
   patchRecordBytes: manifest.patchRecordBytes,
   runRecordBytes: manifest.runRecordBytes,

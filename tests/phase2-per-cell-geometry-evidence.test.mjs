@@ -21,6 +21,18 @@ test("the per-cell geometry readback reconciles with the component inventory", (
   assert.equal(record.totals.cellCount, 1_384_027_417);
 });
 
+test("the readback binds both the current geometry runner and the bytes used by the recorded run", () => {
+  assert.notEqual(inputs.record.runner.sha256, inputs.record.runner.readbackBoundSha256, "the lint-only runner change must remain visible");
+
+  const currentDrift = clone();
+  currentDrift.runnerSha256 = "a".repeat(64);
+  assert.throws(() => validatePerCellGeometryEvidence(currentDrift), /current geometry runner checksum drifted/);
+
+  const historicalDrift = clone();
+  historicalDrift.record.runner.readbackBoundSha256 = "b".repeat(64);
+  assert.throws(() => validatePerCellGeometryEvidence(historicalDrift), /readback-bound geometry runner checksum drifted/);
+});
+
 test("the mapped-extent receipt matches the completed external verification", async (context) => {
   const root = process.env.WITNESS_TREE_DATA_ROOT ?? "/Volumes/Extended_SSD/Witness_Tree-data";
   const descriptor = inputs.extentReceipt.verification;
