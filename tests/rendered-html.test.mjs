@@ -1,5 +1,25 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import test from "node:test";
+
+// The map fetches its tiles and boundary overlays from a remote origin named in these
+// modules. The policy has to name the same origin, so it is derived from them rather
+// than restated: moving the CDN without widening connect-src fails here instead of
+// silently blocking every tile in a browser.
+const BROWSER_FETCHED_SOURCES = ["../lib/explore/map-style.ts", "../lib/explore/boundaries.ts"];
+
+function browserFetchedOrigins() {
+  const origins = new Set();
+  for (const source of BROWSER_FETCHED_SOURCES) {
+    const text = readFileSync(new URL(source, import.meta.url), "utf8");
+    for (const line of text.split("\n")) {
+      // An attribution link is followed, not fetched, so it needs no connect-src entry.
+      if (/\bhref\b/.test(line)) continue;
+      for (const [, url] of line.matchAll(/"(https:\/\/[^"]+)"/g)) origins.add(new URL(url).origin);
+    }
+  }
+  return [...origins].sort();
+}
 
 async function render(pathname) {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
@@ -38,6 +58,13 @@ test("emits application security headers with the map delivery allowances", asyn
   assert.match(policy, /(?:^|; )worker-src 'self'(?:;|$)/);
   assert.match(policy, /(?:^|; )img-src 'self' data: blob:(?:;|$)/);
   assert.match(policy, /(?:^|; )connect-src 'self' https:\/\/d3g1406o0uekin\.cloudfront\.net(?:;|$)/);
+
+  const connect = /(?:^|; )connect-src ([^;]+)/.exec(policy)?.[1].split(" ") ?? [];
+  const origins = browserFetchedOrigins();
+  assert.ok(origins.length > 0);
+  for (const origin of origins) {
+    assert.ok(connect.includes(origin), `connect-src omits ${origin}, which the map fetches from the browser`);
+  }
 });
 
 test("renders both localized public records with neutral non-claims", async () => {
