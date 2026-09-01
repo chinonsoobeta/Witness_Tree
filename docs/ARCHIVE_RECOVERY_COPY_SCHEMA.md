@@ -136,6 +136,70 @@ TOTP codes, and bare six-digit one-time codes are rejected wherever they appear,
 named after any of them in camelCase, snake_case, or kebab-case. None of this material has any place
 in a committed evidence record, and a record carrying it fails rather than being quietly redacted.
 
+## Read-only runner
+
+[`scripts/run-archive-recovery-copy.mjs`](../scripts/run-archive-recovery-copy.mjs) produces this
+record only after the archive owner has approved and completed the AWS mutation. It does not create
+a bucket, enable a rule, start a Batch Replication job, change retention, delete an S3 object, or
+amend either owner decision. Its AWS transport permits only these read operations:
+
+- `get-bucket-location`, `get-bucket-versioning`, `get-object-lock-configuration`, and
+  `get-bucket-replication`;
+- `describe-job` for the named Batch Replication job;
+- exact-key `list-object-versions`, exact-version `head-object`, and exact-version
+  `get-object-retention`; and
+- exact-version `get-object` into a private temporary directory for byte comparison and the restore
+  exercise.
+
+The temporary restore is removed before a passing record is assembled. The runner first requires
+the `recoveryCopy` and `replication` decisions in `data/archive-operations-readiness.json` to be
+`approved` and `approved-canadian`. Those decisions are currently unapproved, so a live invocation
+stops before its first AWS call. That is the intended present behavior.
+
+The runner enumerates the same 84 primary object versions as the checker. It verifies the primary
+version, completed source replication status, destination `REPLICA` version, byte length, provider
+checksum where recorded, and retention for each. The three manifests without a recorded provider
+checksum are compared by exact-version SHA-256 instead. Missing or truncated version observations,
+no matching replica, and more than one byte-identical matching replica all fail closed. The runner
+does not emit a partial record.
+
+After accounting for all objects, it restores the smallest locked payload from the destination,
+checks its byte length and SHA-256 against `data/staged-acquisitions.json` or
+`data/vlce2-promotion-preparation.json`, and reads the exact primary version's retention before and
+afterwards. It then passes the assembled record through `validateArchiveRecoveryCopy` before it can
+be written.
+
+The owner supplies a private, uncommitted input file with this shape:
+
+```json
+{
+  "schemaVersion": "witness-tree/archive-recovery-copy-run-input/1",
+  "awsAccountId": "111122223333",
+  "replicationRuleId": "owner-selected-rule-id",
+  "batchReplicationJobId": "owner-completed-job-id",
+  "supersededFlatKeyVersionsExcluded": false,
+  "supersededFlatKeyDecision": "Owner decision recorded before enabling the rule.",
+  "irreversibilityAcknowledgement": "The replicated COMPLIANCE retention is irreversible and cannot be shortened or removed before its retain-until date."
+}
+```
+
+The superseded-key boolean is checked against the observed rule prefix; it is not accepted on trust.
+Only an all-objects or key-prefix rule can be accounted for from these repository records. A tag or
+compound filter is rejected because the runner cannot establish coverage without unrecorded object
+tag state.
+
+Use absolute paths. The output path must not already exist and is written with mode `0600`:
+
+```sh
+npm run run:archive-recovery-copy -- \
+  --input /absolute/private/archive-recovery-copy-run-input.json \
+  --write /absolute/private/archive-recovery-copy.json
+```
+
+Only after reviewing that generated file should the owner deliberately place it at
+`data/archive-recovery-copy.json`. This remediation unit does not run the copy operation and does not
+create that canonical evidence file.
+
 ## Running the check
 
 ```

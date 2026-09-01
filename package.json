@@ -236,6 +236,7 @@
     "check:phase2-historical-national-execution": "node scripts/check-phase2-real-national-preflight.mjs && node scripts/readback-phase2-real-national.mjs /Volumes/Extended_SSD/Witness_Tree-data/derived/phase2-real-national-1984-2022-v1",
     "check:local-staging-admission": "tsx scripts/check-local-staging-admission.mjs",
     "check:archive-operations-readiness": "node scripts/check-archive-operations-readiness.mjs",
+    "run:archive-recovery-copy": "node scripts/run-archive-recovery-copy.mjs",
     "check:archive-recovery-copy": "node scripts/check-archive-recovery-copy.mjs && node --test tests/archive-recovery-copy.test.mjs",
     "check:archive-direct-mfa-runners": "node scripts/check-archive-direct-mfa-runners.mjs",
     "check:coverage-geometry-admission": "node scripts/check-coverage-geometry-admission.mjs",
