@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -10,6 +11,7 @@ import {
   primaryObjectIdentity,
   validateArchiveRecoveryCopy,
 } from "../scripts/check-archive-recovery-copy.mjs";
+import { READ_ONLY_OPERATIONS, runArchiveRecoveryCopy } from "../scripts/run-archive-recovery-copy.mjs";
 
 /**
  * These tests build the record the checker expects and mutate one field at a time, so a rule is
@@ -44,6 +46,119 @@ function admittedFixture() {
       source: "data/immutable-promotions.json",
     }],
   ]);
+}
+
+function runnerFixture({ missingVersionsFor, omitFailedCount = false, ambiguousKey, destinationRegion = "ca-central-1", approveWest = false } = {}) {
+  const primaryBucket = "example-primary-bucket";
+  const destinationBucket = "example-recovery-bucket";
+  const bytes = {
+    promotionPayload: Buffer.from("promotion-payload"),
+    promotionManifest: Buffer.from("promotion-manifest"),
+    vlce2Payload: Buffer.from("larger-vlce2-payload"),
+    vlce2Manifest: Buffer.from("vlce2-manifest"),
+  };
+  const sha256 = (body) => createHash("sha256").update(body).digest("hex");
+  const promotionSha = sha256(bytes.promotionPayload);
+  const vlce2Sha = sha256(bytes.vlce2Payload);
+  const promotionPayloadKey = `raw/example/undeclared/2026-08-01T00-00-00Z/${promotionSha}/payload/promotion.zip`;
+  const promotionManifestKey = `raw/example/undeclared/2026-08-01T00-00-00Z/${promotionSha}/manifest.json`;
+  const vlce2PayloadKey = `raw/vlce2/2026-08-01T00-00-00Z/${vlce2Sha}/payload/vlce2.zip`;
+  const vlce2ManifestKey = `raw/vlce2/2026-08-01T00-00-00Z/${vlce2Sha}/manifest.json`;
+  const promotionChecksum = "AAAAAAAAAAA=";
+  const vlce2PayloadChecksum = "BBBBBBBBBBB=";
+  const vlce2ManifestChecksum = "CCCCCCCCCCC=";
+  const promotions = {
+    bucket: { bucketId: primaryBucket, region: { regionId: "ca-central-1" } },
+    entries: [{
+      stagedEntryId: "staged-promotion",
+      snapshotId: `example:undeclared:2026-08-01T00:00:00Z:${promotionSha}`,
+      payloadKey: promotionPayloadKey,
+      payloadVersionId: "PRIMARY-PROMOTION-PAYLOAD",
+      remoteByteLength: bytes.promotionPayload.byteLength,
+      providerReported: { checksumBase64: promotionChecksum },
+      retentionMode: "compliance",
+      providerReportedRetention: { mode: "COMPLIANCE", retainUntilDate: RETAIN_UNTIL },
+      manifestKey: promotionManifestKey,
+      manifestVersionId: "PRIMARY-PROMOTION-MANIFEST",
+      manifestByteLength: bytes.promotionManifest.byteLength,
+      manifestRetention: "not-locked",
+      supersededPayloadKey: "raw/example/flat-promotion.zip",
+    }],
+  };
+  const vlce2 = {
+    storage: { bucket: primaryBucket, region: "ca-central-1" },
+    entries: [{
+      year: 1984,
+      payload: { key: vlce2PayloadKey, versionId: "PRIMARY-VLCE2-PAYLOAD", byteLength: bytes.vlce2Payload.byteLength, checksumCrc64nvmeBase64: vlce2PayloadChecksum },
+      sidecar: { key: vlce2ManifestKey, versionId: "PRIMARY-VLCE2-MANIFEST", byteLength: bytes.vlce2Manifest.byteLength, checksumCrc64nvmeBase64: vlce2ManifestChecksum },
+      retention: { mode: "COMPLIANCE", retainUntilDate: RETAIN_UNTIL },
+    }],
+  };
+  const staged = { entries: [{ id: "staged-promotion", byteLength: bytes.promotionPayload.byteLength, sha256: promotionSha }] };
+  const vlce2Preparation = {
+    entries: [{
+      year: 1984,
+      byteLength: bytes.vlce2Payload.byteLength,
+      sha256: vlce2Sha,
+      remote: { payloadKey: vlce2PayloadKey, versionId: "PRIMARY-VLCE2-PAYLOAD" },
+    }],
+  };
+  const readiness = JSON.parse(readFileSync(new URL("../data/archive-operations-readiness.json", import.meta.url), "utf8"));
+  readiness.decisions.recoveryCopy = { state: "approved", ownerRole: "Archive owner", reason: approveWest ? "Approved for a second bucket in ca-west-1." : "Approved for a second Canadian bucket." };
+  readiness.decisions.replication = { state: "approved-canadian", ownerRole: "Archive owner", reason: "Approved for ca-central-1 replication." };
+  const input = {
+    schemaVersion: "witness-tree/archive-recovery-copy-run-input/1",
+    awsAccountId: "123456789012",
+    replicationRuleId: "example-recovery-rule",
+    batchReplicationJobId: "example-batch-job",
+    supersededFlatKeyVersionsExcluded: false,
+    supersededFlatKeyDecision: "The owner accepted replication of the superseded flat-key versions before enabling the raw/ rule.",
+    irreversibilityAcknowledgement: "The replicated COMPLIANCE retention is irreversible and cannot be shortened or removed by anyone before its retain-until date.",
+  };
+  const objects = new Map([
+    [promotionPayloadKey, { primaryVersionId: "PRIMARY-PROMOTION-PAYLOAD", destinationVersionId: "DESTINATION-PROMOTION-PAYLOAD", body: bytes.promotionPayload, checksum: promotionChecksum, locked: true }],
+    [promotionManifestKey, { primaryVersionId: "PRIMARY-PROMOTION-MANIFEST", destinationVersionId: "DESTINATION-PROMOTION-MANIFEST", body: bytes.promotionManifest, locked: false }],
+    [vlce2PayloadKey, { primaryVersionId: "PRIMARY-VLCE2-PAYLOAD", destinationVersionId: "DESTINATION-VLCE2-PAYLOAD", body: bytes.vlce2Payload, checksum: vlce2PayloadChecksum, locked: true }],
+    [vlce2ManifestKey, { primaryVersionId: "PRIMARY-VLCE2-MANIFEST", destinationVersionId: "DESTINATION-VLCE2-MANIFEST", body: bytes.vlce2Manifest, checksum: vlce2ManifestChecksum, locked: false }],
+  ]);
+  const calls = [];
+  const aws = async (operation, request) => {
+    calls.push({ operation, request });
+    if (operation === "get-bucket-location") return { LocationConstraint: request.bucket === primaryBucket ? "ca-central-1" : destinationRegion };
+    if (operation === "get-bucket-replication") return { ReplicationConfiguration: { Rules: [{ ID: input.replicationRuleId, Status: "Enabled", Filter: { Prefix: "raw/" }, Destination: { Bucket: `arn:aws:s3:::${destinationBucket}` } }] } };
+    if (operation === "get-bucket-versioning") return { Status: "Enabled" };
+    if (operation === "get-object-lock-configuration") return { ObjectLockConfiguration: { ObjectLockEnabled: "Enabled" } };
+    if (operation === "describe-job") {
+      const ProgressSummary = { TotalNumberOfTasks: 4, NumberOfTasksSucceeded: 4, ...(!omitFailedCount ? { NumberOfTasksFailed: 0 } : {}) };
+      return { Job: { JobId: input.batchReplicationJobId, Status: "Complete", Operation: { S3ReplicateObject: {} }, ProgressSummary, CreationTime: "2026-08-28T10:00:00.000Z", TerminationDate: "2026-08-28T11:00:00.000Z" } };
+    }
+    const requestedKey = request.key ?? request.prefix;
+    const object = objects.get(requestedKey);
+    assert.ok(object, requestedKey);
+    if (operation === "list-object-versions") {
+      if (requestedKey === missingVersionsFor) return {};
+      const Versions = [{ Key: requestedKey, VersionId: object.destinationVersionId, Size: object.body.byteLength }];
+      if (requestedKey === ambiguousKey) Versions.push({ Key: requestedKey, VersionId: `${object.destinationVersionId}-SECOND`, Size: object.body.byteLength });
+      return { IsTruncated: false, Versions };
+    }
+    if (operation === "head-object") {
+      if (request.bucket === primaryBucket) {
+        return { VersionId: object.primaryVersionId, ContentLength: object.body.byteLength, ...(object.checksum ? { ChecksumCRC64NVME: object.checksum } : {}), ReplicationStatus: "COMPLETED", LastModified: "2026-08-01T00:00:00.000Z" };
+      }
+      return { VersionId: request.versionId, ContentLength: object.body.byteLength, ...(object.checksum ? { ChecksumCRC64NVME: object.checksum } : {}), ReplicationStatus: "REPLICA" };
+    }
+    if (operation === "get-object-retention") return object.locked ? { Retention: { Mode: "COMPLIANCE", RetainUntilDate: RETAIN_UNTIL } } : {};
+    if (operation === "get-object") {
+      writeFileSync(request.destinationPath, object.body, { flag: "wx" });
+      return {};
+    }
+    assert.fail(`Unexpected operation ${operation}`);
+  };
+  return {
+    args: { input, aws, promotions, vlce2, staged, vlce2Preparation, readiness, clock: () => new Date("2026-08-28T12:00:00Z") },
+    calls,
+    keys: { promotionPayloadKey, promotionManifestKey },
+  };
 }
 
 function fixture(overrides = {}) {
@@ -438,8 +553,95 @@ test("the admitted primary map is built from the two records the plan names", ()
   }
 });
 
+test("the read-only runner accounts for every admitted object and emits a checker-valid record", async () => {
+  const harness = runnerFixture();
+  const record = await runArchiveRecoveryCopy(harness.args);
+  assert.equal(record.status, "recovery-copy-verified");
+  assert.equal(record.objects.length, 4);
+  assert.deepEqual(record.coverage, {
+    admittedPrimaryObjectCount: 4,
+    replicatedObjectCount: 4,
+    uncoveredPrimaryObjects: [],
+    complete: true,
+  });
+  assert.equal(record.recoveryExercise.restoredFrom.key, harness.keys.promotionPayloadKey);
+  assert.equal(record.recoveryExercise.sha256Matches, true);
+  assert.equal(record.recoveryExercise.primaryRetentionUnchanged, true);
+  assert.equal(record.recoveryExercise.temporaryCopyRemoved, true);
+  assert.deepEqual(
+    [...new Set(harness.calls.map(({ operation }) => operation))].sort(),
+    [
+      "describe-job",
+      "get-bucket-location",
+      "get-bucket-replication",
+      "get-bucket-versioning",
+      "get-object",
+      "get-object-lock-configuration",
+      "get-object-retention",
+      "head-object",
+      "list-object-versions",
+    ],
+  );
+});
+
+test("the runner stops before AWS while the owner decisions remain unapproved", async () => {
+  const harness = runnerFixture();
+  harness.args.readiness.decisions.recoveryCopy = { state: "unapproved", ownerRole: "Archive owner", reason: "No recovery copy is approved." };
+  harness.args.readiness.decisions.replication = { state: "not-configured", ownerRole: "Archive owner", reason: "No replication rule is approved." };
+  await assert.rejects(() => runArchiveRecoveryCopy(harness.args), /has not approved a recovery copy/);
+  assert.equal(harness.calls.length, 0);
+});
+
+test("the runner requires a region-specific owner approval for ca-west-1", async () => {
+  const unapproved = runnerFixture({ destinationRegion: "ca-west-1" });
+  await assert.rejects(() => runArchiveRecoveryCopy(unapproved.args), /ca-west-1 destination has no region-specific owner approval/);
+  const approved = runnerFixture({ destinationRegion: "ca-west-1", approveWest: true });
+  const record = await runArchiveRecoveryCopy(approved.args);
+  assert.equal(record.destination.region, "ca-west-1");
+  assert.match(record.destination.regionApproval, /ca-west-1/);
+});
+
+test("the runner never converts an unobserved Batch failure count to zero", async () => {
+  const harness = runnerFixture({ omitFailedCount: true });
+  await assert.rejects(() => runArchiveRecoveryCopy(harness.args), /failed count was not observed; an unknown count is not zero/);
+});
+
+test("the runner fails closed when any admitted object's destination versions are unobserved", async () => {
+  const first = runnerFixture();
+  const harness = runnerFixture({ missingVersionsFor: first.keys.promotionManifestKey });
+  await assert.rejects(() => runArchiveRecoveryCopy(harness.args), /destination versions .* were not observed; an absent list is not zero/);
+});
+
+test("the runner fails closed on an ambiguous destination mapping", async () => {
+  const first = runnerFixture();
+  const harness = runnerFixture({ ambiguousKey: first.keys.promotionPayloadKey });
+  await assert.rejects(() => runArchiveRecoveryCopy(harness.args), /maps to 2 byte-identical destination replicas; exactly one is required/);
+});
+
 test("an empty admitted primary set is refused rather than passing vacuously", () => {
   assert.throws(() => validateArchiveRecoveryCopy(fixture(), { admittedPrimaries: new Map() }), /admitted primary object versions are required/);
   assert.throws(() => validateArchiveRecoveryCopy(fixture(), {}), /admitted primary object versions are required/);
   assert.throws(() => validate(broken((record) => { record.objects = []; })), /must record every destination object version/);
+});
+
+test("every AWS operation the runner can reach is a read operation", () => {
+  // The runner's whole claim is that it observes a copy someone else made. That claim is
+  // only as good as the operation set, so the set and the call sites are both checked here
+  // rather than trusted: a future edit that reaches for a mutating verb fails this test.
+  const source = readFileSync(new URL("../scripts/run-archive-recovery-copy.mjs", import.meta.url), "utf8");
+  const invoked = [...source.matchAll(/\binvoke\("([a-z-]+)"/g)].map(([, operation]) => operation);
+  assert.ok(invoked.length > 0);
+  for (const operation of invoked) {
+    assert.ok(READ_ONLY_OPERATIONS.has(operation), `${operation} is invoked but is not in the read-only set`);
+  }
+  for (const operation of READ_ONLY_OPERATIONS) {
+    assert.doesNotMatch(operation, /^(?:put|post|create|delete|copy|write|restore|upload|abort|complete|set|update|tag)-/, `${operation} is not a read operation`);
+  }
+  // The transport is the other way an operation could reach AWS. Its dynamic sites forward
+  // the name the gate above already admitted; any literal it hard-codes bypasses that gate,
+  // so every hard-coded one has to be read-only too.
+  const dispatched = [...source.matchAll(/json\(\["s3(?:api|control)", "([a-z-]+)"/g)].map(([, operation]) => operation);
+  for (const operation of dispatched) {
+    assert.ok(READ_ONLY_OPERATIONS.has(operation), `${operation} is dispatched by the transport but is not read-only`);
+  }
 });
