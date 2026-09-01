@@ -18,7 +18,7 @@
         },
         {
           "path": ".github/workflows/ci.yml",
-          "sha256": "fc636e61ced0c5b432e616cae913a0af0df3c5d16efe050b9905a136bd212503"
+          "sha256": "32fc87b5ab2f1d24f1ec00928e5ab0a452318ebe21156734a8c615847beeb272"
         }
       ]
     },
@@ -41,7 +41,7 @@
         },
         {
           "path": ".github/workflows/ci.yml",
-          "sha256": "fc636e61ced0c5b432e616cae913a0af0df3c5d16efe050b9905a136bd212503"
+          "sha256": "32fc87b5ab2f1d24f1ec00928e5ab0a452318ebe21156734a8c615847beeb272"
         }
       ]
     },

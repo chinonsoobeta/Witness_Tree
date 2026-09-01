@@ -24,7 +24,7 @@ test("every package check is either a direct CI step or a reviewed exclusion", (
 });
 
 test("workflows use current action runtimes and preserve their concurrency policy", () => {
-  assert.ok(ci.includes("concurrency:\n  group: ${{ github.workflow }}-${{ github.ref }}\n  cancel-in-progress: true"));
+  assert.ok(ci.includes("concurrency:\n  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}\n  cancel-in-progress: true"));
   assert.ok(wildfire.includes("concurrency:\n  group: ${{ github.workflow }}-${{ github.ref }}\n  cancel-in-progress: false"));
   assert.match(ci, /actions\/checkout@v7/);
   assert.match(ci, /actions\/setup-node@v7/);
