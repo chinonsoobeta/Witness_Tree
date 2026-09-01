@@ -1,19 +1,20 @@
-// Works out which repository files a data-root-bound test actually depends on.
+// Works out which repository files an owner-bound test actually depends on.
 //
-// The 25 tests that need the owner's SSD cannot run in CI, so nothing tells a
-// reviewer that a pull request has invalidated one of them. #84 changed
+// The 25 tests that need the owner's SSD and three that need macOS cannot run in
+// CI, so nothing tells a reviewer that a pull request has invalidated one. #84 changed
 // scripts/run-phase1-ntems-transform.mjs and rewrote four owner-bound execution
 // authorizations in the same commit, and it merged green because the only test
 // that reads those files is data-root-bound. The drift sat on main for days.
 //
 // The guarded set is derived, never hand-listed, so it cannot fall behind the
-// code it guards. It closes over three kinds of edge:
+// code it guards. It closes over four kinds of edge:
 //
 //   1. repository-local imports, followed transitively;
-//   2. repository-relative path literals any of those modules mention, which is
+//   2. repository-local file URLs, followed transitively;
+//   3. repository-relative path literals any of those modules mention, which is
 //      how the JSON evidence records are reached, since they are read by string
 //      rather than imported;
-//   3. evidence bindings: a { path, sha256 } pair inside a guarded record, whose
+//   4. evidence bindings: a { path, sha256 } pair inside a guarded record, whose
 //      target is itself guarded, transitively to a fixpoint.
 //
 // The third edge is the #84 shape exactly. The readback evidence records the
@@ -41,6 +42,7 @@ const EXTRA_GUARDED_PATHS = new Map([]);
 
 const RELATIVE_IMPORT = /(?:^|[\s;])(?:import|export)\s[^;]*?from\s*"(\.[^"]+)"/g;
 const DYNAMIC_IMPORT = /import\(\s*"(\.[^"]+)"\s*\)/g;
+const RELATIVE_FILE_URL = /new URL\(\s*["'](\.[^"']+)["']\s*,\s*import\.meta\.url\s*\)/g;
 const REPO_PATH_LITERAL = new RegExp(`"((?:${SOURCE_DIRECTORIES.join("|")})/[A-Za-z0-9._/-]+)"`, "g");
 const SHA256 = /^[0-9a-f]{64}$/;
 
@@ -91,7 +93,7 @@ function boundRepositoryFile(named) {
 export function computeGuardedPaths(testFile) {
   const start = path.join(REPO_ROOT, "tests", testFile);
   if (!isReadableFile(start)) {
-    throw new Error(`data-root-bound test does not exist: tests/${testFile}`);
+    throw new Error(`owner-bound test does not exist: tests/${testFile}`);
   }
 
   const guarded = new Set([repoRelative(start)]);
@@ -102,7 +104,7 @@ export function computeGuardedPaths(testFile) {
     const current = queue.shift();
     const source = readFileSync(current, "utf8");
 
-    for (const pattern of [RELATIVE_IMPORT, DYNAMIC_IMPORT]) {
+    for (const pattern of [RELATIVE_IMPORT, DYNAMIC_IMPORT, RELATIVE_FILE_URL]) {
       for (const match of source.matchAll(pattern)) {
         const resolved = resolveImport(current, match[1]);
         if (!resolved || visited.has(resolved)) continue;

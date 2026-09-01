@@ -1,15 +1,16 @@
-# Data-root-bound test currency
+# Owner-bound test currency
 
 ## The gap
 
-`scripts/run-ci-tests.mjs` excludes 25 test files by name because they read the
-owner's SSD data root, which no CI runner can mount. The exclusions are each
-stated with a reason and are correct: those tests genuinely cannot run on a
-runner.
+`scripts/run-ci-tests.mjs` excludes 28 test files by name for two reviewed
+requirements:
 
-What was missing is the consequence. A test that runs nowhere proves nothing
-after the first time it runs, and nothing told a reviewer when a change had
-invalidated one.
+- 25 read the owner's SSD data root, which no CI runner can mount;
+- 3 exercise safety runners that depend on macOS tooling, file ownership, or
+  mode semantics.
+
+Those exclusions are necessary, but an excluded test proves nothing after a
+repository dependency changes unless another gate notices the change.
 
 That is not hypothetical. Pull request #84 changed
 `scripts/run-phase1-ntems-transform.mjs` and, in the same commit, rewrote four
@@ -21,72 +22,77 @@ that contradiction sat on `main` undetected.
 
 ## The mechanism
 
-Two halves.
+The mechanism has two halves.
 
-**`npm run test:data-root`** runs exactly the 25 excluded files on a machine that
-has the data root, and writes `data/data-root-test-run-receipt.json`: the commit,
-whether the tree was clean, and per test the outcome plus the set of repository
-files that test depends on, each with its SHA-256.
+**`npm run test:data-root`** keeps its existing command name, but now runs all 28
+owner-bound files on the owner's Mac with the data root attached. It writes
+`data/data-root-test-run-receipt.json` with the commit, clean-tree state, macOS
+platform, data-root presence, counts by requirement, and each test's outcome and
+guarded repository files.
 
-**`npm run check:data-root-test-currency`** runs in CI. It reads only the
-repository. For each data-root-bound test it recomputes the guarded set from the
-working tree and compares it to the receipt. Any difference fails the build and
-names the files that moved.
+**`npm run check:data-root-test-currency`** runs in CI without the SSD or AWS
+access. It recomputes every guarded set from the working tree and compares it to
+the receipt. Missing tests, failed tests, wrong requirement labels, invalid
+counts, a non-macOS receipt, or any guarded dependency change fail the build.
+
+Receipt schema `/2` covers the data-root and macOS classes identically. The
+committed `/1` receipt must not be edited to satisfy the new schema. It remains
+invalid until the owner performs the combined run and commits the receipt that
+the runner actually produced.
 
 ## How the guarded set is derived
 
-`scripts/lib/guarded-paths.mjs` derives it, so it cannot fall behind the code it
-guards. It closes over three kinds of edge:
+`scripts/lib/guarded-paths.mjs` derives the set instead of hand-listing it. It
+closes over four kinds of edge:
 
 1. repository-local imports, followed transitively;
-2. every repository-relative path literal any of those modules mention, which is
-   how the JSON evidence records are reached, since they are read by string
-   rather than imported;
-3. evidence bindings: a `{ path, sha256 }` pair inside a guarded record, whose
-   target is itself guarded, repeated to a fixpoint.
+2. repository-local `new URL(..., import.meta.url)` file references, followed
+   transitively;
+3. repository-relative path literals mentioned by guarded modules;
+4. evidence bindings such as `{ path, sha256 }` inside guarded records, repeated
+   to a fixpoint.
 
-The third edge is the #84 shape exactly. The readback evidence records the runner
-as `{ path: "scripts/run-phase1-ntems-transform.mjs", sha256 }`, and no module
-names that runner by path, so the first two edges both miss it.
+The file-URL edge guards the shell runners and provisioner invoked by the three
+macOS tests. The evidence-binding edge is the #84 shape exactly. The readback
+evidence records the runner as
+`{ path: "scripts/run-phase1-ntems-transform.mjs", sha256 }`, while no module
+imports or otherwise names that runner by path.
 
-That edge was originally a hand-written exception for the one case found by
-inspection. A scan on 2026-08-30 showed the same shape in **7 of the 25**
+A scan on 2026-08-30 found the same evidence-binding shape in 7 of the 25
 data-root-bound tests, reached through records such as
 `data/phase1-federal-electoral-production-admission.json` and
-`data/phase1-production-transformation-specifications-v1.json`, which bind
-further repository files that nothing imports or names. Deriving the edge closes
-all seven and makes the hand-written entry unnecessary; `EXTRA_GUARDED_PATHS` is
-now empty.
+`data/phase1-production-transformation-specifications-v1.json`. Deriving the
+edge closes all seven and leaves `EXTRA_GUARDED_PATHS` empty.
 
-For `tests/phase1-ntems-readback-bytes.test.mjs` the closure is 27 files,
-including all four execution authorizations, all four readback evidence records,
-and the transform runner. Every file #84 touched is in that set, so the gate
-would have failed the moment #84 was opened.
+For `tests/phase1-ntems-readback-bytes.test.mjs` the closure includes all four
+execution authorizations, all four readback evidence records, and the transform
+runner. Every file #84 touched is guarded, so the gate would have failed as soon
+as that pull request changed them.
 
-Two tests keep this honest. One asserts that no guarded record binds a
-repository file the closure has missed, so narrowing the derivation fails the
-build and no maintenance is needed when records gain bindings. The other requires
-any future `EXTRA_GUARDED_PATHS` entry to name a real file and state why the
-derivation cannot reach it.
+Tests keep the derivation honest. They assert that guarded records leave no
+repository evidence binding behind, file-URL references reach every macOS safety
+runner, and any future hand-written exception names a real file with a stated
+reason.
 
 ## Clearing a failure
 
-Re-run the suite on the machine holding the data root:
+On the owner's Mac, attach the data root and run:
 
 ```bash
 npm run test:data-root
 ```
 
-Commit the regenerated receipt with the change that invalidated it.
+Commit the generated receipt with the change it validates.
 
-Do not edit the receipt by hand. The receipt records that a run happened; writing
-one by hand asserts an event that did not occur. The runner records failures as
-failures for the same reason, and the gate reports a recorded failure as a real
-failure rather than as staleness.
+Do not edit the receipt by hand. The receipt records that a run happened;
+writing one by hand asserts an event that did not occur. The runner also records
+test failures as failures, and the gate treats them as real failures rather than
+staleness.
 
 ## What this does not do
 
-It does not run the tests in CI, and it cannot. It does not prove the data root
-is unchanged, only that the repository is unchanged relative to the last run. A
-change to the payloads on the SSD is invisible to it; that remains the job of the
-byte-level checkers those tests invoke.
+It does not run owner-bound tests in CI. It does not prove that SSD payloads or
+remote AWS state are unchanged. It proves only that all 28 tests passed together
+on the required owner environment and that their guarded repository inputs have
+not changed since that run. Byte-level checkers inside those tests remain
+responsible for the external payloads they inspect.

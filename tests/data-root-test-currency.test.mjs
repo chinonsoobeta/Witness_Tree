@@ -6,15 +6,26 @@ import { existsSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import test from "node:test";
 
-import { REQUIRES_DATA_ROOT, RECEIPT_PATH, RECEIPT_SCHEMA } from "../scripts/lib/data-root-bound-tests.mjs";
+import {
+  OWNER_BOUND_TEST_GROUPS,
+  REQUIRES_DATA_ROOT,
+  REQUIRES_MACOS_RUNNER,
+  RECEIPT_PATH,
+  RECEIPT_SCHEMA,
+  ownerBoundTestInventory,
+} from "../scripts/lib/data-root-bound-tests.mjs";
 import { REPO_ROOT, computeGuardedPaths, digestOf, extraGuardedReasons, guardedFingerprint } from "../scripts/lib/guarded-paths.mjs";
 import { validateDataRootTestCurrency } from "../scripts/check-data-root-test-currency.mjs";
 
+const inventory = ownerBoundTestInventory();
+
 function receiptEntry(name, overrides = {}) {
   const guardedPaths = computeGuardedPaths(name);
+  const metadata = inventory.get(name);
   return {
     test: name,
-    reason: REQUIRES_DATA_ROOT.get(name),
+    requirement: metadata.requirement,
+    reason: metadata.reason,
     status: "passed",
     exitCode: 0,
     durationMs: 1,
@@ -25,8 +36,28 @@ function receiptEntry(name, overrides = {}) {
   };
 }
 
+function countsFor(results) {
+  const byRequirement = Object.fromEntries(
+    OWNER_BOUND_TEST_GROUPS.map(({ requirement }) => [requirement, { total: 0, passed: 0, failed: 0 }]),
+  );
+  for (const entry of results) {
+    const group = byRequirement[entry.requirement];
+    if (group) {
+      group.total += 1;
+      if (entry.status === "passed") group.passed += 1;
+      if (entry.status === "failed") group.failed += 1;
+    }
+  }
+  return {
+    total: results.length,
+    passed: results.filter((entry) => entry.status === "passed").length,
+    failed: results.filter((entry) => entry.status === "failed").length,
+    byRequirement,
+  };
+}
+
 function currentReceipt(mutate = (receipt) => receipt) {
-  return mutate({
+  const receipt = mutate({
     schemaVersion: RECEIPT_SCHEMA,
     status: "owner-local-test-run",
     published: false,
@@ -36,15 +67,20 @@ function currentReceipt(mutate = (receipt) => receipt) {
     runAt: "2026-08-30T00:00:00Z",
     commit: "0".repeat(40),
     workingTreeClean: true,
+    platform: "darwin",
     dataRootPresent: true,
     node: process.version,
-    counts: { total: REQUIRES_DATA_ROOT.size, passed: REQUIRES_DATA_ROOT.size, failed: 0 },
-    results: [...REQUIRES_DATA_ROOT.keys()].sort().map((name) => receiptEntry(name)),
+    results: [...inventory.keys()].map((name) => receiptEntry(name)),
   });
+  receipt.counts = countsFor(receipt.results);
+  return receipt;
 }
 
-test("every data-root-bound test file exists", () => {
-  for (const name of REQUIRES_DATA_ROOT.keys()) {
+test("every owner-bound test file exists and belongs to exactly one requirement", () => {
+  assert.equal(REQUIRES_DATA_ROOT.size, 25);
+  assert.equal(REQUIRES_MACOS_RUNNER.size, 3);
+  assert.equal(inventory.size, 28);
+  for (const name of inventory.keys()) {
     assert.ok(existsSync(path.join(REPO_ROOT, "tests", name)), `tests/${name} is listed but missing`);
   }
 });
@@ -70,10 +106,25 @@ test("the NTEMS readback test guards the runner and all four execution authoriza
 });
 
 test("guarded paths are sorted, unique, and include the test itself", () => {
-  for (const name of REQUIRES_DATA_ROOT.keys()) {
+  for (const name of inventory.keys()) {
     const guarded = computeGuardedPaths(name);
     assert.deepEqual(guarded, [...new Set(guarded)].sort(), `${name} guarded paths are not sorted and unique`);
     assert.ok(guarded.includes(`tests/${name}`), `${name} does not guard itself`);
+  }
+});
+
+test("macOS-bound tests guard the safety runners they execute through file URLs", () => {
+  const required = new Map([
+    ["archive-existing-key-recovery.test.mjs", ["scripts/archive-existing-key-recovery.sh"]],
+    ["phase1-archive-owner-exercise.test.mjs", ["scripts/run-phase1-archive-owner-exercise.sh"]],
+    ["phase1-canopy-completion-recovery.test.mjs", [
+      "scripts/provision-phase1-canopy-recovery-iam.mjs",
+      "scripts/run-phase1-canopy-completion-recovery.sh",
+    ]],
+  ]);
+  for (const [name, paths] of required) {
+    const guarded = computeGuardedPaths(name);
+    for (const relative of paths) assert.ok(guarded.includes(relative), `${name} does not guard ${relative}`);
   }
 });
 
@@ -92,6 +143,21 @@ test("a changed guarded file invalidates the receipt and names the file", () => 
   assert.match(failures[0], new RegExp(`changed: .*${target.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`));
 });
 
+test("a changed macOS safety runner invalidates its receipt entry", () => {
+  const target = "scripts/archive-existing-key-recovery.sh";
+  const failures = validateDataRootTestCurrency({
+    receipt: currentReceipt((receipt) => {
+      const entry = receipt.results.find((item) => item.test === "archive-existing-key-recovery.test.mjs");
+      entry.guardedDigests[target] = "f".repeat(64);
+      entry.guardedFingerprint = "f".repeat(64);
+      return receipt;
+    }),
+  });
+  assert.equal(failures.length, 1);
+  assert.match(failures[0], /archive-existing-key-recovery\.test\.mjs/);
+  assert.match(failures[0], /changed: scripts\/archive-existing-key-recovery\.sh/);
+});
+
 test("a data-root-bound test absent from the receipt fails closed", () => {
   const failures = validateDataRootTestCurrency({
     receipt: currentReceipt((receipt) => {
@@ -100,7 +166,49 @@ test("a data-root-bound test absent from the receipt fails closed", () => {
     }),
   });
   assert.equal(failures.length, 1);
-  assert.match(failures[0], /wildfire-derived-readback\.test\.mjs is data-root-bound but the receipt does not record a run/);
+  assert.match(failures[0], /wildfire-derived-readback\.test\.mjs is owner-bound \(data-root\) but the receipt does not record a run/);
+});
+
+test("a macOS-bound test absent from the receipt fails closed", () => {
+  const failures = validateDataRootTestCurrency({
+    receipt: currentReceipt((receipt) => {
+      receipt.results = receipt.results.filter((item) => item.test !== "archive-existing-key-recovery.test.mjs");
+      return receipt;
+    }),
+  });
+  assert.equal(failures.length, 1);
+  assert.match(failures[0], /archive-existing-key-recovery\.test\.mjs is owner-bound \(macos-runner\) but the receipt does not record a run/);
+});
+
+test("a macOS result cannot be relabeled as data-root-bound", () => {
+  const failures = validateDataRootTestCurrency({
+    receipt: currentReceipt((receipt) => {
+      const entry = receipt.results.find((item) => item.test === "archive-existing-key-recovery.test.mjs");
+      entry.requirement = "data-root";
+      return receipt;
+    }),
+  });
+  assert.equal(failures.length, 1);
+  assert.match(failures[0], /records requirement data-root, expected macos-runner/);
+});
+
+test("the combined receipt must come from macOS with the data root present", () => {
+  const wrongPlatform = validateDataRootTestCurrency({
+    receipt: currentReceipt((receipt) => ({ ...receipt, platform: "linux" })),
+  });
+  assert.ok(wrongPlatform.some((failure) => /expected darwin/.test(failure)));
+
+  const missingDataRoot = validateDataRootTestCurrency({
+    receipt: currentReceipt((receipt) => ({ ...receipt, dataRootPresent: false })),
+  });
+  assert.ok(missingDataRoot.some((failure) => /data root was present/.test(failure)));
+});
+
+test("receipt counts report both owner-bound requirement classes", () => {
+  const receipt = currentReceipt();
+  receipt.counts.byRequirement["macos-runner"].total = 0;
+  const failures = validateDataRootTestCurrency({ receipt });
+  assert.ok(failures.some((failure) => /counts\.byRequirement\.macos-runner\.total is 0, expected 3/.test(failure)));
 });
 
 test("a recorded failure is reported as a failure, not as staleness", () => {
@@ -132,14 +240,14 @@ test("a receipt claiming publication or production eligibility is refused", () =
   }
 });
 
-test("a receipt naming a test that is no longer data-root-bound is refused", () => {
+test("a receipt naming a test that is no longer owner-bound is refused", () => {
   const failures = validateDataRootTestCurrency({
     receipt: currentReceipt((receipt) => {
       receipt.results.push({ ...receipt.results[0], test: "retired-elsewhere.test.mjs" });
       return receipt;
     }),
   });
-  assert.ok(failures.some((failure) => /retired-elsewhere\.test\.mjs, which is no longer data-root-bound/.test(failure)));
+  assert.ok(failures.some((failure) => /retired-elsewhere\.test\.mjs, which is no longer owner-bound/.test(failure)));
 });
 
 test("the committed receipt path is the one the runner writes", () => {
@@ -199,7 +307,7 @@ test("no data-root-bound test leaves an evidence-bound repository file unguarded
 // forbidden, but it must name a real file and state why the derivation cannot
 // reach it, because a list like this is what falls behind the code it guards.
 test("every hand-written guarded-path exception names a real file and states a reason", () => {
-  for (const name of REQUIRES_DATA_ROOT.keys()) {
+  for (const name of inventory.keys()) {
     for (const [relative, reason] of Object.entries(extraGuardedReasons(name))) {
       assert.ok(existsSync(path.join(REPO_ROOT, relative)), `${name} exception names a missing file: ${relative}`);
       assert.ok(typeof reason === "string" && reason.length > 40, `${name} exception for ${relative} has no stated reason`);
