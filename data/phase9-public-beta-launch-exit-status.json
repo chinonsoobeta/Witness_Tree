@@ -63,7 +63,7 @@
         },
         {
           "path": "tests/phase9-quarterly-reproducibility.test.mjs",
-          "sha256": "bed6b38abe3215bab47484d49555fe53d966949a4e89da700642ef7e16b92b3e"
+          "sha256": "653da4e970909436804a3acf8a9acf1c40bd127568fe70f5494272144d62906a"
         },
         {
           "path": "tests/fixtures/phase9-quarterly-reproducibility/population.json",

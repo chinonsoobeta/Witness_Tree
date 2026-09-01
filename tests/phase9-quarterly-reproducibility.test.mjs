@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { cp, mkdtemp, readFile, rm, stat, writeFile } from "node:fs/promises";
+import { cp, mkdtemp, readdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import test from "node:test";
@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 import {
   drawQuarterlySample,
   runQuarterlyReproducibility,
+  sha256File,
   validateQuarterlyPopulationManifest,
   validateQuarterlyReproducibilityResult,
 } from "../scripts/run-phase9-quarterly-reproducibility.mjs";
@@ -128,4 +129,36 @@ test("fixture use, unsafe paths, invalid seeds, oversized draws, and result tamp
   const changedDraw = record.draw.map((entry, index) => index === 0 ? { ...entry, score: "f".repeat(64) } : entry);
   assert.throws(() => validateQuarterlyReproducibilityResult({ ...record, draw: changedDraw }, population, populationBytes), /draw/);
   assert.throws(() => validateQuarterlyReproducibilityResult(record, population, Buffer.from("different manifest")), /manifest SHA-256/);
+});
+
+test("a run leaves the data root exactly as it found it", async (t) => {
+  // The data root is the only copy of the project's data, so a harness that recomputes
+  // from it has to be a reader. This walks the fixture data root before and after a full
+  // run and compares every path, byte length, and digest.
+  const inventory = async (root) => {
+    const entries = await readdir(root, { recursive: true, withFileTypes: true });
+    const files = [];
+    for (const entry of entries) {
+      if (!entry.isFile()) continue;
+      const file = path.join(entry.parentPath ?? entry.path, entry.name);
+      files.push([path.relative(root, file), (await stat(file)).size, await sha256File(file)]);
+    }
+    return files.sort(([left], [right]) => left.localeCompare(right));
+  };
+
+  const before = await inventory(DATA_ROOT);
+  assert.ok(before.length > 0);
+  const temporary = await mkdtemp(path.join(tmpdir(), "phase9-quarterly-readonly-"));
+  t.after(() => rm(temporary, { recursive: true, force: true }));
+  await runQuarterlyReproducibility({
+    populationPath: POPULATION_PATH,
+    dataRoot: DATA_ROOT,
+    seed: SEED_ZERO,
+    sampleSize: populationFixture.units.length,
+    outputPath: path.join(temporary, "result.json"),
+    repoRoot: REPO_ROOT,
+    allowFixture: true,
+    now: clock(),
+  });
+  assert.deepEqual(await inventory(DATA_ROOT), before);
 });
