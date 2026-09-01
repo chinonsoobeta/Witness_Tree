@@ -1,0 +1,256 @@
+{
+  "schema": "witness-tree/nrcan-source-currency/1",
+  "observedAt": "2026-09-01T21:39:55.778Z",
+  "host": "https://opendata.nfis.org/downloads/forest_change",
+  "probedThroughYear": 2027,
+  "impossibleControlYear": 1900,
+  "absentSignal": "HTTP 302 toward a not-found page; this host does not answer 404 for a missing archive",
+  "coverageClaim": {
+    "firstYear": 1984,
+    "lastYear": 2022,
+    "reason": "The site's coverage period is bounded by the ingested years, not by today's date."
+  },
+  "laterYearPublished": false,
+  "publisherRevisedAnIngestedYear": false,
+  "claims": {
+    "dataIsCurrent": false,
+    "laterYearsIngested": false,
+    "publisherConfirmedNoLaterRelease": false
+  },
+  "products": [
+    {
+      "id": "annual-land-cover-vlce2",
+      "title": "Annual forest land cover (VLCE2)",
+      "ingestedThroughYear": 2022,
+      "latestPublishedYear": 2022,
+      "behindByYears": 0,
+      "ingestedArchive": {
+        "fileName": "CA_forest_VLCE2_2022.zip",
+        "directory": "raw/nrcan-annual-land-cover-v2/2026-08-12",
+        "byteLengthOnDisk": 1535510211,
+        "byteLengthPublishedNow": 1535510211,
+        "lastModifiedPublishedNow": "Wed, 04 Mar 2026 19:07:49 GMT",
+        "etagPublishedNow": "\"5b8606c3-64c37893ab054\"",
+        "publisherRevisedSinceIngest": false
+      },
+      "positiveControl": {
+        "year": 2022,
+        "status": 200,
+        "contentLength": 1535510211
+      },
+      "negativeControl": {
+        "year": 1900,
+        "status": 302,
+        "location": "http://nfis.org/notfound_bi.html"
+      },
+      "candidates": [
+        {
+          "year": 2023,
+          "state": "absent",
+          "url": "https://opendata.nfis.org/downloads/forest_change/CA_forest_VLCE2_2023.zip",
+          "status": 302,
+          "location": "http://nfis.org/notfound_bi.html",
+          "contentLength": null,
+          "lastModified": null,
+          "etag": null
+        },
+        {
+          "year": 2024,
+          "state": "absent",
+          "url": "https://opendata.nfis.org/downloads/forest_change/CA_forest_VLCE2_2024.zip",
+          "status": 302,
+          "location": "http://nfis.org/notfound_bi.html",
+          "contentLength": null,
+          "lastModified": null,
+          "etag": null
+        },
+        {
+          "year": 2025,
+          "state": "absent",
+          "url": "https://opendata.nfis.org/downloads/forest_change/CA_forest_VLCE2_2025.zip",
+          "status": 302,
+          "location": "http://nfis.org/notfound_bi.html",
+          "contentLength": null,
+          "lastModified": null,
+          "etag": null
+        },
+        {
+          "year": 2026,
+          "state": "absent",
+          "url": "https://opendata.nfis.org/downloads/forest_change/CA_forest_VLCE2_2026.zip",
+          "status": 302,
+          "location": "http://nfis.org/notfound_bi.html",
+          "contentLength": null,
+          "lastModified": null,
+          "etag": null
+        },
+        {
+          "year": 2027,
+          "state": "absent",
+          "url": "https://opendata.nfis.org/downloads/forest_change/CA_forest_VLCE2_2027.zip",
+          "status": 302,
+          "location": "http://nfis.org/notfound_bi.html",
+          "contentLength": null,
+          "lastModified": null,
+          "etag": null
+        }
+      ]
+    },
+    {
+      "id": "forest-harvest",
+      "title": "Canada forest harvest",
+      "ingestedThroughYear": 2022,
+      "latestPublishedYear": 2022,
+      "behindByYears": 0,
+      "ingestedArchive": {
+        "fileName": "CA_Forest_Harvest_1985-2022.zip",
+        "directory": "raw/nrcan-ca-forest-harvest-1985-2022/2026-08-14",
+        "byteLengthOnDisk": 247945479,
+        "byteLengthPublishedNow": 247945479,
+        "lastModifiedPublishedNow": "Tue, 10 Mar 2026 19:36:40 GMT",
+        "etagPublishedNow": "\"ec75907-64cb0a36fe176\"",
+        "publisherRevisedSinceIngest": false
+      },
+      "positiveControl": {
+        "year": 2022,
+        "status": 200,
+        "contentLength": 247945479
+      },
+      "negativeControl": {
+        "year": 1900,
+        "status": 302,
+        "location": "http://nfis.org/notfound_bi.html"
+      },
+      "candidates": [
+        {
+          "year": 2023,
+          "state": "absent",
+          "url": "https://opendata.nfis.org/downloads/forest_change/CA_Forest_Harvest_1985-2023.zip",
+          "status": 302,
+          "location": "http://nfis.org/notfound_bi.html",
+          "contentLength": null,
+          "lastModified": null,
+          "etag": null
+        },
+        {
+          "year": 2024,
+          "state": "absent",
+          "url": "https://opendata.nfis.org/downloads/forest_change/CA_Forest_Harvest_1985-2024.zip",
+          "status": 302,
+          "location": "http://nfis.org/notfound_bi.html",
+          "contentLength": null,
+          "lastModified": null,
+          "etag": null
+        },
+        {
+          "year": 2025,
+          "state": "absent",
+          "url": "https://opendata.nfis.org/downloads/forest_change/CA_Forest_Harvest_1985-2025.zip",
+          "status": 302,
+          "location": "http://nfis.org/notfound_bi.html",
+          "contentLength": null,
+          "lastModified": null,
+          "etag": null
+        },
+        {
+          "year": 2026,
+          "state": "absent",
+          "url": "https://opendata.nfis.org/downloads/forest_change/CA_Forest_Harvest_1985-2026.zip",
+          "status": 302,
+          "location": "http://nfis.org/notfound_bi.html",
+          "contentLength": null,
+          "lastModified": null,
+          "etag": null
+        },
+        {
+          "year": 2027,
+          "state": "absent",
+          "url": "https://opendata.nfis.org/downloads/forest_change/CA_Forest_Harvest_1985-2027.zip",
+          "status": 302,
+          "location": "http://nfis.org/notfound_bi.html",
+          "contentLength": null,
+          "lastModified": null,
+          "etag": null
+        }
+      ]
+    },
+    {
+      "id": "forest-wildfire",
+      "title": "Canada forest wildfire",
+      "ingestedThroughYear": 2022,
+      "latestPublishedYear": 2022,
+      "behindByYears": 0,
+      "ingestedArchive": {
+        "fileName": "CA_Forest_Fire_1985-2022.zip",
+        "directory": "raw/nrcan-ca-forest-wildfire-1985-2022/2026-08-14",
+        "byteLengthOnDisk": 252364563,
+        "byteLengthPublishedNow": 252364563,
+        "lastModifiedPublishedNow": "Tue, 10 Mar 2026 19:36:35 GMT",
+        "etagPublishedNow": "\"f0ac713-64cb0a32ea63e\"",
+        "publisherRevisedSinceIngest": false
+      },
+      "positiveControl": {
+        "year": 2022,
+        "status": 200,
+        "contentLength": 252364563
+      },
+      "negativeControl": {
+        "year": 1900,
+        "status": 302,
+        "location": "http://nfis.org/notfound_bi.html"
+      },
+      "candidates": [
+        {
+          "year": 2023,
+          "state": "absent",
+          "url": "https://opendata.nfis.org/downloads/forest_change/CA_Forest_Fire_1985-2023.zip",
+          "status": 302,
+          "location": "http://nfis.org/notfound_bi.html",
+          "contentLength": null,
+          "lastModified": null,
+          "etag": null
+        },
+        {
+          "year": 2024,
+          "state": "absent",
+          "url": "https://opendata.nfis.org/downloads/forest_change/CA_Forest_Fire_1985-2024.zip",
+          "status": 302,
+          "location": "http://nfis.org/notfound_bi.html",
+          "contentLength": null,
+          "lastModified": null,
+          "etag": null
+        },
+        {
+          "year": 2025,
+          "state": "absent",
+          "url": "https://opendata.nfis.org/downloads/forest_change/CA_Forest_Fire_1985-2025.zip",
+          "status": 302,
+          "location": "http://nfis.org/notfound_bi.html",
+          "contentLength": null,
+          "lastModified": null,
+          "etag": null
+        },
+        {
+          "year": 2026,
+          "state": "absent",
+          "url": "https://opendata.nfis.org/downloads/forest_change/CA_Forest_Fire_1985-2026.zip",
+          "status": 302,
+          "location": "http://nfis.org/notfound_bi.html",
+          "contentLength": null,
+          "lastModified": null,
+          "etag": null
+        },
+        {
+          "year": 2027,
+          "state": "absent",
+          "url": "https://opendata.nfis.org/downloads/forest_change/CA_Forest_Fire_1985-2027.zip",
+          "status": 302,
+          "location": "http://nfis.org/notfound_bi.html",
+          "contentLength": null,
+          "lastModified": null,
+          "etag": null
+        }
+      ]
+    }
+  ]
+}
