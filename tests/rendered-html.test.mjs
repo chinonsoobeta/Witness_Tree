@@ -25,6 +25,21 @@ test("renders the bilingual language gateway", async () => {
   assert.doesNotMatch(html, /loading skeleton|taking shape/i);
 });
 
+test("emits application security headers with the map delivery allowances", async () => {
+  const response = await render("/en");
+  assert.equal(response.headers.get("strict-transport-security"), "max-age=31536000");
+  assert.equal(response.headers.get("x-content-type-options"), "nosniff");
+  assert.equal(response.headers.get("referrer-policy"), "strict-origin-when-cross-origin");
+  assert.equal(response.headers.get("x-frame-options"), "DENY");
+
+  const policy = response.headers.get("content-security-policy");
+  assert.ok(policy);
+  assert.match(policy, /(?:^|; )frame-ancestors 'none'(?:;|$)/);
+  assert.match(policy, /(?:^|; )worker-src 'self'(?:;|$)/);
+  assert.match(policy, /(?:^|; )img-src 'self' data: blob:(?:;|$)/);
+  assert.match(policy, /(?:^|; )connect-src 'self' https:\/\/d3g1406o0uekin\.cloudfront\.net(?:;|$)/);
+});
+
 test("renders both localized public records with neutral non-claims", async () => {
   const [english, french] = await Promise.all([
     render("/en").then((response) => response.text()),
