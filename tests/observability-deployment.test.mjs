@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -7,14 +8,19 @@ import {
   checkObservabilityDeployment,
   validateObservabilityDeployment,
 } from "../scripts/check-observability-deployment.mjs";
+import { runSyntheticUptime } from "../scripts/run-synthetic-uptime.mjs";
 
 /**
- * These tests build the record the checker expects inside a temporary tree and mutate one field at
- * a time to prove each rule bites. Nothing here reads data/observability-deployment.json, which does
- * not exist until an AWS run produces it, so what is tested is the rule rather than a recorded run.
+ * These tests exercise both accepted states. The canonical partial record binds repository assets
+ * and forbids owner-run evidence. The fixture below models a later observed deployment and is
+ * mutated one field at a time to prove the strict evidence rules still bite.
  */
 
 const WORKFLOW_PATH = ".github/workflows/synthetic-uptime.yml";
+const CANONICAL_PARTIAL = JSON.parse(
+  readFileSync(new URL("../data/observability-deployment.json", import.meta.url), "utf8"),
+);
+const partialFixture = () => structuredClone(CANONICAL_PARTIAL);
 
 async function fixtureRoot(t) {
   const root = await mkdtemp(path.join(tmpdir(), "observability-"));
@@ -197,6 +203,127 @@ const withAlarm = (id, overrides) => {
   };
 };
 
+test("the canonical partial record binds repository assets without claiming owner-run evidence", () => {
+  const record = checkObservabilityDeployment();
+  assert.equal(record.status, "partial");
+  assert.equal(record.claims.phase8CriterionPass, false);
+  assert.equal(Object.hasOwn(record.syntheticUptime, "lastRun"), false);
+  for (const field of ["logDestinations", "archive", "delivery", "alarms", "dashboard", "operationalReviews"]) {
+    assert.equal(Object.hasOwn(record, field), false, `${field} must be absent from the partial record`);
+  }
+  assert.ok(record.syntheticUptime.routes.some((route) => route.path === "/fr/comparer"));
+  assert.equal(record.syntheticUptime.routes.some((route) => route.path === "/fr/compare"), false);
+});
+
+test("a partial record cannot smuggle in deployment evidence or a synthetic lastRun", () => {
+  const lastRun = {
+    startedAt: "2026-08-31T00:00:00Z",
+    result: "pass",
+    observedRoutes: [],
+  };
+  assert.throws(
+    () => validateObservabilityDeployment({ ...partialFixture(), alarms: [] }),
+    /must omit alarms/,
+  );
+  const synthetic = partialFixture().syntheticUptime;
+  assert.throws(
+    () =>
+      validateObservabilityDeployment({
+        ...partialFixture(),
+        syntheticUptime: { ...synthetic, lastRun },
+      }),
+    /must omit syntheticUptime\.lastRun/,
+  );
+  assert.throws(
+    () =>
+      validateObservabilityDeployment({
+        ...partialFixture(),
+        ownerBoundary: { ...partialFixture().ownerBoundary, awsMutationPerformed: true },
+      }),
+    /cannot claim an AWS mutation/,
+  );
+});
+
+test("the partial boundary keeps every required owner-run evidence item and completion claim open", () => {
+  const record = partialFixture();
+  assert.throws(
+    () =>
+      validateObservabilityDeployment({
+        ...record,
+        ownerBoundary: {
+          ...record.ownerBoundary,
+          pendingEvidence: record.ownerBoundary.pendingEvidence.filter(
+            (item) => item !== "delivery-standard-logging",
+          ),
+        },
+      }),
+    /must include delivery-standard-logging/,
+  );
+  assert.throws(
+    () =>
+      validateObservabilityDeployment({
+        ...record,
+        claims: { ...record.claims, phase8CriterionPass: true },
+      }),
+    /phase8CriterionPass must remain false/,
+  );
+});
+
+test("the partial route contract rejects the nonexistent French comparison path", () => {
+  const record = partialFixture();
+  const routes = record.syntheticUptime.routes.map((route) =>
+    route.path === "/fr/comparer" ? { ...route, path: "/fr/compare" } : route,
+  );
+  assert.throws(
+    () =>
+      validateObservabilityDeployment({
+        ...record,
+        syntheticUptime: { ...record.syntheticUptime, routes },
+      }),
+    /French comparison route is \/fr\/comparer/,
+  );
+});
+
+test("the synthetic runner checks status and marker for every configured route", async () => {
+  const routes = [
+    { path: "/en/compare", expectedStatus: 200, contentMarker: "Riding comparison" },
+    { path: "/fr/comparer", expectedStatus: 200, contentMarker: "Comparaison des circonscriptions" },
+  ];
+  const requested = [];
+  const instants = [new Date("2026-08-31T00:00:00Z"), new Date("2026-08-31T00:00:01Z")];
+  const result = await runSyntheticUptime({
+    origin: "https://www.witnesstree.ca",
+    routes,
+    now: () => instants.shift(),
+    fetchImpl: async (url, options) => {
+      requested.push({ path: url.pathname, options });
+      const marker = routes.find((route) => route.path === url.pathname).contentMarker;
+      return new Response(`<h1>${marker}</h1>`, { status: 200 });
+    },
+  });
+  assert.equal(result.result, "pass");
+  assert.deepEqual(requested.map(({ path }) => path), ["/en/compare", "/fr/comparer"]);
+  assert.ok(requested.every(({ options }) => options.redirect === "manual"));
+  assert.ok(requested.every(({ options }) => options.signal instanceof AbortSignal));
+  assert.deepEqual(result.observedRoutes.map(({ contentMarkerFound }) => contentMarkerFound), [true, true]);
+});
+
+test("the synthetic runner preserves a missing observation as null and fails the run", async () => {
+  const instants = [new Date("2026-08-31T00:00:00Z"), new Date("2026-08-31T00:00:01Z")];
+  const result = await runSyntheticUptime({
+    origin: "https://www.witnesstree.ca",
+    routes: [{ path: "/fr/comparer", expectedStatus: 200, contentMarker: "Comparaison" }],
+    now: () => instants.shift(),
+    fetchImpl: async () => {
+      throw new Error("network unavailable");
+    },
+  });
+  assert.equal(result.result, "fail");
+  assert.equal(result.observedRoutes[0].status, null);
+  assert.equal(result.observedRoutes[0].contentMarkerFound, null);
+  assert.match(result.observedRoutes[0].error, /network unavailable/);
+});
+
 test("a complete observability record is accepted", async (t) => {
   const root = await fixtureRoot(t);
   assert.equal(
@@ -212,7 +339,7 @@ test("a missing evidence file fails closed rather than passing silently", async 
       checkObservabilityDeployment(path.join(root, "data", "observability-deployment.json"), {
         repoRoot: root,
       }),
-    /No observability deployment evidence exists/,
+    /No observability record exists/,
   );
 });
 

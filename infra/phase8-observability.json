@@ -1,0 +1,129 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Witness Tree delivery alarms and dashboard. The owner deploys this only after the Canadian log and metric pipeline exists.",
+  "Metadata": {
+    "WitnessTree": {
+      "Status": "owner-deployment-pending",
+      "MetricBoundary": "The template consumes delivery metrics. It does not create or claim a log destination, retention policy, standard-log delivery, or completed operational review."
+    }
+  },
+  "Parameters": {
+    "DeploymentRegion": {
+      "Type": "String",
+      "AllowedValues": [
+        "ca-central-1",
+        "ca-west-1"
+      ],
+      "Description": "Canadian region used by every dashboard widget. Deploy the stack in the same region."
+    },
+    "DistributionId": {
+      "Type": "String",
+      "MinLength": 1,
+      "Description": "CloudFront distribution identifier supplied by the delivery owner at deployment time."
+    },
+    "AlarmTopicArn": {
+      "Type": "String",
+      "MinLength": 1,
+      "NoEcho": true,
+      "Description": "SNS topic ARN for the delivery-owner alarm recipient."
+    },
+    "MetricNamespace": {
+      "Type": "String",
+      "Default": "WitnessTree/PublicDelivery",
+      "AllowedPattern": "^[A-Za-z0-9._/-]+$",
+      "Description": "Namespace populated by the owner-deployed standard-log metric pipeline."
+    },
+    "DashboardName": {
+      "Type": "String",
+      "Default": "WitnessTree-Public-Delivery",
+      "AllowedPattern": "^[A-Za-z0-9_-]+$"
+    }
+  },
+  "Resources": {
+    "Delivery5xxRateAlarm": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "AlarmName": "witness-tree-delivery-5xx-rate",
+        "AlarmDescription": "Delivery 5xx rate exceeded one percent for two consecutive five-minute periods.",
+        "ActionsEnabled": true,
+        "AlarmActions": [
+          {
+            "Ref": "AlarmTopicArn"
+          }
+        ],
+        "OKActions": [
+          {
+            "Ref": "AlarmTopicArn"
+          }
+        ],
+        "Namespace": {
+          "Ref": "MetricNamespace"
+        },
+        "MetricName": "Delivery5xxRate",
+        "Dimensions": [
+          {
+            "Name": "DistributionId",
+            "Value": {
+              "Ref": "DistributionId"
+            }
+          }
+        ],
+        "Statistic": "Average",
+        "Period": 300,
+        "EvaluationPeriods": 2,
+        "DatapointsToAlarm": 2,
+        "Threshold": 1,
+        "ComparisonOperator": "GreaterThanThreshold",
+        "TreatMissingData": "missing"
+      }
+    },
+    "DeliveryOriginErrorRateAlarm": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "AlarmName": "witness-tree-delivery-origin-error-rate",
+        "AlarmDescription": "Origin error rate exceeded one half percent for two consecutive five-minute periods.",
+        "ActionsEnabled": true,
+        "AlarmActions": [
+          {
+            "Ref": "AlarmTopicArn"
+          }
+        ],
+        "OKActions": [
+          {
+            "Ref": "AlarmTopicArn"
+          }
+        ],
+        "Namespace": {
+          "Ref": "MetricNamespace"
+        },
+        "MetricName": "DeliveryOriginErrorRate",
+        "Dimensions": [
+          {
+            "Name": "DistributionId",
+            "Value": {
+              "Ref": "DistributionId"
+            }
+          }
+        ],
+        "Statistic": "Average",
+        "Period": 300,
+        "EvaluationPeriods": 2,
+        "DatapointsToAlarm": 2,
+        "Threshold": 0.5,
+        "ComparisonOperator": "GreaterThanThreshold",
+        "TreatMissingData": "missing"
+      }
+    },
+    "DeliveryDashboard": {
+      "Type": "AWS::CloudWatch::Dashboard",
+      "Properties": {
+        "DashboardName": {
+          "Ref": "DashboardName"
+        },
+        "DashboardBody": {
+          "Fn::Sub": "{\"widgets\":[{\"type\":\"metric\",\"x\":0,\"y\":0,\"width\":8,\"height\":6,\"properties\":{\"title\":\"request-rate\",\"region\":\"${DeploymentRegion}\",\"view\":\"timeSeries\",\"period\":300,\"metrics\":[[\"${MetricNamespace}\",\"RequestCount\",\"DistributionId\",\"${DistributionId}\",{\"stat\":\"Sum\",\"label\":\"request-rate\"}]]}},{\"type\":\"metric\",\"x\":8,\"y\":0,\"width\":8,\"height\":6,\"properties\":{\"title\":\"cache-hit-ratio\",\"region\":\"${DeploymentRegion}\",\"view\":\"timeSeries\",\"period\":300,\"metrics\":[[\"${MetricNamespace}\",\"CacheHitRatio\",\"DistributionId\",\"${DistributionId}\",{\"stat\":\"Average\",\"label\":\"cache-hit-ratio\"}]]}},{\"type\":\"metric\",\"x\":16,\"y\":0,\"width\":8,\"height\":6,\"properties\":{\"title\":\"error-rate\",\"region\":\"${DeploymentRegion}\",\"view\":\"timeSeries\",\"period\":300,\"metrics\":[[\"${MetricNamespace}\",\"ErrorRate\",\"DistributionId\",\"${DistributionId}\",{\"stat\":\"Average\",\"label\":\"error-rate\"}]]}}]}"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,113 @@
+{
+  "schemaVersion": "witness-tree/observability-deployment/1",
+  "capturedAt": "2026-09-01T06:26:21Z",
+  "status": "partial",
+  "siteTier": {
+    "host": "ChatGPT Sites",
+    "externallyHosted": true,
+    "hostSideMonitoringAvailable": false,
+    "monitored": false
+  },
+  "repositoryAssets": {
+    "monitoringDefinitionsPath": "infra/phase8-observability.json",
+    "syntheticRunnerPath": "scripts/run-synthetic-uptime.mjs"
+  },
+  "syntheticUptime": {
+    "workflowPath": ".github/workflows/synthetic-uptime.yml",
+    "schedule": "0 */6 * * *",
+    "writePermissions": false,
+    "substituteForHostSideMonitoring": false,
+    "routes": [
+      {
+        "path": "/en",
+        "expectedStatus": 200,
+        "contentMarker": "What happened to the forest here?"
+      },
+      {
+        "path": "/fr",
+        "expectedStatus": 200,
+        "contentMarker": "Qu’est-il arrivé à la forêt ici?"
+      },
+      {
+        "path": "/en/explore",
+        "expectedStatus": 200,
+        "contentMarker": "Explore forest change"
+      },
+      {
+        "path": "/fr/explorer",
+        "expectedStatus": 200,
+        "contentMarker": "Explorer les changements forestiers"
+      },
+      {
+        "path": "/en/compare",
+        "expectedStatus": 200,
+        "contentMarker": "Riding comparison"
+      },
+      {
+        "path": "/fr/comparer",
+        "expectedStatus": 200,
+        "contentMarker": "Comparaison des circonscriptions"
+      }
+    ]
+  },
+  "ownerBoundary": {
+    "ownerRunRequired": true,
+    "awsMutationPerformed": false,
+    "syntheticRunPerformed": false,
+    "pendingEvidence": [
+      "ca-central-1-log-destinations-with-retention",
+      "ca-west-1-log-destinations-with-retention",
+      "s3-server-access-logging",
+      "cloudtrail-data-events",
+      "delivery-standard-logging",
+      "delivery-metric-publication",
+      "alarm-and-dashboard-deployment",
+      "synthetic-last-run",
+      "operational-review"
+    ]
+  },
+  "unobserved": [
+    {
+      "tier": "site",
+      "component": "ChatGPT Sites control-plane operational metrics",
+      "monitored": false,
+      "reason": "Recent production Worker logs can be queried through the management connector, but no project-visible request count, error rate, alerting hook, dashboard, or retention control is recorded.",
+      "metrics": [
+        {
+          "name": "requestCount",
+          "value": "unknown"
+        },
+        {
+          "name": "errorRate",
+          "value": null
+        }
+      ]
+    },
+    {
+      "tier": "archive",
+      "component": "archive log destinations and review",
+      "monitored": false,
+      "reason": "The owner has not yet recorded Canadian S3 server-access and CloudTrail data-event destinations, their retention, or a completed review."
+    },
+    {
+      "tier": "delivery",
+      "component": "delivery logging, alarms, and dashboard",
+      "monitored": false,
+      "reason": "Definitions exist in the repository, but standard logging, metric publication, alarm deployment, dashboard deployment, destination region, and retention still require an observed owner AWS run."
+    },
+    {
+      "tier": "synthetic",
+      "component": "scheduled uptime run",
+      "monitored": false,
+      "reason": "The workflow and runner exist, but no workflow run has been observed and no lastRun is recorded."
+    }
+  ],
+  "claims": {
+    "hostTierMonitored": false,
+    "archiveLoggingObserved": false,
+    "deliveryLoggingObserved": false,
+    "syntheticRunObserved": false,
+    "observabilityComplete": false,
+    "phase8CriterionPass": false
+  }
+}
