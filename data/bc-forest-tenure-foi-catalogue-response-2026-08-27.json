@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "witness-tree/bc-forest-tenure-foi-catalogue-response/1",
-  "status": "official-response-received-catalogue-export-not-yet-verified",
+  "schemaVersion": "witness-tree/bc-forest-tenure-foi-catalogue-response/2",
+  "status": "official-response-received-public-wfs-export-profiled-single-timestamp-unverified",
   "recordedOn": "2026-08-27",
   "request": {
     "reference": "FOR-2026-056834",
@@ -53,11 +53,146 @@
     "officialProgramAreaSaysPubliclyAvailable": true,
     "exactCatalogueLicenceVerified": true,
     "directFullProvincePackagePresent": false,
+    "completeRecordCountVerified": true,
     "coherentTimestampedExtractVerified": false,
-    "completeRecordCountVerified": false,
+    "stableReadWindowVerified": true,
     "archiveOrProductionAdmission": false,
     "withdrawalRecommended": false,
-    "reason": "The official records establish the exact OGL-BC catalogue entries and warehouse object names, but expose only an indirect custom-download route plus WMS/KML services. No direct timestamped full-province package, exact record count, checksum, schema profile, or completeness proof has yet been obtained."
+    "recordCountVerification": {
+      "method": "Reconcile WFS hits before and after the read window with retrieved features and distinct OBJECTID values.",
+      "views": [
+        {
+          "objectName": "WHSE_FOREST_TENURE.FTEN_CUT_BLOCK_POLY_SVW",
+          "claimedRecordCount": 222618,
+          "hitsBefore": 222618,
+          "hitsAfter": 222618,
+          "featuresRetrieved": 222618,
+          "distinctObjectIds": 222618,
+          "duplicateObjectIds": 0,
+          "missingRecords": 0,
+          "reconciled": true
+        },
+        {
+          "objectName": "WHSE_FOREST_TENURE.FTEN_HARVEST_AUTH_POLY_SVW",
+          "claimedRecordCount": 71876,
+          "hitsBefore": 71876,
+          "hitsAfter": 71876,
+          "featuresRetrieved": 71876,
+          "distinctObjectIds": 71876,
+          "duplicateObjectIds": 0,
+          "missingRecords": 0,
+          "reconciled": true
+        }
+      ]
+    },
+    "stableReadWindow": {
+      "startedAt": "2026-09-01T15:04:41Z",
+      "finishedAt": "2026-09-01T15:12:17Z",
+      "basis": "For both views, WFS result counts before and after paging were unchanged and matched every retrieved feature and distinct OBJECTID, with zero duplicates and zero missing records. This verifies a stable read window, not a one-timestamp snapshot."
+    },
+    "reason": "The exact public OGL-BC WFS surfaces yielded complete province-wide paged extracts with reconciled feature and OBJECTID counts during a stable read window. The catalogue custom-download resource remains indirect with no direct package URL, and the 31 pages expose 31 distinct response timestamps, so no direct full-province package or coherent one-timestamp extract is verified.",
+    "ownerDecision": "Do not recommend withdrawal on the present evidence. The public WFS substantially satisfies the requested records, geometry, attributes and provincial coverage, but the owner should ask whether a one-timestamp extract exists before deciding the FOI request."
   },
-  "nextSafeStep": "Run and profile the official custom-download export for both exact views. Compare its scope and timestamps to the FOI request before the owner decides whether to withdraw or respond that the links are insufficient."
+  "exportProfile": {
+    "evidenceRoot": "/Volumes/Extended_SSD/Witness_Tree-data/work/bc-ften-foi-profile-2026-09-01",
+    "profiledAt": "2026-09-01T15:12:17Z",
+    "evidenceHandling": "Read-only profile of owner-local SSD evidence; no data pages are copied into the repository.",
+    "catalogueDistribution": {
+      "customDownloadAccessMethod": "indirect access",
+      "customDownloadDirectUrlPresent": false,
+      "wmsPresent": true,
+      "kmlGroundOverlayPresent": true
+    },
+    "wfs": {
+      "version": "2.0.0",
+      "outputFormat": "application/json",
+      "srsName": "EPSG:3005",
+      "pageSize": 10000,
+      "paging": "startIndex",
+      "sortBy": "OBJECTID",
+      "oneFeaturePositiveControlPerView": true
+    },
+    "readWindow": {
+      "startedAt": "2026-09-01T15:04:41Z",
+      "finishedAt": "2026-09-01T15:12:17Z",
+      "totalPages": 31,
+      "distinctPageTimestamps": 31,
+      "pageTimestampRange": [
+        "2026-09-01T15:04:49.139Z",
+        "2026-09-01T15:10:41.229Z"
+      ]
+    },
+    "manifest": {
+      "path": "MANIFEST.sha256",
+      "sha256": "e6b89d4872d3bed6dd3d8442123210ca4eff5f8bfefe61e839f891482f9869b4",
+      "listedFilesVerified": 10,
+      "listedFilesFailed": 0
+    },
+    "reports": {
+      "extract-report.json": "6188078d35634e27087d74733f0952ba41597c9549fb3c2ef1f624f1c4530e92",
+      "profile-report.json": "592dfa6fd7b1230a2ece8077652a50a061dcfac10aed293de1b3d2de12480f28",
+      "extent-report.json": "4cf79111d108ce748af165b67fddd43d933e1e2fabab259cc542820a0746a4b5"
+    },
+    "views": [
+      {
+        "objectName": "WHSE_FOREST_TENURE.FTEN_CUT_BLOCK_POLY_SVW",
+        "endpoint": "https://openmaps.gov.bc.ca/geo/pub/WHSE_FOREST_TENURE.FTEN_CUT_BLOCK_POLY_SVW/ows",
+        "pages": 23,
+        "bytes": 2076333327,
+        "featuresRetrieved": 222618,
+        "distinctObjectIds": 222618,
+        "duplicateObjectIds": 0,
+        "missingRecords": 0,
+        "hitsBefore": {"count": 222618, "timestamp": "2026-09-01T15:04:42.464Z"},
+        "hitsAfter": {"count": 222618, "timestamp": "2026-09-01T15:12:16.996Z"},
+        "distinctPageTimestamps": 23,
+        "pageTimestampRange": ["2026-09-01T15:04:49.139Z", "2026-09-01T15:07:22.404Z"],
+        "schema": {
+          "catalogueColumns": 38,
+          "describeFeatureTypeFields": 38,
+          "catalogueOnly": [],
+          "describeFeatureTypeOnly": [],
+          "exactMatch": true
+        },
+        "attributePopulation": {
+          "attributesObservedNonNull": 36,
+          "limitation": "The analyzer reports only keys observed with non-null values; it does not independently prove that every declared catalogue field was populated."
+        },
+        "geometryTypes": {"Polygon": 189475, "MultiPolygon": 33141, "null": 2},
+        "nullGeometryLifecycle": {"RETIRED": 2, "ACTIVE": 0},
+        "extentEpsg3005": [490978.3, 377258.3, 1868337, 1690990.4],
+        "adminDistrictCount": 23
+      },
+      {
+        "objectName": "WHSE_FOREST_TENURE.FTEN_HARVEST_AUTH_POLY_SVW",
+        "endpoint": "https://openmaps.gov.bc.ca/geo/pub/WHSE_FOREST_TENURE.FTEN_HARVEST_AUTH_POLY_SVW/ows",
+        "pages": 8,
+        "bytes": 1948187803,
+        "featuresRetrieved": 71876,
+        "distinctObjectIds": 71876,
+        "duplicateObjectIds": 0,
+        "missingRecords": 0,
+        "hitsBefore": {"count": 71876, "timestamp": "2026-09-01T15:04:42.750Z"},
+        "hitsAfter": {"count": 71876, "timestamp": "2026-09-01T15:12:17.348Z"},
+        "distinctPageTimestamps": 8,
+        "pageTimestampRange": ["2026-09-01T15:07:35.060Z", "2026-09-01T15:10:41.229Z"],
+        "schema": {
+          "catalogueColumns": 56,
+          "describeFeatureTypeFields": 56,
+          "catalogueOnly": [],
+          "describeFeatureTypeOnly": [],
+          "exactMatch": true
+        },
+        "attributePopulation": {
+          "attributesObservedNonNull": 54,
+          "limitation": "The analyzer reports only keys observed with non-null values; it does not independently prove that every declared catalogue field was populated."
+        },
+        "geometryTypes": {"MultiPolygon": 44862, "Polygon": 26989, "null": 25},
+        "nullGeometryLifecycle": {"RETIRED": 21, "ACTIVE": 4},
+        "extentEpsg3005": [490978.3, 372754.2, 1868337, 1692265.8],
+        "adminDistrictCount": 23
+      }
+    ]
+  },
+  "nextSafeStep": "Owner review is required before any reply or withdrawal. Send only the prepared unsent reply draft if the owner approves it, asking the ministry for a one-timestamp extract for both exact views or confirmation that none exists; do not claim the current paged WFS read is timestamp-coherent."
 }

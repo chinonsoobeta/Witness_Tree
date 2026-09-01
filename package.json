@@ -112,7 +112,7 @@
     "check:nrcan-wildfire-profile": "node scripts/check-nrcan-wildfire-profile.mjs",
     "check:bc-consolidated-cutblocks-access": "node scripts/check-bc-consolidated-cutblocks-access.mjs",
     "check:bc-fta-operational-sources": "node scripts/check-bc-fta-operational-sources.mjs",
-    "check:bc-forest-tenure-foi-catalogue-response": "node scripts/check-bc-forest-tenure-foi-catalogue-response.mjs",
+    "check:bc-forest-tenure-foi-catalogue-response": "node scripts/check-bc-forest-tenure-foi-response.mjs",
     "check:phase1-nbac-outreach-sent": "node scripts/check-phase1-nbac-outreach-sent.mjs && node --test tests/phase1-nbac-outreach-sent.test.mjs",
     "check:phase1-nbac-owner-authorization": "node scripts/check-phase1-nbac-owner-authorization.mjs && node --test tests/phase1-nbac-owner-authorization.test.mjs",
     "check:phase1-nbac-profile": "node scripts/check-phase1-nbac-profile.mjs && node --test tests/phase1-nbac-profile.test.mjs",

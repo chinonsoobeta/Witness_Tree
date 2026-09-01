@@ -1,39 +1,74 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
-import { validateBcForestTenureFoiCatalogueResponse } from "../scripts/check-bc-forest-tenure-foi-catalogue-response.mjs";
+import { validateBcForestTenureFoiResponse } from "../scripts/check-bc-forest-tenure-foi-response.mjs";
 
-const read = (name) => JSON.parse(readFileSync(new URL(`../data/${name}.json`, import.meta.url), "utf8"));
-const record = read("bc-forest-tenure-foi-catalogue-response-2026-08-27");
+const record = JSON.parse(readFileSync(new URL("../data/bc-forest-tenure-foi-catalogue-response-2026-08-27.json", import.meta.url), "utf8"));
 
-test("BC FOI catalogue response preserves exact official identities and remains export-blocked", () => {
-  assert.equal(validateBcForestTenureFoiCatalogueResponse(record), record);
-  assert.equal(record.catalogueReadback.datasets.length, 2);
+test("BC FOI response preserves the observed complete WFS profile without claiming timestamp coherence", () => {
+  assert.equal(validateBcForestTenureFoiResponse(record), record);
+  assert.equal(record.assessment.completeRecordCountVerified, true);
+  assert.equal(record.assessment.stableReadWindowVerified, true);
   assert.equal(record.assessment.directFullProvincePackagePresent, false);
-  assert.equal(record.assessment.archiveOrProductionAdmission, false);
+  assert.equal(record.assessment.coherentTimestampedExtractVerified, false);
+  assert.equal(record.exportProfile.readWindow.distinctPageTimestamps, 31);
+  assert.deepEqual(
+    record.exportProfile.views.map(({ featuresRetrieved }) => featuresRetrieved),
+    [222618, 71876],
+  );
+  assert.deepEqual(record.exportProfile.views[1].nullGeometryLifecycle, { RETIRED: 21, ACTIVE: 4 });
   assert.equal(record.request.outboundReplySent, false);
 });
 
-test("BC FOI catalogue response rejects identity, provenance, and request-summary drift", () => {
+test("BC FOI response rejects identity, provenance, and evidence drift", () => {
   const cases = [
     ["status", { ...record, status: "resolved" }],
-    ["request summary label", { ...record, request: { ...record.request, requestedOutcomeIsSummary: false } }],
-    ["separate timestamp condition", { ...record, request: { ...record.request, requestedOutcomeBasis: "Unattributed summary." } }],
+    ["request summary", { ...record, request: { ...record.request, requestedOutcomeIsSummary: false } }],
     ["response provenance", { ...record, request: { ...record.request, responseProvenance: { ...record.request.responseProvenance, senderDomain: "example.invalid" } } }],
     ["catalogue identity", { ...record, catalogueReadback: { ...record.catalogueReadback, datasets: [{ ...record.catalogueReadback.datasets[0], objectName: "WRONG" }, record.catalogueReadback.datasets[1]] } }],
     ["resource set", { ...record, catalogueReadback: { ...record.catalogueReadback, datasets: [{ ...record.catalogueReadback.datasets[0], resources: ["direct-download"] }, record.catalogueReadback.datasets[1]] } }],
+    ["manifest digest", { ...record, exportProfile: { ...record.exportProfile, manifest: { ...record.exportProfile.manifest, sha256: "0".repeat(64) } } }],
+    ["null lifecycle", { ...record, exportProfile: { ...record.exportProfile, views: [record.exportProfile.views[0], { ...record.exportProfile.views[1], nullGeometryLifecycle: { RETIRED: 25, ACTIVE: 0 } }] } }],
   ];
-  for (const [label, candidate] of cases) assert.throws(() => validateBcForestTenureFoiCatalogueResponse(candidate), undefined, label);
-});
-
-test("BC FOI catalogue response rejects admission-looking or withdrawal claims", () => {
-  for (const field of ["directFullProvincePackagePresent", "coherentTimestampedExtractVerified", "completeRecordCountVerified", "archiveOrProductionAdmission", "withdrawalRecommended"]) {
-    const candidate = structuredClone(record);
-    candidate.assessment[field] = true;
-    assert.throws(() => validateBcForestTenureFoiCatalogueResponse(candidate), undefined, field);
+  for (const [label, candidate] of cases) {
+    assert.throws(() => validateBcForestTenureFoiResponse(candidate), undefined, label);
   }
-  const reply = structuredClone(record);
-  reply.request.outboundReplySent = true;
-  assert.throws(() => validateBcForestTenureFoiCatalogueResponse(reply), /reply/i);
 });
 
+test("BC FOI response rejects a coherence claim across multiple page timestamps", () => {
+  const candidate = structuredClone(record);
+  candidate.assessment.coherentTimestampedExtractVerified = true;
+  assert.throws(
+    () => validateBcForestTenureFoiResponse(candidate),
+    /distinctPageTimestamps is greater than 1/,
+  );
+});
+
+test("BC FOI response rejects a claimed record count that differs from the export profile", () => {
+  const candidate = structuredClone(record);
+  candidate.assessment.recordCountVerification.views[0].claimedRecordCount += 1;
+  assert.throws(
+    () => validateBcForestTenureFoiResponse(candidate),
+    /claimed count must match the export profile count/,
+  );
+});
+
+test("BC FOI response rejects withdrawal while any verification remains false", () => {
+  const candidate = structuredClone(record);
+  candidate.assessment.withdrawalRecommended = true;
+  assert.throws(
+    () => validateBcForestTenureFoiResponse(candidate),
+    /withdrawalRecommended requires directFullProvincePackagePresent to be true/,
+  );
+});
+
+test("BC FOI response requires a send date only after an outbound reply is sent", () => {
+  const missingDate = structuredClone(record);
+  missingDate.request.outboundReplySent = true;
+  assert.throws(() => validateBcForestTenureFoiResponse(missingDate), /outboundReplySentAt/);
+
+  const sent = structuredClone(record);
+  sent.request.outboundReplySent = true;
+  sent.request.outboundReplySentAt = "2026-09-01T18:00:00Z";
+  assert.equal(validateBcForestTenureFoiResponse(sent), sent);
+});
