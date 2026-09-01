@@ -178,6 +178,7 @@
     "verify:deployed-map-render": "node scripts/verify-deployed-map-render.mjs",
     "check:observability-deployment": "node scripts/check-observability-deployment.mjs && node --test tests/observability-deployment.test.mjs",
     "check:phase9-public-beta-launch-exit-status": "node scripts/check-phase9-public-beta-launch-exit-status.mjs",
+    "run:phase9-quarterly-reproducibility": "node scripts/run-phase9-quarterly-reproducibility.mjs",
     "check:elections-canada-fed-2025": "node scripts/check-elections-canada-fed-2025.mjs",
     "check:elections-canada-fed-2025-promotion": "tsx scripts/check-elections-canada-fed-2025-promotion-preparation.mjs",
     "check:federal-electoral-archive-recovery-evidence": "node scripts/check-federal-electoral-archive-recovery-evidence.mjs",
