@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import test from "node:test";
 import {
   CATEGORIES,
@@ -15,6 +15,11 @@ const register = readRepositoryJson(REGISTER_PATH);
 const packageDocument = readRepositoryJson("package.json");
 const ci = readRepositoryJson(".github/workflows/ci.yml", false);
 const wildfire = readRepositoryJson(".github/workflows/wildfire-refresh.yml", false);
+const workflowNames = readdirSync(new URL("../.github/workflows/", import.meta.url))
+  .filter((name) => name.endsWith(".yml") || name.endsWith(".yaml"))
+  .sort();
+const workflows = workflowNames.map((name) => [name, readRepositoryJson(`.github/workflows/${name}`, false)]);
+const syntheticUptime = readRepositoryJson(".github/workflows/synthetic-uptime.yml", false);
 const checkerFiles = repositoryCheckFiles();
 
 function clone(value) {
@@ -53,7 +58,17 @@ test("workflows use current action runtimes and preserve their concurrency polic
   assert.match(ci, /if-no-files-found: error/);
   assert.match(wildfire, /actions\/checkout@v7/);
   assert.match(wildfire, /actions\/setup-node@v7/);
-  assert.doesNotMatch(`${ci}\n${wildfire}`, /actions\/(?:checkout|setup-node|upload-artifact)@v[1-6]\b/);
+  // Every workflow on disk, not just the two named above: a third file added later
+  // would otherwise ship a stale runtime and an uncapped schedule unnoticed.
+  assert.ok(workflows.length >= 3);
+  // ci.yml and wildfire-refresh.yml are checksum-bound as phase exit evidence, so capping
+  // their runtime is a separate change that must rebind those records. The scheduled
+  // synthetic probe is not bound, and an uncapped scheduled job is the one that can run away.
+  assert.match(syntheticUptime, /^ +timeout-minutes: \d+$/m);
+  for (const [name, source] of workflows) {
+    assert.doesNotMatch(source, /actions\/[A-Za-z0-9-]+@v[1-6]\b/, `${name} pins a superseded action major`);
+    assert.match(source, /\nconcurrency:\n {2}group: /, `${name} declares no concurrency group`);
+  }
 });
 
 test("the dependency advisory gate blocks what ships and never hides the rest", () => {
