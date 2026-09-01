@@ -19,7 +19,6 @@ const workflowNames = readdirSync(new URL("../.github/workflows/", import.meta.u
   .filter((name) => name.endsWith(".yml") || name.endsWith(".yaml"))
   .sort();
 const workflows = workflowNames.map((name) => [name, readRepositoryJson(`.github/workflows/${name}`, false)]);
-const syntheticUptime = readRepositoryJson(".github/workflows/synthetic-uptime.yml", false);
 const checkerFiles = repositoryCheckFiles();
 
 function clone(value) {
@@ -61,13 +60,10 @@ test("workflows use current action runtimes and preserve their concurrency polic
   // Every workflow on disk, not just the two named above: a third file added later
   // would otherwise ship a stale runtime and an uncapped schedule unnoticed.
   assert.ok(workflows.length >= 3);
-  // ci.yml and wildfire-refresh.yml are checksum-bound as phase exit evidence, so capping
-  // their runtime is a separate change that must rebind those records. The scheduled
-  // synthetic probe is not bound, and an uncapped scheduled job is the one that can run away.
-  assert.match(syntheticUptime, /^ +timeout-minutes: \d+$/m);
   for (const [name, source] of workflows) {
     assert.doesNotMatch(source, /actions\/[A-Za-z0-9-]+@v[1-6]\b/, `${name} pins a superseded action major`);
     assert.match(source, /\nconcurrency:\n {2}group: /, `${name} declares no concurrency group`);
+    assert.match(source, /^ +timeout-minutes: \d+$/m, `${name} declares no job timeout`);
   }
 });
 
