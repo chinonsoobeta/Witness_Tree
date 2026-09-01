@@ -133,14 +133,14 @@ test("renders localized search results and Explore list/table alternatives witho
   assert.match(frenchSearch, /Colombie-Britannique illustrative/);
 
   assert.match(englishExplore, /<main\b[^>]*id="main"/);
-  assert.match(englishExplore, /Explore forest change/);
+  assert.match(englishExplore, /Explore forest loss/);
   assert.match(englishExplore, /The list, chart, and table use illustrative fixtures/);
   assert.match(englishExplore, /This view does not imply a production geographic layer/);
   assert.match(englishExplore, /Reported fire perimeter/);
   assert.match(englishExplore, /<table/);
   assert.match(englishExplore, /Source attribution/);
   assert.match(frenchExplore, /<main\b[^>]*id="main"/);
-  assert.match(frenchExplore, /Explorer les changements forestiers/);
+  assert.match(frenchExplore, /Explorer les pertes forestières/);
   assert.match(frenchExplore, /La liste, le graphique et le tableau utilisent des exemples illustratifs/);
   assert.match(frenchExplore, /Cette vue n’implique aucune couche géographique de production/);
   assert.match(frenchExplore, /Périmètre d’incendie déclaré/);

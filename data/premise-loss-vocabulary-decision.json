@@ -1,0 +1,113 @@
+{
+  "schemaVersion": "witness-tree/premise-loss-vocabulary-decision/1",
+  "status": "owner-approved-vocabulary-nonproduction",
+  "purpose": "Fix the words this product uses for detected forest loss, and separate the two interval quantities, before either reaches a label.",
+  "decidedOn": "2026-09-01",
+  "decidedBy": "owner",
+  "verificationBasis": "Owner statement in the working session. This is a naming decision, not a measurement, and it carries no external attestation.",
+  "sourceOfTruth": {
+    "module": "lib/domain/loss-vocabulary.ts",
+    "rule": "The module is authoritative. This record restates it so a checker can compare the two and fail when they drift apart."
+  },
+  "terms": {
+    "union": {
+      "en": "Forest lost at least once",
+      "fr": "Forêt perdue au moins une fois",
+      "role": "headline",
+      "percentAllowed": true,
+      "percentReason": "The union is bounded by the forest present in the first year of the window, so that forest is a valid denominator."
+    },
+    "sum": {
+      "en": "Yearly losses added together",
+      "fr": "Pertes annuelles additionnées",
+      "role": "secondary",
+      "percentAllowed": false,
+      "percentReason": "A cell lost in two years contributes twice, so the total can exceed the forest that ever stood inside the boundary. There is no denominator that makes a percentage of it true."
+    },
+    "netChange": {
+      "included": false,
+      "reason": "A net figure requires a forest-gain or regrowth claim. No gain product has been produced or validated, and a net of zero would read as nothing having happened where a clearcut was replanted."
+    }
+  },
+  "labels": {
+    "detectedLossHectares": {
+      "en": "Detected loss (ha)",
+      "fr": "Perte détectée (ha)"
+    },
+    "detectedLossPercent": {
+      "en": "Detected loss (%)",
+      "fr": "Perte détectée (%)"
+    },
+    "forestLossLayer": {
+      "en": "Forest loss",
+      "fr": "Perte forestière"
+    },
+    "detectedForestLoss": {
+      "en": "Detected forest loss",
+      "fr": "Perte forestière détectée"
+    }
+  },
+  "intervalHeading": {
+    "enPattern": "Forest lost between {fromYear} and {toYear}",
+    "frPattern": "Forêt perdue entre {fromYear} et {toYear}",
+    "reason": "Years are written out rather than hyphenated because a screen reader renders a hyphenated pair ambiguously."
+  },
+  "retiredWording": [
+    {
+      "pattern": "Observed forest loss",
+      "replacement": "Detected forest loss",
+      "reason": "Nothing was observed on the ground; a classifier detected a change between two annual mosaics."
+    },
+    {
+      "pattern": "Observed loss",
+      "replacement": "Detected loss",
+      "reason": "Same reason, in the shorter label used in tables and legends."
+    },
+    {
+      "pattern": "Perte observée",
+      "replacement": "Perte détectée",
+      "reason": "The French label carries the same eyewitness implication as the English one."
+    },
+    {
+      "pattern": "forêt observée",
+      "replacement": "forêt détectée",
+      "reason": "Catches the longer French phrasing, which the short label pattern misses."
+    },
+    {
+      "pattern": "forestière observée",
+      "replacement": "forestière détectée",
+      "reason": "Catches the adjectival French phrasing used in prose."
+    },
+    {
+      "pattern": "Forest change map",
+      "replacement": "Forest loss map",
+      "reason": "The layer draws loss only. There is no gain or regrowth product behind it."
+    },
+    {
+      "pattern": "changements forestiers",
+      "replacement": "pertes forestières",
+      "reason": "The French map label carried the same unearned symmetry as the English one."
+    },
+    {
+      "pattern": ": \"Forest change\"",
+      "replacement": ": \"Forest loss\"",
+      "reason": "Bans the bare layer label as an object value while leaving the forest-change route identifier alone."
+    },
+    {
+      "pattern": ": \"Changement forestier\"",
+      "replacement": ": \"Perte forestière\"",
+      "reason": "The French half of the same rule."
+    }
+  ],
+  "scope": {
+    "userFacingCopy": true,
+    "internalIdentifiers": false,
+    "internalIdentifierReason": "Field names such as observedLossPercent appear in checksum-bound result files. Renaming them would cascade checksum rebinds through records this decision does not touch, for no change a reader can see. The label is what was decided; the storage key is not."
+  },
+  "claims": {
+    "admitted": false,
+    "released": false,
+    "productionEligible": false,
+    "externalAction": false
+  }
+}

@@ -129,7 +129,7 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
   assert.match(en, /max="2022"/);
   assert.match(en, /name="year"/);
   for (const label of [
-    "Forest change",
+    "Forest loss",
     "Recorded harvest",
     "Wildfire",
     "Condition and recovery",
@@ -296,7 +296,7 @@ test("map/list and chart/table retain evidence, confidence, coverage, provenance
     />,
   );
   assert.match(mapChart, /aria-label="Chart"/);
-  assert.match(mapChart, /aria-label="Forest change map"/);
+  assert.match(mapChart, /aria-label="Forest loss map"/);
   assert.match(listChart, /Official record/);
   assert.match(listChart, /Source attribution/);
   assert.match(listTable, /No authoritative public record/);
@@ -348,7 +348,7 @@ test("Explore uses the exact PMTiles release with a GeoJSON/SVG fallback on map 
   assert.match(map, /year === 2022/);
   assert.match(map, /unavailableYear/);
   assert.match(map, /EXPLORE_PRODUCTION_LAYER\.rows\.map/);
-  assert.match(map, /Observed loss \(%\)/);
+  assert.match(map, /Detected loss \(%\)/);
   assert.match(style, /phase2_province_loss_2020_2022/);
   assert.match(style, /\.pmtiles/);
   assert.match(

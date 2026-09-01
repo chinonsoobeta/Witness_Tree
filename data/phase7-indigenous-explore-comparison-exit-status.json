@@ -35,7 +35,7 @@
       "evidence": [
         {
           "path": "components/governance/GovernancePage.tsx",
-          "sha256": "5170fe5487e9e1f6e1b3339a713c37418a3679492c762489bfc556b137bfab19"
+          "sha256": "0801c67718cebb450f2666bd50dd3a5b5e297019b7d350ae16d7499014c6472e"
         }
       ]
     },
@@ -63,7 +63,7 @@
       "evidence": [
         {
           "path": "components/governance/GovernancePage.tsx",
-          "sha256": "5170fe5487e9e1f6e1b3339a713c37418a3679492c762489bfc556b137bfab19"
+          "sha256": "0801c67718cebb450f2666bd50dd3a5b5e297019b7d350ae16d7499014c6472e"
         }
       ]
     },
@@ -91,7 +91,7 @@
       "evidence": [
         {
           "path": "components/governance/GovernancePage.tsx",
-          "sha256": "5170fe5487e9e1f6e1b3339a713c37418a3679492c762489bfc556b137bfab19"
+          "sha256": "0801c67718cebb450f2666bd50dd3a5b5e297019b7d350ae16d7499014c6472e"
         },
         {
           "path": "data/phase0-owner-scope-decisions-2026-08-27.json",
@@ -107,11 +107,11 @@
       "evidence": [
         {
           "path": "components/explore/ExploreView.tsx",
-          "sha256": "de1c0427b08870bfe12ca2a7614a8375015e233401e7f488aa1115f9ffee19de"
+          "sha256": "2fca8b125c9a0763ebc320a83e1879ae9c56e2b597ead43d1b7a7fa354b8c9af"
         },
         {
           "path": "tests/explore.test.tsx",
-          "sha256": "bc7298bf69db0997a7ee80bb68cdd2df5a223da7dbfa80b05613e4b2efcc58b3"
+          "sha256": "0e9fb67e85a37856ffc34bb5218f80433fc2190078a8e391d683d98c080358a1"
         }
       ]
     },
@@ -123,11 +123,11 @@
       "evidence": [
         {
           "path": "components/explore/ExploreView.tsx",
-          "sha256": "de1c0427b08870bfe12ca2a7614a8375015e233401e7f488aa1115f9ffee19de"
+          "sha256": "2fca8b125c9a0763ebc320a83e1879ae9c56e2b597ead43d1b7a7fa354b8c9af"
         },
         {
           "path": "tests/explore.test.tsx",
-          "sha256": "bc7298bf69db0997a7ee80bb68cdd2df5a223da7dbfa80b05613e4b2efcc58b3"
+          "sha256": "0e9fb67e85a37856ffc34bb5218f80433fc2190078a8e391d683d98c080358a1"
         }
       ]
     },
@@ -139,11 +139,11 @@
       "evidence": [
         {
           "path": "components/explore/ExploreView.tsx",
-          "sha256": "de1c0427b08870bfe12ca2a7614a8375015e233401e7f488aa1115f9ffee19de"
+          "sha256": "2fca8b125c9a0763ebc320a83e1879ae9c56e2b597ead43d1b7a7fa354b8c9af"
         },
         {
           "path": "tests/explore.test.tsx",
-          "sha256": "bc7298bf69db0997a7ee80bb68cdd2df5a223da7dbfa80b05613e4b2efcc58b3"
+          "sha256": "0e9fb67e85a37856ffc34bb5218f80433fc2190078a8e391d683d98c080358a1"
         }
       ]
     },

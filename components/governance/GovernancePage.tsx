@@ -445,7 +445,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Interpretation",
           paragraphs: [
-            "Satellite-observed change does not establish cause. A named organisation appears only in the exact role and dated version of an authoritative public record; proximity is never attribution.",
+            "Satellite-detected change does not establish cause. A named organisation appears only in the exact role and dated version of an authoritative public record; proximity is never attribution.",
           ],
         },
         {
@@ -470,7 +470,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Interprétation",
           paragraphs: [
-            "Un changement observé par satellite n’en établit pas la cause. Une organisation n’est nommée que dans le rôle exact et la version datée d’un registre public faisant autorité; la proximité ne constitue jamais une attribution.",
+            "Un changement détecté par satellite n’en établit pas la cause. Une organisation n’est nommée que dans le rôle exact et la version datée d’un registre public faisant autorité; la proximité ne constitue jamais une attribution.",
           ],
         },
         {

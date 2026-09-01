@@ -43,7 +43,7 @@ export default async function Page({
     <SiteShell locale="en">
       <main id="main" className="page-wrap">
         <header className="masthead">
-          <h1>Explore forest change</h1>
+          <h1>Explore forest loss</h1>
           <p className="masthead-note">Release scope, downloads and limitations are indexed in <Link href="/en/releases">Data releases</Link>.</p>
         </header>
         <ExploreView

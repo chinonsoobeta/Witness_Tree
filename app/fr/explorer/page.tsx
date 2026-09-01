@@ -43,7 +43,7 @@ export default async function Page({
     <SiteShell locale="fr">
       <main id="main" className="page-wrap">
         <header className="masthead">
-          <h1>Explorer les changements forestiers</h1>
+          <h1>Explorer les pertes forestières</h1>
           <p className="masthead-note">La portée, les téléchargements et les limites des versions sont répertoriés dans <Link href="/fr/versions">Versions des données</Link>.</p>
         </header>
         <ExploreView

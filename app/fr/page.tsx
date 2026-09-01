@@ -5,7 +5,7 @@ import { formatHectares, formatPercent, PRODUCT_NAME } from "@/lib/domain";
 import { EXPLORE_COVERAGE_PERIOD, EXPLORE_PRODUCTION_LAYER, formatUnknownSharePercent } from "@/lib/explore";
 import { localizedAlternates } from "@/lib/site-metadata";
 
-export const metadata: Metadata = { title: "Registre public des changements forestiers", alternates: localizedAlternates("fr", { en: "/en", fr: "/fr" }) };
+export const metadata: Metadata = { title: "Registre public des pertes forestières", alternates: localizedAlternates("fr", { en: "/en", fr: "/fr" }) };
 
 function coverageLabel(row: (typeof EXPLORE_PRODUCTION_LAYER.rows)[number]) {
   return `Minimum de la zone cartographiée; ${formatUnknownSharePercent(row.unknownSharePercent, "fr")} (${formatHectares(row.unknownRequiredInputHectares, "fr")}) de la superficie est inconnue`;
@@ -16,7 +16,7 @@ export default function FrenchHome() {
     <header className="masthead">
       <p className="eyebrow">Registre de preuves · {EXPLORE_COVERAGE_PERIOD.fr}</p>
       <h1>Qu’est-il arrivé à la forêt ici?</h1>
-      <p className="dek">{PRODUCT_NAME.fr} aide à comprendre les changements forestiers consignés et observés dans quatre provinces. Chaque résultat indique ce que montrent les preuves, leur provenance, leur actualité et ce qu’elles ne permettent pas d’établir.</p>
+      <p className="dek">{PRODUCT_NAME.fr} aide à comprendre les pertes forestières consignées et détectées dans quatre provinces. Chaque résultat indique ce que montrent les preuves, leur provenance, leur actualité et ce qu’elles ne permettent pas d’établir.</p>
       <div className="meta-row"><span>Colombie-Britannique</span><span>Alberta</span><span>Ontario</span><span>Québec</span></div>
     </header>
     <section className="content-section prose-measure" aria-labelledby="registre-actuel">
@@ -30,7 +30,7 @@ export default function FrenchHome() {
     </section>
     <section className="content-section prose-measure">
       <div className="section-heading"><span className="num">02</span><h2>Un registre, pas un tableau de bord</h2></div>
-      <p className="lead">Cherchez un lieu ou ouvrez un dossier. Consultez l’historique daté des récoltes consignées, des incendies, des perturbations et des changements observés par satellite, avec la source jointe à chaque affirmation.</p>
+      <p className="lead">Cherchez un lieu ou ouvrez un dossier. Consultez l’historique daté des récoltes consignées, des incendies, des perturbations et des changements détectés par satellite, avec la source jointe à chaque affirmation.</p>
       <dl className="principles">
         <div className="principle"><dt>Registre officiel</dt><dd>Une autorité publique consigne un événement, un périmètre, une intervention ou un rôle désigné.</dd></div>
         <div className="principle"><dt>Observation satellitaire</dt><dd>Les images montrent une réduction du couvert arboré ou une reprise ultérieure du couvert. À elles seules, elles n’en établissent pas la cause.</dd></div>
@@ -49,7 +49,7 @@ export default function FrenchHome() {
     </section>
     <section className="content-section prose-measure" aria-labelledby="consequences">
       <div className="section-heading"><span className="num">04</span><h2 id="consequences">Pourquoi le contexte importe</h2></div>
-      <p>La perte forestière observée est une mesure dérivée de l’observation satellitaire, et non une conclusion sur la cause. Une réduction détectée du couvert arboré n’établit pas à elle seule l’exploitation, la déforestation, la responsabilité ou la conformité. <Link href="/fr/methodes">Lire les définitions de méthode et de preuve</Link>.</p>
+      <p>La perte forestière détectée est une mesure dérivée de l’observation satellitaire, et non une conclusion sur la cause. Une réduction détectée du couvert arboré n’établit pas à elle seule l’exploitation, la déforestation, la responsabilité ou la conformité. <Link href="/fr/methodes">Lire les définitions de méthode et de preuve</Link>.</p>
       <p>La version disponible est un aperçu technique déterministe au niveau provincial, limité à quatre provinces, pour 2020 à 2022. Elle ne fournit pas une géométrie par cellule et ne satisfait pas au critère formel de la phase 2. <Link href="/fr/donnees">Lire la portée de la version, la provenance et l’attribution de licence</Link>.</p>
       <p><small>Source du contexte : {EXPLORE_PRODUCTION_LAYER.attribution.fr} <a href={EXPLORE_PRODUCTION_LAYER.attribution.href}>Catalogue source</a>.</small></p>
     </section>

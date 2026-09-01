@@ -14,6 +14,7 @@
     "test:unit": "tsx --test tests/*.test.mjs tests/*.test.ts tests/*.test.tsx",
     "typecheck": "tsc --noEmit",
     "check:bilingual": "node scripts/check-bilingual.mjs",
+    "check:premise-loss-vocabulary": "node scripts/check-premise-loss-vocabulary.mjs",
     "check:ci-check-coverage": "node scripts/check-ci-check-coverage.mjs",
     "check:exit-code-taxonomy": "node scripts/check-exit-code-taxonomy.mjs",
     "check:cross-record-facts": "node scripts/check-cross-record-facts.mjs",
