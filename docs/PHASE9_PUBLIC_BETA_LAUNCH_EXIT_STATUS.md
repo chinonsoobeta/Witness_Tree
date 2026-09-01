@@ -12,4 +12,27 @@ The beta package is a checklist, not an invitation authority:
 - Record source-agency review and confirmation against a versioned, admitted presentation; remediate beta findings and rerun the affected gates.
 - Run the quarterly raw-archive-to-published-figure reproducibility test, then conduct the launch decision against this record.
 
+## Quarterly reproducibility harness
+
+[`scripts/run-phase9-quarterly-reproducibility.mjs`](../scripts/run-phase9-quarterly-reproducibility.mjs) implements the local harness without claiming that a quarterly run occurred. It requires an explicit data root, a frozen population manifest, a 64-character lowercase hexadecimal seed, a sample size, and a new result path:
+
+```sh
+npm run run:phase9-quarterly-reproducibility -- \
+  --population /path/to/2026-Q3-population.json \
+  --data-root /Volumes/Extended_SSD/Witness_Tree-data \
+  --seed 64_LOWERCASE_HEX_CHARACTERS \
+  --sample-size 10 \
+  --output /path/to/new-result.json
+```
+
+The population schema is `witness-tree/phase9-quarterly-reproducibility-population/1`. It records a population id, quarter, generation time, population class, and one or more units. Every unit binds:
+
+- an HTTPS published-figure URL, method version, positive byte length, and SHA-256;
+- at least one exact raw-archive object key and version id, plus its data-root-relative restored path, positive byte length, and SHA-256; and
+- a repository-relative Node `.mjs` recomputation runner, its SHA-256, and arguments containing `{dataRoot}` and `{outputPath}` exactly once.
+
+Freeze and checksum the population before choosing the seed. The draw orders every unit by SHA-256 over the algorithm domain, seed, and unit id, then takes the requested prefix. The result binds the population-manifest SHA-256 and records the seed, algorithm, complete draw, and per-unit input, runner, and output verdict. Each sampled unit continues after another unit fails. Missing observations are recorded as `null`, never as zero. Temporary recomputation outputs are removed before the result is written, and the result path is created exclusively with mode `0600`.
+
+The checked-in synthetic population and runner under `tests/fixtures/phase9-quarterly-reproducibility/` exercise the harness only. Fixture populations require an explicit test-only opt-in and do not establish production evidence. No real published-production population manifest or quarterly result is checked in, and the required data-root run remains an owner action. The Phase 9 criterion therefore remains `fail`.
+
 The existing ChatGPT-hosted site remains a technical preview with illustrative data. This implementation sends no invitations, contacts no agency, admits no production data, publishes no metrics, deploys nothing, and does not launch.

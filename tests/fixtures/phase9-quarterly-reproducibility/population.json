@@ -1,0 +1,101 @@
+{
+  "schemaVersion": "witness-tree/phase9-quarterly-reproducibility-population/1",
+  "populationId": "fixture-2026-q3",
+  "quarter": "2026-Q3",
+  "populationClass": "synthetic-test-fixture",
+  "generatedAt": "2026-08-31T12:00:00Z",
+  "units": [
+    {
+      "id": "alpha-figure",
+      "publishedFigure": {
+        "publicUrl": "https://example.test/figures/alpha.json",
+        "methodVersion": "fixture-multiply-v1",
+        "byteLength": 13,
+        "sha256": "cff2aa301ba9ecb497dbe05544e66d945a3c18e1b53314a919068194a71da05c"
+      },
+      "rawArchiveInputs": [
+        {
+          "archiveKey": "raw/fixture/alpha.json",
+          "versionId": "fixture-version-alpha",
+          "relativePath": "raw/alpha.json",
+          "byteLength": 13,
+          "sha256": "6161c51b4b23291fe486ad3ab8f3e83ce9809e21266846610066666200f64a5f"
+        }
+      ],
+      "recomputation": {
+        "runnerPath": "tests/fixtures/phase9-quarterly-reproducibility/recompute-figure.mjs",
+        "runnerSha256": "8bfccc03d7cc9e11eac4523a64b838e4a012681536f0965ea825c81a2b149a0c",
+        "args": ["--data-root", "{dataRoot}", "--input", "raw/alpha.json", "--factor", "2", "--output", "{outputPath}"]
+      }
+    },
+    {
+      "id": "bravo-figure",
+      "publishedFigure": {
+        "publicUrl": "https://example.test/figures/bravo.json",
+        "methodVersion": "fixture-multiply-v1",
+        "byteLength": 13,
+        "sha256": "c05d5ef28d4dec93330ce93a8b678ab03a1147b1ef5b601ed5829964275a39ec"
+      },
+      "rawArchiveInputs": [
+        {
+          "archiveKey": "raw/fixture/bravo.json",
+          "versionId": "fixture-version-bravo",
+          "relativePath": "raw/bravo.json",
+          "byteLength": 12,
+          "sha256": "6a89805d7a1b132e1cc7e8fcc02d32b8ef8e60bc0652024192dbc9a0ffd40a07"
+        }
+      ],
+      "recomputation": {
+        "runnerPath": "tests/fixtures/phase9-quarterly-reproducibility/recompute-figure.mjs",
+        "runnerSha256": "8bfccc03d7cc9e11eac4523a64b838e4a012681536f0965ea825c81a2b149a0c",
+        "args": ["--data-root", "{dataRoot}", "--input", "raw/bravo.json", "--factor", "3", "--output", "{outputPath}"]
+      }
+    },
+    {
+      "id": "charlie-figure",
+      "publishedFigure": {
+        "publicUrl": "https://example.test/figures/charlie.json",
+        "methodVersion": "fixture-multiply-v1",
+        "byteLength": 13,
+        "sha256": "badcb20715ffcc34c992c06d25c58de2520c0b06f1e25e8a976e56e95e66c097"
+      },
+      "rawArchiveInputs": [
+        {
+          "archiveKey": "raw/fixture/charlie.json",
+          "versionId": "fixture-version-charlie",
+          "relativePath": "raw/charlie.json",
+          "byteLength": 12,
+          "sha256": "e1a0149d8f579ff00de0e4abe2a7aaed95a9bbb4b987a8a7b8f3e97713cb2854"
+        }
+      ],
+      "recomputation": {
+        "runnerPath": "tests/fixtures/phase9-quarterly-reproducibility/recompute-figure.mjs",
+        "runnerSha256": "8bfccc03d7cc9e11eac4523a64b838e4a012681536f0965ea825c81a2b149a0c",
+        "args": ["--data-root", "{dataRoot}", "--input", "raw/charlie.json", "--factor", "4", "--output", "{outputPath}"]
+      }
+    },
+    {
+      "id": "delta-figure",
+      "publishedFigure": {
+        "publicUrl": "https://example.test/figures/delta.json",
+        "methodVersion": "fixture-multiply-v1",
+        "byteLength": 13,
+        "sha256": "7f2953976d48bcc6a1d04f01335d9e3ae5ad0a4b5e860711709f56c4b8335ec3"
+      },
+      "rawArchiveInputs": [
+        {
+          "archiveKey": "raw/fixture/delta.json",
+          "versionId": "fixture-version-delta",
+          "relativePath": "raw/delta.json",
+          "byteLength": 12,
+          "sha256": "6a89805d7a1b132e1cc7e8fcc02d32b8ef8e60bc0652024192dbc9a0ffd40a07"
+        }
+      ],
+      "recomputation": {
+        "runnerPath": "tests/fixtures/phase9-quarterly-reproducibility/recompute-figure.mjs",
+        "runnerSha256": "8bfccc03d7cc9e11eac4523a64b838e4a012681536f0965ea825c81a2b149a0c",
+        "args": ["--data-root", "{dataRoot}", "--input", "raw/delta.json", "--factor", "5", "--output", "{outputPath}"]
+      }
+    }
+  ]
+}

@@ -55,8 +55,20 @@
       "id": "quarterly-reproducibility-test-passes",
       "title": "The quarterly reproducibility test passes",
       "status": "fail",
-      "reason": "Recomputation from the raw archive is demonstrated for the admitted federal electoral output, and an admitted province aggregate is published as a bounded technical preview. Neither result satisfies this criterion. The controlling plan requires a quarterly random-sample recomputation from the population of published production figures. No operated production population or quarterly cadence exists, so no recurring quarterly result can be derived.",
+      "reason": "A seeded owner-run harness now draws from a checksum-bound population manifest and records every sampled unit's recomputation pass or fail. Its checked-in population is synthetic test data only. The admitted federal electoral output remains a single prior reproduction, and no published-production population manifest or owner-run quarterly result exists. The controlling quarterly criterion therefore remains unsatisfied.",
       "evidence": [
+        {
+          "path": "scripts/run-phase9-quarterly-reproducibility.mjs",
+          "sha256": "f6e9cd6b39655160cd30dba22044d63d60a3def01b65556ca14ce5d6d5e1e601"
+        },
+        {
+          "path": "tests/phase9-quarterly-reproducibility.test.mjs",
+          "sha256": "653da4e970909436804a3acf8a9acf1c40bd127568fe70f5494272144d62906a"
+        },
+        {
+          "path": "tests/fixtures/phase9-quarterly-reproducibility/population.json",
+          "sha256": "86c904dc5a1c2c746040e99a76559dab64c7702d616175654cc38b3175409f4f"
+        },
         {
           "path": "data/phase8-launch-readiness-exit-status.json",
           "sha256": "dc62382d2d9d1817b4ad4f143c063793863935664adc0b8b385aa14a4e8216ad"
