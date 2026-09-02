@@ -14,6 +14,7 @@
     "reason": "Every check below reads real source or derived bytes and verifies their SHA-256 against a bound checksum. None of them can be satisfied by a fixture, because a fixture cannot reproduce the checksum of a real archive."
   },
   "checks": [
+    "check:coarse-grid-tiles-bytes",
     "check:phase1-bc-ontario-row-audit",
     "check:phase1-current-state-completion-audit",
     "check:phase1-federal-electoral-output",

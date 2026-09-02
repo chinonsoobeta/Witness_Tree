@@ -19,6 +19,8 @@
     "check:interval-release": "node scripts/check-interval-release.mjs",
     "check:interval-method": "tsx scripts/check-phase3-interval-method.mts && tsx --test tests/interval-method-change.test.ts",
     "check:address-lookup": "tsx scripts/check-address-lookup.mts && tsx --test tests/address-lookup.test.ts",
+    "check:coarse-grid-tiles": "tsx scripts/check-coarse-grid-tiles.mts && tsx --test tests/coarse-grid-tiles.test.ts",
+    "check:coarse-grid-tiles-bytes": "tsx scripts/check-coarse-grid-tiles-bytes.mts",
     "check:district-resolve": "tsx scripts/check-district-resolve.mts && tsx --test tests/district-resolve.test.ts",
     "check:shape-measure": "tsx scripts/check-shape-measure.mts && tsx --test tests/shape-coverage.test.ts tests/shape-draw.test.ts tests/shape-measure.test.ts tests/shape-measure-ui.test.tsx",
     "probe:nrcan-source-currency": "node scripts/probe-nrcan-source-currency.mjs",
