@@ -172,9 +172,11 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
   ])
     assert.match(en, new RegExp(province));
   assert.match(en, /431 ridings\s+Representation orders: British Columbia 2023, Alberta 2019, Ontario 2022, Québec 2026\./);
-  assert.match(en, /Use ridings, not districts, on this layer\./);
   assert.match(fr, /431 circonscriptions\s+Décrets de représentation : Colombie-Britannique 2023, Alberta 2019, Ontario 2022, Québec 2026\./);
-  assert.match(fr, /Utilisez le terme circonscriptions, et non districts, dans cette couche\./);
+  // "Use ridings, not districts" was an instruction to whoever wrote this
+  // layer, not something a reader of the map can act on. It must not come back.
+  assert.doesNotMatch(en, /Use ridings, not districts/);
+  assert.doesNotMatch(fr, /Utilisez le terme circonscriptions, et non districts/);
   assert.match(listTable, /aria-label="List"/);
   assert.match(listTable, /<table/);
   assert.equal((listTable.match(/scope="col"/g) ?? []).length, 6);

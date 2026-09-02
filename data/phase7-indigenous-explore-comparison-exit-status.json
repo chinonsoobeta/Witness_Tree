@@ -87,7 +87,7 @@
       "id": "mistik-request-recorded",
       "title": "The Mistik request, terms, honorarium, and outcome appear in the decision log and engagement register",
       "status": "pass",
-      "reason": "The decision log and engagement register record the owner's final outcome: Mistik was not pursued, no request was made, no permission, honorarium, or terms exist, and Witness Tree / Arbre témoin remains the product name. The surfaces do not imply that engagement or permission occurred.",
+      "reason": "The decision log and engagement register record the owner's final outcome: Mistik was not pursued, no request was made, no permission, honorarium, or terms exist, and Witness Tree / Arbre t\u00e9moin remains the product name. The surfaces do not imply that engagement or permission occurred.",
       "evidence": [
         {
           "path": "components/governance/GovernancePage.tsx",
@@ -103,7 +103,7 @@
       "id": "explore-modes-and-overlays",
       "title": "Explore provides the four required modes and four reference-boundary overlays",
       "status": "pass",
-      "reason": "Narrowed by owner scope decision on 2026-08-29, then met. The four modes render. Federal ridings, the BC, Alberta, Ontario and Quebec provincial ridings, all 76 Statistics Canada 2021 economic regions, and the 169 Canadian areas selected from NRCan's Water Survey of Canada version 6.0 rollup are drawn from one immutable v2 PMTiles release with exact remote readback and bilingual attribution. Economic regions and watersheds are boundary-only reference frameworks, not forest-loss aggregates. The reserve and treaty-area overlays were removed from Explore, not delivered, and this criterion no longer stands in for them: that obligation is tracked solely by reserve-and-treaty-layers-loaded, which remains failed. If this criterion is ever read as evidence that reserve or treaty geography ships, it is being read wrongly.",
+      "reason": "Narrowed by owner scope decision on 2026-08-29, then met. The four modes render. Federal ridings, the BC, Alberta, Ontario and Quebec provincial ridings, the 44 Statistics Canada 2021 economic regions that lie in British Columbia, Alberta, Ontario and Quebec, and the 105 Canadian areas of NRCan's Water Survey of Canada version 6.0 rollup that intersect those four provinces, are drawn from one immutable v3 PMTiles release with exact remote readback and bilingual attribution. The economic-region and watershed layers were clipped to the four provinces on 2026-09-02, so both are now subsets: 44 of 76 regions, and 105 of the 169 Canadian sub-drainage areas, cut at the provincial boundary. An earlier revision of this reason still claimed all 76 regions and all 169 areas after the clip had shipped, because that change refreshed the bound checksums without rereading the sentence they support. Economic regions and watersheds are boundary-only reference frameworks, not forest-loss aggregates. The reserve and treaty-area overlays were removed from Explore, not delivered, and this criterion no longer stands in for them: that obligation is tracked solely by reserve-and-treaty-layers-loaded, which remains failed. If this criterion is ever read as evidence that reserve or treaty geography ships, it is being read wrongly.",
       "evidence": [
         {
           "path": "components/explore/ExploreView.tsx",
@@ -111,7 +111,7 @@
         },
         {
           "path": "tests/explore.test.tsx",
-          "sha256": "07f488fafa616d1a7a76968b5cf44df4f2e5398f5d4328865f42c5fadc1e5e6d"
+          "sha256": "dca2a8d89f03181707f3ed7efc01aab9d6d7371f4048dea41453d8f8bee4144b"
         }
       ]
     },
@@ -127,7 +127,7 @@
         },
         {
           "path": "tests/explore.test.tsx",
-          "sha256": "07f488fafa616d1a7a76968b5cf44df4f2e5398f5d4328865f42c5fadc1e5e6d"
+          "sha256": "dca2a8d89f03181707f3ed7efc01aab9d6d7371f4048dea41453d8f8bee4144b"
         }
       ]
     },
@@ -143,7 +143,7 @@
         },
         {
           "path": "tests/explore.test.tsx",
-          "sha256": "07f488fafa616d1a7a76968b5cf44df4f2e5398f5d4328865f42c5fadc1e5e6d"
+          "sha256": "dca2a8d89f03181707f3ed7efc01aab9d6d7371f4048dea41453d8f8bee4144b"
         }
       ]
     },

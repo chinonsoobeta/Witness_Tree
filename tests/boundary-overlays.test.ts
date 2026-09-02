@@ -215,9 +215,9 @@ test("the checker rejects a missing or altered province clip contract", () => {
 
 test("the provincial overlay names its riding counts and representation orders", () => {
   const note = BOUNDARY_OVERLAYS["provincial-ridings"].note;
-  assert.equal(note.en, "British Columbia, Alberta, Ontario and Québec · 431 ridings\nRepresentation orders: British Columbia 2023, Alberta 2019, Ontario 2022, Québec 2026.\nUse ridings, not districts, on this layer.");
-  assert.equal(note.fr, "Colombie-Britannique, Alberta, Ontario et Québec · 431 circonscriptions\nDécrets de représentation : Colombie-Britannique 2023, Alberta 2019, Ontario 2022, Québec 2026.\nUtilisez le terme circonscriptions, et non districts, dans cette couche.");
-  assert.doesNotMatch(`${note.en}\n${note.fr}`, /territories|territoires|does not take effect|n'entre en vigueur/);
+  assert.equal(note.en, "British Columbia, Alberta, Ontario and Québec · 431 ridings\nRepresentation orders: British Columbia 2023, Alberta 2019, Ontario 2022, Québec 2026.");
+  assert.equal(note.fr, "Colombie-Britannique, Alberta, Ontario et Québec · 431 circonscriptions\nDécrets de représentation : Colombie-Britannique 2023, Alberta 2019, Ontario 2022, Québec 2026.");
+  assert.doesNotMatch(`${note.en}\n${note.fr}`, /territories|territoires|does not take effect|n'entre en vigueur|Use ridings, not districts|Utilisez le terme circonscriptions/);
 });
 
 test("unavailable overlays carry a reason and no tiles", () => {

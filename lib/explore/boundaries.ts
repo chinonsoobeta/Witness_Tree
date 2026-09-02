@@ -69,8 +69,8 @@ export const BOUNDARY_OVERLAYS: Readonly<Record<BoundaryOverlayId, BoundaryOverl
       colour: EXPLORE_MAP_COLOURS.observation,
       dash: [3, 2],
       note: {
-        en: "British Columbia, Alberta, Ontario and Québec · 431 ridings\nRepresentation orders: British Columbia 2023, Alberta 2019, Ontario 2022, Québec 2026.\nUse ridings, not districts, on this layer.",
-        fr: "Colombie-Britannique, Alberta, Ontario et Québec · 431 circonscriptions\nDécrets de représentation : Colombie-Britannique 2023, Alberta 2019, Ontario 2022, Québec 2026.\nUtilisez le terme circonscriptions, et non districts, dans cette couche.",
+        en: "British Columbia, Alberta, Ontario and Québec · 431 ridings\nRepresentation orders: British Columbia 2023, Alberta 2019, Ontario 2022, Québec 2026.",
+        fr: "Colombie-Britannique, Alberta, Ontario et Québec · 431 circonscriptions\nDécrets de représentation : Colombie-Britannique 2023, Alberta 2019, Ontario 2022, Québec 2026.",
       },
       attribution: {
         en: "Elections BC; Open Government Licence – Alberta; Elections Ontario; Élections Québec.",
