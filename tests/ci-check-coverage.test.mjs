@@ -35,9 +35,9 @@ function namedTest(entry) {
 
 test("every on-disk checker is CI-reached or a reviewed exclusion", () => {
   const result = validateCoverage(register, packageDocument, ci, checkerFiles);
-  assert.deepEqual(result, { total: 210, ci: 106, npmNamed: 82, excluded: 104 });
+  assert.deepEqual(result, { total: 211, ci: 107, npmNamed: 82, excluded: 104 });
   // An npm alias is a way to invoke a checker, not a reason CI skips it. Every one of
-  // the 81 npm-named checkers still carries its own written exclusion.
+  // the 82 npm-named checkers still carries its own written exclusion.
   assert.equal(result.total, result.ci + result.excluded);
   assert.ok(result.npmNamed <= result.excluded);
   assert.ok(checkerFiles.includes("scripts/check-phase2-independent-comparison-evidence.mts"));
