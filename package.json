@@ -18,6 +18,7 @@
     "check:nrcan-source-currency": "node scripts/check-nrcan-source-currency.mjs",
     "check:interval-release": "node scripts/check-interval-release.mjs",
     "check:interval-method": "tsx scripts/check-phase3-interval-method.mts && tsx --test tests/interval-method-change.test.ts",
+    "check:address-lookup": "tsx scripts/check-address-lookup.mts && tsx --test tests/address-lookup.test.ts",
     "probe:nrcan-source-currency": "node scripts/probe-nrcan-source-currency.mjs",
     "check:ci-check-coverage": "node scripts/check-ci-check-coverage.mjs",
     "check:exit-code-taxonomy": "node scripts/check-exit-code-taxonomy.mjs",

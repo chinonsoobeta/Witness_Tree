@@ -1,8 +1,9 @@
 /** Cloudflare Worker entry point for the vinext-starter template. */
 import { handleImageOptimization, DEFAULT_DEVICE_SIZES, DEFAULT_IMAGE_SIZES } from "vinext/server/image-optimization";
 import handler from "vinext/server/app-router-entry";
+import { ADDRESS_SEARCH_PATH, addressLookupConfigured, handleAddressSearch, withAddressFlag, type AddressEnv } from "./address";
 
-interface Env {
+interface Env extends AddressEnv {
   ASSETS: Fetcher;
   DB: D1Database;
   IMAGES: {
@@ -75,7 +76,16 @@ const worker = {
       return withSecurityHeaders(response);
     }
 
-    return withSecurityHeaders(await handler.fetch(request, env, ctx));
+    // The address route never reaches the app router. It is the only path
+    // that touches the provider key, and it answers with no-store.
+    if (url.pathname === ADDRESS_SEARCH_PATH) {
+      return withSecurityHeaders(await handleAddressSearch(request, env));
+    }
+
+    // Stamped on every request, so a page can read whether the address field
+    // can work without being told so by the caller.
+    const stamped = withAddressFlag(request, addressLookupConfigured(env));
+    return withSecurityHeaders(await handler.fetch(stamped, env, ctx));
   },
 };
 
