@@ -27,6 +27,7 @@
     "check:ci-check-coverage": "node scripts/check-ci-check-coverage.mjs",
     "check:exit-code-taxonomy": "node scripts/check-exit-code-taxonomy.mjs",
     "check:cross-record-facts": "node scripts/check-cross-record-facts.mjs",
+    "check:riding-map-all-intervals": "node scripts/check-phase2-riding-map-measurements-all-intervals.mjs",
     "check:source-candidates": "node scripts/check-source-candidates.mjs",
     "check:cpcad-acquisition-block": "node scripts/check-cpcad-acquisition-block.mjs",
     "check:bc-provincial-electoral": "node scripts/check-bc-provincial-electoral-2023.mjs",

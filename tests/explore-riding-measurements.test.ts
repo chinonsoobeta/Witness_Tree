@@ -77,3 +77,30 @@ test("fails closed on promoted claims or incomplete totals", () => {
   fabricated.measurements[0].lossHectares = 1;
   assert.throws(() => parseRidingMapMeasurements(fabricated), /inconsistent coverage semantics/);
 });
+
+test("a fully mapped riding that held no forest keeps a null share instead of failing closed", () => {
+  // Thirty-four rows in the all-interval join are exactly this: urban British
+  // Columbia seats, fully inside the mapped extent, with no forest to divide
+  // by. Requiring a share here would blank the map the moment a reader moved
+  // off 2021 to 2022, and reporting zero would claim a measurement nobody made.
+  const source = fixture();
+  const row = source.measurements[1] as Record<string, unknown>;
+  row.knownForestedHectares = 0;
+  row.knownObservedLossHectares = 0;
+  row.lossHectares = 0;
+  row.observedLossPercent = null;
+  const parsed = parseRidingMapMeasurements(source);
+  const adapted = parsed.find((entry) => entry.boundaryId === "CA-2");
+  assert.equal(adapted?.coverage, "complete");
+  assert.equal(adapted?.observedLossPercent, null);
+  assert.equal(adapted?.observedLossHectares, 0);
+});
+
+test("a fully mapped riding with no forest may not report loss it could not have measured", () => {
+  const source = fixture();
+  const row = source.measurements[1] as Record<string, unknown>;
+  row.knownForestedHectares = 0;
+  row.lossHectares = 5;
+  row.observedLossPercent = null;
+  assert.throws(() => parseRidingMapMeasurements(source), /inconsistent coverage semantics/);
+});

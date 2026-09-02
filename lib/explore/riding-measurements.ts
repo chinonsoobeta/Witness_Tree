@@ -94,9 +94,16 @@ export function parseRidingMapMeasurements(value: unknown): readonly RidingBound
       throw new Error(`Riding map measurement ${index} has an invalid contract.`);
     }
     const complete = row.coverageGrade === "complete";
+    // A share needs a denominator. A fully mapped riding that held no forest in
+    // the first year of the interval has none, so its share is null and its
+    // loss must be zero. Requiring a share there would fail closed on a real
+    // row: several urban British Columbia seats read zero forest before the
+    // 1990s, and the map would go blank the moment a reader left 2021 to 2022.
+    const hasDenominator = complete && row.knownForestedHectares > 0;
     if (complete !== (row.unknownRequiredInputHectares === 0) ||
       complete !== (row.lossHectares !== null) ||
-      complete !== (row.observedLossPercent !== null)) {
+      hasDenominator !== (row.observedLossPercent !== null) ||
+      (complete && !hasDenominator && row.lossHectares !== 0)) {
       throw new Error(`Riding map measurement ${index} has inconsistent coverage semantics.`);
     }
     // Boundary tiles namespace every source identifier with its jurisdiction
