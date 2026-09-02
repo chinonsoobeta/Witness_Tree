@@ -34,6 +34,7 @@
     "check:phase2-real-comparison-availability",
     "check:phase2-real-review-packet",
     "check:phase2-real-review-packet-raster-readback",
+    "check:province-rollup",
     "check:vlce2-gap",
     "check:wildfire-derived-readback",
     "check:wildfire-derived-recovery"
