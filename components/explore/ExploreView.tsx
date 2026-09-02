@@ -51,8 +51,12 @@ const copy = {
     annualFire: "Recorded fire (ha)",
     annualUnattributed: "Cause not recorded (ha)",
     annualBasis:
-      "This is the single annual interval the year control has selected, not a total for 1984–2022 and not the 2020–2022 province aggregate. Counted from the exact 30 m cell inventory behind the map. One cell is 0.09 ha.",
+      "This is one annual interval, the one ending in the last year selected. It is not a total for a wider span, not a total for 1984–2022, and not the 2020–2022 province aggregate. Counted from the exact 30 m cell inventory behind the map. One cell is 0.09 ha.",
     annualNone: "No per-cell interval covers this year and mode.",
+    spanNote: (fromYear: number, toYear: number) =>
+      `Districts are shaded for the whole span, ${fromYear} to ${toYear}: each one shows the forest lost at least once inside it, counted once no matter how many times a place was cleared. Where a district lost the same ground more than once, the yearly losses added together are shown alongside, in hectares only. That figure has no denominator and is never given as a share. The per-cell patches drawn on the map are an annual product and show the last year of the span alone.`,
+    spanPending:
+      "District figures follow the years in the address bar. Playback has moved ahead of them, so they are held back rather than shown under years they were not measured over.",
     fixtureList:
       "The list, chart, and table use illustrative fixtures. This view does not imply a production geographic layer.",
     empty: (mode: string, year: number, nearest: number) =>
@@ -116,8 +120,12 @@ const copy = {
     annualFire: "Incendies consignés (ha)",
     annualUnattributed: "Cause non consignée (ha)",
     annualBasis:
-      "Il s’agit du seul intervalle annuel choisi par la commande d’année, et non d’un total pour 1984–2022 ni de l’agrégat provincial de 2020–2022. Comptée à partir de l’inventaire exact des cellules de 30 m derrière la carte. Une cellule représente 0,09 ha.",
+      "Il s’agit d’un seul intervalle annuel, celui qui se termine à la dernière année choisie. Ce n’est pas un total pour une période plus large, ni pour 1984–2022, ni l’agrégat provincial de 2020–2022. Comptée à partir de l’inventaire exact des cellules de 30 m derrière la carte. Une cellule représente 0,09 ha.",
     annualNone: "Aucun intervalle par cellule ne couvre cette année et ce mode.",
+    spanNote: (fromYear: number, toYear: number) =>
+      `Les circonscriptions sont ombrées pour toute la période, de ${fromYear} à ${toYear} : chacune montre la forêt perdue au moins une fois, comptée une seule fois peu importe le nombre de coupes. Lorsqu’une circonscription a perdu le même terrain plus d’une fois, les pertes annuelles additionnées sont affichées à côté, en hectares seulement. Ce chiffre n’a pas de dénominateur et n’est jamais présenté comme une part. Les parcelles par cellule dessinées sur la carte proviennent d’un produit annuel et ne montrent que la dernière année de la période.`,
+    spanPending:
+      "Les chiffres par circonscription suivent les années inscrites dans la barre d’adresse. La lecture les a devancés ; ils sont donc retenus plutôt qu’affichés sous des années qu’ils ne mesurent pas.",
     fixtureList:
       "La liste, le graphique et le tableau utilisent des exemples illustratifs. Cette vue n’implique aucune couche géographique de production.",
     empty: (mode: string, year: number, nearest: number) =>
@@ -203,8 +211,9 @@ function href(
   data: ExploreDataView,
   year: number,
   overlays: readonly BoundaryOverlayId[] = [],
+  fromYear?: number,
 ) {
-  return exploreHref({ mode, presentation, data, year, overlays });
+  return exploreHref({ mode, presentation, data, year, overlays, fromYear });
 }
 
 function Details({ event, locale }: { event: ExploreEvent; locale: Locale }) {
@@ -231,6 +240,7 @@ export function ExploreView({
   presentation = "map",
   data = "chart",
   year = EXPLORE_DEFAULT_YEAR,
+  fromYear,
   overlays = [],
   ridingMeasurements = [],
 }: {
@@ -240,16 +250,48 @@ export function ExploreView({
   presentation?: ExplorePresentation;
   data?: ExploreDataView;
   year?: number;
+  /**
+   * The opening year of the span the route asked for.
+   *
+   * Absent means the annual interval ending at `year`, which is what a link
+   * carrying only a year has always meant. It cannot default to a fixed year:
+   * a caller that names 1995 and no opening year means 1994, not 2021.
+   */
+  fromYear?: number;
   overlays?: readonly BoundaryOverlayId[];
+  /**
+   * District numbers for the route's span, resolved on the server.
+   *
+   * The full table holds every one of the 741 spans for all 774 districts,
+   * which is far more than a browser should carry to answer one question, so
+   * the route picks the span and sends only its answer.
+   */
   ridingMeasurements?: readonly RidingBoundaryMeasurement[];
 }) {
   const text = copy[locale];
+  const routeFrom = fromYear ?? year - 1;
   const [activeYear, setActiveYear] = useState(year);
+  const [activeFrom, setActiveFrom] = useState(routeFrom);
   const [lastRouteYear, setLastRouteYear] = useState(year);
+  const [lastRouteFrom, setLastRouteFrom] = useState(routeFrom);
   if (lastRouteYear !== year) {
     setLastRouteYear(year);
     setActiveYear(year);
   }
+  if (lastRouteFrom !== routeFrom) {
+    setLastRouteFrom(routeFrom);
+    setActiveFrom(routeFrom);
+  }
+  /*
+   * The district numbers belong to the span the server was asked for. While the
+   * reader plays through the record the control moves the span ahead of the
+   * server, and attaching the old span's numbers to the new span's heading
+   * would put a real measurement under the wrong years. Withholding them is the
+   * honest response, and the map already has wording for a district it cannot
+   * measure.
+   */
+  const spanIsServed = activeYear === year && activeFrom === routeFrom;
+  const servedMeasurements = spanIsServed ? ridingMeasurements : [];
 
   const modeEvents = events.filter((event) => event.mode === mode);
   const selected = fixturesForYear(modeEvents, activeYear);
@@ -283,7 +325,7 @@ export function ExploreView({
           <div className="explore-mode" key={item}>
             <a
               className="segment-option"
-              href={href(item, presentation, data, activeYear, overlays)}
+              href={href(item, presentation, data, activeYear, overlays, activeFrom)}
               aria-current={item === mode ? "page" : undefined}
             >
               {text.modes[item]}
@@ -308,8 +350,12 @@ export function ExploreView({
           ) : null}
           <ExploreYearControl
             locale={locale}
-            state={{ mode, presentation, data, year: activeYear, overlays }}
+            state={{ mode, presentation, data, year: activeYear, fromYear: activeFrom, overlays }}
             onYearChange={setActiveYear}
+            onIntervalChange={(span) => {
+              setActiveFrom(span.fromYear);
+              setActiveYear(span.toYear);
+            }}
           />
         </form>
       </section>
@@ -320,14 +366,14 @@ export function ExploreView({
           <legend>{text.presentation}</legend>
           <a
             className="segment-option"
-            href={href(mode, "map", data, activeYear, overlays)}
+            href={href(mode, "map", data, activeYear, overlays, activeFrom)}
             aria-current={presentation === "map" ? "page" : undefined}
           >
             {text.map}
           </a>{" "}
           <a
             className="segment-option"
-            href={href(mode, "list", data, activeYear, overlays)}
+            href={href(mode, "list", data, activeYear, overlays, activeFrom)}
             aria-current={presentation === "list" ? "page" : undefined}
           >
             {text.list}
@@ -338,12 +384,19 @@ export function ExploreView({
             locale={locale}
             mode={mode}
             year={activeYear}
+            fromYear={activeFrom}
             overlays={overlays}
-            ridingMeasurements={ridingMeasurements}
+            ridingMeasurements={servedMeasurements}
           />
         ) : (
           <p className="explore-note">{text.mapHidden}</p>
         )}
+        {activeYear > activeFrom + 1 ? (
+          <p className="explore-note">{text.spanNote(activeFrom, activeYear)}</p>
+        ) : null}
+        {!spanIsServed ? (
+          <p className="explore-note" role="status">{text.spanPending}</p>
+        ) : null}
         <div className="explore-annual">
           <h3>{`${text.annualHeading}, ${annual ? annual.interval : `${activeYear - 1}–${activeYear}`}`}</h3>
           {annual ? (
@@ -397,6 +450,7 @@ export function ExploreView({
                       data,
                       activeYear,
                       toggleBoundaryOverlay(overlays, id),
+                      activeFrom,
                     )}
                     aria-label={labelled(
                       locale,
@@ -432,14 +486,14 @@ export function ExploreView({
           <legend>{text.data}</legend>
           <a
             className="segment-option"
-            href={href(mode, presentation, "chart", activeYear, overlays)}
+            href={href(mode, presentation, "chart", activeYear, overlays, activeFrom)}
             aria-current={data === "chart" ? "page" : undefined}
           >
             {text.chart}
           </a>{" "}
           <a
             className="segment-option"
-            href={href(mode, presentation, "table", activeYear, overlays)}
+            href={href(mode, presentation, "table", activeYear, overlays, activeFrom)}
             aria-current={data === "table" ? "page" : undefined}
           >
             {text.table}

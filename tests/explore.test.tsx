@@ -358,12 +358,22 @@ test("Explore uses the exact PMTiles release with a GeoJSON/SVG fallback on map 
   assert.match(view, /presentation === "map" \? \(/);
   assert.match(view, /<ExploreMapClient/);
   assert.match(view, /year=\{activeYear\}/);
-  assert.match(view, /ridingMeasurements=\{ridingMeasurements\}/);
+  assert.match(view, /fromYear=\{activeFrom\}/);
+  // District figures are resolved for the span the server was asked for, and
+  // withheld rather than relabelled when the control has moved past it.
+  assert.match(view, /ridingMeasurements=\{servedMeasurements\}/);
+  assert.match(view, /const spanIsServed = activeYear === year && activeFrom === routeFrom/);
   for (const route of [enRoute, frRoute]) {
     assert.equal((route.match(/<FederalDistrictFinder/g) ?? []).length, 1);
     assert.doesNotMatch(route, /PlaceFinder/);
     assert.match(route, /<ExploreView/);
-    assert.match(route, /ridingMeasurements=\{ridingMeasurements\}/);
+    assert.match(route, /ridingMeasurements=\{ridingIntervalMeasurements\(interval\)\}/);
+    /*
+     * The interval table holds all 741 spans for all 774 districts. Importing
+     * it through the barrel would put it in reach of every client component
+     * that imports from "@/lib/explore", so the route names the module.
+     */
+    assert.match(route, /from "@\/lib\/explore\/riding-intervals"/);
   }
 });
 
@@ -412,8 +422,8 @@ test("playback swaps only the annual source, starts at 1985, and stops visibly",
   assert.match(yearControl, /History\.prototype\.pushState/);
   assert.match(yearControl, /History\.prototype\.replaceState/);
   assert.match(yearControl, /write\.call\(window\.history/);
-  assert.match(yearControl, /updateYear\(EXPLORE_YEAR_MIN, "replace"\)/);
-  assert.match(yearControl, /if \(nextYear === EXPLORE_YEAR_MAX\)/);
+  assert.match(yearControl, /toYear: EXPLORE_YEAR_MIN \}\s*:/);
+  assert.match(yearControl, /if \(nextSpan\.toYear === EXPLORE_YEAR_MAX\)/);
   assert.match(yearControl, /setPlaying\(false\)/);
   assert.match(yearControl, /year-play-status/);
   assert.match(yearControl, /Playback reached the end of the record/);
@@ -425,10 +435,10 @@ test("the map uses fixed hydration-safe status and attribution ids", async () =>
     "utf8",
   );
   const first = renderToStaticMarkup(
-    <ExploreMapClient locale="en" mode="condition-recovery" year={2022} />,
+    <ExploreMapClient locale="en" mode="condition-recovery" year={2022} fromYear={2021} />,
   );
   const second = renderToStaticMarkup(
-    <ExploreMapClient locale="en" mode="condition-recovery" year={2022} />,
+    <ExploreMapClient locale="en" mode="condition-recovery" year={2022} fromYear={2021} />,
   );
 
   // useId() is position-derived, which can differ across the server and client
@@ -471,7 +481,7 @@ test("the map identifies active boundary lines and uses the riding readout contr
   assert.match(mapSource, /setHoveredBoundary\(null\)/);
   assert.match(mapSource, /setPinnedBoundary\(selection\)/);
   assert.match(mapSource, /className="explore-map-boundary-status" role="status"/);
-  assert.match(mapSource, /boundaryReadout\(boundary, ridingMeasurements, locale\)/);
+  assert.match(mapSource, /boundaryReadout\(boundary, ridingMeasurements, locale, \{ fromYear, toYear: year \}\)/);
   assert.match(mapSource, /readout\?\.kind === "boundary-only"/);
   assert.match(mapSource, /readout\?\.kind === "riding-measurement"/);
   assert.match(mapSource, /text\[locale\]\.normalizedShare/);
@@ -514,7 +524,10 @@ test("the year control is a real, shareable control rather than a decorative sli
   // years the archives actually cover.
   assert.match(en, /min="1985"/);
   assert.match(en, /max="2022"/);
-  for (const tick of [1985, 1990, 1995, 2000, 2005, 2010, 2015, 2020, 2022])
+  // The scale starts at 1984 because the opening handle can select it: 1984 is a
+  // start year with no interval ending there, and a scale beginning at 1985
+  // would put no mark under the handle's own first position.
+  for (const tick of [1984, 1989, 1994, 1999, 2004, 2009, 2014, 2019, 2022])
     assert.match(en, new RegExp(`<option value="${tick}" label="${tick}">`));
 
   /*
@@ -532,7 +545,7 @@ test("the year control is a real, shareable control rather than a decorative sli
     <ExploreView events={exploreFixtures} locale="fr" year={1995} />,
   );
   assert.match(fr, /Changement entre 1994 et 1995/);
-  assert.match(fr, /Ann\u00e9e affich\u00e9e/u);
+  assert.match(fr, /Ann\u00e9es affich\u00e9es/u);
   assert.match(fr, /Mettre à jour/);
 });
 

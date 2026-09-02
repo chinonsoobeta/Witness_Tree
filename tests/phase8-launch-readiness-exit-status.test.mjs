@@ -7,11 +7,18 @@ const record = JSON.parse(readFileSync(new URL("../data/phase8-launch-readiness-
 
 test("Phase 8 records every literal launch-readiness gate without production inflation", async () => {
   assert.equal(await validatePhase8LaunchReadinessExitStatus(record), record);
-  assert.equal(record.completedCriteria, 8);
+  /*
+   * Seven, not eight. CDN and tile validation was recorded as passing on the
+   * strength of a browser observation of the deployed Site, and that
+   * observation is bound to the client it observed. The client changed, so the
+   * gate is stale until the Site is redeployed and the observation is taken
+   * again. Lowering this number is the point of binding it.
+   */
+  assert.equal(record.completedCriteria, 7);
   assert.equal(record.totalCriteria, 16);
-  assert.equal(record.percentage, 50);
+  assert.equal(record.percentage, 43.75);
   assert.equal(record.phaseComplete, false);
-  assert.deepEqual(record.exitCriteria.filter((item) => item.status === "pass").map((item) => item.id), ["raw-archive-reproducibility", "governance-and-corrections-procedures", "operations-handbook", "bulk-downloads", "citation-format", "release-notes", "restore-tests", "cdn-tile-validation"]);
+  assert.deepEqual(record.exitCriteria.filter((item) => item.status === "pass").map((item) => item.id), ["raw-archive-reproducibility", "governance-and-corrections-procedures", "operations-handbook", "bulk-downloads", "citation-format", "release-notes", "restore-tests"]);
 });
 
 test("Phase 8 rejects invented readiness, altered gates, blockers, and tampered evidence", async () => {

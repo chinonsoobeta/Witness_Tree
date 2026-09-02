@@ -461,12 +461,21 @@ export function ExploreMapClient({
   locale,
   mode,
   year,
+  fromYear,
   overlays = [],
   ridingMeasurements = [],
 }: Readonly<{
   locale: Locale;
   mode: ExploreMode;
   year: number;
+  /**
+   * The opening year of the span on display.
+   *
+   * The district shading covers the whole span. The per-cell detail is an
+   * annual product and covers the closing year alone, which the legend says
+   * out loud rather than letting the two layers look like one measurement.
+   */
+  fromYear: number;
   overlays?: readonly BoundaryOverlayId[];
   /** Optional until the completed local riding dataset is wired into this map. */
   ridingMeasurements?: readonly RidingBoundaryMeasurement[];
@@ -791,7 +800,7 @@ export function ExploreMapClient({
     : "";
   const boundary = hoveredBoundary ?? pinnedBoundary;
   const readout = boundary
-    ? boundaryReadout(boundary, ridingMeasurements, locale)
+    ? boundaryReadout(boundary, ridingMeasurements, locale, { fromYear, toYear: year })
     : null;
   const fitMapToView = (mapView: ExploreMapView) => {
     mapRef.current?.fitBounds(MAP_VIEW_BOUNDS[mapView], {
@@ -945,6 +954,7 @@ export function ExploreMapClient({
                     <p>{text[locale].normalizedShare}{colon(locale)} {readout.normalizedShare}</p>
                     <p>{text[locale].totalLoss}{colon(locale)} {readout.absoluteLoss}</p>
                     {readout.knownObservedSubtotal ? <p>{text[locale].knownObservedSubtotal}{colon(locale)} {readout.knownObservedSubtotal}</p> : null}
+                    {readout.summedLoss ? <p>{readout.summedLossLabel}{colon(locale)} {readout.summedLoss}</p> : null}
                   </>
                 ) : null}
                 {pinnedBoundary ? (

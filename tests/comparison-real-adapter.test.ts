@@ -34,6 +34,7 @@ const fixture = () => ({
   schemaVersion: "witness-tree/phase2-federal-riding-latest-comparison/1",
   status: "local-nonproduction-executed",
   claims: { admitted: false as const, released: false as const, productionEligible: false as const, externalAction: false as const },
+  context: { interval: { fromYear: 2021, toYear: 2022 } },
   rows: Array.from({ length: 343 }, (_, index) => row(index + 1)),
 });
 

@@ -3,9 +3,9 @@
   "phase": 8,
   "localImplementationStatus": "incomplete",
   "phaseComplete": false,
-  "completedCriteria": 8,
+  "completedCriteria": 7,
   "totalCriteria": 16,
-  "percentage": 50,
+  "percentage": 43.75,
   "exitCriteria": [
     {
       "id": "professional-bilingual-review",
@@ -39,7 +39,7 @@
       "evidence": [
         {
           "path": "docs/PLAN_GAP_MATRIX.md",
-          "sha256": "dfea5120ccbdf9e49da86e80dba5f7ac2ad8ea815236187305e0c95f83ecfb01"
+          "sha256": "84ddbf899b6a66454850487729387c8d799fc9ea5bae4bac4d0e2c0cc7c425d4"
         }
       ]
     },
@@ -119,7 +119,7 @@
         },
         {
           "path": "docs/PLAN_GAP_MATRIX.md",
-          "sha256": "dfea5120ccbdf9e49da86e80dba5f7ac2ad8ea815236187305e0c95f83ecfb01"
+          "sha256": "84ddbf899b6a66454850487729387c8d799fc9ea5bae4bac4d0e2c0cc7c425d4"
         }
       ],
       "ownerAuthorization": {
@@ -136,7 +136,7 @@
       "evidence": [
         {
           "path": "docs/PLAN_GAP_MATRIX.md",
-          "sha256": "dfea5120ccbdf9e49da86e80dba5f7ac2ad8ea815236187305e0c95f83ecfb01"
+          "sha256": "84ddbf899b6a66454850487729387c8d799fc9ea5bae4bac4d0e2c0cc7c425d4"
         }
       ]
     },
@@ -263,8 +263,8 @@
     {
       "id": "cdn-tile-validation",
       "title": "CDN and tile validation are complete",
-      "status": "pass",
-      "reason": "The admitted 2020-2022 province aggregate and authoritative boundary are bound to an immutable PMTiles archive in a private ca-central-1 delivery bucket behind CloudFront. Four additional boundary-only reference archives for federal ridings, provincial ridings, economic regions and watersheds have exact S3 and CloudFront byte-hash readback. The province archive has directory and tile ranges at three zooms, decoded province/value assertions, repeated CloudFront cache hits, CORS, origin isolation, immutable write controls, and a client PMTiles path with a verified GeoJSON fallback. A defect was found and fixed on 2026-08-28: the bundler never emitted the sibling module MapLibre resolves as its worker, so that URL returned HTTP 404 on the deployed site and map initialization failed before any tile request was issued. The version-pinned worker is now published from public/maplibre/ and pinned by the client, proven byte-identical to the installed distribution by scripts/check-maplibre-worker-asset.mjs. Browser-side PMTiles rendering was first witnessed on 2026-08-29 against a local build of an unmerged branch, which did not satisfy this criterion because the criterion is scoped to the deployed Site. The earlier note that no browser here could fire requestAnimationFrame described the browser this session had at the time and is superseded. The deployed Site has now been recorded the same way. On 2026-08-30 scripts/verify-deployed-map-render.mjs drove Chromium over the DevTools Protocol against https://www.witnesstree.ca/en/explore and wrote data/deployed-map-render-evidence-2026-08-30.json, which records three HTTP 206 range responses from the exact immutable PMTiles URL the client pins, zero fetches of the published GeoJSON compatibility fallback, a map region that settled on data-state=\"ready\" with data-map-source=\"pmtiles\", the component's own ready copy rather than either compatibility fallback copy, 2620 loss-ramp pixels among 506540 opaque pixels in the composited canvas, and no console errors. That record binds lib/explore/map-style.ts and components/explore/ExploreMapClient.tsx by SHA-256, so changing the archive URL or the client makes the observation stale rather than leaving this gate silently green; scripts/check-deployed-map-render.mjs enforces that on every branch. This criterion covers delivery and rendering only. It asserts no production admission, and the admitted-production-data-and-delivery external blocker remains blocked.",
+      "status": "fail",
+      "reason": "The admitted 2020-2022 province aggregate and authoritative boundary are bound to an immutable PMTiles archive in a private ca-central-1 delivery bucket behind CloudFront. Four additional boundary-only reference archives for federal ridings, provincial ridings, economic regions and watersheds have exact S3 and CloudFront byte-hash readback. The province archive has directory and tile ranges at three zooms, decoded province/value assertions, repeated CloudFront cache hits, CORS, origin isolation, immutable write controls, and a client PMTiles path with a verified GeoJSON fallback. A defect was found and fixed on 2026-08-28: the bundler never emitted the sibling module MapLibre resolves as its worker, so that URL returned HTTP 404 on the deployed site and map initialization failed before any tile request was issued. The version-pinned worker is now published from public/maplibre/ and pinned by the client, proven byte-identical to the installed distribution by scripts/check-maplibre-worker-asset.mjs. Browser-side PMTiles rendering was first witnessed on 2026-08-29 against a local build of an unmerged branch, which did not satisfy this criterion because the criterion is scoped to the deployed Site. The earlier note that no browser here could fire requestAnimationFrame described the browser this session had at the time and is superseded. The deployed Site has now been recorded the same way. On 2026-08-30 scripts/verify-deployed-map-render.mjs drove Chromium over the DevTools Protocol against https://www.witnesstree.ca/en/explore and wrote data/deployed-map-render-evidence-2026-08-30.json, which records three HTTP 206 range responses from the exact immutable PMTiles URL the client pins, zero fetches of the published GeoJSON compatibility fallback, a map region that settled on data-state=\"ready\" with data-map-source=\"pmtiles\", the component's own ready copy rather than either compatibility fallback copy, 2620 loss-ramp pixels among 506540 opaque pixels in the composited canvas, and no console errors. That record binds lib/explore/map-style.ts and components/explore/ExploreMapClient.tsx by SHA-256, so changing the archive URL or the client makes the observation stale rather than leaving this gate silently green; scripts/check-deployed-map-render.mjs enforces that on every branch. This criterion covers delivery and rendering only. It asserts no production admission, and the admitted-production-data-and-delivery external blocker remains blocked. On 2026-09-01 this criterion moved from pass to fail. components/explore/ExploreMapClient.tsx changed on this branch, so the 2026-08-30 observation no longer describes the client the Site would serve. The record itself is untouched and remains a true account of what was measured that day; what is no longer true is that it describes the current client. The criterion says in its own terms that changing the client makes the observation stale rather than leaving this gate silently green, so the gate is recorded stale rather than refreshed by hand. It clears only when the owner redeploys the Site and scripts/verify-deployed-map-render.mjs is re-run against it and writes a new observation. Nothing about the delivery archives, the CloudFront readback, or the pinned worker asset is withdrawn by this; only the browser-side rendering observation is stale.",
       "evidence": [
         {
           "path": "data/phase8-province-map-release.json",
@@ -284,11 +284,11 @@
         },
         {
           "path": "components/explore/ExploreMapClient.tsx",
-          "sha256": "6246d0d2e83ca84ad9fe8bb297693f21adbb146f3e5307db47d2b9af04b49864"
+          "sha256": "9fe6c7c580858545e7054fec32bfb9b6ad78d43c646f107d0ffbd88483aee9a9"
         },
         {
           "path": "tests/explore.test.tsx",
-          "sha256": "0e9fb67e85a37856ffc34bb5218f80433fc2190078a8e391d683d98c080358a1"
+          "sha256": "e74f387193d1be591336b6ca6cdbcd609afdbb02b59e555ff0236c6734581471"
         },
         {
           "path": "data/deployed-map-render-evidence-2026-08-30.json",

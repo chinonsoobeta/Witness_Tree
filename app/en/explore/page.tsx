@@ -8,9 +8,12 @@ import {
   exploreFixtures,
   EXPLORE_MODES,
   parseBoundaryOverlays,
+  parseExploreInterval,
   parseExploreYear,
-  ridingMeasurements,
 } from "@/lib/explore";
+// Imported by path rather than through the barrel: this module carries every
+// span for every district and must never be pulled into a browser bundle.
+import { ridingIntervalMeasurements } from "@/lib/explore/riding-intervals";
 import { localizedAlternates } from "@/lib/site-metadata";
 
 export const metadata: Metadata = {
@@ -26,6 +29,7 @@ export default async function Page({
     presentation?: string;
     data?: string;
     year?: string;
+    from?: string;
     overlays?: string;
     district?: string;
   }>;
@@ -38,6 +42,9 @@ export default async function Page({
     : "forest-change";
   const presentation = query.presentation === "list" ? "list" : "map";
   const year = parseExploreYear(query.year);
+  // The span, not just its closing year. A URL that names only `year` still
+  // means the annual interval ending there, which is what it has always meant.
+  const interval = parseExploreInterval(query.from, String(year));
   const overlays = parseBoundaryOverlays(query.overlays);
   return (
     <SiteShell locale="en">
@@ -52,9 +59,10 @@ export default async function Page({
           mode={mode}
           presentation={presentation}
           data={query.data === "table" ? "table" : "chart"}
-          year={year}
+          year={interval.toYear}
+          fromYear={interval.fromYear}
           overlays={overlays}
-          ridingMeasurements={ridingMeasurements}
+          ridingMeasurements={ridingIntervalMeasurements(interval)}
         />
         <FederalDistrictFinder
           locale="en"
@@ -64,7 +72,10 @@ export default async function Page({
             { name: "mode", value: mode },
             { name: "presentation", value: presentation },
             { name: "data", value: query.data === "table" ? "table" : "chart" },
-            { name: "year", value: String(year) },
+            { name: "year", value: String(interval.toYear) },
+            ...(interval.fromYear !== interval.toYear - 1
+              ? [{ name: "from", value: String(interval.fromYear) }]
+              : []),
             ...(overlays.length > 0 ? [{ name: "overlays", value: overlays.join(",") }] : []),
           ]}
         />

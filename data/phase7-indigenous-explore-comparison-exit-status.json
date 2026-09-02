@@ -107,11 +107,11 @@
       "evidence": [
         {
           "path": "components/explore/ExploreView.tsx",
-          "sha256": "2fca8b125c9a0763ebc320a83e1879ae9c56e2b597ead43d1b7a7fa354b8c9af"
+          "sha256": "ca9d2b0222dc4e43959ac5649eb0e216b36e0994604e01323620ef6cfe2454a9"
         },
         {
           "path": "tests/explore.test.tsx",
-          "sha256": "0e9fb67e85a37856ffc34bb5218f80433fc2190078a8e391d683d98c080358a1"
+          "sha256": "e74f387193d1be591336b6ca6cdbcd609afdbb02b59e555ff0236c6734581471"
         }
       ]
     },
@@ -123,11 +123,11 @@
       "evidence": [
         {
           "path": "components/explore/ExploreView.tsx",
-          "sha256": "2fca8b125c9a0763ebc320a83e1879ae9c56e2b597ead43d1b7a7fa354b8c9af"
+          "sha256": "ca9d2b0222dc4e43959ac5649eb0e216b36e0994604e01323620ef6cfe2454a9"
         },
         {
           "path": "tests/explore.test.tsx",
-          "sha256": "0e9fb67e85a37856ffc34bb5218f80433fc2190078a8e391d683d98c080358a1"
+          "sha256": "e74f387193d1be591336b6ca6cdbcd609afdbb02b59e555ff0236c6734581471"
         }
       ]
     },
@@ -135,15 +135,15 @@
       "id": "native-time-control",
       "title": "Explore uses a native range input whose keyboard interaction advances the selected year",
       "status": "pass",
-      "reason": "Explore renders an input of type range with bounded years, so native controls provide arrow-key stepping, and the focused route test pins the element and its range. The control is also operable rather than decorative: it is named, sits in a GET form that carries the mode, presentation, and data selections through a submit, and its year is reflected in every link on the page, so a chosen year can be linked, bookmarked, and shared. The route parses the year defensively and falls back to the default rather than throwing on any value the control could not have produced.",
+      "reason": "Explore renders native range inputs with bounded years, so native controls provide arrow-key stepping, and the focused route test pins the elements and their ranges. There are now two handles rather than one: the reader selects a span, and the annual interval is the narrowest span rather than a separate mode, so a link naming only its closing year still means exactly the annual interval it always meant. The control is operable rather than decorative: both handles are named, they sit in a GET form that carries the mode, presentation, and data selections through a submit, and the selected span is reflected in every link on the page, so a chosen span can be linked, bookmarked, and shared. The route parses the span defensively, ordering a reversed one and widening a zero-length one to the annual interval ending at that year, rather than throwing on any value the control could not have produced.",
       "evidence": [
         {
           "path": "components/explore/ExploreView.tsx",
-          "sha256": "2fca8b125c9a0763ebc320a83e1879ae9c56e2b597ead43d1b7a7fa354b8c9af"
+          "sha256": "ca9d2b0222dc4e43959ac5649eb0e216b36e0994604e01323620ef6cfe2454a9"
         },
         {
           "path": "tests/explore.test.tsx",
-          "sha256": "0e9fb67e85a37856ffc34bb5218f80433fc2190078a8e391d683d98c080358a1"
+          "sha256": "e74f387193d1be591336b6ca6cdbcd609afdbb02b59e555ff0236c6734581471"
         }
       ]
     },

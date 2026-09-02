@@ -112,6 +112,8 @@ export function parseRidingMapMeasurements(value: unknown): readonly RidingBound
       jurisdiction,
       boundaryId: tileBoundaryId,
       coverage: row.coverageGrade,
+      fromYear: 2021,
+      toYear: 2022,
       observedLossPercent: row.observedLossPercent,
       observedLossHectares: row.lossHectares,
       knownObservedSubtotalHectares: row.knownObservedLossHectares,

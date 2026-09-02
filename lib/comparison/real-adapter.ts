@@ -19,6 +19,8 @@ type RawComparison = Readonly<{
   schemaVersion: string;
   status: string;
   claims: Readonly<{ admitted: false; released: false; productionEligible: false; externalAction: false }>;
+  /** The span the document was built for. Every row must agree with it. */
+  context: Readonly<{ interval: Readonly<{ fromYear: number; toYear: number }> }>;
   rows: readonly RawRow[];
 }>;
 
@@ -36,12 +38,29 @@ export function adaptFederalRidingComparison(input: RawComparison): RealFederalR
     throw new Error("Federal-riding comparison must remain local, non-released, and nonproduction.");
   }
   if (input.rows.length !== 343) throw new Error("Federal-riding comparison must contain exactly 343 districts.");
+  /*
+   * The span comes from the document rather than from a literal here.
+   *
+   * A hardcoded 2021 to 2022 was correct for the only comparison ever built,
+   * and it was also the thing that would have silently mislabelled the next
+   * one: a document rebuilt over a wider span would have been rejected as
+   * malformed, or worse, relabelled with years it did not measure. Reading the
+   * declared span keeps the check exactly as strict, since every row is still
+   * required to agree with it, while letting the document say what it measured.
+   */
+  const interval = input.context?.interval;
+  if (!interval || !Number.isInteger(interval.fromYear) || !Number.isInteger(interval.toYear) ||
+    interval.toYear <= interval.fromYear) {
+    throw new Error("Federal-riding comparison must declare the span it measures.");
+  }
 
   const ids = new Set<string>();
   const rows = input.rows.map((source): RankedRiding => {
     if (ids.has(source.boundaryId)) throw new Error(`Duplicate federal district ${source.boundaryId}.`);
     ids.add(source.boundaryId);
-    if (source.fromYear !== 2021 || source.toYear !== 2022) throw new Error("Federal-riding comparison interval must be 2021 to 2022.");
+    if (source.fromYear !== interval.fromYear || source.toYear !== interval.toYear) {
+      throw new Error(`Federal district ${source.boundaryId} was measured over a different span than the document declares.`);
+    }
     const complete = source.coverageGrade === "complete";
     if (source.rankable !== (complete && source.observedLossPercent !== null && source.lossHectares !== null && source.knownForestedHectares >= MINIMUM_RANKED_FOREST_HECTARES)) {
       throw new Error(`Federal district ${source.boundaryId} has inconsistent rankability.`);
@@ -65,13 +84,13 @@ export function adaptFederalRidingComparison(input: RawComparison): RealFederalR
   });
 
   const context: RankingContext = {
-    timeRange: "2021–2022",
+    timeRange: `${interval.fromYear}–${interval.toYear}`,
     boundaryEdition: "2023 Representation Order",
     dataVersion: "phase2-real-national-1984-2022-v1",
     evidence: "satellite-observation",
     denominatorDefinition: {
-      en: "Share of known forested hectares in the 2021 first-year forest mask.",
-      fr: "Part des hectares forestiers connus dans le masque forestier de la première année, 2021.",
+      en: `Share of known forested hectares in the ${interval.fromYear} first-year forest mask.`,
+      fr: `Part des hectares forestiers connus dans le masque forestier de la première année, ${interval.fromYear}.`,
     },
     method: {
       en: "Federal districts with complete mapped coverage and at least 500 forested hectares are ranked by detected-loss share.",
