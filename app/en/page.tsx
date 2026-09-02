@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { SiteShell } from "@/components/site";
+import { ProvinceBar, SiteShell } from "@/components/site";
 import { formatHectares, formatPercent, PRODUCT_NAME } from "@/lib/domain";
 import { EXPLORE_COVERAGE_PERIOD, EXPLORE_PRODUCTION_LAYER, formatUnknownSharePercent } from "@/lib/explore";
 import { localizedAlternates } from "@/lib/site-metadata";
@@ -17,7 +17,7 @@ export default function EnglishHome() {
       <p className="eyebrow">Evidence record · {EXPLORE_COVERAGE_PERIOD.en}</p>
       <h1>What happened to the forest here?</h1>
       <p className="dek">{PRODUCT_NAME.en} helps you understand recorded and detected forest loss in four provinces.</p>
-      <div className="meta-row"><span>British Columbia</span><span>Alberta</span><span>Ontario</span><span>Quebec</span></div>
+      <ProvinceBar locale="en" />
     </header>
     <section className="content-section prose-measure" aria-labelledby="current-record">
       <div className="section-heading"><span className="num">01</span><h2 id="current-record">Start with the current record</h2></div>

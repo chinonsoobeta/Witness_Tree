@@ -27,7 +27,14 @@ export default async function ComparePage({
   const parameters = await searchParams;
   const view = parameters.view === "table" ? "table" : "cards";
   const sort = parseRankingSort(parameters.sort);
-  const selected = selectFederalRidings(federalRidingComparison.places, parameters.left, parameters.right);
+  const leftId = parameters.left ?? federalRidingComparison.defaultPair[0].id;
+  const rightId = parameters.right ?? federalRidingComparison.defaultPair[1].id;
+  const selected = selectFederalRidings(
+    federalRidingComparison.comparisonRows,
+    leftId,
+    rightId,
+    federalRidingComparison.defaultPair,
+  );
   return (
     <SiteShell locale="en">
       <main id="main" className="page-wrap">
@@ -36,12 +43,13 @@ export default async function ComparePage({
           <p className="masthead-note">Extent-corrected measurements for 2021–2022.</p>
         </header>
         <FederalRidingPicker
-          rows={federalRidingComparison.places}
+          rows={federalRidingComparison.comparisonRows}
           locale="en"
-          leftId={parameters.left}
-          rightId={parameters.right}
+          leftId={leftId}
+          rightId={rightId}
           view={view}
           sort={sort}
+          fallback={federalRidingComparison.defaultPair}
         />
         <SideBySideComparison
           places={[selected.left, selected.right]}
@@ -52,7 +60,7 @@ export default async function ComparePage({
           sort={sort}
         />
         <RankedRidingsTable
-          rows={federalRidingComparison.rows}
+          rows={federalRidingComparison.comparisonRows}
           context={federalRidingComparison.context}
           locale="en"
           sort={sort}
