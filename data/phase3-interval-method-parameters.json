@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "methodVersion": "interval-union-and-sum-1984-2022-v1",
+  "parameterSha256": "dc1e30d8e9660741127804f8151d449c5e3a1d771209ab9ee10246090e979db6",
+  "reviewStatus": "owner-approved-versioned-nonproduction",
+  "scope": "versioned-nonproduction-national-processing",
+  "productionEligible": false,
+  "parameters": {
+    "matching": {
+      "minimumOverlapOfSmallerGeometry": 0.5,
+      "standardTemporalToleranceYears": 2,
+      "historicalTemporalToleranceYears": 3,
+      "historicalYearExclusive": 1995,
+      "multipleCandidateRule": "highest-overlap-stable-input-order"
+    },
+    "precedence": [
+      "fire",
+      "recorded-harvest",
+      "insect-disease",
+      "other-intervention",
+      "unmatched-detected-change"
+    ],
+    "mask": {
+      "forestClassCrosswalkStatus": "owner-approved-versioned-nonproduction",
+      "forestClassValues": [
+        210,
+        220,
+        230
+      ],
+      "nodataPolicy": "preserve",
+      "implicitReprojection": "forbidden"
+    },
+    "vectorization": {
+      "connectivity": 4,
+      "minimumPatchPixels": 1,
+      "simplifyToleranceMetres": 0,
+      "dissolveAdjacentCells": false
+    },
+    "aggregation": {
+      "denominatorReference": "first-year-of-range",
+      "overlapPolicy": "precedence-once-per-hectare-year",
+      "areaUnit": "hectare",
+      "decimalPlaces": 6
+    },
+    "boundary": {
+      "cellIntersection": "fractional-area",
+      "gridAlignment": "exact",
+      "snapToleranceMetres": 0,
+      "boundaryEditionRequired": true,
+      "crossEditionComparison": "reject-without-acknowledgement"
+    },
+    "interval": {
+      "firstYear": 1984,
+      "lastYear": 2022,
+      "annualStepCount": 38,
+      "spanCount": 741,
+      "spanEnumeration": "every-ordered-pair-of-years",
+      "unionAccounting": "cell-counted-once-per-span",
+      "unionDenominator": "known-forest-cells-at-opening-year",
+      "summedAccounting": "annual-counts-added",
+      "summedPercentAllowed": false,
+      "netChangeIncluded": false
+    }
+  }
+}

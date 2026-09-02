@@ -104,3 +104,58 @@ test("parameter changes require a new version and an exact recomputation and rel
   assert.throws(() => gateMethodChange(previous, next, { ...exactMarker, nextParameterSha256: "0".repeat(64) }), /exact versions/);
   assert.throws(() => gateMethodChange(previous, unchanged, exactMarker), /must not carry/);
 });
+
+function intervalFixture(): MethodParameterManifest {
+  const base = fixture("interval-method-v1-test");
+  return withParameters(base, {
+    ...base.parameters,
+    interval: {
+      firstYear: 1984,
+      lastYear: 2022,
+      annualStepCount: 38,
+      spanCount: 741,
+      spanEnumeration: "every-ordered-pair-of-years",
+      unionAccounting: "cell-counted-once-per-span",
+      unionDenominator: "known-forest-cells-at-opening-year",
+      summedAccounting: "annual-counts-added",
+      summedPercentAllowed: false,
+      netChangeIncluded: false,
+    },
+  });
+}
+
+test("the span block is derived and checked, never asserted", () => {
+  const manifest = intervalFixture();
+  assert.equal(validateMethodManifest(manifest).parameterSha256, manifest.parameterSha256);
+  // The span block changes the identity, which is what makes the version bump load-bearing.
+  assert.notEqual(manifest.parameterSha256, fixture("interval-method-v1-test").parameterSha256);
+
+  const interval = manifest.parameters.interval!;
+  const broken: [Partial<typeof interval>, RegExp][] = [
+    [{ lastYear: 1984 }, /close after it opens/],
+    [{ annualStepCount: 39 }, /year boundaries/],
+    [{ spanCount: 740 }, /every ordered pair/],
+    [{ spanEnumeration: "every-decade" as never }, /accounting rules are invalid/],
+    [{ unionAccounting: "cell-counted-once-per-year" as never }, /accounting rules are invalid/],
+    [{ summedAccounting: "union" as never }, /accounting rules are invalid/],
+    [{ unionDenominator: "known-forest-cells-at-closing-year" as never }, /opening year/],
+    [{ summedPercentAllowed: true as never }, /never carry a percentage/],
+    [{ netChangeIncluded: true as never }, /does not report net change/],
+  ];
+  for (const [patch, message] of broken) {
+    const parameters = { ...manifest.parameters, interval: { ...interval, ...patch } };
+    assert.throws(() => validateMethodManifest(withParameters(manifest, parameters)), message);
+  }
+});
+
+test("a span block cannot sit on a method whose denominator is not the opening year", () => {
+  const manifest = intervalFixture();
+  const parameters = { ...manifest.parameters, aggregation: { ...manifest.parameters.aggregation, denominatorReference: "last-year-of-range" as never } };
+  assert.throws(() => validateMethodManifest(withParameters(manifest, parameters)), /registered denominator/);
+});
+
+test("the annual method keeps its identity when a span block is absent", () => {
+  const annual = fixture("annual-method-v1-test");
+  assert.equal(annual.parameters.interval, undefined);
+  assert.equal(validateMethodManifest(annual).parameterSha256, methodParameterSha256(annual.parameters));
+});

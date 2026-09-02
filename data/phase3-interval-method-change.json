@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "witness-tree/phase3-interval-method-change/1",
+  "marker": {
+    "schemaVersion": 1,
+    "previousMethodVersion": "phase2-owner-approved-versioned-nonproduction-v1",
+    "nextMethodVersion": "interval-union-and-sum-1984-2022-v1",
+    "previousParameterSha256": "8d12ff6b6fb10208410bedf5f012e96a9682fdec457cccce688509d2dfa0b8fa",
+    "nextParameterSha256": "dc1e30d8e9660741127804f8151d449c5e3a1d771209ab9ee10246090e979db6",
+    "recomputationRequired": true,
+    "releaseNoteRequired": true,
+    "releaseNoteId": "interval-union-and-sum-1984-2022-v1-note",
+    "productionEligible": false
+  },
+  "manifests": {
+    "previous": {
+      "path": "data/phase2-method-parameters.json",
+      "sha256": "8d06ec83542f05e81a4b63b4e6c3c2c7ef1a40df46f501ce8cc0177050446334"
+    },
+    "next": {
+      "path": "data/phase3-interval-method-parameters.json",
+      "sha256": "9c5c3a382ef4b3c25357dd91862939ba1563b3ed59db62d567ab18b8e4bf5c2b"
+    }
+  },
+  "releaseNote": {
+    "id": "interval-union-and-sum-1984-2022-v1-note",
+    "path": "docs/METHOD_RELEASE_NOTE_INTERVAL_1984_2022_V1.md",
+    "sha256": "56ac2f5c9fb1a2ba373f43d8721cca68ca0e72c219c4a9d1742ada2e71372794",
+    "en": "Measurements can now be read over a span of years, not only between one year and the next. Forest lost at least once counts a place once however many times it was cut, and is the only figure shown as a percentage. Yearly losses added together counts a place again each time, and is shown in hectares only.",
+    "fr": "Les mesures peuvent maintenant se lire sur une plage d'années, et non seulement d'une année à la suivante. La forêt perdue au moins une fois compte un lieu une seule fois, quel que soit le nombre de coupes, et c'est le seul chiffre présenté en pourcentage. Les pertes annuelles additionnées comptent un lieu à chaque fois, et sont présentées en hectares seulement."
+  },
+  "recomputation": {
+    "product": {
+      "path": "data/phase3-riding-interval-measurements.json",
+      "sha256": "e634624ac04bb34016d86f3167362305d53b43c08ce83d94a94c1b19c9b33db2"
+    },
+    "derivedFrom": "per-cell annual NTEMS loss masks on the external store, not folded down from the published annual table",
+    "reason": "The union of a span cannot be recovered by adding annual counts, because addition cannot know which cells recur. The union needed the per-cell record.",
+    "reproduced": {
+      "annualSpans": "every one-year span reproduces the admitted annual measurement exactly",
+      "shippedAnnualTable": "the 2021 to 2022 span reproduces data/phase2-riding-map-measurements.json exactly on known forest, observed loss, percentage and coverage grade"
+    }
+  },
+  "claims": {
+    "admitted": false,
+    "released": false,
+    "productionEligible": false,
+    "expertReviewed": false,
+    "externalAction": false
+  }
+}

@@ -39,6 +39,7 @@ jobs:
       - run: npm run check:premise-loss-vocabulary
       - run: npm run check:nrcan-source-currency
       - run: npm run check:interval-release
+      - run: npm run check:interval-method
       - run: npm run check:ci-check-coverage
       - run: npm run check:exit-code-taxonomy
       - run: npm run check:cross-record-facts
