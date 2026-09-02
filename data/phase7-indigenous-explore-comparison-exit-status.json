@@ -79,7 +79,7 @@
         },
         {
           "path": "tests/comparison.test.tsx",
-          "sha256": "19bd90bbb9de819ca08ab51f45313c4f1d2826e45c07cbcf3a88543663e4af2a"
+          "sha256": "3974f2975f4e3374f39b0df9b4998f904b3bc35c7da4d9cfa2ee03e32f5df325"
         }
       ]
     },
@@ -111,7 +111,7 @@
         },
         {
           "path": "tests/explore.test.tsx",
-          "sha256": "e74f387193d1be591336b6ca6cdbcd609afdbb02b59e555ff0236c6734581471"
+          "sha256": "fe32bd2e12e8656d1183b420b3674d57dad9c47fb58fc0d3b4ec9bcaacdba395"
         }
       ]
     },
@@ -127,7 +127,7 @@
         },
         {
           "path": "tests/explore.test.tsx",
-          "sha256": "e74f387193d1be591336b6ca6cdbcd609afdbb02b59e555ff0236c6734581471"
+          "sha256": "fe32bd2e12e8656d1183b420b3674d57dad9c47fb58fc0d3b4ec9bcaacdba395"
         }
       ]
     },
@@ -143,7 +143,7 @@
         },
         {
           "path": "tests/explore.test.tsx",
-          "sha256": "e74f387193d1be591336b6ca6cdbcd609afdbb02b59e555ff0236c6734581471"
+          "sha256": "fe32bd2e12e8656d1183b420b3674d57dad9c47fb58fc0d3b4ec9bcaacdba395"
         }
       ]
     },
@@ -179,7 +179,7 @@
         },
         {
           "path": "tests/comparison.test.tsx",
-          "sha256": "19bd90bbb9de819ca08ab51f45313c4f1d2826e45c07cbcf3a88543663e4af2a"
+          "sha256": "3974f2975f4e3374f39b0df9b4998f904b3bc35c7da4d9cfa2ee03e32f5df325"
         }
       ]
     },
@@ -191,15 +191,15 @@
       "evidence": [
         {
           "path": "components/comparison/RankedRidingsTable.tsx",
-          "sha256": "04c7784e227a324a82dec766fa41330dda0184abae8adad757e594b90e7d6239"
+          "sha256": "341e400db3cbc2ed867b775a4ee415e50bc3dcd2ad3f02d03c675c0893c62ac3"
         },
         {
           "path": "components/comparison/SideBySideComparison.tsx",
-          "sha256": "2821e983fff4b3ff32527e3434172392db0dd411810a099a3b8aa1532ccedac4"
+          "sha256": "f011e62d6e8e33f2361cc5270b4f2a85a445f8fc45a6f1ca39d5d888470835e1"
         },
         {
           "path": "tests/comparison.test.tsx",
-          "sha256": "19bd90bbb9de819ca08ab51f45313c4f1d2826e45c07cbcf3a88543663e4af2a"
+          "sha256": "3974f2975f4e3374f39b0df9b4998f904b3bc35c7da4d9cfa2ee03e32f5df325"
         }
       ]
     },
@@ -215,11 +215,11 @@
         },
         {
           "path": "components/comparison/RankedRidingsTable.tsx",
-          "sha256": "04c7784e227a324a82dec766fa41330dda0184abae8adad757e594b90e7d6239"
+          "sha256": "341e400db3cbc2ed867b775a4ee415e50bc3dcd2ad3f02d03c675c0893c62ac3"
         },
         {
           "path": "tests/comparison.test.tsx",
-          "sha256": "19bd90bbb9de819ca08ab51f45313c4f1d2826e45c07cbcf3a88543663e4af2a"
+          "sha256": "3974f2975f4e3374f39b0df9b4998f904b3bc35c7da4d9cfa2ee03e32f5df325"
         }
       ]
     },
@@ -251,7 +251,7 @@
         },
         {
           "path": "tests/comparison.test.tsx",
-          "sha256": "19bd90bbb9de819ca08ab51f45313c4f1d2826e45c07cbcf3a88543663e4af2a"
+          "sha256": "3974f2975f4e3374f39b0df9b4998f904b3bc35c7da4d9cfa2ee03e32f5df325"
         }
       ]
     },
@@ -263,7 +263,7 @@
       "evidence": [
         {
           "path": "tests/comparison.test.tsx",
-          "sha256": "19bd90bbb9de819ca08ab51f45313c4f1d2826e45c07cbcf3a88543663e4af2a"
+          "sha256": "3974f2975f4e3374f39b0df9b4998f904b3bc35c7da4d9cfa2ee03e32f5df325"
         }
       ]
     }

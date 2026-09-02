@@ -8,18 +8,17 @@ const record = JSON.parse(readFileSync(new URL("../data/phase8-launch-readiness-
 test("Phase 8 records every literal launch-readiness gate without production inflation", async () => {
   assert.equal(await validatePhase8LaunchReadinessExitStatus(record), record);
   /*
-   * Eight, and it has been seven twice. CDN and tile validation passes on the
-   * strength of a browser observation of the deployed Site, bound to the client
-   * it observed. When the client changed the gate went stale and this number
-   * went down; it came back only after the Site was redeployed and the
-   * observation was taken again. Moving in both directions is the point of
-   * binding it.
+   * Seven again. CDN and tile validation passes only on the strength of a
+   * browser observation of the deployed Site bound to the client it observed.
+   * This unmerged change set changes that client without deploying it, so the
+   * historical observation is stale and the gate must move down until a later,
+   * separately authorized deployment is observed.
    */
-  assert.equal(record.completedCriteria, 8);
+  assert.equal(record.completedCriteria, 7);
   assert.equal(record.totalCriteria, 16);
-  assert.equal(record.percentage, 50);
+  assert.equal(record.percentage, 43.75);
   assert.equal(record.phaseComplete, false);
-  assert.deepEqual(record.exitCriteria.filter((item) => item.status === "pass").map((item) => item.id), ["raw-archive-reproducibility", "governance-and-corrections-procedures", "operations-handbook", "bulk-downloads", "citation-format", "release-notes", "restore-tests", "cdn-tile-validation"]);
+  assert.deepEqual(record.exitCriteria.filter((item) => item.status === "pass").map((item) => item.id), ["raw-archive-reproducibility", "governance-and-corrections-procedures", "operations-handbook", "bulk-downloads", "citation-format", "release-notes", "restore-tests"]);
 });
 
 test("Phase 8 rejects invented readiness, altered gates, blockers, and tampered evidence", async () => {

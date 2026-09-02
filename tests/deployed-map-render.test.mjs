@@ -11,16 +11,19 @@ import {
 const loadRecord = async () =>
   JSON.parse(await readFile(new URL(`../${RENDER_EVIDENCE_PATH}`, import.meta.url), "utf8"));
 
-// Every rejection case starts from the record that a real browser run produced,
-// so the mutation under test is the only thing separating pass from fail.
+// Every rejection case starts from the record that a real browser run produced.
+// The current branch intentionally leaves that historical record stale, and
+// each mutation test below checks for its additional, distinct rejection.
 const withRecord = async (mutate) => {
   const record = await loadRecord();
   mutate(record);
   return validateDeployedMapRender({ record });
 };
 
-test("the committed record describes a passing observation of the deployed Site", async () => {
-  assert.deepEqual(validateDeployedMapRender(), []);
+test("the committed observation stays stale after the unmerged client changes", async () => {
+  assert.deepEqual(validateDeployedMapRender(), [
+    "components/explore/ExploreMapClient.tsx changed since the deployed Site was observed at 2026-09-02T00:51:26Z. Re-run the harness against the deployed Site.",
+  ]);
   const record = await loadRecord();
   assert.equal(record.schemaVersion, RENDER_EVIDENCE_SCHEMA);
   assert.ok(record.url.startsWith(DEPLOYED_ORIGIN));
