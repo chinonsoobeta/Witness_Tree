@@ -90,8 +90,8 @@ export const BOUNDARY_OVERLAYS: Readonly<Record<BoundaryOverlayId, BoundaryOverl
       colour: EXPLORE_MAP_COLOURS.observation,
       dash: [5, 2],
       note: {
-        en: "All 76 Statistics Canada 2021 economic regions are drawn as a bilingual reference framework. This boundary layer is not a regional forest-loss aggregate.",
-        fr: "Les 76 régions économiques de Statistique Canada de 2021 sont tracées comme cadre de référence bilingue. Cette couche de limites n'est pas un agrégat régional de perte forestière.",
+        en: "All 76 Statistics Canada 2021 economic regions are drawn as a bilingual reference framework.",
+        fr: "Les 76 régions économiques de Statistique Canada de 2021 sont tracées comme cadre de référence bilingue.",
       },
       attribution: {
         en: "Statistics Canada, 2021 Economic Region Boundary File.",
@@ -107,8 +107,8 @@ export const BOUNDARY_OVERLAYS: Readonly<Record<BoundaryOverlayId, BoundaryOverl
       colour: EXPLORE_MAP_COLOURS.ink,
       dash: [2, 2],
       note: {
-        en: "The 169 Canadian areas in NRCan's bilingual Water Survey of Canada sub-drainage rollup, version 6.0, are drawn as a reference framework. This boundary layer is not a watershed forest-loss aggregate.",
-        fr: "Les 169 aires canadiennes du regroupement bilingue des sous-aires de drainage de la Division des relevés hydrologiques du Canada de RNCan, version 6.0, sont tracées comme cadre de référence. Cette couche de limites n'est pas un agrégat de perte forestière par bassin versant.",
+        en: "The 169 Canadian areas in NRCan's bilingual Water Survey of Canada sub-drainage rollup, version 6.0, are drawn as a reference framework.",
+        fr: "Les 169 aires canadiennes du regroupement bilingue des sous-aires de drainage de la Division des relevés hydrologiques du Canada de RNCan, version 6.0, sont tracées comme cadre de référence.",
       },
       attribution: {
         en: "Natural Resources Canada, Atlas of Canada drainage areas, version 6.0 (2008).",

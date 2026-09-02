@@ -151,12 +151,16 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
   assert.doesNotMatch(en, /geometry unavailable/);
   assert.match(en, /overlays=federal-ridings/);
   assert.match(en, /overlays=provincial-ridings/);
-  // Both admitted reference frameworks are selectable, while their copy
-  // still refuses to imply that a forest-loss aggregate was released.
+  // Both admitted reference frameworks are selectable. The owner removed the
+  // trailing "not an aggregate" disclaimer from both layers, so these hold the
+  // deletion in place and keep the descriptive sentence that still carries each
+  // layer's actual scope. A disclaimer creeping back is a copy regression.
   assert.match(en, /overlays=economic-regions/);
   assert.match(en, /overlays=watersheds/);
-  assert.match(en, /not a regional forest-loss aggregate/);
-  assert.match(en, /not a watershed forest-loss aggregate/);
+  assert.match(en, /All 76 Statistics Canada 2021 economic regions are drawn as a bilingual reference framework\./);
+  assert.match(en, /sub-drainage rollup, version 6\.0, are drawn as a reference framework\./);
+  assert.doesNotMatch(en, /not a regional forest-loss aggregate/);
+  assert.doesNotMatch(en, /not a watershed forest-loss aggregate/);
   // The provincial layer must never read as national coverage.
   for (const province of [
     "British Columbia",
