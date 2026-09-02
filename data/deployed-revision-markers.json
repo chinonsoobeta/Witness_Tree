@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "witness-tree/deployed-revision-markers/1",
+  "status": "engineering-derived-inventory",
+  "purpose": "Answers one question in one command: is the deployed Site running this revision, or an older one? Merging to main does not update the Site, so the repository and the Site drift apart silently, and every symptom of that drift looks like a product defect. Each marker is a short string this revision renders (or has stopped rendering) on a public page, chosen so that its absence on the deployed origin proves the Site is behind rather than merely unconfigured.",
+  "origin": "https://www.witnesstree.ca",
+  "markers": [
+    {
+      "path": "/en/data",
+      "expect": "present",
+      "text": "How current the source is",
+      "source": "components/transparency/SourceCurrency.tsx",
+      "reason": "The source currency section renders unconditionally from a bundled record, so a deployment carrying it cannot hide it and a deployment without it cannot fake it."
+    },
+    {
+      "path": "/fr/donnees",
+      "expect": "present",
+      "text": "Actualité de la source",
+      "source": "components/transparency/SourceCurrency.tsx",
+      "reason": "The French half of the same section, so a half-built bilingual deployment is caught as well."
+    },
+    {
+      "path": "/en/explore",
+      "expect": "present",
+      "text": "Later last year",
+      "source": "components/explore/ExploreYearControl.tsx",
+      "reason": "The interval control ships with the span method. It is not gated on any binding, so its absence is a revision fact and not a configuration fact."
+    },
+    {
+      "path": "/fr/explorer",
+      "expect": "present",
+      "text": "Années affichées",
+      "source": "components/explore/ExploreYearControl.tsx",
+      "reason": "The French half of the interval control, for the same reason."
+    },
+    {
+      "path": "/en/explore",
+      "expect": "absent",
+      "text": "Local nonproduction measurements. Not a published release.",
+      "source": null,
+      "reason": "The owner retired this banner. A deployment still showing it is older than that decision, which makes a retired string a sharper staleness signal than any added one."
+    }
+  ],
+  "gatedSurfacesExcluded": [
+    "components/search/AddressFinderClient.tsx",
+    "components/explore/ShapeMeasureClient.tsx"
+  ],
+  "gatedSurfacesReason": "These surfaces are hidden when their worker bindings are absent, so their absence is the correct fail-closed state and cannot distinguish a stale deployment from an unconfigured one. Using them as markers would report staleness that is not there.",
+  "claims": {
+    "identifiesTheDeployedCommit": false,
+    "published": false,
+    "productionEligible": false,
+    "admissionClaim": false
+  }
+}
