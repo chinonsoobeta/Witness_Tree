@@ -13,9 +13,9 @@ function observedWith(path, replace) {
   });
 }
 
-test("the exact twenty-one operator runners match the reviewed exit taxonomy", () => {
+test("the exact twenty-three operator runners match the reviewed exit taxonomy", () => {
   const result = validateTaxonomy(taxonomy);
-  assert.equal(result.runners, 21);
+  assert.equal(result.runners, 23);
   assert.deepEqual(result.codes, [0, 1, 64, 65, 69, 70, 73, 75, 77]);
 });
 

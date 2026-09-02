@@ -6,3 +6,4 @@ export {
   normalizeFederalDistrictSearch,
 } from "./FederalDistrictFinder";
 export { PlaceFinder } from "./PlaceFinder";
+export { AddressFinderClient } from "./AddressFinderClient";

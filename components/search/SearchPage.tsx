@@ -1,6 +1,7 @@
 import type { Locale } from "@/lib/domain";
 import { federalRidingComparison } from "@/lib/comparison";
 import { FederalDistrictFinder } from "./FederalDistrictFinder";
+import { AddressFinderClient } from "./AddressFinderClient";
 import { PlaceFinder } from "./PlaceFinder";
 
 export type SearchScope = "places" | "districts";
@@ -28,7 +29,18 @@ export function SearchPage({
   locale,
   query,
   scope = "places",
-}: Readonly<{ locale: Locale; query: string; scope?: SearchScope }>) {
+  addressLookup = false,
+}: Readonly<{
+  locale: Locale;
+  query: string;
+  scope?: SearchScope;
+  /**
+   * Whether the address field can actually work. Decided by the route from the
+   * worker's stamped headers, never by this component and never by the caller,
+   * so a field that cannot answer is not offered.
+   */
+  addressLookup?: boolean;
+}>) {
   const text = copy[locale];
   return (
     <section className="page-wrap search-page">
@@ -57,11 +69,14 @@ export function SearchPage({
       {scope === "places" ? (
         <PlaceFinder locale={locale} query={query} />
       ) : (
-        <FederalDistrictFinder
-          locale={locale}
-          query={query}
-          rows={federalRidingComparison.places}
-        />
+        <>
+          {addressLookup ? <AddressFinderClient locale={locale} /> : null}
+          <FederalDistrictFinder
+            locale={locale}
+            query={query}
+            rows={federalRidingComparison.places}
+          />
+        </>
       )}
     </section>
   );

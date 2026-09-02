@@ -57,6 +57,7 @@ NEVER edit this file while it is running.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import importlib.util
 import json
 import os
@@ -313,6 +314,21 @@ def main(args: argparse.Namespace) -> None:
         "gdalCacheBytes": args.gdal_cache_megabytes * 1024 * 1024,
     }
 
+    # Every digest is taken before the pass starts.  Hashing 77 rasters costs
+    # minutes; discovering a hashing bug after the pass costs the pass.
+    inputs = {
+        "forestMasks": [{"path": p, "bytes": file_bytes(p), "sha256": sha256(p)} for p in forests],
+        "lossRasters": [{"path": p, "bytes": file_bytes(p), "sha256": sha256(p)} for p in losses],
+        "mappedExtent": {
+            "path": args.mapped_extent,
+            "bytes": file_bytes(args.mapped_extent),
+            "sha256": sha256(args.mapped_extent),
+        },
+    }
+    worker_sha256 = sha256(str(Path(__file__).resolve()))
+    crs_wkt_sha256 = hashlib.sha256(crs_wkt.encode("utf-8")).hexdigest()
+    print(f"{time.strftime('%H:%M:%S')} hashed {len(forests) + len(losses) + 1} inputs", flush=True)
+
     strips: list[tuple[dict[str, Any], int, int, int, int]] = []
     for yoff in range(0, raster_height, args.strip_rows * BLOCK):
         height = min(args.strip_rows * BLOCK, raster_height - yoff)
@@ -334,7 +350,7 @@ def main(args: argparse.Namespace) -> None:
     context = get_context("spawn")
     with output.open("w", encoding="utf-8") as sink:
         with context.Pool(processes=args.workers) as pool:
-            for result in pool.imap_unordered(_summarize_strip, strips, chunksize=1):
+            for result in pool.imap(_summarize_strip, strips, chunksize=1):
                 done += 1
                 for block in result["blocks"]:
                     total_blocks += 1
@@ -355,7 +371,7 @@ def main(args: argparse.Namespace) -> None:
         "schemaVersion": "witness-tree/phase6-coarse-grid-aggregate/1",
         "methodVersion": args.method_version,
         "codeVersion": args.code_version,
-        "workerSha256": sha256(file_bytes(str(Path(__file__).resolve()))),
+        "workerSha256": worker_sha256,
         "startedAt": started.isoformat().replace("+00:00", "Z"),
         "finishedAt": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "blockPixels": BLOCK,
@@ -366,7 +382,7 @@ def main(args: argparse.Namespace) -> None:
         "gridWidth": (raster_width + BLOCK - 1) // BLOCK,
         "gridHeight": (raster_height + BLOCK - 1) // BLOCK,
         "geoTransform": list(transform),
-        "crsWktSha256": sha256(crs_wkt.encode("utf-8")),
+        "crsWktSha256": crs_wkt_sha256,
         "firstYear": FIRST_YEAR,
         "lastYear": LAST_YEAR,
         "annualStepCount": STEPS,
@@ -379,11 +395,7 @@ def main(args: argparse.Namespace) -> None:
         "mappedCells": total_mapped,
         "annualLossCellYears": total_loss,
         "nationalTrajectories": [[trajectory, count] for trajectory, count in sorted(histogram.items())],
-        "inputs": {
-            "forestMasks": [{"path": p, "sha256": sha256(file_bytes(p))} for p in forests],
-            "lossRasters": [{"path": p, "sha256": sha256(file_bytes(p))} for p in losses],
-            "mappedExtent": {"path": args.mapped_extent, "sha256": sha256(file_bytes(args.mapped_extent))},
-        },
+        "inputs": inputs,
         "claims": {
             "admitted": False,
             "released": False,

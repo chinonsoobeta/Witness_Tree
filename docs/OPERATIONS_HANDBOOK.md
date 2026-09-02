@@ -633,7 +633,7 @@ refusal status where the runner owns that status.
 
 The checked inventory in
 [`data/exit-code-taxonomy.json`](../data/exit-code-taxonomy.json) binds the
-intentional exit sites in all twenty-one `scripts/run-*.sh` operator runners.
+intentional exit sites in all twenty-three `scripts/run-*.sh` operator runners.
 It covers literal shell exits, explicit and default `fail` calls, forwarded
 status exits, and inline Node predicates. It is deliberately not a claim that
 every child process status is in this taxonomy: an unwrapped command stopped by

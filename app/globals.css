@@ -2185,6 +2185,183 @@ h4 {
   color: var(--accent);
   text-decoration: underline;
 }
+.address-finder {
+  margin: 0 0 32px;
+}
+.address-finder h2 {
+  margin-bottom: 8px;
+}
+.address-finder .search-note {
+  margin-bottom: 8px;
+}
+/* A result is a button rather than a link, because choosing one must not put
+   the address into the page's own address. It is given the same shape as the
+   result links beside it so the difference is in what it does, not how it
+   reads. */
+.search-result-choice {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 56px;
+  padding: 0 24px;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 17px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+.search-result-choice:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+.address-results-heading {
+  margin-bottom: 12px;
+  font-size: 17px;
+}
+.address-resolved {
+  margin-top: 16px;
+}
+.address-chosen {
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+.address-district {
+  margin-bottom: 12px;
+}
+.address-district-heading {
+  color: var(--muted);
+  font-family: var(--ui);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  margin-bottom: 2px;
+  text-transform: uppercase;
+}
+.address-district-name {
+  font-size: 17px;
+}
+/* Clay at text weight, which is the palette's emphasis ink. This is a
+   message about the lookup failing, not an alarm, so it stays out of the
+   disturbance colours entirely. */
+.address-problem {
+  color: var(--clay-ink);
+}
+
+/* Measuring a drawn area. The corner fields are the accessible path and the
+   primary one, so they are laid out as real form fields rather than as a
+   fallback tucked under the map. */
+.shape-measure {
+  margin: 0 0 32px;
+  max-width: var(--measure);
+}
+.shape-measure h2 {
+  margin-bottom: 8px;
+}
+.shape-measure-intro {
+  margin-bottom: 12px;
+  color: var(--ink-2);
+}
+.shape-measure fieldset {
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px 16px;
+  margin: 0 0 16px;
+}
+.shape-measure legend {
+  padding: 0 6px;
+  font-weight: 600;
+}
+.shape-kind label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-right: 20px;
+}
+.shape-edges,
+.shape-period {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+}
+.shape-period {
+  margin-bottom: 16px;
+}
+.shape-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.shape-field label {
+  font-size: 0.875rem;
+  color: var(--ink-2);
+}
+.shape-field input,
+.shape-field select {
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-sm);
+  background: var(--input-fill);
+  color: var(--ink);
+  padding: 6px 10px;
+  font-variant-numeric: tabular-nums;
+  min-width: 10ch;
+}
+.shape-unit {
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+.shape-corner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.shape-results {
+  margin-top: 20px;
+}
+.shape-readout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 4px 24px;
+  margin: 0 0 20px;
+}
+.shape-readout dt {
+  font-weight: 600;
+  margin-top: 12px;
+}
+.shape-readout dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+.shape-range {
+  color: var(--muted);
+}
+.shape-note {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--ink-2);
+  font-variant-numeric: normal;
+  margin-top: 2px;
+}
+.shape-precision {
+  color: var(--ink-2);
+  margin-bottom: 12px;
+}
+.shape-problem {
+  color: var(--clay-ink);
+}
+@media (min-width: 640px) {
+  .shape-readout {
+    grid-template-columns: minmax(0, 18ch) minmax(0, 1fr);
+  }
+  .shape-readout dt {
+    margin-top: 0;
+  }
+}
+
 .explore-finder {
   margin: 24px 0 32px;
 }
