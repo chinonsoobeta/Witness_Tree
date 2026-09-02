@@ -419,6 +419,8 @@ test("map failures retain diagnostics, retry, and a reachable patch zoom", async
   const controls = css.match(/\.explore-map-controls \{[\s\S]*?\n\}/)?.[0] ?? "";
   const list = css.match(/\.explore-map-layer-list \{[\s\S]*?\n\}/)?.[0] ?? "";
   assert.match(map, /className="explore-map-scale"[\s\S]*className="explore-map-layer-panel"[\s\S]*className="explore-map-control-cluster"/);
+  assert.match(map, /className="explore-map-layer-panel"[\s\S]*tabIndex=\{0\}[\s\S]*role="region"/);
+  assert.match(map, /className="explore-map-patch-control"[\s\S]*className="[^"]*explore-map-fullscreen-button"[\s\S]*className="explore-map-zoom"/);
   assert.match(panel, /position: static/);
   assert.match(panel, /display: flex/);
   assert.match(panel, /flex-wrap: nowrap/);
@@ -428,7 +430,8 @@ test("map failures retain diagnostics, retry, and a reachable patch zoom", async
   assert.match(controls, /grid-template-columns: auto minmax\(0, 1fr\) auto/);
   assert.match(list, /display: flex/);
   assert.match(list, /flex-wrap: nowrap/);
-  assert.match(css, /@media \(max-width: 760px\) \{[\s\S]*?\.explore-map-layer-panel \{[\s\S]*?grid-template-rows: repeat\(2, auto\)/);
+  assert.match(css, /@media \(max-width: 760px\) \{[\s\S]*?\.explore-map-layer-panel \{[\s\S]*?grid-auto-flow: row;[\s\S]*?grid-template-columns: repeat\(2, max-content\);[\s\S]*?grid-template-rows: repeat\(2, auto\)/);
+  assert.match(css, /\.explore-map-patch-tooltip \{[\s\S]*?inset-inline: 0;[\s\S]*?width: auto/);
 });
 
 test("the map keeps one four-province camera envelope and the forest map alive across intervals", async () => {

@@ -1497,6 +1497,10 @@ h4 {
   flex: 0 0 auto;
   white-space: nowrap;
 }
+.explore-map-layer-panel:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
 .explore-map-layer-list {
   display: flex;
   flex: 0 0 auto;
@@ -1638,11 +1642,10 @@ h4 {
 .explore-map-patch-tooltip {
   position: absolute;
   inset-block-end: calc(100% + 6px);
-  inset-inline-end: 0;
+  inset-inline: 0;
   z-index: 4;
   display: block;
-  width: max-content;
-  max-width: min(260px, 70vw);
+  width: auto;
   padding: 6px 8px;
   border: 1px solid var(--rule-strong);
   border-radius: var(--radius-sm);
@@ -1675,8 +1678,8 @@ h4 {
 @media (max-width: 760px) {
   .explore-map-layer-panel {
     display: grid;
-    grid-auto-columns: max-content;
-    grid-auto-flow: column;
+    grid-auto-flow: row;
+    grid-template-columns: repeat(2, max-content);
     grid-template-rows: repeat(2, auto);
     align-content: center;
     align-items: center;

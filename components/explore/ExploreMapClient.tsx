@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/no-noninteractive-tabindex -- The horizontal map-layer region must remain keyboard-scrollable. */
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -982,7 +983,12 @@ export function ExploreMapClient({
             </div>
           ) : null}
           {state === "ready" ? (
-            <aside className="explore-map-layer-panel" aria-label={text[locale].mapPanel}>
+            <div
+              className="explore-map-layer-panel"
+              tabIndex={0}
+              role="region"
+              aria-label={text[locale].mapPanel}
+            >
               <strong>{text[locale].mapLayers}</strong>
               <ul className="explore-map-layer-list">
                 {provinceAvailable ? <li>{text[locale].provinceAggregate}</li> : null}
@@ -1006,34 +1012,9 @@ export function ExploreMapClient({
                   {cause === "all" ? <li>{symbol("patch-none")}{text[locale].mapPanelNeither}</li> : null}
                 </ul>
               ) : null}
-            </aside>
+            </div>
           ) : null}
           <div className="explore-map-control-cluster">
-            <div
-              className="explore-map-zoom"
-              role="group"
-              aria-label={text[locale].zoomControls}
-            >
-              <button
-                type="button"
-                className="explore-map-zoom-button"
-                onClick={() => mapRef.current?.zoomIn()}
-                disabled={!view || view.atMaxZoom}
-              >
-                <span aria-hidden="true">+</span>
-                <span className="sr-only">{text[locale].zoomIn}</span>
-              </button>
-              <button
-                type="button"
-                className="explore-map-zoom-button"
-                onClick={() => mapRef.current?.zoomOut()}
-                disabled={!view || view.atMinZoom}
-              >
-                {/* A mathematical minus sign remains legible at button size. */}
-                <span aria-hidden="true">−</span>
-                <span className="sr-only">{text[locale].zoomOut}</span>
-              </button>
-            </div>
             <span
               className="explore-map-patch-control"
             >
@@ -1067,6 +1048,31 @@ export function ExploreMapClient({
                 {isFullscreen ? text[locale].exitFullscreen : text[locale].enterFullscreen}
               </button>
             ) : null}
+            <div
+              className="explore-map-zoom"
+              role="group"
+              aria-label={text[locale].zoomControls}
+            >
+              <button
+                type="button"
+                className="explore-map-zoom-button"
+                onClick={() => mapRef.current?.zoomIn()}
+                disabled={!view || view.atMaxZoom}
+              >
+                <span aria-hidden="true">+</span>
+                <span className="sr-only">{text[locale].zoomIn}</span>
+              </button>
+              <button
+                type="button"
+                className="explore-map-zoom-button"
+                onClick={() => mapRef.current?.zoomOut()}
+                disabled={!view || view.atMinZoom}
+              >
+                {/* A mathematical minus sign remains legible at button size. */}
+                <span aria-hidden="true">−</span>
+                <span className="sr-only">{text[locale].zoomOut}</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
