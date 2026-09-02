@@ -4,27 +4,126 @@
   "acquiredAt": "2026-08-25",
   "source": {
     "publisher": "Global Land Analysis and Discovery laboratory, University of Maryland",
-    "product": "Global Forest Change 2000–2024, version 1.12",
+    "product": "Global Forest Change 2000\u20132024, version 1.12",
     "layer": "lossyear",
     "downloadPage": "https://storage.googleapis.com/earthenginepartners-hansen/GFC-2024-v1.12/download.html",
     "licence": "CC BY 4.0",
     "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
     "displayAttribution": "Source: Hansen/UMD/Google/USGS/NASA",
-    "citation": "Hansen et al. (2013), High-Resolution Global Maps of 21st-Century Forest Cover Change, Science 342:850–53."
+    "citation": "Hansen et al. (2013), High-Resolution Global Maps of 21st-Century Forest Cover Change, Science 342:850\u201353."
   },
   "artifacts": [
-    {"provinceSample":"BC","tile":"60N_130W","localPath":"../../Witness_Tree-data/raw/hansen-gfc-v1.12-2024/2026-08-25/Hansen_GFC-2024-v1.12_lossyear_60N_130W.tif","byteLength":77605485,"sha256":"e7347c67766cbb90b5e781e614464a144ad538739c2db14215d6e3d0cb1dee81","extentWgs84":[-130,50,-120,60]},
-    {"provinceSample":"AB","tile":"60N_110W","localPath":"../../Witness_Tree-data/raw/hansen-gfc-v1.12-2024/2026-08-25/Hansen_GFC-2024-v1.12_lossyear_60N_110W.tif","byteLength":72966593,"sha256":"b0f06eb471f9f70ef95de415b77bd3084c38aa05048d523418607f58a7804f43","extentWgs84":[-110,50,-100,60]},
-    {"provinceSample":"ON","tile":"50N_090W","localPath":"../../Witness_Tree-data/raw/hansen-gfc-v1.12-2024/2026-08-25/Hansen_GFC-2024-v1.12_lossyear_50N_090W.tif","byteLength":42531475,"sha256":"c9b192871c0f31538f4503b57bdcec8aa8dccba05bd3a562695e252d860418df","extentWgs84":[-90,40,-80,50]},
-    {"provinceSample":"QC","tile":"50N_070W","localPath":"../../Witness_Tree-data/raw/hansen-gfc-v1.12-2024/2026-08-25/Hansen_GFC-2024-v1.12_lossyear_50N_070W.tif","byteLength":49144451,"sha256":"d85d75ac5829786c296ff369478d0d7c7b50f5e50b7ed737e73da66d09b6d1de","extentWgs84":[-70,40,-60,50]}
+    {
+      "provinceSample": "BC",
+      "tile": "60N_130W",
+      "localPath": "../../Witness_Tree-data/raw/hansen-gfc-v1.12-2024/2026-08-25/Hansen_GFC-2024-v1.12_lossyear_60N_130W.tif",
+      "byteLength": 77605485,
+      "sha256": "e7347c67766cbb90b5e781e614464a144ad538739c2db14215d6e3d0cb1dee81",
+      "extentWgs84": [
+        -130,
+        50,
+        -120,
+        60
+      ],
+      "acquiredAt": "2026-08-25",
+      "provinceEnvelopeWgs84": [
+        -139.0522,
+        48.2968,
+        -114.0683,
+        60.0001
+      ]
+    },
+    {
+      "provinceSample": "AB",
+      "tile": "60N_120W",
+      "localPath": "../../Witness_Tree-data/raw/hansen-gfc-v1.12-2024/2026-09-02/Hansen_GFC-2024-v1.12_lossyear_60N_120W.tif",
+      "byteLength": 72411383,
+      "sha256": "9c80f848eb920915bc73b0a72e1f75c1dccefe382004fbd881c2ea7b0072ab58",
+      "extentWgs84": [
+        -120,
+        50,
+        -110,
+        60
+      ],
+      "acquiredAt": "2026-09-02",
+      "provinceEnvelopeWgs84": [
+        -120.0,
+        48.9968,
+        -110.0,
+        60.0001
+      ]
+    },
+    {
+      "provinceSample": "ON",
+      "tile": "50N_090W",
+      "localPath": "../../Witness_Tree-data/raw/hansen-gfc-v1.12-2024/2026-08-25/Hansen_GFC-2024-v1.12_lossyear_50N_090W.tif",
+      "byteLength": 42531475,
+      "sha256": "c9b192871c0f31538f4503b57bdcec8aa8dccba05bd3a562695e252d860418df",
+      "extentWgs84": [
+        -90,
+        40,
+        -80,
+        50
+      ],
+      "acquiredAt": "2026-08-25",
+      "provinceEnvelopeWgs84": [
+        -95.1557,
+        41.6814,
+        -74.3435,
+        56.8617
+      ]
+    },
+    {
+      "provinceSample": "QC",
+      "tile": "50N_070W",
+      "localPath": "../../Witness_Tree-data/raw/hansen-gfc-v1.12-2024/2026-08-25/Hansen_GFC-2024-v1.12_lossyear_50N_070W.tif",
+      "byteLength": 49144451,
+      "sha256": "d85d75ac5829786c296ff369478d0d7c7b50f5e50b7ed737e73da66d09b6d1de",
+      "extentWgs84": [
+        -70,
+        40,
+        -60,
+        50
+      ],
+      "acquiredAt": "2026-08-25",
+      "provinceEnvelopeWgs84": [
+        -79.7629,
+        44.9911,
+        -57.1078,
+        62.5819
+      ]
+    }
   ],
-  "rasterContract": {"driver":"GTiff","dataType":"Byte","crs":"EPSG:4326","width":40000,"height":40000,"pixelSizeDegrees":0.00025,"lossYearEncoding":"0 means no mapped loss; 1–24 represent loss detected primarily in 2001–2024."},
+  "rasterContract": {
+    "driver": "GTiff",
+    "dataType": "Byte",
+    "crs": "EPSG:4326",
+    "width": 40000,
+    "height": 40000,
+    "pixelSizeDegrees": 0.00025,
+    "lossYearEncoding": "0 means no mapped loss; 1\u201324 represent loss detected primarily in 2001\u20132024."
+  },
   "limitations": [
-    "These four 10×10-degree tiles are samples, not complete provincial coverage.",
+    "These four 10\u00d710-degree tiles are samples, not complete provincial coverage.",
     "Hansen loss is gross forest-cover loss, not a harvest, fire, or causal-attribution record.",
     "Version 1.12 reprocessed 2011 onward; its publisher cautions against treating its annual series as fully consistent with earlier years.",
-    "The Witness Tree baseline ends in 2022, so any future comparison must restrict Hansen values to codes 1–22 and document matching masks, boundary version, grid resampling, area method and uncertainty.",
+    "The Witness Tree baseline ends in 2022, so any future comparison must restrict Hansen values to codes 1\u201322 and document matching masks, boundary version, grid resampling, area method and uncertainty.",
     "This record is local raw-input evidence only. It is not immutable evidence, an admitted source, a computed comparison, a product-accuracy claim, or a release."
   ],
-  "claims": {"comparisonComputed":false,"likeForLike":false,"productAccuracyClaim":false,"admitted":false,"productionEligible":false,"released":false}
+  "claims": {
+    "comparisonComputed": false,
+    "likeForLike": false,
+    "productAccuracyClaim": false,
+    "admitted": false,
+    "productionEligible": false,
+    "released": false
+  },
+  "correction": {
+    "date": "2026-09-02",
+    "what": "The Alberta sample was tile 60N_110W, which spans 110W to 100W. Alberta ends at 110W, so the tile met the province along a meridian and contained none of it. The tile holds Saskatchewan. It was replaced with 60N_120W, which spans 120W to 110W and covers Alberta.",
+    "howItWasFound": "Two independent methods agreed. Vector intersection gave Alberta 0.0 hectares in 60N_110W and 62,784,046 hectares in 60N_120W. Rasterising the provinces onto each tile gave 58,011,487 hectares of Saskatchewan in 60N_110W and 62,401,565 hectares of Alberta in 60N_120W.",
+    "whyTheCheckerMissedIt": "Two reasons, and the second is the larger one. The checker asserted each file's byte length and SHA-256 and that the four labels were the expected four, but never asked whether the tile a label named contained any of that province, so a correct checksum on the wrong tile passed. It also was never executed against this record: no npm script and no CI step ran it, and the single test that imports it passes a stub reader to prove a malformed record is rejected before any artifact is read. The byte bindings were therefore written but never verified by any gate.",
+    "whatChanged": "The checker now derives each tile's extent from its Hansen grid name rather than trusting the declared extent, requires the file a checksum binds to be the tile the label names, derives each province envelope from the unsimplified province geometry the Phase 8 map release already binds by checksum, and requires positive-area overlap between tile and province. It is wired into the gate as check:hansen-sample-profile and registered as data-root-bound, so a detached volume leaves the byte and envelope checks unverified and reported while every structural check still runs. An attached volume that does not hold a bound artifact fails rather than downgrading.",
+    "mutationsProven": 13
+  }
 }

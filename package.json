@@ -30,6 +30,7 @@
     "check:riding-map-all-intervals": "node scripts/check-phase2-riding-map-measurements-all-intervals.mjs",
     "check:vlce2-gap": "node scripts/check-vlce2-mapped-extent-gap-measurement.mjs",
     "check:province-rollup": "node scripts/check-phase3-interval-province-rollup.mjs",
+    "check:hansen-sample-profile": "node scripts/check-phase2-hansen-gfc-v1.12-sample-profile.mjs",
     "check:source-candidates": "node scripts/check-source-candidates.mjs",
     "check:cpcad-acquisition-block": "node scripts/check-cpcad-acquisition-block.mjs",
     "check:bc-provincial-electoral": "node scripts/check-bc-provincial-electoral-2023.mjs",

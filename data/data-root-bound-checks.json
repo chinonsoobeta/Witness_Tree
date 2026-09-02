@@ -15,6 +15,7 @@
   },
   "checks": [
     "check:coarse-grid-tiles-bytes",
+    "check:hansen-sample-profile",
     "check:phase1-bc-ontario-row-audit",
     "check:phase1-current-state-completion-audit",
     "check:phase1-federal-electoral-output",

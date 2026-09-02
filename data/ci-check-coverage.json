@@ -378,11 +378,6 @@
       "reason": "tests/phase2-annual-zonal-output-checker.test.mjs imports this checker and runs in npm run test:suite."
     },
     {
-      "check": "scripts/check-phase2-hansen-gfc-v1.12-sample-profile.mjs",
-      "category": "suite-covered",
-      "reason": "tests/checker-malformed-input-rejection.test.mjs imports this checker and runs in npm run test:suite."
-    },
-    {
       "check": "scripts/check-phase2-historical-evidence-status.mjs",
       "category": "data-root-bound",
       "reason": "This check reads derived bytes on the only external SSD copy and is inventoried in data/data-root-bound-checks.json."
