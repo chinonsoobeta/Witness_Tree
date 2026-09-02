@@ -41,3 +41,22 @@ test("a hidden input needs no accessible name", async () => {
 });
 test("an unlabelled range input still fails alongside a hidden one", () => rejects({ "components/Form.tsx": "<form method=\"get\"><input type=\"hidden\" name=\"mode\" /><input type=\"range\" name=\"year\" /></form>" }, /input requires a label/));
 test("an input merely named hidden is not exempt", () => rejects({ "components/Form.tsx": "<input type=\"text\" name=\"hidden\" />" }, /input requires a label/));
+
+test("a control named by a visible label passes, and one named by nothing still fails", async () => {
+  const directory = await mkdtemp(path.join(os.tmpdir(), "a11y-label-"));
+  const write = (name, source) => writeFile(path.join(directory, name), source, "utf8");
+  const shell = '<SiteShell locale="en"><main id="main">';
+
+  // The primary HTML way to name a control. It names it for a sighted reader too,
+  // which aria-label does not, so it cannot be the weaker of the two.
+  await write("Labelled.tsx", `${shell}<label htmlFor="q">Search</label><input id="q" /></main></SiteShell>`);
+  assert.deepEqual(await checkAccessibilityContracts([directory]), { files: 1 });
+
+  // The same input with the label pointed somewhere else is unnamed again.
+  await write("Labelled.tsx", `${shell}<label htmlFor="other">Search</label><input id="q" /></main></SiteShell>`);
+  await assert.rejects(checkAccessibilityContracts([directory]), /input requires a label/);
+
+  // And with no label at all.
+  await write("Labelled.tsx", `${shell}<input id="q" /></main></SiteShell>`);
+  await assert.rejects(checkAccessibilityContracts([directory]), /input requires a label/);
+});

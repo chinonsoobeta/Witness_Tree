@@ -6,15 +6,13 @@ const copy = {
     title: "Find a federal electoral district",
     submit: "Find",
     guide: "Enter a district name in English or French.",
-    none: "No local federal district measurement matches this query.",
-    boundary: "Local nonproduction measurements. Not a published release.",
+    none: "No federal district measurement matches this query.",
   },
   fr: {
     title: "Trouver une circonscription fédérale",
     submit: "Trouver",
     guide: "Entrez un nom de circonscription en français ou en anglais.",
-    none: "Aucune mesure locale non productive de circonscription fédérale ne correspond à cette recherche.",
-    boundary: "Mesures locales non productives. Il ne s’agit pas d’une publication.",
+    none: "Aucune mesure de circonscription fédérale ne correspond à cette recherche.",
   },
 } as const;
 
@@ -52,13 +50,11 @@ export function FederalDistrictFinder({
   query,
   rows,
   parameters = [],
-  showBoundary = true,
 }: Readonly<{
   locale: Locale;
   query: string;
   rows: readonly ComparisonPlace[];
   parameters?: readonly Readonly<{ name: string; value: string }>[];
-  showBoundary?: boolean;
 }>) {
   const text = copy[locale];
   const results = findFederalDistricts(query, rows);
@@ -66,7 +62,6 @@ export function FederalDistrictFinder({
   return (
     <section className="federal-district-finder">
       <h2>{text.title}</h2>
-      {showBoundary ? <p className="masthead-note">{text.boundary}</p> : null}
       <form className="search-form" method="get">
         {parameters.map((parameter) => (
           <input key={parameter.name} type="hidden" name={parameter.name} value={parameter.value} />

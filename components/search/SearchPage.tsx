@@ -12,7 +12,7 @@ const copy = {
     places: "Places",
     districts: "Federal districts",
     notice:
-      "Place results are illustrative fixtures, and district results are local nonproduction measurements. Neither is a published release.",
+      "Place results are illustrative fixtures. District results are measured from the source grid.",
   },
   fr: {
     title: "Recherche",
@@ -20,7 +20,7 @@ const copy = {
     places: "Lieux",
     districts: "Circonscriptions fédérales",
     notice:
-      "Les résultats de lieux sont des exemples illustratifs, et ceux des circonscriptions sont des mesures locales non productives. Aucun ne constitue une publication.",
+      "Les résultats de lieux sont des exemples illustratifs. Les résultats de circonscriptions sont mesurés à partir de la grille source.",
   },
 } as const;
 
@@ -61,7 +61,6 @@ export function SearchPage({
           locale={locale}
           query={query}
           rows={federalRidingComparison.places}
-          showBoundary={false}
         />
       )}
     </section>

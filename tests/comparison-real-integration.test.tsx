@@ -69,15 +69,14 @@ test("the real federal district finder links source names into Compare", () => {
   const html = renderToStaticMarkup(<FederalDistrictFinder locale="en" query="Abbotsford" rows={federalRidingComparison.places} />);
   assert.match(html, /href="\/en\/compare\?left=federal-59001"/);
   assert.match(html, /Abbotsford/);
-  assert.match(html, /Local nonproduction measurements/);
 });
 
 test("both comparison routes use real data and preserve exact selected ids", async () => {
   const parameters = Promise.resolve({ left: "federal-59001", right: "federal-59006", view: "table", sort: "share-asc" });
   const english = renderToStaticMarkup(await EnglishComparePage({ searchParams: parameters }));
   const french = renderToStaticMarkup(await FrenchComparePage({ searchParams: parameters }));
-  assert.match(english, /Local 2021–2022 extent-corrected measurements/);
-  assert.match(french, /Mesures locales corrigées selon l’étendue pour 2021–2022/);
+  assert.match(english, /Extent-corrected measurements for 2021–2022/);
+  assert.match(french, /Mesures corrigées selon l’étendue pour 2021–2022/);
   for (const html of [english, french]) {
     assert.match(html, /option value="federal-59001" selected/);
     assert.match(html, /option value="federal-59006" selected/);

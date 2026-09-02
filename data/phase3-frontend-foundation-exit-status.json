@@ -14,7 +14,7 @@
         },
         {
           "path": "scripts/check-accessibility-contracts.mjs",
-          "sha256": "da4b511d4ed9f2484b9948dfec8ded6ad2d28a21612d6d4fb9063c4e20ed76ec"
+          "sha256": "3bb40b84863ad239ef1e4e6396fe0789d4ca315a60745a508fdd44cabbf3085c"
         },
         {
           "path": ".github/workflows/ci.yml",

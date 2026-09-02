@@ -124,12 +124,12 @@ test("renders localized search results and Explore list/table alternatives witho
   assert.match(englishSearch, /<main\b[^>]*id="main"/);
   assert.match(englishSearch, /Search places/);
   assert.match(englishSearch, /Place results are illustrative fixtures/);
-  assert.match(englishSearch, /district results are local nonproduction measurements/);
+  assert.match(englishSearch, /District results are measured from the source grid/);
   assert.match(englishSearch, /Illustrative British Columbia/);
   assert.match(frenchSearch, /<main\b[^>]*id="main"/);
   assert.match(frenchSearch, /Rechercher des lieux/);
   assert.match(frenchSearch, /Les résultats de lieux sont des exemples illustratifs/);
-  assert.match(frenchSearch, /circonscriptions sont des mesures locales non productives/);
+  assert.match(frenchSearch, /circonscriptions sont mesurés à partir de la grille source/);
   assert.match(frenchSearch, /Colombie-Britannique illustrative/);
 
   assert.match(englishExplore, /<main\b[^>]*id="main"/);
