@@ -37,9 +37,23 @@ function auditFile(file, source) {
   }
   // A hidden input is not exposed to assistive technology, cannot receive focus, and has no
   // accessible-name requirement. Every other input still needs one, including a range control.
+  //
+  // A visible <label htmlFor> is the primary way HTML names a control, and it names it better
+  // than aria-label does, because the name is also on screen for a sighted reader who is not
+  // using assistive technology. So an input whose own id is the target of a label in this file
+  // is named. This is not a wider rule than before, it is the same rule counting the labels the
+  // regex could not see: an input with no label of any kind still fails.
+  const labelledIds = new Set(
+    [...source.matchAll(/<label\b[^>]*\bhtmlFor\s*=\s*(?:["']([^"']+)["']|\{`([^`]+)`\}|\{([A-Za-z0-9_$.]+)\})/g)]
+      .flatMap((match) => (match[1] ?? match[2] ?? match[3] ?? "").split(/\s+/))
+      .filter(Boolean),
+  );
+  const inputId = (input) => input.match(/\bid\s*=\s*(?:["']([^"']+)["']|\{`?([^`}]+)`?\})/)?.slice(1).find(Boolean) ?? "";
   for (const input of tags(source, "input")) {
     if (/\btype\s*=\s*["']hidden["']/.test(input)) continue;
-    if (!/\b(?:aria-label|aria-labelledby)\s*=/.test(input)) failures.push(`${file}: input requires a label or aria-label.`);
+    if (/\b(?:aria-label|aria-labelledby)\s*=/.test(input)) continue;
+    if (labelledIds.has(inputId(input))) continue;
+    failures.push(`${file}: input requires a label or aria-label.`);
   }
   for (const image of tags(source, "img")) if (!/\balt\s*=/.test(image)) failures.push(`${file}: img requires alt text.`);
   for (const button of tags(source, "button")) if (!/\btype\s*=/.test(button)) failures.push(`${file}: button requires an explicit type.`);

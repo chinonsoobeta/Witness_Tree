@@ -1,6 +1,7 @@
 import type { Locale } from "@/lib/domain";
 import { federalRidingComparison } from "@/lib/comparison";
 import { FederalDistrictFinder } from "./FederalDistrictFinder";
+import { AddressFinderClient } from "./AddressFinderClient";
 import { PlaceFinder } from "./PlaceFinder";
 
 export type SearchScope = "places" | "districts";
@@ -12,7 +13,7 @@ const copy = {
     places: "Places",
     districts: "Federal districts",
     notice:
-      "Place results are illustrative fixtures, and district results are local nonproduction measurements. Neither is a published release.",
+      "Place results are illustrative fixtures. District results are measured from the source grid.",
   },
   fr: {
     title: "Recherche",
@@ -20,7 +21,7 @@ const copy = {
     places: "Lieux",
     districts: "Circonscriptions fédérales",
     notice:
-      "Les résultats de lieux sont des exemples illustratifs, et ceux des circonscriptions sont des mesures locales non productives. Aucun ne constitue une publication.",
+      "Les résultats de lieux sont des exemples illustratifs. Les résultats de circonscriptions sont mesurés à partir de la grille source.",
   },
 } as const;
 
@@ -28,7 +29,18 @@ export function SearchPage({
   locale,
   query,
   scope = "places",
-}: Readonly<{ locale: Locale; query: string; scope?: SearchScope }>) {
+  addressLookup = false,
+}: Readonly<{
+  locale: Locale;
+  query: string;
+  scope?: SearchScope;
+  /**
+   * Whether the address field can actually work. Decided by the route from the
+   * worker's stamped headers, never by this component and never by the caller,
+   * so a field that cannot answer is not offered.
+   */
+  addressLookup?: boolean;
+}>) {
   const text = copy[locale];
   return (
     <section className="page-wrap search-page">
@@ -57,12 +69,14 @@ export function SearchPage({
       {scope === "places" ? (
         <PlaceFinder locale={locale} query={query} />
       ) : (
-        <FederalDistrictFinder
-          locale={locale}
-          query={query}
-          rows={federalRidingComparison.places}
-          showBoundary={false}
-        />
+        <>
+          {addressLookup ? <AddressFinderClient locale={locale} /> : null}
+          <FederalDistrictFinder
+            locale={locale}
+            query={query}
+            rows={federalRidingComparison.places}
+          />
+        </>
       )}
     </section>
   );

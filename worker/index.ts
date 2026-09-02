@@ -1,8 +1,11 @@
 /** Cloudflare Worker entry point for the vinext-starter template. */
 import { handleImageOptimization, DEFAULT_DEVICE_SIZES, DEFAULT_IMAGE_SIZES } from "vinext/server/image-optimization";
 import handler from "vinext/server/app-router-entry";
+import { ADDRESS_SEARCH_PATH, addressLookupConfigured, handleAddressSearch, withAddressFlag, type AddressEnv } from "./address";
+import { DISTRICT_RESOLVE_PATH, districtIndexConfigured, handleDistrictResolve, withDistrictFlag, type DistrictEnv } from "./district";
+import { SHAPE_MEASURE_PATH, coarseGridConfigured, handleShapeMeasure, withShapeFlag, type ShapeEnv } from "./shape";
 
-interface Env {
+interface Env extends AddressEnv, DistrictEnv, ShapeEnv {
   ASSETS: Fetcher;
   DB: D1Database;
   IMAGES: {
@@ -75,7 +78,36 @@ const worker = {
       return withSecurityHeaders(response);
     }
 
-    return withSecurityHeaders(await handler.fetch(request, env, ctx));
+    // The address route never reaches the app router. It is the only path
+    // that touches the provider key, and it answers with no-store.
+    if (url.pathname === ADDRESS_SEARCH_PATH) {
+      return withSecurityHeaders(await handleAddressSearch(request, env));
+    }
+
+    // Resolving a point reads two bytes out of the district index. It is kept
+    // off the app router for the same reason as the address route: it answers
+    // with no-store and it must not be cached by locale or by page.
+    if (url.pathname === DISTRICT_RESOLVE_PATH) {
+      return withSecurityHeaders(await handleDistrictResolve(request, env));
+    }
+
+    // Measuring a drawn shape reads whole grid tiles. It stays off the app
+    // router for the same reasons, and because the shape itself is in the
+    // body: routing it through a page would put it in a cache key.
+    if (url.pathname === SHAPE_MEASURE_PATH) {
+      return withSecurityHeaders(await handleShapeMeasure(request, env));
+    }
+
+    // Stamped on every request, so a page can read whether the address field
+    // and the district readout can work without being told so by the caller.
+    const stamped = withShapeFlag(
+      withDistrictFlag(
+        withAddressFlag(request, addressLookupConfigured(env)),
+        districtIndexConfigured(env),
+      ),
+      coarseGridConfigured(env),
+    );
+    return withSecurityHeaders(await handler.fetch(stamped, env, ctx));
   },
 };
 

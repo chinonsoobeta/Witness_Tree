@@ -33,7 +33,7 @@ import {
 
 const text = {
   en: {
-    label: "Forest change map",
+    label: "Forest loss map",
     loading: "Loading the map layers for the selected year.",
     ready:
       "Showing the provisional province aggregate, which covers 2020 to 2022 and does not follow the year control. Display boundaries are simplified and omit small islands.",
@@ -50,7 +50,7 @@ const text = {
     fallbackError:
       "The interactive PMTiles layer reported an error, so this map is showing the published GeoJSON compatibility fallback.",
     unavailable:
-      "Condition and recovery needs the annual land-cover class series, which has not been acquired or admitted. It is not shown for any year. Forest change, Recorded harvest and Wildfire are unaffected.",
+      "Condition and recovery needs the annual land-cover class series, which has not been acquired or admitted. It is not shown for any year. Forest loss, Recorded harvest and Wildfire are unaffected.",
     unavailableYear:
       "Detected patches cover the annual intervals from 1984–1985 to 2021–2022. Choose 2022 or an earlier year to see this mode.",
     error:
@@ -72,11 +72,11 @@ const text = {
     perCellFire: "A fire is recorded in the same interval",
     perCellNeither:
       "Neither is recorded. The disturbance record cannot distinguish nothing recorded from outside the area it maps, so this is not evidence that neither happened.",
-    legend: "Observed forest loss, percent of known forested hectares",
+    legend: "Detected forest loss, percent of known forested hectares",
     province: "Province",
     period: "Period",
-    lossHectares: "Observed loss (ha)",
-    lossPercent: "Observed loss (%)",
+    lossHectares: "Detected loss (ha)",
+    lossPercent: "Detected loss (%)",
     coverage: "Coverage",
     complete: "Every input pixel present",
     partial: "Some pixels unknown, so this is a minimum",
@@ -93,9 +93,9 @@ const text = {
     jurisdiction: "Jurisdiction",
     clearBoundary: "Clear boundary",
     interval: "Interval",
-    normalizedShare: "Observed loss share",
-    totalLoss: "Observed loss",
-    knownObservedSubtotal: "Known observed subtotal",
+    normalizedShare: "Detected loss share",
+    totalLoss: "Detected loss",
+    knownObservedSubtotal: "Known detected subtotal",
     provinceAggregate: "Provisional province aggregate, 2020 to 2022",
     detectedPatches: "Detected forest-loss patches",
     mapView: "Map view",
@@ -111,7 +111,7 @@ const text = {
     qc: "Québec",
   },
   fr: {
-    label: "Carte des changements forestiers",
+    label: "Carte des pertes forestières",
     loading:
       "Chargement des couches cartographiques pour l’année choisie.",
     ready:
@@ -129,7 +129,7 @@ const text = {
     fallbackError:
       "La couche PMTiles interactive a signalé une erreur; cette carte affiche donc la solution de repli GeoJSON publiée.",
     unavailable:
-      "L’état et le rétablissement exigent la série annuelle des classes de couverture terrestre, qui n’a été ni acquise ni admise. Ce mode n’est affiché pour aucune année. Le changement forestier, les récoltes consignées et les incendies ne sont pas touchés.",
+      "L’état et le rétablissement exigent la série annuelle des classes de couverture terrestre, qui n’a été ni acquise ni admise. Ce mode n’est affiché pour aucune année. La perte forestière, les récoltes consignées et les incendies ne sont pas touchés.",
     unavailableYear:
       "Les parcelles détectées couvrent les intervalles annuels de 1984-1985 à 2021-2022. Choisissez 2022 ou une année antérieure pour voir ce mode.",
     error:
@@ -152,11 +152,11 @@ const text = {
     perCellNeither:
       "Ni l’un ni l’autre n’est consigné. Le registre des perturbations ne distingue pas l’absence de mention de l’extérieur de la zone qu’il cartographie; ce n’est donc pas une preuve que rien ne s’est produit.",
     legend:
-      "Perte forestière observée, en pourcentage des hectares forestiers connus",
+      "Perte forestière détectée, en pourcentage des hectares forestiers connus",
     province: "Province",
     period: "Période",
-    lossHectares: "Perte observée (ha)",
-    lossPercent: "Perte observée (%)",
+    lossHectares: "Perte détectée (ha)",
+    lossPercent: "Perte détectée (%)",
     coverage: "Couverture",
     complete: "Tous les pixels d’entrée sont présents",
     partial: "Certains pixels sont inconnus; il s’agit donc d’un minimum",
@@ -173,9 +173,9 @@ const text = {
     jurisdiction: "Autorité compétente",
     clearBoundary: "Effacer la limite",
     interval: "Intervalle",
-    normalizedShare: "Part de perte observée",
-    totalLoss: "Perte observée",
-    knownObservedSubtotal: "Sous-total observé connu",
+    normalizedShare: "Part de perte détectée",
+    totalLoss: "Perte détectée",
+    knownObservedSubtotal: "Sous-total détecté connu",
     provinceAggregate: "Agrégat provincial provisoire, de 2020 à 2022",
     detectedPatches: "Parcelles de perte forestière détectée",
     mapView: "Vue de la carte",
@@ -461,12 +461,21 @@ export function ExploreMapClient({
   locale,
   mode,
   year,
+  fromYear,
   overlays = [],
   ridingMeasurements = [],
 }: Readonly<{
   locale: Locale;
   mode: ExploreMode;
   year: number;
+  /**
+   * The opening year of the span on display.
+   *
+   * The district shading covers the whole span. The per-cell detail is an
+   * annual product and covers the closing year alone, which the legend says
+   * out loud rather than letting the two layers look like one measurement.
+   */
+  fromYear: number;
   overlays?: readonly BoundaryOverlayId[];
   /** Optional until the completed local riding dataset is wired into this map. */
   ridingMeasurements?: readonly RidingBoundaryMeasurement[];
@@ -791,7 +800,7 @@ export function ExploreMapClient({
     : "";
   const boundary = hoveredBoundary ?? pinnedBoundary;
   const readout = boundary
-    ? boundaryReadout(boundary, ridingMeasurements, locale)
+    ? boundaryReadout(boundary, ridingMeasurements, locale, { fromYear, toYear: year })
     : null;
   const fitMapToView = (mapView: ExploreMapView) => {
     mapRef.current?.fitBounds(MAP_VIEW_BOUNDS[mapView], {
@@ -945,6 +954,7 @@ export function ExploreMapClient({
                     <p>{text[locale].normalizedShare}{colon(locale)} {readout.normalizedShare}</p>
                     <p>{text[locale].totalLoss}{colon(locale)} {readout.absoluteLoss}</p>
                     {readout.knownObservedSubtotal ? <p>{text[locale].knownObservedSubtotal}{colon(locale)} {readout.knownObservedSubtotal}</p> : null}
+                    {readout.summedLoss ? <p>{readout.summedLossLabel}{colon(locale)} {readout.summedLoss}</p> : null}
                   </>
                 ) : null}
                 {pinnedBoundary ? (

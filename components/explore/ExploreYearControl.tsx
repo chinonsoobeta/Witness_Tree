@@ -3,20 +3,26 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { usePathname } from "next/navigation";
 import {
+  EXPLORE_INTERVAL_FIRST_YEAR,
   EXPLORE_YEAR_MAX,
   EXPLORE_YEAR_MIN,
   exploreHref,
+  isAnnualInterval,
+  parseExploreInterval,
   type ExploreQueryState,
 } from "@/lib/explore";
+import { intervalHeading } from "@/lib/domain/loss-vocabulary";
 import type { Locale } from "@/lib/domain";
 
 const TEXT = {
   en: {
-    legend: "Year shown",
-    help: "Each year is one annual interval: what changed between that year and the year before it. Play begins at 1985 and stops at 2022.",
-    interval: (year: number) => `Change between ${year - 1} and ${year}`,
-    previous: "Previous year",
-    next: "Next year",
+    legend: "Years shown",
+    firstYear: "First year",
+    lastYear: "Last year",
+    help: "Move both handles to choose a span, for example 1990 to 1998. Leave them one year apart to see a single year on its own. The record runs from 1984 to 2022.",
+    annual: (year: number) => `Change between ${year - 1} and ${year}`,
+    previous: "Earlier last year",
+    next: "Later last year",
     play: "Play through the years",
     pause: "Stop playing",
     playShort: "Play",
@@ -26,11 +32,13 @@ const TEXT = {
     update: "Update",
   },
   fr: {
-    legend: "Année affichée",
-    help: "Chaque année est un intervalle annuel : ce qui a changé entre cette année et la précédente. La lecture commence en 1985 et s’arrête en 2022.",
-    interval: (year: number) => `Changement entre ${year - 1} et ${year}`,
-    previous: "Année précédente",
-    next: "Année suivante",
+    legend: "Années affichées",
+    firstYear: "Première année",
+    lastYear: "Dernière année",
+    help: "Déplacez les deux curseurs pour choisir une période, par exemple de 1990 à 1998. Laissez-les à un an d’écart pour voir une seule année. Le relevé va de 1984 à 2022.",
+    annual: (year: number) => `Changement entre ${year - 1} et ${year}`,
+    previous: "Dernière année plus tôt",
+    next: "Dernière année plus tard",
     play: "Faire défiler les années",
     pause: "Arrêter le défilement",
     playShort: "Lecture",
@@ -44,7 +52,7 @@ const TEXT = {
 /** One tick every five years, plus both ends, so the scale is readable at any width. */
 const TICKS = (() => {
   const years: number[] = [];
-  for (let year = EXPLORE_YEAR_MIN; year <= EXPLORE_YEAR_MAX; year += 5) years.push(year);
+  for (let year = EXPLORE_INTERVAL_FIRST_YEAR; year <= EXPLORE_YEAR_MAX; year += 5) years.push(year);
   if (years[years.length - 1] !== EXPLORE_YEAR_MAX) years.push(EXPLORE_YEAR_MAX);
   return years;
 })();
@@ -65,6 +73,7 @@ function writeHistory(method: "push" | "replace", url: string) {
  * around this island differ. Explore renders one year control, so a fixed string
  * cannot collide.
  */
+const FROM_SLIDER_ID = "explore-year-from-slider";
 const SLIDER_ID = "explore-year-slider";
 const READOUT_ID = "explore-year-readout";
 const HELP_ID = "explore-year-help";
@@ -103,24 +112,53 @@ const neverChanges = () => () => {};
 const alwaysReady = () => true;
 const neverReady = () => false;
 
+type Span = { fromYear: number; toYear: number };
+
+const spanKey = (span: Span) => `${span.fromYear}-${span.toYear}`;
+
 /**
- * The year control: a full-width slider, the interval it selects named in full,
- * a step either side, and a play control that walks the record.
+ * Order a span the reader is part way through dragging.
+ *
+ * The two handles are separate native sliders, so nothing stops the reader from
+ * dragging one past the other. Rather than refuse the gesture, the handle being
+ * moved keeps the year it was dropped on and pushes the other one out of its
+ * way. A span of zero years is not a span, so the pushed handle stops one year
+ * short and the record always has an interval to answer.
+ */
+function orderSpan(span: Span, moved: "from" | "to"): Span {
+  if (span.fromYear < span.toYear) return span;
+  return moved === "from"
+    ? { fromYear: Math.min(span.fromYear, EXPLORE_YEAR_MAX - 1), toYear: Math.min(span.fromYear, EXPLORE_YEAR_MAX - 1) + 1 }
+    : { fromYear: Math.max(span.toYear, EXPLORE_YEAR_MIN) - 1, toYear: Math.max(span.toYear, EXPLORE_YEAR_MIN) };
+}
+
+/**
+ * The span control: two handles, the interval they select named in full, a step
+ * either side of the closing year, and a play control that walks the record.
+ *
+ * It used to be one handle, because the record used to answer one question: a
+ * year meant the single annual interval ending there. A reader who wants 1990
+ * to 1998 is asking something the single handle could not express, so the
+ * annual interval is now the narrowest span rather than a separate mode. One
+ * code path answers both, and a URL that names only its closing year still
+ * means exactly the annual interval it always meant.
  *
  * It is a client island inside a plain GET form. Without JavaScript the form and
- * its Update button still work, which is why the slider keeps its `name` and the
- * hidden fields stay in the server-rendered form around it. With JavaScript the
- * Update button is redundant, so it is hidden rather than left as a second way to
- * do what releasing the slider already did.
+ * its Update button still work, which is why both sliders keep their `name` and
+ * the hidden fields stay in the server-rendered form around it. With JavaScript
+ * the Update button is redundant, so it is hidden rather than left as a second
+ * way to do what releasing a handle already did.
  */
 export function ExploreYearControl({
   locale,
   state,
   onYearChange,
+  onIntervalChange,
 }: {
   locale: Locale;
   state: ExploreQueryState;
   onYearChange: (year: number) => void;
+  onIntervalChange?: (interval: Span) => void;
 }) {
   const text = TEXT[locale];
   const pathname = usePathname();
@@ -128,37 +166,45 @@ export function ExploreYearControl({
   const isPlaying = useSyncExternalStore(subscribePlaying, readPlaying, notPlaying);
   const ready = useSyncExternalStore(neverChanges, alwaysReady, neverReady);
 
+  const committed = parseExploreInterval(state.fromYear, state.year);
+  const committedKey = spanKey(committed);
+
   /*
-   * While the reader drags, the year has not been committed yet: the readout has
+   * While the reader drags, the span has not been committed yet: the readout has
    * to follow the thumb without a navigation on every pixel. `draft` holds that
-   * uncommitted value along with the year it was started from, so a year arriving
+   * uncommitted span along with the span it was started from, so a span arriving
    * from anywhere else, the browser's Back button included, drops it. Adjusting
    * state during render is React's documented way to react to a changed prop, and
    * it costs one extra render rather than an effect and a second commit.
    */
-  const [draft, setDraft] = useState<{ from: number; value: number } | null>(null);
+  const [draft, setDraft] = useState<{ from: string; span: Span } | null>(null);
   const [playStatus, setPlayStatus] = useState<"idle" | "playing" | "complete">("idle");
-  if (draft && draft.from !== state.year) setDraft(null);
-  const shown = draft && draft.from === state.year ? draft.value : state.year;
+  if (draft && draft.from !== committedKey) setDraft(null);
+  const shown = draft && draft.from === committedKey ? draft.span : committed;
 
-  const updateYear = (year: number, history: "push" | "replace") => {
-    const next = Math.min(EXPLORE_YEAR_MAX, Math.max(EXPLORE_YEAR_MIN, year));
-    // Releasing the thumb where it started, or clicking the track on the current
+  const readout = isAnnualInterval(shown)
+    ? text.annual(shown.toYear)
+    : intervalHeading(shown.fromYear, shown.toYear)[locale];
+
+  const commit = (span: Span, history: "push" | "replace") => {
+    const next = parseExploreInterval(span.fromYear, span.toYear);
+    // Releasing a handle where it started, or clicking the track on the current
     // year, is not a change. Pushing the same URL would reload the map for nothing.
-    if (next === state.year) {
+    if (spanKey(next) === committedKey) {
       setDraft(null);
       return;
     }
-    setDraft({ from: state.year, value: next });
-    onYearChange(next);
-    const nextUrl = `${pathname}${exploreHref({ ...state, year: next })}`;
+    setDraft({ from: committedKey, span: next });
+    onYearChange(next.toYear);
+    onIntervalChange?.(next);
+    const nextUrl = `${pathname}${exploreHref({ ...state, year: next.toYear, fromYear: next.fromYear })}`;
     writeHistory(history, nextUrl);
   };
 
-  const go = (year: number) => {
+  const go = (span: Span) => {
     setPlaying(false);
     setPlayStatus("idle");
-    updateYear(year, "push");
+    commit(span, "push");
   };
 
   /*
@@ -166,28 +212,39 @@ export function ExploreYearControl({
    * effect below depends on this string: the query state is a fresh object on
    * every server render, and depending on the object would restart the clock on
    * every unrelated re-render, so the years would never advance while dragging.
+   *
+   * Playback moves the closing year. When the span is a single year the opening
+   * year moves with it, which is exactly what the control did before spans
+   * existed; when the reader has chosen a wider span the opening year stays put
+   * and the window grows, which is the honest reading of a fixed start date.
    */
-  const nextYear = Math.min(EXPLORE_YEAR_MAX, state.year + 1);
+  const nextToYear = Math.min(EXPLORE_YEAR_MAX, committed.toYear + 1);
+  const nextSpan: Span = isAnnualInterval(committed)
+    ? { fromYear: nextToYear - 1, toYear: nextToYear }
+    : { fromYear: committed.fromYear, toYear: nextToYear };
   const nextHref = `${pathname}${exploreHref({
     ...state,
-    year: nextYear,
+    year: nextSpan.toYear,
+    fromYear: nextSpan.fromYear,
   })}`;
 
   // Playback changes only the active source and URL state. It neither asks the
   // App Router for a new page nor silently wraps at the end of the record.
   useEffect(() => {
-    if (!isPlaying || state.year >= EXPLORE_YEAR_MAX) return;
+    if (!isPlaying || committed.toYear >= EXPLORE_YEAR_MAX) return;
     const timer = setTimeout(() => {
-      setDraft({ from: state.year, value: nextYear });
-      onYearChange(nextYear);
+      setDraft({ from: committedKey, span: nextSpan });
+      onYearChange(nextSpan.toYear);
+      onIntervalChange?.(nextSpan);
       writeHistory("replace", nextHref);
-      if (nextYear === EXPLORE_YEAR_MAX) {
+      if (nextSpan.toYear === EXPLORE_YEAR_MAX) {
         setPlaying(false);
         setPlayStatus("complete");
       }
     }, STEP_MS);
     return () => clearTimeout(timer);
-  }, [isPlaying, nextHref, nextYear, onYearChange, state.year]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isPlaying, nextHref, committedKey, onYearChange, onIntervalChange]);
 
   const togglePlayback = () => {
     if (isPlaying) {
@@ -197,17 +254,47 @@ export function ExploreYearControl({
     }
     setPlayStatus("playing");
     setPlaying(true);
-    updateYear(EXPLORE_YEAR_MIN, "replace");
+    commit(
+      isAnnualInterval(committed)
+        ? { fromYear: EXPLORE_INTERVAL_FIRST_YEAR, toYear: EXPLORE_YEAR_MIN }
+        : { fromYear: committed.fromYear, toYear: committed.fromYear + 1 },
+      "replace",
+    );
   };
 
   return (
     <div className="year-control">
       <div className="year-head">
-        <label className="year-legend" htmlFor={SLIDER_ID}>{text.legend}</label>
-        <output className="year-readout" id={READOUT_ID} htmlFor={SLIDER_ID}>
-          {text.interval(shown)}
+        <span className="year-legend" id={`${READOUT_ID}-legend`}>{text.legend}</span>
+        <output className="year-readout" id={READOUT_ID} htmlFor={`${FROM_SLIDER_ID} ${SLIDER_ID}`}>
+          {readout}
         </output>
       </div>
+      <label className="year-handle-label" htmlFor={FROM_SLIDER_ID}>{text.firstYear}</label>
+      <input
+        type="range"
+        className="explore-slider"
+        id={FROM_SLIDER_ID}
+        name="from"
+        list={TICKS_ID}
+        min={EXPLORE_INTERVAL_FIRST_YEAR}
+        max={EXPLORE_YEAR_MAX - 1}
+        step={1}
+        value={shown.fromYear}
+        aria-describedby={HELP_ID}
+        aria-valuetext={`${text.firstYear}: ${shown.fromYear}`}
+        onChange={(event) =>
+          setDraft({
+            from: committedKey,
+            span: orderSpan({ fromYear: Number(event.target.value), toYear: shown.toYear }, "from"),
+          })
+        }
+        // A range fires change continuously while dragging, so the commit hangs off
+        // the release instead: one navigation per drag rather than one per pixel.
+        onKeyUp={(event) => { if (event.key.startsWith("Arrow")) go(shown); }}
+        onPointerUp={() => go(shown)}
+      />
+      <label className="year-handle-label" htmlFor={SLIDER_ID}>{text.lastYear}</label>
       <input
         type="range"
         className="explore-slider"
@@ -217,13 +304,15 @@ export function ExploreYearControl({
         min={EXPLORE_YEAR_MIN}
         max={EXPLORE_YEAR_MAX}
         step={1}
-        value={shown}
-        aria-label={text.legend}
+        value={shown.toYear}
         aria-describedby={HELP_ID}
-        aria-valuetext={text.interval(shown)}
-        onChange={(event) => setDraft({ from: state.year, value: Number(event.target.value) })}
-        // A range fires change continuously while dragging, so the commit hangs off
-        // the release instead: one navigation per drag rather than one per pixel.
+        aria-valuetext={readout}
+        onChange={(event) =>
+          setDraft({
+            from: committedKey,
+            span: orderSpan({ fromYear: shown.fromYear, toYear: Number(event.target.value) }, "to"),
+          })
+        }
         onKeyUp={(event) => { if (event.key.startsWith("Arrow")) go(shown); }}
         onPointerUp={() => go(shown)}
       />
@@ -231,7 +320,7 @@ export function ExploreYearControl({
         {TICKS.map((year) => <option key={year} value={year} label={String(year)} />)}
       </datalist>
       {/* A picture of the datalist, which browsers draw inconsistently or not at
-          all. Hidden from assistive technology because the slider already
+          all. Hidden from assistive technology because each slider already
           announces its range, its value and the interval that value means. */}
       <ul className="year-scale" aria-hidden="true">
         {TICKS.map((year) => <li key={year}>{year}</li>)}
@@ -240,8 +329,8 @@ export function ExploreYearControl({
         <button
           type="button"
           className="year-step"
-          onClick={() => go(shown - 1)}
-          disabled={!ready || shown <= EXPLORE_YEAR_MIN}
+          onClick={() => go(orderSpan({ fromYear: shown.fromYear, toYear: shown.toYear - 1 }, "to"))}
+          disabled={!ready || shown.toYear <= EXPLORE_YEAR_MIN}
           aria-label={text.previous}
         >
           <span aria-hidden="true">←</span>
@@ -249,8 +338,8 @@ export function ExploreYearControl({
         <button
           type="button"
           className="year-step"
-          onClick={() => go(shown + 1)}
-          disabled={!ready || shown >= EXPLORE_YEAR_MAX}
+          onClick={() => go(orderSpan({ fromYear: shown.fromYear, toYear: shown.toYear + 1 }, "to"))}
+          disabled={!ready || shown.toYear >= EXPLORE_YEAR_MAX}
           aria-label={text.next}
         >
           <span aria-hidden="true">→</span>

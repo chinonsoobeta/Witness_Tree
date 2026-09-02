@@ -1,7 +1,7 @@
 {
   "schemaVersion": "witness-tree/operator-runner-exit-taxonomy/1",
   "status": "engineering-derived-static-inventory",
-  "boundary": "Explicit shell refusals, literal exits, forwarded-status exits, and inline Node predicates in the nineteen scripts/run-*.sh operator runners. Native child statuses propagated by errexit or pipefail are outside the intentional taxonomy and require the child diagnostic.",
+  "boundary": "Explicit shell refusals, literal exits, forwarded-status exits, and inline Node predicates in the twenty-three scripts/run-*.sh operator runners. Native child statuses propagated by errexit or pipefail are outside the intentional taxonomy and require the child diagnostic.",
   "codes": [
     { "code": 0, "meaning": "successful completion or approved no-op" },
     { "code": 1, "meaning": "generic unclassified batch or precondition failure" },
@@ -24,6 +24,10 @@
     "scripts/run-phase2-annual-province-zonal-v2.sh": { "codes": { "1": 3 }, "defaultFailCode": null, "siteContractSha256": "60193d1c8d5b799d96c6aea7744ad9bd51485811be5f9cf1c4a331df2eb5e30b" },
     "scripts/run-phase2-annual-riding-zonal.sh": { "codes": { "1": 2 }, "defaultFailCode": null, "siteContractSha256": "15683394f795d018dbe9021ad7a08798dc019dab9ce6ef851dff685df9fe663c" },
     "scripts/run-phase2-per-cell-tiles.sh": { "codes": {}, "defaultFailCode": null, "siteContractSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" },
+    "scripts/run-phase3-interval-riding-zonal.sh": { "codes": { "1": 2 }, "defaultFailCode": null, "siteContractSha256": "d9b151c113d28db99149c8f15a36d807217405f9fd0e76d19862d77d434adfb0" },
+    "scripts/run-phase6-coarse-grid.sh": { "codes": { "0": 1, "1": 5 }, "defaultFailCode": null, "siteContractSha256": "c37de2e407e2f8f3010251cf7d393e503b87ca7245ecb0585eb547dfc5dd0693" },
+    "scripts/run-phase6-district-index.sh": { "codes": { "0": 1, "1": 6 }, "defaultFailCode": null, "siteContractSha256": "8950f1a691cec35e94679845fabacabc9ebcf38e83f196ce552471686c88e869" },
+    "scripts/run-phase6-pack-grid.sh": { "codes": { "0": 1, "1": 5 }, "defaultFailCode": null, "siteContractSha256": "07946d41411ad6e9e2174632d4736196f8de424be14e4a769e815d2eada94f5d" },
     "scripts/run-phase8-bulk-download-publication.sh": { "codes": { "0": 1, "64": 1, "65": 3, "69": 3, "70": 7, "77": 2 }, "defaultFailCode": null, "siteContractSha256": "49446d152e6a73c9b49cd4cdde76e1a4c29f0b8b7f0345c880a8546c88f12af9" },
     "scripts/run-postgres-tenant-isolation-drill.sh": { "codes": { "75": 4 }, "defaultFailCode": 1, "siteContractSha256": "f0b7411dce56dda820efa07389319487fcdadff6f31d4d558ae300aaac51bb22" },
     "scripts/run-qc-approved-multipart-promotion.sh": { "codes": { "0": 2, "64": 1, "65": 2, "69": 1, "70": 29, "75": 16 }, "defaultFailCode": 1, "siteContractSha256": "a475e09e25532e579bb1f2ded2c31ccea135918cc0b6acf0a78b6a13f3da6050" },

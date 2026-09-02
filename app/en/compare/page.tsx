@@ -33,7 +33,7 @@ export default async function ComparePage({
       <main id="main" className="page-wrap">
         <header className="masthead">
           <h1>{TITLE}</h1>
-          <p className="masthead-note">Local 2021–2022 extent-corrected measurements. This is not an admitted or published production release.</p>
+          <p className="masthead-note">Extent-corrected measurements for 2021–2022.</p>
         </header>
         <FederalRidingPicker
           rows={federalRidingComparison.places}

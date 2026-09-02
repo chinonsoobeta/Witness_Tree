@@ -65,7 +65,7 @@ test("the checked-in map join exposes the measured coverage without invented tot
     jurisdiction: "CA",
     boundaryId: "CA-10001",
     name: "Avalon",
-  }, ridingMeasurements, "en").kind, "riding-measurement");
+  }, ridingMeasurements, "en", { fromYear: 2021, toYear: 2022 }).kind, "riding-measurement");
 });
 
 test("fails closed on promoted claims or incomplete totals", () => {

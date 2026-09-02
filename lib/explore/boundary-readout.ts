@@ -1,4 +1,4 @@
-import { formatHectares, formatPercent, type Locale } from "@/lib/domain";
+import { formatHectares, formatPercent, SUM_TERM, type Locale } from "@/lib/domain";
 import type { BoundaryOverlayId } from "./boundaries";
 
 export type BoundaryMeasurementCoverage =
@@ -19,9 +19,20 @@ export type RidingBoundaryMeasurement = Readonly<{
   boundaryId: string;
   jurisdiction: string;
   coverage: BoundaryMeasurementCoverage;
+  /** The span this row measures. Every number below is scoped to it. */
+  fromYear: number;
+  toYear: number;
   observedLossPercent: number | null;
   observedLossHectares: number | null;
   knownObservedSubtotalHectares?: number | null;
+  /**
+   * The span's yearly losses added together, in hectares.
+   *
+   * Reported only where it exceeds the forest lost at least once, because
+   * where the two agree a second identical figure teaches the reader nothing
+   * and invites them to read a distinction into numbers that do not differ.
+   */
+  summedLossHectares?: number | null;
 }>;
 
 export type BoundaryReadout =
@@ -33,6 +44,8 @@ export type BoundaryReadout =
       normalizedShare: string;
       absoluteLoss: string;
       knownObservedSubtotal?: string;
+      summedLossLabel?: string;
+      summedLoss?: string;
     }>;
 
 const words = {
@@ -62,6 +75,10 @@ const finiteNonNegative = (value: number | null | undefined) =>
 
 function assertMeasurement(measurement: RidingBoundaryMeasurement) {
   const complete = measurement.coverage === "complete";
+  if (!Number.isInteger(measurement.fromYear) || !Number.isInteger(measurement.toYear) ||
+    measurement.toYear <= measurement.fromYear) {
+    throw new Error("A riding measurement must name a span that ends after it starts.");
+  }
   if (complete !== (finiteNonNegative(measurement.observedLossPercent) && finiteNonNegative(measurement.observedLossHectares))) {
     throw new Error("Only complete riding coverage may report a total loss and normalized share.");
   }
@@ -70,6 +87,18 @@ function assertMeasurement(measurement: RidingBoundaryMeasurement) {
   }
   if (measurement.knownObservedSubtotalHectares !== undefined && measurement.knownObservedSubtotalHectares !== null && !finiteNonNegative(measurement.knownObservedSubtotalHectares)) {
     throw new Error("Known observed subtotal must be a non-negative finite number.");
+  }
+  if (measurement.summedLossHectares !== undefined && measurement.summedLossHectares !== null) {
+    if (!finiteNonNegative(measurement.summedLossHectares)) {
+      throw new Error("A summed loss must be a non-negative finite number.");
+    }
+    // A cell lost twice counts twice in the sum and once in the union, so the
+    // sum can only ever be the larger of the two. A sum below the union means
+    // the two figures were measured over different windows.
+    if (finiteNonNegative(measurement.knownObservedSubtotalHectares) &&
+      measurement.summedLossHectares < measurement.knownObservedSubtotalHectares!) {
+      throw new Error("A summed loss cannot fall below the forest lost at least once.");
+    }
   }
 }
 
@@ -82,6 +111,7 @@ export function boundaryReadout(
   selection: BoundarySelection,
   measurements: readonly RidingBoundaryMeasurement[],
   locale: Locale,
+  interval: Readonly<{ fromYear: number; toYear: number }>,
 ): BoundaryReadout {
   const copy = words[locale];
   if (!isRidingOverlay(selection.overlay)) return { kind: "boundary-only", note: copy.boundaryOnly };
@@ -94,27 +124,42 @@ export function boundaryReadout(
   if (!measurement) {
     return {
       kind: "riding-measurement",
-      interval: "2021–2022",
+      interval: `${interval.fromYear}–${interval.toYear}`,
       coverage: copy.unavailable,
       normalizedShare: copy.unknown,
       absoluteLoss: copy.unknown,
     };
   }
   assertMeasurement(measurement);
+  // A row measured over a different span than the one on screen would put the
+  // wrong number under the right heading, which is worse than showing nothing.
+  if (measurement.fromYear !== interval.fromYear || measurement.toYear !== interval.toYear) {
+    throw new Error("A riding measurement was resolved for a different span than the one on display.");
+  }
   const coverage = measurement.coverage === "complete"
     ? copy.complete
     : measurement.coverage === "partial-with-unknown"
       ? copy.partial
       : copy.none;
   const complete = measurement.coverage === "complete";
+  const summedExceedsUnion =
+    finiteNonNegative(measurement.summedLossHectares) &&
+    finiteNonNegative(measurement.knownObservedSubtotalHectares) &&
+    measurement.summedLossHectares! > measurement.knownObservedSubtotalHectares!;
   return {
     kind: "riding-measurement",
-    interval: "2021–2022",
+    interval: `${measurement.fromYear}–${measurement.toYear}`,
     coverage,
     normalizedShare: complete ? formatPercent(measurement.observedLossPercent!, locale) : copy.unknown,
     absoluteLoss: complete ? formatHectares(measurement.observedLossHectares!, locale) : copy.unknown,
     ...(finiteNonNegative(measurement.knownObservedSubtotalHectares)
       ? { knownObservedSubtotal: formatHectares(measurement.knownObservedSubtotalHectares!, locale) }
+      : {}),
+    ...(summedExceedsUnion
+      ? {
+          summedLossLabel: SUM_TERM[locale],
+          summedLoss: formatHectares(measurement.summedLossHectares!, locale),
+        }
       : {}),
   };
 }

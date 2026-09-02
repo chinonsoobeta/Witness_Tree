@@ -109,7 +109,7 @@ export function validateTaxonomy(document, observed = collectRunnerInventory()) 
   assert.deepEqual(Object.keys(document).sort(), ["boundary", "codes", "runners", "schemaVersion", "status"], "taxonomy has unexpected fields");
   assert.equal(document.schemaVersion, TAXONOMY_SCHEMA, "taxonomy schema differs");
   assert.equal(document.status, "engineering-derived-static-inventory", "taxonomy status differs");
-  assert.equal(document.boundary, "Explicit shell refusals, literal exits, forwarded-status exits, and inline Node predicates in the nineteen scripts/run-*.sh operator runners. Native child statuses propagated by errexit or pipefail are outside the intentional taxonomy and require the child diagnostic.", "taxonomy boundary differs");
+  assert.equal(document.boundary, "Explicit shell refusals, literal exits, forwarded-status exits, and inline Node predicates in the twenty-three scripts/run-*.sh operator runners. Native child statuses propagated by errexit or pipefail are outside the intentional taxonomy and require the child diagnostic.", "taxonomy boundary differs");
   assert.ok(Array.isArray(document.codes), "taxonomy codes are required");
   assert.ok(document.runners && typeof document.runners === "object" && !Array.isArray(document.runners), "taxonomy runners are required");
   const declaredCodes = document.codes.map(({ code, meaning }) => {

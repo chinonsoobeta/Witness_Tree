@@ -5,7 +5,7 @@ import { formatHectares, formatPercent, PRODUCT_NAME } from "@/lib/domain";
 import { EXPLORE_COVERAGE_PERIOD, EXPLORE_PRODUCTION_LAYER, formatUnknownSharePercent } from "@/lib/explore";
 import { localizedAlternates } from "@/lib/site-metadata";
 
-export const metadata: Metadata = { title: "Public forest-change record", alternates: localizedAlternates("en", { en: "/en", fr: "/fr" }) };
+export const metadata: Metadata = { title: "Public forest-loss record", alternates: localizedAlternates("en", { en: "/en", fr: "/fr" }) };
 
 function coverageLabel(row: (typeof EXPLORE_PRODUCTION_LAYER.rows)[number]) {
   return `Minimum from the mapped area; ${formatUnknownSharePercent(row.unknownSharePercent, "en")} (${formatHectares(row.unknownRequiredInputHectares, "en")}) is unknown`;
@@ -16,7 +16,7 @@ export default function EnglishHome() {
     <header className="masthead">
       <p className="eyebrow">Evidence record · {EXPLORE_COVERAGE_PERIOD.en}</p>
       <h1>What happened to the forest here?</h1>
-      <p className="dek">{PRODUCT_NAME.en} helps you understand recorded and observed forest change in four provinces. Every result shows what the evidence says, where it came from, how current it is, and what it cannot tell you.</p>
+      <p className="dek">{PRODUCT_NAME.en} helps you understand recorded and detected forest loss in four provinces. Every result shows what the evidence says, where it came from, how current it is, and what it cannot tell you.</p>
       <div className="meta-row"><span>British Columbia</span><span>Alberta</span><span>Ontario</span><span>Quebec</span></div>
     </header>
     <section className="content-section prose-measure" aria-labelledby="current-record">
@@ -30,7 +30,7 @@ export default function EnglishHome() {
     </section>
     <section className="content-section prose-measure">
       <div className="section-heading"><span className="num">02</span><h2>A record, not a dashboard</h2></div>
-      <p className="lead">Search a place or open a record. Read a dated history of recorded harvest, wildfire, disturbance and satellite-observed change, with the source attached to every claim.</p>
+      <p className="lead">Search a place or open a record. Read a dated history of recorded harvest, wildfire, disturbance and satellite-detected change, with the source attached to every claim.</p>
       <dl className="principles">
         <div className="principle"><dt>Official record</dt><dd>A public authority records an event, perimeter, intervention or named role.</dd></div>
         <div className="principle"><dt>Satellite observation</dt><dd>Imagery shows tree-cover reduction or later canopy recovery. It does not, by itself, establish a cause.</dd></div>
@@ -49,7 +49,7 @@ export default function EnglishHome() {
     </section>
     <section className="content-section prose-measure" aria-labelledby="consequences">
       <div className="section-heading"><span className="num">04</span><h2 id="consequences">Why the context matters</h2></div>
-      <p>Observed forest loss is a satellite-derived measure, not a finding about cause. A detected reduction in tree cover does not by itself establish logging, deforestation, responsibility or compliance. <Link href="/en/methods">Read the method and evidence definitions</Link>.</p>
+      <p>Detected forest loss is a satellite-derived measure, not a finding about cause. A detected reduction in tree cover does not by itself establish logging, deforestation, responsibility or compliance. <Link href="/en/methods">Read the method and evidence definitions</Link>.</p>
       <p>The available release is a deterministic, four-province province-level technical preview for 2020 to 2022. It is not per-cell geometry and does not complete the formal Phase 2 gate. <Link href="/en/data">Read the release scope, provenance and licence attribution</Link>.</p>
       <p><small>Context source: {EXPLORE_PRODUCTION_LAYER.attribution.en} <a href={EXPLORE_PRODUCTION_LAYER.attribution.href}>Source catalogue</a>.</small></p>
     </section>

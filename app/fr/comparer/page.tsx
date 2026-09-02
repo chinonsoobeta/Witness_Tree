@@ -33,7 +33,7 @@ export default async function ComparerPage({
       <main id="main" className="page-wrap">
         <header className="masthead">
           <h1>{TITRE}</h1>
-          <p className="masthead-note">Mesures locales corrigées selon l’étendue pour 2021–2022. Il ne s’agit pas d’une publication de production admise.</p>
+          <p className="masthead-note">Mesures corrigées selon l’étendue pour 2021–2022.</p>
         </header>
         <FederalRidingPicker
           rows={federalRidingComparison.places}

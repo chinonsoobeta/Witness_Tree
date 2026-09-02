@@ -7,3 +7,4 @@ export * from "./boundaries";
 export * from "./boundary-readout";
 export * from "./riding-measurements";
 export * from "./href";
+export * from "./interval";

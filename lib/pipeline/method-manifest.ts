@@ -45,6 +45,22 @@ export type MethodParameters = Readonly<{
     boundaryEditionRequired: true;
     crossEditionComparison: "reject-without-acknowledgement";
   }>;
+  /**
+   * Present only on a method that measures spans rather than single years. Absent on the
+   * annual method, so the annual manifest keeps the canonical hash it was admitted with.
+   */
+  interval?: Readonly<{
+    firstYear: number;
+    lastYear: number;
+    annualStepCount: number;
+    spanCount: number;
+    spanEnumeration: "every-ordered-pair-of-years";
+    unionAccounting: "cell-counted-once-per-span";
+    unionDenominator: "known-forest-cells-at-opening-year";
+    summedAccounting: "annual-counts-added";
+    summedPercentAllowed: false;
+    netChangeIncluded: false;
+  }>;
 }>;
 
 export type MethodParameterManifest = Readonly<{
@@ -144,6 +160,24 @@ export function validateMethodManifest(manifest: MethodParameterManifest): Metho
   if (aggregation.decimalPlaces > 9) throw new Error("Aggregation decimal places cannot exceed 9.");
   if (boundary.cellIntersection !== "fractional-area" || boundary.gridAlignment !== "exact" || !Number.isFinite(boundary.snapToleranceMetres) || boundary.snapToleranceMetres < 0 || boundary.boundaryEditionRequired !== true || boundary.crossEditionComparison !== "reject-without-acknowledgement") {
     throw new Error("Boundary parameters do not satisfy the registered edition and grid rules.");
+  }
+
+  const { interval } = manifest.parameters;
+  if (interval !== undefined) {
+    integerAtLeast(interval.firstYear, 1, "Interval first year");
+    integerAtLeast(interval.lastYear, 1, "Interval last year");
+    if (interval.lastYear <= interval.firstYear) throw new Error("An interval method must close after it opens.");
+    if (interval.annualStepCount !== interval.lastYear - interval.firstYear) throw new Error("Interval annual steps must equal the number of year boundaries in the record.");
+    if (interval.spanCount !== (interval.annualStepCount * (interval.annualStepCount + 1)) / 2) throw new Error("Interval span count must equal every ordered pair of years in the record.");
+    if (interval.spanEnumeration !== "every-ordered-pair-of-years" || interval.unionAccounting !== "cell-counted-once-per-span" || interval.summedAccounting !== "annual-counts-added") {
+      throw new Error("Interval accounting rules are invalid.");
+    }
+    if (interval.unionDenominator !== "known-forest-cells-at-opening-year" || aggregation.denominatorReference !== "first-year-of-range") {
+      throw new Error("The interval denominator must be the known forest at the opening year, matching the registered aggregation denominator.");
+    }
+    // The percentage ban is a property of the method, not of the copy that renders it.
+    if (interval.summedPercentAllowed !== false) throw new Error("A summed interval total can never carry a percentage.");
+    if (interval.netChangeIncluded !== false) throw new Error("An interval method does not report net change.");
   }
 
   const canonicalParameters = canonicalMethodParameters(manifest.parameters);

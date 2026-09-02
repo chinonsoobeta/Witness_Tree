@@ -1,4 +1,5 @@
 import { colon, type Locale } from "@/lib/domain";
+import { SourceCurrency } from "./SourceCurrency";
 import {
   provinceBulkManifestUrl,
   provinceBulkRelease,
@@ -121,6 +122,8 @@ export function DataPage({ locale }: Readonly<{ locale: Locale }>) {
         <p>{copy.limits}</p>
         <p>{copy.previewLimits}</p>
       </aside>
+
+      <SourceCurrency locale={locale} />
 
       <section className="content-section prose-measure">
         <h2>{copy.recordsTitle}</h2>

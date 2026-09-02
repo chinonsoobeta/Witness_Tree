@@ -14,7 +14,7 @@
         },
         {
           "path": "components/governance/GovernancePage.tsx",
-          "sha256": "5170fe5487e9e1f6e1b3339a713c37418a3679492c762489bfc556b137bfab19"
+          "sha256": "0801c67718cebb450f2666bd50dd3a5b5e297019b7d350ae16d7499014c6472e"
         },
         {
           "path": "tests/forest-definition-publication.test.ts",
@@ -66,7 +66,7 @@
         },
         {
           "path": "components/governance/GovernancePage.tsx",
-          "sha256": "5170fe5487e9e1f6e1b3339a713c37418a3679492c762489bfc556b137bfab19"
+          "sha256": "0801c67718cebb450f2666bd50dd3a5b5e297019b7d350ae16d7499014c6472e"
         }
       ]
     },
@@ -93,7 +93,7 @@
       "evidence": [
         {
           "path": "lib/domain/brand.ts",
-          "sha256": "dac71c66f72fb5b8249cb414c3641e8ba45ea7f2ed0f60a5db38d2779df64e40"
+          "sha256": "9062cdaefc406df6831dacc5f0dc2a3eada24b70672dbfacb6377e96266b7ad0"
         },
         {
           "path": "scripts/check-brand-token.mjs",
@@ -117,7 +117,7 @@
         },
         {
           "path": "components/governance/GovernancePage.tsx",
-          "sha256": "5170fe5487e9e1f6e1b3339a713c37418a3679492c762489bfc556b137bfab19"
+          "sha256": "0801c67718cebb450f2666bd50dd3a5b5e297019b7d350ae16d7499014c6472e"
         }
       ]
     },
@@ -137,11 +137,11 @@
         },
         {
           "path": "lib/domain/brand.ts",
-          "sha256": "dac71c66f72fb5b8249cb414c3641e8ba45ea7f2ed0f60a5db38d2779df64e40"
+          "sha256": "9062cdaefc406df6831dacc5f0dc2a3eada24b70672dbfacb6377e96266b7ad0"
         },
         {
           "path": ".github/workflows/ci.yml",
-          "sha256": "8def5a848eb2ac0b970342df86aa4fb208bf3a4449184f83b8b2f8bed2545880"
+          "sha256": "736d21ef7bd116ed2e2c735f276622feb78b6596a9a2b8e0fd534734ab11e13d"
         }
       ]
     }

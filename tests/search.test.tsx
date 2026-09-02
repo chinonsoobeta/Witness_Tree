@@ -32,7 +32,7 @@ test("Search exposes one field behind a labelled places or districts scope", () 
   for (const markup of [places, districts]) {
     assert.equal((markup.match(/<input class="input"/g) ?? []).length, 1);
     assert.match(markup, /aria-label="Search scope"/);
-    assert.match(markup, /Neither is a published release/);
+    assert.match(markup, /Place results are illustrative fixtures/);
   }
   assert.match(places, /href="\/en\/places\//);
   assert.doesNotMatch(places, /Find a federal electoral district/);
