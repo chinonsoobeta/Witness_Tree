@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { SiteShell } from "@/components/site";
+import { ProvinceBar, SiteShell } from "@/components/site";
 import { formatHectares, formatPercent, PRODUCT_NAME } from "@/lib/domain";
 import { EXPLORE_COVERAGE_PERIOD, EXPLORE_PRODUCTION_LAYER, formatUnknownSharePercent } from "@/lib/explore";
 import { localizedAlternates } from "@/lib/site-metadata";
@@ -17,7 +17,7 @@ export default function FrenchHome() {
       <p className="eyebrow">Registre de preuves · {EXPLORE_COVERAGE_PERIOD.fr}</p>
       <h1>Qu’est-il arrivé à la forêt ici?</h1>
       <p className="dek">{PRODUCT_NAME.fr} aide à comprendre les pertes forestières consignées et détectées dans quatre provinces.</p>
-      <div className="meta-row"><span>Colombie-Britannique</span><span>Alberta</span><span>Ontario</span><span>Québec</span></div>
+      <ProvinceBar locale="fr" />
     </header>
     <section className="content-section prose-measure" aria-labelledby="registre-actuel">
       <div className="section-heading"><span className="num">01</span><h2 id="registre-actuel">Commencer par le registre actuel</h2></div>

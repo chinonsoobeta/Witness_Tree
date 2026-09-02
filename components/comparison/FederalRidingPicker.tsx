@@ -18,18 +18,22 @@ export function selectFederalRidings(
   rows: readonly ComparisonPlace[],
   leftId?: string,
   rightId?: string,
+  fallback?: readonly ComparisonPlace[],
 ): SelectedFederalRidings {
   const candidates = federalRidings(rows);
   if (candidates.length < 2) {
     throw new Error("A federal-riding comparison requires at least two rows.");
   }
+  const preferred = fallback && fallback.length > 0
+    ? [...federalRidings(fallback), ...candidates]
+    : candidates;
 
   const requestedLeft = candidates.find((row) => row.id === leftId);
   const requestedRight = candidates.find((row) => row.id === rightId);
-  const left = requestedLeft ?? candidates.find((row) => row.id !== requestedRight?.id) ?? candidates[0]!;
+  const left = requestedLeft ?? preferred.find((row) => row.id !== requestedRight?.id) ?? candidates[0]!;
   const right = requestedRight && requestedRight.id !== left.id
     ? requestedRight
-    : candidates.find((row) => row.id !== left.id);
+    : preferred.find((row) => row.id !== left.id);
   if (!right) throw new Error("A federal-riding comparison requires two distinct rows.");
   return { left, right };
 }
@@ -41,6 +45,7 @@ export function FederalRidingPicker({
   rightId,
   view,
   sort,
+  fallback,
 }: {
   rows: readonly ComparisonPlace[];
   locale: Locale;
@@ -48,8 +53,9 @@ export function FederalRidingPicker({
   rightId?: string;
   view?: string;
   sort?: string;
+  fallback?: readonly ComparisonPlace[];
 }) {
-  const selected = selectFederalRidings(rows, leftId, rightId);
+  const selected = selectFederalRidings(rows, leftId, rightId, fallback);
   const candidates = federalRidings(rows);
   const labels = locale === "en"
     ? {
@@ -58,7 +64,7 @@ export function FederalRidingPicker({
         right: "Right riding",
         submit: "Compare",
         fallback: (side: string, requested: string, shown: string) =>
-          `Requested ${side} riding “${requested}” was not found. Showing ${shown} instead.`,
+          `Requested ${side} riding “${requested}” is not available in this four-province comparison. Showing ${shown} instead.`,
       }
     : {
         title: "Choisir les circonscriptions à comparer",
@@ -66,7 +72,7 @@ export function FederalRidingPicker({
         right: "Circonscription de droite",
         submit: "Comparer",
         fallback: (side: string, requested: string, shown: string) =>
-          `La circonscription de ${side} demandée « ${requested} » est introuvable. ${shown} est affichée à la place.`,
+          `La circonscription de ${side} demandée « ${requested} » n’est pas offerte dans cette comparaison limitée à quatre provinces. ${shown} est affichée à la place.`,
       };
   const missing = [
     leftId && !candidates.some((row) => row.id === leftId)

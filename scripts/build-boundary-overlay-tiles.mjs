@@ -18,8 +18,21 @@ import os from "node:os";
 import { requireExactBilingualJoin, resolveBoundaryNames } from "./boundary-overlay-names.mjs";
 
 const DATA_ROOT = process.env.WITNESS_TREE_DATA_ROOT ?? "/Volumes/Extended_SSD/Witness_Tree-data";
-const OUT_DIR = path.join(DATA_ROOT, "derived/boundary-overlays-v2");
+const PRODUCT_ID = "boundary-overlays-v3";
+const ARCHIVE_VERSION = "v3";
+const OUT_DIR = path.join(DATA_ROOT, "derived", PRODUCT_ID);
 const TOOLS = "/opt/homebrew/bin";
+
+const PROVINCE_BOUNDARY = Object.freeze({
+  relativePath: "raw/statcan-boundaries/2026-08-12/lpr_000b21a_e.zip",
+  input: path.join(DATA_ROOT, "raw/statcan-boundaries/2026-08-12/lpr_000b21a_e.zip"),
+  sha256: "d28bbb15d7b49e3d1828755a5f1b4ebcee699ad70efe8b0f1b902d29ebffd20b",
+  layer: "lpr_000b21a_e",
+  filter: "PRUID IN ('24','35','48','59')",
+  provinceIds: ["24", "35", "48", "59"],
+});
+
+const CLIPPED_OVERLAYS = new Set(["economic-regions", "watersheds"]);
 
 const SOURCES = [
   {
@@ -93,16 +106,24 @@ const SOURCES = [
     id: "statcan-economic-regions-2021",
     overlay: "economic-regions",
     jurisdiction: "CA",
+    sourceFeatureCount: 76,
+    inputFeatureCount: 76,
+    inputDistinctCount: 76,
+    selectedFeatureCount: 44,
+    // The source has 76 regions nationally; only the 44 regions in the four
+    // admitted province ids reach the clipped reference overlay.
+    featureCount: 44,
     input: path.join(DATA_ROOT, "raw/statcan-economic-regions-2021/2026-08-29/ler_000a21s_e.geojson"),
     sha256: "b1bcb1305a04c6ddf9b74bdee545616a85ef6ff2e5622de343c34b122bdb08f7",
     french_input: path.join(DATA_ROOT, "raw/statcan-economic-regions-2021/2026-08-29/lre_000a21s_f.geojson"),
     french_sha256: "02449dd7bccfd6338b554821fd6fab8430cd1720d2b53b1ad8499746ae538c1b",
-    featureCount: 76,
-    districtCount: 76,
+    districtCount: 44,
     id_field: "DGUID",
     en_field: "ERNAME",
     french_id_field: "IDUGD",
     french_field: "RÉNOM",
+    clipToProvinceBoundary: true,
+    where: PROVINCE_BOUNDARY.filter,
   },
   {
     id: "nrcan-wsc-sub-drainage-v6",
@@ -116,14 +137,20 @@ const SOURCES = [
     vsi: "/vsizip/{input}/canadwscsda_p.shp",
     sha256: "0108bb97466e4fe43f59bbda27744e19d8a969bc8a40e9a20880d3ff9ca50fad",
     sourceFeatureCount: 184,
-    featureCount: 169,
-    districtCount: 169,
+    inputFeatureCount: 184,
+    inputDistinctCount: 184,
+    selectedFeatureCount: 169,
+    // The exact post-intersection count is recorded in the generated
+    // manifest after GDAL drops non-intersecting features.
+    featureCount: null,
+    districtCount: null,
     where: "WSCSDA NOT LIKE 'U%'",
     excludedIdPrefix: "U",
     excludedFeatureCount: 15,
     id_field: "WSCSDA",
     en_field: "WSCSDA_EN",
     fr_field: "WSCSDA_FR",
+    clipToProvinceBoundary: true,
   },
 ];
 
@@ -168,11 +195,20 @@ function verify(source) {
   return { sha256, frenchSha256, outerSha256 };
 }
 
+function inputFeatureCount(source) {
+  return source.inputFeatureCount ?? source.sourceFeatureCount ?? source.featureCount;
+}
+
+function inputDistinctCount(source) {
+  return source.inputDistinctCount ?? source.sourceFeatureCount ?? source.districtCount;
+}
+
 function frenchNames(source) {
   if (!source.french_input) return null;
   const collection = JSON.parse(fs.readFileSync(source.french_input, "utf8"));
-  if (collection?.type !== "FeatureCollection" || collection.features.length !== source.featureCount) {
-    throw new Error(`${source.id}: French name source must contain ${source.featureCount} features`);
+  const expected = inputFeatureCount(source);
+  if (collection?.type !== "FeatureCollection" || collection.features.length !== expected) {
+    throw new Error(`${source.id}: French name source must contain ${expected} features`);
   }
   const names = new Map();
   for (const feature of collection.features) {
@@ -184,8 +220,9 @@ function frenchNames(source) {
     if (names.has(String(id))) throw new Error(`${source.id}: duplicate French identifier ${id}`);
     names.set(String(id), String(name).trim());
   }
-  if (names.size !== source.districtCount) {
-    throw new Error(`${source.id}: expected ${source.districtCount} French identifiers, read ${names.size}`);
+  const expectedDistinct = inputDistinctCount(source);
+  if (names.size !== expectedDistinct) {
+    throw new Error(`${source.id}: expected ${expectedDistinct} French identifiers, read ${names.size}`);
   }
   return names;
 }
@@ -193,13 +230,16 @@ function frenchNames(source) {
 // Reproject to WGS84 and normalize to one schema. Proper names are never
 // translated, so a jurisdiction that publishes a single official name carries
 // that same name in both locales rather than a fabricated translation.
-function normalize(source, tmp) {
+function normalize(source, tmp, clipBoundaryPath) {
   const vsi = source.vsi ? source.vsi.replace("{input}", source.input) : source.input;
   const translatedNames = frenchNames(source);
   if (source.sourceFeatureCount) profileRawSource(source, vsi, tmp);
   const geo = path.join(tmp, `${source.id}.4326.geojsonl`);
   run("ogr2ogr", [
     "-t_srs", "EPSG:4326", "-f", "GeoJSONSeq", "-lco", "RS=NO",
+    // The province geometry is materialized in WGS84. Clip after source
+    // reprojection so projected inputs and the clip geometry share a CRS.
+    ...(source.clipToProvinceBoundary ? ["-clipdst", clipBoundaryPath, "-clipdstlayer", "four-province-boundaries"] : []),
     ...(source.where ? ["-where", source.where] : []),
     geo, vsi,
   ]);
@@ -217,6 +257,7 @@ function normalize(source, tmp) {
     if (source.excludedIdPrefix && String(rawId).startsWith(source.excludedIdPrefix)) {
       throw new Error(`${source.id}: excluded identifier ${rawId} reached the Canadian overlay`);
     }
+    if (!feature.geometry) throw new Error(`${source.id}: clipped feature without geometry`);
     seen += 1;
     ids.add(String(rawId));
     out.push(JSON.stringify({
@@ -230,14 +271,54 @@ function normalize(source, tmp) {
       geometry: feature.geometry,
     }));
   }
-  if (seen !== source.featureCount) {
+  if (source.featureCount !== null && source.featureCount !== undefined && seen !== source.featureCount) {
     throw new Error(`${source.id}: expected ${source.featureCount} features, read ${seen}`);
   }
-  if (ids.size !== source.districtCount) {
+  if (source.districtCount !== null && source.districtCount !== undefined && ids.size !== source.districtCount) {
     throw new Error(`${source.id}: expected ${source.districtCount} distinct districts, read ${ids.size}`);
   }
-  requireExactBilingualJoin(ids, translatedNames, source.id);
-  return out;
+  const selectedNames = translatedNames
+    ? new Map([...translatedNames].filter(([id]) => ids.has(id)))
+    : null;
+  requireExactBilingualJoin(ids, selectedNames, source.id);
+  return { lines: out, distinctCount: ids.size };
+}
+
+function materializeProvinceClip(tmp) {
+  const sha256 = verifyOne("province-clip-boundary", PROVINCE_BOUNDARY.input, PROVINCE_BOUNDARY.sha256);
+  const output = path.join(tmp, "four-province-boundaries.gpkg");
+  run("ogr2ogr", [
+    "-f", "GPKG",
+    output,
+    `/vsizip/${PROVINCE_BOUNDARY.input}`,
+    PROVINCE_BOUNDARY.layer,
+    "-where", PROVINCE_BOUNDARY.filter,
+    "-t_srs", "EPSG:4326",
+    "-nln", "four-province-boundaries",
+    "-nlt", "PROMOTE_TO_MULTI",
+    "-lco", "GEOMETRY_NAME=geom",
+    "-lco", "SPATIAL_INDEX=YES",
+    "-select", "PRUID",
+  ]);
+  const details = JSON.parse(run("ogrinfo", [
+    "-ro", "-json", "-al", "-features", "-geom", "NO", "-nomd",
+    output, "four-province-boundaries",
+  ]));
+  const layer = details?.layers?.[0];
+  const ids = layer?.features?.map((feature) => String(feature.properties?.PRUID ?? "")) ?? [];
+  if (layer?.featureCount !== PROVINCE_BOUNDARY.provinceIds.length || ids.length !== PROVINCE_BOUNDARY.provinceIds.length) {
+    throw new Error(`Province clip boundary must contain ${PROVINCE_BOUNDARY.provinceIds.length} features`);
+  }
+  const sortedIds = [...ids].sort();
+  const expectedIds = [...PROVINCE_BOUNDARY.provinceIds].sort();
+  if (JSON.stringify(sortedIds) !== JSON.stringify(expectedIds)) {
+    throw new Error(`Province clip boundary ids changed: ${ids.join(", ")}`);
+  }
+  const geometryType = layer.geometryFields?.[0]?.type ?? "";
+  if (!geometryType.includes("Polygon")) {
+    throw new Error(`Province clip boundary geometry changed to ${geometryType || "unknown"}`);
+  }
+  return { path: output, sha256, featureCount: ids.length };
 }
 
 function profileRawSource(source, vsi, tmp) {
@@ -252,13 +333,13 @@ function profileRawSource(source, vsi, tmp) {
     const properties = feature.properties ?? {};
     const id = String(properties[source.id_field] ?? "").trim();
     const en = String(properties[source.en_field] ?? "").trim();
-    const fr = String(properties[source.fr_field] ?? "").trim();
-    if (!feature.geometry || !id || !en || !fr) {
+    const fr = source.fr_field ? String(properties[source.fr_field] ?? "").trim() : "";
+    if (!feature.geometry || !id || !en || (source.fr_field && !fr)) {
       throw new Error(`${source.id}: raw source has missing geometry, identifier, or bilingual name`);
     }
     count += 1;
     ids.add(id);
-    if (id.startsWith(source.excludedIdPrefix)) {
+    if (source.excludedIdPrefix && id.startsWith(source.excludedIdPrefix)) {
       excluded += 1;
       if (!en.startsWith("[USA:") || !fr.startsWith("[É.-U")) {
         throw new Error(`${source.id}: excluded identifier ${id} is not explicitly marked USA-only in both official names`);
@@ -268,7 +349,7 @@ function profileRawSource(source, vsi, tmp) {
   if (count !== source.sourceFeatureCount || ids.size !== source.sourceFeatureCount) {
     throw new Error(`${source.id}: expected ${source.sourceFeatureCount} raw features and identifiers, read ${count}/${ids.size}`);
   }
-  if (excluded !== source.excludedFeatureCount) {
+  if (source.excludedFeatureCount !== undefined && excluded !== source.excludedFeatureCount) {
     throw new Error(`${source.id}: expected ${source.excludedFeatureCount} USA-only features, read ${excluded}`);
   }
 }
@@ -292,8 +373,10 @@ function buildArchive(overlay, lines, tmp) {
     src,
   ]);
   fs.mkdirSync(OUT_DIR, { recursive: true });
-  const pmtiles = path.join(OUT_DIR, `${overlay}-v2.pmtiles`);
-  fs.rmSync(pmtiles, { force: true });
+  const pmtiles = path.join(OUT_DIR, `${overlay}-${ARCHIVE_VERSION}.pmtiles`);
+  if (fs.existsSync(pmtiles)) {
+    throw new Error(`immutable ${PRODUCT_ID} artifact already exists: ${pmtiles}`);
+  }
   run("pmtiles", ["convert", mbtiles, pmtiles]);
   return {
     overlay,
@@ -301,17 +384,23 @@ function buildArchive(overlay, lines, tmp) {
     fileName: path.basename(pmtiles),
     path: pmtiles,
     featureCount: lines.length,
+    clippedToProvinceBoundary: CLIPPED_OVERLAYS.has(overlay),
     byteLength: fs.statSync(pmtiles).size,
     sha256: sha256File(pmtiles),
   };
 }
 
+if (fs.existsSync(OUT_DIR) && fs.readdirSync(OUT_DIR).length > 0) {
+  throw new Error(`immutable ${PRODUCT_ID} output directory is not empty: ${OUT_DIR}`);
+}
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "boundary-overlays-"));
 const byOverlay = new Map();
 const sources = [];
+const provinceClip = materializeProvinceClip(tmp);
 for (const source of SOURCES) {
   const verified = verify(source);
-  const lines = normalize(source, tmp);
+  const normalized = normalize(source, tmp, provinceClip.path);
+  const lines = normalized.lines;
   if (!byOverlay.has(source.overlay)) byOverlay.set(source.overlay, []);
   byOverlay.get(source.overlay).push(...lines);
   sources.push({
@@ -325,12 +414,16 @@ for (const source of SOURCES) {
       outerMember: source.outer_member,
       outerMemberByteLength: source.payload_byte_length,
     } : {}),
-    featureCount: source.featureCount,
-    districtCount: source.districtCount,
+    inputFeatureCount: inputFeatureCount(source),
+    inputDistinctCount: inputDistinctCount(source),
+    ...(source.selectedFeatureCount ? { selectedFeatureCount: source.selectedFeatureCount } : {}),
+    featureCount: lines.length,
     ...(source.sourceFeatureCount ? { sourceFeatureCount: source.sourceFeatureCount } : {}),
+    districtCount: normalized.distinctCount,
     ...(source.where ? { selection: source.where } : {}),
+    clippedToProvinceBoundary: Boolean(source.clipToProvinceBoundary),
   });
-  process.stderr.write(`${source.id.padEnd(38)} ${String(source.featureCount).padStart(4)} features verified\n`);
+  process.stderr.write(`${source.id.padEnd(38)} ${String(lines.length).padStart(4)} features verified\n`);
 }
 
 const archives = [];
@@ -339,8 +432,22 @@ fs.rmSync(tmp, { recursive: true, force: true });
 
 const manifest = {
   schemaVersion: "witness-tree/boundary-overlay-tiles/1",
-  productId: "boundary-overlays-v2",
+  productId: PRODUCT_ID,
   builtAt: new Date().toISOString(),
+  transform: {
+    clip: {
+      operation: "intersection",
+      boundaryRelativePath: PROVINCE_BOUNDARY.relativePath,
+      boundarySha256: provinceClip.sha256,
+      boundaryLayer: PROVINCE_BOUNDARY.layer,
+      boundaryFilter: PROVINCE_BOUNDARY.filter,
+      provinceIds: PROVINCE_BOUNDARY.provinceIds,
+      boundaryFeatureCount: provinceClip.featureCount,
+      boundarySourceCrs: "EPSG:3347",
+      outputCrs: "EPSG:4326",
+      appliesTo: [...CLIPPED_OVERLAYS],
+    },
+  },
   sources,
   archives: archives.map((archive) => {
     const rest = { ...archive };
@@ -349,5 +456,9 @@ const manifest = {
     return rest;
   }),
 };
-fs.writeFileSync(path.join(OUT_DIR, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`);
+const manifestPath = path.join(OUT_DIR, "manifest.json");
+if (fs.existsSync(manifestPath)) {
+  throw new Error(`immutable ${PRODUCT_ID} manifest already exists: ${manifestPath}`);
+}
+fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
 process.stdout.write(`${JSON.stringify(manifest, null, 2)}\n`);

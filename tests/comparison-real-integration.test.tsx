@@ -35,34 +35,43 @@ test("the checked-in real comparison has 343 extent-corrected districts", () => 
   assert.doesNotMatch(federalRidingComparison.context.method.en, /British Columbia, Alberta, Ontario and Quebec/);
 });
 
-test("every federal district is listed under a reason consistent with its own coverage", () => {
+test("the comparison lists only four-province districts under truthful coverage reasons", () => {
   const english = renderToStaticMarkup(
-    <RankedRidingsTable rows={federalRidingComparison.rows} context={federalRidingComparison.context} locale="en" />,
+    <RankedRidingsTable rows={federalRidingComparison.comparisonRows} context={federalRidingComparison.context} locale="en" />,
   );
   const french = renderToStaticMarkup(
-    <RankedRidingsTable rows={federalRidingComparison.rows} context={federalRidingComparison.context} locale="fr" />,
+    <RankedRidingsTable rows={federalRidingComparison.comparisonRows} context={federalRidingComparison.context} locale="fr" />,
   );
-  for (const html of [english, french]) assert.equal((html.match(/<th scope="row">/g) ?? []).length, 343);
-  assert.match(english, /57 of 343 federal districts are ranked\./);
-  assert.match(english, /183 have no mapped coverage; 91 have partial mapped coverage; 12 have complete mapped coverage but less than 500 forested hectares\./);
-  assert.match(french, /57 des 343 circonscriptions fédérales sont classées\./);
-  assert.match(french, /183 n’ont aucune couverture cartographiée; 91 ont une couverture cartographiée partielle; 12 ont une couverture cartographiée complète, mais moins de 500 hectares forestiers\./);
+  for (const html of [english, french]) assert.equal((html.match(/<th scope="row">/g) ?? []).length, 280);
+  assert.match(english, /36 of 280 federal districts are ranked\./);
+  assert.match(english, /165 have no mapped coverage; 67 have partial mapped coverage; 12 have complete mapped coverage but less than 500 forested hectares\./);
+  assert.match(french, /36 des 280 circonscriptions fédérales sont classées\./);
+  assert.match(french, /165 n’ont aucune couverture cartographiée; 67 ont une couverture cartographiée partielle; 12 ont une couverture cartographiée complète, mais moins de 500 hectares forestiers\./);
   assert.doesNotMatch(`${english}${french}`, /Insufficient coverage, not ranked|Couverture insuffisante, non classée/);
 
   const none = english.indexOf("No mapped coverage, not ranked");
   const partial = english.indexOf("Partial mapped coverage, not ranked");
   const belowFloor = english.indexOf("Complete mapped coverage below 500 forested hectares, not ranked");
-  const centralNova = english.indexOf("Central Nova");
   const cloverdale = english.indexOf("Cloverdale\u2014Langley City");
-  assert.ok(centralNova > 0 && centralNova < none, "a sound measurement outside the old four-province filter belongs in the ranked table");
+  assert.doesNotMatch(english, /Central Nova|Charlottetown|Malpeque|Cardigan|Kings\u2014Hants|Beauséjour|Prince Albert/);
   assert.ok(none > 0 && partial > none && belowFloor > partial);
   assert.ok(cloverdale > belowFloor, "a completely mapped small-forest district belongs only under the ranking-floor heading");
-  assert.equal((english.slice(none, partial).match(/<span class="coverage-band">No mapped coverage<\/span>/g) ?? []).length, 183);
-  assert.equal((english.slice(partial, belowFloor).match(/<span class="coverage-band">Partial mapped coverage; unknown area remains<\/span>/g) ?? []).length, 91);
+  assert.equal((english.slice(none, partial).match(/<span class="coverage-band">No mapped coverage<\/span>/g) ?? []).length, 165);
+  assert.equal((english.slice(partial, belowFloor).match(/<span class="coverage-band">Partial mapped coverage; unknown area remains<\/span>/g) ?? []).length, 67);
   assert.equal((english.slice(belowFloor).match(/<span class="coverage-band">Complete mapped coverage<\/span>/g) ?? []).length, 12);
-  assert.match(french, /aria-label="Aucune couverture cartographiée, non classée \(183\)"/);
-  assert.match(french, /aria-label="Couverture cartographiée partielle, non classée \(91\)"/);
+  assert.match(french, /aria-label="Aucune couverture cartographiée, non classée \(165\)"/);
+  assert.match(french, /aria-label="Couverture cartographiée partielle, non classée \(67\)"/);
   assert.match(french, /aria-label="Couverture cartographiée complète sous le seuil de 500 hectares forestiers, non classée \(12\)"/);
+});
+
+test("the comparison scope and defaults are derived from the four-province data", () => {
+  assert.equal(federalRidingComparison.comparisonRows.length, 280);
+  assert.ok(federalRidingComparison.comparisonRows.every((row) => /^federal-(24|35|48|59)/.test(row.id)));
+  assert.equal(federalRidingComparison.comparisonRows.filter((row) => row.sufficientCoverage).length, 36);
+  const [left, right] = federalRidingComparison.defaultPair;
+  assert.deepEqual([left.id, right.id], ["federal-59001", "federal-59011"]);
+  assert.ok(left.sufficientCoverage && right.sufficientCoverage);
+  assert.notEqual(left.id, right.id);
 });
 
 test("the real federal district finder links source names into Compare", () => {
@@ -93,11 +102,21 @@ test("both comparison routes use real data and preserve exact selected ids", asy
   }
 });
 
+test("both comparison routes default to covered measured ridings", async () => {
+  const english = renderToStaticMarkup(await EnglishComparePage({ searchParams: Promise.resolve({}) }));
+  const french = renderToStaticMarkup(await FrenchComparePage({ searchParams: Promise.resolve({}) }));
+  for (const html of [english, french]) {
+    assert.match(html, /option value="federal-59001" selected/);
+    assert.match(html, /option value="federal-59011" selected/);
+    assert.doesNotMatch(html, /option value="federal-(?!24|35|48|59)/);
+  }
+});
+
 test("comparison routes disclose an unrecognized requested riding before the fallback result", async () => {
   const english = renderToStaticMarkup(await EnglishComparePage({ searchParams: Promise.resolve({ left: "federal-missing" }) }));
   const french = renderToStaticMarkup(await FrenchComparePage({ searchParams: Promise.resolve({ right: "federal-absente" }) }));
-  assert.match(english, /Requested left riding “federal-missing” was not found\. Showing [^<]+ instead\./);
-  assert.match(french, /La circonscription de droite demandée « federal-absente » est introuvable\. [^<]+ est affichée à la place\./);
+  assert.match(english, /Requested left riding “federal-missing” is not available in this four-province comparison\. Showing [^<]+ instead\./);
+  assert.match(french, /La circonscription de droite demandée « federal-absente » n’est pas offerte dans cette comparaison limitée à quatre provinces\. [^<]+ est affichée à la place\./);
   assert.ok(english.indexOf("Requested left riding") < english.indexOf("Side-by-side comparison"));
   assert.ok(french.indexOf("demandée « federal-absente »") < french.indexOf("Comparaison côte à côte"));
 });

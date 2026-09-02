@@ -14,9 +14,10 @@ Source admission is recorded in
 The exact French REST snapshot is separately admitted: 28,023,689 bytes with
 SHA-256 `02449dd7bccfd6338b554821fd6fab8430cd1720d2b53b1ad8499746ae538c1b`.
 Its 76 IDUGDs exactly match the 76 English DGUIDs, with no missing names. The
-overlay joins those official names by DGUID/IDUGD. The immutable v2 boundary
-archive has passed exact remote readback. No regional forest-loss aggregate is
-claimed.
+overlay joins those official names by DGUID/IDUGD. The immutable v3 boundary
+archive contains the 44 selected regions, clipped to the four official province
+boundaries, and has passed exact S3 and CloudFront readback. No regional
+forest-loss aggregate is claimed.
 
 Primary references:
 
@@ -46,6 +47,9 @@ begin with `U` and are explicitly named as USA-only source records. The
 Canadian overlay selection excludes those 15 records and therefore contains
 169 coded areas. This filter is recorded in the tile manifest as
 `WSCSDA NOT LIKE 'U%'`; the source archive itself remains unchanged.
+Intersecting that Canadian selection with the four official province boundaries
+produces 105 coded areas in the immutable v3 overlay. Cross-border watersheds
+are intentionally truncated at those boundaries.
 
 This archive is preferable to two live-service alternatives. NRCan's current
 Atlas service returns 169 geometries, including two unnamed records, and does
@@ -76,13 +80,14 @@ References:
 - [Statistics Canada note on version 6.0](https://www.statcan.gc.ca/en/subjects/standard/sdac/sdacinfo3)
 
 The watershed geometry is source-admitted, and its exact governed bytes,
-Canadian selection, and immutable v2 boundary archive passed readback. This
-does not claim a watershed forest-loss aggregate or production eligibility.
+Canadian selection, and immutable v3 boundary archive of 105 clipped areas
+passed exact S3 and CloudFront readback. This does not claim a watershed
+forest-loss aggregate or production eligibility.
 
 ## Province identity marks
 
-The switcher remains text-only. British Columbia, Alberta and Québec publish
-official flag artwork under stated conditions. Ontario's current guidance says
-its Red Ensign requires prior written authorization for reproduction. Showing
-three flags and substituting text for Ontario would create an inconsistent
-permission signal, so no province flag is shipped until all four can be used.
+The landing page and Explore map share one province bar with compact inline SVG
+renditions of all four flags. The public-domain source files are recorded in
+[`docs/THIRD_PARTY.md`](THIRD_PARTY.md), and no flag image is hotlinked at
+runtime. The owner directed this use on 2 September 2026 without a separate
+authorization gate.

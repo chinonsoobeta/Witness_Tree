@@ -11,13 +11,17 @@ import os from "node:os";
 import path from "node:path";
 
 const DATA_ROOT = process.env.WITNESS_TREE_DATA_ROOT ?? "/Volumes/Extended_SSD/Witness_Tree-data";
-const OUT_DIR = path.join(DATA_ROOT, "derived/boundary-overlays-v2");
+const PRODUCT_ID = "boundary-overlays-v3";
+const OUT_DIR = path.join(DATA_ROOT, "derived", PRODUCT_ID);
 const BUCKET = "witness-tree-public-delivery-ca-central-1";
 const DISTRIBUTION = "https://d3g1406o0uekin.cloudfront.net";
-const RELEASE = "boundary-overlays-v2";
+const RELEASE = PRODUCT_ID;
 
 const aws = (args) => execFileSync("aws", args, { encoding: "utf8", maxBuffer: 1 << 26 });
 const manifest = JSON.parse(fs.readFileSync(path.join(OUT_DIR, "manifest.json"), "utf8"));
+if (manifest.productId !== PRODUCT_ID) {
+  throw new Error(`Expected ${PRODUCT_ID} build manifest, found ${manifest.productId ?? "none"}`);
+}
 
 const releaseId = createHash("sha256")
   .update(manifest.archives.map((a) => `${a.overlay}:${a.sha256}`).join("\n"))
@@ -26,53 +30,70 @@ const prefix = `releases/${RELEASE}/${releaseId}/tiles`;
 
 const published = [];
 const readbackDir = fs.mkdtempSync(path.join(os.tmpdir(), "boundary-overlay-readback-"));
-for (const archive of manifest.archives) {
-  const local = path.join(OUT_DIR, archive.fileName);
-  const actual = createHash("sha256").update(fs.readFileSync(local)).digest("hex");
-  if (actual !== archive.sha256) throw new Error(`${archive.fileName}: local bytes drifted from the manifest`);
+try {
+  for (const archive of manifest.archives) {
+    const local = path.join(OUT_DIR, archive.fileName);
+    const actual = createHash("sha256").update(fs.readFileSync(local)).digest("hex");
+    if (actual !== archive.sha256) throw new Error(`${archive.fileName}: local bytes drifted from the manifest`);
 
-  const key = `${prefix}/${archive.fileName}`;
-  let existing = null;
-  try {
-    existing = JSON.parse(aws(["s3api", "head-object", "--bucket", BUCKET, "--key", key, "--output", "json"]));
-  } catch {
-    existing = null;
-  }
-  if (existing) {
-    if (existing.ContentLength !== archive.byteLength) {
-      throw new Error(`${key} already published with ${existing.ContentLength} bytes, refusing to overwrite`);
+    const key = `${prefix}/${archive.fileName}`;
+    let existing = null;
+    try {
+      existing = JSON.parse(aws(["s3api", "head-object", "--bucket", BUCKET, "--key", key, "--output", "json"]));
+    } catch {
+      existing = null;
     }
-    process.stderr.write(`${archive.fileName} already published, unchanged\n`);
-  } else {
-    // The bucket denies any release write that is not conditional on the object
-    // being absent, so create-once is enforced by the policy rather than by this
-    // script being careful. Release objects also cannot be deleted.
-    aws([
-      "s3api", "put-object",
-      "--bucket", BUCKET,
-      "--key", key,
-      "--body", local,
-      "--content-type", "application/octet-stream",
-      "--if-none-match", "*",
-      "--output", "json",
-    ]);
-    process.stderr.write(`${archive.fileName} uploaded\n`);
-  }
+    if (existing) {
+      if (existing.ContentLength !== archive.byteLength) {
+        throw new Error(`${key} already published with ${existing.ContentLength} bytes, refusing to overwrite`);
+      }
+      process.stderr.write(`${archive.fileName} already published, unchanged\n`);
+    } else {
+      // The bucket denies any release write that is not conditional on the object
+      // being absent, so create-once is enforced by the policy rather than by this
+      // script being careful. Release objects also cannot be deleted.
+      aws([
+        "s3api", "put-object",
+        "--bucket", BUCKET,
+        "--key", key,
+        "--body", local,
+        "--content-type", "application/octet-stream",
+        "--if-none-match", "*",
+        "--output", "json",
+      ]);
+      process.stderr.write(`${archive.fileName} uploaded\n`);
+    }
 
-  const head = JSON.parse(aws(["s3api", "head-object", "--bucket", BUCKET, "--key", key, "--output", "json"]));
-  if (head.ContentLength !== archive.byteLength) {
-    throw new Error(`${key}: published length ${head.ContentLength} does not match ${archive.byteLength}`);
+    const head = JSON.parse(aws(["s3api", "head-object", "--bucket", BUCKET, "--key", key, "--output", "json"]));
+    if (head.ContentLength !== archive.byteLength) {
+      throw new Error(`${key}: published length ${head.ContentLength} does not match ${archive.byteLength}`);
+    }
+    const readback = path.join(readbackDir, archive.fileName);
+    aws(["s3api", "get-object", "--bucket", BUCKET, "--key", key, readback, "--output", "json"]);
+    const remoteLength = fs.statSync(readback).size;
+    const remoteSha256 = createHash("sha256").update(fs.readFileSync(readback)).digest("hex");
+    if (remoteLength !== archive.byteLength || remoteSha256 !== archive.sha256) {
+      throw new Error(`${key}: exact S3 readback does not match the local archive`);
+    }
+
+    const url = `${DISTRIBUTION}/${prefix}/${archive.fileName}`;
+    const response = await fetch(url, {
+      cache: "no-store",
+      headers: { "accept-encoding": "identity", "cache-control": "no-cache" },
+    });
+    if (!response.ok) {
+      throw new Error(`${archive.fileName}: CloudFront readback returned HTTP ${response.status}`);
+    }
+    const cloudFrontBytes = Buffer.from(await response.arrayBuffer());
+    const cloudFrontSha256 = createHash("sha256").update(cloudFrontBytes).digest("hex");
+    if (cloudFrontBytes.length !== archive.byteLength || cloudFrontSha256 !== archive.sha256) {
+      throw new Error(`${archive.fileName}: exact CloudFront readback does not match the local archive`);
+    }
+    published.push({ ...archive, url });
   }
-  const readback = path.join(readbackDir, archive.fileName);
-  aws(["s3api", "get-object", "--bucket", BUCKET, "--key", key, readback, "--output", "json"]);
-  const remoteLength = fs.statSync(readback).size;
-  const remoteSha256 = createHash("sha256").update(fs.readFileSync(readback)).digest("hex");
-  if (remoteLength !== archive.byteLength || remoteSha256 !== archive.sha256) {
-    throw new Error(`${key}: exact remote readback does not match the local archive`);
-  }
-  published.push({ ...archive, url: `${DISTRIBUTION}/${prefix}/${archive.fileName}` });
+} finally {
+  fs.rmSync(readbackDir, { recursive: true, force: true });
 }
-fs.rmSync(readbackDir, { recursive: true, force: true });
 
 const release = {
   schemaVersion: "witness-tree/boundary-overlay-release/1",
@@ -80,8 +101,22 @@ const release = {
   releaseId,
   base: `${DISTRIBUTION}/${prefix}`,
   builtAt: manifest.builtAt,
+  transform: manifest.transform,
   sources: manifest.sources,
   archives: published,
 };
+const readback = {
+  schemaVersion: "witness-tree/boundary-overlay-release-readback/1",
+  releaseId,
+  recordedAt: new Date().toISOString(),
+  s3ExactReadback: true,
+  cloudFrontExactReadback: true,
+  archives: published.map(({ fileName, byteLength, sha256 }) => ({
+    fileName,
+    byteLength,
+    sha256,
+  })),
+};
 fs.writeFileSync("data/boundary-overlay-release.json", `${JSON.stringify(release, null, 2)}\n`);
+fs.writeFileSync("data/boundary-overlay-release-readback.json", `${JSON.stringify(readback, null, 2)}\n`);
 process.stdout.write(`${JSON.stringify(release, null, 2)}\n`);

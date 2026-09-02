@@ -43,26 +43,29 @@ Directly applicable detection accuracy remains **Unknown**.
 
 The exact Statistics Canada 2021 economic-region geometry is source-admitted:
 76 features and 76 distinct DGUIDs, including 44 regions in the four initial
-provinces. The bilingual immutable v2 tile archive is released with exact
-remote readback. A regional forest-loss aggregate remains unreleased.
+provinces. The bilingual immutable v3 tile archive contains those 44 regions
+clipped to the official province boundaries and passed exact S3 and CloudFront
+readback. A regional forest-loss aggregate remains unreleased.
 
 The source-admitted watershed geometry is NRCan's national Water Survey of Canada
 sub-drainage-area rollup archive, version 6.0 at 1:1,000,000 scale. It is a
 single 50.9 MB federal ZIP with stable WSCSDA codes and bilingual names, and it
 covers all four initial provinces. Exact staging found 184 coded features,
 including 15 explicitly USA-only `U*` records; the recorded Canadian overlay
-selection therefore contains 169. Its immutable v2 boundary archive passed
-exact remote readback; no watershed forest-loss aggregate is claimed. The
+selection therefore contains 169. Intersecting that selection with the four
+official province boundaries produces 105 coded areas, with cross-border
+watersheds intentionally truncated. The immutable v3 boundary archive passed
+exact S3 and CloudFront readback; no watershed forest-loss aggregate is claimed. The
 older 164-area narrative is not being
 substituted for the archive's measured contents. Statistics Canada did not
 adopt NRCan version 6.0 for SDAC dissemination, so the released reference
 overlay retains the NRCan version label rather than being called the current
 SDAC.
 
-Province flags remain omitted. British Columbia, Alberta and Québec publish
-reusable official artwork under conditions, but Ontario requires prior written
-authorization to reproduce its Red Ensign. A text-only switcher is retained so
-the interface does not imply a permission that has not been obtained.
+The landing page and Explore map now share a province bar with compact inline
+SVG renditions of all four flags. Public-domain source files are recorded in
+`docs/THIRD_PARTY.md`, and no flag image is hotlinked at runtime. The owner
+directed this use on 2 September 2026 without a separate authorization gate.
 
 ## Other formal phase counts
 

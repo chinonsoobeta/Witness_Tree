@@ -1,49 +1,86 @@
 {
   "schemaVersion": "witness-tree/boundary-overlay-release/1",
-  "productId": "boundary-overlays-v2",
-  "releaseId": "2c3667c5e23d4f976791cc30ae8246f63e2aa03b4c4829a7006952cdd43f7ff8",
-  "base": "https://d3g1406o0uekin.cloudfront.net/releases/boundary-overlays-v2/2c3667c5e23d4f976791cc30ae8246f63e2aa03b4c4829a7006952cdd43f7ff8/tiles",
-  "builtAt": "2026-08-30T00:34:16.968Z",
+  "productId": "boundary-overlays-v3",
+  "releaseId": "4259310e49e4bf2a289463240a434529627415f81152f6104370764d07471339",
+  "base": "https://d3g1406o0uekin.cloudfront.net/releases/boundary-overlays-v3/4259310e49e4bf2a289463240a434529627415f81152f6104370764d07471339/tiles",
+  "builtAt": "2026-09-02T18:47:29.292Z",
+  "transform": {
+    "clip": {
+      "operation": "intersection",
+      "boundaryRelativePath": "raw/statcan-boundaries/2026-08-12/lpr_000b21a_e.zip",
+      "boundarySha256": "d28bbb15d7b49e3d1828755a5f1b4ebcee699ad70efe8b0f1b902d29ebffd20b",
+      "boundaryLayer": "lpr_000b21a_e",
+      "boundaryFilter": "PRUID IN ('24','35','48','59')",
+      "provinceIds": [
+        "24",
+        "35",
+        "48",
+        "59"
+      ],
+      "boundaryFeatureCount": 4,
+      "boundarySourceCrs": "EPSG:3347",
+      "outputCrs": "EPSG:4326",
+      "appliesTo": [
+        "economic-regions",
+        "watersheds"
+      ]
+    }
+  },
   "sources": [
     {
       "id": "fed-2023-ridings",
       "overlay": "federal-ridings",
       "jurisdiction": "CA",
       "sha256": "ca50eb02e1baee076ebec1b8e8511ca6697e8e48cef68bf5d1d74f5458681c05",
+      "inputFeatureCount": 352,
+      "inputDistinctCount": 343,
       "featureCount": 352,
-      "districtCount": 343
+      "districtCount": 343,
+      "clippedToProvinceBoundary": false
     },
     {
       "id": "bc-provincial-electoral-districts-2023",
       "overlay": "provincial-ridings",
       "jurisdiction": "BC",
       "sha256": "d2403eeb488be4ef761f7dcbc72c25f8af3a046fce9980536307ba145993f193",
+      "inputFeatureCount": 93,
+      "inputDistinctCount": 93,
       "featureCount": 93,
-      "districtCount": 93
+      "districtCount": 93,
+      "clippedToProvinceBoundary": false
     },
     {
       "id": "ontario-electoral-districts-2022",
       "overlay": "provincial-ridings",
       "jurisdiction": "ON",
       "sha256": "70fd809a4998147b228fd9275e34e569be8ae1fd67470e2f4a20761e5d1e7cae",
+      "inputFeatureCount": 124,
+      "inputDistinctCount": 124,
       "featureCount": 124,
-      "districtCount": 124
+      "districtCount": 124,
+      "clippedToProvinceBoundary": false
     },
     {
       "id": "ab-electoral-divisions-2019",
       "overlay": "provincial-ridings",
       "jurisdiction": "AB",
       "sha256": "89d0393f8046fe9178f630012fbf4a68718e898f538523554e211fc8dae526a4",
+      "inputFeatureCount": 87,
+      "inputDistinctCount": 87,
       "featureCount": 87,
-      "districtCount": 87
+      "districtCount": 87,
+      "clippedToProvinceBoundary": false
     },
     {
       "id": "qc-electoral-districts-2026",
       "overlay": "provincial-ridings",
       "jurisdiction": "QC",
       "sha256": "dd164f0ad5ff7e9f5366f26696d78b9c562ceb88b3a5ad664c22a8e158843677",
+      "inputFeatureCount": 127,
+      "inputDistinctCount": 127,
       "featureCount": 127,
-      "districtCount": 127
+      "districtCount": 127,
+      "clippedToProvinceBoundary": false
     },
     {
       "id": "statcan-economic-regions-2021",
@@ -51,8 +88,14 @@
       "jurisdiction": "CA",
       "sha256": "b1bcb1305a04c6ddf9b74bdee545616a85ef6ff2e5622de343c34b122bdb08f7",
       "frenchSha256": "02449dd7bccfd6338b554821fd6fab8430cd1720d2b53b1ad8499746ae538c1b",
-      "featureCount": 76,
-      "districtCount": 76
+      "inputFeatureCount": 76,
+      "inputDistinctCount": 76,
+      "selectedFeatureCount": 44,
+      "featureCount": 44,
+      "sourceFeatureCount": 76,
+      "districtCount": 44,
+      "selection": "PRUID IN ('24','35','48','59')",
+      "clippedToProvinceBoundary": true
     },
     {
       "id": "nrcan-wsc-sub-drainage-v6",
@@ -62,48 +105,56 @@
       "outerSha256": "9afc4f505cc7d86e20c1296b7695b6ccae94fd085ed94f7be3178811583d8213",
       "outerMember": "canadwscsda_p_1m_v6-0_shp.zip",
       "outerMemberByteLength": 23489341,
-      "featureCount": 169,
-      "districtCount": 169,
+      "inputFeatureCount": 184,
+      "inputDistinctCount": 184,
+      "selectedFeatureCount": 169,
+      "featureCount": 105,
       "sourceFeatureCount": 184,
-      "selection": "WSCSDA NOT LIKE 'U%'"
+      "districtCount": 105,
+      "selection": "WSCSDA NOT LIKE 'U%'",
+      "clippedToProvinceBoundary": true
     }
   ],
   "archives": [
     {
       "overlay": "federal-ridings",
       "layer": "federal_ridings",
-      "fileName": "federal-ridings-v2.pmtiles",
+      "fileName": "federal-ridings-v3.pmtiles",
       "featureCount": 352,
+      "clippedToProvinceBoundary": false,
       "byteLength": 2674670,
-      "sha256": "e1560352785a99b94e158ec7bb1a1a428a32123821f7ce04b992570e2cc5d6c0",
-      "url": "https://d3g1406o0uekin.cloudfront.net/releases/boundary-overlays-v2/2c3667c5e23d4f976791cc30ae8246f63e2aa03b4c4829a7006952cdd43f7ff8/tiles/federal-ridings-v2.pmtiles"
+      "sha256": "4d45819383e2af72aac3c321b58ad8575ff5d5daf0b178293d112429aa1cb4ef",
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/boundary-overlays-v3/4259310e49e4bf2a289463240a434529627415f81152f6104370764d07471339/tiles/federal-ridings-v3.pmtiles"
     },
     {
       "overlay": "provincial-ridings",
       "layer": "provincial_ridings",
-      "fileName": "provincial-ridings-v2.pmtiles",
+      "fileName": "provincial-ridings-v3.pmtiles",
       "featureCount": 431,
-      "byteLength": 2117944,
-      "sha256": "46e88ea0bebb87383288c62bb850e647ed73b83ecea3f9e63d4809105d7b20aa",
-      "url": "https://d3g1406o0uekin.cloudfront.net/releases/boundary-overlays-v2/2c3667c5e23d4f976791cc30ae8246f63e2aa03b4c4829a7006952cdd43f7ff8/tiles/provincial-ridings-v2.pmtiles"
+      "clippedToProvinceBoundary": false,
+      "byteLength": 2117946,
+      "sha256": "afbb7fee81e796546de4c61661b90bf9fe5ec825d1762da734396a27445f1a5d",
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/boundary-overlays-v3/4259310e49e4bf2a289463240a434529627415f81152f6104370764d07471339/tiles/provincial-ridings-v3.pmtiles"
     },
     {
       "overlay": "economic-regions",
       "layer": "economic_regions",
-      "fileName": "economic-regions-v2.pmtiles",
-      "featureCount": 76,
-      "byteLength": 2135557,
-      "sha256": "221a27b68b8c0aa37e63c64c1332e2e81384f703a3ec864b321e236752d45875",
-      "url": "https://d3g1406o0uekin.cloudfront.net/releases/boundary-overlays-v2/2c3667c5e23d4f976791cc30ae8246f63e2aa03b4c4829a7006952cdd43f7ff8/tiles/economic-regions-v2.pmtiles"
+      "fileName": "economic-regions-v3.pmtiles",
+      "featureCount": 44,
+      "clippedToProvinceBoundary": true,
+      "byteLength": 4066915,
+      "sha256": "3b5cfd24d93716ac1d7266b9ffdf3287accb643cf2ed480acf45b7dbbe0c8c97",
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/boundary-overlays-v3/4259310e49e4bf2a289463240a434529627415f81152f6104370764d07471339/tiles/economic-regions-v3.pmtiles"
     },
     {
       "overlay": "watersheds",
       "layer": "watersheds",
-      "fileName": "watersheds-v2.pmtiles",
-      "featureCount": 169,
-      "byteLength": 11921998,
-      "sha256": "c6d6596172e7b74973e54e4c993670afed7f190e8223fc5964b8cf3d69a18617",
-      "url": "https://d3g1406o0uekin.cloudfront.net/releases/boundary-overlays-v2/2c3667c5e23d4f976791cc30ae8246f63e2aa03b4c4829a7006952cdd43f7ff8/tiles/watersheds-v2.pmtiles"
+      "fileName": "watersheds-v3.pmtiles",
+      "featureCount": 105,
+      "clippedToProvinceBoundary": true,
+      "byteLength": 5289981,
+      "sha256": "74f0ca0a90e33959f758a0da01c52331bee1e0e83fed8c9cb1f0ab32da8ccab7",
+      "url": "https://d3g1406o0uekin.cloudfront.net/releases/boundary-overlays-v3/4259310e49e4bf2a289463240a434529627415f81152f6104370764d07471339/tiles/watersheds-v3.pmtiles"
     }
   ]
 }
