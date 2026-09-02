@@ -40,3 +40,7 @@ yarn-error.log*
 /outputs/
 /work/
 __pycache__/
+
+# Local Worker variables. Never committed: this file is how a developer points
+# a local run at a service binding, and it is the standard place a secret lands.
+/.dev.vars

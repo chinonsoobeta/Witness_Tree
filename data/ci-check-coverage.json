@@ -78,6 +78,11 @@
       "reason": "This source-access status gate is reviewed in the owner-run local gate set."
     },
     {
+      "check": "scripts/check-coarse-grid-tiles-bytes.mts",
+      "category": "data-root-bound",
+      "reason": "It reads all 2067 packed coarse-grid tiles from the approved data root and verifies each digest, so it cannot run in CI. Its CI-runnable half is check:coarse-grid-tiles, which verifies the committed record."
+    },
+    {
       "check": "scripts/check-coverage-geometry-admission.mjs",
       "category": "owner-invoked",
       "reason": "This admission decision can remain blocked and is reviewed in the owner-run local gate set."

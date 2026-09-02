@@ -41,6 +41,7 @@ jobs:
       - run: npm run check:interval-release
       - run: npm run check:interval-method
       - run: npm run check:address-lookup
+      - run: npm run check:coarse-grid-tiles
       - run: npm run check:district-resolve
       - run: npm run check:shape-measure
       - run: npm run check:ci-check-coverage

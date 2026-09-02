@@ -21,6 +21,7 @@
 
 import { useId, useState } from "react";
 import type { Locale } from "@/lib/domain";
+import { ShapeDrawMap } from "./ShapeDrawMap";
 
 type Corner = Readonly<{ latitude: number; longitude: number }>;
 type Bracket = Readonly<{ low: number; estimate: number; high: number }>;
@@ -47,6 +48,10 @@ type Measurement = Readonly<{
 const FIRST_YEAR = 1984;
 const LAST_YEAR = 2022;
 const MISSING = "–";
+// The worker refuses a shape with more vertices than this, so the pointer path
+// stops adding at the same number rather than letting a reader draw a shape the
+// measurement will then reject.
+const MAX_CORNERS = 250;
 
 const copy = {
   en: {
@@ -370,6 +375,15 @@ export function ShapeMeasureClient({ locale }: { locale: Locale }) {
             </button>
           </fieldset>
         )}
+
+        <ShapeDrawMap
+          locale={locale}
+          kind={kind}
+          corners={kind === "rectangle" ? activeCorners : corners}
+          maxCorners={MAX_CORNERS}
+          onPolygon={setCorners}
+          onRectangle={setEdges}
+        />
 
         <div className="shape-period">
           <div className="shape-field">
