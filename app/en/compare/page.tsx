@@ -45,7 +45,6 @@ export default async function ComparePage({
         />
         <SideBySideComparison
           places={[selected.left, selected.right]}
-          context={federalRidingComparison.context}
           locale="en"
           view={view}
           leftId={selected.left.id}

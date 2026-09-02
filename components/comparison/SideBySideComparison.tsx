@@ -2,14 +2,12 @@ import { EvidenceChip } from "@/components/policy";
 import {
   comparePlaces,
   type ComparisonPlace,
-  type RankingContext,
 } from "@/lib/comparison";
 import { formatHectares, formatPercent, type Locale } from "@/lib/domain";
 import { MeasurementCoverage } from "./MeasurementCoverage";
 
 export function SideBySideComparison({
   places,
-  context,
   locale,
   view = "cards",
   leftId,
@@ -17,7 +15,6 @@ export function SideBySideComparison({
   sort,
 }: {
   places: readonly ComparisonPlace[];
-  context: RankingContext;
   locale: Locale;
   view?: "cards" | "table";
   leftId?: string;
@@ -37,7 +34,6 @@ export function SideBySideComparison({
           forest: "Forested area",
           coverage: "Coverage",
           evidence: "Evidence",
-          method: "Method",
         }
       : {
           title: "Comparaison côte à côte",
@@ -49,13 +45,7 @@ export function SideBySideComparison({
           forest: "Superficie forestière",
           coverage: "Couverture",
           evidence: "Élément de preuve",
-          method: "Méthode",
         };
-  const methodNote = (
-    <p className="comparison-method">
-      {labels.method}: {context.method[locale]}
-    </p>
-  );
   const unknown = locale === "en" ? "Unknown" : "Inconnu";
   const percent = (value: number | null) => value === null ? unknown : formatPercent(value, locale);
   const hectares = (value: number | null) => value === null ? unknown : formatHectares(value, locale);
@@ -121,7 +111,6 @@ export function SideBySideComparison({
             </tbody>
           </table>
         </div>
-        {methodNote}
       </section>
     );
   }
@@ -135,7 +124,6 @@ export function SideBySideComparison({
         <Place place={left} locale={locale} unknown={unknown} />
         <Place place={right} locale={locale} unknown={unknown} />
       </div>
-      {methodNote}
     </section>
   );
 }

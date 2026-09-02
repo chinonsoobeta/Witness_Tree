@@ -2628,11 +2628,6 @@ dd > a:only-child {
   font-family: var(--mono);
   font-size: 13px;
 }
-.comparison-method {
-  color: var(--ink-2);
-  max-width: var(--measure);
-}
-
 /* ==========================================================================
    Phase 5: record pages (place records and location results)
    ========================================================================== */
