@@ -1126,6 +1126,15 @@ h4 {
   flex-wrap: wrap;
   margin-top: 24px;
 }
+.landing-hero {
+  padding-block: 80px 48px;
+}
+.landing-hero h1 {
+  max-width: 15ch;
+}
+.landing-action {
+  margin: 24px 0 0;
+}
 .province-bar-item,
 .province-bar button {
   display: inline-flex;
@@ -1168,6 +1177,33 @@ h4 {
 .lead {
   color: var(--ink-2);
   font-size: 19px;
+}
+.landing-record-band {
+  margin-inline: calc(50% - 50vw);
+  padding: 72px max(20px, calc((100vw - var(--plate)) / 2));
+  background: var(--surface-2);
+}
+.landing-record-band > h2 {
+  max-width: 20ch;
+  margin: 14px 0 18px;
+  font-size: clamp(30px, 4vw, 46px);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+}
+.landing-record-band > .lead {
+  max-width: var(--measure);
+  margin: 0;
+}
+.landing-record-evidence {
+  max-width: var(--plate);
+}
+.landing-record-band .landing-action a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-family: var(--ui);
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .principles {

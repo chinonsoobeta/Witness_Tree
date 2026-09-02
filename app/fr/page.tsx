@@ -13,20 +13,21 @@ function coverageLabel(row: (typeof EXPLORE_PRODUCTION_LAYER.rows)[number]) {
 
 export default function FrenchHome() {
   return <SiteShell locale="fr"><main id="main" className="page-wrap">
-    <header className="masthead">
+    <header className="masthead landing-hero">
       <p className="eyebrow">Registre de preuves · {EXPLORE_COVERAGE_PERIOD.fr}</p>
       <h1>Qu’est-il arrivé à la forêt ici?</h1>
-      <p className="dek">{PRODUCT_NAME.fr} aide à comprendre les pertes forestières consignées et détectées dans quatre provinces.</p>
+      <p className="dek">{PRODUCT_NAME.fr} aide à comprendre les pertes forestières consignées et détectées dans quatre provinces. D’autres provinces s’ajouteront bientôt.</p>
       <ProvinceBar locale="fr" />
+      <p className="landing-action"><Link className="btn btn--primary" href="/fr/explorer">Explorer l’agrégat provincial</Link></p>
     </header>
-    <section className="content-section prose-measure" aria-labelledby="registre-actuel">
-      <div className="section-heading"><span className="num">01</span><h2 id="registre-actuel">Commencer par le registre actuel</h2></div>
-      <p className="lead">L’agrégat provincial provisoire et limité de {EXPLORE_PRODUCTION_LAYER.period} est prêt à explorer. Il présente la perte forestière détectée avec un état de couverture pour chaque province. Une vérification complète de l’étendue cartographiée de {EXPLORE_COVERAGE_PERIOD.fr} régit maintenant la classification des zones inconnues.</p>
-      <dl className="principles">
+    <section className="content-section landing-record-band" aria-labelledby="registre-actuel">
+      <p className="eyebrow">Registre actuel · 01</p>
+      <h2 id="registre-actuel">Comparez quatre provinces sans masquer les zones inconnues</h2>
+      <p className="lead">L’agrégat provincial provisoire et limité de {EXPLORE_PRODUCTION_LAYER.period} compare la perte forestière détectée, en gardant visibles l’état de couverture et la superficie inconnue de chaque province.</p>
+      <dl className="principles landing-record-evidence">
         {EXPLORE_PRODUCTION_LAYER.rows.map((row) => <div className="principle" key={row.id}><dt>{row.name.fr}</dt><dd>{formatHectares(row.observedLossHectares, "fr")} de perte détectée ({formatPercent(row.observedLossPercent, "fr")}) · {coverageLabel(row)}</dd></div>)}
       </dl>
-      <p><Link className="btn btn--primary" href="/fr/explorer">Explorer l’agrégat provincial</Link></p>
-      <p><small>D’autres provinces s’ajouteront bientôt.</small></p>
+      <p className="landing-action"><Link href="/fr/explorer">Explorer le registre actuel</Link></p>
     </section>
     <section className="content-section prose-measure">
       <div className="section-heading"><span className="num">02</span><h2>Un registre, pas un tableau de bord</h2></div>

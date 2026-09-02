@@ -13,20 +13,21 @@ function coverageLabel(row: (typeof EXPLORE_PRODUCTION_LAYER.rows)[number]) {
 
 export default function EnglishHome() {
   return <SiteShell locale="en"><main id="main" className="page-wrap">
-    <header className="masthead">
+    <header className="masthead landing-hero">
       <p className="eyebrow">Evidence record · {EXPLORE_COVERAGE_PERIOD.en}</p>
       <h1>What happened to the forest here?</h1>
-      <p className="dek">{PRODUCT_NAME.en} helps you understand recorded and detected forest loss in four provinces.</p>
+      <p className="dek">{PRODUCT_NAME.en} helps you understand recorded and detected forest loss in four provinces. Other provinces are coming soon.</p>
       <ProvinceBar locale="en" />
+      <p className="landing-action"><Link className="btn btn--primary" href="/en/explore">Explore the province aggregate</Link></p>
     </header>
-    <section className="content-section prose-measure" aria-labelledby="current-record">
-      <div className="section-heading"><span className="num">01</span><h2 id="current-record">Start with the current record</h2></div>
-      <p className="lead">The bounded, provisional {EXPLORE_PRODUCTION_LAYER.period} province aggregate is available to explore. It reports detected forest loss with a coverage state for each province. A complete {EXPLORE_COVERAGE_PERIOD.en} mapped-extent verification now governs how unknown areas are classified.</p>
-      <dl className="principles">
+    <section className="content-section landing-record-band" aria-labelledby="current-record">
+      <p className="eyebrow">Current record · 01</p>
+      <h2 id="current-record">Compare four provinces without hiding unknown areas</h2>
+      <p className="lead">The bounded, provisional {EXPLORE_PRODUCTION_LAYER.period} aggregate compares detected forest loss while keeping each province’s coverage state and unknown area visible.</p>
+      <dl className="principles landing-record-evidence">
         {EXPLORE_PRODUCTION_LAYER.rows.map((row) => <div className="principle" key={row.id}><dt>{row.name.en}</dt><dd>{formatHectares(row.observedLossHectares, "en")} detected loss ({formatPercent(row.observedLossPercent, "en")}) · {coverageLabel(row)}</dd></div>)}
       </dl>
-      <p><Link className="btn btn--primary" href="/en/explore">Explore the province aggregate</Link></p>
-      <p><small>Other provinces are coming soon.</small></p>
+      <p className="landing-action"><Link href="/en/explore">Explore the current record</Link></p>
     </section>
     <section className="content-section prose-measure">
       <div className="section-heading"><span className="num">02</span><h2>A record, not a dashboard</h2></div>
