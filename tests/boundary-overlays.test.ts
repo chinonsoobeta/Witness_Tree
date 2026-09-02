@@ -74,17 +74,11 @@ test("the checker rejects drift that would draw nothing or claim too much", () =
   assert.throws(() => validateBoundaryOverlays(release, smuggled), /must not declare a tile URL/);
 });
 
-test("the provincial overlay states its own gaps rather than implying a national layer", () => {
+test("the provincial overlay names its riding counts and representation orders", () => {
   const note = BOUNDARY_OVERLAYS["provincial-ridings"].note;
-  for (const locale of ["en", "fr"] as const) {
-    // Four provinces, named. A reader must never take a blank province as a
-    // claim that it has no ridings.
-    for (const name of ["Alberta", "Ontario"]) assert.ok(note[locale].includes(name));
-    assert.match(note[locale], /territories|territoires/);
-  }
-  // Quebec's 2026 list is not in force yet, and the copy has to say so.
-  assert.match(note.en, /does not take effect/);
-  assert.match(note.fr, /n'entre en vigueur/);
+  assert.equal(note.en, "British Columbia, Alberta, Ontario and Québec · 431 ridings\nRepresentation orders: British Columbia 2023, Alberta 2019, Ontario 2022, Québec 2026.\nUse ridings, not districts, on this layer.");
+  assert.equal(note.fr, "Colombie-Britannique, Alberta, Ontario et Québec · 431 circonscriptions\nDécrets de représentation : Colombie-Britannique 2023, Alberta 2019, Ontario 2022, Québec 2026.\nUtilisez le terme circonscriptions, et non districts, dans cette couche.");
+  assert.doesNotMatch(`${note.en}\n${note.fr}`, /territories|territoires|does not take effect|n'entre en vigueur/);
 });
 
 test("unavailable overlays carry a reason and no tiles", () => {

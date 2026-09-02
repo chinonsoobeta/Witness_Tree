@@ -16,7 +16,7 @@ export default function FrenchHome() {
     <header className="masthead">
       <p className="eyebrow">Registre de preuves · {EXPLORE_COVERAGE_PERIOD.fr}</p>
       <h1>Qu’est-il arrivé à la forêt ici?</h1>
-      <p className="dek">{PRODUCT_NAME.fr} aide à comprendre les pertes forestières consignées et détectées dans quatre provinces. Chaque résultat indique ce que montrent les preuves, leur provenance, leur actualité et ce qu’elles ne permettent pas d’établir.</p>
+      <p className="dek">{PRODUCT_NAME.fr} aide à comprendre les pertes forestières consignées et détectées dans quatre provinces.</p>
       <div className="meta-row"><span>Colombie-Britannique</span><span>Alberta</span><span>Ontario</span><span>Québec</span></div>
     </header>
     <section className="content-section prose-measure" aria-labelledby="registre-actuel">
@@ -26,7 +26,7 @@ export default function FrenchHome() {
         {EXPLORE_PRODUCTION_LAYER.rows.map((row) => <div className="principle" key={row.id}><dt>{row.name.fr}</dt><dd>{formatHectares(row.observedLossHectares, "fr")} de perte détectée ({formatPercent(row.observedLossPercent, "fr")}) · {coverageLabel(row)}</dd></div>)}
       </dl>
       <p><Link className="btn btn--primary" href="/fr/explorer">Explorer l’agrégat provincial</Link></p>
-      <p><small>Portée : la Colombie-Britannique, l’Alberta, l’Ontario et le Québec passent d’abord. Cet aperçu technique limité à quatre provinces ne constitue pas une affirmation au sujet des autres provinces ou des territoires.</small></p>
+      <p><small>D’autres provinces s’ajouteront bientôt.</small></p>
     </section>
     <section className="content-section prose-measure">
       <div className="section-heading"><span className="num">02</span><h2>Un registre, pas un tableau de bord</h2></div>

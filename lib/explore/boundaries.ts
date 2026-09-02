@@ -68,13 +68,9 @@ export const BOUNDARY_OVERLAYS: Readonly<Record<BoundaryOverlayId, BoundaryOverl
       sourceLayer: "provincial_ridings",
       colour: EXPLORE_MAP_COLOURS.observation,
       dash: [3, 2],
-      // Four provinces, and that is the layer's scope rather than a shortfall
-      // against some wider promise. Naming the scope on the layer itself is
-      // still necessary: a reader who sees no boundary over Saskatchewan must
-      // not read that as a claim that Saskatchewan has no ridings.
       note: {
-        en: "British Columbia, Alberta, Ontario and Québec, 431 districts. Those four provinces are what this layer covers. Other provinces and the territories are not drawn, which says nothing about them. Québec's 127 districts are the 2026 list, which does not take effect until the 43rd legislature ends.",
-        fr: "Colombie-Britannique, Alberta, Ontario et Québec, 431 circonscriptions. Ces quatre provinces constituent la portée de cette couche. Les autres provinces et les territoires ne sont pas tracés, ce qui n'énonce rien à leur sujet. Les 127 circonscriptions du Québec sont la liste de 2026, qui n'entre en vigueur qu'à la fin de la 43e législature.",
+        en: "British Columbia, Alberta, Ontario and Québec · 431 ridings\nRepresentation orders: British Columbia 2023, Alberta 2019, Ontario 2022, Québec 2026.\nUse ridings, not districts, on this layer.",
+        fr: "Colombie-Britannique, Alberta, Ontario et Québec · 431 circonscriptions\nDécrets de représentation : Colombie-Britannique 2023, Alberta 2019, Ontario 2022, Québec 2026.\nUtilisez le terme circonscriptions, et non districts, dans cette couche.",
       },
       attribution: {
         en: "Elections BC; Open Government Licence – Alberta; Elections Ontario; Élections Québec.",

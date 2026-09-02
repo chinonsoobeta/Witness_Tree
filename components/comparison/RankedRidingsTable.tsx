@@ -139,17 +139,20 @@ export function RankedRidingsTable({
   };
   return (
     <section className="comparison-table" aria-label={copy.metric}>
-      <header className="card card--sand comparison-context">
-        <p className="comparison-context-meta">
-          {context.timeRange} · {context.boundaryEdition} ·{" "}
-          {context.dataVersion}
-        </p>
-        <p>{context.denominatorDefinition[locale]}</p>
-        <p>{context.method[locale]}</p>
-        <p>{unrankedCopy.summary(result.ranked.length, rows.length, noneMapped.length, partial.length, belowFloor.length)}</p>
-        <p>{copy.officialMatching}</p>
-        <EvidenceChip evidence={context.evidence} locale={locale} />
-      </header>
+      <details className="card card--sand comparison-context">
+        <summary>{locale === "en" ? "How this ranking works" : "Comment fonctionne ce classement"}</summary>
+        <div className="comparison-context-body">
+          <p className="comparison-context-meta">
+            {context.timeRange} · {context.boundaryEdition} ·{" "}
+            {context.dataVersion}
+          </p>
+          <p>{context.denominatorDefinition[locale]}</p>
+          <p>{context.method[locale]}</p>
+          <p>{unrankedCopy.summary(result.ranked.length, rows.length, noneMapped.length, partial.length, belowFloor.length)}</p>
+          <p>{copy.officialMatching}</p>
+          <EvidenceChip evidence={context.evidence} locale={locale} />
+        </div>
+      </details>
       <nav className="segment" aria-label={locale === "en" ? "Ranking order" : "Ordre du classement"}>
         <a className="segment-option" href={sortHref("share-desc")} aria-current={sort === "share-desc" ? "page" : undefined}>
           {locale === "en" ? "Highest share first" : "Part la plus élevée en premier"}

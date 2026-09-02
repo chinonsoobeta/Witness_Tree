@@ -16,7 +16,7 @@ export default function EnglishHome() {
     <header className="masthead">
       <p className="eyebrow">Evidence record · {EXPLORE_COVERAGE_PERIOD.en}</p>
       <h1>What happened to the forest here?</h1>
-      <p className="dek">{PRODUCT_NAME.en} helps you understand recorded and detected forest loss in four provinces. Every result shows what the evidence says, where it came from, how current it is, and what it cannot tell you.</p>
+      <p className="dek">{PRODUCT_NAME.en} helps you understand recorded and detected forest loss in four provinces.</p>
       <div className="meta-row"><span>British Columbia</span><span>Alberta</span><span>Ontario</span><span>Quebec</span></div>
     </header>
     <section className="content-section prose-measure" aria-labelledby="current-record">
@@ -26,7 +26,7 @@ export default function EnglishHome() {
         {EXPLORE_PRODUCTION_LAYER.rows.map((row) => <div className="principle" key={row.id}><dt>{row.name.en}</dt><dd>{formatHectares(row.observedLossHectares, "en")} detected loss ({formatPercent(row.observedLossPercent, "en")}) · {coverageLabel(row)}</dd></div>)}
       </dl>
       <p><Link className="btn btn--primary" href="/en/explore">Explore the province aggregate</Link></p>
-      <p><small>Scope: British Columbia, Alberta, Ontario and Quebec come first. This bounded four-province technical preview is not a claim about other provinces or the territories.</small></p>
+      <p><small>Other provinces are coming soon.</small></p>
     </section>
     <section className="content-section prose-measure">
       <div className="section-heading"><span className="num">02</span><h2>A record, not a dashboard</h2></div>

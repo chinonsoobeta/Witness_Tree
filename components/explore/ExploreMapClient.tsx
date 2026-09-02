@@ -99,8 +99,6 @@ const text = {
     provinceAggregate: "Provisional province aggregate, 2020 to 2022",
     detectedPatches: "Detected forest-loss patches",
     mapView: "Map view",
-    framingViews:
-      "These buttons are framing views only; use Zoom to patches to reach the patch layer.",
     patchesBelowZoom:
       "Detected-loss patches begin at zoom 8. The current view is below that threshold.",
     zoomToPatches: "Zoom to patches",
@@ -179,8 +177,6 @@ const text = {
     provinceAggregate: "Agrégat provincial provisoire, de 2020 à 2022",
     detectedPatches: "Parcelles de perte forestière détectée",
     mapView: "Vue de la carte",
-    framingViews:
-      "Ces boutons servent seulement au cadrage; utilisez Zoomer vers les parcelles pour atteindre la couche de parcelles.",
     patchesBelowZoom:
       "Les parcelles de perte détectée commencent au zoom 8. La vue actuelle est sous ce seuil.",
     zoomToPatches: "Zoomer vers les parcelles",
@@ -899,7 +895,6 @@ export function ExploreMapClient({
                         </button>
                       ))}
                     </div>
-                    <p className="explore-map-note">{text[locale].framingViews}</p>
                   </fieldset>
                 ) : null}
                 {source === "pmtiles" &&

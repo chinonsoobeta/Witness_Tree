@@ -17,8 +17,10 @@ test("landing pages use the production aggregate and retain the bounded scope", 
   assert.match(french, /provisoire et limité/);
   assert.doesNotMatch(english, /The verified .* province aggregate/);
   assert.doesNotMatch(french, /agrégat provincial vérifié/);
-  assert.match(english, /British Columbia, Alberta, Ontario and Quebec come first/);
-  assert.match(french, /Colombie-Britannique, l’Alberta, l’Ontario et le Québec passent d’abord/);
+  assert.match(english, /Other provinces are coming soon/);
+  assert.match(french, /D’autres provinces s’ajouteront bientôt/);
+  assert.doesNotMatch(english, /Every result shows what the evidence says/);
+  assert.doesNotMatch(french, /Chaque résultat indique ce que montrent les preuves/);
 });
 
 test("public coverage copy derives from the bounded Explore period", async () => {

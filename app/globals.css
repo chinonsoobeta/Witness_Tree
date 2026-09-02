@@ -2562,6 +2562,14 @@ dd > a:only-child {
   margin-bottom: 20px;
   padding: 22px 26px;
 }
+.comparison-context summary {
+  cursor: pointer;
+  font-family: var(--ui);
+  font-weight: 700;
+}
+.comparison-context-body {
+  padding-top: 16px;
+}
 .comparison-context p {
   margin: 0 0 8px;
   color: var(--ink-2);

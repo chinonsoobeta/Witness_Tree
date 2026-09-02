@@ -161,7 +161,7 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
   assert.match(en, /sub-drainage rollup, version 6\.0, are drawn as a reference framework\./);
   assert.doesNotMatch(en, /not a regional forest-loss aggregate/);
   assert.doesNotMatch(en, /not a watershed forest-loss aggregate/);
-  // The provincial layer must never read as national coverage.
+  // The provincial layer names the exact riding count and boundary editions.
   for (const province of [
     "British Columbia",
     "Alberta",
@@ -169,7 +169,10 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
     "Québec",
   ])
     assert.match(en, new RegExp(province));
-  assert.match(en, /does not take effect until the 43rd legislature ends/);
+  assert.match(en, /431 ridings\s+Representation orders: British Columbia 2023, Alberta 2019, Ontario 2022, Québec 2026\./);
+  assert.match(en, /Use ridings, not districts, on this layer\./);
+  assert.match(fr, /431 circonscriptions\s+Décrets de représentation : Colombie-Britannique 2023, Alberta 2019, Ontario 2022, Québec 2026\./);
+  assert.match(fr, /Utilisez le terme circonscriptions, et non districts, dans cette couche\./);
   assert.match(listTable, /aria-label="List"/);
   assert.match(listTable, /<table/);
   assert.equal((listTable.match(/scope="col"/g) ?? []).length, 6);
@@ -400,7 +403,7 @@ test("map failures retain diagnostics, retry, and a reachable patch zoom", async
   assert.match(map, /zoom: EXPLORE_PER_CELL_LAYER\.minZoom/);
   assert.match(map, /center: map\.getCenter\(\)/);
   assert.match(map, /view\.zoom < EXPLORE_PER_CELL_LAYER\.minZoom/);
-  assert.match(map, /framing views only/);
+  assert.doesNotMatch(map, /framingViews|framing views only|servent seulement au cadrage/);
 });
 
 test("playback swaps only the annual source, starts at 1985, and stops visibly", async () => {
