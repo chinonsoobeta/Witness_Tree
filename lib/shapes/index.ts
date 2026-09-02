@@ -2,5 +2,6 @@
 // headers and would drag a server-only dependency into anything that imports
 // the geometry.
 export * from "./coverage";
+export * from "./draw";
 export * from "./measure";
 export * from "./tiles";

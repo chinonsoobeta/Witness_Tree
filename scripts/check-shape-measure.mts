@@ -29,6 +29,7 @@ const measure = read("lib/shapes/measure.ts");
 const tiles = read("lib/shapes/tiles.ts");
 const client = read("components/explore/ShapeMeasureClient.tsx");
 const worker = read("worker/index.ts");
+const draw = read("components/explore/ShapeDrawMap.tsx");
 
 // 1. The counts come from the packed grid, never from the tiles being drawn on.
 if (!route.includes("tileName(") || !route.includes("decodeTile(")) {
@@ -126,6 +127,47 @@ if (!/function clipToBox\(/.test(coverage) || !/function shoelaceArea\(/.test(co
 }
 if (coverage.includes("Math.round(fraction)")) {
   fail("an edge block must not be rounded wholly in or out of the shape.");
+}
+
+// 9. The pointer surface is an extra way in, never the only one, and it feeds
+// the same fields rather than a second path to the measurement.
+if (!/\bonPolygon\b/.test(draw) || !/\bonRectangle\b/.test(draw)) {
+  fail("the drawing map must hand its corners back to the fields rather than hold a shape of its own.");
+}
+if (draw.includes("fetch(") || draw.includes(ROUTE)) {
+  fail("the drawing map must not measure anything itself; the form owns the one request.");
+}
+if (!draw.includes("maxCorners") || !client.includes("MAX_CORNERS")) {
+  fail("the pointer path must stop at the same vertex cap the worker enforces.");
+}
+const unavailable = [...draw.matchAll(/^\s*unavailable:\s*"([^"]*)"/gm)].map((match) => match[1]);
+if (unavailable.length !== 2) {
+  fail("the drawing map must say in both languages what a reader can still do when it fails to load.");
+}
+if (!/fields/.test(unavailable[0] ?? "") || !/champs/.test(unavailable[1] ?? "")) {
+  fail("a map that fails to load must say the corner fields still work, in each language's own words.");
+}
+for (const key of ["caption", "hintPolygon", "hintRectangleStart", "undo", "reset"]) {
+  const written = draw.match(new RegExp(`^\\s*${key}:`, "gm")) ?? [];
+  if (written.length !== 2) fail(`the drawing map must carry ${key} in both languages.`);
+}
+if (/addProtocol|removeProtocol/.test(draw)) {
+  fail("the drawing map must not touch the global tile-protocol registry the explore map owns.");
+}
+if (!/setTimeout\([\s\S]{0,300}setState\("unavailable"\)[\s\S]{0,80}\}, LOAD_TIMEOUT_MS\)/.test(draw)) {
+  fail("the drawing map must give itself a load budget and fall back to the fields when it runs out.");
+}
+if (/on\("error"[\s\S]{0,200}setState\("unavailable"\)/.test(draw)) {
+  fail("a single source error must not condemn the drawing map; the load budget is what decides.");
+}
+if (!draw.includes("compatibilityGeoJsonUrl")) {
+  fail("the drawing map's ground must come from the checksum-pinned outline rather than an unpinned basemap.");
+}
+if (!draw.includes('role="status"')) {
+  fail("the drawing map must announce each placed corner to a screen reader.");
+}
+if (!draw.includes("EXPLORE_MAP_COLOURS.ink") || draw.includes("EXPLORE_MAP_COLOURS.harvest") || draw.includes("EXPLORE_MAP_COLOURS.wildfire")) {
+  fail("a drawn shape must not be painted in a colour the legend has already spent on a disturbance cause.");
 }
 
 console.log(`Shape measurement contract passed: ${ROUTE} reads the grid, brackets its estimate, and refuses by kind.`);

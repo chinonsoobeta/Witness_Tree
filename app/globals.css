@@ -2353,6 +2353,38 @@ h4 {
 .shape-problem {
   color: var(--clay-ink);
 }
+.shape-draw {
+  margin: 16px 0 4px;
+  padding: 0;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: var(--surface);
+}
+.shape-draw-canvas {
+  height: 320px;
+  border-bottom: 1px solid var(--rule);
+}
+.shape-draw-hint,
+.shape-draw-live,
+.shape-draw-caption {
+  margin: 0;
+  padding: 8px 12px 0;
+  font-size: 0.875rem;
+  color: var(--ink-2);
+}
+.shape-draw-live:empty {
+  padding: 0;
+}
+.shape-draw-caption {
+  padding-bottom: 12px;
+  color: var(--muted);
+}
+.shape-draw-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px 12px 0;
+}
 @media (min-width: 640px) {
   .shape-readout {
     grid-template-columns: minmax(0, 18ch) minmax(0, 1fr);
