@@ -4,6 +4,8 @@ import { lstatSync, readFileSync } from "node:fs";
 import { isAbsolute, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { resolveDataRoot } from "./data-root.mjs";
+
 import {
   END_YEAR,
   START_YEAR,
@@ -16,7 +18,6 @@ import {
 
 const repoRoot = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const profilePath = resolve(repoRoot, "data/nfd-harvest-statistics-profile.json");
-const DEFAULT_DATA_ROOT = resolve(repoRoot, "../../Witness_Tree-data");
 const SHA256 = /^[a-f0-9]{64}$/;
 const RAW_PREFIX = "raw/nfd-harvest-statistics/2026-08-27/";
 const ROW_KEYS = [
@@ -34,7 +35,7 @@ const ROW_KEYS = [
   "likeForLikeClaim",
 ];
 
-function configuredDataRoot(dataRoot = process.env.WITNESS_TREE_DATA_ROOT ?? DEFAULT_DATA_ROOT) {
+function configuredDataRoot(dataRoot = resolveDataRoot()) {
   assert(isAbsolute(dataRoot), "NFD data root must be absolute");
   return resolve(dataRoot);
 }

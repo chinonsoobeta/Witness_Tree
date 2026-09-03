@@ -13,9 +13,10 @@ import { existsSync, lstatSync, mkdtempSync, readFileSync, rmSync, writeFileSync
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { resolveDataRoot } from "./data-root.mjs";
 
 export const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-export const DEFAULT_DATA_ROOT = path.resolve(REPO_ROOT, "../../Witness_Tree-data");
+export const DEFAULT_DATA_ROOT = path.resolve(resolveDataRoot());
 export const SPEC_ID = "federal-electoral-districts-2023-v1";
 export const METHOD_VERSION = "phase1-federal-electoral-districts-2023-v1";
 export const SPEC_PATH = "data/phase1-production-transformation-specifications-v1.json";

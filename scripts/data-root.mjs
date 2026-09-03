@@ -32,6 +32,26 @@ export function relocateToDataRoot(recordedAbsolutePath, root = resolveDataRoot(
   return `${root}/${recordedAbsolutePath.slice(prefix.length)}`;
 }
 
+// Re-root a path a record declares relative to the repository onto the current data root.
+//
+// Records write the archive's location the way it sits beside a canonical checkout, as
+// "../Witness_Tree-data/..." or "../../Witness_Tree-data/...". Resolving that string against the
+// repository is only correct when the checkout happens to sit beside the archive. From a worktree
+// it names a directory that does not exist, and a check written to treat a missing artifact as
+// "nothing available to verify" then passes having verified nothing. That is not a hypothetical:
+// it is how a gap checker skipped all 54 of its bound tile checksums on a machine where the
+// archive was attached the whole time. The declared prefix says which root is meant; this says
+// where that root actually is. A path that does not declare the archive comes back as null, so
+// this never quietly rewrites a repository path.
+export const RECORDED_DATA_ROOT_PATTERN = /^(?:\.\.\/)+Witness_Tree-data\//;
+
+export function resolveRecordedDataPath(recordedRelativePath, root = resolveDataRoot()) {
+  if (typeof recordedRelativePath !== "string") return null;
+  const declared = RECORDED_DATA_ROOT_PATTERN.exec(recordedRelativePath);
+  if (!declared) return null;
+  return `${root}/${recordedRelativePath.slice(declared[0].length)}`;
+}
+
 // Resolve the data root, allowing it to be a symlink only when it points at the approved SSD root.
 //
 // After the migration the internal path is a compatibility symlink so recorded absolute paths keep

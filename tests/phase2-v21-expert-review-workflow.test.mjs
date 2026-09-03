@@ -5,13 +5,15 @@ import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "no
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
+import { resolveRecordedDataPath } from "../scripts/data-root.mjs";
 
 const root = new URL("..", import.meta.url).pathname;
 const workflowPath = "data/phase2-v21-expert-review-workflow.json";
 const workflowBytes = readFileSync(`${root}/${workflowPath}`);
 const workflow = JSON.parse(workflowBytes);
-const packetAvailable = existsSync(`${root}/${workflow.packet.path}`);
-const packet = packetAvailable ? JSON.parse(readFileSync(`${root}/${workflow.packet.path}`, "utf8")) : { samples: [] };
+const packetPath = resolveRecordedDataPath(workflow.packet.path) ?? `${root}/${workflow.packet.path}`;
+const packetAvailable = existsSync(packetPath);
+const packet = packetAvailable ? JSON.parse(readFileSync(packetPath, "utf8")) : { samples: [] };
 const digest = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const workflowBinding = { path: workflowPath, sha256: digest(workflowBytes), byteLength: workflowBytes.length };
 const reviewedAt = "2026-08-25T12:00:00Z";

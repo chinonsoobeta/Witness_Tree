@@ -12,9 +12,10 @@ import { readFileSync, existsSync } from "node:fs";
 import { isAbsolute, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { resolveDataRoot } from "./data-root.mjs";
+
 const repoRoot = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const recordPath = resolve(repoRoot, "data/phase3-interval-province-rollup.json");
-const DEFAULT_DATA_ROOT = resolve(repoRoot, "../../Witness_Tree-data");
 const FOREST_YEARS = 39;
 const LOSS_PAIRS = 38;
 const INTERVALS = 741;
@@ -91,7 +92,7 @@ assert.equal(districts, FEDERAL_DISTRICTS,
 
 // When the archive is attached the record is rebuilt from its bound source and
 // compared byte for byte, because the rollup is a pure function of that input.
-const dataRoot = resolve(process.env.WITNESS_TREE_DATA_ROOT ?? DEFAULT_DATA_ROOT);
+const dataRoot = resolve(resolveDataRoot());
 assert.ok(isAbsolute(dataRoot), "data root must be absolute");
 const sourcePath = resolve(dataRoot, `derived/${d.from}`);
 let rebuilt = "not rebuilt (data root not attached)";
