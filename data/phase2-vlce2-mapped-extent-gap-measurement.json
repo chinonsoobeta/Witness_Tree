@@ -331,6 +331,107 @@
       "acquisition": "2026-09-02"
     }
   },
+  "tileCoverageAudit": {
+    "schema": "witness-tree/vlce2-gap-tile-coverage-audit/1",
+    "question": "Does the tile set the gap measurement clipped cover every province it reports?",
+    "geometrySource": {
+      "boundRecord": "data/phase8-province-map-release.json",
+      "field": "browserCompatibilityOutput.displayGeometry.parentSha256",
+      "sha256": "aec8513a57c2360bf5a4c6faecc750155ba16f16f588b28773414cebde1cbd11",
+      "why": "The unsimplified parent, not the display copy. The display copy omits small islands, so a coverage test against it could miss a tile a province genuinely reaches."
+    },
+    "thresholdHectares": 1000.0,
+    "areaMethod": "planar intersection in degrees scaled by cos(mid-latitude); an estimate sufficient to separate a real tile from a boundary sliver, not a published area",
+    "provinceEnvelopesWgs84": {
+      "Alberta": [
+        -120.00001532767449,
+        48.99884302312107,
+        -110.00000344574262,
+        60.00000569461554
+      ],
+      "British Columbia": [
+        -139.0522010411841,
+        48.29680877507114,
+        -114.06833448469612,
+        60.00005904727499
+      ],
+      "Ontario": [
+        -95.15343305923969,
+        41.68141379926106,
+        -74.34347198794298,
+        56.861704601195875
+      ],
+      "Quebec": [
+        -79.76287904508102,
+        44.999312784111474,
+        -57.107767444727514,
+        62.581856535458314
+      ]
+    },
+    "overlapHectaresByProvince": {
+      "Alberta": {
+        "50N_120W": 3629440.8,
+        "60N_120W": 63330402.3,
+        "60N_130W": 29.0,
+        "70N_120W": 16.5,
+        "70N_130W": 0.0
+      },
+      "British Columbia": {
+        "50N_120W": 4450349.2,
+        "50N_130W": 5091596.8,
+        "60N_120W": 7731794.7,
+        "60N_130W": 65679093.9,
+        "60N_140W": 11409081.3,
+        "70N_130W": 117.7,
+        "70N_140W": 184.1
+      },
+      "Ontario": {
+        "50N_080W": 10492629.9,
+        "50N_090W": 27227967.8,
+        "50N_100W": 6363649.3,
+        "60N_080W": 457131.3,
+        "60N_090W": 36514200.1,
+        "60N_100W": 16999946.2
+      },
+      "Quebec": {
+        "50N_070W": 7903079.1,
+        "50N_080W": 34579512.8,
+        "60N_060W": 1949291.4,
+        "60N_070W": 36797010.1,
+        "60N_080W": 58457553.1,
+        "70N_070W": 240350.4,
+        "70N_080W": 9303723.8
+      }
+    },
+    "requiredTiles": [
+      "50N_070W",
+      "50N_080W",
+      "50N_090W",
+      "50N_100W",
+      "50N_120W",
+      "50N_130W",
+      "60N_060W",
+      "60N_070W",
+      "60N_080W",
+      "60N_090W",
+      "60N_100W",
+      "60N_120W",
+      "60N_130W",
+      "60N_140W",
+      "70N_070W",
+      "70N_080W"
+    ],
+    "belowThresholdTiles": {
+      "70N_120W": 16.5,
+      "70N_130W": 117.7,
+      "70N_140W": 184.1
+    },
+    "builtBy": "scripts/audit-vlce2-gap-tile-coverage.py",
+    "finding": "Every tile any covered province reaches in area is in the run set. The three tiles that fall below the threshold are boundary slivers where digitised vertices sit a fraction north of the 60th parallel, which is the real northern limit of both Alberta and British Columbia. Two of the three were run anyway; 70N_140W, at 184.1 ha against 457,131 ha for the smallest tile any province genuinely needs, was not. Adding it could not move a gap percentage.",
+    "whyThisIsChecked": "The sibling Hansen sample profile recorded a tile that sat entirely outside the province it was labelled for, and its checksums matched, so nothing caught it. This record carries no per-province tile label to get wrong: it clips one shared tile set. Its version of the same failure is a province reaching past the tile set and being quietly truncated, which would understate that province's gap while every number still looked well formed.",
+    "limits": "Node cannot re-derive polygon intersections, so the checker verifies the invariant and the geometry binding rather than recomputing the areas. It does independently derive each province envelope from the bound geometry, so a fabricated overlap against a province a tile cannot reach is still caught.",
+    "mutationsProven": 14
+  },
   "elapsedSeconds": 429.05471897125244,
   "provinces": {
     "Quebec": {

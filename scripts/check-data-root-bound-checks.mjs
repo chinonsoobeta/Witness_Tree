@@ -7,6 +7,8 @@ import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
+import { resolveDataRoot } from "./data-root.mjs";
+
 const root = fileURLToPath(new URL("..", import.meta.url));
 export const INVENTORY_PATH = "data/data-root-bound-checks.json";
 export const INVENTORY_SCHEMA = "witness-tree/data-root-bound-checks/1";
@@ -100,6 +102,17 @@ export function validateInventory(document, checkScripts) {
   return { checks: [...checks], total: available.size };
 }
 
+// The sweep must resolve the archive exactly as the checks it spawns do, or its
+// bookkeeping and their behaviour describe different worlds. Resolving the inventory's
+// recorded relative path against the repository did that: from a worktree that does not
+// sit beside the data directory it read "detached" while every spawned check inherited
+// the real root and passed, and the reconciliation then blamed the inventory for it. The
+// recorded path stays as the declaration of which root is meant; the shared helper says
+// where that root actually is for this run, and it is the same helper the checks use.
+export function sweepDataRoot() {
+  return resolveDataRoot();
+}
+
 export function dataRootAvailable(dataRootPath) {
   try {
     return statSync(dataRootPath).isDirectory();
@@ -151,11 +164,11 @@ function main() {
   const inventory = readJson(INVENTORY_PATH);
   const checkScripts = packageCheckScripts(readJson("package.json"));
   const { checks, total } = validateInventory(inventory, checkScripts);
-  const dataRootPath = new URL(`${inventory.dataRoot.path}/`, new URL("..", import.meta.url)).pathname.replace(/\/$/, "");
+  const dataRootPath = sweepDataRoot();
   const attached = dataRootAvailable(dataRootPath);
 
   console.log(`${INVENTORY_PATH}: ${checks.length} of ${total} check scripts are data-root bound.`);
-  console.log(`Data root ${dataRootPath}: ${attached ? "attached" : "not attached"}${existsSync(dataRootPath) ? "" : " (path does not resolve)"}.`);
+  console.log(`Data root ${dataRootPath} (declared ${inventory.dataRoot.path}): ${attached ? "attached" : "not attached"}${existsSync(dataRootPath) ? "" : " (path does not resolve)"}.`);
 
   if (!process.argv.includes("--empirical")) {
     console.log("Static validation only. Pass --empirical to reconcile the inventory against a full check sweep.");

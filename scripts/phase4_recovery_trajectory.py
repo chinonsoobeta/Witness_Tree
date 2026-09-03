@@ -9,10 +9,17 @@ mapped cell through 1984 to 2022 once and records what happened to it.
 A cell is LOST in a pair when it is forest in the first year and not forest in
 the second. It has RECOVERED when it later reads forest again and holds forest
 for at least CONFIRM consecutive years, because a single year of forest after a
-loss is as likely to be a classification wobble as a regrown stand. A return
-that begins too close to 2022 to accumulate CONFIRM years is reported
-separately as unconfirmed rather than counted either way: the series ends, the
-forest does not.
+loss is as likely to be a classification wobble as a regrown stand. Recovered
+and not-recovered partition the lost cells: every lost cell is in exactly one.
+
+A return that begins too close to 2022 to accumulate CONFIRM years is reported
+separately as unconfirmed. That is an overlapping measure, not a third bucket. A
+cell still mid-return in 2022 has not met the rule, so it is counted as not
+recovered; a cell that recovered from an earlier loss and is mid-return from a
+later one is counted as both recovered and unconfirmed. This file used to say
+the unconfirmed were counted as neither, which its own arithmetic and its own
+hand-worked test have never done. Reading the old sentence and subtracting the
+unconfirmed from the not-recovered total understates it.
 
 Unknown is never turned into zero. A cell outside the land-cover product's
 mapped extent was never looked at, and a cell carrying nodata in any year has a
@@ -251,7 +258,8 @@ def main() -> int:
             "firstYear": FIRST, "lastYear": LAST,
             "lossRule": "forest in year t and not forest in year t+1, inside the mapped extent",
             "recoveryRule": f"after a loss, forest again for at least {CONFIRM} consecutive years",
-            "unconfirmedRule": "a return with fewer than the required consecutive years by 2022 is reported separately and counted as neither recovered nor not-recovered",
+            "unconfirmedRule": "a return with fewer than the required consecutive years by 2022 is reported separately, and overlaps the other two counts rather than forming a third: it is still counted as not recovered, and a cell recovered from an earlier loss can also be mid-return from a later one",
+            "partitionRule": "recoveredCells + notRecoveredCells == lostCells; returnUnconfirmedCells is never added to either",
             "unknownPolicy": "outside the mapped extent, or nodata in any year, is Unknown for every question and never zero",
             "cellHectares": 0.09,
         },

@@ -91,10 +91,12 @@ EXPECT_NATIONAL = {
     "returnUnconfirmedCells": 3,    # columns 4, 8 and 9 are mid-return in 2022
     "notRecoveredCells": 3,         # columns 2, 4 and 9
 }
-# Columns 3, 5 and 8 are recovered; 2 and 4 are not; together they are exactly
-# the 5 lost cells. Column 8 is counted as both recovered and unconfirmed,
-# because it recovered once and is mid-return from a later loss. The two
-# buckets are deliberately not exclusive and this pins that.
+# Columns 3, 5 and 8 are recovered; 2, 4 and 9 are not; together they are
+# exactly the 6 lost cells, which is the partition the worker guarantees.
+# Unconfirmed returns overlap both sides rather than forming a third bucket:
+# columns 4 and 9 are mid-return and counted as not recovered, and column 8 is
+# counted as both recovered and unconfirmed because it recovered once and is
+# mid-return from a later loss. This pins that overlap deliberately.
 EXPECT_BOUNDARIES = {
     "A": {"knownCells": 8, "everForestCells": 3, "lostCells": 2,
           "recoveredCells": 1, "returnUnconfirmedCells": 0, "unknownCells": 0},

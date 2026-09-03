@@ -51,6 +51,7 @@ jobs:
       - run: npm run check:vlce2-gap
       - run: npm run check:province-rollup
       - run: npm run check:hansen-sample-profile
+      - run: npm run check:phase4-recovery-trajectory
       - run: npm run check:source-candidates
       - run: npm run check:bc-forest-tenure-foi-catalogue-response
       - run: npm run check:archive-direct-mfa-runners

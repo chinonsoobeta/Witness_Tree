@@ -13,7 +13,9 @@ import {
   reconcile,
   validateEmpirically,
   validateInventory,
+  sweepDataRoot,
 } from "../scripts/check-data-root-bound-checks.mjs";
+import { resolveDataRoot, SSD_DATA_ROOT } from "../scripts/data-root.mjs";
 
 const inventory = readJson(INVENTORY_PATH);
 const checkScripts = packageCheckScripts(readJson("package.json"));
@@ -133,4 +135,35 @@ test("the sweep classifies each failing check and ignores passing ones", () => {
     output: name === "check:a" ? `ENOENT: no such file or directory, stat /x/${DATA_ROOT_MARKER}/y` : "AssertionError: real defect",
   }));
   assert.deepEqual([...failures.entries()], [["check:a", "data-root-unavailable"], ["check:c", "other"]]);
+});
+
+// The sweep spawns every check as a child process, so those children resolve the archive
+// through the shared helper while the sweep resolved the inventory's recorded relative
+// path against the repository. In a worktree that does not sit beside the data directory
+// those two answers disagreed: the sweep recorded "detached" and reported the whole
+// inventory as wrong, while every child had read the attached archive and passed. The
+// invariant is not which path is right, it is that both must name the same one.
+test("the sweep resolves the archive to the same path the checks it spawns do", () => {
+  assert.equal(sweepDataRoot(), resolveDataRoot());
+});
+
+test("the sweep follows an overridden archive location rather than the repository layout", () => {
+  const previous = process.env.WITNESS_TREE_DATA_ROOT;
+  process.env.WITNESS_TREE_DATA_ROOT = "/Volumes/Some_Other_Disk/Witness_Tree-data";
+  try {
+    assert.equal(sweepDataRoot(), "/Volumes/Some_Other_Disk/Witness_Tree-data");
+  } finally {
+    if (previous === undefined) delete process.env.WITNESS_TREE_DATA_ROOT;
+    else process.env.WITNESS_TREE_DATA_ROOT = previous;
+  }
+});
+
+test("with no override the sweep names the canonical archive, not a path beside the checkout", () => {
+  const previous = process.env.WITNESS_TREE_DATA_ROOT;
+  delete process.env.WITNESS_TREE_DATA_ROOT;
+  try {
+    assert.equal(sweepDataRoot(), SSD_DATA_ROOT);
+  } finally {
+    if (previous !== undefined) process.env.WITNESS_TREE_DATA_ROOT = previous;
+  }
 });
