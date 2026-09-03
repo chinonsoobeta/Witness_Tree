@@ -20,10 +20,12 @@ const withRecord = async (mutate) => {
   return validateDeployedMapRender({ record });
 };
 
-test("the committed observation stays stale after the unmerged client changes", async () => {
-  assert.deepEqual(validateDeployedMapRender(), [
-    "components/explore/ExploreMapClient.tsx changed since the deployed Site was observed at 2026-09-02T00:51:26Z. Re-run the harness against the deployed Site.",
-  ]);
+test("the committed observation is current for the deployed client", async () => {
+  // The Site was redeployed to this branch on 2026-09-03 and the harness was
+  // re-run against it, so the recorded observation once again describes the
+  // client the deployed origin serves. The staleness detector itself is still
+  // exercised synthetically below by mutating a bound source.
+  assert.deepEqual(validateDeployedMapRender(), []);
   const record = await loadRecord();
   assert.equal(record.schemaVersion, RENDER_EVIDENCE_SCHEMA);
   assert.ok(record.url.startsWith(DEPLOYED_ORIGIN));
