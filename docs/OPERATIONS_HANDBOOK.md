@@ -437,10 +437,24 @@ them.
 
 **A. The scheduled wildfire refresh.** `.github/workflows/wildfire-refresh.yml`.
 
-- Cron fires at eight UTC hours (`0 0,4,5,12,13,19,20,23 * * *`).
-- `scripts/wildfire/dst-gate.mjs` then permits the run only at Vancouver local
-  hours 05, 12, 16, and 21, so exactly four runs execute per day across both
-  DST offsets and the extra cron entries are discarded.
+- Cron fires at eight UTC hours, declared as eight separate entries at minute
+  17. Separate entries are what make the slot recoverable: GitHub reports the
+  expression that triggered a run, and one expression listing eight hours
+  identifies none of them.
+- `scripts/wildfire/dst-gate.mjs` converts that slot to its Vancouver local hour
+  and permits the run only at 05, 12, 16, and 21, so four of the eight slots
+  open across both DST offsets and the other four are discarded.
+- It judges the slot, not the wall clock at gate time. GitHub queues these runs
+  late, by at least 38 minutes at the median and at least 349 at the worst, and
+  a wall-clock gate drops a correctly scheduled run once the delay carries it
+  into a different Pacific hour. Before this changed, the gate opened 39 of 100
+  runs where the design intends 50, and zero or one a day through the week to
+  2026-09-02. The measurement is in
+  [`data/wildfire-refresh-scheduler-delay-2026-09-02.json`](../data/wildfire-refresh-scheduler-delay-2026-09-02.json).
+- Four refreshes a day still is not something this repository can promise.
+  GitHub creates scheduled runs on a best-effort basis and dropped half of them
+  over the same week. Minute 17 is a mitigation for that, not a guarantee, and
+  only observation over a real window can show the cadence held.
 - `scripts/wildfire/refresh.mjs` currently **always refuses**:
   `configuredSources()` throws `No cleared live-wildfire feed is configured;
   refusing remote refresh.` unless `WILDFIRE_FIXTURE` is set. The
@@ -452,7 +466,9 @@ The 100 most recent scheduled runs were inspected on 2026-08-31 and are
 recorded in
 [`data/wildfire-refresh-run-history-2026-08-31.json`](../data/wildfire-refresh-run-history-2026-08-31.json).
 The snapshot contains 56 successful DST-gated no-ops and 44 failed attempted
-refreshes; it contains no successful real refresh. A successful workflow run is
+refreshes; it contains no successful real refresh. The 2026-09-02 measurement
+re-read the same window against the gate itself and found the same thing: every
+run the gate opened failed, and none refreshed anything. A successful workflow run is
 not evidence of a refresh when the gate skipped the refresh step. The observed
 attempted-refresh failures include a direct push rejected by protected `main`,
 so the workflow conclusion alone is not a feed-health signal.

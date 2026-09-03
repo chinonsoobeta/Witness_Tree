@@ -1,0 +1,139 @@
+{
+  "schemaVersion": "witness-tree/wildfire-refresh-scheduler-delay/1",
+  "recordType": "github-actions-scheduler-delay-measurement",
+  "repository": "chinonsoobeta/Witness_Tree",
+  "workflowPath": ".github/workflows/wildfire-refresh.yml",
+  "measuredAt": "2026-09-03T06:20:00Z",
+  "published": false,
+  "productionEligible": false,
+  "admissionClaim": false,
+  "productionAdmission": false,
+  "retrieval": {
+    "runListCommand": "gh run list --repo chinonsoobeta/Witness_Tree --workflow wildfire-refresh.yml --limit 100 --json databaseId,createdAt,startedAt,updatedAt,conclusion,status,event,url",
+    "limit": 100,
+    "scheduleAtMeasurement": "0 0,4,5,12,13,19,20,23 * * *",
+    "gateAtMeasurement": "REFRESH_HOURS.has(vancouverHour(new Date()))"
+  },
+  "window": {
+    "oldestCreatedAt": "2026-08-17T12:40:26Z",
+    "newestCreatedAt": "2026-09-03T00:57:30Z",
+    "scheduledRuns": 100
+  },
+  "attribution": {
+    "problem": "The schedule is one expression naming eight hours, so GitHub reports the same expression for every slot and a run does not say which slot triggered it.",
+    "method": "Each run is measured against the nearest cron slot at or before its createdAt. A run delayed past a later slot is credited to that later slot, so every delay below is a lower bound on the real one.",
+    "consequence": "The delay figures understate the delay. They are not used to attribute any individual run to a slot, and no claim below depends on such an attribution."
+  },
+  "lowerBoundDelayMinutes": {
+    "definition": "createdAt minus the nearest cron slot at or before it. startedAt equals createdAt on all 100 runs, so the queue time is the earliest instant the gate could have read.",
+    "min": 6.3,
+    "median": 38.0,
+    "p90": 185.8,
+    "max": 349.1,
+    "createdWithin60MinutesOfSomeSlot": 69,
+    "createdWithin60MinutesIsAnUpperBound": "A run credited to a later slot looks punctual. At most this many of the 100 were on time."
+  },
+  "wallClockGateOutcome": {
+    "opened": 39,
+    "of": 100,
+    "designIntent": "exactly four of every eight slots open, so 50 of 100",
+    "note": "This count needs no attribution: it is the gate's own predicate applied to each run's createdAt."
+  },
+  "scheduledRunsCreatedPerUtcDay": {
+    "expectedCreated": 8,
+    "expectedOpened": 4,
+    "observed": {
+      "2026-08-18": {
+        "created": 8,
+        "gateOpened": 4
+      },
+      "2026-08-19": {
+        "created": 8,
+        "gateOpened": 4
+      },
+      "2026-08-20": {
+        "created": 8,
+        "gateOpened": 4
+      },
+      "2026-08-21": {
+        "created": 8,
+        "gateOpened": 4
+      },
+      "2026-08-22": {
+        "created": 8,
+        "gateOpened": 4
+      },
+      "2026-08-23": {
+        "created": 8,
+        "gateOpened": 4
+      },
+      "2026-08-24": {
+        "created": 8,
+        "gateOpened": 4
+      },
+      "2026-08-25": {
+        "created": 8,
+        "gateOpened": 4
+      },
+      "2026-08-26": {
+        "created": 6,
+        "gateOpened": 2
+      },
+      "2026-08-27": {
+        "created": 2,
+        "gateOpened": 1
+      },
+      "2026-08-28": {
+        "created": 2,
+        "gateOpened": 0
+      },
+      "2026-08-29": {
+        "created": 4,
+        "gateOpened": 0
+      },
+      "2026-08-30": {
+        "created": 4,
+        "gateOpened": 0
+      },
+      "2026-08-31": {
+        "created": 4,
+        "gateOpened": 1
+      },
+      "2026-09-01": {
+        "created": 4,
+        "gateOpened": 0
+      },
+      "2026-09-02": {
+        "created": 4,
+        "gateOpened": 0
+      }
+    },
+    "note": "GitHub created all eight through 2026-08-25 and four or fewer afterwards. Scheduled runs are best effort and may be dropped under load; this measurement cannot distinguish a dropped invocation from one never queued."
+  },
+  "conclusions": {
+    "success": 61,
+    "failure": 39
+  },
+  "refreshOutcome": {
+    "realRefreshSuccesses": 0,
+    "openedRunsThatFailed": 39,
+    "reason": "scripts/wildfire/refresh.mjs throws 'No cleared live-wildfire feed is configured' before any external request, and the repository variable WILDFIRE_SOURCE_URLS was empty in every observed run. Every run the gate opened therefore failed. That is the fail-closed source-rights design working, not a scheduling fault."
+  },
+  "representativeRuns": [
+    {
+      "runId": 33248690725,
+      "url": "https://github.com/chinonsoobeta/Witness_Tree/actions/runs/33248690725",
+      "observations": [
+        "Created 2026-08-29T10:49:05Z, at least 349.1 minutes after the slot that triggered it.",
+        "The wall clock read 03:00 America/Vancouver, which is not one of the four required hours, so the gate logged run=false."
+      ]
+    }
+  ],
+  "limitations": [
+    "This is a time-bounded snapshot of the 100 most recent runs at retrieval time.",
+    "createdAt is GitHub's queue time, not the runner's start. Every delay here is a lower bound twice over.",
+    "The window lies entirely within Pacific daylight time. It does not observe a daylight saving transition.",
+    "Moving the cron minute off the hour mitigates delay and dropped invocations. It does not guarantee them: GitHub does not promise scheduled delivery, so four refreshes a day cannot be asserted from this repository's code alone.",
+    "Nothing here shows a successful refresh. No live wildfire feed has cleared source rights, so the exit criterion cannot pass on scheduling alone."
+  ]
+}

@@ -11,23 +11,27 @@
    "id": "pacific-dst-schedule",
    "title": "The scheduled job runs exactly four times daily in both halves of the year, verified across a daylight saving transition",
    "status": "fail",
-   "reason": "The schedule gate selects the four required America/Vancouver hours, but the dated 100-run receipt records 56 gated no-ops, 44 attempted-refresh failures, and zero real refresh successes. The workflow now writes through a bot branch and pull request; this code change is not evidence that a scheduled run has succeeded.",
+   "reason": "The gate now decides from the cron slot GitHub reports rather than the wall clock at gate time, so a run queued hours late is still judged by the slot it was scheduled for, and the eight UTC entries open exactly the four required America/Vancouver hours in both halves of the year. That closes a measured defect: across the 100 most recent scheduled runs the wall-clock gate opened 39 where the design intends 50, and zero or one a day through the week to 2026-09-02. Two things still keep this criterion failing. GitHub created only four of the eight scheduled runs a day over that same week, so the cadence depends on a scheduler that promises nothing and can only be shown by observation over a real window, including one that crosses a daylight saving transition. And no live wildfire feed has cleared source rights, so every run the gate opens still fails before making any request; there are still zero real refresh successes. Code that decides correctly is not evidence that a scheduled run has succeeded.",
    "evidence": [
     {
      "path": "scripts/wildfire/dst-gate.mjs",
-     "sha256": "d223159cdc84286cb9d6c6d1494b910155b5b0a55fba50f956dd9a6e09bcb5b3"
+     "sha256": "9b72e9a3e1582ba8b7c4fbf228fe1825c76fc343f86044fbd6f59b59b94cc773"
     },
     {
      "path": "tests/wildfire-workflow.test.mjs",
-     "sha256": "ab9684e7d7649719c3ec51a0baf4f2b5f008b7f2e2c08eeb05c0b5929cebc835"
+     "sha256": "4f5dc6f0ba3ba40c7a72a50770ef1606d3586cfaf85de1536a8719555f6f68d7"
     },
     {
      "path": ".github/workflows/wildfire-refresh.yml",
-     "sha256": "bcaf4f1321ffb759493cbbd5f29f46e9e1f984a34c2f516b295ed908dea17295"
+     "sha256": "2b3ecb2dce114bbef9d6d27c3fe2134588ae0dd0be2717bef5bcd6977f1cc198"
     },
     {
      "path": "data/wildfire-refresh-run-history-2026-08-31.json",
      "sha256": "1ccaad0722e9b9a590aad4dad87a678f1ab2a180b959ccc90e242fb46f49b5c7"
+    },
+    {
+     "path": "data/wildfire-refresh-scheduler-delay-2026-09-02.json",
+     "sha256": "0660aead798a2bcccdea688fdc1a50e7fe153e65044b413d150613fd88131f86"
     }
    ]
   },
@@ -51,7 +55,7 @@
    "evidence": [
     {
      "path": "tests/wildfire-workflow.test.mjs",
-     "sha256": "ab9684e7d7649719c3ec51a0baf4f2b5f008b7f2e2c08eeb05c0b5929cebc835"
+     "sha256": "4f5dc6f0ba3ba40c7a72a50770ef1606d3586cfaf85de1536a8719555f6f68d7"
     },
     {
      "path": "tests/wildfire-routes.test.tsx",
@@ -71,7 +75,7 @@
     },
     {
      "path": "tests/wildfire-workflow.test.mjs",
-     "sha256": "ab9684e7d7649719c3ec51a0baf4f2b5f008b7f2e2c08eeb05c0b5929cebc835"
+     "sha256": "4f5dc6f0ba3ba40c7a72a50770ef1606d3586cfaf85de1536a8719555f6f68d7"
     }
    ]
   }
