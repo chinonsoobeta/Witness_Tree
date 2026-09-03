@@ -2,10 +2,11 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
+import { resolveRecordedDataPath } from "./data-root.mjs";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 const evidence = JSON.parse(readFileSync(`${root}/data/phase2-v21-real-review-packet-evidence.json`, "utf8"));
-const packetPath = `${root}/${evidence.packet.path}`;
+const packetPath = resolveRecordedDataPath(evidence.packet.path) ?? `${root}/${evidence.packet.path}`;
 const packetBytes = readFileSync(packetPath);
 const packet = JSON.parse(packetBytes);
 assert.equal(createHash("sha256").update(packetBytes).digest("hex"), evidence.packet.sha256);

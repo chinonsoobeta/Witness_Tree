@@ -1,0 +1,591 @@
+{
+  "schema": "witness-tree/vlce2-mapped-extent-gap-measurement/1",
+  "status": "local-nonproduction-executed",
+  "claims": {
+    "admitted": false,
+    "released": false,
+    "productionEligible": false,
+    "summedWithVlce2": false,
+    "closesTheGap": false
+  },
+  "question": "How much forest and how much loss sits in the part of Quebec, Ontario, Alberta and British Columbia that the land-cover product never mapped?",
+  "answer": "The unmapped part is large in area and nearly empty of forest. Across the whole 10 to 50 percent tree-cover sensitivity band the loss it hides is under 0.21 percent of measured loss in Alberta, under 0.86 percent in Quebec, about 1.02 percent in Ontario, and nil in British Columbia. The gap is worth disclosing, and re-mapping it would not move any published number materially.",
+  "source": {
+    "product": "Hansen Global Forest Change 2000-2024 v1.12",
+    "licence": "CC BY 4.0",
+    "attribution": "Source: Hansen/UMD/Google/USGS/NASA",
+    "whyThisSource": "It is global, so it has no Canadian mapped-extent gap of its own and can be asked about ground the land-cover product skipped."
+  },
+  "window": {
+    "fromYear": 2001,
+    "toYear": 2022,
+    "note": "Hansen begins in 2001; 1984-2000 has no independent measurement here."
+  },
+  "method": {
+    "inside": "the part VLCE2 mapped, used as the definitional control",
+    "outside": "the part VLCE2 never mapped, the quantity wanted",
+    "areaMethod": "spherical cell area per row, authalic radius 6371007.181 m",
+    "waterExcluded": "Hansen datamask == 1 (land) only",
+    "thresholdsPercentTreeCover2000": [
+      10,
+      20,
+      30,
+      50
+    ],
+    "control": "The inside figures are the control. Hansen and the land-cover product answer the same ground there, so the ratio between them measures how differently the two define forest and loss. A Hansen number in the gap is uninterpretable without it."
+  },
+  "neverDone": [
+    "adding an inside figure to an outside figure",
+    "adding any Hansen figure to a land-cover product figure",
+    "treating this as coverage of the gap rather than a measurement of it"
+  ],
+  "tiles": [
+    "50N_070W",
+    "50N_080W",
+    "50N_090W",
+    "50N_100W",
+    "50N_120W",
+    "50N_130W",
+    "60N_060W",
+    "60N_070W",
+    "60N_080W",
+    "60N_090W",
+    "60N_100W",
+    "60N_120W",
+    "60N_130W",
+    "60N_140W",
+    "70N_070W",
+    "70N_080W",
+    "70N_120W",
+    "70N_130W"
+  ],
+  "tileChecksums": {
+    "Hansen_GFC-2024-v1.12_datamask_50N_070W.tif": {
+      "sha256": "7d65210b4ce00381345b9fad64c37ea4bbe0398aed0aef157e413f86b6fb7143",
+      "bytes": 21262004,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_datamask_50N_080W.tif": {
+      "sha256": "5f76e3cd49ad38ea9fb5a496499150f4032deb0f672f614102e521fa9a6f8191",
+      "bytes": 25733963,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_datamask_50N_090W.tif": {
+      "sha256": "72318a20b862f511c1be3f21b3a3f646a1ec02bdbc33bc0e99509ca94ed74a3a",
+      "bytes": 23498051,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_datamask_50N_100W.tif": {
+      "sha256": "64bfee253cc8882aad0810b60334f4d0b16ba5aca622d98c48b98317e97dd65c",
+      "bytes": 20963849,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_datamask_50N_120W.tif": {
+      "sha256": "99cee840f75e93b7f25caa93815a8266b3f3fc4b4d705410c3ebb98f1d6a2d33",
+      "bytes": 15411743,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_datamask_50N_130W.tif": {
+      "sha256": "492c2fa895ddd5382e34b063a925f4daac5f6bfd698f239387e59d6dd3bc00ef",
+      "bytes": 26994175,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_datamask_60N_060W.tif": {
+      "sha256": "45635e99f73114aebc819cd34936d30fdf0626a3edcc3a897805e0b9c0875517",
+      "bytes": 21410940,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_datamask_60N_070W.tif": {
+      "sha256": "82fcfffbad7f326a2b3a542d702f5f24a08cbbad08dd013ab45adb7590302049",
+      "bytes": 36129651,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_datamask_60N_080W.tif": {
+      "sha256": "ed339517bdd82660330ae4adee6638414db025c619bf007fe5a8bcb1fb489302",
+      "bytes": 43502219,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_datamask_60N_090W.tif": {
+      "sha256": "cbc240dc38ea532370407ea029a3013361d97c503dd57980383b5dc6e4d31818",
+      "bytes": 26664349,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_datamask_60N_100W.tif": {
+      "sha256": "4f631184a746c60617473d2ce34ea312cc431e2ea381aa1787bc8ca6d2eaab51",
+      "bytes": 31040218,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_datamask_60N_120W.tif": {
+      "sha256": "fc134e8260181c7db7a3dd26f2bf1b7b2699b98f4834bbf466b608eba0f48a44",
+      "bytes": 17886838,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_datamask_60N_130W.tif": {
+      "sha256": "6cb3450c6474dda2bda7a4afba13700b70b83adb98a661b2a59167d250679977",
+      "bytes": 18968538,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_datamask_60N_140W.tif": {
+      "sha256": "4853e81d66680416f5fa631b27ab9042abb066056582494b342571b30fb9e892",
+      "bytes": 24322810,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_datamask_70N_070W.tif": {
+      "sha256": "85be9e0aaf4a709152d09f890de36a75081c0344a1f3f4ff3268cf4cf743c42c",
+      "bytes": 27751880,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_datamask_70N_080W.tif": {
+      "sha256": "c415329422fc1b343ee11af46e0b34173b4cf2fdb9d02ff9ad6c62dc699e53fd",
+      "bytes": 33363613,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_datamask_70N_120W.tif": {
+      "sha256": "44e33d927a0407d4fc2379749fd71e62945866006a11cc18299c2d418fa054c8",
+      "bytes": 33425536,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_datamask_70N_130W.tif": {
+      "sha256": "204a7f998c71a9c1618e18841ec0b9afc0cdfcc28de2af649ef3da6d4cff81e5",
+      "bytes": 22931104,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_lossyear_50N_070W.tif": {
+      "sha256": "d85d75ac5829786c296ff369478d0d7c7b50f5e50b7ed737e73da66d09b6d1de",
+      "bytes": 49144451,
+      "acquisition": "2026-08-25"
+    },
+    "Hansen_GFC-2024-v1.12_lossyear_50N_080W.tif": {
+      "sha256": "f471fcbee1cb8b2e86ac9ccc1722b0a5201a020c193ae75354bf3e069ae63a18",
+      "bytes": 64308141,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_lossyear_50N_090W.tif": {
+      "sha256": "c9b192871c0f31538f4503b57bdcec8aa8dccba05bd3a562695e252d860418df",
+      "bytes": 42531475,
+      "acquisition": "2026-08-25"
+    },
+    "Hansen_GFC-2024-v1.12_lossyear_50N_100W.tif": {
+      "sha256": "f67f102a5a49f758a6eeaceecc9100d2331f6a3a71ebfc5a88e745e5e9a20e05",
+      "bytes": 35313758,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_lossyear_50N_120W.tif": {
+      "sha256": "f24100296656cb1bc189899c2810c7ab772071b02d31cf033c2ad240b9756aaa",
+      "bytes": 55828607,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_lossyear_50N_130W.tif": {
+      "sha256": "73ca8bf804a84cde301af49c1ad34ea593b63bea7ae2a8d698288643713e165a",
+      "bytes": 61287904,
+      "acquisition": "2026-08-25"
+    },
+    "Hansen_GFC-2024-v1.12_lossyear_60N_060W.tif": {
+      "sha256": "24b83e73bf94ff35e222b2f8c3ace5cb9eca50232166160fc33680736d496ef0",
+      "bytes": 14621355,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_lossyear_60N_070W.tif": {
+      "sha256": "9cd11827972ec8ce117e0c257ed89e1ac40015c58a8d6fbcd5403f8e5cf5b531",
+      "bytes": 29873616,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_lossyear_60N_080W.tif": {
+      "sha256": "a992e3ea57a491bac942540905b9e7f7c5ddd4f2ccd793ffc2b285703a636fe6",
+      "bytes": 43247918,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_lossyear_60N_090W.tif": {
+      "sha256": "130337825707d13bd5330d99f1b8ecad1ee6c06a84d4f740e773ec53e2df76b4",
+      "bytes": 20611852,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_lossyear_60N_100W.tif": {
+      "sha256": "3e388f330e292d15585b453f45233b21378264f941e3f6eb1e879298fbc877c2",
+      "bytes": 48250383,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_lossyear_60N_120W.tif": {
+      "sha256": "9c80f848eb920915bc73b0a72e1f75c1dccefe382004fbd881c2ea7b0072ab58",
+      "bytes": 72411383,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_lossyear_60N_130W.tif": {
+      "sha256": "e7347c67766cbb90b5e781e614464a144ad538739c2db14215d6e3d0cb1dee81",
+      "bytes": 77605485,
+      "acquisition": "2026-08-25"
+    },
+    "Hansen_GFC-2024-v1.12_lossyear_60N_140W.tif": {
+      "sha256": "1166f012de337c3824f150cc68f1c4dda6d78a79f769858ce2c81bcf71c5a761",
+      "bytes": 16293146,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_lossyear_70N_070W.tif": {
+      "sha256": "aef021bb6ecd254a60e22a1189e6453a4379d9fbf51584613d14a724b5b9de97",
+      "bytes": 13320712,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_lossyear_70N_080W.tif": {
+      "sha256": "b6fc642ed38247d770932fef877889e9f9c2566425f59d07b04c056decf6c7b1",
+      "bytes": 13348510,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_lossyear_70N_120W.tif": {
+      "sha256": "21b2a17fb0b09009647faf9a252ffafc26ed08e949b1f976ad52ec5894badbd8",
+      "bytes": 45370160,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_lossyear_70N_130W.tif": {
+      "sha256": "d7e281976ba2b68d2283a8c1faca09a417cde16f94d2c2213fd511152814015a",
+      "bytes": 30616530,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_treecover2000_50N_070W.tif": {
+      "sha256": "6147111bb63a456b105188c9a463545598d4c8a5d73b4cf513ce78e7c26900bc",
+      "bytes": 283979320,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_treecover2000_50N_080W.tif": {
+      "sha256": "a6d3820b79dc011e043e0d12b43a3a04cbe374727452d355c9b0bb08c272bfa1",
+      "bytes": 622488429,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_treecover2000_50N_090W.tif": {
+      "sha256": "13383ed4f67281b9ce0480ee3b3a99ee629e2565def4f9d7b48125ad8a40dcc1",
+      "bytes": 438457923,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_treecover2000_50N_100W.tif": {
+      "sha256": "4feaa5e1f676ea475cf189dfdffd2b8e3d537513bb20904f080ec6726ebb338a",
+      "bytes": 340179249,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_treecover2000_50N_120W.tif": {
+      "sha256": "c5898dd59e0f2334d6214929b7ac149e962b2d7a02313d5a995b39e3688b9d8d",
+      "bytes": 426162727,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_treecover2000_50N_130W.tif": {
+      "sha256": "bb232eddb3340e11fe38fd2797eabf3fd7f0ace0194101caaa35241428231f10",
+      "bytes": 314597555,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_treecover2000_60N_060W.tif": {
+      "sha256": "f48b1674ffa54e31a7fa32f16a8d6800ff941b416d499b9ad29680e68df9937a",
+      "bytes": 118242095,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_treecover2000_60N_070W.tif": {
+      "sha256": "ec49e1432d849b219e7d27d0d2af8c7c46d745573b32f73f67f90d13813e5342",
+      "bytes": 493740719,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_treecover2000_60N_080W.tif": {
+      "sha256": "11fc1319cf6b1a57e7a5c4cffaee86212f0026d815a422b5a53e94a2fd996e1f",
+      "bytes": 527849712,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_treecover2000_60N_090W.tif": {
+      "sha256": "26fb2abae364a8d2c7131bb7f6e82b9741d06f2bbc7b36b55e748d22bd56859c",
+      "bytes": 377075244,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_treecover2000_60N_100W.tif": {
+      "sha256": "4419b7e4ccdcebd8342b3eaeb52d27af26be2f3643b8e541d3740ee07cd659be",
+      "bytes": 586429673,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_treecover2000_60N_120W.tif": {
+      "sha256": "bdb9d343c71c28db3ec2965ac3b64a2138d73868d3005ca10fb5a8c447bb1efa",
+      "bytes": 608389768,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_treecover2000_60N_130W.tif": {
+      "sha256": "11b8a501dc77c1df1501b012ef7db54103d2b4960082902e84a7024c94f95164",
+      "bytes": 618594913,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_treecover2000_60N_140W.tif": {
+      "sha256": "9e96a785814b29f1c11cb73629e28bfb5a62f0c401c1555cba4c0b2253418309",
+      "bytes": 172991135,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_treecover2000_70N_070W.tif": {
+      "sha256": "a2fb8f85835fa08750526fb007c0bef9c9bbc60288d4f357d398a92e8630c800",
+      "bytes": 13354193,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_treecover2000_70N_080W.tif": {
+      "sha256": "ae1018d7c7786bf8231af0662fb2416e4ce36c44541dce5d6d021d70270dba86",
+      "bytes": 19054309,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_treecover2000_70N_120W.tif": {
+      "sha256": "5d9b5e58bfdb4cf537f910f507dc771f086b92809dc88a1300c1ba96a3407afe",
+      "bytes": 289756022,
+      "acquisition": "2026-09-02"
+    },
+    "Hansen_GFC-2024-v1.12_treecover2000_70N_130W.tif": {
+      "sha256": "1ef940285a94cd087448ffbbbd66bf0e368542e4993de09f3d086f15729a7cee",
+      "bytes": 418564859,
+      "acquisition": "2026-09-02"
+    }
+  },
+  "tileCoverageAudit": {
+    "schema": "witness-tree/vlce2-gap-tile-coverage-audit/1",
+    "question": "Does the tile set the gap measurement clipped cover every province it reports?",
+    "geometrySource": {
+      "boundRecord": "data/phase8-province-map-release.json",
+      "field": "browserCompatibilityOutput.displayGeometry.parentSha256",
+      "sha256": "aec8513a57c2360bf5a4c6faecc750155ba16f16f588b28773414cebde1cbd11",
+      "why": "The unsimplified parent, not the display copy. The display copy omits small islands, so a coverage test against it could miss a tile a province genuinely reaches."
+    },
+    "thresholdHectares": 1000.0,
+    "areaMethod": "planar intersection in degrees scaled by cos(mid-latitude); an estimate sufficient to separate a real tile from a boundary sliver, not a published area",
+    "provinceEnvelopesWgs84": {
+      "Alberta": [
+        -120.00001532767449,
+        48.99884302312107,
+        -110.00000344574262,
+        60.00000569461554
+      ],
+      "British Columbia": [
+        -139.0522010411841,
+        48.29680877507114,
+        -114.06833448469612,
+        60.00005904727499
+      ],
+      "Ontario": [
+        -95.15343305923969,
+        41.68141379926106,
+        -74.34347198794298,
+        56.861704601195875
+      ],
+      "Quebec": [
+        -79.76287904508102,
+        44.999312784111474,
+        -57.107767444727514,
+        62.581856535458314
+      ]
+    },
+    "overlapHectaresByProvince": {
+      "Alberta": {
+        "50N_120W": 3629440.8,
+        "60N_120W": 63330402.3,
+        "60N_130W": 29.0,
+        "70N_120W": 16.5,
+        "70N_130W": 0.0
+      },
+      "British Columbia": {
+        "50N_120W": 4450349.2,
+        "50N_130W": 5091596.8,
+        "60N_120W": 7731794.7,
+        "60N_130W": 65679093.9,
+        "60N_140W": 11409081.3,
+        "70N_130W": 117.7,
+        "70N_140W": 184.1
+      },
+      "Ontario": {
+        "50N_080W": 10492629.9,
+        "50N_090W": 27227967.8,
+        "50N_100W": 6363649.3,
+        "60N_080W": 457131.3,
+        "60N_090W": 36514200.1,
+        "60N_100W": 16999946.2
+      },
+      "Quebec": {
+        "50N_070W": 7903079.1,
+        "50N_080W": 34579512.8,
+        "60N_060W": 1949291.4,
+        "60N_070W": 36797010.1,
+        "60N_080W": 58457553.1,
+        "70N_070W": 240350.4,
+        "70N_080W": 9303723.8
+      }
+    },
+    "requiredTiles": [
+      "50N_070W",
+      "50N_080W",
+      "50N_090W",
+      "50N_100W",
+      "50N_120W",
+      "50N_130W",
+      "60N_060W",
+      "60N_070W",
+      "60N_080W",
+      "60N_090W",
+      "60N_100W",
+      "60N_120W",
+      "60N_130W",
+      "60N_140W",
+      "70N_070W",
+      "70N_080W"
+    ],
+    "belowThresholdTiles": {
+      "70N_120W": 16.5,
+      "70N_130W": 117.7,
+      "70N_140W": 184.1
+    },
+    "builtBy": "scripts/audit-vlce2-gap-tile-coverage.py",
+    "finding": "Every tile any covered province reaches in area is in the run set. The three tiles that fall below the threshold are boundary slivers where digitised vertices sit a fraction north of the 60th parallel, which is the real northern limit of both Alberta and British Columbia. Two of the three were run anyway; 70N_140W, at 184.1 ha against 457,131 ha for the smallest tile any province genuinely needs, was not. Adding it could not move a gap percentage.",
+    "whyThisIsChecked": "The sibling Hansen sample profile recorded a tile that sat entirely outside the province it was labelled for, and its checksums matched, so nothing caught it. This record carries no per-province tile label to get wrong: it clips one shared tile set. Its version of the same failure is a province reaching past the tile set and being quietly truncated, which would understate that province's gap while every number still looked well formed.",
+    "limits": "Node cannot re-derive polygon intersections, so the checker verifies the invariant and the geometry binding rather than recomputing the areas. It does independently derive each province envelope from the bound geometry, so a fabricated overlap against a province a tile cannot reach is still caught.",
+    "mutationsProven": 14
+  },
+  "elapsedSeconds": 429.05471897125244,
+  "provinces": {
+    "Quebec": {
+      "insideMappedExtent": {
+        "landHectares": 111175752.4284505,
+        "forestHectaresByThreshold": {
+          "10": 89436431.34888832,
+          "20": 83345903.00548461,
+          "30": 78732684.68439522,
+          "50": 64546111.016047016
+        },
+        "lossHectaresByThreshold": {
+          "10": 8674983.65788541,
+          "20": 8519851.194800908,
+          "30": 8300136.34592025,
+          "50": 7509171.172180026
+        }
+      },
+      "outsideMappedExtent": {
+        "landHectares": 19757433.198254675,
+        "forestHectaresByThreshold": {
+          "10": 2185548.4334618575,
+          "20": 1544020.998092343,
+          "30": 1339133.7995668557,
+          "50": 1048871.0017456992
+        },
+        "lossHectaresByThreshold": {
+          "10": 68159.72764027258,
+          "20": 67500.1296076064,
+          "30": 66767.7894111697,
+          "50": 63775.177881191936
+        }
+      },
+      "gapLossAsPercentOfInsideLossByThreshold": {
+        "10": 0.7857043924032822,
+        "20": 0.7922688796348603,
+        "30": 0.8044179833743085,
+        "50": 0.8492971650115819
+      }
+    },
+    "Ontario": {
+      "insideMappedExtent": {
+        "landHectares": 81073909.42847078,
+        "forestHectaresByThreshold": {
+          "10": 72779464.59012079,
+          "20": 70175714.66747893,
+          "30": 67609349.67043899,
+          "50": 58356494.61966248
+        },
+        "lossHectaresByThreshold": {
+          "10": 5443213.107967453,
+          "20": 5423647.889832823,
+          "30": 5390514.888357915,
+          "50": 5115248.38821587
+        }
+      },
+      "outsideMappedExtent": {
+        "landHectares": 7998497.423784817,
+        "forestHectaresByThreshold": {
+          "10": 2933933.4966136133,
+          "20": 2749399.9185156412,
+          "30": 2610209.1261482807,
+          "50": 2326251.3942764793
+        },
+        "lossHectaresByThreshold": {
+          "10": 55320.22343545487,
+          "20": 54682.05956879906,
+          "30": 54034.91105541712,
+          "50": 51748.783472472176
+        }
+      },
+      "gapLossAsPercentOfInsideLossByThreshold": {
+        "10": 1.016315590408915,
+        "20": 1.0082155161898714,
+        "30": 1.0024072314894856,
+        "50": 1.0116572949162583
+      }
+    },
+    "Alberta": {
+      "insideMappedExtent": {
+        "landHectares": 48756930.38777021,
+        "forestHectaresByThreshold": {
+          "10": 39371903.095793836,
+          "20": 38439091.205608346,
+          "30": 37337673.90658753,
+          "50": 32142655.108730596
+        },
+        "lossHectaresByThreshold": {
+          "10": 5990486.075417745,
+          "20": 5950851.2884523235,
+          "30": 5852482.346634195,
+          "50": 5020516.418255639
+        }
+      },
+      "outsideMappedExtent": {
+        "landHectares": 15436952.970503483,
+        "forestHectaresByThreshold": {
+          "10": 535018.9923539154,
+          "20": 417618.17553795694,
+          "30": 330169.88651810307,
+          "50": 180727.72820270603
+        },
+        "lossHectaresByThreshold": {
+          "10": 12249.315866233195,
+          "20": 11476.769509705453,
+          "30": 10567.688999785063,
+          "50": 8042.807573484217
+        }
+      },
+      "gapLossAsPercentOfInsideLossByThreshold": {
+        "10": 0.20447949819128813,
+        "20": 0.19285928942597202,
+        "30": 0.18056763564374725,
+        "50": 0.1601988103104075
+      }
+    },
+    "British Columbia": {
+      "insideMappedExtent": {
+        "landHectares": 91133460.9713776,
+        "forestHectaresByThreshold": {
+          "10": 68111806.67190526,
+          "20": 66821496.19039303,
+          "30": 65872622.97300347,
+          "50": 60591421.66069527
+        },
+        "lossHectaresByThreshold": {
+          "10": 8944786.525921324,
+          "20": 8909077.061025139,
+          "30": 8867913.196595177,
+          "50": 8352772.122448197
+        }
+      },
+      "outsideMappedExtent": {
+        "landHectares": 27617.176244771374,
+        "forestHectaresByThreshold": {
+          "10": 2815.3882763542542,
+          "20": 2644.946141936083,
+          "30": 2555.9140311701844,
+          "50": 2224.6762695421316
+        },
+        "lossHectaresByThreshold": {
+          "10": 5.438381660686815,
+          "20": 5.395208964566061,
+          "30": 5.395208964566061,
+          "50": 4.948965338499026
+        }
+      },
+      "gapLossAsPercentOfInsideLossByThreshold": {
+        "10": 6.079945725844648e-05,
+        "20": 6.0558562100317625e-05,
+        "30": 6.083966819428887e-05,
+        "50": 5.92493757275936e-05
+      }
+    }
+  },
+  "tileChecksumNote": "Every layer file the run actually opened, with the acquisition it resolved to. The worker prefers the 2026-09-02 acquisition and falls back to 2026-08-25, so recording only one directory would leave inputs unbound."
+}

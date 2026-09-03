@@ -10,10 +10,61 @@ const JURISDICTION_NAMES = new Map([
   ["QC", { en: "Québec", fr: "Québec" }],
 ]);
 
+const PRODUCT_ID = "boundary-overlays-v3";
+const PROVINCE_CLIP = Object.freeze({
+  operation: "intersection",
+  boundaryRelativePath: "raw/statcan-boundaries/2026-08-12/lpr_000b21a_e.zip",
+  boundarySha256: "d28bbb15d7b49e3d1828755a5f1b4ebcee699ad70efe8b0f1b902d29ebffd20b",
+  boundaryLayer: "lpr_000b21a_e",
+  boundaryFilter: "PRUID IN ('24','35','48','59')",
+  provinceIds: ["24", "35", "48", "59"],
+  boundaryFeatureCount: 4,
+  boundarySourceCrs: "EPSG:3347",
+  outputCrs: "EPSG:4326",
+  appliesTo: ["economic-regions", "watersheds"],
+});
+const CLIPPED_OVERLAYS = new Set(PROVINCE_CLIP.appliesTo);
+
+function sameArray(actual, expected) {
+  return Array.isArray(actual) && actual.length === expected.length &&
+    actual.every((value, index) => value === expected[index]);
+}
+
+function validateClipTransform(transform) {
+  const clip = transform?.clip;
+  if (!clip || typeof clip !== "object") {
+    throw new Error("Boundary overlay release must record its province clip transform.");
+  }
+  for (const field of ["boundaryRelativePath", "boundarySha256", "boundaryLayer", "boundaryFilter", "boundarySourceCrs", "outputCrs"]) {
+    if (clip[field] !== PROVINCE_CLIP[field]) {
+      throw new Error(`Province clip metadata ${field} changed.`);
+    }
+  }
+  if (clip.operation !== PROVINCE_CLIP.operation) {
+    throw new Error("Province clip operation must be a geometry intersection.");
+  }
+  if (!/^[a-f0-9]{64}$/.test(clip.boundarySha256 ?? "")) {
+    throw new Error("Province clip boundary must carry a SHA-256 checksum.");
+  }
+  if (clip.boundaryFeatureCount !== PROVINCE_CLIP.boundaryFeatureCount) {
+    throw new Error("Province clip boundary must contain four province features.");
+  }
+  if (!sameArray(clip.provinceIds, PROVINCE_CLIP.provinceIds)) {
+    throw new Error("Province clip must select PRUIDs 24, 35, 48 and 59 in that order.");
+  }
+  if (!sameArray(clip.appliesTo, PROVINCE_CLIP.appliesTo)) {
+    throw new Error("Province clip must apply exactly to economic regions and watersheds.");
+  }
+}
+
 export function validateBoundaryOverlays(release, source, readback) {
   if (release?.schemaVersion !== "witness-tree/boundary-overlay-release/1") {
     throw new Error("Boundary overlay release must be a version 1 record.");
   }
+  if (release.productId !== PRODUCT_ID) {
+    throw new Error(`Boundary overlay release must be ${PRODUCT_ID}.`);
+  }
+  validateClipTransform(release.transform);
   if (!/^[a-f0-9]{64}$/.test(release.releaseId ?? "")) {
     throw new Error("Boundary overlay release id must be a SHA-256 digest.");
   }
@@ -55,6 +106,10 @@ export function validateBoundaryOverlays(release, source, readback) {
     if (!Number.isInteger(archive.byteLength) || archive.byteLength <= 0) {
       throw new Error(`Archive ${archive.fileName} has no byte length.`);
     }
+    const clipped = CLIPPED_OVERLAYS.has(archive.overlay);
+    if (archive.clippedToProvinceBoundary !== clipped) {
+      throw new Error(`Archive ${archive.fileName} has incorrect province clip metadata.`);
+    }
     if (!archive.url?.startsWith(`${release.base}/`)) {
       throw new Error(`Archive ${archive.fileName} is not served from the release base.`);
     }
@@ -72,6 +127,34 @@ export function validateBoundaryOverlays(release, source, readback) {
   // Feature counts must reconcile to the sources they were built from.
   const perOverlay = new Map();
   for (const entry of release.sources ?? []) {
+    if (!Number.isInteger(entry.inputFeatureCount) || entry.inputFeatureCount <= 0) {
+      throw new Error(`${entry.id} must record its positive input feature count.`);
+    }
+    if (!Number.isInteger(entry.inputDistinctCount) || entry.inputDistinctCount <= 0) {
+      throw new Error(`${entry.id} must record its positive input distinct-identifier count.`);
+    }
+    if (!Number.isInteger(entry.featureCount) || entry.featureCount <= 0) {
+      throw new Error(`${entry.id} must record its positive output feature count.`);
+    }
+    if (!Number.isInteger(entry.districtCount) || entry.districtCount <= 0) {
+      throw new Error(`${entry.id} must record its positive output distinct-identifier count.`);
+    }
+    if (entry.inputFeatureCount < entry.featureCount || entry.inputDistinctCount < entry.districtCount) {
+      throw new Error(`${entry.id} output counts cannot exceed the input counts.`);
+    }
+    const clipped = CLIPPED_OVERLAYS.has(entry.overlay);
+    if (entry.clippedToProvinceBoundary !== clipped) {
+      throw new Error(`${entry.id} has incorrect province clip metadata.`);
+    }
+    if (clipped && (
+      !Number.isInteger(entry.selectedFeatureCount) ||
+      entry.selectedFeatureCount <= 0 ||
+      entry.selectedFeatureCount > entry.inputFeatureCount ||
+      entry.featureCount > entry.selectedFeatureCount ||
+      entry.districtCount > entry.selectedFeatureCount
+    )) {
+      throw new Error(`${entry.id} must preserve its pre-clip selected and output feature counts.`);
+    }
     perOverlay.set(entry.overlay, (perOverlay.get(entry.overlay) ?? 0) + entry.featureCount);
   }
   for (const archive of release.archives) {

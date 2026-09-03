@@ -18,8 +18,8 @@ export type BoundaryOverlayId = (typeof BOUNDARY_OVERLAY_IDS)[number];
 // scripts/publish-boundary-overlay-release.mjs. scripts/check-boundary-overlays.mjs
 // fails if this drifts from data/boundary-overlay-release.json.
 export const BOUNDARY_OVERLAY_RELEASE = Object.freeze({
-  releaseId: "2c3667c5e23d4f976791cc30ae8246f63e2aa03b4c4829a7006952cdd43f7ff8",
-  base: "https://d3g1406o0uekin.cloudfront.net/releases/boundary-overlays-v2/2c3667c5e23d4f976791cc30ae8246f63e2aa03b4c4829a7006952cdd43f7ff8/tiles",
+  releaseId: "4259310e49e4bf2a289463240a434529627415f81152f6104370764d07471339",
+  base: "https://d3g1406o0uekin.cloudfront.net/releases/boundary-overlays-v3/4259310e49e4bf2a289463240a434529627415f81152f6104370764d07471339/tiles",
 } as const);
 
 type Bilingual = Readonly<Record<"en" | "fr", string>>;
@@ -48,7 +48,7 @@ export const BOUNDARY_OVERLAYS: Readonly<Record<BoundaryOverlayId, BoundaryOverl
       id: "federal-ridings",
       label: { en: "Federal ridings", fr: "Circonscriptions fédérales" },
       available: true,
-      url: url("federal-ridings-v2.pmtiles"),
+      url: url("federal-ridings-v3.pmtiles"),
       sourceLayer: "federal_ridings",
       colour: EXPLORE_MAP_COLOURS.ink,
       note: {
@@ -64,17 +64,13 @@ export const BOUNDARY_OVERLAYS: Readonly<Record<BoundaryOverlayId, BoundaryOverl
       id: "provincial-ridings",
       label: { en: "Provincial ridings", fr: "Circonscriptions provinciales" },
       available: true,
-      url: url("provincial-ridings-v2.pmtiles"),
+      url: url("provincial-ridings-v3.pmtiles"),
       sourceLayer: "provincial_ridings",
       colour: EXPLORE_MAP_COLOURS.observation,
       dash: [3, 2],
-      // Four provinces, and that is the layer's scope rather than a shortfall
-      // against some wider promise. Naming the scope on the layer itself is
-      // still necessary: a reader who sees no boundary over Saskatchewan must
-      // not read that as a claim that Saskatchewan has no ridings.
       note: {
-        en: "British Columbia, Alberta, Ontario and Québec, 431 districts. Those four provinces are what this layer covers. Other provinces and the territories are not drawn, which says nothing about them. Québec's 127 districts are the 2026 list, which does not take effect until the 43rd legislature ends.",
-        fr: "Colombie-Britannique, Alberta, Ontario et Québec, 431 circonscriptions. Ces quatre provinces constituent la portée de cette couche. Les autres provinces et les territoires ne sont pas tracés, ce qui n'énonce rien à leur sujet. Les 127 circonscriptions du Québec sont la liste de 2026, qui n'entre en vigueur qu'à la fin de la 43e législature.",
+        en: "British Columbia, Alberta, Ontario and Québec · 431 ridings\nRepresentation orders: British Columbia 2023, Alberta 2019, Ontario 2022, Québec 2026.",
+        fr: "Colombie-Britannique, Alberta, Ontario et Québec · 431 circonscriptions\nDécrets de représentation : Colombie-Britannique 2023, Alberta 2019, Ontario 2022, Québec 2026.",
       },
       attribution: {
         en: "Elections BC; Open Government Licence – Alberta; Elections Ontario; Élections Québec.",
@@ -85,13 +81,13 @@ export const BOUNDARY_OVERLAYS: Readonly<Record<BoundaryOverlayId, BoundaryOverl
       id: "economic-regions",
       label: { en: "Economic regions", fr: "Régions économiques" },
       available: true,
-      url: url("economic-regions-v2.pmtiles"),
+      url: url("economic-regions-v3.pmtiles"),
       sourceLayer: "economic_regions",
       colour: EXPLORE_MAP_COLOURS.observation,
       dash: [5, 2],
       note: {
-        en: "All 76 Statistics Canada 2021 economic regions are drawn as a bilingual reference framework. This boundary layer is not a regional forest-loss aggregate.",
-        fr: "Les 76 régions économiques de Statistique Canada de 2021 sont tracées comme cadre de référence bilingue. Cette couche de limites n'est pas un agrégat régional de perte forestière.",
+        en: "The 44 Statistics Canada 2021 economic regions in British Columbia, Alberta, Ontario and Québec are clipped to those provinces and drawn as a bilingual reference framework.",
+        fr: "Les 44 régions économiques de Statistique Canada de 2021 situées en Colombie-Britannique, en Alberta, en Ontario et au Québec sont découpées selon ces provinces et tracées comme cadre de référence bilingue.",
       },
       attribution: {
         en: "Statistics Canada, 2021 Economic Region Boundary File.",
@@ -102,13 +98,13 @@ export const BOUNDARY_OVERLAYS: Readonly<Record<BoundaryOverlayId, BoundaryOverl
       id: "watersheds",
       label: { en: "Watersheds", fr: "Bassins versants" },
       available: true,
-      url: url("watersheds-v2.pmtiles"),
+      url: url("watersheds-v3.pmtiles"),
       sourceLayer: "watersheds",
       colour: EXPLORE_MAP_COLOURS.ink,
       dash: [2, 2],
       note: {
-        en: "The 169 Canadian areas in NRCan's bilingual Water Survey of Canada sub-drainage rollup, version 6.0, are drawn as a reference framework. This boundary layer is not a watershed forest-loss aggregate.",
-        fr: "Les 169 aires canadiennes du regroupement bilingue des sous-aires de drainage de la Division des relevés hydrologiques du Canada de RNCan, version 6.0, sont tracées comme cadre de référence. Cette couche de limites n'est pas un agrégat de perte forestière par bassin versant.",
+        en: "The 105 Canadian sub-drainage areas from NRCan's bilingual Water Survey of Canada rollup, version 6.0, that intersect British Columbia, Alberta, Ontario and Québec are clipped at those provincial boundaries and drawn as a reference framework.",
+        fr: "Les 105 aires canadiennes du regroupement bilingue des sous-aires de drainage de la Division des relevés hydrologiques du Canada de RNCan, version 6.0, qui touchent la Colombie-Britannique, l’Alberta, l’Ontario et le Québec sont découpées aux limites de ces provinces et tracées comme cadre de référence.",
       },
       attribution: {
         en: "Natural Resources Canada, Atlas of Canada drainage areas, version 6.0 (2008).",

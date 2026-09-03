@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/no-noninteractive-tabindex -- The horizontal map-layer region must remain keyboard-scrollable. */
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -12,7 +13,6 @@ import { chooseScaleBar, metresPerPixel, type ScaleBar } from "@/lib/explore/map
 import {
   BOUNDARY_OVERLAYS,
   EXPLORE_MAP_COLOURS,
-  EXPLORE_MAP_VIEWS,
   EXPLORE_PER_CELL_LAYER,
   EXPLORE_PRODUCTION_LAYER,
   formatUnknownSharePercent,
@@ -30,6 +30,7 @@ import {
   type BoundarySelection,
   type RidingBoundaryMeasurement,
 } from "@/lib/explore/boundary-readout";
+import { ProvinceBar } from "@/components/site";
 
 const text = {
   en: {
@@ -96,19 +97,17 @@ const text = {
     normalizedShare: "Detected loss share",
     totalLoss: "Detected loss",
     knownObservedSubtotal: "Known detected subtotal",
-    provinceAggregate: "Provisional province aggregate, 2020 to 2022",
-    detectedPatches: "Detected forest-loss patches",
-    mapView: "Map view",
-    framingViews:
-      "These buttons are framing views only; use Zoom to patches to reach the patch layer.",
-    patchesBelowZoom:
-      "Detected-loss patches begin at zoom 8. The current view is below that threshold.",
+    provinceAggregate: "Provisional aggregate, 2020 to 2022",
+    detectedPatches: "Detected-loss patches",
     zoomToPatches: "Zoom to patches",
-    national: "National",
-    bc: "British Columbia",
-    ab: "Alberta",
-    on: "Ontario",
-    qc: "Québec",
+    patchesVisible: "Patches are already visible at this zoom.",
+    patchesUnavailable: "No patch layer is available for this selection.",
+    mapNotReady: "The map is not ready yet.",
+    enterFullscreen: "View map full screen",
+    exitFullscreen: "Exit full screen",
+    mapPanelHarvest: "Harvest recorded",
+    mapPanelFire: "Fire recorded",
+    mapPanelNeither: "Neither recorded",
   },
   fr: {
     label: "Carte des pertes forestières",
@@ -176,19 +175,17 @@ const text = {
     normalizedShare: "Part de perte détectée",
     totalLoss: "Perte détectée",
     knownObservedSubtotal: "Sous-total détecté connu",
-    provinceAggregate: "Agrégat provincial provisoire, de 2020 à 2022",
-    detectedPatches: "Parcelles de perte forestière détectée",
-    mapView: "Vue de la carte",
-    framingViews:
-      "Ces boutons servent seulement au cadrage; utilisez Zoomer vers les parcelles pour atteindre la couche de parcelles.",
-    patchesBelowZoom:
-      "Les parcelles de perte détectée commencent au zoom 8. La vue actuelle est sous ce seuil.",
+    provinceAggregate: "Agrégat provisoire, de 2020 à 2022",
+    detectedPatches: "Parcelles de perte détectée",
     zoomToPatches: "Zoomer vers les parcelles",
-    national: "National",
-    bc: "Colombie-Britannique",
-    ab: "Alberta",
-    on: "Ontario",
-    qc: "Québec",
+    patchesVisible: "Les parcelles sont déjà visibles à ce niveau de zoom.",
+    patchesUnavailable: "Aucune couche de parcelles n’est offerte pour cette sélection.",
+    mapNotReady: "La carte n’est pas encore prête.",
+    enterFullscreen: "Afficher la carte en plein écran",
+    exitFullscreen: "Quitter le plein écran",
+    mapPanelHarvest: "Récolte consignée",
+    mapPanelFire: "Incendie consigné",
+    mapPanelNeither: "Ni l’un ni l’autre consigné",
   },
 } as const;
 
@@ -202,11 +199,15 @@ const PMTILES_LOAD_TIMEOUT_MS = 10_000;
 // by the server and client trees having different positions around this island.
 const STATUS_ID = "explore-map-status";
 const ATTRIBUTION_ID = "explore-map-attribution";
+const PATCH_ZOOM_REASON_ID = "explore-map-patch-zoom-reason";
 
-// These are only camera extents for the view buttons. They neither filter a
-// layer nor imply that a layer supplies a provincial measurement there.
+// The default camera and pan limit share this one four-province envelope so
+// they cannot drift apart. It frames all four provinces but is not a button.
+const COMBINED_PROVINCE_BOUNDS: MapBounds = [-139.1, 41.5, -57, 62.1];
+
+// These are only camera extents for the province buttons. They neither filter
+// a layer nor imply that a layer supplies a provincial measurement there.
 const MAP_VIEW_BOUNDS: Readonly<Record<ExploreMapView, MapBounds>> = {
-  national: [-141, 41, -52, 70],
   bc: [-139.1, 48.2, -114, 60.1],
   ab: [-120, 48.9, -109, 60.1],
   on: [-95.2, 41.5, -74.1, 56.9],
@@ -482,6 +483,7 @@ export function ExploreMapClient({
 }>) {
   const statusId = STATUS_ID;
   const attributionId = ATTRIBUTION_ID;
+  const mapFrameRef = useRef<HTMLDivElement>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
   /*
    * The live map, so the zoom controls can drive it. MapLibre injects its own
@@ -492,14 +494,16 @@ export function ExploreMapClient({
    */
   const mapRef = useRef<MapLibreMap | null>(null);
   const [view, setView] = useState<MapView | null>(null);
-  const [selectedMapView, setSelectedMapView] = useState<ExploreMapView>("national");
+  const [selectedMapView, setSelectedMapView] = useState<ExploreMapView | null>(null);
+  const [fullscreenAvailable, setFullscreenAvailable] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   // The provisional province aggregate covers 2020-2022 only. The per-cell
   // detail covers every annual interval from 1984-1985 to 2021-2022, so the
   // map is now offered for the whole series and the two layers are shown
   // wherever each one actually has something to say.
   const cause = perCellCauseForMode(mode);
   const perCellArchive = cause ? perCellArchiveForYear(year) : null;
-  const provinceAvailable = mode === "forest-change" && year === 2022;
+  const provinceAvailable = mode === "forest-change";
   const available = provinceAvailable || perCellArchive !== null;
   // A stable primitive, so the effect re-runs when the selection changes
   // rather than on every render of a fresh array literal.
@@ -519,6 +523,31 @@ export function ExploreMapClient({
       : source
         ? "ready"
         : "loading";
+  useEffect(() => {
+    const frame = mapFrameRef.current;
+    const available = Boolean(
+      frame?.requestFullscreen && document.fullscreenEnabled && document.exitFullscreen,
+    );
+    setFullscreenAvailable(available);
+    if (!available) return;
+
+    const syncFullscreenState = () => {
+      setIsFullscreen(document.fullscreenElement === frame);
+      mapRef.current?.resize();
+    };
+    const syncAfterEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") window.requestAnimationFrame(syncFullscreenState);
+    };
+    document.addEventListener("fullscreenchange", syncFullscreenState);
+    document.addEventListener("keydown", syncAfterEscape);
+    window.addEventListener("resize", syncFullscreenState);
+    return () => {
+      document.removeEventListener("fullscreenchange", syncFullscreenState);
+      document.removeEventListener("keydown", syncAfterEscape);
+      window.removeEventListener("resize", syncFullscreenState);
+    };
+  }, []);
+
   useEffect(() => {
     if (!available) return;
 
@@ -620,8 +649,9 @@ export function ExploreMapClient({
         map = new maplibre.Map({
           container: mapContainerRef.current,
           style: buildStyle(provinceAvailable, null, overlays, "all"),
-          center: [-96, 56],
-          zoom: 2.6,
+          bounds: COMBINED_PROVINCE_BOUNDS,
+          fitBoundsOptions: { padding: 36, maxZoom: 6 },
+          maxBounds: COMBINED_PROVINCE_BOUNDS,
           minZoom: 1.5,
           // The per-cell layer is only drawn from zoom 8, so the map has to
           // reach it. Without an archive there is nothing past the province
@@ -806,7 +836,7 @@ export function ExploreMapClient({
     mapRef.current?.fitBounds(MAP_VIEW_BOUNDS[mapView], {
       padding: 36,
       duration: 350,
-      maxZoom: mapView === "national" ? 2.6 : 6,
+      maxZoom: 6,
     });
   };
   const zoomToPatches = () => {
@@ -826,9 +856,27 @@ export function ExploreMapClient({
     setMapReady(false);
     setRetryNonce((attempt) => attempt + 1);
   };
+  const patchZoomDisabledReason = !perCellArchive
+    ? text[locale].patchesUnavailable
+    : !view
+      ? text[locale].mapNotReady
+      : view.zoom >= EXPLORE_PER_CELL_LAYER.minZoom
+        ? text[locale].patchesVisible
+        : null;
+  const toggleFullscreen = async () => {
+    const frame = mapFrameRef.current;
+    if (!frame || !fullscreenAvailable) return;
+    try {
+      if (document.fullscreenElement === frame) await document.exitFullscreen();
+      else await frame.requestFullscreen();
+    } catch (error: unknown) {
+      console.error("Explore map full-screen error", error);
+    }
+  };
   return (
     <section aria-label={text[locale].label}>
       <div
+        ref={mapFrameRef}
         className="explore-map"
         role="region"
         aria-label={text[locale].label}
@@ -838,6 +886,15 @@ export function ExploreMapClient({
           source === "geojson" ? "geojson-fallback" : source ?? undefined
         }
       >
+        <ProvinceBar
+          locale={locale}
+          placement="map"
+          selected={selectedMapView}
+          onSelect={(mapView) => {
+            setSelectedMapView(mapView);
+            fitMapToView(mapView);
+          }}
+        />
         {available ? (
           <>
             <div
@@ -849,6 +906,7 @@ export function ExploreMapClient({
             />
             {state === "ready" && source === "geojson" ? (
           <svg
+            className="explore-map-fallback"
             viewBox="0 0 1000 500"
             role="img"
             aria-label={text[locale].label}
@@ -879,65 +937,6 @@ export function ExploreMapClient({
             {state !== "ready" ? (
               <p className="explore-map-panel">{message}</p>
             ) : null}
-            {state === "ready" ? (
-              <aside className="explore-map-layer-panel" aria-label={text[locale].mapPanel}>
-                {source === "pmtiles" ? (
-                  <fieldset>
-                    <legend>{text[locale].mapView}</legend>
-                    <div className="explore-map-view-options">
-                      {EXPLORE_MAP_VIEWS.map((mapView) => (
-                        <button
-                          key={mapView}
-                          type="button"
-                          aria-pressed={selectedMapView === mapView}
-                          onClick={() => {
-                            setSelectedMapView(mapView);
-                            fitMapToView(mapView);
-                          }}
-                        >
-                          {text[locale][mapView]}
-                        </button>
-                      ))}
-                    </div>
-                    <p className="explore-map-note">{text[locale].framingViews}</p>
-                  </fieldset>
-                ) : null}
-                {source === "pmtiles" &&
-                perCellArchive &&
-                view &&
-                view.zoom < EXPLORE_PER_CELL_LAYER.minZoom ? (
-                  <div className="explore-map-action">
-                    <p>{text[locale].patchesBelowZoom}</p>
-                    <button type="button" onClick={zoomToPatches}>
-                      {text[locale].zoomToPatches}
-                    </button>
-                  </div>
-                ) : null}
-                <strong>{text[locale].mapLayers}</strong>
-                <ul className="explore-map-layer-list">
-                  {provinceAvailable ? <li>{text[locale].provinceAggregate}</li> : null}
-                  {perCellArchive ? (
-                    <li>{`${text[locale].detectedPatches}, ${perCellArchive.interval}`}</li>
-                  ) : null}
-                  {overlays.map((id) => <li key={id}>{BOUNDARY_OVERLAYS[id].label[locale]}</li>)}
-                </ul>
-                {provinceAvailable ? (
-                  <ul className="explore-map-legend" aria-label={text[locale].legend}>
-                    <li>{symbol("loss-0")}0–&lt;1%</li>
-                    <li>{symbol("loss-1")}1–&lt;2%</li>
-                    <li>{symbol("loss-2")}2–&lt;3%</li>
-                    <li>{symbol("loss-3")}3%+</li>
-                  </ul>
-                ) : null}
-                {perCellArchive ? (
-                  <ul className="explore-map-legend" aria-label={legendTitle}>
-                    {cause === "fire" ? null : <li>{symbol("patch-harvest")}{text[locale].perCellHarvest}</li>}
-                    {cause === "harvest" ? null : <li>{symbol("patch-fire")}{text[locale].perCellFire}</li>}
-                    {cause === "all" ? <li>{symbol("patch-none")}{text[locale].perCellNeither}</li> : null}
-                  </ul>
-                ) : null}
-              </aside>
-            ) : null}
             {state === "ready" && source === "pmtiles" && boundary ? (
               <aside className="explore-map-boundary-status" role="status">
                 <strong>{text[locale].boundary}</strong>
@@ -964,63 +963,118 @@ export function ExploreMapClient({
                 ) : null}
               </aside>
             ) : null}
-            {scale && view ? (
-              <div className="explore-map-controls">
-                <div
-                  className="explore-map-zoom"
-                  role="group"
-                  aria-label={text[locale].zoomControls}
-                >
-                  <button
-                    type="button"
-                    className="explore-map-zoom-button"
-                    onClick={() => mapRef.current?.zoomIn()}
-                    disabled={view.atMaxZoom}
-                  >
-                    <span aria-hidden="true">+</span>
-                    <span className="sr-only">
-                      {text[locale].zoomIn}
-                    </span>
-                  </button>
-                  <button
-                    type="button"
-                    className="explore-map-zoom-button"
-                    onClick={() => mapRef.current?.zoomOut()}
-                    disabled={view.atMinZoom}
-                  >
-                    {/*
-                      A minus sign (U+2212), not a hyphen. At button size the
-                      hyphen reads as a speck next to the plus. It is written as
-                      the character itself rather than as a numeric character
-                      reference, because the style-token gate reads a numeric
-                      reference as a hex colour literal.
-                    */}
-                    <span aria-hidden="true">−</span>
-                    <span className="sr-only">
-                      {text[locale].zoomOut}
-                    </span>
-                  </button>
-                </div>
-                <div
-                  className="explore-map-scale"
-                  // The bar is a picture of a distance, so it is labelled with
-                  // that distance rather than left for a reader to measure.
-                  role="img"
-                  aria-label={labelled(locale, text[locale].scaleBar, scaleLabel)}
-                >
-                  <span
-                    className="explore-map-scale-bar"
-                    style={{ width: `${Math.round(scale.pixels)}px` }}
-                    aria-hidden="true"
-                  />
-                  <span aria-hidden="true">{scaleLabel}</span>
-                </div>
-              </div>
-            ) : null}
           </>
         ) : (
           <p className="explore-map-panel">{message}</p>
         )}
+        <div className="explore-map-controls">
+          {scale && view ? (
+            <div
+              className="explore-map-scale"
+              role="img"
+              aria-label={labelled(locale, text[locale].scaleBar, scaleLabel)}
+            >
+              <span
+                className="explore-map-scale-bar"
+                style={{ width: `${Math.round(scale.pixels)}px` }}
+                aria-hidden="true"
+              />
+              <span aria-hidden="true">{scaleLabel}</span>
+            </div>
+          ) : null}
+          {state === "ready" ? (
+            <div
+              className="explore-map-layer-panel"
+              tabIndex={0}
+              role="region"
+              aria-label={text[locale].mapPanel}
+            >
+              <strong>{text[locale].mapLayers}</strong>
+              <ul className="explore-map-layer-list">
+                {provinceAvailable ? <li>{text[locale].provinceAggregate}</li> : null}
+                {perCellArchive ? (
+                  <li>{`${text[locale].detectedPatches}, ${perCellArchive.interval}`}</li>
+                ) : null}
+                {overlays.map((id) => <li key={id}>{BOUNDARY_OVERLAYS[id].label[locale]}</li>)}
+              </ul>
+              {provinceAvailable ? (
+                <ul className="explore-map-legend" aria-label={text[locale].legend}>
+                  <li>{symbol("loss-0")}0–&lt;1%</li>
+                  <li>{symbol("loss-1")}1–&lt;2%</li>
+                  <li>{symbol("loss-2")}2–&lt;3%</li>
+                  <li>{symbol("loss-3")}3%+</li>
+                </ul>
+              ) : null}
+              {perCellArchive ? (
+                <ul className="explore-map-legend" aria-label={legendTitle}>
+                  {cause === "fire" ? null : <li>{symbol("patch-harvest")}{text[locale].mapPanelHarvest}</li>}
+                  {cause === "harvest" ? null : <li>{symbol("patch-fire")}{text[locale].mapPanelFire}</li>}
+                  {cause === "all" ? <li>{symbol("patch-none")}{text[locale].mapPanelNeither}</li> : null}
+                </ul>
+              ) : null}
+            </div>
+          ) : null}
+          <div className="explore-map-control-cluster">
+            <span
+              className="explore-map-patch-control"
+            >
+              <button
+                type="button"
+                className="explore-map-corner-button"
+                onClick={zoomToPatches}
+                disabled={patchZoomDisabledReason !== null}
+                title={patchZoomDisabledReason ?? undefined}
+                aria-describedby={patchZoomDisabledReason ? PATCH_ZOOM_REASON_ID : undefined}
+              >
+                {text[locale].zoomToPatches}
+              </button>
+              {patchZoomDisabledReason ? (
+                <span
+                  id={PATCH_ZOOM_REASON_ID}
+                  className="explore-map-patch-tooltip"
+                  role="tooltip"
+                >
+                  {patchZoomDisabledReason}
+                </span>
+              ) : null}
+            </span>
+            {fullscreenAvailable ? (
+              <button
+                type="button"
+                className="explore-map-corner-button explore-map-fullscreen-button"
+                onClick={() => void toggleFullscreen()}
+                aria-label={isFullscreen ? text[locale].exitFullscreen : text[locale].enterFullscreen}
+              >
+                {isFullscreen ? text[locale].exitFullscreen : text[locale].enterFullscreen}
+              </button>
+            ) : null}
+            <div
+              className="explore-map-zoom"
+              role="group"
+              aria-label={text[locale].zoomControls}
+            >
+              <button
+                type="button"
+                className="explore-map-zoom-button"
+                onClick={() => mapRef.current?.zoomIn()}
+                disabled={!view || view.atMaxZoom}
+              >
+                <span aria-hidden="true">+</span>
+                <span className="sr-only">{text[locale].zoomIn}</span>
+              </button>
+              <button
+                type="button"
+                className="explore-map-zoom-button"
+                onClick={() => mapRef.current?.zoomOut()}
+                disabled={!view || view.atMinZoom}
+              >
+                {/* A mathematical minus sign remains legible at button size. */}
+                <span aria-hidden="true">−</span>
+                <span className="sr-only">{text[locale].zoomOut}</span>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
       <p
         id={statusId}

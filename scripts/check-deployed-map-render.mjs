@@ -23,7 +23,7 @@ import { fileURLToPath } from "node:url";
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
-export const RENDER_EVIDENCE_PATH = "data/deployed-map-render-evidence-2026-09-01.json";
+export const RENDER_EVIDENCE_PATH = "data/deployed-map-render-evidence-2026-09-03.json";
 export const RENDER_EVIDENCE_SCHEMA = "witness-tree/deployed-map-render-evidence/1";
 export const DEPLOYED_ORIGIN = "https://www.witnesstree.ca";
 

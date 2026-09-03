@@ -4,6 +4,13 @@ import test from "node:test";
 
 const read = (path) => readFile(new URL(path, import.meta.url), "utf8");
 
+function section(source, start, end) {
+  const from = source.indexOf(start);
+  const to = source.indexOf(end, from);
+  assert.ok(from >= 0 && to > from, `Expected ${start} before ${end}`);
+  return source.slice(from, to);
+}
+
 test("landing pages use the production aggregate and retain the bounded scope", async () => {
   const [english, french] = await Promise.all([read("../app/en/page.tsx"), read("../app/fr/page.tsx")]);
   for (const page of [english, french]) {
@@ -17,8 +24,33 @@ test("landing pages use the production aggregate and retain the bounded scope", 
   assert.match(french, /provisoire et limité/);
   assert.doesNotMatch(english, /The verified .* province aggregate/);
   assert.doesNotMatch(french, /agrégat provincial vérifié/);
-  assert.match(english, /British Columbia, Alberta, Ontario and Quebec come first/);
-  assert.match(french, /Colombie-Britannique, l’Alberta, l’Ontario et le Québec passent d’abord/);
+  assert.match(english, /Other provinces are coming soon/);
+  assert.match(french, /D’autres provinces s’ajouteront bientôt/);
+  assert.doesNotMatch(english, /Every result shows what the evidence says/);
+  assert.doesNotMatch(french, /Chaque résultat indique ce que montrent les preuves/);
+});
+
+test("the staged landing grammar stops after the hero and first interior section", async () => {
+  const [english, french] = await Promise.all([read("../app/en/page.tsx"), read("../app/fr/page.tsx")]);
+  for (const [page, route] of [[english, "/en/explore"], [french, "/fr/explorer"]]) {
+    const hero = section(page, '<header className="masthead landing-hero">', "</header>");
+    const record = section(page, '<section className="content-section landing-record-band"', '<section className="content-section prose-measure">');
+    assert.match(hero, /<p className="eyebrow">/);
+    assert.match(hero, /<h1>/);
+    assert.match(hero, /<ProvinceBar/);
+    assert.equal((hero.match(/<Link\b/g) ?? []).length, 1);
+    assert.match(hero, new RegExp(`href="${route}"`));
+    assert.match(record, /<p className="eyebrow">/);
+    assert.match(record, /<h2 id=/);
+    assert.match(record, /landing-record-evidence/);
+    assert.equal((record.match(/<Link\b/g) ?? []).length, 1);
+    assert.match(record, new RegExp(`href="${route}"`));
+    assert.equal((page.match(/landing-record-band/g) ?? []).length, 1);
+    assert.match(page, /<span className="num">02<\/span>/);
+    assert.match(page, /<span className="num">03<\/span>/);
+    assert.match(page, /<span className="num">04<\/span>/);
+    assert.doesNotMatch(page, /\u2014/);
+  }
 });
 
 test("public coverage copy derives from the bounded Explore period", async () => {

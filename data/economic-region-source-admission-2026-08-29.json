@@ -63,6 +63,22 @@
     "url": "https://d3g1406o0uekin.cloudfront.net/releases/boundary-overlays-v2/2c3667c5e23d4f976791cc30ae8246f63e2aa03b4c4829a7006952cdd43f7ff8/tiles/economic-regions-v2.pmtiles",
     "exactRemoteReadback": true
   },
+  "overlayReleaseSuperseded": {
+    "supersedes": "2c3667c5e23d4f976791cc30ae8246f63e2aa03b4c4829a7006952cdd43f7ff8",
+    "productId": "boundary-overlays-v3",
+    "releaseId": "4259310e49e4bf2a289463240a434529627415f81152f6104370764d07471339",
+    "builtAt": "2026-09-02T18:47:29.292Z",
+    "fileName": "economic-regions-v3.pmtiles",
+    "byteLength": 4066915,
+    "sha256": "3b5cfd24d93716ac1d7266b9ffdf3287accb643cf2ed480acf45b7dbbe0c8c97",
+    "url": "https://d3g1406o0uekin.cloudfront.net/releases/boundary-overlays-v3/4259310e49e4bf2a289463240a434529627415f81152f6104370764d07471339/tiles/economic-regions-v3.pmtiles",
+    "shippedFeatureCount": 44,
+    "admittedSelectionFeatureCount": 76,
+    "sourceFeatureCount": 76,
+    "selection": "PRUID IN ('24','35','48','59')",
+    "clippedToProvinceBoundary": true,
+    "reason": "The shipped overlay was clipped to British Columbia, Alberta, Ontario and Quebec on 2026-09-02. The admitted source is still the national file of 76 regions; the layer that ships is the 44 of them that lie in those four provinces."
+  },
   "claims": {
     "sourceAdmitted": true,
     "geometryAdmitted": true,

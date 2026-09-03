@@ -151,13 +151,19 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
   assert.doesNotMatch(en, /geometry unavailable/);
   assert.match(en, /overlays=federal-ridings/);
   assert.match(en, /overlays=provincial-ridings/);
-  // Both admitted reference frameworks are selectable, while their copy
-  // still refuses to imply that a forest-loss aggregate was released.
+  // Both admitted reference frameworks are selectable. The owner removed the
+  // trailing "not an aggregate" disclaimer from both layers, so these hold the
+  // deletion in place and keep the descriptive sentence that still carries each
+  // layer's actual scope. A disclaimer creeping back is a copy regression.
   assert.match(en, /overlays=economic-regions/);
   assert.match(en, /overlays=watersheds/);
-  assert.match(en, /not a regional forest-loss aggregate/);
-  assert.match(en, /not a watershed forest-loss aggregate/);
-  // The provincial layer must never read as national coverage.
+  assert.match(en, /The 44 Statistics Canada 2021 economic regions in British Columbia, Alberta, Ontario and Québec are clipped to those provinces and drawn as a bilingual reference framework\./);
+  assert.match(en, /The 105 Canadian sub-drainage areas from NRCan&#x27;s bilingual Water Survey of Canada rollup, version 6\.0, that intersect British Columbia, Alberta, Ontario and Québec are clipped at those provincial boundaries and drawn as a reference framework\./);
+  assert.match(fr, /Les 44 régions économiques de Statistique Canada de 2021 situées en Colombie-Britannique, en Alberta, en Ontario et au Québec sont découpées selon ces provinces et tracées comme cadre de référence bilingue\./);
+  assert.match(fr, /Les 105 aires canadiennes du regroupement bilingue des sous-aires de drainage de la Division des relevés hydrologiques du Canada de RNCan, version 6\.0, qui touchent la Colombie-Britannique, l’Alberta, l’Ontario et le Québec sont découpées aux limites de ces provinces et tracées comme cadre de référence\./);
+  assert.doesNotMatch(en, /not a regional forest-loss aggregate/);
+  assert.doesNotMatch(en, /not a watershed forest-loss aggregate/);
+  // The provincial layer names the exact riding count and boundary editions.
   for (const province of [
     "British Columbia",
     "Alberta",
@@ -165,7 +171,12 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
     "Québec",
   ])
     assert.match(en, new RegExp(province));
-  assert.match(en, /does not take effect until the 43rd legislature ends/);
+  assert.match(en, /431 ridings\s+Representation orders: British Columbia 2023, Alberta 2019, Ontario 2022, Québec 2026\./);
+  assert.match(fr, /431 circonscriptions\s+Décrets de représentation : Colombie-Britannique 2023, Alberta 2019, Ontario 2022, Québec 2026\./);
+  // "Use ridings, not districts" was an instruction to whoever wrote this
+  // layer, not something a reader of the map can act on. It must not come back.
+  assert.doesNotMatch(en, /Use ridings, not districts/);
+  assert.doesNotMatch(fr, /Utilisez le terme circonscriptions, et non districts/);
   assert.match(listTable, /aria-label="List"/);
   assert.match(listTable, /<table/);
   assert.equal((listTable.match(/scope="col"/g) ?? []).length, 6);
@@ -210,6 +221,8 @@ test("Explore puts explanation and controls before the map, then layers and data
     const positions = orderedMarkers.map((marker) => markup.indexOf(marker));
     assert.ok(positions.every((position) => position >= 0));
     assert.deepEqual(positions, [...positions].sort((a, b) => a - b));
+    assert.ok(markup.indexOf('class="explore-map"') < markup.indexOf('id="explore-layers-heading"'));
+    assert.ok(markup.indexOf("overlay-toggle") > markup.indexOf('class="explore-map"'));
   }
   assert.ok(
     en.indexOf("Per-cell detected loss,") >
@@ -341,11 +354,11 @@ test("Explore uses the exact PMTiles release with a GeoJSON/SVG fallback on map 
   assert.match(map, /"source-layer": EXPLORE_PRODUCTION_LAYER\.sourceLayer/);
   assert.match(map, /data-map-source/);
   assert.match(map, /geojson-fallback/);
-  assert.match(map, /<svg\s+viewBox="0 0 1000 500"/);
+  assert.match(map, /<svg\s+className="explore-map-fallback"\s+viewBox="0 0 1000 500"/);
   assert.match(map, /featurePath\(feature\)/);
   assert.doesNotMatch(map, /sources: \{ fixtures:/);
   assert.match(map, /role=\{state === "error" \? "alert" : "status"\}/);
-  assert.match(map, /year === 2022/);
+  assert.match(map, /const provinceAvailable = mode === "forest-change";/);
   assert.match(map, /unavailableYear/);
   assert.match(map, /EXPLORE_PRODUCTION_LAYER\.rows\.map/);
   assert.match(map, /Detected loss \(%\)/);
@@ -378,10 +391,11 @@ test("Explore uses the exact PMTiles release with a GeoJSON/SVG fallback on map 
 });
 
 test("map failures retain diagnostics, retry, and a reachable patch zoom", async () => {
-  const map = await (await import("node:fs/promises")).readFile(
-    new URL("../components/explore/ExploreMapClient.tsx", import.meta.url),
-    "utf8",
-  );
+  const { readFile } = await import("node:fs/promises");
+  const [map, css] = await Promise.all([
+    readFile(new URL("../components/explore/ExploreMapClient.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+  ]);
   assert.match(map, /map\.on\("error", \(event\) =>/);
   assert.match(map, /event\.error \?\? event/);
   assert.match(map, /catch \(error: unknown\)/);
@@ -395,8 +409,89 @@ test("map failures retain diagnostics, retry, and a reachable patch zoom", async
   assert.match(map, /Zoom to patches/);
   assert.match(map, /zoom: EXPLORE_PER_CELL_LAYER\.minZoom/);
   assert.match(map, /center: map\.getCenter\(\)/);
-  assert.match(map, /view\.zoom < EXPLORE_PER_CELL_LAYER\.minZoom/);
-  assert.match(map, /framing views only/);
+  assert.match(map, /view\.zoom >= EXPLORE_PER_CELL_LAYER\.minZoom/);
+  assert.match(map, /disabled=\{patchZoomDisabledReason !== null\}/);
+  assert.match(map, /role="tooltip"/);
+  assert.match(map, /aria-describedby=\{patchZoomDisabledReason \? PATCH_ZOOM_REASON_ID : undefined\}/);
+  assert.match(map, /className="explore-map-control-cluster"/);
+  assert.doesNotMatch(map, /source === "pmtiles" &&\s*perCellArchive &&\s*view &&\s*view\.zoom/);
+  assert.doesNotMatch(map, /framingViews|framing views only|servent seulement au cadrage/);
+
+  const panel = css.match(/\.explore-map-layer-panel \{[\s\S]*?\n\}/)?.[0] ?? "";
+  const controls = css.match(/\.explore-map-controls \{[\s\S]*?\n\}/)?.[0] ?? "";
+  const list = css.match(/\.explore-map-layer-list \{[\s\S]*?\n\}/)?.[0] ?? "";
+  assert.match(map, /className="explore-map-scale"[\s\S]*className="explore-map-layer-panel"[\s\S]*className="explore-map-control-cluster"/);
+  assert.match(map, /className="explore-map-layer-panel"[\s\S]*tabIndex=\{0\}[\s\S]*role="region"/);
+  assert.match(map, /className="explore-map-patch-control"[\s\S]*className="[^"]*explore-map-fullscreen-button"[\s\S]*className="explore-map-zoom"/);
+  assert.match(panel, /position: static/);
+  assert.match(panel, /display: flex/);
+  assert.match(panel, /flex-wrap: nowrap/);
+  assert.match(panel, /overflow-x: auto/);
+  assert.match(controls, /inset-block-end: 12px/);
+  assert.match(controls, /display: grid/);
+  assert.match(controls, /grid-template-columns: auto minmax\(0, 1fr\) auto/);
+  assert.match(list, /display: flex/);
+  assert.match(list, /flex-wrap: nowrap/);
+  assert.match(css, /@media \(max-width: 760px\) \{[\s\S]*?\.explore-map-layer-panel \{[\s\S]*?grid-auto-flow: row;[\s\S]*?grid-template-columns: repeat\(2, max-content\);[\s\S]*?grid-template-rows: repeat\(2, auto\)/);
+  assert.match(css, /\.explore-map-patch-tooltip \{[\s\S]*?inset-inline: 0;[\s\S]*?width: auto/);
+});
+
+test("the map keeps one four-province camera envelope and the forest map alive across intervals", async () => {
+  const { readFile } = await import("node:fs/promises");
+  const map = await readFile(new URL("../components/explore/ExploreMapClient.tsx", import.meta.url), "utf8");
+  const types = await readFile(new URL("../lib/explore/types.ts", import.meta.url), "utf8");
+  assert.match(types, /EXPLORE_MAP_VIEWS = \["bc", "ab", "on", "qc"\] as const/);
+  assert.match(map, /const COMBINED_PROVINCE_BOUNDS: MapBounds = \[-139\.1, 41\.5, -57, 62\.1\]/);
+  assert.match(map, /bounds: COMBINED_PROVINCE_BOUNDS/);
+  assert.match(map, /maxBounds: COMBINED_PROVINCE_BOUNDS/);
+  assert.match(map, /const provinceAvailable = mode === "forest-change";/);
+  assert.doesNotMatch(map, /provinceAvailable = mode === "forest-change" && year === 2022/);
+  assert.doesNotMatch(map, /mapView === "national"|^\s*national:/m);
+});
+
+test("the map exposes native full screen only when supported", async () => {
+  const map = await (await import("node:fs/promises")).readFile(
+    new URL("../components/explore/ExploreMapClient.tsx", import.meta.url),
+    "utf8",
+  );
+  assert.match(map, /frame\?\.requestFullscreen && document\.fullscreenEnabled && document\.exitFullscreen/);
+  assert.match(map, /document\.addEventListener\("fullscreenchange", syncFullscreenState\)/);
+  assert.match(map, /document\.fullscreenElement === frame/);
+  assert.match(map, /event\.key === "Escape"/);
+  assert.match(map, /requestAnimationFrame\(syncFullscreenState\)/);
+  assert.match(map, /window\.addEventListener\("resize", syncFullscreenState\)/);
+  assert.match(map, /await frame\.requestFullscreen\(\)/);
+  assert.match(map, /await document\.exitFullscreen\(\)/);
+  assert.match(map, /\{fullscreenAvailable \? \(/);
+  assert.match(map, /isFullscreen \? text\[locale\]\.exitFullscreen : text\[locale\]\.enterFullscreen/);
+});
+
+test("one bilingual inline-SVG province bar serves landing and every map state", async () => {
+  const { readFile } = await import("node:fs/promises");
+  const [bar, map, englishHome, frenchHome] = await Promise.all([
+    readFile(new URL("../components/site/ProvinceBar.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../components/explore/ExploreMapClient.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/en/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/fr/page.tsx", import.meta.url), "utf8"),
+  ]);
+  for (const consumer of [map, englishHome, frenchHome]) assert.match(consumer, /ProvinceBar/);
+  assert.match(bar, /EXPLORE_MAP_VIEWS\.map/);
+  assert.match(bar, /<svg className="province-flag"/);
+  assert.doesNotMatch(bar, /<img\b|https?:\/\//);
+
+  const english = renderToStaticMarkup(
+    <ExploreMapClient locale="en" mode="condition-recovery" year={2022} fromYear={2021} />,
+  );
+  const french = renderToStaticMarkup(
+    <ExploreMapClient locale="fr" mode="condition-recovery" year={2022} fromYear={2021} />,
+  );
+  assert.equal((english.match(/<svg class="province-flag"/g) ?? []).length, 4);
+  assert.equal((french.match(/<svg class="province-flag"/g) ?? []).length, 4);
+  for (const province of ["British Columbia", "Alberta", "Ontario", "Québec"]) assert.match(english, new RegExp(province));
+  for (const province of ["Colombie-Britannique", "Alberta", "Ontario", "Québec"]) assert.match(french, new RegExp(province));
+  assert.match(english, /Flag of British Columbia/);
+  assert.match(french, /Drapeau de la Colombie-Britannique/);
+  assert.ok(english.indexOf("province-bar--map") < english.indexOf("Condition and recovery needs"));
 });
 
 test("playback swaps only the annual source, starts at 1985, and stops visibly", async () => {
@@ -457,13 +552,16 @@ test("the map identifies active boundary lines and uses the riding readout contr
     new URL("../components/explore/ExploreMapClient.tsx", import.meta.url),
     "utf8",
   );
+  const provinceBarSource = await (await import("node:fs/promises")).readFile(
+    new URL("../components/site/ProvinceBar.tsx", import.meta.url),
+    "utf8",
+  );
 
   assert.match(mapSource, /aria-label=\{text\[locale\]\.mapPanel\}/);
-  assert.match(mapSource, /\{source === "pmtiles" \? \(/);
-  assert.match(mapSource, /<legend>\{text\[locale\]\.mapView\}<\/legend>/);
-  assert.match(mapSource, /aria-pressed=\{selectedMapView === mapView\}/);
+  assert.match(mapSource, /<ProvinceBar/);
+  assert.match(provinceBarSource, /aria-pressed=\{selected === province\}/);
   assert.match(mapSource, /mapRef\.current\?\.fitBounds\(MAP_VIEW_BOUNDS\[mapView\]/);
-  for (const mapView of ["national", "bc", "ab", "on", "qc"])
+  for (const mapView of ["bc", "ab", "on", "qc"])
     assert.match(mapSource, new RegExp(`${mapView}:`));
   assert.match(mapSource, /boundaryLineLayerIds\(overlays\)/);
   assert.match(mapSource, /map\?\.on\("mouseenter", layerId/);

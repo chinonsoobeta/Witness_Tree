@@ -1,6 +1,8 @@
+import { rankRidings } from "./ranking";
 import type { ComparisonPlace, RankedRiding, RankingContext } from "./types";
 
 export const MINIMUM_RANKED_FOREST_HECTARES = 500;
+const COVERED_FEDERAL_DISTRICT_PREFIXES = ["24", "35", "48", "59"] as const;
 
 type RawRow = Readonly<{
   boundaryId: string;
@@ -26,8 +28,13 @@ type RawComparison = Readonly<{
 
 export type RealFederalRidingComparison = Readonly<{
   context: RankingContext;
+  /** Every district in the source evidence, retained for search and audit surfaces. */
   rows: readonly RankedRiding[];
   places: readonly ComparisonPlace[];
+  /** The four-province rows available on the comparison surface. */
+  comparisonRows: readonly RankedRiding[];
+  /** A measured pair shown before the reader makes a selection. */
+  defaultPair: readonly [RankedRiding, RankedRiding];
 }>;
 
 export function adaptFederalRidingComparison(input: RawComparison): RealFederalRidingComparison {
@@ -97,5 +104,13 @@ export function adaptFederalRidingComparison(input: RawComparison): RealFederalR
       fr: "Les circonscriptions fédérales ayant une couverture cartographiée complète et au moins 500 hectares forestiers sont classées selon la part de perte détectée.",
     },
   };
-  return { context, rows, places: rows };
+  const comparisonRows = rows.filter((row) =>
+    COVERED_FEDERAL_DISTRICT_PREFIXES.some((prefix) => row.id.startsWith(`federal-${prefix}`)),
+  );
+  const ranked = rankRidings(comparisonRows).ranked;
+  if (ranked.length < 2) {
+    throw new Error("Federal-riding comparison needs two ranked districts for its default pair.");
+  }
+  const defaultPair: readonly [RankedRiding, RankedRiding] = [ranked[0]!, ranked[1]!];
+  return { context, rows, places: rows, comparisonRows, defaultPair };
 }

@@ -23,6 +23,13 @@ test("selectFederalRidings fills a missing or duplicate side without discarding 
   assert.throws(() => selectFederalRidings(comparisonFixtures.slice(0, 1)), /at least two rows/);
 });
 
+test("an unresolved side uses the caller's preferred measured fallback", () => {
+  const fallback = [rankedRidingFixtures[2]!];
+  assert.deepEqual(Object.values(selectFederalRidings(rankedRidingFixtures, undefined, undefined, fallback)).map((row) => row.id), ["r3", "r1"]);
+  assert.deepEqual(Object.values(selectFederalRidings(rankedRidingFixtures, "missing", "r2", fallback)).map((row) => row.id), ["r3", "r2"]);
+  assert.deepEqual(Object.values(selectFederalRidings(rankedRidingFixtures, "r1", "r2", fallback)).map((row) => row.id), ["r1", "r2"]);
+});
+
 test("the bilingual GET picker uses exact ids and preserves view and sort", () => {
   const english = renderToStaticMarkup(<FederalRidingPicker rows={rankedRidingFixtures} locale="en" leftId="r2" rightId="r3" view="table" sort="share-asc" />);
   const french = renderToStaticMarkup(<FederalRidingPicker rows={rankedRidingFixtures} locale="fr" leftId="r2" rightId="r3" view="cards" sort="share-desc" />);
@@ -40,8 +47,8 @@ test("the bilingual GET picker uses exact ids and preserves view and sort", () =
 test("the picker names an unresolved request and its visible fallback", () => {
   const english = renderToStaticMarkup(<FederalRidingPicker rows={rankedRidingFixtures} locale="en" leftId="missing-left" rightId="r2" />);
   const french = renderToStaticMarkup(<FederalRidingPicker rows={rankedRidingFixtures} locale="fr" leftId="r2" rightId="missing-right" />);
-  assert.match(english, /Requested left riding “missing-left” was not found\. Showing Example North instead\./);
+  assert.match(english, /Requested left riding “missing-left” is not available in this four-province comparison\. Showing Example North instead\./);
   assert.match(english, /role="status"/);
-  assert.match(french, /La circonscription de droite demandée « missing-right » est introuvable\. Exemple Nord est affichée à la place\./);
-  assert.doesNotMatch(renderToStaticMarkup(<FederalRidingPicker rows={rankedRidingFixtures} locale="en" leftId="r1" rightId="r2" />), /was not found/);
+  assert.match(french, /La circonscription de droite demandée « missing-right » n’est pas offerte dans cette comparaison limitée à quatre provinces\. Exemple Nord est affichée à la place\./);
+  assert.doesNotMatch(renderToStaticMarkup(<FederalRidingPicker rows={rankedRidingFixtures} locale="en" leftId="r1" rightId="r2" />), /not available/);
 });

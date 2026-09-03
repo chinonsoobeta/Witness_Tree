@@ -8,16 +8,16 @@ const record = JSON.parse(readFileSync(new URL("../data/phase8-launch-readiness-
 test("Phase 8 records every literal launch-readiness gate without production inflation", async () => {
   assert.equal(await validatePhase8LaunchReadinessExitStatus(record), record);
   /*
-   * Eight, and it has been seven twice. CDN and tile validation passes on the
-   * strength of a browser observation of the deployed Site, bound to the client
-   * it observed. When the client changed the gate went stale and this number
-   * went down; it came back only after the Site was redeployed and the
-   * observation was taken again. Moving in both directions is the point of
-   * binding it.
+   * Eight. CDN and tile validation passes only on the strength of a browser
+   * observation of the deployed Site bound to the client it observed. This
+   * change set changed that client, and on 2026-09-03 the Site was redeployed to
+   * this branch and the harness re-run against it, so the bound observation once
+   * again describes the deployed client and the gate is back up. It stays a
+   * delivery-and-rendering gate: it asserts no production admission.
    */
   assert.equal(record.completedCriteria, 8);
   assert.equal(record.totalCriteria, 16);
-  assert.equal(record.percentage, 50);
+  assert.equal(record.percentage, 50.0);
   assert.equal(record.phaseComplete, false);
   assert.deepEqual(record.exitCriteria.filter((item) => item.status === "pass").map((item) => item.id), ["raw-archive-reproducibility", "governance-and-corrections-procedures", "operations-handbook", "bulk-downloads", "citation-format", "release-notes", "restore-tests", "cdn-tile-validation"]);
 });

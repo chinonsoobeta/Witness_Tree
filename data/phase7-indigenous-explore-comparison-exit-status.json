@@ -79,7 +79,7 @@
         },
         {
           "path": "tests/comparison.test.tsx",
-          "sha256": "19bd90bbb9de819ca08ab51f45313c4f1d2826e45c07cbcf3a88543663e4af2a"
+          "sha256": "3974f2975f4e3374f39b0df9b4998f904b3bc35c7da4d9cfa2ee03e32f5df325"
         }
       ]
     },
@@ -87,7 +87,7 @@
       "id": "mistik-request-recorded",
       "title": "The Mistik request, terms, honorarium, and outcome appear in the decision log and engagement register",
       "status": "pass",
-      "reason": "The decision log and engagement register record the owner's final outcome: Mistik was not pursued, no request was made, no permission, honorarium, or terms exist, and Witness Tree / Arbre témoin remains the product name. The surfaces do not imply that engagement or permission occurred.",
+      "reason": "The decision log and engagement register record the owner's final outcome: Mistik was not pursued, no request was made, no permission, honorarium, or terms exist, and Witness Tree / Arbre t\u00e9moin remains the product name. The surfaces do not imply that engagement or permission occurred.",
       "evidence": [
         {
           "path": "components/governance/GovernancePage.tsx",
@@ -103,7 +103,7 @@
       "id": "explore-modes-and-overlays",
       "title": "Explore provides the four required modes and four reference-boundary overlays",
       "status": "pass",
-      "reason": "Narrowed by owner scope decision on 2026-08-29, then met. The four modes render. Federal ridings, the BC, Alberta, Ontario and Quebec provincial ridings, all 76 Statistics Canada 2021 economic regions, and the 169 Canadian areas selected from NRCan's Water Survey of Canada version 6.0 rollup are drawn from one immutable v2 PMTiles release with exact remote readback and bilingual attribution. Economic regions and watersheds are boundary-only reference frameworks, not forest-loss aggregates. The reserve and treaty-area overlays were removed from Explore, not delivered, and this criterion no longer stands in for them: that obligation is tracked solely by reserve-and-treaty-layers-loaded, which remains failed. If this criterion is ever read as evidence that reserve or treaty geography ships, it is being read wrongly.",
+      "reason": "Narrowed by owner scope decision on 2026-08-29, then met. The four modes render. Federal ridings, the BC, Alberta, Ontario and Quebec provincial ridings, the 44 Statistics Canada 2021 economic regions that lie in British Columbia, Alberta, Ontario and Quebec, and the 105 Canadian areas of NRCan's Water Survey of Canada version 6.0 rollup that intersect those four provinces, are drawn from one immutable v3 PMTiles release with exact remote readback and bilingual attribution. The economic-region and watershed layers were clipped to the four provinces on 2026-09-02, so both are now subsets: 44 of 76 regions, and 105 of the 169 Canadian sub-drainage areas, cut at the provincial boundary. An earlier revision of this reason still claimed all 76 regions and all 169 areas after the clip had shipped, because that change refreshed the bound checksums without rereading the sentence they support. Economic regions and watersheds are boundary-only reference frameworks, not forest-loss aggregates. The reserve and treaty-area overlays were removed from Explore, not delivered, and this criterion no longer stands in for them: that obligation is tracked solely by reserve-and-treaty-layers-loaded, which remains failed. If this criterion is ever read as evidence that reserve or treaty geography ships, it is being read wrongly.",
       "evidence": [
         {
           "path": "components/explore/ExploreView.tsx",
@@ -111,7 +111,7 @@
         },
         {
           "path": "tests/explore.test.tsx",
-          "sha256": "e74f387193d1be591336b6ca6cdbcd609afdbb02b59e555ff0236c6734581471"
+          "sha256": "dca2a8d89f03181707f3ed7efc01aab9d6d7371f4048dea41453d8f8bee4144b"
         }
       ]
     },
@@ -127,7 +127,7 @@
         },
         {
           "path": "tests/explore.test.tsx",
-          "sha256": "e74f387193d1be591336b6ca6cdbcd609afdbb02b59e555ff0236c6734581471"
+          "sha256": "dca2a8d89f03181707f3ed7efc01aab9d6d7371f4048dea41453d8f8bee4144b"
         }
       ]
     },
@@ -143,7 +143,7 @@
         },
         {
           "path": "tests/explore.test.tsx",
-          "sha256": "e74f387193d1be591336b6ca6cdbcd609afdbb02b59e555ff0236c6734581471"
+          "sha256": "dca2a8d89f03181707f3ed7efc01aab9d6d7371f4048dea41453d8f8bee4144b"
         }
       ]
     },
@@ -179,7 +179,7 @@
         },
         {
           "path": "tests/comparison.test.tsx",
-          "sha256": "19bd90bbb9de819ca08ab51f45313c4f1d2826e45c07cbcf3a88543663e4af2a"
+          "sha256": "3974f2975f4e3374f39b0df9b4998f904b3bc35c7da4d9cfa2ee03e32f5df325"
         }
       ]
     },
@@ -191,15 +191,15 @@
       "evidence": [
         {
           "path": "components/comparison/RankedRidingsTable.tsx",
-          "sha256": "04c7784e227a324a82dec766fa41330dda0184abae8adad757e594b90e7d6239"
+          "sha256": "341e400db3cbc2ed867b775a4ee415e50bc3dcd2ad3f02d03c675c0893c62ac3"
         },
         {
           "path": "components/comparison/SideBySideComparison.tsx",
-          "sha256": "2821e983fff4b3ff32527e3434172392db0dd411810a099a3b8aa1532ccedac4"
+          "sha256": "f011e62d6e8e33f2361cc5270b4f2a85a445f8fc45a6f1ca39d5d888470835e1"
         },
         {
           "path": "tests/comparison.test.tsx",
-          "sha256": "19bd90bbb9de819ca08ab51f45313c4f1d2826e45c07cbcf3a88543663e4af2a"
+          "sha256": "3974f2975f4e3374f39b0df9b4998f904b3bc35c7da4d9cfa2ee03e32f5df325"
         }
       ]
     },
@@ -215,11 +215,11 @@
         },
         {
           "path": "components/comparison/RankedRidingsTable.tsx",
-          "sha256": "04c7784e227a324a82dec766fa41330dda0184abae8adad757e594b90e7d6239"
+          "sha256": "341e400db3cbc2ed867b775a4ee415e50bc3dcd2ad3f02d03c675c0893c62ac3"
         },
         {
           "path": "tests/comparison.test.tsx",
-          "sha256": "19bd90bbb9de819ca08ab51f45313c4f1d2826e45c07cbcf3a88543663e4af2a"
+          "sha256": "3974f2975f4e3374f39b0df9b4998f904b3bc35c7da4d9cfa2ee03e32f5df325"
         }
       ]
     },
@@ -251,7 +251,7 @@
         },
         {
           "path": "tests/comparison.test.tsx",
-          "sha256": "19bd90bbb9de819ca08ab51f45313c4f1d2826e45c07cbcf3a88543663e4af2a"
+          "sha256": "3974f2975f4e3374f39b0df9b4998f904b3bc35c7da4d9cfa2ee03e32f5df325"
         }
       ]
     },
@@ -263,7 +263,7 @@
       "evidence": [
         {
           "path": "tests/comparison.test.tsx",
-          "sha256": "19bd90bbb9de819ca08ab51f45313c4f1d2826e45c07cbcf3a88543663e4af2a"
+          "sha256": "3974f2975f4e3374f39b0df9b4998f904b3bc35c7da4d9cfa2ee03e32f5df325"
         }
       ]
     }

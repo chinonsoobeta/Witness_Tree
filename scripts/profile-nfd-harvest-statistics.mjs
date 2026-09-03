@@ -3,6 +3,8 @@ import { readFileSync, statSync } from "node:fs";
 import { isAbsolute, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { resolveDataRoot } from "./data-root.mjs";
+
 import {
   END_YEAR,
   START_YEAR,
@@ -11,8 +13,6 @@ import {
   parseNfdCsv,
 } from "../lib/phase2/nfd-harvest-statistics.mjs";
 
-const repoRoot = resolve(fileURLToPath(new URL("..", import.meta.url)));
-const DEFAULT_DATA_ROOT = resolve(repoRoot, "../../Witness_Tree-data");
 const SNAPSHOT = "2026-08-27";
 const RAW_RELATIVE_DIRECTORY = `raw/nfd-harvest-statistics/${SNAPSHOT}`;
 const FILES = Object.freeze([
@@ -36,7 +36,7 @@ const FILES = Object.freeze([
   },
 ]);
 
-function dataRootFromEnvironment(dataRoot = process.env.WITNESS_TREE_DATA_ROOT ?? DEFAULT_DATA_ROOT) {
+function dataRootFromEnvironment(dataRoot = resolveDataRoot()) {
   if (!isAbsolute(dataRoot)) throw new Error("NFD data root must be an absolute path.");
   return resolve(dataRoot);
 }

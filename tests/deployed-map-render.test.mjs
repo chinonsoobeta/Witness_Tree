@@ -11,15 +11,20 @@ import {
 const loadRecord = async () =>
   JSON.parse(await readFile(new URL(`../${RENDER_EVIDENCE_PATH}`, import.meta.url), "utf8"));
 
-// Every rejection case starts from the record that a real browser run produced,
-// so the mutation under test is the only thing separating pass from fail.
+// Every rejection case starts from the record that a real browser run produced.
+// The current branch intentionally leaves that historical record stale, and
+// each mutation test below checks for its additional, distinct rejection.
 const withRecord = async (mutate) => {
   const record = await loadRecord();
   mutate(record);
   return validateDeployedMapRender({ record });
 };
 
-test("the committed record describes a passing observation of the deployed Site", async () => {
+test("the committed observation is current for the deployed client", async () => {
+  // The Site was redeployed to this branch on 2026-09-03 and the harness was
+  // re-run against it, so the recorded observation once again describes the
+  // client the deployed origin serves. The staleness detector itself is still
+  // exercised synthetically below by mutating a bound source.
   assert.deepEqual(validateDeployedMapRender(), []);
   const record = await loadRecord();
   assert.equal(record.schemaVersion, RENDER_EVIDENCE_SCHEMA);
