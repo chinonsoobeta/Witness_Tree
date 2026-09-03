@@ -11,7 +11,7 @@
   },
   "dataRoot": {
     "path": "../../Witness_Tree-data",
-    "reason": "Every check below reads real source or derived bytes and verifies their SHA-256 against a bound checksum. None of them can be satisfied by a fixture, because a fixture cannot reproduce the checksum of a real archive."
+    "reason": "Every check below reads the real archive. Most verify the SHA-256 of source or derived bytes against a bound checksum, which no fixture can reproduce. One asserts the absence of files that no manifest admits, which a fixture cannot demonstrate either, because an empty temporary directory is clean by construction."
   },
   "detachedSweep": {
     "method": "Run every check: script from package.json with WITNESS_TREE_DATA_ROOT pointed at a path that does not resolve. The sweep and the checks it spawns then agree on where the archive is meant to be and find it absent, which is what a detached drive looks like to code that goes through the shared resolver.",
@@ -31,6 +31,10 @@
     ]
   },
   "checks": [
+    {
+      "name": "check:archive-tool-artifacts",
+      "whenDetached": "fails"
+    },
     {
       "name": "check:coarse-grid-tiles-bytes",
       "whenDetached": "fails"
@@ -58,6 +62,10 @@
     },
     {
       "name": "check:phase1-federal-electoral-production-admission",
+      "whenDetached": "fails"
+    },
+    {
+      "name": "check:phase1-federal-electoral-transformation",
       "whenDetached": "fails"
     },
     {
@@ -160,10 +168,6 @@
     {
       "name": "check:deployed-map-render",
       "reason": "It renders the deployed site over the network. It fails identically with the archive attached whenever the site is unreachable from this machine."
-    },
-    {
-      "name": "check:phase1-federal-electoral-transformation",
-      "reason": "scripts/run-phase1-federal-electoral-transformation.mjs shadows the shared helper with its own resolver, so it looks for the archive beside the checkout and ignores WITNESS_TREE_DATA_ROOT. It fails identically with the archive attached. The fix changes a runner whose digest is bound into an owner execution approval, so it is held for an owner decision rather than made here."
     },
     {
       "name": "check:postgres-tenant-isolation",

@@ -38,6 +38,11 @@
       "reason": "This owner recovery configuration and evidence gate is evaluated in the local release gate set."
     },
     {
+      "check": "scripts/check-archive-tool-artifacts.mjs",
+      "category": "data-root-bound",
+      "reason": "It walks the durable trees of the only external SSD copy and is inventoried in data/data-root-bound-checks.json."
+    },
+    {
       "check": "scripts/check-aws-role-max-session-readback.mjs",
       "category": "suite-covered",
       "reason": "tests/aws-role-max-session-readback.test.mjs imports this checker and runs in npm run test:suite."
@@ -259,6 +264,11 @@
     },
     {
       "check": "scripts/check-phase1-federal-electoral-production-admission.mjs",
+      "category": "data-root-bound",
+      "reason": "This check reads source or derived bytes on the only external SSD copy and is inventoried in data/data-root-bound-checks.json."
+    },
+    {
+      "check": "scripts/check-phase1-federal-electoral-transformation.mjs",
       "category": "data-root-bound",
       "reason": "This check reads source or derived bytes on the only external SSD copy and is inventoried in data/data-root-bound-checks.json."
     },
