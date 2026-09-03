@@ -147,3 +147,33 @@ test("renders localized search results and Explore list/table alternatives witho
   assert.match(frenchExplore, /<table/);
   assert.match(frenchExplore, /Attribution de la source/);
 });
+
+// The synthetic uptime probe decides a route is healthy when the response body contains a
+// marker string recorded in data/observability-deployment.json. Nothing tied that string to
+// the page it quotes, so a copy edit turned the probe red six hours later against a site that
+// was serving exactly what this repository asked it to serve. Rendering the same routes here
+// moves that failure to the commit that changes the copy.
+test("every synthetic uptime route still renders the marker the probe looks for", async () => {
+  const record = JSON.parse(
+    readFileSync(new URL("../data/observability-deployment.json", import.meta.url), "utf8"),
+  );
+  const routes = record.syntheticUptime.routes;
+  assert.ok(Array.isArray(routes) && routes.length > 0, "the record must name at least one route");
+
+  for (const route of routes) {
+    const response = await render(route.path);
+    assert.equal(
+      response.status,
+      route.expectedStatus,
+      `${route.path} rendered ${response.status}, but the probe expects ${route.expectedStatus}`,
+    );
+    const html = await response.text();
+    // The probe uses a plain substring test, so this one has to as well: a regex here would
+    // accept markers the probe rejects.
+    assert.ok(
+      html.includes(route.contentMarker),
+      `${route.path} no longer contains the recorded marker ${JSON.stringify(route.contentMarker)}. ` +
+        "Update data/observability-deployment.json in the same commit as the copy change.",
+    );
+  }
+});
