@@ -31,12 +31,12 @@
       {
         "path": "/en/explore",
         "expectedStatus": 200,
-        "contentMarker": "Explore forest change"
+        "contentMarker": "Explore forest loss"
       },
       {
         "path": "/fr/explorer",
         "expectedStatus": 200,
-        "contentMarker": "Explorer les changements forestiers"
+        "contentMarker": "Explorer les pertes forestières"
       },
       {
         "path": "/en/compare",
