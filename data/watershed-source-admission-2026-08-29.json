@@ -56,6 +56,22 @@
     "url": "https://d3g1406o0uekin.cloudfront.net/releases/boundary-overlays-v2/2c3667c5e23d4f976791cc30ae8246f63e2aa03b4c4829a7006952cdd43f7ff8/tiles/watersheds-v2.pmtiles",
     "exactRemoteReadback": true
   },
+  "overlayReleaseSuperseded": {
+    "supersedes": "2c3667c5e23d4f976791cc30ae8246f63e2aa03b4c4829a7006952cdd43f7ff8",
+    "productId": "boundary-overlays-v3",
+    "releaseId": "4259310e49e4bf2a289463240a434529627415f81152f6104370764d07471339",
+    "builtAt": "2026-09-02T18:47:29.292Z",
+    "fileName": "watersheds-v3.pmtiles",
+    "byteLength": 5289981,
+    "sha256": "74f0ca0a90e33959f758a0da01c52331bee1e0e83fed8c9cb1f0ab32da8ccab7",
+    "url": "https://d3g1406o0uekin.cloudfront.net/releases/boundary-overlays-v3/4259310e49e4bf2a289463240a434529627415f81152f6104370764d07471339/tiles/watersheds-v3.pmtiles",
+    "shippedFeatureCount": 105,
+    "admittedSelectionFeatureCount": 169,
+    "sourceFeatureCount": 184,
+    "selection": "WSCSDA NOT LIKE 'U%'",
+    "clippedToProvinceBoundary": true,
+    "reason": "The shipped overlay was clipped to British Columbia, Alberta, Ontario and Quebec on 2026-09-02. The admitted Canadian selection is still 169 sub-drainage areas; the layer that ships is the 105 of them that intersect those four provinces."
+  },
   "claims": {
     "sourceAdmitted": true,
     "geometryAdmitted": true,
