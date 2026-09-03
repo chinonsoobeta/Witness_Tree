@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { promisify } from 'node:util';
 import test from 'node:test';
-import { shouldRefresh, vancouverHour } from '../scripts/wildfire/dst-gate.mjs';
+import { scheduledInstant, scheduledUtcHour, shouldRefresh, shouldRefreshScheduled, vancouverHour } from '../scripts/wildfire/dst-gate.mjs';
 import { refreshWildfire } from '../scripts/wildfire/refresh.mjs';
 import { createSnapshotStore } from '../scripts/wildfire/snapshot-store.mjs';
 
@@ -14,26 +14,76 @@ const sources = [{ id: 'bc', response: { incidents: [{ id: 'BC-1' }], perimeters
 const execFile = promisify(execFileCallback);
 const national = { id: 'national', response: { incidents: [{ id: 'CA-1' }], perimeters: [] } };
 
-test('DST gate uses America/Vancouver and selects exactly the four local hours', () => {
-  assert.equal(vancouverHour(new Date('2026-01-15T13:00:00Z')), 5);
-  assert.equal(vancouverHour(new Date('2026-07-15T12:00:00Z')), 5);
-  assert.equal(shouldRefresh(new Date('2026-01-15T20:00:00Z')), true);
-  assert.equal(shouldRefresh(new Date('2026-07-15T19:00:00Z')), true);
-  assert.equal(shouldRefresh(new Date('2026-07-15T20:00:00Z')), false);
+const UTC_SLOTS = [0, 4, 5, 12, 13, 19, 20, 23];
+const cronFor = (hour) => `17 ${hour} * * *`;
+
+// Which slots open, judged from the slot itself, on a day in each half of the year.
+// Sorted because the Pacific hours a UTC-ordered slot list produces are rotated:
+// under standard time the 00:00 UTC slot is the previous Pacific afternoon.
+const openSlots = (now) => UTC_SLOTS
+  .filter((hour) => shouldRefreshScheduled(cronFor(hour), now))
+  .map((hour) => vancouverHour(scheduledInstant(hour, now)))
+  .sort((a, b) => a - b);
+
+test('the gate reads the slot from the cron expression, and refuses anything that is not one', () => {
+  assert.equal(scheduledUtcHour('17 12 * * *'), 12);
+  assert.equal(scheduledUtcHour('17 0 * * *'), 0);
+  assert.equal(scheduledUtcHour('17 0,4,5 * * *'), null, 'a list of hours names no single slot');
+  assert.equal(scheduledUtcHour('17 24 * * *'), null);
+  assert.equal(scheduledUtcHour('17 12 * *'), null);
+  assert.equal(scheduledUtcHour(''), null);
+  assert.equal(scheduledUtcHour(undefined), null);
 });
 
-test('DST gate selects exactly four hourly runs in a Pacific calendar day in both halves of the year', () => {
-  for (const dayStart of ['2026-01-15T08:00:00Z', '2026-07-15T07:00:00Z']) {
-    const selected = Array.from({ length: 24 }, (_, hour) => new Date(Date.parse(dayStart) + hour * 60 * 60 * 1000))
-      .filter((now) => shouldRefresh(now))
-      .map((now) => vancouverHour(now));
-    assert.deepEqual(selected, [5, 12, 16, 21]);
-  }
+test('the eight UTC slots open exactly the four required Pacific hours in both halves of the year', () => {
+  assert.deepEqual(openSlots(new Date('2026-01-15T13:30:00Z')), [5, 12, 16, 21]);
+  assert.deepEqual(openSlots(new Date('2026-07-15T12:30:00Z')), [5, 12, 16, 21]);
 });
 
-test('workflow cron covers both Pacific UTC offsets', async () => {
+test('a late run still belongs to its own slot, which is the whole point', () => {
+  // GitHub queues scheduled runs late by hours. The 12:00 UTC slot is 05:00
+  // Pacific in July; a gate reading the wall clock at 16:14 UTC would see 09:00
+  // and drop a refresh that was correctly scheduled.
+  const slot = cronFor(12);
+  assert.equal(shouldRefreshScheduled(slot, new Date('2026-07-15T12:00:30Z')), true);
+  assert.equal(shouldRefreshScheduled(slot, new Date('2026-07-15T16:14:34Z')), true);
+  assert.equal(shouldRefreshScheduled(slot, new Date('2026-07-15T18:00:00Z')), true);
+  assert.equal(vancouverHour(new Date('2026-07-15T16:14:34Z')), 9, 'the wall clock has moved off the slot');
+});
+
+test('a run queued before midnight UTC and started after it keeps the previous day\'s slot', () => {
+  const started = new Date('2026-07-16T03:43:00Z');
+  assert.equal(scheduledInstant(23, started).toISOString(), '2026-07-15T23:00:00.000Z');
+  assert.equal(shouldRefreshScheduled(cronFor(23), started), true, '23:00 UTC is 16:00 Pacific in July');
+});
+
+test('a slot that crosses into the other offset is judged by the offset it was named under', () => {
+  // Pacific daylight time ends at 02:00 local on 2026-11-01, which is 09:00 UTC.
+  // The 12:00 UTC slot the day before is 05:00 PDT and must open; the 13:00 UTC
+  // slot on the day itself is 05:00 PST and must open too.
+  assert.equal(shouldRefreshScheduled(cronFor(12), new Date('2026-10-31T12:20:00Z')), true);
+  assert.equal(shouldRefreshScheduled(cronFor(13), new Date('2026-10-31T13:20:00Z')), false);
+  assert.equal(shouldRefreshScheduled(cronFor(13), new Date('2026-11-01T13:20:00Z')), true);
+  assert.equal(shouldRefreshScheduled(cronFor(12), new Date('2026-11-01T12:20:00Z')), false);
+});
+
+test('a manual dispatch refreshes, and a scheduled run without a slot fails loudly instead of guessing', () => {
+  assert.equal(shouldRefresh({ event: 'workflow_dispatch' }), true);
+  assert.equal(shouldRefresh({ event: 'workflow_dispatch', cron: '' }), true);
+  assert.throws(
+    () => shouldRefresh({ event: 'schedule', cron: '17 0,4,5,12,13,19,20,23 * * *' }),
+    /slot it belongs to is unknown/,
+    'a combined expression names eight slots, so it identifies none of them',
+  );
+  assert.throws(() => shouldRefresh({ event: 'schedule', cron: undefined }), /slot it belongs to is unknown/);
+});
+
+test('the workflow declares one entry per slot and passes the triggering expression to the gate', async () => {
   const workflow = await readFile(new URL('../.github/workflows/wildfire-refresh.yml', import.meta.url), 'utf8');
-  assert.match(workflow, /cron: '0 0,4,5,12,13,19,20,23 \* \* \*'/);
+  const crons = [...workflow.matchAll(/- cron: '(\d+) (\d+) \* \* \*'/g)];
+  assert.deepEqual(crons.map(([, , hour]) => Number(hour)).sort((a, b) => a - b), UTC_SLOTS);
+  assert.deepEqual([...new Set(crons.map(([, minute]) => minute))], ['17'], 'every slot fires off the top of the hour');
+  assert.match(workflow, /WILDFIRE_SCHEDULED_CRON: \$\{\{ github\.event\.schedule \}\}/);
   assert.match(workflow, /run: sleep 900 && node scripts\/wildfire\/refresh\.mjs/);
 });
 
