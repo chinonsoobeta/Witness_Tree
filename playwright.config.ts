@@ -1,6 +1,7 @@
 import { defineConfig } from "@playwright/test";
 
-const evidenceDirectory = `outputs/playwright/${new Date().toISOString().replaceAll(":", "-")}`;
+const runTimestamp = process.env.WITNESS_TREE_PLAYWRIGHT_RUN ??= new Date().toISOString().replaceAll(":", "-");
+const evidenceDirectory = `outputs/playwright/${runTimestamp}`;
 
 export default defineConfig({
   testDir: "./tests/browser",
