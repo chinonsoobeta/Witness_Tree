@@ -123,3 +123,13 @@ No downstream data record binds either status record. Phase 8 remains 8/16,
 Phase 9 remains 0/4, and `check:data-root-test-currency` still validates the
 unchanged receipt for 28 owner-bound tests. Historical and owner-admitted records
 were not rebound.
+
+The first GitHub CodeQL execution passed for Python (zero findings). It found
+one missing-permissions declaration in the existing `verify` job; the job now
+explicitly receives only `contents: read`. JavaScript/TypeScript reported seven
+findings: three URL-substring checks in `scripts/check-address-lookup.mts`, the
+deployed-origin prefix check in `scripts/check-deployed-map-render.mjs`, one
+test helper in `tests/phase1-federal-electoral-output-verification.test.mjs`, and
+two test helpers in `tests/shape-measure-ui.test.tsx`. They remain unsuppressed.
+The deployed-render gate belongs to E4 in the other workstream, and these
+existing checkers and fixtures were not modified as part of adding the scanner.

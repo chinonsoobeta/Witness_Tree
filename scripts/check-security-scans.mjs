@@ -7,6 +7,7 @@ export function validateSecurityScans(workflow) {
   const ci = workflow.split("\n").filter((line) => !line.trimStart().startsWith("#")).join("\n");
   assert.match(ci, /verify:\s*\n\s+needs: \[codeql, secrets\]/, "The required verify job must depend on security scans");
   assert.ok(ci.includes("if: ${{ always() && !cancelled() }}"), "Verify must run even when a prerequisite fails");
+  assert.match(ci, /verify:[\s\S]*?permissions:\n\s+contents: read\n\s+runs-on:/, "Verify needs only read access to repository contents");
   assert.ok(ci.includes("CODEQL_RESULT: ${{ needs.codeql.result }}") && ci.includes("SECRETS_RESULT: ${{ needs.secrets.result }}"));
   for (const result of ["CODEQL_RESULT", "SECRETS_RESULT"]) assert.ok(ci.includes(`test "$${result}" = success`), "Verify must fail for unsuccessful security scans");
   assert.match(ci, /npm audit --omit=dev --audit-level=high/, "Production dependency audit must remain blocking");

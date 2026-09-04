@@ -73,6 +73,8 @@ jobs:
   verify:
     needs: [codeql, secrets]
     if: ${{ always() && !cancelled() }}
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
