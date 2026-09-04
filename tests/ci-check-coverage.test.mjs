@@ -10,6 +10,7 @@ import {
   validateCoverage,
 } from "../scripts/check-ci-check-coverage.mjs";
 import { REQUIRES_DATA_ROOT, REQUIRES_MACOS_RUNNER } from "../scripts/lib/data-root-bound-tests.mjs";
+import { validateSecurityScans, validateCodeqlResults } from "../scripts/check-security-scans.mjs";
 
 const register = readRepositoryJson(REGISTER_PATH);
 const packageDocument = readRepositoryJson("package.json");
@@ -35,13 +36,27 @@ function namedTest(entry) {
 
 test("every on-disk checker is CI-reached or a reviewed exclusion", () => {
   const result = validateCoverage(register, packageDocument, ci, checkerFiles);
-  assert.deepEqual(result, { total: 217, ci: 112, npmNamed: 84, excluded: 105 });
+  assert.deepEqual(result, { total: 219, ci: 114, npmNamed: 84, excluded: 105 });
   // An npm alias is a way to invoke a checker, not a reason CI skips it. Every one of
   // the 84 npm-named checkers still carries its own written exclusion.
   assert.equal(result.total, result.ci + result.excluded);
   assert.ok(result.npmNamed <= result.excluded);
   assert.ok(checkerFiles.includes("scripts/check-phase2-independent-comparison-evidence.mts"));
   assert.ok(checkerFiles.includes("scripts/check-phase2-method-parameters.mts"));
+});
+
+test("security scans block verify, preserve redaction, and reject findings or missing evidence", () => {
+  assert.equal(validateSecurityScans(ci).status, "passed");
+  for (const [before, after] of [["needs: [codeql, secrets]", "needs: []"], ["if: ${{ always() && !cancelled() }}", "if: success()"], ['test "$CODEQL_RESULT" = success', "true"], ['test "$SECRETS_RESULT" = success', "true"], ["--redact=100", "--redact=0"], ["fetch-depth: 0", "fetch-depth: 1"], ["--exit-code 1", "--exit-code 0"]]) {
+    assert.throws(() => validateSecurityScans(ci.replace(before, after)));
+  }
+  const sarif = { version: "2.1.0", runs: [{ tool: { driver: { name: "CodeQL" } }, results: [] }] };
+  assert.equal(validateCodeqlResults([sarif]).status, "passed");
+  assert.throws(() => validateCodeqlResults([]), /no SARIF/);
+  assert.throws(() => validateCodeqlResults([{ ...sarif, runs: [] }]), /no runs/);
+  const findings = clone(sarif);
+  findings.runs[0].results.push({ ruleId: "js/example-finding" });
+  assert.throws(() => validateCodeqlResults([findings]), /finding/);
 });
 
 test("workflows use current action runtimes and preserve their concurrency policy", () => {
