@@ -141,7 +141,7 @@
         },
         {
           "path": ".github/workflows/ci.yml",
-          "sha256": "2da2d7b11a2a1af622fd206036c2b636b7bed86d00b049b3080b1b754414bba5"
+          "sha256": "000bc6f9bc7536552814035abcb043c3eee0a4ee1c155aa98da6a2eb98fb15e4"
         }
       ]
     }

@@ -175,6 +175,7 @@ jobs:
       # half (--empirical) is only decidable with the data root detached and
       # is run by hand, not here.
       - run: npm run check:data-root-bound-checks
+      - run: npm run check:data-root-coverage
       - run: npm run check:source-review
       - run: npm run check:accessibility
       - run: npm run build
@@ -185,6 +186,14 @@ jobs:
       # in scripts/run-ci-tests.mjs with the reason for each. It follows the build
       # because the rendered-HTML tests import the build output.
       - run: npm run test:suite
+      - name: Preserve explicit test availability
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: portable-test-availability
+          path: outputs/test-run-*.json
+          if-no-files-found: error
+          retention-days: 30
       # Nothing above can run the 25 data-root-bound tests, so this gate checks
       # instead that they are not stale: it recomputes each one's guarded file set
       # from the tree and compares it to the receipt of the owner's last local run.
