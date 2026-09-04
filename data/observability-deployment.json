@@ -14,7 +14,7 @@
   },
   "syntheticUptime": {
     "workflowPath": ".github/workflows/synthetic-uptime.yml",
-    "schedule": "0 */6 * * *",
+    "schedule": "*/15 * * * *",
     "writePermissions": false,
     "substituteForHostSideMonitoring": false,
     "routes": [
