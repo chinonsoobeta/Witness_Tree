@@ -47,17 +47,17 @@ const text = {
     readyBoth:
       "Showing two layers with different periods: detected forest-loss patches for the selected annual interval, drawn as you zoom in and available for every interval from 1984–1985 to 2021–2022, over the provisional province aggregate, which covers 2020 to 2022 and does not follow the year control. Province display boundaries are simplified and omit small islands.",
     fallbackTimeout:
-      "The interactive PMTiles layer did not become ready within 10 seconds, so this map is showing the published GeoJSON compatibility fallback.",
+      "The interactive map is taking too long to load. A static map is shown instead. The figures below are unaffected. You can retry the interactive map.",
     fallbackError:
-      "The interactive PMTiles layer reported an error, so this map is showing the published GeoJSON compatibility fallback.",
+      "The interactive map could not be loaded. A static map is shown instead. The figures below are unaffected. You can retry the interactive map.",
     unavailable:
       "Condition and recovery needs the annual land-cover class series, which has not been acquired or admitted. It is not shown for any year. Forest loss, Recorded harvest and Wildfire are unaffected.",
     unavailableYear:
       "Detected patches cover the annual intervals from 1984–1985 to 2021–2022. Choose 2022 or an earlier year to see this mode.",
     error:
-      "The map layer reported an error and could not be loaded. The list and table alternatives remain available.",
+      "The map could not be loaded. The figures below are unaffected. You can retry the interactive map or use the list and table.",
     errorTimeout:
-      "The map layer did not become ready within 10 seconds and no compatibility fallback covers this selection. The list and table alternatives remain available.",
+      "The interactive map is taking too long to load, and no static map is available for this selection. The figures below are unaffected. You can retry the interactive map or use the list and table.",
     retry: "Retry the interactive map",
     attribution: "Map sources",
     perCell:
@@ -124,17 +124,17 @@ const text = {
     readyBoth:
       "Affichage de deux couches aux périodes différentes : les parcelles de perte forestière détectée pour l’intervalle annuel choisi, dessinées au fur et à mesure du zoom et offertes pour chaque intervalle de 1984-1985 à 2021-2022, par-dessus l’agrégat provincial provisoire, qui couvre 2020 à 2022 et ne suit pas la commande d’année. Les limites provinciales affichées sont simplifiées et omettent les petites îles.",
     fallbackTimeout:
-      "La couche PMTiles interactive n’était pas prête après 10 secondes; cette carte affiche donc la solution de repli GeoJSON publiée.",
+      "La carte interactive met trop de temps à se charger. Une carte statique est affichée à sa place. Les chiffres ci-dessous restent inchangés. Vous pouvez réessayer de charger la carte interactive.",
     fallbackError:
-      "La couche PMTiles interactive a signalé une erreur; cette carte affiche donc la solution de repli GeoJSON publiée.",
+      "La carte interactive n’a pas pu être chargée. Une carte statique est affichée à sa place. Les chiffres ci-dessous restent inchangés. Vous pouvez réessayer de charger la carte interactive.",
     unavailable:
       "L’état et le rétablissement exigent la série annuelle des classes de couverture terrestre, qui n’a été ni acquise ni admise. Ce mode n’est affiché pour aucune année. La perte forestière, les récoltes consignées et les incendies ne sont pas touchés.",
     unavailableYear:
       "Les parcelles détectées couvrent les intervalles annuels de 1984-1985 à 2021-2022. Choisissez 2022 ou une année antérieure pour voir ce mode.",
     error:
-      "La couche cartographique a signalé une erreur et n’a pas pu être chargée. Les autres présentations en liste et en tableau demeurent disponibles.",
+      "La carte n’a pas pu être chargée. Les chiffres ci-dessous restent inchangés. Vous pouvez réessayer de charger la carte interactive ou utiliser la liste et le tableau.",
     errorTimeout:
-      "La couche cartographique n’était pas prête après 10 secondes et aucune solution de repli ne couvre cette sélection. Les autres présentations en liste et en tableau demeurent disponibles.",
+      "La carte interactive met trop de temps à se charger, et aucune carte statique n’est disponible pour cette sélection. Les chiffres ci-dessous restent inchangés. Vous pouvez réessayer de charger la carte interactive ou utiliser la liste et le tableau.",
     retry: "Réessayer la carte interactive",
     attribution: "Sources de la carte",
     perCell:
@@ -903,6 +903,7 @@ export function ExploreMapClient({
               role="img"
               aria-label={text[locale].label}
               aria-hidden={state !== "ready" || source !== "pmtiles"}
+              inert={state !== "ready" || source !== "pmtiles"}
             />
             {state === "ready" && source === "geojson" ? (
           <svg

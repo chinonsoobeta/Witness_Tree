@@ -12,6 +12,9 @@
     "test": "npm run build && node --test tests/rendered-html.test.mjs",
     "test:suite": "node scripts/run-ci-tests.mjs",
     "test:unit": "tsx --test tests/*.test.mjs tests/*.test.ts tests/*.test.tsx",
+    "test:playwright": "playwright test",
+    "check:security-scans": "node scripts/check-security-scans.mjs",
+    "verify:data-root-inventory": "node scripts/verify-data-root-inventory.mjs",
     "typecheck": "tsc --noEmit",
     "check:bilingual": "node scripts/check-bilingual.mjs",
     "check:premise-loss-vocabulary": "node scripts/check-premise-loss-vocabulary.mjs",
@@ -286,10 +289,12 @@
     "react-dom": "19.2.8"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
     "@cloudflare/vite-plugin": "1.37.1",
     "@cloudflare/workers-types": "^4.20260702.1",
     "@eslint/js": "9.39.4",
     "@next/eslint-plugin-next": "16.2.6",
+    "@playwright/test": "1.62.1",
     "@tailwindcss/postcss": "4.2.1",
     "@types/node": "22.19.19",
     "@types/react": "19.2.14",
