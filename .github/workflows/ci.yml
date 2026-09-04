@@ -45,6 +45,7 @@ jobs:
       - run: npm run check:district-resolve
       - run: npm run check:shape-measure
       - run: npm run check:ci-check-coverage
+      - run: npm run check:uptime-alerting
       - run: npm run check:exit-code-taxonomy
       - run: npm run check:cross-record-facts
       - run: npm run check:riding-map-all-intervals

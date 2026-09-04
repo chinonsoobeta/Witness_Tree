@@ -9,7 +9,8 @@ function requiredText(value, name) {
   if (typeof value !== "string" || !value.trim()) throw new Error(`${name} is required.`);
 }
 
-function parseArguments(argv) {
+export function parseArguments(argv) {
+  if (argv.includes("--help") || argv.includes("-h")) return { help: true };
   const options = {};
   for (let index = 0; index < argv.length; index += 1) {
     const argument = argv[index];
@@ -18,6 +19,7 @@ function parseArguments(argv) {
     }
     const value = argv[index + 1];
     requiredText(value, argument);
+    if (value.startsWith("--")) throw new Error(`${argument} requires a value.`);
     options[argument.slice(2)] = value;
     index += 1;
   }
@@ -112,6 +114,20 @@ function readRoutes(recordPath) {
 
 async function main() {
   const options = parseArguments(process.argv.slice(2));
+  if (options.help) {
+    console.log(`Usage: npm run verify:synthetic-uptime -- [options]
+
+GET every configured route and verify its HTTP status and content marker.
+--origin URL   HTTPS origin (npm default: https://www.witnesstree.ca)
+--output FILE  New receipt file (npm default: synthetic-uptime-result.json)
+--record FILE  Route record (default: data/observability-deployment.json)
+--help, -h     Print this help without making a request or writing a file
+
+Existing receipts are never overwritten. Choose a new --output for each run.
+Exit 0 means every route passed; exit 1 means a failed probe or invalid invocation.
+A run does not update the committed observability claims.`);
+    return;
+  }
   const result = await runSyntheticUptime({
     origin: options.origin,
     routes: readRoutes(path.resolve(options.record)),
