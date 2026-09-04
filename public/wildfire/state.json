@@ -1,0 +1,8 @@
+{
+  "consecutiveFailures": 2,
+  "status": "degraded",
+  "sources": {},
+  "lastFailureAt": "2026-09-04T09:08:14.137Z",
+  "nextRetryAt": "2026-09-04T09:23:14.137Z",
+  "error": "No cleared live-wildfire feed is configured; refusing remote refresh."
+}
