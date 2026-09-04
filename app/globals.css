@@ -1480,6 +1480,13 @@ h4 {
 .explore-map-fallback {
   display: block;
   width: 100%;
+  /*
+   * Belt and braces for the column above: an SVG with a viewBox reports that
+   * viewBox as its intrinsic width, so it must be told it may never exceed
+   * its box regardless of what sizes the box.
+   */
+  max-width: 100%;
+  height: auto;
   min-height: 430px;
 }
 .province-bar--map {
@@ -2885,7 +2892,22 @@ dd > a:only-child {
 
 .explore-section {
   display: grid;
+  /*
+   * An implicit `auto` column sizes to its content's min-content width, which
+   * a map cannot supply honestly: the fallback SVG carries a 1000-unit
+   * viewBox, its `width: 100%` cannot resolve against an indefinite column,
+   * and it falls back to that intrinsic width. The column then locks to 980px
+   * inside a 335px page and every heading and paragraph beside it is dragged
+   * out with it, scrolling the whole document sideways on a phone.
+   *
+   * minmax(0, 1fr) lets the column take the container width and shrink below
+   * its content, which is what every other grid on this page already does.
+   */
+  grid-template-columns: minmax(0, 1fr);
   gap: 16px;
+}
+.explore-section > * {
+  min-width: 0;
 }
 
 .explore-section > h2,
