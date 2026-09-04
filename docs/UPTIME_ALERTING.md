@@ -34,3 +34,12 @@ The origin defaults to the public site and the output to
 `--record` for another route definition or `--origin` for an HTTPS preview. Help
 performs no requests and writes no files. Tests simulate GitHub and route
 responses; running them sends no issues and changes no committed observation.
+
+The CI workflow's engineering checksum in the Phase 0 and Phase 3 status
+records is refreshed when this required gate is registered. The existing
+persistent-identifier, budget, accessibility, and bilingual gates still run and
+pass, so each bound criterion's stated reason still holds. Phase 0 remains
+7 of 8 with its existing exclusion; Phase 3 remains 4 of 5. No downstream data
+record binds either status file. Phase 8 remains 8 of 16. The coverage test's
+count includes the province-series checker already added by `c83f430` and this
+uptime checker; no exclusion is added or changed.
