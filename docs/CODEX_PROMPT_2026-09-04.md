@@ -118,10 +118,25 @@ single-source), **U10** (date-range formatter), **E6** (`totals.hectares` rename
 the readback layer) and **E4** (deployed-map-render gate circularity). Do not implement these and
 do not revert them if you encounter them.
 
-Two coordination points. U1 changes the same Explore stylesheet your responsive pass touches, so
-rebase before starting group 2 below and do not fight its `min-width: 0` and SVG clamp fixes. E3's
-byte ceilings must be measured **after** the widening lands, or you will lock in a number the
-widening immediately breaks.
+### What the widening has and has not landed
+
+As of this prompt the widening workstream has landed **only its data chain**, in `c83f430`: the
+province series, its readback, its gate and its tests. It has **not** landed U1, U5, U6, U10 or
+any other Explore user-interface change, and there is no branch carrying them yet.
+
+That has two consequences for your sequencing.
+
+- **Do not wait for U1 to start.** Groups 1, 3, 4, 5 and 6 below touch files the widening is not
+  editing. Begin with group 1.
+- **Do not begin group 2 (U2, U3, U4, U7, U8) until you are told U1 has landed.** That group edits
+  `app/globals.css`, and the widening's U1 fix changes the same Explore rules: it adds a `viewBox`
+  and `max-width: 100%` to the fallback SVG and `min-width: 0` to the grid and flex items in the
+  Explore chain. Starting group 2 first guarantees a conflict in exactly those rules. If you reach
+  group 2 before that notice arrives, move to a later group and say so in your report rather than
+  guessing at the fix yourself.
+
+E3's byte ceilings must also be measured **after** the widening lands, or you will lock in a
+number the widening immediately breaks.
 
 ### Start with E1
 
