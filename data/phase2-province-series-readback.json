@@ -1,0 +1,1432 @@
+{
+  "schemaVersion": "witness-tree/phase2-province-series-readback/1",
+  "status": "exact-readback-passed",
+  "productId": "phase2-province-series-1984-2022-v1",
+  "method": "data/phase2-method-parameters.json",
+  "bases": {
+    "interval": "Each annual row measures loss against its own from-year forest mask, which moves as forest regrows.",
+    "cumulative": "The cumulative row is a per-cell union across all 38 intervals, measured against the fixed 1984 forest mask.",
+    "warning": "The two bases differ. Summing the interval rows does not reproduce the cumulative figure and must never be presented as if it did."
+  },
+  "sources": {
+    "annual": {
+      "path": "../Witness_Tree-data/derived/phase2-annual-province-zonal-v2/annual-province-zonal-1984-2022.json",
+      "byteLength": 88613,
+      "sha256": "65b51ab93414e49a371901dab3a408fb8ab831e404f037395d28f1efa687c65d",
+      "receipt": "data/phase2-annual-province-zonal-v2-receipt-2026-08-29.json",
+      "runner": {
+        "path": "scripts/phase2_annual_zonal_aggregate_v2.py",
+        "sha256": "44c86765b4f1a0ba527f7ed7cb91f95b1d490af404f9d783a84ffdf208a13958"
+      }
+    },
+    "cumulative": {
+      "path": "../Witness_Tree-data/derived/phase2-cumulative-province-zonal-v1/cumulative-province-zonal-1984-2022.json",
+      "byteLength": 3457,
+      "sha256": "b165730ef3d219d4d3a7844cf8ac429dc3dbbe5a793e128aaf5db0e784d9e115",
+      "runner": {
+        "path": "scripts/phase2_cumulative_zonal_aggregate.py",
+        "sha256": "ba3892e354f4d78cc763dade524f709276ac6f7315382cb9ef2ac42b62067826"
+      }
+    }
+  },
+  "provinceCount": 4,
+  "intervalCount": 38,
+  "firstYear": 1984,
+  "lastYear": 2022,
+  "admitted": false,
+  "released": false,
+  "productionEligible": false,
+  "expertReviewed": false,
+  "complete": false,
+  "completenessBasis": "Every province is partial-with-unknown: the product does not map the whole province, so every figure is a minimum and unknown is never zero.",
+  "provinces": [
+    {
+      "code": "BC",
+      "id": "59",
+      "name": {
+        "en": "British Columbia",
+        "fr": "Colombie-Britannique"
+      },
+      "districtHectares": 91730013.75,
+      "unknownRequiredInputHectares": 4095.27,
+      "unmappedByProductExtentHectares": 4095.27,
+      "coverageGrade": "partial-with-unknown",
+      "cumulative": {
+        "fromYear": 1984,
+        "toYear": 2022,
+        "basis": "fixed-1984-forest-mask",
+        "observedLossHectares": 10823352.93,
+        "observedLossPercent": 19.56812,
+        "known1984ForestHectares": 55311152.4,
+        "observedLossOutsideFirstYearForestHectares": 1651674.6,
+        "repeatLossCellHectares": 409526.55,
+        "maximumLossEventsInOneCell": 15,
+        "naiveSumOver1984ForestHectares": 11715123.15,
+        "storeFieldName": "naiveAnnualSumHectares",
+        "doubleCountAvoidedOver1984ForestHectares": 891770.22,
+        "temporalSemantics": "1984-2022 cumulative union of 38 adjacent annual intervals; denominator is the 1984 forest-mask snapshot; a cell detected as lost in several intervals is counted once"
+      },
+      "reconciliation": {
+        "naiveSumOfPublishedIntervalsHectares": 14920559.37,
+        "cumulativeObservedLossHectares": 10823352.93,
+        "differenceHectares": 4097206.44,
+        "causes": [
+          "A cell detected as lost in more than one interval is counted once in the cumulative union and once per interval in the sum.",
+          "Each interval measures against its own from-year forest mask, so the sum includes loss of forest that regrew after 1984 and is outside the cumulative denominator."
+        ]
+      },
+      "baseline": {
+        "year": 1984,
+        "knownForestedHectares": 55311152.4,
+        "temporalSemantics": "1984 forest-mask snapshot only; no annual loss period or loss value is assigned"
+      },
+      "intervals": [
+        {
+          "fromYear": 1984,
+          "toYear": 1985,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 274731.12,
+          "knownForestedHectares": 55311152.4,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1985,
+          "toYear": 1986,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 246668.4,
+          "knownForestedHectares": 55444602.78,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1986,
+          "toYear": 1987,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 306961.11,
+          "knownForestedHectares": 55749632.13,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1987,
+          "toYear": 1988,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 359441.64,
+          "knownForestedHectares": 55867699.26,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1988,
+          "toYear": 1989,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 319446.9,
+          "knownForestedHectares": 55885145.04,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1989,
+          "toYear": 1990,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 314156.79,
+          "knownForestedHectares": 55978799.4,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1990,
+          "toYear": 1991,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 329681.16,
+          "knownForestedHectares": 56100936.51,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1991,
+          "toYear": 1992,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 353519.55,
+          "knownForestedHectares": 56181903.3,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1992,
+          "toYear": 1993,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 243036.81,
+          "knownForestedHectares": 56181344.13,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1993,
+          "toYear": 1994,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 322540.74,
+          "knownForestedHectares": 56521204.29,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1994,
+          "toYear": 1995,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 274913.64,
+          "knownForestedHectares": 56660891.49,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1995,
+          "toYear": 1996,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 311495.4,
+          "knownForestedHectares": 56895290.91,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1996,
+          "toYear": 1997,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 290616.12,
+          "knownForestedHectares": 57026402.64,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1997,
+          "toYear": 1998,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 336384.27,
+          "knownForestedHectares": 57159452.16,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1998,
+          "toYear": 1999,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 309960.09,
+          "knownForestedHectares": 57206025.9,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1999,
+          "toYear": 2000,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 366243.3,
+          "knownForestedHectares": 57492216.36,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2000,
+          "toYear": 2001,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 345303.18,
+          "knownForestedHectares": 57613748.04,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2001,
+          "toYear": 2002,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 357437.25,
+          "knownForestedHectares": 57687006.78,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2002,
+          "toYear": 2003,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 363491.64,
+          "knownForestedHectares": 57725197.29,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2003,
+          "toYear": 2004,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 529664.76,
+          "knownForestedHectares": 57786720.21,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2004,
+          "toYear": 2005,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 416580.66,
+          "knownForestedHectares": 57659056.65,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2005,
+          "toYear": 2006,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 495043.11,
+          "knownForestedHectares": 57688560.45,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2006,
+          "toYear": 2007,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 391512.96,
+          "knownForestedHectares": 57516851.79,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2007,
+          "toYear": 2008,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 351527.22,
+          "knownForestedHectares": 57528382.5,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2008,
+          "toYear": 2009,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 327805.92,
+          "knownForestedHectares": 57584483.37,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2009,
+          "toYear": 2010,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 445114.44,
+          "knownForestedHectares": 57646918.44,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2010,
+          "toYear": 2011,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 452897.19,
+          "knownForestedHectares": 57607801.92,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2011,
+          "toYear": 2012,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 407888.91,
+          "knownForestedHectares": 57739240.98,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2012,
+          "toYear": 2013,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 442680.57,
+          "knownForestedHectares": 57943985.67,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2013,
+          "toYear": 2014,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 504249.12,
+          "knownForestedHectares": 58061631.69,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2014,
+          "toYear": 2015,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 593670.78,
+          "knownForestedHectares": 58001700.24,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2015,
+          "toYear": 2016,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 380658.78,
+          "knownForestedHectares": 57830144.58,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2016,
+          "toYear": 2017,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 595549.8,
+          "knownForestedHectares": 57964476.6,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2017,
+          "toYear": 2018,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 655075.98,
+          "knownForestedHectares": 57756076.92,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2018,
+          "toYear": 2019,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 777929.22,
+          "knownForestedHectares": 57532073.22,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2019,
+          "toYear": 2020,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 297471.6,
+          "knownForestedHectares": 57343830.84,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2020,
+          "toYear": 2021,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 496712.16,
+          "knownForestedHectares": 57514798.53,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2021,
+          "toYear": 2022,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 332497.08,
+          "knownForestedHectares": 57413320.2,
+          "observedLossOutsideFirstYearForestHectares": 0
+        }
+      ]
+    },
+    {
+      "code": "AB",
+      "id": "48",
+      "name": {
+        "en": "Alberta",
+        "fr": "Alberta"
+      },
+      "districtHectares": 63992872.89,
+      "unknownRequiredInputHectares": 15372023.76,
+      "unmappedByProductExtentHectares": 15372023.76,
+      "coverageGrade": "partial-with-unknown",
+      "cumulative": {
+        "fromYear": 1984,
+        "toYear": 2022,
+        "basis": "fixed-1984-forest-mask",
+        "observedLossHectares": 6842768.76,
+        "observedLossPercent": 27.520175,
+        "known1984ForestHectares": 24864553.53,
+        "observedLossOutsideFirstYearForestHectares": 4301427.96,
+        "repeatLossCellHectares": 809081.82,
+        "maximumLossEventsInOneCell": 17,
+        "naiveSumOver1984ForestHectares": 9006114.69,
+        "storeFieldName": "naiveAnnualSumHectares",
+        "doubleCountAvoidedOver1984ForestHectares": 2163345.93,
+        "temporalSemantics": "1984-2022 cumulative union of 38 adjacent annual intervals; denominator is the 1984 forest-mask snapshot; a cell detected as lost in several intervals is counted once"
+      },
+      "reconciliation": {
+        "naiveSumOfPublishedIntervalsHectares": 18862251.12,
+        "cumulativeObservedLossHectares": 6842768.76,
+        "differenceHectares": 12019482.36,
+        "causes": [
+          "A cell detected as lost in more than one interval is counted once in the cumulative union and once per interval in the sum.",
+          "Each interval measures against its own from-year forest mask, so the sum includes loss of forest that regrew after 1984 and is outside the cumulative denominator."
+        ]
+      },
+      "baseline": {
+        "year": 1984,
+        "knownForestedHectares": 24864553.53,
+        "temporalSemantics": "1984 forest-mask snapshot only; no annual loss period or loss value is assigned"
+      },
+      "intervals": [
+        {
+          "fromYear": 1984,
+          "toYear": 1985,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 328083.57,
+          "knownForestedHectares": 24864553.53,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1985,
+          "toYear": 1986,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 181158.39,
+          "knownForestedHectares": 24863136.3,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1986,
+          "toYear": 1987,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 467549.1,
+          "knownForestedHectares": 25348011.66,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1987,
+          "toYear": 1988,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 434943.45,
+          "knownForestedHectares": 25336084.68,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1988,
+          "toYear": 1989,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 313999.65,
+          "knownForestedHectares": 25287933.78,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1989,
+          "toYear": 1990,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 387337.77,
+          "knownForestedHectares": 25419829.68,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1990,
+          "toYear": 1991,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 325706.67,
+          "knownForestedHectares": 25407280.62,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1991,
+          "toYear": 1992,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 339772.14,
+          "knownForestedHectares": 25451169.48,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1992,
+          "toYear": 1993,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 266760,
+          "knownForestedHectares": 25497101.88,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1993,
+          "toYear": 1994,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 383571,
+          "knownForestedHectares": 25885323,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1994,
+          "toYear": 1995,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 513928.71,
+          "knownForestedHectares": 26191010.16,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1995,
+          "toYear": 1996,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 475865.82,
+          "knownForestedHectares": 26422962.84,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1996,
+          "toYear": 1997,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 471613.77,
+          "knownForestedHectares": 26614774.62,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1997,
+          "toYear": 1998,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 657732.06,
+          "knownForestedHectares": 26677621.62,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1998,
+          "toYear": 1999,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 417570.84,
+          "knownForestedHectares": 26419032.27,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1999,
+          "toYear": 2000,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 335416.32,
+          "knownForestedHectares": 26568702.9,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2000,
+          "toYear": 2001,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 609828.84,
+          "knownForestedHectares": 26996938.83,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2001,
+          "toYear": 2002,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 988521.21,
+          "knownForestedHectares": 27010721.7,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2002,
+          "toYear": 2003,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 471250.53,
+          "knownForestedHectares": 26421043.05,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2003,
+          "toYear": 2004,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 450561.96,
+          "knownForestedHectares": 26356083.75,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2004,
+          "toYear": 2005,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 573228.54,
+          "knownForestedHectares": 26500711.41,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2005,
+          "toYear": 2006,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 584051.4,
+          "knownForestedHectares": 26468293.32,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2006,
+          "toYear": 2007,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 444282.84,
+          "knownForestedHectares": 26344291.14,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2007,
+          "toYear": 2008,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 407569.95,
+          "knownForestedHectares": 26424868.5,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2008,
+          "toYear": 2009,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 389970.9,
+          "knownForestedHectares": 26537869.17,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2009,
+          "toYear": 2010,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 366608.7,
+          "knownForestedHectares": 26610347.16,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2010,
+          "toYear": 2011,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 823966.74,
+          "knownForestedHectares": 26824833.9,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2011,
+          "toYear": 2012,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 705928.68,
+          "knownForestedHectares": 26860667.76,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2012,
+          "toYear": 2013,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 657371.52,
+          "knownForestedHectares": 27158282.46,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2013,
+          "toYear": 2014,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 545640.03,
+          "knownForestedHectares": 27169839.27,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2014,
+          "toYear": 2015,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 750652.74,
+          "knownForestedHectares": 27180313.92,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2015,
+          "toYear": 2016,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 582394.77,
+          "knownForestedHectares": 26838594.81,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2016,
+          "toYear": 2017,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 734413.95,
+          "knownForestedHectares": 26934088.77,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2017,
+          "toYear": 2018,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 541967.22,
+          "knownForestedHectares": 26697377.97,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2018,
+          "toYear": 2019,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 684052.74,
+          "knownForestedHectares": 26603157.33,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2019,
+          "toYear": 2020,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 433914.84,
+          "knownForestedHectares": 26488473.39,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2020,
+          "toYear": 2021,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 549080.1,
+          "knownForestedHectares": 26618990.49,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2021,
+          "toYear": 2022,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 265983.66,
+          "knownForestedHectares": 26380231.29,
+          "observedLossOutsideFirstYearForestHectares": 0
+        }
+      ]
+    },
+    {
+      "code": "ON",
+      "id": "35",
+      "name": {
+        "en": "Ontario",
+        "fr": "Ontario"
+      },
+      "districtHectares": 97932917.61,
+      "unknownRequiredInputHectares": 8843646.69,
+      "unmappedByProductExtentHectares": 8843646.69,
+      "coverageGrade": "partial-with-unknown",
+      "cumulative": {
+        "fromYear": 1984,
+        "toYear": 2022,
+        "basis": "fixed-1984-forest-mask",
+        "observedLossHectares": 9280647.27,
+        "observedLossPercent": 19.071954,
+        "known1984ForestHectares": 48661228.44,
+        "observedLossOutsideFirstYearForestHectares": 812941.83,
+        "repeatLossCellHectares": 317270.52,
+        "maximumLossEventsInOneCell": 14,
+        "naiveSumOver1984ForestHectares": 9907571.52,
+        "storeFieldName": "naiveAnnualSumHectares",
+        "doubleCountAvoidedOver1984ForestHectares": 626924.25,
+        "temporalSemantics": "1984-2022 cumulative union of 38 adjacent annual intervals; denominator is the 1984 forest-mask snapshot; a cell detected as lost in several intervals is counted once"
+      },
+      "reconciliation": {
+        "naiveSumOfPublishedIntervalsHectares": 11381573.16,
+        "cumulativeObservedLossHectares": 9280647.27,
+        "differenceHectares": 2100925.89,
+        "causes": [
+          "A cell detected as lost in more than one interval is counted once in the cumulative union and once per interval in the sum.",
+          "Each interval measures against its own from-year forest mask, so the sum includes loss of forest that regrew after 1984 and is outside the cumulative denominator."
+        ]
+      },
+      "baseline": {
+        "year": 1984,
+        "knownForestedHectares": 48661228.44,
+        "temporalSemantics": "1984 forest-mask snapshot only; no annual loss period or loss value is assigned"
+      },
+      "intervals": [
+        {
+          "fromYear": 1984,
+          "toYear": 1985,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 144693.54,
+          "knownForestedHectares": 48661228.44,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1985,
+          "toYear": 1986,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 223035.84,
+          "knownForestedHectares": 48651202.08,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1986,
+          "toYear": 1987,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 267384.15,
+          "knownForestedHectares": 48603980.07,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1987,
+          "toYear": 1988,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 309333.78,
+          "knownForestedHectares": 48499911.9,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1988,
+          "toYear": 1989,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 390927.96,
+          "knownForestedHectares": 48388482.81,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1989,
+          "toYear": 1990,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 353712.24,
+          "knownForestedHectares": 48237977.7,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1990,
+          "toYear": 1991,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 351909.54,
+          "knownForestedHectares": 48165921.18,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1991,
+          "toYear": 1992,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 357002.91,
+          "knownForestedHectares": 48076637.49,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1992,
+          "toYear": 1993,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 246942.09,
+          "knownForestedHectares": 48080611.8,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1993,
+          "toYear": 1994,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 247543.11,
+          "knownForestedHectares": 48243509.46,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1994,
+          "toYear": 1995,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 460120.95,
+          "knownForestedHectares": 48377587.41,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1995,
+          "toYear": 1996,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 565069.05,
+          "knownForestedHectares": 48281986.35,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1996,
+          "toYear": 1997,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 297798.39,
+          "knownForestedHectares": 48011246.37,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1997,
+          "toYear": 1998,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 327267.63,
+          "knownForestedHectares": 47981755.17,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1998,
+          "toYear": 1999,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 394078.05,
+          "knownForestedHectares": 47933556.39,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1999,
+          "toYear": 2000,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 277111.89,
+          "knownForestedHectares": 47929550.85,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2000,
+          "toYear": 2001,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 296935.83,
+          "knownForestedHectares": 48002797.71,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2001,
+          "toYear": 2002,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 457934.58,
+          "knownForestedHectares": 47983760.73,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2002,
+          "toYear": 2003,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 478713.87,
+          "knownForestedHectares": 47886896.79,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2003,
+          "toYear": 2004,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 275266.8,
+          "knownForestedHectares": 47723855.22,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2004,
+          "toYear": 2005,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 259616.61,
+          "knownForestedHectares": 47801244.69,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2005,
+          "toYear": 2006,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 263986.29,
+          "knownForestedHectares": 47888718.39,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2006,
+          "toYear": 2007,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 264920.22,
+          "knownForestedHectares": 47974612.41,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2007,
+          "toYear": 2008,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 153860.58,
+          "knownForestedHectares": 48137597.91,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2008,
+          "toYear": 2009,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 161703.09,
+          "knownForestedHectares": 48532680.72,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2009,
+          "toYear": 2010,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 191788.02,
+          "knownForestedHectares": 48794353.47,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2010,
+          "toYear": 2011,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 408320.91,
+          "knownForestedHectares": 48929474.97,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2011,
+          "toYear": 2012,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 321573.15,
+          "knownForestedHectares": 48985934.49,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2012,
+          "toYear": 2013,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 190418.49,
+          "knownForestedHectares": 49143740.76,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2013,
+          "toYear": 2014,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 175103.1,
+          "knownForestedHectares": 49339587.33,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2014,
+          "toYear": 2015,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 207980.19,
+          "knownForestedHectares": 49528281.15,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2015,
+          "toYear": 2016,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 226945.26,
+          "knownForestedHectares": 49622905.8,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2016,
+          "toYear": 2017,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 250248.42,
+          "knownForestedHectares": 49680951.66,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2017,
+          "toYear": 2018,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 316332.09,
+          "knownForestedHectares": 49674502.53,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2018,
+          "toYear": 2019,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 343888.02,
+          "knownForestedHectares": 49565181.33,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2019,
+          "toYear": 2020,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 190475.91,
+          "knownForestedHectares": 49456936.71,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2020,
+          "toYear": 2021,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 318182.4,
+          "knownForestedHectares": 49505037.75,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2021,
+          "toYear": 2022,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 413448.21,
+          "knownForestedHectares": 49384438.11,
+          "observedLossOutsideFirstYearForestHectares": 0
+        }
+      ]
+    },
+    {
+      "code": "QC",
+      "id": "24",
+      "name": {
+        "en": "Quebec",
+        "fr": "Québec"
+      },
+      "districtHectares": 147544902,
+      "unknownRequiredInputHectares": 22204952.19,
+      "unmappedByProductExtentHectares": 22204952.19,
+      "coverageGrade": "partial-with-unknown",
+      "cumulative": {
+        "fromYear": 1984,
+        "toYear": 2022,
+        "basis": "fixed-1984-forest-mask",
+        "observedLossHectares": 18028529.19,
+        "observedLossPercent": 25.972551,
+        "known1984ForestHectares": 69413780.34,
+        "observedLossOutsideFirstYearForestHectares": 3390729.66,
+        "repeatLossCellHectares": 582650.37,
+        "maximumLossEventsInOneCell": 14,
+        "naiveSumOver1984ForestHectares": 19176572.43,
+        "storeFieldName": "naiveAnnualSumHectares",
+        "doubleCountAvoidedOver1984ForestHectares": 1148043.24,
+        "temporalSemantics": "1984-2022 cumulative union of 38 adjacent annual intervals; denominator is the 1984 forest-mask snapshot; a cell detected as lost in several intervals is counted once"
+      },
+      "reconciliation": {
+        "naiveSumOfPublishedIntervalsHectares": 24866190.9,
+        "cumulativeObservedLossHectares": 18028529.19,
+        "differenceHectares": 6837661.71,
+        "causes": [
+          "A cell detected as lost in more than one interval is counted once in the cumulative union and once per interval in the sum.",
+          "Each interval measures against its own from-year forest mask, so the sum includes loss of forest that regrew after 1984 and is outside the cumulative denominator."
+        ]
+      },
+      "baseline": {
+        "year": 1984,
+        "knownForestedHectares": 69413780.34,
+        "temporalSemantics": "1984 forest-mask snapshot only; no annual loss period or loss value is assigned"
+      },
+      "intervals": [
+        {
+          "fromYear": 1984,
+          "toYear": 1985,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 212534.64,
+          "knownForestedHectares": 69413780.34,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1985,
+          "toYear": 1986,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 384487.47,
+          "knownForestedHectares": 70101797.85,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1986,
+          "toYear": 1987,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 378458.28,
+          "knownForestedHectares": 70611754.23,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1987,
+          "toYear": 1988,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 477858.51,
+          "knownForestedHectares": 71097320.97,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1988,
+          "toYear": 1989,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 1463430.69,
+          "knownForestedHectares": 71366359.32,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1989,
+          "toYear": 1990,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 830672.46,
+          "knownForestedHectares": 70712029.89,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1990,
+          "toYear": 1991,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 698803.29,
+          "knownForestedHectares": 70611558.66,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1991,
+          "toYear": 1992,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 381778.65,
+          "knownForestedHectares": 70596314.82,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1992,
+          "toYear": 1993,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 473482.8,
+          "knownForestedHectares": 70879308.57,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1993,
+          "toYear": 1994,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 525341.34,
+          "knownForestedHectares": 71107722.09,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1994,
+          "toYear": 1995,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 747744.93,
+          "knownForestedHectares": 71283767.4,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1995,
+          "toYear": 1996,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 1042677.54,
+          "knownForestedHectares": 71243798.67,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1996,
+          "toYear": 1997,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 1012395.78,
+          "knownForestedHectares": 70787336.85,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1997,
+          "toYear": 1998,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 781122.69,
+          "knownForestedHectares": 70240488.57,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1998,
+          "toYear": 1999,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 728204.58,
+          "knownForestedHectares": 69966963.81,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 1999,
+          "toYear": 2000,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 654786,
+          "knownForestedHectares": 69917358.87,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2000,
+          "toYear": 2001,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 569152.62,
+          "knownForestedHectares": 69903406.26,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2001,
+          "toYear": 2002,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 1204667.28,
+          "knownForestedHectares": 70041260.88,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2002,
+          "toYear": 2003,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 680126.22,
+          "knownForestedHectares": 69618329.73,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2003,
+          "toYear": 2004,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 564509.16,
+          "knownForestedHectares": 69605438.67,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2004,
+          "toYear": 2005,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 1009699.2,
+          "knownForestedHectares": 69688858.5,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2005,
+          "toYear": 2006,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 619096.05,
+          "knownForestedHectares": 69317680.77,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2006,
+          "toYear": 2007,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 667802.88,
+          "knownForestedHectares": 69371630.28,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2007,
+          "toYear": 2008,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 441129.24,
+          "knownForestedHectares": 69399524.79,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2008,
+          "toYear": 2009,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 541920.42,
+          "knownForestedHectares": 69686450.1,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2009,
+          "toYear": 2010,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 742584.96,
+          "knownForestedHectares": 69807109.05,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2010,
+          "toYear": 2011,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 556059.69,
+          "knownForestedHectares": 69651375.21,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2011,
+          "toYear": 2012,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 646094.61,
+          "knownForestedHectares": 69793729.65,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2012,
+          "toYear": 2013,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 1224126.45,
+          "knownForestedHectares": 69829337.16,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2013,
+          "toYear": 2014,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 738746.91,
+          "knownForestedHectares": 69253579.17,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2014,
+          "toYear": 2015,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 497572.65,
+          "knownForestedHectares": 69366269.34,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2015,
+          "toYear": 2016,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 571318.02,
+          "knownForestedHectares": 69596995.41,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2016,
+          "toYear": 2017,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 657384.03,
+          "knownForestedHectares": 69616760.85,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2017,
+          "toYear": 2018,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 518906.88,
+          "knownForestedHectares": 69447565.44,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2018,
+          "toYear": 2019,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 446219.01,
+          "knownForestedHectares": 69485663.07,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2019,
+          "toYear": 2020,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 428179.68,
+          "knownForestedHectares": 69607756.17,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2020,
+          "toYear": 2021,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 406575.81,
+          "knownForestedHectares": 69806679.21,
+          "observedLossOutsideFirstYearForestHectares": 0
+        },
+        {
+          "fromYear": 2021,
+          "toYear": 2022,
+          "basis": "moving-from-year-forest-mask",
+          "observedLossHectares": 340539.48,
+          "knownForestedHectares": 70136552.88,
+          "observedLossOutsideFirstYearForestHectares": 0
+        }
+      ]
+    }
+  ]
+}
