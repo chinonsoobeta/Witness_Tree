@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/no-noninteractive-tabindex -- The horizontally scrollable table region must be keyboard-focusable. */
 import { formatNumber, type Locale } from "@/lib/domain";
 
 type SourceFlags = Readonly<{ preliminary: boolean; revised: boolean; agencyEstimated: boolean }>;

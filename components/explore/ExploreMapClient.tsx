@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/no-noninteractive-tabindex -- The horizontal map-layer region must remain keyboard-scrollable. */
 "use client";
 
 import { useEffect, useRef, useState } from "react";
