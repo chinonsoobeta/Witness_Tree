@@ -69,12 +69,17 @@ export function validateSecretScanConfig(config) {
  *
  * A path is not a blanket. Each entry names one rule in one file and says how
  * many occurrences were read.
+ *
+ * The language is the matrix job that produces the finding. CodeQL runs one job
+ * per language and hands each its own SARIF, so an entry is only expected to
+ * occur in the analysis it belongs to.
  */
 export const ACCEPTED_CODEQL_FINDINGS = Object.freeze([
   {
     ruleId: "js/incomplete-url-substring-sanitization",
     path: "scripts/check-address-lookup.mts",
     count: 3,
+    language: "javascript-typescript",
     reason:
       "The three checks read the text of a source file and a Content-Security-Policy directive to answer whether either mentions the address provider's host. Nothing here parses or validates a URL, so the query's remedy, comparing a parsed host, has nothing to apply to. A partial match is the intent: a mention of the host anywhere in shipped code is the thing being forbidden.",
   },
@@ -87,6 +92,7 @@ function acceptanceKey(ruleId, path) {
 export function validateCodeqlResults(documents, acceptedFindings = ACCEPTED_CODEQL_FINDINGS) {
   assert.ok(documents.length > 0, "CodeQL produced no SARIF evidence");
   const counted = new Map();
+  const analysed = new Set();
   for (const document of documents) {
     assert.equal(document.version, "2.1.0", "Unrecognized SARIF version");
     assert.ok(Array.isArray(document.runs) && document.runs.length > 0, "SARIF has no runs");
@@ -94,6 +100,11 @@ export function validateCodeqlResults(documents, acceptedFindings = ACCEPTED_COD
       assert.ok(run.tool?.driver?.name?.includes("CodeQL"), "SARIF is not from CodeQL");
       assert.ok(Array.isArray(run.results), "SARIF results are missing");
       assert.ok((run.invocations ?? []).every((invocation) => invocation.executionSuccessful !== false), "CodeQL invocation failed");
+      // The category the workflow passes to codeql-action/analyze, which is the
+      // matrix language. A run that declares none is treated as covering
+      // everything, so an unlabelled SARIF cannot excuse a missing entry.
+      const language = /^\/language:(.+)\/$/.exec(run.automationDetails?.id ?? "")?.[1];
+      analysed.add(language ?? "*");
       for (const result of run.results) {
         const path = result.locations?.[0]?.physicalLocation?.artifactLocation?.uri ?? "<unlocated>";
         const key = acceptanceKey(result.ruleId, path);
@@ -106,12 +117,13 @@ export function validateCodeqlResults(documents, acceptedFindings = ACCEPTED_COD
   const unread = [...counted].filter(([key]) => !accepted.has(key));
   assert.equal(unread.length, 0, `CodeQL reported findings nobody has read: ${unread.map(([key, count]) => `${key} x${count}`).join("; ")}. Fix them, or record the reason for keeping them.`);
   for (const [key, entry] of accepted) {
+    if (!analysed.has("*") && !analysed.has(entry.language)) continue;
     const found = counted.get(key) ?? 0;
     assert.ok(entry.reason.length > 120, `${key} is accepted without a reason worth reading`);
     assert.equal(found, entry.count, `${key} was accepted at ${entry.count} finding(s) and CodeQL now reports ${found}. ${found > entry.count ? "The extra one has not been read." : "The reason no longer applies; drop the entry."}`);
   }
   const findings = [...counted.values()].reduce((total, count) => total + count, 0);
-  return { status: "passed", documents: documents.length, findings, accepted: accepted.size, unread: 0, externalReview: false };
+  return { status: "passed", documents: documents.length, findings, accepted: accepted.size, analysed: [...analysed].sort(), unread: 0, externalReview: false };
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

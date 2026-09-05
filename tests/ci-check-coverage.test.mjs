@@ -80,6 +80,29 @@ test("a CodeQL finding blocks the build unless someone has read it and said why"
 
   // What the repository actually accepts today: one rule, one file, three reads.
   assert.deepEqual(ACCEPTED_CODEQL_FINDINGS.map((accepted) => [accepted.ruleId, accepted.path, accepted.count]), [["js/incomplete-url-substring-sanitization", "scripts/check-address-lookup.mts", 3]]);
+  // Each entry belongs to a matrix job that actually runs.
+  const languages = /language: \[([^\]]+)\]/.exec(ci)?.[1].split(", ") ?? [];
+  for (const accepted of ACCEPTED_CODEQL_FINDINGS) assert.ok(languages.includes(accepted.language), `${accepted.ruleId} is accepted for a language CodeQL does not analyse`);
+});
+
+test("an accepted finding is expected only in the analysis that produces it", () => {
+  // CodeQL runs one job per language and hands each its own SARIF, so the
+  // python job sees none of the javascript findings and must not read their
+  // absence as a reason that has stopped applying.
+  const labelled = (language, ...results) => [{ version: "2.1.0", runs: [{ tool: { driver: { name: "CodeQL" } }, automationDetails: { id: `/language:${language}/` }, results }] }];
+  const entry = { ruleId: "js/example-finding", path: "scripts/check-example.mjs", count: 1, language: "javascript-typescript", reason: "x".repeat(121) };
+  const at = { ruleId: entry.ruleId, locations: [{ physicalLocation: { artifactLocation: { uri: entry.path } } }] };
+
+  assert.equal(validateCodeqlResults(labelled("python"), [entry]).status, "passed");
+  assert.equal(validateCodeqlResults(labelled("actions"), [entry]).status, "passed");
+  assert.equal(validateCodeqlResults(labelled("javascript-typescript", at), [entry]).status, "passed");
+  // The job that does produce it still has to produce it.
+  assert.throws(() => validateCodeqlResults(labelled("javascript-typescript"), [entry]), /no longer applies/);
+  // A SARIF that names no language is treated as covering everything, so an
+  // unlabelled analysis cannot excuse a missing entry.
+  assert.throws(() => validateCodeqlResults([{ version: "2.1.0", runs: [{ tool: { driver: { name: "CodeQL" } }, results: [] }] }], [entry]), /no longer applies/);
+  // A finding nobody has read blocks whichever job reports it.
+  assert.throws(() => validateCodeqlResults(labelled("python", { ruleId: "py/example-finding" }), [entry]), /nobody has read/);
 });
 
 test("the secret-scan allowlist can only clear the exact shapes it names", () => {
