@@ -5,8 +5,8 @@
   "productionEligible": false,
   "isEdition": false,
   "isSnapshot": false,
-  "runAt": "2026-09-05T03:29:19Z",
-  "commit": "c21fc672d0087a0789d642f21a1b332b8505b46a",
+  "runAt": "2026-09-05T04:05:49Z",
+  "commit": "2a7d0affbf8d53f2086dab128c9ab611948d9b08",
   "workingTreeClean": true,
   "platform": "darwin",
   "dataRootPresent": true,
@@ -35,7 +35,7 @@
       "reason": "Drives run-alberta-plvi-approved-promotion.sh, which resolves the data root.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 15911,
+      "durationMs": 15878,
       "guardedPaths": [
         "data/alberta-plvi-full-release-readiness.json",
         "data/alberta-plvi-immutable-promotion-preparation.json",
@@ -64,7 +64,7 @@
       "reason": "archive-existing-key-recovery.sh reads sizes with the BSD-only `stat -f %z`.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 848,
+      "durationMs": 831,
       "guardedPaths": [
         "scripts/archive-existing-key-recovery.sh",
         "tests/archive-existing-key-recovery.test.mjs"
@@ -81,7 +81,7 @@
       "reason": "Drives run-current-wildfire-approved-promotion.sh, which resolves the data root.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 722,
+      "durationMs": 714,
       "guardedPaths": [
         "data/alberta-wildfire-locations-profile.json",
         "data/bc-wildfire-current-perimeters-profile.json",
@@ -114,7 +114,7 @@
       "reason": "Resolves the approved data root at module load through approvedDataRootRealPath, and drives the promotion runner against it.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 515,
+      "durationMs": 509,
       "guardedPaths": [
         "data/archive-operations-readiness.json",
         "data/elections-canada-fed-2025-profile.json",
@@ -165,7 +165,7 @@
       "reason": "Reads and re-derives the checksum-bound official NFD CSV profile from the owner SSD data root.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 223,
+      "durationMs": 226,
       "guardedPaths": [
         "data/nfd-harvest-statistics-profile.json",
         "lib/phase2/nfd-harvest-statistics.mjs",
@@ -188,7 +188,7 @@
       "reason": "Drives run-phase1-approved-promotion.sh, which resolves the data root.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 9934,
+      "durationMs": 9709,
       "guardedPaths": [
         "scripts/aws-direct-mfa-role-session.sh",
         "scripts/run-phase1-approved-promotion.sh",
@@ -207,7 +207,7 @@
       "reason": "Drives run-phase1-archive-owner-exercise.sh, which depends on macOS shell tooling.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 3186,
+      "durationMs": 3162,
       "guardedPaths": [
         "scripts/run-phase1-archive-owner-exercise.sh",
         "tests/phase1-archive-owner-exercise.test.mjs"
@@ -224,7 +224,7 @@
       "reason": "Stats the admitted federal-electoral GeoPackage under the data root.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 635,
+      "durationMs": 629,
       "guardedPaths": [
         "data/current-wildfire-derived-archive-evidence.json",
         "data/current-wildfire-derived-live-recovery-guard-2026-08-20.json",
@@ -309,7 +309,7 @@
       "reason": "Asserts on an attestation failure that a macOS owner-and-mode-600 check reaches first.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 1702,
+      "durationMs": 1708,
       "guardedPaths": [
         "data/phase1-canopy-completion-recovery-iam-delta.json",
         "data/phase1-canopy-recovery-retention-iam-delta.json",
@@ -334,7 +334,7 @@
       "reason": "Stats the admitted federal-electoral GeoPackage under the data root.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 68,
+      "durationMs": 67,
       "guardedPaths": [
         "data/current-wildfire-owner-admission.json",
         "data/partial-ledger-owner-review-outreach-package.json",
@@ -436,7 +436,7 @@
       "reason": "Profiles the NRCan canopy cover raster from the data root.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 135,
+      "durationMs": 138,
       "guardedPaths": [
         "data/acquisition-readiness.json",
         "data/alberta-electoral-boundary-block.json",
@@ -643,7 +643,7 @@
       "reason": "Reads raw/nrcan-ca-forest-harvest-1985-2022 from the data root.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 168237,
+      "durationMs": 167189,
       "guardedPaths": [
         "data/elections-canada-fed-2025-profile.json",
         "data/elections-canada-fed-2025-source-ledger.json",
@@ -710,7 +710,7 @@
       "reason": "Reads recorded artifacts under the data root to confirm the queue matches bytes on disk.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 276,
+      "durationMs": 280,
       "guardedPaths": [
         "data/current-wildfire-derived-archive-evidence.json",
         "data/current-wildfire-derived-readback-owner-approval.json",
@@ -807,7 +807,7 @@
       "reason": "Resolves approval evidence paths through the data root.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 120,
+      "durationMs": 124,
       "guardedPaths": [
         "data/current-wildfire-derived-readback-owner-approval.json",
         "data/partial-ledger-owner-review-outreach-package.json",
@@ -844,7 +844,7 @@
       "reason": "Stats the admitted federal-electoral GeoPackage under the data root.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 161,
+      "durationMs": 156,
       "guardedPaths": [
         "data/acquisition-readiness.json",
         "data/alberta-electoral-boundary-block.json",
@@ -1057,7 +1057,7 @@
       "reason": "Its checker resolves recorded artifacts through the data root.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 69,
+      "durationMs": 67,
       "guardedPaths": [
         "data/current-wildfire-derived-archive-evidence.json",
         "data/current-wildfire-owner-admission.json",
@@ -1187,7 +1187,7 @@
       "reason": "Its checker opens comparison inputs under the data root.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 18371,
+      "durationMs": 18491,
       "guardedPaths": [
         "data/phase1-nbac-profile-2026-08-27.json",
         "data/phase2-hansen-gfc-v1.12-sample-profile.json",
@@ -1212,7 +1212,7 @@
       "reason": "Reads raw/nrcan-ca-forest-harvest-1985-2022 from the data root.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 661,
+      "durationMs": 698,
       "guardedPaths": [
         "data/phase2-v21-expert-review-workflow.json",
         "scripts/check-phase2-v21-expert-review-evidence.mjs",
@@ -1235,7 +1235,7 @@
       "reason": "Reads derived/phase2-v21-review-packet-v2 from the data root.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 101,
+      "durationMs": 100,
       "guardedPaths": [
         "data/phase2-v21-real-review-packet-evidence.json",
         "data/phase2-v21-real-review-packet-raster-readback-evidence.json",
@@ -1260,7 +1260,7 @@
       "reason": "Its checker opens the v21 review packet under the data root.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 86,
+      "durationMs": 85,
       "guardedPaths": [
         "scripts/check-phase2-v21-real-review-packet.mjs",
         "scripts/data-root.mjs",
@@ -1279,7 +1279,7 @@
       "reason": "Resolves the data root and reconciles against bytes under it.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 2820,
+      "durationMs": 2632,
       "guardedPaths": [
         "data/coverage-geometry-admission.json",
         "data/qc-immutable-promotion-preparation.json",
@@ -1304,7 +1304,7 @@
       "reason": "Resolves the data root and prepares against bytes under it.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 10807,
+      "durationMs": 11107,
       "guardedPaths": [
         "data/coverage-geometry-admission.json",
         "data/qc-immutable-promotion-preparation.json",
@@ -1335,7 +1335,7 @@
       "reason": "Resolves the data root and runs against bytes under it.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 1823,
+      "durationMs": 1768,
       "guardedPaths": [
         "data/coverage-geometry-admission.json",
         "data/qc-immutable-promotion-preparation.json",
@@ -1360,7 +1360,7 @@
       "reason": "Reads derived wildfire outputs from the data root.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 1405,
+      "durationMs": 1324,
       "guardedPaths": [
         "data/wildfire-derived-immutable-promotion-iam-desired-state.json",
         "data/wildfire-derived-immutable-promotion-preparation.json",
@@ -1387,7 +1387,7 @@
       "reason": "Resolves the data root before invoking the recovery runner.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 87,
+      "durationMs": 92,
       "guardedPaths": [
         "scripts/run-wildfire-derived-recovery-owner.sh",
         "tests/wildfire-derived-recovery-owner-wrapper.test.mjs"
@@ -1404,7 +1404,7 @@
       "reason": "Reads derived wildfire outputs from the data root.",
       "status": "passed",
       "exitCode": 0,
-      "durationMs": 2804,
+      "durationMs": 2641,
       "guardedPaths": [
         "data/wildfire-derived-immutable-promotion-iam-desired-state.json",
         "data/wildfire-derived-immutable-promotion-preparation.json",
