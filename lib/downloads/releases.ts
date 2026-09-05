@@ -1,4 +1,9 @@
-import { formatYearRangeKey } from "../domain";
+// tests/transparency-pages.test.mjs reaches this file under plain node, not
+// tsx, so the specifier has to be one Node's own resolver accepts. The
+// "../domain" barrel is a directory import: it resolves under the bundler and
+// under tsx and nowhere else.
+// @ts-expect-error Node strip-types requires explicit local extensions.
+import { formatYearRangeKey } from "../domain/year-range.ts";
 import type { DownloadRelease } from "./types";
 
 /*
