@@ -3,6 +3,14 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 export const INCIDENT_MARKER = "<!-- witness-tree-synthetic-uptime-incident -->";
+
+/**
+ * Consecutive failed probe runs before an incident is opened. One failure is
+ * usually the network rather than the Site. Exported because
+ * scripts/check-uptime-alerting.mjs reports this number, and a report that
+ * restated it would keep saying 2 after someone changed it here.
+ */
+export const FAILURE_THRESHOLD = 2;
 const TITLE = "Synthetic uptime: public routes unavailable";
 const FAILURE_CONCLUSIONS = new Set(["failure", "timed_out", "startup_failure"]);
 
@@ -60,7 +68,7 @@ export async function updateUptimeIssue({ repository, run, receipt, routes, requ
   }
   assert.ok(incidents.length <= 1, "Multiple incident issues exist; refusing to pick one silently");
   const incident = incidents[0];
-  if (!recovery && consecutiveFailures < 2) return { action: "waiting", consecutiveFailures };
+  if (!recovery && consecutiveFailures < FAILURE_THRESHOLD) return { action: "waiting", consecutiveFailures };
   if (recovery && (!incident || incident.state === "closed")) return { action: "healthy" };
 
   const runMarker = `<!-- run:${run.id}:${run.run_attempt} -->`;

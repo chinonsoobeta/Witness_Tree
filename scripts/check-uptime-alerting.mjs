@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
+import { FAILURE_THRESHOLD } from "./update-uptime-issue.mjs";
 
 export function validateUptimeAlerting(probe, alert) {
   const uncomment = (text) => text.split("\n").filter((line) => !line.trimStart().startsWith("#")).join("\n");
@@ -35,7 +36,9 @@ export function validateUptimeAlerting(probe, alert) {
   assert.match(alert, /ref: main\s*\n\s+persist-credentials: false/);
   assert.match(alert, /run: gh run download "\$UPTIME_RUN_ID" --name synthetic-uptime-result --dir uptime-receipt/);
   assert.match(alert, /- name: Alert after consecutive failures or close on recovery\s*\n\s+if: always\(\)\s*\n\s+env:\s*\n\s+GH_TOKEN: \$\{\{ github.token \}\}\s*\n\s+run: node scripts\/update-uptime-issue\.mjs --receipt uptime-receipt\/synthetic-uptime-result\.json/);
-  return { cadenceMinutes: Math.max(...slots.map((slot, i) => (slots[i + 1] ?? slots[0] + 60) - slot)), failureThreshold: 2 };
+  // Reported, not asserted: this is the threshold scripts/update-uptime-issue.mjs
+  // actually enforces, read from there rather than restated here.
+  return { cadenceMinutes: Math.max(...slots.map((slot, i) => (slots[i + 1] ?? slots[0] + 60) - slot)), failureThreshold: FAILURE_THRESHOLD };
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

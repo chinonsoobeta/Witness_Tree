@@ -11,6 +11,7 @@ import {
 } from "../scripts/check-observability-deployment.mjs";
 import { runSyntheticUptime } from "../scripts/run-synthetic-uptime.mjs";
 import { validateUptimeAlerting } from "../scripts/check-uptime-alerting.mjs";
+import { FAILURE_THRESHOLD } from "../scripts/update-uptime-issue.mjs";
 import { INCIDENT_MARKER, updateUptimeIssue } from "../scripts/update-uptime-issue.mjs";
 
 /**
@@ -43,6 +44,20 @@ test("uptime cadence and the trusted failure/recovery handler are required", () 
   assert.throws(() => validateUptimeAlerting(probe, alert.replace("if: always()", "if: success()")));
   assert.throws(() => validateUptimeAlerting(probe, alert.replace("issues: write", "issues: read")));
   assert.throws(() => validateUptimeAlerting(probe, alert.replace("ref: main", "ref: untrusted")));
+});
+
+test("the reported failure threshold is the one the handler enforces", () => {
+  // The checker used to report a literal 2 while the comparison lived in
+  // update-uptime-issue.mjs, so raising the real threshold would have left the
+  // report saying 2. The report now reads the enforced constant, and the
+  // comparison site must keep using it rather than a number.
+  const read = (name) => readFileSync(new URL(`../.github/workflows/${name}.yml`, import.meta.url), "utf8");
+  const reported = validateUptimeAlerting(read("synthetic-uptime"), read("synthetic-uptime-alert")).failureThreshold;
+  assert.equal(reported, FAILURE_THRESHOLD);
+
+  const handler = readFileSync(new URL("../scripts/update-uptime-issue.mjs", import.meta.url), "utf8");
+  assert.match(handler, /consecutiveFailures < FAILURE_THRESHOLD/);
+  assert.doesNotMatch(handler, /consecutiveFailures < \d/, "the threshold is restated as a literal again");
 });
 
 test("two consecutive failures open one issue, updates deduplicate, and verified recovery closes it", async () => {
