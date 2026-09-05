@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/no-noninteractive-tabindex -- The horizontal map-layer region must remain keyboard-scrollable. */
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -8,17 +7,20 @@ import type {
   MapLayerMouseEvent,
   StyleSpecification,
 } from "maplibre-gl";
-import { colon, formatNumber, formatPercent, labelled, PRODUCT_NAME, type Locale } from "@/lib/domain";
+import { colon, formatNumber, formatPercent, formatYearRangeKey, labelled, PRODUCT_NAME, type Locale } from "@/lib/domain";
 import { chooseScaleBar, metresPerPixel, type ScaleBar } from "@/lib/explore/map-scale";
 import {
+  annualIntervalCoverage,
   BOUNDARY_OVERLAYS,
   EXPLORE_MAP_COLOURS,
   EXPLORE_PER_CELL_LAYER,
   EXPLORE_PRODUCTION_LAYER,
+  EXPLORE_YEAR_MAX,
   formatUnknownSharePercent,
   perCellArchiveForYear,
   perCellCauseForMode,
   perCellSourceLayer,
+  productionAggregatePeriod,
   type BoundaryOverlayId,
   type ExploreMapView,
   type ExploreMode,
@@ -37,31 +39,31 @@ const text = {
     label: "Forest loss map",
     loading: "Loading the map layers for the selected year.",
     ready:
-      "Showing the provisional province aggregate, which covers 2020 to 2022 and does not follow the year control. Display boundaries are simplified and omit small islands.",
+      `Showing the provisional province aggregate, which covers ${productionAggregatePeriod("en", "span")} and does not follow the year control. Display boundaries are simplified and omit small islands.`,
     readyPerCell:
-      "Showing detected forest-loss patches for the selected annual interval, traced from the 30 m grid. Patches are held for every interval from 1984–1985 to 2021–2022; the year control chooses which one is drawn.",
+      `Showing detected forest-loss patches for the selected annual interval, traced from the 30 m grid. Patches are held for every interval from ${annualIntervalCoverage("en")}; the year control chooses which one is drawn.`,
     readyHarvest:
       "Showing only the detected forest-loss patches that the national disturbance record marks as harvest in the selected interval.",
     readyFire:
       "Showing only the detected forest-loss patches that the national disturbance record marks as fire in the selected interval.",
     readyBoth:
-      "Showing two layers with different periods: detected forest-loss patches for the selected annual interval, drawn as you zoom in and available for every interval from 1984–1985 to 2021–2022, over the provisional province aggregate, which covers 2020 to 2022 and does not follow the year control. Province display boundaries are simplified and omit small islands.",
+      `Showing two layers with different periods: detected forest-loss patches for the selected annual interval, drawn as you zoom in and available for every interval from ${annualIntervalCoverage("en")}, over the provisional province aggregate, which covers ${productionAggregatePeriod("en", "span")} and does not follow the year control. Province display boundaries are simplified and omit small islands.`,
     fallbackTimeout:
-      "The interactive PMTiles layer did not become ready within 10 seconds, so this map is showing the published GeoJSON compatibility fallback.",
+      "The interactive map is taking too long to load. A static map is shown instead. The figures below are unaffected. You can retry the interactive map.",
     fallbackError:
-      "The interactive PMTiles layer reported an error, so this map is showing the published GeoJSON compatibility fallback.",
+      "The interactive map could not be loaded. A static map is shown instead. The figures below are unaffected. You can retry the interactive map.",
     unavailable:
       "Condition and recovery needs the annual land-cover class series, which has not been acquired or admitted. It is not shown for any year. Forest loss, Recorded harvest and Wildfire are unaffected.",
     unavailableYear:
-      "Detected patches cover the annual intervals from 1984–1985 to 2021–2022. Choose 2022 or an earlier year to see this mode.",
+      `Detected patches cover the annual intervals from ${annualIntervalCoverage("en")}. Choose ${EXPLORE_YEAR_MAX} or an earlier year to see this mode.`,
     error:
-      "The map layer reported an error and could not be loaded. The list and table alternatives remain available.",
+      "The map could not be loaded. The figures below are unaffected. You can retry the interactive map or use the list and table.",
     errorTimeout:
-      "The map layer did not become ready within 10 seconds and no compatibility fallback covers this selection. The list and table alternatives remain available.",
+      "The interactive map is taking too long to load, and no static map is available for this selection. The figures below are unaffected. You can retry the interactive map or use the list and table.",
     retry: "Retry the interactive map",
     attribution: "Map sources",
     perCell:
-      "Zoom in to see individual patches of detected forest loss, traced from the 30 m grid rather than generalized from it. One annual interval is drawn at a time, chosen by the year control, from the intervals running 1984–1985 to 2021–2022.",
+      `Zoom in to see individual patches of detected forest loss, traced from the 30 m grid rather than generalized from it. One annual interval is drawn at a time, chosen by the year control, from the intervals running ${annualIntervalCoverage("en")}.`,
     perCellLimits:
       "These patches are drawn, not counted. Below the closest zoom the map simplifies them and leaves out the smallest ones, so adding them up would come out short; the annual figures are counted from the exact cell inventory instead. Nobody has checked these patches against conditions on the ground. An area with no patch is not a claim that no loss happened there.",
     perCellLegend: "Detected loss patch, by what the official record shows",
@@ -97,7 +99,7 @@ const text = {
     normalizedShare: "Detected loss share",
     totalLoss: "Detected loss",
     knownObservedSubtotal: "Known detected subtotal",
-    provinceAggregate: "Provisional aggregate, 2020 to 2022",
+    provinceAggregate: `Provisional aggregate, ${productionAggregatePeriod("en")}`,
     detectedPatches: "Detected-loss patches",
     zoomToPatches: "Zoom to patches",
     patchesVisible: "Patches are already visible at this zoom.",
@@ -114,31 +116,31 @@ const text = {
     loading:
       "Chargement des couches cartographiques pour l’année choisie.",
     ready:
-      "Affichage de l’agrégat provincial provisoire, qui couvre 2020 à 2022 et ne suit pas la commande d’année. Les limites d’affichage sont simplifiées et omettent les petites îles.",
+      `Affichage de l’agrégat provincial provisoire, qui couvre ${productionAggregatePeriod("fr", "span")} et ne suit pas la commande d’année. Les limites d’affichage sont simplifiées et omettent les petites îles.`,
     readyPerCell:
-      "Affichage des parcelles de perte forestière détectée pour l’intervalle annuel choisi, tracées à partir de la grille de 30 m. Des parcelles existent pour chaque intervalle de 1984-1985 à 2021-2022; la commande d’année détermine celui qui est dessiné.",
+      `Affichage des parcelles de perte forestière détectée pour l’intervalle annuel choisi, tracées à partir de la grille de 30 m. Des parcelles existent pour chaque intervalle ${annualIntervalCoverage("fr")}; la commande d’année détermine celui qui est dessiné.`,
     readyHarvest:
       "Affichage des seules parcelles de perte forestière détectée que le registre national des perturbations désigne comme récolte pour l’intervalle choisi.",
     readyFire:
       "Affichage des seules parcelles de perte forestière détectée que le registre national des perturbations désigne comme incendie pour l’intervalle choisi.",
     readyBoth:
-      "Affichage de deux couches aux périodes différentes : les parcelles de perte forestière détectée pour l’intervalle annuel choisi, dessinées au fur et à mesure du zoom et offertes pour chaque intervalle de 1984-1985 à 2021-2022, par-dessus l’agrégat provincial provisoire, qui couvre 2020 à 2022 et ne suit pas la commande d’année. Les limites provinciales affichées sont simplifiées et omettent les petites îles.",
+      `Affichage de deux couches aux périodes différentes : les parcelles de perte forestière détectée pour l’intervalle annuel choisi, dessinées au fur et à mesure du zoom et offertes pour chaque intervalle ${annualIntervalCoverage("fr")}, par-dessus l’agrégat provincial provisoire, qui couvre ${productionAggregatePeriod("fr", "span")} et ne suit pas la commande d’année. Les limites provinciales affichées sont simplifiées et omettent les petites îles.`,
     fallbackTimeout:
-      "La couche PMTiles interactive n’était pas prête après 10 secondes; cette carte affiche donc la solution de repli GeoJSON publiée.",
+      "La carte interactive met trop de temps à se charger. Une carte statique est affichée à sa place. Les chiffres ci-dessous restent inchangés. Vous pouvez réessayer de charger la carte interactive.",
     fallbackError:
-      "La couche PMTiles interactive a signalé une erreur; cette carte affiche donc la solution de repli GeoJSON publiée.",
+      "La carte interactive n’a pas pu être chargée. Une carte statique est affichée à sa place. Les chiffres ci-dessous restent inchangés. Vous pouvez réessayer de charger la carte interactive.",
     unavailable:
       "L’état et le rétablissement exigent la série annuelle des classes de couverture terrestre, qui n’a été ni acquise ni admise. Ce mode n’est affiché pour aucune année. La perte forestière, les récoltes consignées et les incendies ne sont pas touchés.",
     unavailableYear:
-      "Les parcelles détectées couvrent les intervalles annuels de 1984-1985 à 2021-2022. Choisissez 2022 ou une année antérieure pour voir ce mode.",
+      `Les parcelles détectées couvrent les intervalles annuels ${annualIntervalCoverage("fr")}. Choisissez ${EXPLORE_YEAR_MAX} ou une année antérieure pour voir ce mode.`,
     error:
-      "La couche cartographique a signalé une erreur et n’a pas pu être chargée. Les autres présentations en liste et en tableau demeurent disponibles.",
+      "La carte n’a pas pu être chargée. Les chiffres ci-dessous restent inchangés. Vous pouvez réessayer de charger la carte interactive ou utiliser la liste et le tableau.",
     errorTimeout:
-      "La couche cartographique n’était pas prête après 10 secondes et aucune solution de repli ne couvre cette sélection. Les autres présentations en liste et en tableau demeurent disponibles.",
+      "La carte interactive met trop de temps à se charger, et aucune carte statique n’est disponible pour cette sélection. Les chiffres ci-dessous restent inchangés. Vous pouvez réessayer de charger la carte interactive ou utiliser la liste et le tableau.",
     retry: "Réessayer la carte interactive",
     attribution: "Sources de la carte",
     perCell:
-      "Faites un zoom avant pour voir chaque parcelle de perte forestière détectée, tracée à partir de la grille de 30 m plutôt que généralisée. Un seul intervalle annuel est dessiné à la fois, choisi par la commande d’année, parmi les intervalles allant de 1984-1985 à 2021-2022.",
+      `Faites un zoom avant pour voir chaque parcelle de perte forestière détectée, tracée à partir de la grille de 30 m plutôt que généralisée. Un seul intervalle annuel est dessiné à la fois, choisi par la commande d’année, parmi les intervalles ${annualIntervalCoverage("fr")}.`,
     perCellLimits:
       "Ces parcelles sont dessinées, et non comptées. Sous le zoom le plus rapproché, la carte les simplifie et omet les plus petites ; les additionner donnerait donc un total trop faible. Les chiffres annuels sont plutôt comptés à partir de l’inventaire exact des cellules. Personne n’a vérifié ces parcelles sur le terrain. Une zone sans parcelle n’affirme pas qu’aucune perte n’y est survenue.",
     perCellLegend: "Parcelle de perte détectée, selon ce que montre le registre officiel",
@@ -175,7 +177,7 @@ const text = {
     normalizedShare: "Part de perte détectée",
     totalLoss: "Perte détectée",
     knownObservedSubtotal: "Sous-total détecté connu",
-    provinceAggregate: "Agrégat provisoire, de 2020 à 2022",
+    provinceAggregate: `Agrégat provisoire, ${productionAggregatePeriod("fr")}`,
     detectedPatches: "Parcelles de perte détectée",
     zoomToPatches: "Zoomer vers les parcelles",
     patchesVisible: "Les parcelles sont déjà visibles à ce niveau de zoom.",
@@ -903,6 +905,7 @@ export function ExploreMapClient({
               role="img"
               aria-label={text[locale].label}
               aria-hidden={state !== "ready" || source !== "pmtiles"}
+              inert={state !== "ready" || source !== "pmtiles"}
             />
             {state === "ready" && source === "geojson" ? (
           <svg
@@ -948,7 +951,7 @@ export function ExploreMapClient({
                 {readout?.kind === "boundary-only" ? <p>{readout.note}</p> : null}
                 {readout?.kind === "riding-measurement" ? (
                   <>
-                    <p>{text[locale].interval}{colon(locale)} {readout.interval}</p>
+                    <p>{text[locale].interval}{colon(locale)} {readout.intervalLabel}</p>
                     <p>{text[locale].coverage}{colon(locale)} {readout.coverage}</p>
                     <p>{text[locale].normalizedShare}{colon(locale)} {readout.normalizedShare}</p>
                     <p>{text[locale].totalLoss}{colon(locale)} {readout.absoluteLoss}</p>
@@ -993,7 +996,7 @@ export function ExploreMapClient({
               <ul className="explore-map-layer-list">
                 {provinceAvailable ? <li>{text[locale].provinceAggregate}</li> : null}
                 {perCellArchive ? (
-                  <li>{`${text[locale].detectedPatches}, ${perCellArchive.interval}`}</li>
+                  <li>{`${text[locale].detectedPatches}, ${formatYearRangeKey(perCellArchive.interval, locale)}`}</li>
                 ) : null}
                 {overlays.map((id) => <li key={id}>{BOUNDARY_OVERLAYS[id].label[locale]}</li>)}
               </ul>
@@ -1135,10 +1138,10 @@ export function ExploreMapClient({
             <li>{symbol("loss-2")}2–&lt;3%</li>
             <li>{symbol("loss-3")}3%+</li>
           </ul>
-          <div className="table-scroll">
+          <div className="table-scroll" tabIndex={0} role="region" aria-labelledby="explore-map-table-caption">
             <table>
-              <caption>
-                {text[locale].label}: {EXPLORE_PRODUCTION_LAYER.period}
+              <caption id="explore-map-table-caption">
+                {labelled(locale, text[locale].label, productionAggregatePeriod(locale))}
               </caption>
               <thead>
                 <tr>
@@ -1153,7 +1156,7 @@ export function ExploreMapClient({
                 {EXPLORE_PRODUCTION_LAYER.rows.map((row) => (
                   <tr key={row.id}>
                     <th scope="row">{row.name[locale]}</th>
-                    <td>{EXPLORE_PRODUCTION_LAYER.period}</td>
+                    <td>{productionAggregatePeriod(locale)}</td>
                     <td>{formatNumber(row.observedLossHectares, locale)}</td>
                     <td>{formatNumber(row.observedLossPercent, locale)}</td>
                     <td>

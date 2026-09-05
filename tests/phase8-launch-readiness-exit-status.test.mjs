@@ -10,16 +10,25 @@ test("Phase 8 records every literal launch-readiness gate without production inf
   /*
    * Eight. CDN and tile validation passes only on the strength of a browser
    * observation of the deployed Site bound to the client it observed. This
-   * change set changed that client, and on 2026-09-03 the Site was redeployed to
-   * this branch and the harness re-run against it, so the bound observation once
-   * again describes the deployed client and the gate is back up. It stays a
-   * delivery-and-rendering gate: it asserts no production admission.
+   * change set changed that client, the Site was redeployed to this branch on
+   * 2026-09-05, and the harness was re-run against it, so the bound observation
+   * again describes the deployed client. Nothing weaker held the gate up while
+   * it was down: the preview and break-glass tiers exist and neither record is
+   * committed here. It stays a delivery-and-rendering gate: it asserts no
+   * production admission.
    */
   assert.equal(record.completedCriteria, 8);
   assert.equal(record.totalCriteria, 16);
-  assert.equal(record.percentage, 50.0);
+  assert.equal(record.percentage, 50);
   assert.equal(record.phaseComplete, false);
   assert.deepEqual(record.exitCriteria.filter((item) => item.status === "pass").map((item) => item.id), ["raw-archive-reproducibility", "governance-and-corrections-procedures", "operations-handbook", "bulk-downloads", "citation-format", "release-notes", "restore-tests", "cdn-tile-validation"]);
+
+  // The criterion tracks the gate rather than the code: whenever
+  // check:deployed-map-render is red, cdn-tile-validation must not read as pass.
+  const { resolveDeployedMapRender } = await import("../scripts/check-deployed-map-render.mjs");
+  const gate = resolveDeployedMapRender();
+  const cdn = record.exitCriteria.find((item) => item.id === "cdn-tile-validation");
+  assert.equal(cdn.status, gate.failures.length === 0 ? "pass" : "fail", `cdn-tile-validation says ${cdn.status} while the gate reports ${gate.failures.length} failure(s)`);
 });
 
 test("Phase 8 rejects invented readiness, altered gates, blockers, and tampered evidence", async () => {

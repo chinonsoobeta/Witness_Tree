@@ -1,6 +1,7 @@
-import { colon, type Locale } from "@/lib/domain";
+import { colon, formatYearRangeKey, type Locale } from "@/lib/domain";
 import { SourceCurrency } from "./SourceCurrency";
 import {
+  PROVINCE_BULK_TIME_RANGE,
   provinceBulkManifestUrl,
   provinceBulkRelease,
 } from "@/lib/downloads/releases";
@@ -10,7 +11,7 @@ const COPY = {
     title: "Data and transparency",
     accessTitle: "What you can download",
     accessSummary:
-      "A bounded four-province technical preview for 2020 to 2022 is available as a CSV table and a GeoPackage. Both files contain the same province-level values for British Columbia, Alberta, Ontario and Quebec.",
+      `A bounded four-province technical preview for ${formatYearRangeKey(PROVINCE_BULK_TIME_RANGE, "en", "span")} is available as a CSV table and a GeoPackage. Both files contain the same province-level values for British Columbia, Alberta, Ontario and Quebec.`,
     notice:
       "These are province summaries for reading and analysis. They are not per-cell geometry or a live data service.",
     csv: "Download province values (CSV)",
@@ -49,7 +50,7 @@ const COPY = {
     title: "Données et transparence",
     accessTitle: "Ce que vous pouvez télécharger",
     accessSummary:
-      "Un aperçu technique limité à quatre provinces pour 2020 à 2022 est offert sous forme de tableau CSV et de GeoPackage. Les deux fichiers contiennent les mêmes valeurs au niveau provincial pour la Colombie-Britannique, l’Alberta, l’Ontario et le Québec.",
+      `Un aperçu technique limité à quatre provinces pour ${formatYearRangeKey(PROVINCE_BULK_TIME_RANGE, "fr", "span")} est offert sous forme de tableau CSV et de GeoPackage. Les deux fichiers contiennent les mêmes valeurs au niveau provincial pour la Colombie-Britannique, l’Alberta, l’Ontario et le Québec.`,
     notice:
       "Il s’agit de résumés provinciaux destinés à la lecture et à l’analyse. Ils ne constituent ni une géométrie par cellule ni un service de données en direct.",
     csv: "Télécharger les valeurs provinciales (CSV)",

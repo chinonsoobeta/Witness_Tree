@@ -84,7 +84,7 @@ function UnrankedTable({
   return (
     <section aria-label={accessibleLabel}>
       <h3>{accessibleLabel}</h3>
-      <div className="table-scroll">
+      <div className="table-scroll" tabIndex={0} role="region" aria-label={accessibleLabel}>
         <table>
           <caption className="sr-only">{accessibleLabel}</caption>
           <thead>
@@ -161,7 +161,7 @@ export function RankedRidingsTable({
           {locale === "en" ? "Lowest share first" : "Part la plus faible en premier"}
         </a>
       </nav>
-      <div className="table-scroll">
+      <div className="table-scroll" tabIndex={0} role="region" aria-label={copy.metric}>
         <table>
           <caption>{copy.metric}</caption>
           <thead>

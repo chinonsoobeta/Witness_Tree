@@ -8,6 +8,13 @@ from "../components/explore/ShapeMeasureClient.tsx";
 
 const rendered = (locale: "en" | "fr") => renderToStaticMarkup(<ShapeMeasureClient locale={locale} />);
 
+/**
+ * Whether a fragment of rendered markup holds a text node that is not only
+ * whitespace. It asks the question the assertions actually have, rather than
+ * stripping tags first, which would be a sanitizer neither of them wants.
+ */
+const hasTextNode = (fragment: string) => /(?:^|>)[^<>]*[^\s<>]/.test(fragment);
+
 test("the control renders in both locales with a named field for every input", () => {
   for (const locale of ["en", "fr"] as const) {
     const markup = rendered(locale);
@@ -32,7 +39,7 @@ test("the keyboard path is the only path on the server, and it is complete", () 
   assert.match(markup, /aria-live="polite"/);
   // Every button says what it does rather than relying on an icon.
   for (const button of markup.matchAll(/<button\b[^>]*>([\s\S]*?)<\/button>/g)) {
-    assert.ok(button[1].replace(/<[^>]*>/g, "").trim().length > 0, "a button has no text");
+    assert.ok(hasTextNode(button[1]), "a button has no text");
     assert.match(button[0], /\btype="(?:submit|button)"/);
   }
 });
@@ -92,6 +99,6 @@ test("the map's own status region starts empty rather than claiming a corner", (
   const markup = rendered("en");
   const live = markup.match(/<p class="shape-draw-live"[^>]*>([\s\S]*?)<\/p>/);
   assert.ok(live, "the drawing surface has no status region");
-  assert.equal(live[1].replace(/<[^>]*>/g, "").trim(), "", "the status region invents an announcement");
+  assert.ok(!hasTextNode(live[1]), "the status region invents an announcement");
   assert.match(markup, /class="shape-draw-live" role="status"/);
 });

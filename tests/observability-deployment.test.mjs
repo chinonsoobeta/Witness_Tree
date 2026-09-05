@@ -4,11 +4,15 @@ import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import test from "node:test";
+import { spawnSync } from "node:child_process";
 import {
   checkObservabilityDeployment,
   validateObservabilityDeployment,
 } from "../scripts/check-observability-deployment.mjs";
 import { runSyntheticUptime } from "../scripts/run-synthetic-uptime.mjs";
+import { validateUptimeAlerting } from "../scripts/check-uptime-alerting.mjs";
+import { FAILURE_THRESHOLD } from "../scripts/update-uptime-issue.mjs";
+import { INCIDENT_MARKER, updateUptimeIssue } from "../scripts/update-uptime-issue.mjs";
 
 /**
  * These tests exercise both accepted states. The canonical partial record binds repository assets
@@ -21,6 +25,89 @@ const CANONICAL_PARTIAL = JSON.parse(
   readFileSync(new URL("../data/observability-deployment.json", import.meta.url), "utf8"),
 );
 const partialFixture = () => structuredClone(CANONICAL_PARTIAL);
+
+test("uptime help lists every flag without probing or writing a receipt", () => {
+  const result = spawnSync(process.execPath, ["scripts/run-synthetic-uptime.mjs", "--help"], { encoding: "utf8" });
+  assert.equal(result.status, 0);
+  for (const flag of ["--origin", "--output", "--record", "--help"]) assert.ok(result.stdout.includes(flag));
+  assert.match(result.stdout, /never overwritten/);
+});
+
+test("uptime cadence and the trusted failure/recovery handler are required", () => {
+  const read = (name) => readFileSync(new URL(`../.github/workflows/${name}.yml`, import.meta.url), "utf8");
+  const probe = read("synthetic-uptime");
+  const alert = read("synthetic-uptime-alert");
+  assert.equal(validateUptimeAlerting(probe, alert).cadenceMinutes, 15);
+  for (const cron of ["0 */6 * * *", "*/30 * * * *", "0,10,20,30 * * * *"]) {
+    assert.throws(() => validateUptimeAlerting(probe.replace("*/15 * * * *", cron), alert));
+  }
+  assert.throws(() => validateUptimeAlerting(probe, alert.replace("if: always()", "if: success()")));
+  assert.throws(() => validateUptimeAlerting(probe, alert.replace("issues: write", "issues: read")));
+  assert.throws(() => validateUptimeAlerting(probe, alert.replace("ref: main", "ref: untrusted")));
+});
+
+test("the reported failure threshold is the one the handler enforces", () => {
+  // The checker used to report a literal 2 while the comparison lived in
+  // update-uptime-issue.mjs, so raising the real threshold would have left the
+  // report saying 2. The report now reads the enforced constant, and the
+  // comparison site must keep using it rather than a number.
+  const read = (name) => readFileSync(new URL(`../.github/workflows/${name}.yml`, import.meta.url), "utf8");
+  const reported = validateUptimeAlerting(read("synthetic-uptime"), read("synthetic-uptime-alert")).failureThreshold;
+  assert.equal(reported, FAILURE_THRESHOLD);
+
+  const handler = readFileSync(new URL("../scripts/update-uptime-issue.mjs", import.meta.url), "utf8");
+  assert.match(handler, /consecutiveFailures < FAILURE_THRESHOLD/);
+  assert.doesNotMatch(handler, /consecutiveFailures < \d/, "the threshold is restated as a literal again");
+});
+
+test("two consecutive failures open one issue, updates deduplicate, and verified recovery closes it", async () => {
+  const repository = "owner/repo";
+  const routes = [{ path: "/en", expectedStatus: 200, contentMarker: "Forest" }];
+  const run = (id, conclusion) => ({
+    id, workflow_id: 1, run_number: id, run_attempt: 1, conclusion, status: "completed",
+    event: "schedule", head_branch: "main", head_repository: { full_name: repository },
+    run_started_at: "2026-09-04T00:00:00Z", updated_at: "2026-09-04T00:01:00Z",
+  });
+  let runs = [run(1, "failure")];
+  let issues = [];
+  const writes = [];
+  const request = async (method, endpoint, body) => {
+    if (method === "GET") return endpoint.includes("/actions/") ? { workflow_runs: runs } : issues;
+    writes.push({ method, endpoint, body });
+    issues = [{ number: 10, state: body.state ?? "open", user: { login: "github-actions[bot]" }, body: body.body }];
+  };
+  const receipt = (healthy) => ({
+    schemaVersion: "witness-tree/synthetic-uptime-run/1", origin: "https://www.witnesstree.ca",
+    startedAt: "2026-09-04T00:00:01Z", completedAt: "2026-09-04T00:00:05Z", result: healthy ? "pass" : "fail",
+    observedRoutes: [{ path: "/en", status: healthy ? 200 : 404, contentMarkerFound: healthy, error: null }],
+  });
+  const update = (value = receipt(false), eventRun = runs[0]) => updateUptimeIssue({ repository, run: eventRun, receipt: value, routes, request });
+  assert.equal((await update()).action, "waiting");
+  assert.equal(writes.length, 0);
+  runs.unshift(run(2, "failure"));
+  assert.equal((await update()).action, "opened");
+  assert.match(writes[0].body.body, /\/en: HTTP 404/);
+  assert.match(writes[0].body.body, /2026-09-04T00:01:00Z/);
+  assert.ok(writes[0].body.body.startsWith(INCIDENT_MARKER));
+  assert.equal((await update()).action, "unchanged");
+  runs.unshift(run(3, "failure"));
+  assert.equal((await update()).action, "updated");
+  assert.equal(writes.at(-1).method, "PATCH");
+  assert.equal((await update(null, runs[1])).action, "obsolete");
+  runs.unshift(run(4, "success"));
+  assert.equal((await update(null)).action, "waiting", "a missing receipt cannot prove recovery");
+  assert.equal(issues[0].state, "open");
+  assert.equal((await update(receipt(true))).action, "closed");
+  assert.equal(issues[0].state, "closed");
+  runs.unshift(run(5, "failure"));
+  assert.equal((await update()).action, "waiting", "success resets the streak");
+  runs.unshift(run(6, "failure"));
+  assert.equal((await update()).action, "updated");
+  assert.equal(issues[0].state, "open");
+  assert.equal(writes.filter(({ method }) => method === "POST").length, 1);
+  await assert.rejects(() => update(receipt(true), { ...runs[0], head_branch: "feature" }), /trusted/);
+  await assert.rejects(() => update(receipt(true), { ...runs[0], head_repository: { full_name: "fork/repo" } }), /trusted/);
+});
 
 async function fixtureRoot(t) {
   const root = await mkdtemp(path.join(tmpdir(), "observability-"));

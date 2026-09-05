@@ -7,7 +7,7 @@ import {
   EvidenceChip,
   ProvenanceBlock,
 } from "@/components/policy";
-import { colon, formatNumber, formatPercent, labelled, type Locale } from "@/lib/domain";
+import { colon, formatNumber, formatPercent, formatYearRange, formatYearRangeKey, labelled, yearRange, type Locale } from "@/lib/domain";
 import {
   BOUNDARY_OVERLAY_IDS,
   BOUNDARY_OVERLAYS,
@@ -19,7 +19,9 @@ import {
   formatUnknownSharePercent,
   perCellAnnualForYear,
   perCellArchiveForYear,
+  perCellArchiveSpan,
   perCellCauseForMode,
+  productionAggregatePeriod,
   serializeBoundaryOverlays,
   toggleBoundaryOverlay,
   type BoundaryOverlayId,
@@ -42,16 +44,16 @@ const copy = {
     mapHidden:
       "The map is hidden in the List presentation. Choose Map above to show it.",
     production:
-      "Each layer on this page carries its own period, and this view is showing only one of them. The list, chart, and table use the same provisional 2020–2022 province aggregate, which is the only period that release covers. No per-cell patches are drawn for the selected year.",
+      `Each layer on this page carries its own period, and this view is showing only one of them. The list, chart, and table use the same provisional ${productionAggregatePeriod("en")} province aggregate, which is the only period that release covers. No per-cell patches are drawn for the selected year.`,
     productionWithPerCell:
-      "Each layer on this page carries its own period, so no single span describes the whole view. The map draws per-cell detected loss patches for 1984–2022, traced from the 30 m grid, and the heading below names the one annual interval the year control has selected. The list, chart, and table use the same provisional 2020–2022 province aggregate, which covers those years alone and does not move with the year control. The annual figures below are counted from the exact cell inventory, not from the drawn patches, which are simplified for display and cannot be added up. Nothing here has been checked against conditions on the ground, and the source maps only part of the country, so every figure is a minimum.",
+      `Each layer on this page carries its own period, so no single span describes the whole view. The map draws per-cell detected loss patches for ${perCellArchiveSpan("en")}, traced from the 30 m grid, and the heading below names the one annual interval the year control has selected. The list, chart, and table use the same provisional ${productionAggregatePeriod("en")} province aggregate, which covers those years alone and does not move with the year control. The annual figures below are counted from the exact cell inventory, not from the drawn patches, which are simplified for display and cannot be added up. Nothing here has been checked against conditions on the ground, and the source maps only part of the country, so every figure is a minimum.`,
     annualHeading: "Per-cell detected loss",
     annualDetected: "Detected loss (ha)",
     annualHarvest: "Recorded harvest (ha)",
     annualFire: "Recorded fire (ha)",
     annualUnattributed: "Cause not recorded (ha)",
     annualBasis:
-      "This is one annual interval, the one ending in the last year selected. It is not a total for a wider span, not a total for 1984–2022, and not the 2020–2022 province aggregate. Counted from the exact 30 m cell inventory behind the map. One cell is 0.09 ha.",
+      `This is one annual interval, the one ending in the last year selected. It is not a total for a wider span, not a total for ${perCellArchiveSpan("en")}, and not the ${productionAggregatePeriod("en")} province aggregate. Counted from the exact 30 m cell inventory behind the map. One cell is 0.09 ha.`,
     annualNone: "No per-cell interval covers this year and mode.",
     spanNote: (fromYear: number, toYear: number) =>
       `Districts are shaded for the whole span, ${fromYear} to ${toYear}: each one shows the forest lost at least once inside it, counted once no matter how many times a place was cleared. Where a district lost the same ground more than once, the yearly losses added together are shown alongside, in hectares only. That figure has no denominator and is never given as a share. The per-cell patches drawn on the map are an annual product and show the last year of the span alone.`,
@@ -111,16 +113,16 @@ const copy = {
     mapHidden:
       "La carte est masquée dans la présentation en liste. Choisissez Carte ci-dessus pour l’afficher.",
     production:
-      "Chaque couche de cette page porte sa propre période, et cette vue n’en affiche qu’une seule. La liste, le graphique et le tableau utilisent le même agrégat provincial provisoire de 2020 à 2022, seule période couverte par cette version. Aucune parcelle par cellule n’est dessinée pour l’année choisie.",
+      `Chaque couche de cette page porte sa propre période, et cette vue n’en affiche qu’une seule. La liste, le graphique et le tableau utilisent le même agrégat provincial provisoire ${productionAggregatePeriod("fr", "from")}, seule période couverte par cette version. Aucune parcelle par cellule n’est dessinée pour l’année choisie.`,
     productionWithPerCell:
-      "Chaque couche de cette page porte sa propre période ; aucune période unique ne décrit donc l’ensemble de la vue. La carte dessine les parcelles de perte détectée par cellule de 1984 à 2022, tracées à partir de la grille de 30 m, et le titre ci-dessous nomme le seul intervalle annuel choisi par la commande d’année. La liste, le graphique et le tableau utilisent le même agrégat provincial provisoire de 2020 à 2022, qui ne couvre que ces années et ne suit pas la commande d’année. Les chiffres annuels ci-dessous sont comptés à partir de l’inventaire exact des cellules, et non des parcelles dessinées, qui sont simplifiées pour l’affichage et ne peuvent pas être additionnées. Rien ici n’a été vérifié sur le terrain, et la source ne cartographie qu’une partie du pays : chaque chiffre est donc un minimum.",
+      `Chaque couche de cette page porte sa propre période\u202F; aucune période unique ne décrit donc l’ensemble de la vue. La carte dessine les parcelles de perte détectée par cellule ${perCellArchiveSpan("fr", "from")}, tracées à partir de la grille de 30 m, et le titre ci-dessous nomme le seul intervalle annuel choisi par la commande d’année. La liste, le graphique et le tableau utilisent le même agrégat provincial provisoire ${productionAggregatePeriod("fr", "from")}, qui ne couvre que ces années et ne suit pas la commande d’année. Les chiffres annuels ci-dessous sont comptés à partir de l’inventaire exact des cellules, et non des parcelles dessinées, qui sont simplifiées pour l’affichage et ne peuvent pas être additionnées. Rien ici n’a été vérifié sur le terrain, et la source ne cartographie qu’une partie du pays\u202F: chaque chiffre est donc un minimum.`,
     annualHeading: "Perte détectée par cellule",
     annualDetected: "Perte détectée (ha)",
     annualHarvest: "Récoltes consignées (ha)",
     annualFire: "Incendies consignés (ha)",
     annualUnattributed: "Cause non consignée (ha)",
     annualBasis:
-      "Il s’agit d’un seul intervalle annuel, celui qui se termine à la dernière année choisie. Ce n’est pas un total pour une période plus large, ni pour 1984–2022, ni l’agrégat provincial de 2020–2022. Comptée à partir de l’inventaire exact des cellules de 30 m derrière la carte. Une cellule représente 0,09 ha.",
+      `Il s’agit d’un seul intervalle annuel, celui qui se termine à la dernière année choisie. Ce n’est pas un total pour une période plus large, ni pour ${perCellArchiveSpan("fr")}, ni l’agrégat provincial de ${productionAggregatePeriod("fr")}. Comptée à partir de l’inventaire exact des cellules de 30 m derrière la carte. Une cellule représente 0,09 ha.`,
     annualNone: "Aucun intervalle par cellule ne couvre cette année et ce mode.",
     spanNote: (fromYear: number, toYear: number) =>
       `Les circonscriptions sont ombrées pour toute la période, de ${fromYear} à ${toYear} : chacune montre la forêt perdue au moins une fois, comptée une seule fois peu importe le nombre de coupes. Lorsqu’une circonscription a perdu le même terrain plus d’une fois, les pertes annuelles additionnées sont affichées à côté, en hectares seulement. Ce chiffre n’a pas de dénominateur et n’est jamais présenté comme une part. Les parcelles par cellule dessinées sur la carte proviennent d’un produit annuel et ne montrent que la dernière année de la période.`,
@@ -398,7 +400,7 @@ export function ExploreView({
           <p className="explore-note" role="status">{text.spanPending}</p>
         ) : null}
         <div className="explore-annual">
-          <h3>{`${text.annualHeading}, ${annual ? annual.interval : `${activeYear - 1}–${activeYear}`}`}</h3>
+          <h3>{`${text.annualHeading}, ${annual ? formatYearRangeKey(annual.interval, locale) : formatYearRange(yearRange(activeYear - 1, activeYear), locale)}`}</h3>
           {annual ? (
             <>
               <dl>
@@ -510,7 +512,7 @@ export function ExploreView({
                 ? EXPLORE_PRODUCTION_LAYER.rows.map((row) => (
                     <li className="card card--lift" key={row.id}>
                       <h3>{row.name[locale]}</h3>
-                      <p>{EXPLORE_PRODUCTION_LAYER.period}</p>
+                      <p>{productionAggregatePeriod(locale)}</p>
                       <p>
                         {text.observedLoss}
                         {colon(locale)} {formatNumber(row.observedLossHectares, locale)} ·{" "}
@@ -548,56 +550,33 @@ export function ExploreView({
                 "observedLossPercent" in item ? item.observedLossPercent : 1,
               );
               const scale = Math.max(...values, 1);
-              const rowHeight = 34;
-              const barX = 150;
-              const barMax = 300;
               return (
-                <svg
-                  className="explore-chart"
-                  role="img"
-                  aria-label={text.chart}
-                  viewBox={`0 0 500 ${rows.length * rowHeight + 12}`}
-                >
-                  <title>{text.chart}</title>
-                  {rows.map((item, index) => {
+                <ul className="explore-chart" aria-label={text.chart}>
+                  {rows.map((item) => {
                     const isProduction = "observedLossPercent" in item;
                     const value = isProduction ? item.observedLossPercent : 1;
-                    const label = item.name[locale];
                     const detail = isProduction ? formatPercent(value, locale) : String(item.year);
-                    const y = index * rowHeight + 8;
                     return (
-                      <g key={item.id}>
-                        <title>{labelled(locale, label, detail)}</title>
-                        <text className="explore-bar-name" x="0" y={y + 15}>{label}</text>
-                        <rect
-                          className="explore-bar"
-                          x={barX}
-                          y={y}
-                          width={Math.max((value / scale) * barMax, 2)}
-                          height="20"
-                          rx="6"
-                        />
-                        <text
-                          className="explore-bar-label"
-                          x={barX + Math.max((value / scale) * barMax, 2) + 8}
-                          y={y + 15}
-                        >
-                          {detail}
-                        </text>
-                      </g>
+                      <li key={item.id}>
+                        <span className="explore-bar-name">{item.name[locale]}</span>
+                        <span className="explore-bar-label">{detail}</span>
+                        <span className="explore-bar-track" aria-hidden="true">
+                          <span className="explore-bar" style={{ width: `${(value / scale) * 100}%` }} />
+                        </span>
+                      </li>
                     );
                   })}
-                </svg>
+                </ul>
               );
           })()
         ) : null}
 
         {hasData && data === "table" ? (
-          <div className="table-scroll">
+          <div className="table-scroll" tabIndex={0} role="region" aria-labelledby="explore-data-table-caption">
             <table className="explore-table">
-              <caption>
+              <caption id="explore-data-table-caption">
                 {text.table}
-                {productionAvailable ? `${colon(locale)} ${EXPLORE_PRODUCTION_LAYER.period}` : ""}
+                {productionAvailable ? `${colon(locale)} ${productionAggregatePeriod(locale)}` : ""}
               </caption>
               <thead>
                 {productionAvailable ? (
@@ -625,7 +604,7 @@ export function ExploreView({
                   ? EXPLORE_PRODUCTION_LAYER.rows.map((row) => (
                       <tr key={row.id}>
                         <th scope="row">{row.name[locale]}</th>
-                        <td>{EXPLORE_PRODUCTION_LAYER.period}</td>
+                        <td>{productionAggregatePeriod(locale)}</td>
                         <td>{formatNumber(row.observedLossHectares, locale)}</td>
                         <td>{formatNumber(row.observedLossPercent, locale)}</td>
                         <td>{provinceCoverageLabel(row)}</td>

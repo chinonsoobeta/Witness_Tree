@@ -18,9 +18,40 @@ import {
   sweepDataRoot,
 } from "../scripts/check-data-root-bound-checks.mjs";
 import { resolveDataRoot, SSD_DATA_ROOT } from "../scripts/data-root.mjs";
+import { readdirSync } from "node:fs";
+import { BASELINE, validateDataRootCoverage } from "../scripts/check-data-root-coverage.mjs";
+import { checkOutcome, verificationSummary } from "../scripts/run-verification-checks.mjs";
 
 const inventory = readJson(INVENTORY_PATH);
 const checkScripts = packageCheckScripts(readJson("package.json"));
+
+test("current coverage pins unavailable names as well as their counts", () => {
+  const input = { packageDocument: readJson("package.json"), inventory, testFiles: readdirSync(new URL("../tests", import.meta.url)).filter((name) => /\.test\.(mjs|ts|tsx)$/.test(name)) };
+  const result = validateDataRootCoverage(input);
+  assert.equal(BASELINE.checkScripts, 231);
+  assert.equal(result.current.dataRootChecks, 30);
+  assert.equal(result.current.dataRootTestFiles, 25);
+  assert.equal(result.empiricalCompleteness, "unavailable");
+  const changed = clone(inventory);
+  changed.checks[0].name = "check:bilingual";
+  assert.throws(() => validateDataRootCoverage({ ...input, inventory: changed }), /names or detached behavior changed/);
+  assert.throws(() => validateDataRootCoverage({ ...input, requirements: [new Map(), new Map(), new Map()] }), /Unavailable test names or reasons changed/);
+});
+
+test("machine outcomes distinguish passed, failed and unavailable even for a degrading exit-zero check", () => {
+  const base = { name: "check:a", dataRoot: "/missing/Witness_Tree-data", attached: false, registry: [{ name: "check:a", whenDetached: "degrades", announces: "data root not mounted" }] };
+  const run = (exitCode, output, overrides = {}) => checkOutcome({ ...base, exitCode, output, ...overrides });
+  assert.equal(run(0, "data root not mounted").status, "unavailable");
+  assert.equal(run(0, "all good").status, "failed");
+  assert.equal(run(1, "ENOENT: /missing/Witness_Tree-data/raw/a.tif").status, "unavailable");
+  assert.equal(run(1, "checksum mismatch /missing/Witness_Tree-data/raw/a.tif").status, "failed");
+  assert.equal(run(1, "ENOENT: data/missing-record.json").status, "failed");
+  assert.equal(run(null, "timeout").status, "failed");
+  assert.equal(run(0, "all good", { attached: true }).status, "passed");
+  assert.equal(verificationSummary([{ status: "passed" }, { status: "unavailable" }]).exitCode, 2);
+  assert.equal(verificationSummary([{ status: "failed" }, { status: "unavailable" }]).exitCode, 1);
+  assert.equal(verificationSummary([{ status: "passed" }]).exitCode, 0);
+});
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));

@@ -448,11 +448,6 @@
       "reason": "This owner preflight gate is evaluated in the local gate set."
     },
     {
-      "check": "scripts/check-phase8-bulk-download-independent-retrieval.mjs",
-      "category": "environment-bound",
-      "reason": "The command performs an independent retrieval from the live publication endpoint; CI runs the repository-side publication check separately."
-    },
-    {
       "check": "scripts/check-phase8-bulk-download-release.mjs",
       "category": "owner-invoked",
       "reason": "This owner release evidence gate is reviewed in the local gate set."

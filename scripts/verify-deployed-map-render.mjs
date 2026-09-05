@@ -29,6 +29,7 @@
 import { spawn } from "node:child_process";
 import { createHash } from "node:crypto";
 import { inflateSync } from "node:zlib";
+import { execFileSync } from "node:child_process";
 import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import path from "node:path";
@@ -325,6 +326,32 @@ async function run(options) {
   return { browserPath, requests, consoleErrors, settled, canvas };
 }
 
+const DEPLOYED_ORIGIN = "https://www.witnesstree.ca";
+
+/**
+ * Which claim this run is entitled to make. Only a run against the Site can say
+ * the Site renders; anything else is a preview observation, and the record has
+ * to say so itself rather than leaving the reader to compare origins.
+ */
+function scopeOf(url) {
+  let origin;
+  try {
+    origin = new URL(url).origin;
+  } catch {
+    origin = null;
+  }
+  return origin === DEPLOYED_ORIGIN ? "deployed-site" : "branch-deployment";
+}
+
+/** The commit the working tree is on, so a preview record names what was deployed. */
+function currentRevision() {
+  try {
+    return execFileSync("git", ["rev-parse", "HEAD"], { cwd: REPO_ROOT, encoding: "utf8" }).trim();
+  } catch {
+    return null;
+  }
+}
+
 function summarize(observed, options) {
   const style = readFileSync(path.join(REPO_ROOT, "lib/explore/map-style.ts"), "utf8");
   const pmtilesUrl = style.match(/url:\s*"(https:\/\/[^"]+\.pmtiles)"/)?.[1];
@@ -377,17 +404,25 @@ function summarize(observed, options) {
     sha256: createHash("sha256").update(readFileSync(path.join(REPO_ROOT, relative))).digest("hex"),
   }));
 
+  const scope = scopeOf(options.url);
+
   return {
     schemaVersion: "witness-tree/deployed-map-render-evidence/1",
-    status: "deployed-site-browser-observation",
-    // This records a measurement taken against the deployed Site. It is not an
-    // admission, a release, or a production-eligibility record.
+    status: scope === "deployed-site" ? "deployed-site-browser-observation" : "branch-deployment-browser-observation",
+    scope,
+    // A preview run measures the client where it was served from, which is not
+    // the Site. The record carries that distinction itself so it can never be
+    // filed as the stronger claim.
+    siteObservationOwed: scope !== "deployed-site",
+    // This records a measurement taken against a running deployment. It is not
+    // an admission, a release, or a production-eligibility record.
     published: false,
     productionEligible: false,
     admissionClaim: false,
     productionAdmission: false,
     observedAt: new Date().toISOString().replace(/\.\d{3}Z$/, "Z"),
     url: options.url,
+    revision: currentRevision(),
     browser: { path: observed.browserPath, build: path.basename(path.dirname(path.dirname(observed.browserPath))) },
     archives: { pmtilesUrl, geojsonUrl },
     sources,
@@ -422,6 +457,6 @@ async function main() {
   if (!record.allChecksPassed) process.exit(1);
 }
 
-export { summarize };
+export { summarize, scopeOf };
 
 if (import.meta.url === `file://${process.argv[1]}`) await main();

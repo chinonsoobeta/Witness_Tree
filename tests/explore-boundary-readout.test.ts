@@ -30,7 +30,7 @@ const SPAN = { fromYear: 2021, toYear: 2022 };
 test("riding readout joins on overlay, jurisdiction, and boundary id with share before hectares", () => {
   assert.deepEqual(boundaryReadout(selection("federal-ridings"), [complete], "en", SPAN), {
     kind: "riding-measurement",
-    interval: "2021–2022",
+    intervalLabel: "2021–2022",
     coverage: "Complete mapped coverage",
     normalizedShare: "1.25%",
     absoluteLoss: "50 ha",
@@ -85,9 +85,9 @@ test("a measurement from another span is refused rather than shown under the wro
 test("the readout names the span it was given, not a fixed pair of years", () => {
   const wide = { ...complete, fromYear: 1990, toYear: 1998 };
   const readout = boundaryReadout(selection("federal-ridings"), [wide], "en", { fromYear: 1990, toYear: 1998 });
-  assert.equal(readout.kind === "riding-measurement" && readout.interval, "1990–1998");
+  assert.equal(readout.kind === "riding-measurement" && readout.intervalLabel, "1990–1998");
   const missing = boundaryReadout(selection("federal-ridings"), [], "fr", { fromYear: 1990, toYear: 1998 });
-  assert.equal(missing.kind === "riding-measurement" && missing.interval, "1990–1998");
+  assert.equal(missing.kind === "riding-measurement" && missing.intervalLabel, "1990–1998");
 });
 
 test("the summed figure appears only where it exceeds the forest lost at least once", () => {

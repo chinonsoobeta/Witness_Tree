@@ -20,7 +20,8 @@
  */
 
 import { useId, useState } from "react";
-import type { Locale } from "@/lib/domain";
+import { formatYearRange, type Locale } from "@/lib/domain";
+import { EXPLORE_COVERAGE_SPAN } from "@/lib/explore/types";
 import { ShapeDrawMap } from "./ShapeDrawMap";
 
 type Corner = Readonly<{ latitude: number; longitude: number }>;
@@ -45,8 +46,13 @@ type Measurement = Readonly<{
   precision: Readonly<{ blockMetres: number; exact: boolean }>;
 }>;
 
-const FIRST_YEAR = 1984;
-const LAST_YEAR = 2022;
+/*
+ * The measurable span is the archive's span. It was written out again here,
+ * which is how this control could have gone on offering a year the archive
+ * cannot answer after the archive moved.
+ */
+const FIRST_YEAR = EXPLORE_COVERAGE_SPAN.fromYear;
+const LAST_YEAR = EXPLORE_COVERAGE_SPAN.toYear;
 const MISSING = "–";
 // The worker refuses a shape with more vertices than this, so the pointer path
 // stops adding at the same number rather than letting a reader draw a shape the
@@ -102,7 +108,7 @@ const copy = {
     offGrid: "That area is outside the part of Canada this record covers.",
     noArea: "Those corners do not enclose an area.",
     tooFew: "An area needs at least three corners.",
-    badYears: "Choose a period inside 1984 to 2022.",
+    badYears: `Choose a period inside ${formatYearRange(EXPLORE_COVERAGE_SPAN, "en", "span")}.`,
   },
   fr: {
     title: "Mesurer une zone de votre choix",
@@ -152,7 +158,7 @@ const copy = {
     offGrid: "Cette zone se trouve hors de la partie du Canada couverte par ce relevé.",
     noArea: "Ces coins ne délimitent aucune aire.",
     tooFew: "Une zone a besoin d'au moins trois coins.",
-    badYears: "Choisissez une période comprise entre 1984 et 2022.",
+    badYears: `Choisissez une période comprise ${formatYearRange(EXPLORE_COVERAGE_SPAN, "fr", "between")}.`,
   },
 } as const;
 
@@ -220,7 +226,7 @@ export function ShapeMeasureClient({ locale }: { locale: Locale }) {
   const [edges, setEdges] = useState({ north: 45.44, south: 45.4, west: -75.72, east: -75.66 });
   const [corners, setCorners] = useState<Corner[]>(DEFAULT_CORNERS);
   const [startYear, setStartYear] = useState(2000);
-  const [endYear, setEndYear] = useState(2022);
+  const [endYear, setEndYear] = useState(LAST_YEAR);
   const [busy, setBusy] = useState(false);
   const [problem, setProblem] = useState<string | null>(null);
   const [measurement, setMeasurement] = useState<Measurement | null>(null);
