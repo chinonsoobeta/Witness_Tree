@@ -80,6 +80,34 @@
       "changesNotice": "This raw archive is unchanged. No extraction, transformation, or ingestion has been performed; verification read the bytes only.",
       "immutableObjectStorage": false,
       "productionEligible": false
+    },
+    {
+      "id": "ontario-forest-management-units-2026-08-14",
+      "sourceId": "ontario-forest-management-units",
+      "datasetTitle": "Forest Management Unit",
+      "publisher": "Ontario Ministry of Natural Resources and Forestry",
+      "catalogueUrl": "https://www.arcgis.com/home/item.html?id=c5f284168fe7443c9dc108552ce1b47f",
+      "sourceUrl": "https://ws.gisetl.lrc.gov.on.ca/fmedatadownload/Packages/fgdb/FORMGMT.zip",
+      "localPath": "../Witness_Tree-data/raw/ontario-forest-management-units/2026-08-14/FORMGMT.zip",
+      "verifiedAt": "2026-08-14T15:33:09Z",
+      "byteLength": 14324368,
+      "sha256": "b7fb8d30bf377725f97a0236be04e2d2611e2e4410215d99794fb9a14e9f4384",
+      "zipIntegrity": "passed",
+      "licenceId": "ogl-ontario",
+      "temporalCoverage": "current administrative/planning-unit boundaries; official item says the data is continually updated as needed",
+      "attributionState": "metadata-verified",
+      "attribution": "Ontario Ministry of Natural Resources and Forestry © King's Printer for Ontario, 2022",
+      "licenceUrl": "https://www.ontario.ca/page/open-government-licence-ontario",
+      "attributionBasis": "The official ArcGIS item c5f284168fe7443c9dc108552ce1b47f links to the Open Government Licence – Ontario and supplies this exact accessInformation text. No replacement attribution wording is inferred.",
+      "attributionSources": [
+        "https://www.arcgis.com/home/item.html?id=c5f284168fe7443c9dc108552ce1b47f",
+        "https://www.ontario.ca/page/open-government-licence-ontario"
+      ],
+      "attributionVerifiedAt": "2026-08-14T15:33:09Z",
+      "archiveContents": "53 entries, 39171610 bytes uncompressed; Non_Sensitive.gdb contains the FOREST_MANAGEMENT_UNIT layer.",
+      "changesNotice": "This raw archive is unchanged. ZIP verification and geometry profiling read it directly through /vsizip/ without extraction, transformation, repair, dissolve, ingestion, or promotion. The publisher describes it as Crown-forest planning-unit geometry; it does not resolve the project-defined Ontario managed-forest scope decision.",
+      "immutableObjectStorage": false,
+      "productionEligible": false
     }
   ]
 }

@@ -7,6 +7,7 @@ const manifest = JSON.parse(readFileSync(new URL("../data/staged-acquisitions.js
 const first = manifest.entries[0];
 const alberta = manifest.entries.find((entry) => entry.sourceId === "alberta-avi-crown");
 const canopy = manifest.entries.find((entry) => entry.sourceId === "nrcan-forest-canopy-cover-2022");
+const ontarioFmu = manifest.entries.find((entry) => entry.sourceId === "ontario-forest-management-units");
 
 test("verified local acquisition remains staging-only", () => {
   assert.equal(validateStagedAcquisitions(manifest), manifest);
@@ -17,8 +18,18 @@ test("verified local acquisition remains staging-only", () => {
   assert.equal(first.attributionState, "metadata-verified");
   assert.match(first.attribution, /Ministère des Ressources naturelles et des Forêts/);
   assert.equal(first.licenceUrl, "https://www.donneesquebec.ca/licence/#cc-by");
-  assert.equal(manifest.entries.reduce((total, entry) => total + entry.byteLength, 0), 10925681632);
+  assert.equal(manifest.entries.reduce((total, entry) => total + entry.byteLength, 0), 10940006000);
   assert.equal(alberta?.sha256, "e93572129f25c83911b73eadfacff12624ff6b08f2db4b311c1662196b665093");
+});
+
+test("staged Ontario FMU archive is pinned and remains outside coverage admission", () => {
+  assert.ok(ontarioFmu, "ontario-forest-management-units entry is missing from the manifest");
+  assert.equal(ontarioFmu.byteLength, 14324368);
+  assert.equal(ontarioFmu.sha256, "b7fb8d30bf377725f97a0236be04e2d2611e2e4410215d99794fb9a14e9f4384");
+  assert.equal(ontarioFmu.licenceId, "ogl-ontario");
+  assert.equal(ontarioFmu.immutableObjectStorage, false);
+  assert.equal(ontarioFmu.productionEligible, false);
+  assert.match(ontarioFmu.changesNotice, /does not resolve the project-defined Ontario managed-forest scope decision/);
 });
 
 test("staged canopy cover acquisition is pinned and staging-only", () => {
