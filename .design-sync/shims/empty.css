@@ -1,0 +1,4 @@
+/* The BC Sans @font-face rules ship as fonts/fonts.css with real file urls,
+   reachable from styles.css. Letting Document.tsx's import pull the same rules
+   into the JS bundle inlines all twelve faces as data URIs and adds ~4.9 MB to
+   _ds_bundle.css, which every rendered design would then download. */

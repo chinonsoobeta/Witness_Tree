@@ -1,0 +1,148 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@/app/globals.css": [
+        "./.cache/globals.compiled.css"
+      ],
+      "@bcgov/bc-sans/css/BC_Sans.css": [
+        "./shims/empty.css"
+      ],
+      "@/components/account": [
+        "../components/account/index.ts"
+      ],
+      "@/components/comparison": [
+        "../components/comparison/index.ts"
+      ],
+      "@/components/explore": [
+        "../components/explore/index.ts"
+      ],
+      "@/components/gallery": [
+        "../components/gallery/index.ts"
+      ],
+      "@/components/governance": [
+        "../components/governance/index.ts"
+      ],
+      "@/components/places": [
+        "../components/places/index.ts"
+      ],
+      "@/components/policy": [
+        "../components/policy/index.ts"
+      ],
+      "@/components/search": [
+        "../components/search/index.ts"
+      ],
+      "@/components/site": [
+        "../components/site/index.ts"
+      ],
+      "@/components/transparency": [
+        "../components/transparency/index.ts"
+      ],
+      "@/components/wildfire": [
+        "../components/wildfire/index.ts"
+      ],
+      "@/lib/accounts": [
+        "../lib/accounts/index.ts"
+      ],
+      "@/lib/address": [
+        "../lib/address/index.ts"
+      ],
+      "@/lib/alerts": [
+        "../lib/alerts/index.ts"
+      ],
+      "@/lib/archive": [
+        "../lib/archive/index.ts"
+      ],
+      "@/lib/archive-staging": [
+        "../lib/archive-staging/index.ts"
+      ],
+      "@/lib/boundaries": [
+        "../lib/boundaries/index.ts"
+      ],
+      "@/lib/comparison": [
+        "../lib/comparison/index.ts"
+      ],
+      "@/lib/corrections": [
+        "../lib/corrections/index.ts"
+      ],
+      "@/lib/coverage": [
+        "../lib/coverage/index.ts"
+      ],
+      "@/lib/currency": [
+        "../lib/currency/index.ts"
+      ],
+      "@/lib/data": [
+        "../lib/data/index.ts"
+      ],
+      "@/lib/districts": [
+        "../lib/districts/index.ts"
+      ],
+      "@/lib/domain": [
+        "../lib/domain/index.ts"
+      ],
+      "@/lib/downloads": [
+        "../lib/downloads/index.ts"
+      ],
+      "@/lib/events": [
+        "../lib/events/index.ts"
+      ],
+      "@/lib/explore": [
+        "../lib/explore/index.ts"
+      ],
+      "@/lib/fire-impact": [
+        "../lib/fire-impact/index.ts"
+      ],
+      "@/lib/grid": [
+        "../lib/grid/index.ts"
+      ],
+      "@/lib/indigenous": [
+        "../lib/indigenous/index.ts"
+      ],
+      "@/lib/ingestion": [
+        "../lib/ingestion/index.ts"
+      ],
+      "@/lib/phase2": [
+        "../lib/phase2/index.ts"
+      ],
+      "@/lib/phase4": [
+        "../lib/phase4/index.ts"
+      ],
+      "@/lib/pipeline": [
+        "../lib/pipeline/index.ts"
+      ],
+      "@/lib/places": [
+        "../lib/places/index.ts"
+      ],
+      "@/lib/records": [
+        "../lib/records/index.ts"
+      ],
+      "@/lib/releases": [
+        "../lib/releases/index.ts"
+      ],
+      "@/lib/search": [
+        "../lib/search/index.ts"
+      ],
+      "@/lib/shapes": [
+        "../lib/shapes/index.ts"
+      ],
+      "@/lib/source-review": [
+        "../lib/source-review/index.ts"
+      ],
+      "@/lib/sources": [
+        "../lib/sources/index.ts"
+      ],
+      "@/lib/transformation": [
+        "../lib/transformation/index.ts"
+      ],
+      "@/lib/wildfire": [
+        "../lib/wildfire/index.ts"
+      ],
+      "@/*": [
+        "../*"
+      ],
+      "next/navigation": [
+        "./shims/navigation.ts"
+      ]
+    }
+  }
+}
