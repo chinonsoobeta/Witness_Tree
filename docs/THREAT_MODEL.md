@@ -133,3 +133,13 @@ test helper in `tests/phase1-federal-electoral-output-verification.test.mjs`, an
 two test helpers in `tests/shape-measure-ui.test.tsx`. They remain unsuppressed.
 The deployed-render gate belongs to E4 in the other workstream, and these
 existing checkers and fixtures were not modified as part of adding the scanner.
+
+Four of those findings were resolved on 2026-09-04 rather than left standing:
+the origin check in `scripts/check-deployed-map-render.mjs` now parses the
+recorded URL and compares its origin, so a host that merely begins with the
+deployed origin is rejected; and the three test helpers were rewritten to ask
+their actual question. The three remaining URL-substring findings in
+`scripts/check-address-lookup.mts` are recorded in `ACCEPTED_CODEQL_FINDINGS` in
+`scripts/check-security-scans.mjs`, with the reason they do not apply and a
+count that fails the build if it changes in either direction. They are read and
+registered, not suppressed.

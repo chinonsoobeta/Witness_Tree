@@ -164,6 +164,15 @@ undocumented ad-hoc decision each time.
 
 **Boundary.** Break-glass must record a reason, not suppress the gate.
 
+**Status, 2026-09-04.** Implemented. The gate now resolves across three tiers, documented in
+[docs/DEPLOYED_MAP_RENDER_GATE.md](DEPLOYED_MAP_RENDER_GATE.md). The harness labels a record by
+the origin it measured rather than the path it is written to, so a preview run cannot be filed as
+a Site observation. A preview record must name a real remote https origin and the revision it was
+built from. A break-glass record carries a written reason, an authorizer, the exact digests it
+covers, and a settle-by date at most 14 days out; it expires, it cannot be reused for a later
+change, and it fails the gate once the Site observation is current again. Neither weaker record is
+committed on this branch, and a test asserts that, so the gate here is still the strong one.
+
 ## E5. Data-root-bound checks report skips indistinguishably from passes
 
 **Evidence.** `scripts/lib/data-root-bound-tests.mjs` marks 19 of 157 checks as requiring the

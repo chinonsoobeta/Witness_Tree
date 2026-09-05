@@ -8,18 +8,27 @@ const record = JSON.parse(readFileSync(new URL("../data/phase8-launch-readiness-
 test("Phase 8 records every literal launch-readiness gate without production inflation", async () => {
   assert.equal(await validatePhase8LaunchReadinessExitStatus(record), record);
   /*
-   * Eight. CDN and tile validation passes only on the strength of a browser
-   * observation of the deployed Site bound to the client it observed. This
-   * change set changed that client, and on 2026-09-03 the Site was redeployed to
-   * this branch and the harness re-run against it, so the bound observation once
-   * again describes the deployed client and the gate is back up. It stays a
-   * delivery-and-rendering gate: it asserts no production admission.
+   * Seven. CDN and tile validation passes only on the strength of a browser
+   * observation of the deployed Site bound to the client it observed. The
+   * 2026-09-03 observation was current until this change set changed that client
+   * again, so the gate is down and the criterion is down with it, as it was on
+   * 2026-09-01 and 2026-09-02. Nothing weaker was used to hold it up: the gate
+   * grew a preview tier and a break-glass tier the same day, and neither record
+   * is committed here. It stays a delivery-and-rendering gate: it asserts no
+   * production admission.
    */
-  assert.equal(record.completedCriteria, 8);
+  assert.equal(record.completedCriteria, 7);
   assert.equal(record.totalCriteria, 16);
-  assert.equal(record.percentage, 50.0);
+  assert.equal(record.percentage, 43.75);
   assert.equal(record.phaseComplete, false);
-  assert.deepEqual(record.exitCriteria.filter((item) => item.status === "pass").map((item) => item.id), ["raw-archive-reproducibility", "governance-and-corrections-procedures", "operations-handbook", "bulk-downloads", "citation-format", "release-notes", "restore-tests", "cdn-tile-validation"]);
+  assert.deepEqual(record.exitCriteria.filter((item) => item.status === "pass").map((item) => item.id), ["raw-archive-reproducibility", "governance-and-corrections-procedures", "operations-handbook", "bulk-downloads", "citation-format", "release-notes", "restore-tests"]);
+
+  // The criterion tracks the gate rather than the code: whenever
+  // check:deployed-map-render is red, cdn-tile-validation must not read as pass.
+  const { resolveDeployedMapRender } = await import("../scripts/check-deployed-map-render.mjs");
+  const gate = resolveDeployedMapRender();
+  const cdn = record.exitCriteria.find((item) => item.id === "cdn-tile-validation");
+  assert.equal(cdn.status, gate.failures.length === 0 ? "pass" : "fail", `cdn-tile-validation says ${cdn.status} while the gate reports ${gate.failures.length} failure(s)`);
 });
 
 test("Phase 8 rejects invented readiness, altered gates, blockers, and tampered evidence", async () => {
