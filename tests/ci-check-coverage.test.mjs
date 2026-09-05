@@ -10,7 +10,7 @@ import {
   validateCoverage,
 } from "../scripts/check-ci-check-coverage.mjs";
 import { REQUIRES_DATA_ROOT, REQUIRES_MACOS_RUNNER } from "../scripts/lib/data-root-bound-tests.mjs";
-import { validateSecurityScans, validateCodeqlResults } from "../scripts/check-security-scans.mjs";
+import { ACCEPTED_CODEQL_FINDINGS, validateSecurityScans, validateCodeqlResults, validateSecretScanConfig } from "../scripts/check-security-scans.mjs";
 
 const register = readRepositoryJson(REGISTER_PATH);
 const packageDocument = readRepositoryJson("package.json");
@@ -36,9 +36,9 @@ function namedTest(entry) {
 
 test("every on-disk checker is CI-reached or a reviewed exclusion", () => {
   const result = validateCoverage(register, packageDocument, ci, checkerFiles);
-  assert.deepEqual(result, { total: 222, ci: 117, npmNamed: 84, excluded: 105 });
+  assert.deepEqual(result, { total: 223, ci: 119, npmNamed: 83, excluded: 104 });
   // An npm alias is a way to invoke a checker, not a reason CI skips it. Every one of
-  // the 84 npm-named checkers still carries its own written exclusion.
+  // the 83 npm-named checkers still carries its own written exclusion.
   assert.equal(result.total, result.ci + result.excluded);
   assert.ok(result.npmNamed <= result.excluded);
   assert.ok(checkerFiles.includes("scripts/check-phase2-independent-comparison-evidence.mts"));
@@ -51,12 +51,53 @@ test("security scans block verify, preserve redaction, and reject findings or mi
     assert.throws(() => validateSecurityScans(ci.replace(before, after)));
   }
   const sarif = { version: "2.1.0", runs: [{ tool: { driver: { name: "CodeQL" } }, results: [] }] };
-  assert.equal(validateCodeqlResults([sarif]).status, "passed");
-  assert.throws(() => validateCodeqlResults([]), /no SARIF/);
-  assert.throws(() => validateCodeqlResults([{ ...sarif, runs: [] }]), /no runs/);
+  assert.equal(validateCodeqlResults([sarif], []).status, "passed");
+  assert.throws(() => validateCodeqlResults([], []), /no SARIF/);
+  assert.throws(() => validateCodeqlResults([{ ...sarif, runs: [] }], []), /no runs/);
   const findings = clone(sarif);
   findings.runs[0].results.push({ ruleId: "js/example-finding" });
-  assert.throws(() => validateCodeqlResults([findings]), /finding/);
+  assert.throws(() => validateCodeqlResults([findings], []), /finding/);
+});
+
+test("a CodeQL finding blocks the build unless someone has read it and said why", () => {
+  const at = (ruleId, uri) => ({ ruleId, locations: [{ physicalLocation: { artifactLocation: { uri } } }] });
+  const sarifFor = (...results) => [{ version: "2.1.0", runs: [{ tool: { driver: { name: "CodeQL" } }, results }] }];
+  const entry = { ruleId: "js/example-finding", path: "scripts/check-example.mjs", count: 2, reason: "x".repeat(121) };
+
+  // The reason has to be worth reading, and it has to name a rule in a file, so
+  // an accepted finding is always one somebody looked at.
+  assert.equal(validateCodeqlResults(sarifFor(at(entry.ruleId, entry.path), at(entry.ruleId, entry.path)), [entry]).accepted, 1);
+  assert.throws(() => validateCodeqlResults(sarifFor(at(entry.ruleId, entry.path), at(entry.ruleId, entry.path)), [{ ...entry, reason: "looks fine" }]), /without a reason/);
+
+  // One more of the same rule in the same file has not been read.
+  assert.throws(() => validateCodeqlResults(sarifFor(at(entry.ruleId, entry.path), at(entry.ruleId, entry.path), at(entry.ruleId, entry.path)), [entry]), /has not been read/);
+  // One fewer means the reason has stopped applying, so the entry cannot rot in place.
+  assert.throws(() => validateCodeqlResults(sarifFor(at(entry.ruleId, entry.path)), [entry]), /no longer applies/);
+  // Acceptance is per file: the same rule elsewhere is a finding nobody has read.
+  assert.throws(() => validateCodeqlResults(sarifFor(at(entry.ruleId, entry.path), at(entry.ruleId, entry.path), at(entry.ruleId, "worker/index.ts")), [entry]), /nobody has read/);
+  // As is a different rule in the accepted file.
+  assert.throws(() => validateCodeqlResults(sarifFor(at(entry.ruleId, entry.path), at(entry.ruleId, entry.path), at("js/other-finding", entry.path)), [entry]), /nobody has read/);
+
+  // What the repository actually accepts today: one rule, one file, three reads.
+  assert.deepEqual(ACCEPTED_CODEQL_FINDINGS.map((accepted) => [accepted.ruleId, accepted.path, accepted.count]), [["js/incomplete-url-substring-sanitization", "scripts/check-address-lookup.mts", 3]]);
+});
+
+test("the secret-scan allowlist can only clear the exact shapes it names", () => {
+  const config = readFileSync(new URL("../.gitleaks.toml", import.meta.url), "utf8");
+  assert.equal(validateSecretScanConfig(config).status, "passed");
+  // Each rewrite below is a way the file could be edited into a scan that reports
+  // less than it appears to, and each has to be refused.
+  for (const [before, after] of [
+    ["^[0-9a-f]{64}$", "[0-9a-f]{64}"],
+    ["^[0-9a-f]{64}$", "^.*$"],
+    ["[[allowlists]]", "[allowlist]"],
+    ['regexTarget = "secret"', 'paths = ["data/"]'],
+    ['regexTarget = "secret"', 'regexTarget = "match"'],
+    ["useDefault = true", "useDefault = false"],
+  ]) {
+    assert.throws(() => validateSecretScanConfig(config.replace(before, after)), `${before} -> ${after} was accepted`);
+  }
+  assert.throws(() => validateSecretScanConfig(`${config}\n[[rules]]\nid = "generic-api-key"\n`), /Redeclaring/);
 });
 
 test("workflows use current action runtimes and preserve their concurrency policy", () => {

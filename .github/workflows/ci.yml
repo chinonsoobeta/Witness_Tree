@@ -60,7 +60,13 @@ jobs:
           printf '%s  %s\n' '551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb' "$RUNNER_TEMP/gitleaks.tar.gz" | sha256sum --check
           tar -xzf "$RUNNER_TEMP/gitleaks.tar.gz" -C "$RUNNER_TEMP" gitleaks
       - name: Reject secrets in the full Git history
-        run: '"$RUNNER_TEMP/gitleaks" git --redact=100 --no-banner --exit-code 1 --report-format json --report-path /tmp/gitleaks-results.json --log-opts="--all" .'
+        run: '"$RUNNER_TEMP/gitleaks" git --config .gitleaks.toml --redact=100 --no-banner --exit-code 1 --report-format json --report-path /tmp/gitleaks-results.json --log-opts="--all" .'
+      # The config quiets one entropy heuristic on the SHA-256 digests the evidence
+      # records are built from, which is exactly the sort of change that can turn a
+      # secret scan into a no-op without anyone noticing. So the scanner is pointed at
+      # a directory of planted credentials and required to report every one of them.
+      - name: Prove the configured scan still reports planted credentials
+        run: node scripts/check-secret-scan-canary.mjs "$RUNNER_TEMP/gitleaks"
       - name: Preserve redacted secret scan results
         if: always()
         uses: actions/upload-artifact@v7

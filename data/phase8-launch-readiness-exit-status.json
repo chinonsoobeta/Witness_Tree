@@ -300,7 +300,7 @@
         },
         {
           "path": "scripts/check-deployed-map-render.mjs",
-          "sha256": "fc9810ebd93e0978ae2ed478a97f58f3f3e0ba740bac1b0fe61e387569557022"
+          "sha256": "7038e34f946b131fa3c0acddbd708e35d14c9b0ad80cce390f52114b2d63cb6f"
         },
         {
           "path": "tests/deployed-map-render.test.mjs",

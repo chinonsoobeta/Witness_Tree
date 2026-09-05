@@ -27,6 +27,15 @@ export const RENDER_EVIDENCE_PATH = "data/deployed-map-render-evidence-2026-09-0
 export const RENDER_EVIDENCE_SCHEMA = "witness-tree/deployed-map-render-evidence/1";
 export const DEPLOYED_ORIGIN = "https://www.witnesstree.ca";
 
+/** The origin of a recorded url, or null when the record holds something that is not a url. */
+export function safeOrigin(url) {
+  try {
+    return new URL(url).origin;
+  } catch {
+    return null;
+  }
+}
+
 const REQUIRED_CHECKS = Object.freeze([
   "pmtiles-range-responses",
   "no-geojson-fallback",
@@ -58,7 +67,9 @@ export function validateDeployedMapRender({ record: supplied, root = REPO_ROOT }
 
   // The criterion is scoped to the deployed Site. A run against localhost or a
   // preview origin proves the code works, not that the Site does.
-  if (typeof record.url !== "string" || !record.url.startsWith(DEPLOYED_ORIGIN)) {
+  // startsWith would accept a host that merely begins with the origin, so the
+  // record's url is parsed and its origin compared outright.
+  if (typeof record.url !== "string" || safeOrigin(record.url) !== DEPLOYED_ORIGIN) {
     add(`record url is ${record.url}, which is not on the deployed origin ${DEPLOYED_ORIGIN}. This criterion is scoped to the deployed Site.`);
   }
 
