@@ -3322,6 +3322,25 @@ dd > a:only-child {
   --table-min: 720px;
 }
 
+/* Three columns inside the prose measure: one long archive name and two years.
+   Auto layout spends the whole measure on the name and pushes the years out of
+   view, so the columns are fixed and the floor removed - this table is built to
+   fit rather than to scroll. Its last column is a year, not the label the
+   shared rule assumes, so both year columns keep the numeric alignment. */
+.currency-table {
+  --table-min: 0;
+}
+.currency-table table {
+  table-layout: fixed;
+}
+.currency-table th:first-child {
+  width: 50%;
+}
+.currency-table th:last-child,
+.currency-table td:last-child {
+  text-align: right;
+}
+
 /* Checksums and release identifiers are unbreakable strings. Without this the
    data page pushes a horizontal scrollbar onto the whole document. */
 .page-wrap code {
