@@ -308,7 +308,11 @@ test("map/list and chart/table retain evidence, confidence, coverage, provenance
       year={1988}
     />,
   );
-  assert.match(mapChart, /aria-label="Chart"/);
+  assert.match(mapChart, /<ul class="explore-chart" aria-label="Chart"/);
+  assert.match(mapChart, /class="explore-bar-name">British Columbia<\/span>/);
+  assert.match(mapChart, /class="explore-bar-label">1\.39%<\/span>/);
+  assert.doesNotMatch(mapChart, /<svg[^>]*class="explore-chart"/);
+  assert.match(listChart, /class="explore-bar-label">2012<\/span>/);
   assert.match(mapChart, /aria-label="Forest loss map"/);
   assert.match(listChart, /Official record/);
   assert.match(listChart, /Source attribution/);
@@ -425,14 +429,14 @@ test("map failures retain diagnostics, retry, and a reachable patch zoom", async
   assert.match(map, /className="explore-map-patch-control"[\s\S]*className="[^"]*explore-map-fullscreen-button"[\s\S]*className="explore-map-zoom"/);
   assert.match(panel, /position: static/);
   assert.match(panel, /display: flex/);
-  assert.match(panel, /flex-wrap: nowrap/);
-  assert.match(panel, /overflow-x: auto/);
+  assert.match(panel, /flex-wrap: wrap/);
+  assert.doesNotMatch(panel, /overflow(?:-x)?:\s*(?:hidden|clip|auto)/);
   assert.match(controls, /inset-block-end: 12px/);
   assert.match(controls, /display: grid/);
   assert.match(controls, /grid-template-columns: auto minmax\(0, 1fr\) auto/);
   assert.match(list, /display: flex/);
-  assert.match(list, /flex-wrap: nowrap/);
-  assert.match(css, /@media \(max-width: 760px\) \{[\s\S]*?\.explore-map-layer-panel \{[\s\S]*?grid-auto-flow: row;[\s\S]*?grid-template-columns: repeat\(2, max-content\);[\s\S]*?grid-template-rows: repeat\(2, auto\)/);
+  assert.match(list, /flex-wrap: wrap/);
+  assert.match(css, /@media \(max-width: 760px\) \{[\s\S]*?\.explore-map-layer-panel \{[\s\S]*?grid-column: 1 \/ -1;[\s\S]*?grid-row: 1/);
   assert.match(css, /\.explore-map-patch-tooltip \{[\s\S]*?inset-inline: 0;[\s\S]*?width: auto/);
 });
 

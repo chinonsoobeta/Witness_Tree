@@ -1136,9 +1136,9 @@ export function ExploreMapClient({
             <li>{symbol("loss-2")}2–&lt;3%</li>
             <li>{symbol("loss-3")}3%+</li>
           </ul>
-          <div className="table-scroll">
+          <div className="table-scroll" tabIndex={0} role="region" aria-labelledby="explore-map-table-caption">
             <table>
-              <caption>
+              <caption id="explore-map-table-caption">
                 {text[locale].label}: {EXPLORE_PRODUCTION_LAYER.period}
               </caption>
               <thead>

@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { test, expect, type Route } from "@playwright/test";
 import { EXPLORE_PRODUCTION_LAYER } from "../../lib/explore/map-style";
+import { AVAILABLE_BOUNDARY_OVERLAYS } from "../../lib/explore/boundaries";
 import { THEME_STORAGE_KEY } from "../../lib/theme";
 
 let publishedFallback: Buffer;
@@ -87,4 +88,59 @@ for (const locale of ["en", "fr"] as const) {
       });
     });
   }
+}
+
+for (const locale of ["en", "fr"] as const) {
+  test(`responsive map controls ${locale}`, async ({ page, colorScheme }, info) => {
+    const theme = colorScheme === "dark" ? "dark" : "light";
+    const route = locale === "en" ? "/en/explore" : "/fr/explorer";
+    await page.addInitScript(({ key, value }) => localStorage.setItem(key, value), { key: THEME_STORAGE_KEY, value: theme });
+    await page.route(/\.pmtiles(?:\?.*)?$/, (request) => request.abort("failed"));
+    await page.route(EXPLORE_PRODUCTION_LAYER.compatibilityGeoJsonUrl, (request) => request.fulfill({ status: 200, contentType: "application/geo+json", body: publishedFallback }));
+    await page.goto(`${route}?${new URLSearchParams({ overlays: AVAILABLE_BOUNDARY_OVERLAYS.join(",") })}`);
+    await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
+    await expect(page.locator(".explore-map")).toHaveAttribute("data-map-source", "geojson-fallback");
+    await page.evaluate(() => document.fonts.ready);
+    await expect(page.locator(".explore-map-layer-list li")).toHaveCount(2 + AVAILABLE_BOUNDARY_OVERLAYS.length);
+    const layout = await page.evaluate(() => {
+      const box = (element: Element) => { const rect = element.getBoundingClientRect(); return { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom, width: rect.width, height: rect.height }; };
+      const panel = document.querySelector(".explore-map-layer-panel")!;
+      const nav = document.querySelector(".province-bar--map")!;
+      const frame = document.querySelector(".explore-map")!;
+      const overflow = [...document.querySelectorAll(".explore-map-layer-panel, .explore-map-layer-list, .explore-map-legend, .province-bar--map, .explore-annual dl")]
+        .filter((element) => element.scrollWidth > element.clientWidth + 1)
+        .map((element) => ({ className: element.getAttribute("class"), scroll: element.scrollWidth, client: element.clientWidth }));
+      const clippedItems = [...panel.querySelectorAll("li")].filter((element) => box(element).left < box(panel).left || box(element).right > box(panel).right);
+      const dl = document.querySelector<HTMLElement>(".explore-annual dl")!;
+      const previousWidth = dl.style.width;
+      dl.style.width = "10rem";
+      const smallContainer = { scroll: dl.scrollWidth, client: dl.clientWidth };
+      dl.style.width = previousWidth;
+      return { documentWidth: document.documentElement.scrollWidth, viewport: document.documentElement.clientWidth,
+        panel: box(panel), nav: box(nav), frame: box(frame), overflow, clippedItems: clippedItems.length, smallContainer,
+        buttons: [...nav.querySelectorAll("button")].map(box) };
+    });
+    await info.attach("responsive-map-evidence", { body: JSON.stringify({ route, theme, ...layout }, null, 2), contentType: "application/json" });
+    expect(layout.documentWidth).toBeLessThanOrEqual(layout.viewport + 1);
+    expect(layout.overflow).toEqual([]);
+    expect(layout.clippedItems).toBe(0);
+    expect(layout.smallContainer.scroll).toBeLessThanOrEqual(layout.smallContainer.client + 1);
+    expect(layout.panel.top).toBeGreaterThanOrEqual(layout.nav.bottom + 4);
+    expect(layout.panel.bottom).toBeLessThanOrEqual(layout.frame.bottom);
+    if (page.viewportSize()!.width < 760) {
+      expect(new Set(layout.buttons.map((button) => Math.round(button.top))).size).toBe(2);
+    }
+    const buttons = page.locator(".province-bar--map button");
+    await expect(buttons).toHaveCount(4);
+    await buttons.first().focus();
+    await page.keyboard.press("Shift+Tab");
+    for (let index = 0; index < 4; index += 1) {
+      await page.keyboard.press("Tab");
+      await expect(buttons.nth(index)).toBeFocused();
+      const rectangle = layout.buttons[index]!;
+      expect(rectangle.left).toBeGreaterThanOrEqual(layout.nav.left);
+      expect(rectangle.right).toBeLessThanOrEqual(layout.nav.right);
+    }
+    await info.attach("responsive-map-viewport", { body: await page.screenshot(), contentType: "image/png" });
+  });
 }
