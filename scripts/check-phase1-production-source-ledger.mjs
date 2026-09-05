@@ -37,7 +37,7 @@ export function validatePhase1ProductionSourceLedger(ledger, inventory, root = p
     if (entry.evidenceState === "local-verified-profiled" && (!entry.proof.profile || !entry.proof.rawArchiveRefetch || entry.proof.immutableArchive)) throw new Error("Local evidence must remain profile/re-fetch evidence without immutable proof.");
   }
   const totalRawCredit = ledger.entries.reduce((sum, entry) => sum + entry.rawCredit, 0);
-  if (totalRawCredit !== 7.5) throw new Error("Current ledger evidence must total 7.50 raw credits, not an inferred completion value.");
+  if (totalRawCredit !== 9.5) throw new Error("Current ledger evidence must total 9.50 raw credits, not an inferred completion value.");
   return ledger;
 }
 

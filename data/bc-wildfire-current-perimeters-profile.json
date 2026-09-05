@@ -1,0 +1,17 @@
+{
+  "status": "local-staging-profile",
+  "sourceId": "bc-wildfire",
+  "publisher": "Government of British Columbia, BC Wildfire Service",
+  "resourceUrl": "https://services6.arcgis.com/ubm4tcTYICKBpist/ArcGIS/rest/services/BCWS_FirePerimeters_PublicView/FeatureServer/0/query?where=1%3D1&outFields=*&returnGeometry=true&f=geojson",
+  "retrievedAt": "2026-08-14T20:31:39Z",
+  "artifact": {"bytes": 4813292, "sha256": "46ee3a97ff83128630a030b5cfcc7f3c389fc94e3ca95d463595ab6f4fb57e83", "contentIntegrity": "passed", "externalStagingPath": "Witness_Tree-data/raw/bc-wildfire-fire-perimeters/2026-08-14/bc-wildfire-fire-perimeters_2026-08-14.geojson"},
+  "licence": {"basis": "The official BC Wildfire Fire Perimeters — Current catalogue and linked public ArcGIS item identify the Open Government Licence – British Columbia.", "url": "https://www2.gov.bc.ca/gov/content?id=A519A56BC2BF44E4A008B33FCF527F61", "requiredNotice": "Contains information licensed under the Open Government Licence – British Columbia. Source: Government of British Columbia, BC Wildfire Service."},
+  "snapshot": {"service": "BCWS_FirePerimeters_PublicView/FeatureServer/0", "edition": "undeclared current-season FeatureServer layer", "httpLastModified": "2026-08-14T20:27:00Z", "responseMaxRecordCount": 1000, "responseFeatureCount": 217, "query": "where=1=1&outFields=*&returnGeometry=true&f=geojson", "cadence": "operational systems nightly; reference only, individual-fire update frequency varies"},
+  "layer": {"name": "bc-wildfire-current-perimeters_2026-08-14", "count": 217, "geometry": ["Polygon", "MultiPolygon"], "crs": "EPSG:4326 — WGS 84", "extent": [-133.922811, 48.594966, -115.02192, 59.820295], "missing": 0, "empty": 0, "invalid": 2, "invalidFeatures": [{"fireNumber": "G70362", "reason": "Nested shells[-120.19459847283 55.0282474714306]"}, {"fireNumber": "V10755", "reason": "Nested shells[-121.140986894783 49.8596771011124]"}], "statusCounts": {"null": 1, "Being Held": 24, "Fire of Note": 4, "Out": 143, "Out of Control": 32, "Under Control": 13}, "trackDateRange": ["2026-03-18T07:00:00Z", "2026-08-14T07:00:00Z"]},
+  "schema": ["FIRE_NUMBER", "VERSION_NUMBER", "FIRE_YEAR", "FIRE_SIZE_HECTARES", "SOURCE", "TRACK_DATE", "LOAD_DATE", "FIRE_STATUS", "FEATURE_CODE", "FEATURE_AREA_SQM", "FEATURE_LENGTH_M", "OBJECTID", "GlobalID", "Shape__Area", "Shape__Length", "FIRE_URL"],
+  "limitations": ["The publisher says current-fire data may not reflect the most current fire situation and is for reference purposes only.", "This is a complete one-request response below the declared 1,000-record cap at retrieval, but it is a mutable operational snapshot rather than an immutable edition or real-time service.", "Two invalid polygons are recorded exactly and must not be silently repaired."],
+  "immutable": false,
+  "transformed": false,
+  "ingested": false,
+  "productionEligible": false
+}
