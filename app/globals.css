@@ -5,7 +5,7 @@
    Five groups: ground and surface, ink, rules and edges, brand,
    shape and depth. Plus the four semantic event colours, which are held
    apart because they carry meaning rather than style, and the type and
-   measure tokens, which are unchanged.
+   measure tokens.
    Every contrast figure in a comment below is a measured WCAG 2.1 ratio
    against the ground of the palette it sits in.
    ========================================================================== */
@@ -124,6 +124,8 @@
     ui-monospace, "SF Mono", SFMono-Regular, Menlo, "DejaVu Sans Mono",
     monospace;
   --ui: "BC Sans", "Noto Sans", Verdana, Arial, sans-serif;
+  --text-small: 0.875rem;
+  --text-compact: 0.75rem;
   --measure: 68ch;
   --plate: 1180px;
   --drawer: 420px;
@@ -555,7 +557,7 @@ h4 {
   margin: 0;
   color: var(--muted);
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: var(--text-small);
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
@@ -1002,7 +1004,7 @@ h4 {
 .theme-toggle-label {
   padding: 10px 16px 4px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: var(--text-small);
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -1076,7 +1078,7 @@ h4 {
   border-radius: 999px;
   color: var(--accent);
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: var(--text-small);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -1222,7 +1224,7 @@ h4 {
 .principle dt {
   padding-top: 3px;
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: var(--text-small);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -1355,7 +1357,7 @@ h4 {
 .notice h3 {
   margin: 0 0 8px;
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: var(--text-small);
   letter-spacing: 0.09em;
   text-transform: uppercase;
 }
@@ -1411,7 +1413,7 @@ h4 {
   margin: 0;
   color: var(--ink-2);
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: var(--text-small);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -1491,12 +1493,13 @@ h4 {
 }
 .province-bar--map {
   position: absolute;
+  flex-wrap: wrap;
+  justify-content: center;
   inset-block-start: 10px;
   inset-inline-start: 50%;
   z-index: 3;
   max-width: calc(100% - 20px);
   padding: 5px 7px;
-  overflow-x: auto;
   border: 1px solid var(--accent-fill);
   border-radius: 999px;
   background: var(--header-fill);
@@ -1524,11 +1527,10 @@ h4 {
   position: static;
   display: flex;
   min-width: 0;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   align-items: center;
   gap: 6px 14px;
   padding: 7px 10px;
-  overflow-x: auto;
   border: 1px solid var(--rule-strong);
   border-radius: var(--radius-sm);
   background: var(--surface);
@@ -1546,16 +1548,18 @@ h4 {
 }
 .explore-map-layer-list {
   display: flex;
-  flex: 0 0 auto;
-  flex-wrap: nowrap;
+  min-width: 0;
+  flex: 0 1 auto;
+  flex-wrap: wrap;
   gap: 4px 12px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 .explore-map-layer-panel .explore-map-legend {
-  flex: 0 0 auto;
-  flex-wrap: nowrap;
+  min-width: 0;
+  flex: 0 1 auto;
+  flex-wrap: wrap;
   margin: 0;
   gap: 4px 8px;
   font-size: 12px;
@@ -1719,13 +1723,37 @@ h4 {
   border-top: 0;
 }
 @media (max-width: 760px) {
-  .explore-map-layer-panel {
+  .explore-map,
+  .explore-map-fallback {
+    min-height: 30rem;
+  }
+  .province-bar--map {
     display: grid;
-    grid-auto-flow: row;
-    grid-template-columns: repeat(2, max-content);
-    grid-template-rows: repeat(2, auto);
-    align-content: center;
-    align-items: center;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: calc(100% - 20px);
+    align-items: stretch;
+    gap: 4px 8px;
+  }
+  .province-bar--map button {
+    min-width: 0;
+    min-height: 44px;
+    white-space: normal;
+  }
+  .explore-map-controls {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .explore-map-layer-panel {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+  .explore-map-scale {
+    grid-column: 1;
+    grid-row: 2;
+    justify-self: start;
+  }
+  .explore-map-control-cluster {
+    grid-column: 2;
+    grid-row: 2;
   }
 }
 .explore-map:fullscreen {
@@ -1778,11 +1806,13 @@ h4 {
   font-size: 13px;
 }
 .explore-map-legend li {
+  min-width: 0;
   display: inline-flex;
   align-items: center;
   gap: 5px;
 }
 .loss-swatch {
+  flex: 0 0 auto;
   width: 18px;
   height: 18px;
   border: 1px solid var(--ink);
@@ -1836,7 +1866,13 @@ h4 {
   color: var(--ground);
 }
 .table-scroll {
+  min-width: 0;
+  max-width: 100%;
   overflow-x: auto;
+}
+.table-scroll:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
 }
 .table-scroll table {
   width: 100%;
@@ -1931,7 +1967,7 @@ h4 {
   height: 22px;
   border-radius: 999px;
   background: var(--input-fill);
-  font-size: 11px;
+  font-size: var(--text-small);
   line-height: 1;
 }
 
@@ -2020,7 +2056,7 @@ h4 {
 .provenance dt {
   color: var(--ink-2);
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: var(--text-small);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -2088,7 +2124,7 @@ h4 {
   padding: 4px 2px;
   color: var(--accent);
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: var(--text-small);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   cursor: pointer;
@@ -2618,7 +2654,7 @@ h4 {
   margin: 0 0 6px;
   color: var(--ink-2);
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: var(--text-small);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -2697,7 +2733,7 @@ dd > a:only-child {
 .annual-value {
   fill: var(--ink-2);
   font-family: var(--mono);
-  font-size: 9px;
+  font-size: var(--text-compact);
 }
 
 /* ==========================================================================
@@ -2960,12 +2996,13 @@ dd > a:only-child {
 
 .explore-annual dl {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
   gap: 12px 24px;
   margin: 0;
 }
 
 .explore-annual dl > div {
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -3043,7 +3080,7 @@ dd > a:only-child {
   padding: 0;
   list-style: none;
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: var(--text-compact);
   color: var(--muted);
   font-variant-numeric: tabular-nums;
 }
@@ -3220,20 +3257,46 @@ dd > a:only-child {
 }
 
 .explore-chart {
+  display: grid;
+  gap: 12px;
   width: 100%;
   max-width: 560px;
-  height: auto;
-  color: var(--accent);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.explore-chart > li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 4px 12px;
+}
+
+.explore-bar-track {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  display: block;
+  height: 20px;
 }
 
 .explore-bar {
-  fill: var(--accent-fill);
-  stroke: var(--accent);
+  display: block;
+  min-width: 2px;
+  height: 100%;
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  background: var(--accent-fill);
+}
+
+.explore-bar-name,
+.explore-bar-label {
+  color: var(--ink-2);
+  font-size: var(--text-small);
 }
 
 .explore-bar-label {
-  font-size: 9px;
-  fill: var(--ink-2);
+  font-variant-numeric: tabular-nums;
 }
 
 .explore-legend {
@@ -3250,11 +3313,6 @@ dd > a:only-child {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-}
-
-.explore-bar-name {
-  font-size: 13px;
-  fill: var(--ink-2);
 }
 
 /* These tables carry fewer, narrower columns than the record tables, so they
