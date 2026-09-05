@@ -12,6 +12,7 @@
 
 # testing
 /coverage
+/synthetic-uptime-result.json
 
 # next.js
 /.next/

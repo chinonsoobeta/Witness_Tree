@@ -16,6 +16,8 @@
     "check:security-scans": "node scripts/check-security-scans.mjs",
     "verify:data-root-inventory": "node scripts/verify-data-root-inventory.mjs",
     "verify:load-test": "node scripts/run-load-test.mjs",
+    "verify:synthetic-uptime": "node scripts/run-synthetic-uptime.mjs --origin https://www.witnesstree.ca --output synthetic-uptime-result.json",
+    "check:uptime-alerting": "node scripts/check-uptime-alerting.mjs && node --test tests/observability-deployment.test.mjs",
     "typecheck": "tsc --noEmit",
     "check:bilingual": "node scripts/check-bilingual.mjs",
     "check:premise-loss-vocabulary": "node scripts/check-premise-loss-vocabulary.mjs",
