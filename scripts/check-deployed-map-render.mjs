@@ -39,7 +39,7 @@ import { fileURLToPath } from "node:url";
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
-export const RENDER_EVIDENCE_PATH = "data/deployed-map-render-evidence-2026-09-03.json";
+export const RENDER_EVIDENCE_PATH = "data/deployed-map-render-evidence-2026-09-05.json";
 export const RENDER_EVIDENCE_SCHEMA = "witness-tree/deployed-map-render-evidence/1";
 export const BRANCH_EVIDENCE_PATH = "data/deployed-map-render-branch-observation.json";
 export const BREAK_GLASS_PATH = "data/deployed-map-render-break-glass.json";

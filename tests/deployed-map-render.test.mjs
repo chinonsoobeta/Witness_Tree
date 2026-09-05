@@ -32,7 +32,7 @@ const withRecord = async (mutate) => {
 };
 
 test("the committed observation is current for the deployed client", async () => {
-  // The Site was redeployed to this branch on 2026-09-03 and the harness was
+  // The Site was redeployed to this branch on 2026-09-05 and the harness was
   // re-run against it, so the recorded observation once again describes the
   // client the deployed origin serves. The staleness detector itself is still
   // exercised synthetically below by mutating a bound source.

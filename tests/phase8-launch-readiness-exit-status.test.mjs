@@ -8,20 +8,20 @@ const record = JSON.parse(readFileSync(new URL("../data/phase8-launch-readiness-
 test("Phase 8 records every literal launch-readiness gate without production inflation", async () => {
   assert.equal(await validatePhase8LaunchReadinessExitStatus(record), record);
   /*
-   * Seven. CDN and tile validation passes only on the strength of a browser
-   * observation of the deployed Site bound to the client it observed. The
-   * 2026-09-03 observation was current until this change set changed that client
-   * again, so the gate is down and the criterion is down with it, as it was on
-   * 2026-09-01 and 2026-09-02. Nothing weaker was used to hold it up: the gate
-   * grew a preview tier and a break-glass tier the same day, and neither record
-   * is committed here. It stays a delivery-and-rendering gate: it asserts no
+   * Eight. CDN and tile validation passes only on the strength of a browser
+   * observation of the deployed Site bound to the client it observed. This
+   * change set changed that client, the Site was redeployed to this branch on
+   * 2026-09-05, and the harness was re-run against it, so the bound observation
+   * again describes the deployed client. Nothing weaker held the gate up while
+   * it was down: the preview and break-glass tiers exist and neither record is
+   * committed here. It stays a delivery-and-rendering gate: it asserts no
    * production admission.
    */
-  assert.equal(record.completedCriteria, 7);
+  assert.equal(record.completedCriteria, 8);
   assert.equal(record.totalCriteria, 16);
-  assert.equal(record.percentage, 43.75);
+  assert.equal(record.percentage, 50);
   assert.equal(record.phaseComplete, false);
-  assert.deepEqual(record.exitCriteria.filter((item) => item.status === "pass").map((item) => item.id), ["raw-archive-reproducibility", "governance-and-corrections-procedures", "operations-handbook", "bulk-downloads", "citation-format", "release-notes", "restore-tests"]);
+  assert.deepEqual(record.exitCriteria.filter((item) => item.status === "pass").map((item) => item.id), ["raw-archive-reproducibility", "governance-and-corrections-procedures", "operations-handbook", "bulk-downloads", "citation-format", "release-notes", "restore-tests", "cdn-tile-validation"]);
 
   // The criterion tracks the gate rather than the code: whenever
   // check:deployed-map-render is red, cdn-tile-validation must not read as pass.
