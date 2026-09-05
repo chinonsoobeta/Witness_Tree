@@ -10,4 +10,4 @@ export const rankedRidingFixtures: readonly RankedRiding[] = [
   { id: "r2", name: { en: "Example South", fr: "Exemple Sud" }, placeType: "federal-riding", detectedChangePercent: 2.1, detectedChangeHectares: 105, forestedHectares: 5000, coverageGrade: "enhanced-local-records", evidence: "satellite-observation", sufficientCoverage: true },
   { id: "r3", name: { en: "Example Sparse", fr: "Exemple limité" }, placeType: "federal-riding", detectedChangePercent: 8, detectedChangeHectares: 80, forestedHectares: 1000, coverageGrade: "not-applicable", evidence: "unknown", sufficientCoverage: false },
 ];
-export const comparisonFixtures: readonly ComparisonPlace[] = rankedRidingFixtures.slice(0, 2);
+export const comparisonFixtures: readonly ComparisonPlace[] = rankedRidingFixtures.slice(0, 2).map((place) => ({ ...place, boundaryEdition: comparisonContext.boundaryEdition }));

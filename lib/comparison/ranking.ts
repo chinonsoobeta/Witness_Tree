@@ -1,5 +1,5 @@
 import type { Locale } from "../domain";
-import { RANKING_METRIC, type ComparisonPlace, type RankedRiding, type RankingContext }
+import { RANKING_METRIC, type ComparisonBoundaryAcknowledgement, type ComparisonPlace, type RankedRiding, type RankingContext }
 // @ts-expect-error -- Node's TypeScript runner requires explicit local extensions.
 from "./types.ts";
 
@@ -18,9 +18,13 @@ export function rankingContextLines(context: RankingContext, locale: Locale): re
   return [context.timeRange, context.boundaryEdition, context.dataVersion, context.denominatorDefinition[locale], context.method[locale]];
 }
 
-export function comparePlaces(places: readonly ComparisonPlace[]): readonly [ComparisonPlace, ComparisonPlace] {
+export function comparePlaces(places: readonly ComparisonPlace[], acknowledgement?: ComparisonBoundaryAcknowledgement): readonly [ComparisonPlace, ComparisonPlace] {
   if (places.length !== 2) throw new Error("Side-by-side comparison requires exactly two places.");
   if (places[0].placeType !== places[1].placeType) throw new Error("Side-by-side places must have the same type.");
+  const [left, right] = places;
+  if (left.boundaryEdition !== right.boundaryEdition && (!acknowledgement || acknowledgement.boundaryEditions[0] !== left.boundaryEdition || acknowledgement.boundaryEditions[1] !== right.boundaryEdition)) {
+    throw new Error("Side-by-side places must use the same boundary edition or include an acknowledgement for both boundary editions.");
+  }
   return [places[0], places[1]];
 }
 

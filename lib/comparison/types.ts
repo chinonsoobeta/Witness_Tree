@@ -31,9 +31,14 @@ export type ComparisonPlace = Readonly<{
   id: string;
   name: Readonly<Record<Locale, string>>;
   placeType: ComparablePlaceType;
+  boundaryEdition: string;
   detectedChangePercent: number;
   detectedChangeHectares: number;
   forestedHectares: number;
   coverageGrade: CoverageGrade;
   evidence: EvidenceClass;
+}>;
+export type ComparisonBoundaryAcknowledgement = Readonly<{
+  acknowledged: true;
+  boundaryEditions: readonly [string, string];
 }>;
