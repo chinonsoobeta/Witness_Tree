@@ -114,7 +114,10 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
     assert.doesNotMatch(en, /expert-reviewed/);
 
     // The figure itself is on the page, beside the patches it describes.
-    assert.match(en, /Per-cell detected loss, \d{4}-\d{4}/);
+    // The heading names the interval in the typographic form the year-range gate
+    // requires, so a raw machine key reaching the reader fails here too.
+    assert.match(en, /Per-cell detected loss, \d{4}\u2013\d{4}/u);
+    assert.doesNotMatch(en, /Per-cell detected loss, \d{4}-\d{4}/u);
     assert.match(en, /Detected loss \(ha\)/);
     assert.match(en, /Cause not recorded \(ha\)/);
     assert.match(en, /One cell is 0\.09 ha/);

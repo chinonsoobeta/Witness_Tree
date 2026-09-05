@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ProvinceBar, SiteShell } from "@/components/site";
 import { formatHectares, formatPercent, PRODUCT_NAME } from "@/lib/domain";
+import { productionAggregatePeriod } from "@/lib/explore/period";
 import { EXPLORE_COVERAGE_PERIOD, EXPLORE_PRODUCTION_LAYER, formatUnknownSharePercent } from "@/lib/explore";
 import { localizedAlternates } from "@/lib/site-metadata";
 
@@ -23,7 +24,7 @@ export default function EnglishHome() {
     <section className="content-section landing-record-band" aria-labelledby="current-record">
       <p className="eyebrow">Current record · 01</p>
       <h2 id="current-record">Compare four provinces without hiding unknown areas</h2>
-      <p className="lead">The bounded, provisional {EXPLORE_PRODUCTION_LAYER.period} aggregate compares detected forest loss while keeping each province’s coverage state and unknown area visible.</p>
+      <p className="lead">The bounded, provisional {productionAggregatePeriod("en")} aggregate compares detected forest loss while keeping each province’s coverage state and unknown area visible.</p>
       <dl className="principles landing-record-evidence">
         {EXPLORE_PRODUCTION_LAYER.rows.map((row) => <div className="principle" key={row.id}><dt>{row.name.en}</dt><dd>{formatHectares(row.observedLossHectares, "en")} detected loss ({formatPercent(row.observedLossPercent, "en")}) · {coverageLabel(row)}</dd></div>)}
       </dl>
@@ -44,14 +45,14 @@ export default function EnglishHome() {
       <div className="record-grid">
         <article className="record-card"><p className="eyebrow">Components</p><h3>Evidence before numbers</h3><p>Inspect how figures, unknowns, confidence, coverage and provenance will appear across the public record.</p><Link href="/en/components">Open the component gallery</Link></article>
         <article className="record-card"><p className="eyebrow">Methods</p><h3>Definitions before numbers</h3><p>See the forest denominator, evidence classes, confidence rules, coverage grades and matching method.</p><Link href="/en/methods">Read the methods</Link></article>
-        <article className="record-card"><p className="eyebrow">Data status</p><h3>Bounded province release</h3><p>The 2020 to 2022 province aggregate is published with its source, coverage state and limits. Other views may still use clearly labelled examples.</p><Link href="/en/data">Review data transparency</Link></article>
+        <article className="record-card"><p className="eyebrow">Data status</p><h3>Bounded province release</h3><p>The {productionAggregatePeriod("en", "span")} province aggregate is published with its source, coverage state and limits. Other views may still use clearly labelled examples.</p><Link href="/en/data">Review data transparency</Link></article>
       </div>
       <aside className="notice"><h3>What this record does not claim</h3><p>{PRODUCT_NAME.en} does not estimate merchantable timber, predict wildfire spread, label detected change as logging or deforestation, make legal or compliance findings, or infer responsibility from proximity.</p></aside>
     </section>
     <section className="content-section prose-measure" aria-labelledby="consequences">
       <div className="section-heading"><span className="num">04</span><h2 id="consequences">Why the context matters</h2></div>
       <p>Detected forest loss is a satellite-derived measure, not a finding about cause. A detected reduction in tree cover does not by itself establish logging, deforestation, responsibility or compliance. <Link href="/en/methods">Read the method and evidence definitions</Link>.</p>
-      <p>The available release is a deterministic, four-province province-level technical preview for 2020 to 2022. It is not per-cell geometry and does not complete the formal Phase 2 gate. <Link href="/en/data">Read the release scope, provenance and licence attribution</Link>.</p>
+      <p>The available release is a deterministic, four-province province-level technical preview for {productionAggregatePeriod("en", "span")}. It is not per-cell geometry and does not complete the formal Phase 2 gate. <Link href="/en/data">Read the release scope, provenance and licence attribution</Link>.</p>
       <p><small>Context source: {EXPLORE_PRODUCTION_LAYER.attribution.en} <a href={EXPLORE_PRODUCTION_LAYER.attribution.href}>Source catalogue</a>.</small></p>
     </section>
   </main></SiteShell>;

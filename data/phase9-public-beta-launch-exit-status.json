@@ -71,7 +71,7 @@
         },
         {
           "path": "data/phase8-launch-readiness-exit-status.json",
-          "sha256": "0f6bc5000472dc0b58cde7e7ae4048a0de925af313044a83ee4406427529c646"
+          "sha256": "43bb559fb39d7f41071a96e6b879211107da5c3896146f60c1db75ff21452eac"
         },
         {
           "path": "data/raw-archive-reproduction-drill.json",

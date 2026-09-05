@@ -8,3 +8,4 @@ export * from "./loss-vocabulary";
 export * from "./number";
 export * from "./reported";
 export * from "./source-ledger";
+export * from "./year-range";

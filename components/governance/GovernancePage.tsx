@@ -1,10 +1,12 @@
-import { PRODUCT_NAME, type Locale } from "@/lib/domain";
+import { formatYearRangeKey, PRODUCT_NAME, type Locale } from "@/lib/domain";
 import {
   EXPLORE_COVERAGE_PERIOD,
   EXPLORE_DEFAULT_YEAR,
   EXPLORE_YEAR_MIN,
+  productionAggregatePeriod,
 } from "@/lib/explore";
 import {
+  PROVINCE_BULK_TIME_RANGE,
   provinceBulkManifestUrl,
   provinceBulkRelease,
 } from "@/lib/downloads/releases";
@@ -74,7 +76,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Province aggregate",
           paragraphs: [
-            "A summary calculated for an entire provincial boundary. The available 2020 to 2022 province aggregate is a separate layer from the annual per-cell map and does not change when the year control moves.",
+            `A summary calculated for an entire provincial boundary. The available ${productionAggregatePeriod("en", "span")} province aggregate is a separate layer from the annual per-cell map and does not change when the year control moves.`,
           ],
         },
         {
@@ -148,7 +150,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Agrégat provincial",
           paragraphs: [
-            "Un résumé calculé pour toute une limite provinciale. L’agrégat provincial disponible de 2020 à 2022 constitue une couche distincte de la carte annuelle par cellule et ne change pas lorsque le contrôle de l’année est déplacé.",
+            `Un résumé calculé pour toute une limite provinciale. L’agrégat provincial disponible ${productionAggregatePeriod("fr", "from")} constitue une couche distincte de la carte annuelle par cellule et ne change pas lorsque le contrôle de l’année est déplacé.`,
           ],
         },
         {
@@ -491,7 +493,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Published bounded release",
           paragraphs: [
-            `Release ${provinceBulkRelease.id} contains the bounded 2020 to 2022 province aggregate for British Columbia, Alberta, Ontario and Quebec as a CSV and GeoPackage. Each artifact has a published SHA-256, licence attribution, boundary edition and method version.`,
+            `Release ${provinceBulkRelease.id} contains the bounded ${formatYearRangeKey(PROVINCE_BULK_TIME_RANGE, "en", "span")} province aggregate for British Columbia, Alberta, Ontario and Quebec as a CSV and GeoPackage. Each artifact has a published SHA-256, licence attribution, boundary edition and method version.`,
             "This release is a province-level technical preview, not per-cell geometry. All four provinces have some unknown mapped area, so its detected-loss figures are minima. It does not complete the formal Phase 2 gate.",
           ],
           links: [
@@ -509,7 +511,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Citation format",
           paragraphs: [
-            `${enBrand}, province aggregate, 2020 to 2022, ${provinceCsv.boundaryEdition}, release ${provinceBulkRelease.id}, method ${provinceCsv.methodVersion}, retrieval date and stable artifact URL. Cite it as a bounded technical preview. A production citation for the formal Phase 2 release cannot be generated until that specific gate has a verified release.`,
+            `${enBrand}, province aggregate, ${formatYearRangeKey(PROVINCE_BULK_TIME_RANGE, "en")}, ${provinceCsv.boundaryEdition}, release ${provinceBulkRelease.id}, method ${provinceCsv.methodVersion}, retrieval date and stable artifact URL. Cite it as a bounded technical preview. A production citation for the formal Phase 2 release cannot be generated until that specific gate has a verified release.`,
           ],
         },
       ],
@@ -522,7 +524,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Version limitée publiée",
           paragraphs: [
-            `La version ${provinceBulkRelease.id} contient l’agrégat provincial limité de 2020 à 2022 pour la Colombie-Britannique, l’Alberta, l’Ontario et le Québec, en formats CSV et GeoPackage. Chaque artefact possède une somme SHA-256 publiée, une attribution de licence, une édition de limite et une version de méthode.`,
+            `La version ${provinceBulkRelease.id} contient l’agrégat provincial limité ${formatYearRangeKey(PROVINCE_BULK_TIME_RANGE, "fr", "from")} pour la Colombie-Britannique, l’Alberta, l’Ontario et le Québec, en formats CSV et GeoPackage. Chaque artefact possède une somme SHA-256 publiée, une attribution de licence, une édition de limite et une version de méthode.`,
             "Cette version est un aperçu technique au niveau provincial, et non une géométrie par cellule. Les quatre provinces comportent une superficie cartographiée inconnue; les valeurs de perte détectée sont donc des minimums. Cette version ne satisfait pas au critère formel de la phase 2.",
           ],
           links: [
@@ -540,7 +542,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Format de citation",
           paragraphs: [
-            `${frBrand}, agrégat provincial, 2020 à 2022, ${provinceCsv.boundaryEdition}, version ${provinceBulkRelease.id}, méthode ${provinceCsv.methodVersion}, date de consultation et URL stable de l’artefact. La citation doit préciser qu’il s’agit d’un aperçu technique limité. Une citation de production pour la version formelle de la phase 2 ne peut être générée avant qu’une version vérifiée ne satisfasse précisément à ce critère.`,
+            `${frBrand}, agrégat provincial, ${formatYearRangeKey(PROVINCE_BULK_TIME_RANGE, "fr")}, ${provinceCsv.boundaryEdition}, version ${provinceBulkRelease.id}, méthode ${provinceCsv.methodVersion}, date de consultation et URL stable de l’artefact. La citation doit préciser qu’il s’agit d’un aperçu technique limité. Une citation de production pour la version formelle de la phase 2 ne peut être générée avant qu’une version vérifiée ne satisfasse précisément à ce critère.`,
           ],
         },
       ],

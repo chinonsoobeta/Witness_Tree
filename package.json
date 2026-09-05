@@ -265,6 +265,7 @@
     "check:style-tokens": "node scripts/check-style-tokens.mjs",
     "check:contrast": "node scripts/check-contrast.mjs",
     "check:hex-literals": "node scripts/check-hex-literals.mjs && node --test tests/explore-loss-ramp.test.mjs",
+    "check:year-range-format": "node scripts/check-year-range-format.mjs && npx tsx --test tests/year-range-format.test.ts",
     "check:brand-token": "node scripts/check-brand-token.mjs",
     "check:persistent-identifiers": "node scripts/check-persistent-identifiers.mjs && node --test tests/persistent-identifiers.test.mjs",
     "check:accessibility": "node scripts/check-accessibility-contracts.mjs",

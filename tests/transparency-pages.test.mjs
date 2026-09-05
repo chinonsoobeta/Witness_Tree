@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
+import { formatYearRangeKey } from "../lib/domain/year-range.ts";
+import { PROVINCE_BULK_TIME_RANGE } from "../lib/downloads/releases.ts";
 
 const read = (path) => readFile(new URL(path, import.meta.url), "utf8");
 
@@ -46,7 +48,18 @@ test("methodology publishes predecessor VLCE accuracy with its VLCE2 non-applica
 test("data page labels examples and links the ledger and documentation", async () => {
   const page = await read("../components/transparency/DataPage.tsx");
   assert.match(page, /examples remain illustrative/i);
-  assert.match(page, /bounded four-province technical preview for 2020 to 2022/i);
+  /*
+   * The span is no longer typed into this sentence, so asserting the literal
+   * would only prove someone typed it again. Assert the two halves that
+   * together put the words in front of a reader: the copy interpolates the
+   * release's own time range, and that time range still reads "2020 to 2022".
+   * This now also fails if the release moves and the sentence does not.
+   */
+  assert.match(
+    page,
+    /bounded four-province technical preview for \$\{formatYearRangeKey\(PROVINCE_BULK_TIME_RANGE, "en", "span"\)\}/,
+  );
+  assert.equal(formatYearRangeKey(PROVINCE_BULK_TIME_RANGE, "en", "span"), "2020 to 2022");
   assert.match(page, /provinceBulkManifestUrl/);
   assert.match(page, /provinceBulkRelease\.artifacts/);
   assert.match(page, /href="https:\/\/github\.com\/chinonsoobeta\/Witness_Tree\/blob\/main\/data\/source-ledger\.json"/);
