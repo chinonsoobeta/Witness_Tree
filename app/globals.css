@@ -11,6 +11,13 @@
    ========================================================================== */
 
 :root {
+
+  /* Topbar stays dark in every theme. */
+  --topbar-fill: #2c2c24;
+  --topbar-ink: #fdfcf8;
+  --topbar-ink-2: #ded8cf;
+  --topbar-accent: #a9cf9b;
+  --topbar-edge: #948b7a;
   color-scheme: light dark;
 
   /* ground and surface */
@@ -154,6 +161,13 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
+
+    /* Topbar stays dark in every theme. */
+    --topbar-fill: #22201a;
+    --topbar-ink: #f2ede3;
+    --topbar-ink-2: #c9c2b6;
+    --topbar-accent: #a9cf9b;
+    --topbar-edge: #7d7566;
     color-scheme: dark;
 
     /* ground and surface */
@@ -221,6 +235,13 @@
 }
 
 [data-theme="light"] {
+
+  /* Topbar stays dark in every theme. */
+  --topbar-fill: #2c2c24;
+  --topbar-ink: #fdfcf8;
+  --topbar-ink-2: #ded8cf;
+  --topbar-accent: #a9cf9b;
+  --topbar-edge: #948b7a;
   color-scheme: light;
 
   /* ground and surface */
@@ -307,6 +328,13 @@
 }
 
 [data-theme="dark"] {
+
+  /* Topbar stays dark in every theme. */
+  --topbar-fill: #22201a;
+  --topbar-ink: #f2ede3;
+  --topbar-ink-2: #c9c2b6;
+  --topbar-accent: #a9cf9b;
+  --topbar-edge: #7d7566;
   color-scheme: dark;
 
   /* ground and surface */
@@ -848,62 +876,31 @@ h4 {
 .site-shell {
   min-height: 100vh;
 }
-/* ==========================================================================
-   Chrome: the sticky header pill, its disclosure nav, and the footer band.
-
-   The header floats 16px below the top of the viewport on every page. z-index
-   50 puts it above the paper grain (z-index 1) and below the skip link
-   (z-index 100). Nothing between .site-shell and here establishes a clipping
-   ancestor, so position: sticky resolves against the viewport.
-
-   Measured WCAG 2.1 ratios on the composited pill, light / dark, taken at the
-   worst background the pill can float over (pure black behind it in light,
-   a pure white map tile behind it in dark):
-     --ink on the pill (wordmark, summary)     10.70 / 10.40
-     --ink-2 on the pill (nav links)            6.81 /  7.62
-     --accent on the pill (locale pill label)   5.77 /  5.87
-     --accent-fill as a control edge            4.09 /  4.21
-   Over the site's own --ground the same pairs read 13.96 / 15.16, 8.89 /
-   11.12, 7.53 / 8.56 and 5.34 / 6.14. --rule-strong is deliberately absent:
-   on the worst-case pill it is 2.56 / 2.00 and would miss the 3:1 control
-   minimum, so every edge in the header is --accent-fill.
-   ========================================================================== */
+/* Shared dark topbar. The existing disclosure serves full, compact and mobile layouts. */
 .site-header {
   position: sticky;
   z-index: 50;
-  top: 16px;
-  padding: 16px 20px 0;
+  top: 0;
+  padding: 0 20px;
+  background: var(--topbar-fill);
+  color: var(--topbar-ink);
 }
 .site-header-inner {
   width: min(var(--plate), 100%);
   margin: 0 auto;
-  min-height: 72px;
+  min-height: 64px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  padding: 8px 12px 8px 26px;
-  border: 1px solid var(--accent-fill);
-  border-radius: 999px;
-  /* Opaque fallback first: a browser without backdrop-filter gets a solid
-     surface rather than an unreadable transparent bar. */
-  background: var(--surface);
-  box-shadow: var(--shadow-soft);
-}
-@supports (
-  (backdrop-filter: blur(12px)) or (-webkit-backdrop-filter: blur(12px))
-) {
-  .site-header-inner {
-    background: var(--header-fill);
-    -webkit-backdrop-filter: blur(12px);
-    backdrop-filter: blur(12px);
-  }
+  padding: 8px 0;
+  background: var(--topbar-fill);
 }
 .wordmark {
   display: inline-flex;
   align-items: center;
   min-height: 44px;
-  color: var(--ink);
+  color: var(--topbar-ink);
   font-size: 23px;
   font-weight: 600;
   text-decoration: none;
@@ -914,7 +911,7 @@ h4 {
   align-items: center;
   gap: 12px;
   font-family: var(--ui);
-  font-size: 13px;
+  font-size: 14px;
 }
 
 /* The disclosure. No JavaScript: <details> gives the open/close behaviour and
@@ -932,11 +929,11 @@ h4 {
   min-height: 44px;
   min-width: 44px;
   padding: 0 20px;
-  border: 1px solid var(--accent-fill);
-  border-radius: 999px;
-  color: var(--ink);
+  border: 1px solid var(--topbar-edge);
+  border-radius: 4px;
+  color: var(--topbar-ink);
   font-family: var(--ui);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   list-style: none;
   cursor: pointer;
@@ -948,10 +945,10 @@ h4 {
   display: none;
 }
 .nav-toggle:hover {
-  background: var(--accent-soft);
+  background: var(--topbar-fill);
 }
 .nav-toggle:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--topbar-accent);
   outline-offset: 3px;
 }
 .nav-panel {
@@ -962,9 +959,9 @@ h4 {
   display: grid;
   min-width: max(220px, 60vw);
   padding: 10px;
-  border: 1px solid var(--rule);
-  border-radius: var(--radius-lg);
-  background: var(--surface);
+  border: 1px solid var(--topbar-edge);
+  border-radius: 4px;
+  background: var(--topbar-fill);
   box-shadow: var(--shadow-float);
 }
 .nav-panel a {
@@ -972,16 +969,16 @@ h4 {
   align-items: center;
   min-height: 44px;
   padding: 0 16px;
-  border-radius: var(--radius-sm);
-  color: var(--ink-2);
+  border-radius: 2px;
+  color: var(--topbar-ink-2);
   text-decoration: none;
   transition:
     color var(--dur) var(--ease),
     background-color var(--dur) var(--ease);
 }
 .nav-panel a:hover {
-  background: var(--accent-soft);
-  color: var(--ink);
+  background: var(--topbar-fill);
+  color: var(--topbar-ink);
 }
 
 /* The colour-theme control. Three native radios in a segmented pill.
@@ -1001,8 +998,8 @@ h4 {
 }
 .theme-toggle-label {
   padding: 10px 16px 4px;
-  color: var(--muted);
-  font-size: 11px;
+  color: var(--topbar-ink-2);
+  font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -1032,26 +1029,26 @@ h4 {
   min-height: 44px;
   padding: 0 16px;
   border: 1px solid transparent;
-  border-radius: 999px;
-  color: var(--ink-2);
+  border-radius: 4px;
+  color: var(--topbar-ink-2);
   transition:
     color var(--dur) var(--ease),
     background-color var(--dur) var(--ease),
     border-color var(--dur) var(--ease);
 }
 .theme-option input:hover + span {
-  background: var(--accent-soft);
-  color: var(--ink);
+  background: var(--topbar-fill);
+  color: var(--topbar-ink);
 }
 /* Checked state is an edge and a fill, not colour alone: the border survives
    forced-colours mode and a monochrome display, where a tint does not. */
 .theme-option input:checked + span {
-  border-color: var(--accent-fill);
-  background: var(--accent-soft);
-  color: var(--ink);
+  border-color: var(--topbar-edge);
+  background: var(--topbar-fill);
+  color: var(--topbar-ink);
 }
 .theme-option input:focus-visible + span {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--topbar-accent);
   outline-offset: 2px;
 }
 /* Server-rendered inert, until the island mounts and can actually change
@@ -1061,7 +1058,7 @@ h4 {
   cursor: default;
 }
 .theme-option input:disabled + span {
-  color: var(--muted);
+  color: var(--topbar-ink-2);
 }
 
 /* The language switch: the one control every reader on a bilingual
@@ -1072,11 +1069,11 @@ h4 {
   align-items: center;
   min-height: 44px;
   padding: 0 18px;
-  border: 1px solid var(--accent-fill);
-  border-radius: 999px;
-  color: var(--accent);
+  border: 1px solid var(--topbar-edge);
+  border-radius: 4px;
+  color: var(--topbar-ink);
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -1086,7 +1083,21 @@ h4 {
     color var(--dur) var(--ease);
 }
 .locale-link:hover {
-  background: var(--accent-soft);
+  background: var(--topbar-fill);
+}
+
+.site-header a:focus-visible {
+  outline-color: var(--topbar-accent);
+}
+.nav-panel a[aria-current="page"] {
+  color: var(--topbar-ink);
+  text-decoration: underline;
+  text-decoration-color: var(--topbar-accent);
+  text-decoration-thickness: 3px;
+  text-underline-offset: 8px;
+}
+.theme-option input:checked + span {
+  font-weight: 700;
 }
 
 .page-wrap {
@@ -2171,11 +2182,11 @@ h4 {
 
 @media (max-width: 760px) {
   .site-header {
-    padding: 12px 12px 0;
+    padding: 0 12px;
   }
   .site-header-inner {
     gap: 10px;
-    padding: 8px 10px 8px 18px;
+    padding: 6px 0;
   }
   .wordmark {
     font-size: 19px;
@@ -3223,4 +3234,40 @@ dd > a:only-child {
 .prose-measure > h2:not(:first-child),
 .prose-measure > h3 {
   margin-block-start: 36px;
+}
+
+/* Confidence comes before figures; both panels inherit their local palette. */
+.coverage-statement {
+  padding: 24px;
+  border: 1px solid var(--edge-unknown);
+  border-inline-start-width: 4px;
+  background: var(--tint-unknown);
+  color: var(--ink);
+}
+.coverage-statement h2 {
+  margin: 0 0 12px;
+  font-size: 1.125rem;
+}
+.coverage-statement p {
+  max-width: var(--measure);
+}
+.coverage-statement p:last-child {
+  margin-bottom: 0;
+}
+.evidence-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  padding: 16px 0;
+  margin: 0;
+  list-style: none;
+  color: var(--ink);
+}
+.evidence-legend li {
+  min-width: 0;
+}
+@media (min-width: 1180px) {
+  .nav-panel a, .theme-option > span {
+    min-height: 40px;
+  }
 }

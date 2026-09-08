@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import type { Locale } from "@/lib/domain";
 import { localeHref } from "@/lib/locale-navigation";
@@ -12,7 +13,21 @@ import { localeHref } from "@/lib/locale-navigation";
  * navigation to the browser to compute one href. This island keeps the header server-rendered.
  */
 export function LocaleLink({ locale }: { locale: Locale }) {
-  const href = localeHref(usePathname(), useSearchParams(), locale);
+  const pathname = usePathname();
+  const href = localeHref(pathname, useSearchParams(), locale);
+  // Reuse the route-aware island while the navigation stays server-rendered.
+  useEffect(() => {
+    const links = document.querySelectorAll<HTMLAnchorElement>(".site-header .nav-panel a");
+    for (const link of links) {
+      const target = link.getAttribute("href");
+      if (target && (pathname === target || pathname?.startsWith(`${target}/`))) {
+        link.setAttribute("aria-current", "page");
+      } else {
+        link.removeAttribute("aria-current");
+      }
+    }
+    return () => { for (const link of links) link.removeAttribute("aria-current"); };
+  }, [pathname]);
   return <LocaleAnchor locale={locale} href={href} />;
 }
 
