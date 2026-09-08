@@ -50,6 +50,21 @@ test("language choices use native document navigation", async () => {
   assert.match(gateway, /<a className="btn btn--outline" href="\/fr" lang="fr">Continuer en français<\/a>/);
 });
 
+test("the decorative gate loops every five seconds without controls and respects reduced motion", async () => {
+  const [gateway, css] = await Promise.all([read("../app/(gateway)/page.tsx"), read("../app/globals.css")]);
+  assert.match(gateway, /\["forest\.jpg", "forest-2\.jpg", "forest-3\.jpg", "forest-4\.jpg"\]/);
+  assert.match(gateway, /alt="" role="presentation"/);
+  assert.doesNotMatch(gateway, /<input|<button|gateway-motion/);
+  assert.match(css, /animation: gateway-crossfade 20s linear infinite/);
+  for (const [index, delay] of [[2, -15], [3, -10], [4, -5]]) {
+    assert.ok(css.includes(`.gateway-photo:nth-of-type(${index}) { animation-delay: ${delay}s; }`));
+  }
+  assert.match(css, /@keyframes gateway-crossfade\s*\{\s*0%, 20%, 100% \{ opacity: 1; \}\s*25%, 95% \{ opacity: 0; \}/);
+  assert.match(css, /@media \(prefers-reduced-motion: reduce\)\s*\{\s*\.gateway-slideshow \.gateway-photo \{ animation: none; opacity: 1; \}/);
+  assert.match(css, /\.gateway-photo:not\(:first-of-type\) \{ display: none; \}/);
+  assert.match(css, /\.language-gateway::before\s*\{[^}]*background: var\(--ground\);[^}]*opacity: 0\.76;/);
+});
+
 test("localized not-found pages use the site shell and offer three exits", async () => {
   const [english, french, englishCatchAll, frenchCatchAll] = await Promise.all([
     read("../app/en/not-found.tsx"),
