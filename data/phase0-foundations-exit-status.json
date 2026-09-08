@@ -14,7 +14,7 @@
         },
         {
           "path": "components/governance/GovernancePage.tsx",
-          "sha256": "4a1b41b6588bf51d0906ebfaa578b73222e22824281b12c315e303ffabb9b4cd"
+          "sha256": "c19b5072b362ddd2a0dcc2b53e5851e3a76b98cda0745d0118ca34c7f07e9209"
         },
         {
           "path": "tests/forest-definition-publication.test.ts",
@@ -66,7 +66,7 @@
         },
         {
           "path": "components/governance/GovernancePage.tsx",
-          "sha256": "4a1b41b6588bf51d0906ebfaa578b73222e22824281b12c315e303ffabb9b4cd"
+          "sha256": "c19b5072b362ddd2a0dcc2b53e5851e3a76b98cda0745d0118ca34c7f07e9209"
         }
       ]
     },
@@ -117,7 +117,7 @@
         },
         {
           "path": "components/governance/GovernancePage.tsx",
-          "sha256": "4a1b41b6588bf51d0906ebfaa578b73222e22824281b12c315e303ffabb9b4cd"
+          "sha256": "c19b5072b362ddd2a0dcc2b53e5851e3a76b98cda0745d0118ca34c7f07e9209"
         }
       ]
     },

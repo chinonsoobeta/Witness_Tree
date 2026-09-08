@@ -1,3 +1,6 @@
+import { CoverageStatement } from "@/components/policy/CoverageStatement";
+import { EvidenceLegend } from "@/components/policy/EvidenceLegend";
+import type { ConfidenceResult } from "@/lib/domain/confidence";
 import type { Locale } from "@/lib/domain";
 import {
   EXPLORE_COVERAGE_PERIOD,
@@ -8,6 +11,10 @@ import {
 const COPY = {
   en: {
     title: "Methodology",
+    statement: "These methods explain how evidence is classified and where it stops. A detected change alone establishes neither cause nor responsibility.",
+    confidenceRules: "Confidence rules, in evaluation order; the first matching rule applies",
+    confidenceLevel: "Level and rule",
+    confidenceCondition: "When it applies",
     definition: "Forest definition",
     definitionText:
       "Forest is land of at least 1 hectare, with at least 10% crown closure, carrying trees capable of reaching 5 metres at maturity.",
@@ -17,9 +24,15 @@ const COPY = {
     coverage: "Geographic coverage",
     coverageText:
       "The national baseline covers British Columbia, Alberta, Ontario and Quebec. Quebec north of 52° is shown as national baseline, not as enhanced local coverage. Coverage is intersected from mapped geometry, not inferred from a province label.",
+    unmapped: "Where the source does not reach",
+    unmappedText:
+      "The NTEMS VLCE2 land-cover source never mapped 46,424,717.91 hectares across the four provinces: 22,204,952.19 hectares in Quebec, 15,372,023.76 in Alberta, 8,843,646.69 in Ontario and 4,095.27 in British Columbia. It tracks Canada’s forested ecosystems, so its extent leaves out two very different kinds of area. Roughly half the gap is the prairies and the settled south; most of the remainder is the far north of Quebec, beyond the northern limit of the closed-crown forest. British Columbia lies almost entirely inside the mapped extent. Not mapped is not the same as no forest, and this record never treats one as the other. In British Columbia, most of this gap reflects shoreline and boundary-edition disagreement against the authoritative GeoBC terrestrial boundary.",
+    unmappedKnowledge: "What we know about the unmapped area",
+    unmappedKnowledgeText:
+      "This area is not assumed to be empty of forest. Dated records of forestry activity within it have been reviewed internally; public use of those records remains pending source admission. An attempt to estimate forest loss sampled locations and read annual satellite imagery back to 1984. It could not constrain the answer sufficiently. The forest definition requires at least 10% crown closure and trees able to reach 5 metres at maturity. Neither can be measured directly from surface reflectance, so the unresolved question is whether the area met the forest definition at the 1984 baseline, not the detection of change. Moving the baseline to a later year was also tested and did not help. Resolving this requires field plots, air photos or lidar supplying stand structure for the baseline year.",
     evidence: "Evidence and confidence",
     evidenceText:
-      "Each public claim is classified as an official record, satellite observation, derived estimate or unknown. Confidence is high, medium, limited or unknown and always includes its generated reason. A colour alone does not communicate confidence.",
+      "Each public claim is classified as an official record, satellite observation, derived estimate or unknown; here, unknown is an evidence class, distinct from area the source did not map. Confidence is high, medium, limited or unknown and always includes its generated reason. A colour alone does not communicate confidence.",
     accuracy: "Detection accuracy",
     accuracyText:
       "The publisher cites an independent validation of the predecessor VLCE land-cover map for 2005: 70.3% overall classification accuracy with a 95% confidence interval of ±2.5 percentage points. That result is not a validation of this record’s derived forest-loss detections, a district-specific accuracy, or a validation of every VLCE2 year. A directly applicable detected-loss accuracy estimate is therefore Unknown.",
@@ -36,6 +49,10 @@ const COPY = {
   },
   fr: {
     title: "Méthodologie",
+    statement: "Ces méthodes expliquent comment les preuves sont classées et où elles s’arrêtent. Un changement détecté ne suffit à établir ni cause ni responsabilité.",
+    confidenceRules: "Règles de confiance, dans l’ordre d’évaluation; la première règle applicable est retenue",
+    confidenceLevel: "Niveau et règle",
+    confidenceCondition: "Conditions d’application",
     definition: "Définition de la forêt",
     definitionText:
       "La forêt est une terre d’au moins 1 hectare, présentant un couvert de cimes d’au moins 10 %, avec des arbres capables d’atteindre 5 mètres à maturité.",
@@ -45,9 +62,15 @@ const COPY = {
     coverage: "Couverture géographique",
     coverageText:
       "La référence nationale couvre la Colombie-Britannique, l’Alberta, l’Ontario et le Québec. Le Québec au nord du 52e degré est présenté comme référence nationale, et non comme couverture locale enrichie. La couverture est intersectée à partir d’une géométrie cartographiée, et non déduite d’une étiquette provinciale.",
+    unmapped: "Là où la source ne cartographie pas le territoire",
+    unmappedText:
+      "La source de couverture terrestre NTEMS VLCE2 n’a jamais cartographié 46 424 717,91 hectares dans les quatre provinces : 22 204 952,19 hectares au Québec, 15 372 023,76 en Alberta, 8 843 646,69 en Ontario et 4 095,27 en Colombie-Britannique. Elle suit les écosystèmes forestiers du Canada, et son emprise laisse donc de côté deux types de territoires très différents. La moitié environ de l’écart correspond aux Prairies et aux régions habitées du sud; la plus grande partie du reste se trouve dans le Grand Nord québécois, au-delà de la limite septentrionale de la forêt fermée. La Colombie-Britannique, elle, est presque entièrement comprise dans l’emprise cartographiée. Un territoire non cartographié n’est pas nécessairement dépourvu de forêt; ce registre ne confond jamais ces deux situations. En Colombie-Britannique, cet écart tient surtout au tracé du littoral et aux différences entre éditions des limites, par comparaison avec la limite terrestre officielle de GeoBC.",
+    unmappedKnowledge: "Ce que nous savons du territoire non cartographié",
+    unmappedKnowledgeText:
+      "Nous ne supposons pas que ce territoire est dépourvu de forêt. Des documents datés attestant d’activités forestières à l’intérieur de cette zone ont été examinés en interne; leur utilisation publique reste soumise à l’admission des sources. Une tentative d’estimation de la perte forestière a porté sur un échantillon de lieux, à partir d’images satellitaires annuelles remontant à 1984. Elle n’a pas permis de resserrer suffisamment l’estimation. La définition de la forêt exige un couvert de cimes d’au moins 10 % et des arbres capables d’atteindre 5 mètres à maturité. La réflectance de surface ne permet de mesurer directement ni l’un ni l’autre. L’incertitude porte donc sur la présence de forêt au départ, en 1984, plutôt que sur la détection du changement. Le recours à une année de référence plus récente a aussi été testé, sans réduire cette incertitude. Pour la résoudre, il faudrait des placettes de terrain, des photographies aériennes ou des données lidar décrivant la structure des peuplements pour l’année de référence.",
     evidence: "Preuves et confiance",
     evidenceText:
-      "Chaque affirmation publique est classée comme registre officiel, observation satellitaire, estimation dérivée ou inconnue. La confiance est élevée, moyenne, limitée ou inconnue et comprend toujours sa raison générée. Une couleur seule ne communique pas la confiance.",
+      "Chaque affirmation publique est classée comme registre officiel, observation satellitaire, estimation dérivée ou inconnue; « inconnue » désigne ici une catégorie de preuve, distincte d’une superficie non cartographiée par la source. La confiance est élevée, moyenne, limitée ou inconnue et comprend toujours sa raison générée. Une couleur seule ne communique pas la confiance.",
     accuracy: "Exactitude de la détection",
     accuracyText:
       "L’éditeur cite une validation indépendante de la carte de couverture terrestre VLCE antérieure pour 2005 : une exactitude globale de classification de 70,3 %, avec un intervalle de confiance à 95 % de ±2,5 points de pourcentage. Ce résultat ne valide ni les détections dérivées de perte forestière de ce registre, ni une exactitude propre à une circonscription, ni chaque année de VLCE2. Une estimation directement applicable de l’exactitude de la perte détectée demeure donc inconnue.",
@@ -64,12 +87,41 @@ const COPY = {
   },
 } as const;
 
+const CONFIDENCE_RULES: readonly Readonly<{
+  id: ConfidenceResult["ruleId"];
+  en: readonly [string, string];
+  fr: readonly [string, string];
+}>[] = [
+  {
+    id: "CONF-LIMITED-001",
+    en: ["Limited", "A coverage gap, an inventory older than five years at the event, or geometry resolution coarser than one hundred metres. This limitation takes precedence over the other rules."],
+    fr: ["Limitée", "Une lacune de couverture, un inventaire datant de plus de cinq ans au moment de l’événement ou une résolution géométrique plus grossière que cent mètres. Cette limite a préséance sur les autres règles."],
+  },
+  {
+    id: "CONF-HIGH-001",
+    en: ["High", "An authoritative record with resolved geometry, required attributes present, no partial attribution and date uncertainty of at most one year. An unspecified date uncertainty is treated as absent by the rule."],
+    fr: ["Élevée", "Un registre faisant autorité, une géométrie résolue, les attributs requis présents, aucune attribution partielle et une incertitude de date d’au plus un an. La règle traite une incertitude de date non précisée comme absente."],
+  },
+  {
+    id: "CONF-MEDIUM-001",
+    en: ["Medium", "An authoritative record or resolved geometry remains, but the preceding rules do not apply. The generated reason identifies date uncertainty, partial attribution or an unavailable required attribute."],
+    fr: ["Moyenne", "Un registre faisant autorité ou une géométrie résolue demeure, sans que les règles précédentes s’appliquent. La raison générée précise l’incertitude de date, l’attribution partielle ou un attribut requis indisponible."],
+  },
+  {
+    id: "CONF-UNKNOWN-001",
+    en: ["Unknown", "None of the preceding rules applies: neither an authoritative record nor resolved geometry is available. No authoritative public record has been integrated for this question."],
+    fr: ["Inconnue", "Aucune règle précédente ne s’applique : ni registre faisant autorité ni géométrie résolue n’est disponible. Aucun registre public faisant autorité n’a été intégré pour cette question."],
+  },
+];
+
 export function MethodologyPage({ locale }: Readonly<{ locale: Locale }>) {
   const copy = COPY[locale];
   const sections = [
     [copy.definition, copy.definitionText],
     [copy.denominator, copy.denominatorText],
     [copy.coverage, copy.coverageText],
+    [copy.unmapped, copy.unmappedText],
+    [copy.unmappedKnowledge, copy.unmappedKnowledgeText],
     [copy.evidence, copy.evidenceText],
     [copy.accuracy, copy.accuracyText],
     [copy.matching, copy.matchingText],
@@ -78,18 +130,34 @@ export function MethodologyPage({ locale }: Readonly<{ locale: Locale }>) {
   ];
 
   return (
-    <main id="main" className="page-wrap">
+    <main id="main" className="page-wrap methods-page">
       <header className="masthead">
         <h1>{copy.title}</h1>
       </header>
+      <CoverageStatement locale={locale}><p>{copy.statement}</p></CoverageStatement>
+      <EvidenceLegend locale={locale} />
       <div className="content-section prose-measure">
         {sections.map(([heading, text], index) => (
-          <section className="governance-section" key={heading}>
+          <section className="governance-section" key={heading} id={heading === copy.unmapped ? "coverage-gap" : undefined}>
             <p className="governance-index" aria-hidden="true">
               {String(index + 1).padStart(2, "0")}
             </p>
             <h2>{heading}</h2>
             <p>{text}</p>
+            {heading === copy.evidence ? (
+              <table className="confidence-rules">
+                <caption>{copy.confidenceRules}</caption>
+                <thead><tr><th scope="col">{copy.confidenceLevel}</th><th scope="col">{copy.confidenceCondition}</th></tr></thead>
+                <tbody>
+                  {CONFIDENCE_RULES.map((rule) => (
+                    <tr key={rule.id}>
+                      <th scope="row">{rule[locale][0]}<code>{rule.id}</code></th>
+                      <td>{rule[locale][1]}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : null}
             {heading === copy.accuracy ? (
               <p>
                 <a href="https://doi.org/10.1080/07038992.2018.1437719">

@@ -23,3 +23,13 @@ export function MeasurementCoverage({ place, locale }: Readonly<{
     ? <span className="coverage-band">{labels[locale][place.measurementCoverage]}</span>
     : <CoverageBand coverageGrade={place.coverageGrade} locale={locale} />;
 }
+
+export function missingMeasurement(place: Pick<ComparisonPlace, "measurementCoverage">, locale: Locale): string {
+  if (place.measurementCoverage === "none-mapped") {
+    return locale === "en" ? "– No mapped coverage." : "– Aucune couverture cartographiée.";
+  }
+  if (place.measurementCoverage === "partial-with-unknown") {
+    return locale === "en" ? "– Partial mapped coverage; the measurement is unavailable." : "– Couverture cartographiée partielle; la mesure est indisponible.";
+  }
+  return locale === "en" ? "– No measured value is available." : "– Aucune valeur mesurée n’est disponible.";
+}

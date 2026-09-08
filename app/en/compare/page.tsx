@@ -1,3 +1,5 @@
+import { CoverageStatement } from "@/components/policy/CoverageStatement";
+import { EvidenceLegend } from "@/components/policy/EvidenceLegend";
 import type { Metadata } from "next";
 import {
   FederalRidingPicker,
@@ -42,6 +44,8 @@ export default async function ComparePage({
           <h1>{TITLE}</h1>
           <p className="masthead-note">Extent-corrected measurements for 2021–2022.</p>
         </header>
+        <CoverageStatement locale="en"><p>Compare the mapped coverage before comparing the figures. A smaller measured loss does not establish less loss where coverage differs. Missing measurements are excluded from the ranking, never counted as zero.</p><p>The forested-area denominator includes only known mapped forest; it does not describe forest in areas without coverage.</p></CoverageStatement>
+        <EvidenceLegend locale="en" />
         <FederalRidingPicker
           rows={federalRidingComparison.comparisonRows}
           locale="en"

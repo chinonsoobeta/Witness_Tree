@@ -53,3 +53,37 @@ test("renders the bilingual place finder with a hidden label and compact submit 
   assert.match(fr, /<button[^>]*>Trouver<\/button>/);
   assert.match(fr, /href="\/fr\/lieux\//);
 });
+
+test("search coverage precedes controls and a missing record is a result with a reason", () => {
+  for (const locale of ["en", "fr"] as const) {
+    for (const scope of ["places", "districts"] as const) {
+      const markup = renderToStaticMarkup(<SearchPage locale={locale} scope={scope} query="not-a-place" />);
+      assert.ok(markup.indexOf('class="coverage-statement"') < markup.indexOf('<form'));
+      assert.match(markup, /class="evidence-legend"/);
+      assert.match(markup, /class="no-record-result"/);
+      assert.match(markup, /<strong>– /);
+      assert.match(markup, new RegExp(`href="${locale === "en" ? "/en/methods" : "/fr/methodes"}"`));
+      assert.doesNotMatch(markup, />0(?: ha)?</);
+    }
+  }
+});
+
+// @ts-expect-error Node test runner needs extensions.
+import { DistrictReadout } from "../components/search/AddressFinderClient.tsx";
+
+test("address results distinguish a missing boundary from a found boundary without a measurement", () => {
+  for (const locale of ["en", "fr"] as const) {
+    const name = { en: "Example district", fr: "Circonscription exemple" };
+    const found = { kind: "single" as const, districtId: "59001", name };
+    const empty = renderToStaticMarkup(<DistrictReadout locale={locale} heading="District" lookup={{ kind: "empty" }} linkable={false} />);
+    const noMeasurement = renderToStaticMarkup(<DistrictReadout locale={locale} heading="District" lookup={found} linkable={false} />);
+    const measured = renderToStaticMarkup(<DistrictReadout locale={locale} heading="District" lookup={found} linkable />);
+    assert.match(empty, /class="no-record-result"/);
+    assert.match(empty, /no boundary record|aucun registre de limites/);
+    assert.ok(noMeasurement.includes(name[locale]));
+    assert.match(noMeasurement, /no measurement|aucune mesure/);
+    assert.doesNotMatch(noMeasurement, /compare\?left=|comparer\?left=/);
+    assert.match(measured, /compare\?left=federal-59001|comparer\?left=federal-59001/);
+    assert.doesNotMatch(measured, /class="no-record-result"/);
+  }
+});

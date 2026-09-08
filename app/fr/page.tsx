@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ProvinceBar, SiteShell } from "@/components/site";
-import { formatHectares, formatPercent, PRODUCT_NAME } from "@/lib/domain";
+import { ProvinceCoverageCard } from "@/components/site/ProvinceCoverageCard";
+import { CoverageStatement } from "@/components/policy/CoverageStatement";
+import { EvidenceLegend } from "@/components/policy/EvidenceLegend";
+import { PRODUCT_NAME } from "@/lib/domain";
 import { EXPLORE_COVERAGE_PERIOD, EXPLORE_PRODUCTION_LAYER, formatUnknownSharePercent } from "@/lib/explore";
 import { productionAggregatePeriod } from "@/lib/explore/period";
 import { localizedAlternates } from "@/lib/site-metadata";
@@ -9,26 +12,29 @@ import { localizedAlternates } from "@/lib/site-metadata";
 export const metadata: Metadata = { title: "Registre public des pertes forestières", alternates: localizedAlternates("fr", { en: "/en", fr: "/fr" }) };
 
 function coverageLabel(row: (typeof EXPLORE_PRODUCTION_LAYER.rows)[number]) {
-  return `Minimum de la zone cartographiée; ${formatUnknownSharePercent(row.unknownSharePercent, "fr")} (${formatHectares(row.unknownRequiredInputHectares, "fr")}) de la superficie est inconnue`;
+  return `${formatUnknownSharePercent(row.unknownSharePercent, "fr")} de la superficie provinciale n’a pas été cartographiée par la source${"unmappedCharacter" in row ? `; ${row.unmappedCharacter.fr}` : ""}`;
 }
 
 export default function FrenchHome() {
   return <SiteShell locale="fr"><main id="main" className="page-wrap">
-    <header className="masthead landing-hero">
+    <header className="masthead masthead--record">
       <p className="eyebrow">Registre de preuves · {EXPLORE_COVERAGE_PERIOD.fr}</p>
       <h1>Qu’est-il arrivé à la forêt ici?</h1>
-      <p className="dek">{PRODUCT_NAME.fr} aide à comprendre les pertes forestières consignées et détectées dans quatre provinces. D’autres provinces s’ajouteront bientôt.</p>
+      <p className="dek">{PRODUCT_NAME.fr} aide à comprendre les pertes forestières consignées et détectées dans quatre provinces.</p>
       <ProvinceBar locale="fr" />
-      <p className="landing-action"><Link className="btn btn--primary" href="/fr/explorer">Explorer l’agrégat provincial</Link></p>
     </header>
-    <section className="content-section landing-record-band" aria-labelledby="registre-actuel">
-      <p className="eyebrow">Registre actuel · 01</p>
-      <h2 id="registre-actuel">Comparez quatre provinces sans masquer les zones inconnues</h2>
-      <p className="lead">L’agrégat provincial provisoire et limité {productionAggregatePeriod("fr", "from")} compare la perte forestière détectée, en gardant visibles l’état de couverture et la superficie inconnue de chaque province.</p>
-      <dl className="principles landing-record-evidence">
-        {EXPLORE_PRODUCTION_LAYER.rows.map((row) => <div className="principle" key={row.id}><dt>{row.name.fr}</dt><dd>{formatHectares(row.observedLossHectares, "fr")} de perte détectée ({formatPercent(row.observedLossPercent, "fr")}) · {coverageLabel(row)}</dd></div>)}
-      </dl>
-      <p className="landing-action"><Link href="/fr/explorer">Explorer le registre actuel</Link></p>
+    <CoverageStatement locale="fr"><p>La perte détectée est un minimum de la zone cartographiée dans quatre provinces. Les superficies non cartographiées par la source restent inconnues, même là où la perte détectée est faible.</p></CoverageStatement>
+    <EvidenceLegend locale="fr" />
+    <section className="content-section landing-coverage" aria-labelledby="registre-actuel">
+      <div className="section-heading"><span className="num">01</span><h2 id="registre-actuel">Commencer par le registre actuel</h2></div>
+      <p className="lead">L’agrégat provincial provisoire et limité {productionAggregatePeriod("fr", "from")} est prêt à explorer. Il présente la perte forestière détectée avec un état de couverture pour chaque province. La vérification de l’étendue cartographiée pour chacune des années de {EXPLORE_COVERAGE_PERIOD.fr} est terminée. Ses résultats déterminent désormais le classement des superficies non cartographiées par la source.</p>
+      <p className="prose-measure">Toutes les barres partagent une échelle en hectares. La superficie non cartographiée n’est pas une mesure de perte forestière.</p>
+      <div className="province-coverage-grid">
+        {EXPLORE_PRODUCTION_LAYER.rows.map((row) => <ProvinceCoverageCard key={row.id} row={row} locale="fr" unknownContext={coverageLabel(row)} />)}
+      </div>
+      <p><Link href="/fr/methodes#coverage-gap">Pourquoi ces superficies ne sont pas cartographiées et ce que nous en savons</Link></p>
+      <p><Link className="btn btn--primary" href="/fr/explorer">Explorer l’agrégat provincial</Link></p>
+      <p><small>D’autres provinces s’ajouteront bientôt.</small></p>
     </section>
     <section className="content-section prose-measure">
       <div className="section-heading"><span className="num">02</span><h2>Un registre, pas un tableau de bord</h2></div>

@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ProvinceBar, SiteShell } from "@/components/site";
-import { formatHectares, formatPercent, PRODUCT_NAME } from "@/lib/domain";
+import { ProvinceCoverageCard } from "@/components/site/ProvinceCoverageCard";
+import { CoverageStatement } from "@/components/policy/CoverageStatement";
+import { EvidenceLegend } from "@/components/policy/EvidenceLegend";
+import { PRODUCT_NAME } from "@/lib/domain";
 import { productionAggregatePeriod } from "@/lib/explore/period";
 import { EXPLORE_COVERAGE_PERIOD, EXPLORE_PRODUCTION_LAYER, formatUnknownSharePercent } from "@/lib/explore";
 import { localizedAlternates } from "@/lib/site-metadata";
@@ -9,26 +12,29 @@ import { localizedAlternates } from "@/lib/site-metadata";
 export const metadata: Metadata = { title: "Public forest-loss record", alternates: localizedAlternates("en", { en: "/en", fr: "/fr" }) };
 
 function coverageLabel(row: (typeof EXPLORE_PRODUCTION_LAYER.rows)[number]) {
-  return `Minimum from the mapped area; ${formatUnknownSharePercent(row.unknownSharePercent, "en")} (${formatHectares(row.unknownRequiredInputHectares, "en")}) is unknown`;
+  return `${formatUnknownSharePercent(row.unknownSharePercent, "en")} of the province was not mapped by the source${"unmappedCharacter" in row ? `; ${row.unmappedCharacter.en}` : ""}`;
 }
 
 export default function EnglishHome() {
   return <SiteShell locale="en"><main id="main" className="page-wrap">
-    <header className="masthead landing-hero">
+    <header className="masthead masthead--record">
       <p className="eyebrow">Evidence record · {EXPLORE_COVERAGE_PERIOD.en}</p>
       <h1>What happened to the forest here?</h1>
-      <p className="dek">{PRODUCT_NAME.en} helps you understand recorded and detected forest loss in four provinces. Other provinces are coming soon.</p>
+      <p className="dek">{PRODUCT_NAME.en} helps you understand recorded and detected forest loss in four provinces.</p>
       <ProvinceBar locale="en" />
-      <p className="landing-action"><Link className="btn btn--primary" href="/en/explore">Explore the province aggregate</Link></p>
     </header>
-    <section className="content-section landing-record-band" aria-labelledby="current-record">
-      <p className="eyebrow">Current record · 01</p>
-      <h2 id="current-record">Compare four provinces without hiding unknown areas</h2>
-      <p className="lead">The bounded, provisional {productionAggregatePeriod("en")} aggregate compares detected forest loss while keeping each province’s coverage state and unknown area visible.</p>
-      <dl className="principles landing-record-evidence">
-        {EXPLORE_PRODUCTION_LAYER.rows.map((row) => <div className="principle" key={row.id}><dt>{row.name.en}</dt><dd>{formatHectares(row.observedLossHectares, "en")} detected loss ({formatPercent(row.observedLossPercent, "en")}) · {coverageLabel(row)}</dd></div>)}
-      </dl>
-      <p className="landing-action"><Link href="/en/explore">Explore the current record</Link></p>
+    <CoverageStatement locale="en"><p>Detected loss is a minimum from the mapped area in four provinces. Areas the source did not map remain unknown, even where detected loss is small.</p></CoverageStatement>
+    <EvidenceLegend locale="en" />
+    <section className="content-section landing-coverage" aria-labelledby="current-record">
+      <div className="section-heading"><span className="num">01</span><h2 id="current-record">Start with the current record</h2></div>
+      <p className="lead">The bounded, provisional {productionAggregatePeriod("en")} province aggregate is available to explore. It reports detected forest loss with a coverage state for each province. Verification of the mapped extent for every year in {EXPLORE_COVERAGE_PERIOD.en} is complete. Its results now govern how areas the source did not map are classified.</p>
+      <p className="prose-measure">All bars share a hectare scale. The unmapped area is not a measurement of forest loss.</p>
+      <div className="province-coverage-grid">
+        {EXPLORE_PRODUCTION_LAYER.rows.map((row) => <ProvinceCoverageCard key={row.id} row={row} locale="en" unknownContext={coverageLabel(row)} />)}
+      </div>
+      <p><Link href="/en/methods#coverage-gap">Why these areas were not mapped, and what we know about them</Link></p>
+      <p><Link className="btn btn--primary" href="/en/explore">Explore the province aggregate</Link></p>
+      <p><small>Other provinces are coming soon.</small></p>
     </section>
     <section className="content-section prose-measure">
       <div className="section-heading"><span className="num">02</span><h2>A record, not a dashboard</h2></div>

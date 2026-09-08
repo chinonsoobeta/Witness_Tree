@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import test from "node:test";
 
 // The map fetches its tiles and boundary overlays from a remote origin named in these
@@ -40,9 +40,58 @@ test("renders the bilingual language gateway", async () => {
   assert.match(html, /Witness Tree/);
   assert.match(html, /Continue in English/);
   assert.match(html, /Continuer en français/);
-  assert.match(html, /href="\/en"[^>]*>Continue in English/);
-  assert.match(html, /href="\/fr"[^>]*>Continuer en français/);
+  assert.match(html, /href="\/en"[^>]*>[\s\S]*?Continue in English/);
+  assert.match(html, /href="\/fr"[^>]*>[\s\S]*?Continuer en français/);
   assert.doesNotMatch(html, /loading skeleton|taking shape/i);
+});
+
+test("the entry gate has no figures or product navigation and tolerates the absent owner photograph", async () => {
+  const html = await (await render("/")).text();
+  const main = /<main\b[^>]*>([\s\S]*?)<\/main>/.exec(html)?.[1];
+  assert.ok(main);
+  // No measured quantity reaches the gate. The coverage period is the one
+  // number on it, and it states the record's scope rather than a finding.
+  // Stripping tags in one pass leaves any construct the first pass reassembles,
+  // so this repeats until the string stops changing before reading the text.
+  let words = main;
+  for (let previous = ""; previous !== words; ) {
+    previous = words;
+    words = words.replace(/<[^<>]*>/g, "");
+  }
+  words = words.replaceAll("1984 to 2022", "").replaceAll("1984 à 2022", "");
+  assert.doesNotMatch(words, /\d/);
+  assert.doesNotMatch(html, /class="site-header|<figcaption/);
+  assert.equal([...main.matchAll(/<a\b/g)].length, 2);
+  if (existsSync(new URL("../public/gate/forest.jpg", import.meta.url))) {
+    assert.match(main, /<img[^>]*src="\/gate\/forest\.jpg"[^>]*alt=""[^>]*role="presentation"/);
+  } else {
+    assert.doesNotMatch(main, /<img\b/);
+  }
+});
+
+test("landing figures pair loss with unmapped area on one hectare scale in both languages", async () => {
+  const hectares = [680273.64, 22204952.19, 714701.7, 8843646.69, 748863.72, 15372023.76, 800473.32, 4095.27];
+  for (const locale of ["en", "fr"]) {
+    const html = await (await render(`/${locale}`)).text();
+    const cards = [...html.matchAll(/<article class="province-coverage-card"[^>]*>([\s\S]*?)<\/article>/g)].map((match) => match[1]);
+    assert.equal(cards.length, 4);
+    assert.ok(html.indexOf('class="coverage-statement"') < html.indexOf('class="province-coverage-card"'));
+    assert.ok(html.indexOf('class="evidence-legend"') < html.indexOf('class="province-coverage-card"'));
+    const values = cards.flatMap((card) => [...card.matchAll(/<strong class="province-coverage-value">([^<]+)<\/strong>/g)].map((match) => match[1]));
+    const format = new Intl.NumberFormat(`${locale}-CA`, { maximumFractionDigits: 2 });
+    assert.deepEqual(values, hectares.map((value) => `${format.format(value)} ha`));
+    const widths = cards.flatMap((card) => [...card.matchAll(/class="province-coverage-fill" style="width:([\d.]+)%"/g)].map((match) => Number(match[1])));
+    assert.equal(widths.length, 8);
+    widths.forEach((width, index) => assert.ok(Math.abs(width / hectares[index] - 100 / 22204952.19) < 1e-12));
+    for (const card of cards) {
+      assert.match(card, /province-coverage-unknown/);
+      assert.match(card, /of known mapped forest|de la forêt connue cartographiée/);
+      assert.match(card, /of the province|de la superficie provinciale/);
+      assert.match(card, /href="\/en\/data"|href="\/fr\/donnees"/);
+    }
+    assert.match(cards[3], /&lt;0[.,]01/);
+    assert.match(cards[3], /GeoBC/);
+  }
 });
 
 test("emits application security headers with the map delivery allowances", async () => {

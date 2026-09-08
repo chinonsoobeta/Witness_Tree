@@ -5,6 +5,7 @@ const COPY = {
     title: "Account service status",
     status:
       "Accounts are not active. Sign-up, sign-in, saved areas, exports, deletion requests, and email delivery are unavailable in this technical preview.",
+    future: "What would be required to activate accounts",
     planned: "Planned v1 capabilities",
     capabilities: [
       "Save up to 25 supported places or custom areas, with each custom area limited to 5,000 km².",
@@ -31,6 +32,7 @@ const COPY = {
     title: "État du service de compte",
     status:
       "Les comptes ne sont pas actifs. L’inscription, la connexion, les zones enregistrées, les exportations, les demandes de suppression et l’envoi de courriels ne sont pas disponibles dans cet aperçu technique.",
+    future: "Conditions nécessaires à l’activation des comptes",
     planned: "Fonctions prévues de la version 1",
     capabilities: [
       "Enregistrer jusqu’à 25 lieux pris en charge ou zones personnalisées; chaque zone personnalisée est limitée à 5 000 km².",
@@ -63,12 +65,13 @@ export function AccountStatusPage({ locale }: Readonly<{ locale: Locale }>) {
     PRODUCT_NAME[locale],
   );
   return (
-    <main id="main" className="page-wrap">
+    <main id="main" className="page-wrap account-page">
       <header className="masthead">
         <h1>{copy.title}</h1>
-        <p className="dek">{copy.status}</p>
+        <p className="account-state"><strong>{copy.status}</strong></p>
       </header>
-      <section className="content-section">
+      <details className="content-section account-future">
+        <summary>{copy.future}</summary>
         <h2>{copy.planned}</h2>
         <ul className="capability-grid">
           {copy.capabilities.map((item) => (
@@ -104,7 +107,7 @@ export function AccountStatusPage({ locale }: Readonly<{ locale: Locale }>) {
             </a>
           </p>
         </div>
-      </section>
+      </details>
     </main>
   );
 }

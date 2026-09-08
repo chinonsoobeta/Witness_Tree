@@ -104,3 +104,12 @@ test("Releases indexes the bounded release and Data and Explore point back to it
   assert.match(englishExplore, /href="\/en\/releases"/);
   assert.match(frenchExplore, /href="\/fr\/versions"/);
 });
+
+
+test("governance foregrounds accountability with a correction-instructions primary link", async () => {
+  const source = await read("../components/governance/GovernancePage.tsx");
+  assert.ok(source.indexOf('className="coverage-statement governance-accountability"') < source.indexOf('page.sections.map'));
+  assert.match(source, /className="btn btn--primary" href=\{kind === "corrections" \? "#correction-instructions" : `\/\$\{locale\}\/corrections`\}/);
+  assert.match(source, /id=\{kind === "corrections" && index === 2 \? "correction-instructions" : undefined\}/);
+  for (const label of ["Accountability", "Responsabilité", "Read the correction instructions", "Consulter les instructions de correction"]) assert.ok(source.includes(label));
+});

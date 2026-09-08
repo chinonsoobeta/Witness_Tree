@@ -457,7 +457,12 @@ type MapView = Readonly<{
 const SCALE_MAX_PIXELS = 120;
 
 const symbol = (className: string) => (
-  <i className={`loss-swatch ${className}`} aria-hidden="true" />
+  <span className="map-legend-key" aria-hidden="true">
+    <i className={`loss-swatch ${className}`} />
+    {className.startsWith("patch-") ? <span className="map-legend-shape">
+      {className === "patch-harvest" ? "●" : className === "patch-fire" ? "◆" : "○"}
+    </span> : null}
+  </span>
 );
 
 export function ExploreMapClient({
@@ -1160,7 +1165,7 @@ export function ExploreMapClient({
                     <td>{formatNumber(row.observedLossHectares, locale)}</td>
                     <td>{formatNumber(row.observedLossPercent, locale)}</td>
                     <td>
-                      {`${text[locale].partial} (${formatUnknownSharePercent(row.unknownSharePercent, locale)}; ${formatNumber(row.unknownRequiredInputHectares, locale)} ${text[locale].unknownArea})`}
+                      {`${text[locale].partial} (${formatUnknownSharePercent(row.unknownSharePercent, locale)}; ${formatNumber(row.unknownRequiredInputHectares, locale)} ${text[locale].unknownArea})${"unmappedCharacter" in row ? `; ${row.unmappedCharacter[locale]}` : ""}`}
                     </td>
                   </tr>
                 ))}

@@ -19,6 +19,8 @@
  * wrong answer.
  */
 
+import { CoverageStatement } from "@/components/policy/CoverageStatement";
+import { EvidenceLegend } from "@/components/policy/EvidenceLegend";
 import { useId, useState } from "react";
 import { formatYearRange, type Locale } from "@/lib/domain";
 import { EXPLORE_COVERAGE_SPAN } from "@/lib/explore/types";
@@ -261,8 +263,6 @@ export function ShapeMeasureClient({ locale }: { locale: Locale }) {
     }
   }
 
-  const bracket = (value: Bracket): string =>
-    words.between(formatHectares(locale, value.low), formatHectares(locale, value.high));
 
   return (
     <section className="shape-measure" aria-labelledby={titleId}>
@@ -426,54 +426,77 @@ export function ShapeMeasureClient({ locale }: { locale: Locale }) {
       <div className="shape-results" aria-live="polite">
         {problem ? <p className="shape-problem">{problem}</p> : null}
         {measurement ? (
-          <>
-            <h3>{words.resultsHeading}</h3>
-            <dl className="shape-readout">
-              <dt>{words.unionHeading}</dt>
-              <dd>
-                <strong>{words.hectares(formatHectares(locale, measurement.unionHectares.estimate))}</strong>{" "}
-                <span className="shape-range">{bracket(measurement.unionHectares)}</span>
-                <span className="shape-note">{words.unionExplain}</span>
-              </dd>
-
-              <dt>{words.shareLabel}</dt>
-              <dd>
-                {measurement.unionShareOfForest === null
-                  ? MISSING
-                  : formatShare(locale, measurement.unionShareOfForest)}
-              </dd>
-
-              <dt>{words.forestHeading}</dt>
-              <dd>{words.hectares(formatHectares(locale, measurement.forestHectares.estimate))}</dd>
-
-              <dt>{words.sumHeading}</dt>
-              <dd>
-                {words.hectares(formatHectares(locale, measurement.sumHectares.estimate))}
-                <span className="shape-note">{words.sumExplain}</span>
-              </dd>
-            </dl>
-
-            <h3>{words.precisionHeading}</h3>
-            <p className="shape-precision">
-              {measurement.precision.exact
-                ? words.precisionExact(measurement.precision.blockMetres)
-                : words.precisionEdge(
-                    measurement.precision.blockMetres,
-                    measurement.coverage.edgeBlocks,
-                    formatShare(locale, measurement.coverage.edgeShareOfEstimate),
-                  )}
-            </p>
-            {measurement.coverage.blocksWithoutData > 0 ? (
-              <p className="shape-precision">{words.precisionMissing(measurement.coverage.blocksWithoutData)}</p>
-            ) : null}
-            {measurement.coverage.outsideGridHectares > 0 ? (
-              <p className="shape-precision">
-                {words.outsideGrid(formatHectares(locale, measurement.coverage.outsideGridHectares))}
-              </p>
-            ) : null}
-          </>
+          <ShapeMeasurementResult locale={locale} measurement={measurement} />
         ) : null}
       </div>
     </section>
+  );
+}
+
+export function ShapeMeasurementResult({ locale, measurement }: Readonly<{ locale: Locale; measurement: Measurement }>) {
+  const words = copy[locale];
+  const bracket = (value: Bracket): string =>
+    words.between(formatHectares(locale, value.low), formatHectares(locale, value.high));
+
+  return (
+    <>
+      <h3>{words.resultsHeading}</h3>
+      <CoverageStatement locale={locale}>
+        <p>{locale === "en"
+          ? "The figures below describe only the part the record can measure. Missing blocks and land outside the grid are excluded, never counted as no loss."
+          : "Les chiffres ci-dessous décrivent seulement la partie que le relevé peut mesurer. Les blocs sans données et le territoire hors de la grille sont exclus, jamais comptés comme sans perte."}</p>
+        <div className="shape-coverage-states">
+          <div>
+            <h3>{locale === "en" ? "Blocks without data" : "Blocs sans données"}</h3>
+            <p>{words.precisionMissing(measurement.coverage.blocksWithoutData)}</p>
+          </div>
+          <div>
+            <h3>{locale === "en" ? "Outside the mapped area" : "Hors de la zone cartographiée"}</h3>
+            <p>{words.outsideGrid(formatHectares(locale, measurement.coverage.outsideGridHectares))}</p>
+          </div>
+        </div>
+      </CoverageStatement>
+      <EvidenceLegend locale={locale} />
+      <dl className="shape-readout">
+        <dt>{words.unionHeading}</dt>
+        <dd>
+          <strong>{words.hectares(formatHectares(locale, measurement.unionHectares.estimate))}</strong>{" "}
+          <span className="shape-range">{bracket(measurement.unionHectares)}</span>
+          <span className="shape-note">{words.unionExplain}</span>
+        </dd>
+
+        <dt>{words.shareLabel}</dt>
+        <dd>
+          {measurement.unionShareOfForest === null
+            ? `${MISSING} ${locale === "en" ? "No forest denominator is available." : "Aucun dénominateur forestier n’est disponible."}`
+            : formatShare(locale, measurement.unionShareOfForest)}
+        </dd>
+
+        <dt>{words.forestHeading}</dt>
+        <dd>
+          {words.hectares(formatHectares(locale, measurement.forestHectares.estimate))}{" "}
+          <span className="shape-range">{bracket(measurement.forestHectares)}</span>
+        </dd>
+
+        <dt>{words.sumHeading}</dt>
+        <dd>
+          {words.hectares(formatHectares(locale, measurement.sumHectares.estimate))}{" "}
+          <span className="shape-range">{bracket(measurement.sumHectares)}</span>
+          <span className="shape-note">{words.sumExplain}</span>
+        </dd>
+      </dl>
+
+      <h3>{words.precisionHeading}</h3>
+      <p className="shape-precision">
+        {measurement.precision.exact
+          ? words.precisionExact(measurement.precision.blockMetres)
+          : words.precisionEdge(
+              measurement.precision.blockMetres,
+              measurement.coverage.edgeBlocks,
+              formatShare(locale, measurement.coverage.edgeShareOfEstimate),
+            )}
+      </p>
+
+    </>
   );
 }

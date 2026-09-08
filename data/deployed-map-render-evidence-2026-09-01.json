@@ -5,7 +5,7 @@
   "productionEligible": false,
   "admissionClaim": false,
   "productionAdmission": false,
-  "observedAt": "2026-09-02T00:51:26Z",
+  "observedAt": "2026-09-08T16:28:33Z",
   "url": "https://www.witnesstree.ca/en/explore",
   "browser": {
     "path": "/Users/chinonsoobeta/Library/Caches/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-mac-arm64/chrome-headless-shell",
@@ -18,11 +18,11 @@
   "sources": [
     {
       "path": "lib/explore/map-style.ts",
-      "sha256": "3d94e515a4a4f3398f44ba2b28a0dac693d91a98d41919b0af579ee65b3d895f"
+      "sha256": "9f4614daef163416f6e20d21cc50a946a7a1bbd29c565e9856511ad655fb1398"
     },
     {
       "path": "components/explore/ExploreMapClient.tsx",
-      "sha256": "9fe6c7c580858545e7054fec32bfb9b6ad78d43c646f107d0ffbd88483aee9a9"
+      "sha256": "49712fba637fbc9e7cecd44a84197b8d1aa1960dfa98a35e8f608966e497ab12"
     }
   ],
   "settled": {
@@ -35,18 +35,18 @@
     "width": 1178,
     "height": 430,
     "opaquePixels": 506540,
-    "rampPixels": 2620,
+    "rampPixels": 3505,
     "samples": [
       [
-        173,
-        166,
-        152,
+        148,
+        139,
+        122,
         255
       ],
       [
-        156,
         148,
-        132,
+        139,
+        122,
         255
       ],
       [
@@ -90,15 +90,15 @@
     "box": {
       "present": true,
       "x": 51,
-      "y": 1289,
+      "y": 1290,
       "width": 1178,
       "height": 430
     }
   },
   "requestCounts": {
-    "total": 25,
-    "pmtiles": 3,
-    "pmtilesRange": 3,
+    "total": 31,
+    "pmtiles": 4,
+    "pmtilesRange": 4,
     "geojsonFallback": 0
   },
   "consoleErrors": [],
@@ -106,7 +106,7 @@
     {
       "id": "pmtiles-range-responses",
       "requirement": "The deployed page fetched the immutable PMTiles archive and the origin answered with HTTP 206 range responses.",
-      "observed": "3 of 3 responses were 206",
+      "observed": "4 of 4 responses were 206",
       "pass": true
     },
     {
@@ -130,7 +130,7 @@
     {
       "id": "canvas-painted-loss-ramp",
       "requirement": "The composited canvas contains pixels on the loss ramp, so tiles were decoded and painted.",
-      "observed": "2620 ramp pixels of 506540 opaque",
+      "observed": "3505 ramp pixels of 506540 opaque",
       "pass": true
     }
   ],

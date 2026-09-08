@@ -1,3 +1,6 @@
+import { CoverageStatement } from "@/components/policy/CoverageStatement";
+import { EvidenceLegend } from "@/components/policy/EvidenceLegend";
+import { NoRecordResult } from "@/components/search/NoRecordResult";
 import { colon, type Locale } from "@/lib/domain";
 import type { Location, Place } from "@/lib/places";
 import {
@@ -36,6 +39,12 @@ export function LocationResult({
         <h1>{location.summary[locale]}</h1>
       </header>
 
+      <CoverageStatement locale={locale}>
+        <p>{locale === "en"
+          ? "This location is an illustrative fixture. Its containing geographies and events describe the example, not a measured record at these coordinates."
+          : "Cet emplacement est un exemple illustratif. Les géographies et les événements associés décrivent l’exemple, et non un registre mesuré à ces coordonnées."}</p>
+      </CoverageStatement>
+      <EvidenceLegend locale={locale} />
       <section className="record-block">
         <h2>{text.coordinates}</h2>
         <p className="coordinates">
@@ -65,6 +74,9 @@ export function LocationResult({
 
       <section className="record-block">
         <h2>{text.events}</h2>
+        {location.events.length === 0 ? <NoRecordResult locale={locale} reason={locale === "en"
+          ? "No event record is available in this location example."
+          : "Aucun registre d’événement n’est disponible dans cet exemple d’emplacement."} /> : null}
         <div className="event-stack">
           {location.events.map((event) => (
             <article className="card event-card" key={event.id}>

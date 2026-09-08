@@ -31,11 +31,11 @@
       "id": "right-of-reply-live",
       "title": "Every reserve and treaty page carries a working right-of-reply route with a named recipient",
       "status": "fail",
-      "reason": "The public engagement page accurately says that no named accountable recipient or tested intake channel has been appointed. An illustrative safeguard note is not a working reply route.",
+      "reason": "The public engagement page states that no engagement contact route exists. The corrections page states that a named accountable recipient and tested intake channel are still required. Neither page supplies a working right-of-reply route.",
       "evidence": [
         {
           "path": "components/governance/GovernancePage.tsx",
-          "sha256": "4a1b41b6588bf51d0906ebfaa578b73222e22824281b12c315e303ffabb9b4cd"
+          "sha256": "c19b5072b362ddd2a0dcc2b53e5851e3a76b98cda0745d0118ca34c7f07e9209"
         }
       ]
     },
@@ -63,7 +63,7 @@
       "evidence": [
         {
           "path": "components/governance/GovernancePage.tsx",
-          "sha256": "4a1b41b6588bf51d0906ebfaa578b73222e22824281b12c315e303ffabb9b4cd"
+          "sha256": "c19b5072b362ddd2a0dcc2b53e5851e3a76b98cda0745d0118ca34c7f07e9209"
         }
       ]
     },
@@ -79,7 +79,7 @@
         },
         {
           "path": "tests/comparison.test.tsx",
-          "sha256": "801858a2b6a49dd25bc7d4132b5dccfac3b4af4d8a40e5ff0cd5902a8d334e4c"
+          "sha256": "12c48d7ec23105c635b167a71a0279fb07411646f74f6f6aec656a9bb615b1e7"
         }
       ]
     },
@@ -87,11 +87,11 @@
       "id": "mistik-request-recorded",
       "title": "The Mistik request, terms, honorarium, and outcome appear in the decision log and engagement register",
       "status": "pass",
-      "reason": "The decision log and engagement register record the owner's final outcome: Mistik was not pursued, no request was made, no permission, honorarium, or terms exist, and Witness Tree / Arbre t\u00e9moin remains the product name. The surfaces do not imply that engagement or permission occurred.",
+      "reason": "The decision log and engagement register record the owner's final outcome: Mistik was not pursued, no request was made, no permission, honorarium, or terms exist, and Witness Tree / Arbre témoin remains the product name. The surfaces do not imply that engagement or permission occurred.",
       "evidence": [
         {
           "path": "components/governance/GovernancePage.tsx",
-          "sha256": "4a1b41b6588bf51d0906ebfaa578b73222e22824281b12c315e303ffabb9b4cd"
+          "sha256": "c19b5072b362ddd2a0dcc2b53e5851e3a76b98cda0745d0118ca34c7f07e9209"
         },
         {
           "path": "data/phase0-owner-scope-decisions-2026-08-27.json",
@@ -107,11 +107,11 @@
       "evidence": [
         {
           "path": "components/explore/ExploreView.tsx",
-          "sha256": "73e2899201206b877e8214ef0048d324c3caedcf561a03e44b083e377c946f4a"
+          "sha256": "ac50b3f60164982b970542718c24b23849cde36bdf9744ac6a45e29bc7cc6a37"
         },
         {
           "path": "tests/explore.test.tsx",
-          "sha256": "bb46d0b7b7dd0f38aac7e1f4a91ab0d40d96d566575fbbf7dc2ee75f25d48b68"
+          "sha256": "42b3611a724fc91b43d455117cbd69cb9fc88f3ef9feb00ce6ccd564c2a65d49"
         }
       ]
     },
@@ -123,11 +123,11 @@
       "evidence": [
         {
           "path": "components/explore/ExploreView.tsx",
-          "sha256": "73e2899201206b877e8214ef0048d324c3caedcf561a03e44b083e377c946f4a"
+          "sha256": "ac50b3f60164982b970542718c24b23849cde36bdf9744ac6a45e29bc7cc6a37"
         },
         {
           "path": "tests/explore.test.tsx",
-          "sha256": "bb46d0b7b7dd0f38aac7e1f4a91ab0d40d96d566575fbbf7dc2ee75f25d48b68"
+          "sha256": "42b3611a724fc91b43d455117cbd69cb9fc88f3ef9feb00ce6ccd564c2a65d49"
         }
       ]
     },
@@ -139,11 +139,11 @@
       "evidence": [
         {
           "path": "components/explore/ExploreView.tsx",
-          "sha256": "73e2899201206b877e8214ef0048d324c3caedcf561a03e44b083e377c946f4a"
+          "sha256": "ac50b3f60164982b970542718c24b23849cde36bdf9744ac6a45e29bc7cc6a37"
         },
         {
           "path": "tests/explore.test.tsx",
-          "sha256": "bb46d0b7b7dd0f38aac7e1f4a91ab0d40d96d566575fbbf7dc2ee75f25d48b68"
+          "sha256": "42b3611a724fc91b43d455117cbd69cb9fc88f3ef9feb00ce6ccd564c2a65d49"
         }
       ]
     },
@@ -179,7 +179,7 @@
         },
         {
           "path": "tests/comparison.test.tsx",
-          "sha256": "801858a2b6a49dd25bc7d4132b5dccfac3b4af4d8a40e5ff0cd5902a8d334e4c"
+          "sha256": "12c48d7ec23105c635b167a71a0279fb07411646f74f6f6aec656a9bb615b1e7"
         }
       ]
     },
@@ -187,19 +187,19 @@
       "id": "comparison-row-context",
       "title": "Every riding comparison row renders normalised and absolute values, forested-hectare denominator, coverage, and evidence",
       "status": "pass",
-      "reason": "The comparison table and cards render percentage, hectares, forested hectares, coverage, and evidence in both locales, and the rank basis cell also carries the share with no matching official record, so a cropped screenshot cannot separate a rank from its caveat.",
+      "reason": "The comparison table and cards render percentage, hectares, forested hectares, coverage, and evidence in both locales. The official-matching caveat is stated once in the ranking-context disclosure rather than repeated in each row. The owner authorized this explanation correction on 2026-09-08 to match the existing implementation. The selected riding coverage now appears beneath each name before the figures, and unavailable measurements carry a dash with a coverage reason. The required row context, passing status, and Phase 7 gate count are unchanged.",
       "evidence": [
         {
           "path": "components/comparison/RankedRidingsTable.tsx",
-          "sha256": "a132954f89bdb3f6d5ce86bcadfbbd74c1e552896e82f8ff1df3e35a0e5f358a"
+          "sha256": "e9c2a25c9856631906ea20117bb847a6435d89ec1ac624896c9f2065affaa1b6"
         },
         {
           "path": "components/comparison/SideBySideComparison.tsx",
-          "sha256": "3bcdab5a94d39f605229cefbbfc4f113eecf17f7ea4787ca649ce81b0dacfc80"
+          "sha256": "7b49c0e067c7e7e663229fe45b2f9d9a7e4a0ac03480c6a01ad1b4d2dec83bec"
         },
         {
           "path": "tests/comparison.test.tsx",
-          "sha256": "801858a2b6a49dd25bc7d4132b5dccfac3b4af4d8a40e5ff0cd5902a8d334e4c"
+          "sha256": "12c48d7ec23105c635b167a71a0279fb07411646f74f6f6aec656a9bb615b1e7"
         }
       ]
     },
@@ -215,11 +215,11 @@
         },
         {
           "path": "components/comparison/RankedRidingsTable.tsx",
-          "sha256": "a132954f89bdb3f6d5ce86bcadfbbd74c1e552896e82f8ff1df3e35a0e5f358a"
+          "sha256": "e9c2a25c9856631906ea20117bb847a6435d89ec1ac624896c9f2065affaa1b6"
         },
         {
           "path": "tests/comparison.test.tsx",
-          "sha256": "801858a2b6a49dd25bc7d4132b5dccfac3b4af4d8a40e5ff0cd5902a8d334e4c"
+          "sha256": "12c48d7ec23105c635b167a71a0279fb07411646f74f6f6aec656a9bb615b1e7"
         }
       ]
     },
@@ -251,7 +251,7 @@
         },
         {
           "path": "tests/comparison.test.tsx",
-          "sha256": "801858a2b6a49dd25bc7d4132b5dccfac3b4af4d8a40e5ff0cd5902a8d334e4c"
+          "sha256": "12c48d7ec23105c635b167a71a0279fb07411646f74f6f6aec656a9bb615b1e7"
         }
       ]
     },
@@ -263,7 +263,7 @@
       "evidence": [
         {
           "path": "tests/comparison.test.tsx",
-          "sha256": "801858a2b6a49dd25bc7d4132b5dccfac3b4af4d8a40e5ff0cd5902a8d334e4c"
+          "sha256": "12c48d7ec23105c635b167a71a0279fb07411646f74f6f6aec656a9bb615b1e7"
         }
       ]
     }

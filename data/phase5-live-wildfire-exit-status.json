@@ -43,7 +43,7 @@
    "evidence": [
     {
      "path": "tests/wildfire-routes.test.tsx",
-     "sha256": "ca854232a9fc053b19c3772c9f1b4f440f7e6ca389105af4feefdc870c8b50c7"
+     "sha256": "d3d399ff2ad45f3b1107110cb1a47cf4e8e148f3699f7679e01e9f89582e31e8"
     }
    ]
   },
@@ -59,7 +59,7 @@
     },
     {
      "path": "tests/wildfire-routes.test.tsx",
-     "sha256": "ca854232a9fc053b19c3772c9f1b4f440f7e6ca389105af4feefdc870c8b50c7"
+     "sha256": "d3d399ff2ad45f3b1107110cb1a47cf4e8e148f3699f7679e01e9f89582e31e8"
     }
    ]
   },

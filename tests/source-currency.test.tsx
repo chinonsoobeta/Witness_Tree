@@ -52,3 +52,14 @@ test("the Data page carries the section in both locales", () => {
     assert.ok(markup.includes(probe.observedAt.slice(0, 10)), `${locale} data page is missing the observation date`);
   }
 });
+
+
+test("Data leads with coverage and keeps provenance beside the reader downloads", () => {
+  for (const locale of ["en", "fr"] as const) {
+    const html = renderToStaticMarkup(<DataPage locale={locale} />);
+    assert.ok(html.indexOf('class="coverage-statement"') < html.indexOf('class="data-layout"'));
+    assert.match(html, /<aside class="data-provenance" aria-label="[^"]+">/);
+    assert.ok(html.indexOf('class="data-reader"') < html.indexOf('class="data-provenance"'));
+    assert.match(html, /source-ledger\.json/);
+  }
+});

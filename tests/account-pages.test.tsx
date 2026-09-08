@@ -11,3 +11,14 @@ test("English and French account status pages state the same unavailable service
   for (const text of ["Les comptes ne sont pas actifs", "L’inscription", "connexion", "pas disponibles", "25", "5 000 km²", "courriel vérifiée", "version exacte", "30 jours", "PostgreSQL géré au Canada", "sécurité des lignes", "Chiffrement", "courriel transactionnel", "limitation du débit", "Examen de la confidentialité", "ne constituent pas des directives d’urgence"]) assert.match(fr, new RegExp(text, "i"));
   assert.match(en, /href="\/en\/privacy"/); assert.match(en, /href="\/en\/terms"/); assert.match(fr, /href="\/fr\/confidentialite"/); assert.match(fr, /href="\/fr\/conditions"/); assert.equal(/<form|type="submit"/i.test(`${en}${fr}`), false);
 });
+
+
+test("Account foregrounds unavailable state and puts future capabilities in a closed disclosure", () => {
+  for (const locale of ["en", "fr"] as const) {
+    const html = renderToStaticMarkup(<AccountStatusPage locale={locale} />);
+    assert.match(html, /<p class="account-state"><strong>/);
+    assert.match(html, /<details class="content-section account-future"><summary>/);
+    assert.ok(html.indexOf('class="account-state"') < html.indexOf('<details'));
+    assert.doesNotMatch(html, /coverage-statement|evidence-legend|<details[^>]* open/);
+  }
+});

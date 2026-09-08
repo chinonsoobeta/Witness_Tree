@@ -1,3 +1,5 @@
+import { CoverageStatement } from "@/components/policy/CoverageStatement";
+import { EvidenceLegend } from "@/components/policy/EvidenceLegend";
 import { PRODUCT_NAME, type Locale } from "@/lib/domain";
 
 const AGENCIES = [
@@ -49,7 +51,7 @@ const COPY = {
     lastRefresh: `Last successful ${PRODUCT_NAME.en} refresh`,
     lastRefreshValue: "None; no live refresh has run.",
     agency: "Source agency",
-    agencyValue: "Use the responsible provincial agency listed above.",
+    agencyValue: "Use the responsible provincial agency listed below.",
     nextRefresh: "Next scheduled refresh",
     nextRefreshValue: "Not scheduled.",
     emergency: "Official emergency information",
@@ -70,7 +72,7 @@ const COPY = {
     lastRefresh: `Dernière actualisation réussie d’${PRODUCT_NAME.fr}`,
     lastRefreshValue: "Aucune; aucune actualisation en direct n’a été exécutée.",
     agency: "Organisme source",
-    agencyValue: "Consultez l’organisme provincial responsable indiqué ci-dessus.",
+    agencyValue: "Consultez l’organisme provincial responsable indiqué ci-dessous.",
     nextRefresh: "Prochaine actualisation prévue",
     nextRefreshValue: "Aucune actualisation n’est prévue.",
     emergency: "Information d’urgence officielle",
@@ -87,12 +89,32 @@ export function WildfireView({ locale }: WildfireViewProps) {
       <header className="masthead">
         <p className="eyebrow">{copy.eyebrow}</p>
         <h1>{copy.title}</h1>
-        <p className="dek">{copy.context}</p>
       </header>
 
-      <aside className="notice notice--alert" role="note">
-        <p><strong>{copy.urgent}</strong></p>
+      <CoverageStatement locale={locale}><p>{copy.context}</p></CoverageStatement>
+      <aside className="notice notice--alert wildfire-disclaimer" role="note">
+        <span className="wildfire-disclaimer-symbol" aria-hidden="true">△</span>
+        <div>
+          <h2>{locale === "en" ? "Use official emergency instructions" : "Suivez les consignes officielles des services d’urgence"}</h2>
+          <p><strong>{copy.urgent}</strong></p>
+          <a href="#wildfire-directory-heading">{copy.emergencyValue}</a>
+        </div>
       </aside>
+      <EvidenceLegend locale={locale} />
+
+      <section className="content-section" aria-labelledby="wildfire-status-heading">
+        <h2 id="wildfire-status-heading">{copy.status}</h2>
+        <dl className="stat-row">
+          <div className="stat"><dt>{copy.sourceUpdated}</dt><dd>– {copy.sourceUpdatedValue}</dd></div>
+          <div className="stat"><dt>{copy.lastRefresh}</dt><dd>– {copy.lastRefreshValue}</dd></div>
+          <div className="stat"><dt>{copy.agency}</dt><dd>{copy.agencyValue}</dd></div>
+          <div className="stat"><dt>{copy.nextRefresh}</dt><dd>– {copy.nextRefreshValue}</dd></div>
+          <div className="stat">
+            <dt>{copy.emergency}</dt>
+            <dd><a href="#wildfire-directory-heading">{copy.emergencyValue}</a></dd>
+          </div>
+        </dl>
+      </section>
 
       <section className="content-section" aria-labelledby="wildfire-directory-heading">
         <h2 id="wildfire-directory-heading">{copy.directory}</h2>
@@ -109,19 +131,6 @@ export function WildfireView({ locale }: WildfireViewProps) {
         <p>{copy.timing}</p>
       </section>
 
-      <section className="content-section" aria-labelledby="wildfire-status-heading">
-        <h2 id="wildfire-status-heading">{copy.status}</h2>
-        <dl className="stat-row">
-          <div className="stat"><dt>{copy.sourceUpdated}</dt><dd>{copy.sourceUpdatedValue}</dd></div>
-          <div className="stat"><dt>{copy.lastRefresh}</dt><dd>{copy.lastRefreshValue}</dd></div>
-          <div className="stat"><dt>{copy.agency}</dt><dd>{copy.agencyValue}</dd></div>
-          <div className="stat"><dt>{copy.nextRefresh}</dt><dd>{copy.nextRefreshValue}</dd></div>
-          <div className="stat">
-            <dt>{copy.emergency}</dt>
-            <dd><a href="#wildfire-directory-heading">{copy.emergencyValue}</a></dd>
-          </div>
-        </dl>
-      </section>
     </main>
   );
 }

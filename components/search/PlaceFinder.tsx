@@ -1,3 +1,4 @@
+import { NoRecordResult } from "./NoRecordResult";
 import type { Locale } from "@/lib/domain";
 import { searchPlaces } from "@/lib/search";
 
@@ -65,7 +66,7 @@ export function PlaceFinder({
           ))}
         </ul>
       ) : (
-        <p className="search-note">{text.none}</p>
+        <NoRecordResult locale={locale} reason={text.none} />
       )}
     </section>
   );
