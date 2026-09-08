@@ -18,6 +18,14 @@
   --topbar-ink-2: #ded8cf;
   --topbar-accent: #a9cf9b;
   --topbar-edge: #948b7a;
+  --hero-fill: #47593f;
+  --hero-panel: #2c2c24;
+  --hero-ink: #fdfcf8;
+  --hero-ink-2: #e7ebe3;
+  --hero-eyebrow: #e6dccd;
+  --hero-rule: #615f54;
+  --coverage-baseline: #7fa872;
+  --coverage-local: #cfe3c4;
   color-scheme: light dark;
 
   /* ground and surface */
@@ -168,6 +176,14 @@
     --topbar-ink-2: #c9c2b6;
     --topbar-accent: #a9cf9b;
     --topbar-edge: #7d7566;
+    --hero-fill: #35422f;
+    --hero-panel: #22201a;
+    --hero-ink: #f2ede3;
+    --hero-ink-2: #d8e0d2;
+    --hero-eyebrow: #cfc6b6;
+    --hero-rule: #4c4a41;
+    --coverage-baseline: #7fa872;
+    --coverage-local: #cfe3c4;
     color-scheme: dark;
 
     /* ground and surface */
@@ -242,6 +258,14 @@
   --topbar-ink-2: #ded8cf;
   --topbar-accent: #a9cf9b;
   --topbar-edge: #948b7a;
+  --hero-fill: #47593f;
+  --hero-panel: #2c2c24;
+  --hero-ink: #fdfcf8;
+  --hero-ink-2: #e7ebe3;
+  --hero-eyebrow: #e6dccd;
+  --hero-rule: #615f54;
+  --coverage-baseline: #7fa872;
+  --coverage-local: #cfe3c4;
   color-scheme: light;
 
   /* ground and surface */
@@ -335,6 +359,14 @@
   --topbar-ink-2: #c9c2b6;
   --topbar-accent: #a9cf9b;
   --topbar-edge: #7d7566;
+  --hero-fill: #35422f;
+  --hero-panel: #22201a;
+  --hero-ink: #f2ede3;
+  --hero-ink-2: #d8e0d2;
+  --hero-eyebrow: #cfc6b6;
+  --hero-rule: #4c4a41;
+  --coverage-baseline: #7fa872;
+  --coverage-local: #cfe3c4;
   color-scheme: dark;
 
   /* ground and surface */
@@ -3643,4 +3675,112 @@ dd > a:only-child {
 @media (max-width: 480px) {
   .province-coverage-pair { grid-template-columns: minmax(0, 1fr); }
   .province-coverage-measure dt { min-height: 0; margin-bottom: 8px; }
+}
+
+/* Place record, confidence-first arrangement.
+   The hero and its coverage panel are two surfaces that stay dark in both
+   themes, so they take the --hero-* set rather than --accent and --ink: those
+   two swap between palettes and would invert the band. */
+.place-record { display: flex; flex-direction: column; width: 100%; }
+.place-hero {
+  padding-inline: max(32px, calc((100% - var(--plate)) / 2));
+}
+
+.place-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 420px;
+  background: var(--hero-fill);
+  color: var(--hero-ink);
+}
+.place-hero > .place-identity { position: static; top: auto; z-index: auto; background: none; color: inherit; padding: 36px 0; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.place-hero > .place-identity h1 { margin: 0; max-width: 20ch; text-wrap: pretty; }
+.place-hero > .place-identity .eyebrow { color: var(--hero-eyebrow); margin: 0; }
+.place-hero-lead { margin: 0; max-width: 52ch; color: var(--hero-ink-2); text-wrap: pretty; }
+.place-hero-alias { margin: 0; color: var(--hero-eyebrow); font-size: 0.85rem; }
+
+.place-hero-panel {
+  padding: 36px 32px;
+  margin-inline-end: calc(0px - max(32px, calc((100% - var(--plate)) / 2)));
+  border: 0;
+  background: var(--hero-panel);
+  color: var(--hero-ink);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.place-hero-panel h2 { color: var(--hero-ink); }
+.place-hero-panel .eyebrow { color: var(--hero-eyebrow); margin: 0; }
+.place-coverage-keys { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 11px; }
+.place-coverage-keys li { display: flex; gap: 11px; align-items: flex-start; line-height: 1.45; }
+.place-coverage-keys-absent { color: var(--hero-eyebrow); }
+.place-key-swatch { flex: none; width: 12px; height: 12px; margin-top: 4px; border-radius: 2px; }
+.place-key-swatch--national-baseline { background: var(--coverage-baseline); }
+.place-key-swatch--national-baseline-plus-local-context { background: var(--coverage-local); }
+/* The hatch is the same warp-and-weft the map uses for an unmeasured cell, so
+   a reader who has seen one recognises the other. */
+.place-key-swatch--absent { background: repeating-linear-gradient(135deg, var(--rule-strong) 0 3px, var(--muted) 3px 6px); }
+.place-hero-note { margin: 0; padding-top: 14px; border-top: 1px solid var(--hero-rule); color: var(--hero-eyebrow); font-size: 0.8rem; line-height: 1.5; }
+
+.place-evidence-strip {
+  display: flex; gap: 20px; flex-wrap: wrap; align-items: center;
+  padding: 14px max(32px, calc((100% - var(--plate)) / 2)); background: var(--sand); border-bottom: 1px solid var(--rule-strong);
+}
+.place-evidence-strip .eyebrow { margin: 0; }
+.place-evidence-strip .evidence-legend { margin: 0; }
+
+.place-body { padding: 30px max(32px, calc((100% - var(--plate)) / 2)); display: flex; flex-direction: column; gap: 28px; }
+.place-stat-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.place-stat-card { border: 1px solid var(--edge-record); border-radius: var(--radius-lg); background: var(--surface); padding: 22px; display: flex; flex-direction: column; gap: 12px; }
+.place-stat-card--unknown { border-color: var(--edge-unknown); background: var(--surface-2); }
+.place-stat-card .eyebrow { margin: 0; }
+
+.place-source-heading { margin: 18px 0 8px; font-size: 0.95rem; }
+.place-detail { display: grid; grid-template-columns: minmax(0, 1fr) 460px; gap: 28px; align-items: start; }
+.place-detail > .place-observed { grid-column: 1; grid-row: 1; }
+.place-detail > .place-provenance { grid-column: 2; grid-row: 1; }
+.place-observed { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.place-observed .eyebrow { margin: 0; }
+
+.place-years { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.place-year {
+  display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; gap: 14px; align-items: center;
+  padding: 12px 16px; border: 1px solid var(--rule); border-radius: var(--radius);
+}
+.place-year-label { font-weight: 600; }
+.place-year-body { min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.place-year-evidence { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.place-year-value { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+.place-year--official-record { border-color: var(--edge-record); background: var(--tint-record); }
+.place-year--satellite-observation { border-color: var(--edge-satellite); background: var(--tint-satellite); }
+.place-year--derived-estimate { border-color: var(--edge-derived); background: var(--tint-derived); }
+/* A year with no record is a dashed edge, so it reads as absent rather than as
+   a fourth evidence class with a colour of its own. */
+.place-year--absent { border-style: dashed; border-color: var(--edge-unknown); background: var(--tint-unknown); color: var(--muted); }
+.place-year--absent .place-year-value { font-weight: 400; }
+
+.place-provenance { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.place-provenance .eyebrow { margin: 0; }
+.place-provenance-card, .place-caution { display: flex; flex-direction: column; gap: 12px; }
+.place-caution { border-color: var(--clay); background: var(--tint-derived); }
+.place-caution .eyebrow, .place-caution a { color: var(--clay-ink); }
+.place-caution p { margin: 0; }
+.place-download { text-align: center; }
+.place-provenance .source-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.record-citation p { margin: 0; }
+
+@media (max-width: 1000px) {
+  .place-hero { grid-template-columns: minmax(0, 1fr); }
+  .place-hero-panel { margin-inline-end: 0; }
+  .place-detail { grid-template-columns: minmax(0, 1fr); }
+  /* Stacked, the series reads first and the provenance rail follows it. */
+  .place-detail > .place-observed { grid-column: 1; grid-row: 1; }
+  .place-detail > .place-provenance { grid-column: 1; grid-row: 2; }
+}
+@media (max-width: 640px) {
+  .place-hero-identity, .place-hero-panel { padding: 20px 16px; }
+  .place-evidence-strip { padding: 12px 16px; }
+  .place-body { padding: 20px 16px; }
+  .place-stat-cards { grid-template-columns: minmax(0, 1fr); }
+  .place-year { grid-template-columns: 56px minmax(0, 1fr); }
+  .place-year-value { grid-column: 2; text-align: left; }
 }
