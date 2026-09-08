@@ -10,6 +10,8 @@ Deployment is an owner-owned decision. This record does not authorize or perform
 - Open integration: [PR #156](https://github.com/chinonsoobeta/Witness_Tree/pull/156)
 - Canonical domain: `https://www.witnesstree.ca`
 
+The branch head may sit one commit ahead of the application commit above, where that later commit changes only this instruction file. Select the application commit explicitly so the deployed application stays traceable to the tree the checks ran against.
+
 ## Why this deploy precedes the merge
 
 The named commit is not on `main` and is not the result of a protected merge. That is deliberate. `scripts/check-deployed-map-render.mjs` binds the deployed-Site map observation to the client that was observed, and this branch changes both `lib/explore/map-style.ts` and `components/explore/ExploreMapClient.tsx` relative to the 2026-09-05 observation. The gate is therefore failing, `verify` is the one required status check on `main`, and PR #156 cannot merge until the Site has been redeployed from this commit and the harness has been re-run against it.
