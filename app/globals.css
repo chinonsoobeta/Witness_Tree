@@ -2651,8 +2651,11 @@ dd > a:only-child {
    6.43 dark, and the labels use --ink-2 at 8.95 / 11.64. */
 .annual-chart {
   display: block;
-  max-width: 640px;
+  min-width: 720px;
   margin-bottom: 6px;
+}
+.place-annual-scroll {
+  overflow-x: auto;
 }
 .annual-bar {
   fill: var(--accent-fill);
@@ -2665,7 +2668,7 @@ dd > a:only-child {
 .annual-value {
   fill: var(--ink-2);
   font-family: var(--mono);
-  font-size: 9px;
+  font-size: 14px;
 }
 
 /* ==========================================================================
@@ -2756,6 +2759,76 @@ dd > a:only-child {
 
 .record-page > * + * {
   margin-block-start: 40px;
+}
+
+.place-identity {
+  position: sticky;
+  top: 64px;
+  z-index: 40;
+  padding: 14px 0;
+  background: var(--ground);
+  color: var(--ink);
+  border-bottom: 1px solid var(--rule-strong);
+}
+.place-identity h1 {
+  margin: 0;
+  font-size: clamp(1.125rem, 2.5vw, 1.75rem);
+}
+.place-identity .eyebrow {
+  margin: 0 0 4px;
+}
+.place-coverage-bar {
+  width: 100%;
+  height: 12px;
+}
+.place-coverage-track {
+  fill: var(--rule);
+}
+.place-coverage-share {
+  fill: var(--edge-record);
+}
+.place-evidence-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: 32px;
+  align-items: start;
+}
+.place-headline > h2, .place-provenance h2 {
+  margin-top: 0;
+  font-size: 1.25rem;
+}
+.place-headline .reported-stack {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.place-headline .reported {
+  min-width: 0;
+  padding: 20px;
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--rule-strong);
+}
+.place-headline .reported--unknown {
+  background: var(--tint-unknown);
+  border-color: var(--edge-unknown);
+}
+.place-headline .reported-figure--unknown {
+  font-size: 1.25rem;
+}
+.place-provenance {
+  padding: 24px;
+  background: var(--surface-2);
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+@media (max-width: 960px) {
+  .place-evidence-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 540px) {
+  .place-headline .reported-stack {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .record-block > h2 {
