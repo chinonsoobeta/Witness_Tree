@@ -35,7 +35,7 @@
       "evidence": [
         {
           "path": "components/governance/GovernancePage.tsx",
-          "sha256": "05f7c915a57a048335be6cdaf7e5676a4b3f6fde00505cb2b06cc783b32808a8"
+          "sha256": "173bd87470ffb1169ab116a5e0a0d1e4a7f2f0e0a72eeabbe77eae29ecf06471"
         }
       ]
     },
@@ -63,7 +63,7 @@
       "evidence": [
         {
           "path": "components/governance/GovernancePage.tsx",
-          "sha256": "05f7c915a57a048335be6cdaf7e5676a4b3f6fde00505cb2b06cc783b32808a8"
+          "sha256": "173bd87470ffb1169ab116a5e0a0d1e4a7f2f0e0a72eeabbe77eae29ecf06471"
         }
       ]
     },
@@ -87,11 +87,11 @@
       "id": "mistik-request-recorded",
       "title": "The Mistik request, terms, honorarium, and outcome appear in the decision log and engagement register",
       "status": "pass",
-      "reason": "The decision log and engagement register record the owner's final outcome: Mistik was not pursued, no request was made, no permission, honorarium, or terms exist, and Witness Tree / Arbre t\u00e9moin remains the product name. The surfaces do not imply that engagement or permission occurred.",
+      "reason": "The decision log and engagement register record the owner's final outcome: Mistik was not pursued, no request was made, no permission, honorarium, or terms exist, and Witness Tree / Arbre témoin remains the product name. The surfaces do not imply that engagement or permission occurred.",
       "evidence": [
         {
           "path": "components/governance/GovernancePage.tsx",
-          "sha256": "05f7c915a57a048335be6cdaf7e5676a4b3f6fde00505cb2b06cc783b32808a8"
+          "sha256": "173bd87470ffb1169ab116a5e0a0d1e4a7f2f0e0a72eeabbe77eae29ecf06471"
         },
         {
           "path": "data/phase0-owner-scope-decisions-2026-08-27.json",

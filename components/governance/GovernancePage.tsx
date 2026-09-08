@@ -1,4 +1,4 @@
-import { EvidenceLegend } from "@/components/policy/EvidenceLegend";
+import { CoverageStatement } from "@/components/policy/CoverageStatement";
 import { PRODUCT_NAME, type Locale } from "@/lib/domain";
 import {
   EXPLORE_COVERAGE_PERIOD,
@@ -572,14 +572,19 @@ export function GovernancePage({
       <header className="masthead">
         <h1>{page.title}</h1>
       </header>
-      <aside className="coverage-statement governance-accountability" aria-label={locale === "en" ? "Accountability" : "Responsabilité"}>
-        <h2>{locale === "en" ? "Accountability" : "Responsabilité"}</h2>
+      {/* This screen reports no figure, so the plate carries accountability
+          rather than coverage, and no evidence legend belongs on it: the
+          legend annotates figures, and there are none here. */}
+      <CoverageStatement
+        locale={locale}
+        className="governance-accountability"
+        title={locale === "en" ? "Accountability" : "Responsabilité"}
+      >
         <p>{page.status}</p>
         <a className="btn btn--primary" href={kind === "corrections" ? "#correction-instructions" : `/${locale}/corrections`}>
           {locale === "en" ? "Read the correction instructions" : "Consulter les instructions de correction"}
         </a>
-      </aside>
-      <EvidenceLegend locale={locale} />
+      </CoverageStatement>
       <div className="content-section prose-measure">
         {page.sections.map((section, index) => (
           <section className="governance-section" key={section.heading} id={kind === "corrections" && index === 2 ? "correction-instructions" : undefined}>
