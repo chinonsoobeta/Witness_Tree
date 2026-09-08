@@ -703,17 +703,24 @@ h4 {
 .gateway-welcome {
   margin: 0;
   font-weight: 600;
-  font-size: 16px;
+  font-size: clamp(16px, calc(14.51px + 0.381vw), 20px);
   line-height: 1;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--gate-eyebrow);
   text-wrap: pretty;
 }
+/* 3a is drawn twice: an 840px card standing in for a full desktop screen and
+   a 390px card standing in for a phone. Fixing the desktop card's pixels made
+   the type sit a third small in a real 1440px frame, so each value runs from
+   the mobile artboard at 390px to the desktop artboard's proportions at
+   1440px. The choice cards below are the exception: 26px already reads
+   correctly at desktop, and lifting the eyebrow past them would inverse the
+   hierarchy. */
 .gateway-lead {
   margin: 0;
   font-weight: 400;
-  font-size: 15px;
+  font-size: clamp(13px, calc(11.14px + 0.476vw), 18px);
   line-height: 1.6;
   color: var(--gate-lead);
   max-width: 62ch;
@@ -766,7 +773,9 @@ h4 {
 .gateway-location-name {
   grid-area: 1 / 1;
   font-weight: 400;
-  font-size: 16px;
+  /* The 12px floor is the owner's own mobile value, so it is the low end of
+     the ramp rather than a separate override below 640px. */
+  font-size: clamp(12px, calc(10.89px + 0.286vw), 15px);
   line-height: 1.4;
   color: var(--gate-caption);
 }
@@ -777,13 +786,12 @@ h4 {
   .language-gateway { gap: 22px; padding: 24px 18px; }
   .gateway-panel { gap: 22px; }
   .gateway-intro { gap: 10px; }
-  .gateway-lead { font-size: 13px; line-height: 1.55; }
+  .gateway-lead { line-height: 1.55; }
   .language-choices { grid-template-columns: minmax(0, 1fr); gap: 12px; }
   .gateway-choice { padding: 18px 20px; border-radius: 14px; gap: 5px; }
   .gateway-choice-name { font-size: 21px; }
   .gateway-choice-sub { font-size: 12.5px; line-height: 1.4; }
   .gateway-location { padding: 8px 14px; }
-  .gateway-location-name { font-size: 12px; }
 }
 
 .eyebrow {
@@ -1297,9 +1305,13 @@ h4 {
   padding: 72px 0 28px;
   border-bottom: 1px solid var(--ink);
 }
+/* The artboards run their whole scale small (12.5px body against this site's
+   17px), so their pixels do not transfer; their ratio to body text does. An
+   interior heading sits at 2.56x body on the canvas and the landing at 3.52x,
+   which against 17px is 44px and 60px. */
 .masthead h1 {
   margin: 14px 0 16px;
-  font-size: clamp(40px, 6vw, 68px);
+  font-size: clamp(30px, 3.4vw, 44px);
   line-height: 1.02;
   letter-spacing: -0.025em;
   font-weight: 600;
@@ -1308,8 +1320,11 @@ h4 {
   max-width: 62ch;
   margin: 0;
   color: var(--ink-2);
-  font-size: 21px;
+  font-size: 18px;
 }
+/* The landing page is the one screen that opens on a question rather than a
+   section name, and the canvas gives it its own larger step. */
+.masthead--record h1 { font-size: clamp(38px, 4.6vw, 60px); }
 .province-bar {
   display: flex;
   align-items: center;

@@ -16,7 +16,7 @@ function coverageLabel(row: (typeof EXPLORE_PRODUCTION_LAYER.rows)[number]) {
 
 export default function FrenchHome() {
   return <SiteShell locale="fr"><main id="main" className="page-wrap">
-    <header className="masthead">
+    <header className="masthead masthead--record">
       <p className="eyebrow">Registre de preuves · {EXPLORE_COVERAGE_PERIOD.fr}</p>
       <h1>Qu’est-il arrivé à la forêt ici?</h1>
       <p className="dek">{PRODUCT_NAME.fr} aide à comprendre les pertes forestières consignées et détectées dans quatre provinces.</p>

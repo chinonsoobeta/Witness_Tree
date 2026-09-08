@@ -16,7 +16,7 @@ function coverageLabel(row: (typeof EXPLORE_PRODUCTION_LAYER.rows)[number]) {
 
 export default function EnglishHome() {
   return <SiteShell locale="en"><main id="main" className="page-wrap">
-    <header className="masthead">
+    <header className="masthead masthead--record">
       <p className="eyebrow">Evidence record · {EXPLORE_COVERAGE_PERIOD.en}</p>
       <h1>What happened to the forest here?</h1>
       <p className="dek">{PRODUCT_NAME.en} helps you understand recorded and detected forest loss in four provinces.</p>

@@ -68,8 +68,10 @@ test("the gate names where each photograph was taken", async () => {
     assert.ok(gateway.includes(`{ file: "${file}", location: "${location}" }`), file);
   }
   assert.match(gateway, /className="gateway-location-name"/);
-  assert.match(css, /\.gateway-location-name \{[^}]*font-size: 16px;/);
-  assert.match(css, /@media \(max-width: 640px\) \{[\s\S]*?\.gateway-location-name \{ font-size: 12px; \}/);
+  // The caption ramps between the two artboards. Its floor is the owner's own
+  // mobile value, so a phone gets 12px without a separate override.
+  assert.match(css, /\.gateway-location-name \{[\s\S]*?font-size: clamp\(12px, [^,]+, 15px\);/);
+  assert.doesNotMatch(css, /@media \(max-width: 640px\) \{[\s\S]*?\.gateway-location-name \{ font-size:/);
 });
 
 test("the decorative gate loops every five seconds without controls and respects reduced motion", async () => {
