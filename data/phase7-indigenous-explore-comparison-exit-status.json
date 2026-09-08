@@ -31,11 +31,11 @@
       "id": "right-of-reply-live",
       "title": "Every reserve and treaty page carries a working right-of-reply route with a named recipient",
       "status": "fail",
-      "reason": "The public engagement page accurately says that no named accountable recipient or tested intake channel has been appointed. An illustrative safeguard note is not a working reply route.",
+      "reason": "The public engagement page states that no engagement contact route exists. The corrections page states that a named accountable recipient and tested intake channel are still required. Neither page supplies a working right-of-reply route.",
       "evidence": [
         {
           "path": "components/governance/GovernancePage.tsx",
-          "sha256": "0801c67718cebb450f2666bd50dd3a5b5e297019b7d350ae16d7499014c6472e"
+          "sha256": "05f7c915a57a048335be6cdaf7e5676a4b3f6fde00505cb2b06cc783b32808a8"
         }
       ]
     },
@@ -63,7 +63,7 @@
       "evidence": [
         {
           "path": "components/governance/GovernancePage.tsx",
-          "sha256": "0801c67718cebb450f2666bd50dd3a5b5e297019b7d350ae16d7499014c6472e"
+          "sha256": "05f7c915a57a048335be6cdaf7e5676a4b3f6fde00505cb2b06cc783b32808a8"
         }
       ]
     },
@@ -91,7 +91,7 @@
       "evidence": [
         {
           "path": "components/governance/GovernancePage.tsx",
-          "sha256": "0801c67718cebb450f2666bd50dd3a5b5e297019b7d350ae16d7499014c6472e"
+          "sha256": "05f7c915a57a048335be6cdaf7e5676a4b3f6fde00505cb2b06cc783b32808a8"
         },
         {
           "path": "data/phase0-owner-scope-decisions-2026-08-27.json",

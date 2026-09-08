@@ -1,3 +1,6 @@
+import { CoverageStatement } from "@/components/policy/CoverageStatement";
+import { EvidenceLegend } from "@/components/policy/EvidenceLegend";
+import type { ConfidenceResult } from "@/lib/domain/confidence";
 import type { Locale } from "@/lib/domain";
 import {
   EXPLORE_COVERAGE_PERIOD,
@@ -8,6 +11,10 @@ import {
 const COPY = {
   en: {
     title: "Methodology",
+    statement: "These methods explain how evidence is classified and where it stops. A detected change alone establishes neither cause nor responsibility.",
+    confidenceRules: "Confidence rules, in evaluation order; the first matching rule applies",
+    confidenceLevel: "Level and rule",
+    confidenceCondition: "When it applies",
     definition: "Forest definition",
     definitionText:
       "Forest is land of at least 1 hectare, with at least 10% crown closure, carrying trees capable of reaching 5 metres at maturity.",
@@ -42,6 +49,10 @@ const COPY = {
   },
   fr: {
     title: "Méthodologie",
+    statement: "Ces méthodes expliquent comment les preuves sont classées et où elles s’arrêtent. Un changement détecté ne suffit à établir ni cause ni responsabilité.",
+    confidenceRules: "Règles de confiance, dans l’ordre d’évaluation; la première règle applicable est retenue",
+    confidenceLevel: "Niveau et règle",
+    confidenceCondition: "Conditions d’application",
     definition: "Définition de la forêt",
     definitionText:
       "La forêt est une terre d’au moins 1 hectare, présentant un couvert de cimes d’au moins 10 %, avec des arbres capables d’atteindre 5 mètres à maturité.",
@@ -76,6 +87,33 @@ const COPY = {
   },
 } as const;
 
+const CONFIDENCE_RULES: readonly Readonly<{
+  id: ConfidenceResult["ruleId"];
+  en: readonly [string, string];
+  fr: readonly [string, string];
+}>[] = [
+  {
+    id: "CONF-LIMITED-001",
+    en: ["Limited", "A coverage gap, an inventory older than five years at the event, or geometry resolution coarser than one hundred metres. This limitation takes precedence over the other rules."],
+    fr: ["Limitée", "Une lacune de couverture, un inventaire datant de plus de cinq ans au moment de l’événement ou une résolution géométrique plus grossière que cent mètres. Cette limite a préséance sur les autres règles."],
+  },
+  {
+    id: "CONF-HIGH-001",
+    en: ["High", "An authoritative record with resolved geometry, required attributes present, no partial attribution and date uncertainty of at most one year. An unspecified date uncertainty is treated as absent by the rule."],
+    fr: ["Élevée", "Un registre faisant autorité, une géométrie résolue, les attributs requis présents, aucune attribution partielle et une incertitude de date d’au plus un an. La règle traite une incertitude de date non précisée comme absente."],
+  },
+  {
+    id: "CONF-MEDIUM-001",
+    en: ["Medium", "An authoritative record or resolved geometry remains, but the preceding rules do not apply. The generated reason identifies date uncertainty, partial attribution or an unavailable required attribute."],
+    fr: ["Moyenne", "Un registre faisant autorité ou une géométrie résolue demeure, sans que les règles précédentes s’appliquent. La raison générée précise l’incertitude de date, l’attribution partielle ou un attribut requis indisponible."],
+  },
+  {
+    id: "CONF-UNKNOWN-001",
+    en: ["Unknown", "None of the preceding rules applies: neither an authoritative record nor resolved geometry is available. No authoritative public record has been integrated for this question."],
+    fr: ["Inconnue", "Aucune règle précédente ne s’applique : ni registre faisant autorité ni géométrie résolue n’est disponible. Aucun registre public faisant autorité n’a été intégré pour cette question."],
+  },
+];
+
 export function MethodologyPage({ locale }: Readonly<{ locale: Locale }>) {
   const copy = COPY[locale];
   const sections = [
@@ -92,10 +130,12 @@ export function MethodologyPage({ locale }: Readonly<{ locale: Locale }>) {
   ];
 
   return (
-    <main id="main" className="page-wrap">
+    <main id="main" className="page-wrap methods-page">
       <header className="masthead">
         <h1>{copy.title}</h1>
       </header>
+      <CoverageStatement locale={locale}><p>{copy.statement}</p></CoverageStatement>
+      <EvidenceLegend locale={locale} />
       <div className="content-section prose-measure">
         {sections.map(([heading, text], index) => (
           <section className="governance-section" key={heading} id={heading === copy.unmapped ? "coverage-gap" : undefined}>
@@ -104,6 +144,20 @@ export function MethodologyPage({ locale }: Readonly<{ locale: Locale }>) {
             </p>
             <h2>{heading}</h2>
             <p>{text}</p>
+            {heading === copy.evidence ? (
+              <table className="confidence-rules">
+                <caption>{copy.confidenceRules}</caption>
+                <thead><tr><th scope="col">{copy.confidenceLevel}</th><th scope="col">{copy.confidenceCondition}</th></tr></thead>
+                <tbody>
+                  {CONFIDENCE_RULES.map((rule) => (
+                    <tr key={rule.id}>
+                      <th scope="row">{rule[locale][0]}<code>{rule.id}</code></th>
+                      <td>{rule[locale][1]}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : null}
             {heading === copy.accuracy ? (
               <p>
                 <a href="https://doi.org/10.1080/07038992.2018.1437719">
