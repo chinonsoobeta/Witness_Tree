@@ -74,3 +74,16 @@ test("locale routes no longer import or pass the illustrative feed", async () =>
     assert.match(route, /<WildfireView locale=/);
   }
 });
+
+test("wildfire puts its limits and missing times before the directory without inventing an observation", () => {
+  for (const locale of ["en", "fr"] as const) {
+    const markup = renderToStaticMarkup(<WildfireView locale={locale} />);
+    assert.ok(markup.indexOf('class="coverage-statement"') < markup.indexOf('class="wildfire-disclaimer-symbol"'));
+    assert.match(markup, /class="evidence-legend"/);
+    assert.match(markup, /<dd>– (Unavailable|Indisponible);/);
+    assert.match(markup, /<dd>– (None|Aucune);/);
+    assert.ok(markup.indexOf('id="wildfire-status-heading"') < markup.indexOf('id="wildfire-directory-heading"'));
+    assert.doesNotMatch(markup, /<time|datetime=/i);
+    assert.match(markup, /aria-hidden="true">△/);
+  }
+});

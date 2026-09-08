@@ -1,3 +1,5 @@
+import { CoverageStatement } from "@/components/policy/CoverageStatement";
+import { EvidenceLegend } from "@/components/policy/EvidenceLegend";
 import type { Metadata } from "next";
 import {
   FederalRidingPicker,
@@ -42,6 +44,8 @@ export default async function ComparerPage({
           <h1>{TITRE}</h1>
           <p className="masthead-note">Mesures corrigées selon l’étendue pour 2021–2022.</p>
         </header>
+        <CoverageStatement locale="fr"><p>Comparez la couverture cartographiée avant de comparer les chiffres. Une perte mesurée plus faible ne signifie pas une perte moindre lorsque la couverture diffère. Les mesures manquantes sont exclues du classement, jamais comptées comme zéro.</p><p>Le dénominateur de superficie forestière comprend seulement la forêt connue et cartographiée; il ne décrit pas la forêt des zones sans couverture.</p></CoverageStatement>
+        <EvidenceLegend locale="fr" />
         <FederalRidingPicker
           rows={federalRidingComparison.comparisonRows}
           locale="fr"

@@ -2767,9 +2767,9 @@ dd > a:only-child {
   margin-top: 0;
 }
 .comparison-figures {
-  color: var(--ink-2);
+  color: var(--ink);
   font-family: var(--mono);
-  font-size: 13px;
+  font-size: 1rem;
 }
 /* ==========================================================================
    Phase 5: record pages (place records and location results)
@@ -3417,4 +3417,62 @@ dd > a:only-child {
   padding: 10px 0;
   cursor: pointer;
   font-weight: 600;
+}
+
+/* Coverage stays with the riding identity, including long French headings. */
+.comparison-heading-coverage {
+  display: block;
+  margin: 12px 0 20px;
+  max-width: var(--measure);
+  font-family: var(--ui);
+  font-size: 1rem;
+  font-weight: 400;
+  overflow-wrap: anywhere;
+}
+.comparison-heading-coverage .coverage-band {
+  white-space: normal;
+}
+.comparison-card {
+  background: var(--surface);
+  color: var(--ink);
+}
+.comparison-figures dt {
+  margin-top: 20px;
+  font-family: var(--ui);
+  font-size: 1rem;
+}
+.comparison-figures dd {
+  margin: 6px 0 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+.comparison-provenance {
+  max-width: var(--measure);
+}
+.wildfire-disclaimer {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  color: var(--ink);
+}
+.wildfire-disclaimer-symbol {
+  flex: 0 0 auto;
+  font-size: 1.75rem;
+  line-height: 1;
+}
+.wildfire-disclaimer h2 {
+  margin: 0 0 12px;
+  font-size: 1.25rem;
+}
+.wildfire-disclaimer a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+.comparison-picker label {
+  min-width: 0;
+  max-width: 100%;
+}
+.comparison-picker select {
+  max-width: 100%;
 }
