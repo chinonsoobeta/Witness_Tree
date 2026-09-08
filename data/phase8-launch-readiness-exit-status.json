@@ -47,7 +47,7 @@
       "id": "load-testing",
       "title": "Load testing is complete",
       "status": "fail",
-      "reason": "Artifact budgets do not measure a deployed service or establish the required 50× load-test result.",
+      "reason": "Artifact budgets do not measure a deployed service or establish the required 50\u00d7 load-test result.",
       "evidence": [
         {
           "path": "docs/PERFORMANCE.md",
@@ -115,7 +115,7 @@
       "evidence": [
         {
           "path": "docs/OPERATIONS_HANDBOOK.md",
-          "sha256": "6f8dc1c9a45134b082b256a92f7fc11bf7e444348b33e57ccdc1c63acf8e3caa"
+          "sha256": "d33cf7f8296d06a11da4f18937d1beb176c7f5329b2b5f16c24060eb70ca370b"
         },
         {
           "path": "docs/PLAN_GAP_MATRIX.md",
@@ -220,7 +220,7 @@
         },
         {
           "path": "docs/OPERATIONS_HANDBOOK.md",
-          "sha256": "6f8dc1c9a45134b082b256a92f7fc11bf7e444348b33e57ccdc1c63acf8e3caa"
+          "sha256": "d33cf7f8296d06a11da4f18937d1beb176c7f5329b2b5f16c24060eb70ca370b"
         }
       ]
     },
@@ -284,11 +284,11 @@
         },
         {
           "path": "components/explore/ExploreMapClient.tsx",
-          "sha256": "9fe6c7c580858545e7054fec32bfb9b6ad78d43c646f107d0ffbd88483aee9a9"
+          "sha256": "c19cb4f4bf1e89c643b7dcdbdf9633b4a17a494268333102ecf712408171b0f5"
         },
         {
           "path": "tests/explore.test.tsx",
-          "sha256": "e74f387193d1be591336b6ca6cdbcd609afdbb02b59e555ff0236c6734581471"
+          "sha256": "07f488fafa616d1a7a76968b5cf44df4f2e5398f5d4328865f42c5fadc1e5e6d"
         },
         {
           "path": "data/deployed-map-render-evidence-2026-09-01.json",
@@ -308,7 +308,7 @@
         },
         {
           "path": "lib/explore/map-style.ts",
-          "sha256": "3d94e515a4a4f3398f44ba2b28a0dac693d91a98d41919b0af579ee65b3d895f"
+          "sha256": "9f4614daef163416f6e20d21cc50a946a7a1bbd29c565e9856511ad655fb1398"
         }
       ]
     }
@@ -327,7 +327,7 @@
     {
       "id": "security-and-load-review",
       "status": "blocked",
-      "reason": "Production security review and measured 50× load-test evidence need an approved deployment environment."
+      "reason": "Production security review and measured 50\u00d7 load-test evidence need an approved deployment environment."
     },
     {
       "id": "legal-licence-attribution-sign-off",
