@@ -31,8 +31,8 @@ git status --short
 npm ci
 npm run typecheck
 npm run lint
-npm run test:suite
 npm run build
+npm run test:suite
 npm run check:claims
 npm run check:style-tokens
 npm run check:accessibility
@@ -46,12 +46,14 @@ npm run check:boundary-overlays
 npm run check:year-range-format
 ```
 
+`npm run build` must precede `npm run test:suite`. The rendered-page tests import `dist/server/index.js`, so running the suite first fails eight assertions with `ERR_MODULE_NOT_FOUND` in a clean checkout. This mirrors the workflow, which orders the two the same way for the same reason at `.github/workflows/ci.yml`.
+
 Require a clean worktree and a successful build. Two known failures are expected at this commit and are the reason for the deploy, not a reason to withhold it:
 
 - `npm run check:deployed-map-render` fails, naming `lib/explore/map-style.ts` and `components/explore/ExploreMapClient.tsx`.
-- `npm run test:suite` reports one failing assertion, `the committed observation is current for the deployed client`, which reads the same gate.
+- `npm run test:suite` reports exactly one failing assertion, `the committed observation is current for the deployed client`, which reads the same gate.
 
-Everything else must be green. Any third failure is a real regression and stops the deploy. The documented SSD-dependent receipt checks may skip when the external Witness Tree data root is detached; do not convert a skip into a pass claim.
+Everything else must be green. Any further failure is a real regression and stops the deploy. The documented SSD-dependent receipt checks may skip when the external Witness Tree data root is detached; do not convert a skip into a pass claim.
 
 ## Redeploy
 
