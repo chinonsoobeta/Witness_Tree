@@ -11,6 +11,13 @@
    ========================================================================== */
 
 :root {
+
+  /* Topbar stays dark in every theme. */
+  --topbar-fill: #2c2c24;
+  --topbar-ink: #fdfcf8;
+  --topbar-ink-2: #ded8cf;
+  --topbar-accent: #a9cf9b;
+  --topbar-edge: #948b7a;
   color-scheme: light dark;
 
   /* ground and surface */
@@ -154,6 +161,13 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
+
+    /* Topbar stays dark in every theme. */
+    --topbar-fill: #22201a;
+    --topbar-ink: #f2ede3;
+    --topbar-ink-2: #c9c2b6;
+    --topbar-accent: #a9cf9b;
+    --topbar-edge: #7d7566;
     color-scheme: dark;
 
     /* ground and surface */
@@ -221,6 +235,13 @@
 }
 
 [data-theme="light"] {
+
+  /* Topbar stays dark in every theme. */
+  --topbar-fill: #2c2c24;
+  --topbar-ink: #fdfcf8;
+  --topbar-ink-2: #ded8cf;
+  --topbar-accent: #a9cf9b;
+  --topbar-edge: #948b7a;
   color-scheme: light;
 
   /* ground and surface */
@@ -307,6 +328,13 @@
 }
 
 [data-theme="dark"] {
+
+  /* Topbar stays dark in every theme. */
+  --topbar-fill: #22201a;
+  --topbar-ink: #f2ede3;
+  --topbar-ink-2: #c9c2b6;
+  --topbar-accent: #a9cf9b;
+  --topbar-edge: #7d7566;
   color-scheme: dark;
 
   /* ground and surface */
