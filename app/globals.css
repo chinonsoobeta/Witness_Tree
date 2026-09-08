@@ -1704,13 +1704,27 @@ h4 {
   border-top: 0;
 }
 @media (max-width: 760px) {
+  .explore-map-controls {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
   .explore-map-layer-panel {
+    grid-column: 1 / -1;
+    grid-row: 1;
     display: grid;
     grid-auto-flow: row;
     grid-template-columns: repeat(2, max-content);
     grid-template-rows: repeat(2, auto);
     align-content: center;
     align-items: center;
+  }
+  .explore-map-scale {
+    justify-self: start;
+    grid-column: 1;
+    grid-row: 2;
+  }
+  .explore-map-control-cluster {
+    grid-column: 2;
+    grid-row: 2;
   }
 }
 .explore-map:fullscreen {
@@ -2593,6 +2607,7 @@ h4 {
 }
 .governance-section p {
   color: var(--ink-2);
+  overflow-wrap: anywhere;
 }
 
 /* ==========================================================================
@@ -2968,6 +2983,7 @@ dd > a:only-child {
 
 .explore-section {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 16px;
 }
 
