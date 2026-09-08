@@ -8,23 +8,24 @@ const record = JSON.parse(readFileSync(new URL("../data/phase8-launch-readiness-
 test("Phase 8 records every literal launch-readiness gate without production inflation", async () => {
   assert.equal(await validatePhase8LaunchReadinessExitStatus(record), record);
   /*
-   * Seven. CDN and tile validation passes only on the strength of a browser
-   * observation of the deployed Site bound to the client it observed. The
-   * 2026-09-05 run observed main's client; merging main into the
-   * confidence-first redesign changed both the map style and the client again,
-   * so that observation no longer describes what the Site would serve and the
-   * criterion is failing rather than waived. Nothing weaker is holding it up:
-   * the preview and break-glass tiers exist and neither record is committed
-   * here. A redeploy of this branch followed by a successful harness run
-   * against the deployed Site is what restores it, and this count moves back to
-   * eight when that happens rather than because the code exists. It stays a
-   * delivery-and-rendering gate: it asserts no production admission.
+   * Eight. CDN and tile validation passes only on the strength of a browser
+   * observation of the deployed Site bound to the client it observed. It spent
+   * this branch at fail, because merging main into the confidence-first
+   * redesign changed both the map style and the client and left the 2026-09-05
+   * observation describing something the Site no longer served. The owner
+   * redeployed on 2026-09-08 and the harness was re-run against the deployed
+   * Site, so the count moves because a measurement was taken, not because the
+   * code exists. Nothing weaker was used on the way: neither the preview tier
+   * nor a break-glass record is committed here, and the earlier observations
+   * stay on disk as true accounts of their own days. It stays a
+   * delivery-and-rendering gate: it asserts no production admission, and the
+   * remaining eight criteria are untouched by the deploy.
    */
-  assert.equal(record.completedCriteria, 7);
+  assert.equal(record.completedCriteria, 8);
   assert.equal(record.totalCriteria, 16);
-  assert.equal(record.percentage, 43.75);
+  assert.equal(record.percentage, 50);
   assert.equal(record.phaseComplete, false);
-  assert.deepEqual(record.exitCriteria.filter((item) => item.status === "pass").map((item) => item.id), ["raw-archive-reproducibility", "governance-and-corrections-procedures", "operations-handbook", "bulk-downloads", "citation-format", "release-notes", "restore-tests"]);
+  assert.deepEqual(record.exitCriteria.filter((item) => item.status === "pass").map((item) => item.id), ["raw-archive-reproducibility", "governance-and-corrections-procedures", "operations-handbook", "bulk-downloads", "citation-format", "release-notes", "restore-tests", "cdn-tile-validation"]);
 
   // The criterion tracks the gate rather than the code: whenever
   // check:deployed-map-render is red, cdn-tile-validation must not read as pass.
