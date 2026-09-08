@@ -49,7 +49,7 @@ export function SiteHeader({ locale }: { locale: Locale }) {
                 node serves both layouts: below the nav breakpoint it is a labelled row
                 inside the menu, and above it the panel is forced open as an inline row
                 and the control sits at its end. Putting it in the header bar instead
-                would have overflowed the pill on a narrow screen.
+                would have crowded the bar on a narrow screen.
               */}
               <ThemeToggle locale={locale} />
             </div>
