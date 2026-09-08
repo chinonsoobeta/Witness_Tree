@@ -1751,9 +1751,16 @@ h4 {
   gap: 5px;
 }
 .loss-swatch {
+  display: inline-flex;
+  flex: 0 0 18px;
+  align-items: center;
+  justify-content: center;
   width: 18px;
   height: 18px;
   border: 1px solid var(--ink);
+  color: var(--ink);
+  font-style: normal;
+  line-height: 1;
 }
 .loss-0 {
   background: var(--loss-0);
@@ -1775,6 +1782,17 @@ h4 {
 }
 .patch-none {
   background: var(--loss-3);
+  background-image: repeating-linear-gradient(135deg, transparent 0 4px, var(--loss-0) 4px 5px);
+}
+.map-legend-key {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 4px;
+}
+.map-legend-shape {
+  color: var(--ink);
+  font-size: 16px;
 }
 
 .comparison-filters {
@@ -3343,4 +3361,60 @@ dd > a:only-child {
   .nav-panel a, .theme-option > span {
     min-height: 40px;
   }
+}
+
+/* Confidence-first map, search and drawn-area results share the existing palette. */
+.explore-caveat {
+  font-weight: 600;
+}
+.no-record-result {
+  padding: 24px;
+  margin: 16px 0;
+  background: var(--tint-unknown);
+  color: var(--ink);
+  border: 1px solid var(--edge-unknown);
+  overflow-wrap: anywhere;
+}
+.no-record-result p {
+  max-width: var(--measure);
+}
+.no-record-reason {
+  margin-top: 12px;
+  font-size: 1.125rem;
+}
+.draw-page .shape-measure {
+  max-width: none;
+}
+.draw-page .shape-measure > form {
+  max-width: var(--measure);
+}
+.shape-coverage-states {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+.shape-coverage-states h3 {
+  margin: 0 0 8px;
+  font-size: 1.125rem;
+}
+.shape-readout {
+  padding: 24px;
+  border: 1px solid var(--rule-strong);
+  background: var(--surface);
+  color: var(--ink);
+}
+@media (max-width: 640px) {
+  .shape-coverage-states {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .shape-field {
+    min-width: 0;
+    max-width: 100%;
+  }
+}
+.explore-coverage-details summary {
+  min-height: 44px;
+  padding: 10px 0;
+  cursor: pointer;
+  font-weight: 600;
 }

@@ -284,11 +284,11 @@
         },
         {
           "path": "components/explore/ExploreMapClient.tsx",
-          "sha256": "c19cb4f4bf1e89c643b7dcdbdf9633b4a17a494268333102ecf712408171b0f5"
+          "sha256": "49712fba637fbc9e7cecd44a84197b8d1aa1960dfa98a35e8f608966e497ab12"
         },
         {
           "path": "tests/explore.test.tsx",
-          "sha256": "07f488fafa616d1a7a76968b5cf44df4f2e5398f5d4328865f42c5fadc1e5e6d"
+          "sha256": "700825a1c0328831566796efaa33c2e7ae35a12bbb672f65aa1ea5c1f3a4598d"
         },
         {
           "path": "data/deployed-map-render-evidence-2026-09-01.json",

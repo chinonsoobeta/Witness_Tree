@@ -455,7 +455,12 @@ type MapView = Readonly<{
 const SCALE_MAX_PIXELS = 120;
 
 const symbol = (className: string) => (
-  <i className={`loss-swatch ${className}`} aria-hidden="true" />
+  <span className="map-legend-key" aria-hidden="true">
+    <i className={`loss-swatch ${className}`} />
+    {className.startsWith("patch-") ? <span className="map-legend-shape">
+      {className === "patch-harvest" ? "●" : className === "patch-fire" ? "◆" : "○"}
+    </span> : null}
+  </span>
 );
 
 export function ExploreMapClient({
