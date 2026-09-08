@@ -1,6 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { CoverageStatement } from "@/components/policy/CoverageStatement";
+import { EvidenceLegend } from "@/components/policy/EvidenceLegend";
+
 import {
   ConfidenceBadge,
   CoverageBand,
@@ -318,7 +321,16 @@ export function ExploreView({
 
   return (
     <section className="explore" aria-label={text.title}>
-      <p className="explore-note">{note}</p>
+      <CoverageStatement locale={locale}>
+        <p className="explore-caveat">{locale === "en"
+          ? "A blank area on the map does not establish that no loss occurred. Read each layer’s coverage and period before comparing its figures."
+          : "Une zone vide sur la carte ne permet pas de conclure qu’aucune perte n’a eu lieu. Consultez la couverture et la période de chaque couche avant de comparer ses chiffres."}</p>
+        <details className="explore-coverage-details">
+          <summary>{locale === "en" ? "Layer periods and limits" : "Périodes et limites des couches"}</summary>
+          <p className="explore-note">{note}</p>
+        </details>
+      </CoverageStatement>
+      <EvidenceLegend locale={locale} />
 
       <nav className="explore-modes" aria-label={text.title}>
         {EXPLORE_MODES.map((item) => (
@@ -568,7 +580,7 @@ export function ExploreView({
                     const y = index * rowHeight + 8;
                     return (
                       <g key={item.id}>
-                        <title>{labelled(locale, label, detail)}{"unmappedCharacter" in item ? `; ${item.unmappedCharacter[locale]}` : ""}</title>
+                        <title>{`${labelled(locale, label, detail)}${"unmappedCharacter" in item ? `; ${item.unmappedCharacter[locale]}` : ""}`}</title>
                         <text className="explore-bar-name" x="0" y={y + 15}>{label}</text>
                         <rect
                           className="explore-bar"

@@ -3,6 +3,7 @@ import type { Locale } from "@/lib/domain";
 const COUNTERPARTS: Record<string, string> = {
   "/en": "/fr", "/fr": "/en",
   "/en/explore": "/fr/explorer", "/fr/explorer": "/en/explore",
+  "/en/explore/draw": "/fr/explorer/dessiner", "/fr/explorer/dessiner": "/en/explore/draw",
   "/en/compare": "/fr/comparer", "/fr/comparer": "/en/compare",
   "/en/wildfire": "/fr/incendies", "/fr/incendies": "/en/wildfire",
   "/en/account": "/fr/compte", "/fr/compte": "/en/account",

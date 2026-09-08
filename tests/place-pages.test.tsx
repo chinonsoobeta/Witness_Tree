@@ -94,3 +94,13 @@ test("place records put coverage before unchanged figures and provenance before 
     }
   }
 });
+
+test("location fixtures state their limits before coordinates and explain an absent event record", () => {
+  for (const locale of ["en", "fr"] as const) {
+    const markup = renderToStaticMarkup(<LocationResult locale={locale} location={{ ...LOCATIONS[0], events: [] }} places={[]} />);
+    assert.ok(markup.indexOf('class="coverage-statement"') < markup.indexOf('class="coordinates"'));
+    assert.match(markup, /class="no-record-result"/);
+    assert.match(markup, /<strong>– /);
+    assert.doesNotMatch(markup, />0</);
+  }
+});
