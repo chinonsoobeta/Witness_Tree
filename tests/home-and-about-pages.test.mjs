@@ -60,8 +60,8 @@ test("the gate names where each photograph was taken", async () => {
   // on screen belongs to the frame on screen.
   assert.match(gateway, /const GATE_PHOTOGRAPHS = \[/);
   for (const [file, location] of [
-    ["forest.jpg", "Lillooet, British Columbia"],
-    ["forest-2.jpg", "Shannon Falls Provincial Park, British Columbia"],
+    ["forest.jpg", "Shannon Falls Provincial Park, British Columbia"],
+    ["forest-2.jpg", "Lillooet, British Columbia"],
     ["forest-3.jpg", "McKinley Landing, Kelowna, British Columbia"],
     ["forest-4.jpg", "Stanley Park, Vancouver, British Columbia"],
   ]) {

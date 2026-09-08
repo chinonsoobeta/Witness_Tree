@@ -9,8 +9,8 @@ import { gatewayAlternates } from "@/lib/site-metadata";
 // Each photograph is named by where it was taken, read from the file's own
 // capture metadata. No location is stated for a photograph that carries none.
 const GATE_PHOTOGRAPHS = [
-  { file: "forest.jpg", location: "Lillooet, British Columbia" },
-  { file: "forest-2.jpg", location: "Shannon Falls Provincial Park, British Columbia" },
+  { file: "forest.jpg", location: "Shannon Falls Provincial Park, British Columbia" },
+  { file: "forest-2.jpg", location: "Lillooet, British Columbia" },
   { file: "forest-3.jpg", location: "McKinley Landing, Kelowna, British Columbia" },
   { file: "forest-4.jpg", location: "Stanley Park, Vancouver, British Columbia" },
 ] as const;
