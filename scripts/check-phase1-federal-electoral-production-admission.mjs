@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { readFileSync, statSync } from "node:fs";
+import { resolveRecordedDataPath } from "./data-root.mjs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -30,7 +31,8 @@ export function validate(record, root = ROOT, { verifyArtifact = true } = {}) {
   assert.match(source.currentEditionBasis, /came into effect on 2025-03-23/);
   assert.equal(source.licence.id, "ogl-canada-2.0");
   assert.equal(source.licence.requiredAttribution, record.requiredAttribution);
-  const output = path.resolve(root, "../../Witness_Tree-data", record.sharedArtifact.path.replace(/^\.\.\/Witness_Tree-data\//, ""));
+  const output = resolveRecordedDataPath(record.sharedArtifact.path)
+    ?? path.resolve(root, record.sharedArtifact.path);
   assert.equal(record.sharedArtifact.path, OUTPUT);
   assert.equal(record.sharedArtifact.sha256, OUTPUT_SHA);
   const outputVerification = read(root, "data/phase1-federal-electoral-output-verification-evidence.json");

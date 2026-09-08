@@ -1,4 +1,4 @@
-import { formatHectares, formatPercent, SUM_TERM, type Locale } from "@/lib/domain";
+import { formatHectares, formatPercent, formatYearRange, SUM_TERM, yearRange, type Locale } from "@/lib/domain";
 import type { BoundaryOverlayId } from "./boundaries";
 
 export type BoundaryMeasurementCoverage =
@@ -39,7 +39,12 @@ export type BoundaryReadout =
   | Readonly<{ kind: "boundary-only"; note: string }>
   | Readonly<{
       kind: "riding-measurement";
-      interval: string;
+      /*
+       * The span set for a reader, not the machine key. Two fields called
+       * "interval" meant a lookup key and a label could be swapped without a
+       * type error, which is how a raw "2021-2022" reached a heading.
+       */
+      intervalLabel: string;
       coverage: string;
       normalizedShare: string;
       absoluteLoss: string;
@@ -124,7 +129,7 @@ export function boundaryReadout(
   if (!measurement) {
     return {
       kind: "riding-measurement",
-      interval: `${interval.fromYear}–${interval.toYear}`,
+      intervalLabel: formatYearRange(yearRange(interval.fromYear, interval.toYear), locale),
       coverage: copy.unavailable,
       normalizedShare: copy.unknown,
       absoluteLoss: copy.unknown,
@@ -148,7 +153,7 @@ export function boundaryReadout(
     measurement.summedLossHectares! > measurement.knownObservedSubtotalHectares!;
   return {
     kind: "riding-measurement",
-    interval: `${measurement.fromYear}–${measurement.toYear}`,
+    intervalLabel: formatYearRange(yearRange(measurement.fromYear, measurement.toYear), locale),
     coverage,
     normalizedShare: complete ? formatPercent(measurement.observedLossPercent!, locale) : copy.unknown,
     absoluteLoss: complete ? formatHectares(measurement.observedLossHectares!, locale) : copy.unknown,

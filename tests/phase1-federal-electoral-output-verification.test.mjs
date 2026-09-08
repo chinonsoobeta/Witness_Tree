@@ -35,7 +35,10 @@ test("tampered sidecar output hash is rejected", () => {
 });
 
 test("tampered sidecar bytes are rejected even when parsed values are unchanged", () => {
-  const tamperedRaw = sidecarRaw.replace("\n", " \n");
+  // One byte, at one position: a space in front of the first line break. The
+  // parsed values are identical, so only a byte-level check can catch it.
+  const firstBreak = sidecarRaw.indexOf("\n");
+  const tamperedRaw = `${sidecarRaw.slice(0, firstBreak)} ${sidecarRaw.slice(firstBreak)}`;
   assert.throws(() => validateSidecarDocument(sidecar, tamperedRaw, contract), /canonical deterministic JSON/);
 });
 

@@ -6,12 +6,14 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
 import { validateExpertReviewEvidence } from "../scripts/check-phase2-v21-expert-review-evidence.mjs";
+import { resolveRecordedDataPath } from "../scripts/data-root.mjs";
 
 const root = new URL("..", import.meta.url).pathname;
 const workflowPath = "data/phase2-v21-expert-review-workflow.json";
 const workflowBytes = readFileSync(`${root}/${workflowPath}`);
 const workflow = JSON.parse(workflowBytes);
-const packet = JSON.parse(readFileSync(`${root}/${workflow.packet.path}`, "utf8"));
+const packetPath = resolveRecordedDataPath(workflow.packet.path) ?? `${root}/${workflow.packet.path}`;
+const packet = JSON.parse(readFileSync(packetPath, "utf8"));
 const digest = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const binding = (path, bytes) => ({ path, sha256: digest(bytes), byteLength: bytes.length });
 const workflowBinding = binding(workflowPath, workflowBytes);

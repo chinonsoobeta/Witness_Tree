@@ -3,9 +3,10 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { resolveRecordedDataPath } from "./data-root.mjs";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
-const resolveInputPath = (path) => resolve(root, path);
+const resolveInputPath = (path) => resolveRecordedDataPath(path) ?? resolve(root, path);
 const readJson = (path) => JSON.parse(readFileSync(resolveInputPath(path), "utf8"));
 const digest = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const nonempty = (value, label) => assert.equal(typeof value === "string" && value.trim().length > 0, true, `${label} is required`);
@@ -20,7 +21,11 @@ const template = readJson(`${root}/data/phase2-v21-expert-review-results.templat
 const rosterTemplate = readJson(`${root}/data/phase2-v21-expert-reviewer-roster.template.json`);
 const workflowPath = "data/phase2-v21-expert-review-workflow.json";
 const workflowBytes = readFileSync(`${root}/${workflowPath}`);
-const packetPath = `${root}/${workflow.packet.path}`;
+// The workflow declares the packet against the archive, not the repository. Joining it to the
+// repository made it missing from any worktree, and the checker then ran in control-plane-only
+// mode and never verified the packet at all, while reporting a status that reads like a
+// deliberate scope rather than a path that failed to resolve.
+const packetPath = resolveInputPath(workflow.packet.path);
 const packetAvailable = existsSync(packetPath);
 const packetBytes = packetAvailable ? readFileSync(packetPath) : null;
 const packet = packetBytes ? JSON.parse(packetBytes) : null;
@@ -101,7 +106,10 @@ function validateCanonicalWorkflow({ verifyPacket = true } = {}) {
   assert.equal(template.schemaVersion, resultSchema); assert.equal(template.status, "not-started"); assert.deepEqual(template.results, []);
   assert.equal(rosterTemplate.schemaVersion, rosterSchema); assert.equal(rosterTemplate.status, "not-approved"); assert.deepEqual(rosterTemplate.reviewers, []);
   if (!verifyPacket) return { assigned: workflow.assignment.totalCandidates, perProvince: Object.fromEntries(provinces.map((province) => [province, workflow.assignment.requiredCandidatesPerProvince])), verificationMode: "control-plane-only" };
-  assert.equal(packetAvailable, true, `review packet is required for artifact verification: ${workflow.packet.path}`);
+  // Naming only the recorded relative path left the failure unattributable: a
+  // reader could not tell an absent archive from a missing repository file, and
+  // the data-root sweep classified it "other" for that reason alone.
+  assert.equal(packetAvailable, true, `review packet is required for artifact verification, and no such file or directory exists at ${packetPath} (recorded as ${workflow.packet.path})`);
   assert.equal(digest(packetBytes), workflow.packet.sha256, "workflow packet checksum differs");
   assert.equal(packetBytes.length, workflow.packet.byteLength, "workflow packet byte length differs");
   assert.equal(packet.samples.length, 400);

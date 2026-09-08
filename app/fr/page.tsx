@@ -6,6 +6,7 @@ import { CoverageStatement } from "@/components/policy/CoverageStatement";
 import { EvidenceLegend } from "@/components/policy/EvidenceLegend";
 import { PRODUCT_NAME } from "@/lib/domain";
 import { EXPLORE_COVERAGE_PERIOD, EXPLORE_PRODUCTION_LAYER, formatUnknownSharePercent } from "@/lib/explore";
+import { productionAggregatePeriod } from "@/lib/explore/period";
 import { localizedAlternates } from "@/lib/site-metadata";
 
 export const metadata: Metadata = { title: "Registre public des pertes forestières", alternates: localizedAlternates("fr", { en: "/en", fr: "/fr" }) };
@@ -26,7 +27,7 @@ export default function FrenchHome() {
     <EvidenceLegend locale="fr" />
     <section className="content-section landing-coverage" aria-labelledby="registre-actuel">
       <div className="section-heading"><span className="num">01</span><h2 id="registre-actuel">Commencer par le registre actuel</h2></div>
-      <p className="lead">L’agrégat provincial provisoire et limité de {EXPLORE_PRODUCTION_LAYER.period} est prêt à explorer. Il présente la perte forestière détectée avec un état de couverture pour chaque province. La vérification de l’étendue cartographiée pour chacune des années de {EXPLORE_COVERAGE_PERIOD.fr} est terminée. Ses résultats déterminent désormais le classement des superficies non cartographiées par la source.</p>
+      <p className="lead">L’agrégat provincial provisoire et limité {productionAggregatePeriod("fr", "from")} est prêt à explorer. Il présente la perte forestière détectée avec un état de couverture pour chaque province. La vérification de l’étendue cartographiée pour chacune des années de {EXPLORE_COVERAGE_PERIOD.fr} est terminée. Ses résultats déterminent désormais le classement des superficies non cartographiées par la source.</p>
       <p className="prose-measure">Toutes les barres partagent une échelle en hectares. La superficie non cartographiée n’est pas une mesure de perte forestière.</p>
       <div className="province-coverage-grid">
         {EXPLORE_PRODUCTION_LAYER.rows.map((row) => <ProvinceCoverageCard key={row.id} row={row} locale="fr" unknownContext={coverageLabel(row)} />)}
@@ -50,14 +51,14 @@ export default function FrenchHome() {
       <div className="record-grid">
         <article className="record-card"><p className="eyebrow">Composants</p><h3>Les preuves avant les chiffres</h3><p>Examinez la présentation des valeurs, des inconnues, de la confiance, de la couverture et de la provenance dans le registre public.</p><Link href="/fr/composants">Ouvrir la galerie de composants</Link></article>
         <article className="record-card"><p className="eyebrow">Méthodes</p><h3>Les définitions avant les chiffres</h3><p>Consultez le dénominateur forestier, les catégories de preuves, les règles de confiance, les niveaux de couverture et la méthode d’appariement.</p><Link href="/fr/methodes">Lire les méthodes</Link></article>
-        <article className="record-card"><p className="eyebrow">État des données</p><h3>Version provinciale limitée</h3><p>L’agrégat provincial de 2020 à 2022 est publié avec sa source, son état de couverture et ses limites. D’autres vues peuvent encore utiliser des exemples clairement identifiés.</p><Link href="/fr/donnees">Consulter la transparence des données</Link></article>
+        <article className="record-card"><p className="eyebrow">État des données</p><h3>Version provinciale limitée</h3><p>L’agrégat provincial {productionAggregatePeriod("fr", "from")} est publié avec sa source, son état de couverture et ses limites. D’autres vues peuvent encore utiliser des exemples clairement identifiés.</p><Link href="/fr/donnees">Consulter la transparence des données</Link></article>
       </div>
       <aside className="notice"><h3>Ce que ce registre n’affirme pas</h3><p>{PRODUCT_NAME.fr} n’estime pas le bois marchand, ne prédit pas la propagation des incendies, ne qualifie pas un changement détecté d’exploitation ou de déforestation, ne formule aucune conclusion juridique ou de conformité et ne déduit aucune responsabilité de la proximité.</p></aside>
     </section>
     <section className="content-section prose-measure" aria-labelledby="consequences">
       <div className="section-heading"><span className="num">04</span><h2 id="consequences">Pourquoi le contexte importe</h2></div>
       <p>La perte forestière détectée est une mesure dérivée de l’observation satellitaire, et non une conclusion sur la cause. Une réduction détectée du couvert arboré n’établit pas à elle seule l’exploitation, la déforestation, la responsabilité ou la conformité. <Link href="/fr/methodes">Lire les définitions de méthode et de preuve</Link>.</p>
-      <p>La version disponible est un aperçu technique déterministe au niveau provincial, limité à quatre provinces, pour 2020 à 2022. Elle ne fournit pas une géométrie par cellule et ne satisfait pas au critère formel de la phase 2. <Link href="/fr/donnees">Lire la portée de la version, la provenance et l’attribution de licence</Link>.</p>
+      <p>La version disponible est un aperçu technique déterministe au niveau provincial, limité à quatre provinces, pour {productionAggregatePeriod("fr", "span")}. Elle ne fournit pas une géométrie par cellule et ne satisfait pas au critère formel de la phase 2. <Link href="/fr/donnees">Lire la portée de la version, la provenance et l’attribution de licence</Link>.</p>
       <p><small>Source du contexte : {EXPLORE_PRODUCTION_LAYER.attribution.fr} <a href={EXPLORE_PRODUCTION_LAYER.attribution.href}>Catalogue source</a>.</small></p>
     </section>
   </main></SiteShell>;

@@ -1,8 +1,19 @@
 name: Wildfire refresh
 
 on:
+  # One entry per UTC slot, not one expression listing eight hours: GitHub reports
+  # the expression that triggered a run, so separate entries are what let the gate
+  # recover which slot a late run belongs to. Minute 17 rather than 0 because
+  # runs scheduled on the hour are the ones GitHub delays and drops under load.
   schedule:
-    - cron: '0 0,4,5,12,13,19,20,23 * * *'
+    - cron: '17 0 * * *'
+    - cron: '17 4 * * *'
+    - cron: '17 5 * * *'
+    - cron: '17 12 * * *'
+    - cron: '17 13 * * *'
+    - cron: '17 19 * * *'
+    - cron: '17 20 * * *'
+    - cron: '17 23 * * *'
   workflow_dispatch:
 
 concurrency:
@@ -23,6 +34,8 @@ jobs:
           node-version: 22
       - id: gate
         run: node scripts/wildfire/dst-gate.mjs
+        env:
+          WILDFIRE_SCHEDULED_CRON: ${{ github.event.schedule }}
       - id: refresh
         if: steps.gate.outputs.run == 'true'
         continue-on-error: true

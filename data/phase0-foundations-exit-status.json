@@ -14,7 +14,7 @@
         },
         {
           "path": "components/governance/GovernancePage.tsx",
-          "sha256": "173bd87470ffb1169ab116a5e0a0d1e4a7f2f0e0a72eeabbe77eae29ecf06471"
+          "sha256": "c19b5072b362ddd2a0dcc2b53e5851e3a76b98cda0745d0118ca34c7f07e9209"
         },
         {
           "path": "tests/forest-definition-publication.test.ts",
@@ -66,7 +66,7 @@
         },
         {
           "path": "components/governance/GovernancePage.tsx",
-          "sha256": "173bd87470ffb1169ab116a5e0a0d1e4a7f2f0e0a72eeabbe77eae29ecf06471"
+          "sha256": "c19b5072b362ddd2a0dcc2b53e5851e3a76b98cda0745d0118ca34c7f07e9209"
         }
       ]
     },
@@ -117,7 +117,7 @@
         },
         {
           "path": "components/governance/GovernancePage.tsx",
-          "sha256": "173bd87470ffb1169ab116a5e0a0d1e4a7f2f0e0a72eeabbe77eae29ecf06471"
+          "sha256": "c19b5072b362ddd2a0dcc2b53e5851e3a76b98cda0745d0118ca34c7f07e9209"
         }
       ]
     },
@@ -141,7 +141,7 @@
         },
         {
           "path": ".github/workflows/ci.yml",
-          "sha256": "1208d2a39ee899398ebe4c5cf47817c2eee5a2d58eda3fc34b57d105486e6c03"
+          "sha256": "79191656d4581a781d67b822501891e775fb43b9c2f13e42afca9fefa665df61"
         }
       ]
     }

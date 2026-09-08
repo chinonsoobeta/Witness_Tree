@@ -1,0 +1,53 @@
+# Secret-scanning configuration for the `secrets` CI job.
+#
+# The bundled rule set stays on in full. What follows only tells the one
+# entropy-based heuristic, `generic-api-key`, to stop reporting two shapes this
+# repository uses structurally, and clears a single fabricated placeholder that
+# a deleted test used to prove credential-shaped output gets rejected.
+#
+# Every allowlist below is scoped with `targetRules`, so it quiets exactly one
+# rule and leaves the rest of the bundled rules armed. Each matches on the
+# captured secret with anchored patterns rather than on a path, so a real secret
+# sitting in the same file is still reported.
+
+[extend]
+useDefault = true
+
+# The evidence architecture binds source files to records by SHA-256, so a bare
+# 64-character lowercase hex digest appears thousands of times across `data/`
+# and `scripts/`. `generic-api-key` fires on them whenever the neighbouring key
+# happens to contain the word "key", which for a checksum map is just a file
+# name like `archive-existing-key-recovery.sh`.
+#
+# The anchors matter: the whole captured secret must be the digest and nothing
+# else. A token that merely embeds hex, or carries any prefix, separator or
+# uppercase character, is still reported.
+[[allowlists]]
+description = "SHA-256 digests bound by the evidence records"
+targetRules = ["generic-api-key"]
+regexTarget = "secret"
+regexes = ['''^[0-9a-f]{64}$''']
+
+# Two public identifiers that sit next to fields named `remoteKeyVersion`,
+# `archiveKeyVersion` and `decisionId`. The first is Elections Canada's
+# published shapefile release name; the second is this repository's own
+# authorization decision id. Both are listed literally, so nothing else is
+# covered.
+[[allowlists]]
+description = "Public dataset and decision identifiers stored beside *Key* fields"
+targetRules = ["generic-api-key"]
+regexTarget = "secret"
+regexes = [
+  '''^federal-electoral-districts-2025-shp$''',
+  '''^phase1-ntems-raster-execution-v1$''',
+]
+
+# `tests/current-wildfire-promotion-checkpoint.test.mjs`, deleted from the tree
+# but still in history, asserted that `recordResponseEvidence` refuses output
+# containing credential material. Its fixture is a straight A-to-P placeholder
+# in AWS key shape. Listed as an exact literal so any other AWS key is reported.
+[[allowlists]]
+description = "Fabricated AWS key shape from a deleted negative test"
+targetRules = ["aws-access-token"]
+regexTarget = "secret"
+regexes = ['''^AKIAABCDEFGHIJKLMNOP$''']

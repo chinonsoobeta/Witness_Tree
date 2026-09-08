@@ -3,9 +3,9 @@
   "phase": 8,
   "localImplementationStatus": "incomplete",
   "phaseComplete": false,
-  "completedCriteria": 8,
+  "completedCriteria": 7,
   "totalCriteria": 16,
-  "percentage": 50,
+  "percentage": 43.75,
   "exitCriteria": [
     {
       "id": "professional-bilingual-review",
@@ -47,7 +47,7 @@
       "id": "load-testing",
       "title": "Load testing is complete",
       "status": "fail",
-      "reason": "Artifact budgets do not measure a deployed service or establish the required 50\u00d7 load-test result.",
+      "reason": "Artifact budgets do not measure a deployed service or establish the required 50× load-test result.",
       "evidence": [
         {
           "path": "docs/PERFORMANCE.md",
@@ -115,7 +115,7 @@
       "evidence": [
         {
           "path": "docs/OPERATIONS_HANDBOOK.md",
-          "sha256": "d33cf7f8296d06a11da4f18937d1beb176c7f5329b2b5f16c24060eb70ca370b"
+          "sha256": "f1cf82046257d70d0f179323833389549732a070f3bab1b55eb5a77b4d7e774e"
         },
         {
           "path": "docs/PLAN_GAP_MATRIX.md",
@@ -216,11 +216,11 @@
         },
         {
           "path": ".github/workflows/wildfire-refresh.yml",
-          "sha256": "bcaf4f1321ffb759493cbbd5f29f46e9e1f984a34c2f516b295ed908dea17295"
+          "sha256": "2b3ecb2dce114bbef9d6d27c3fe2134588ae0dd0be2717bef5bcd6977f1cc198"
         },
         {
           "path": "docs/OPERATIONS_HANDBOOK.md",
-          "sha256": "d33cf7f8296d06a11da4f18937d1beb176c7f5329b2b5f16c24060eb70ca370b"
+          "sha256": "f1cf82046257d70d0f179323833389549732a070f3bab1b55eb5a77b4d7e774e"
         }
       ]
     },
@@ -263,8 +263,8 @@
     {
       "id": "cdn-tile-validation",
       "title": "CDN and tile validation are complete",
-      "status": "pass",
-      "reason": "The admitted 2020-2022 province aggregate and authoritative boundary are bound to an immutable PMTiles archive in a private ca-central-1 delivery bucket behind CloudFront. Four additional boundary-only reference archives for federal ridings, provincial ridings, economic regions and watersheds have exact S3 and CloudFront byte-hash readback. The province archive has directory and tile ranges at three zooms, decoded province/value assertions, repeated CloudFront cache hits, CORS, origin isolation, immutable write controls, and a client PMTiles path with a verified GeoJSON fallback. A defect was found and fixed on 2026-08-28: the bundler never emitted the sibling module MapLibre resolves as its worker, so that URL returned HTTP 404 on the deployed site and map initialization failed before any tile request was issued. The version-pinned worker is now published from public/maplibre/ and pinned by the client, proven byte-identical to the installed distribution by scripts/check-maplibre-worker-asset.mjs. Browser-side PMTiles rendering was first witnessed on 2026-08-29 against a local build of an unmerged branch, which did not satisfy this criterion because the criterion is scoped to the deployed Site. The earlier note that no browser here could fire requestAnimationFrame described the browser this session had at the time and is superseded. The deployed Site has now been recorded the same way. On 2026-08-30 scripts/verify-deployed-map-render.mjs drove Chromium over the DevTools Protocol against https://www.witnesstree.ca/en/explore and wrote data/deployed-map-render-evidence-2026-08-30.json, which records three HTTP 206 range responses from the exact immutable PMTiles URL the client pins, zero fetches of the published GeoJSON compatibility fallback, a map region that settled on data-state=\"ready\" with data-map-source=\"pmtiles\", the component's own ready copy rather than either compatibility fallback copy, 2620 loss-ramp pixels among 506540 opaque pixels in the composited canvas, and no console errors. That record binds lib/explore/map-style.ts and components/explore/ExploreMapClient.tsx by SHA-256, so changing the archive URL or the client makes the observation stale rather than leaving this gate silently green; scripts/check-deployed-map-render.mjs enforces that on every branch. This criterion covers delivery and rendering only. It asserts no production admission, and the admitted-production-data-and-delivery external blocker remains blocked. On 2026-09-01 this criterion moved from pass to fail, because components/explore/ExploreMapClient.tsx changed on this branch and the 2026-08-30 observation no longer described the client the Site would serve. The owner then redeployed the Site, and on 2026-09-01 scripts/verify-deployed-map-render.mjs was re-run against https://www.witnesstree.ca/en/explore and wrote data/deployed-map-render-evidence-2026-09-01.json. That run recorded three HTTP 206 range responses from the exact immutable PMTiles URL the client pins, zero fetches of the published GeoJSON compatibility fallback, a map region settled on data-state=\"ready\" with data-map-source=\"pmtiles\", the component's own ready copy rather than either compatibility fallback copy, 2620 loss-ramp pixels among 506540 opaque pixels in the composited canvas, and no console errors. The new record binds the same two source files by SHA-256, and described the client observed at that time. The 2026-08-30 record is untouched and stays on disk: it remains a true account of what was measured that day and is superseded as the current observation rather than withdrawn. This criterion still covers delivery and rendering only. It asserts no production admission, and the admitted-production-data-and-delivery external blocker remains blocked. On 2026-09-08 the owner authorized correcting this stale passing status before the confidence-first map redesign. The retained observation is dated 2026-09-02T00:51:26Z; check-deployed-map-render reports that both lib/explore/map-style.ts and components/explore/ExploreMapClient.tsx have changed since that observation. That correction left the criterion failed and Phase 8 at seven of sixteen until a new deployment and successful browser observation. Rebinding engineering source checksums alone did not refresh the deployed observation or close the criterion. On 2026-09-08 the owner authorized deployment and resolution of these failures. Sites version 28 deployed source 8cd7172835c4a4a0a5c34ff036e4760e055b3aeb successfully. At 2026-09-08T16:28:33Z the unchanged browser harness observed https://www.witnesstree.ca/en/explore: four HTTP 206 PMTiles range responses, zero GeoJSON fallback fetches, a ready map sourced from PMTiles, the ready status copy, 3505 loss-ramp pixels among 506540 opaque pixels, and no console errors. All five checks passed and both source hashes match the deployed code. The canonical checker path data/deployed-map-render-evidence-2026-09-01.json now contains the byte-for-byte harness output of this new run; the date in its filename is retained for checker compatibility, while observedAt identifies the actual measurement time. The prior observation remains in Git history. This measured result restores this delivery-and-rendering criterion to pass and Phase 8 to eight of sixteen. It does not close any production-admission or other external blocker.",
+      "status": "fail",
+      "reason": "The admitted 2020-2022 province aggregate and authoritative boundary are bound to an immutable PMTiles archive in a private ca-central-1 delivery bucket behind CloudFront. Four additional boundary-only reference archives for federal ridings, provincial ridings, economic regions and watersheds have exact S3 and CloudFront byte-hash readback. The province archive has directory and tile ranges at three zooms, decoded province/value assertions, repeated CloudFront cache hits, CORS, origin isolation, immutable write controls, and a client PMTiles path with a verified GeoJSON fallback. A defect was found and fixed on 2026-08-28: the bundler never emitted the sibling module MapLibre resolves as its worker, so that URL returned HTTP 404 on the deployed site and map initialization failed before any tile request was issued. The version-pinned worker is now published from public/maplibre/ and pinned by the client, proven byte-identical to the installed distribution by scripts/check-maplibre-worker-asset.mjs. Browser-side PMTiles rendering was first witnessed on 2026-08-29 against a local build of an unmerged branch, which did not satisfy this criterion because the criterion is scoped to the deployed Site. The earlier note that no browser here could fire requestAnimationFrame described the browser this session had at the time and is superseded. The deployed Site has now been recorded the same way. On 2026-08-30 scripts/verify-deployed-map-render.mjs drove Chromium over the DevTools Protocol against https://www.witnesstree.ca/en/explore and wrote data/deployed-map-render-evidence-2026-08-30.json, which records three HTTP 206 range responses from the exact immutable PMTiles URL the client pins, zero fetches of the published GeoJSON compatibility fallback, a map region that settled on data-state=\"ready\" with data-map-source=\"pmtiles\", the component's own ready copy rather than either compatibility fallback copy, 2620 loss-ramp pixels among 506540 opaque pixels in the composited canvas, and no console errors. That record binds lib/explore/map-style.ts and components/explore/ExploreMapClient.tsx by SHA-256, so changing the archive URL or the client makes the observation stale rather than leaving this gate silently green; scripts/check-deployed-map-render.mjs enforces that on every branch. This criterion covers delivery and rendering only. It asserts no production admission, and the admitted-production-data-and-delivery external blocker remains blocked. On 2026-09-01 this criterion moved from pass to fail, because components/explore/ExploreMapClient.tsx changed on this branch and the 2026-08-30 observation no longer described the client the Site would serve. The owner then redeployed the Site, and on 2026-09-01 scripts/verify-deployed-map-render.mjs was re-run against https://www.witnesstree.ca/en/explore and wrote data/deployed-map-render-evidence-2026-09-01.json. That run recorded three HTTP 206 range responses from the exact immutable PMTiles URL the client pins, zero fetches of the published GeoJSON compatibility fallback, a map region settled on data-state=\"ready\" with data-map-source=\"pmtiles\", the component's own ready copy rather than either compatibility fallback copy, 2620 loss-ramp pixels among 506540 opaque pixels in the composited canvas, and no console errors. The new record binds the same two source files by SHA-256, and the client it names is the one on this branch. The 2026-08-30 record is untouched and stays on disk: it remains a true account of what was measured that day and is superseded as the current observation rather than withdrawn. This criterion still covers delivery and rendering only. It asserts no production admission, and the admitted-production-data-and-delivery external blocker remains blocked. On 2026-09-02 the unmerged change set changed ExploreMapClient.tsx again, which made the 2026-09-01 observation stale for the client this branch would serve, and this criterion returned to fail while that remained true. On 2026-09-03 the owner redeployed the Site to this branch and scripts/verify-deployed-map-render.mjs was re-run against https://www.witnesstree.ca/en/explore, writing data/deployed-map-render-evidence-2026-09-03.json. That run recorded four HTTP 206 range responses from the exact immutable PMTiles URL the client pins, zero fetches of the published GeoJSON compatibility fallback, a map region settled on data-state=\"ready\" with data-map-source=\"pmtiles\", the component's own ready copy rather than either compatibility fallback copy, 3490 loss-ramp pixels among 506540 opaque pixels in the composited canvas, and no console errors. The new record binds lib/explore/map-style.ts and components/explore/ExploreMapClient.tsx by SHA-256, and the client it names is the one on this branch and now on the deployed Site. scripts/check-deployed-map-render.mjs points at the 2026-09-03 record; the 2026-08-30 and 2026-09-01 records are untouched and remain true accounts of what was measured on those days. This criterion covers delivery and rendering only. It asserts no production admission, and the admitted-production-data-and-delivery external blocker remains blocked. On 2026-09-04 the integrated change set changed components/explore/ExploreMapClient.tsx again, so the 2026-09-03 observation no longer describes the client the Site would serve and scripts/check-deployed-map-render.mjs fails on this branch. Following the 2026-09-01 and 2026-09-02 precedent, this criterion returns to fail while that remains true. The 2026-09-03 record is untouched and remains a true account of what was measured that day. On the same date the gate gained two weaker tiers, documented in docs/DEPLOYED_MAP_RENDER_GATE.md: an observation of a preview deployment, which answers the gate but records that the Site observation is still owed, and a break-glass record, which measures nothing and states a reason, an authorizer, the digests it covers and a settle-by date at most fourteen days out. Neither weaker record is committed on this branch, so nothing weaker than an observation of the deployed Site has been used here, and this criterion is failing rather than being waived. This criterion still covers delivery and rendering only. It asserts no production admission, and the admitted-production-data-and-delivery external blocker remains blocked. On 2026-09-05 the owner redeployed the Site to this branch and scripts/verify-deployed-map-render.mjs was re-run against https://www.witnesstree.ca/en/explore, writing data/deployed-map-render-evidence-2026-09-05.json. That run recorded 4 HTTP 206 range responses from the exact immutable PMTiles URL the client pins, 0 fetches of the published GeoJSON compatibility fallback, a map region settled on data-state=\"ready\" with data-map-source=\"pmtiles\", the component's own ready copy rather than either compatibility fallback copy, 3808 loss-ramp pixels among 506540 opaque pixels in the composited canvas, and 0 console errors. Before the harness ran, the deployed ExploreMapClient bundle was checked for a string this change set introduced, so the observation is known to describe this branch's client rather than merely to have been taken after a deploy. The new record binds lib/explore/map-style.ts and components/explore/ExploreMapClient.tsx by SHA-256. scripts/check-deployed-map-render.mjs now points at the 2026-09-05 record; the earlier records are untouched and remain true accounts of what was measured on their days. No break-glass or preview record was used. This criterion covers delivery and rendering only. It asserts no production admission, and the admitted-production-data-and-delivery external blocker remains blocked. On 2026-09-08 origin/main was merged into the confidence-first redesign branch. Both lib/explore/map-style.ts and components/explore/ExploreMapClient.tsx differ from the client the 2026-09-05 run observed, so scripts/check-deployed-map-render.mjs reports the retained record no longer describes the client the Site would serve, and this criterion returns to fail. The 2026-09-05 record is untouched and remains a true account of what was measured that day. Nothing weaker is standing in for it: neither a preview observation nor a break-glass record is committed here. Restoring this criterion requires a redeploy of the Site from this branch followed by a successful run of scripts/verify-deployed-map-render.mjs against it. Phase 8 stands at seven of sixteen while that remains true. This criterion still covers delivery and rendering only. It asserts no production admission, and the admitted-production-data-and-delivery external blocker remains blocked.",
       "evidence": [
         {
           "path": "data/phase8-province-map-release.json",
@@ -284,27 +284,27 @@
         },
         {
           "path": "components/explore/ExploreMapClient.tsx",
-          "sha256": "49712fba637fbc9e7cecd44a84197b8d1aa1960dfa98a35e8f608966e497ab12"
+          "sha256": "1b5852ef5503695f11a26378a9f75c630f8885e1c9288031802698a649a8b59d"
         },
         {
           "path": "tests/explore.test.tsx",
-          "sha256": "700825a1c0328831566796efaa33c2e7ae35a12bbb672f65aa1ea5c1f3a4598d"
+          "sha256": "42b3611a724fc91b43d455117cbd69cb9fc88f3ef9feb00ce6ccd564c2a65d49"
         },
         {
-          "path": "data/deployed-map-render-evidence-2026-09-01.json",
-          "sha256": "db60fb75b2773e364edd29d2809c782ce06aab6883ab93692f0ab5f1b9996137"
+          "path": "data/deployed-map-render-evidence-2026-09-05.json",
+          "sha256": "c1c9bbfd5cafce23e9d69ef2e7d2fd0614904c907531616e062fee2ffa2161bc"
         },
         {
           "path": "scripts/verify-deployed-map-render.mjs",
-          "sha256": "995f7ddfd7fb0b02ff1fcde86ecd2ec7e69520257b4e07f572e79cb708dc98fe"
+          "sha256": "62f21ebaa0cd85752242296edcd61501ffcf95699eeced91af7fa1e9916ac009"
         },
         {
           "path": "scripts/check-deployed-map-render.mjs",
-          "sha256": "72821e74f14c0921f846c7d396a5b222673a614e72ee1d3778e655ccb62bdbd9"
+          "sha256": "29ec9a66f575988dc9762eb6291e4da75031a4f52b445300161fe4021a6fb135"
         },
         {
           "path": "tests/deployed-map-render.test.mjs",
-          "sha256": "7bde1f227c076add9e6801dd701573180b2384a575659dc789f8aa47a4eceb23"
+          "sha256": "bb198eb1423443f6b76c36eec4f20c1cbc2027252ee7ecd6f30ca042c7b5f72e"
         },
         {
           "path": "lib/explore/map-style.ts",
@@ -327,7 +327,7 @@
     {
       "id": "security-and-load-review",
       "status": "blocked",
-      "reason": "Production security review and measured 50\u00d7 load-test evidence need an approved deployment environment."
+      "reason": "Production security review and measured 50× load-test evidence need an approved deployment environment."
     },
     {
       "id": "legal-licence-attribution-sign-off",
@@ -345,5 +345,5 @@
       "reason": "The admitted province-level technical-preview tile and four boundary-only reference archives have CDN deployment and exact delivery/readback evidence, and the bounded CSV and GeoPackage release is public and independently verified. Complete deployed-browser PMTiles rendering evidence and the remaining production data gates are still required before production delivery can open."
     }
   ],
-  "nonProductionBoundary": "The public site, delivery-validated province-level CDN tile, four exact-readback reference-boundary archives, and bounded bulk release remain a technical preview. Deployed-browser PMTiles rendering is now observed against the Site itself. This record does not claim per-cell production geometry, Phase 2 completion, reviewed translation, accessibility conformance, security review, load result, backup, live operations, or general production readiness."
+  "nonProductionBoundary": "The public site, delivery-validated province-level CDN tile, four exact-readback reference-boundary archives, and bounded bulk release remain a technical preview. Deployed-browser PMTiles rendering is observed against the Site itself, most recently on 2026-09-03 after the Site was redeployed to this branch. This record does not claim per-cell production geometry, Phase 2 completion, reviewed translation, accessibility conformance, security review, load result, backup, live operations, or general production readiness."
 }

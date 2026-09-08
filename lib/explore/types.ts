@@ -1,3 +1,10 @@
+/*
+ * The leaf module, not the domain barrel. lib/domain/brand.ts reads the
+ * coverage period from this file, so going through the barrel would close a
+ * cycle and leave whichever module was entered first reading an uninitialized
+ * binding. year-range.ts imports nothing but a type.
+ */
+import { formatYearRange, yearRange } from "../domain/year-range";
 import type { ConfidenceResult, CoverageGrade, EvidenceClass, Locale, Provenance } from "../domain";
 export const EXPLORE_MODES = ["forest-change", "recorded-harvest", "wildfire", "condition-recovery"] as const;
 export type ExploreMode = (typeof EXPLORE_MODES)[number];
@@ -21,10 +28,23 @@ export type ExploreDataView = "chart" | "table";
 export const EXPLORE_YEAR_MIN = 1985;
 export const EXPLORE_YEAR_MAX = 2022;
 export const EXPLORE_DEFAULT_YEAR = EXPLORE_YEAR_MAX;
+/*
+ * The whole span the archive reaches across. It is the outer bound of the 38
+ * annual intervals, not an interval itself: no single layer covers it.
+ */
+export const EXPLORE_COVERAGE_SPAN = yearRange(EXPLORE_YEAR_MIN - 1, EXPLORE_YEAR_MAX);
+
+/*
+ * The same span in the three shapes prose needs. These were spelled out by
+ * hand here and differently again in half a dozen components, which is how the
+ * page came to print a hyphen, an en dash and the word "to" for one period.
+ * lib/domain/year-range.ts is now the only place that decides how a range is
+ * set, and this is the only place that names this particular range.
+ */
 export const EXPLORE_COVERAGE_PERIOD = Object.freeze({
-  en: `${EXPLORE_YEAR_MIN - 1} to ${EXPLORE_YEAR_MAX}`,
-  fr: `${EXPLORE_YEAR_MIN - 1} à ${EXPLORE_YEAR_MAX}`,
-  compact: `${EXPLORE_YEAR_MIN - 1}–${EXPLORE_YEAR_MAX}`,
+  en: formatYearRange(EXPLORE_COVERAGE_SPAN, "en", "span"),
+  fr: formatYearRange(EXPLORE_COVERAGE_SPAN, "fr", "span"),
+  compact: formatYearRange(EXPLORE_COVERAGE_SPAN, "en"),
 });
 export const EXPLORE_MAP_VIEWS = ["bc", "ab", "on", "qc"] as const;
 export type ExploreMapView = (typeof EXPLORE_MAP_VIEWS)[number];

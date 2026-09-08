@@ -65,7 +65,7 @@ export function SideBySideComparison({
           {labels.cards}
         </a>
         {provenance}
-        <div className="table-scroll">
+        <div className="table-scroll" tabIndex={0} role="region" aria-label={labels.title}>
           <table aria-label={labels.title}>
             <caption>{labels.title}</caption>
             <thead>

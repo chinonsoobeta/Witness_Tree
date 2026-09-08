@@ -69,11 +69,14 @@ export function packageCheckFiles(packageDocument, availableFiles) {
 }
 
 // Count executable workflow steps only. A name in a comment is documentation,
-// not execution, and cannot satisfy this gate.
+// not execution, and cannot satisfy this gate. A step's run: counts whether or
+// not the step carries a name:, which moves the command onto its own line;
+// matching only the "- run:" form let a checker run in CI while the register
+// went on recording it as unreached.
 export function ciPackageChecks(ciText) {
   const names = [];
   for (const line of String(ciText).split("\n")) {
-    const match = line.match(/^\s*-\s+run:\s+npm run (check:[A-Za-z0-9:_-]+)\s*$/);
+    const match = line.match(/^\s*(?:-\s+)?run:\s+npm run (check:[A-Za-z0-9:_-]+)\s*$/);
     if (match) names.push(match[1]);
   }
   assert.equal(new Set(names).size, names.length, "CI runs the same package check more than once");
@@ -83,7 +86,7 @@ export function ciPackageChecks(ciText) {
 function ciRunCommands(ciText) {
   return String(ciText)
     .split("\n")
-    .map((line) => line.match(/^\s*-\s+run:\s+(.+)$/)?.[1])
+    .map((line) => line.match(/^\s*(?:-\s+)?run:\s+(.+)$/)?.[1])
     .filter((command) => command && command !== "|" && command !== ">");
 }
 

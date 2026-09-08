@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "witness-tree/data-root-bound-checks/1",
+  "schemaVersion": "witness-tree/data-root-bound-checks/2",
   "status": "engineering-derived-inventory",
   "claims": {
     "evidenceUnavailableIsNotEvidenceContradicted": true,
@@ -11,30 +11,167 @@
   },
   "dataRoot": {
     "path": "../../Witness_Tree-data",
-    "reason": "Every check below reads real source or derived bytes and verifies their SHA-256 against a bound checksum. None of them can be satisfied by a fixture, because a fixture cannot reproduce the checksum of a real archive."
+    "reason": "Every check below reads the real archive. Most verify the SHA-256 of source or derived bytes against a bound checksum, which no fixture can reproduce. One asserts the absence of files that no manifest admits, which a fixture cannot demonstrate either, because an empty temporary directory is clean by construction."
+  },
+  "detachedSweep": {
+    "method": "Run every check: script from package.json with WITNESS_TREE_DATA_ROOT pointed at a path that does not resolve. The sweep and the checks it spawns then agree on where the archive is meant to be and find it absent, which is what a detached drive looks like to code that goes through the shared resolver.",
+    "limits": [
+      {
+        "check": "check:phase1-canonical-raw-inventory-bytes",
+        "reason": "It asserts the resolved root equals the canonical SSD path, so WITNESS_TREE_DATA_ROOT cannot move it. Pointed at a simulated absent root it read the real 130 GB archive instead and passed, which says nothing about a detached drive. Only a physical detach can observe it."
+      },
+      {
+        "check": "check:phase1-nbac-profile-bytes",
+        "reason": "It asserts the resolved root equals the canonical SSD path, so WITNESS_TREE_DATA_ROOT cannot move it. Pointed at a simulated absent root it read the real archive instead and passed. Only a physical detach can observe it."
+      },
+      {
+        "check": "check:wildfire-derived-recovery",
+        "reason": "It sets WITNESS_TREE_DATA_ROOT itself for the subprocesses it drives, so an outer override never reaches them. Its entry here is the registration earned by the earlier physical-detach baseline, not by this sweep."
+      }
+    ]
   },
   "checks": [
-    "check:coarse-grid-tiles-bytes",
-    "check:phase1-bc-ontario-row-audit",
-    "check:phase1-current-state-completion-audit",
-    "check:phase1-federal-electoral-output",
-    "check:phase1-federal-electoral-production-admission",
-    "check:phase1-federal-electoral-transformation",
-    "check:phase1-nbac-profile-bytes",
-    "check:phase1-nrcan-cover-processing-gate",
-    "check:phase1-ntems-readback-bytes",
-    "check:phase1-owner-decision-queue",
-    "check:phase1-phase3-owner-approvals",
-    "check:phase1-production-source-ledger",
-    "check:phase1-remaining-actions-audit",
-    "check:phase1-source-ledger-decision-readiness",
-    "check:phase2-expert-review-evidence",
-    "check:phase2-historical-evidence-status",
-    "check:phase2-historical-national-execution",
-    "check:phase2-real-comparison-availability",
-    "check:phase2-real-review-packet",
-    "check:phase2-real-review-packet-raster-readback",
-    "check:wildfire-derived-readback",
-    "check:wildfire-derived-recovery"
+    {
+      "name": "check:archive-tool-artifacts",
+      "whenDetached": "fails"
+    },
+    {
+      "name": "check:coarse-grid-tiles-bytes",
+      "whenDetached": "fails"
+    },
+    {
+      "name": "check:hansen-sample-profile",
+      "whenDetached": "degrades",
+      "announces": "because the data root is not attached"
+    },
+    {
+      "name": "check:nfd-harvest-statistics-profile",
+      "whenDetached": "fails"
+    },
+    {
+      "name": "check:phase1-bc-ontario-row-audit",
+      "whenDetached": "fails"
+    },
+    {
+      "name": "check:phase1-canonical-raw-inventory-bytes",
+      "whenDetached": "fails"
+    },
+    {
+      "name": "check:phase1-federal-electoral-output",
+      "whenDetached": "fails"
+    },
+    {
+      "name": "check:phase1-federal-electoral-production-admission",
+      "whenDetached": "fails"
+    },
+    {
+      "name": "check:phase1-federal-electoral-transformation",
+      "whenDetached": "fails"
+    },
+    {
+      "name": "check:phase1-nbac-profile-bytes",
+      "whenDetached": "fails"
+    },
+    {
+      "name": "check:phase1-nrcan-cover-processing-gate",
+      "whenDetached": "fails"
+    },
+    {
+      "name": "check:phase1-ntems-readback-bytes",
+      "whenDetached": "fails"
+    },
+    {
+      "name": "check:phase1-owner-decision-queue",
+      "whenDetached": "fails"
+    },
+    {
+      "name": "check:phase1-phase3-owner-approvals",
+      "whenDetached": "fails"
+    },
+    {
+      "name": "check:phase1-production-source-ledger",
+      "whenDetached": "fails"
+    },
+    {
+      "name": "check:phase1-source-ledger-decision-readiness",
+      "whenDetached": "fails"
+    },
+    {
+      "name": "check:phase2-expert-review-evidence",
+      "whenDetached": "fails"
+    },
+    {
+      "name": "check:phase2-expert-review-workflow",
+      "whenDetached": "degrades",
+      "announces": "control-plane-only"
+    },
+    {
+      "name": "check:phase2-historical-evidence-status",
+      "whenDetached": "fails"
+    },
+    {
+      "name": "check:phase2-historical-national-execution",
+      "whenDetached": "fails"
+    },
+    {
+      "name": "check:phase2-independent-comparison-evidence",
+      "whenDetached": "fails"
+    },
+    {
+      "name": "check:phase2-official-published-harvest-runner",
+      "whenDetached": "fails"
+    },
+    {
+      "name": "check:phase2-real-comparison-availability",
+      "whenDetached": "fails"
+    },
+    {
+      "name": "check:phase2-real-review-packet",
+      "whenDetached": "fails"
+    },
+    {
+      "name": "check:phase2-real-review-packet-raster-readback",
+      "whenDetached": "fails"
+    },
+    {
+      "name": "check:phase8-bulk-download-release",
+      "whenDetached": "fails"
+    },
+    {
+      "name": "check:province-rollup",
+      "whenDetached": "degrades",
+      "announces": "not rebuilt (data root not attached)"
+    },
+    {
+      "name": "check:vlce2-gap",
+      "whenDetached": "degrades",
+      "announces": "data root not mounted"
+    },
+    {
+      "name": "check:wildfire-derived-readback",
+      "whenDetached": "fails"
+    },
+    {
+      "name": "check:wildfire-derived-recovery",
+      "whenDetached": "fails"
+    }
+  ],
+  "failingForOtherReasons": [
+    {
+      "name": "check:archive-recovery-copy",
+      "reason": "data/archive-recovery-copy.json has never been produced. The check fails identically with the archive attached, because it is waiting on an AWS run recorded in docs/ARCHIVE_RECOVERY_COPY_SCHEMA.md, not on the drive."
+    },
+    {
+      "name": "check:data-root-test-currency",
+      "reason": "data/data-root-test-run-receipt.json records a run against a different tree. The check fails identically with the archive attached and is cleared by re-running npm run test:data-root, never by editing the receipt."
+    },
+    {
+      "name": "check:deployed-map-render",
+      "reason": "It renders the deployed site over the network. It fails identically with the archive attached whenever the site is unreachable from this machine."
+    },
+    {
+      "name": "check:postgres-tenant-isolation",
+      "reason": "It needs a live PostgreSQL instance. It fails identically with the archive attached whenever no server is running."
+    }
   ]
 }

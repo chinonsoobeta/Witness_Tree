@@ -2,9 +2,10 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
+import { resolveRecordedDataPath } from "./data-root.mjs";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
-const bytes = (path) => readFileSync(`${root}/${path}`);
+const bytes = (path) => readFileSync(resolveRecordedDataPath(path) ?? `${root}/${path}`);
 const digest = (value) => createHash("sha256").update(value).digest("hex");
 const evidence = JSON.parse(bytes("data/phase2-v21-real-review-packet-raster-readback-evidence.json"));
 const packetEvidence = JSON.parse(bytes("data/phase2-v21-real-review-packet-evidence.json"));

@@ -9,6 +9,8 @@ const admission = JSON.parse(
   await readFile(new URL("../data/economic-region-source-admission-2026-08-29.json", import.meta.url), "utf8"),
 );
 
+const SOURCE_ID = "statcan-economic-regions-2021";
+
 test("economic-region geometry and immutable overlay release are exact", () => {
   assert.equal(admission.schemaVersion, "witness-tree/framework-source-admission/1");
   assert.equal(admission.status, "owner-directed-source-admission");
@@ -71,4 +73,39 @@ test("the admitted economic-region record matches the attached source bytes", as
   const frenchIds = new Set(french.features.map((feature) => String(feature.properties.IDUGD)));
   assert.deepEqual([...frenchIds].sort(), [...englishIds].sort());
   assert.equal(french.features.filter((feature) => !String(feature.properties.RÉNOM ?? "").trim()).length, 0);
+});
+
+// The admitted source is national; the overlay that ships is not. This binds the
+// record to the release that is current, so a later release cannot quietly leave
+// this admission pointing at a superseded file the way v2 did.
+test("the superseded overlay pointer names the release that is actually current", async () => {
+  const release = JSON.parse(
+    await readFile(new URL("../data/boundary-overlay-release.json", import.meta.url), "utf8"),
+  );
+  const superseded = admission.overlayReleaseSuperseded;
+  assert.equal(superseded.supersedes, admission.overlayRelease.releaseId);
+  assert.notEqual(superseded.releaseId, admission.overlayRelease.releaseId);
+  assert.equal(superseded.productId, release.productId);
+  assert.equal(superseded.releaseId, release.releaseId);
+  assert.equal(superseded.builtAt, release.builtAt);
+
+  const archive = release.archives.find((entry) => entry.fileName === superseded.fileName);
+  assert.ok(archive, `${superseded.fileName} is not in the current release`);
+  assert.equal(superseded.byteLength, archive.byteLength);
+  assert.equal(superseded.sha256, archive.sha256);
+  assert.equal(superseded.url, archive.url);
+  assert.equal(superseded.shippedFeatureCount, archive.featureCount);
+  assert.equal(superseded.url, `${release.base}/${superseded.fileName}`);
+
+  const source = release.sources.find((entry) => entry.id === SOURCE_ID);
+  assert.ok(source, `${SOURCE_ID} is not a source of the current release`);
+  assert.equal(superseded.shippedFeatureCount, source.featureCount);
+  assert.equal(superseded.sourceFeatureCount, source.sourceFeatureCount);
+  assert.equal(superseded.selection, source.selection);
+  assert.equal(superseded.clippedToProvinceBoundary, source.clippedToProvinceBoundary);
+  assert.equal(source.clippedToProvinceBoundary, true);
+  assert.ok(
+    superseded.shippedFeatureCount < superseded.admittedSelectionFeatureCount,
+    "a clipped overlay ships fewer features than the admission selected",
+  );
 });

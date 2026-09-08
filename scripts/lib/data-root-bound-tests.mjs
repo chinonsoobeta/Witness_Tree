@@ -42,6 +42,20 @@ export const REQUIRES_MACOS_RUNNER = new Map([
   ["phase1-canopy-completion-recovery.test.mjs", "Asserts on an attestation failure that a macOS owner-and-mode-600 check reaches first."],
 ]);
 
+// Files that stay in portable CI but hold one subtest that reads the data root and
+// skips itself when the root is absent. Registering the whole file would strip
+// the assertions that do run everywhere, so the skip is recorded here instead.
+//
+// A skipped subtest reports ok, which is the failure mode this whole registry
+// exists to prevent, so the set is pinned: a new silent skip fails the suite
+// until it is either registered above or listed here with a reason.
+export const SKIPS_WITHOUT_DATA_ROOT = new Map([
+  ["economic-region-admission.test.mjs", "One subtest hashes the admitted national economic-region GeoJSON and its French counterpart under the data root. The record, licence and supersession assertions run everywhere."],
+  ["explore-province-coverage-claim.test.ts", "One subtest binds the governed annual-JSON and sidecar pair named by the coverage receipt. The published grades, areas and unknown-share assertions run everywhere."],
+  ["phase2-per-cell-geometry-evidence.test.mjs", "One subtest reads the completed external mapped-extent verification named by the receipt. The inventory reconciliation and every tamper case run everywhere."],
+  ["watershed-source-admission.test.mjs", "One subtest hashes the governed WSC v6 outer archive and its polygon payload under the data root. The measured selection, licence and supersession assertions run everywhere."],
+]);
+
 export const TEST_REQUIREMENTS = Object.freeze({
   dataRoot: "data-root",
   macosRunner: "macos-runner",

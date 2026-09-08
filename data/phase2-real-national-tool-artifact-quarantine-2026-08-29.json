@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "witness-tree/archive-tool-artifact-quarantine/1",
+  "status": "resolved-quarantined-admitted-outputs-unchanged",
+  "admittedDirectory": "derived/phase2-real-national-1984-2022-v1",
+  "whatHappened": "A file that no manifest admits appeared inside an owner-admitted output directory. It is a GDAL PAM sidecar holding a 256-bucket histogram of recorded-harvest-1985-2022.tif. GDAL writes one beside any raster whose statistics or histogram are computed, unless GDAL_PAM_ENABLED=NO is set, so reading the raster is what wrote it.",
+  "attribution": {
+    "cause": "gdalinfo -hist disturbance/recorded-harvest-1985-2022.tif",
+    "by": "this engineering session, as an undirected diagnostic",
+    "basis": "The command appears in this session's own transcript, and the sidecar's modification time matches. No repository script runs gdalinfo with -hist or -stats; scripts/check-raster-grid.mjs exists precisely to assert that -stats was never run against the grid record.",
+    "confidence": "attributed, not merely assumed: the command and the timestamp agree, and it is the only such file that has ever existed anywhere under the archive."
+  },
+  "detectedAt": "2026-09-02",
+  "detectedBy": "check:phase2-historical-national-execution, whose readback asserts the exact contents of the admitted directory",
+  "admittedOutputs": {
+    "count": 79,
+    "verifiedAgainst": "derived/phase2-real-national-1984-2022-v1/lineage.json",
+    "method": "SHA-256 and byte length of every listed output, read in full",
+    "verifiedOn": "2026-09-02",
+    "mismatches": 0,
+    "note": "The raster itself was last modified 2026-08-21T18:11 local, before the sidecar appeared. Nothing admitted was rewritten; a sibling file was added."
+  },
+  "quarantined": {
+    "from": "derived/phase2-real-national-1984-2022-v1/disturbance/recorded-harvest-1985-2022.tif.aux.xml",
+    "to": "quarantine/phase2-real-national-pam-sidecar/2026-08-29/recorded-harvest-1985-2022.tif.aux.xml",
+    "sha256": "47d39d022bd1e2dcc44b141a8c0fc70d8eecc77c5ca51fe155b546d19c75fd7a",
+    "byteLength": 956,
+    "modifiedAt": "2026-08-29T01:14 local",
+    "reasonNotDeleted": "The archive is the only project-data copy, and the doctrine is non-destructive. The file is preserved where a reader can still find it, rather than removed to make a gate green."
+  },
+  "guard": {
+    "check": "check:archive-tool-artifacts",
+    "covers": "raw, extracted, derived and evidence, refusing any GDAL PAM sidecar, overview, external mask, or macOS Finder artifact",
+    "priorCoverage": "scripts/check-raster-grid.mjs guarded one record against gdalinfo -stats. Nothing guarded the archive."
+  },
+  "boundary": {
+    "admittedBytesChanged": false,
+    "recordRewritten": false,
+    "ingested": false,
+    "released": false,
+    "productionEligible": false,
+    "externalMutation": false
+  }
+}

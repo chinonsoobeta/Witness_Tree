@@ -1,0 +1,47 @@
+name: Synthetic uptime alert
+
+on:
+  workflow_run:
+    workflows: [Synthetic uptime]
+    types: [completed]
+    branches: [main]
+
+# The probe retains its read-only token. Only this trusted completion handler
+# can write the incident issue. Never check out code from the triggering run.
+permissions:
+  contents: read
+  actions: read
+  issues: write
+
+concurrency:
+  group: synthetic-uptime-incident
+  cancel-in-progress: false
+
+jobs:
+  alert:
+    if: >-
+      github.event.workflow_run.head_repository.full_name == github.repository &&
+      github.event.workflow_run.head_branch == 'main' &&
+      (github.event.workflow_run.event == 'schedule' || github.event.workflow_run.event == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - name: Read the completed probe receipt
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          UPTIME_RUN_ID: ${{ github.event.workflow_run.id }}
+        run: gh run download "$UPTIME_RUN_ID" --name synthetic-uptime-result --dir uptime-receipt
+      - name: Alert after consecutive failures or close on recovery
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/update-uptime-issue.mjs --receipt uptime-receipt/synthetic-uptime-result.json

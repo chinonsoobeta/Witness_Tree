@@ -4,6 +4,13 @@ import test from "node:test";
 
 const read = (path) => readFile(new URL(path, import.meta.url), "utf8");
 
+function section(source, start, end) {
+  const from = source.indexOf(start);
+  const to = source.indexOf(end, from);
+  assert.ok(from >= 0 && to > from, `Expected ${start} before ${end}`);
+  return source.slice(from, to);
+}
+
 test("landing pages use the production aggregate and retain the bounded scope", async () => {
   const [english, french] = await Promise.all([read("../app/en/page.tsx"), read("../app/fr/page.tsx")]);
   for (const page of [english, french]) {
@@ -21,6 +28,47 @@ test("landing pages use the production aggregate and retain the bounded scope", 
   assert.match(french, /D’autres provinces s’ajouteront bientôt/);
   assert.doesNotMatch(english, /Every result shows what the evidence says/);
   assert.doesNotMatch(french, /Chaque résultat indique ce que montrent les preuves/);
+});
+
+/*
+ * This replaces the staged-grammar test that pinned the landing-hero and
+ * landing-record-band structure. The confidence-first canvas puts the coverage
+ * statement and the evidence legend ahead of the first figure, and reports each
+ * province through a coverage card rather than a definition list, so the old
+ * structure is gone by design rather than by neglect. The contract it enforced
+ * is kept here against the composition that replaced it, at the same strictness:
+ * one call to action per band, the interior sections still numbered, and no
+ * em dash.
+ */
+test("the landing composition puts coverage and the legend before any figure", async () => {
+  const [english, french] = await Promise.all([read("../app/en/page.tsx"), read("../app/fr/page.tsx")]);
+  for (const [page, route, methods] of [
+    [english, "/en/explore", "/en/methods#coverage-gap"],
+    [french, "/fr/explorer", "/fr/methodes#coverage-gap"],
+  ]) {
+    const hero = section(page, '<header className="masthead masthead--record">', "</header>");
+    assert.match(hero, /<p className="eyebrow">/);
+    assert.match(hero, /<h1>/);
+    assert.match(hero, /<ProvinceBar/);
+    // Nothing leaves the hero: the reader meets the coverage statement first.
+    assert.equal((hero.match(/<Link\b/g) ?? []).length, 0);
+    // Order is the claim. The coverage statement and the legend both stand
+    // ahead of the section that reports a province's figures.
+    const coverage = page.indexOf("<CoverageStatement");
+    const legend = page.indexOf("<EvidenceLegend");
+    const record = page.indexOf('<section className="content-section landing-coverage"');
+    assert.ok(coverage > 0 && legend > coverage && record > legend, "coverage, then legend, then figures");
+    const band = section(page, '<section className="content-section landing-coverage"', '<section className="content-section prose-measure">');
+    assert.match(band, /<span className="num">01<\/span>/);
+    assert.match(band, /<ProvinceCoverageCard/);
+    assert.match(band, new RegExp(`href="${methods}"`));
+    assert.match(band, new RegExp(`href="${route}"`));
+    assert.equal((page.match(/landing-coverage/g) ?? []).length, 1);
+    assert.match(page, /<span className="num">02<\/span>/);
+    assert.match(page, /<span className="num">03<\/span>/);
+    assert.match(page, /<span className="num">04<\/span>/);
+    assert.doesNotMatch(page, /\u2014/);
+  }
 });
 
 test("public coverage copy derives from the bounded Explore period", async () => {
