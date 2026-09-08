@@ -1,3 +1,5 @@
+import { CoverageStatement } from "@/components/policy/CoverageStatement";
+import { EvidenceLegend } from "@/components/policy/EvidenceLegend";
 import { colon, type Locale } from "@/lib/domain";
 import { SourceCurrency } from "./SourceCurrency";
 import {
@@ -90,10 +92,14 @@ export function DataPage({ locale }: Readonly<{ locale: Locale }>) {
   const copy = COPY[locale];
   const [csv, geopackage] = provinceBulkRelease.artifacts;
   return (
-    <main id="main" className="page-wrap">
+    <main id="main" className="page-wrap data-page">
       <header className="masthead">
         <h1>{copy.title}</h1>
       </header>
+      <CoverageStatement locale={locale}><p>{copy.limits}</p></CoverageStatement>
+      <EvidenceLegend locale={locale} />
+      <div className="data-layout">
+      <div className="data-reader">
 
       <section className="content-section prose-measure">
         <h2>{copy.accessTitle}</h2>
@@ -119,11 +125,12 @@ export function DataPage({ locale }: Readonly<{ locale: Locale }>) {
 
       <aside className="card card--sand prose-measure">
         <h2>{copy.limitsTitle}</h2>
-        <p>{copy.limits}</p>
         <p>{copy.previewLimits}</p>
       </aside>
 
       <SourceCurrency locale={locale} />
+      </div>
+      <aside className="data-provenance" aria-label={copy.recordsTitle}>
 
       <section className="content-section prose-measure">
         <h2>{copy.recordsTitle}</h2>
@@ -177,6 +184,8 @@ export function DataPage({ locale }: Readonly<{ locale: Locale }>) {
           </li>
         </ul>
       </section>
+      </aside>
+      </div>
     </main>
   );
 }

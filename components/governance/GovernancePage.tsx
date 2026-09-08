@@ -1,3 +1,4 @@
+import { EvidenceLegend } from "@/components/policy/EvidenceLegend";
 import { PRODUCT_NAME, type Locale } from "@/lib/domain";
 import {
   EXPLORE_COVERAGE_PERIOD,
@@ -570,11 +571,18 @@ export function GovernancePage({
     <main id="main" className="page-wrap governance-page">
       <header className="masthead">
         <h1>{page.title}</h1>
-        <p className="dek">{page.status}</p>
       </header>
+      <aside className="coverage-statement governance-accountability" aria-label={locale === "en" ? "Accountability" : "Responsabilité"}>
+        <h2>{locale === "en" ? "Accountability" : "Responsabilité"}</h2>
+        <p>{page.status}</p>
+        <a className="btn btn--primary" href={kind === "corrections" ? "#correction-instructions" : `/${locale}/corrections`}>
+          {locale === "en" ? "Read the correction instructions" : "Consulter les instructions de correction"}
+        </a>
+      </aside>
+      <EvidenceLegend locale={locale} />
       <div className="content-section prose-measure">
         {page.sections.map((section, index) => (
-          <section className="governance-section" key={section.heading}>
+          <section className="governance-section" key={section.heading} id={kind === "corrections" && index === 2 ? "correction-instructions" : undefined}>
             <p className="governance-index" aria-hidden="true">
               {String(index + 1).padStart(2, "0")}
             </p>

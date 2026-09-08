@@ -95,3 +95,18 @@ test("BC alone has a qualifier and every province presentation carries it", () =
   assert.match(read("app/en/page.tsx"), /href="\/en\/methods#coverage-gap"/);
   assert.match(read("app/fr/page.tsx"), /href="\/fr\/methodes#coverage-gap"/);
 });
+
+
+test("methods publish every confidence rule in an accessible bilingual table", () => {
+  for (const locale of ["en", "fr"] as const) {
+    const html = render(locale);
+    const table = html.match(/<table class="confidence-rules">[\s\S]*?<\/table>/)?.[0];
+    assert.ok(table, `${locale}: confidence rules must be a real table`);
+    assert.match(table, /<caption>/);
+    assert.equal((table.match(/scope="col"/g) ?? []).length, 2);
+    assert.equal((table.match(/scope="row"/g) ?? []).length, 4);
+    const ids = [...table.matchAll(/<code>(CONF-[A-Z]+-001)<\/code>/g)].map((match) => match[1]);
+    assert.deepEqual(ids, ["CONF-LIMITED-001", "CONF-HIGH-001", "CONF-MEDIUM-001", "CONF-UNKNOWN-001"]);
+    assert.ok(html.indexOf('class="coverage-statement"') < html.indexOf('class="governance-section"'));
+  }
+});
