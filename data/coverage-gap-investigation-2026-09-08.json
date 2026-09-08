@@ -20,7 +20,15 @@
         "ON": 8843646.69,
         "BC": 4095.27
       },
-      "meaning": "Area the NTEMS VLCE2 land-cover source did not map, not a measurement of forest or forest loss."
+      "meaning": "Area the NTEMS VLCE2 land-cover source did not map, not a measurement of forest or forest loss.",
+      "distribution": {
+        "measure": "Gap hectares by plot latitude, weighted by stratum inclusion probability from measurements/sample-plots.csv of coverage-metric-production-20260908T030436Z.",
+        "farNorthAtOrAbove56NHectares": 19332104,
+        "albertaMid52To56NHectares": 5408122,
+        "southBelow52NHectares": 21684491,
+        "quebecFarNorthHectares": 19328009,
+        "interpretation": "The gap is two comparable blocks, not one. The settled south and prairies supply 46.7% and the far north of Quebec supplies 41.6%. Describing the gap as southern alone would misplace the largest single block."
+      }
     },
     "referenceBands": {
       "bandAHectares": 29296005.57,

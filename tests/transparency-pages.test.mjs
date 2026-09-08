@@ -90,6 +90,8 @@ test("methods explain the unmapped extent and inconclusive sampling in both loca
     "Neither can be measured directly from surface reflectance", "La réflectance de surface ne permet de mesurer directement ni l’un ni l’autre",
     "Moving the baseline to a later year was also tested and did not help", "une année de référence plus récente a aussi été testé, sans réduire cette incertitude",
     "field plots, air photos or lidar", "placettes de terrain, des photographies aériennes ou des données lidar",
+    "most of the remainder is the far north of Quebec, beyond the northern limit of the closed-crown forest",
+    "la plus grande partie du reste se trouve dans le Grand Nord québécois, au-delà de la limite septentrionale de la forêt fermée",
     "unknown is an evidence class, distinct from area the source did not map", "une catégorie de preuve, distincte d’une superficie non cartographiée par la source",
   ]) assert.ok(page.includes(phrase), phrase);
   assert.match(page, /\[copy\.coverage, copy\.coverageText\],\s*\[copy\.unmapped, copy\.unmappedText\],\s*\[copy\.unmappedKnowledge, copy\.unmappedKnowledgeText\],\s*\[copy\.evidence, copy\.evidenceText\]/);
