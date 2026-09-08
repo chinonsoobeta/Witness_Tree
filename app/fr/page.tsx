@@ -8,7 +8,7 @@ import { localizedAlternates } from "@/lib/site-metadata";
 export const metadata: Metadata = { title: "Registre public des pertes forestières", alternates: localizedAlternates("fr", { en: "/en", fr: "/fr" }) };
 
 function coverageLabel(row: (typeof EXPLORE_PRODUCTION_LAYER.rows)[number]) {
-  return `Minimum de la zone cartographiée; ${formatUnknownSharePercent(row.unknownSharePercent, "fr")} (${formatHectares(row.unknownRequiredInputHectares, "fr")}) de la superficie est inconnue`;
+  return `Minimum de la zone cartographiée; ${formatUnknownSharePercent(row.unknownSharePercent, "fr")} (${formatHectares(row.unknownRequiredInputHectares, "fr")}) de la superficie n’a pas été cartographiée par la source${"unmappedCharacter" in row ? `; ${row.unmappedCharacter.fr}` : ""}`;
 }
 
 export default function FrenchHome() {
@@ -21,10 +21,11 @@ export default function FrenchHome() {
     </header>
     <section className="content-section prose-measure" aria-labelledby="registre-actuel">
       <div className="section-heading"><span className="num">01</span><h2 id="registre-actuel">Commencer par le registre actuel</h2></div>
-      <p className="lead">L’agrégat provincial provisoire et limité de {EXPLORE_PRODUCTION_LAYER.period} est prêt à explorer. Il présente la perte forestière détectée avec un état de couverture pour chaque province. Une vérification complète de l’étendue cartographiée de {EXPLORE_COVERAGE_PERIOD.fr} régit maintenant la classification des zones inconnues.</p>
+      <p className="lead">L’agrégat provincial provisoire et limité de {EXPLORE_PRODUCTION_LAYER.period} est prêt à explorer. Il présente la perte forestière détectée avec un état de couverture pour chaque province. La vérification de l’étendue cartographiée pour chacune des années de {EXPLORE_COVERAGE_PERIOD.fr} est terminée. Ses résultats déterminent désormais le classement des superficies non cartographiées par la source.</p>
       <dl className="principles">
         {EXPLORE_PRODUCTION_LAYER.rows.map((row) => <div className="principle" key={row.id}><dt>{row.name.fr}</dt><dd>{formatHectares(row.observedLossHectares, "fr")} de perte détectée ({formatPercent(row.observedLossPercent, "fr")}) · {coverageLabel(row)}</dd></div>)}
       </dl>
+      <p><Link href="/fr/methodes#coverage-gap">Pourquoi ces superficies ne sont pas cartographiées et ce que nous en savons</Link></p>
       <p><Link className="btn btn--primary" href="/fr/explorer">Explorer l’agrégat provincial</Link></p>
       <p><small>D’autres provinces s’ajouteront bientôt.</small></p>
     </section>

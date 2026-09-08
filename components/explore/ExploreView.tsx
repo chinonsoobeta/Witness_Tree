@@ -305,7 +305,7 @@ export function ExploreView({
       : text.production;
   const annual = perCellShown ? perCellAnnualForYear(activeYear) : null;
   const provinceCoverageLabel = (row: (typeof EXPLORE_PRODUCTION_LAYER.rows)[number]) =>
-    `${text.partial} (${formatUnknownSharePercent(row.unknownSharePercent, locale)}; ${formatNumber(row.unknownRequiredInputHectares, locale)} ${text.unknownArea})`;
+    `${text.partial} (${formatUnknownSharePercent(row.unknownSharePercent, locale)}; ${formatNumber(row.unknownRequiredInputHectares, locale)} ${text.unknownArea})${"unmappedCharacter" in row ? `; ${row.unmappedCharacter[locale]}` : ""}`;
   const nearestYear = modeEvents.reduce(
     (nearest, event) =>
       Math.abs(event.year - activeYear) < Math.abs(nearest - activeYear)
@@ -552,6 +552,7 @@ export function ExploreView({
               const barX = 150;
               const barMax = 300;
               return (
+                <>
                 <svg
                   className="explore-chart"
                   role="img"
@@ -567,7 +568,7 @@ export function ExploreView({
                     const y = index * rowHeight + 8;
                     return (
                       <g key={item.id}>
-                        <title>{labelled(locale, label, detail)}</title>
+                        <title>{labelled(locale, label, detail)}{"unmappedCharacter" in item ? `; ${item.unmappedCharacter[locale]}` : ""}</title>
                         <text className="explore-bar-name" x="0" y={y + 15}>{label}</text>
                         <rect
                           className="explore-bar"
@@ -588,6 +589,10 @@ export function ExploreView({
                     );
                   })}
                 </svg>
+                {rows.map((item) => "unmappedCharacter" in item ? (
+                  <p key={item.id}>{item.name[locale]}{colon(locale)} {item.unmappedCharacter[locale]}</p>
+                ) : null)}
+                </>
               );
           })()
         ) : null}

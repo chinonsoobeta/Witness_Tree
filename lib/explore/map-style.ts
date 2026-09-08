@@ -76,6 +76,18 @@ export const EXPLORE_PRODUCTION_LAYER = Object.freeze({
     {
       id: "59",
       name: { en: "British Columbia", fr: "Colombie-Britannique" },
+      /*
+       * Against the authoritative GeoBC terrestrial boundary, most of BC's
+       * gap is shoreline and boundary-edition disagreement, unlike Alberta's
+       * ecological footprint gap. Treating the rows identically would imply
+       * that all of BC's gap is unmeasured forest. This optional qualifier
+       * explains its character without changing any coverage or loss value.
+       * See data/coverage-gap-investigation-2026-09-08.json.
+       */
+      unmappedCharacter: {
+        en: "mostly shoreline and boundary-edition disagreement against the GeoBC terrestrial boundary",
+        fr: "écart surtout lié au littoral et aux différences entre éditions des limites, par comparaison avec la limite terrestre de GeoBC",
+      },
       observedLossHectares: 800473.32,
       observedLossPercent: 1.3917693193039167,
       unknownRequiredInputHectares: 4095.27,
