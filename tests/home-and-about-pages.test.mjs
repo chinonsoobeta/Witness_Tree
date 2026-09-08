@@ -46,8 +46,30 @@ test("public coverage copy derives from the bounded Explore period", async () =>
 test("language choices use native document navigation", async () => {
   const gateway = await read("../app/(gateway)/page.tsx");
   assert.doesNotMatch(gateway, /next\/link|<Link\b/);
-  assert.match(gateway, /<a className="btn btn--primary" href="\/en">Continue in English<\/a>/);
-  assert.match(gateway, /<a className="btn btn--outline" href="\/fr" lang="fr">Continuer en français<\/a>/);
+  assert.match(gateway, /<a className="gateway-choice gateway-choice--en" href="\/en">/);
+  assert.match(gateway, /<a className="gateway-choice gateway-choice--fr" href="\/fr" lang="fr">/);
+  assert.match(gateway, /<span className="gateway-choice-name">English<\/span>/);
+  assert.match(gateway, /<span className="gateway-choice-name">Français<\/span>/);
+  assert.match(gateway, /<span className="gateway-choice-sub">Continue in English →<\/span>/);
+  assert.match(gateway, /<span className="gateway-choice-sub">Continuer en français →<\/span>/);
+});
+
+test("the gate names where each photograph was taken", async () => {
+  const [gateway, css] = await Promise.all([read("../app/(gateway)/page.tsx"), read("../app/globals.css")]);
+  // One caption per photograph, in the same order as the rotation, so the name
+  // on screen belongs to the frame on screen.
+  assert.match(gateway, /const GATE_PHOTOGRAPHS = \[/);
+  for (const [file, location] of [
+    ["forest.jpg", "Lillooet, British Columbia"],
+    ["forest-2.jpg", "Shannon Falls Provincial Park, British Columbia"],
+    ["forest-3.jpg", "McKinley Landing, Kelowna, British Columbia"],
+    ["forest-4.jpg", "Stanley Park, Vancouver, British Columbia"],
+  ]) {
+    assert.ok(gateway.includes(`{ file: "${file}", location: "${location}" }`), file);
+  }
+  assert.match(gateway, /className="gateway-location-name"/);
+  assert.match(css, /\.gateway-location-name \{[^}]*font-size: 16px;/);
+  assert.match(css, /@media \(max-width: 640px\) \{[\s\S]*?\.gateway-location-name \{ font-size: 12px; \}/);
 });
 
 test("the decorative gate loops every five seconds without controls and respects reduced motion", async () => {
@@ -56,13 +78,22 @@ test("the decorative gate loops every five seconds without controls and respects
   assert.match(gateway, /alt="" role="presentation"/);
   assert.doesNotMatch(gateway, /<input|<button|gateway-motion/);
   assert.match(css, /animation: gateway-crossfade 20s linear infinite/);
+  assert.match(css, /animation: gateway-caption 20s linear infinite/);
   for (const [index, delay] of [[2, -15], [3, -10], [4, -5]]) {
-    assert.ok(css.includes(`.gateway-photo:nth-of-type(${index}) { animation-delay: ${delay}s; }`));
+    assert.ok(css.includes(`.gateway-slideshow .gateway-photo:nth-of-type(${index}) { animation-delay: ${delay}s; }`));
+    assert.ok(css.includes(`.gateway-slideshow .gateway-location-name:nth-of-type(${index}) { animation-delay: ${delay}s; }`));
   }
-  assert.match(css, /@keyframes gateway-crossfade\s*\{\s*0%, 20%, 100% \{ opacity: 1; \}\s*25%, 95% \{ opacity: 0; \}/);
+  assert.match(css, /@keyframes gateway-crossfade\s*\{\s*0%, 25%, 100% \{ opacity: 1; \}\s*30\.5%, 94\.5% \{ opacity: 0; \}/);
+  // Captions clear the frame before the next arrives: no two place names are
+  // ever legible at once.
+  assert.match(css, /@keyframes gateway-caption\s*\{\s*0%, 23%, 100% \{ opacity: 1; \}\s*25%, 98% \{ opacity: 0; \}/);
   assert.match(css, /@media \(prefers-reduced-motion: reduce\)\s*\{\s*\.gateway-slideshow \.gateway-photo \{ animation: none; opacity: 1; \}/);
-  assert.match(css, /\.gateway-photo:not\(:first-of-type\) \{ display: none; \}/);
-  assert.match(css, /\.language-gateway::before\s*\{[^}]*background: var\(--ground\);[^}]*opacity: 0\.76;/);
+  assert.match(css, /\.gateway-slideshow \.gateway-photo:not\(:first-of-type\) \{ display: none; \}/);
+  assert.match(css, /\.gateway-slideshow \.gateway-location-name:not\(:first-of-type\) \{ display: none; \}/);
+  // A flat dark scrim, not the page ground: var(--ground) inverts with the
+  // theme and would wash out the white gate type in the light palette.
+  assert.match(css, /\.gateway-scrim \{[^}]*background: var\(--gate-scrim\);/);
+  assert.doesNotMatch(css, /\.language-gateway::before/);
 });
 
 test("localized not-found pages use the site shell and offer three exits", async () => {

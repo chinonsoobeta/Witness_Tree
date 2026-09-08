@@ -18,6 +18,17 @@
   --topbar-ink-2: #ded8cf;
   --topbar-accent: #a9cf9b;
   --topbar-edge: #948b7a;
+  --gate-scrim: rgba(22, 19, 15, 0.76);
+  --gate-eyebrow: #a9cf9b;
+  --gate-lead: #e6dccd;
+  --gate-rule: #948b7a;
+  --gate-title: #fdfcf8;
+  --gate-caption: #ded8cf;
+  --gate-en-fill: rgba(71, 89, 63, 0.82);
+  --gate-en-edge: #a9cf9b;
+  --gate-en-sub: #e7ebe3;
+  --gate-fr-fill: rgba(22, 19, 15, 0.7);
+  --gate-fr-edge: #948b7a;
   --hero-fill: #47593f;
   --hero-panel: #2c2c24;
   --hero-ink: #fdfcf8;
@@ -176,6 +187,17 @@
     --topbar-ink-2: #c9c2b6;
     --topbar-accent: #a9cf9b;
     --topbar-edge: #7d7566;
+    --gate-scrim: rgba(22, 19, 15, 0.76);
+    --gate-eyebrow: #a9cf9b;
+    --gate-lead: #e6dccd;
+    --gate-rule: #948b7a;
+    --gate-title: #fdfcf8;
+    --gate-caption: #ded8cf;
+    --gate-en-fill: rgba(71, 89, 63, 0.82);
+    --gate-en-edge: #a9cf9b;
+    --gate-en-sub: #e7ebe3;
+    --gate-fr-fill: rgba(22, 19, 15, 0.7);
+    --gate-fr-edge: #948b7a;
     --hero-fill: #35422f;
     --hero-panel: #22201a;
     --hero-ink: #f2ede3;
@@ -258,6 +280,17 @@
   --topbar-ink-2: #ded8cf;
   --topbar-accent: #a9cf9b;
   --topbar-edge: #948b7a;
+  --gate-scrim: rgba(22, 19, 15, 0.76);
+  --gate-eyebrow: #a9cf9b;
+  --gate-lead: #e6dccd;
+  --gate-rule: #948b7a;
+  --gate-title: #fdfcf8;
+  --gate-caption: #ded8cf;
+  --gate-en-fill: rgba(71, 89, 63, 0.82);
+  --gate-en-edge: #a9cf9b;
+  --gate-en-sub: #e7ebe3;
+  --gate-fr-fill: rgba(22, 19, 15, 0.7);
+  --gate-fr-edge: #948b7a;
   --hero-fill: #47593f;
   --hero-panel: #2c2c24;
   --hero-ink: #fdfcf8;
@@ -359,6 +392,17 @@
   --topbar-ink-2: #c9c2b6;
   --topbar-accent: #a9cf9b;
   --topbar-edge: #7d7566;
+  --gate-scrim: rgba(22, 19, 15, 0.76);
+  --gate-eyebrow: #a9cf9b;
+  --gate-lead: #e6dccd;
+  --gate-rule: #948b7a;
+  --gate-title: #fdfcf8;
+  --gate-caption: #ded8cf;
+  --gate-en-fill: rgba(71, 89, 63, 0.82);
+  --gate-en-edge: #a9cf9b;
+  --gate-en-sub: #e7ebe3;
+  --gate-fr-fill: rgba(22, 19, 15, 0.7);
+  --gate-fr-edge: #948b7a;
   --hero-fill: #35422f;
   --hero-panel: #22201a;
   --hero-ink: #f2ede3;
@@ -580,15 +624,17 @@ h4 {
 .language-gateway {
   position: relative;
   isolation: isolate;
+  overflow: hidden;
   background: var(--ground);
   width: 100%;
   min-height: 100vh;
-  display: grid;
-  align-content: center;
-  justify-items: stretch;
-  grid-template-columns: minmax(0, var(--measure));
+  display: flex;
+  flex-direction: column;
   justify-content: center;
-  padding: 80px max(20px, calc((100% - var(--measure)) / 2));
+  align-items: center;
+  gap: 30px;
+  padding: 44px;
+  text-align: center;
 }
 .gateway-photo {
   position: absolute;
@@ -597,35 +643,147 @@ h4 {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center 68%;
 }
-/* Four photographs, five seconds apart, with a one-second crossfade. Negative
-   offsets start every layer on the same cycle, including the first transition. */
+/* Four photographs, five seconds each, crossfading over 1.1s of the 20s cycle.
+   Negative offsets start every layer on the same cycle, first transition
+   included. 5s is 25% of the cycle and 1.1s is 5.5% of it. */
 .gateway-slideshow .gateway-photo {
   opacity: 0;
   animation: gateway-crossfade 20s linear infinite;
+}
+/* The captions share the photographs' schedule but never overlap: two place
+   names crossfading on top of each other are unreadable, so each one clears
+   the frame before the next arrives. */
+.gateway-slideshow .gateway-location-name {
+  opacity: 0;
+  animation: gateway-caption 20s linear infinite;
 }
 .gateway-slideshow .gateway-photo:nth-of-type(2) { animation-delay: -15s; }
 .gateway-slideshow .gateway-photo:nth-of-type(3) { animation-delay: -10s; }
 .gateway-slideshow .gateway-photo:nth-of-type(4) { animation-delay: -5s; }
 @keyframes gateway-crossfade {
-  0%, 20%, 100% { opacity: 1; }
-  25%, 95% { opacity: 0; }
+  0%, 25%, 100% { opacity: 1; }
+  30.5%, 94.5% { opacity: 0; }
+}
+@keyframes gateway-caption {
+  0%, 23%, 100% { opacity: 1; }
+  25%, 98% { opacity: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
   .gateway-slideshow .gateway-photo { animation: none; opacity: 1; }
   .gateway-slideshow .gateway-photo:not(:first-of-type) { display: none; }
+  .gateway-slideshow .gateway-location-name { animation: none; opacity: 1; }
+  .gateway-slideshow .gateway-location-name:not(:first-of-type) { display: none; }
 }
-.language-gateway::before {
-  content: "";
+/* A flat dark overlay, not the page ground at 76%: the type has to hold its
+   contrast on the bright part of a frame, and in the light theme the ground
+   would wash the photograph out from under it. */
+.gateway-scrim {
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: var(--ground);
-  opacity: 0.76;
+  background: var(--gate-scrim);
   pointer-events: none;
 }
-.language-gateway .eyebrow {
-  color: var(--ink-2);
+.gateway-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  width: min(100%, var(--plate));
+}
+.gateway-intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+.gateway-welcome {
+  margin: 0;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gate-eyebrow);
+  text-wrap: pretty;
+}
+.gateway-lead {
+  margin: 0;
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--gate-lead);
+  max-width: 62ch;
+  text-wrap: pretty;
+}
+.gateway-rule {
+  height: 1px;
+  width: 100%;
+  background: var(--gate-rule);
+}
+.language-choices {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  width: 100%;
+}
+.gateway-choice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+  padding: 26px 24px;
+  border-radius: 16px;
+  backdrop-filter: blur(2px);
+  text-decoration: none;
+}
+.gateway-choice--en { background: var(--gate-en-fill); border: 1px solid var(--gate-en-edge); }
+.gateway-choice--fr { background: var(--gate-fr-fill); border: 1px solid var(--gate-fr-edge); }
+.gateway-choice-name {
+  font-weight: 600;
+  font-size: 26px;
+  line-height: 1.1;
+  color: var(--gate-title);
+}
+.gateway-choice-sub { font-weight: 400; font-size: 13px; line-height: 1.5; }
+.gateway-choice--en .gateway-choice-sub { color: var(--gate-en-sub); }
+.gateway-choice--fr .gateway-choice-sub { color: var(--gate-lead); }
+/* The photographs are the owner's, so each frame names where it was taken.
+   The names stack in one line and fade on the photographs' own schedule. */
+.gateway-location {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: 0;
+  padding: 10px 16px;
+  display: grid;
+  text-align: center;
+}
+.gateway-location-name {
+  grid-area: 1 / 1;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.4;
+  color: var(--gate-caption);
+}
+.gateway-slideshow .gateway-location-name:nth-of-type(2) { animation-delay: -15s; }
+.gateway-slideshow .gateway-location-name:nth-of-type(3) { animation-delay: -10s; }
+.gateway-slideshow .gateway-location-name:nth-of-type(4) { animation-delay: -5s; }
+@media (max-width: 640px) {
+  .language-gateway { gap: 22px; padding: 24px 18px; }
+  .gateway-panel { gap: 22px; }
+  .gateway-intro { gap: 10px; }
+  .gateway-lead { font-size: 13px; line-height: 1.55; }
+  .language-choices { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .gateway-choice { padding: 18px 20px; border-radius: 14px; gap: 5px; }
+  .gateway-choice-name { font-size: 21px; }
+  .gateway-choice-sub { font-size: 12.5px; line-height: 1.4; }
+  .gateway-location { padding: 8px 14px; }
+  .gateway-location-name { font-size: 12px; }
 }
 
 .eyebrow {
@@ -635,27 +793,6 @@ h4 {
   font-size: 11px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-}
-
-.language-gateway h1 {
-  margin: 18px 0 10px;
-  font-size: clamp(48px, 10vw, 84px);
-  font-weight: 600;
-  letter-spacing: -0.035em;
-  line-height: 0.98;
-}
-
-.gateway-lead {
-  max-width: 56ch;
-  color: var(--ink-2);
-  font-size: clamp(19px, 3vw, 23px);
-}
-
-.language-choices {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 30px;
 }
 
 /* ==========================================================================

@@ -40,8 +40,8 @@ test("renders the bilingual language gateway", async () => {
   assert.match(html, /Witness Tree/);
   assert.match(html, /Continue in English/);
   assert.match(html, /Continuer en français/);
-  assert.match(html, /href="\/en"[^>]*>Continue in English/);
-  assert.match(html, /href="\/fr"[^>]*>Continuer en français/);
+  assert.match(html, /href="\/en"[^>]*>[\s\S]*?Continue in English/);
+  assert.match(html, /href="\/fr"[^>]*>[\s\S]*?Continuer en français/);
   assert.doesNotMatch(html, /loading skeleton|taking shape/i);
 });
 
@@ -49,7 +49,10 @@ test("the entry gate has no figures or product navigation and tolerates the abse
   const html = await (await render("/")).text();
   const main = /<main\b[^>]*>([\s\S]*?)<\/main>/.exec(html)?.[1];
   assert.ok(main);
-  assert.doesNotMatch(main.replace(/<[^>]*>/g, ""), /\d/);
+  // No measured quantity reaches the gate. The coverage period is the one
+  // number on it, and it states the record's scope rather than a finding.
+  const words = main.replace(/<[^>]*>/g, "").replaceAll("1984 to 2022", "").replaceAll("1984 à 2022", "");
+  assert.doesNotMatch(words, /\d/);
   assert.doesNotMatch(html, /class="site-header|<figcaption/);
   assert.equal([...main.matchAll(/<a\b/g)].length, 2);
   if (existsSync(new URL("../public/gate/forest.jpg", import.meta.url))) {
