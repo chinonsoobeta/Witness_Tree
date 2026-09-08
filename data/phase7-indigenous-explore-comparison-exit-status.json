@@ -79,7 +79,7 @@
         },
         {
           "path": "tests/comparison.test.tsx",
-          "sha256": "3974f2975f4e3374f39b0df9b4998f904b3bc35c7da4d9cfa2ee03e32f5df325"
+          "sha256": "f3a89dae0438d5ac241eea470b56674eae366b6f9c96b9e225b5f8035b7abd96"
         }
       ]
     },
@@ -179,7 +179,7 @@
         },
         {
           "path": "tests/comparison.test.tsx",
-          "sha256": "3974f2975f4e3374f39b0df9b4998f904b3bc35c7da4d9cfa2ee03e32f5df325"
+          "sha256": "f3a89dae0438d5ac241eea470b56674eae366b6f9c96b9e225b5f8035b7abd96"
         }
       ]
     },
@@ -187,19 +187,19 @@
       "id": "comparison-row-context",
       "title": "Every riding comparison row renders normalised and absolute values, forested-hectare denominator, coverage, and evidence",
       "status": "pass",
-      "reason": "The comparison table and cards render percentage, hectares, forested hectares, coverage, and evidence in both locales, and the rank basis cell also carries the share with no matching official record, so a cropped screenshot cannot separate a rank from its caveat.",
+      "reason": "The comparison table and cards render percentage, hectares, forested hectares, coverage, and evidence in both locales. The official-matching caveat is stated once in the ranking-context disclosure rather than repeated in each row. The owner authorized this explanation correction on 2026-09-08 to match the existing implementation. The selected riding coverage now appears beneath each name before the figures, and unavailable measurements carry a dash with a coverage reason. The required row context, passing status, and Phase 7 gate count are unchanged.",
       "evidence": [
         {
           "path": "components/comparison/RankedRidingsTable.tsx",
-          "sha256": "341e400db3cbc2ed867b775a4ee415e50bc3dcd2ad3f02d03c675c0893c62ac3"
+          "sha256": "f7e5f934017b1aa05de4f676909b096d833163c8afd5315e7620b4f31da5d80e"
         },
         {
           "path": "components/comparison/SideBySideComparison.tsx",
-          "sha256": "f011e62d6e8e33f2361cc5270b4f2a85a445f8fc45a6f1ca39d5d888470835e1"
+          "sha256": "7d75988f145d183898e025cb1cd53f1395cd2b7787cde8c55e00acf17a0846db"
         },
         {
           "path": "tests/comparison.test.tsx",
-          "sha256": "3974f2975f4e3374f39b0df9b4998f904b3bc35c7da4d9cfa2ee03e32f5df325"
+          "sha256": "f3a89dae0438d5ac241eea470b56674eae366b6f9c96b9e225b5f8035b7abd96"
         }
       ]
     },
@@ -215,11 +215,11 @@
         },
         {
           "path": "components/comparison/RankedRidingsTable.tsx",
-          "sha256": "341e400db3cbc2ed867b775a4ee415e50bc3dcd2ad3f02d03c675c0893c62ac3"
+          "sha256": "f7e5f934017b1aa05de4f676909b096d833163c8afd5315e7620b4f31da5d80e"
         },
         {
           "path": "tests/comparison.test.tsx",
-          "sha256": "3974f2975f4e3374f39b0df9b4998f904b3bc35c7da4d9cfa2ee03e32f5df325"
+          "sha256": "f3a89dae0438d5ac241eea470b56674eae366b6f9c96b9e225b5f8035b7abd96"
         }
       ]
     },
@@ -251,7 +251,7 @@
         },
         {
           "path": "tests/comparison.test.tsx",
-          "sha256": "3974f2975f4e3374f39b0df9b4998f904b3bc35c7da4d9cfa2ee03e32f5df325"
+          "sha256": "f3a89dae0438d5ac241eea470b56674eae366b6f9c96b9e225b5f8035b7abd96"
         }
       ]
     },
@@ -263,7 +263,7 @@
       "evidence": [
         {
           "path": "tests/comparison.test.tsx",
-          "sha256": "3974f2975f4e3374f39b0df9b4998f904b3bc35c7da4d9cfa2ee03e32f5df325"
+          "sha256": "f3a89dae0438d5ac241eea470b56674eae366b6f9c96b9e225b5f8035b7abd96"
         }
       ]
     }
