@@ -51,7 +51,14 @@ test("the entry gate has no figures or product navigation and tolerates the abse
   assert.ok(main);
   // No measured quantity reaches the gate. The coverage period is the one
   // number on it, and it states the record's scope rather than a finding.
-  const words = main.replace(/<[^>]*>/g, "").replaceAll("1984 to 2022", "").replaceAll("1984 à 2022", "");
+  // Stripping tags in one pass leaves any construct the first pass reassembles,
+  // so this repeats until the string stops changing before reading the text.
+  let words = main;
+  for (let previous = ""; previous !== words; ) {
+    previous = words;
+    words = words.replace(/<[^<>]*>/g, "");
+  }
+  words = words.replaceAll("1984 to 2022", "").replaceAll("1984 à 2022", "");
   assert.doesNotMatch(words, /\d/);
   assert.doesNotMatch(html, /class="site-header|<figcaption/);
   assert.equal([...main.matchAll(/<a\b/g)].length, 2);
