@@ -77,3 +77,20 @@ test("annual table has a caption and scoped column headers", () => {
   assert.match(chart, /<caption>\{title\}<\/caption>/);
   assert.equal((chart.match(/<th scope="col">/g) ?? []).length, 3);
 });
+
+test("place records put coverage before unchanged figures and provenance before the annual series", () => {
+  for (const locale of ["en", "fr"] as const) {
+    for (const place of PLACES) {
+      const markup = renderToStaticMarkup(<PlacePage locale={locale} place={place} view="chart" />);
+      assert.ok(markup.indexOf('class="coverage-statement"') < markup.indexOf('<output'));
+      assert.ok(markup.indexOf('class="place-provenance"') < markup.indexOf('class="annual-change"'));
+      assert.ok(markup.includes('class="place-identity"'));
+      for (const stat of place.stats) {
+        if (stat.kind === "figure") assert.ok(markup.includes(`>${stat.value} ${stat.unit}</output>`));
+        else assert.ok(markup.includes(`>– ${stat.reason[locale]}</output>`));
+      }
+      assert.ok(markup.includes(place.citation.dataVersion));
+      for (const source of place.sources) assert.ok(markup.includes(source));
+    }
+  }
+});
