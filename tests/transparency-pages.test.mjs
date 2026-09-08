@@ -78,3 +78,19 @@ test("transparency pages do not make prohibited product claims or turn unknown i
   for (const term of ["real" + "-time", "com" + "plete", "tr" + "uth"]) assert.equal(claims.includes(term), false);
   assert.doesNotMatch(claims, /unknown[^\n]{0,120}\b0\b/);
 });
+
+test("methods explain the unmapped extent and inconclusive sampling in both locales", async () => {
+  const page = await read("../components/transparency/MethodologyPage.tsx");
+  for (const phrase of [
+    "Where the source does not reach", "What we know about the unmapped area",
+    "Là où la source ne cartographie pas le territoire", "Ce que nous savons du territoire non cartographié",
+    "Not mapped is not the same as no forest", "ce registre ne confond jamais ces deux situations",
+    "public use of those records remains pending source admission", "leur utilisation publique reste soumise à l’admission des sources",
+    "It could not constrain the answer sufficiently", "Elle n’a pas permis de resserrer suffisamment l’estimation",
+    "Neither can be measured directly from surface reflectance", "La réflectance de surface ne permet de mesurer directement ni l’un ni l’autre",
+    "Moving the baseline to a later year was also tested and did not help", "une année de référence plus récente a aussi été testé, sans réduire cette incertitude",
+    "field plots, air photos or lidar", "placettes de terrain, des photographies aériennes ou des données lidar",
+    "unknown is an evidence class, distinct from area the source did not map", "une catégorie de preuve, distincte d’une superficie non cartographiée par la source",
+  ]) assert.ok(page.includes(phrase), phrase);
+  assert.match(page, /\[copy\.coverage, copy\.coverageText\],\s*\[copy\.unmapped, copy\.unmappedText\],\s*\[copy\.unmappedKnowledge, copy\.unmappedKnowledgeText\],\s*\[copy\.evidence, copy\.evidenceText\]/);
+});

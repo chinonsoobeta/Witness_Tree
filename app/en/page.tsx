@@ -8,7 +8,7 @@ import { localizedAlternates } from "@/lib/site-metadata";
 export const metadata: Metadata = { title: "Public forest-loss record", alternates: localizedAlternates("en", { en: "/en", fr: "/fr" }) };
 
 function coverageLabel(row: (typeof EXPLORE_PRODUCTION_LAYER.rows)[number]) {
-  return `Minimum from the mapped area; ${formatUnknownSharePercent(row.unknownSharePercent, "en")} (${formatHectares(row.unknownRequiredInputHectares, "en")}) is unknown`;
+  return `Minimum from the mapped area; ${formatUnknownSharePercent(row.unknownSharePercent, "en")} (${formatHectares(row.unknownRequiredInputHectares, "en")}) was not mapped by the source${"unmappedCharacter" in row ? `; ${row.unmappedCharacter.en}` : ""}`;
 }
 
 export default function EnglishHome() {
@@ -21,10 +21,11 @@ export default function EnglishHome() {
     </header>
     <section className="content-section prose-measure" aria-labelledby="current-record">
       <div className="section-heading"><span className="num">01</span><h2 id="current-record">Start with the current record</h2></div>
-      <p className="lead">The bounded, provisional {EXPLORE_PRODUCTION_LAYER.period} province aggregate is available to explore. It reports detected forest loss with a coverage state for each province. A complete {EXPLORE_COVERAGE_PERIOD.en} mapped-extent verification now governs how unknown areas are classified.</p>
+      <p className="lead">The bounded, provisional {EXPLORE_PRODUCTION_LAYER.period} province aggregate is available to explore. It reports detected forest loss with a coverage state for each province. Verification of the mapped extent for every year in {EXPLORE_COVERAGE_PERIOD.en} is complete. Its results now govern how areas the source did not map are classified.</p>
       <dl className="principles">
         {EXPLORE_PRODUCTION_LAYER.rows.map((row) => <div className="principle" key={row.id}><dt>{row.name.en}</dt><dd>{formatHectares(row.observedLossHectares, "en")} detected loss ({formatPercent(row.observedLossPercent, "en")}) · {coverageLabel(row)}</dd></div>)}
       </dl>
+      <p><Link href="/en/methods#coverage-gap">Why these areas were not mapped, and what we know about them</Link></p>
       <p><Link className="btn btn--primary" href="/en/explore">Explore the province aggregate</Link></p>
       <p><small>Other provinces are coming soon.</small></p>
     </section>

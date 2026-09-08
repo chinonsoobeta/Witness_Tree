@@ -17,9 +17,15 @@ const COPY = {
     coverage: "Geographic coverage",
     coverageText:
       "The national baseline covers British Columbia, Alberta, Ontario and Quebec. Quebec north of 52° is shown as national baseline, not as enhanced local coverage. Coverage is intersected from mapped geometry, not inferred from a province label.",
+    unmapped: "Where the source does not reach",
+    unmappedText:
+      "The NTEMS VLCE2 land-cover source never mapped 46,424,717.91 hectares across the four provinces: 22,204,952.19 hectares in Quebec, 15,372,023.76 in Alberta, 8,843,646.69 in Ontario and 4,095.27 in British Columbia. It tracks Canada’s forested ecosystems, so the prairies and the settled south fall largely outside its extent while British Columbia lies almost entirely within. Not mapped is not the same as no forest, and this record never treats one as the other. In British Columbia, most of this gap reflects shoreline and boundary-edition disagreement against the authoritative GeoBC terrestrial boundary.",
+    unmappedKnowledge: "What we know about the unmapped area",
+    unmappedKnowledgeText:
+      "This area is not assumed to be empty of forest. Dated records of forestry activity within it have been reviewed internally; public use of those records remains pending source admission. An attempt to estimate forest loss sampled locations and read annual satellite imagery back to 1984. It could not constrain the answer sufficiently. The forest definition requires at least 10% crown closure and trees able to reach 5 metres at maturity. Neither can be measured directly from surface reflectance, so the unresolved question is whether the area met the forest definition at the 1984 baseline, not the detection of change. Moving the baseline to a later year was also tested and did not help. Resolving this requires field plots, air photos or lidar supplying stand structure for the baseline year.",
     evidence: "Evidence and confidence",
     evidenceText:
-      "Each public claim is classified as an official record, satellite observation, derived estimate or unknown. Confidence is high, medium, limited or unknown and always includes its generated reason. A colour alone does not communicate confidence.",
+      "Each public claim is classified as an official record, satellite observation, derived estimate or unknown; here, unknown is an evidence class, distinct from area the source did not map. Confidence is high, medium, limited or unknown and always includes its generated reason. A colour alone does not communicate confidence.",
     accuracy: "Detection accuracy",
     accuracyText:
       "The publisher cites an independent validation of the predecessor VLCE land-cover map for 2005: 70.3% overall classification accuracy with a 95% confidence interval of ±2.5 percentage points. That result is not a validation of this record’s derived forest-loss detections, a district-specific accuracy, or a validation of every VLCE2 year. A directly applicable detected-loss accuracy estimate is therefore Unknown.",
@@ -45,9 +51,15 @@ const COPY = {
     coverage: "Couverture géographique",
     coverageText:
       "La référence nationale couvre la Colombie-Britannique, l’Alberta, l’Ontario et le Québec. Le Québec au nord du 52e degré est présenté comme référence nationale, et non comme couverture locale enrichie. La couverture est intersectée à partir d’une géométrie cartographiée, et non déduite d’une étiquette provinciale.",
+    unmapped: "Là où la source ne cartographie pas le territoire",
+    unmappedText:
+      "La source de couverture terrestre NTEMS VLCE2 n’a jamais cartographié 46 424 717,91 hectares dans les quatre provinces : 22 204 952,19 hectares au Québec, 15 372 023,76 en Alberta, 8 843 646,69 en Ontario et 4 095,27 en Colombie-Britannique. Elle suit les écosystèmes forestiers du Canada. Les Prairies et les régions habitées du sud se trouvent donc en grande partie hors de son emprise, tandis que la Colombie-Britannique y est presque entièrement comprise. Un territoire non cartographié n’est pas nécessairement dépourvu de forêt; ce registre ne confond jamais ces deux situations. En Colombie-Britannique, cet écart tient surtout au tracé du littoral et aux différences entre éditions des limites, par comparaison avec la limite terrestre officielle de GeoBC.",
+    unmappedKnowledge: "Ce que nous savons du territoire non cartographié",
+    unmappedKnowledgeText:
+      "Nous ne supposons pas que ce territoire est dépourvu de forêt. Des documents datés attestant d’activités forestières à l’intérieur de cette zone ont été examinés en interne; leur utilisation publique reste soumise à l’admission des sources. Une tentative d’estimation de la perte forestière a porté sur un échantillon de lieux, à partir d’images satellitaires annuelles remontant à 1984. Elle n’a pas permis de resserrer suffisamment l’estimation. La définition de la forêt exige un couvert de cimes d’au moins 10 % et des arbres capables d’atteindre 5 mètres à maturité. La réflectance de surface ne permet de mesurer directement ni l’un ni l’autre. L’incertitude porte donc sur la présence de forêt au départ, en 1984, plutôt que sur la détection du changement. Le recours à une année de référence plus récente a aussi été testé, sans réduire cette incertitude. Pour la résoudre, il faudrait des placettes de terrain, des photographies aériennes ou des données lidar décrivant la structure des peuplements pour l’année de référence.",
     evidence: "Preuves et confiance",
     evidenceText:
-      "Chaque affirmation publique est classée comme registre officiel, observation satellitaire, estimation dérivée ou inconnue. La confiance est élevée, moyenne, limitée ou inconnue et comprend toujours sa raison générée. Une couleur seule ne communique pas la confiance.",
+      "Chaque affirmation publique est classée comme registre officiel, observation satellitaire, estimation dérivée ou inconnue; « inconnue » désigne ici une catégorie de preuve, distincte d’une superficie non cartographiée par la source. La confiance est élevée, moyenne, limitée ou inconnue et comprend toujours sa raison générée. Une couleur seule ne communique pas la confiance.",
     accuracy: "Exactitude de la détection",
     accuracyText:
       "L’éditeur cite une validation indépendante de la carte de couverture terrestre VLCE antérieure pour 2005 : une exactitude globale de classification de 70,3 %, avec un intervalle de confiance à 95 % de ±2,5 points de pourcentage. Ce résultat ne valide ni les détections dérivées de perte forestière de ce registre, ni une exactitude propre à une circonscription, ni chaque année de VLCE2. Une estimation directement applicable de l’exactitude de la perte détectée demeure donc inconnue.",
@@ -70,6 +82,8 @@ export function MethodologyPage({ locale }: Readonly<{ locale: Locale }>) {
     [copy.definition, copy.definitionText],
     [copy.denominator, copy.denominatorText],
     [copy.coverage, copy.coverageText],
+    [copy.unmapped, copy.unmappedText],
+    [copy.unmappedKnowledge, copy.unmappedKnowledgeText],
     [copy.evidence, copy.evidenceText],
     [copy.accuracy, copy.accuracyText],
     [copy.matching, copy.matchingText],
@@ -84,7 +98,7 @@ export function MethodologyPage({ locale }: Readonly<{ locale: Locale }>) {
       </header>
       <div className="content-section prose-measure">
         {sections.map(([heading, text], index) => (
-          <section className="governance-section" key={heading}>
+          <section className="governance-section" key={heading} id={heading === copy.unmapped ? "coverage-gap" : undefined}>
             <p className="governance-index" aria-hidden="true">
               {String(index + 1).padStart(2, "0")}
             </p>

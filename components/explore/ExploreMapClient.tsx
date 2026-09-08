@@ -1157,7 +1157,7 @@ export function ExploreMapClient({
                     <td>{formatNumber(row.observedLossHectares, locale)}</td>
                     <td>{formatNumber(row.observedLossPercent, locale)}</td>
                     <td>
-                      {`${text[locale].partial} (${formatUnknownSharePercent(row.unknownSharePercent, locale)}; ${formatNumber(row.unknownRequiredInputHectares, locale)} ${text[locale].unknownArea})`}
+                      {`${text[locale].partial} (${formatUnknownSharePercent(row.unknownSharePercent, locale)}; ${formatNumber(row.unknownRequiredInputHectares, locale)} ${text[locale].unknownArea})${"unmappedCharacter" in row ? `; ${row.unmappedCharacter[locale]}` : ""}`}
                     </td>
                   </tr>
                 ))}
