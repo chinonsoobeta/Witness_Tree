@@ -555,6 +555,174 @@
       "changesNotice": "This raw GeoJSON is unchanged. A separately checksummed, external local-only derived GeoPackage copies 179 valid features unchanged and repairs nine bounded self-intersections under data/ontario-in-year-fire-geometry-policy-2026-08-14.json. The raw artifact was not modified, filtered, ingested, promoted, admitted, or made production eligible.",
       "immutableObjectStorage": false,
       "productionEligible": false
+    },
+    {
+      "id": "nrcan-fao-forest-2022-2026-09-09",
+      "sourceId": "nrcan-fao-forest-2022",
+      "datasetTitle": "CA FAO Forest (2022)",
+      "publisher": "Natural Resources Canada, Canadian Forest Service",
+      "catalogueUrl": "https://opendata.nfis.org/mapserver/nfis-change_eng.html",
+      "sourceUrl": "https://opendata.nfis.org/downloads/forest_change/CA_FAO_forest_2022.zip",
+      "localPath": "../Witness_Tree-data/raw/nrcan-fao-forest-2022/2026-09-09/CA_FAO_forest_2022.zip",
+      "originalFilename": "CA_FAO_forest_2022.zip",
+      "sourceVersion": "undeclared",
+      "sourceVersionBasis": {
+        "en": "The NTEMS distribution page and the archive README identify this product but declare no dataset version. The explicit absence marker is therefore recorded; the temporal range and the server last-modified time are not inferred editions.",
+        "fr": "La page de distribution NTEMS et le fichier README de l'archive désignent ce produit sans déclarer de version du jeu de données. Le marqueur explicite d'absence est donc consigné; la période temporelle et la date de dernière modification du serveur ne sont pas des éditions inférées."
+      },
+      "retrievedAt": "2026-09-09T16:30:39Z",
+      "retrievedAtBasis": {
+        "en": "Download completion instant in UTC, derived from the staged file's local modification time. It is an approximation recorded by this project, not a provider attestation.",
+        "fr": "Instant d'achèvement du téléchargement en UTC, dérivé de la date de modification locale du fichier préparé. C'est une approximation consignée par ce projet et non une attestation du fournisseur."
+      },
+      "verifiedAt": "2026-09-09T17:52:46Z",
+      "byteLength": 831994643,
+      "sha256": "1ed253eae5cb4898a79361d8aa42ce18a50fba3bcba2e83bd546c8a8191dfc0e",
+      "zipIntegrity": "passed",
+      "licenceId": "ogl-canada",
+      "licenceVersion": "2.0",
+      "temporalCoverage": "2022; three codes, 0 non-forest, 1 current forest area, 2 temporally informed forest area",
+      "attributionState": "metadata-verified",
+      "attribution": "Contains information licensed under the Open Government Licence – Canada. When using this data, please cite: Wulder, M.A., T. Hermosilla, G. Stinson, F.A. Gougeon, J.C. White, D.A. Hill, B.P. Smiley. (2020). Satellite-based time series land cover and change information to map forest area consistent with national and international reporting requirements. Forestry 93(3), 331-343. https://doi.org/10.1093/forestry/cpaa006.",
+      "licenceUrl": "https://open.canada.ca/en/open-government-licence-canada",
+      "attributionBasis": "The bundled README or metadata file names the Open Government Licence – Canada under Use Limitation and requests the citation recorded here. The licence requires acknowledgement of the source, any provider attribution statement, and a licence link where possible.",
+      "attributionSources": [
+        "https://open.canada.ca/en/open-government-licence-canada",
+        "https://opendata.nfis.org/mapserver/nfis-change_eng.html",
+        "CA_FAO_forest_2022.zip:CA_FAO_forest_2022"
+      ],
+      "attributionVerifiedAt": "2026-09-09T17:52:46Z",
+      "archiveContents": "8 entries, 1150868287 bytes uncompressed: one 30-m GeoTIFF forest-area raster with its overview, world file, value-attribute table, ArcGIS layer file, and bilingual README and LISEZMOI documents.",
+      "publisherStatedLimitation": "The bundled README states that no filtering to a minimum mappable unit has been applied, and that the FAO definition incorporates land use, so areas whose trees were removed by fire or harvesting remain forest. Recorded because it bounds what this product can evidence: it implements the land-use half of the FAO definition and does not apply any area threshold.",
+      "changesNotice": "This raw archive is unchanged. No extraction into the repository, transformation, ingestion, object-storage promotion, or production use has been performed; verification read the bytes only.",
+      "immutableObjectStorage": false,
+      "productionEligible": false
+    },
+    {
+      "id": "nrcan-treed-area-1984-2022-2026-09-09",
+      "sourceId": "nrcan-treed-area-1984-2022",
+      "datasetTitle": "Treed Area in Canada (1984–2022)",
+      "publisher": "Natural Resources Canada, Canadian Forest Service",
+      "catalogueUrl": "https://opendata.nfis.org/mapserver/nfis-change_eng.html",
+      "sourceUrl": "https://opendata.nfis.org/downloads/forest_change/CA_treed_area_1984-2022.zip",
+      "localPath": "../Witness_Tree-data/raw/nrcan-treed-area-1984-2022/2026-09-09/CA_treed_area_1984-2022.zip",
+      "originalFilename": "CA_treed_area_1984-2022.zip",
+      "sourceVersion": "undeclared",
+      "sourceVersionBasis": {
+        "en": "The NTEMS distribution page and the archive README identify this product but declare no dataset version. The explicit absence marker is therefore recorded; the temporal range and the server last-modified time are not inferred editions.",
+        "fr": "La page de distribution NTEMS et le fichier README de l'archive désignent ce produit sans déclarer de version du jeu de données. Le marqueur explicite d'absence est donc consigné; la période temporelle et la date de dernière modification du serveur ne sont pas des éditions inférées."
+      },
+      "retrievedAt": "2026-09-09T16:32:31Z",
+      "retrievedAtBasis": {
+        "en": "Download completion instant in UTC, derived from the staged file's local modification time. It is an approximation recorded by this project, not a provider attestation.",
+        "fr": "Instant d'achèvement du téléchargement en UTC, dérivé de la date de modification locale du fichier préparé. C'est une approximation consignée par ce projet et non une attestation du fournisseur."
+      },
+      "verifiedAt": "2026-09-09T17:52:58Z",
+      "byteLength": 1183942534,
+      "sha256": "06458f5b8c85e7667ad88977c68482413ec9689589b18d7a521546ad3af17821",
+      "zipIntegrity": "passed",
+      "licenceId": "ogl-canada",
+      "licenceVersion": "2.0",
+      "temporalCoverage": "1984–2022; four codes, 0 non-treed, 1 always-treed, 2 newly-treed, 3 was-treed",
+      "attributionState": "metadata-verified",
+      "attribution": "Contains information licensed under the Open Government Licence – Canada. When using this data, please cite: Hermosilla, T., Wulder, M.A., White, J.C., Bater, C.W., Baral, S.K., Leach, J.A., 2025. Expansion of treed area over Canada's forested ecosystems: Spatial and temporal trends. Forestry: An International Journal of Forest Research. https://doi.org/10.1093/forestry/cpaf015.",
+      "licenceUrl": "https://open.canada.ca/en/open-government-licence-canada",
+      "attributionBasis": "The bundled README or metadata file names the Open Government Licence – Canada under Use Limitation and requests the citation recorded here. The licence requires acknowledgement of the source, any provider attribution statement, and a licence link where possible.",
+      "attributionSources": [
+        "https://open.canada.ca/en/open-government-licence-canada",
+        "https://opendata.nfis.org/mapserver/nfis-change_eng.html",
+        "CA_treed_area_1984-2022.zip:CA_treed_area_1984-2022"
+      ],
+      "attributionVerifiedAt": "2026-09-09T17:52:58Z",
+      "archiveContents": "9 entries, 1480946108 bytes uncompressed: one 30-m GeoTIFF treed-area-dynamics raster with its overview, world file, colour table, value-attribute table, ArcGIS layer file, and bilingual README and LISEZMOI documents.",
+      "publisherStatedLimitation": "The bundled README describes the layer as a summary of treed-area dynamics over the whole 1984 to 2022 period rather than a per-year reclassification, so it carries temporal smoothing and must not be read as an independent annual land-cover product.",
+      "changesNotice": "This raw archive is unchanged. No extraction into the repository, transformation, ingestion, object-storage promotion, or production use has been performed; verification read the bytes only.",
+      "immutableObjectStorage": false,
+      "productionEligible": false
+    },
+    {
+      "id": "nrcan-forest-age-2022-2026-09-09",
+      "sourceId": "nrcan-forest-age-2022",
+      "datasetTitle": "Canada Forest Age (2022)",
+      "publisher": "Natural Resources Canada, Canadian Forest Service",
+      "catalogueUrl": "https://opendata.nfis.org/mapserver/nfis-change_eng.html",
+      "sourceUrl": "https://opendata.nfis.org/downloads/forest_change/CA_forest_age_2022.zip",
+      "localPath": "../Witness_Tree-data/raw/nrcan-forest-age-2022/2026-09-09/CA_forest_age_2022.zip",
+      "originalFilename": "CA_forest_age_2022.zip",
+      "sourceVersion": "undeclared",
+      "sourceVersionBasis": {
+        "en": "The NTEMS distribution page and the archive README identify this product but declare no dataset version. The explicit absence marker is therefore recorded; the temporal range and the server last-modified time are not inferred editions.",
+        "fr": "La page de distribution NTEMS et le fichier README de l'archive désignent ce produit sans déclarer de version du jeu de données. Le marqueur explicite d'absence est donc consigné; la période temporelle et la date de dernière modification du serveur ne sont pas des éditions inférées."
+      },
+      "retrievedAt": "2026-09-09T16:45:46Z",
+      "retrievedAtBasis": {
+        "en": "Download completion instant in UTC, derived from the staged file's local modification time. It is an approximation recorded by this project, not a provider attestation.",
+        "fr": "Instant d'achèvement du téléchargement en UTC, dérivé de la date de modification locale du fichier préparé. C'est une approximation consignée par ce projet et non une attestation du fournisseur."
+      },
+      "verifiedAt": "2026-09-09T17:55:03Z",
+      "byteLength": 5922298842,
+      "sha256": "3e2771e46d9f08176a916fabc6c5350f5226ee148c97d6d44fb8b57b50ea4158",
+      "zipIntegrity": "passed",
+      "licenceId": "ogl-canada",
+      "licenceVersion": "2.0",
+      "temporalCoverage": "2022; modelled stand age to a maximum mapped age of 150 years, with ages above 150 grouped into one class, plus a companion approach raster",
+      "attributionState": "metadata-verified",
+      "attribution": "Contains information licensed under the Open Government Licence – Canada. When using this data, please cite: Maltman, J.C., Hermosilla, T., Wulder, M.A., Coops, N.C., White, J.C., 2023. Estimating and mapping forest age across Canada's forested ecosystems. Remote Sensing of Environment 290, 113529. https://doi.org/10.1016/j.rse.2023.113529.",
+      "licenceUrl": "https://open.canada.ca/en/open-government-licence-canada",
+      "attributionBasis": "The bundled README or metadata file names the Open Government Licence – Canada under Use Limitation and requests the citation recorded here. The licence requires acknowledgement of the source, any provider attribution statement, and a licence link where possible.",
+      "attributionSources": [
+        "https://open.canada.ca/en/open-government-licence-canada",
+        "https://opendata.nfis.org/mapserver/nfis-change_eng.html",
+        "CA_forest_age_2022.zip:CA_forest_age_2022"
+      ],
+      "attributionVerifiedAt": "2026-09-09T17:55:03Z",
+      "archiveContents": "18 entries, 6603960354 bytes uncompressed: two 30-m GeoTIFF rasters, forest age and the approach used to estimate it, each with its overview, world file, colour table, value-attribute table, ArcGIS layer file, and bilingual README and LISEZMOI documents.",
+      "publisherStatedLimitation": "The bundled README states that age is estimated by three approaches, disturbance, recovery, and an allometric approach that inverts allometric equations against maps of forest structure and productivity. Recorded because the allometric portion is derived from structure, so it cannot serve as independent evidence for a structure-based condition.",
+      "changesNotice": "This raw archive is unchanged. No extraction into the repository, transformation, ingestion, object-storage promotion, or production use has been performed; verification read the bytes only.",
+      "immutableObjectStorage": false,
+      "productionEligible": false
+    },
+    {
+      "id": "nrcan-satellite-forest-inventory-2020-2026-09-09",
+      "sourceId": "nrcan-satellite-forest-inventory-2020",
+      "datasetTitle": "Satellite-Based Forest Inventory (SBFI) for Canada 2020",
+      "publisher": "Natural Resources Canada, Canadian Forest Service",
+      "catalogueUrl": "https://opendata.nfis.org/mapserver/nfis-change_eng.html",
+      "sourceUrl": "https://opendata.nfis.org/downloads/forest_change/CA_Forest_Satellite_Based_Inventory_2020.zip",
+      "localPath": "../Witness_Tree-data/raw/nrcan-satellite-forest-inventory-2020/2026-09-09/CA_Forest_Satellite_Based_Inventory_2020.zip",
+      "originalFilename": "CA_Forest_Satellite_Based_Inventory_2020.zip",
+      "sourceVersion": "undeclared",
+      "sourceVersionBasis": {
+        "en": "The NTEMS distribution page and the archive README identify this product but declare no dataset version. The explicit absence marker is therefore recorded; the temporal range and the server last-modified time are not inferred editions.",
+        "fr": "La page de distribution NTEMS et le fichier README de l'archive désignent ce produit sans déclarer de version du jeu de données. Le marqueur explicite d'absence est donc consigné; la période temporelle et la date de dernière modification du serveur ne sont pas des éditions inférées."
+      },
+      "retrievedAt": "2026-09-09T16:49:19Z",
+      "retrievedAtBasis": {
+        "en": "Download completion instant in UTC, derived from the staged file's local modification time. It is an approximation recorded by this project, not a provider attestation.",
+        "fr": "Instant d'achèvement du téléchargement en UTC, dérivé de la date de modification locale du fichier préparé. C'est une approximation consignée par ce projet et non une attestation du fournisseur."
+      },
+      "verifiedAt": "2026-09-09T17:57:28Z",
+      "byteLength": 7234719296,
+      "sha256": "b71dd76aecbb824b91f5580b991cf44bf0fb4bdaa1c36e8ae1bd9985f672ef3e",
+      "zipIntegrity": "passed",
+      "licenceId": "ogl-canada",
+      "licenceVersion": "2.0",
+      "temporalCoverage": "2020 stand conditions, with stand-replacing disturbance and recovery attributes spanning 1985–2020",
+      "attributionState": "metadata-verified",
+      "attribution": "Contains information licensed under the Open Government Licence – Canada. When using this data, please cite: Wulder, M.A., Hermosilla, T., White, J.C., Hobart, G.W., Bater, C.W., Bronson, S.C., 2024. Development and implementation of a stand-level Satellite-Based Forest Inventory (SBFI) for Canada. Forestry. https://doi.org/10.1093/forestry/cpad065.",
+      "licenceUrl": "https://open.canada.ca/en/open-government-licence-canada",
+      "attributionBasis": "The bundled README or metadata file names the Open Government Licence – Canada under Use Limitation and requests the citation recorded here. The licence requires acknowledgement of the source, any provider attribution statement, and a licence link where possible.",
+      "attributionSources": [
+        "https://open.canada.ca/en/open-government-licence-canada",
+        "https://opendata.nfis.org/mapserver/nfis-change_eng.html",
+        "CA_Forest_Satellite_Based_Inventory_2020.zip:SBFI_2020/Metadata_NTEMS_SBFI_EN.txt"
+      ],
+      "attributionVerifiedAt": "2026-09-09T17:57:28Z",
+      "archiveContents": "2387 entries, 38002008087 bytes uncompressed: one file geodatabase holding 388 tile feature classes plus one tile-grid reference feature class, 389 ArcGIS layer files, bilingual metadata text, and bilingual data-dictionary and use-guide PDFs.",
+      "publisherStatedLimitation": "The bundled metadata states that polygons were produced by multiresolution segmentation of the 2020 Landsat best-available-pixel composite with fire-year and harvest-year layers, using a minimum map unit of 0.45 hectares, and that a 150 by 150 km tile system partitions the polygons into 388 reference tiles. Recorded because the segmentation minimum is smaller than the National Forest Inventory area condition, so that condition still has to be applied per stand rather than assumed.",
+      "changesNotice": "This raw archive is unchanged. No extraction into the repository, transformation, ingestion, object-storage promotion, or production use has been performed; verification read the bytes only.",
+      "immutableObjectStorage": false,
+      "productionEligible": false
     }
   ]
 }
