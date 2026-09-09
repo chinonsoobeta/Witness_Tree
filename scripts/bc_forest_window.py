@@ -41,8 +41,22 @@ DATA_ROOT = os.environ.get("WITNESS_TREE_DATA_ROOT", "/Volumes/Extended_SSD/Witn
 GRID_WIDTH, GRID_HEIGHT = 193936, 128340
 GRID_TRANSFORM = (-2660910.524, 30.0, 0.0, 2998848.1105, 0.0, -30.0)
 
-# British Columbia as a window into that grid.
+# British Columbia as a window into that grid. These module-level values are the
+# default for the single-province British Columbia jobs. `use_window` rebinds
+# them so the same tiling, reading and sieving code serves any province.
 XOFF, YOFF, XSIZE, YSIZE = 0, 33312, 60855, 64176
+
+
+def use_window(xoff, yoff, xsize, ysize):
+    """Rebind the module's province window.
+
+    Must be called before any pool worker starts, and in each worker, because
+    the offsets are read by `read_window` and `tiles` at call time. The province
+    jobs pass the window to the worker initializer for exactly that reason.
+    """
+    global XOFF, YOFF, XSIZE, YSIZE
+    XOFF, YOFF, XSIZE, YSIZE = xoff, yoff, xsize, ysize
+    _ORIGIN_CACHE.clear()
 
 TILE, HALO = 4096, 16
 HA_PER_CELL = 0.09
@@ -95,16 +109,40 @@ def tiles(tile=TILE):
 
 
 def read_window(path, x0, y0, w, h):
-    """Read a window in BC-window coordinates from a national-grid raster.
+    """Read a window in BC-window coordinates from any raster on the national grid.
+
+    Two kinds of raster are passed to this function and they need different
+    offsets. A national product covers the whole grid, so BC-window coordinates
+    must have (XOFF, YOFF) added. A province-clipped raster such as the boundary
+    mask already starts at that offset, so adding it again reads the wrong
+    ground. Both are validly "on the national grid" and `assert_aligned` accepts
+    both, so the distinction cannot be left to whoever writes the next script:
+    reading the mask with a national offset silently returns real data from the
+    wrong place, and only crashes when the window happens to run off the bottom.
+
+    The raster's own origin says which it is. `assert_aligned` returns that
+    origin as an integer cell offset into the national grid, so subtracting it
+    yields the correct read for either kind with no per-caller convention.
 
     The Dataset must outlive the Band. Chaining
     `gdal.Open(...).GetRasterBand(1).ReadAsArray(...)` frees the dataset while
     the band is still live and raises a SWIG type error from inside a worker,
     which is why the dataset is bound to a name here.
     """
+    dx, dy = _origin_offset(path)
     ds = gdal.Open(path)
     band = ds.GetRasterBand(1)
-    return band.ReadAsArray(XOFF + x0, YOFF + y0, w, h)
+    return band.ReadAsArray(XOFF + x0 - dx, YOFF + y0 - dy, w, h)
+
+
+_ORIGIN_CACHE = {}
+
+
+def _origin_offset(path):
+    """Cache `assert_aligned` per path; it is called once per tile per year."""
+    if path not in _ORIGIN_CACHE:
+        _ORIGIN_CACHE[path] = assert_aligned(path)
+    return _ORIGIN_CACHE[path]
 
 
 def sieve(binary, threshold, connectedness):
