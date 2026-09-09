@@ -23,6 +23,7 @@ test("the glossary publishes the forest definition in English and French", async
     assert.ok(paragraph.includes(String(FOREST_DEFINITION.minimumAreaHectares)), `The ${heading} entry must publish the ${FOREST_DEFINITION.minimumAreaHectares} hectare minimum area.`);
     assert.ok(paragraph.includes(String(FOREST_DEFINITION.minimumCrownClosurePercent)), `The ${heading} entry must publish the ${FOREST_DEFINITION.minimumCrownClosurePercent} percent crown closure minimum.`);
     assert.ok(paragraph.includes(String(FOREST_DEFINITION.minimumMatureTreeHeightMetres)), `The ${heading} entry must publish the ${FOREST_DEFINITION.minimumMatureTreeHeightMetres} metre mature height minimum.`);
+    assert.ok(paragraph.includes(String(FOREST_DEFINITION.minimumWidthMetres)), `The ${heading} entry must publish the ${FOREST_DEFINITION.minimumWidthMetres} metre minimum width.`);
   }
 });
 
@@ -30,7 +31,7 @@ test("the canonical definition carries the same parameters in both languages", (
   for (const locale of ["en", "fr"] as const) {
     const text = FOREST_DEFINITION.text[locale];
     assert.ok(text.trim().length > 0, `The canonical forest definition needs ${locale} text.`);
-    for (const value of [FOREST_DEFINITION.minimumAreaHectares, FOREST_DEFINITION.minimumCrownClosurePercent, FOREST_DEFINITION.minimumMatureTreeHeightMetres]) {
+    for (const value of [FOREST_DEFINITION.minimumAreaHectares, FOREST_DEFINITION.minimumCrownClosurePercent, FOREST_DEFINITION.minimumMatureTreeHeightMetres, FOREST_DEFINITION.minimumWidthMetres]) {
       assert.ok(text.includes(String(value)), `The ${locale} definition must state ${value}.`);
     }
   }
