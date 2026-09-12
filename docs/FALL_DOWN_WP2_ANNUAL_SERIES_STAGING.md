@@ -122,3 +122,33 @@ Its stated universal-ledger failure reason is unchanged; Phase 1 remains 2/4.
 Only the field-audit digest in the downstream Phase 1 exit record was refreshed;
 no record binds that exit record's old digest. The field-audit, Phase 1 exit and
 cross-record checkers pass. No owner-admitted payload digest or gate count moved.
+
+
+The first owner-bound run at commit `b3b8c21444fdb5847e1799a4ffe5e26776d09c28`
+recorded 27 passing files and one PLVI mocked-runner timeout at 120 seconds while
+other SSD reads were active. That failed receipt was preserved in commit
+`56bf865c17c80ac559e977e3d24ca401841b5e9d`. The PLVI guarded fingerprint was
+identical to the passing WP1 run. With the competing inventory paused, the
+unchanged PLVI test passed all seven cases in 18.96 seconds. The full owner suite
+was then rerun from the clean `56bf865c17c80ac559e977e3d24ca401841b5e9d` tree:
+all 28 files passed, with the receipt recorded at `2026-09-12T16:13:28Z`. No test,
+timeout or failure record was rewritten to claim a pass.
+
+To implement the owner's local parallelism instruction, the inventory verifier
+now discovers the full tree, hashes files through a bounded pool sized to the
+available CPUs, waits for every worker, and checks every discovered path's
+metadata again before issuing a result. The full-root scope, SHA-256 reads,
+O_NOFOLLOW, file-descriptor stability and byte-count checks, symlink treatment,
+output format, no-overwrite rule and unavailable/failure distinction are retained.
+The existing inventory test was extended with 24 distinct nested payloads to
+verify deterministic, complete per-file digests and unchanged source bytes.
+All five inventory tests pass, including deliberate corruption, removal, addition,
+symlink and output-location cases. The interrupted serial scan is not represented
+as a completed inventory.
+
+`npm run build`, `npm run test:suite`, `npm run check:bilingual`, TypeScript and
+lint passed. The portable suite reports its 28 excluded owner-bound files as
+unavailable; the separate successful owner receipt supplies those results.
+The 125-check CI sweep found only the pending owner-receipt currency check; after
+the actual full rerun, `npm run check:data-root-test-currency` also passed. The
+full portable suite passed again after the inventory concurrency change.
