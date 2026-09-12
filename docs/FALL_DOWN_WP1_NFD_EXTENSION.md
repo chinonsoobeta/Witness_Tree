@@ -1,6 +1,6 @@
 # WP1: NFD harvest comparison through 2022
 
-Recorded 2026-09-12. **Implemented; final verification in progress.**
+Recorded 2026-09-12. **Implemented and verified locally; GitHub checks tracked in PR #160.**
 Specification: `docs/FALL_DOWN_ARTICLE_SUPPORT_PLAN.md` at `64346e4`.
 
 ## What this package asserts and is entitled to assert
@@ -132,5 +132,53 @@ Commands run from the specified `wt/premises` worktree. Clean `origin/main` at
 all 125 CI package checks before edits. The independent sweep used all 10 CPUs.
 The original production dependency audit failed on MapLibre 6.3.0.
 
-The final WP1 verification and remote-observation results are recorded below
-once completed. WP2, WP4 and WP3 cannot start until WP1's PR checks are green.
+| Command | Result |
+| --- | --- |
+| `npm run build` | Passed from deployed source `66c494f1afdb8ed196d869f4f2712fb56a80275a` |
+| `npm run test:suite` | Exit 0, portable execution passed; 28 owner-bound files reported unavailable by this portable runner, separately executed below |
+| `npm run test:data-root` | 28 files passed, zero failed; clean tree at `66c494f1afdb8ed196d869f4f2712fb56a80275a`, receipt recorded at `2026-09-12T15:34:52Z` |
+| `npm run check:data-root-test-currency` | All 28 owner-bound tests current |
+| `npm run check:bilingual` | Passed, 19 route pairs |
+| `npx tsc --noEmit` and `npm run lint` | Passed |
+| `node --test tests/staged-acquisitions.test.mjs` | 18 tests passed |
+| `WITNESS_TREE_DATA_ROOT=/Volumes/Extended_SSD/Witness_Tree-data node --test tests/phase2-official-published-harvest-comparator.test.mjs` | Six tests passed, no skips |
+| `node --import tsx --test tests/official-published-harvest-page.test.tsx` | Five tests passed |
+| `npm run check:phase2-official-published-harvest-receipt-bytes` | Passed, historical SSD bytes verified |
+| `node scripts/check-phase2-official-published-harvest-publication-receipt.mjs` | Passed, historical publication preserved |
+| `npm run check:deployed-map-render` | Passed, 24 tests and five measured browser checks |
+| `npm run check:phase1-source-ledger-field-audit`, `check:phase1-exit-status`, `check:phase8-launch-readiness-exit-status`, `check:phase9-public-beta-launch-exit-status` | Passed; counts unchanged |
+| `npm run check:cross-record-facts` | Passed, 11 facts with pre-existing declared exceptions |
+| `npm audit --omit=dev --audit-level=high` | Zero vulnerabilities |
+| `npm audit --audit-level=critical` | Exit 0; 16 development-tree advisories remain (nine moderate, seven high), none critical |
+| `git diff --check` | Passed |
+
+The 125-check local CI sweep found only stale map, Phase 8 and owner-test-currency
+records. Those three checks passed after the actual browser observation, audit
+and owner test run. No checker was removed or its acceptance criteria weakened.
+
+## Deployment and public readback
+
+The existing Sites project `appgprj_6a7bea9e59988191a9304d4c5a3f379d` published
+version 33 from `66c494f1afdb8ed196d869f4f2712fb56a80275a`; deployment
+`appgdep_6aa5704bb5cc81918f172a50280a5461` reached `succeeded`.
+The Sites origin is <https://witnesstree.r7bv67rgkk.chatgpt.site>.
+The existing public audience was preserved.
+
+Both that origin and <https://www.witnesstree.ca> served the exact vendored
+6.9.0 worker bytes and a client chunk pinned to 6.9.0. The canonical English and
+French comparison routes each returned HTTP 200 and 132 visible table rows,
+including all four 2022 values with source precision and qualifiers.
+
+At `2026-09-12T15:31:55Z`, the browser harness observed four HTTP 206 PMTiles
+responses, zero fallback fetches, ready state from PMTiles, 3819 loss-ramp pixels
+and no console errors. The new record is
+`data/deployed-map-render-evidence-2026-09-12.json`; historical observations are
+untouched. The Phase 8 delivery-and-rendering reason was re-verified before its
+bindings were refreshed. Phase 8 remains 8/16 with every external blocker blocked.
+The dependent Phase 9 quarterly-reproducibility reason remains unsatisfied:
+this package introduced no production population or quarterly result. Its binding
+was refreshed after that audit; Phase 9 remains 0/4 and has no downstream checksum
+references. This website deployment does not grant data admission or launch approval.
+
+No part of WP1 remains blocked. WP2, WP4 and WP3 start only after the preceding
+package's GitHub checks pass.
