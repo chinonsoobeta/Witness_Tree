@@ -723,6 +723,37 @@
       "changesNotice": "This raw archive is unchanged. No extraction into the repository, transformation, ingestion, object-storage promotion, or production use has been performed; verification read the bytes only.",
       "immutableObjectStorage": false,
       "productionEligible": false
+    },
+    {
+      "status": "local-staging",
+      "sourceId": "nfd-5.2-undeclared",
+      "sourceUrl": "http://nfdp.ccfm.org/download/data/csv/NFD%20-%20Area%20harvested%20by%20ownership%20and%20harvesting%20method%20-%20EN%20FR.csv",
+      "localPath": "../Witness_Tree-data/raw/nfd-harvest/2026-09-12/nfd-area-harvested-en-fr.csv",
+      "byteLength": 2033845,
+      "sha256": "1644b66e78a3e30d865f1425065de39350532ad96a131038ec77e1890f58f706",
+      "retrievedAt": "2026-09-12T15:10:57Z",
+      "retrievedAtBasis": "Local file modification time after download completion; project record, not publisher attestation.",
+      "sourceVersion": "undeclared",
+      "sourceVersionBasis": "The current CSV download does not declare an edition. The separately archived Zenodo package version is not the version of this download.",
+      "immutableObjectStorage": false,
+      "productionEligible": false,
+      "id": "nfd-5.2-undeclared-2026-09-12",
+      "datasetTitle": "NFD Table 5.2: area harvested by ownership, management and harvesting method",
+      "publisher": "Canadian Council of Forest Ministers / Natural Resources Canada",
+      "catalogueUrl": "https://cfs.cloud.nrcan.gc.ca/statsprofile/management/harvesting.html",
+      "originalFilename": "nfd-area-harvested-en-fr.csv",
+      "verifiedAt": "2026-09-12T15:25:08Z",
+      "crc64nvme": "ef1972d415353fcf",
+      "contentIntegrity": "passed",
+      "integrityMethod": "All 12816 bilingual CSV source rows validated with the existing NFD parser; whole-file SHA-256 and CRC64NVME computed locally.",
+      "licenceId": "ogl-canada",
+      "licenceVersion": "2.0",
+      "licenceUrl": "https://open.canada.ca/en/open-government-licence-canada",
+      "attributionState": "metadata-verified",
+      "attribution": "Contains information licensed under the Open Government Licence – Canada. Source: National Forestry Database, Canadian Council of Forest Ministers, Table 5.2.",
+      "attributionBasis": "The retrieved official NFD terms page explicitly identifies Open Government Licence – Canada version 2.0.",
+      "changesNotice": "Unmodified raw CSV on the external SSD. Local parsing preserves unknown qualifiers; no promotion, admission or production eligibility is asserted.",
+      "temporalCoverage": "Publisher-labelled years through 2022; new comparison rows cover BC/AB 2020–2022 and ON/QC 2019–2022. Calendar-versus-fiscal equivalence is not asserted."
     }
   ]
 }

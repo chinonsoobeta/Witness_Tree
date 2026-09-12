@@ -1,6 +1,6 @@
 # WP1: NFD harvest comparison through 2022
 
-Recorded 2026-09-12. **Prepared in part; blocked, not complete.**
+Recorded 2026-09-12. **Implemented; final verification in progress.**
 Specification: `docs/FALL_DOWN_ARTICLE_SUPPORT_PLAN.md` at `64346e4`.
 
 ## What this package asserts and is entitled to assert
@@ -43,7 +43,7 @@ attestation. The current CSV declares no edition: `sourceVersion: undeclared`.
 The separately archived Zenodo package version 3.0.0 is not the version of this
 current CSV and does not supply the requested 2022 frame.
 
-The official terms page states Open Government Licence – Canada 2.0. The intended
+The official terms page states Open Government Licence – Canada 2.0. The staged
 entry is `sourceId: nfd-5.2-undeclared`, `licenceId: ogl-canada`,
 `licenceUrl: https://open.canada.ca/en/open-government-licence-canada`,
 `attributionState: metadata-verified`, `immutableObjectStorage: false`, and
@@ -57,20 +57,17 @@ The exact download advertised by the publisher is:
 <http://nfdp.ccfm.org/download/data/csv/NFD%20-%20Area%20harvested%20by%20ownership%20and%20harvesting%20method%20-%20EN%20FR.csv>
 
 HTTP retrieval succeeded. The same host's HTTPS endpoint refused connections
-on port 443. `scripts/check-staged-acquisitions.mjs` requires HTTPS for every
-source URL. The task explicitly prohibits weakening a checker. No exception has
-been applied and no alternative source has been substituted. Permission for an
-exception restricted to this exact URL and checked bytes has been requested but
-has not been received.
+on port 443. On 2026-09-12 the owner approved a narrowly scoped exception to the
+HTTPS requirement. The checker accepts this one source ID and exact URL only
+when byte length, SHA-256 and CRC64NVME also match the verified payload. Mutations
+to any of these identifiers are rejected by the staging regression test; other
+HTTP sources remain rejected. No source or licence was substituted.
 
-Consequently, the manifest and its byte-total test are unchanged. If an exact
-CSV exception is approved, stage the CSV and add assertions for its byte length,
-SHA-256 and CRC64NVME in the same commit. With this CSV alone added to the
-specified branch's manifest, the new literal total would be **48944111388**;
-the current total remains **48942077543**. Supporting HTTP notices are recorded
-here and on the SSD, not silently entered under invented HTTPS retrieval URLs.
+The manifest and per-entry assertions were updated together. The literal total
+is **48944111388** bytes. Supporting HTTP notices remain on the SSD and are
+identified above, without invented HTTPS retrieval URLs.
 
-## Implemented and checked independently of staging
+## Implemented behaviour
 
 - The existing parser validates all source rows and preserves qualifier meanings.
   The new extension function reuses it through the preparation runner.
@@ -92,9 +89,18 @@ here and on the SSD, not silently entered under invented HTTPS retrieval URLs.
   payload, binds both the new source and the existing imagery/historical bytes,
   writes only a new SSD-derived file, refuses overwrite, and verifies readback.
 
-A read-only invocation of the pure extension function with the real SSD inputs
-produced 132 rows in memory, with 14 computable new rows and all 118 historical
-rows unchanged. It did not persist or publish a new comparison artifact.
+The guarded generator wrote and read back
+`derived/fall-down-wp1-20260912/comparison.json` on the SSD: 309450 bytes,
+SHA-256 `01c3a033b528022689a4384518178b477eea10140e9c719109f2980aea7a6d36`.
+The public comparison is byte-identical and contains 132 rows, including the
+14 computable new rows. The exact 118-row historical public artifact is retained
+as `data/phase2-official-published-harvest-comparison-1990-2019.json`:
+283062 bytes, SHA-256
+`c896b5d63dcb5c2c12e45b2085174ba9e8371f3583785d4a344bf7b79fc506b0`.
+The historical receipts point to that preserved artifact. Their original output
+and public-payload checksums, source revision and publication event remain intact;
+the prepared-receipt binding was refreshed solely for the repository path move.
+Both historical receipt checkers still verify the original SSD bytes.
 
 The current NFD BC values are 155443.24 ha (2020), 142943.108 ha (2021), and
 112901.942 ha (2022). `(112901.942 / 155443.24 - 1) * 100` is
@@ -102,48 +108,29 @@ The current NFD BC values are 155443.24 ha (2020), 142943.108 ha (2021), and
 of two annual published values, not a sum of annual imagery intervals. No 33
 percent claim has been added to the site.
 
-## Checks and remaining work
+## Security prerequisite and evidence audit
 
-Executed from the specified `wt/premises` worktree, without entering the main
-checkout. Before edits, clean `origin/main` at
+The owner approved fixing the existing MapLibre critical advisory
+GHSA-jrc7-96c5-q579 as a WP1 prerequisite. This reuses the repository's existing
+6.9.0 dependency update and its exact vendored worker assets. Production audit
+now reports zero vulnerabilities; the worker asset checker passes all 12 tests.
+A fresh remote map observation is required because the map client changed.
+No stale observation is rebound to the new code.
+
+All 115 staged-manifest field bindings were checked against their JSON pointers
+and expected values before refreshing the manifest digest. Every pre-existing
+manifest entry is unchanged. The ledger remains 31 rows, 22 core and nine optional,
+with two complete and admitted core rows. The Phase 1 exit record's audit digest
+was refreshed after confirming its universal-ledger failure reason remains true;
+Phase 1 remains 2/4. No downstream file binds the prior Phase 1 exit-record digest.
+No owner-admitted payload checksum or gate count changed. Phase 2 remains 2/4.
+
+## Verification
+
+Commands run from the specified `wt/premises` worktree. Clean `origin/main` at
 `bb46e3748c16ba8fc155ecbb5b280c2befa9d6d9` passed the build, portable suite and
-all 125 CI package checks. The independent check sweep used 10 concurrent workers,
-the available CPU count. The production audit failed separately on the existing
-MapLibre 6.3.0 critical advisory GHSA-jrc7-96c5-q579.
+all 125 CI package checks before edits. The independent sweep used all 10 CPUs.
+The original production dependency audit failed on MapLibre 6.3.0.
 
-On the WP1 preparation:
-
-| Command | Observed result |
-| --- | --- |
-| `npm run build` | Passed |
-| `npm run test:suite` | Portable execution passed; the runner reports its 28 excluded owner-bound files as unavailable, not failed |
-| `npm run check:bilingual` | Passed, 19 route pairs |
-| `npx tsc --noEmit` | Passed |
-| `WITNESS_TREE_DATA_ROOT=/Volumes/Extended_SSD/Witness_Tree-data node --test tests/phase2-official-published-harvest-comparator.test.mjs` | Passed, 6 tests; no skips |
-| `node --import tsx --test tests/official-published-harvest-page.test.tsx` | Passed, 4 tests |
-| `node --test tests/staged-acquisitions.test.mjs` | Passed, 17 tests; existing manifest only |
-| `npm run check:phase2-official-published-harvest-receipt-bytes` | Passed with exact external readback; historical receipt unchanged |
-| `npm run check:cross-record-facts` | Passed, 11 facts |
-| `npm run check:data-root-test-currency` | Passed; the existing receipt still covers all 28 owner-bound tests; no new owner test run is claimed |
-| `npx eslint lib/phase2/official-published-harvest-comparator.mjs scripts/extend-official-harvest-comparison.mjs components/transparency/OfficialPublishedHarvestComparison.tsx tests/official-published-harvest-page.test.tsx tests/phase2-official-published-harvest-comparator.test.mjs` | Passed |
-| `git diff --check` | Passed |
-
-The guarded preparation command was also invoked and stopped with
-`WP1 blocked: the exact NFD acquisition must pass the staging checker before row generation`.
-This is a staging-policy block, not unavailable SSD evidence and not a successful
-end-to-end generation run.
-
-Remaining before WP1 is complete:
-
-1. Resolve the exact HTTP/HTTPS checker conflict without an unapproved exception.
-2. Stage the acquisition and update the total and per-entry checks together.
-3. Run the guarded generator and publish the extended JSON to the existing route.
-   Preserve the exact historical artifact and receipt semantics; do not rebind
-   historical publication to newly generated bytes or invent a deployment event.
-4. Repeat the affected checks and obtain green PR checks. The existing critical
-   dependency advisory must be resolved without bypassing branch protection or
-   including an unapproved dependency expansion in this package.
-
-The checked-in comparison therefore still has 118 rows. No deployment has been
-performed. Phase 2 remains 2/4. WP2, WP4 and WP3 have not started because the
-required preceding green PR does not yet exist. This record does not close WP1.
+The final WP1 verification and remote-observation results are recorded below
+once completed. WP2, WP4 and WP3 cannot start until WP1's PR checks are green.

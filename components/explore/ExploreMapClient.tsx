@@ -222,7 +222,7 @@ const MAP_VIEW_BOUNDS: Readonly<Record<ExploreMapView, MapBounds>> = {
 // any tile request is made. Serve the version-pinned worker from `public/`
 // instead. `scripts/check-maplibre-worker-asset.mjs` proves these files are
 // byte-identical to the installed maplibre-gl distribution.
-const MAPLIBRE_WORKER_VERSION = "6.3.0";
+const MAPLIBRE_WORKER_VERSION = "6.9.0";
 const MAPLIBRE_WORKER_URL = `/maplibre/${MAPLIBRE_WORKER_VERSION}/maplibre-gl-worker.mjs`;
 type ProvinceFeature = {
   id: string;

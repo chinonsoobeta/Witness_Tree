@@ -25,7 +25,7 @@
     "sha256": "8d66fdac66c4adeb2289a7d327f6f08812321031b7bbbb85d8816a147b5d4082"
   },
   "publicArtifact": {
-    "repositoryPath": "data/phase2-official-published-harvest-comparison.json",
+    "repositoryPath": "data/phase2-official-published-harvest-comparison-1990-2019.json",
     "byteLength": 283062,
     "sha256": "c896b5d63dcb5c2c12e45b2085174ba9e8371f3583785d4a344bf7b79fc506b0"
   },

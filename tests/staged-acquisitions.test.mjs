@@ -31,7 +31,7 @@ test("verified local acquisition remains staging-only", () => {
   assert.equal(first.attributionState, "metadata-verified");
   assert.match(first.attribution, /Ministère des Ressources naturelles et des Forêts/);
   assert.equal(first.licenceUrl, "https://www.donneesquebec.ca/licence/#cc-by");
-  assert.equal(manifest.entries.reduce((total, entry) => total + entry.byteLength, 0), 48942077543);
+  assert.equal(manifest.entries.reduce((total, entry) => total + entry.byteLength, 0), 48944111388);
   assert.equal(alberta?.sha256, "e93572129f25c83911b73eadfacff12624ff6b08f2db4b311c1662196b665093");
 });
 
@@ -208,4 +208,23 @@ test("staging gate rejects unsafe paths, missing integrity, and inflated claims"
   assert.throws(() => validateStagedAcquisitions({ ...manifest, entries: [{ ...first, productionEligible: true }] }), /never claim/);
   assert.throws(() => validateStagedAcquisitions({ ...manifest, entries: [{ ...first, attribution: "" }] }), /attribution is required/i);
   assert.throws(() => validateStagedAcquisitions({ ...manifest, entries: [{ ...first, licenceUrl: "http://example.test" }] }), /HTTPS/);
+});
+
+const nfd = manifest.entries.find((entry) => entry.sourceId === "nfd-5.2-undeclared");
+test("the authorized NFD HTTP exception is exact and checksum-bound", () => {
+  assert.ok(nfd);
+  assert.equal(nfd.byteLength, 2033845);
+  assert.equal(nfd.sha256, "1644b66e78a3e30d865f1425065de39350532ad96a131038ec77e1890f58f706");
+  assert.equal(nfd.crc64nvme, "ef1972d415353fcf");
+  assert.equal(nfd.sourceVersion, "undeclared");
+  assert.equal(nfd.immutableObjectStorage, false);
+  assert.equal(nfd.productionEligible, false);
+  for (const mutation of [
+    { sourceUrl: nfd.sourceUrl + "?substitute=1" },
+    { sourceUrl: "http://example.test/file.csv" },
+    { sourceId: "another-source" },
+    { byteLength: nfd.byteLength + 1 },
+    { sha256: "0".repeat(64) },
+    { crc64nvme: "0".repeat(16) },
+  ]) assert.throws(() => validateStagedAcquisitions({ ...manifest, entries: [{ ...nfd, ...mutation }] }), /HTTPS/);
 });
