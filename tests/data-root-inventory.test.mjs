@@ -18,15 +18,31 @@ async function fixture(t) {
 
 test("hashes every file including hidden entries and leaves source bytes and metadata intact", async (t) => {
   const { root, file } = await fixture(t);
+  const nested = path.join(root, "nested");
+  await mkdir(nested);
+  const payloads = Array.from({ length: 24 }, (_, index) => ({
+    relative: `nested/part-${String(index).padStart(2, "0")}.bin`,
+    bytes: Buffer.alloc(1024 + index, index),
+  }));
+  await Promise.all(payloads.map(({ relative, bytes }) => writeFile(path.join(root, relative), bytes)));
   await chmod(file, 0o444);
   const before = await lstat(file);
   const result = await inventoryDataRoot({ root });
   const after = await lstat(file);
   assert.equal(result.status, "passed");
-  assert.equal(result.counts.files, 1);
-  assert.equal(result.counts.bytes, 14);
+  assert.equal(result.counts.files, 1 + payloads.length);
+  assert.equal(result.counts.bytes, 14 + payloads.reduce((sum, item) => sum + item.bytes.length, 0));
   assert.equal(result.entries[0].sha256, createHash("sha256").update("measured bytes").digest("hex"));
-  assert.deepEqual(result.entries.map(({ path, type }) => ({ path, type })), [{ path: ".hidden", type: "file" }, { path: "empty", type: "directory" }]);
+  assert.deepEqual(result.entries.map(({ path, type }) => ({ path, type })), [
+    { path: ".hidden", type: "file" }, { path: "empty", type: "directory" }, { path: "nested", type: "directory" },
+    ...payloads.map(({ relative }) => ({ path: relative, type: "file" })),
+  ]);
+  for (const { relative, bytes } of payloads) {
+    const entry = result.entries.find((item) => item.path === relative);
+    assert.equal(entry.bytes, bytes.length);
+    assert.equal(entry.sha256, createHash("sha256").update(bytes).digest("hex"));
+    assert.deepEqual(await readFile(path.join(root, relative)), bytes);
+  }
   assert.equal(before.mtimeMs, after.mtimeMs);
   assert.equal(before.ctimeMs, after.ctimeMs);
   assert.equal(await readFile(file, "utf8"), "measured bytes");
