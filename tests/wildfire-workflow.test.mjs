@@ -140,14 +140,14 @@ test('empty data is never published and the last good data remains', async () =>
   assert.equal(await readFile(path.join(directory, 'current.json'), 'utf8'), before);
 });
 
-test('an uncleared configured endpoint is blocked before any remote refresh', async () => {
+test('an endpoint supplied at run time is refused before any remote refresh', async () => {
   const directory = await root();
   await assert.rejects(() => execFile(process.execPath, ['scripts/wildfire/refresh.mjs'], {
     cwd: new URL('..', import.meta.url),
     env: { ...process.env, WILDFIRE_DATA_DIR: directory, WILDFIRE_SOURCE_URLS: JSON.stringify([{ id: 'uncleared', url: 'https://example.test/never-requested' }]) },
   }));
   const state = JSON.parse(await readFile(path.join(directory, 'state.json'), 'utf8'));
-  assert.match(state.error, /No cleared live-wildfire feed/);
+  assert.match(state.error, /WILDFIRE_SOURCE_URLS is set; refusing remote refresh/);
 });
 
 test('two failures produce degraded state and 15-minute retry metadata', async () => {

@@ -11,7 +11,7 @@
    "id": "pacific-dst-schedule",
    "title": "The scheduled job runs exactly four times daily in both halves of the year, verified across a daylight saving transition",
    "status": "fail",
-   "reason": "The gate now decides from the cron slot GitHub reports rather than the wall clock at gate time, so a run queued hours late is still judged by the slot it was scheduled for, and the eight UTC entries open exactly the four required America/Vancouver hours in both halves of the year. That closes a measured defect: across the 100 most recent scheduled runs the wall-clock gate opened 39 where the design intends 50, and zero or one a day through the week to 2026-09-02. Two things still keep this criterion failing. GitHub created only four of the eight scheduled runs a day over that same week, so the cadence depends on a scheduler that promises nothing and can only be shown by observation over a real window, including one that crosses a daylight saving transition. And no live wildfire feed has cleared source rights, so every run the gate opens still fails before making any request; there are still zero real refresh successes. Code that decides correctly is not evidence that a scheduled run has succeeded.",
+   "reason": "The gate now decides from the cron slot GitHub reports rather than the wall clock at gate time, so a run queued hours late is still judged by the slot it was scheduled for, and the eight UTC entries open exactly the four required America/Vancouver hours in both halves of the year. That closes a measured defect: across the 100 most recent scheduled runs the wall-clock gate opened 39 where the design intends 50, and zero or one a day through the week to 2026-09-02. Two things still keep this criterion failing. GitHub created only four of the eight scheduled runs a day over that same week, so the cadence depends on a scheduler that promises nothing and can only be shown by observation over a real window, including one that crosses a daylight saving transition. And no scheduled run has yet refreshed a real feed: until 2026-09-13 every run the gate opened failed before making any request, the four owner-admitted feeds are only now fetched under a snapshot contract, and there are still zero observed real refresh successes. Code that decides correctly is not evidence that a scheduled run has succeeded.",
    "evidence": [
     {
      "path": "scripts/wildfire/dst-gate.mjs",
@@ -19,7 +19,7 @@
     },
     {
      "path": "tests/wildfire-workflow.test.mjs",
-     "sha256": "b5f6f18d1117f0ccd26df7471e35eb9b2d74386025fb984a157b923a3a6c50e6"
+     "sha256": "bf7473323a2814b40b8bd7c097f2c8f9de238fb4e22a8e1c21a3ce3094b6451e"
     },
     {
      "path": ".github/workflows/wildfire-refresh.yml",
@@ -55,7 +55,7 @@
    "evidence": [
     {
      "path": "tests/wildfire-workflow.test.mjs",
-     "sha256": "b5f6f18d1117f0ccd26df7471e35eb9b2d74386025fb984a157b923a3a6c50e6"
+     "sha256": "bf7473323a2814b40b8bd7c097f2c8f9de238fb4e22a8e1c21a3ce3094b6451e"
     },
     {
      "path": "tests/wildfire-routes.test.tsx",
@@ -75,7 +75,7 @@
     },
     {
      "path": "tests/wildfire-workflow.test.mjs",
-     "sha256": "b5f6f18d1117f0ccd26df7471e35eb9b2d74386025fb984a157b923a3a6c50e6"
+     "sha256": "bf7473323a2814b40b8bd7c097f2c8f9de238fb4e22a8e1c21a3ce3094b6451e"
     }
    ]
   }
