@@ -40,16 +40,20 @@ in a site incident. Every figure the site shows is compiled into the bundle
 from an illustrative fixture.
 
 The archive and the data root hold everything that would be expensive to lose.
-They are touched only by an owner sitting at a terminal. Nothing touches them
-on a schedule.
+They are touched only by an owner sitting at a terminal, with one designed
+exception that has not yet run: the scheduled wildfire refresh below.
 
 ### What runs without a human
 
 Exactly one thing: `.github/workflows/wildfire-refresh.yml`. It is a scheduled
-GitHub Actions job with `contents: write`, and it commits to the default
-branch. Section 6.3 covers it. Do not repeat the older claim that this project
-has no scheduler and no CI job with write credentials; that claim is wrong and
-this job is the counterexample.
+GitHub Actions job with `contents: read` and `id-token: write`. It no longer
+writes to this repository. After a successful refresh it is designed to assume
+an AWS role through GitHub OIDC and write new wildfire snapshots to the raw
+archive with COMPLIANCE retention, then a status object to the delivery bucket.
+That role does not exist yet, and no refresh has ever succeeded, so the job has
+never written anything. Section 6.3 covers it. Do not repeat the older claim
+that this project has no scheduler and no CI job with write credentials; that
+claim is wrong and this job is the counterexample.
 
 `.github/workflows/ci.yml` runs on every push and pull request. It deploys
 nothing and has no cloud credentials. It declares no `permissions:` block, so
@@ -461,6 +465,25 @@ them.
   `WILDFIRE_SOURCE_URLS` variable the workflow passes is not read by that
   function. A URL alone is not a cleared feed.
 - The workflow retries once after 900 seconds and then exits 1.
+- A successful refresh is archived, not committed. The job first requires the
+  `WILDFIRE_ARCHIVE_ROLE_ARN` repository variable and fails if it is empty. It
+  then assumes that role through GitHub OIDC and runs
+  `scripts/wildfire/archive-upload.mjs`.
+  - Every new snapshot goes to
+    `raw/<feed>/undeclared/<fetchedAt>/<sha256>/payload/` in
+    `witness-tree-raw-archive-ca-central-1`, with COMPLIANCE retention until
+    2033-08-12 and an unlocked `manifest.json` beside it.
+  - Each put carries `If-None-Match: *`, and each payload is read back by
+    version before the next write.
+  - `wildfire/current-status.json` goes to the delivery bucket last, with a
+    60 second cache.
+  - The retention mode and date are required and must equal
+    [`data/current-wildfire-scheduled-archive-owner-approval-2026-09-13.json`](../data/current-wildfire-scheduled-archive-owner-approval-2026-09-13.json).
+    That record is the owner's standing approval for exactly `cwfis-current`,
+    `bc-wildfire`, `ab-wildfire` and `on-fire-disturbance`. A snapshot of any
+    other source, SOPFEU included, stops the upload before any write.
+  - No such role has been created, so an archive failure is S3 once one exists
+    and a refresh succeeds. A payload that reads back without its lock is S1.
 
 The 100 most recent scheduled runs were inspected on 2026-08-31 and are
 recorded in
@@ -489,9 +512,10 @@ failed round cannot restamp last-good data and make stale data look current.
 One thing to know before spending an incident on this: **a successful refresh
 would not currently change the site.** `app/en/wildfire/page.tsx` and
 `app/fr/incendies/page.tsx` render `ILLUSTRATIVE_WILDFIRE_FEED`, compiled in
-from `lib/wildfire/fixtures.ts`. The refresh writes to `public/wildfire`, which
-no route reads. Wiring them together is a code change gated on cleared feeds,
-not an operational step.
+from `lib/wildfire/fixtures.ts`. The refresh writes to `public/wildfire` on the
+runner, and the status object it would publish is not read by any route yet.
+Wiring them together is a code change gated on cleared feeds, not an
+operational step.
 
 **B. An archive promotion or retention run.** This is not a refresh in any
 routine sense. It is a deliberate, owner-invoked, MFA-bearing mutation of the

@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "witness-tree/current-wildfire-scheduled-archive-owner-approval/1",
+  "status": "owner-approved-not-provisioned",
+  "approved": true,
+  "approvedAt": "2026-09-13",
+  "approvedBy": "Chinonso Obeta, accountable owner",
+  "decisionRecord": "Chosen by the owner in a Claude Code session on 2026-09-13 in answer to an explicit question: a standing scheduled approval, with COMPLIANCE retention until 2033-08-12. No separate signed document exists.",
+  "notice": "This approves a class of future writes, not an exact artifact set. It replaces nothing: every earlier exact-artifact approval, its MFA requirement and its retention date stay as recorded. No IAM role exists yet, no scheduled write has run, and nothing here is transformation, ingestion, release or production admission.",
+  "account": "286853118812",
+  "region": "ca-central-1",
+  "bucket": "witness-tree-raw-archive-ca-central-1",
+  "writer": {
+    "kind": "github-actions-oidc",
+    "repository": "chinonsoobeta/Witness_Tree",
+    "workflow": ".github/workflows/wildfire-refresh.yml",
+    "ref": "refs/heads/main",
+    "mfaRequired": false,
+    "mfaExceptionReason": "A scheduled run has no person present. The exception is bounded by the feed allow-list, the key prefixes and the denied actions below."
+  },
+  "feeds": ["cwfis-current", "bc-wildfire", "ab-wildfire", "on-fire-disturbance"],
+  "keyPattern": "raw/<feed>/undeclared/<fetchedAt with colons as hyphens>/<sha256>/payload/<filename> plus a sibling manifest.json",
+  "retention": {
+    "mode": "COMPLIANCE",
+    "retainUntil": "2033-08-12T00:00:00Z",
+    "appliesTo": "payload object versions only; manifest.json sidecars stay rebuildable and unlocked, as in every earlier promotion"
+  },
+  "allowedActions": ["s3:PutObject", "s3:PutObjectRetention", "s3:GetObject", "s3:GetObjectVersion", "s3:GetObjectRetention"],
+  "deniedActions": ["s3:DeleteObject", "s3:DeleteObjectVersion", "s3:BypassGovernanceRetention", "s3:PutObjectLegalHold", "s3:PutBucket*", "s3:DeleteBucket*", "iam:*"],
+  "excludedFeeds": {
+    "sopfeu": "Written reuse terms are unresolved; the 2026-08-14 request has no substantive reply."
+  },
+  "pendingBeforeFirstWrite": [
+    "owner approval of the exact IAM trust and permission policy",
+    "IAM role creation and a recorded live readback of it",
+    "a fetch contract per feed that rejects empty, capped, schema-drifted or invalid input"
+  ],
+  "claims": {
+    "iamRoleCreated": false,
+    "scheduledWriteExecuted": false,
+    "retentionApplied": false,
+    "transformed": false,
+    "ingested": false,
+    "released": false,
+    "productionEligible": false
+  }
+}
