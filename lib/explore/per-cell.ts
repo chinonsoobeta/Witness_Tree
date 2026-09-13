@@ -66,9 +66,14 @@ export const EXPLORE_PER_CELL_LAYER = Object.freeze({
  * is nothing to acquire and nothing to admit for them.
  *
  * `condition-recovery` returns null, and that is a different kind of absence:
- * it needs the annual land-cover class series, which is a separate product
- * that has never been acquired. The interface has to say which of the two
- * kinds of absence it is looking at, because "we have not wired this yet" and
+ * recovery needs a forest class from the annual land-cover class series. That
+ * series is staged on the data root, but the forest-class treatment a
+ * recovery rule depends on is not admitted. See
+ * docs/VLCE2_FOREST_MASK_DECISION.md and
+ * docs/FALL_DOWN_WP3_CONDITION_RECOVERY_DETERMINATION.md.
+ *
+ * The interface has to say which of the two kinds of absence it is looking
+ * at, because "we have not wired this yet" and
  * "this data does not exist here" are not the same statement to a reader.
  */
 export type PerCellCause = "all" | "harvest" | "fire";
