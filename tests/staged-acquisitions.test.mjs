@@ -31,7 +31,7 @@ test("verified local acquisition remains staging-only", () => {
   assert.equal(first.attributionState, "metadata-verified");
   assert.match(first.attribution, /Ministère des Ressources naturelles et des Forêts/);
   assert.equal(first.licenceUrl, "https://www.donneesquebec.ca/licence/#cc-by");
-  assert.equal(manifest.entries.reduce((total, entry) => total + entry.byteLength, 0), 105345312334);
+  assert.equal(manifest.entries.reduce((total, entry) => total + entry.byteLength, 0), 105345341805);
   assert.equal(alberta?.sha256, "e93572129f25c83911b73eadfacff12624ff6b08f2db4b311c1662196b665093");
 });
 
@@ -703,4 +703,18 @@ test("every WP2 annual-series file is individually bound and staging-only", () =
   }
   const bc = manifest.entries.find(entry => entry.id === "wp2-bc-annual-series-20260909--bc-annual-series-1984-2022.json");
   assert.equal(bc.additionalLicences[0].licenceId, "ogl-bc");
+});
+
+test("the OGL-BC timber harvesting indicator workbooks are exact and checksum-bound", () => {
+  const indicator = manifest.entries.filter((entry) => entry.sourceId === "bc-timber-harvesting-indicator");
+  assert.deepEqual(indicator.map((entry) => [entry.originalFilename, entry.byteLength, entry.sha256, entry.crc64nvme]), [
+    ["bctimberharvest.xlsx", 13800, "3203c78735b881b83b9a66609c139d61975762aaed3617c6d71503bd666b0029", "b5e3d0bdeaeae149"],
+    ["bctimbersupplyforecast.xlsx", 15671, "42558228e9052f6b94568b9247c9bc959b0d2fe49725677642a6e266bbd5770d", "753ced0eb9907a31"],
+  ]);
+  for (const entry of indicator) {
+    assert.equal(entry.licenceId, "ogl-bc");
+    assert.equal(entry.redistributable, true);
+    assert.equal(entry.productionEligible, false);
+    assert.throws(() => validateStagedAcquisitions({ ...manifest, entries: [{ ...entry, sourceUrl: entry.sourceUrl.replace("https://", "http://") }] }), /HTTPS/);
+  }
 });

@@ -503,6 +503,11 @@
       "reason": "This point-in-time remote promotion evidence is reviewed in the local gate set."
     },
     {
+      "check": "scripts/check-volume-source-redistribution.mjs",
+      "category": "suite-covered",
+      "reason": "tests/volume-source-redistribution.test.mjs imports this checker and runs it against the repository in npm run test:suite; adding a direct CI step would change the checksum-bound .github/workflows/ci.yml."
+    },
+    {
       "check": "scripts/check-wildfire-derived-manifest-retention.mjs",
       "category": "suite-covered",
       "reason": "tests/wildfire-derived-manifest-retention.test.mjs imports this checker and runs in npm run test:suite."
