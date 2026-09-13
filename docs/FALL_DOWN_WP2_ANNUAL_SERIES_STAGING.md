@@ -1,6 +1,6 @@
 # WP2: annual-area series and supporting files
 
-Recorded 2026-09-12. All 62 staging entries verified; full inventory and suite validation in progress.
+Recorded 2026-09-12. All 62 staging entries verified; full suite and full data-root inventory passed.
 WP1 PR #160 passed all GitHub checks before this package started.
 Specification: `docs/FALL_DOWN_ARTICLE_SUPPORT_PLAN.md` at `64346e4`.
 
@@ -103,9 +103,8 @@ verified NFD CSV digest (`ef1972d415353fcf`). SHA-256 and CRC read the same byte
 stream. File metadata is checked before and after reading; structural checks use
 read-only GDAL, JSON/XML parsers, world-file validation and GeoPackage quick_check.
 
-Validation results and the final inventory digest are recorded here after the
-read-only checks finish. No computation job that overwrites existing outputs was
-rerun.
+No computation job that overwrites existing outputs was rerun. The completed
+inventory result is recorded in the final section below.
 
 
 All 62 files passed whole-file SHA-256, CRC64NVME and read-only structural checks.
@@ -152,3 +151,29 @@ unavailable; the separate successful owner receipt supplies those results.
 The 125-check CI sweep found only the pending owner-receipt currency check; after
 the actual full rerun, `npm run check:data-root-test-currency` also passed. The
 full portable suite passed again after the inventory concurrency change.
+
+## Full data-root inventory
+
+The parallel inventory verifier ran read-only over the complete SSD data root at
+`/Volumes/Extended_SSD/Witness_Tree-data`, from `2026-09-12T16:15:33.356Z` to
+`2026-09-12T19:30:42.377Z`, and returned `status: passed` with zero errors.
+
+| Measure | Value |
+| --- | ---: |
+| Files | 739642 |
+| Bytes | 908827811932 |
+| Directories | 1405 |
+| Symlinks (recorded, not followed) | 4 |
+| Tree SHA-256 | `f4d0f59ad4391f18cd64b840c9bd47ad231eb5955a83b07b14118287186d999f` |
+
+The manifest itself is 261,795,250 bytes with SHA-256
+`0f7369ae8e2770ad45d4c947cfb4c53a735ff4a2d7c8a7d1d7ac5e7006a5806a`. It is kept
+outside the repository and outside the data root, as the verifier requires, and
+is not committed. It carries `backup: false` and `recoveryDemonstrated: false`:
+an inventory is evidence of what the tree held at completion, not a copy of it
+and not proof that it can be restored.
+
+The digest describes the tree as of the completion instant only. The data root
+was no longer present on this machine when it was next checked, shortly after
+completion. No further read of the data root is claimed by this record, and no
+later state of the tree is inferred from this digest.
