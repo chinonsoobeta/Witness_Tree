@@ -115,7 +115,7 @@
       "evidence": [
         {
           "path": "docs/OPERATIONS_HANDBOOK.md",
-          "sha256": "f1cf82046257d70d0f179323833389549732a070f3bab1b55eb5a77b4d7e774e"
+          "sha256": "f57915fa135b852892aa9f2fbd248da0682765be4ad169d83902b8db29cc8873"
         },
         {
           "path": "docs/PLAN_GAP_MATRIX.md",
@@ -216,11 +216,11 @@
         },
         {
           "path": ".github/workflows/wildfire-refresh.yml",
-          "sha256": "2b3ecb2dce114bbef9d6d27c3fe2134588ae0dd0be2717bef5bcd6977f1cc198"
+          "sha256": "768107c4125ff5bac1d9b5ff947a6c97e887e3b3b42e00a0a810308e0729d791"
         },
         {
           "path": "docs/OPERATIONS_HANDBOOK.md",
-          "sha256": "f1cf82046257d70d0f179323833389549732a070f3bab1b55eb5a77b4d7e774e"
+          "sha256": "f57915fa135b852892aa9f2fbd248da0682765be4ad169d83902b8db29cc8873"
         }
       ]
     },
