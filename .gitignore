@@ -45,3 +45,10 @@ __pycache__/
 # Local Worker variables. Never committed: this file is how a developer points
 # a local run at a service binding, and it is the standard place a secret lands.
 /.dev.vars
+
+# design-sync (staged scripts + regenerated output; the durable set under .design-sync/ IS committed)
+/.ds-sync/
+/ds-bundle/
+/.design-sync/.cache/
+/.design-sync/learnings/
+/.design-sync/node_modules
