@@ -51,25 +51,27 @@ export function SourceCurrency({ locale }: Readonly<{ locale: Locale }>) {
     <section className="content-section prose-measure">
       <h2>{copy.title}</h2>
       <p>{copy.lead(sourceCurrency.checkedOn)}</p>
-      <table>
-        <caption className="sr-only">{copy.title}</caption>
-        <thead>
-          <tr>
-            <th scope="col">{copy.product}</th>
-            <th scope="col">{copy.ingested}</th>
-            <th scope="col">{copy.published}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sourceCurrency.products.map((product) => (
-            <tr key={product.id}>
-              <th scope="row">{NAMES[product.id]?.[locale] ?? product.title}</th>
-              <td>{product.ingestedThroughYear}</td>
-              <td>{product.latestPublishedYear}</td>
+      <div className="table-scroll currency-table" tabIndex={0} role="region" aria-label={copy.title}>
+        <table>
+          <caption className="sr-only">{copy.title}</caption>
+          <thead>
+            <tr>
+              <th scope="col">{copy.product}</th>
+              <th scope="col">{copy.ingested}</th>
+              <th scope="col">{copy.published}</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {sourceCurrency.products.map((product) => (
+              <tr key={product.id}>
+                <th scope="row">{NAMES[product.id]?.[locale] ?? product.title}</th>
+                <td>{product.ingestedThroughYear}</td>
+                <td>{product.latestPublishedYear}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       <p>{sourceCurrency.laterYearPublished ? copy.behind : copy.current(sourceCurrency.lastYear)}</p>
       {sourceCurrency.publisherRevisedAnIngestedYear ? <p>{copy.revised}</p> : null}
       <p>

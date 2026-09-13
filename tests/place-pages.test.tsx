@@ -74,7 +74,9 @@ test("localized routes use the shared shell and consistent main landmark", () =>
 
 test("annual table has a caption and scoped column headers", () => {
   const chart = readFileSync(new URL("../components/places/AnnualChangeChart.tsx", import.meta.url), "utf8");
-  assert.match(chart, /<caption>\{title\}<\/caption>/);
+  // The caption may be visually hidden (the <h2> shows the words), but it must
+  // still be the table's own caption and carry the title.
+  assert.match(chart, /<caption(?: className="sr-only")?>\{title\}<\/caption>/);
   assert.equal((chart.match(/<th scope="col">/g) ?? []).length, 3);
 });
 

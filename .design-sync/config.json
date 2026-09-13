@@ -1,0 +1,147 @@
+{
+  "projectId": "2f6334e9-b96f-40bd-a7d4-0e3da2546b03",
+  "shape": "package",
+  "pkg": "witness-tree",
+  "globalName": "WitnessTree",
+  "srcDir": "components",
+  "tsconfig": "./.design-sync/tsconfig.dssync.json",
+  "buildCmd": "node .design-sync/.cache/compile-css.mjs",
+  "cssEntry": ".design-sync/.cache/globals.compiled.css",
+  "extraFonts": [
+    "node_modules/@bcgov/bc-sans/css/BC_Sans.css"
+  ],
+  "guidelinesGlob": [],
+  "componentSrcMap": {
+    "Document": null
+  },
+  "docsMap": {
+    "LocaleAnchor": ".design-sync/docs/LocaleAnchor.md"
+  },
+  "dtsPropsFor": {
+    "AccountStatusPage": "locale: \"en\" | \"fr\";",
+    "AddressFinderClient": "locale: \"en\" | \"fr\";",
+    "AnnualChangeChart": "annual: ({\n    year: number;\n    hectares: number;\n    eventIds: string[];\n  })[];\nlocale: \"en\" | \"fr\";\nview: \"table\" | \"chart\";",
+    "ComponentGallery": "locale: \"en\" | \"fr\";",
+    "ConfidenceBadge": "confidence: {\n  level: \"unknown\" | \"high\" | \"medium\" | \"limited\";\n  ruleId: \"CONF-HIGH-001\" | \"CONF-MEDIUM-001\" | \"CONF-LIMITED-001\" | \"CONF-UNKNOWN-001\";\n  reason: {\n    en: string;\n    fr: string;\n  };\n};\nlocale: \"en\" | \"fr\";",
+    "CoverageBand": "coverageGrade: \"enhanced-local-records\" | \"national-baseline-plus-local-context\" | \"national-baseline\" | \"extended-record-sparse-official-matching\" | \"not-applicable\";\nlocale: \"en\" | \"fr\";",
+    "DataPage": "locale: \"en\" | \"fr\";",
+    "EvidenceChip": "evidence: \"official-record\" | \"satellite-observation\" | \"derived-estimate\" | \"unknown\";\nlocale: \"en\" | \"fr\";",
+    "ExploreMapClient": "locale: \"en\" | \"fr\";\nmode: \"forest-change\" | \"recorded-harvest\" | \"wildfire\" | \"condition-recovery\";\nyear: number;\nfromYear: number;\noverlays?: (\"federal-ridings\" | \"provincial-ridings\" | \"economic-regions\" | \"watersheds\")[];\nridingMeasurements?: ({\n    overlay: \"federal-ridings\" | \"provincial-ridings\";\n    boundaryId: string;\n    jurisdiction: string;\n    coverage: \"complete\" | \"partial-with-unknown\" | \"none-mapped\";\n    fromYear: number;\n    toYear: number;\n    observedLossPercent: null | number;\n    observedLossHectares: null | number;\n    knownObservedSubtotalHectares?: null | number;\n    summedLossHectares?: null | number;\n  })[];",
+    "ExploreView": "events: ({\n    id: string;\n    mode: \"forest-change\" | \"recorded-harvest\" | \"wildfire\" | \"condition-recovery\";\n    year: number;\n    coordinates: [number, number];\n    name: {\n      en: any;\n      fr: any;\n    };\n    evidence: \"official-record\" | \"satellite-observation\" | \"derived-estimate\" | \"unknown\";\n    confidence: {\n      level: \"unknown\" | \"high\" | \"medium\" | \"limited\";\n      ruleId: \"CONF-HIGH-001\" | \"CONF-MEDIUM-001\" | \"CONF-LIMITED-001\" | \"CONF-UNKNOWN-001\";\n      reason: {\n        en: string;\n        fr: string;\n      };\n    };\n    coverageGrade: \"enhanced-local-records\" | \"national-baseline-plus-local-context\" | \"national-baseline\" | \"extended-record-sparse-official-matching\" | \"not-applicable\";\n    provenance: {\n      dataset: string;\n      version: string;\n      retrievedDate: string;\n      licence: \"ogl-canada-2.0\" | \"ogl-bc-2.0\" | \"ogl-alberta\" | \"ogl-ontario\" | \"cc-by-4.0-quebec\" | \"terms-pending\";\n      recordUrl?: string;\n    };\n    unknownReason?: string;\n  })[];\nlocale: \"en\" | \"fr\";\nmode?: \"forest-change\" | \"recorded-harvest\" | \"wildfire\" | \"condition-recovery\";\npresentation?: \"map\" | \"list\";\ndata?: \"table\" | \"chart\";\nyear?: number;\nfromYear?: number;\noverlays?: (\"federal-ridings\" | \"provincial-ridings\" | \"economic-regions\" | \"watersheds\")[];\nridingMeasurements?: ({\n    overlay: \"federal-ridings\" | \"provincial-ridings\";\n    boundaryId: string;\n    jurisdiction: string;\n    coverage: \"complete\" | \"partial-with-unknown\" | \"none-mapped\";\n    fromYear: number;\n    toYear: number;\n    observedLossPercent: null | number;\n    observedLossHectares: null | number;\n    knownObservedSubtotalHectares?: null | number;\n    summedLossHectares?: null | number;\n  })[];",
+    "ExploreYearControl": "locale: \"en\" | \"fr\";\nstate: {\n  mode: \"forest-change\" | \"recorded-harvest\" | \"wildfire\" | \"condition-recovery\";\n  presentation: \"map\" | \"list\";\n  data: \"table\" | \"chart\";\n  year: number;\n  fromYear?: number;\n  overlays?: (\"federal-ridings\" | \"provincial-ridings\" | \"economic-regions\" | \"watersheds\")[];\n};\nonYearChange: (year: number) => void;\nonIntervalChange?: (interval: {\n    fromYear: number;\n    toYear: number;\n  }) => void;",
+    "FederalDistrictFinder": "locale: \"en\" | \"fr\";\nquery: string;\nrows: ({\n    id: string;\n    name: {\n      en: any;\n      fr: any;\n    };\n    placeType: \"province\" | \"economic-region\" | \"watershed\" | \"forest-district\" | \"municipality\" | \"federal-riding\" | \"provincial-riding\" | \"reserve\" | \"treaty-area\";\n    detectedChangePercent: null | number;\n    detectedChangeHectares: null | number;\n    forestedHectares: number;\n    coverageGrade: \"enhanced-local-records\" | \"national-baseline-plus-local-context\" | \"national-baseline\" | \"extended-record-sparse-official-matching\" | \"not-applicable\";\n    measurementCoverage?: \"complete\" | \"partial-with-unknown\" | \"none-mapped\";\n    evidence: \"official-record\" | \"satellite-observation\" | \"derived-estimate\" | \"unknown\";\n  })[];\nparameters?: ({\n    name: string;\n    value: string;\n  })[];",
+    "FederalRidingPicker": "rows: ({\n    id: string;\n    name: {\n      en: any;\n      fr: any;\n    };\n    placeType: \"province\" | \"economic-region\" | \"watershed\" | \"forest-district\" | \"municipality\" | \"federal-riding\" | \"provincial-riding\" | \"reserve\" | \"treaty-area\";\n    detectedChangePercent: null | number;\n    detectedChangeHectares: null | number;\n    forestedHectares: number;\n    coverageGrade: \"enhanced-local-records\" | \"national-baseline-plus-local-context\" | \"national-baseline\" | \"extended-record-sparse-official-matching\" | \"not-applicable\";\n    measurementCoverage?: \"complete\" | \"partial-with-unknown\" | \"none-mapped\";\n    evidence: \"official-record\" | \"satellite-observation\" | \"derived-estimate\" | \"unknown\";\n  })[];\nlocale: \"en\" | \"fr\";\nleftId?: string;\nrightId?: string;\nview?: string;\nsort?: string;\nfallback?: ({\n    id: string;\n    name: {\n      en: any;\n      fr: any;\n    };\n    placeType: \"province\" | \"economic-region\" | \"watershed\" | \"forest-district\" | \"municipality\" | \"federal-riding\" | \"provincial-riding\" | \"reserve\" | \"treaty-area\";\n    detectedChangePercent: null | number;\n    detectedChangeHectares: null | number;\n    forestedHectares: number;\n    coverageGrade: \"enhanced-local-records\" | \"national-baseline-plus-local-context\" | \"national-baseline\" | \"extended-record-sparse-official-matching\" | \"not-applicable\";\n    measurementCoverage?: \"complete\" | \"partial-with-unknown\" | \"none-mapped\";\n    evidence: \"official-record\" | \"satellite-observation\" | \"derived-estimate\" | \"unknown\";\n  })[];",
+    "GovernancePage": "kind: \"glossary\" | \"corrections\" | \"decisions\" | \"engagement\" | \"privacy\" | \"terms\" | \"releases\";\nlocale: \"en\" | \"fr\";",
+    "LocaleAnchor": "locale: \"en\" | \"fr\";\nhref: string;",
+    "LocaleLink": "locale: \"en\" | \"fr\";",
+    "LocationResult": "locale: \"en\" | \"fr\";\nlocation: {\n  status: \"example\";\n  id: string;\n  summary: {\n    en: string;\n    fr: string;\n  };\n  latitude: number;\n  longitude: number;\n  accuracyMetres: number;\n  containingPlaceIds: string[];\n  events: ({\n      id: string;\n      year: number;\n      evidence: \"official-record\" | \"satellite-observation\" | \"derived-estimate\" | \"unknown\";\n      title: {\n        en: string;\n        fr: string;\n      };\n      confidence: {\n        level: \"unknown\" | \"high\" | \"medium\" | \"limited\";\n        ruleId: \"CONF-HIGH-001\" | \"CONF-MEDIUM-001\" | \"CONF-LIMITED-001\" | \"CONF-UNKNOWN-001\";\n        reason: {\n          en: string;\n          fr: string;\n        };\n      };\n      limitation: {\n        en: string;\n        fr: string;\n      };\n      provenance: {\n        dataset: string;\n        version: string;\n        retrievedDate: string;\n        licence: \"ogl-canada-2.0\" | \"ogl-bc-2.0\" | \"ogl-alberta\" | \"ogl-ontario\" | \"cc-by-4.0-quebec\" | \"terms-pending\";\n        recordUrl?: string;\n      };\n    })[];\n};\nplaces: ({\n    status: \"example\";\n    id: string;\n    type: \"province\" | \"economic-region\" | \"watershed\" | \"forest-district\" | \"municipality\" | \"federal-riding\" | \"provincial-riding\" | \"reserve\" | \"treaty-area\";\n    province: \"BC\" | \"AB\" | \"ON\" | \"QC\";\n    name: {\n      en: string;\n      fr: string;\n    };\n    aliases: {\n      en: string;\n      fr: string;\n    };\n    boundaryEdition: string;\n    boundaryVersion: string;\n    forestHectares: number;\n    coverage: ({\n        grade: \"enhanced-local-records\" | \"national-baseline-plus-local-context\" | \"national-baseline\" | \"extended-record-sparse-official-matching\" | \"not-applicable\";\n        share: number;\n      })[];\n    annual: ({\n        year: number;\n        hectares: number;\n        eventIds: string[];\n      })[];\n    events: ({\n        id: string;\n        year: number;\n        evidence: \"official-record\" | \"satellite-observation\" | \"derived-estimate\" | \"unknown\";\n        title: {\n          en: string;\n          fr: string;\n        };\n        confidence: {\n          level: \"unknown\" | \"high\" | \"medium\" | \"limited\";\n          ruleId: \"CONF-HIGH-001\" | \"CONF-MEDIUM-001\" | \"CONF-LIMITED-001\" | \"CONF-UNKNOWN-001\";\n          reason: {\n            en: string;\n            fr: string;\n          };\n        };\n        limitation: {\n          en: string;\n          fr: string;\n        };\n        provenance: {\n          dataset: string;\n          version: string;\n          retrievedDate: string;\n          licence: \"ogl-canada-2.0\" | \"ogl-bc-2.0\" | \"ogl-alberta\" | \"ogl-ontario\" | \"cc-by-4.0-quebec\" | \"terms-pending\";\n          recordUrl?: string;\n        };\n      })[];\n    stats: ({\n        kind: \"figure\";\n        value: number;\n        unit: \"year\" | \"ha\" | \"%\" | \"count\";\n        evidence: \"official-record\" | \"satellite-observation\" | \"derived-estimate\";\n        confidence: {\n          level: \"unknown\" | \"high\" | \"medium\" | \"limited\";\n          ruleId: \"CONF-HIGH-001\" | \"CONF-MEDIUM-001\" | \"CONF-LIMITED-001\" | \"CONF-UNKNOWN-001\";\n          reason: {\n            en: string;\n            fr: string;\n          };\n        };\n        provenance: {\n          dataset: string;\n          version: string;\n          retrievedDate: string;\n          licence: \"ogl-canada-2.0\" | \"ogl-bc-2.0\" | \"ogl-alberta\" | \"ogl-ontario\" | \"cc-by-4.0-quebec\" | \"terms-pending\";\n          recordUrl?: string;\n        };\n      } | {\n        kind: \"unknown\";\n        evidence: \"unknown\";\n        reason: {\n          en: string;\n          fr: string;\n        };\n        coverageGrade: \"enhanced-local-records\" | \"national-baseline-plus-local-context\" | \"national-baseline\" | \"extended-record-sparse-official-matching\" | \"not-applicable\";\n      })[];\n    sources: string[];\n    citation: {\n      timeRange: string;\n      dataVersion: string;\n      method: string;\n    };\n    safeguard?: {\n      en: string;\n      fr: string;\n    };\n  })[];",
+    "MeasurementCoverage": "place: {\n  coverageGrade: \"enhanced-local-records\" | \"national-baseline-plus-local-context\" | \"national-baseline\" | \"extended-record-sparse-official-matching\" | \"not-applicable\";\n  measurementCoverage?: \"complete\" | \"partial-with-unknown\" | \"none-mapped\";\n};\nlocale: \"en\" | \"fr\";",
+    "MethodologyPage": "locale: \"en\" | \"fr\";",
+    "OfficialPublishedHarvestComparison": "rows: ({\n    province: string;\n    fromYear: number;\n    toYear: number;\n    witnessTreeObservedForestLossHectares: number;\n    strictNfdExactTotalHectares: null;\n    referenceHectaresNominal: null | number;\n    referenceRoundingHalfWidthHectares: null | number;\n    referenceSourceFlags: null | {\n      preliminary: boolean;\n      revised: boolean;\n      agencyEstimated: boolean;\n    };\n    comparisonStatus: string;\n    nominalSignedDifferenceHectares: null | number;\n    withholdReason: null | string;\n  })[];\nlocale: \"en\" | \"fr\";\nprovince?: string;",
+    "PlaceFinder": "locale: \"en\" | \"fr\";\nquery: string;",
+    "PlacePage": "locale: \"en\" | \"fr\";\nplace: {\n  status: \"example\";\n  id: string;\n  type: \"province\" | \"economic-region\" | \"watershed\" | \"forest-district\" | \"municipality\" | \"federal-riding\" | \"provincial-riding\" | \"reserve\" | \"treaty-area\";\n  province: \"BC\" | \"AB\" | \"ON\" | \"QC\";\n  name: {\n    en: string;\n    fr: string;\n  };\n  aliases: {\n    en: string;\n    fr: string;\n  };\n  boundaryEdition: string;\n  boundaryVersion: string;\n  forestHectares: number;\n  coverage: ({\n      grade: \"enhanced-local-records\" | \"national-baseline-plus-local-context\" | \"national-baseline\" | \"extended-record-sparse-official-matching\" | \"not-applicable\";\n      share: number;\n    })[];\n  annual: ({\n      year: number;\n      hectares: number;\n      eventIds: string[];\n    })[];\n  events: ({\n      id: string;\n      year: number;\n      evidence: \"official-record\" | \"satellite-observation\" | \"derived-estimate\" | \"unknown\";\n      title: {\n        en: string;\n        fr: string;\n      };\n      confidence: {\n        level: \"unknown\" | \"high\" | \"medium\" | \"limited\";\n        ruleId: \"CONF-HIGH-001\" | \"CONF-MEDIUM-001\" | \"CONF-LIMITED-001\" | \"CONF-UNKNOWN-001\";\n        reason: {\n          en: string;\n          fr: string;\n        };\n      };\n      limitation: {\n        en: string;\n        fr: string;\n      };\n      provenance: {\n        dataset: string;\n        version: string;\n        retrievedDate: string;\n        licence: \"ogl-canada-2.0\" | \"ogl-bc-2.0\" | \"ogl-alberta\" | \"ogl-ontario\" | \"cc-by-4.0-quebec\" | \"terms-pending\";\n        recordUrl?: string;\n      };\n    })[];\n  stats: ({\n      kind: \"figure\";\n      value: number;\n      unit: \"year\" | \"ha\" | \"%\" | \"count\";\n      evidence: \"official-record\" | \"satellite-observation\" | \"derived-estimate\";\n      confidence: {\n        level: \"unknown\" | \"high\" | \"medium\" | \"limited\";\n        ruleId: \"CONF-HIGH-001\" | \"CONF-MEDIUM-001\" | \"CONF-LIMITED-001\" | \"CONF-UNKNOWN-001\";\n        reason: {\n          en: string;\n          fr: string;\n        };\n      };\n      provenance: {\n        dataset: string;\n        version: string;\n        retrievedDate: string;\n        licence: \"ogl-canada-2.0\" | \"ogl-bc-2.0\" | \"ogl-alberta\" | \"ogl-ontario\" | \"cc-by-4.0-quebec\" | \"terms-pending\";\n        recordUrl?: string;\n      };\n    } | {\n      kind: \"unknown\";\n      evidence: \"unknown\";\n      reason: {\n        en: string;\n        fr: string;\n      };\n      coverageGrade: \"enhanced-local-records\" | \"national-baseline-plus-local-context\" | \"national-baseline\" | \"extended-record-sparse-official-matching\" | \"not-applicable\";\n    })[];\n  sources: string[];\n  citation: {\n    timeRange: string;\n    dataVersion: string;\n    method: string;\n  };\n  safeguard?: {\n    en: string;\n    fr: string;\n  };\n};\nview: \"table\" | \"chart\";",
+    "ProvenanceBlock": "provenance: {\n  dataset: string;\n  version: string;\n  retrievedDate: string;\n  licence: \"ogl-canada-2.0\" | \"ogl-bc-2.0\" | \"ogl-alberta\" | \"ogl-ontario\" | \"cc-by-4.0-quebec\" | \"terms-pending\";\n  recordUrl?: string;\n};\nlocale: \"en\" | \"fr\";",
+    "ProvinceBar": "locale: \"en\" | \"fr\";\nselected?: null | \"bc\" | \"ab\" | \"on\" | \"qc\";\nonSelect?: (province: \"bc\" | \"ab\" | \"on\" | \"qc\") => void;\nplacement?: \"map\" | \"landing\";",
+    "RankedRidingsTable": "rows: ({\n    id: string;\n    name: {\n      en: any;\n      fr: any;\n    };\n    placeType: \"federal-riding\" | \"provincial-riding\";\n    detectedChangePercent: null | number;\n    detectedChangeHectares: null | number;\n    forestedHectares: number;\n    unmatchedSharePercent?: null | number;\n    coverageGrade: \"enhanced-local-records\" | \"national-baseline-plus-local-context\" | \"national-baseline\" | \"extended-record-sparse-official-matching\" | \"not-applicable\";\n    measurementCoverage: \"complete\" | \"partial-with-unknown\" | \"none-mapped\";\n    evidence: \"official-record\" | \"satellite-observation\" | \"derived-estimate\" | \"unknown\";\n    sufficientCoverage: boolean;\n  })[];\ncontext: {\n  timeRange: string;\n  boundaryEdition: string;\n  dataVersion: string;\n  denominatorDefinition: {\n    en: any;\n    fr: any;\n  };\n  evidence: \"official-record\" | \"satellite-observation\" | \"derived-estimate\" | \"unknown\";\n  method: {\n    en: any;\n    fr: any;\n  };\n};\nlocale: \"en\" | \"fr\";\nsort?: \"share-desc\" | \"share-asc\";\nleftId?: string;\nrightId?: string;\nview?: \"cards\" | \"table\";",
+    "ReaderLocalTime": "dateTime: string;\nlocale: \"en\" | \"fr\";",
+    "ReportedValue": "reported: {\n  kind: \"figure\";\n  value: number;\n  unit: \"year\" | \"ha\" | \"%\" | \"count\";\n  evidence: \"official-record\" | \"satellite-observation\" | \"derived-estimate\";\n  confidence: {\n    level: \"unknown\" | \"high\" | \"medium\" | \"limited\";\n    ruleId: \"CONF-HIGH-001\" | \"CONF-MEDIUM-001\" | \"CONF-LIMITED-001\" | \"CONF-UNKNOWN-001\";\n    reason: {\n      en: string;\n      fr: string;\n    };\n  };\n  provenance: {\n    dataset: string;\n    version: string;\n    retrievedDate: string;\n    licence: \"ogl-canada-2.0\" | \"ogl-bc-2.0\" | \"ogl-alberta\" | \"ogl-ontario\" | \"cc-by-4.0-quebec\" | \"terms-pending\";\n    recordUrl?: string;\n  };\n} | {\n  kind: \"unknown\";\n  evidence: \"unknown\";\n  reason: {\n    en: string;\n    fr: string;\n  };\n  coverageGrade: \"enhanced-local-records\" | \"national-baseline-plus-local-context\" | \"national-baseline\" | \"extended-record-sparse-official-matching\" | \"not-applicable\";\n};\ncoverageGrade: \"enhanced-local-records\" | \"national-baseline-plus-local-context\" | \"national-baseline\" | \"extended-record-sparse-official-matching\" | \"not-applicable\";\nlocale: \"en\" | \"fr\";",
+    "SearchPage": "locale: \"en\" | \"fr\";\nquery: string;\nscope?: \"places\" | \"districts\";\naddressLookup?: boolean;",
+    "ShapeDrawMap": "locale: \"en\" | \"fr\";\nkind: \"rectangle\" | \"polygon\";\ncorners: ({\n    latitude: number;\n    longitude: number;\n  })[];\nmaxCorners: number;\nonPolygon: (corners: ({\n      latitude: number;\n      longitude: number;\n    })[]) => void;\nonRectangle: (edges: {\n    north: number;\n    south: number;\n    west: number;\n    east: number;\n  }) => void;",
+    "ShapeMeasureClient": "locale: \"en\" | \"fr\";",
+    "SideBySideComparison": "places: ({\n    id: string;\n    name: {\n      en: any;\n      fr: any;\n    };\n    placeType: \"province\" | \"economic-region\" | \"watershed\" | \"forest-district\" | \"municipality\" | \"federal-riding\" | \"provincial-riding\" | \"reserve\" | \"treaty-area\";\n    detectedChangePercent: null | number;\n    detectedChangeHectares: null | number;\n    forestedHectares: number;\n    coverageGrade: \"enhanced-local-records\" | \"national-baseline-plus-local-context\" | \"national-baseline\" | \"extended-record-sparse-official-matching\" | \"not-applicable\";\n    measurementCoverage?: \"complete\" | \"partial-with-unknown\" | \"none-mapped\";\n    evidence: \"official-record\" | \"satellite-observation\" | \"derived-estimate\" | \"unknown\";\n  })[];\nlocale: \"en\" | \"fr\";\nview?: \"cards\" | \"table\";\nleftId?: string;\nrightId?: string;\nsort?: string;",
+    "SiteFooter": "locale: \"en\" | \"fr\";",
+    "SiteHeader": "locale: \"en\" | \"fr\";",
+    "SiteShell": "locale: \"en\" | \"fr\";\nchildren: React.ReactNode;",
+    "SourceCurrency": "locale: \"en\" | \"fr\";",
+    "ThemeToggle": "locale: \"en\" | \"fr\";",
+    "WildfireView": "locale: \"en\" | \"fr\";"
+  },
+  "readmeHeader": ".design-sync/conventions.md",
+  "overrides": {
+    "AccountStatusPage": {
+      "cardMode": "column",
+      "viewport": "1000x2000"
+    },
+    "ComponentGallery": {
+      "cardMode": "column",
+      "viewport": "1000x2000"
+    },
+    "DataPage": {
+      "cardMode": "column",
+      "viewport": "1000x2000"
+    },
+    "GovernancePage": {
+      "cardMode": "column",
+      "viewport": "1000x2000"
+    },
+    "MethodologyPage": {
+      "cardMode": "column",
+      "viewport": "1000x2000"
+    },
+    "OfficialPublishedHarvestComparison": {
+      "cardMode": "column",
+      "viewport": "1300x2000"
+    },
+    "ProvinceBar": {
+      "cardMode": "column",
+      "viewport": "1100x700"
+    },
+    "SiteFooter": {
+      "cardMode": "column",
+      "viewport": "1100x900"
+    },
+    "SiteHeader": {
+      "cardMode": "single",
+      "primaryStory": "English",
+      "viewport": "1100x560"
+    },
+    "SiteShell": {
+      "cardMode": "single",
+      "primaryStory": "RecordPage",
+      "viewport": "1100x1050"
+    },
+    "WildfireView": {
+      "cardMode": "column",
+      "viewport": "1000x1750"
+    },
+    "SearchPage": {
+      "cardMode": "column"
+    },
+    "PlacePage": {
+      "cardMode": "column",
+      "viewport": "1000x2600"
+    },
+    "LocationResult": {
+      "cardMode": "column",
+      "viewport": "1000x1800"
+    },
+    "SideBySideComparison": {
+      "cardMode": "column",
+      "viewport": "1150x700"
+    },
+    "FederalRidingPicker": {
+      "viewport": "1000x300"
+    },
+    "MeasurementCoverage": {
+      "viewport": "1000x190"
+    },
+    "ExploreYearControl": {
+      "viewport": "1000x260"
+    },
+    "ShapeMeasureClient": {
+      "cardMode": "column",
+      "viewport": "1000x1150"
+    },
+    "ExploreView": {
+      "cardMode": "column",
+      "viewport": "1600x2000"
+    },
+    "ExploreMapClient": {
+      "cardMode": "column",
+      "viewport": "1100x1400"
+    },
+    "ShapeDrawMap": {
+      "viewport": "900x530"
+    }
+  }
+}
