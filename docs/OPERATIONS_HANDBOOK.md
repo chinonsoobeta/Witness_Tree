@@ -50,8 +50,9 @@ GitHub Actions job with `contents: read` and `id-token: write`. It no longer
 writes to this repository. After a successful refresh it is designed to assume
 an AWS role through GitHub OIDC and write new wildfire snapshots to the raw
 archive with COMPLIANCE retention, then a status object to the delivery bucket.
-That role does not exist yet, and no refresh has ever succeeded, so the job has
-never written anything. Section 6.3 covers it. Do not repeat the older claim
+The owner approved that role's exact policy and it was created on 2026-09-13,
+but no scheduled refresh has succeeded since, so the job has never written
+anything. Section 6.3 covers it. Do not repeat the older claim
 that this project has no scheduler and no CI job with write credentials; that
 claim is wrong and this job is the counterexample.
 
@@ -100,7 +101,7 @@ that same person. **There is no second responder.** See
 | `nrcan-forest-canopy-cover-2022` | Promoted, version-pinned in the raw archive | Archive operator |
 | Every other source in [`data/source-ledger.json`](../data/source-ledger.json) | Illustrative `example.local` entries with placeholder hashes | Release approver |
 | All derived bytes under `Witness_Tree-data` | Single copy on one drive | Data custodian |
-| Wildfire feed data | No cleared feed is configured; the site renders `ILLUSTRATIVE_WILDFIRE_FEED` from `lib/wildfire/fixtures.ts` | Site owner |
+| Wildfire feed data | The scheduled refresh fetches the four owner-admitted feeds; the site still renders `ILLUSTRATIVE_WILDFIRE_FEED` from `lib/wildfire/fixtures.ts` | Site owner |
 | Account and alert data | None exists. The account service is inactive by construction (section 6.5) | Site owner |
 
 The three promoted payloads are the only real bytes in cloud custody. Their
@@ -459,11 +460,24 @@ them.
   GitHub creates scheduled runs on a best-effort basis and dropped half of them
   over the same week. Minute 17 is a mitigation for that, not a guarantee, and
   only observation over a real window can show the cadence held.
-- `scripts/wildfire/refresh.mjs` currently **always refuses**:
-  `configuredSources()` throws `No cleared live-wildfire feed is configured;
-  refusing remote refresh.` unless `WILDFIRE_FIXTURE` is set. The
-  `WILDFIRE_SOURCE_URLS` variable the workflow passes is not read by that
-  function. A URL alone is not a cleared feed.
+- `scripts/wildfire/refresh.mjs` fetches only the four owner-admitted feeds
+  named in `scripts/wildfire/feed-contract.mjs`: `cwfis-current`,
+  `bc-wildfire`, `ab-wildfire` and `on-fire-disturbance`. Endpoints live in
+  that file and nowhere else. If the `WILDFIRE_SOURCE_URLS` variable is set
+  to anything, the refresh stops before any request, because a URL alone is
+  not a cleared feed. SOPFEU is not in the contract.
+  - Each feed is rejected, alone, when it is empty, capped, partial, changes
+    while being paged, drifts from its admitted field set, returns a missing
+    or unexpected geometry type, or places a record outside Canada. ArcGIS
+    feeds are paged in `OBJECTID` order and counted before and after. CWFIS
+    is read as the records valid at the refresh instant, and every matched
+    record must come back in EPSG:3978.
+  - A rejected feed keeps serving its last good snapshot and shows as
+    `retrying`, then `degraded`, in the status object. A round in which every
+    feed is rejected publishes nothing.
+  - Raw snapshots keep every record the agency returned. The BC `V10755`
+    quarantine and provincial precedence over CWFIS are release and display
+    rules, not capture rules.
 - The workflow retries once after 900 seconds and then exits 1.
 - A successful refresh is archived, not committed. The job first requires the
   `WILDFIRE_ARCHIVE_ROLE_ARN` repository variable and fails if it is empty. It
@@ -483,8 +497,13 @@ them.
     That record is the owner's standing approval for exactly `cwfis-current`,
     `bc-wildfire`, `ab-wildfire` and `on-fire-disturbance`. A snapshot of any
     other source, SOPFEU included, stops the upload before any write.
-  - No such role has been created, so an archive failure is S3 once one exists
-    and a refresh succeeds. A payload that reads back without its lock is S1.
+  - The role is `WitnessTreeWildfireScheduledArchiveWriter`. Its live
+    readback and policy simulation are in
+    [`data/current-wildfire-scheduled-archive-iam-applied-readback-2026-09-13.json`](../data/current-wildfire-scheduled-archive-iam-applied-readback-2026-09-13.json).
+    It trusts only this workflow on `main`, cannot delete, and is denied any
+    payload write without If-None-Match or a COMPLIANCE lock of about two
+    years. An archive failure after a successful refresh is S3. A payload
+    that reads back without its lock is S1.
 
 The 100 most recent scheduled runs were inspected on 2026-08-31 and are
 recorded in
@@ -497,10 +516,11 @@ not evidence of a refresh when the gate skipped the refresh step. The observed
 attempted-refresh failures include a direct push rejected by protected `main`,
 so the workflow conclusion alone is not a feed-health signal.
 
-An attempted refresh that fails while no cleared feed is configured is S4, not
-an incident. It becomes S3 the day a cleared feed is configured and it still
-fails, and it becomes S2 if it ever *succeeds* while no feed has actually been
-cleared, because that would mean a source is being fetched without rights.
+One feed rejected while the others publish is S4 until its last good snapshot
+turns stale after 24 hours, and S3 from then on. A refresh in which every feed
+is rejected, twice in a row, is S3. A request to any endpoint outside the
+contract is S2, because that would mean a source is being fetched without
+rights.
 
 `scripts/wildfire/snapshot-store.mjs` defines the state machine if a refresh
 ever does run: immutable per-source snapshots written with `wx` so a snapshot
@@ -515,8 +535,7 @@ would not currently change the site.** `app/en/wildfire/page.tsx` and
 `app/fr/incendies/page.tsx` render `ILLUSTRATIVE_WILDFIRE_FEED`, compiled in
 from `lib/wildfire/fixtures.ts`. The refresh writes to `public/wildfire` on the
 runner, and the status object it would publish is not read by any route yet.
-Wiring them together is a code change gated on cleared feeds, not an
-operational step.
+Wiring them together is a code change, not an operational step.
 
 **B. An archive promotion or retention run.** This is not a refresh in any
 routine sense. It is a deliberate, owner-invoked, MFA-bearing mutation of the
