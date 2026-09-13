@@ -289,7 +289,7 @@
   "dependencies": {
     "@bcgov/bc-sans": "^2.1.0",
     "drizzle-orm": "0.45.2",
-    "maplibre-gl": "^6.3.0",
+    "maplibre-gl": "^6.9.0",
     "pmtiles": "^4.5.0",
     "react": "19.2.8",
     "react-dom": "19.2.8"
