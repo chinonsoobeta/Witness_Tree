@@ -93,12 +93,13 @@ export function BcHarvestVolumeIndicator({ rows, locale }: Readonly<{ rows: read
   const text = COPY[locale];
   const unknown = <span className="unknown-value">{text.unknown}</span>;
   const ordered = [...rows].sort((left, right) => right.year - left.year);
-  return <main id="main" className="page-wrap">
+  // The page route owns <main id="main">, so the accessibility contract can see it.
+  return <>
     <header className="masthead prose-measure"><p className="eyebrow">{text.eyebrow}</p><h1>{text.title}</h1><p className="dek">{text.lead}</p></header>
     <section className="content-section prose-measure"><h2>{text.scopeTitle}</h2><p>{text.scope}</p><p>{text.volume}</p><p>{text.aac}</p><p><strong>{text.prohibited}</strong></p><p>{text.stumpage}</p><p>{text.compare}</p><p>{text.unknownNote}</p></section>
     <section className="content-section">
       <div className="table-scroll" tabIndex={0} role="region" aria-label={text.caption}><table><caption>{text.caption}</caption><thead><tr><th scope="col">{text.year}</th><th scope="col">{text.region}</th><th scope="col">{text.total}</th><th scope="col">{text.regulated}</th><th scope="col">{text.unregulated}</th><th scope="col">{text.allowable}</th><th scope="col">{text.share}</th><th scope="col">{text.coverage}</th></tr></thead><tbody>{ordered.map((row) => <tr key={row.year}><th scope="row">{row.year}</th><td>{row.region}</td><td>{volume(row.totalHarvestMillionCubicMetres, locale) ?? unknown}</td><td>{volume(row.harvestRegulatedByAacMillionCubicMetres, locale) ?? unknown}</td><td>{volume(row.harvestNotRegulatedByAacMillionCubicMetres, locale) ?? unknown}</td><td>{volume(row.allowableAnnualCutMillionCubicMetres, locale) ?? unknown}</td><td>{share(row, locale) ?? unknown}</td><td>{row.coverageGrade === "complete" ? text.complete : text.aacUnknown}<br /><small>{text.sourceName}</small></td></tr>)}</tbody></table></div>
     </section>
     <section className="content-section prose-measure"><h2>{text.source}</h2><p>{text.attribution}</p><p>{text.withheld}</p><p><a href="https://catalogue.data.gov.bc.ca/dataset/indicator-summary-data-trends-in-timber-harvesting-in-bc">{text.catalogue}</a> · <a href="https://www2.gov.bc.ca/gov/content?id=A519A56BC2BF44E4A008B33FCF527F61">{text.licence}</a></p></section>
-  </main>;
+  </>;
 }

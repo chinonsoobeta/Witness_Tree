@@ -7,5 +7,5 @@ import { localizedAlternates } from "@/lib/site-metadata";
 export const metadata: Metadata = { title: "BC harvest volume and allowable annual cut", alternates: localizedAlternates("en", { en: "/en/data/bc-harvest-volume", fr: "/fr/donnees/volume-recolte-bc" }) };
 
 export default async function EnglishBcHarvestVolumePage() {
-  return <SiteShell locale="en"><BcHarvestVolumeIndicator rows={indicator.rows} locale="en" /></SiteShell>;
+  return <SiteShell locale="en"><main id="main" className="page-wrap"><BcHarvestVolumeIndicator rows={indicator.rows} locale="en" /></main></SiteShell>;
 }
