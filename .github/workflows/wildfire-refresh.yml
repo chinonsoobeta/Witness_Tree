@@ -78,7 +78,7 @@ jobs:
           WILDFIRE_DATA_DIR: public/wildfire
           # Required, with no default in the uploader, and checked against the recorded owner approval.
           WILDFIRE_ARCHIVE_RETENTION_MODE: COMPLIANCE
-          WILDFIRE_ARCHIVE_RETAIN_UNTIL: '2033-08-12T00:00:00Z'
+          WILDFIRE_ARCHIVE_RETENTION_PERIOD: P2Y
           WILDFIRE_DELIVERY_BUCKET: witness-tree-public-delivery-ca-central-1
       - if: steps.gate.outputs.run == 'true' && steps.refresh.outcome == 'failure' && steps.retry.outcome == 'failure'
         run: exit 1

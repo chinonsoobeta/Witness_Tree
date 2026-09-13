@@ -17,25 +17,39 @@ const required = (env, name) => {
   return value;
 };
 
+/**
+ * The lock date for a payload written at `now`: whole calendar years later, to the second. A 29 February start
+ * rolls forward to 1 March, so a lock is never shorter than the approved period.
+ */
+export function retainUntilFor(period, now) {
+  const years = Number(/^P([1-9]\d*)Y$/.exec(period)?.[1]);
+  if (!years) throw new Error(`Retention period ${period} is not a whole number of years.`);
+  const until = new Date(now.getTime());
+  until.setUTCFullYear(until.getUTCFullYear() + years);
+  return until.toISOString().replace(/\.\d{3}Z$/, 'Z');
+}
+
 const awsJson = async (run, args) => JSON.parse((await run(['s3api', ...args, '--output', 'json'])) || '{}');
 
 /**
  * Archive what one successful refresh published, then publish its status. Retention is never defaulted: the mode and
- * date must be passed explicitly and must equal the recorded owner approval, and every payload is read back before
+ * period must be passed explicitly and must equal the recorded owner approval, and every payload is read back before
  * the next write so a lock that did not take stops the run. Each put uses If-None-Match so nothing is overwritten.
  */
-export async function uploadArchive({ root, env = process.env, run = defaultRun, approval, log = console.log }) {
+export async function uploadArchive({ root, env = process.env, run = defaultRun, approval, now = () => new Date(), log = console.log }) {
   const mode = required(env, 'WILDFIRE_ARCHIVE_RETENTION_MODE');
-  const retainUntil = required(env, 'WILDFIRE_ARCHIVE_RETAIN_UNTIL');
+  const period = required(env, 'WILDFIRE_ARCHIVE_RETENTION_PERIOD');
   const deliveryBucket = required(env, 'WILDFIRE_DELIVERY_BUCKET');
-  if (mode !== approval.retention.mode || retainUntil !== approval.retention.retainUntil) {
-    throw new Error(`Retention ${mode} until ${retainUntil} does not match the recorded approval.`);
+  if (mode !== approval.retention.mode || period !== approval.retention.period) {
+    throw new Error(`Retention ${mode} for ${period} does not match the recorded approval.`);
   }
   const current = JSON.parse(await readFile(path.join(root, 'current.json'), 'utf8'));
   const plan = await buildArchivePlan({ root, current, approval });
   const scratch = await mkdtemp(path.join(os.tmpdir(), 'wildfire-archive-'));
   const receipts = [];
   for (const write of plan.writes) {
+    // Taken per payload, immediately before its write, so no lock ends earlier than the period after the object exists.
+    const retainUntil = retainUntilFor(period, now());
     const put = await awsJson(run, [
       'put-object', '--bucket', plan.bucket, '--key', write.payloadKey, '--body', path.join(root, write.file),
       '--if-none-match', '*', '--content-type', 'application/json', '--checksum-algorithm', 'SHA256',
@@ -53,14 +67,14 @@ export async function uploadArchive({ root, env = process.env, run = defaultRun,
       'put-object', '--bucket', plan.bucket, '--key', write.sidecarKey, '--body', sidecarFile,
       '--if-none-match', '*', '--content-type', 'application/json', '--checksum-algorithm', 'SHA256',
     ]);
-    receipts.push({ feed: write.feed, key: write.payloadKey, versionId: put.VersionId, sha256: write.sha256, sidecarVersionId: sidecar.VersionId });
+    receipts.push({ feed: write.feed, key: write.payloadKey, versionId: put.VersionId, sha256: write.sha256, retainUntil, sidecarVersionId: sidecar.VersionId });
   }
   // Published last, so the status the site reads never names a snapshot that is not already locked in the archive.
   await awsJson(run, [
     'put-object', '--bucket', deliveryBucket, '--key', STATUS_KEY, '--body', path.join(root, 'current-status.json'),
     '--content-type', 'application/json', '--cache-control', STATUS_CACHE_CONTROL,
   ]);
-  const summary = { refreshedAt: current.refreshedAt, retention: { mode, retainUntil }, archived: receipts, status: `s3://${deliveryBucket}/${STATUS_KEY}` };
+  const summary = { refreshedAt: current.refreshedAt, retention: { mode, period }, archived: receipts, status: `s3://${deliveryBucket}/${STATUS_KEY}` };
   log(JSON.stringify(summary, null, 2));
   return summary;
 }

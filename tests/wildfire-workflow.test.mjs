@@ -98,7 +98,7 @@ test('workflow archives a successful refresh through OIDC and never writes back 
   assert.match(workflow, /role-to-assume: \$\{\{ vars\.WILDFIRE_ARCHIVE_ROLE_ARN \}\}/);
   assert.match(workflow, /aws-region: ca-central-1/);
   assert.match(workflow, /steps\.archive-role\.outcome == 'success'\n\s+run: node scripts\/wildfire\/archive-upload\.mjs/);
-  assert.match(workflow, /WILDFIRE_ARCHIVE_RETENTION_MODE: COMPLIANCE\n\s+WILDFIRE_ARCHIVE_RETAIN_UNTIL: '2033-08-12T00:00:00Z'/);
+  assert.match(workflow, /WILDFIRE_ARCHIVE_RETENTION_MODE: COMPLIANCE\n\s+WILDFIRE_ARCHIVE_RETENTION_PERIOD: P2Y\n/);
   assert.match(workflow, /if: steps\.gate\.outputs\.run == 'true' && steps\.refresh\.outcome == 'failure' && steps\.retry\.outcome == 'failure'\n\s+run: exit 1/);
 });
 

@@ -471,13 +471,14 @@ them.
   `scripts/wildfire/archive-upload.mjs`.
   - Every new snapshot goes to
     `raw/<feed>/undeclared/<fetchedAt>/<sha256>/payload/` in
-    `witness-tree-raw-archive-ca-central-1`, with COMPLIANCE retention until
-    2033-08-12 and an unlocked `manifest.json` beside it.
+    `witness-tree-raw-archive-ca-central-1`, locked in COMPLIANCE mode for two
+    years from its own upload time, with an unlocked `manifest.json` beside
+    it.
   - Each put carries `If-None-Match: *`, and each payload is read back by
     version before the next write.
   - `wildfire/current-status.json` goes to the delivery bucket last, with a
     60 second cache.
-  - The retention mode and date are required and must equal
+  - The retention mode and period are required and must equal
     [`data/current-wildfire-scheduled-archive-owner-approval-2026-09-13.json`](../data/current-wildfire-scheduled-archive-owner-approval-2026-09-13.json).
     That record is the owner's standing approval for exactly `cwfis-current`,
     `bc-wildfire`, `ab-wildfire` and `on-fire-disturbance`. A snapshot of any

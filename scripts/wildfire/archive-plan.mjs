@@ -33,7 +33,7 @@ export function sidecarFor({ feed, fetchedAt, payloadKey, byteLength, digest, fi
  * so a partial archive can never look like a complete run.
  */
 export async function buildArchivePlan({ root, current, approval }) {
-  if (approval?.approved !== true || approval.retention?.mode !== 'COMPLIANCE' || !approval.retention?.retainUntil) {
+  if (approval?.approved !== true || approval.retention?.mode !== 'COMPLIANCE' || !/^P[1-9]\d*Y$/.test(approval.retention?.period ?? '')) {
     throw new Error('Scheduled archive writes need the recorded standing owner approval.');
   }
   if (JSON.stringify([...approval.feeds].sort()) !== JSON.stringify([...ARCHIVE_FEEDS].sort())) {
@@ -64,7 +64,7 @@ export async function buildArchivePlan({ root, current, approval }) {
   return {
     bucket: approval.bucket,
     region: approval.region,
-    retention: { mode: approval.retention.mode, retainUntil: approval.retention.retainUntil },
+    retention: { mode: approval.retention.mode, period: approval.retention.period },
     writes,
   };
 }

@@ -19,11 +19,11 @@
     },
     {
      "path": "tests/wildfire-workflow.test.mjs",
-     "sha256": "136b2ff3577b24d9f406576401ec5102c781a72c8cb3f73442bf5d0d97140517"
+     "sha256": "b5f6f18d1117f0ccd26df7471e35eb9b2d74386025fb984a157b923a3a6c50e6"
     },
     {
      "path": ".github/workflows/wildfire-refresh.yml",
-     "sha256": "7907f9987db2a5bafd8d24c18507bdaae152a7e721a675f54547743ee8719217"
+     "sha256": "768107c4125ff5bac1d9b5ff947a6c97e887e3b3b42e00a0a810308e0729d791"
     },
     {
      "path": "data/wildfire-refresh-run-history-2026-08-31.json",
@@ -55,7 +55,7 @@
    "evidence": [
     {
      "path": "tests/wildfire-workflow.test.mjs",
-     "sha256": "136b2ff3577b24d9f406576401ec5102c781a72c8cb3f73442bf5d0d97140517"
+     "sha256": "b5f6f18d1117f0ccd26df7471e35eb9b2d74386025fb984a157b923a3a6c50e6"
     },
     {
      "path": "tests/wildfire-routes.test.tsx",
@@ -75,7 +75,7 @@
     },
     {
      "path": "tests/wildfire-workflow.test.mjs",
-     "sha256": "136b2ff3577b24d9f406576401ec5102c781a72c8cb3f73442bf5d0d97140517"
+     "sha256": "b5f6f18d1117f0ccd26df7471e35eb9b2d74386025fb984a157b923a3a6c50e6"
     }
    ]
   }
