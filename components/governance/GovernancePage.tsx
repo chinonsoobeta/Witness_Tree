@@ -46,7 +46,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Forest",
           paragraphs: [
-            "Land of at least 1 hectare, with at least 10% crown closure, carrying trees capable of reaching 5 metres at maturity. Percentages use forested hectares inside the stated boundary edition, not total land area.",
+            "Land of at least 1 hectare and at least 20 metres wide, with at least 10% crown closure, carrying trees capable of reaching 5 metres at maturity. Percentages use forested hectares inside the stated boundary edition, not total land area.",
           ],
         },
         {
@@ -120,7 +120,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Forêt",
           paragraphs: [
-            "Terre d’au moins 1 hectare, présentant un couvert de cimes d’au moins 10 %, avec des arbres capables d’atteindre 5 mètres à maturité. Les pourcentages utilisent les hectares forestiers dans l’édition de limite indiquée, et non la superficie terrestre totale.",
+            "Terre d’au moins 1 hectare et d’au moins 20 mètres de largeur, présentant un couvert de cimes d’au moins 10 %, avec des arbres capables d’atteindre 5 mètres à maturité. Les pourcentages utilisent les hectares forestiers dans l’édition de limite indiquée, et non la superficie terrestre totale.",
           ],
         },
         {

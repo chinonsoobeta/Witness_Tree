@@ -5,9 +5,14 @@ type OfficialPublishedHarvestRow = Readonly<{
   province: string;
   fromYear: number;
   toYear: number;
-  witnessTreeObservedForestLossHectares: number;
+  witnessTreeObservedForestLossHectares: number | null;
+  witnessTreeCoverageGrade: string;
+  witnessTreeUnknownRequiredInputHectares: number | null;
   strictNfdExactTotalHectares: null;
   referenceHectaresNominal: number | null;
+  referenceHectaresExact?: string | null;
+  referenceSourceId: string;
+  referenceSourceUrl?: string | null;
   referenceRoundingHalfWidthHectares: number | null;
   referenceSourceFlags: SourceFlags | null;
   comparisonStatus: string;
@@ -25,6 +30,19 @@ const COPY = {
     rounding: "The 104 available reference values were published as whole square kilometres. Their hectare values are nominal conversions with a ±50 ha rounding range, not exact NFD totals.",
     withheld: "Fourteen later reference values are not published here because their repository states personal use only and all rights reserved. They remain unknown, never zero.",
     gate: "This harvest-only track does not complete the formal Phase 2 independent-comparison gate.",
+    entitlement: "Each row compares two independent instruments for the same labelled annual interval. Neither corrects the other, and neither series may be summed across intervals. The province aggregate remains its fixed window and ignores the year control.",
+    nfdScope: "The added National Forestry Database (NFD) Table 5.2 rows retain the publisher’s year labels, reported hectare precision and source flags. A year-label join does not establish that reporting periods are identical. No publisher edition is declared. Source totals with unknown components and comparisons with incomplete imagery remain unknown.",
+    nfdAttribution: "Contains information licensed under the Open Government Licence – Canada 2.0. Source: National Forestry Database, Canadian Council of Forest Ministers, Table 5.2. No publisher endorsement is implied.",
+    nfdValue: "NFD reported hectares; source precision",
+    incomplete: "Incomplete input; difference unknown",
+    unavailable: "Unknown",
+    coverage: "Imagery coverage",
+    complete: "Complete",
+    partial: "Partial",
+    unknownArea: "Required-input area unknown (ha)",
+    rowSource: "Reference source",
+    statcan: "Statistics Canada, Table 2.10",
+    nfd: "NFD, Table 5.2; edition undeclared",
     all: "All provinces",
     province: "Province",
     interval: "Annual interval",
@@ -52,6 +70,19 @@ const COPY = {
     rounding: "Les 104 valeurs de référence disponibles ont été publiées en kilomètres carrés entiers. Les valeurs en hectares sont des conversions nominales assorties d’une plage d’arrondissement de ±50 ha, et non des totaux exacts de la BDNF.",
     withheld: "Quatorze valeurs de référence plus récentes ne sont pas publiées ici, car leur dépôt indique un usage personnel seulement et tous droits réservés. Elles demeurent inconnues, jamais zéro.",
     gate: "Ce volet sur la récolte ne satisfait pas à lui seul le critère formel de comparaison indépendante de la phase 2.",
+    entitlement: "Chaque ligne compare deux instruments indépendants pour le même intervalle annuel libellé. Aucun ne corrige l’autre, et aucune série ne peut être additionnée entre les intervalles. L’agrégat provincial conserve sa fenêtre fixe et ne tient pas compte du sélecteur d’année.",
+    nfdScope: "Les lignes ajoutées du tableau 5.2 de la Base de données nationale sur les forêts (BDNF) conservent les années, la précision en hectares et les indicateurs de la source. Une jointure par année ne prouve pas que les périodes de déclaration sont identiques. Aucune édition n’est déclarée par l’éditeur. Les totaux comportant des éléments inconnus et les comparaisons avec une imagerie incomplète demeurent inconnus.",
+    nfdAttribution: "Contient de l’information visée par la Licence du gouvernement ouvert – Canada 2.0. Source : Base de données nationale sur les forêts, Conseil canadien des ministres des forêts, tableau 5.2. Aucune approbation par l’éditeur n’est sous-entendue.",
+    nfdValue: "Hectares déclarés par la BDNF; précision de la source",
+    incomplete: "Données incomplètes; écart inconnu",
+    unavailable: "Inconnu",
+    coverage: "Couverture de l’imagerie",
+    complete: "Complète",
+    partial: "Partielle",
+    unknownArea: "Superficie inconnue des données requises (ha)",
+    rowSource: "Source de référence",
+    statcan: "Statistique Canada, tableau 2.10",
+    nfd: "BDNF, tableau 5.2; édition non déclarée",
     all: "Toutes les provinces",
     province: "Province",
     interval: "Intervalle annuel",
@@ -90,17 +121,23 @@ export function OfficialPublishedHarvestComparison({ rows, locale, province }: R
   const text = COPY[locale];
   const selectedProvince = PROVINCES.includes(province as typeof PROVINCES[number]) ? province : null;
   const visible = selectedProvince ? rows.filter((row) => row.province === selectedProvince) : rows;
+  const hasNfd = visible.some((row) => row.referenceSourceId === "nfd-5.2-undeclared");
   const base = locale === "en" ? "/en/data/official-harvest-comparison" : "/fr/donnees/comparaison-recolte-officielle";
   return <main id="main" className="page-wrap">
     <header className="masthead prose-measure"><p className="eyebrow">{text.eyebrow}</p><h1>{text.title}</h1><p className="dek">{text.lead}</p></header>
-    <section className="content-section prose-measure"><h2>{text.scopeTitle}</h2><p>{text.scope}</p><p>{text.rounding}</p><p>{text.withheld}</p><p><strong>{text.gate}</strong></p></section>
+    <section className="content-section prose-measure"><h2>{text.scopeTitle}</h2><p>{text.scope}</p><p>{text.entitlement}</p><p>{text.rounding}</p><p>{text.withheld}</p>{hasNfd && <p>{text.nfdScope}</p>}<p><strong>{text.gate}</strong></p></section>
     <section className="content-section">
       <nav aria-label={text.province} className="comparison-filters"><a href={base} aria-current={selectedProvince === null ? "page" : undefined}>{text.all}</a>{PROVINCES.map((item) => <a key={item} href={`${base}?province=${item}`} aria-current={selectedProvince === item ? "page" : undefined}>{item}</a>)}</nav>
-      <div className="table-scroll" tabIndex={0} role="region" aria-label={text.caption}><table><caption>{text.caption}{selectedProvince ? `: ${selectedProvince}` : ""}</caption><thead><tr><th scope="col">{text.province}</th><th scope="col">{text.interval}</th><th scope="col">{text.witness}</th><th scope="col">{text.reference}</th><th scope="col">{text.difference}</th><th scope="col">{text.status}</th></tr></thead><tbody>{visible.map((row) => {
+      <div className="table-scroll" tabIndex={0} role="region" aria-label={text.caption}><table><caption>{text.caption}{selectedProvince ? `: ${selectedProvince}` : ""}</caption><thead><tr><th scope="col">{text.province}</th><th scope="col">{text.interval}</th><th scope="col">{text.witness}</th><th scope="col">{text.reference}</th><th scope="col">{text.difference}</th><th scope="col">{text.status}</th><th scope="col">{text.coverage}</th><th scope="col">{text.rowSource}</th></tr></thead><tbody>{visible.map((row) => {
         const computed = row.comparisonStatus === "computed-rounded-reference";
-        return <tr key={`${row.province}:${row.toYear}`}><th scope="row">{row.province}</th><td>{row.fromYear}–{row.toYear}</td><td>{number(row.witnessTreeObservedForestLossHectares, locale)}</td><td>{computed ? number(row.referenceHectaresNominal, locale, 0) : <span className="unknown-value">{text.notPublished}</span>}</td><td>{computed ? number(row.nominalSignedDifferenceHectares, locale) : <span className="unknown-value">{text.notPublished}</span>}</td><td>{computed ? <>{text.rounded}<br /><small>{flags(row.referenceSourceFlags, locale)}</small></> : <><strong>{text.notPublished}</strong><br /><small>{text.restrictedDetail}</small></>}</td></tr>;
+        const nfd = row.referenceSourceId === "nfd-5.2-undeclared";
+        const reference = nfd && row.referenceHectaresExact != null
+          ? new Intl.NumberFormat(locale === "fr" ? "fr-CA" : "en-CA", { maximumFractionDigits: 20 }).format(Number(row.referenceHectaresExact))
+          : computed ? number(row.referenceHectaresNominal, locale, 0) : null;
+        const sourceName = nfd ? text.nfd : computed ? text.statcan : text.notPublished;
+        return <tr key={`${row.province}:${row.toYear}`}><th scope="row">{row.province}</th><td>{row.fromYear}–{row.toYear}</td><td>{number(row.witnessTreeObservedForestLossHectares, locale) ?? <span className="unknown-value">{text.unavailable}</span>}</td><td>{reference ?? <span className="unknown-value">{nfd ? text.unavailable : text.notPublished}</span>}</td><td>{number(row.nominalSignedDifferenceHectares, locale) ?? <span className="unknown-value">{nfd ? text.unavailable : text.notPublished}</span>}</td><td>{computed || row.comparisonStatus === "computed-nfd-reference" ? <>{nfd ? text.nfdValue : text.rounded}<br /><small>{flags(row.referenceSourceFlags, locale)}</small></> : nfd ? text.incomplete : <><strong>{text.notPublished}</strong><br /><small>{text.restrictedDetail}</small></>}</td><td>{row.witnessTreeCoverageGrade === "complete" ? text.complete : row.witnessTreeCoverageGrade === "partial-with-unknown" ? text.partial : text.unavailable}<br /><small>{text.unknownArea}: {number(row.witnessTreeUnknownRequiredInputHectares, locale) ?? text.unavailable}</small></td><td>{row.referenceSourceUrl ? <a href={row.referenceSourceUrl}>{sourceName}</a> : sourceName}</td></tr>;
       })}</tbody></table></div>
     </section>
-    <section className="content-section prose-measure"><h2>{text.source}</h2><p>{text.attribution}</p><p><a href={locale === "en" ? "https://www150.statcan.gc.ca/n1/pub/16-201-x/2018001/sec-2/tbl/tbl-2.10-eng.htm" : "https://www150.statcan.gc.ca/n1/pub/16-201-x/2018001/sec-2/tbl/tbl-2.10-fra.htm"}>{locale === "en" ? "Open Statistics Canada Table 2.10" : "Ouvrir le tableau 2.10 de Statistique Canada"}</a></p></section>
+    <section className="content-section prose-measure"><h2>{text.source}</h2><p>{text.attribution}</p>{hasNfd && <p>{text.nfdAttribution}</p>}<p><a href={locale === "en" ? "https://www150.statcan.gc.ca/n1/pub/16-201-x/2018001/sec-2/tbl/tbl-2.10-eng.htm" : "https://www150.statcan.gc.ca/n1/pub/16-201-x/2018001/sec-2/tbl/tbl-2.10-fra.htm"}>{locale === "en" ? "Open Statistics Canada Table 2.10" : "Ouvrir le tableau 2.10 de Statistique Canada"}</a></p></section>
   </main>;
 }

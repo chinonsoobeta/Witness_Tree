@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import { constants } from "node:fs";
 import { lstat, open, readdir, readFile, readlink, realpath, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { availableParallelism } from "node:os";
 import { fileURLToPath } from "node:url";
 import { resolveDataRoot, SSD_DATA_ROOT, INTERNAL_DATA_ROOT } from "./data-root.mjs";
 
@@ -25,6 +26,18 @@ export function compareInventory(baseline, entries) {
   });
 }
 
+// Wait for every worker before returning, including after a failed read. This
+// prevents background reads from continuing after an incomplete result is issued.
+async function forEachConcurrent(items, operation) {
+  let next = 0;
+  const workers = Array.from({ length: Math.min(availableParallelism(), items.length) }, async () => {
+    while (next < items.length) await operation(items[next++]);
+  });
+  const results = await Promise.allSettled(workers);
+  const failed = results.find((result) => result.status === "rejected");
+  if (failed) throw failed.reason;
+}
+
 export async function inventoryDataRoot({ root = resolveDataRoot(), baseline, progress = () => {} }) {
   const startedAt = new Date().toISOString();
   const entries = [];
@@ -38,45 +51,60 @@ export async function inventoryDataRoot({ root = resolveDataRoot(), baseline, pr
   let bytes = 0;
   let files = 0;
   let lastProgress = Date.now();
-  async function walk(relative) {
+  const observed = [];
+  const pendingFiles = [];
+  async function discover(relative) {
     const absolute = path.join(resolvedRoot, relative);
     const before = await lstat(absolute);
+    observed.push({ absolute, before });
+    if (Date.now() - lastProgress >= 30_000) {
+      progress({ phase: "discovering", filesDiscovered: pendingFiles.length, files, bytesRead: bytes });
+      lastProgress = Date.now();
+    }
     if (before.isSymbolicLink()) {
       const target = await readlink(absolute);
       entries.push({ path: relative, type: "symlink", target, sha256: sha256(target) });
     } else if (before.isDirectory()) {
       if (relative) entries.push({ path: relative, type: "directory" });
-      for (const name of (await readdir(absolute)).sort()) await walk(path.join(relative, name));
+      for (const name of (await readdir(absolute)).sort()) await discover(path.join(relative, name));
     } else if (before.isFile()) {
-      // No payload is copied or opened with write access. O_NOFOLLOW prevents
-      // a file replaced by a symlink from redirecting a read during this walk.
-      const handle = await open(absolute, constants.O_RDONLY | constants.O_NOFOLLOW);
-      let digest;
-      let readBytes = 0;
-      try {
-        assert.ok(stable(before, await handle.stat()), "File changed before reading");
-        const hash = createHash("sha256");
-        for await (const chunk of handle.createReadStream({ autoClose: false, highWaterMark: 1024 * 1024 })) {
-          hash.update(chunk);
-          readBytes += chunk.length;
-          if (Date.now() - lastProgress >= 30_000) {
-            progress({ files, bytesRead: bytes + readBytes });
-            lastProgress = Date.now();
-          }
-        }
-        assert.ok(stable(before, await handle.stat()) && readBytes === before.size, "File changed while reading");
-        digest = hash.digest("hex");
-      } finally { await handle.close(); }
-      entries.push({ path: relative, type: "file", bytes: before.size, sha256: digest, modifiedAt: before.mtime.toISOString() });
-      files += 1;
-      bytes += readBytes;
+      pendingFiles.push({ relative, absolute, before });
     } else {
       throw new Error("Unsupported filesystem entry; manifest is incomplete");
     }
-    assert.ok(stable(before, await lstat(absolute)), "Tree changed while reading");
+  }
+  async function hashFile({ relative, absolute, before }) {
+    // No payload is copied or opened with write access. O_NOFOLLOW prevents
+    // a file replaced by a symlink from redirecting a read during this walk.
+    const handle = await open(absolute, constants.O_RDONLY | constants.O_NOFOLLOW);
+    let digest;
+    let readBytes = 0;
+    try {
+      assert.ok(stable(before, await handle.stat()), "File changed before reading");
+      const hash = createHash("sha256");
+      for await (const chunk of handle.createReadStream({ autoClose: false, highWaterMark: 1024 * 1024 })) {
+        hash.update(chunk);
+        readBytes += chunk.length;
+        bytes += chunk.length;
+        if (Date.now() - lastProgress >= 30_000) {
+          progress({ files, bytesRead: bytes });
+          lastProgress = Date.now();
+        }
+      }
+      assert.ok(stable(before, await handle.stat()) && readBytes === before.size, "File changed while reading");
+      digest = hash.digest("hex");
+    } finally { await handle.close(); }
+    entries.push({ path: relative, type: "file", bytes: before.size, sha256: digest, modifiedAt: before.mtime.toISOString() });
+    files += 1;
   }
   try {
-    await walk("");
+    await discover("");
+    await forEachConcurrent(pendingFiles, hashFile);
+    // Recheck the entire discovered tree after all reads. This also catches a
+    // directory or already-hashed file changing while another worker was active.
+    await forEachConcurrent(observed, async ({ absolute, before }) => {
+      assert.ok(stable(before, await lstat(absolute)), "Tree changed while reading");
+    });
     entries.sort((a, b) => a.path < b.path ? -1 : a.path > b.path ? 1 : 0);
     const changes = baseline ? compareInventory(baseline, entries) : null;
     return { schemaVersion: SCHEMA, status: changes?.length ? "failed" : "passed", root: resolvedRoot, startedAt, completedAt: new Date().toISOString(), treeSha256: sha256(JSON.stringify(entries.map(content))), entries,
