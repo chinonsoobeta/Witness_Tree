@@ -9,13 +9,17 @@ test("Phase 8 records every literal launch-readiness gate without production inf
   assert.equal(await validatePhase8LaunchReadinessExitStatus(record), record);
   /*
    * Eight. CDN and tile validation passes only on the strength of a browser
-   * observation of the deployed Site bound to the client it observed. This
-   * change set changed that client, the Site was redeployed to this branch on
-   * 2026-09-05, and the harness was re-run against it, so the bound observation
-   * again describes the deployed client. Nothing weaker held the gate up while
-   * it was down: the preview and break-glass tiers exist and neither record is
-   * committed here. It stays a delivery-and-rendering gate: it asserts no
-   * production admission.
+   * observation of the deployed Site bound to the client it observed. It spent
+   * this branch at fail, because merging main into the confidence-first
+   * redesign changed both the map style and the client and left the 2026-09-05
+   * observation describing something the Site no longer served. The owner
+   * redeployed on 2026-09-08 and the harness was re-run against the deployed
+   * Site, so the count moves because a measurement was taken, not because the
+   * code exists. Nothing weaker was used on the way: neither the preview tier
+   * nor a break-glass record is committed here, and the earlier observations
+   * stay on disk as true accounts of their own days. It stays a
+   * delivery-and-rendering gate: it asserts no production admission, and the
+   * remaining eight criteria are untouched by the deploy.
    */
   assert.equal(record.completedCriteria, 8);
   assert.equal(record.totalCriteria, 16);

@@ -1,3 +1,5 @@
+import { CoverageStatement } from "@/components/policy/CoverageStatement";
+import { EvidenceLegend } from "@/components/policy/EvidenceLegend";
 import type { Locale } from "@/lib/domain";
 import { federalRidingComparison } from "@/lib/comparison";
 import { FederalDistrictFinder } from "./FederalDistrictFinder";
@@ -48,6 +50,13 @@ export function SearchPage({
         <h1>{text.title}</h1>
       </header>
 
+      <CoverageStatement locale={locale}>
+        <p>{text.notice}</p>
+        <p>{locale === "en"
+          ? "Finding a boundary does not establish that it has a measurement. A missing record does not establish that no event occurred."
+          : "Trouver une limite ne signifie pas qu’une mesure y est associée. L’absence de registre ne permet pas de conclure qu’aucun événement n’a eu lieu."}</p>
+      </CoverageStatement>
+      <EvidenceLegend locale={locale} />
       <nav className="segment" aria-label={text.scope}>
         <a
           className="segment-option"
@@ -64,13 +73,17 @@ export function SearchPage({
           {text.districts}
         </a>
       </nav>
-      <p className="masthead-note">{text.notice}</p>
 
       {scope === "places" ? (
         <PlaceFinder locale={locale} query={query} />
       ) : (
         <>
-          {addressLookup ? <AddressFinderClient locale={locale} /> : null}
+          {addressLookup ? <AddressFinderClient
+            locale={locale}
+            measuredDistrictIds={federalRidingComparison.places
+              .filter((place) => place.detectedChangeHectares !== null)
+              .map((place) => place.id)}
+          /> : null}
           <FederalDistrictFinder
             locale={locale}
             query={query}

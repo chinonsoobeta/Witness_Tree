@@ -721,3 +721,18 @@ test("switching language keeps the selected year", async () => {
   assert.match(href, /year=1995/);
   assert.match(href, /mode=wildfire/);
 });
+
+test("Explore shows its coverage caveat and shaped evidence legend before the map in both locales", () => {
+  for (const locale of ["en", "fr"] as const) {
+    const markup = renderToStaticMarkup(<ExploreView events={exploreFixtures} locale={locale} />);
+    const coverage = markup.indexOf('class="coverage-statement"');
+    const legend = markup.indexOf('class="evidence-legend"');
+    const map = markup.indexOf('class="explore-map"');
+    assert.ok(coverage >= 0 && coverage < legend && legend < map);
+    assert.match(markup, /blank area|zone vide/);
+    for (const glyph of ["■", "●", "▲", "○"]) assert.ok(markup.includes(glyph));
+    assert.match(markup, /loss-swatch patch-harvest[^>]*><\/i><span class="map-legend-shape">●/);
+    assert.match(markup, /loss-swatch patch-fire[^>]*><\/i><span class="map-legend-shape">◆/);
+    assert.match(markup, /loss-swatch patch-none[^>]*><\/i><span class="map-legend-shape">○/);
+  }
+});

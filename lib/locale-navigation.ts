@@ -3,6 +3,7 @@ import type { Locale } from "@/lib/domain";
 const COUNTERPARTS: Record<string, string> = {
   "/en": "/fr", "/fr": "/en",
   "/en/explore": "/fr/explorer", "/fr/explorer": "/en/explore",
+  "/en/explore/draw": "/fr/explorer/dessiner", "/fr/explorer/dessiner": "/en/explore/draw",
   "/en/compare": "/fr/comparer", "/fr/comparer": "/en/compare",
   "/en/wildfire": "/fr/incendies", "/fr/incendies": "/en/wildfire",
   "/en/account": "/fr/compte", "/fr/compte": "/en/account",
@@ -10,6 +11,7 @@ const COUNTERPARTS: Record<string, string> = {
   "/en/about": "/fr/a-propos", "/fr/a-propos": "/en/about",
   "/en/data": "/fr/donnees", "/fr/donnees": "/en/data",
   "/en/data/official-harvest-comparison": "/fr/donnees/comparaison-recolte-officielle", "/fr/donnees/comparaison-recolte-officielle": "/en/data/official-harvest-comparison",
+  "/en/data/bc-harvest-volume": "/fr/donnees/volume-recolte-bc", "/fr/donnees/volume-recolte-bc": "/en/data/bc-harvest-volume",
   "/en/terms": "/fr/conditions", "/fr/conditions": "/en/terms",
   "/en/privacy": "/fr/confidentialite", "/fr/confidentialite": "/en/privacy",
   "/en/corrections": "/fr/corrections", "/fr/corrections": "/en/corrections",

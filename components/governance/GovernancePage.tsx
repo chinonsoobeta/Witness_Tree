@@ -1,3 +1,4 @@
+import { CoverageStatement } from "@/components/policy/CoverageStatement";
 import { formatYearRangeKey, PRODUCT_NAME, type Locale } from "@/lib/domain";
 import {
   EXPLORE_COVERAGE_PERIOD,
@@ -45,7 +46,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Forest",
           paragraphs: [
-            "Land of at least 1 hectare, with at least 10% crown closure, carrying trees capable of reaching 5 metres at maturity. Percentages use forested hectares inside the stated boundary edition, not total land area.",
+            "Land of at least 1 hectare and at least 20 metres wide, with at least 10% crown closure, carrying trees capable of reaching 5 metres at maturity. Percentages use forested hectares inside the stated boundary edition, not total land area.",
           ],
         },
         {
@@ -119,7 +120,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Forêt",
           paragraphs: [
-            "Terre d’au moins 1 hectare, présentant un couvert de cimes d’au moins 10 %, avec des arbres capables d’atteindre 5 mètres à maturité. Les pourcentages utilisent les hectares forestiers dans l’édition de limite indiquée, et non la superficie terrestre totale.",
+            "Terre d’au moins 1 hectare et d’au moins 20 mètres de largeur, présentant un couvert de cimes d’au moins 10 %, avec des arbres capables d’atteindre 5 mètres à maturité. Les pourcentages utilisent les hectares forestiers dans l’édition de limite indiquée, et non la superficie terrestre totale.",
           ],
         },
         {
@@ -572,11 +573,23 @@ export function GovernancePage({
     <main id="main" className="page-wrap governance-page">
       <header className="masthead">
         <h1>{page.title}</h1>
-        <p className="dek">{page.status}</p>
       </header>
+      {/* This screen reports no figure, so the plate carries accountability
+          rather than coverage, and no evidence legend belongs on it: the
+          legend annotates figures, and there are none here. */}
+      <CoverageStatement
+        locale={locale}
+        className="governance-accountability"
+        title={locale === "en" ? "Accountability" : "Responsabilité"}
+      >
+        <p>{page.status}</p>
+        <a className="btn btn--primary" href={kind === "corrections" ? "#correction-instructions" : `/${locale}/corrections`}>
+          {locale === "en" ? "Read the correction instructions" : "Consulter les instructions de correction"}
+        </a>
+      </CoverageStatement>
       <div className="content-section prose-measure">
         {page.sections.map((section, index) => (
-          <section className="governance-section" key={section.heading}>
+          <section className="governance-section" key={section.heading} id={kind === "corrections" && index === 2 ? "correction-instructions" : undefined}>
             <p className="governance-index" aria-hidden="true">
               {String(index + 1).padStart(2, "0")}
             </p>

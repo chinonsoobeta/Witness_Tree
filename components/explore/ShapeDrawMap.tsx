@@ -23,7 +23,7 @@ type MapState = "loading" | "ready" | "unavailable";
 // The same version-pinned worker the explore map serves from `public/`. MapLibre
 // resolves its worker relative to its own chunk, which the bundler does not emit,
 // so both maps have to name this file rather than take the default.
-const MAPLIBRE_WORKER_VERSION = "6.3.0";
+const MAPLIBRE_WORKER_VERSION = "6.9.0";
 const MAPLIBRE_WORKER_URL = `/maplibre/${MAPLIBRE_WORKER_VERSION}/maplibre-gl-worker.mjs`;
 const NATIONAL_BOUNDS: [number, number, number, number] = [-141, 41, -52, 70];
 const DRAWN_SOURCE = "shape-drawn";

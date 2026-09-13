@@ -23,6 +23,7 @@
     "typecheck": "tsc --noEmit",
     "check:bilingual": "node scripts/check-bilingual.mjs",
     "check:premise-loss-vocabulary": "node scripts/check-premise-loss-vocabulary.mjs",
+    "check:volume-source-redistribution": "node scripts/check-volume-source-redistribution.mjs",
     "check:nrcan-source-currency": "node scripts/check-nrcan-source-currency.mjs",
     "check:interval-release": "node scripts/check-interval-release.mjs",
     "check:interval-method": "tsx scripts/check-phase3-interval-method.mts && tsx --test tests/interval-method-change.test.ts",
@@ -289,7 +290,7 @@
   "dependencies": {
     "@bcgov/bc-sans": "^2.1.0",
     "drizzle-orm": "0.45.2",
-    "maplibre-gl": "^6.3.0",
+    "maplibre-gl": "^6.9.0",
     "pmtiles": "^4.5.0",
     "react": "19.2.8",
     "react-dom": "19.2.8"

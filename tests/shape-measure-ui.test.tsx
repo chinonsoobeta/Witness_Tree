@@ -102,3 +102,43 @@ test("the map's own status region starts empty rather than claiming a corner", (
   assert.ok(!hasTextNode(live[1]), "the status region invents an announcement");
   assert.match(markup, /class="shape-draw-live" role="status"/);
 });
+
+// @ts-expect-error Node test runner needs extensions.
+import { ShapeMeasurementResult } from "../components/explore/ShapeMeasureClient.tsx";
+// @ts-expect-error Node test runner needs extensions.
+import { DrawPage } from "../components/explore/DrawPage.tsx";
+
+test("draw has its own coverage-first page and keeps unavailable measurement explicit", () => {
+  for (const locale of ["en", "fr"] as const) {
+    const enabled = renderToStaticMarkup(<DrawPage locale={locale} available />);
+    const unavailable = renderToStaticMarkup(<DrawPage locale={locale} available={false} />);
+    assert.ok(enabled.indexOf('class="coverage-statement"') < enabled.indexOf('<form'));
+    assert.match(enabled, /class="evidence-legend"/);
+    assert.match(unavailable, /role="status">– /);
+    assert.doesNotMatch(unavailable, /<form|class="shape-readout"/);
+  }
+});
+
+test("draw results put both missing coverage states before all three bounded amounts", () => {
+  const measurement = {
+    startYear: 2000, endYear: 2022,
+    unionHectares: { low: 10, estimate: 15, high: 20 },
+    forestHectares: { low: 100, estimate: 150, high: 200 },
+    sumHectares: { low: 30, estimate: 45, high: 60 },
+    unionShareOfForest: null,
+    coverage: { blocks: 10, interiorBlocks: 6, edgeBlocks: 4, blocksWithoutData: 2, shapeHectares: 1000, outsideGridHectares: 25, edgeShareOfEstimate: 0.2 },
+    precision: { blockMetres: 960, exact: false },
+  };
+  for (const locale of ["en", "fr"] as const) {
+    const markup = renderToStaticMarkup(<ShapeMeasurementResult locale={locale} measurement={measurement} />);
+    const figures = markup.indexOf('class="shape-readout"');
+    for (const label of locale === "en" ? ["Blocks without data", "Outside the mapped area"] : ["Blocs sans données", "Hors de la zone cartographiée"]) {
+      assert.ok(markup.indexOf(label) >= 0 && markup.indexOf(label) < figures);
+    }
+    assert.equal((markup.match(/class="shape-range"/g) ?? []).length, 3);
+    for (const range of locale === "en" ? ["between 10 and 20", "between 100 and 200", "between 30 and 60"] : ["entre 10 et 20", "entre 100 et 200", "entre 30 et 60"]) assert.ok(markup.includes(range));
+    assert.match(markup, /– No forest denominator|– Aucun dénominateur forestier/);
+    assert.match(markup, /2 of the squares|2 des carrés/);
+    assert.match(markup, /25 ha/);
+  }
+});

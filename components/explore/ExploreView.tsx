@@ -1,6 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { CoverageStatement } from "@/components/policy/CoverageStatement";
+import { EvidenceLegend } from "@/components/policy/EvidenceLegend";
+
 import {
   ConfidenceBadge,
   CoverageBand,
@@ -307,7 +310,7 @@ export function ExploreView({
       : text.production;
   const annual = perCellShown ? perCellAnnualForYear(activeYear) : null;
   const provinceCoverageLabel = (row: (typeof EXPLORE_PRODUCTION_LAYER.rows)[number]) =>
-    `${text.partial} (${formatUnknownSharePercent(row.unknownSharePercent, locale)}; ${formatNumber(row.unknownRequiredInputHectares, locale)} ${text.unknownArea})`;
+    `${text.partial} (${formatUnknownSharePercent(row.unknownSharePercent, locale)}; ${formatNumber(row.unknownRequiredInputHectares, locale)} ${text.unknownArea})${"unmappedCharacter" in row ? `; ${row.unmappedCharacter[locale]}` : ""}`;
   const nearestYear = modeEvents.reduce(
     (nearest, event) =>
       Math.abs(event.year - activeYear) < Math.abs(nearest - activeYear)
@@ -320,7 +323,16 @@ export function ExploreView({
 
   return (
     <section className="explore" aria-label={text.title}>
-      <p className="explore-note">{note}</p>
+      <CoverageStatement locale={locale}>
+        <p className="explore-caveat">{locale === "en"
+          ? "A blank area on the map does not establish that no loss occurred. Read each layer’s coverage and period before comparing its figures."
+          : "Une zone vide sur la carte ne permet pas de conclure qu’aucune perte n’a eu lieu. Consultez la couverture et la période de chaque couche avant de comparer ses chiffres."}</p>
+        <details className="explore-coverage-details">
+          <summary>{locale === "en" ? "Layer periods and limits" : "Périodes et limites des couches"}</summary>
+          <p className="explore-note">{note}</p>
+        </details>
+      </CoverageStatement>
+      <EvidenceLegend locale={locale} />
 
       <nav className="explore-modes" aria-label={text.title}>
         {EXPLORE_MODES.map((item) => (
@@ -551,6 +563,7 @@ export function ExploreView({
               );
               const scale = Math.max(...values, 1);
               return (
+                <>
                 <ul className="explore-chart" aria-label={text.chart}>
                   {rows.map((item) => {
                     const isProduction = "observedLossPercent" in item;
@@ -567,6 +580,13 @@ export function ExploreView({
                     );
                   })}
                 </ul>
+                {/* A bar states what was detected inside the mapped area. The
+                    unmapped share is not a smaller bar, so it is written out
+                    beneath the chart rather than drawn into it. */}
+                {rows.map((item) => "unmappedCharacter" in item ? (
+                  <p key={item.id}>{item.name[locale]}{colon(locale)} {item.unmappedCharacter[locale]}</p>
+                ) : null)}
+                </>
               );
           })()
         ) : null}

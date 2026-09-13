@@ -15,6 +15,7 @@
  * prefixes.
  */
 
+import { NoRecordResult } from "./NoRecordResult";
 import { useId, useRef, useState } from "react";
 import type { Locale } from "@/lib/domain";
 import { ADDRESS_QUERY_MAX_LENGTH } from "@/lib/address";
@@ -91,21 +92,25 @@ const copy = {
 
 function comparePath(locale: Locale, districtId: string) {
   const path = locale === "en" ? "/en/compare" : "/fr/comparer";
-  return `${path}?left=${encodeURIComponent(districtId)}`;
+  return `${path}?left=${encodeURIComponent(`federal-${districtId}`)}`;
 }
 
-function DistrictReadout({
+export function DistrictReadout({
   locale,
   heading,
   lookup,
   linkable,
 }: Readonly<{ locale: Locale; heading: string; lookup: Lookup; linkable: boolean }>) {
   const text = copy[locale];
-  if (lookup.kind === "empty") return null;
+
   return (
     <div className="address-district">
       <h4 className="address-district-heading">{heading}</h4>
-      {lookup.kind === "single" ? (
+      {lookup.kind === "empty" ? (
+        <NoRecordResult locale={locale} reason={locale === "en"
+          ? "The index has no boundary record for this point."
+          : "L’index ne contient aucun registre de limites pour ce point."} />
+      ) : lookup.kind === "single" ? (
         <p className="address-district-name">
           {lookup.name[locale]}
           {linkable ? (
@@ -120,11 +125,16 @@ function DistrictReadout({
           {lookup.candidates.map((candidate) => candidate.name[locale]).join(", ")}
         </p>
       )}
+      {lookup.kind === "single" && !linkable ? (
+        <NoRecordResult locale={locale} reason={locale === "en"
+          ? "The boundary was found, but this address result has no measurement for it."
+          : "La limite a été trouvée, mais ce résultat d’adresse ne fournit aucune mesure pour celle-ci."} />
+      ) : null}
     </div>
   );
 }
 
-export function AddressFinderClient({ locale }: Readonly<{ locale: Locale }>) {
+export function AddressFinderClient({ locale, measuredDistrictIds = [] }: Readonly<{ locale: Locale; measuredDistrictIds?: readonly string[] }>) {
   const text = copy[locale];
   const fieldId = useId();
   const [query, setQuery] = useState("");
@@ -247,7 +257,7 @@ export function AddressFinderClient({ locale }: Readonly<{ locale: Locale }>) {
               locale={locale}
               heading={text.federal}
               lookup={resolved.federal}
-              linkable={resolved.federal.kind === "single"}
+              linkable={resolved.federal.kind === "single" && measuredDistrictIds.includes(`federal-${resolved.federal.districtId}`)}
             />
             {resolved.provincial.map((entry) => (
               <DistrictReadout

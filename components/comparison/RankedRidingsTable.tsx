@@ -9,7 +9,7 @@ import {
   type RankingContext,
 } from "@/lib/comparison";
 import { formatHectares, formatPercent, type Locale } from "@/lib/domain";
-import { MeasurementCoverage } from "./MeasurementCoverage";
+import { MeasurementCoverage, missingMeasurement } from "./MeasurementCoverage";
 
 const UNRANKED_COPY = {
   en: {
@@ -49,9 +49,8 @@ function TableHeaders({
 
 /** Each measurement keeps a scoped column, and unavailable values remain textual. */
 function RidingRow({ row, locale }: { row: RankedRiding; locale: Locale }) {
-  const copy = RANKING_COPY[locale];
-  const percent = row.detectedChangePercent === null ? copy.unknown : formatPercent(row.detectedChangePercent, locale);
-  const hectares = row.detectedChangeHectares === null ? copy.unknown : formatHectares(row.detectedChangeHectares, locale);
+  const percent = row.detectedChangePercent === null ? missingMeasurement(row, locale) : formatPercent(row.detectedChangePercent, locale);
+  const hectares = row.detectedChangeHectares === null ? missingMeasurement(row, locale) : formatHectares(row.detectedChangeHectares, locale);
   return (
     <tr>
       <th scope="row">{row.name[locale]}</th>

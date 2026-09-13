@@ -1,10 +1,10 @@
 import { formatNumber, type Locale } from "@/lib/domain";
 import type { AnnualSummary } from "@/lib/places";
 
-const CHART_WIDTH = 300;
-const CHART_HEIGHT = 140;
-const BASELINE_Y = 120;
-const PLOT_HEIGHT = 90;
+const MIN_CHART_WIDTH = 720;
+const CHART_HEIGHT = 300;
+const BASELINE_Y = 260;
+const PLOT_HEIGHT = 210;
 
 export function AnnualChangeChart({
   annual,
@@ -18,7 +18,8 @@ export function AnnualChangeChart({
   const rows = [...annual].sort((a, b) => a.year - b.year);
   const max = Math.max(...rows.map((row) => row.hectares), 1);
   const title = locale === "en" ? "Annual change" : "Changement annuel";
-  const step = CHART_WIDTH / Math.max(rows.length, 1);
+  const chartWidth = Math.max(MIN_CHART_WIDTH, rows.length * 100);
+  const step = chartWidth / Math.max(rows.length, 1);
   const barWidth = Math.min(48, step * 0.5);
 
   if (view === "table") {
@@ -61,11 +62,12 @@ export function AnnualChangeChart({
       {/* The bars used to be unfilled outlines, which read as empty on the
           page. Fill and label come from the stylesheet so the palette stays in
           one place; rx gives the rounded cap. */}
+      <div className="place-annual-scroll">
       <svg
         className="annual-chart"
         role="img"
         aria-label={title}
-        viewBox={`0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`}
+        viewBox={`0 0 ${chartWidth} ${CHART_HEIGHT}`}
         width="100%"
       >
         <title>{title}</title>
@@ -73,7 +75,7 @@ export function AnnualChangeChart({
           className="annual-axis"
           x1="0"
           y1={BASELINE_Y}
-          x2={CHART_WIDTH}
+          x2={chartWidth}
           y2={BASELINE_Y}
         />
         {rows.map((row, index) => {
@@ -92,7 +94,7 @@ export function AnnualChangeChart({
               <text
                 className="annual-label"
                 x={x + barWidth / 2}
-                y={BASELINE_Y + 15}
+                y={BASELINE_Y + 24}
                 textAnchor="middle"
               >
                 {row.year}
@@ -109,6 +111,7 @@ export function AnnualChangeChart({
           );
         })}
       </svg>
+      </div>
       <p>
         <a className="btn btn--ghost" href="?view=table">
           {locale === "en"

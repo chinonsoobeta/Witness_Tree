@@ -1,0 +1,97 @@
+{
+  "schemaVersion": "witness-tree/coverage-gap-investigation/1",
+  "status": "research-non-admitted-nonproduction",
+  "completedAt": "2026-09-08T14:46:13.607405Z",
+  "execution": {
+    "activity": "Evidence synthesis for the methods-page explanation; no measurement rerun or source admission.",
+    "sourceRuns": [
+      "coverage-post-assessment-20260908T003028Z",
+      "coverage-metric-production-20260908T030436Z"
+    ],
+    "provenanceRoot": "../Witness_Tree-data/derived",
+    "phase2": "2/4"
+  },
+  "findings": {
+    "gap": {
+      "totalHectares": 46424717.91,
+      "provinceHectares": {
+        "QC": 22204952.19,
+        "AB": 15372023.76,
+        "ON": 8843646.69,
+        "BC": 4095.27
+      },
+      "meaning": "Area the NTEMS VLCE2 land-cover source did not map, not a measurement of forest or forest loss.",
+      "distribution": {
+        "measure": "Gap hectares by plot latitude, weighted by stratum inclusion probability from measurements/sample-plots.csv of coverage-metric-production-20260908T030436Z.",
+        "farNorthAtOrAbove56NHectares": 19332104,
+        "albertaMid52To56NHectares": 5408122,
+        "southBelow52NHectares": 21684491,
+        "quebecFarNorthHectares": 19328009,
+        "interpretation": "The gap is two comparable blocks, not one. The settled south and prairies supply 46.7% and the far north of Quebec supplies 41.6%. Describing the gap as southern alone would misplace the largest single block."
+      }
+    },
+    "referenceBands": {
+      "bandAHectares": 29296005.57,
+      "bandBHectares": 17128712.34
+    },
+    "samplingAttempt": {
+      "plots": 603,
+      "plotYears": 23517,
+      "thresholdConfigurations": 600,
+      "baselineYear": 1984,
+      "forestDefinition": {
+        "minimumCrownClosurePercent": 10,
+        "matureTreeHeightMetres": 5
+      },
+      "envelope": {
+        "notForPublication": true,
+        "lowerHectares": 1580297,
+        "upperHectares": 25835820
+      },
+      "conclusion": "The attempt could not constrain the forest-loss answer sufficiently. Baseline stand structure cannot be measured directly from surface reflectance.",
+      "labels": "Rule-set labels read the same imagery as the classifier. This is a method comparison, not independent validation or ground reference."
+    },
+    "parameterAttribution": {
+      "measure": "Swing in median lower-bound gap rate as each parameter varies, with other parameters varying.",
+      "ndviForest": 0.11,
+      "drop": 0.026
+    },
+    "baselineYearTest": {
+      "envelopeWidths": {
+        "notForPublication": true,
+        "baseline1984PercentagePoints": 40.7,
+        "baseline2000PercentagePoints": 42.2
+      },
+      "conclusion": "Moving the baseline to a later year did not narrow the envelope."
+    },
+    "britishColumbia": {
+      "components": 401,
+      "cells": 45503,
+      "whollyInsideGeoBcTerrestrialBoundary": {
+        "components": 211,
+        "hectares": 297.99
+      },
+      "shorelineAndBoundaryEditionDisagreement": {
+        "components": 190,
+        "hectares": 3797.28
+      },
+      "interpretation": "Most of the BC gap is shoreline and boundary-edition disagreement against the authoritative GeoBC terrestrial boundary, not unmapped forest."
+    },
+    "forestryActivity": {
+      "finding": "Dated records of forestry activity within the unmapped area were reviewed internally.",
+      "publicationLimit": "Qualitative statement only. Provincial harvest-record and fire-perimeter hectare quantities are withheld pending source-admission evidence."
+    },
+    "neededEvidence": "Field plots, air photos or lidar supplying stand structure for the baseline year.",
+    "limitations": [
+      "Research evidence only; not admitted production data.",
+      "No gap forest-loss estimate or sampling envelope is authorized for reader-facing copy.",
+      "No detection-accuracy claim, source admission, release or gate change. No published province figure changes."
+    ]
+  },
+  "claims": {
+    "admitted": false,
+    "released": false,
+    "productionEligible": false,
+    "externalAction": false
+  }
+}

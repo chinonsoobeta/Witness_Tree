@@ -1,3 +1,4 @@
+import { NoRecordResult } from "./NoRecordResult";
 import type { ComparisonPlace } from "@/lib/comparison";
 import type { Locale } from "@/lib/domain";
 
@@ -80,7 +81,7 @@ export function FederalDistrictFinder({
             </li>
           ))}
         </ul>
-      ) : <p className="search-note">{text.none}</p>}
+      ) : <NoRecordResult locale={locale} reason={text.none} />}
     </section>
   );
 }

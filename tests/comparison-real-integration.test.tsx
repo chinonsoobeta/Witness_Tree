@@ -120,3 +120,12 @@ test("comparison routes disclose an unrecognized requested riding before the fal
   assert.ok(english.indexOf("Requested left riding") < english.indexOf("Side-by-side comparison"));
   assert.ok(french.indexOf("demandée « federal-absente »") < french.indexOf("Comparaison côte à côte"));
 });
+
+test("comparison routes state comparability limits before controls and figures", async () => {
+  for (const Page of [EnglishComparePage, FrenchComparePage]) {
+    const markup = renderToStaticMarkup(await Page({ searchParams: Promise.resolve({}) }));
+    assert.ok(markup.indexOf('class="coverage-statement"') < markup.indexOf('class="comparison-picker"'));
+    assert.ok(markup.indexOf('class="evidence-legend"') < markup.indexOf('class="comparison-side-by-side"'));
+    assert.match(markup, /coverage differs|la couverture diffère/);
+  }
+});

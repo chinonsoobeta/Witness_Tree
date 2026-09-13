@@ -6,6 +6,18 @@ const SHA256 = /^[a-f0-9]{64}$/;
 const TIMESTAMP = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/;
 const STAGING_PATH = /^\.\.\/Witness_Tree-data\/raw\/[a-z0-9._-]+\/\d{4}-\d{2}-\d{2}\/[A-Za-z0-9._-]+$/;
 
+const DERIVED_STAGING_PATH = /^\.\.\/Witness_Tree-data\/derived\/(?:[A-Za-z0-9][A-Za-z0-9._-]*\/)*[A-Za-z0-9][A-Za-z0-9._-]*$/;
+
+// Owner-authorized on 2026-09-12: this exact NFD publisher endpoint refuses
+// HTTPS. The exception binds the complete payload, not a host or URL prefix.
+function approvedNfdHttpAcquisition(entry) {
+  return entry.sourceId === "nfd-5.2-undeclared"
+    && entry.sourceUrl === "http://nfdp.ccfm.org/download/data/csv/NFD%20-%20Area%20harvested%20by%20ownership%20and%20harvesting%20method%20-%20EN%20FR.csv"
+    && entry.byteLength === 2033845
+    && entry.sha256 === "1644b66e78a3e30d865f1425065de39350532ad96a131038ec77e1890f58f706"
+    && entry.crc64nvme === "ef1972d415353fcf";
+}
+
 function required(value, field) {
   if (typeof value !== "string" || !value.trim()) throw new Error(`${field} is required.`);
 }
@@ -20,8 +32,9 @@ export function validateStagedAcquisitions(manifest) {
     for (const field of ["id", "sourceId", "datasetTitle", "publisher", "catalogueUrl", "sourceUrl", "localPath", "verifiedAt", "sha256", "licenceId", "temporalCoverage", "attributionState"]) required(entry?.[field], field);
     if (ids.has(entry.id)) throw new Error("Staging entry ids must be unique.");
     ids.add(entry.id);
-    if (!entry.catalogueUrl.startsWith("https://") || !entry.sourceUrl.startsWith("https://")) throw new Error("Staging source URLs must use HTTPS.");
-    if (!STAGING_PATH.test(entry.localPath) || entry.localPath.includes("/../")) throw new Error("Local path must remain in the separate staging tree.");
+    if (!entry.catalogueUrl.startsWith("https://") || (!entry.sourceUrl.startsWith("https://") && !approvedNfdHttpAcquisition(entry))) throw new Error("Staging source URLs must use HTTPS unless the exact owner-authorized NFD bytes match.");
+    const derived = DERIVED_STAGING_PATH.test(entry.localPath);
+    if ((!STAGING_PATH.test(entry.localPath) && !derived) || entry.localPath.includes("/../")) throw new Error("Local path must remain in the separate staging tree.");
     if (!TIMESTAMP.test(entry.verifiedAt) || Number.isNaN(new Date(entry.verifiedAt).getTime())) throw new Error("Verified time must be a UTC timestamp.");
     if (!Number.isSafeInteger(entry.byteLength) || entry.byteLength <= 0) throw new Error("Byte length must be a positive safe integer.");
     if (!SHA256.test(entry.sha256)) throw new Error("SHA-256 is required.");
@@ -30,6 +43,16 @@ export function validateStagedAcquisitions(manifest) {
     if (entry.attributionState === "metadata-verified") {
       for (const field of ["attribution", "licenceUrl", "changesNotice"]) required(entry[field], field);
       if (!entry.licenceUrl.startsWith("https://")) throw new Error("Verified licence URL must use HTTPS.");
+    }
+    if (derived) {
+      for (const field of ["sourceVersion", "retrievedAt", "derivation", "licenceUrl"]) required(entry[field], field);
+      if (!TIMESTAMP.test(entry.retrievedAt) || new Date(entry.retrievedAt).toISOString() !== entry.retrievedAt.replace("Z", ".000Z")) throw new Error("Derived staging requires a valid UTC modification timestamp.");
+      if (!/^[a-f0-9]{16}$/.test(entry.crc64nvme ?? "")) throw new Error("Derived staging requires a whole-file CRC64NVME in lower-case hex.");
+      if (!entry.licenceUrl.startsWith("https://")) throw new Error("Derived licence URL must use HTTPS.");
+      for (const locale of ["en", "fr"]) {
+        required(entry.publicationBoundary?.[locale], `publicationBoundary.${locale}`);
+        required(entry.retrievedAtBasis?.[locale], `retrievedAtBasis.${locale}`);
+      }
     }
     if (entry.immutableObjectStorage !== false || entry.productionEligible !== false) throw new Error("Local staging must never claim immutability or production eligibility.");
   }

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ExploreView, ShapeMeasureClient } from "@/components/explore";
+import { ExploreView } from "@/components/explore";
 import { FederalDistrictFinder } from "@/components/search";
 import { SiteShell } from "@/components/site";
 import { federalRidingComparison } from "@/lib/comparison";
@@ -14,7 +14,6 @@ import {
 // Imported by path rather than through the barrel: this module carries every
 // span for every district and must never be pulled into a browser bundle.
 import { ridingIntervalMeasurements } from "@/lib/explore/riding-intervals";
-import { coarseGridAvailable } from "@/lib/shapes/runtime";
 import { localizedAlternates } from "@/lib/site-metadata";
 
 export const metadata: Metadata = {
@@ -36,7 +35,6 @@ export default async function Page({
   }>;
 }) {
   const query = await searchParams;
-  const shapeMeasurement = await coarseGridAvailable();
   const mode = EXPLORE_MODES.includes(
     query.mode as (typeof EXPLORE_MODES)[number],
   )
@@ -66,7 +64,7 @@ export default async function Page({
           overlays={overlays}
           ridingMeasurements={ridingIntervalMeasurements(interval)}
         />
-        {shapeMeasurement ? <ShapeMeasureClient locale="en" /> : null}
+        <p className="explore-draw-link"><Link className="btn btn--outline" href="/en/explore/draw">Draw and measure an area</Link></p>
         <FederalDistrictFinder
           locale="en"
           query={query.district ?? ""}

@@ -6,19 +6,19 @@
       "id": "forest-definition-published-bilingually",
       "title": "The forest definition is published in the glossary in English and French",
       "status": "pass",
-      "reason": "FOREST_DEFINITION carries bilingual text and per-locale glossary anchors, the glossary publishes a Forest and a Forêt entry, and a test pins the published minimum area, crown closure and mature height to the constant so the prose cannot drift from the value that drives computation.",
+      "reason": "FOREST_DEFINITION carries bilingual text and per-locale glossary anchors, the glossary publishes a Forest and a Forêt entry, and a test pins the published minimum area, minimum width, crown closure and mature height to the constant so the prose cannot drift from the value that drives computation. Version nfi-2 added the minimum width on 2026-09-09; the condition is published, not implemented, and cannot be evaluated on the 30 m grid.",
       "evidence": [
         {
           "path": "lib/domain/forest.ts",
-          "sha256": "c078a09f14560bdd90b507bbd2952cf4df21b85bd0f78b375961a5b441f8231d"
+          "sha256": "6ae0edefc63e5fb3634c8b406a1939e8b7f797b7eb56693ec60701064d4681f3"
         },
         {
           "path": "components/governance/GovernancePage.tsx",
-          "sha256": "4a1b41b6588bf51d0906ebfaa578b73222e22824281b12c315e303ffabb9b4cd"
+          "sha256": "79723b4ace8535a9c06cb4515c6dde0a1bbf877a2c8df38b2e51bcbac163529c"
         },
         {
           "path": "tests/forest-definition-publication.test.ts",
-          "sha256": "62efd67ed0d6b86ec710788ba9e25d2e74736b67dff47da7b49c2221c7e53754"
+          "sha256": "c9f8b916c1e8e7de324e0df1aeb6c7c38b3240db603d7476f5e75f487230b2dc"
         }
       ]
     },
@@ -66,7 +66,7 @@
         },
         {
           "path": "components/governance/GovernancePage.tsx",
-          "sha256": "4a1b41b6588bf51d0906ebfaa578b73222e22824281b12c315e303ffabb9b4cd"
+          "sha256": "79723b4ace8535a9c06cb4515c6dde0a1bbf877a2c8df38b2e51bcbac163529c"
         }
       ]
     },
@@ -117,7 +117,7 @@
         },
         {
           "path": "components/governance/GovernancePage.tsx",
-          "sha256": "4a1b41b6588bf51d0906ebfaa578b73222e22824281b12c315e303ffabb9b4cd"
+          "sha256": "79723b4ace8535a9c06cb4515c6dde0a1bbf877a2c8df38b2e51bcbac163529c"
         }
       ]
     },

@@ -1,3 +1,5 @@
+import { CoverageStatement } from "@/components/policy/CoverageStatement";
+import { EvidenceLegend } from "@/components/policy/EvidenceLegend";
 import { colon, formatYearRangeKey, type Locale } from "@/lib/domain";
 import { SourceCurrency } from "./SourceCurrency";
 import {
@@ -17,6 +19,7 @@ const COPY = {
     csv: "Download province values (CSV)",
     geopackage: "Download province values (GeoPackage)",
     comparison: "Compare the values with official harvest statistics",
+    harvestVolume: "BC harvest volume and allowable annual cut",
     releases: "Read the release notes and citation format",
     limitsTitle: "Limits to understand first",
     limits:
@@ -56,6 +59,7 @@ const COPY = {
     csv: "Télécharger les valeurs provinciales (CSV)",
     geopackage: "Télécharger les valeurs provinciales (GeoPackage)",
     comparison: "Comparer les valeurs aux statistiques officielles sur la récolte",
+    harvestVolume: "Volume récolté et possibilité annuelle de coupe en C.-B.",
     releases: "Lire les notes de version et le format de citation",
     limitsTitle: "Limites à comprendre d’abord",
     limits:
@@ -91,10 +95,14 @@ export function DataPage({ locale }: Readonly<{ locale: Locale }>) {
   const copy = COPY[locale];
   const [csv, geopackage] = provinceBulkRelease.artifacts;
   return (
-    <main id="main" className="page-wrap">
+    <main id="main" className="page-wrap data-page">
       <header className="masthead">
         <h1>{copy.title}</h1>
       </header>
+      <CoverageStatement locale={locale}><p>{copy.limits}</p></CoverageStatement>
+      <EvidenceLegend locale={locale} />
+      <div className="data-layout">
+      <div className="data-reader">
 
       <section className="content-section prose-measure">
         <h2>{copy.accessTitle}</h2>
@@ -113,6 +121,9 @@ export function DataPage({ locale }: Readonly<{ locale: Locale }>) {
             </a>
           </li>
           <li className="card card--lift">
+            <a href={locale === "en" ? "/en/data/bc-harvest-volume" : "/fr/donnees/volume-recolte-bc"}>{copy.harvestVolume}</a>
+          </li>
+          <li className="card card--lift">
             <a href={locale === "en" ? "/en/releases" : "/fr/versions"}>{copy.releases}</a>
           </li>
         </ul>
@@ -120,11 +131,12 @@ export function DataPage({ locale }: Readonly<{ locale: Locale }>) {
 
       <aside className="card card--sand prose-measure">
         <h2>{copy.limitsTitle}</h2>
-        <p>{copy.limits}</p>
         <p>{copy.previewLimits}</p>
       </aside>
 
       <SourceCurrency locale={locale} />
+      </div>
+      <aside className="data-provenance" aria-label={copy.recordsTitle}>
 
       <section className="content-section prose-measure">
         <h2>{copy.recordsTitle}</h2>
@@ -178,6 +190,8 @@ export function DataPage({ locale }: Readonly<{ locale: Locale }>) {
           </li>
         </ul>
       </section>
+      </aside>
+      </div>
     </main>
   );
 }
