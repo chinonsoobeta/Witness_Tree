@@ -16,6 +16,22 @@ trees able to reach 5 metres at maturity. A class-name match alone does not
 prove the area, crown-closure, maturity-height, connectivity, or land-use
 conditions. The mapping below is deliberately unresolved.
 
+The bundled README, now recorded below, states what the product was built to be
+and is the reason the mapping cannot be read off a class name. VLCE2 is a
+land-cover classification produced from annual Landsat best-available-pixel
+composites using an August 1 plus or minus 30 day compositing window, with a
+training pool derived from existing land-cover products, regional classification
+models on a 150 by 150 km tiling system, and a Hidden Markov Model applied
+afterwards to force logical class transitions between years. Its method is
+Hermosilla et al. 2022, Remote Sensing of Environment 268, 112780. Its published
+content is 13 class codes and nothing else: the document states no crown-closure
+threshold, no minimum area, no maturity height, and no minimum width, so no NFI
+condition can be read out of a class value alone. Its stated extent is Canada's
+forested ecosystems at roughly 650 Mha, which is a publisher footprint decision
+and is not a forest-land denominator. Recording this closes the bundled-document
+evidence row below. It does not resolve any class, and it does not move this
+gate.
+
 ## Project rule versus current NFI source
 
 The project-plan wording is not a substitute for a current, versioned NFI
@@ -49,7 +65,7 @@ immutable version identifier by itself.
 | Input | Required immutable/version evidence | Recorded value | Reviewer verification |
 | --- | --- | --- | --- |
 | VLCE2 raster, each year used | Publisher, dataset title, year, retrieval UTC timestamp, source URL, archive SHA-256, byte length, immutable object key and version ID, retention evidence | Not recorded | Not verified |
-| Bundled VLCE2 README and class documentation, each version relied on | Exact member name, archive SHA-256 binding, extracted-document SHA-256, language, publication/version date if supplied | Not recorded | Not verified |
+| Bundled VLCE2 README and class documentation, each version relied on | Exact member name, archive SHA-256 binding, extracted-document SHA-256, language, publication/version date if supplied | `CA_forest_VLCE2_2022_README.txt` (English), SHA-256 `b17da8c0a2435bfbc43d3400802107c421acd0e9685d5c0d5aafa62071020b4d`, 4008 bytes; `CA_forest_VLCE2_2022_LISEZMOI.txt` (French), SHA-256 `1c4ae48ab7535829b6f826d682d4ada182deec1901fc9fe38cbccd5d01973d91`, 5121 bytes. Both are members of `raw/nrcan-annual-land-cover-v2/2026-08-12/CA_forest_VLCE2_2022.zip`, archive SHA-256 `53555f815ffa68adb7c5b6117dd15d7b5385771a36926691e8a41e5fc12b11dd`, 1535510211 bytes, which matches the canonical raw inventory. No publication or version date is supplied inside either document; the zip member timestamp is 2025-10-09T12:25:14 and is not a publisher version statement. | Not verified |
 | NFI definition source | Issuer, exact edition/publication date, stable citation or archived copy checksum, retrieval UTC timestamp | Not recorded | Not verified |
 | NFI interpretive guidance used for any condition | Issuer, exact edition/publication date, stable citation or archived copy checksum, retrieval UTC timestamp | Not recorded | Not verified |
 | Connectivity/area/land-use/height ancillary inputs, if chosen | Dataset/version, licence, spatial and temporal scope, checksum, immutable object key/version ID, retention evidence | Not recorded | Not verified |
