@@ -19,6 +19,7 @@ const COPY = {
     csv: "Download province values (CSV)",
     geopackage: "Download province values (GeoPackage)",
     comparison: "Compare the values with official harvest statistics",
+    harvestVolume: "BC harvest volume and allowable annual cut",
     releases: "Read the release notes and citation format",
     limitsTitle: "Limits to understand first",
     limits:
@@ -58,6 +59,7 @@ const COPY = {
     csv: "Télécharger les valeurs provinciales (CSV)",
     geopackage: "Télécharger les valeurs provinciales (GeoPackage)",
     comparison: "Comparer les valeurs aux statistiques officielles sur la récolte",
+    harvestVolume: "Volume récolté et possibilité annuelle de coupe en C.-B.",
     releases: "Lire les notes de version et le format de citation",
     limitsTitle: "Limites à comprendre d’abord",
     limits:
@@ -117,6 +119,9 @@ export function DataPage({ locale }: Readonly<{ locale: Locale }>) {
             <a href={locale === "en" ? "/en/data/official-harvest-comparison" : "/fr/donnees/comparaison-recolte-officielle"}>
               {copy.comparison}
             </a>
+          </li>
+          <li className="card card--lift">
+            <a href={locale === "en" ? "/en/data/bc-harvest-volume" : "/fr/donnees/volume-recolte-bc"}>{copy.harvestVolume}</a>
           </li>
           <li className="card card--lift">
             <a href={locale === "en" ? "/en/releases" : "/fr/versions"}>{copy.releases}</a>
