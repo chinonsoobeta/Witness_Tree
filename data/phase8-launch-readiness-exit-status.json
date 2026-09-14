@@ -115,7 +115,7 @@
       "evidence": [
         {
           "path": "docs/OPERATIONS_HANDBOOK.md",
-          "sha256": "30758d2bdd3b2db6a27bc5574f614ffac5c3f4ca670eac20f1c0750783ca80d1"
+          "sha256": "e120b8ae3537ea9e00c37e2d8d4e25ef31fc54fbbef4f6925dc73ea62157d814"
         },
         {
           "path": "docs/PLAN_GAP_MATRIX.md",
@@ -220,7 +220,7 @@
         },
         {
           "path": "docs/OPERATIONS_HANDBOOK.md",
-          "sha256": "30758d2bdd3b2db6a27bc5574f614ffac5c3f4ca670eac20f1c0750783ca80d1"
+          "sha256": "e120b8ae3537ea9e00c37e2d8d4e25ef31fc54fbbef4f6925dc73ea62157d814"
         }
       ]
     },
