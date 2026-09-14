@@ -526,6 +526,11 @@
       "check": "scripts/check-wildfire-derived-recovery.mjs",
       "category": "data-root-bound",
       "reason": "Its full recovery coverage is tests/wildfire-derived-recovery.test.mjs, which reads derived wildfire outputs from the approved data root and is excluded from npm run test:suite by REQUIRES_DATA_ROOT."
+    },
+    {
+      "check": "scripts/check-wildfire-scheduled-archive-observed-runs.mjs",
+      "category": "suite-covered",
+      "reason": "tests/wildfire-scheduled-archive-observed-runs.test.mjs imports this checker and runs in npm run test:suite."
     }
   ]
 }

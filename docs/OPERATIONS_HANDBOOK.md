@@ -40,19 +40,19 @@ in a site incident. Every figure the site shows is compiled into the bundle
 from an illustrative fixture.
 
 The archive and the data root hold everything that would be expensive to lose.
-They are touched only by an owner sitting at a terminal, with one designed
-exception that has not yet run: the scheduled wildfire refresh below.
+They are touched only by an owner sitting at a terminal, with one exception:
+the scheduled wildfire refresh below, which has archived snapshots since
+2026-09-13.
 
 ### What runs without a human
 
 Exactly one thing: `.github/workflows/wildfire-refresh.yml`. It is a scheduled
 GitHub Actions job with `contents: read` and `id-token: write`. It no longer
-writes to this repository. After a successful refresh it is designed to assume
-an AWS role through GitHub OIDC and write new wildfire snapshots to the raw
-archive with COMPLIANCE retention, then a status object to the delivery bucket.
-The owner approved that role's exact policy and it was created on 2026-09-13,
-but no scheduled refresh has succeeded since, so the job has never written
-anything. Section 6.3 covers it. Do not repeat the older claim
+writes to this repository. After a successful refresh it assumes an AWS role
+through GitHub OIDC and writes new wildfire snapshots to the raw archive with
+COMPLIANCE retention, then a status object to the delivery bucket. The owner
+approved that role's exact policy and it was created on 2026-09-13. The first
+scheduled refresh succeeded that evening. Section 6.3 covers it. Do not repeat the older claim
 that this project has no scheduler and no CI job with write credentials; that
 claim is wrong and this job is the counterexample.
 
@@ -515,6 +515,17 @@ run the gate opened failed, and none refreshed anything. A successful workflow r
 not evidence of a refresh when the gate skipped the refresh step. The observed
 attempted-refresh failures include a direct push rejected by protected `main`,
 so the workflow conclusion alone is not a feed-health signal.
+
+The runs after the snapshot contract merged are recorded in
+[`data/wildfire-scheduled-archive-observed-runs-2026-09-14.json`](../data/wildfire-scheduled-archive-observed-runs-2026-09-14.json),
+with an independent readback of every archived payload and status version.
+GitHub created six scheduled runs between 2026-09-13 and 2026-09-14. The gate
+opened three, and each of those refreshed all four feeds, archived them and
+published a status version; the other three were gated no-ops. That window is
+under a day and crosses no daylight saving transition, so it does not show the
+four-a-day cadence. To classify a later run, read its step conclusions, not
+its workflow conclusion: a real refresh shows the refresh, role and archive
+steps all succeeded.
 
 One feed rejected while the others publish is S4 until its last good snapshot
 turns stale after 24 hours, and S3 from then on. A refresh in which every feed
