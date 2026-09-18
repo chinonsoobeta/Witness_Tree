@@ -18,9 +18,6 @@ DATA_ROOT="${WITNESS_TREE_DATA_ROOT:-/Volumes/Extended_SSD/Witness_Tree-data}"
 REFERENCE="$DATA_ROOT/derived/phase2-real-national-1984-2022-v1/masks/forest-mask-1984.tif"
 STAGING="$DATA_ROOT/staging"
 FEDERAL="$DATA_ROOT/derived/phase1/federal-electoral-districts-2023-v1/4004a6bff0303c46bc5d9318a3c0b4a0322599bc707712a3c41acffafbef0b93/phase1-federal-electoral-districts-2023-v1/federal-electoral-districts-2023.gpkg"
-# v2 reads Alberta from the Government of Alberta copy and Québec from Élections
-# Québec's published bytes (data/provincial-electoral-sources-2026-09-18.json).
-# v1 is kept as built.
 OUT="$DATA_ROOT/derived/phase6-district-index-v2"
 BUILDER="$(cd "$(dirname "$0")" && pwd)/phase6_district_index.py"
 METHOD_VERSION="district-index-960m-all-touched-v1"
@@ -65,6 +62,9 @@ if [ -e "$MANIFEST" ] || [ -e "$MARKER" ]; then
   exit 1
 fi
 
+# Output v2 reads Alberta from the Government of Alberta copy and Québec from Élections
+# Québec's published bytes (data/provincial-electoral-sources-2026-09-18.json).
+# v1 is kept as built.
 LAYERS="$OUT/layers.json"
 cat > "$LAYERS" <<JSON
 [

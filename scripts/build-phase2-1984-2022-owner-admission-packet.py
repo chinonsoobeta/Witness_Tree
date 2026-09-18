@@ -17,6 +17,8 @@ DRIVER_REL = "scripts/phase3-province-interval-spans-block-partition.py"
 ANCHORS_REL = "data/phase3-province-interval-spans-anchor-check.json"
 VALIDATION_REL = "data/phase3-province-interval-spans-partition-validation.json"
 OUT_REL = "data/phase2-1984-2022-owner-admission-packet.json"
+SOURCES_REL = "data/provincial-electoral-sources-2026-09-18.json"
+OVERLAY_V4_MANIFEST = f"{SSD}/derived/boundary-overlays-v4/manifest.json"
 
 
 def sha(path):
@@ -128,11 +130,28 @@ packet = {
             "what": "Loss for all 741 spans in each federal and provincial electoral district.",
             "file": bind("data/phase3-riding-interval-measurements.json"),
             "jurisdictionsInFile": districts,
-            "approvableJurisdictions": ["federal-ridings-2023", "bc-provincial-ridings-2023", "on-provincial-ridings-2022"],
+            "approvableJurisdictions": ["federal-ridings-2023", "bc-provincial-ridings-2023",
+                                        "ab-provincial-ridings-2019-goa", "on-provincial-ridings-2022",
+                                        "qc-provincial-ridings-2026-published"],
             "boundaryAdmission": {
                 "federal-ridings-2023": "admitted and release-approved (data/phase1-federal-electoral-production-admission.json)",
                 "bc-provincial-ridings-2023": "checksum-bound and profiled; no use-specific admission record found; owner to confirm",
+                "ab-provincial-ridings-2019-goa": ("re-sourced on 2026-09-18 from the Government of Alberta copy under the "
+                                                   "Open Government Licence - Alberta 2.2, which allows modification; owner to confirm"),
                 "on-provincial-ridings-2022": "checksum-bound and profiled; no use-specific admission record found; owner to confirm",
+                "qc-provincial-ridings-2026-published": ("Élections Québec's published bytes, reused unchanged on the owner's "
+                                                         "2026-09-18 determination that this is reproduction under the publisher's "
+                                                         "non-profit terms with the © credit. Not written permission; owner to confirm"),
+            },
+            "sourcesRecord": bind(SOURCES_REL),
+            "outlines": {
+                "what": ("The v4 boundary overlay tiles, built locally with the same Alberta and Québec sources. Québec "
+                         "(and the provincial overlay it shares) is drawn without simplification. Not uploaded."),
+                "manifest": bind(OVERLAY_V4_MANIFEST),
+                "creditsToShowWithV4": {
+                    "alberta": "the Open Government Licence - Alberta sentence, exactly as the sources record gives it",
+                    "quebec": "Source : © Directeur général des élections du Québec et Commission de la représentation électorale, 2026.",
+                },
             },
             "note": ("The file holds all five jurisdictions in one set of bytes. Admitting part of it means "
                      "the record names the approvable jurisdictions and the site must not show the excluded "
@@ -162,65 +181,15 @@ packet = {
         },
     },
     "notApprovable": {
-        "ab-provincial-ridings-2019 and qc-provincial-ridings-2026 district figures": (
-            "data/phase1-source-inventory.json records Alberta as rights-blocked (written permission "
-            "missing) and the Quebec 2026 map as not yet effective and rights-blocked. The outreach audit "
-            "records the Elections Alberta permission request as unsent. No later record clears either. "
-            "An admission here would invent source rights."),
+        "the earlier AB and QC district sources": (
+            "The Elections Alberta shapefile (sha256 89d0393f...) and the project's sans-eau Québec copy (sha256 "
+            "dd164f0a..., one name rewritten) and every output built from them. They are superseded by "
+            + SOURCES_REL + ", which records why. The live boundary-overlays-v3 tiles still draw the Elections "
+            "Alberta outlines until a v4 release replaces them and the credit together."),
         "rightsEvidence": [bind("data/phase1-source-inventory.json"), bind("data/phase1-production-source-ledger.json"),
                            bind("data/phase1-outreach-reply-audit.json")],
-        "publisherTermsReadOn2026-09-18": {
-            "note": ("Read from the public pages only. Nothing was sent, requested or accepted. These are the "
-                     "publishers' own words, summarized; they are not a rights decision."),
-            "alberta": {
-                "boundArtifact": "Elections Alberta 2019Boundaries_ED shapefile (EDS_ENACTED_BILL33_15DEC2017), sha256 89d0393f8046fe9178f630012fbf4a68718e898f538523554e211fc8dae526a4",
-                "terms": "https://www.elections.ab.ca/terms-conditions/",
-                "nonCommercialReproductionConditions": [
-                    "the materials are not modified",
-                    "due diligence to keep them accurate",
-                    "Elections Alberta is identified as the source",
-                    "not represented as an official version, or as made in affiliation with or with the endorsement of Elections Alberta",
-                ],
-                "commercial": "written permission from Elections Alberta (Deputy Chief Electoral Officer)",
-                "prescribedAttributionSentence": None,
-                "shapefileMetadataConstraints": "none: the zip carries no licence file and its .shp.xml has no use-constraint fields",
-                "whyAttributionAloneDoesNotClearIt": ("The site reprojects, generalizes and tiles the outlines and derives "
-                                                      "figures from them. That is modification, which the non-commercial "
-                                                      "exception does not allow."),
-                "siteAttributionIsWrong": ("lib/explore/boundaries.ts:76 credits the Alberta outlines to the Open Government "
-                                           "Licence - Alberta, but the bound file came from Elections Alberta under its own "
-                                           "terms, not that licence."),
-                "possibleCleanPath": {
-                    "dataset": "Provincial Electoral Division - Current 2019 (Government of Alberta, Provincial Geospatial Centre)",
-                    "catalogue": "https://open.alberta.ca/opendata/gda-e201c640-1f76-429c-8c24-89ff496f956e",
-                    "metadata": "https://geodiscover.alberta.ca/geoportal/rest/metadata/item/0999f0448e384d81981ff82b25656d16/xml",
-                    "licence": "Open Government Licence - Alberta (modification and commercial use allowed with attribution)",
-                    "attributionIfUsed": "Contains information licensed under the Open Government Licence - Alberta.",
-                    "status": ("Not acquired, checksummed or compared with the bound file. Re-sourcing Alberta from it, "
-                               "then re-running the AB district figures, would need its own owner decision. The licence "
-                               "page itself returned HTTP 520 on 2026-09-18 and should be re-read before relying on it."),
-                },
-            },
-            "quebec": {
-                "boundArtifact": "Élections Québec 2026 electoral map shapefile (127 divisions), sha256 dd164f0ad5ff7e9f5366f26696d78b9c562ceb88b3a5ad664c22a8e158843677",
-                "terms": "https://www.electionsquebec.qc.ca/en/our-institution/terms-of-use/",
-                "reproductionAllowed": "download and reproduce for non-profit purposes",
-                "requiredCredit": "mention the source and the copyright (©), and the author where named",
-                "adaptation": "written permission required",
-                "commercial": "written permission required",
-                "prescribedAttributionSentence": None,
-                "attributionIfPermitted": "Source : © Directeur général des élections du Québec et Commission de la représentation électorale, 2026.",
-                "mapStatus": ("Enacted by the National Assembly on 2026-06-12, boundaries published in the Gazette "
-                              "officielle on 2026-06-17, first used at the 2026-10-05 general election. The shapefile is "
-                              "now publicly downloadable, which closes the 'accessible artifact' half of the blocker."),
-                "whyAttributionAloneDoesNotClearIt": "Tiling the outlines and deriving figures from them is adaptation, which needs written permission.",
-                "openDataAlternative": ("None found. Données Québec lists only a CSV of division names "
-                                        "(Assemblée nationale, CC BY-NC 4.0) and no boundary geometry."),
-            },
-        },
-        "alreadyPublishedFlag": ("The AB and QC provincial district outlines are already in the live boundary-overlays-v3 "
-                                 "release, which records no rights basis for them. This packet does not fix that; it is "
-                                 "raised for a separate owner decision."),
+        "rightsEvidenceNote": ("These records still describe the earlier sources as rights-blocked. They are not edited; "
+                               "the sources record is their dated successor for Alberta and Québec."),
         "a span-ready patch archive": "It does not exist yet, and its scope under the 2026-08-29 amendment is unconfirmed.",
     },
     "limitsEveryItemCarries": [

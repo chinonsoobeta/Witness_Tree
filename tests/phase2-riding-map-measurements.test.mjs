@@ -12,8 +12,8 @@ const runner = path.join(root, "scripts/build-phase2-riding-map-measurements.mjs
 const sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const specs = [
   ["federal-ridings-2023", "CA", "FED_NUM", 343, 352], ["bc-provincial-ridings-2023", "BC", "ELECTORAL_DISTRICT_ID", 93, 93],
-  ["ab-provincial-ridings-2019", "AB", "EDNumber20", 87, 87], ["on-provincial-ridings-2022", "ON", "ED_ID", 124, 124],
-  ["qc-provincial-ridings-2026", "QC", "CO_CEP", 127, 127],
+  ["ab-provincial-ridings-2019-goa", "AB", "EDNUMBER", 87, 87], ["on-provincial-ridings-2022", "ON", "ED_ID", 124, 124],
+  ["qc-provincial-ridings-2026-published", "QC", "CO_CEP", 127, 127],
 ];
 
 function annualRows(province, count) {
@@ -58,7 +58,7 @@ test("combines exactly the five completed V2 runs and keeps incomplete shares nu
 test("fails closed when any of the five runner completion markers is absent", () => {
   const paths = fixture();
   try {
-    unlinkSync(path.join(paths.dir, "qc-provincial-ridings-2026.complete.sha256"));
+    unlinkSync(path.join(paths.dir, "qc-provincial-ridings-2026-published.complete.sha256"));
     assert.throws(() => run(paths), /completion marker does not exist/);
   } finally { rmSync(paths.dir, { recursive: true, force: true }); }
 });

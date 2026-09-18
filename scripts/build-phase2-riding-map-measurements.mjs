@@ -18,9 +18,9 @@ const CLAIMS = Object.freeze({ admitted: false, released: false, productionEligi
 const RUNS = Object.freeze([
   { key: "federal", overlay: "federal-ridings", jurisdiction: "CA", idField: "FED_NUM", featureCount: 343, sourceFeatureCount: 352, annual: "federal-ridings-2023.json", sidecar: "federal-ridings-2023.provenance.json", marker: "federal-ridings-2023.complete.sha256" },
   { key: "bc", overlay: "provincial-ridings", jurisdiction: "BC", idField: "ELECTORAL_DISTRICT_ID", featureCount: 93, sourceFeatureCount: 93, annual: "bc-provincial-ridings-2023.json", sidecar: "bc-provincial-ridings-2023.provenance.json", marker: "bc-provincial-ridings-2023.complete.sha256" },
-  { key: "ab", overlay: "provincial-ridings", jurisdiction: "AB", idField: "EDNumber20", featureCount: 87, sourceFeatureCount: 87, annual: "ab-provincial-ridings-2019.json", sidecar: "ab-provincial-ridings-2019.provenance.json", marker: "ab-provincial-ridings-2019.complete.sha256" },
+  { key: "ab", overlay: "provincial-ridings", jurisdiction: "AB", idField: "EDNUMBER", featureCount: 87, sourceFeatureCount: 87, annual: "ab-provincial-ridings-2019-goa.json", sidecar: "ab-provincial-ridings-2019-goa.provenance.json", marker: "ab-provincial-ridings-2019-goa.complete.sha256" },
   { key: "on", overlay: "provincial-ridings", jurisdiction: "ON", idField: "ED_ID", featureCount: 124, sourceFeatureCount: 124, annual: "on-provincial-ridings-2022.json", sidecar: "on-provincial-ridings-2022.provenance.json", marker: "on-provincial-ridings-2022.complete.sha256" },
-  { key: "qc", overlay: "provincial-ridings", jurisdiction: "QC", idField: "CO_CEP", featureCount: 127, sourceFeatureCount: 127, annual: "qc-provincial-ridings-2026.json", sidecar: "qc-provincial-ridings-2026.provenance.json", marker: "qc-provincial-ridings-2026.complete.sha256" },
+  { key: "qc", overlay: "provincial-ridings", jurisdiction: "QC", idField: "CO_CEP", featureCount: 127, sourceFeatureCount: 127, annual: "qc-provincial-ridings-2026-published.json", sidecar: "qc-provincial-ridings-2026-published.provenance.json", marker: "qc-provincial-ridings-2026-published.complete.sha256" },
 ]);
 
 const fail = (message) => { throw new Error(message); };

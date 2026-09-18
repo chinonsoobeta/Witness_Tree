@@ -31,7 +31,7 @@
   "recomputation": {
     "product": {
       "path": "data/phase3-riding-interval-measurements.json",
-      "sha256": "e634624ac04bb34016d86f3167362305d53b43c08ce83d94a94c1b19c9b33db2"
+      "sha256": "d27f7a0b393399e5ea9638753fd5123fc9e0dbcc1cb3fa3579fe5842dcb8f06a"
     },
     "derivedFrom": "per-cell annual NTEMS loss masks on the external store, not folded down from the published annual table",
     "reason": "The union of a span cannot be recovered by adding annual counts, because addition cannot know which cells recur. The union needed the per-cell record.",

@@ -51,7 +51,7 @@ Share of each province with no data: AB 24.02%, QC 15.05%, ON 9.03%, BC 0.004%.
 | A | The 79-raster national batch everything is computed from (`phase2-real-national-1984-2022-v1`) | Not admitted today. The 2026-08-26 record covered a different 21-raster batch. |
 | B | Province annual series and the 1984-2022 once-counted loss | Marked countable today, as a minimum. |
 | C | The new province span file, its per-piece file and its driver | All anchors hold. |
-| D | District span figures | Federal, BC and ON only. See below. |
+| D | District span figures, and the v4 outlines they are drawn in | All five boundary sets, after the Alberta and Québec re-source. See below. |
 | E | 38 annual per-cell patch archives (already on the CDN) | They draw outside the four provinces. No span-ready archive exists yet. |
 | F | The 960 m coarse grid behind draw-and-measure | Built and complete, never uploaded. |
 
@@ -64,31 +64,29 @@ Share of each province with no data: AB 24.02%, QC 15.05%, ON 9.03%, BC 0.004%.
 
 **What approval cannot do.** Phase 2 stays at 2 of 4 and Phase 8 stays at 8 of 16. Approval admits and releases bytes. It does not complete expert review, the independent comparisons or any external event.
 
-## Alberta and Québec districts cannot be admitted by this packet
+## Alberta and Québec districts, after the re-source
 
-The source inventory records both provincial district maps as blocked on rights. On 2026-09-18 I read each publisher's public terms (read only: nothing was sent, requested or accepted).
+The first build of this packet left Alberta and Québec out, because their sources didn't allow the use the site makes. On 2026-09-18 the owner directed a fix, recorded in [`data/provincial-electoral-sources-2026-09-18.json`](../data/provincial-electoral-sources-2026-09-18.json) and explained in [the sources note](PROVINCIAL_ELECTORAL_SOURCES_2026_09_18.md). The packet binds that record.
 
-**Alberta.** The bound file is Elections Alberta's 2019 shapefile.
-- Elections Alberta's [terms](https://www.elections.ab.ca/terms-conditions/) allow non-commercial reproduction only if:
-  - the material is not modified;
-  - Elections Alberta is named as the source;
-  - it is not presented as official or endorsed.
-- There is no set attribution sentence, and the shapefile carries no licence file.
-- The site reprojects, generalizes and tiles the outlines, and derives figures from them. That is modification, so attribution alone doesn't cover it.
-- **The site's current credit is wrong.** `lib/explore/boundaries.ts:76` credits the Alberta outlines to the Open Government Licence - Alberta, but this file was not published under that licence.
-- **A possible clean path the repo never considered.** The Government of Alberta publishes "Provincial Electoral Division - Current 2019" (Provincial Geospatial Centre) under the Open Government Licence - Alberta. That licence allows modification with the credit "Contains information licensed under the Open Government Licence - Alberta."
-  - This copy is not acquired or compared with the bound file.
-  - Re-sourcing Alberta from it would need its own decision.
-  - The licence page returned an error on 2026-09-18 and should be re-read before anyone relies on it.
+**Alberta: re-sourced.**
+- The district figures and outlines now come from the Government of Alberta's copy of the same 87 divisions, under the Open Government Licence - Alberta 2.2. That licence allows modification.
+- The old Elections Alberta file only allowed reproduction without modification.
+- The new outlines differ from the old ones by 0.003% of area. The 1984-2022 once-counted loss for the whole province changed by 3.69 ha.
 
-**Québec.** The bound file is Élections Québec's 2026 map.
-- The map was enacted on 2026-06-12 and published in the Gazette on 2026-06-17. It is first used at the 2026-10-05 election.
-- Its shapefile is now public, which settles the "no accessible artifact" half of the blocker.
-- Élections Québec's [terms](https://www.electionsquebec.qc.ca/en/our-institution/terms-of-use/) allow non-profit reproduction if the source and © are credited. Adapting the content or commercial use needs written permission.
-- If permission is granted, the credit would read: "Source : © Directeur général des élections du Québec et Commission de la représentation électorale, 2026."
-- Données Québec has no open copy of the boundaries, only a list of division names.
+**Québec: reused as published.**
+- The figures and outlines now come from Élections Québec's published file, unchanged. The copy used before had one name rewritten.
+- The outlines are drawn without simplification.
+- Every count is identical to the earlier run; only that one name differs.
+- This rests on the owner's determination that unchanged reuse falls within Élections Québec's non-profit reproduction terms, with its © credit. It is not written permission from Élections Québec.
 
-**Already live.** Both outlines are already in the live boundary-overlays-v3 release, which records no rights basis for them. This packet doesn't change that; it is raised for a separate decision.
+**What the owner is confirming for item D.** Approving D for Alberta and Québec accepts the sources record as the rights basis for those two boundary sets. The inventory, ledger and outreach records still describe the old sources as blocked. They are not edited, and the sources record is their dated successor.
+
+**The live site.**
+- The live boundary-overlays-v3 tiles still draw the Elections Alberta outlines, and the credit line is still the old one.
+- The v4 tiles are built locally and bound in the packet, but not uploaded.
+- Releasing D means publishing v4 and changing the credit line in the same step:
+  - **Alberta:** the licence's own sentence.
+  - **Québec:** "Source : © Directeur général des élections du Québec et Commission de la représentation électorale, 2026."
 
 ## Rebuild and check
 
