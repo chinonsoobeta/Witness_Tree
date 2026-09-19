@@ -108,14 +108,17 @@
   --loss-1: #a9cf9b;
   --loss-2: #57935a;
   --loss-3: #1f5f38;
+  --loss-4: #0b3320;
 
   /* per-cell patch colours, on the same footing and for the same reason: the
      legend swatch has to read as the same colour as the patch beside it.
-     "neither recorded" reuses --loss-3 rather than earning a colour of its
-     own, because it is a detected loss patch with nothing in the official
-     record, not a third kind of event. */
+     "neither recorded" has a neutral colour of its own: it once reused
+     --loss-3, which is also a province fill colour, so a patch with nothing
+     in the record vanished into the province behind it. It is still a
+     detected loss patch, not a third kind of event, so it takes no hue. */
   --patch-harvest: #2a78d6;
   --patch-fire: #eb6834;
+  --patch-neither: #7a6a58;
 
   /* Public-domain province-flag artwork keeps its fixed identity colours in
      both themes. These tokens keep raw colour values out of component code. */
@@ -2010,6 +2013,9 @@ h4 {
 .loss-3 {
   background: var(--loss-3);
 }
+.loss-4 {
+  background: var(--loss-4);
+}
 .patch-harvest {
   background: var(--patch-harvest);
 }
@@ -2017,8 +2023,7 @@ h4 {
   background: var(--patch-fire);
 }
 .patch-none {
-  background: var(--loss-3);
-  background-image: repeating-linear-gradient(135deg, transparent 0 4px, var(--loss-0) 4px 5px);
+  background: var(--patch-neither);
 }
 .map-legend-key {
   display: inline-flex;

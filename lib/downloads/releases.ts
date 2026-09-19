@@ -39,3 +39,20 @@ export const provinceBulkRelease: DownloadRelease = {
 };
 
 export const provinceBulkManifestUrl = `${base}/manifest.json`;
+
+/*
+ * Every span from 1984 to 2022 for the four provinces: item C of the 2026-09-18
+ * admission, as data/phase3-province-span-downloads-release.json records it.
+ * These are the numbers the Explore page reads, written out one row per province
+ * per span. tests/province-span-downloads.test.ts holds this to the record.
+ */
+export const PROVINCE_SPAN_TIME_RANGE = "1984-2022";
+const spanBase = "https://d3g1406o0uekin.cloudfront.net/releases/phase3-province-span-downloads-v1/f9cd109fa27cd43db90eed76118be45393bc3b7f9bb0d7830a18ec19ed463c81";
+export const provinceSpanRelease = {
+  id: "f9cd109fa27cd43db90eed76118be45393bc3b7f9bb0d7830a18ec19ed463c81",
+  spanCount: 741,
+  rowCount: 2964,
+  csv: { url: `${spanBase}/province-spans-1984-2022.csv`, sha256: "1b57f418f4bd3bc546bb713c7de4eecfe8163cd3ee5aa10f84f35382de2e7c25" },
+  json: { url: `${spanBase}/province-spans-1984-2022.json`, sha256: "cef3954987ba2e4e3fb22b407fe1bafe1b1539c98e0291de7e236d4fcc547a2a" },
+  manifestUrl: `${spanBase}/manifest.json`,
+} as const;

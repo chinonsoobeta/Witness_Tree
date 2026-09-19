@@ -9,3 +9,4 @@ export * from "./riding-measurements";
 export * from "./href";
 export * from "./interval";
 export * from "./period";
+export * from "./province-spans";

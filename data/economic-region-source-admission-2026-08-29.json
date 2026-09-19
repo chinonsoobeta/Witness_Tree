@@ -65,19 +65,25 @@
   },
   "overlayReleaseSuperseded": {
     "supersedes": "2c3667c5e23d4f976791cc30ae8246f63e2aa03b4c4829a7006952cdd43f7ff8",
-    "productId": "boundary-overlays-v3",
-    "releaseId": "4259310e49e4bf2a289463240a434529627415f81152f6104370764d07471339",
-    "builtAt": "2026-09-02T18:47:29.292Z",
-    "fileName": "economic-regions-v3.pmtiles",
-    "byteLength": 4066915,
-    "sha256": "3b5cfd24d93716ac1d7266b9ffdf3287accb643cf2ed480acf45b7dbbe0c8c97",
-    "url": "https://d3g1406o0uekin.cloudfront.net/releases/boundary-overlays-v3/4259310e49e4bf2a289463240a434529627415f81152f6104370764d07471339/tiles/economic-regions-v3.pmtiles",
+    "productId": "boundary-overlays-v4",
+    "releaseId": "594e33aa08fd7b60a21e6a17d43f7491757d99e7900fdd697230f6d1f52b78f0",
+    "builtAt": "2026-09-18T22:45:43.945Z",
+    "fileName": "economic-regions-v4.pmtiles",
+    "byteLength": 4066925,
+    "sha256": "c814306a7fa3458c143ce25440b1ce9ce5d22416640db01aabebaf74186520af",
+    "url": "https://d3g1406o0uekin.cloudfront.net/releases/boundary-overlays-v4/594e33aa08fd7b60a21e6a17d43f7491757d99e7900fdd697230f6d1f52b78f0/tiles/economic-regions-v4.pmtiles",
     "shippedFeatureCount": 44,
     "admittedSelectionFeatureCount": 76,
     "sourceFeatureCount": 76,
     "selection": "PRUID IN ('24','35','48','59')",
     "clippedToProvinceBoundary": true,
-    "reason": "The shipped overlay was clipped to British Columbia, Alberta, Ontario and Quebec on 2026-09-02. The admitted source is still the national file of 76 regions; the layer that ships is the 44 of them that lie in those four provinces."
+    "reason": "The shipped overlay was clipped to British Columbia, Alberta, Ontario and Quebec on 2026-09-02. The admitted source is still the national file of 76 regions; the layer that ships is the 44 of them that lie in those four provinces. On 2026-09-18 boundary-overlays-v4 republished the same clipped layer with the same features, under item D of data/phase2-1984-2022-admission-record-2026-09-18.json; this pointer moved from v3 to v4 then.",
+    "previousPointer": {
+      "productId": "boundary-overlays-v3",
+      "releaseId": "4259310e49e4bf2a289463240a434529627415f81152f6104370764d07471339",
+      "fileName": "economic-regions-v3.pmtiles",
+      "sha256": "3b5cfd24d93716ac1d7266b9ffdf3287accb643cf2ed480acf45b7dbbe0c8c97"
+    }
   },
   "claims": {
     "sourceAdmitted": true,

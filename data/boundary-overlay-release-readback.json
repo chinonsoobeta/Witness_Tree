@@ -1,29 +1,29 @@
 {
   "schemaVersion": "witness-tree/boundary-overlay-release-readback/1",
-  "releaseId": "4259310e49e4bf2a289463240a434529627415f81152f6104370764d07471339",
-  "recordedAt": "2026-09-02T18:48:41.553Z",
+  "releaseId": "594e33aa08fd7b60a21e6a17d43f7491757d99e7900fdd697230f6d1f52b78f0",
+  "recordedAt": "2026-09-19T04:49:30.947Z",
   "s3ExactReadback": true,
   "cloudFrontExactReadback": true,
   "archives": [
     {
-      "fileName": "federal-ridings-v3.pmtiles",
-      "byteLength": 2674670,
-      "sha256": "4d45819383e2af72aac3c321b58ad8575ff5d5daf0b178293d112429aa1cb4ef"
+      "fileName": "federal-ridings-v4.pmtiles",
+      "byteLength": 2674681,
+      "sha256": "bf05e816be08595a20b7a438de1313245ad463747170fe96cff6025fd30ce944"
     },
     {
-      "fileName": "provincial-ridings-v3.pmtiles",
-      "byteLength": 2117946,
-      "sha256": "afbb7fee81e796546de4c61661b90bf9fe5ec825d1762da734396a27445f1a5d"
+      "fileName": "provincial-ridings-v4.pmtiles",
+      "byteLength": 5485659,
+      "sha256": "7ddf3c7ff1906b7aa23613bb931334115b902d01416ec130b1463caef94c2c36"
     },
     {
-      "fileName": "economic-regions-v3.pmtiles",
-      "byteLength": 4066915,
-      "sha256": "3b5cfd24d93716ac1d7266b9ffdf3287accb643cf2ed480acf45b7dbbe0c8c97"
+      "fileName": "economic-regions-v4.pmtiles",
+      "byteLength": 4066925,
+      "sha256": "c814306a7fa3458c143ce25440b1ce9ce5d22416640db01aabebaf74186520af"
     },
     {
-      "fileName": "watersheds-v3.pmtiles",
-      "byteLength": 5289981,
-      "sha256": "74f0ca0a90e33959f758a0da01c52331bee1e0e83fed8c9cb1f0ab32da8ccab7"
+      "fileName": "watersheds-v4.pmtiles",
+      "byteLength": 5289988,
+      "sha256": "89728ea5801e95ff4aa8755287b186d86e37bca2dd58fef02fd24ff7e85713e2"
     }
   ]
 }

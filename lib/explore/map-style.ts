@@ -11,6 +11,8 @@ export const EXPLORE_MAP_COLOURS = Object.freeze({
   loss1: "#a9cf9b",
   loss2: "#57935a",
   loss3: "#1f5f38",
+  loss4: "#0b3320",
+  neither: "#7a6a58",
 } as const);
 
 export const EXPLORE_PRODUCTION_LAYER = Object.freeze({

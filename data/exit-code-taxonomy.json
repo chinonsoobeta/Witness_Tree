@@ -1,7 +1,7 @@
 {
   "schemaVersion": "witness-tree/operator-runner-exit-taxonomy/1",
   "status": "engineering-derived-static-inventory",
-  "boundary": "Explicit shell refusals, literal exits, forwarded-status exits, and inline Node predicates in the twenty-four scripts/run-*.sh operator runners. Native child statuses propagated by errexit or pipefail are outside the intentional taxonomy and require the child diagnostic.",
+  "boundary": "Explicit shell refusals, literal exits, forwarded-status exits, and inline Node predicates in the twenty-five scripts/run-*.sh operator runners. Native child statuses propagated by errexit or pipefail are outside the intentional taxonomy and require the child diagnostic.",
   "codes": [
     {
       "code": 0,
@@ -38,6 +38,10 @@
     {
       "code": 77,
       "meaning": "identity or authorization boundary is not established"
+    },
+    {
+      "code": 255,
+      "meaning": "a parallel batch aborted outright because the data root went away mid-run"
     }
   ],
   "runners": {
@@ -143,6 +147,13 @@
       },
       "defaultFailCode": null,
       "siteContractSha256": "15683394f795d018dbe9021ad7a08798dc019dab9ce6ef851dff685df9fe663c"
+    },
+    "scripts/run-phase2-per-cell-four-province-tiles.sh": {
+      "codes": {
+        "255": 2
+      },
+      "defaultFailCode": null,
+      "siteContractSha256": "27e5ea771c798271ece535941646b8851c151c7f51d12ce8e58d62630c0f1425"
     },
     "scripts/run-phase2-per-cell-tiles.sh": {
       "codes": {},

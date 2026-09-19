@@ -1,4 +1,6 @@
-import releaseRecord from "@/data/phase2-per-cell-tile-release.json";
+import releaseRecord from "@/data/phase2-per-cell-four-province-tile-release.json";
+import spanRecord from "@/data/phase2-per-cell-span-archive-release.json";
+import type { PerCellAnnualInterval } from "./annual-series";
 import type { ExploreMode } from "./types";
 
 /** One published archive: the tiles for a single annual interval. */
@@ -11,6 +13,8 @@ export type PerCellArchive = Readonly<{
   cellCount: number;
   harvestCells: number;
   fireCells: number;
+  patchesWithBothCauses: number;
+  disturbanceYearsMissing: readonly string[];
   url: string;
 }>;
 
@@ -33,19 +37,22 @@ type PerCellRelease = Readonly<{
 const release = releaseRecord as PerCellRelease;
 
 /**
- * The per-cell forest-loss layer.
+ * The per-cell forest-loss layer, for British Columbia, Alberta, Ontario and
+ * Québec.
  *
  * This is the detail behind the province aggregate: one polygon per connected
  * patch of detected loss, traced exactly from the 30 m grid rather than
- * generalized from it. It exists for all 38 annual intervals from 1984-1985 to
- * 2021-2022 and reconciles patch for patch against the component inventory.
+ * generalized from it, for all 38 annual intervals from 1984-1985 to
+ * 2021-2022. The national patches were cut at the four provinces' boundary, so
+ * nothing is drawn outside them; in every interval the cells kept equal the
+ * provinces' admitted annual loss exactly. The clipped archives have their own
+ * admission record, data/phase2-per-cell-four-province-admission-record-2026-09-19.json.
  *
- * What it is not: reviewed, released, or production eligible. The owner
- * authorized building and publishing it; nobody has checked it against ground
- * truth, and the province and national loss rates the site publishes are not
- * restated from it. Below the maximum zoom the tiler generalizes and, in
- * crowded tiles, drops the smallest patches, so the layer is drawable and not
- * countable at any zoom. Nothing in the interface may total it.
+ * Admitted and released; not reviewed and not production eligible. Nobody has
+ * checked it against ground truth. Below the maximum zoom the tiler
+ * generalizes and, in crowded tiles, drops the smallest patches, so the layer
+ * is drawable and not countable at any zoom. Nothing in the interface may
+ * total it; the counts below come from the release record, not the tiles.
  */
 export const EXPLORE_PER_CELL_LAYER = Object.freeze({
   ...release,
@@ -93,6 +100,79 @@ export function perCellCauseForMode(mode: ExploreMode): PerCellCause | null {
 
 export function perCellArchiveForYear(year: number): PerCellArchive | null {
   return archiveForYear(EXPLORE_PER_CELL_LAYER.intervals, year);
+}
+
+const hectares = (cells: number) => Math.round(cells * 9) / 100;
+
+/**
+ * One annual interval's four-province figures, counted from the clipped cell
+ * store the archives were drawn from, so the numbers beside the map describe
+ * the same four provinces the map shows. A cell carries a recorded harvest or
+ * a recorded fire, never both, so the two and the unattributed rest add up to
+ * the interval's loss.
+ */
+export function fourProvinceAnnualForYear(year: number): PerCellAnnualInterval | null {
+  const archive = perCellArchiveForYear(year);
+  if (!archive) return null;
+  const unattributedCells = archive.cellCount - archive.harvestCells - archive.fireCells;
+  if (unattributedCells < 0) return null;
+  return {
+    interval: archive.interval,
+    startYear: year - 1,
+    endYear: year,
+    patchCount: archive.patchCount,
+    cellCount: archive.cellCount,
+    hectares: hectares(archive.cellCount),
+    harvestCells: archive.harvestCells,
+    harvestHectares: hectares(archive.harvestCells),
+    fireCells: archive.fireCells,
+    fireHectares: hectares(archive.fireCells),
+    unattributedCells,
+    unattributedHectares: hectares(unattributedCells),
+    disturbanceYearsMissing: archive.disturbanceYearsMissing,
+    patchesWithBothCauses: archive.patchesWithBothCauses,
+  };
+}
+
+type PerCellSpanRelease = Readonly<{
+  schemaVersion: string;
+  releaseId: string;
+  url: string;
+  sourceLayer: string;
+  yearProperty: string;
+  firstYear: number;
+  lastYear: number;
+  minZoom: number;
+  maxZoom: number;
+  countable: boolean;
+  expertReviewed: boolean;
+  productionEligible: boolean;
+}>;
+
+/**
+ * The span archive: every four-province patch from all 38 intervals in one
+ * layer, each tagged with the closing year of the interval it was lost in.
+ * A span is a filter on that year, so moving a year handle never swaps a
+ * source, and the patches drawn are every patch lost at least once in the
+ * span. A place lost in two years is drawn once for each.
+ */
+export const EXPLORE_PER_CELL_SPAN_LAYER = Object.freeze({
+  ...(spanRecord as PerCellSpanRelease),
+  sourceId: "phase2-per-cell-span-loss",
+});
+
+/**
+ * The closing years a span draws: after its opening year, through its closing
+ * year. Null when the span reaches outside the archive, so the map never
+ * labels a partial span with the years that were asked for.
+ */
+export function perCellSpanYears(
+  fromYear: number,
+  toYear: number,
+): Readonly<{ after: number; through: number }> | null {
+  if (!Number.isInteger(fromYear) || !Number.isInteger(toYear) || toYear <= fromYear) return null;
+  if (fromYear < EXPLORE_PER_CELL_SPAN_LAYER.firstYear - 1 || toYear > EXPLORE_PER_CELL_SPAN_LAYER.lastYear) return null;
+  return { after: fromYear, through: toYear };
 }
 
 /**

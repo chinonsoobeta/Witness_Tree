@@ -2,6 +2,7 @@
 import { handleImageOptimization, DEFAULT_DEVICE_SIZES, DEFAULT_IMAGE_SIZES } from "vinext/server/image-optimization";
 import handler from "vinext/server/app-router-entry";
 import { ADDRESS_SEARCH_PATH, addressLookupConfigured, handleAddressSearch, withAddressFlag, type AddressEnv } from "./address";
+import { DISTRICT_SPANS_PATH, handleDistrictSpans } from "./district-spans";
 import { DISTRICT_RESOLVE_PATH, districtIndexConfigured, handleDistrictResolve, withDistrictFlag, type DistrictEnv } from "./district";
 import { SHAPE_MEASURE_PATH, coarseGridConfigured, handleShapeMeasure, withShapeFlag, type ShapeEnv } from "./shape";
 
@@ -89,6 +90,12 @@ const worker = {
     // with no-store and it must not be cached by locale or by page.
     if (url.pathname === DISTRICT_RESOLVE_PATH) {
       return withSecurityHeaders(await handleDistrictResolve(request, env));
+    }
+
+    // One span's district figures, so the readout follows the year control
+    // without a navigation. It reads only committed data and needs no binding.
+    if (url.pathname === DISTRICT_SPANS_PATH) {
+      return withSecurityHeaders(handleDistrictSpans(request));
     }
 
     // Measuring a drawn shape reads whole grid tiles. It stays off the app

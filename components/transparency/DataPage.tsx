@@ -4,8 +4,10 @@ import { colon, formatYearRangeKey, type Locale } from "@/lib/domain";
 import { SourceCurrency } from "./SourceCurrency";
 import {
   PROVINCE_BULK_TIME_RANGE,
+  PROVINCE_SPAN_TIME_RANGE,
   provinceBulkManifestUrl,
   provinceBulkRelease,
+  provinceSpanRelease,
 } from "@/lib/downloads/releases";
 
 const COPY = {
@@ -18,6 +20,14 @@ const COPY = {
       "These are province summaries for reading and analysis. They are not per-cell geometry or a live data service.",
     csv: "Download province values (CSV)",
     geopackage: "Download province values (GeoPackage)",
+    spanTitle: "Every span, 1984 to 2022",
+    spanSummary:
+      `Detected forest loss for every span ${formatYearRangeKey(PROVINCE_SPAN_TIME_RANGE, "en", "from")} (741 spans) for British Columbia, Alberta, Ontario and Quebec: one row per province per span, the same figures the Explore page shows. Each row gives the forest known at the start year, the forest lost at least once, its share of the known forest, the yearly losses added together, and the land nobody could see in the start year.`,
+    spanLimits:
+      "Every figure is a minimum, because every province has land that was unmapped or nodata in the start year; that land is Unknown, never no loss. Yearly losses added together count a place lost in two years twice, so they are hectares only and carry no percentage. Nothing has been expert reviewed, and harvest and wildfire are not attributed as causes.",
+    spanCsv: "Download every span (CSV)",
+    spanJson: "Download every span (JSON)",
+    spanManifest: "Open the span download manifest",
     comparison: "Compare the values with official harvest statistics",
     harvestVolume: "BC harvest volume and allowable annual cut",
     releases: "Read the release notes and citation format",
@@ -58,6 +68,14 @@ const COPY = {
       "Il s’agit de résumés provinciaux destinés à la lecture et à l’analyse. Ils ne constituent ni une géométrie par cellule ni un service de données en direct.",
     csv: "Télécharger les valeurs provinciales (CSV)",
     geopackage: "Télécharger les valeurs provinciales (GeoPackage)",
+    spanTitle: "Toutes les périodes, de 1984 à 2022",
+    spanSummary:
+      `La perte forestière détectée pour chaque période ${formatYearRangeKey(PROVINCE_SPAN_TIME_RANGE, "fr", "from")} (741 périodes) en Colombie-Britannique, en Alberta, en Ontario et au Québec : une ligne par province et par période, soit les mêmes valeurs que la page Explorer. Chaque ligne donne la forêt connue l’année de départ, la forêt perdue au moins une fois, sa part de la forêt connue, les pertes annuelles additionnées et le territoire que personne ne pouvait voir l’année de départ.`,
+    spanLimits:
+      "Chaque valeur est un minimum, car chaque province compte un territoire non cartographié ou sans données l’année de départ; ce territoire est Inconnu, jamais une absence de perte. Les pertes annuelles additionnées comptent deux fois un lieu perdu deux fois : elles sont donc en hectares seulement, sans pourcentage. Rien n’a fait l’objet d’un examen par des experts, et la récolte et les feux ne sont pas attribués comme causes.",
+    spanCsv: "Télécharger toutes les périodes (CSV)",
+    spanJson: "Télécharger toutes les périodes (JSON)",
+    spanManifest: "Ouvrir le manifeste du téléchargement par période",
     comparison: "Comparer les valeurs aux statistiques officielles sur la récolte",
     harvestVolume: "Volume récolté et possibilité annuelle de coupe en C.-B.",
     releases: "Lire les notes de version et le format de citation",
@@ -125,6 +143,25 @@ export function DataPage({ locale }: Readonly<{ locale: Locale }>) {
           </li>
           <li className="card card--lift">
             <a href={locale === "en" ? "/en/releases" : "/fr/versions"}>{copy.releases}</a>
+          </li>
+        </ul>
+      </section>
+
+      <section className="content-section prose-measure">
+        <h2>{copy.spanTitle}</h2>
+        <p>{copy.spanSummary}</p>
+        <p className="notice card--sand">{copy.spanLimits}</p>
+        <ul className="link-list">
+          <li className="card card--lift">
+            <a className="btn btn--primary" href={provinceSpanRelease.csv.url}>{copy.spanCsv}</a>
+            <br /><small>{copy.checksum}{colon(locale)} <code>{provinceSpanRelease.csv.sha256}</code></small>
+          </li>
+          <li className="card card--lift">
+            <a className="btn btn--primary" href={provinceSpanRelease.json.url}>{copy.spanJson}</a>
+            <br /><small>{copy.checksum}{colon(locale)} <code>{provinceSpanRelease.json.sha256}</code></small>
+          </li>
+          <li className="card card--lift">
+            <a href={provinceSpanRelease.manifestUrl}>{copy.spanManifest}</a>
           </li>
         </ul>
       </section>

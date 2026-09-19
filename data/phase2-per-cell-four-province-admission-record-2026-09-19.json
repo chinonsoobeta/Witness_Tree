@@ -1,0 +1,298 @@
+{
+  "schemaVersion": "witness-tree/phase2-per-cell-four-province-admission/1",
+  "status": "admitted-and-released-under-prior-owner-authorization",
+  "ownerDecision": {
+    "decidedOn": "2026-09-18",
+    "ownerWords": "Go, and the admission packet is a go as well. Do it all.",
+    "meaning": "Rebuild the archives clipped to the four provinces as a new product. The clipped archives are new bytes and are not admitted by this record; they need their own packet and record.",
+    "recordedFrom": "the owner's message in the Claude Code session of 2026-09-18, answering the item E handling question",
+    "timing": "The owner authorized admission and release of the clipped archives before they were built. The owner has not seen these bytes, their digests or this record; nothing here is a review of them by the owner or anyone else. The approval is what this record rests on, and the checks below are engineering checks.",
+    "parentRecord": {
+      "path": "data/phase2-1984-2022-admission-record-2026-09-18.json",
+      "item": "E-per-cell-patch-archives",
+      "sha256": "4fc4382364576404af0a231eb0e1fef676b52f73627805605bca5e80a4bf60ee"
+    }
+  },
+  "admittedProduct": {
+    "productId": "phase2-per-cell-geometry-1984-2022-four-province-v1",
+    "derivedFrom": "phase2-per-cell-geometry-1984-2022-v1",
+    "what": "38 annual per-cell loss patch archives, zoom 8-14, holding only the loss cells inside BC, AB, ON and QC. A patch that crosses a provincial boundary keeps its inside cells; a patch with none inside is dropped."
+  },
+  "engineeringChecks": {
+    "reconciliation": "for every interval and province, kept cells equal annualLossCells in data/phase3-province-interval-spans-1984-2022.json",
+    "allIntervalsMatchAnchor": true,
+    "keptCells": 778117495,
+    "patchesCutAtABorder": 11049,
+    "patchesDropped": 125200301,
+    "provinceCellRuns": {
+      "path": "/Volumes/Extended_SSD/Witness_Tree-data/derived/phase2-four-province-cell-runs-v1/four-province-cell-runs.bin",
+      "byteLength": 20204704,
+      "sha256": "b5ed3275ea5ee148235c596812c1bf5a9f7705e10a69d52ff84a581625b8f933"
+    }
+  },
+  "bound": {
+    "releaseId": "01fed8f9dec607c0c5c62872ab5dda89bd22f22d97fa765004252484fefe27c1",
+    "storeManifestSha256": "4e06e5cf89d12165d6a1b8a8d95dfdd5f993351d6a8a992f07b44a91c35c659a",
+    "attributionManifestSha256": "93e4e20bfad1be85f97f2f36d730647419799524b5c1f8a9ef2967f1c22943c6",
+    "archives": [
+      {
+        "interval": "1984-1985",
+        "fileName": "1984-1985.pmtiles",
+        "byteLength": 351874969,
+        "sha256": "90c620b997f82f3b96a1511cebb5a0a694da84c5091f1e9b85105a01aa6a5d1b"
+      },
+      {
+        "interval": "1985-1986",
+        "fileName": "1985-1986.pmtiles",
+        "byteLength": 392616884,
+        "sha256": "ac159efe6d9e3e3cdbf3adc0531dce9658bc72b2027b667824e84aac9ac5d1dc"
+      },
+      {
+        "interval": "1986-1987",
+        "fileName": "1986-1987.pmtiles",
+        "byteLength": 493692554,
+        "sha256": "2e1e504dc8928f387844aca7ab49a9148e173bdfce5119f3d65584c492d4f99a"
+      },
+      {
+        "interval": "1987-1988",
+        "fileName": "1987-1988.pmtiles",
+        "byteLength": 540743176,
+        "sha256": "743b4ae16a5641a3264ed9105aae9c76b990c4d2f58d335619645fb2a0fc4c67"
+      },
+      {
+        "interval": "1988-1989",
+        "fileName": "1988-1989.pmtiles",
+        "byteLength": 551123528,
+        "sha256": "7d5716a96f517e50f98a6492b804bbb092d067c2c343b3c6c274c89072a8ed01"
+      },
+      {
+        "interval": "1989-1990",
+        "fileName": "1989-1990.pmtiles",
+        "byteLength": 588501293,
+        "sha256": "1099a133dd3ae3a6e7d1b15f27d372214be6639b21a21b7083ac83fc780609e7"
+      },
+      {
+        "interval": "1990-1991",
+        "fileName": "1990-1991.pmtiles",
+        "byteLength": 594820988,
+        "sha256": "de7657d96e3c8f475954938aa848ddaf0817629f44b14a363e919d47d54d0d1f"
+      },
+      {
+        "interval": "1991-1992",
+        "fileName": "1991-1992.pmtiles",
+        "byteLength": 550488635,
+        "sha256": "59343c4a0af58033531ca6014f27cd2c88a39bd066b8a525464a5c02e54c6764"
+      },
+      {
+        "interval": "1992-1993",
+        "fileName": "1992-1993.pmtiles",
+        "byteLength": 512671633,
+        "sha256": "591392e1c853916dd1f4ec15de07fc63338a744419966e6ad9afbc268a0f3594"
+      },
+      {
+        "interval": "1993-1994",
+        "fileName": "1993-1994.pmtiles",
+        "byteLength": 588694330,
+        "sha256": "716c660bf65d36ab16266b10c35e84c777b788d085b7023971842cfdde784414"
+      },
+      {
+        "interval": "1994-1995",
+        "fileName": "1994-1995.pmtiles",
+        "byteLength": 641719594,
+        "sha256": "ff2da6e079d616ce5a5e7928badc74d6ec21cff9d729aa0cd0731314e08e16f6"
+      },
+      {
+        "interval": "1995-1996",
+        "fileName": "1995-1996.pmtiles",
+        "byteLength": 709721547,
+        "sha256": "c211866cdc19141a9a929da5106659c8cf4825f321e005abc881298c2fed7665"
+      },
+      {
+        "interval": "1996-1997",
+        "fileName": "1996-1997.pmtiles",
+        "byteLength": 743820561,
+        "sha256": "03e7b91b970c938011e7008f907938f10a494f0ef7cc1ef36c38e5f8e9bd16c4"
+      },
+      {
+        "interval": "1997-1998",
+        "fileName": "1997-1998.pmtiles",
+        "byteLength": 770198741,
+        "sha256": "8e8670f21224b2d9c1474bdaaaed769637791979a58394cb8492b3486db269b8"
+      },
+      {
+        "interval": "1998-1999",
+        "fileName": "1998-1999.pmtiles",
+        "byteLength": 698383035,
+        "sha256": "d632f0e41b72a0ef568684e052add98c5375370e604dded4b53bc1ff84136d23"
+      },
+      {
+        "interval": "1999-2000",
+        "fileName": "1999-2000.pmtiles",
+        "byteLength": 703154655,
+        "sha256": "17d006b881078eb23594b2b979fba829d94a88c786823f9bc3f6937299432d9d"
+      },
+      {
+        "interval": "2000-2001",
+        "fileName": "2000-2001.pmtiles",
+        "byteLength": 705943558,
+        "sha256": "654d4ebab62994c89c6613de3461be8ce67aeb06c705052f6f2558e64d4f80e3"
+      },
+      {
+        "interval": "2001-2002",
+        "fileName": "2001-2002.pmtiles",
+        "byteLength": 776612511,
+        "sha256": "3434ce30d143f8e2a776b0d3f19ba9dc63a1dcaa11990489bd40cd407ff169f9"
+      },
+      {
+        "interval": "2002-2003",
+        "fileName": "2002-2003.pmtiles",
+        "byteLength": 744176932,
+        "sha256": "bcb572b3a3370466341fd94007a86ee7b62b4b76ae8ca8e80d33dee52cad378c"
+      },
+      {
+        "interval": "2003-2004",
+        "fileName": "2003-2004.pmtiles",
+        "byteLength": 681768898,
+        "sha256": "50d613252454fc34c1abfec38697abbf59f632a7f900ef8405f9077ca6cb3acf"
+      },
+      {
+        "interval": "2004-2005",
+        "fileName": "2004-2005.pmtiles",
+        "byteLength": 719916695,
+        "sha256": "e6ab962d49d96b0ab079b9219e6993a4ab4c7b50cd23fea16ac4d45836b5031f"
+      },
+      {
+        "interval": "2005-2006",
+        "fileName": "2005-2006.pmtiles",
+        "byteLength": 731457174,
+        "sha256": "5a4bfd029e26f9c56570169f0e9547fde08e99a60563f7c38e717927ec078db2"
+      },
+      {
+        "interval": "2006-2007",
+        "fileName": "2006-2007.pmtiles",
+        "byteLength": 679917752,
+        "sha256": "e96b09c5c3a9e7930e9daaca9eb999346eb83dfc9a12372bdd31d7d4c71d4750"
+      },
+      {
+        "interval": "2007-2008",
+        "fileName": "2007-2008.pmtiles",
+        "byteLength": 666405245,
+        "sha256": "de8830eb20e74ef01c47b7674c1724d91bebe4c9a8761c6a67e9e2ef959065a5"
+      },
+      {
+        "interval": "2008-2009",
+        "fileName": "2008-2009.pmtiles",
+        "byteLength": 705043571,
+        "sha256": "ab9d0aeaa6466a550c7e52c803801144553ece0b285e9c6ef8be6019004a1cf2"
+      },
+      {
+        "interval": "2009-2010",
+        "fileName": "2009-2010.pmtiles",
+        "byteLength": 777454917,
+        "sha256": "c90a1ec8a8dbff822fd0d1bcab0fca4a6e6dd14d0ec3036d1f17ceb14e7547bd"
+      },
+      {
+        "interval": "2010-2011",
+        "fileName": "2010-2011.pmtiles",
+        "byteLength": 804599079,
+        "sha256": "5bfe0c61437453c8e1e3934c5fa3ecfbca2540394607f2bef703c02e7cc48ee0"
+      },
+      {
+        "interval": "2011-2012",
+        "fileName": "2011-2012.pmtiles",
+        "byteLength": 852824681,
+        "sha256": "aabe3e9f3278a16776b715eaa0d6b8fb17530b73ae8d39dbb561b1344edb4282"
+      },
+      {
+        "interval": "2012-2013",
+        "fileName": "2012-2013.pmtiles",
+        "byteLength": 853656415,
+        "sha256": "620942ea7e2b31176313c3e57b584770b198baadbd0d909887afa071f5ef26b6"
+      },
+      {
+        "interval": "2013-2014",
+        "fileName": "2013-2014.pmtiles",
+        "byteLength": 751940478,
+        "sha256": "e9c1101e930f3e44a3a117d9b6d4f71b99a381815b8a193beb00bf105ea36c2e"
+      },
+      {
+        "interval": "2014-2015",
+        "fileName": "2014-2015.pmtiles",
+        "byteLength": 766584343,
+        "sha256": "6df3d5a7d7aa852d4c83c409a6d58e1f7aa57f9890b72f53d634e21124296959"
+      },
+      {
+        "interval": "2015-2016",
+        "fileName": "2015-2016.pmtiles",
+        "byteLength": 680062173,
+        "sha256": "6e3f65303d093bc9b567d4ffa6e4e6bc481535475be7afc71b5dc77b745c1097"
+      },
+      {
+        "interval": "2016-2017",
+        "fileName": "2016-2017.pmtiles",
+        "byteLength": 770947924,
+        "sha256": "b79c7866a69eeb6c21662e410c137d11b3e5e957c9ade16d983939e01fe52d72"
+      },
+      {
+        "interval": "2017-2018",
+        "fileName": "2017-2018.pmtiles",
+        "byteLength": 705498878,
+        "sha256": "f668a889d5510f2f36cafb446b431a4eaa3af48a5e776b657c151a98e355a957"
+      },
+      {
+        "interval": "2018-2019",
+        "fileName": "2018-2019.pmtiles",
+        "byteLength": 639695547,
+        "sha256": "d9fcd5669967c8ee2e86aaed2664983db3a01ce99cfabf60cb75909bb17fa451"
+      },
+      {
+        "interval": "2019-2020",
+        "fileName": "2019-2020.pmtiles",
+        "byteLength": 570483172,
+        "sha256": "90262b30cb811781dcf133c94ff8f503fc5af7723c46a1f3d1f21da6c2120879"
+      },
+      {
+        "interval": "2020-2021",
+        "fileName": "2020-2021.pmtiles",
+        "byteLength": 598788570,
+        "sha256": "5cd94302217940778d95f61f4b0cb1ca1b90774e500a91ef28f28184ab912606"
+      },
+      {
+        "interval": "2021-2022",
+        "fileName": "2021-2022.pmtiles",
+        "byteLength": 509535926,
+        "sha256": "a0c03e4ee00ed78dc49814cc0eaa5d71d89bbfbe5a23b159dcbfc1399b01a585"
+      }
+    ]
+  },
+  "limits": [
+    "Every province is partial-with-unknown, so every figure is a minimum. Unmapped share of the cartographic province: QC 15.04962%, ON 9.03031%, AB 24.02146%, BC 0.00446%.",
+    "Loss is counted once per place, against the forest known at the start year. Yearly losses added together carry no percentage.",
+    "Unmapped and nodata cells stay Unknown and are never shown as no loss.",
+    "Nothing has been expert reviewed. Independent comparisons are not published.",
+    "Harvest and wildfire on patches are overlaps with recorded events, not causal attribution."
+  ],
+  "prohibitedClaims": [
+    "expert review completed",
+    "independent comparison completed or published",
+    "accuracy, completeness or causal attribution",
+    "any figure as a complete-province total",
+    "net forest change or regrowth",
+    "admission of any unbound output or of the notApprovable items"
+  ],
+  "formalGates": {
+    "phase2FormalExit": "stays 2 of 4: expert review was retired, not met, and the comparisons are unpublished",
+    "phase8LaunchReadiness": "stays 8 of 16 until the real external events occur",
+    "honestConclusion": "Approval admits and can release bytes. It completes no formal gate."
+  },
+  "claims": {
+    "admitted": true,
+    "releaseApproved": true,
+    "ownerReviewedTheseBytes": false,
+    "expertReviewed": false,
+    "complete": false,
+    "countable": false,
+    "productionEligible": false,
+    "formalGatesChanged": false
+  }
+}

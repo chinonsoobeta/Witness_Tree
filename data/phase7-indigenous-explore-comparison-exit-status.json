@@ -103,15 +103,15 @@
       "id": "explore-modes-and-overlays",
       "title": "Explore provides the four required modes and four reference-boundary overlays",
       "status": "pass",
-      "reason": "Narrowed by owner scope decision on 2026-08-29, then met. The four modes render. Federal ridings, the BC, Alberta, Ontario and Quebec provincial ridings, the 44 Statistics Canada 2021 economic regions that lie in British Columbia, Alberta, Ontario and Quebec, and the 105 Canadian areas of NRCan's Water Survey of Canada version 6.0 rollup that intersect those four provinces, are drawn from one immutable v3 PMTiles release with exact remote readback and bilingual attribution. The economic-region and watershed layers were clipped to the four provinces on 2026-09-02, so both are now subsets: 44 of 76 regions, and 105 of the 169 Canadian sub-drainage areas, cut at the provincial boundary. An earlier revision of this reason still claimed all 76 regions and all 169 areas after the clip had shipped, because that change refreshed the bound checksums without rereading the sentence they support. Economic regions and watersheds are boundary-only reference frameworks, not forest-loss aggregates. The reserve and treaty-area overlays were removed from Explore, not delivered, and this criterion no longer stands in for them: that obligation is tracked solely by reserve-and-treaty-layers-loaded, which remains failed. If this criterion is ever read as evidence that reserve or treaty geography ships, it is being read wrongly.",
+      "reason": "Narrowed by owner scope decision on 2026-08-29, then met. The four modes render. Federal ridings, the BC, Alberta, Ontario and Quebec provincial ridings, the 44 Statistics Canada 2021 economic regions that lie in British Columbia, Alberta, Ontario and Quebec, and the 105 Canadian areas of NRCan's Water Survey of Canada version 6.0 rollup that intersect those four provinces, are drawn from one immutable v4 PMTiles release with exact remote readback and bilingual attribution. The economic-region and watershed layers were clipped to the four provinces on 2026-09-02, so both are now subsets: 44 of 76 regions, and 105 of the 169 Canadian sub-drainage areas, cut at the provincial boundary. An earlier revision of this reason still claimed all 76 regions and all 169 areas after the clip had shipped, because that change refreshed the bound checksums without rereading the sentence they support. Economic regions and watersheds are boundary-only reference frameworks, not forest-loss aggregates. The reserve and treaty-area overlays were removed from Explore, not delivered, and this criterion no longer stands in for them: that obligation is tracked solely by reserve-and-treaty-layers-loaded, which remains failed. If this criterion is ever read as evidence that reserve or treaty geography ships, it is being read wrongly. On 2026-09-19 the version in this reason was corrected from v3 to v4. lib/explore/boundaries.ts has pinned boundary-overlays-v4 release 594e33aa08fd7b60a21e6a17d43f7491757d99e7900fdd697230f6d1f52b78f0 since 2026-09-18, and the v4 record carries the same 44 economic regions and 105 watersheds clipped to the four provinces, and the same unclipped riding layers, that this reason describes. The sentence was wrong about the release it named, not about what ships. This is the second time this criterion has had a claim corrected after a checksum refresh changed the files under it without the sentence being reread.",
       "evidence": [
         {
           "path": "components/explore/ExploreView.tsx",
-          "sha256": "ac50b3f60164982b970542718c24b23849cde36bdf9744ac6a45e29bc7cc6a37"
+          "sha256": "86ac2fcea961f77a4755618734d909c6cc06239ce9b25711a3af843f6e4ac744"
         },
         {
           "path": "tests/explore.test.tsx",
-          "sha256": "42b3611a724fc91b43d455117cbd69cb9fc88f3ef9feb00ce6ccd564c2a65d49"
+          "sha256": "2c426816a13510b04bde2cb7281a8d314a7fb7db63f540a1d08ca4a98eebe98b"
         }
       ]
     },
@@ -123,11 +123,11 @@
       "evidence": [
         {
           "path": "components/explore/ExploreView.tsx",
-          "sha256": "ac50b3f60164982b970542718c24b23849cde36bdf9744ac6a45e29bc7cc6a37"
+          "sha256": "86ac2fcea961f77a4755618734d909c6cc06239ce9b25711a3af843f6e4ac744"
         },
         {
           "path": "tests/explore.test.tsx",
-          "sha256": "42b3611a724fc91b43d455117cbd69cb9fc88f3ef9feb00ce6ccd564c2a65d49"
+          "sha256": "2c426816a13510b04bde2cb7281a8d314a7fb7db63f540a1d08ca4a98eebe98b"
         }
       ]
     },
@@ -139,11 +139,11 @@
       "evidence": [
         {
           "path": "components/explore/ExploreView.tsx",
-          "sha256": "ac50b3f60164982b970542718c24b23849cde36bdf9744ac6a45e29bc7cc6a37"
+          "sha256": "86ac2fcea961f77a4755618734d909c6cc06239ce9b25711a3af843f6e4ac744"
         },
         {
           "path": "tests/explore.test.tsx",
-          "sha256": "42b3611a724fc91b43d455117cbd69cb9fc88f3ef9feb00ce6ccd564c2a65d49"
+          "sha256": "2c426816a13510b04bde2cb7281a8d314a7fb7db63f540a1d08ca4a98eebe98b"
         }
       ]
     },
