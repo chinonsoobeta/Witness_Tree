@@ -56,7 +56,15 @@ function runSegment(command, files, kind) {
   const output = `${result.stdout ?? ""}${result.stderr ?? ""}`;
   process.stdout.write(output);
   const skips = [...output.matchAll(/^\s*ok \d+ - (.+?) # SKIP(?: (.*))?$/gm)].map((match) => ({ name: match[1], reason: match[2] ?? "Test declared its own skip", status: "unavailable" }));
-  segments.push({ kind, files: files.length, exitCode: result.status, status: result.status !== 0 ? "failed" : skips.length ? "unavailable" : "passed", unavailableSubtests: skips });
+  // The TAP stream is the evidence, but it is also ten thousand lines long and
+  // a reader has to find four of them. These are repeated in the summary at the
+  // very end, where a log opens.
+  const failed = [...output.matchAll(/^not ok \d+ - (.+)$/gm)].map((match) => match[1]);
+  // spawnSync reports a child that never produced a status separately: killed by
+  // a signal, or refused to start. Both look like "exit 1" downstream, and both
+  // mean something other than a failed assertion, so name which.
+  const abnormal = result.status === null ? `${result.signal ? `killed by ${result.signal}` : "did not start"}${result.error ? `: ${result.error.message}` : ""}` : null;
+  segments.push({ kind, files: files.length, exitCode: result.status, abnormal, status: result.status !== 0 ? "failed" : skips.length ? "unavailable" : "passed", unavailableSubtests: skips, failedSubtests: failed });
   return result.status ?? 1;
 }
 if (node.length > 0) {
@@ -79,6 +87,24 @@ const receipt = {
 const output = path.join(outputDir, `test-run-${startedAt.replaceAll(":", "-")}.json`);
 writeFileSync(output, `${JSON.stringify(receipt, null, 2)}\n`, { flag: "wx" });
 console.log(JSON.stringify({ status: receipt.status, portableExecutionStatus: receipt.portableExecutionStatus, unavailableFiles: unavailable.length, receipt: output }));
+
+/*
+ * Say what failed, last, in a handful of lines.
+ *
+ * On 2026-09-20 a run failed in CI and the log held no `not ok` anywhere: the
+ * TAP stream stopped mid-word partway through the first segment and the job
+ * ended. Nothing had crashed. `process.exit()` was discarding the rest of a
+ * large asynchronous write to the pipe, so CI could report that the suite had
+ * failed but never which assertion, which is the one thing a failing suite is
+ * for. Setting `exitCode` and returning lets the runtime drain stdout first.
+ */
+for (const segment of segments) {
+  if (segment.status !== "failed") continue;
+  console.error(`FAILED: ${segment.kind} segment, ${segment.files} files, exit ${segment.exitCode ?? "none"}${segment.abnormal ? ` (${segment.abnormal})` : ""}`);
+  for (const name of segment.failedSubtests) console.error(`  not ok - ${name}`);
+  if (segment.failedSubtests.length === 0) console.error("  no failing assertion was reported, so the segment died rather than failing a test");
+}
+
 // CI's exit code describes the portable assertions only. The receipt explicitly
 // reports the full suite as unavailable; it never substitutes for owner evidence.
-process.exit(status);
+process.exitCode = status;

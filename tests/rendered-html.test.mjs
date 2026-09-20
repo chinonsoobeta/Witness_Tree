@@ -69,24 +69,59 @@ test("the entry gate has no figures or product navigation and tolerates the abse
   }
 });
 
-test("landing figures pair loss with unmapped area on one hectare scale in both languages", async () => {
-  const hectares = [680273.64, 22204952.19, 714701.7, 8843646.69, 748863.72, 15372023.76, 800473.32, 4095.27];
+test("landing figures show detected loss alone, on a scale of detected loss", async () => {
+  /*
+   * The card used to carry two measures side by side on one shared hectare
+   * scale, detected loss and unmapped area, which is what forced the page to
+   * print that the unmapped bar was not a measurement of forest loss. A
+   * disclaimer that exists to undo a drawing means the drawing is wrong, so the
+   * second bar is gone and the disclaimer with it.
+   *
+   * These assertions replace the old pair at the same strictness rather than
+   * relaxing into it: one value and one bar per card, scaled against the
+   * largest detected loss of the four, with the unmapped share kept in the
+   * sentence that says why the figure is a floor.
+   */
+  const hectares = [680273.64, 714701.7, 748863.72, 800473.32];
+  const scale = Math.max(...hectares);
   for (const locale of ["en", "fr"]) {
     const html = await (await render(`/${locale}`)).text();
     const cards = [...html.matchAll(/<article class="province-coverage-card"[^>]*>([\s\S]*?)<\/article>/g)].map((match) => match[1]);
     assert.equal(cards.length, 4);
     assert.ok(html.indexOf('class="coverage-statement"') < html.indexOf('class="province-coverage-card"'));
     assert.ok(html.indexOf('class="evidence-legend"') < html.indexOf('class="province-coverage-card"'));
-    const values = cards.flatMap((card) => [...card.matchAll(/<strong class="province-coverage-value">([^<]+)<\/strong>/g)].map((match) => match[1]));
-    const format = new Intl.NumberFormat(`${locale}-CA`, { maximumFractionDigits: 2 });
-    assert.deepEqual(values, hectares.map((value) => `${format.format(value)} ha`));
+
+    // Whole hectares on the headline. Two decimal places on a satellite-derived
+    // floor claim centimetres no source can back.
+    const whole = new Intl.NumberFormat(`${locale}-CA`, { maximumFractionDigits: 0 });
+    const values = cards.flatMap((card) => [...card.matchAll(/<p class="province-coverage-value">([^<]+)<\/p>/g)].map((match) => match[1]));
+    assert.deepEqual(values, hectares.map((value) => `${whole.format(value)} ha`));
+
+    // One bar per card, and the scale is detected loss. The unmapped hectares
+    // are deliberately not in this maximum: they never share the scale again.
     const widths = cards.flatMap((card) => [...card.matchAll(/class="province-coverage-fill" style="width:([\d.]+)%"/g)].map((match) => Number(match[1])));
-    assert.equal(widths.length, 8);
-    widths.forEach((width, index) => assert.ok(Math.abs(width / hectares[index] - 100 / 22204952.19) < 1e-12));
+    assert.equal(widths.length, 4);
+    widths.forEach((width, index) => assert.ok(Math.abs(width - (hectares[index] / scale) * 100) < 1e-9));
+    assert.equal(Math.max(...widths), 100);
+
+    // The pairing is gone, so nothing may reintroduce a second measure or the
+    // shared-scale disclaimer that a second measure needs.
+    assert.doesNotMatch(html, /province-coverage-unknown|province-coverage-pair|province-coverage-measure/);
+    assert.doesNotMatch(html, /hectare scale|échelle en hectares/);
+
+    // The exact value stays at the foot of the card, which is what makes the
+    // rounded headline cost nothing.
+    const exact = new Intl.NumberFormat(`${locale}-CA`, { maximumFractionDigits: 2 });
+    const recorded = cards.flatMap((card) => [...card.matchAll(/class="province-coverage-recorded"><span>([^<]+)</g)].map((match) => match[1]));
+    assert.deepEqual(recorded, hectares.map((value) => exact.format(value)));
+
     for (const card of cards) {
-      assert.match(card, /province-coverage-unknown/);
-      assert.match(card, /of known mapped forest|de la forêt connue cartographiée/);
-      assert.match(card, /of the province|de la superficie provinciale/);
+      // The span rides on the figure now, not on a masthead badge that claimed
+      // 1984 to 2022 over figures covering three years.
+      assert.match(card, /class="province-coverage-span">\d{4}\u2013\d{4}</u);
+      assert.match(card, /of the forest the source mapped|de la forêt cartographiée par la source/);
+      assert.match(card, /<strong>[^<]*%<\/strong>/);
+      assert.match(card, /never counted as zero|jamais comptée comme zéro/);
       assert.match(card, /href="\/en\/data"|href="\/fr\/donnees"/);
     }
     assert.match(cards[3], /&lt;0[.,]01/);
