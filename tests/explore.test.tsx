@@ -440,7 +440,20 @@ test("map failures retain diagnostics, retry, and a reachable patch zoom", async
   const panel = css.match(/\.explore-map-layer-panel \{[\s\S]*?\n\}/)?.[0] ?? "";
   const controls = css.match(/\.explore-map-controls \{[\s\S]*?\n\}/)?.[0] ?? "";
   const list = css.match(/\.explore-map-layer-list \{[\s\S]*?\n\}/)?.[0] ?? "";
-  assert.match(map, /className="explore-map-scale"[\s\S]*className="explore-map-layer-panel"[\s\S]*className="explore-map-control-cluster"/);
+  /*
+   * The floating strip holds only the scale and the zoom cluster now. The
+   * layer panel and the province chooser left it for normal flow, because
+   * both grow with their content and neither added height to the frame, so
+   * the frame's height was the only thing keeping them from overlapping.
+   * These assertions pin that separation structurally rather than trusting a
+   * tall-enough frame: the panel is built outside the return and rendered
+   * after the frame closes, so it cannot be drawn over anything.
+   */
+  assert.match(map, /className="explore-map-scale"[\s\S]*className="explore-map-control-cluster"/);
+  assert.match(map, /const layerPanel = state === "ready" \? \(/);
+  assert.match(map, /className="explore-map-stack"/);
+  assert.match(map, /<\/div>\n\s*\{layerPanel\}\n\s*<\/div>/);
+  assert.doesNotMatch(map, /className="explore-map"[\s\S]*?className="explore-map-layer-panel"/);
   assert.match(map, /className="explore-map-layer-panel"[\s\S]*tabIndex=\{0\}[\s\S]*role="region"/);
   assert.match(map, /className="explore-map-patch-control"[\s\S]*className="[^"]*explore-map-fullscreen-button"[\s\S]*className="explore-map-zoom"/);
   assert.match(panel, /position: static/);
@@ -449,10 +462,15 @@ test("map failures retain diagnostics, retry, and a reachable patch zoom", async
   assert.doesNotMatch(panel, /overflow(?:-x)?:\s*(?:hidden|clip|auto)/);
   assert.match(controls, /inset-block-end: 12px/);
   assert.match(controls, /display: grid/);
-  assert.match(controls, /grid-template-columns: auto minmax\(0, 1fr\) auto/);
+  assert.match(controls, /grid-template-columns: minmax\(0, 1fr\) auto/);
   assert.match(list, /display: flex/);
   assert.match(list, /flex-wrap: wrap/);
-  assert.match(css, /@media \(max-width: 760px\) \{[\s\S]*?\.explore-map-layer-panel \{[\s\S]*?grid-column: 1 \/ -1;[\s\S]*?grid-row: 1/);
+  // Nothing that grows with content may be taken out of flow over the frame.
+  const chooser = css.match(/\.province-bar--map \{[\s\S]*?\n\}/)?.[0] ?? "";
+  assert.match(chooser, /position: static/);
+  assert.doesNotMatch(chooser, /position: absolute/);
+  assert.doesNotMatch(panel, /position: absolute/);
+  assert.match(css, /\.explore-map-stack \{[\s\S]*?flex-direction: column/);
   assert.match(css, /\.explore-map-patch-tooltip \{[\s\S]*?inset-inline: 0;[\s\S]*?width: auto/);
 });
 

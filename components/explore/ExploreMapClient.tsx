@@ -952,8 +952,62 @@ export function ExploreMapClient({
       console.error("Explore map full-screen error", error);
     }
   };
+  /*
+   * Nothing that grows with content floats over the map any more.
+   *
+   * The province chooser used to be pinned to the top of the frame and the
+   * layer panel hung from its bottom, both absolutely positioned, so neither
+   * added any height. The frame's own height was the only thing keeping them
+   * apart, and when the span legend grew from four short bands to five
+   * spelled-out ones the panel rose over the chooser and covered it. That was
+   * patched with a taller frame and a clearance assertion, which buys time
+   * rather than removing the failure.
+   *
+   * Both are now in normal flow, the chooser above the frame and the panel
+   * below it, so a legend that grows pushes its own column instead. Only the
+   * scale and the zoom cluster still float, because they describe and operate
+   * the canvas itself and neither grows with the content.
+   */
+  const layerPanel = state === "ready" ? (
+    <div
+      className="explore-map-layer-panel"
+      tabIndex={0}
+      role="region"
+      aria-label={text[locale].mapPanel}
+    >
+      <strong>{text[locale].mapLayers}</strong>
+      <ul className="explore-map-layer-list">
+        {provinceAvailable ? <li>{`${text[locale].provinceAggregate}, ${spanLabel}`}</li> : null}
+        {perCellYears ? <li>{`${text[locale].detectedPatches}, ${spanLabel}`}</li> : null}
+        {overlays.map((id) => <li key={id}>{BOUNDARY_OVERLAYS[id].label[locale]}</li>)}
+      </ul>
+      {provinceAvailable ? (
+        <ul className="explore-map-legend" aria-label={text[locale].legend}>
+          {spanLegend(locale).map(([band, label]) => <li key={band}>{symbol(band)}{label}</li>)}
+        </ul>
+      ) : null}
+      {perCellYears ? (
+        <ul className="explore-map-legend" aria-label={legendTitle}>
+          {cause === "fire" ? null : <li>{symbol("patch-harvest")}{text[locale].mapPanelHarvest}</li>}
+          {cause === "harvest" ? null : <li>{symbol("patch-fire")}{text[locale].mapPanelFire}</li>}
+          {cause === "all" ? <li>{symbol("patch-none")}{text[locale].mapPanelNeither}</li> : null}
+        </ul>
+      ) : null}
+    </div>
+  ) : null;
+
   return (
     <section aria-label={text[locale].label}>
+      <div className="explore-map-stack">
+      <ProvinceBar
+        locale={locale}
+        placement="map"
+        selected={selectedMapView}
+        onSelect={(mapView) => {
+          setSelectedMapView(mapView);
+          fitMapToView(mapView);
+        }}
+      />
       <div
         ref={mapFrameRef}
         className="explore-map"
@@ -965,15 +1019,6 @@ export function ExploreMapClient({
           source === "geojson" ? "geojson-fallback" : source ?? undefined
         }
       >
-        <ProvinceBar
-          locale={locale}
-          placement="map"
-          selected={selectedMapView}
-          onSelect={(mapView) => {
-            setSelectedMapView(mapView);
-            fitMapToView(mapView);
-          }}
-        />
         {available ? (
           <>
             <div
@@ -1060,33 +1105,6 @@ export function ExploreMapClient({
               <span aria-hidden="true">{scaleLabel}</span>
             </div>
           ) : null}
-          {state === "ready" ? (
-            <div
-              className="explore-map-layer-panel"
-              tabIndex={0}
-              role="region"
-              aria-label={text[locale].mapPanel}
-            >
-              <strong>{text[locale].mapLayers}</strong>
-              <ul className="explore-map-layer-list">
-                {provinceAvailable ? <li>{`${text[locale].provinceAggregate}, ${spanLabel}`}</li> : null}
-                {perCellYears ? <li>{`${text[locale].detectedPatches}, ${spanLabel}`}</li> : null}
-                {overlays.map((id) => <li key={id}>{BOUNDARY_OVERLAYS[id].label[locale]}</li>)}
-              </ul>
-              {provinceAvailable ? (
-                <ul className="explore-map-legend" aria-label={text[locale].legend}>
-                  {spanLegend(locale).map(([band, label]) => <li key={band}>{symbol(band)}{label}</li>)}
-                </ul>
-              ) : null}
-              {perCellYears ? (
-                <ul className="explore-map-legend" aria-label={legendTitle}>
-                  {cause === "fire" ? null : <li>{symbol("patch-harvest")}{text[locale].mapPanelHarvest}</li>}
-                  {cause === "harvest" ? null : <li>{symbol("patch-fire")}{text[locale].mapPanelFire}</li>}
-                  {cause === "all" ? <li>{symbol("patch-none")}{text[locale].mapPanelNeither}</li> : null}
-                </ul>
-              ) : null}
-            </div>
-          ) : null}
           <div className="explore-map-control-cluster">
             <span
               className="explore-map-patch-control"
@@ -1148,6 +1166,8 @@ export function ExploreMapClient({
             </div>
           </div>
         </div>
+      </div>
+      {layerPanel}
       </div>
       <p
         id={statusId}

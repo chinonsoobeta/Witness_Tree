@@ -1690,21 +1690,26 @@ h4 {
   height: auto;
   min-height: 430px;
 }
+/* In flow above the map. It used to float on the frame, which is how the
+   layer panel came to cover it when the legend grew. */
+.explore-map-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 .province-bar--map {
-  position: absolute;
+  position: static;
+  display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  inset-block-start: 10px;
-  inset-inline-start: 50%;
-  z-index: 3;
-  max-width: calc(100% - 20px);
+  align-self: center;
+  max-width: 100%;
+  margin: 0;
   padding: 5px 7px;
   border: 1px solid var(--accent-fill);
   border-radius: 999px;
   background: var(--header-fill);
-  box-shadow: var(--shadow-soft);
-  transform: translateX(-50%);
-  backdrop-filter: blur(12px);
+  transform: none;
 }
 .province-bar--map button {
   min-height: 34px;
@@ -1725,6 +1730,7 @@ h4 {
 .explore-map-layer-panel {
   position: static;
   display: flex;
+  margin: 0;
   min-width: 0;
   flex-wrap: wrap;
   align-items: center;
@@ -1803,7 +1809,7 @@ h4 {
   inset-block-end: 12px;
   inset-inline: 12px;
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: flex-end;
   gap: 12px;
   z-index: 2;
@@ -1923,24 +1929,18 @@ h4 {
 }
 @media (max-width: 760px) {
   /*
-   * Two blocks are positioned over this frame and neither adds height to it:
-   * the province chooser is pinned to the top, and the layer panel and scale
-   * hang from the bottom. So the frame's own height is the only thing keeping
-   * them apart, and at 30rem they collided once the span legend grew from four
-   * short bands to five spelled-out ones, which wrap furthest in French. The
-   * panel rose over the chooser and covered it. This height is set to clear the
-   * tallest measured pair with room to spare rather than to just pass; the
-   * clearance is asserted in tests/browser/fallback.spec.ts, so content that
-   * outgrows it again fails there instead of shipping as an overlap.
+   * The frame no longer carries the province chooser or the layer panel, so
+   * its height is not what keeps them apart and it does not need padding
+   * against a legend that grows. It only has to be a usable map.
    */
   .explore-map,
   .explore-map-fallback {
-    min-height: 36rem;
+    min-height: 30rem;
   }
   .province-bar--map {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    width: calc(100% - 20px);
+    width: 100%;
     align-items: stretch;
     gap: 4px 8px;
   }
@@ -1952,18 +1952,8 @@ h4 {
   .explore-map-controls {
     grid-template-columns: minmax(0, 1fr) auto;
   }
-  .explore-map-layer-panel {
-    grid-column: 1 / -1;
-    grid-row: 1;
-  }
   .explore-map-scale {
-    grid-column: 1;
-    grid-row: 2;
     justify-self: start;
-  }
-  .explore-map-control-cluster {
-    grid-column: 2;
-    grid-row: 2;
   }
 }
 .explore-map:fullscreen {
