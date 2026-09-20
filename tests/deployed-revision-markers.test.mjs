@@ -182,7 +182,12 @@ test("a page still carrying a retired string reads as behind", () => {
   for (const marker of sources.record.markers) pages[marker.path].body += `${marker.text}\n`;
   const { behind, findings } = evaluateDeployedRevision(sources.record.markers, pages);
   assert.equal(behind, true);
-  assert.equal(findings.filter((finding) => finding.outcome === "still-on-page").length, 1);
+  // Every retired string, not a fixed number of them. The count was pinned at one
+  // while the set held one, which made growing the set look like a regression in
+  // the evaluator rather than what it is.
+  const retired = sources.record.markers.filter((marker) => marker.expect === "absent");
+  assert.ok(retired.length > 0, "the record must keep at least one retired string for this test to mean anything");
+  assert.equal(findings.filter((finding) => finding.outcome === "still-on-page").length, retired.length);
 });
 
 test("an empty marker set cannot be evaluated at all", () => {

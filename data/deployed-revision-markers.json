@@ -38,6 +38,34 @@
       "text": "Local nonproduction measurements. Not a published release.",
       "source": null,
       "reason": "The owner retired this banner. A deployment still showing it is older than that decision, which makes a retired string a sharper staleness signal than any added one."
+    },
+    {
+      "expect": "present",
+      "path": "/en",
+      "source": "components/site/CumulativeHeadline.tsx",
+      "text": "Forest detected as lost",
+      "reason": "The cumulative headline is the landing page's largest figure and renders from bundled span measurements with nothing gating it, so a deployment that answers /en without this heading is serving the landing page as it stood before the 2026-09-20 redesign."
+    },
+    {
+      "expect": "present",
+      "path": "/fr",
+      "source": "components/site/CumulativeHeadline.tsx",
+      "text": "Forêt détectée comme perdue",
+      "reason": "The French half of the same headline, so a deployment that rebuilt one locale and not the other is caught on the landing page as well as on the data and explore pages."
+    },
+    {
+      "expect": "absent",
+      "path": "/en",
+      "source": null,
+      "text": "A record, not a dashboard",
+      "reason": "The 2026-09-20 redesign replaced this landing section with the evidence marks block. A page still carrying its heading is older than that work, and a retired string catches a deployment that kept something this revision removed, which no added string can do."
+    },
+    {
+      "expect": "absent",
+      "path": "/fr",
+      "source": null,
+      "text": "Un registre, pas un tableau de bord",
+      "reason": "The French half of the same retired section, so a deployment that rebuilt only the English landing page still reads as behind rather than as current."
     }
   ],
   "gatedSurfacesExcluded": [
