@@ -1,0 +1,310 @@
+{
+  "schemaVersion": "witness-tree/phase2-1984-2022-admission-record/1",
+  "status": "recorded-admission",
+  "supersedes": {
+    "record": "data/phase2-1984-2022-admission-record-2026-09-18.json",
+    "recordSha256": "4fc4382364576404af0a231eb0e1fef676b52f73627805605bca5e80a4bf60ee",
+    "packet": "data/phase2-1984-2022-owner-admission-packet.json",
+    "packetSha256": "52faeca923f5697a65c6e18b206072412c739ca9ee2a03856a1b263fb32d7083",
+    "reason": "The 2026-09-18 packet bound the two formal-gate status records at their living paths. Those records are not immutable: a status record moves whenever a gate moves, and data/phase8-launch-readiness-exit-status.json holds cdn-tile-validation, which by design goes to fail whenever the Explore client changes and back to pass when the Site is redeployed and re-observed. An admission record is a statement about a moment, so binding it to a file that legitimately changes afterwards made the assertion break on ordinary work and break again on the repair. It first broke on 2026-09-19, when this branch changed the Explore client. The correction freezes the exact bytes each pin already named into a dated snapshot and binds that instead. The sha256 and byteLength of both bindings are unchanged, because the bytes are unchanged; only the path moves. The snapshots were extracted from git history and verified against the checksums this packet already carried, so no new claim is made and nothing was re-measured. The owner decision being recorded is the same 2026-09-18 decision on items A to F. This packet does not re-decide anything, and it does not edit the 2026-09-18 packet or record, which stay on disk as written.",
+    "what": [
+      {
+        "from": "data/phase2-formal-exit-status.json",
+        "to": "data/phase2-formal-exit-status-as-admitted-2026-09-18.json"
+      },
+      {
+        "from": "data/phase8-launch-readiness-exit-status.json",
+        "to": "data/phase8-launch-readiness-exit-status-as-admitted-2026-09-18.json"
+      }
+    ],
+    "meaning": "This is the same 2026-09-18 decision, re-recorded against bindings that cannot go stale. The superseded record and packet are not edited and remain on disk; this record does not re-decide any item, and the owner approved the correction of the evidence shape, not a new admission."
+  },
+  "ownerDecision": {
+    "decisionId": "phase2-1984-2022-series-spans-and-map-admission-v1",
+    "decidedOn": "2026-09-18",
+    "decision": "approve-admission-and-release",
+    "items": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ],
+    "ownerWords": [
+      "For the admission packets, I approve items A,B, C, D, E and F.",
+      "Item 1: admit and release for A-F."
+    ],
+    "recordedFrom": "the owner's messages in the Claude Code session of 2026-09-18, given after the packet, its owner-readable summary and the sources record were delivered to the owner",
+    "acknowledgementsStated": "The owner stated no acknowledgement line beyond the words above. The packet's limits, prohibited claims and not-approvable items bind this admission regardless.",
+    "itemDBoundaryConfirmations": {
+      "federal-ridings-2023": "already admitted and release-approved (data/phase1-federal-electoral-production-admission.json)",
+      "bc-provincial-ridings-2023": "confirmed by the owner's approval of item D",
+      "ab-provincial-ridings-2019-goa": "confirmed by the owner's approval of item D; rights basis is the Open Government Licence - Alberta 2.2, per the sources record",
+      "on-provincial-ridings-2022": "confirmed by the owner's approval of item D",
+      "qc-provincial-ridings-2026-published": "confirmed by the owner's approval of item D; rights basis is the owner's determination recorded in the sources record, which is not written permission from Élections Québec"
+    },
+    "itemEHandling": {
+      "decidedOn": "2026-09-18",
+      "ownerWords": "Go, and the admission packet is a go as well. Do it all.",
+      "meaning": [
+        "Release the admitted national archives with a map layer that hides every patch outside BC, AB, ON and QC. This is a display change; the archives are not altered.",
+        "Rebuild the archives clipped to the four provinces as a new product. The clipped archives are new bytes and are not admitted by this record; they need their own packet and record."
+      ]
+    },
+    "packet": {
+      "path": "data/phase2-1984-2022-owner-admission-packet-2026-09-19.json",
+      "byteLength": 18451,
+      "sha256": "545858510866ef30e99d7725cd82864ad673735bf665d1e31ac7e18b7116f2e4"
+    }
+  },
+  "admittedItems": {
+    "A-base-rasters": "The national annual raster batch every other item is computed from: 39 forest masks and 38 annual loss rasters, 1984-2022.",
+    "B-province-annual-series-and-union": "Each province's 38 annual losses and the 1984-2022 loss counted once per place.",
+    "C-province-span-aggregate": "Loss counted once per place, forest known at the start year, unknown area, and yearly losses added together, for all 741 spans, for BC, AB, ON and QC. The four-province figure is the sum of the four, which is exact because provinces are disjoint.",
+    "D-district-span-figures": "Loss for all 741 spans in each federal and provincial electoral district.",
+    "E-per-cell-patch-archives": "38 annual per-cell loss patch archives, zoom 8-14, already served from CloudFront.",
+    "F-coarse-grid": "960 m union-and-sum grid for draw and measure, any span 1984-2022."
+  },
+  "bindingsRevalidated": {
+    "count": 25,
+    "allMatch": true,
+    "entries": [
+      {
+        "at": ".items.A-base-rasters.evidence",
+        "path": "data/phase2-real-national-execution-evidence.json",
+        "byteLength": 2722,
+        "sha256": "77ee3c70ce729a1a01a9cc9a9f1bbaeee920b3f10ac556e2ba53feea6f9562a0",
+        "matches": true
+      },
+      {
+        "at": ".items.B-province-annual-series-and-union.series",
+        "path": "data/phase2-province-series.json",
+        "byteLength": 38965,
+        "sha256": "0bf0324ee9d89c902824fbdc134b6958edd6482ad5c887b4f3606ebff3724ef5",
+        "matches": true
+      },
+      {
+        "at": ".items.B-province-annual-series-and-union.readback",
+        "path": "data/phase2-province-series-readback.json",
+        "byteLength": 51512,
+        "sha256": "c3c8a878c8203ebad6df37b10e204361c7bde3c3ddc27ee861c338414e3aab00",
+        "matches": true
+      },
+      {
+        "at": ".items.B-province-annual-series-and-union.cumulativeArtifact",
+        "path": "/Volumes/Extended_SSD/Witness_Tree-data/derived/phase2-cumulative-province-zonal-v1/cumulative-province-zonal-1984-2022.json",
+        "byteLength": 3457,
+        "sha256": "b165730ef3d219d4d3a7844cf8ac429dc3dbbe5a793e128aaf5db0e784d9e115",
+        "matches": true
+      },
+      {
+        "at": ".items.B-province-annual-series-and-union.cumulativeProvenance",
+        "path": "/Volumes/Extended_SSD/Witness_Tree-data/derived/phase2-cumulative-province-zonal-v1/cumulative-province-zonal-1984-2022.provenance.json",
+        "byteLength": 20657,
+        "sha256": "2a75bdf76acf88124121b7bdf8ff6836bfea3cda343f2e16fb9a827ce56ff082",
+        "matches": true
+      },
+      {
+        "at": ".items.C-province-span-aggregate.output",
+        "path": "data/phase3-province-interval-spans-1984-2022.json",
+        "byteLength": 299946,
+        "sha256": "215b3b6ae49844afb24f544c6927963d8a49680f93c127bda5a8dc10da7964f2",
+        "matches": true
+      },
+      {
+        "at": ".items.C-province-span-aggregate.pieces",
+        "path": "data/phase3-province-interval-spans-1984-2022.pieces.jsonl.gz",
+        "byteLength": 1934417,
+        "sha256": "54d1fc50bd9a972a506ad60183865439e27492ae2cc661e2ee2d3608239e532d",
+        "matches": true
+      },
+      {
+        "at": ".items.C-province-span-aggregate.driver",
+        "path": "scripts/phase3-province-interval-spans-block-partition.py",
+        "byteLength": 12914,
+        "sha256": "8b859aacf6a132329d680774d872a1a40eea031befdb1aaa3f3dbcd28ef8e8c1",
+        "matches": true
+      },
+      {
+        "at": ".items.C-province-span-aggregate.worker",
+        "path": "scripts/phase3_interval_zonal_aggregate.py",
+        "byteLength": 29161,
+        "sha256": "e8705301aaf5ae6e1812e6f80f5f8ff3707411c56fe631fd4dc0f8eeeac94674",
+        "matches": true
+      },
+      {
+        "at": ".items.C-province-span-aggregate.partitionValidation",
+        "path": "data/phase3-province-interval-spans-partition-validation.json",
+        "byteLength": 253405,
+        "sha256": "f364cedf6de2864ac03be0fc7a4bde49b4204089dd39c1f44c732b667c89a250",
+        "matches": true
+      },
+      {
+        "at": ".items.C-province-span-aggregate.anchorCheck",
+        "path": "data/phase3-province-interval-spans-anchor-check.json",
+        "byteLength": 1266,
+        "sha256": "fa098f36170f2546678a4a13f661f6c4cbc4ad0e7370cf4dbd8f225ce15701f6",
+        "matches": true
+      },
+      {
+        "at": ".items.D-district-span-figures.file",
+        "path": "data/phase3-riding-interval-measurements.json",
+        "byteLength": 2452774,
+        "sha256": "d27f7a0b393399e5ea9638753fd5123fc9e0dbcc1cb3fa3579fe5842dcb8f06a",
+        "matches": true
+      },
+      {
+        "at": ".items.D-district-span-figures.sourcesRecord",
+        "path": "data/provincial-electoral-sources-2026-09-18.json",
+        "byteLength": 7925,
+        "sha256": "40a4dd6aab2b7fd5c98de9159a78510499817d5af193eef61f2e80c9b37014b5",
+        "matches": true
+      },
+      {
+        "at": ".items.D-district-span-figures.outlines.manifest",
+        "path": "/Volumes/Extended_SSD/Witness_Tree-data/derived/boundary-overlays-v4/manifest.json",
+        "byteLength": 5395,
+        "sha256": "e53d880979884838c7039f0f7e66b2d53e0da4ae718b99fafb3a417c2f6bad30",
+        "matches": true
+      },
+      {
+        "at": ".items.E-per-cell-patch-archives.release",
+        "path": "data/phase2-per-cell-tile-release.json",
+        "byteLength": 20767,
+        "sha256": "ad6b5ec2f797cb3d60dc8351fcd445bcbdf9e056076dc8def71297a7240ccd96",
+        "matches": true
+      },
+      {
+        "at": ".items.E-per-cell-patch-archives.readback",
+        "path": "data/phase2-per-cell-geometry-readback.json",
+        "byteLength": 47836,
+        "sha256": "167d959eb01a3552224b4d277e81c15f821204d283a9bd7b853261a41de844d9",
+        "matches": true
+      },
+      {
+        "at": ".items.E-per-cell-patch-archives.scopeAuthority",
+        "path": "data/phase2-zonal-aggregation-contract-amendment-2026-08-29.json",
+        "byteLength": 2149,
+        "sha256": "918e434f3759202babfe4738a2d104abfc22f6936337413942376eec903fbb15",
+        "matches": true
+      },
+      {
+        "at": ".items.F-coarse-grid.manifest",
+        "path": "data/phase6-coarse-grid-tiles.json",
+        "byteLength": 487787,
+        "sha256": "f9c45f76b96d2daf0e194f3103d0d9eab18ea4b453533ac821b44987e40dcd0b",
+        "matches": true
+      },
+      {
+        "at": ".notApprovable.rightsEvidence[0]",
+        "path": "data/phase1-source-inventory.json",
+        "byteLength": 26881,
+        "sha256": "1a558ca2d295dedf497223eb8b53bc99e843b435a389edbfb39a036af22ac34a",
+        "matches": true
+      },
+      {
+        "at": ".notApprovable.rightsEvidence[1]",
+        "path": "data/phase1-production-source-ledger.json",
+        "byteLength": 27083,
+        "sha256": "4ffc278a2b0bfc6308f8d6af57fc1f2fe36466b1fba758538749a9e4dd2693ee",
+        "matches": true
+      },
+      {
+        "at": ".notApprovable.rightsEvidence[2]",
+        "path": "data/phase1-outreach-reply-audit.json",
+        "byteLength": 21224,
+        "sha256": "22dbfca35ce1b8c394399c21dcb50d83f12b8efa4df6d267d7a637b20ba8004a",
+        "matches": true
+      },
+      {
+        "at": ".formalGateAssessment.statusRecords[0]",
+        "path": "data/phase2-formal-exit-status-as-admitted-2026-09-18.json",
+        "byteLength": 1510,
+        "sha256": "45ce097b7f6f5029d3bdf0667d4c3b319a080e1da6030ab61ae35134311c8048",
+        "matches": true
+      },
+      {
+        "at": ".formalGateAssessment.statusRecords[1]",
+        "path": "data/phase8-launch-readiness-exit-status-as-admitted-2026-09-18.json",
+        "byteLength": 28934,
+        "sha256": "bee4d0f2d467996476e7e579eec969a6914802dce0e2a62dbe7f74dc0e9e8352",
+        "matches": true
+      },
+      {
+        "at": ".doesNotTouch[0]",
+        "path": "data/phase2-admission-record-2026-08-26.json",
+        "byteLength": 14873,
+        "sha256": "58147c088d12190f8882d0c493364cd07cf7c176d4fafbc266421bf337ca7d82",
+        "matches": true
+      },
+      {
+        "at": ".doesNotTouch[1]",
+        "path": "data/phase2-owner-admission-packet.json",
+        "byteLength": 6283,
+        "sha256": "f4bc01b389a2c514ad5e04c746821c249ca6c2bf91b6d6f2a46428d6d66d77fd",
+        "matches": true
+      }
+    ]
+  },
+  "limits": [
+    "Every province is partial-with-unknown, so every figure is a minimum. Unmapped share of the cartographic province: QC 15.04962%, ON 9.03031%, AB 24.02146%, BC 0.00446%.",
+    "Loss is counted once per place, against the forest known at the start year. Yearly losses added together carry no percentage.",
+    "Unmapped and nodata cells stay Unknown and are never shown as no loss.",
+    "Nothing has been expert reviewed. Independent comparisons are not published.",
+    "Harvest and wildfire on patches are overlaps with recorded events, not causal attribution."
+  ],
+  "permittedClaims": [
+    "The chosen items are admitted for 1984-2022 under the bound method and limits.",
+    "If release is chosen: the chosen items may be published on the site and in a bulk download, with the limits above shown next to them."
+  ],
+  "prohibitedClaims": [
+    "expert review completed",
+    "independent comparison completed or published",
+    "accuracy, completeness or causal attribution",
+    "any figure as a complete-province total",
+    "net forest change or regrowth",
+    "admission of any unbound output or of the notApprovable items"
+  ],
+  "notAdmitted": [
+    "the earlier AB and QC district sources",
+    "rightsEvidence",
+    "rightsEvidenceNote",
+    "a span-ready patch archive"
+  ],
+  "formalGates": {
+    "phase2FormalExit": "stays 2 of 4: expert review was retired, not met, and the comparisons are unpublished",
+    "phase8LaunchReadiness": "stays 8 of 16 until the real external events occur",
+    "honestConclusion": "Approval admits and can release bytes. It completes no formal gate.",
+    "statusRecords": [
+      {
+        "path": "data/phase2-formal-exit-status-as-admitted-2026-09-18.json",
+        "byteLength": 1510,
+        "sha256": "45ce097b7f6f5029d3bdf0667d4c3b319a080e1da6030ab61ae35134311c8048",
+        "livingRecord": "data/phase2-formal-exit-status.json"
+      },
+      {
+        "path": "data/phase8-launch-readiness-exit-status-as-admitted-2026-09-18.json",
+        "byteLength": 28934,
+        "sha256": "bee4d0f2d467996476e7e579eec969a6914802dce0e2a62dbe7f74dc0e9e8352",
+        "livingRecord": "data/phase8-launch-readiness-exit-status.json"
+      }
+    ]
+  },
+  "claims": {
+    "admitted": true,
+    "releaseApproved": true,
+    "released": false,
+    "releasedMeaning": "Set by each item's own release record when its bytes are actually published and read back; this record does not claim any release happened.",
+    "expertReviewed": false,
+    "complete": false,
+    "formalGatesChanged": false
+  },
+  "doesNotEdit": [
+    "data/phase2-1984-2022-admission-record-2026-09-18.json",
+    "data/phase2-1984-2022-owner-admission-packet.json",
+    "data/phase2-admission-record-2026-08-26.json",
+    "data/phase2-owner-admission-packet.json",
+    "historical readback evidence"
+  ]
+}

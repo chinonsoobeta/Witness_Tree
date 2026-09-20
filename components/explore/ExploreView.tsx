@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CoverageStatement } from "@/components/policy/CoverageStatement";
 import { EvidenceLegend } from "@/components/policy/EvidenceLegend";
 
@@ -20,11 +20,12 @@ import {
   exploreHref,
   fixturesForYear,
   formatUnknownSharePercent,
-  perCellAnnualForYear,
-  perCellArchiveForYear,
+  fourProvinceAnnualForYear,
   perCellArchiveSpan,
   perCellCauseForMode,
-  productionAggregatePeriod,
+  fourProvinceSpanMeasurement,
+  provinceSpanMeasurements,
+  provinceSpanReach,
   serializeBoundaryOverlays,
   toggleBoundaryOverlay,
   type BoundaryOverlayId,
@@ -47,21 +48,21 @@ const copy = {
     mapHidden:
       "The map is hidden in the List presentation. Choose Map above to show it.",
     production:
-      `Each layer on this page carries its own period, and this view is showing only one of them. The list, chart, and table use the same provisional ${productionAggregatePeriod("en")} province aggregate, which is the only period that release covers. No per-cell patches are drawn for the selected year.`,
+      `The province figures on the map and in the list, chart, and table are for the span the year control has selected, and follow it; any span within ${provinceSpanReach("en")} can be chosen. Each place counts once however many times it was cleared, against the forest known at the start of the span. No per-cell patches are drawn for the selected year. Nothing here has been checked against conditions on the ground, and the source maps only part of each province, so every figure is a minimum.`,
     productionWithPerCell:
-      `Each layer on this page carries its own period, so no single span describes the whole view. The map draws per-cell detected loss patches for ${perCellArchiveSpan("en")}, traced from the 30 m grid, and the heading below names the one annual interval the year control has selected. The list, chart, and table use the same provisional ${productionAggregatePeriod("en")} province aggregate, which covers those years alone and does not move with the year control. The annual figures below are counted from the exact cell inventory, not from the drawn patches, which are simplified for display and cannot be added up. Nothing here has been checked against conditions on the ground, and the source maps only part of the country, so every figure is a minimum.`,
+      `Each layer on this page carries its own period, so no single span describes the whole view. The provinces on the map and the list, chart, and table are for the span the year control has selected, and follow it; any span within ${provinceSpanReach("en")} can be chosen. Each place counts once however many times it was cleared, against the forest known at the start of the span. The per-cell patches drawn as you zoom in, traced from the 30 m grid for British Columbia, Alberta, Ontario and Québec, cover the same span: every patch lost in any year of it. The per-cell figures below are one annual interval only, the last of the span, which the heading below names; they are counted from the exact cell inventory, not from the drawn patches, which are simplified for display and cannot be added up. Nothing here has been checked against conditions on the ground, and the source maps only part of each province, so every figure is a minimum.`,
     annualHeading: "Per-cell detected loss",
     annualDetected: "Detected loss (ha)",
     annualHarvest: "Recorded harvest (ha)",
     annualFire: "Recorded fire (ha)",
     annualUnattributed: "Cause not recorded (ha)",
     annualBasis:
-      `This is one annual interval, the one ending in the last year selected. It is not a total for a wider span, not a total for ${perCellArchiveSpan("en")}, and not the ${productionAggregatePeriod("en")} province aggregate. Counted from the exact 30 m cell inventory behind the map. One cell is 0.09 ha.`,
+      `This is one annual interval, the one ending in the last year selected, for British Columbia, Alberta, Ontario and Québec together. It is not a total for a wider span, not a total for ${perCellArchiveSpan("en")}, and not the province figures for the selected span. Counted from the exact 30 m cell inventory behind the map. One cell is 0.09 ha.`,
     annualNone: "No per-cell interval covers this year and mode.",
     spanNote: (fromYear: number, toYear: number) =>
-      `Districts are shaded for the whole span, ${fromYear} to ${toYear}: each one shows the forest lost at least once inside it, counted once no matter how many times a place was cleared. Where a district lost the same ground more than once, the yearly losses added together are shown alongside, in hectares only. That figure has no denominator and is never given as a share. The per-cell patches drawn on the map are an annual product and show the last year of the span alone.`,
+      `The provinces are shaded for the whole span, ${fromYear} to ${toYear}, and a district boundary you point at or select on the map reads out its figures for the same span: the forest lost at least once inside it, counted once no matter how many times a place was cleared. Districts are drawn as outlines only and are not shaded. Where a district lost the same ground more than once, the yearly losses added together are shown alongside, in hectares only. That figure has no denominator and is never given as a share. The per-cell patches drawn on the map cover the same span, one patch for each year a place was lost in it.`,
     spanPending:
-      "District figures follow the years in the address bar. Playback has moved ahead of them, so they are held back rather than shown under years they were not measured over.",
+      "District figures for the selected years are loading. Until they arrive they are held back rather than shown under years they were not measured over.",
     fixtureList:
       "The list, chart, and table use illustrative fixtures. This view does not imply a production geographic layer.",
     empty: (mode: string, year: number, nearest: number) =>
@@ -87,6 +88,7 @@ const copy = {
     coverage: "Coverage",
     observedLoss: "Detected loss (ha)",
     observedLossPercent: "Detected loss (%)",
+    fourProvinces: "The four provinces together",
     partial: "Some pixels unknown, so this is a minimum",
     unknownArea: "ha unknown",
     source: "Source attribution",
@@ -98,7 +100,7 @@ const copy = {
     },
     modeStatus: {
       "forest-change":
-        "Real map intervals: 1985–2022; real province aggregate: 2022. Illustrative data view: 2004; other data-view years have no illustrative record.",
+        "Real map intervals: 1985–2022; real province figures: any span within 1984–2022.",
       "recorded-harvest":
         "Real map intervals: 1985–2022. Illustrative data view: 2012; other data-view years have no illustrative record.",
       wildfire:
@@ -116,21 +118,21 @@ const copy = {
     mapHidden:
       "La carte est masquée dans la présentation en liste. Choisissez Carte ci-dessus pour l’afficher.",
     production:
-      `Chaque couche de cette page porte sa propre période, et cette vue n’en affiche qu’une seule. La liste, le graphique et le tableau utilisent le même agrégat provincial provisoire ${productionAggregatePeriod("fr", "from")}, seule période couverte par cette version. Aucune parcelle par cellule n’est dessinée pour l’année choisie.`,
+      `Les chiffres provinciaux de la carte, de la liste, du graphique et du tableau portent sur la période choisie par la commande d’année et la suivent; toute période ${provinceSpanReach("fr", "from")} peut être choisie. Chaque lieu compte une seule fois, peu importe le nombre de coupes, par rapport à la forêt connue au début de la période. Aucune parcelle par cellule n’est dessinée pour l’année choisie. Rien ici n’a été vérifié sur le terrain, et la source ne cartographie qu’une partie de chaque province\u202F: chaque chiffre est donc un minimum.`,
     productionWithPerCell:
-      `Chaque couche de cette page porte sa propre période\u202F; aucune période unique ne décrit donc l’ensemble de la vue. La carte dessine les parcelles de perte détectée par cellule ${perCellArchiveSpan("fr", "from")}, tracées à partir de la grille de 30 m, et le titre ci-dessous nomme le seul intervalle annuel choisi par la commande d’année. La liste, le graphique et le tableau utilisent le même agrégat provincial provisoire ${productionAggregatePeriod("fr", "from")}, qui ne couvre que ces années et ne suit pas la commande d’année. Les chiffres annuels ci-dessous sont comptés à partir de l’inventaire exact des cellules, et non des parcelles dessinées, qui sont simplifiées pour l’affichage et ne peuvent pas être additionnées. Rien ici n’a été vérifié sur le terrain, et la source ne cartographie qu’une partie du pays\u202F: chaque chiffre est donc un minimum.`,
+      `Chaque couche de cette page porte sa propre période\u202F; aucune période unique ne décrit donc l’ensemble de la vue. Les provinces de la carte ainsi que la liste, le graphique et le tableau portent sur la période choisie par la commande d’année et la suivent; toute période ${provinceSpanReach("fr", "from")} peut être choisie. Chaque lieu compte une seule fois, peu importe le nombre de coupes, par rapport à la forêt connue au début de la période. Les parcelles par cellule dessinées au fur et à mesure du zoom, tracées à partir de la grille de 30 m pour la Colombie-Britannique, l’Alberta, l’Ontario et le Québec, couvrent la même période\u202F: toutes les parcelles perdues au cours de n’importe laquelle de ses années. Les chiffres par cellule ci-dessous ne portent que sur un intervalle annuel, le dernier de la période, que nomme le titre ci-dessous\u202F; ils sont comptés à partir de l’inventaire exact des cellules, et non des parcelles dessinées, qui sont simplifiées pour l’affichage et ne peuvent pas être additionnées. Rien ici n’a été vérifié sur le terrain, et la source ne cartographie qu’une partie de chaque province\u202F: chaque chiffre est donc un minimum.`,
     annualHeading: "Perte détectée par cellule",
     annualDetected: "Perte détectée (ha)",
     annualHarvest: "Récoltes consignées (ha)",
     annualFire: "Incendies consignés (ha)",
     annualUnattributed: "Cause non consignée (ha)",
     annualBasis:
-      `Il s’agit d’un seul intervalle annuel, celui qui se termine à la dernière année choisie. Ce n’est pas un total pour une période plus large, ni pour ${perCellArchiveSpan("fr")}, ni l’agrégat provincial de ${productionAggregatePeriod("fr")}. Comptée à partir de l’inventaire exact des cellules de 30 m derrière la carte. Une cellule représente 0,09 ha.`,
+      `Il s’agit d’un seul intervalle annuel, celui qui se termine à la dernière année choisie, pour la Colombie-Britannique, l’Alberta, l’Ontario et le Québec ensemble. Ce n’est pas un total pour une période plus large, ni pour ${perCellArchiveSpan("fr")}, ni les chiffres provinciaux de la période choisie. Comptée à partir de l’inventaire exact des cellules de 30 m derrière la carte. Une cellule représente 0,09 ha.`,
     annualNone: "Aucun intervalle par cellule ne couvre cette année et ce mode.",
     spanNote: (fromYear: number, toYear: number) =>
-      `Les circonscriptions sont ombrées pour toute la période, de ${fromYear} à ${toYear} : chacune montre la forêt perdue au moins une fois, comptée une seule fois peu importe le nombre de coupes. Lorsqu’une circonscription a perdu le même terrain plus d’une fois, les pertes annuelles additionnées sont affichées à côté, en hectares seulement. Ce chiffre n’a pas de dénominateur et n’est jamais présenté comme une part. Les parcelles par cellule dessinées sur la carte proviennent d’un produit annuel et ne montrent que la dernière année de la période.`,
+      `Les provinces sont ombrées pour toute la période, de ${fromYear} à ${toYear}, et une limite de circonscription pointée ou choisie sur la carte affiche ses chiffres pour la même période : la forêt perdue au moins une fois, comptée une seule fois peu importe le nombre de coupes. Les circonscriptions sont tracées en contour seulement et ne sont pas ombrées. Lorsqu’une circonscription a perdu le même terrain plus d’une fois, les pertes annuelles additionnées sont affichées à côté, en hectares seulement. Ce chiffre n’a pas de dénominateur et n’est jamais présenté comme une part. Les parcelles par cellule dessinées sur la carte couvrent la même période, une parcelle pour chaque année où un lieu y a été perdu.`,
     spanPending:
-      "Les chiffres par circonscription suivent les années inscrites dans la barre d’adresse. La lecture les a devancés ; ils sont donc retenus plutôt qu’affichés sous des années qu’ils ne mesurent pas.",
+      "Les chiffres par circonscription pour les années choisies sont en cours de chargement. D’ici là, ils sont retenus plutôt qu’affichés sous des années qu’ils ne mesurent pas.",
     fixtureList:
       "La liste, le graphique et le tableau utilisent des exemples illustratifs. Cette vue n’implique aucune couche géographique de production.",
     empty: (mode: string, year: number, nearest: number) =>
@@ -156,6 +158,7 @@ const copy = {
     coverage: "Couverture",
     observedLoss: "Perte détectée (ha)",
     observedLossPercent: "Perte détectée (%)",
+    fourProvinces: "Les quatre provinces ensemble",
     partial: "Certains pixels sont inconnus; il s’agit donc d’un minimum",
     unknownArea: "ha inconnus",
     source: "Attribution de la source",
@@ -167,7 +170,7 @@ const copy = {
     },
     modeStatus: {
       "forest-change":
-        "Intervalles cartographiques réels : 1985–2022; agrégat provincial réel : 2022. Vue des données illustrative : 2004; les autres années n’ont aucun dossier illustratif.",
+        "Intervalles cartographiques réels : 1985–2022; chiffres provinciaux réels : toute période comprise dans 1984–2022.",
       "recorded-harvest":
         "Intervalles cartographiques réels : 1985–2022. Vue des données illustrative : 2012; les autres années n’ont aucun dossier illustratif.",
       wildfire:
@@ -288,29 +291,64 @@ export function ExploreView({
     setActiveFrom(routeFrom);
   }
   /*
-   * The district numbers belong to the span the server was asked for. While the
-   * reader plays through the record the control moves the span ahead of the
-   * server, and attaching the old span's numbers to the new span's heading
-   * would put a real measurement under the wrong years. Withholding them is the
-   * honest response, and the map already has wording for a district it cannot
-   * measure.
+   * The district numbers the server rendered belong to the span in the address.
+   * The control moves the span without a navigation, so once it has moved the
+   * page asks the district-span route for the span it now shows, and uses the
+   * answer only if it names that same span. Until then the numbers are
+   * withheld: attaching the old span's numbers to the new span's heading would
+   * put a real measurement under the wrong years.
    */
   const spanIsServed = activeYear === year && activeFrom === routeFrom;
-  const servedMeasurements = spanIsServed ? ridingMeasurements : [];
+  const spanKey = `${activeFrom}-${activeYear}`;
+  const [liveSpan, setLiveSpan] = useState<{ key: string; measurements: readonly RidingBoundaryMeasurement[] } | null>(null);
+  useEffect(() => {
+    if (spanIsServed) return;
+    const controller = new AbortController();
+    // Playback steps faster than a reader needs each answer, so wait for the
+    // span to settle before asking.
+    const timer = setTimeout(() => {
+      fetch(`/api/explore/district-spans?from=${activeFrom}&to=${activeYear}`, { signal: controller.signal })
+        .then((response) => (response.ok ? (response.json() as Promise<{ fromYear?: unknown; toYear?: unknown; measurements?: unknown }>) : null))
+        .then((body) => {
+          if (!body || body.fromYear !== activeFrom || body.toYear !== activeYear || !Array.isArray(body.measurements)) return;
+          setLiveSpan({ key: `${activeFrom}-${activeYear}`, measurements: body.measurements as RidingBoundaryMeasurement[] });
+        })
+        .catch(() => {
+          // A failed request leaves the figures withheld, which the page already says.
+        });
+    }, 250);
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [spanIsServed, activeFrom, activeYear]);
+  const liveIsCurrent = liveSpan?.key === spanKey;
+  const districtsCurrent = spanIsServed || liveIsCurrent;
+  const servedMeasurements = spanIsServed
+    ? ridingMeasurements
+    : liveIsCurrent
+      ? liveSpan.measurements
+      : [];
 
   const modeEvents = events.filter((event) => event.mode === mode);
   const selected = fixturesForYear(modeEvents, activeYear);
-  const productionAvailable = mode === "forest-change" && activeYear === 2022;
+  const activeSpan = { fromYear: activeFrom, toYear: activeYear };
+  const provinceRows = mode === "forest-change" ? provinceSpanMeasurements(activeSpan) : [];
+  const fourProvinces = provinceRows.length === 4 ? fourProvinceSpanMeasurement(activeSpan) : null;
+  const productionAvailable = provinceRows.length === 4;
+  const spanPeriod = formatYearRange(yearRange(activeFrom, activeYear), locale);
   const perCellShown =
-    perCellCauseForMode(mode) !== null && perCellArchiveForYear(activeYear) !== null;
+    perCellCauseForMode(mode) !== null && fourProvinceAnnualForYear(activeYear) !== null;
   const note = !productionAvailable
     ? text.fixtureList
     : perCellShown
       ? text.productionWithPerCell
       : text.production;
-  const annual = perCellShown ? perCellAnnualForYear(activeYear) : null;
-  const provinceCoverageLabel = (row: (typeof EXPLORE_PRODUCTION_LAYER.rows)[number]) =>
-    `${text.partial} (${formatUnknownSharePercent(row.unknownSharePercent, locale)}; ${formatNumber(row.unknownRequiredInputHectares, locale)} ${text.unknownArea})${"unmappedCharacter" in row ? `; ${row.unmappedCharacter[locale]}` : ""}`;
+  const annual = perCellShown ? fourProvinceAnnualForYear(activeYear) : null;
+  const provinceCoverageLabel = (row: (typeof provinceRows)[number]) =>
+    `${text.partial} (${formatUnknownSharePercent(row.unknownSharePercent, locale)}; ${formatNumber(row.unknownHectares ?? 0, locale)} ${text.unknownArea})${row.unmappedCharacter ? `; ${row.unmappedCharacter[locale]}` : ""}`;
+  const hectaresOrDash = (value: number | null) => (value === null ? "–" : formatNumber(value, locale));
+  const percentOrDash = (value: number | null) => (value === null ? "–" : formatNumber(value, locale));
   const nearestYear = modeEvents.reduce(
     (nearest, event) =>
       Math.abs(event.year - activeYear) < Math.abs(nearest - activeYear)
@@ -408,7 +446,7 @@ export function ExploreView({
         {activeYear > activeFrom + 1 ? (
           <p className="explore-note">{text.spanNote(activeFrom, activeYear)}</p>
         ) : null}
-        {!spanIsServed ? (
+        {!districtsCurrent ? (
           <p className="explore-note" role="status">{text.spanPending}</p>
         ) : null}
         <div className="explore-annual">
@@ -521,15 +559,15 @@ export function ExploreView({
         {presentation === "list" && hasData ? (
           <ul className="explore-list" aria-label={text.list}>
               {productionAvailable
-                ? EXPLORE_PRODUCTION_LAYER.rows.map((row) => (
+                ? provinceRows.map((row) => (
                     <li className="card card--lift" key={row.id}>
                       <h3>{row.name[locale]}</h3>
-                      <p>{productionAggregatePeriod(locale)}</p>
+                      <p>{spanPeriod}</p>
                       <p>
                         {text.observedLoss}
-                        {colon(locale)} {formatNumber(row.observedLossHectares, locale)} ·{" "}
+                        {colon(locale)} {hectaresOrDash(row.unionLossHectares)} ·{" "}
                         {text.observedLossPercent}
-                        {colon(locale)} {formatNumber(row.observedLossPercent, locale)} ·{" "}
+                        {colon(locale)} {percentOrDash(row.unionLossPercent)} ·{" "}
                         {text.coverage}
                         {colon(locale)} {provinceCoverageLabel(row)}
                       </p>
@@ -557,18 +595,20 @@ export function ExploreView({
 
         {hasData && data === "chart" ? (
           (() => {
-              const rows = productionAvailable ? EXPLORE_PRODUCTION_LAYER.rows : selected;
+              const rows = productionAvailable ? provinceRows : selected;
               const values = rows.map((item) =>
-                "observedLossPercent" in item ? item.observedLossPercent : 1,
+                "unionLossPercent" in item ? item.unionLossPercent ?? 0 : 1,
               );
               const scale = Math.max(...values, 1);
               return (
                 <>
                 <ul className="explore-chart" aria-label={text.chart}>
                   {rows.map((item) => {
-                    const isProduction = "observedLossPercent" in item;
-                    const value = isProduction ? item.observedLossPercent : 1;
-                    const detail = isProduction ? formatPercent(value, locale) : String(item.year);
+                    const isProduction = "unionLossPercent" in item;
+                    const value = isProduction ? item.unionLossPercent ?? 0 : 1;
+                    const detail = isProduction
+                      ? item.unionLossPercent === null ? "–" : formatPercent(item.unionLossPercent, locale)
+                      : String(item.year);
                     return (
                       <li key={item.id}>
                         <span className="explore-bar-name">{item.name[locale]}</span>
@@ -583,9 +623,9 @@ export function ExploreView({
                 {/* A bar states what was detected inside the mapped area. The
                     unmapped share is not a smaller bar, so it is written out
                     beneath the chart rather than drawn into it. */}
-                {rows.map((item) => "unmappedCharacter" in item ? (
+                {productionAvailable ? provinceRows.map((item) => item.unmappedCharacter ? (
                   <p key={item.id}>{item.name[locale]}{colon(locale)} {item.unmappedCharacter[locale]}</p>
-                ) : null)}
+                ) : null) : null}
                 </>
               );
           })()
@@ -596,7 +636,7 @@ export function ExploreView({
             <table className="explore-table">
               <caption id="explore-data-table-caption">
                 {text.table}
-                {productionAvailable ? `${colon(locale)} ${productionAggregatePeriod(locale)}` : ""}
+                {productionAvailable ? `${colon(locale)} ${spanPeriod}` : ""}
               </caption>
               <thead>
                 {productionAvailable ? (
@@ -621,20 +661,36 @@ export function ExploreView({
               </thead>
               <tbody>
                 {productionAvailable
-                  ? EXPLORE_PRODUCTION_LAYER.rows.map((row) => (
-                      <tr key={row.id}>
-                        <th scope="row">{row.name[locale]}</th>
-                        <td>{productionAggregatePeriod(locale)}</td>
-                        <td>{formatNumber(row.observedLossHectares, locale)}</td>
-                        <td>{formatNumber(row.observedLossPercent, locale)}</td>
-                        <td>{provinceCoverageLabel(row)}</td>
-                        <td>
-                          <a href={EXPLORE_PRODUCTION_LAYER.attribution.href}>
-                            {EXPLORE_PRODUCTION_LAYER.attribution[locale]}
-                          </a>
-                        </td>
-                      </tr>
-                    ))
+                  ? [
+                      ...provinceRows.map((row) => (
+                        <tr key={row.id}>
+                          <th scope="row">{row.name[locale]}</th>
+                          <td>{spanPeriod}</td>
+                          <td>{hectaresOrDash(row.unionLossHectares)}</td>
+                          <td>{percentOrDash(row.unionLossPercent)}</td>
+                          <td>{provinceCoverageLabel(row)}</td>
+                          <td>
+                            <a href={EXPLORE_PRODUCTION_LAYER.attribution.href}>
+                              {EXPLORE_PRODUCTION_LAYER.attribution[locale]}
+                            </a>
+                          </td>
+                        </tr>
+                      )),
+                      fourProvinces ? (
+                        <tr key="four-provinces">
+                          <th scope="row">{text.fourProvinces}</th>
+                          <td>{spanPeriod}</td>
+                          <td>{hectaresOrDash(fourProvinces.unionLossHectares)}</td>
+                          <td>{percentOrDash(fourProvinces.unionLossPercent)}</td>
+                          <td>{`${text.partial} (${formatNumber(fourProvinces.unknownHectares ?? 0, locale)} ${text.unknownArea})`}</td>
+                          <td>
+                            <a href={EXPLORE_PRODUCTION_LAYER.attribution.href}>
+                              {EXPLORE_PRODUCTION_LAYER.attribution[locale]}
+                            </a>
+                          </td>
+                        </tr>
+                      ) : null,
+                    ]
                   : selected.map((event) => (
                       <tr key={event.id}>
                         <th scope="row">{event.name[locale]}</th>

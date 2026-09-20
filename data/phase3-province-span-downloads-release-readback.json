@@ -1,0 +1,51 @@
+{
+  "schemaVersion": "witness-tree/province-span-download-readback/1",
+  "releaseId": "f9cd109fa27cd43db90eed76118be45393bc3b7f9bb0d7830a18ec19ed463c81",
+  "recordedAt": "2026-09-19T07:13:12.098Z",
+  "s3ExactReadback": {
+    "method": "head-object length and single-part MD5 ETag against the local bytes",
+    "files": [
+      {
+        "name": "province-spans-1984-2022.csv",
+        "byteLength": 412084,
+        "md5ETagMatches": true,
+        "contentType": "text/csv; charset=utf-8"
+      },
+      {
+        "name": "province-spans-1984-2022.json",
+        "byteLength": 1612936,
+        "md5ETagMatches": true,
+        "contentType": "application/json; charset=utf-8"
+      },
+      {
+        "name": "manifest.json",
+        "byteLength": 3593,
+        "md5ETagMatches": true,
+        "contentType": "application/json; charset=utf-8"
+      }
+    ]
+  },
+  "cloudFrontExactReadback": {
+    "method": "every file fetched without caching and hashed with SHA-256",
+    "files": [
+      {
+        "name": "province-spans-1984-2022.csv",
+        "status": 200,
+        "byteLength": 412084,
+        "sha256": "1b57f418f4bd3bc546bb713c7de4eecfe8163cd3ee5aa10f84f35382de2e7c25"
+      },
+      {
+        "name": "province-spans-1984-2022.json",
+        "status": 200,
+        "byteLength": 1612936,
+        "sha256": "cef3954987ba2e4e3fb22b407fe1bafe1b1539c98e0291de7e236d4fcc547a2a"
+      },
+      {
+        "name": "manifest.json",
+        "status": 200,
+        "byteLength": 3593,
+        "sha256": "22180ecbb0dc64b08f8999494cfb66e5d9117dccc7cfed62897af85eb58df97f"
+      }
+    ]
+  }
+}

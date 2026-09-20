@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "witness-tree/coarse-grid-release-readback/1",
+  "releaseId": "0d58b35643f7f8033d2d9e1651c34b065cf4168a947c35987beb32cf1393be8c",
+  "recordedAt": "2026-09-19T05:13:02.091Z",
+  "s3ExactReadback": {
+    "method": "list-objects-v2 length and single-part MD5 ETag against the local bytes",
+    "tiles": 2067
+  },
+  "cloudFrontExactReadback": {
+    "method": "every tile fetched without caching and hashed with SHA-256",
+    "tiles": 2067,
+    "bytes": 496687280
+  },
+  "tilesIndexSha256": "5e732a5829b2efba254067453470acc0fb4490eaafc4315ca8923e41e310fdfc"
+}

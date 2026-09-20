@@ -67,3 +67,18 @@ export const PER_CELL_ARCHIVE_SPAN: YearRange = EXPLORE_COVERAGE_SPAN;
 export function perCellArchiveSpan(locale: Locale, form: YearRangeForm = "compact"): string {
   return formatYearRange(PER_CELL_ARCHIVE_SPAN, locale, form);
 }
+
+/*
+ * How far the province spans reach: any span inside 1984 to 2022. It is the
+ * same two years as the per-cell archive's reach, but a different claim, since
+ * a province span is one figure for the whole span rather than a stack of
+ * annual layers, so it has its own name.
+ */
+export const PROVINCE_SPAN_REACH: YearRange = yearRange(
+  EXPLORE_INTERVAL_FIRST_YEAR,
+  EXPLORE_INTERVAL_LAST_YEAR,
+);
+
+export function provinceSpanReach(locale: Locale, form: YearRangeForm = "compact"): string {
+  return formatYearRange(PROVINCE_SPAN_REACH, locale, form);
+}

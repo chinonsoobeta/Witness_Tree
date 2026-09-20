@@ -1,0 +1,121 @@
+{
+  "schemaVersion": "witness-tree/provincial-electoral-sources/1",
+  "recordId": "provincial-electoral-sources-2026-09-18",
+  "recordedOn": "2026-09-18",
+  "status": "engineering-record",
+  "purpose": "Replaces the Alberta and Québec provincial district sources with ones whose terms allow the use the product makes. It does not edit data/phase1-source-inventory.json, data/phase1-production-source-ledger.json or data/phase1-outreach-reply-audit.json, which stay as recorded; this record is their dated successor for these two sources.",
+  "alberta": {
+    "decision": "Re-sourced. Owner direction, 2026-09-18: \"Re-source the copy for the Province of Alberta.\"",
+    "replaces": {
+      "publisher": "Elections Alberta",
+      "artifact": "staging/ab-electoral-2019/EDS_ENACTED_BILL33_15DEC2017.shp",
+      "sha256": "89d0393f8046fe9178f630012fbf4a68718e898f538523554e211fc8dae526a4",
+      "whyReplaced": "Elections Alberta's terms allow non-commercial reproduction only without modification. The product reprojects, tiles and measures the outlines."
+    },
+    "source": {
+      "publisher": "Government of Alberta (Alberta Environment and Protected Areas, Provincial Geospatial Centre)",
+      "datasetTitle": "Provincial Electoral Division - Current 2019",
+      "catalogueUrl": "https://open.alberta.ca/opendata/gda-e201c640-1f76-429c-8c24-89ff496f956e",
+      "metadataUrl": "https://geodiscover.alberta.ca/geoportal/rest/metadata/item/0999f0448e384d81981ff82b25656d16/xml",
+      "serviceLayerUrl": "https://geospatial.alberta.ca/titan/rest/services/boundary/goa_administrative_area_10tm_nad83_aep/MapServer/3",
+      "sourceUrl": "https://geospatial.alberta.ca/titan/rest/services/boundary/goa_administrative_area_10tm_nad83_aep/MapServer/3/query?where=1%3D1&outFields=EDNUMBER%2CEDNAME%2CEDPROV&returnGeometry=true&orderByFields=EDNUMBER&f=geojson",
+      "retrievedAt": "2026-09-18T22:31:19Z",
+      "artifact": {
+        "path": "raw/alberta-provincial-electoral-divisions-2019/2026-09-18/provincial-electoral-division-current-2019.geojson",
+        "byteLength": 10829034,
+        "sha256": "2c3772181068395df9d4397c143bc6880f8474cd589502a0dfa915adb008dd07"
+      },
+      "acquisitionMetadata": {
+        "path": "raw/alberta-provincial-electoral-divisions-2019/2026-09-18/provincial-electoral-division-current-2019.geojson.metadata.json",
+        "byteLength": 4345,
+        "sha256": "ce41b84e6467d5decdbb4ae1a907657a17ea58edf1f4b4bc636ff013b59840c3"
+      },
+      "idField": "EDNUMBER",
+      "nameField": "EDNAME",
+      "featureCount": 87
+    },
+    "licence": {
+      "id": "ogl-alberta-2.2",
+      "url": "https://open.alberta.ca/licence",
+      "basis": "The dataset's own metadata record states that use is governed by the Open Government Licence - Alberta. The licence terms are those already reviewed for ogl-alberta 2.2 in data/source-review-register.json; the licence page returned HTTP 520 on 2026-09-18, so it was not re-read that day.",
+      "allowsModification": true,
+      "allowsCommercialUse": true
+    },
+    "attribution": {
+      "en": "Contains information licensed under the Open Government Licence – Alberta.",
+      "fr": "Contains information licensed under the Open Government Licence – Alberta."
+    },
+    "attributionNote": "The licence prescribes this sentence in English, so the French page shows it as written rather than a translation of our own. The dash is part of the licence's title.",
+    "comparisonWithReplacedFile": {
+      "sameDivisionNumbers": true,
+      "nameDifferences": 0,
+      "areaHectaresInEpsg3400": {
+        "new": 66258157.5,
+        "replaced": 66258112.8
+      },
+      "symmetricDifferenceHectares": 2022.1,
+      "symmetricDifferencePercent": 0.00305,
+      "largestDivisionDifference": {
+        "division": 4,
+        "hectares": 1.5,
+        "percent": 0.1441
+      },
+      "reading": "Same 87 divisions, numbers and names. The outlines differ slightly (digitizing and projection), so figures built on them are re-run, not reused."
+    },
+    "consequence": "Alberta district figures and outlines are rebuilt from this file under new slugs (ab-provincial-ridings-2019-goa). The figures change slightly because the outlines do."
+  },
+  "quebec": {
+    "decision": "Reuse Élections Québec's published boundaries unchanged. Owner direction, 2026-09-18: \"For Quebec, we don't need to adapt it, just reuse the boundaries.\"",
+    "whatIsReused": {
+      "publisher": "Élections Québec",
+      "sourceUrl": "https://donnees.electionsquebec.qc.ca/autres/provincial/circonscriptions_electorales_sans_eau_2026.json",
+      "artifact": {
+        "path": "staging/qc-electoral-2026/qc-electoral-2026.geojson",
+        "byteLength": 2380742,
+        "sha256": "5c22379acdffc6138eb77a5aaec265d7c301cffd04eb4c0bafede68ed8651503"
+      },
+      "idField": "CO_CEP",
+      "nameField": "NM_CEP",
+      "featureCount": 127,
+      "edition": "2026 electoral map, enacted 2026-06-12, published in the Gazette officielle 2026-06-17, first used at the 2026-10-05 general election."
+    },
+    "replaces": {
+      "artifact": "staging/qc-electoral-2026-sanseau/qc-electoral-districts-2026-sans-eau.geojson",
+      "sha256": "dd164f0ad5ff7e9f5366f26696d78b9c562ceb88b3a5ad664c22a8e158843677",
+      "difference": "Identical geometry for all 127 districts. The project had rewritten one name: feature 36's NM_CEP is published as 'Riv.-du-Loup-Témis.-Basques' and had been expanded to the full form. That change is an adaptation, so the published bytes are used instead and the name is shown as published."
+    },
+    "howItIsReused": [
+      "Names and identifiers are carried exactly as published.",
+      "Outlines are drawn without simplification or tiny-polygon reduction. Vector tiles still place coordinates on each zoom level's tile grid.",
+      "Figures are measured inside the published outlines; the outlines themselves are not altered."
+    ],
+    "publisherTerms": {
+      "url": "https://www.electionsquebec.qc.ca/en/our-institution/terms-of-use/",
+      "readOn": "2026-09-18",
+      "summary": "Download and reproduction are allowed for non-profit purposes, crediting the source and the copyright. Adaptation and commercial use need written permission."
+    },
+    "conditionsThisReuseRelies": [
+      "non-profit use",
+      "the source and © credit shown wherever the outlines are",
+      "no change to geometry, identifiers or names"
+    ],
+    "credit": {
+      "fr": "Source : © Directeur général des élections du Québec et Commission de la représentation électorale, 2026.",
+      "en": "Source: © Directeur général des élections du Québec and Commission de la représentation électorale, 2026."
+    },
+    "notWrittenPermission": "This is the owner's determination that unchanged reuse falls within the published reproduction terms. It is not written permission from Élections Québec, and nothing was sent to or received from Élections Québec.",
+    "openQuestion": "On 2026-09-18 this project's own reading (data/phase2-1984-2022-owner-admission-packet.json, first build) was that tiling the outlines and deriving figures from them could count as adaptation. The owner's determination above answers that question for this project; it does not settle how Élections Québec would read it.",
+    "consequence": "Québec district outlines and figures are rebuilt from the published bytes under new slugs (qc-provincial-ridings-2026-published). The geometry is identical, so the figures must match the earlier run exactly."
+  },
+  "notChangedHere": [
+    "No release, upload or deployment. The live boundary-overlays-v3 tiles keep the old Alberta outlines and the old credit until a v4 release replaces both together."
+  ],
+  "claims": {
+    "admitted": false,
+    "released": false,
+    "productionEligible": false,
+    "expertReviewed": false,
+    "externalAction": false,
+    "writtenPermission": false
+  }
+}

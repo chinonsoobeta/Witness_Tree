@@ -16,7 +16,9 @@ import { traceRings } from "../lib/phase2/rings.mjs";
 // so the run reader only ever moves forward and never seeks.
 
 const DATA_ROOT = process.env.WITNESS_TREE_DATA_ROOT ?? "/Volumes/Extended_SSD/Witness_Tree-data";
-const STORE = path.join(DATA_ROOT, "derived/phase2-per-cell-geometry-1984-2022-v1");
+// WITNESS_TREE_PER_CELL_STORE selects a derived store with the same layout,
+// such as the four-province clip.
+const STORE = process.env.WITNESS_TREE_PER_CELL_STORE ?? path.join(DATA_ROOT, "derived/phase2-per-cell-geometry-1984-2022-v1");
 
 // The national grid, read back from the loss rasters rather than assumed.
 const ORIGIN_X = -2660910.524;
@@ -24,6 +26,12 @@ const ORIGIN_Y = 2998848.1105;
 const CELL_METRES = 30;
 
 const COORDINATE_DECIMALS = 7; // about a centimetre; the cell is 30 m
+
+// WITNESS_TREE_PER_CELL_YEAR=1 writes each patch's closing year as a `year`
+// property, for the span archive, where all 38 intervals share one layer and
+// the map chooses a span by filtering on it. The annual archives leave it off:
+// there the interval is a property of the whole archive.
+const WITH_YEAR = process.env.WITNESS_TREE_PER_CELL_YEAR === "1";
 
 /** A forward-only record reader over a binary file of fixed-width records. */
 class RecordReader {
@@ -107,6 +115,7 @@ function ringsToCoordinates(rings) {
   // separate polygons in a MultiPolygon so no ring is silently dropped.
   const polygons = [];
   const outers = [];
+  const outerAreas = [];
   const holes = [];
   for (const ring of rings) {
     let area = 0;
@@ -115,6 +124,7 @@ function ringsToCoordinates(rings) {
     }
     if (area > 0) {
       outers.push(ring);
+      outerAreas.push(area);
       polygons.push([ring.map(([x, y]) => vertexToLonLat(x, y))]);
     } else {
       holes.push(ring);
@@ -125,7 +135,14 @@ function ringsToCoordinates(rings) {
     let host = 0;
     if (polygons.length > 1) {
       const [px, py] = pointInsideHost(hole);
-      host = outers.findIndex((outer) => containsPoint(outer, px, py));
+      // The smallest outer ring containing the point owns the hole. A patch
+      // clipped at a province border can leave one piece inside another
+      // piece's hole, where the first containing ring would be the wrong one.
+      host = -1;
+      for (let index = 0; index < outers.length; index += 1) {
+        if (!containsPoint(outers[index], px, py)) continue;
+        if (host === -1 || outerAreas[index] < outerAreas[host]) host = index;
+      }
       if (host === -1) throw new Error("a hole fell outside every outer ring of its patch");
     }
     polygons[host].push(hole.map(([x, y]) => vertexToLonLat(x, y)));
@@ -174,6 +191,7 @@ async function emitInterval(intervalName, output) {
           cells: patch.cellCount,
           harvest: attributeView.getUint32(0, true),
           fire: attributeView.getUint32(4, true),
+          ...(WITH_YEAR ? { year: Number(intervalName.slice(5)) } : {}),
         },
         geometry,
       })}\n`,

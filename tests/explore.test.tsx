@@ -75,7 +75,7 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
   );
   assert.match(
     en,
-    /list, chart, and table use the same provisional 2020–2022 province aggregate/,
+    /list, chart, and table are for the span the year control has selected, and follow it; any span within 1984–2022 can be chosen/,
   );
   /*
    * The per-cell half of the caption is a promise about a layer the reader can
@@ -86,7 +86,7 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
    */
   const perCellRelease = JSON.parse(
     readFileSync(
-      new URL("../data/phase2-per-cell-tile-release.json", import.meta.url),
+      new URL("../data/phase2-per-cell-four-province-tile-release.json", import.meta.url),
       "utf8",
     ),
   ) as { intervals: { interval: string }[] };
@@ -96,7 +96,12 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
     entry.interval.endsWith("-2022"),
   );
   if (perCellShown) {
-    assert.match(en, /per-cell detected loss patches for 1984–2022/);
+    // The patches and the provinces now cover the same span, but the per-cell
+    // figures are still one annual interval; the caption has to keep that
+    // apart rather than let one period stand for both.
+    assert.match(en, /cover the same span: every patch lost in any year of it/);
+    assert.match(en, /one annual interval only, the last of the span/);
+    assert.doesNotMatch(en, /show the last annual interval of the span alone/);
     /*
      * Figures are now counted from the exact cell inventory, so the copy may no
      * longer say nothing is counted from the layer. What it must still carry is
@@ -313,7 +318,14 @@ test("map/list and chart/table retain evidence, confidence, coverage, provenance
   );
   assert.match(mapChart, /<ul class="explore-chart" aria-label="Chart"/);
   assert.match(mapChart, /class="explore-bar-name">British Columbia<\/span>/);
-  assert.match(mapChart, /class="explore-bar-label">1\.39%<\/span>/);
+  // The default is the annual span 2021-2022, so the bar is that span's share,
+  // read from the span release rather than the fixed 2020-2022 aggregate.
+  assert.match(mapChart, /class="explore-bar-label">0\.58%<\/span>/);
+  const aggregateSpan = renderToStaticMarkup(
+    <ExploreView events={exploreFixtures} locale="en" mode="forest-change" presentation="map" data="chart" year={2022} fromYear={2020} />,
+  );
+  // The 2020-2022 span is the admitted aggregate, to the hectare.
+  assert.match(aggregateSpan, /class="explore-bar-label">1\.39%<\/span>/);
   assert.doesNotMatch(mapChart, /<svg[^>]*class="explore-chart"/);
   assert.match(listChart, /class="explore-bar-label">2012<\/span>/);
   assert.match(mapChart, /aria-label="Forest loss map"/);
@@ -367,7 +379,8 @@ test("Explore uses the exact PMTiles release with a GeoJSON/SVG fallback on map 
   assert.match(map, /role=\{state === "error" \? "alert" : "status"\}/);
   assert.match(map, /const provinceAvailable = mode === "forest-change";/);
   assert.match(map, /unavailableYear/);
-  assert.match(map, /EXPLORE_PRODUCTION_LAYER\.rows\.map/);
+  assert.match(map, /spanRows\.map/);
+  assert.match(map, /setPaintProperty\(PROVINCE_FILL_LAYER_ID, "fill-color", provinceFillColour\(fromYear, year\)\)/);
   assert.match(map, /Detected loss \(%\)/);
   assert.match(style, /phase2_province_loss_2020_2022/);
   assert.match(style, /\.pmtiles/);
@@ -501,7 +514,7 @@ test("one bilingual inline-SVG province bar serves landing and every map state",
   assert.ok(english.indexOf("province-bar--map") < english.indexOf("Condition and recovery needs"));
 });
 
-test("playback swaps only the annual source, starts at 1985, and stops visibly", async () => {
+test("playback swaps only the patch layer, starts at 1985, and stops visibly", async () => {
   const { readFile } = await import("node:fs/promises");
   const map = await readFile(
     new URL("../components/explore/ExploreMapClient.tsx", import.meta.url),
@@ -513,8 +526,11 @@ test("playback swaps only the annual source, starts at 1985, and stops visibly",
   );
   assert.match(map, /function swapPerCellLayer/);
   assert.match(map, /map\.removeLayer\(PER_CELL_LAYER_ID\)/);
-  assert.match(map, /map\.removeSource\(EXPLORE_PER_CELL_LAYER\.sourceId\)/);
-  assert.match(map, /map\.addSource\(EXPLORE_PER_CELL_LAYER\.sourceId, source\)/);
+  // One span source serves every year: a span change rebuilds the filtered
+  // layer and never removes or re-adds the source.
+  assert.doesNotMatch(map, /map\.removeSource\(EXPLORE_PER_CELL/);
+  assert.match(map, /map\.addSource\(EXPLORE_PER_CELL_SPAN_LAYER\.sourceId, perCellSource\(\)\)/);
+  assert.match(map, /\[mapReady, perCellKey, cause, overlayKey\]/);
   assert.match(map, /\[available, provinceAvailable, overlayKey, retryNonce\]/);
   assert.doesNotMatch(
     map,
@@ -731,8 +747,11 @@ test("Explore shows its coverage caveat and shaped evidence legend before the ma
     assert.ok(coverage >= 0 && coverage < legend && legend < map);
     assert.match(markup, /blank area|zone vide/);
     for (const glyph of ["■", "●", "▲", "○"]) assert.ok(markup.includes(glyph));
-    assert.match(markup, /loss-swatch patch-harvest[^>]*><\/i><span class="map-legend-shape">●/);
-    assert.match(markup, /loss-swatch patch-fire[^>]*><\/i><span class="map-legend-shape">◆/);
-    assert.match(markup, /loss-swatch patch-none[^>]*><\/i><span class="map-legend-shape">○/);
+    // Patch keys are swatches alone: the map draws no glyphs, so the legend
+    // must not promise any.
+    assert.match(markup, /loss-swatch patch-harvest[^>]*><\/i><\/span>/);
+    assert.match(markup, /loss-swatch patch-fire[^>]*><\/i><\/span>/);
+    assert.match(markup, /loss-swatch patch-none[^>]*><\/i><\/span>/);
+    assert.doesNotMatch(markup, /map-legend-shape/);
   }
 });

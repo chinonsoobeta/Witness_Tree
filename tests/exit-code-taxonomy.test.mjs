@@ -13,10 +13,14 @@ function observedWith(path, replace) {
   });
 }
 
-test("the exact twenty-four operator runners match the reviewed exit taxonomy", () => {
+test("the exact twenty-five operator runners match the reviewed exit taxonomy", () => {
   const result = validateTaxonomy(taxonomy);
-  assert.equal(result.runners, 24);
-  assert.deepEqual(result.codes, [0, 1, 64, 65, 69, 70, 73, 75, 77]);
+  assert.equal(result.runners, 25);
+  // 255 joined the set on 2026-09-19 for the four-province tile runner, which
+  // exits 255 so that a data root disappearing mid-run aborts the whole xargs
+  // batch instead of letting every remaining interval fail on its own and
+  // report itself built.
+  assert.deepEqual(result.codes, [0, 1, 64, 65, 69, 70, 73, 75, 77, 255]);
 });
 
 test("a same-code refusal message change fails the reviewed site contract", () => {

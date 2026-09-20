@@ -54,10 +54,10 @@ type ClipFixtureRelease = {
   };
 };
 
-const makeV3Fixture = () => {
+const makeCurrentFixture = () => {
   const releaseId = "a".repeat(64);
   const fixture = structuredClone(release);
-  const fixtureProductId = "boundary-overlays-v3";
+  const fixtureProductId = "boundary-overlays-v4";
   fixture.productId = fixtureProductId;
   fixture.releaseId = releaseId;
   fixture.base = release.base
@@ -89,17 +89,15 @@ const makeV3Fixture = () => {
   });
   fixture.archives = fixture.archives.map((archive: { overlay: string; fileName: string; url: string }) => ({
     ...archive,
-    fileName: archive.fileName.replaceAll("-v2.", "-v3."),
-    url: `${fixture.base}/${archive.fileName.replaceAll("-v2.", "-v3.")}`,
+    url: `${fixture.base}/${archive.fileName}`,
     clippedToProvinceBoundary: PROVINCE_CLIP.appliesTo.includes(archive.overlay as (typeof PROVINCE_CLIP.appliesTo)[number]),
     ...(archive.overlay === "economic-regions" ? { featureCount: 44 } : {}),
   }));
-  const sourceV3 = source
+  const sourceFixture = source
     .replaceAll(release.base, fixture.base)
     .replaceAll(release.releaseId, releaseId)
-    .replaceAll(release.productId, fixtureProductId)
-    .replaceAll("-v2.pmtiles", "-v3.pmtiles");
-  const readbackV3 = {
+    .replaceAll(release.productId, fixtureProductId);
+  const readbackFixture = {
     schemaVersion: "witness-tree/boundary-overlay-release-readback/1",
     releaseId,
     s3ExactReadback: true,
@@ -110,14 +108,14 @@ const makeV3Fixture = () => {
       sha256,
     })),
   };
-  return { release: fixture, source: sourceV3, readback: readbackV3 };
+  return { release: fixture, source: sourceFixture, readback: readbackFixture };
 };
 
 test("the published release reconciles with what the app pins", () => {
   const result = validateBoundaryOverlays(release, source, readback);
   assert.equal(result.archives, 4);
   assert.equal(result.provincial, 4);
-  assert.equal(release.productId, "boundary-overlays-v3");
+  assert.equal(release.productId, "boundary-overlays-v4");
   assert.deepEqual(release.transform.clip, PROVINCE_CLIP);
 });
 
@@ -139,14 +137,14 @@ test("the publisher records exact S3 and CloudFront readbacks", () => {
 });
 
 test("the release checker rejects a remote byte mismatch", () => {
-  const fixture = makeV3Fixture();
+  const fixture = makeCurrentFixture();
   const drifted = structuredClone(fixture.readback);
   drifted.archives[0].sha256 = "0".repeat(64);
   assert.throws(() => validateBoundaryOverlays(fixture.release, fixture.source, drifted), /does not match/);
 });
 
 test("the checker rejects drift that would draw nothing or claim too much", () => {
-  const fixture = makeV3Fixture();
+  const fixture = makeCurrentFixture();
   const validRelease = fixture.release;
   const validSource = fixture.source;
   // A layer rename is the failure this gate exists for: the tiles still load,
@@ -183,8 +181,8 @@ test("the checker rejects drift that would draw nothing or claim too much", () =
   // An unavailable overlay that quietly gained a URL would be published
   // without any of the evidence an available one has to carry.
   const smuggled = validSource.replace(
-    'available: true,\n      url: url("economic-regions-v3.pmtiles"),',
-    'available: false,\n      url: url("economic-regions-v3.pmtiles"),',
+    'available: true,\n      url: url("economic-regions-v4.pmtiles"),',
+    'available: false,\n      url: url("economic-regions-v4.pmtiles"),',
   );
   assert.throws(() => validateBoundaryOverlays(validRelease, smuggled), /must not declare a tile URL/);
 });
@@ -198,16 +196,16 @@ test("the checker rejects a missing or altered province clip contract", () => {
     (candidate) => { candidate.transform!.clip.appliesTo = ["economic-regions"]; },
   ];
   for (const mutate of mutators) {
-    const fixture = makeV3Fixture();
+    const fixture = makeCurrentFixture();
     mutate(fixture.release);
     assert.throws(() => validateBoundaryOverlays(fixture.release, fixture.source), /clip|province/i);
   }
 
-  const fixture = makeV3Fixture();
+  const fixture = makeCurrentFixture();
   fixture.release.archives.find((archive: { overlay: string }) => archive.overlay === "economic-regions").clippedToProvinceBoundary = false;
   assert.throws(() => validateBoundaryOverlays(fixture.release, fixture.source), /incorrect province clip metadata/);
 
-  const miscounted = makeV3Fixture();
+  const miscounted = makeCurrentFixture();
   const economic = miscounted.release.sources.find((entry: { overlay: string }) => entry.overlay === "economic-regions");
   economic.selectedFeatureCount = economic.inputFeatureCount + 1;
   assert.throws(() => validateBoundaryOverlays(miscounted.release, miscounted.source), /pre-clip selected/);

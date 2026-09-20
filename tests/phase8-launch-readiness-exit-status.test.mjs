@@ -9,17 +9,23 @@ test("Phase 8 records every literal launch-readiness gate without production inf
   assert.equal(await validatePhase8LaunchReadinessExitStatus(record), record);
   /*
    * Eight. CDN and tile validation passes only on the strength of a browser
-   * observation of the deployed Site bound to the client it observed. It spent
-   * this branch at fail, because merging main into the confidence-first
-   * redesign changed both the map style and the client and left the 2026-09-05
-   * observation describing something the Site no longer served. The owner
-   * redeployed on 2026-09-08 and the harness was re-run against the deployed
-   * Site, so the count moves because a measurement was taken, not because the
-   * code exists. Nothing weaker was used on the way: neither the preview tier
-   * nor a break-glass record is committed here, and the earlier observations
-   * stay on disk as true accounts of their own days. It stays a
+   * observation of the deployed Site bound to the client it observed, so it
+   * moves in both directions as the client changes and is redeployed. On
+   * 2026-09-19 this branch changed lib/explore/map-style.ts and
+   * components/explore/ExploreMapClient.tsx to draw patches from one span
+   * archive filtered on the year each patch was lost, so the 2026-09-12
+   * observation stopped describing the client the Site would serve and the
+   * criterion went to fail, as it did on 2026-09-01, 09-02, 09-04 and 09-08.
+   * A preview measurement was attempted first and does not exist: the Sites
+   * control plane offers no preview URL and its only deploy operation
+   * publishes to production. The owner then authorized the repository's first
+   * break-glass record, which satisfies the gate while stating outright that
+   * nothing was measured, so the criterion reads pass again and the count
+   * returns to eight. That is debt, not evidence: the record expires on
+   * 2026-09-22, binds only the two changed files, and is deleted and replaced
+   * by a real Site observation at the next deploy. It stays a
    * delivery-and-rendering gate: it asserts no production admission, and the
-   * remaining eight criteria are untouched by the deploy.
+   * other fifteen criteria are untouched by this change.
    */
   assert.equal(record.completedCriteria, 8);
   assert.equal(record.totalCriteria, 16);

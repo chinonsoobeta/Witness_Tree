@@ -18,8 +18,8 @@ export type BoundaryOverlayId = (typeof BOUNDARY_OVERLAY_IDS)[number];
 // scripts/publish-boundary-overlay-release.mjs. scripts/check-boundary-overlays.mjs
 // fails if this drifts from data/boundary-overlay-release.json.
 export const BOUNDARY_OVERLAY_RELEASE = Object.freeze({
-  releaseId: "4259310e49e4bf2a289463240a434529627415f81152f6104370764d07471339",
-  base: "https://d3g1406o0uekin.cloudfront.net/releases/boundary-overlays-v3/4259310e49e4bf2a289463240a434529627415f81152f6104370764d07471339/tiles",
+  releaseId: "594e33aa08fd7b60a21e6a17d43f7491757d99e7900fdd697230f6d1f52b78f0",
+  base: "https://d3g1406o0uekin.cloudfront.net/releases/boundary-overlays-v4/594e33aa08fd7b60a21e6a17d43f7491757d99e7900fdd697230f6d1f52b78f0/tiles",
 } as const);
 
 type Bilingual = Readonly<Record<"en" | "fr", string>>;
@@ -48,7 +48,7 @@ export const BOUNDARY_OVERLAYS: Readonly<Record<BoundaryOverlayId, BoundaryOverl
       id: "federal-ridings",
       label: { en: "Federal ridings", fr: "Circonscriptions fédérales" },
       available: true,
-      url: url("federal-ridings-v3.pmtiles"),
+      url: url("federal-ridings-v4.pmtiles"),
       sourceLayer: "federal_ridings",
       colour: EXPLORE_MAP_COLOURS.ink,
       note: {
@@ -64,7 +64,7 @@ export const BOUNDARY_OVERLAYS: Readonly<Record<BoundaryOverlayId, BoundaryOverl
       id: "provincial-ridings",
       label: { en: "Provincial ridings", fr: "Circonscriptions provinciales" },
       available: true,
-      url: url("provincial-ridings-v3.pmtiles"),
+      url: url("provincial-ridings-v4.pmtiles"),
       sourceLayer: "provincial_ridings",
       colour: EXPLORE_MAP_COLOURS.observation,
       dash: [3, 2],
@@ -73,15 +73,15 @@ export const BOUNDARY_OVERLAYS: Readonly<Record<BoundaryOverlayId, BoundaryOverl
         fr: "Colombie-Britannique, Alberta, Ontario et Québec · 431 circonscriptions\nDécrets de représentation : Colombie-Britannique 2023, Alberta 2019, Ontario 2022, Québec 2026.",
       },
       attribution: {
-        en: "Elections BC; Open Government Licence – Alberta; Elections Ontario; Élections Québec.",
-        fr: "Elections BC; Licence du gouvernement ouvert – Alberta; Élections Ontario; Élections Québec.",
+        en: "Elections BC. Alberta: Contains information licensed under the Open Government Licence – Alberta. Elections Ontario. Québec: Source: © Directeur général des élections du Québec and Commission de la représentation électorale, 2026.",
+        fr: "Elections BC. Alberta : Contains information licensed under the Open Government Licence – Alberta. Élections Ontario. Québec : Source : © Directeur général des élections du Québec et Commission de la représentation électorale, 2026.",
       },
     },
     "economic-regions": {
       id: "economic-regions",
       label: { en: "Economic regions", fr: "Régions économiques" },
       available: true,
-      url: url("economic-regions-v3.pmtiles"),
+      url: url("economic-regions-v4.pmtiles"),
       sourceLayer: "economic_regions",
       colour: EXPLORE_MAP_COLOURS.observation,
       dash: [5, 2],
@@ -98,7 +98,7 @@ export const BOUNDARY_OVERLAYS: Readonly<Record<BoundaryOverlayId, BoundaryOverl
       id: "watersheds",
       label: { en: "Watersheds", fr: "Bassins versants" },
       available: true,
-      url: url("watersheds-v3.pmtiles"),
+      url: url("watersheds-v4.pmtiles"),
       sourceLayer: "watersheds",
       colour: EXPLORE_MAP_COLOURS.ink,
       dash: [2, 2],

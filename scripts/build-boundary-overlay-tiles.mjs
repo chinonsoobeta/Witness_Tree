@@ -18,8 +18,11 @@ import os from "node:os";
 import { requireExactBilingualJoin, resolveBoundaryNames } from "./boundary-overlay-names.mjs";
 
 const DATA_ROOT = process.env.WITNESS_TREE_DATA_ROOT ?? "/Volumes/Extended_SSD/Witness_Tree-data";
-const PRODUCT_ID = "boundary-overlays-v3";
-const ARCHIVE_VERSION = "v3";
+// v4 reads Alberta from the Government of Alberta's open-licence copy and
+// Québec from Élections Québec's published bytes, drawn without simplification.
+// v3 stays as built and published until a release decision replaces it.
+const PRODUCT_ID = "boundary-overlays-v4";
+const ARCHIVE_VERSION = "v4";
 const OUT_DIR = path.join(DATA_ROOT, "derived", PRODUCT_ID);
 const TOOLS = "/opt/homebrew/bin";
 
@@ -82,25 +85,33 @@ const SOURCES = [
     id: "ab-electoral-divisions-2019",
     overlay: "provincial-ridings",
     jurisdiction: "AB",
-    input: path.join(DATA_ROOT, "staging/ab-electoral-2019/EDS_ENACTED_BILL33_15DEC2017.shp"),
-    sha256: "89d0393f8046fe9178f630012fbf4a68718e898f538523554e211fc8dae526a4",
+    // Government of Alberta, Open Government Licence - Alberta 2.2, which allows
+    // modification. See data/provincial-electoral-sources-2026-09-18.json.
+    input: path.join(
+      DATA_ROOT,
+      "raw/alberta-provincial-electoral-divisions-2019/2026-09-18/provincial-electoral-division-current-2019.geojson",
+    ),
+    sha256: "2c3772181068395df9d4397c143bc6880f8474cd589502a0dfa915adb008dd07",
     featureCount: 87,
     districtCount: 87,
-    id_field: "EDNumber20",
-    en_field: "EDName2017",
+    id_field: "EDNUMBER",
+    en_field: "EDNAME",
     fr_field: null,
   },
   {
     id: "qc-electoral-districts-2026",
     overlay: "provincial-ridings",
     jurisdiction: "QC",
-    input: path.join(DATA_ROOT, "staging/qc-electoral-2026-sanseau/qc-electoral-districts-2026-sans-eau.geojson"),
-    sha256: "dd164f0ad5ff7e9f5366f26696d78b9c562ceb88b3a5ad664c22a8e158843677",
+    // Élections Québec's published bytes, unchanged. Reproduced, not adapted:
+    // names are carried as published and the outlines are not simplified.
+    input: path.join(DATA_ROOT, "staging/qc-electoral-2026/qc-electoral-2026.geojson"),
+    sha256: "5c22379acdffc6138eb77a5aaec265d7c301cffd04eb4c0bafede68ed8651503",
     featureCount: 127,
     districtCount: 127,
     id_field: "CO_CEP",
     en_field: "NM_CEP",
     fr_field: "NM_CEP",
+    simplify: false,
   },
   {
     id: "statcan-economic-regions-2021",
@@ -354,17 +365,30 @@ function profileRawSource(source, vsi, tmp) {
   }
 }
 
+// An archive that carries any source marked simplify: false is built with no
+// line simplification and no tiny-polygon reduction, so every vertex the
+// publisher drew reaches the tile. Coordinates are still quantized to each
+// zoom's tile grid, which is how any vector tile is drawn.
+const UNSIMPLIFIED_OVERLAYS = new Set(SOURCES.filter((source) => source.simplify === false).map((source) => source.overlay));
+
 function buildArchive(overlay, lines, tmp) {
   const layer = overlay.replaceAll("-", "_");
   const src = path.join(tmp, `${overlay}.geojsonl`);
   fs.writeFileSync(src, `${lines.join("\n")}\n`);
   const mbtiles = path.join(tmp, `${overlay}.mbtiles`);
+  const simplified = !UNSIMPLIFIED_OVERLAYS.has(overlay);
   run("tippecanoe", [
+    // Keep tippecanoe's scratch files beside the others, which follow TMPDIR.
+    "-t", tmp,
     "-Z0", "-z10",
-    "--simplification=10",
-    // Keeps adjacent district edges aligned when simplifying, so the overlay
-    // does not develop gaps between neighbours as you zoom out.
-    "--detect-shared-borders",
+    ...(simplified
+      ? [
+        "--simplification=10",
+        // Keeps adjacent district edges aligned when simplifying, so the overlay
+        // does not develop gaps between neighbours as you zoom out.
+        "--detect-shared-borders",
+      ]
+      : ["--no-line-simplification", "--no-tiny-polygon-reduction"]),
     "--no-tile-size-limit",
     "--no-feature-limit",
     "--preserve-input-order",
@@ -385,6 +409,7 @@ function buildArchive(overlay, lines, tmp) {
     path: pmtiles,
     featureCount: lines.length,
     clippedToProvinceBoundary: CLIPPED_OVERLAYS.has(overlay),
+    simplified,
     byteLength: fs.statSync(pmtiles).size,
     sha256: sha256File(pmtiles),
   };
@@ -422,6 +447,7 @@ for (const source of SOURCES) {
     districtCount: normalized.distinctCount,
     ...(source.where ? { selection: source.where } : {}),
     clippedToProvinceBoundary: Boolean(source.clipToProvinceBoundary),
+    simplified: source.simplify !== false && !UNSIMPLIFIED_OVERLAYS.has(source.overlay),
   });
   process.stderr.write(`${source.id.padEnd(38)} ${String(lines.length).padStart(4)} features verified\n`);
 }

@@ -24,6 +24,8 @@ const intervals: readonly PerCellArchive[] = Array.from({ length: 38 }, (_, inde
     cellCount: 0,
     harvestCells: 0,
     fireCells: 0,
+    patchesWithBothCauses: 0,
+    disturbanceYearsMissing: [],
     url: "",
   };
 });
