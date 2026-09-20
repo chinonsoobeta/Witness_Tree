@@ -1904,9 +1904,20 @@ h4 {
   border-top: 0;
 }
 @media (max-width: 760px) {
+  /*
+   * Two blocks are positioned over this frame and neither adds height to it:
+   * the province chooser is pinned to the top, and the layer panel and scale
+   * hang from the bottom. So the frame's own height is the only thing keeping
+   * them apart, and at 30rem they collided once the span legend grew from four
+   * short bands to five spelled-out ones, which wrap furthest in French. The
+   * panel rose over the chooser and covered it. This height is set to clear the
+   * tallest measured pair with room to spare rather than to just pass; the
+   * clearance is asserted in tests/browser/fallback.spec.ts, so content that
+   * outgrows it again fails there instead of shipping as an overlap.
+   */
   .explore-map,
   .explore-map-fallback {
-    min-height: 30rem;
+    min-height: 36rem;
   }
   .province-bar--map {
     display: grid;

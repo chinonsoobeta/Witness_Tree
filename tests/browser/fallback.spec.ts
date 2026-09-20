@@ -42,7 +42,17 @@ for (const locale of ["en", "fr"] as const) {
       const status = page.locator(".explore-map-status");
       const figures = page.locator(".explore-map-data table");
       const before = await figures.innerText();
-      expect(before).toContain(locale === "en" ? "Some pixels unknown" : "Certains pixels sont inconnus");
+      /*
+       * The span table replaced a Coverage column that repeated the same
+       * "Some pixels unknown, so this is a minimum" sentence on every row with
+       * the measured unknown share itself, province by province. The caveat is
+       * the same caveat; what this asserts is that the figures the reader is
+       * told not to trust as a total are actually carrying their own unknown
+       * area, and that they are present before the map is faulted.
+       */
+      expect(before).toContain(locale === "en" ? "Unknown at the start" : "Inconnu au début");
+      expect(before).toContain(locale === "en" ? "ha unknown" : "ha inconnus");
+      expect(before).toContain(locale === "en" ? "The four provinces together" : "Les quatre provinces ensemble");
       const expectedState = failure === "both-maps-unavailable" ? "error" : "ready";
       await expect(map).toHaveAttribute("data-state", expectedState);
       if (failure === "both-maps-unavailable") {
