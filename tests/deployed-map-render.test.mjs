@@ -22,42 +22,33 @@ import { scopeOf } from "../scripts/verify-deployed-map-render.mjs";
 const loadRecord = async () =>
   JSON.parse(await readFile(new URL(`../${RENDER_EVIDENCE_PATH}`, import.meta.url), "utf8"));
 
-// Every rejection case starts from the record that a real browser run produced.
-// The current branch intentionally leaves that historical record stale, and
-// each mutation test below checks for its additional, distinct rejection.
+// Every rejection case starts from the record that a real browser run produced,
+// which is clean, so each mutation test below checks for its own distinct
+// rejection rather than one the starting record already carried.
 const withRecord = async (mutate) => {
   const record = await loadRecord();
   mutate(record);
   return validateDeployedMapRender({ record });
 };
 
-test("the Site observation is stale for exactly this branch's client change", async () => {
+test("the committed observation is current for the deployed client", async () => {
   /*
-   * Until 2026-09-19 this asserted the Site observation was clean, which held
-   * while the deployed client matched the recorded one. This branch changed
-   * lib/explore/map-style.ts and components/explore/ExploreMapClient.tsx, so
-   * the 2026-09-12 observation is stale and asserting otherwise would be a
-   * false statement about the deployed Site. The test still earns its place:
-   * it pins the staleness to exactly those two files, so any other source
-   * drifting out of the observation is caught here instead of being waved
-   * through, and it holds the record's own shape unchanged.
+   * Between 2026-09-19 and the 2026-09-20 deploy this asserted the opposite:
+   * the client had changed, the observation was stale, and the gate was
+   * answered by an authorized break-glass instead of a measurement. The Site
+   * now runs those same bytes and has been observed doing it, so the debt is
+   * settled and this reads as it did before. The break-glass file is deleted
+   * rather than kept as history, because the tier resolves on presence.
    */
-  const failures = validateDeployedMapRender();
-  assert.equal(failures.length, 2, failures.join(" "));
-  for (const relative of ["lib/explore/map-style.ts", "components/explore/ExploreMapClient.tsx"]) {
-    assert.ok(
-      failures.some((message) => message.startsWith(`${relative} changed since`)),
-      `${relative} is not among the reasons the observation is stale`,
-    );
-  }
-  // The gate is answered meanwhile, but by accepted debt, not by measurement.
+  assert.deepEqual(validateDeployedMapRender(), []);
   const gate = resolveDeployedMapRender();
-  assert.equal(gate.satisfiedBy, "break-glass");
+  assert.equal(gate.satisfiedBy, "deployed-site");
   assert.deepEqual(gate.failures, []);
   const record = await loadRecord();
   assert.equal(record.schemaVersion, RENDER_EVIDENCE_SCHEMA);
   assert.ok(record.url.startsWith(DEPLOYED_ORIGIN));
   assert.equal(record.allChecksPassed, true);
+  assert.equal(record.siteObservationOwed, false);
 });
 
 test("the record claims no publication, admission or production eligibility", async () => {
@@ -350,37 +341,31 @@ test("a settled debt has to be deleted rather than left on the branch", async ()
   assert.ok(superseded.failures.some((message) => message.includes("is not needed. Delete it")));
 });
 
-test("the only weaker tier on this branch is the authorized break-glass, and it is real debt", async () => {
+test("neither weaker tier exists on this branch, so nothing stands in for the Site", async () => {
   /*
-   * This used to assert that neither weaker record existed, so that committing
-   * one would fail here and make a reviewer read why. That is what happened on
-   * 2026-09-19, and this is the why: the Explore client changed, and a preview
-   * measurement is not available, because the ChatGPT Sites control plane
-   * exposes no preview URL for this project and its only deployment operation
-   * publishes to production. Rather than deploy an unmeasured client to the
-   * Site in order to obtain the measurement, the owner authorized the first
-   * break-glass in this repository's history.
-   * The preview tier stays absent, and the break-glass is held to its own
-   * terms: it expires, it binds only the two files it covers, and it is
-   * forbidden from reporting checks or claiming anything was observed.
+   * The gate resolves a tier on presence, so a leftover file silently answers
+   * for a measurement nobody took. Both weaker tiers must therefore be absent
+   * whenever the Site observation is current.
+   *
+   * On 2026-09-19 this test was inverted to assert the break-glass existed,
+   * which is the only honest way to hold accepted debt. The reason it was
+   * opened is worth keeping: the Explore client changed, and no preview
+   * measurement was possible, because the ChatGPT Sites control plane exposes
+   * no preview URL for this project and its only deployment operation
+   * publishes to production. The owner authorized the first break-glass in
+   * this repository's history rather than have an unmeasured client deployed
+   * to obtain the measurement. The 2026-09-20 deploy settled it, and the file
+   * is deleted rather than kept, because keeping it would answer the gate for
+   * the next client change too.
    */
-  assert.equal(
-    existsSync(new URL(`../${BRANCH_EVIDENCE_PATH}`, import.meta.url)),
-    false,
-    `${BRANCH_EVIDENCE_PATH} is committed, but no preview deployment was ever measured`,
-  );
-  assert.equal(existsSync(new URL(`../${BREAK_GLASS_PATH}`, import.meta.url)), true);
-  assert.deepEqual(validateBreakGlass({}), []);
-
-  const record = JSON.parse(await readFile(new URL(`../${BREAK_GLASS_PATH}`, import.meta.url), "utf8"));
-  assert.equal(record.status, "gate-debt-not-an-observation");
-  assert.equal(record.siteObservationOwed, true);
-  assert.equal(record.allChecksPassed, false);
-  assert.equal(record.checks, undefined, "a break-glass that reports checks is claiming a measurement");
-  assert.deepEqual(
-    record.sources.map((entry) => entry.path).sort(),
-    ["components/explore/ExploreMapClient.tsx", "lib/explore/map-style.ts"],
-  );
+  for (const relative of [BRANCH_EVIDENCE_PATH, BREAK_GLASS_PATH]) {
+    assert.equal(
+      existsSync(new URL(`../${relative}`, import.meta.url)),
+      false,
+      `${relative} is committed, but the Site observation is current, so nothing may stand in for it`,
+    );
+  }
+  assert.equal(resolveDeployedMapRender().satisfiedBy, "deployed-site");
 });
 
 test("the harness labels a run by the origin it measured, not by the file it is written to", async () => {
