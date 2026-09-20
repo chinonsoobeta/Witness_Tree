@@ -29,14 +29,21 @@ jobs:
         with:
           languages: ${{ matrix.language }}
           build-mode: none
-      - uses: github/codeql-action/analyze@fddeee1a7ece751b577e409a89057319e3172939 # v4
+      - id: analyze
+        uses: github/codeql-action/analyze@fddeee1a7ece751b577e409a89057319e3172939 # v4
         with:
           output: outputs/codeql
           category: /language:${{ matrix.language }}
       - name: Fail on CodeQL findings
         run: node scripts/check-security-scans.mjs --sarif outputs/codeql
+      # The SARIF is written by analyze, not by the gate above that reads it, and
+      # the reason this is always() is to keep the findings when that gate fails.
+      # So it gates on analyze alone. 'success' rather than != 'skipped' because
+      # a failed analyze leaves no SARIF behind: there is nothing to preserve and
+      # no reason to add a second red step. An analyze that succeeds and writes
+      # nothing still trips if-no-files-found, which is the case it exists for.
       - name: Preserve CodeQL findings
-        if: always()
+        if: always() && steps.analyze.outcome == 'success'
         uses: actions/upload-artifact@v7
         with:
           name: codeql-${{ matrix.language }}
@@ -60,6 +67,7 @@ jobs:
           printf '%s  %s\n' '551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb' "$RUNNER_TEMP/gitleaks.tar.gz" | sha256sum --check
           tar -xzf "$RUNNER_TEMP/gitleaks.tar.gz" -C "$RUNNER_TEMP" gitleaks
       - name: Reject secrets in the full Git history
+        id: gitleaks
         run: '"$RUNNER_TEMP/gitleaks" git --config .gitleaks.toml --redact=100 --no-banner --exit-code 1 --report-format json --report-path /tmp/gitleaks-results.json --log-opts="--all" .'
       # The config quiets one entropy heuristic on the SHA-256 digests the evidence
       # records are built from, which is exactly the sort of change that can turn a
@@ -67,8 +75,13 @@ jobs:
       # a directory of planted credentials and required to report every one of them.
       - name: Prove the configured scan still reports planted credentials
         run: node scripts/check-secret-scan-canary.mjs "$RUNNER_TEMP/gitleaks"
+      # gitleaks writes the report and then exits 1 on findings, so a failing scan
+      # is exactly when the report is worth keeping: != 'skipped', not 'success'.
+      # "Reject secrets in the full Git history" is the only producer of this
+      # path; the canary scans a temporary directory it deletes, and never writes
+      # here. So the gate is keyed on that step and not on the canary.
       - name: Preserve redacted secret scan results
-        if: always()
+        if: always() && steps.gitleaks.outcome != 'skipped'
         uses: actions/upload-artifact@v7
         with:
           name: gitleaks-redacted
@@ -257,9 +270,16 @@ jobs:
       # test file except the three that read the owner's data root, which is named
       # in scripts/run-ci-tests.mjs with the reason for each. It follows the build
       # because the rendered-HTML tests import the build output.
-      - run: npm run test:suite
+      - id: test-suite
+        run: npm run test:suite
+      # always() alone made this upload fail on every early exit, because a step
+      # that never ran leaves nothing to upload and if-no-files-found: error is
+      # then reached for the wrong reason. Gating on the producer's outcome keeps
+      # the hard error for "ran and produced no receipt" while staying silent for
+      # "never ran": a skipped step reports outcome 'skipped', a failed one
+      # reports 'failure', so a failing suite still surrenders its evidence.
       - name: Preserve explicit test availability
-        if: always()
+        if: always() && steps.test-suite.outcome != 'skipped'
         uses: actions/upload-artifact@v7
         with:
           name: portable-test-availability
@@ -283,9 +303,10 @@ jobs:
       - name: Install the rendered-browser test runtime
         run: npx playwright install --with-deps chromium
       - name: Gate WCAG 2.2 AA across bilingual routes and themes
+        id: test-playwright
         run: npm run test:playwright
       - name: Preserve accessibility observations
-        if: always()
+        if: always() && steps.test-playwright.outcome != 'skipped'
         uses: actions/upload-artifact@v7
         with:
           name: automated-accessibility-evidence

@@ -33,12 +33,16 @@ const withRecord = async (mutate) => {
 
 test("the committed observation is current for the deployed client", async () => {
   /*
-   * Between 2026-09-19 and the 2026-09-20 deploy this asserted the opposite:
-   * the client had changed, the observation was stale, and the gate was
-   * answered by an authorized break-glass instead of a measurement. The Site
-   * now runs those same bytes and has been observed doing it, so the debt is
-   * settled and this reads as it did before. The break-glass file is deleted
-   * rather than kept as history, because the tier resolves on presence.
+   * This asserts the settled shape, and it has been inverted twice. Between
+   * 2026-09-19 and the first 2026-09-20 deploy the gate rested on an
+   * authorized break-glass rather than a measurement; version 34 settled
+   * that. It went stale again the same day, on an ordinary unobserved client
+   * change: this branch takes the Explore map chrome out of the map frame,
+   * which moves components/explore/ExploreMapClient.tsx. Version 36 was
+   * deployed from that client and observed at 2026-09-20T18:27:40Z, so the
+   * bytes the Site runs are the bytes this branch carries and the record
+   * binds them. lib/explore/map-style.ts never moved, so the second failure
+   * named one file where the first named two.
    */
   assert.deepEqual(validateDeployedMapRender(), []);
   const gate = resolveDeployedMapRender();
@@ -354,9 +358,11 @@ test("neither weaker tier exists on this branch, so nothing stands in for the Si
    * no preview URL for this project and its only deployment operation
    * publishes to production. The owner authorized the first break-glass in
    * this repository's history rather than have an unmeasured client deployed
-   * to obtain the measurement. The 2026-09-20 deploy settled it, and the file
-   * is deleted rather than kept, because keeping it would answer the gate for
-   * the next client change too.
+   * to obtain the measurement. The first 2026-09-20 deploy settled it, and the
+   * file is deleted rather than kept, because keeping it would answer the gate
+   * for the next client change too. That reasoning was tested immediately: the
+   * chrome-in-flow change reopened the gate hours later, and version 36
+   * settled it on a measurement with no weaker tier committed at any point.
    */
   for (const relative of [BRANCH_EVIDENCE_PATH, BREAK_GLASS_PATH]) {
     assert.equal(

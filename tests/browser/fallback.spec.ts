@@ -135,8 +135,16 @@ for (const locale of ["en", "fr"] as const) {
     expect(layout.overflow).toEqual([]);
     expect(layout.clippedItems).toBe(0);
     expect(layout.smallContainer.scroll).toBeLessThanOrEqual(layout.smallContainer.client + 1);
-    expect(layout.panel.top).toBeGreaterThanOrEqual(layout.nav.bottom + 4);
-    expect(layout.panel.bottom).toBeLessThanOrEqual(layout.frame.bottom);
+    /*
+     * The chooser and the layer panel are no longer drawn over the frame, so
+     * this stops measuring a clearance and measures the separation instead:
+     * chooser entirely above the map, panel entirely below it. A clearance can
+     * be exhausted by content that grows, which is how the panel came to cover
+     * the chooser when the span legend went from four short bands to five
+     * spelled-out ones. Stacking order cannot be exhausted.
+     */
+    expect(layout.nav.bottom).toBeLessThanOrEqual(layout.frame.top);
+    expect(layout.panel.top).toBeGreaterThanOrEqual(layout.frame.bottom);
     if (page.viewportSize()!.width < 760) {
       expect(new Set(layout.buttons.map((button) => Math.round(button.top))).size).toBe(2);
     }
