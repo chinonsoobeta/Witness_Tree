@@ -3,20 +3,23 @@ import { PRODUCT_NAME, type Locale } from "@/lib/domain";
 import { LocaleAnchor, LocaleLink } from "./LocaleLink";
 import { ThemeToggle } from "./ThemeToggle";
 
+/**
+ * Four items, not five. Search left this list when the homepage grew a search
+ * field of its own: a control the reader uses in place, under the question it
+ * answers, rather than a destination competing with Explore and Compare.
+ */
 const NAV = {
   en: [
     ["Explore", "/en/explore"],
     ["Compare", "/en/compare"],
     ["Methods", "/en/methods"],
     ["Data", "/en/data"],
-    ["Search", "/en/search"],
   ],
   fr: [
     ["Explorer", "/fr/explorer"],
     ["Comparer", "/fr/comparer"],
     ["Méthodes", "/fr/methodes"],
     ["Données", "/fr/donnees"],
-    ["Recherche", "/fr/recherche"],
   ],
 } as const;
 

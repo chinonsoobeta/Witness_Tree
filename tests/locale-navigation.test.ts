@@ -33,10 +33,23 @@ test("preserves only safe query parameters on locale changes", () => {
 
 test("shared navigation exposes localized search and dynamic pages publish record-specific alternates", () => {
   const header = readFileSync(new URL("../components/site/SiteHeader.tsx", import.meta.url), "utf8");
+  const homeSearch = readFileSync(new URL("../components/site/HomeSearch.tsx", import.meta.url), "utf8");
   const placeRoute = readFileSync(new URL("../app/en/places/[placeId]/page.tsx", import.meta.url), "utf8");
   const locationRoute = readFileSync(new URL("../app/fr/emplacement/[locationId]/page.tsx", import.meta.url), "utf8");
-  assert.match(header, /\["Search", "\/en\/search"\]/);
-  assert.match(header, /\["Recherche", "\/fr\/recherche"\]/);
+  /*
+   * Search left the global nav and became a control on the homepage, under
+   * the question it answers. What has to stay true is that both localized
+   * search routes are reachable from a shared component, so that is asserted
+   * against the component that now owns them. The nav is held to four items
+   * so the fifth cannot quietly come back and give the reader two doors.
+   */
+  assert.match(homeSearch, /action: "\/en\/search"/);
+  assert.match(homeSearch, /action: "\/fr\/recherche"/);
+  assert.match(homeSearch, /action=\{text\.action\}/);
+  assert.doesNotMatch(header, /\["Search", "\/en\/search"\]/);
+  assert.doesNotMatch(header, /\["Recherche", "\/fr\/recherche"\]/);
+  const nav = header.slice(header.indexOf("const NAV = {"), header.indexOf("} as const;"));
+  assert.equal((nav.match(/\[".+?", ".+?"\]/g) ?? []).length, 8, "four items per locale, no more");
   assert.match(placeRoute, /\/en\/places\/\$\{placeId\}/);
   assert.match(placeRoute, /\/fr\/lieux\/\$\{placeId\}/);
   assert.match(locationRoute, /\/en\/location\/\$\{locationId\}/);
