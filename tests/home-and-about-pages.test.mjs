@@ -15,7 +15,20 @@ test("landing pages use the production aggregate and retain the bounded scope", 
   const [english, french] = await Promise.all([read("../app/en/page.tsx"), read("../app/fr/page.tsx")]);
   for (const page of [english, french]) {
     assert.match(page, /EXPLORE_PRODUCTION_LAYER\.rows/);
-    assert.match(page, /not per-cell geometry|ne fournit pas une géométrie par cellule/);
+    /*
+     * This used to require the page to say the release "is not per-cell
+     * geometry". That stopped being true on 2026-09-19, when the clipped
+     * four-province per-cell products were admitted and released, so the
+     * sentence became a false denial of something the Explore map draws.
+     *
+     * The binding limit is countable:false, not absence, so the page is held
+     * to that instead, at the same strictness: the patches exist, they may be
+     * drawn, no total may be taken from them, and the formal gate stays open.
+     */
+    assert.match(page, /drawn, not counted|dessinées, et non comptées/);
+    assert.match(page, /no total may be taken|aucun total ne peut en être tiré/);
+    assert.match(page, /expert review|examen par des spécialistes/);
+    assert.match(page, /Phase 2|phase 2/);
     assert.match(page, /attribution\.href/);
   }
   assert.match(english, /technical preview/);
@@ -59,14 +72,20 @@ test("the landing composition puts coverage and the legend before any figure", a
     const record = page.indexOf('<section className="content-section landing-coverage"');
     assert.ok(coverage > 0 && legend > coverage && record > legend, "coverage, then legend, then figures");
     const band = section(page, '<section className="content-section landing-coverage"', '<section className="content-section prose-measure">');
-    assert.match(band, /<span className="num">01<\/span>/);
     assert.match(band, /<ProvinceCoverageCard/);
     assert.match(band, new RegExp(`href="${methods}"`));
     assert.match(band, new RegExp(`href="${route}"`));
     assert.equal((page.match(/landing-coverage/g) ?? []).length, 1);
-    assert.match(page, /<span className="num">02<\/span>/);
-    assert.match(page, /<span className="num">03<\/span>/);
-    assert.match(page, /<span className="num">04<\/span>/);
+    /*
+     * The interior sections are no longer numbered. A numbered marker claims
+     * the content is a sequence the reader should follow in order, and these
+     * four never were: 02 and 04 stated the same caveat several screens
+     * apart. They collapse into the evidence marks plus one limits block, so
+     * the contract enforced here is now that no such marker survives and that
+     * the limits block is single.
+     */
+    assert.doesNotMatch(page, /<span className="num">/);
+    assert.equal((page.match(/aria-labelledby="(limits|limites)"/g) ?? []).length, 1);
     assert.doesNotMatch(page, /\u2014/);
   }
 });
@@ -82,7 +101,11 @@ test("public coverage copy derives from the bounded Explore period", async () =>
     read("../lib/explore/types.ts"),
   ]);
   for (const source of [gateway, english, french, footer, brand, fixtures]) {
-    assert.match(source, /EXPLORE_COVERAGE_PERIOD/);
+    // Either derived span is acceptable; a literal year range is not. The
+    // landing pages moved to the production aggregate's own period because
+    // that is the span their figures actually cover, which is the point of
+    // putting the window on the number rather than in a masthead badge.
+    assert.match(source, /EXPLORE_COVERAGE_PERIOD|productionAggregatePeriod/);
     assert.doesNotMatch(source, /1984(?:–| to )present|1984–2025|depuis 1984/i);
   }
   assert.match(period, /EXPLORE_YEAR_MAX = 2022/);
