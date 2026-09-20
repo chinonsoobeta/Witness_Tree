@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { HomeSearch, ProvinceBar, SiteShell } from "@/components/site";
 import { ProvinceRecordList } from "@/components/site/ProvinceRecordList";
+import { CumulativeHeadline } from "@/components/site/CumulativeHeadline";
 import { CoverageStatement } from "@/components/policy/CoverageStatement";
 import { EvidenceMarks } from "@/components/policy/EvidenceMarks";
 import { PRODUCT_NAME } from "@/lib/domain";
@@ -39,6 +40,14 @@ export default function EnglishHome() {
       <HomeSearch locale="en" />
       <ProvinceBar locale="en" />
     </header>
+
+    {/*
+      The answer to the question in the h1, immediately under it.
+      It carries its own denominator, its own unmapped share and its own
+      refusal of the annual sum, so it does not lean on the standing
+      coverage banner below it to stay honest when it is read alone.
+    */}
+    <CumulativeHeadline locale="en" />
 
     <CoverageStatement locale="en"><p>Detected loss is a minimum from the mapped area in four provinces. Areas the source did not map remain unknown, even where detected loss is small. An absence in this record is not a claim about what happened in the world.</p></CoverageStatement>
 

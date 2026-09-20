@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { HomeSearch, ProvinceBar, SiteShell } from "@/components/site";
 import { ProvinceRecordList } from "@/components/site/ProvinceRecordList";
+import { CumulativeHeadline } from "@/components/site/CumulativeHeadline";
 import { CoverageStatement } from "@/components/policy/CoverageStatement";
 import { EvidenceMarks } from "@/components/policy/EvidenceMarks";
 import { PRODUCT_NAME } from "@/lib/domain";
@@ -29,6 +30,14 @@ export default function FrenchHome() {
       <HomeSearch locale="fr" />
       <ProvinceBar locale="fr" />
     </header>
+
+    {/*
+      The answer to the question in the h1, immediately under it.
+      It carries its own denominator, its own unmapped share and its own
+      refusal of the annual sum, so it does not lean on the standing
+      coverage banner below it to stay honest when it is read alone.
+    */}
+    <CumulativeHeadline locale="fr" />
 
     <CoverageStatement locale="fr"><p>La perte détectée est un minimum de la zone cartographiée dans quatre provinces. Les superficies non cartographiées par la source restent inconnues, même là où la perte détectée est faible. Une absence dans ce registre n’est pas une affirmation sur ce qui s’est produit dans le monde.</p></CoverageStatement>
 

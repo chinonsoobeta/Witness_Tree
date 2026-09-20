@@ -61,7 +61,8 @@ test("the reading panel's bar is a composition of the interval, in record-type h
   const markup = renderToStaticMarkup(
     <ExploreView events={exploreFixtures} locale="en" year={2022} />,
   );
-  const bar = markup.match(/<span class="explore-annual-bar"[^>]*>(.*?)<\/span><dl>/s);
+  // [\s\S] rather than the `s` flag: the repo targets es2017, where that flag is a type error.
+  const bar = markup.match(/<span class="explore-annual-bar"[^>]*>([\s\S]*?)<\/span><dl>/);
   assert.ok(bar, "the reading panel renders a composition bar for a real interval");
   const widths = [...bar[1].matchAll(/width:\s*([\d.]+)%/g)].map((m) => Number(m[1]));
   assert.equal(widths.length, 3, "harvest, fire and the unattributed rest");
