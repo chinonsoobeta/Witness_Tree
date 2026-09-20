@@ -19,11 +19,16 @@ test("Phase 8 records every literal launch-readiness gate without production inf
    * A preview measurement was attempted first and does not exist: the Sites
    * control plane offers no preview URL and its only deploy operation
    * publishes to production. The owner then authorized the repository's first
-   * break-glass record, which satisfies the gate while stating outright that
-   * nothing was measured, so the criterion reads pass again and the count
-   * returns to eight. That is debt, not evidence: the record expires on
-   * 2026-09-22, binds only the two changed files, and is deleted and replaced
-   * by a real Site observation at the next deploy. It stays a
+   * break-glass record, which satisfied the gate while stating outright that
+   * nothing had been measured, and the count returned to eight on debt rather
+   * than on evidence.
+   *
+   * That debt lasted under a day. On 2026-09-20 the owner deployed the Site as
+   * version 34 from this branch's head, the harness observed the live page,
+   * and the break-glass was deleted. The count is eight either way, which is
+   * the thing to watch: this number did not move when the criterion stopped
+   * being evidenced and did not move when it started again, so read the
+   * criterion's own reason before treating eight as eight. It stays a
    * delivery-and-rendering gate: it asserts no production admission, and the
    * other fifteen criteria are untouched by this change.
    */
