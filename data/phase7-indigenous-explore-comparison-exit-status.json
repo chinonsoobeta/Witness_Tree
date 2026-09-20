@@ -87,7 +87,7 @@
       "id": "mistik-request-recorded",
       "title": "The Mistik request, terms, honorarium, and outcome appear in the decision log and engagement register",
       "status": "pass",
-      "reason": "The decision log and engagement register record the owner's final outcome: Mistik was not pursued, no request was made, no permission, honorarium, or terms exist, and Witness Tree / Arbre témoin remains the product name. The surfaces do not imply that engagement or permission occurred.",
+      "reason": "The decision log and engagement register record the owner's final outcome: Mistik was not pursued, no request was made, no permission, honorarium, or terms exist, and Witness Tree / Arbre t\u00e9moin remains the product name. The surfaces do not imply that engagement or permission occurred.",
       "evidence": [
         {
           "path": "components/governance/GovernancePage.tsx",
@@ -111,7 +111,7 @@
         },
         {
           "path": "tests/explore.test.tsx",
-          "sha256": "2c426816a13510b04bde2cb7281a8d314a7fb7db63f540a1d08ca4a98eebe98b"
+          "sha256": "89bb95e5adea07321d20d51b86774e90a49789a9475f3bfd4768000afac36b9f"
         }
       ]
     },
@@ -127,7 +127,7 @@
         },
         {
           "path": "tests/explore.test.tsx",
-          "sha256": "2c426816a13510b04bde2cb7281a8d314a7fb7db63f540a1d08ca4a98eebe98b"
+          "sha256": "89bb95e5adea07321d20d51b86774e90a49789a9475f3bfd4768000afac36b9f"
         }
       ]
     },
@@ -143,7 +143,7 @@
         },
         {
           "path": "tests/explore.test.tsx",
-          "sha256": "2c426816a13510b04bde2cb7281a8d314a7fb7db63f540a1d08ca4a98eebe98b"
+          "sha256": "89bb95e5adea07321d20d51b86774e90a49789a9475f3bfd4768000afac36b9f"
         }
       ]
     },

@@ -8,35 +8,32 @@ const record = JSON.parse(readFileSync(new URL("../data/phase8-launch-readiness-
 test("Phase 8 records every literal launch-readiness gate without production inflation", async () => {
   assert.equal(await validatePhase8LaunchReadinessExitStatus(record), record);
   /*
-   * Eight. CDN and tile validation passes only on the strength of a browser
+   * Seven. CDN and tile validation passes only on the strength of a browser
    * observation of the deployed Site bound to the client it observed, so it
-   * moves in both directions as the client changes and is redeployed. On
-   * 2026-09-19 this branch changed lib/explore/map-style.ts and
-   * components/explore/ExploreMapClient.tsx to draw patches from one span
-   * archive filtered on the year each patch was lost, so the 2026-09-12
-   * observation stopped describing the client the Site would serve and the
-   * criterion went to fail, as it did on 2026-09-01, 09-02, 09-04 and 09-08.
-   * A preview measurement was attempted first and does not exist: the Sites
-   * control plane offers no preview URL and its only deploy operation
-   * publishes to production. The owner then authorized the repository's first
-   * break-glass record, which satisfied the gate while stating outright that
-   * nothing had been measured, and the count returned to eight on debt rather
-   * than on evidence.
+   * moves in both directions as the client changes and is redeployed. It has
+   * failed on 2026-09-01, 09-02, 09-04, 09-08 and 09-19, and it fails again
+   * here: this branch takes the Explore map chrome out of the map frame, so
+   * the version 34 observation of 2026-09-20 no longer describes the client
+   * the Site would serve.
    *
-   * That debt lasted under a day. On 2026-09-20 the owner deployed the Site as
-   * version 34 from this branch's head, the harness observed the live page,
-   * and the break-glass was deleted. The count is eight either way, which is
-   * the thing to watch: this number did not move when the criterion stopped
-   * being evidenced and did not move when it started again, so read the
-   * criterion's own reason before treating eight as eight. It stays a
-   * delivery-and-rendering gate: it asserts no production admission, and the
-   * other fifteen criteria are untouched by this change.
+   * The count is the thing to watch, and the thing not to read. It was eight
+   * while the criterion rested on a measurement, eight again while it rested
+   * on an owner-authorized break-glass that stated outright that nothing had
+   * been measured, and it is seven now on no debt at all, only an ordinary
+   * unobserved client change. A number that did not move when the criterion
+   * stopped being evidenced cannot be trusted to mean that it is, so read the
+   * criterion's own reason rather than the count.
+   *
+   * This one returns to eight when the owner redeploys the Site from this
+   * branch and the harness observes it. No break-glass record is created for
+   * it. The gate stays a delivery-and-rendering gate either way: it asserts
+   * no production admission, and the other fifteen criteria are untouched.
    */
-  assert.equal(record.completedCriteria, 8);
+  assert.equal(record.completedCriteria, 7);
   assert.equal(record.totalCriteria, 16);
-  assert.equal(record.percentage, 50);
+  assert.equal(record.percentage, 43.75);
   assert.equal(record.phaseComplete, false);
-  assert.deepEqual(record.exitCriteria.filter((item) => item.status === "pass").map((item) => item.id), ["raw-archive-reproducibility", "governance-and-corrections-procedures", "operations-handbook", "bulk-downloads", "citation-format", "release-notes", "restore-tests", "cdn-tile-validation"]);
+  assert.deepEqual(record.exitCriteria.filter((item) => item.status === "pass").map((item) => item.id), ["raw-archive-reproducibility", "governance-and-corrections-procedures", "operations-handbook", "bulk-downloads", "citation-format", "release-notes", "restore-tests"]);
 
   // The criterion tracks the gate rather than the code: whenever
   // check:deployed-map-render is red, cdn-tile-validation must not read as pass.
