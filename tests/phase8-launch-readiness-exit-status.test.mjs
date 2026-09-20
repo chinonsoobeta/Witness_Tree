@@ -8,32 +8,32 @@ const record = JSON.parse(readFileSync(new URL("../data/phase8-launch-readiness-
 test("Phase 8 records every literal launch-readiness gate without production inflation", async () => {
   assert.equal(await validatePhase8LaunchReadinessExitStatus(record), record);
   /*
-   * Seven. CDN and tile validation passes only on the strength of a browser
+   * Eight. CDN and tile validation passes only on the strength of a browser
    * observation of the deployed Site bound to the client it observed, so it
    * moves in both directions as the client changes and is redeployed. It has
-   * failed on 2026-09-01, 09-02, 09-04, 09-08 and 09-19, and it fails again
-   * here: this branch takes the Explore map chrome out of the map frame, so
-   * the version 34 observation of 2026-09-20 no longer describes the client
-   * the Site would serve.
+   * failed on 2026-09-01, 09-02, 09-04, 09-08 and 09-19, and twice on 09-20:
+   * once on accepted debt, and once here, when this branch took the Explore
+   * map chrome out of the map frame and left the version 34 observation
+   * describing a client the Site no longer served. Sites version 36 deployed
+   * that client and the harness observed it, so this reads eight again.
    *
    * The count is the thing to watch, and the thing not to read. It was eight
    * while the criterion rested on a measurement, eight again while it rested
    * on an owner-authorized break-glass that stated outright that nothing had
-   * been measured, and it is seven now on no debt at all, only an ordinary
-   * unobserved client change. A number that did not move when the criterion
-   * stopped being evidenced cannot be trusted to mean that it is, so read the
-   * criterion's own reason rather than the count.
+   * been measured, and seven while it rested on nothing at all. A number that
+   * did not move when the criterion stopped being evidenced cannot be trusted
+   * to mean that it is, so read the criterion's own reason rather than the
+   * count. The assertion below this one is the real guard: it ties the
+   * criterion's status to the live gate, so neither can drift from the other.
    *
-   * This one returns to eight when the owner redeploys the Site from this
-   * branch and the harness observes it. No break-glass record is created for
-   * it. The gate stays a delivery-and-rendering gate either way: it asserts
-   * no production admission, and the other fifteen criteria are untouched.
+   * The gate stays a delivery-and-rendering gate either way: it asserts no
+   * production admission, and the other fifteen criteria are untouched.
    */
-  assert.equal(record.completedCriteria, 7);
+  assert.equal(record.completedCriteria, 8);
   assert.equal(record.totalCriteria, 16);
-  assert.equal(record.percentage, 43.75);
+  assert.equal(record.percentage, 50);
   assert.equal(record.phaseComplete, false);
-  assert.deepEqual(record.exitCriteria.filter((item) => item.status === "pass").map((item) => item.id), ["raw-archive-reproducibility", "governance-and-corrections-procedures", "operations-handbook", "bulk-downloads", "citation-format", "release-notes", "restore-tests"]);
+  assert.deepEqual(record.exitCriteria.filter((item) => item.status === "pass").map((item) => item.id), ["raw-archive-reproducibility", "governance-and-corrections-procedures", "operations-handbook", "bulk-downloads", "citation-format", "release-notes", "restore-tests", "cdn-tile-validation"]);
 
   // The criterion tracks the gate rather than the code: whenever
   // check:deployed-map-render is red, cdn-tile-validation must not read as pass.

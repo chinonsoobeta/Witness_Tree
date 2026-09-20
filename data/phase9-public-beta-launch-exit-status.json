@@ -71,7 +71,7 @@
         },
         {
           "path": "data/phase8-launch-readiness-exit-status.json",
-          "sha256": "6cf07f0b4490b9ac79775f745ab8b3116c6bf951d64282421885a84c06497433"
+          "sha256": "668a00c5e3f97ef4517e9dcc1559a26f1a57f6a3dd9e4c4ef7e1ce3540999635"
         },
         {
           "path": "data/raw-archive-reproduction-drill.json",
@@ -88,7 +88,7 @@
     {
       "id": "all-applicable-prior-release-gates",
       "status": "blocked",
-      "reason": "Every applicable Phase 0\u20138 gate must pass for any surface proposed for public beta or launch; the technical preview is not an exception."
+      "reason": "Every applicable Phase 0–8 gate must pass for any surface proposed for public beta or launch; the technical preview is not an exception."
     },
     {
       "id": "owner-moment-of-action-authorization",
