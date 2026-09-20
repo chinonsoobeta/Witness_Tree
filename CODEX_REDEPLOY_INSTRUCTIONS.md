@@ -10,7 +10,7 @@ Deployment is an owner-owned decision. This record does not authorize or perform
 - Open integration: [PR #170](https://github.com/chinonsoobeta/Witness_Tree/pull/170)
 - Canonical domain: `https://www.witnesstree.ca`
 
-The branch head sits one commit ahead of the application commit above, and that commit changes only this instruction file. Select the application commit explicitly so the deployed application stays traceable to the tree the checks ran against.
+The branch head sits a few commits ahead of the application commit above. Those commits change only this instruction file, the CI workflow, the test runner and two evidence records; no file under `app/`, `components/`, `lib/`, `public/` or `styles/` differs between the application commit and the branch head, so the application is the same either way. Select the application commit explicitly so the deployed application stays traceable to the tree the checks ran against.
 
 ## Why this deploy precedes the merge
 
@@ -57,7 +57,15 @@ Require a clean worktree and a successful build. Two known failures are expected
 
 Everything else must be green, and `npm run test:suite` now prints a `FAILED:` summary naming every failing assertion in its last few lines. Read that summary rather than searching the TAP stream: until 2026-09-20 the runner called `process.exit()` and discarded its own output mid-write, so a failing suite could report failure without ever naming what failed, both in CI and locally.
 
-Any failure beyond the two above is a real regression and stops the deploy. The documented SSD-dependent receipt checks may skip when the external Witness Tree data root is detached; do not convert a skip into a pass claim.
+Any failure beyond the two above is a real regression and stops the deploy, with one documented exception to rule out first.
+
+**Check `python3` before believing a GDAL failure.** Twenty-three tests spawn `python3` and need numpy and GDAL in that interpreter: the four `phase2-*zonal*` files, `phase2-v21-raster-first-runner`, and `phase2-annual-zonal-fractional-correction`. If `python3` resolves to `/Library/Developer/CommandLineTools/usr/bin/python3`, which has neither, all twenty-three fail together with `ModuleNotFoundError: No module named 'numpy'` and pass again in a shell with the normal `PATH`. That looks exactly like a flaky cluster and is not one; it is deterministic. Prepending the Command Line Tools bin is the usual workaround for `/usr/bin/git` stopping on the Xcode licence prompt, and it swaps the interpreter out as a side effect. Use the full path to that `git` instead of putting its directory on `PATH`, and confirm before the run:
+
+```sh
+python3 -c "import numpy, osgeo.gdal as g; print(numpy.__version__, g.__version__)"
+```
+
+If that prints two versions, a GDAL failure is real. The documented SSD-dependent receipt checks may skip when the external Witness Tree data root is detached; do not convert a skip into a pass claim.
 
 The Phase 8 record already states this debt rather than hiding it. `cdn-tile-validation` reads `fail` at this commit and Phase 8 reads seven of sixteen, not eight. That is correct and expected: a test ties the criterion to `resolveDeployedMapRender()` precisely so it cannot read pass while its own gate is red. Do not edit the record to make the count look settled.
 
