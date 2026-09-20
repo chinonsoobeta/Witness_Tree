@@ -81,7 +81,7 @@ export function FederalDistrictFinder({
             </li>
           ))}
         </ul>
-      ) : <NoRecordResult locale={locale} reason={text.none} />}
+      ) : <NoRecordResult locale={locale} reason={text.none} remedies />}
     </section>
   );
 }

@@ -372,6 +372,7 @@ export function ExploreView({
       </CoverageStatement>
       <EvidenceLegend locale={locale} />
 
+      <div className="explore-workspace">
       <nav className="explore-modes" aria-label={text.title}>
         {EXPLORE_MODES.map((item) => (
           <div className="explore-mode" key={item}>
@@ -387,7 +388,7 @@ export function ExploreView({
         ))}
       </nav>
 
-      <section className="explore-section" aria-labelledby="explore-year-heading">
+      <section className="explore-section explore-window" aria-labelledby="explore-year-heading">
         <h2 id="explore-year-heading">{text.yearHeading}</h2>
         <form className="explore-year" method="get">
           <input type="hidden" name="mode" value={mode} />
@@ -412,7 +413,7 @@ export function ExploreView({
         </form>
       </section>
 
-      <section className="explore-section" aria-labelledby="explore-map-heading">
+      <section className="explore-section explore-canvas" aria-labelledby="explore-map-heading">
         <h2 id="explore-map-heading">{text.mapHeading}</h2>
         <fieldset className="segment-set">
           <legend>{text.presentation}</legend>
@@ -449,25 +450,57 @@ export function ExploreView({
         {!districtsCurrent ? (
           <p className="explore-note" role="status">{text.spanPending}</p>
         ) : null}
-        <div className="explore-annual">
-          <h3>{`${text.annualHeading}, ${annual ? formatYearRangeKey(annual.interval, locale) : formatYearRange(yearRange(activeYear - 1, activeYear), locale)}`}</h3>
+      </section>
+
+      {/*
+        The reading panel: what the map currently says, beside the map rather
+        than under it. It is a sibling of the map section and not a child of it
+        so the grid can place it in the right column, and it stays here in the
+        source, ahead of the layers, because the figures explain the view the
+        reader is looking at before the controls that would change it.
+      */}
+      <aside className="explore-annual explore-reading" aria-labelledby="explore-annual-heading">
+          <h3 id="explore-annual-heading">{`${text.annualHeading}, ${annual ? formatYearRangeKey(annual.interval, locale) : formatYearRange(yearRange(activeYear - 1, activeYear), locale)}`}</h3>
           {annual ? (
             <>
+              {/*
+                A composition bar, not a magnitude bar. Recorded harvest and
+                recorded fire are exclusive on a cell and the rest is
+                unattributed, so the three segments are exactly the interval's
+                loss and the widths are taken from cell counts, which are whole
+                numbers, rather than from hectares rounded for display. Hue is
+                the record type: the unattributed segment is neutral because no
+                record names a cause for it, not because the cause is minor.
+              */}
+              <span className="explore-annual-bar" aria-hidden="true">
+                <span
+                  className="explore-annual-part explore-annual-part--harvest"
+                  style={{ width: `${(annual.harvestCells / annual.cellCount) * 100}%` }}
+                />
+                <span
+                  className="explore-annual-part explore-annual-part--fire"
+                  style={{ width: `${(annual.fireCells / annual.cellCount) * 100}%` }}
+                />
+                <span
+                  className="explore-annual-part explore-annual-part--neither"
+                  style={{ width: `${(annual.unattributedCells / annual.cellCount) * 100}%` }}
+                />
+              </span>
               <dl>
                 <div>
                   <dt>{text.annualDetected}</dt>
                   <dd>{`${formatNumber(annual.hectares, locale)} (${text.partial})`}</dd>
                 </div>
                 <div>
-                  <dt>{text.annualHarvest}</dt>
+                  <dt><span className="explore-annual-mark explore-annual-mark--harvest" aria-hidden="true" />{text.annualHarvest}</dt>
                   <dd>{formatNumber(annual.harvestHectares, locale)}</dd>
                 </div>
                 <div>
-                  <dt>{text.annualFire}</dt>
+                  <dt><span className="explore-annual-mark explore-annual-mark--fire" aria-hidden="true" />{text.annualFire}</dt>
                   <dd>{formatNumber(annual.fireHectares, locale)}</dd>
                 </div>
                 <div>
-                  <dt>{text.annualUnattributed}</dt>
+                  <dt><span className="explore-annual-mark explore-annual-mark--neither" aria-hidden="true" />{text.annualUnattributed}</dt>
                   <dd>{formatNumber(annual.unattributedHectares, locale)}</dd>
                 </div>
               </dl>
@@ -476,8 +509,7 @@ export function ExploreView({
           ) : (
             <p className="explore-annual-basis">{text.annualNone}</p>
           )}
-        </div>
-      </section>
+      </aside>
 
       <section
         className="explore-section explore-overlays"
@@ -531,6 +563,7 @@ export function ExploreView({
           })}
         </ul>
       </section>
+      </div>
 
       <section className="explore-section explore-data" aria-labelledby="explore-data-heading">
         <h2 id="explore-data-heading">{text.dataViewsHeading}</h2>

@@ -64,6 +64,13 @@ test("search coverage precedes controls and a missing record is a result with a 
       assert.match(markup, /<strong>– /);
       assert.match(markup, new RegExp(`href="${locale === "en" ? "/en/methods" : "/fr/methodes"}"`));
       assert.doesNotMatch(markup, />0(?: ha)?</);
+      // Unknown is stated as the answer before the reason for it, and the panel
+      // says what would turn it into a figure rather than stopping at the absence.
+      assert.match(markup, /class="no-record-stated"/);
+      assert.match(markup, locale === "en" ? /Unknown\. Nothing has been published/ : /Inconnu\. Rien n\u2019a \u00e9t\u00e9 publi\u00e9/);
+      assert.match(markup, /class="no-record-remedy-list"/);
+      assert.match(markup, new RegExp(`href="${locale === "en" ? "/en/releases" : "/fr/versions"}"`));
+      assert.match(markup, new RegExp(`href="${locale === "en" ? "/en/corrections" : "/fr/corrections"}"`));
     }
   }
 });
@@ -80,6 +87,10 @@ test("address results distinguish a missing boundary from a found boundary witho
     const measured = renderToStaticMarkup(<DistrictReadout locale={locale} heading="District" lookup={found} linkable />);
     assert.match(empty, /class="no-record-result"/);
     assert.match(empty, /no boundary record|aucun registre de limites/);
+    // Two Unknown panels can share one address block, so the way-out list stays
+    // off here: printed twice on one screen it reads as noise, not as a route.
+    assert.doesNotMatch(empty, /class="no-record-remedy-list"/);
+    assert.doesNotMatch(noMeasurement, /class="no-record-remedy-list"/);
     assert.ok(noMeasurement.includes(name[locale]));
     assert.match(noMeasurement, /no measurement|aucune mesure/);
     assert.doesNotMatch(noMeasurement, /compare\?left=|comparer\?left=/);

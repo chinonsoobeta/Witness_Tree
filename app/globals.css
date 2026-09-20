@@ -1404,33 +1404,6 @@ h4 {
   font-size: 19px;
 }
 
-.principles {
-  margin: 28px 0 0;
-}
-.principle {
-  display: grid;
-  grid-template-columns: 220px 1fr;
-  gap: 28px;
-  padding: 17px 0;
-  border-top: 1px solid var(--rule-soft);
-}
-.principle:last-child {
-  border-bottom: 1px solid var(--rule-soft);
-}
-.principle dt {
-  padding-top: 3px;
-  font-family: var(--ui);
-  font-variant-numeric: tabular-nums lining-nums;
-  font-size: var(--text-small);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-.principle dd {
-  margin: 0;
-  color: var(--ink-2);
-  font-size: 16px;
-}
-
 .record-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -1619,7 +1592,25 @@ h4 {
 .footer-nav {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 2px 24px;
+  gap: 22px 24px;
+  align-items: start;
+}
+/* Three named columns, because a link dropped from this footer is a page
+   with no route to it: the header carries four items and none of these. */
+.footer-group-label {
+  margin: 0 0 4px;
+  font-size: var(--text-compact);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.footer-group ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.footer-group li {
+  min-width: 0;
 }
 .footer-nav a {
   display: flex;
@@ -2482,14 +2473,10 @@ h4 {
     grid-template-columns: minmax(0, 1fr);
   }
   .footer-nav {
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .record-grid {
     grid-template-columns: 1fr;
-  }
-  .principle {
-    grid-template-columns: 1fr;
-    gap: 7px;
   }
 }
 
@@ -3224,6 +3211,114 @@ dd > a:only-child {
   max-width: var(--measure);
 }
 
+/* ==========================================================================
+   Explore workspace: controls left, map centre, reading panel right.
+
+   Placed by named areas rather than by source order, on purpose. The source
+   order is explain, choose, map, figures, layers, and a test pins it, because
+   that is the order the record has to be read in and the order a screen reader
+   takes. Grid areas move the boxes without moving that reading order.
+
+   The one cost is a tab step that returns to the left rail after the map and
+   the figures, which is what any layout with controls on both sides of a
+   canvas incurs. It is preferred here to reshuffling the document so the
+   layers precede the map they apply to.
+
+   Nothing in this block floats over the map frame. The chooser-over-frame
+   overlap that #170 removed stays removed: every column grows downward in
+   normal flow, so a legend that gets longer pushes its own column and cannot
+   reach across into another one.
+   ========================================================================== */
+.explore-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
+}
+/* Two tiers, because the centre column is the one that has to stay usable.
+   The rail and the reading panel are fixed, so every pixel the window loses
+   comes out of the map: at 1100px the three-column form leaves the map about
+   440px, which is narrower than the panel beside it. Below 1280px the reading
+   panel drops under the map instead and gets the whole centre width. */
+@media (min-width: 1000px) {
+  .explore-workspace {
+    grid-template-columns: 258px minmax(0, 1fr);
+    grid-template-areas:
+      "modes  canvas"
+      "window canvas"
+      "layers canvas"
+      "layers reading";
+    grid-template-rows: auto auto auto 1fr;
+    align-items: start;
+    column-gap: 24px;
+    row-gap: 22px;
+  }
+}
+@media (min-width: 1280px) {
+  .explore-workspace {
+    grid-template-columns: 258px minmax(0, 1fr) 296px;
+    grid-template-areas:
+      "modes  canvas reading"
+      "window canvas reading"
+      "layers canvas reading"
+      ".      canvas reading";
+  }
+}
+@media (min-width: 1000px) {
+  .explore-workspace > .explore-modes { grid-area: modes; }
+  .explore-workspace > .explore-window { grid-area: window; }
+  .explore-workspace > .explore-canvas { grid-area: canvas; }
+  .explore-workspace > .explore-reading { grid-area: reading; }
+  .explore-workspace > .explore-overlays { grid-area: layers; }
+  /* In one column the four modes sit side by side; in a 258px rail they stack,
+     which is also the only way their status lines stay readable. */
+  .explore-workspace > .explore-modes {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .explore-workspace > .explore-overlays .overlay-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* The reading panel carries a composition, so it needs its own marks. */
+.explore-annual-bar {
+  display: flex;
+  width: 100%;
+  height: 12px;
+  border: 1px solid var(--rule-strong);
+  background: var(--ground);
+  overflow: hidden;
+}
+.explore-annual-part {
+  display: block;
+  min-width: 0;
+}
+.explore-annual-part--harvest {
+  background: var(--patch-harvest);
+}
+.explore-annual-part--fire {
+  background: var(--patch-fire);
+}
+.explore-annual-part--neither {
+  background: var(--patch-neither);
+}
+.explore-annual-mark {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 7px;
+  vertical-align: baseline;
+  flex-shrink: 0;
+}
+.explore-annual-mark--harvest {
+  background: var(--patch-harvest);
+}
+.explore-annual-mark--fire {
+  background: var(--patch-fire);
+}
+.explore-annual-mark--neither {
+  background: var(--patch-neither);
+}
+
 .explore-section {
   display: grid;
   /*
@@ -3694,6 +3789,46 @@ dd > a:only-child {
   margin-top: 12px;
   font-size: 1.125rem;
 }
+/* Unknown is stated before it is explained. The conclusion carries the weight,
+   the reason sits under it at body scale, and the reason keeps its en-dash
+   prefix because that is the missing-value mark everywhere else on the site. */
+.no-record-stated {
+  margin-top: 14px;
+  font-size: clamp(19px, 1.9vw, 23px);
+  font-weight: 700;
+  line-height: 1.28;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+.no-record-remedies {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--edge-unknown);
+}
+.no-record-remedies-label {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+.no-record-remedy-list {
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 10px;
+  max-width: var(--measure);
+}
+.no-record-remedy-list li {
+  display: grid;
+  gap: 4px;
+  padding-left: 15px;
+  border-left: 1px solid var(--edge-unknown);
+  font-size: 0.9375rem;
+  line-height: 1.55;
+}
 .draw-page .shape-measure {
   max-width: none;
 }
@@ -3868,67 +4003,170 @@ dd > a:only-child {
 
 /* Landing: loss and unmapped area use equal panels and a shared hectare scale. */
 .landing-coverage > .lead { max-width: var(--measure); }
-.province-coverage-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 24px;
-  margin-block: 24px;
+/* Four readings of one instrument, ranked.
+   The provinces were a two-column grid of cards, which is a layout for
+   browsing, and these are not things to browse. A list ranks; cards only sit
+   beside each other. Neither measure prints a sentence explaining its scale,
+   because each bar draws exactly what the figure beside it says. */
+.province-list-block {
+  margin-block: 28px;
 }
-/* One number, one bar, one caveat. The card used to hold two measures on a
-   shared hectare scale, which is what forced the page to print a line saying
-   the two were not comparable. There is one bar now, so there is no line. */
-.province-coverage-card {
-  min-width: 0;
-  padding: 24px;
+.province-list-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px 28px;
+}
+.province-list-headline {
+  margin: 0;
+  max-width: 24ch;
+  font-size: clamp(21px, 2.3vw, 27px);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+.measure-toggle {
+  display: flex;
+  flex-shrink: 0;
   border: 1px solid var(--rule-strong);
-  background: var(--surface);
-  color: var(--ink);
+  overflow: hidden;
+}
+.measure-toggle-option {
+  min-height: 44px;
+  padding: 0 18px;
+  border: none;
+  background: var(--ground);
+  color: var(--ink-2);
+  font-family: var(--ui);
+  font-size: var(--text-small);
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color var(--dur) var(--ease),
+    color var(--dur) var(--ease);
+}
+.measure-toggle-option + .measure-toggle-option {
+  border-left: 1px solid var(--rule-strong);
+}
+.measure-toggle-option[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--ground);
+}
+/* A key, not a disclaimer: it names the two parts of a bar the reader can
+   see, rather than asking the reader to discount what the bar draws. */
+.province-list-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--ui);
+  font-size: var(--text-small);
+  color: var(--ink-2);
+}
+.province-list-key li {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.province-list-key-mapped,
+.province-list-key-gap {
+  display: block;
+  width: 26px;
+  height: 12px;
+}
+.province-list-key-mapped {
+  background: var(--edge-derived);
+}
+.province-list-key-gap {
+  background: var(--ground);
+  border: 1px dashed var(--edge-unknown);
+}
+.province-list {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.province-list-row {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  padding: 22px 0 24px;
+  border-top: 1px solid var(--rule);
 }
-.province-coverage-value {
-  display: block;
+.province-list-row:last-child {
+  border-bottom: 1px solid var(--rule);
+}
+.province-list-mark {
+  display: flex;
+  align-items: center;
+  gap: 9px;
   margin: 0;
-  font-size: clamp(30px, 3.4vw, 44px);
+  font-family: var(--ui);
+  font-size: var(--text-compact);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.province-list .province-list-place {
+  margin: 0;
+  font-size: clamp(20px, 2.2vw, 26px);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+}
+/* Matched against `.page-wrap h3` rather than left as a bare class: the base
+   heading scale is a descendant selector, so a class alone loses to it. */
+.province-list .province-list-span {
+  font-weight: 400;
+  font-variant-numeric: tabular-nums lining-nums;
+  color: var(--ink-2);
+}
+.province-list-figure {
+  margin: 0;
+  font-size: clamp(30px, 3.6vw, 42px);
   font-weight: 700;
   font-variant-numeric: tabular-nums lining-nums;
   letter-spacing: -0.01em;
   line-height: 1.05;
 }
-.province-coverage-place {
-  margin: 0;
-  font-size: var(--text-small);
-  font-weight: 400;
-  color: var(--ink-2);
-}
-/* The span rides on the figure it belongs to. */
-.province-coverage-span {
-  font-variant-numeric: tabular-nums lining-nums;
-  color: var(--ink);
-}
-.province-coverage-track {
-  display: block;
-  height: 14px;
+.province-list-track {
+  display: flex;
+  height: 12px;
   background: var(--surface-2);
   border: 1px solid var(--rule);
 }
-.province-coverage-fill {
+.province-list-fill {
   display: block;
   height: 100%;
   background: var(--edge-derived);
 }
-.province-coverage-basis {
+/* Unknown reads as a dashed edge, never as a hatch: the 45 degree hatch is
+   already spoken for by observation with no matching record. A province with
+   a gap too small to draw still keeps its 1px dashed edge, for the same
+   reason the share never prints as 0%. */
+.province-list-gap {
+  display: block;
+  height: 100%;
+  min-width: 1px;
+  background: var(--ground);
+  border-left: 1px dashed var(--edge-unknown);
+}
+.province-list-note {
   margin: 0;
+  max-width: var(--measure);
   color: var(--ink-2);
   line-height: 1.55;
 }
-.province-coverage-basis strong {
+.province-list-note strong {
   font-weight: 700;
   font-variant-numeric: tabular-nums lining-nums;
   color: var(--ink);
 }
-.province-coverage-recorded {
+.province-list-foot {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
@@ -3936,13 +4174,119 @@ dd > a:only-child {
   gap: 12px;
   margin: 0;
   padding-top: 12px;
-  border-top: 1px solid var(--rule);
+  border-top: 1px solid var(--rule-soft);
+  font-family: var(--ui);
   font-size: var(--text-compact);
   color: var(--ink-2);
 }
-.province-coverage-recorded span { font-variant-numeric: tabular-nums lining-nums; }
-@media (max-width: 1000px) {
-  .province-coverage-grid { grid-template-columns: minmax(0, 1fr); }
+.province-list-foot span {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+@media (max-width: 700px) {
+  .province-list-head {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .measure-toggle-option {
+    flex: 1 1 0;
+  }
+}
+
+/* The four marks and their definitions, said once. The mark is a shape, not
+   a colour, so the four classes survive greyscale and forced colours. */
+.evidence-marks {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 26px;
+  margin: 24px 0 0;
+}
+.evidence-mark dt {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--ui);
+  font-size: var(--text-small);
+  font-weight: 700;
+}
+.evidence-mark dd {
+  margin: 7px 0 0;
+  color: var(--ink-2);
+  font-size: 15px;
+  line-height: 1.5;
+}
+.mark-glyph {
+  display: block;
+  flex-shrink: 0;
+  width: 13px;
+  height: 13px;
+}
+.mark-glyph--record {
+  background: var(--edge-record);
+}
+.mark-glyph--satellite {
+  border-radius: 50%;
+  background: var(--edge-satellite);
+}
+.mark-glyph--derived {
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  background: var(--edge-derived);
+}
+.mark-glyph--unknown {
+  border: 2px solid var(--edge-unknown);
+  border-radius: 50%;
+}
+.evidence-band-lead {
+  margin: 0;
+  max-width: var(--measure);
+  color: var(--ink-2);
+  font-size: 19px;
+}
+@media (max-width: 900px) {
+  .evidence-marks { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 520px) {
+  .evidence-marks { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* What the record does not claim, as a list of claims rather than one
+   sentence carrying five of them in a row. */
+.limits-block {
+  padding: 28px 32px;
+  background: var(--sand);
+}
+.limits-block > h2 {
+  margin: 0;
+}
+.limits-body > p {
+  max-width: var(--measure);
+  color: var(--ink-2);
+}
+.limits-body > p:last-child {
+  margin-bottom: 0;
+}
+.limits-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 11px 40px;
+  margin: 0 0 24px;
+  padding: 0;
+  list-style: none;
+}
+.limits-list li {
+  padding-left: 15px;
+  border-left: 1px solid var(--rule-strong);
+  line-height: 1.45;
+}
+@media (min-width: 900px) {
+  .limits-block {
+    display: grid;
+    grid-template-columns: 230px minmax(0, 1fr);
+    gap: 48px;
+    align-items: start;
+  }
+}
+@media (max-width: 620px) {
+  .limits-list { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* The search control the homepage grew when Search left the global nav. */

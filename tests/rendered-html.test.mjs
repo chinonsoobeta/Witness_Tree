@@ -77,55 +77,64 @@ test("landing figures show detected loss alone, on a scale of detected loss", as
    * disclaimer that exists to undo a drawing means the drawing is wrong, so the
    * second bar is gone and the disclaimer with it.
    *
-   * These assertions replace the old pair at the same strictness rather than
-   * relaxing into it: one value and one bar per card, scaled against the
-   * largest detected loss of the four, with the unmapped share kept in the
-   * sentence that says why the figure is a floor.
+   * The cards are a ranked list now, and the unmapped share is a measure of
+   * its own behind a toggle rather than a clause inside the loss caveat. The
+   * assertions move with it at the same strictness: the server renders the
+   * loss measure, one value and one bar per row, scaled against the largest
+   * detected loss of the four, ranked by that same figure, with the unmapped
+   * share still in the sentence that says why the figure is a floor.
+   *
+   * The scale sentence stays gone. Each bar draws what the figure beside it
+   * says, so there is nothing for a sentence to undo.
    */
-  const hectares = [680273.64, 714701.7, 748863.72, 800473.32];
+  const hectares = [800473.32, 748863.72, 714701.7, 680273.64];
   const scale = Math.max(...hectares);
   for (const locale of ["en", "fr"]) {
     const html = await (await render(`/${locale}`)).text();
-    const cards = [...html.matchAll(/<article class="province-coverage-card"[^>]*>([\s\S]*?)<\/article>/g)].map((match) => match[1]);
-    assert.equal(cards.length, 4);
-    assert.ok(html.indexOf('class="coverage-statement"') < html.indexOf('class="province-coverage-card"'));
-    assert.ok(html.indexOf('class="evidence-legend"') < html.indexOf('class="province-coverage-card"'));
+    const rows = [...html.matchAll(/<li class="province-list-row"[^>]*>([\s\S]*?)<\/li>/g)].map((match) => match[1]);
+    assert.equal(rows.length, 4);
+    assert.ok(html.indexOf('class="coverage-statement"') < html.indexOf('class="province-list-row"'));
+    assert.ok(html.indexOf('class="evidence-marks"') < html.indexOf('class="province-list-row"'));
 
     // Whole hectares on the headline. Two decimal places on a satellite-derived
     // floor claim centimetres no source can back.
     const whole = new Intl.NumberFormat(`${locale}-CA`, { maximumFractionDigits: 0 });
-    const values = cards.flatMap((card) => [...card.matchAll(/<p class="province-coverage-value">([^<]+)<\/p>/g)].map((match) => match[1]));
+    const values = rows.flatMap((row) => [...row.matchAll(/<p class="province-list-figure">([^<]+)<\/p>/g)].map((match) => match[1]));
     assert.deepEqual(values, hectares.map((value) => `${whole.format(value)} ha`));
 
-    // One bar per card, and the scale is detected loss. The unmapped hectares
+    // One bar per row, and the scale is detected loss. The unmapped hectares
     // are deliberately not in this maximum: they never share the scale again.
-    const widths = cards.flatMap((card) => [...card.matchAll(/class="province-coverage-fill" style="width:([\d.]+)%"/g)].map((match) => Number(match[1])));
+    const widths = rows.flatMap((row) => [...row.matchAll(/class="province-list-fill" style="width:([\d.]+)%"/g)].map((match) => Number(match[1])));
     assert.equal(widths.length, 4);
     widths.forEach((width, index) => assert.ok(Math.abs(width - (hectares[index] / scale) * 100) < 1e-9));
     assert.equal(Math.max(...widths), 100);
 
-    // The pairing is gone, so nothing may reintroduce a second measure or the
-    // shared-scale disclaimer that a second measure needs.
-    assert.doesNotMatch(html, /province-coverage-unknown|province-coverage-pair|province-coverage-measure/);
+    // The unmapped measure is a measure, not a second bar on this one. Its
+    // own bar reaches the page only once the reader asks for it.
+    assert.doesNotMatch(html, /province-list-gap/);
     assert.doesNotMatch(html, /hectare scale|échelle en hectares/);
 
-    // The exact value stays at the foot of the card, which is what makes the
+    // The exact value stays at the foot of the row, which is what makes the
     // rounded headline cost nothing.
     const exact = new Intl.NumberFormat(`${locale}-CA`, { maximumFractionDigits: 2 });
-    const recorded = cards.flatMap((card) => [...card.matchAll(/class="province-coverage-recorded"><span>([^<]+)</g)].map((match) => match[1]));
-    assert.deepEqual(recorded, hectares.map((value) => exact.format(value)));
+    const unit = locale === "en" ? "ha recorded" : "ha consignés";
+    const recorded = rows.flatMap((row) => [...row.matchAll(/class="province-list-foot"><span>([^<]+)</g)].map((match) => match[1]));
+    assert.deepEqual(recorded, hectares.map((value) => `${exact.format(value)} ${unit}`));
 
-    for (const card of cards) {
+    for (const row of rows) {
       // The span rides on the figure now, not on a masthead badge that claimed
       // 1984 to 2022 over figures covering three years.
-      assert.match(card, /class="province-coverage-span">\d{4}\u2013\d{4}</u);
-      assert.match(card, /of the forest the source mapped|de la forêt cartographiée par la source/);
-      assert.match(card, /<strong>[^<]*%<\/strong>/);
-      assert.match(card, /never counted as zero|jamais comptée comme zéro/);
-      assert.match(card, /href="\/en\/data"|href="\/fr\/donnees"/);
+      assert.match(row, /class="province-list-span">\d{4}\u2013\d{4}</u);
+      assert.match(row, /of the forest the source mapped|de la forêt cartographiée par la source/);
+      assert.match(row, /<strong>[^<]*%<\/strong>/);
+      assert.match(row, /never counted as zero|jamais comptée comme zéro/);
+      assert.match(row, /href="\/en\/data"|href="\/fr\/donnees"/);
     }
-    assert.match(cards[3], /&lt;0[.,]01/);
-    assert.match(cards[3], /GeoBC/);
+    // British Columbia leads the loss ranking and carries the qualifier that
+    // stops its gap reading as unmeasured forest. It rides on this measure
+    // too, because a claim behind a control is a claim most readers never see.
+    assert.match(rows[0], /&lt;0[.,]01/);
+    assert.match(rows[0], /GeoBC/);
   }
 });
 
@@ -162,9 +171,9 @@ test("renders both localized public records with neutral non-claims", async () =
   assert.match(french, /<html lang="fr">/);
   assert.doesNotMatch(french, /<html lang="en">/);
   assert.match(english, /What happened to the forest here\?/);
-  assert.match(english, /does not estimate merchantable timber/);
+  assert.match(english, /An estimate of merchantable timber/);
   assert.match(french, /Qu’est-il arrivé à la forêt ici\?/);
-  assert.match(french, /n’estime pas le bois marchand/);
+  assert.match(french, /Une estimation du bois marchand/);
   assert.doesNotMatch(`${english}\n${french}`, /the truth|real-time|complete record/i);
 });
 
