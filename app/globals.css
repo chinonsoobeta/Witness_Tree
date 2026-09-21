@@ -3709,10 +3709,17 @@ dd > a:only-child {
 }
 
 /* Confidence comes before figures; both panels inherit their local palette. */
+/* A plate, not a plate with a rail.
+ *
+ * A rail is how a block that has no colour of its own carries an evidence
+ * class: .notice and .explore-empty sit on the neutral surface, so their rail
+ * is the only thing that says Unknown, and both keep it. This block does not
+ * need a third statement of the same fact. It is already filled with the
+ * unknown tint and edged in the unknown edge, and the rail was the class said
+ * once more, louder, in a vocabulary nothing else in the record uses. */
 .coverage-statement {
   padding: 24px;
   border: 1px solid var(--edge-unknown);
-  border-inline-start-width: 4px;
   background: var(--tint-unknown);
   color: var(--ink);
 }
