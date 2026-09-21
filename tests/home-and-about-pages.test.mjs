@@ -47,7 +47,7 @@ test("landing pages use the production aggregate and retain the bounded scope", 
  * This replaces the staged-grammar test that pinned the landing-hero and
  * landing-record-band structure. The confidence-first canvas puts the coverage
  * statement and the evidence legend ahead of the first figure, and reports each
- * province through a coverage card rather than a definition list, so the old
+ * province through a ranked list rather than a grid of cards, so the old
  * structure is gone by design rather than by neglect. The contract it enforced
  * is kept here against the composition that replaced it, at the same strictness:
  * one call to action per band, the interior sections still numbered, and no
@@ -68,11 +68,11 @@ test("the landing composition puts coverage and the legend before any figure", a
     // Order is the claim. The coverage statement and the legend both stand
     // ahead of the section that reports a province's figures.
     const coverage = page.indexOf("<CoverageStatement");
-    const legend = page.indexOf("<EvidenceLegend");
+    const legend = page.indexOf("<EvidenceMarks");
     const record = page.indexOf('<section className="content-section landing-coverage"');
     assert.ok(coverage > 0 && legend > coverage && record > legend, "coverage, then legend, then figures");
-    const band = section(page, '<section className="content-section landing-coverage"', '<section className="content-section prose-measure">');
-    assert.match(band, /<ProvinceCoverageCard/);
+    const band = section(page, '<section className="content-section landing-coverage"', '<section className="content-section">');
+    assert.match(band, /<ProvinceRecordList/);
     assert.match(band, new RegExp(`href="${methods}"`));
     assert.match(band, new RegExp(`href="${route}"`));
     assert.equal((page.match(/landing-coverage/g) ?? []).length, 1);

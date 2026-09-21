@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { HomeSearch, ProvinceBar, SiteShell } from "@/components/site";
-import { ProvinceCoverageCard } from "@/components/site/ProvinceCoverageCard";
+import { ProvinceRecordList } from "@/components/site/ProvinceRecordList";
+import { CumulativeHeadline } from "@/components/site/CumulativeHeadline";
 import { CoverageStatement } from "@/components/policy/CoverageStatement";
-import { EvidenceLegend } from "@/components/policy/EvidenceLegend";
+import { EvidenceMarks } from "@/components/policy/EvidenceMarks";
 import { PRODUCT_NAME } from "@/lib/domain";
 import { productionAggregatePeriod } from "@/lib/explore/period";
 import { EXPLORE_PRODUCTION_LAYER, formatUnknownSharePercent } from "@/lib/explore";
@@ -14,6 +15,10 @@ export const metadata: Metadata = { title: "Public forest-loss record", alternat
 function coverageLabel(row: (typeof EXPLORE_PRODUCTION_LAYER.rows)[number]) {
   return `${formatUnknownSharePercent(row.unknownSharePercent, "en")} of the province was not mapped by the source${"unmappedCharacter" in row ? `; ${row.unmappedCharacter.en}` : ""}`;
 }
+
+const UNKNOWN_CONTEXTS = Object.fromEntries(
+  EXPLORE_PRODUCTION_LAYER.rows.map((row) => [row.id, coverageLabel(row)]),
+);
 
 /*
  * The page asks a question in its headline, so it answers it in its own body.
@@ -36,30 +41,33 @@ export default function EnglishHome() {
       <ProvinceBar locale="en" />
     </header>
 
+    {/*
+      The answer to the question in the h1, immediately under it.
+      It carries its own denominator, its own unmapped share and its own
+      refusal of the annual sum, so it does not lean on the standing
+      coverage banner below it to stay honest when it is read alone.
+    */}
+    <CumulativeHeadline locale="en" />
+
     <CoverageStatement locale="en"><p>Detected loss is a minimum from the mapped area in four provinces. Areas the source did not map remain unknown, even where detected loss is small. An absence in this record is not a claim about what happened in the world.</p></CoverageStatement>
 
-    <EvidenceLegend locale="en" />
+    {/*
+      The four marks and their definitions, in one place. They used to be a
+      row of chips here and a definition list of the same four classes
+      several screens down, in different words.
+    */}
+    <section className="content-section evidence-band">
+      <p className="evidence-band-lead">Open a record and read a dated history of recorded harvest, wildfire, disturbance and satellite-detected change. Every claim carries the class of evidence behind it.</p>
+      <EvidenceMarks locale="en" />
+    </section>
 
     <section className="content-section landing-coverage" aria-labelledby="current-record">
       <h2 id="current-record">The published record</h2>
       <p className="lead">The bounded, provisional {productionAggregatePeriod("en")} province aggregate reports detected forest loss with a coverage state for each province. Verification of the mapped extent for every year is complete, and its results govern how unmapped areas are classified.</p>
-      <div className="province-coverage-grid">
-        {EXPLORE_PRODUCTION_LAYER.rows.map((row) => <ProvinceCoverageCard key={row.id} row={row} locale="en" unknownContext={coverageLabel(row)} />)}
-      </div>
+      <ProvinceRecordList rows={EXPLORE_PRODUCTION_LAYER.rows} locale="en" unknownContexts={UNKNOWN_CONTEXTS} />
       <p><Link href="/en/methods#coverage-gap">Why these areas were not mapped, and what we know about them</Link></p>
       <p><Link className="btn btn--primary" href="/en/explore">Explore the record</Link></p>
       <p><small>Other provinces are coming soon.</small></p>
-    </section>
-
-    <section className="content-section prose-measure">
-      <h2>A record, not a dashboard</h2>
-      <p className="lead">Open a record and read a dated history of recorded harvest, wildfire, disturbance and satellite-detected change. Every claim carries the class of evidence behind it.</p>
-      <dl className="principles">
-        <div className="principle"><dt>Official record</dt><dd>A public authority records an event, perimeter, intervention or named role.</dd></div>
-        <div className="principle"><dt>Satellite observation</dt><dd>Imagery shows tree-cover reduction or later canopy recovery. It does not, by itself, establish a cause.</dd></div>
-        <div className="principle"><dt>Derived estimate</dt><dd>A calculation made from documented records and a published method.</dd></div>
-        <div className="principle"><dt>Unknown</dt><dd>No authoritative public record has been integrated for the question.</dd></div>
-      </dl>
     </section>
 
     <section className="content-section">
@@ -76,12 +84,22 @@ export default function EnglishHome() {
       detected reduction in tree cover is not a finding about cause, in nearly
       the same words, several screens apart.
     */}
-    <section className="content-section prose-measure" aria-labelledby="limits">
+    <section className="content-section limits-block" aria-labelledby="limits">
       <h2 id="limits">What this record does not claim</h2>
-      <p>{PRODUCT_NAME.en} does not estimate merchantable timber, predict wildfire spread, label detected change as logging or deforestation, make legal or compliance findings, or infer responsibility from proximity.</p>
-      <p>Detected forest loss is satellite-derived. A reduction in tree cover does not by itself establish logging, deforestation, responsibility or compliance. <Link href="/en/methods">Read the method and evidence definitions</Link>.</p>
-      <p>The province aggregate above is a deterministic, four-province technical preview for {productionAggregatePeriod("en", "span")}. Per-cell loss patches are drawn on the Explore map for the same four provinces, traced from the 30 m grid. They are drawn, not counted: no expert review has been completed, so they do not close the formal Phase 2 gate and no total may be taken from them. <Link href="/en/data">Read the release scope, provenance and licence attribution</Link>.</p>
-      <p><small>Context source: {EXPLORE_PRODUCTION_LAYER.attribution.en} <a href={EXPLORE_PRODUCTION_LAYER.attribution.href}>Source catalogue</a>.</small></p>
+      <div className="limits-body">
+        <ul className="limits-list">
+          <li>That detected change was logging, or deforestation.</li>
+          <li>Any legal or compliance finding.</li>
+          <li>An estimate of merchantable timber.</li>
+          <li>Responsibility inferred from proximity.</li>
+          <li>A statement about how wildfire will spread.</li>
+          <li>A total. Detected loss is a floor, not a sum.</li>
+        </ul>
+        <p>{PRODUCT_NAME.en} reports what its sources record and what its imagery detects, and nothing beyond that.</p>
+        <p>Detected forest loss is satellite-derived. A reduction in tree cover does not by itself establish logging, deforestation, responsibility or compliance. <Link href="/en/methods">Read the method and evidence definitions</Link>.</p>
+        <p>The province aggregate above is a deterministic, four-province technical preview for {productionAggregatePeriod("en", "span")}. Per-cell loss patches are drawn on the Explore map for the same four provinces, traced from the 30 m grid. They are drawn, not counted: no expert review has been completed, so they do not close the formal Phase 2 gate and no total may be taken from them. <Link href="/en/data">Read the release scope, provenance and licence attribution</Link>.</p>
+        <p><small>Context source: {EXPLORE_PRODUCTION_LAYER.attribution.en} <a href={EXPLORE_PRODUCTION_LAYER.attribution.href}>Source catalogue</a>.</small></p>
+      </div>
     </section>
   </main></SiteShell>;
 }
