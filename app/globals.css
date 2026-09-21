@@ -4334,6 +4334,19 @@ dd > a:only-child {
   .cumulative-headline { padding: 24px 20px 22px; }
 }
 
+/*
+   The figure must not break between the number and its unit. At 375 px the
+   French form is the binding case, because its group separator is a space:
+   "44 975 298,15 ha" needs about 303 px at the 40 px floor and the block
+   offers 293, so it wrapped with "ha" alone on the second line, which reads
+   as two facts rather than one quantity. The floor drops on the narrowest
+   screens instead, because a figure that fits is worth more here than a
+   figure that is large.
+*/
+@media (max-width: 420px) {
+  .cumulative-figure { font-size: clamp(30px, 9.4vw, 40px); }
+}
+
 /* What the record does not claim, as a list of claims rather than one
    sentence carrying five of them in a row. */
 .limits-block {
