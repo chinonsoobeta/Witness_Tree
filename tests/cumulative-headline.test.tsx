@@ -9,7 +9,29 @@ import { fourProvinceSpanMeasurement } from "../lib/explore/province-spans.ts";
 import { formatHectares, formatPercent } from "../lib/domain/number.ts";
 
 const WHOLE = { fromYear: 1984, toYear: 2022 };
-const measured = fourProvinceSpanMeasurement(WHOLE);
+
+/**
+ * The measurement is nullable twice over: the whole call returns null unless
+ * all four provinces are present, and every figure in it is separately
+ * nullable, because a province the sources never mapped has no number rather
+ * than a zero. The component renders nothing unless all five are present, so a
+ * test that carried the nulls through would be asserting about an empty page.
+ * This resolves them once and says which one is missing if any is.
+ */
+const FIGURES = ["unionLossHectares", "knownForestedHectares", "unionLossPercent", "summedLossHectares", "unknownHectares"] as const;
+type Measured = Record<(typeof FIGURES)[number], number>;
+
+function measureWholeRecord(): Measured {
+  const measurement = fourProvinceSpanMeasurement(WHOLE);
+  assert.ok(measurement, "the whole-record span is measurable for all four provinces");
+  const measured = {} as Measured;
+  for (const figure of FIGURES) {
+    const value = measurement[figure];
+    assert.ok(typeof value === "number", `the whole-record span states no ${figure}, so the headline renders nothing`);
+    measured[figure] = value;
+  }
+  return measured;
+}
 
 /*
  * The headline publishes the one figure the product exists to state, so the
@@ -18,7 +40,7 @@ const measured = fourProvinceSpanMeasurement(WHOLE);
  * the number could be separated from its basis and read as a total.
  */
 test("the figure, its denominator, its unmapped share and its span are one block", () => {
-  assert.ok(measured, "the whole-record span is measurable for all four provinces");
+  const measured = measureWholeRecord();
   for (const locale of ["en", "fr"] as const) {
     const markup = renderToStaticMarkup(<CumulativeHeadline locale={locale} />);
 
@@ -50,6 +72,7 @@ test("the figure, its denominator, its unmapped share and its span are one block
 });
 
 test("the annual sum appears only as a different measure, never as the figure", () => {
+  const measured = measureWholeRecord();
   for (const locale of ["en", "fr"] as const) {
     const markup = renderToStaticMarkup(<CumulativeHeadline locale={locale} />);
     const summed = formatHectares(measured.summedLossHectares, locale);
