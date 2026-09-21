@@ -157,28 +157,55 @@ export function ProvinceRecordList({ rows, locale, unknownContexts }: Readonly<{
             : "";
           return (
             <li className="province-list-row" key={row.id}>
-              <p className="province-list-mark">
-                <span
-                  className={showingLoss ? "mark-glyph mark-glyph--satellite" : "mark-glyph mark-glyph--unknown"}
-                  aria-hidden="true"
-                />
-                {EVIDENCE_DEFINITIONS[showingLoss ? "satellite-observation" : "unknown"].label[locale]}
-              </p>
-
-              <h3 className="province-list-place">
-                {row.name[locale]}, <span className="province-list-span">{span}</span>
-              </h3>
-
               {/*
-                Whole hectares. Two decimal places on a satellite-derived floor
-                claim centimetres no source can back. The recorded value stays
-                at the foot of the row, so the rounding costs nothing.
+                The evidence class, the place and the figure share one baseline.
+                Stacked, the row ran to 352px and four of them pushed the fourth
+                province below the fold on a laptop; read across, the row is the
+                sentence it always was, and the eye can compare four figures
+                down a single right edge instead of hunting for each one.
+
+                The class still leads the place in document order, which is the
+                order the record states things in everywhere else: what kind of
+                evidence this is, then what it says.
               */}
-              <p className="province-list-figure">
-                {showingLoss
-                  ? formatHectares(row.observedLossHectares, locale, 0)
-                  : unknownShare}
-              </p>
+              <div className="province-list-head-row">
+                <div className="province-list-identity">
+                  <p className="province-list-mark">
+                    <span
+                      className={showingLoss ? "mark-glyph mark-glyph--satellite" : "mark-glyph mark-glyph--unknown"}
+                      aria-hidden="true"
+                    />
+                    {EVIDENCE_DEFINITIONS[showingLoss ? "satellite-observation" : "unknown"].label[locale]}
+                  </p>
+
+                  <h3 className="province-list-place">
+                    {row.name[locale]}, <span className="province-list-span">{span}</span>
+                  </h3>
+                </div>
+
+                {/*
+                  Whole hectares. Two decimal places on a satellite-derived floor
+                  claim centimetres no source can back. The recorded value stays
+                  at the foot of the row, so the rounding costs nothing.
+
+                  The unit is a span rather than part of the number so it can sit
+                  at reading weight beside a figure set at 42px. The text the
+                  element renders is unchanged, which is what the rendered-page
+                  assertion measures.
+                */}
+                <p className="province-list-figure">
+                  {showingLoss ? (
+                    <>
+                      <span className="province-list-value">
+                        {formatNumber(row.observedLossHectares, locale, 0)}
+                      </span>{" "}
+                      <span className="province-list-unit">ha</span>
+                    </>
+                  ) : (
+                    <span className="province-list-value">{unknownShare}</span>
+                  )}
+                </p>
+              </div>
 
               <span className="province-list-track" aria-hidden="true">
                 {showingLoss ? (
@@ -194,28 +221,37 @@ export function ProvinceRecordList({ rows, locale, unknownContexts }: Readonly<{
                 )}
               </span>
 
-              {showingLoss ? (
-                <p className="province-list-note">
-                  {formatPercent(row.observedLossPercent, locale)} {copy.basis}{" "}
-                  <strong>{unknownShare}</strong> {copy.basisEnd}{character}
-                </p>
-              ) : (
-                <p className="province-list-note">
-                  <strong>{formatHectares(row.unmappedByProductExtentHectares, locale, 0)}</strong>{" "}
-                  {copy.coverNote} {copy.coverEnd}{character}
-                </p>
-              )}
+              {/*
+                The caveat and the value it rests on, side by side. They were a
+                paragraph and then a bordered band across the full width, which
+                read as two separate footnotes; the rule between them said the
+                recorded value belonged to the row rather than to the sentence
+                immediately above it.
+              */}
+              <div className="province-list-base">
+                {showingLoss ? (
+                  <p className="province-list-note">
+                    {formatPercent(row.observedLossPercent, locale)} {copy.basis}{" "}
+                    <strong>{unknownShare}</strong> {copy.basisEnd}{character}
+                  </p>
+                ) : (
+                  <p className="province-list-note">
+                    <strong>{formatHectares(row.unmappedByProductExtentHectares, locale, 0)}</strong>{" "}
+                    {copy.coverNote} {copy.coverEnd}{character}
+                  </p>
+                )}
 
-              <p className="sr-only">{unknownContexts[row.id]}</p>
+                <p className="sr-only">{unknownContexts[row.id]}</p>
 
-              <p className="province-list-foot">
-                <span>
-                  {showingLoss
-                    ? `${formatNumber(row.observedLossHectares, locale, 2)} ${copy.recorded}`
-                    : `${formatNumber(row.unmappedByProductExtentHectares, locale, 2)} ${copy.measured}`}
-                </span>
-                <Link href={locale === "en" ? "/en/data" : "/fr/donnees"}>{copy.sources}</Link>
-              </p>
+                <p className="province-list-foot">
+                  <span>
+                    {showingLoss
+                      ? `${formatNumber(row.observedLossHectares, locale, 2)} ${copy.recorded}`
+                      : `${formatNumber(row.unmappedByProductExtentHectares, locale, 2)} ${copy.measured}`}
+                  </span>
+                  <Link href={locale === "en" ? "/en/data" : "/fr/donnees"}>{copy.sources}</Link>
+                </p>
+              </div>
             </li>
           );
         })}

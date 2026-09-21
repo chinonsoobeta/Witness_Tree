@@ -99,7 +99,16 @@ test("landing figures show detected loss alone, on a scale of detected loss", as
     // Whole hectares on the headline. Two decimal places on a satellite-derived
     // floor claim centimetres no source can back.
     const whole = new Intl.NumberFormat(`${locale}-CA`, { maximumFractionDigits: 0 });
-    const values = rows.flatMap((row) => [...row.matchAll(/<p class="province-list-figure">([^<]+)<\/p>/g)].map((match) => match[1]));
+    // The unit is its own span now, so the figure and the word can share a
+    // baseline at different sizes. What the element renders is unchanged and is
+    // what this still asserts: the markup between the words is removed, and no
+    // whitespace is collapsed, because the French group separator is itself a
+    // space character and collapsing it would compare a different string.
+    const values = rows.flatMap((row) =>
+      [...row.matchAll(/<p class="province-list-figure">([\s\S]*?)<\/p>/g)].map((match) =>
+        match[1].replace(/<[^>]+>/g, "").trim(),
+      ),
+    );
     assert.deepEqual(values, hectares.map((value) => `${whole.format(value)} ha`));
 
     // One bar per row, and the scale is detected loss. The unmapped hectares
