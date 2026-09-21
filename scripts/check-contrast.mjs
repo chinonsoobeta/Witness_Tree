@@ -36,6 +36,13 @@ const PAIRS = [
   ["edge-satellite", "tint-satellite", 3, "satellite-observation chip edge"],
   ["edge-derived", "tint-derived", 3, "derived-estimate chip edge"],
   ["edge-unknown", "tint-unknown", 3, "unknown chip edge"],
+  // The top bar keeps its own palette because it is dark under both themes, so
+  // none of the pairs above describe it. Nothing measured it until the colour
+  // theme control started inverting one of these tokens against another.
+  ["topbar-ink", "topbar-fill", 4.5, "top bar text, and the chosen theme option inverted against it"],
+  ["topbar-ink-2", "topbar-fill", 4.5, "top bar secondary text and unchosen options"],
+  ["topbar-edge", "topbar-fill", 3, "top bar control edges and segment dividers"],
+  ["topbar-accent", "topbar-fill", 3, "the focus ring on the top bar"],
 ];
 
 const HEX = /^#([0-9a-f]{6}|[0-9a-f]{3})$/i;

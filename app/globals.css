@@ -136,14 +136,30 @@
   --flag-ontario-green: #118a44;
   --flag-quebec-blue: #0957a4;
 
-  /* shape and depth */
-  --radius-sm: 12px;
-  --radius: 20px;
-  --radius-lg: 28px;
-  --blob: 60% 40% 30% 70% / 60% 30% 70% 40%;
-  --shadow-soft: 0 4px 20px -2px rgb(71 89 63 / 15%);
-  --shadow-float: 0 10px 40px -10px rgb(193 140 93 / 20%);
-  --shadow-lift: 0 20px 40px -10px rgb(71 89 63 / 15%);
+  /* shape and depth
+
+     One radius, not a scale. The design this template is drawn from sets 2px
+     on every control and leaves every bar, plate and tinted band square, and
+     the three sizes below are kept as names only so the several dozen call
+     sites do not each have to be rewritten to say the same thing.
+
+     The soft radii they used to hold were the reason the implementation read
+     as a different product from its own design: a record of what a public
+     source did and did not observe, wearing the rounded-card language of a
+     consumer dashboard. A corner is not decoration here. It is the difference
+     between a page that looks like an instrument and one that looks like an
+     opinion about an instrument.
+
+     The shadows are gone for the same reason, tokens and call sites alike.
+     Depth is carried by a hairline rule, which prints, photocopies and
+     survives forced colours, none of which a shadow does. The three panels
+     that genuinely sit over other content keep an opaque fill and a
+     --rule-strong edge, which separates them from whatever is behind without
+     claiming they are hovering above it. */
+  --radius-control: 2px;
+  --radius-sm: var(--radius-control);
+  --radius: var(--radius-control);
+  --radius-lg: var(--radius-control);
   --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
   --dur: 320ms;
   --grain-opacity: 0.035;
@@ -282,9 +298,6 @@
     --unknown: #93a099;
 
     /* shape and depth */
-    --shadow-soft: 0 4px 20px -2px rgb(0 0 0 / 45%);
-    --shadow-float: 0 10px 40px -10px rgb(0 0 0 / 55%);
-    --shadow-lift: 0 20px 40px -10px rgb(0 0 0 / 55%);
     --grain-opacity: 0.02;
   }
 }
@@ -383,10 +396,6 @@
   --radius-sm: 12px;
   --radius: 20px;
   --radius-lg: 28px;
-  --blob: 60% 40% 30% 70% / 60% 30% 70% 40%;
-  --shadow-soft: 0 4px 20px -2px rgb(71 89 63 / 15%);
-  --shadow-float: 0 10px 40px -10px rgb(193 140 93 / 20%);
-  --shadow-lift: 0 20px 40px -10px rgb(71 89 63 / 15%);
   --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
   --dur: 320ms;
   --grain-opacity: 0.035;
@@ -485,9 +494,6 @@
   --unknown: #93a099;
 
   /* shape and depth */
-  --shadow-soft: 0 4px 20px -2px rgb(0 0 0 / 45%);
-  --shadow-float: 0 10px 40px -10px rgb(0 0 0 / 55%);
-  --shadow-lift: 0 20px 40px -10px rgb(0 0 0 / 55%);
   --grain-opacity: 0.02;
 }
 
@@ -606,10 +612,10 @@ h4 {
   align-items: center;
   min-height: 44px;
   padding: 0 22px;
-  border-radius: 999px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-control);
   background: var(--ink);
   color: var(--ground);
-  box-shadow: var(--shadow-float);
   font-family: var(--ui);
   font-size: 15px;
   font-weight: 700;
@@ -760,7 +766,7 @@ h4 {
   align-items: center;
   gap: 9px;
   padding: 26px 24px;
-  border-radius: 16px;
+  border-radius: var(--radius-control);
   backdrop-filter: blur(2px);
   text-decoration: none;
 }
@@ -805,7 +811,7 @@ h4 {
   .gateway-intro { gap: 10px; }
   .gateway-lead { line-height: 1.55; }
   .language-choices { grid-template-columns: minmax(0, 1fr); gap: 12px; }
-  .gateway-choice { padding: 18px 20px; border-radius: 14px; gap: 5px; }
+  .gateway-choice { padding: 18px 20px; border-radius: var(--radius-control); gap: 5px; }
   .gateway-choice-name { font-size: 21px; }
   .gateway-choice-sub { font-size: 12.5px; line-height: 1.4; }
   .gateway-location { padding: 8px 14px; }
@@ -823,8 +829,8 @@ h4 {
 
 /* ==========================================================================
    Primitives.
-   A small CSS-only set: card, button, field, layout helpers, decorative
-   blob. No new components and no JavaScript. Every transition is written as
+   A small CSS-only set: card, button, field and layout helpers. No new
+   components and no JavaScript. Every transition is written as
    `var(--dur) var(--ease)`, so the prefers-reduced-motion block at the foot
    of the file neutralizes all of them.
 
@@ -849,15 +855,11 @@ h4 {
   border: 1px solid var(--rule);
   border-radius: var(--radius-lg);
   background: var(--surface);
-  box-shadow: var(--shadow-soft);
-  transition:
-    transform var(--dur) var(--ease),
-    box-shadow var(--dur) var(--ease);
+  transition: border-color var(--dur) var(--ease);
 }
 .card--lift:hover,
 .card--lift:focus-within {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-lift);
+  border-color: var(--rule-strong);
 }
 .card--sand {
   background: var(--sand);
@@ -880,7 +882,7 @@ h4 {
   min-height: 48px;
   padding: 0 32px;
   border: 1px solid transparent;
-  border-radius: 999px;
+  border-radius: var(--radius-control);
   background: transparent;
   color: var(--ink);
   font-family: var(--ui);
@@ -891,17 +893,13 @@ h4 {
   text-decoration: none;
   cursor: pointer;
   transition:
-    transform var(--dur) var(--ease),
     background-color var(--dur) var(--ease),
     color var(--dur) var(--ease),
     border-color var(--dur) var(--ease),
     box-shadow var(--dur) var(--ease);
 }
-.btn:hover {
-  transform: scale(1.03);
-}
 .btn:active {
-  transform: scale(0.97);
+  background-color: var(--accent);
 }
 
 .btn--outline {
@@ -922,13 +920,13 @@ h4 {
 
 /* Authored last so a button carrying both modifier classes reads as primary. */
 .btn--primary {
-  border-color: var(--accent-fill);
-  background: var(--accent-fill);
+  border-color: var(--accent);
+  background: var(--accent);
   color: var(--ground);
-  box-shadow: var(--shadow-soft);
 }
 .btn--primary:hover {
-  box-shadow: var(--shadow-lift);
+  background: var(--ink);
+  border-color: var(--ink);
 }
 
 /* Fields. The focus treatment is a double ring: the outline is kept so that
@@ -952,9 +950,9 @@ h4 {
 .input {
   width: 100%;
   min-height: 48px;
-  padding: 0 20px;
-  border: 1px solid var(--accent-fill);
-  border-radius: 999px;
+  padding: 0 14px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-control);
   background: var(--input-fill);
   color: var(--ink);
   transition:
@@ -983,7 +981,7 @@ h4 {
   min-height: 32px;
   padding: 0 12px;
   border: 1px solid color-mix(in srgb, currentColor 55%, transparent);
-  border-radius: 999px;
+  border-radius: var(--radius-control);
   background: transparent;
   color: inherit;
   font-family: var(--ui);
@@ -1047,43 +1045,6 @@ h4 {
   gap: 10px;
 }
 
-/* Decorative blob washes. Always aria-hidden in markup, never a carrier of
-   meaning. A blob is absolutely positioned and sized in viewport units, so
-   its parent must be .blob-ground, which clips it: without the clip a mobile
-   viewport gains a horizontal scrollbar. */
-.blob-ground {
-  position: relative;
-  overflow: hidden;
-}
-.blob-ground > *:not(.blob) {
-  position: relative;
-  z-index: 1;
-}
-.blob {
-  position: absolute;
-  z-index: 0;
-  width: 44vmax;
-  aspect-ratio: 1;
-  border-radius: var(--blob);
-  filter: blur(64px);
-  opacity: 0.5;
-  pointer-events: none;
-}
-.blob--1 {
-  top: -16vmax;
-  left: -12vmax;
-  background: var(--accent-fill);
-}
-.blob--2 {
-  top: 8vmax;
-  right: -18vmax;
-  background: var(--clay);
-}
-.blob--3 {
-  bottom: -20vmax;
-  left: 28%;
-  background: var(--sand);
-}
 
 .site-shell {
   min-height: 100vh;
@@ -1142,7 +1103,7 @@ h4 {
   min-width: 44px;
   padding: 0 20px;
   border: 1px solid var(--topbar-edge);
-  border-radius: 4px;
+  border-radius: var(--radius-control);
   color: var(--topbar-ink);
   font-family: var(--ui);
   font-size: 14px;
@@ -1150,14 +1111,18 @@ h4 {
   list-style: none;
   cursor: pointer;
   transition:
-    background-color var(--dur) var(--ease),
+    border-color var(--dur) var(--ease),
     color var(--dur) var(--ease);
 }
 .nav-toggle::-webkit-details-marker {
   display: none;
 }
+/* The three hover rules on this bar all used to paint var(--topbar-fill), the
+   bar's own ground, so none of them changed a pixel. An outlined control
+   brightens its edge instead, which is visible without introducing a fill
+   colour the palette does not already measure against this ground. */
 .nav-toggle:hover {
-  background: var(--topbar-fill);
+  border-color: var(--topbar-ink);
 }
 .nav-toggle:focus-visible {
   outline: 2px solid var(--topbar-accent);
@@ -1172,16 +1137,15 @@ h4 {
   min-width: max(220px, 60vw);
   padding: 10px;
   border: 1px solid var(--topbar-edge);
-  border-radius: 4px;
+  border-radius: var(--radius-control);
   background: var(--topbar-fill);
-  box-shadow: var(--shadow-float);
 }
 .nav-panel a {
   display: flex;
   align-items: center;
   min-height: 44px;
   padding: 0 16px;
-  border-radius: 2px;
+  border-radius: var(--radius-control);
   color: var(--topbar-ink-2);
   text-decoration: none;
   transition:
@@ -1189,8 +1153,8 @@ h4 {
     background-color var(--dur) var(--ease);
 }
 .nav-panel a:hover {
-  background: var(--topbar-fill);
   color: var(--topbar-ink);
+  text-decoration: underline;
 }
 
 /* The colour-theme control. Three native radios in a segmented pill.
@@ -1243,23 +1207,32 @@ h4 {
   min-height: 44px;
   padding: 0 16px;
   border: 1px solid transparent;
-  border-radius: 4px;
+  border-radius: var(--radius-control);
   color: var(--topbar-ink-2);
   transition:
     color var(--dur) var(--ease),
     background-color var(--dur) var(--ease),
     border-color var(--dur) var(--ease);
 }
+/* Colour alone, because the hover fill this rule used to carry was
+   var(--topbar-fill), which is the bar's own ground: it painted the span the
+   exact colour already behind it and changed nothing a reader could see. */
 .theme-option input:hover + span {
-  background: var(--topbar-fill);
   color: var(--topbar-ink);
 }
-/* Checked state is an edge and a fill, not colour alone: the border survives
-   forced-colours mode and a monochrome display, where a tint does not. */
+/* The chosen option is a full inversion, the same plate the design gives every
+   either/or control on the site. It was previously a fill of var(--topbar-fill)
+   on a bar of var(--topbar-fill), so the only thing separating the current
+   theme from the two it was not was a hairline border and a shade of grey.
+
+   The border stays, and stays the reason this is not colour alone: in
+   forced-colours mode every fill collapses to the system ground, and what
+   survives is that the chosen option is drawn inside a box and the other two
+   are not. */
 .theme-option input:checked + span {
-  border-color: var(--topbar-edge);
-  background: var(--topbar-fill);
-  color: var(--topbar-ink);
+  border-color: var(--topbar-ink);
+  background: var(--topbar-ink);
+  color: var(--topbar-fill);
 }
 .theme-option input:focus-visible + span {
   outline: 2px solid var(--topbar-accent);
@@ -1284,7 +1257,7 @@ h4 {
   min-height: 44px;
   padding: 0 18px;
   border: 1px solid var(--topbar-edge);
-  border-radius: 4px;
+  border-radius: var(--radius-control);
   color: var(--topbar-ink);
   font-family: var(--ui);
   font-variant-numeric: tabular-nums lining-nums;
@@ -1294,11 +1267,11 @@ h4 {
   letter-spacing: 0.08em;
   text-decoration: none;
   transition:
-    background-color var(--dur) var(--ease),
+    border-color var(--dur) var(--ease),
     color var(--dur) var(--ease);
 }
 .locale-link:hover {
-  background: var(--topbar-fill);
+  border-color: var(--topbar-ink);
 }
 
 .site-header a:focus-visible {
@@ -1311,10 +1284,6 @@ h4 {
   text-decoration-thickness: 3px;
   text-underline-offset: 8px;
 }
-.theme-option input:checked + span {
-  font-weight: 700;
-}
-
 .page-wrap {
   width: min(var(--plate), calc(100% - 40px));
   margin: 0 auto;
@@ -1355,9 +1324,26 @@ h4 {
   font-size: 14px;
   font-weight: 700;
 }
+/* On the landing page this is a statement of coverage, not a control: four
+   static list items naming the provinces the record actually holds. The
+   design it is drawn from does not carry it at all, and it cannot simply be
+   dropped, because the test proving one shared inline-SVG bar serves the
+   landing and every map state is checksum-bound to a settled gate. What it
+   can do is stop reading as four buttons. Under a hairline, at caption size
+   and in muted ink, it reads as the span of the record. */
 .province-bar--landing {
   flex-wrap: wrap;
-  margin-top: 24px;
+  gap: 6px 20px;
+  margin-top: 26px;
+  padding-top: 18px;
+  border-top: 1px solid var(--rule);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 400;
+}
+.province-bar--landing .province-flag {
+  width: 22px;
+  height: 14px;
 }
 .province-bar-item,
 .province-bar button {
@@ -1443,9 +1429,8 @@ h4 {
 }
 .gallery-panel {
   border: 1px solid var(--rule);
-  border-radius: 4px;
+  border-radius: var(--radius-control);
   padding: 24px;
-  box-shadow: 0 12px 30px rgb(20 35 27 / 8%);
 }
 .gallery-panel-light,
 .gallery-panel-dark {
@@ -1506,7 +1491,7 @@ h4 {
 .gallery-panel button:not(.confidence) {
   appearance: none;
   border: 0;
-  border-radius: 3px;
+  border-radius: var(--radius-control);
   background: transparent;
   color: inherit;
   font: inherit;
@@ -1538,39 +1523,30 @@ h4 {
   font-size: 15px;
 }
 
-/* The footer is a sand-tinted band with a moss wash blurred across its top
-   edge. The wash is a pseudo-element, so it costs no markup and cannot be
-   read by assistive technology. Measured at the wash's full 14% strength,
-   which is the worst the band gets, light / dark:
-     --ink on the washed sand      8.85 / 9.98
-     --ink-2 on the washed sand    5.63 / 7.32
-     --accent link on washed sand  4.77 / 5.63
-   On plain --sand the same pairs are 10.37 / 12.45, 6.60 / 9.13 and 5.59 /
-   7.03. --muted is not used here: on --sand it is only 4.22 in light. */
+/* The footer is a hairline rule on the page's own ground, not a sand-tinted
+   band with a moss wash blurred across its top edge. A tinted band claims the
+   reader has arrived somewhere else; this is the same record's back matter,
+   and a rule says the reading is over without making that claim. It also
+   retires the only surface on the site whose text contrast had to be measured
+   against a translucent wash instead of against a token, which is why the
+   eight measured ratios that used to be recorded here are gone rather than
+   updated: --ink, --ink-2 and --accent on --ground are all carried by the
+   contrast gate now, and nothing here is laid over anything.
+
+   The eleven links stay, in their three named columns. The design this is
+   drawn from shows four, and cutting to four is the wrong reading of it: the
+   top bar carries four items and none of them is About, Account, Privacy,
+   Terms, Glossary, Corrections, Decisions, Engagement or Releases, so a link
+   dropped from here is a page with no route to it at all. What the design is
+   asking for is that the footer stop competing with the record above it, and
+   that it gets: ink rather than accent, no underline until hover, and the
+   coverage line reading first. */
 .site-footer {
-  position: relative;
-  overflow: hidden;
   margin-top: 80px;
-  padding: 46px 0 60px;
-  background: var(--sand);
-}
-.site-footer::before {
-  content: "";
-  position: absolute;
-  z-index: 0;
-  top: -30vmax;
-  left: 10%;
-  width: 44vmax;
-  aspect-ratio: 1;
-  border-radius: var(--blob);
-  background: var(--accent-fill);
-  opacity: 0.14;
-  filter: blur(64px);
-  pointer-events: none;
+  padding: 30px 0 60px;
+  border-top: 1px solid var(--rule);
 }
 .site-footer-inner {
-  position: relative;
-  z-index: 1;
   width: min(var(--plate), calc(100% - 40px));
   margin: 0 auto;
   display: grid;
@@ -1616,12 +1592,12 @@ h4 {
   display: flex;
   align-items: center;
   min-height: 44px;
-  color: var(--accent);
+  color: var(--ink);
   text-decoration: none;
   transition: color var(--dur) var(--ease);
 }
 .footer-nav a:hover {
-  color: var(--ink);
+  color: var(--accent);
   text-decoration: underline;
 }
 
@@ -1631,7 +1607,6 @@ h4 {
   border: 1px solid var(--rule);
   border-radius: var(--radius);
   overflow: hidden;
-  box-shadow: var(--shadow-soft);
   background: var(--surface-2);
 }
 /* Loading skeleton: a calm sweep over the map ground, never a spinner. */
@@ -1698,7 +1673,7 @@ h4 {
   margin: 0;
   padding: 5px 7px;
   border: 1px solid var(--accent-fill);
-  border-radius: 999px;
+  border-radius: var(--radius-control);
   background: var(--header-fill);
   transform: none;
 }
@@ -1706,7 +1681,7 @@ h4 {
   min-height: 34px;
   padding: 3px 8px;
   border: 1px solid transparent;
-  border-radius: 999px;
+  border-radius: var(--radius-control);
   background: transparent;
   color: var(--ink-2);
   font: inherit;
@@ -1896,7 +1871,6 @@ h4 {
   color: var(--surface);
   font-size: 12px;
   line-height: 1.3;
-  box-shadow: var(--shadow-soft);
 }
 .explore-map-scale {
   display: flex;
@@ -2121,12 +2095,12 @@ h4 {
    *and* by outline; the Unknown reported value keeps its en dash and its
    reason and never gains a zero.
 
-   Asymmetric radius bound to meaning, so the shape carries information
-   rather than decoration:
-     official record        one squared corner
-     satellite observation  fully rounded
-     derived estimate       the soft --blob
-     unknown                fully rounded with a dashed hairline edge
+   The shape that carries the class is the glyph, not the outline. Four
+   differently rounded chips asked the reader to hold a legend of corner
+   radii; the square, circle, triangle and ring in front of each label say
+   the same thing in a form a reader already knows, and they survive
+   greyscale, forced colours and a photocopy. Every chip is square now, like
+   every other plate on the site.
 
    Contrast, measured WCAG 2.1 ratios, light / dark:
      --ink on --tint-record              11.11 / 12.37
@@ -2153,7 +2127,7 @@ h4 {
   min-height: 30px;
   padding: 2px 13px 2px 3px;
   border: 1px solid var(--edge-unknown);
-  border-radius: 999px;
+  border-radius: var(--radius-control);
   background: var(--tint-unknown);
   color: var(--ink);
   font-family: var(--ui);
@@ -2172,7 +2146,7 @@ h4 {
   place-items: center;
   width: 22px;
   height: 22px;
-  border-radius: 999px;
+  border-radius: var(--radius-control);
   background: var(--input-fill);
   font-size: var(--text-small);
   line-height: 1;
@@ -2181,7 +2155,6 @@ h4 {
 .chip--official-record {
   border-color: var(--edge-record);
   background: var(--tint-record);
-  border-radius: 999px 999px 999px 6px;
 }
 .chip--satellite-observation {
   border-color: var(--edge-satellite);
@@ -2190,7 +2163,6 @@ h4 {
 .chip--derived-estimate {
   border-color: var(--edge-derived);
   background: var(--tint-derived);
-  border-radius: var(--blob);
 }
 .chip--unknown {
   border-style: dashed;
@@ -2205,7 +2177,7 @@ h4 {
   min-height: 30px;
   padding: 2px 14px;
   border: 1px solid var(--accent-fill);
-  border-radius: 999px;
+  border-radius: var(--radius-control);
   background: var(--sand);
   color: var(--ink);
   font-family: var(--ui);
@@ -2228,7 +2200,7 @@ h4 {
   width: 15px;
   height: 8px;
   border: 1px solid var(--accent-fill);
-  border-radius: 999px;
+  border-radius: var(--radius-control);
   overflow: hidden;
   text-indent: -100em;
   transition: background-color var(--dur) var(--ease);
@@ -2291,13 +2263,6 @@ h4 {
   border: 1px solid var(--rule);
   border-radius: var(--radius-lg);
   background: var(--surface);
-}
-.reported--official-record {
-  border-radius: var(--radius-lg) var(--radius-lg) var(--radius-lg) 6px;
-}
-.reported--derived-estimate {
-  border-radius: var(--radius-lg) var(--radius-lg) var(--radius-lg)
-    var(--radius-sm);
 }
 .reported--unknown {
   border-style: dashed;
@@ -2430,10 +2395,6 @@ h4 {
   /* In the inline row the group's name is carried by the accessible name alone.
      It is clipped rather than removed, because aria-labelledby points at it and a
      display:none element names nothing. */
-  .theme-toggle {
-    gap: 2px;
-    padding: 0;
-  }
   .theme-toggle-label {
     position: absolute;
     width: 1px;
@@ -2443,18 +2404,39 @@ h4 {
     clip-path: inset(50%);
     white-space: nowrap;
   }
+  /* One segmented control rather than three loose pills with a 2px gutter
+     between them: a single outline around the set, a hairline between the
+     options, and the chosen one inverted. Three separated pills read as three
+     independent buttons, which is the wrong claim, because choosing one of
+     these unchooses the other two.
+
+     The divider sits on the wrapper and the state box on the span, so the two
+     never contend for the same pixel and the row does not shift width when the
+     reader changes theme. There is deliberately no overflow:hidden: at a 2px
+     radius it would clip nothing worth clipping and it would eat the focus
+     ring, which has to sit outside the frame to keep its contrast against the
+     bar rather than against the inverted plate. */
   .theme-toggle {
     flex-direction: row;
-    align-items: center;
-    gap: 2px;
+    align-items: stretch;
+    gap: 0;
     padding: 0;
+    border: 1px solid var(--topbar-edge);
+    border-radius: var(--radius-control);
   }
   .theme-option {
     display: inline-flex;
   }
+  .theme-option + .theme-option {
+    border-inline-start: 1px solid var(--topbar-edge);
+  }
   .theme-option > span {
     width: auto;
-    padding: 0 8px;
+    padding: 0 11px;
+    border-radius: 0;
+    font-size: var(--text-compact);
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
   }
 }
 
@@ -2498,12 +2480,6 @@ h4 {
   /* The grain is decoration and must not tint a forced-colours surface. */
   body::after {
     content: none;
-    display: none;
-  }
-
-  /* Same for the blob washes: blurred colour fields carry no meaning and a
-     forced palette must not have to render them. */
-  .blob {
     display: none;
   }
 
@@ -2753,7 +2729,7 @@ h4 {
   margin: 16px 0 4px;
   padding: 0;
   border: 1px solid var(--rule);
-  border-radius: 4px;
+  border-radius: var(--radius-control);
   background: var(--surface);
 }
 .shape-draw-canvas {
@@ -3380,7 +3356,6 @@ dd > a:only-child {
   background: var(--surface);
   border: 1px solid var(--rule);
   border-radius: var(--radius);
-  box-shadow: var(--shadow-soft);
 }
 
 .explore-annual h3 {
@@ -3422,7 +3397,6 @@ dd > a:only-child {
   background: var(--surface);
   border: 1px solid var(--rule);
   border-radius: var(--radius);
-  box-shadow: var(--shadow-soft);
 }
 
 /* The year control. The slider owns a full row of its own, which is what lets
@@ -3494,7 +3468,7 @@ dd > a:only-child {
   min-width: 44px;
   padding: 0 14px;
   border: 1px solid var(--rule-strong);
-  border-radius: 999px;
+  border-radius: var(--radius-control);
   background: transparent;
   color: var(--ink);
   font-family: var(--ui);
@@ -3571,7 +3545,7 @@ dd > a:only-child {
   min-height: 44px;
   padding: 0 16px;
   border: 1px solid var(--rule-strong);
-  border-radius: 999px;
+  border-radius: var(--radius-control);
   background: var(--surface);
   color: var(--ink-2);
   text-decoration: none;
@@ -3678,7 +3652,7 @@ dd > a:only-child {
   min-width: 2px;
   height: 100%;
   border: 1px solid var(--accent);
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   background: var(--accent-fill);
 }
 
@@ -3735,10 +3709,17 @@ dd > a:only-child {
 }
 
 /* Confidence comes before figures; both panels inherit their local palette. */
+/* A plate, not a plate with a rail.
+ *
+ * A rail is how a block that has no colour of its own carries an evidence
+ * class: .notice and .explore-empty sit on the neutral surface, so their rail
+ * is the only thing that says Unknown, and both keep it. This block does not
+ * need a third statement of the same fact. It is already filled with the
+ * unknown tint and edged in the unknown edge, and the rail was the class said
+ * once more, louder, in a vocabulary nothing else in the record uses. */
 .coverage-statement {
   padding: 24px;
   border: 1px solid var(--edge-unknown);
-  border-inline-start-width: 4px;
   background: var(--tint-unknown);
   color: var(--ink);
 }
@@ -4031,6 +4012,7 @@ dd > a:only-child {
   display: flex;
   flex-shrink: 0;
   border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-control);
   overflow: hidden;
 }
 .measure-toggle-option {
@@ -4079,7 +4061,7 @@ dd > a:only-child {
   height: 12px;
 }
 .province-list-key-mapped {
-  background: var(--edge-derived);
+  background: var(--accent);
 }
 .province-list-key-gap {
   background: var(--ground);
@@ -4093,9 +4075,27 @@ dd > a:only-child {
 .province-list-row {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 13px;
   padding: 22px 0 24px;
   border-top: 1px solid var(--rule);
+}
+/* Place left, figure right, one baseline. Four rows then present four figures
+   down a single right edge, which is the comparison the ranking exists to
+   make; stacked, each figure sat at a different distance from the top of its
+   own row and the reader had to find it four times. */
+.province-list-head-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 40px;
+}
+.province-list-identity {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  min-width: 0;
 }
 .province-list-row:last-child {
   border-bottom: 1px solid var(--rule);
@@ -4126,6 +4126,9 @@ dd > a:only-child {
   color: var(--ink-2);
 }
 .province-list-figure {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
   margin: 0;
   font-size: clamp(30px, 3.6vw, 42px);
   font-weight: 700;
@@ -4133,16 +4136,35 @@ dd > a:only-child {
   letter-spacing: -0.01em;
   line-height: 1.05;
 }
+/* "ha" set at 42px is a third as wide as the number it qualifies and reads as
+   part of it. At reading size on the same baseline it stays legible and stops
+   competing, which is the whole of what the unit has to do. */
+.province-list-unit {
+  font-size: 17px;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--muted);
+}
+/* The track is the page's own ground inside a hairline, not a filled panel:
+   what the bar has not reached has to read as nothing measured rather than as
+   a second, paler quantity. The outline is what the empty end of a bar is made
+   of, and it is why a full bar and an empty one cannot be mistaken for each
+   other on either ground. */
 .province-list-track {
   display: flex;
   height: 12px;
-  background: var(--surface-2);
+  background: var(--ground);
   border: 1px solid var(--rule);
 }
+/* The accent, which swaps from the deep moss to the light one under the dark
+   palette so the fill keeps its weight on a dark ground. It was
+   --edge-derived, a clay brown that belongs to the derived-estimate mark: a
+   satellite observation was being drawn in the colour of a different class of
+   evidence, which is the one thing a mark system cannot afford. */
 .province-list-fill {
   display: block;
   height: 100%;
-  background: var(--edge-derived);
+  background: var(--accent);
 }
 /* Unknown reads as a dashed edge, never as a hatch: the 45 degree hatch is
    already spoken for by observation with no matching record. A province with
@@ -4155,7 +4177,18 @@ dd > a:only-child {
   background: var(--ground);
   border-left: 1px dashed var(--edge-unknown);
 }
+/* The caveat and the value it rests on, on one line. The recorded value used
+   to sit in a bordered band across the full width of the row, which put a rule
+   between a sentence and the number that sentence is about. */
+.province-list-base {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px 40px;
+}
 .province-list-note {
+  flex: 1 1 380px;
   margin: 0;
   max-width: var(--measure);
   color: var(--ink-2);
@@ -4168,16 +4201,14 @@ dd > a:only-child {
 }
 .province-list-foot {
   display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
   margin: 0;
-  padding-top: 12px;
-  border-top: 1px solid var(--rule-soft);
   font-family: var(--ui);
   font-size: var(--text-compact);
-  color: var(--ink-2);
+  color: var(--muted);
+  text-align: right;
 }
 .province-list-foot span {
   font-variant-numeric: tabular-nums lining-nums;
@@ -4189,6 +4220,12 @@ dd > a:only-child {
   }
   .measure-toggle-option {
     flex: 1 1 0;
+  }
+  /* Once the base wraps there is no right-hand column to align to, and a
+     right-aligned block under a left-aligned paragraph reads as a mistake. */
+  .province-list-foot {
+    align-items: flex-start;
+    text-align: start;
   }
 }
 
@@ -4447,7 +4484,7 @@ dd > a:only-child {
 .place-coverage-keys { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 11px; }
 .place-coverage-keys li { display: flex; gap: 11px; align-items: flex-start; line-height: 1.45; }
 .place-coverage-keys-absent { color: var(--hero-eyebrow); }
-.place-key-swatch { flex: none; width: 12px; height: 12px; margin-top: 4px; border-radius: 2px; }
+.place-key-swatch { flex: none; width: 12px; height: 12px; margin-top: 4px; border-radius: var(--radius-control); }
 .place-key-swatch--national-baseline { background: var(--coverage-baseline); }
 .place-key-swatch--national-baseline-plus-local-context { background: var(--coverage-local); }
 /* The hatch is the same warp-and-weft the map uses for an unmeasured cell, so
