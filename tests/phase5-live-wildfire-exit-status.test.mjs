@@ -4,6 +4,12 @@ import test from "node:test";
 import { validatePhase5LiveWildfireExitStatus } from "../scripts/check-phase5-live-wildfire-exit-status.mjs";
 
 const record = JSON.parse(readFileSync(new URL("../data/phase5-live-wildfire-exit-status.json", import.meta.url), "utf8"));
+const observed = JSON.parse(readFileSync(new URL("../data/wildfire-scheduled-archive-observed-runs-2026-09-14.json", import.meta.url), "utf8"));
+
+function claimingScheduledPass() {
+  const exitCriteria = record.exitCriteria.map((criterion) => criterion.id === "pacific-dst-schedule" ? { ...criterion, status: "pass" } : criterion);
+  return { ...record, localImplementationStatus: "complete", completedCriteria: 4, percentage: 100, exitCriteria };
+}
 
 test("Phase 5 records three of four local criteria and keeps production blockers distinct", async () => {
   assert.equal(await validatePhase5LiveWildfireExitStatus(record), record);
@@ -12,6 +18,7 @@ test("Phase 5 records three of four local criteria and keeps production blockers
   assert.equal(record.localImplementationStatus, "incomplete");
   assert.equal(record.exitCriteria[0].status, "fail");
   assert.ok(record.exitCriteria[0].evidence.some(({ path }) => path === "data/wildfire-refresh-run-history-2026-08-31.json"));
+  assert.ok(record.exitCriteria[0].evidence.some(({ path }) => path === "data/wildfire-scheduled-archive-observed-runs-2026-09-14.json"));
   assert.equal(record.phaseComplete, false);
   assert.deepEqual(record.productionBlockers.map(({ id, status }) => [id, status]), [["cleared-feeds", "blocked"], ["operations-rehearsal", "blocked"]]);
 });
@@ -23,13 +30,30 @@ test("Phase 5 rejects a premature phase completion, changed percentage, or evide
   await assert.rejects(validatePhase5LiveWildfireExitStatus({ ...record, exitCriteria: criteria }), /checksum/);
 });
 
+test("Phase 5 cannot drop the dated observed scheduled runs from the scheduled-job evidence", async () => {
+  const exitCriteria = record.exitCriteria.map((criterion) => criterion.id === "pacific-dst-schedule"
+    ? { ...criterion, evidence: criterion.evidence.filter(({ path }) => path !== "data/wildfire-scheduled-archive-observed-runs-2026-09-14.json") }
+    : criterion);
+  await assert.rejects(validatePhase5LiveWildfireExitStatus({ ...record, exitCriteria }), /cite the dated observed scheduled runs/);
+});
+
 test("Phase 5 cannot claim the scheduled-job criterion passed with zero real refresh successes", async () => {
-  const exitCriteria = record.exitCriteria.map((criterion) => criterion.id === "pacific-dst-schedule" ? { ...criterion, status: "pass" } : criterion);
-  await assert.rejects(validatePhase5LiveWildfireExitStatus({
-    ...record,
-    localImplementationStatus: "complete",
-    completedCriteria: 4,
-    percentage: 100,
-    exitCriteria,
-  }), /zero observed real refresh successes/);
+  const noOps = observed.runs.filter(({ gateOpened }) => !gateOpened);
+  const zero = {
+    ...observed,
+    runs: noOps,
+    classifications: {
+      realRefreshSuccesses: { count: 0, runIds: [] },
+      dstGatedNoOpSuccesses: { count: noOps.length, runIds: noOps.map(({ runId }) => runId) },
+      attemptedRefreshFailures: { count: 0, runIds: [] },
+    },
+    statusObject: { ...observed.statusObject, versionCount: 0 },
+    claims: { ...observed.claims, tokenClaimsObservedInRealRun: false, scheduledWriteExecuted: false, retentionApplied: false, archiveReadBackIndependently: false, statusPublished: false },
+  };
+  await assert.rejects(validatePhase5LiveWildfireExitStatus(claimingScheduledPass(), { observedRuns: zero }), /zero observed real refresh successes/);
+});
+
+test("Phase 5 cannot claim the scheduled-job criterion passed before a run crosses daylight saving time", async () => {
+  assert.ok(observed.classifications.realRefreshSuccesses.count > 0);
+  await assert.rejects(validatePhase5LiveWildfireExitStatus(claimingScheduledPass()), /crosses a daylight saving transition/);
 });
