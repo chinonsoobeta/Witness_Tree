@@ -55,7 +55,7 @@
       "id": "quarterly-reproducibility-test-passes",
       "title": "The quarterly reproducibility test passes",
       "status": "fail",
-      "reason": "A seeded owner-run harness now draws from a checksum-bound population manifest and records every sampled unit's recomputation pass or fail. Its checked-in population is synthetic test data only. The admitted federal electoral output remains a single prior reproduction, and no published-production population manifest or owner-run quarterly result exists. The controlling quarterly criterion therefore remains unsatisfied. On 2026-09-21 the Phase 8 record changed because cdn-tile-validation returned to fail when this branch moved both map-client files; this criterion does not depend on that change, stays fail, and Phase 9 stays at zero of four.",
+      "reason": "A seeded owner-run harness now draws from a checksum-bound population manifest and records every sampled unit's recomputation pass or fail. Its checked-in population is synthetic test data only. The admitted federal electoral output remains a single prior reproduction, and no published-production population manifest or owner-run quarterly result exists. The controlling quarterly criterion therefore remains unsatisfied. On 2026-09-22 the Phase 8 record changed because cdn-tile-validation returned to pass after Sites version 39 was deployed and observed; this criterion does not depend on that change, stays fail, and Phase 9 stays at zero of four.",
       "evidence": [
         {
           "path": "scripts/run-phase9-quarterly-reproducibility.mjs",
@@ -71,7 +71,7 @@
         },
         {
           "path": "data/phase8-launch-readiness-exit-status.json",
-          "sha256": "c482c908462bf616f33bec6a1912e56c498d7cb4a2fe08d8b9e4d2eb57b7515e"
+          "sha256": "fc7e90fd6c2c9162ed3922bab8edb1f70aa90f0c56741833d6b141ad8a23481b"
         },
         {
           "path": "data/raw-archive-reproduction-drill.json",

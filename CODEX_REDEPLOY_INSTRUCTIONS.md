@@ -10,9 +10,9 @@ Deployment is an owner-owned decision. This record does not authorize or perform
 - Open PR: [PR #177](https://github.com/chinonsoobeta/Witness_Tree/pull/177)
 - Canonical domain: `https://www.witnesstree.ca`
 
-Last deployment this repository observed: version 36, at 2026-09-20T18:27:40Z, in `data/deployed-map-render-evidence-2026-09-20-v36.json`. The control plane records any later version.
+Last deployment this repository observed: version 39, source commit `b69c1e35e980bcaa1ab2264734c7b64a4687de63`, completed at 2026-09-22T05:17:31.421743Z, with the browser observation in `data/deployed-map-render-evidence-2026-09-22-v39.json`. The control plane records any later version.
 
-The branch head is one commit ahead of the application commit above and changes only this instruction file. No file under `app/`, `components/`, `lib/`, `public/` or `styles/` differs between the two. Select the application commit explicitly so the deployed application stays traceable to the tree the checks ran against.
+Main advanced to `c4ca17a2` with two data-only commits, and that main tip was merged into the Batch B branch without rebasing or force-pushing. The branch includes the application commit above and the Part 2 settlement. No file under `app/`, `components/`, `lib/`, `public/` or `styles/` differs from `b69c1e35`. Select the application commit explicitly so the deployed application stays traceable to the tree the checks ran against.
 
 ## Why this deploy precedes the merge
 
@@ -77,12 +77,12 @@ npm run check:deployed-map-render
 
 `npm run build` must precede `npm run test:suite`. The rendered-page tests import `dist/server/index.js`, so running the suite first in a clean checkout fails the landing and rendered-page assertions with `ERR_MODULE_NOT_FOUND`. The workflow orders the two the same way for the same reason.
 
-The expected failures at this commit are exactly these two:
+Before the owner redeploy, the expected failures at the application commit were exactly these two:
 
 - `npm run test:suite` reports exactly two failing assertions: `the committed observation is current for the deployed client` and `neither weaker tier exists on this branch, so nothing stands in for the Site`.
 - `npm run check:deployed-map-render` fails and names exactly `lib/explore/map-style.ts` and `components/explore/ExploreMapClient.tsx`.
 
-The Phase 8 record reads `fail` and seven of sixteen at this commit. That is correct and expected. Do not edit the record to make the count look settled. Any failure beyond the two suite assertions and the two named render-gate files is a real regression and stops the deploy.
+The pre-deploy Phase 8 record read `fail` and seven of sixteen. That was correct before observation. After Sites version 39 was observed, the settlement changed the current checker and Phase 8 record to pass for this criterion, bringing Phase 8 to eight of sixteen. The historical pre-deploy failures remain a record of the state before settlement; any new failure after settlement is a real regression.
 
 The suite prints a `FAILED:` summary near its end. Read that summary rather than searching the TAP stream. The local run reports the static availability line as `"status":"unavailable","portableExecutionStatus":"passed","unavailableFiles":28` with a receipt. Those 28 files are the runner's static `REQUIRES_DATA_ROOT` and `REQUIRES_MACOS_RUNNER` exclusions, not a detached-drive diagnosis and not a pass claim for those tests.
 
@@ -125,7 +125,7 @@ The owner reports three facts:
 - Source commit
 - Deployment completed at, in UTC
 
-Codex then performs Part 2 of the Batch B handoff only after receiving the valid owner deploy report. The settlement is one commit and follows the Part 2 protocol: confirm the branch and application commit, validate the report, confirm the local gated bytes, repeat the bilingual identity check, run `npm run verify:deployed-revision`, run the live bilingual hover probe, run the map harness once with a new versioned evidence filename, update `scripts/check-deployed-map-render.mjs`, update only the two render-test comments, settle the Phase 8 record and its evidence digests, refresh the Phase 9 binding, update the Phase 8 test, update this instruction file, and run the final checksum audit. If the live probe or harness fails, stop and report; do not edit or delete the failed evidence.
+Codex performs Part 2 of the Batch B handoff only after receiving the valid owner deploy report. Part 2 was completed for Sites version 39 on 2026-09-22: the branch and application commit were confirmed, the local gated bytes matched, the bilingual identity check passed, `npm run verify:deployed-revision` passed, the live bilingual hover probe passed, and the map harness ran once with `data/deployed-map-render-evidence-2026-09-22-v39.json`. The one settlement commit updated `scripts/check-deployed-map-render.mjs`, only the two render-test comments, the Phase 8 record and evidence digests, the Phase 9 binding, the Phase 8 test, and this instruction file, followed by the final checksum audit. If the live probe or harness fails in a future redeploy, stop and report; do not edit or delete the failed evidence.
 
 Do not carry forward the current file's claim that version 36 settlement was completed in `4cf95d5a`. That commit settled version 34. Version 36's settlement is `8e9bacca` on the #170 branch, squashed into `main` as `afbb7ac2`.
 
