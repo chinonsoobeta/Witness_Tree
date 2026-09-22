@@ -15,7 +15,9 @@ test("Phase 8 records every literal launch-readiness gate without production inf
    * once on accepted debt, and once here, when this branch took the Explore
    * map chrome out of the map frame and left the version 34 observation
    * describing a client the Site no longer served. Sites version 36 deployed
-   * that client and the harness observed it, so this reads eight again.
+   * that client and the harness observed it, so this reads eight again. On
+   * 2026-09-21 this branch moved both map files, so the count is seven until
+   * the owner redeploys this branch and the harness observes it.
    *
    * The count is the thing to watch, and the thing not to read. It was eight
    * while the criterion rested on a measurement, eight again while it rested
@@ -29,11 +31,11 @@ test("Phase 8 records every literal launch-readiness gate without production inf
    * The gate stays a delivery-and-rendering gate either way: it asserts no
    * production admission, and the other fifteen criteria are untouched.
    */
-  assert.equal(record.completedCriteria, 8);
+  assert.equal(record.completedCriteria, 7);
   assert.equal(record.totalCriteria, 16);
-  assert.equal(record.percentage, 50);
+  assert.equal(record.percentage, 43.75);
   assert.equal(record.phaseComplete, false);
-  assert.deepEqual(record.exitCriteria.filter((item) => item.status === "pass").map((item) => item.id), ["raw-archive-reproducibility", "governance-and-corrections-procedures", "operations-handbook", "bulk-downloads", "citation-format", "release-notes", "restore-tests", "cdn-tile-validation"]);
+  assert.deepEqual(record.exitCriteria.filter((item) => item.status === "pass").map((item) => item.id), ["raw-archive-reproducibility", "governance-and-corrections-procedures", "operations-handbook", "bulk-downloads", "citation-format", "release-notes", "restore-tests"]);
 
   // The criterion tracks the gate rather than the code: whenever
   // check:deployed-map-render is red, cdn-tile-validation must not read as pass.
