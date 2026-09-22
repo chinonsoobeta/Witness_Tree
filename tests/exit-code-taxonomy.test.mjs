@@ -13,9 +13,9 @@ function observedWith(path, replace) {
   });
 }
 
-test("the exact twenty-five operator runners match the reviewed exit taxonomy", () => {
+test("the exact twenty-six operator runners match the reviewed exit taxonomy", () => {
   const result = validateTaxonomy(taxonomy);
-  assert.equal(result.runners, 25);
+  assert.equal(result.runners, 26);
   // 255 joined the set on 2026-09-19 for the four-province tile runner, which
   // exits 255 so that a data root disappearing mid-run aborts the whole xargs
   // batch instead of letting every remaining interval fail on its own and

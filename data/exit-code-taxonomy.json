@@ -1,7 +1,7 @@
 {
   "schemaVersion": "witness-tree/operator-runner-exit-taxonomy/1",
   "status": "engineering-derived-static-inventory",
-  "boundary": "Explicit shell refusals, literal exits, forwarded-status exits, and inline Node predicates in the twenty-five scripts/run-*.sh operator runners. Native child statuses propagated by errexit or pipefail are outside the intentional taxonomy and require the child diagnostic.",
+  "boundary": "Explicit shell refusals, literal exits, forwarded-status exits, and inline Node predicates in the twenty-six scripts/run-*.sh operator runners. Native child statuses propagated by errexit or pipefail are outside the intentional taxonomy and require the child diagnostic.",
   "codes": [
     {
       "code": 0,
@@ -209,6 +209,15 @@
       },
       "defaultFailCode": null,
       "siteContractSha256": "49446d152e6a73c9b49cd4cdde76e1a4c29f0b8b7f0345c880a8546c88f12af9"
+    },
+    "scripts/run-place-name-index.sh": {
+      "codes": {
+        "0": 1,
+        "1": 8,
+        "64": 1
+      },
+      "defaultFailCode": null,
+      "siteContractSha256": "f0356b1bb4ee1d4d68bfd468152716154a3429dfa182a79d506a50ec401c7346"
     },
     "scripts/run-postgres-tenant-isolation-drill.sh": {
       "codes": {
