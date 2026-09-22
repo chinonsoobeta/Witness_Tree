@@ -4,7 +4,6 @@ import {
   EXPLORE_COVERAGE_PERIOD,
   EXPLORE_DEFAULT_YEAR,
   EXPLORE_YEAR_MIN,
-  productionAggregatePeriod,
 } from "@/lib/explore";
 import {
   PROVINCE_BULK_TIME_RANGE,
@@ -77,7 +76,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Province aggregate",
           paragraphs: [
-            `A summary calculated for an entire provincial boundary. The available ${productionAggregatePeriod("en", "span")} province aggregate is a separate layer from the annual per-cell map and does not change when the year control moves.`,
+            `A summary calculated for an entire provincial boundary. Province figures are released for every span from 1984 to 2022, and on Explore they follow the year control.`,
           ],
         },
         {
@@ -151,7 +150,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Agrégat provincial",
           paragraphs: [
-            `Un résumé calculé pour toute une limite provinciale. L’agrégat provincial disponible ${productionAggregatePeriod("fr", "from")} constitue une couche distincte de la carte annuelle par cellule et ne change pas lorsque le contrôle de l’année est déplacé.`,
+            "Un résumé calculé pour toute une limite provinciale. Les chiffres provinciaux sont publiés pour chaque intervalle de 1984 à 2022 et, dans Explorer, ils suivent le contrôle de l’année.",
           ],
         },
         {

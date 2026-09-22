@@ -131,11 +131,8 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
     assert.doesNotMatch(en, /have not been expert-reviewed/);
   }
   assert.doesNotMatch(en, /not per-cell geometry/);
-  assert.match(en, /type="range"/);
-  // One year means one annual interval, and the archives hold 1985 through 2022.
-  assert.match(en, /min="1985"/);
-  assert.match(en, /max="2022"/);
-  assert.match(en, /name="year"/);
+  assert.match(en, /<select[^>]*name="from"/);
+  assert.match(en, /<select[^>]*name="year"/);
   for (const label of [
     "Forest loss",
     "Recorded harvest",
@@ -657,17 +654,13 @@ test("the year control is a real, shareable control rather than a decorative sli
   // A year is an interval, and the control has to say so: 1995 is what changed
   // between 1994 and 1995, not a snapshot of 1995.
   assert.match(en, /Change between 1994 and 1995/);
-  assert.match(en, /aria-valuetext="Change between 1994 and 1995"/);
 
-  // The ends of the slider are the ends of the record, and the scale marks are
-  // years the archives actually cover.
-  assert.match(en, /min="1985"/);
-  assert.match(en, /max="2022"/);
-  // The scale starts at 1984 because the opening handle can select it: 1984 is a
-  // start year with no interval ending there, and a scale beginning at 1985
-  // would put no mark under the handle's own first position.
-  for (const tick of [1984, 1989, 1994, 1999, 2004, 2009, 2014, 2019, 2022])
-    assert.match(en, new RegExp(`<option value="${tick}" label="${tick}">`));
+  const fromOptions = en.match(/<select[^>]*name="from"[\s\S]*?<\/select>/)?.[0] ?? "";
+  const yearOptions = en.match(/<select[^>]*name="year"[\s\S]*?<\/select>/)?.[0] ?? "";
+  assert.match(fromOptions, /<option value="1984">1984<\/option>/);
+  assert.match(fromOptions, /<option value="2021">2021<\/option>/);
+  assert.match(yearOptions, /<option value="1985">1985<\/option>/);
+  assert.match(yearOptions, /<option value="2022">2022<\/option>/);
 
   /*
    * Server markup is the no-JavaScript state, and every enhanced control is inert
@@ -675,8 +668,7 @@ test("the year control is a real, shareable control rather than a decorative sli
    * island hides once it mounts is still present. A control that looks live and
    * does nothing is the failure this pins down.
    */
-  for (const inert of [/class="year-step" disabled=""/, /class="year-play" disabled=""/])
-    assert.match(en, inert);
+  assert.match(en, /class="year-play" disabled=""/);
   assert.match(en, /class="btn btn--primary year-submit" type="submit"/);
   assert.doesNotMatch(en, /year-submit[^>]*hidden/);
 
@@ -686,6 +678,26 @@ test("the year control is a real, shareable control rather than a decorative sli
   assert.match(fr, /Changement entre 1994 et 1995/);
   assert.match(fr, /Ann\u00e9es affich\u00e9es/u);
   assert.match(fr, /Mettre à jour/);
+});
+
+test("condition and recovery explains its missing admitted product", () => {
+  const en = renderToStaticMarkup(
+    <ExploreView events={exploreFixtures} locale="en" mode="condition-recovery" year={1988} />,
+  );
+  const fr = renderToStaticMarkup(
+    <ExploreView events={exploreFixtures} locale="fr" mode="condition-recovery" year={1988} />,
+  );
+  assert.match(en, /Condition and recovery is not mapped yet/);
+  assert.match(en, /annual land-cover series it would read is already on file/);
+  assert.match(en, /admission and review of a product/);
+  assert.match(fr, /ne sont pas encore cartographiés/);
+  assert.match(fr, /série annuelle de couverture terrestre/);
+
+  const other = renderToStaticMarkup(
+    <ExploreView events={exploreFixtures} locale="en" mode="wildfire" year={1984} />,
+  );
+  assert.match(other, /No per-cell interval covers this year and mode\./);
+  assert.doesNotMatch(other, /Condition and recovery is not mapped yet/);
 });
 
 test("the year query is parsed defensively and fixtures use one selected interval", async () => {

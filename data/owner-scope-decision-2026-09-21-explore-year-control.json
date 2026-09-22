@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "witness-tree/owner-scope-decision/1",
+  "status": "scope-decision-recorded",
+  "date": "2026-09-21",
+  "id": "explore-year-control",
+  "ownerWords": "Redefine the Phase 7 native-time-control criterion as: Explore uses native year selects whose keyboard interaction changes the selected span. Update the controlling plan to match",
+  "criterion": {
+    "id": "native-time-control",
+    "previousTitle": "Explore uses a native range input whose keyboard interaction advances the selected year",
+    "newTitle": "Explore uses native year selects whose keyboard interaction changes the selected span"
+  },
+  "planLinesChanged": [1043, 1560],
+  "source": "owner, in the Claude Code session of 2026-09-21 that prepared the Batch A handoff; relayed verbatim in the Batch A v2 prompt",
+  "gateEffect": {
+    "marksGatePassed": false,
+    "recordsAdmission": false,
+    "recordsRelease": false
+  }
+}

@@ -10,3 +10,4 @@ export * from "./href";
 export * from "./interval";
 export * from "./period";
 export * from "./province-spans";
+export * from "./unmapped-reasons";

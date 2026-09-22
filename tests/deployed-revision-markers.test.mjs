@@ -92,7 +92,7 @@ test("dropping every French present marker is refused", () => {
     draft.record.markers.push({
       path: "/en/explore",
       expect: "present",
-      text: "Earlier last year",
+      text: "The record runs from 1984 to 2022.",
       source: "components/explore/ExploreYearControl.tsx",
       reason: "The other half of the interval control, used here only to keep the marker count above the floor.",
     });

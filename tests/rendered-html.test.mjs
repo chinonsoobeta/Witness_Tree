@@ -87,7 +87,7 @@ test("landing figures show detected loss alone, on a scale of detected loss", as
    * The scale sentence stays gone. Each bar draws what the figure beside it
    * says, so there is nothing for a sentence to undo.
    */
-  const hectares = [800473.32, 748863.72, 714701.7, 680273.64];
+  const hectares = [18028529.19, 10823352.93, 9280647.27, 6842768.76];
   const scale = Math.max(...hectares);
   for (const locale of ["en", "fr"]) {
     const html = await (await render(`/${locale}`)).text();
@@ -145,8 +145,10 @@ test("landing figures show detected loss alone, on a scale of detected loss", as
     // British Columbia leads the loss ranking and carries the qualifier that
     // stops its gap reading as unmeasured forest. It rides on this measure
     // too, because a claim behind a control is a claim most readers never see.
-    assert.match(rows[0], /&lt;0[.,]01/);
-    assert.match(rows[0], /GeoBC/);
+    const bcRow = rows.find((row) => /British Columbia|Colombie-Britannique/.test(row));
+    assert.ok(bcRow);
+    assert.match(bcRow, /&lt;0[.,]01/);
+    assert.match(bcRow, /GeoBC/);
   }
 });
 

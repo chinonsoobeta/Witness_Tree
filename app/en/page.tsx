@@ -6,18 +6,20 @@ import { CumulativeHeadline } from "@/components/site/CumulativeHeadline";
 import { CoverageStatement } from "@/components/policy/CoverageStatement";
 import { EvidenceMarks } from "@/components/policy/EvidenceMarks";
 import { PRODUCT_NAME } from "@/lib/domain";
-import { productionAggregatePeriod } from "@/lib/explore/period";
-import { EXPLORE_PRODUCTION_LAYER, formatUnknownSharePercent } from "@/lib/explore";
+import { provinceSpanReach } from "@/lib/explore/period";
+import { EXPLORE_PRODUCTION_LAYER, formatUnknownSharePercent, provinceSpanMeasurements } from "@/lib/explore";
 import { localizedAlternates } from "@/lib/site-metadata";
 
 export const metadata: Metadata = { title: "Public forest-loss record", alternates: localizedAlternates("en", { en: "/en", fr: "/fr" }) };
 
-function coverageLabel(row: (typeof EXPLORE_PRODUCTION_LAYER.rows)[number]) {
-  return `${formatUnknownSharePercent(row.unknownSharePercent, "en")} of the province was not mapped by the source${"unmappedCharacter" in row ? `; ${row.unmappedCharacter.en}` : ""}`;
+const SPAN_ROWS = provinceSpanMeasurements({ fromYear: 1984, toYear: 2022 });
+
+function coverageLabel(row: (typeof SPAN_ROWS)[number]) {
+  return `${formatUnknownSharePercent(row.unknownSharePercent, "en")} of the province was not mapped by the source; ${row.unmappedCharacter.en}`;
 }
 
 const UNKNOWN_CONTEXTS = Object.fromEntries(
-  EXPLORE_PRODUCTION_LAYER.rows.map((row) => [row.id, coverageLabel(row)]),
+  SPAN_ROWS.map((row) => [row.id, coverageLabel(row)]),
 );
 
 /*
@@ -63,8 +65,8 @@ export default function EnglishHome() {
 
     <section className="content-section landing-coverage" aria-labelledby="current-record">
       <h2 id="current-record">The published record</h2>
-      <p className="lead">The bounded, provisional {productionAggregatePeriod("en")} province aggregate reports detected forest loss with a coverage state for each province. Verification of the mapped extent for every year is complete, and its results govern how unmapped areas are classified.</p>
-      <ProvinceRecordList rows={EXPLORE_PRODUCTION_LAYER.rows} locale="en" unknownContexts={UNKNOWN_CONTEXTS} />
+      <p className="lead">The bounded, provisional {provinceSpanReach("en")} province aggregate reports detected forest loss with a coverage state for each province. Verification of the mapped extent for every year is complete, and its results govern how unmapped areas are classified.</p>
+      <ProvinceRecordList rows={SPAN_ROWS} locale="en" unknownContexts={UNKNOWN_CONTEXTS} />
       <p><Link href="/en/methods#coverage-gap">Why these areas were not mapped, and what we know about them</Link></p>
       <p><Link className="btn btn--primary" href="/en/explore">Explore the record</Link></p>
       <p><small>Other provinces are coming soon.</small></p>
@@ -75,7 +77,7 @@ export default function EnglishHome() {
       <div className="record-grid">
         <article className="record-card"><p className="eyebrow">Components</p><h3>Evidence before numbers</h3><p>Inspect how figures, unknowns, confidence, coverage and provenance appear across the public record.</p><Link href="/en/components">Open the component gallery</Link></article>
         <article className="record-card"><p className="eyebrow">Methods</p><h3>Definitions before numbers</h3><p>See the forest denominator, evidence classes, confidence rules, coverage grades and matching method.</p><Link href="/en/methods">Read the methods</Link></article>
-        <article className="record-card"><p className="eyebrow">Data status</p><h3>Bounded province release</h3><p>The {productionAggregatePeriod("en", "span")} province aggregate is published with its source, coverage state and limits.</p><Link href="/en/data">Review data transparency</Link></article>
+        <article className="record-card"><p className="eyebrow">Data status</p><h3>Bounded province release</h3><p>The {provinceSpanReach("en", "span")} province aggregate is published with its source, coverage state and limits.</p><Link href="/en/data">Review data transparency</Link></article>
       </div>
     </section>
 
@@ -97,7 +99,7 @@ export default function EnglishHome() {
         </ul>
         <p>{PRODUCT_NAME.en} reports what its sources record and what its imagery detects, and nothing beyond that.</p>
         <p>Detected forest loss is satellite-derived. A reduction in tree cover does not by itself establish logging, deforestation, responsibility or compliance. <Link href="/en/methods">Read the method and evidence definitions</Link>.</p>
-        <p>The province aggregate above is a deterministic, four-province technical preview for {productionAggregatePeriod("en", "span")}. Per-cell loss patches are drawn on the Explore map for the same four provinces, traced from the 30 m grid. They are drawn, not counted: no expert review has been completed, so they do not close the formal Phase 2 gate and no total may be taken from them. <Link href="/en/data">Read the release scope, provenance and licence attribution</Link>.</p>
+        <p>The province aggregate above is a deterministic, four-province technical preview for {provinceSpanReach("en", "span")}. Per-cell loss patches are drawn on the Explore map for the same four provinces, traced from the 30 m grid. They are drawn, not counted: no expert review has been completed, so they do not close the formal Phase 2 gate and no total may be taken from them. <Link href="/en/data">Read the release scope, provenance and licence attribution</Link>.</p>
         <p><small>Context source: {EXPLORE_PRODUCTION_LAYER.attribution.en} <a href={EXPLORE_PRODUCTION_LAYER.attribution.href}>Source catalogue</a>.</small></p>
       </div>
     </section>

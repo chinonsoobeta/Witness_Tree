@@ -3399,9 +3399,8 @@ dd > a:only-child {
   border-radius: var(--radius);
 }
 
-/* The year control. The slider owns a full row of its own, which is what lets
-   the tick scale below line up with it: when the stepping buttons shared the
-   row, every tick sat a button's width out of true. */
+/* The year control uses native selects so keyboard and assistive technology
+   interactions remain the browser's own. */
 .year-control {
   display: grid;
   gap: 10px;
@@ -3432,23 +3431,28 @@ dd > a:only-child {
   font-variant-numeric: tabular-nums;
 }
 
-.explore-slider {
-  accent-color: var(--accent-fill);
-  width: 100%;
-  min-width: 0;
+.explore-year-select {
   min-height: 44px;
+  min-width: 0;
+  width: 100%;
+  padding: 0 34px 0 10px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  color: var(--ink);
+  font-family: var(--ui);
+  font-variant-numeric: tabular-nums lining-nums;
+  font-size: 1rem;
+}
+
+.explore-year-select:focus-visible {
+  outline: 3px solid var(--accent-fill);
+  outline-offset: 2px;
 }
 
 .year-scale {
-  display: flex;
-  justify-content: space-between;
-  gap: 4px;
-  margin: -4px 0 0;
-  padding: 0;
-  list-style: none;
-  font-family: var(--ui);
-  font-size: var(--text-compact);
-  color: var(--muted);
+  width: 100%;
+  min-width: 0;
   font-variant-numeric: tabular-nums lining-nums;
 }
 
@@ -3459,7 +3463,6 @@ dd > a:only-child {
   gap: 8px;
 }
 
-.year-step,
 .year-play {
   display: inline-flex;
   align-items: center;
@@ -3480,17 +3483,10 @@ dd > a:only-child {
     border-color var(--dur) var(--ease);
 }
 
-.year-step {
-  padding: 0;
-  font-size: 16px;
-}
-
-.year-step:hover:enabled,
 .year-play:hover:enabled {
   background: var(--accent-soft);
 }
 
-.year-step:disabled,
 .year-play:disabled {
   color: var(--muted);
   cursor: default;
@@ -3508,6 +3504,12 @@ dd > a:only-child {
   margin: 0;
   font-size: 0.82rem;
   color: var(--muted);
+}
+
+.year-order-status {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
 }
 
 .year-play-status {

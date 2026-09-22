@@ -13,7 +13,7 @@ const CRITERIA = new Map([
   ["mistik-request-recorded", "The Mistik request, terms, honorarium, and outcome appear in the decision log and engagement register"],
   ["explore-modes-and-overlays", "Explore provides the four required modes and four reference-boundary overlays"],
   ["no-map-tabular-equivalence", "Explore map/list and chart/table presentations expose the same evidence-bearing records at the same route"],
-  ["native-time-control", "Explore uses a native range input whose keyboard interaction advances the selected year"],
+  ["native-time-control", "Explore uses native year selects whose keyboard interaction changes the selected span"],
   ["boundary-editioning", "Comparison and place aggregates retain and display a boundary edition rather than silently applying a current boundary"],
   ["normalisation-forced", "The riding ranking has no absolute-hectares-only sort and orders by detected-change share of forested area"],
   ["comparison-row-context", "Every riding comparison row renders normalised and absolute values, forested-hectare denominator, coverage, and evidence"],

@@ -59,6 +59,7 @@ const copy = {
     annualBasis:
       `This is one annual interval, the one ending in the last year selected, for British Columbia, Alberta, Ontario and Québec together. It is not a total for a wider span, not a total for ${perCellArchiveSpan("en")}, and not the province figures for the selected span. Counted from the exact 30 m cell inventory behind the map. One cell is 0.09 ha.`,
     annualNone: "No per-cell interval covers this year and mode.",
+    conditionRecoveryNone: "Condition and recovery is not mapped yet. The annual land-cover series it would read is already on file; what is missing is a recorded decision on which land-cover classes count as treed cover returning after a loss, and the admission and review of a product built on that decision.",
     spanNote: (fromYear: number, toYear: number) =>
       `The provinces are shaded for the whole span, ${fromYear} to ${toYear}, and a district boundary you point at or select on the map reads out its figures for the same span: the forest lost at least once inside it, counted once no matter how many times a place was cleared. Districts are drawn as outlines only and are not shaded. Where a district lost the same ground more than once, the yearly losses added together are shown alongside, in hectares only. That figure has no denominator and is never given as a share. The per-cell patches drawn on the map cover the same span, one patch for each year a place was lost in it.`,
     spanPending:
@@ -129,6 +130,7 @@ const copy = {
     annualBasis:
       `Il s’agit d’un seul intervalle annuel, celui qui se termine à la dernière année choisie, pour la Colombie-Britannique, l’Alberta, l’Ontario et le Québec ensemble. Ce n’est pas un total pour une période plus large, ni pour ${perCellArchiveSpan("fr")}, ni les chiffres provinciaux de la période choisie. Comptée à partir de l’inventaire exact des cellules de 30 m derrière la carte. Une cellule représente 0,09 ha.`,
     annualNone: "Aucun intervalle par cellule ne couvre cette année et ce mode.",
+    conditionRecoveryNone: "L’état et le rétablissement ne sont pas encore cartographiés. La série annuelle de couverture terrestre qu’ils utiliseraient est déjà conservée; il manque une décision consignée sur les classes de couverture terrestre qui comptent comme un couvert arboré revenant après une perte, ainsi que l’admission et l’examen d’un produit fondé sur cette décision.",
     spanNote: (fromYear: number, toYear: number) =>
       `Les provinces sont ombrées pour toute la période, de ${fromYear} à ${toYear}, et une limite de circonscription pointée ou choisie sur la carte affiche ses chiffres pour la même période : la forêt perdue au moins une fois, comptée une seule fois peu importe le nombre de coupes. Les circonscriptions sont tracées en contour seulement et ne sont pas ombrées. Lorsqu’une circonscription a perdu le même terrain plus d’une fois, les pertes annuelles additionnées sont affichées à côté, en hectares seulement. Ce chiffre n’a pas de dénominateur et n’est jamais présenté comme une part. Les parcelles par cellule dessinées sur la carte couvrent la même période, une parcelle pour chaque année où un lieu y a été perdu.`,
     spanPending:
@@ -507,7 +509,7 @@ export function ExploreView({
               <p className="explore-annual-basis">{text.annualBasis}</p>
             </>
           ) : (
-            <p className="explore-annual-basis">{text.annualNone}</p>
+            <p className="explore-annual-basis">{mode === "condition-recovery" ? text.conditionRecoveryNone : text.annualNone}</p>
           )}
       </aside>
 

@@ -31,11 +31,11 @@
       "id": "right-of-reply-live",
       "title": "Every reserve and treaty page carries a working right-of-reply route with a named recipient",
       "status": "fail",
-      "reason": "The public engagement page states that no engagement contact route exists. The corrections page states that a named accountable recipient and tested intake channel are still required. Neither page supplies a working right-of-reply route.",
+      "reason": "The public engagement page states that no engagement contact route exists. The corrections page states that a named accountable recipient and tested intake channel are still required. Neither page supplies a working right-of-reply route. On 2026-09-21 GovernancePage.tsx was refreshed for the existing glossary wording change alone; its digest was refreshed, and this reason still holds.",
       "evidence": [
         {
           "path": "components/governance/GovernancePage.tsx",
-          "sha256": "79723b4ace8535a9c06cb4515c6dde0a1bbf877a2c8df38b2e51bcbac163529c"
+          "sha256": "29da8b520cec8683639aa55fd5a28d89e49b041860eaed6f801a19832b40e9f1"
         }
       ]
     },
@@ -59,11 +59,11 @@
       "id": "engagement-register-published",
       "title": "A public register lists engagement contacts made and responses received while respecting confidentiality requests",
       "status": "pass",
-      "reason": "The bilingual public register is published and truthfully lists zero contacts and zero responses, with a confidentiality rule. It is not evidence that the required outreach has occurred.",
+      "reason": "The bilingual public register is published and truthfully lists zero contacts and zero responses, with a confidentiality rule. It is not evidence that the required outreach has occurred. On 2026-09-21 GovernancePage.tsx was refreshed for the existing glossary wording change alone; its digest was refreshed, and this reason still holds.",
       "evidence": [
         {
           "path": "components/governance/GovernancePage.tsx",
-          "sha256": "79723b4ace8535a9c06cb4515c6dde0a1bbf877a2c8df38b2e51bcbac163529c"
+          "sha256": "29da8b520cec8683639aa55fd5a28d89e49b041860eaed6f801a19832b40e9f1"
         }
       ]
     },
@@ -87,11 +87,11 @@
       "id": "mistik-request-recorded",
       "title": "The Mistik request, terms, honorarium, and outcome appear in the decision log and engagement register",
       "status": "pass",
-      "reason": "The decision log and engagement register record the owner's final outcome: Mistik was not pursued, no request was made, no permission, honorarium, or terms exist, and Witness Tree / Arbre t\u00e9moin remains the product name. The surfaces do not imply that engagement or permission occurred.",
+      "reason": "The decision log and engagement register record the owner's final outcome: Mistik was not pursued, no request was made, no permission, honorarium, or terms exist, and Witness Tree / Arbre t\u00e9moin remains the product name. The surfaces do not imply that engagement or permission occurred. On 2026-09-21 GovernancePage.tsx was refreshed for the existing glossary wording change alone; its digest was refreshed, and this reason still holds.",
       "evidence": [
         {
           "path": "components/governance/GovernancePage.tsx",
-          "sha256": "79723b4ace8535a9c06cb4515c6dde0a1bbf877a2c8df38b2e51bcbac163529c"
+          "sha256": "29da8b520cec8683639aa55fd5a28d89e49b041860eaed6f801a19832b40e9f1"
         },
         {
           "path": "data/phase0-owner-scope-decisions-2026-08-27.json",
@@ -107,11 +107,11 @@
       "evidence": [
         {
           "path": "components/explore/ExploreView.tsx",
-          "sha256": "ebd8c24f75921728dd252324d98366b97576447351e0a1437a53b3e5e71df91a"
+          "sha256": "4d5a2b1217a5115e9419c2f56765e589d7d3d36977c5b8d8e37eb3f19d5cc3c5"
         },
         {
           "path": "tests/explore.test.tsx",
-          "sha256": "89bb95e5adea07321d20d51b86774e90a49789a9475f3bfd4768000afac36b9f"
+          "sha256": "ddb3ea830b12e4ca762b347875625b5f362d38bcacd128c82fc9e99b16498ae0"
         }
       ]
     },
@@ -119,31 +119,43 @@
       "id": "no-map-tabular-equivalence",
       "title": "Explore map/list and chart/table presentations expose the same evidence-bearing records at the same route",
       "status": "pass",
-      "reason": "The view retains evidence, confidence, coverage, provenance, and Unknown reasoning in its accessible table presentation and route parameters. On 2026-09-20 ExploreView.tsx was moved into a three-column grid and the bound digest was refreshed for that move alone. The data-view section, its table and its route parameters were not edited, so the equivalence this reason states is the same one that was passing before.",
+      "reason": "The view retains evidence, confidence, coverage, provenance, and Unknown reasoning in its accessible table presentation and route parameters. On 2026-09-20 ExploreView.tsx was moved into a three-column grid and the bound digest was refreshed for that move alone. The data-view section, its table and its route parameters were not edited, so the equivalence this reason states is the same one that was passing before. On 2026-09-21 ExploreView.tsx and tests/explore.test.tsx were changed for the condition-and-recovery reading explanation and native year-select assertions; their digests were refreshed for those changes alone, and the map/list and chart/table equivalence remains unchanged.",
       "evidence": [
         {
           "path": "components/explore/ExploreView.tsx",
-          "sha256": "ebd8c24f75921728dd252324d98366b97576447351e0a1437a53b3e5e71df91a"
+          "sha256": "4d5a2b1217a5115e9419c2f56765e589d7d3d36977c5b8d8e37eb3f19d5cc3c5"
         },
         {
           "path": "tests/explore.test.tsx",
-          "sha256": "89bb95e5adea07321d20d51b86774e90a49789a9475f3bfd4768000afac36b9f"
+          "sha256": "ddb3ea830b12e4ca762b347875625b5f362d38bcacd128c82fc9e99b16498ae0"
         }
       ]
     },
     {
       "id": "native-time-control",
-      "title": "Explore uses a native range input whose keyboard interaction advances the selected year",
+      "title": "Explore uses native year selects whose keyboard interaction changes the selected span",
       "status": "pass",
-      "reason": "Explore renders native range inputs with bounded years, so native controls provide arrow-key stepping, and the focused route test pins the elements and their ranges. There are now two handles rather than one: the reader selects a span, and the annual interval is the narrowest span rather than a separate mode, so a link naming only its closing year still means exactly the annual interval it always meant. The control is operable rather than decorative: both handles are named, they sit in a GET form that carries the mode, presentation, and data selections through a submit, and the selected span is reflected in every link on the page, so a chosen span can be linked, bookmarked, and shared. The route parses the span defensively, ordering a reversed one and widening a zero-length one to the annual interval ending at that year, rather than throwing on any value the control could not have produced. On 2026-09-20 ExploreView.tsx was moved into a three-column grid and the bound digest was refreshed for that move alone. The year section changed enclosure, not content: the GET form, both named handles, the hidden mode, presentation, data and overlay fields, and the defensive span parsing are untouched.",
+      "reason": "Explore renders two native select elements with bounded years: the opening year runs from 1984 to 2021 and the closing year from 1985 to 2022. Because they are native selects, the browser supplies their keyboard interaction and their screen-reader announcements, and every change, however it is made, commits the new span to the address and the map. The focused route test pins both elements and their option ranges, and tests/browser/year-control.spec.ts changes the span with the keyboard alone. A choice that would reverse or empty the span moves the other select to the nearest valid year and says so in a status line, so the span is never zero-length. The annual interval is the narrowest span rather than a separate mode, so a link naming only its closing year still means exactly the annual interval it always meant. The control is operable rather than decorative: both selects are named, they sit in a GET form that carries the mode, presentation, and data selections through a submit, and the selected span is reflected in every link on the page, so a chosen span can be linked, bookmarked, and shared. The route parses the span defensively, ordering a reversed one and widening a zero-length one to the annual interval ending at that year, rather than throwing on any value the control could not have produced. Until 2026-09-21 the control was two native range inputs; the owner redefined this criterion on that date (data/owner-scope-decision-2026-09-21-explore-year-control.json). On 2026-09-20 ExploreView.tsx was moved into a three-column grid, controls left, map centre, figures right. The bound digest was refreshed for that move alone: the four modes and the four boundary overlays render exactly as this reason describes, placement is by named grid area so the document order is unchanged, and no release, clip, attribution or removal named above was touched. On 2026-09-21 ExploreYearControl.tsx and tests/browser/year-control.spec.ts were changed for the native year-select interaction described here; their evidence digests were added, and this reason still holds.",
       "evidence": [
         {
           "path": "components/explore/ExploreView.tsx",
-          "sha256": "ebd8c24f75921728dd252324d98366b97576447351e0a1437a53b3e5e71df91a"
+          "sha256": "4d5a2b1217a5115e9419c2f56765e589d7d3d36977c5b8d8e37eb3f19d5cc3c5"
         },
         {
           "path": "tests/explore.test.tsx",
-          "sha256": "89bb95e5adea07321d20d51b86774e90a49789a9475f3bfd4768000afac36b9f"
+          "sha256": "ddb3ea830b12e4ca762b347875625b5f362d38bcacd128c82fc9e99b16498ae0"
+        },
+        {
+          "path": "data/owner-scope-decision-2026-09-21-explore-year-control.json",
+          "sha256": "ac9867466b392d9e4cf974d0937bbba703da0d7e3ca128870f0f746d97d42049"
+        },
+        {
+          "path": "components/explore/ExploreYearControl.tsx",
+          "sha256": "093a3202230c4f9b6c8d27811653c2b47dabf2d0b42045e42a275e671e8f58f2"
+        },
+        {
+          "path": "tests/browser/year-control.spec.ts",
+          "sha256": "493febd95fa2ab2352cdd9b0acb24ec6e782746b0d7bb9638a635e80336690a3"
         }
       ]
     },
