@@ -229,15 +229,13 @@ test("renders localized search results and Explore list/table alternatives witho
   ]);
 
   assert.match(englishSearch, /<main\b[^>]*id="main"/);
-  assert.match(englishSearch, /Search places/);
-  assert.match(englishSearch, /Place results are illustrative fixtures/);
-  assert.match(englishSearch, /District results are measured from the source grid/);
-  assert.match(englishSearch, /Illustrative British Columbia/);
+  assert.match(englishSearch, /<h2>Places<\/h2>/);
+  assert.match(englishSearch, /Search covers provinces, federal and provincial ridings, and communities, with figures for 1984 to 2022\./);
+  assert.match(englishSearch, /British Columbia/);
   assert.match(frenchSearch, /<main\b[^>]*id="main"/);
-  assert.match(frenchSearch, /Rechercher des lieux/);
-  assert.match(frenchSearch, /Les résultats de lieux sont des exemples illustratifs/);
-  assert.match(frenchSearch, /circonscriptions sont mesurés à partir de la grille source/);
-  assert.match(frenchSearch, /Colombie-Britannique illustrative/);
+  assert.match(frenchSearch, /<h2>Lieux<\/h2>/);
+  assert.match(frenchSearch, /La recherche couvre les provinces, les circonscriptions fédérales et provinciales ainsi que les collectivités, avec des chiffres de 1984 à 2022\./);
+  assert.match(frenchSearch, /Colombie-Britannique/);
 
   assert.match(englishExplore, /<main\b[^>]*id="main"/);
   assert.match(englishExplore, /Explore forest loss/);

@@ -1,9 +1,11 @@
 import { CoverageStatement } from "@/components/policy/CoverageStatement";
 import { EvidenceLegend } from "@/components/policy/EvidenceLegend";
-import type { Locale } from "@/lib/domain";
+import { formatHectares, formatPercent, type Locale } from "@/lib/domain";
 import { federalRidingComparison } from "@/lib/comparison";
 import { FederalDistrictFinder } from "./FederalDistrictFinder";
-import { searchAttribution, searchPlaceTypeLabel, searchSite, provinceSearchRows, indexedPlaceForSearch } from "@/lib/search/site-search";
+import { AddressFinderClient } from "./AddressFinderClient";
+import { formatUnknownSharePercent } from "@/lib/explore/map-style";
+import { formatSearchShare, searchAttribution, searchPlaceTypeLabel, searchSite, ridingSearchRow, type SearchRidingReference, type SiteSearchResult } from "@/lib/search/site-search";
 import { NoRecordResult } from "./NoRecordResult";
 
 export type SearchScope = "places" | "districts";
@@ -85,6 +87,12 @@ export function SearchPage({
         </section>
       ) : (
         <>
+          {addressLookup ? <AddressFinderClient
+            locale={locale}
+            measuredDistrictIds={federalRidingComparison.places
+              .filter((place) => place.detectedChangeHectares !== null)
+              .map((place) => place.id)}
+          /> : null}
           <FederalDistrictFinder
             locale={locale}
             query={query}
@@ -98,20 +106,79 @@ export function SearchPage({
 
 function SearchResults({ locale, query }: { locale: Locale; query: string }) {
   const text = copy[locale];
-  const results = searchSite(query);
-  if (!results.length) return <NoRecordResult locale={locale} reason={locale === "en" ? "No released place, riding, or community record matches this query." : "Aucun registre publié de province, de circonscription ou de collectivité ne correspond à cette recherche."} remedies />;
-  const provinces = provinceSearchRows();
+  const page = searchSite(query);
+  if (!page.results.length) return <NoRecordResult locale={locale} reason={locale === "en" ? "No released place, riding, or community record matches this query." : "Aucun registre publié de province, de circonscription ou de collectivité ne correspond à cette recherche."} remedies />;
+  const groups = (["province", "riding", "community"] as const).map((kind) => [kind, page.results.filter((result) => result.kind === kind)] as const);
+  const groupTitle = {
+    en: { province: "Provinces", riding: "Ridings", community: "Communities" },
+    fr: { province: "Provinces", riding: "Circonscriptions", community: "Collectivités" },
+  }[locale];
   return <>
-    <ul className="search-results">{results.map((result) => {
-      const place = result.kind === "community" ? indexedPlaceForSearch(result.id) : undefined;
-      const row = provinces.find((item) => item.id === result.id);
-      return <li className="card card--lift search-result" key={`${result.kind}-${result.id}`}>
-        <h3>{result.kind === "community" ? result.nameFr && locale === "fr" ? result.nameFr : result.name : locale === "fr" && result.nameFr ? result.nameFr : result.name}</h3>
-        <p>{result.kind === "community" && place ? `${result.province} · ${searchPlaceTypeLabel(place.type, locale)}` : result.kind}</p>
-        {row ? <p>{row.unionLossHectares?.toFixed(2)} ha · {row.unionLossPercent?.toFixed(0)}% · {row.unknownHectares?.toFixed(2)} ha Unknown</p> : null}
-        {place ? <p>{text.shareNote}</p> : null}
-      </li>;
-    })}</ul>
-    <p className="search-note">{searchAttribution(locale)}</p>
+    {groups.map(([kind, results]) => results.length ? (
+      <section key={kind} aria-label={groupTitle[kind]}>
+        <h3>{groupTitle[kind]}</h3>
+        <ul className="search-results">{results.map((result) => <SearchResultCard key={`${result.kind}-${result.id}`} locale={locale} result={result} />)}</ul>
+        {page.more[kind] > 0 ? <p className="search-note">{locale === "en" ? `${page.more[kind]} more ${kind} results.` : `${page.more[kind]} autres résultats de ${kind === "riding" ? "circonscription" : kind === "community" ? "collectivité" : "province"}.`}</p> : null}
+      </section>
+    ) : null)}
+    {page.results.some((result) => result.kind === "community") ? <>
+      <p className="search-note">{text.shareNote}</p>
+      <p className="search-note">{searchAttribution(locale)}</p>
+    </> : null}
   </>;
+}
+
+function resultName(result: SiteSearchResult, locale: Locale) {
+  return locale === "fr" && result.nameFr ? result.nameFr : result.name;
+}
+
+function ridingFigure(row: ReturnType<typeof ridingSearchRow>, locale: Locale) {
+  if (!row) return null;
+  const text = locale === "en"
+    ? { unknown: "Unknown", atLeast: "At least", loss: "detected loss", unknownShare: "unknown share" }
+    : { unknown: "Inconnu", atLeast: "Au moins", loss: "perte détectée", unknownShare: "part inconnue" };
+  if (row.coverage === "complete" && row.observedLossHectares !== null && row.observedLossPercent !== null) {
+    return `${formatHectares(row.observedLossHectares, locale)} · ${formatPercent(row.observedLossPercent, locale)} ${text.loss}`;
+  }
+  const unknown = row.unknownSharePercent === null ? text.unknown : formatUnknownSharePercent(row.unknownSharePercent, locale);
+  if (row.coverage === "partial-with-unknown" && row.knownObservedSubtotalHectares !== null && row.knownObservedSubtotalHectares !== undefined && row.knownObservedSubtotalHectares > 0) {
+    return `${text.atLeast} ${formatHectares(row.knownObservedSubtotalHectares, locale)} ${text.loss}; ${unknown} ${text.unknownShare}`;
+  }
+  return `${text.unknown}; ${unknown} ${text.unknownShare}`;
+}
+
+function ridingReferenceMarkup(reference: SearchRidingReference, locale: Locale, federal: boolean) {
+  const row = ridingSearchRow(reference.id);
+  const name = locale === "fr" ? reference.nameFr : reference.name;
+  const label = federal ? (
+    <a href={`${locale === "en" ? "/en/compare" : "/fr/comparer"}?left=${encodeURIComponent(`federal-${reference.id.slice(3)}`)}`}>{name}</a>
+  ) : name;
+  return <li key={reference.id}>{label}: {formatSearchShare(reference.share, locale)}{row ? <>; {ridingFigure(row, locale)}</> : null}</li>;
+}
+
+function SearchResultCard({ locale, result }: { locale: Locale; result: SiteSearchResult }) {
+  if (result.kind === "province") {
+    const unknown = locale === "en" ? "Unknown" : "Inconnu";
+    return <li className="card card--lift search-result">
+      <h4>{resultName(result, locale)}</h4>
+      <p>{result.unionLossHectares === null || result.unionLossHectares === undefined ? unknown : formatHectares(result.unionLossHectares, locale)} · {result.unionLossPercent === null || result.unionLossPercent === undefined ? unknown : formatPercent(result.unionLossPercent, locale)}</p>
+      <p>{result.unknownHectares === null || result.unknownHectares === undefined ? unknown : formatHectares(result.unknownHectares, locale)} {locale === "en" ? "Unknown area" : "zone inconnue"}; {result.unknownSharePercent === null || result.unknownSharePercent === undefined ? unknown : formatUnknownSharePercent(result.unknownSharePercent, locale)}</p>
+      {result.unmappedCharacter ? <p>{locale === "en" ? "Here that gap is" : "Ici, il s’agit d’un"} {result.unmappedCharacter[locale]}.</p> : null}
+    </li>;
+  }
+  if (result.kind === "riding") {
+    return <li className="card card--lift search-result">
+      <h4>{resultName(result, locale)}</h4>
+      <p>{result.province} · {locale === "en" ? "Riding" : "Circonscription"}</p>
+      <p>{ridingFigure(ridingSearchRow(result.id), locale)}</p>
+    </li>;
+  }
+  return <li className="card card--lift search-result">
+    <h4>{resultName(result, locale)}</h4>
+    <p>{result.province} · {searchPlaceTypeLabel(result.type!, locale)}</p>
+    <p>{locale === "en" ? "Federal ridings" : "Circonscriptions fédérales"}</p>
+    <ul>{result.federal?.length ? result.federal.map((reference) => ridingReferenceMarkup(reference, locale, true)) : <li>{locale === "en" ? "No federal riding is recorded for this community." : "Aucune circonscription fédérale n’est enregistrée pour cette collectivité."}</li>}</ul>
+    <p>{locale === "en" ? "Provincial ridings" : "Circonscriptions provinciales"}</p>
+    <ul>{result.provincial?.length ? result.provincial.map((reference) => ridingReferenceMarkup(reference, locale, false)) : <li>{locale === "en" ? "No provincial riding is recorded for this community." : "Aucune circonscription provinciale n’est enregistrée pour cette collectivité."}</li>}</ul>
+  </li>;
 }
