@@ -3,8 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import type {
   ExpressionSpecification,
+  FilterSpecification,
   Map as MapLibreMap,
-  MapLayerMouseEvent,
+  MapMouseEvent,
   StyleSpecification,
 } from "maplibre-gl";
 import { colon, formatNumber, formatPercent, formatYearRange, labelled, PRODUCT_NAME, yearRange, type Locale } from "@/lib/domain";
@@ -35,6 +36,11 @@ import {
   type BoundarySelection,
   type RidingBoundaryMeasurement,
 } from "@/lib/explore/boundary-readout";
+import {
+  boundaryHighlightFilter,
+  pickBoundary,
+  type BoundaryFeature,
+} from "@/lib/explore/boundary-pick";
 import { ProvinceBar } from "@/components/site";
 
 const text = {
@@ -56,7 +62,7 @@ const text = {
     fallbackError:
       "The interactive map could not be loaded. A static map is shown instead. The figures below are unaffected. You can retry the interactive map.",
     unavailable:
-      "Condition and recovery needs the annual land-cover class series, which has not been acquired or admitted. It is not shown for any year. Forest loss, Recorded harvest and Wildfire are unaffected.",
+      "Condition and recovery needs a recorded decision on which land-cover classes count as treed cover returning after a loss, and an admitted, reviewed product built on that decision. Neither the decision nor the product exists yet. It is not shown for any year. Forest loss, Recorded harvest and Wildfire are unaffected.",
     unavailableYear:
       `Detected patches cover spans within ${perCellArchiveSpan("en")}. Choose ${EXPLORE_YEAR_MAX} or an earlier year to see this mode.`,
     error:
@@ -139,7 +145,7 @@ const text = {
     fallbackError:
       "La carte interactive n’a pas pu être chargée. Une carte statique est affichée à sa place. Les chiffres ci-dessous restent inchangés. Vous pouvez réessayer de charger la carte interactive.",
     unavailable:
-      "L’état et le rétablissement exigent la série annuelle des classes de couverture terrestre, qui n’a été ni acquise ni admise. Ce mode n’est affiché pour aucune année. La perte forestière, les récoltes consignées et les incendies ne sont pas touchés.",
+      "L’état et le rétablissement exigent une décision consignée sur les classes de couverture terrestre qui comptent comme un couvert arboré revenant après une perte, ainsi qu’un produit admis et examiné fondé sur cette décision. Ni la décision ni le produit ne sont encore en place. Ce mode n’est affiché pour aucune année. La perte forestière, les récoltes consignées et les incendies ne sont pas touchés.",
     unavailableYear:
       `Les parcelles détectées couvrent les périodes comprises dans ${perCellArchiveSpan("fr")}. Choisissez ${EXPLORE_YEAR_MAX} ou une année antérieure pour voir ce mode.`,
     error:
@@ -299,13 +305,16 @@ const provinceFillColour = (fromYear: number, toYear: number) => {
 
 const PROVINCE_FILL_LAYER_ID = `${EXPLORE_PRODUCTION_LAYER.sourceLayer}-fill`;
 
-const boundaryLineLayerIds = (overlays: readonly BoundaryOverlayId[]) =>
+const boundaryLayerIds = (overlays: readonly BoundaryOverlayId[]) =>
   overlays.flatMap((id) => {
     const overlay = BOUNDARY_OVERLAYS[id];
     return overlay.available && overlay.url && overlay.sourceLayer
-      ? [`boundary-${id}-line`]
+      ? [`boundary-${id}-fill`, `boundary-${id}-line`, `boundary-${id}-selected`]
       : [];
   });
+
+const boundaryPickLayerIds = (overlays: readonly BoundaryOverlayId[]) =>
+  boundaryLayerIds(overlays).filter((id) => id.endsWith("-fill") || id.endsWith("-line"));
 
 const boundaryJurisdiction = (locale: Locale, jurisdiction: string) =>
   ({
@@ -444,18 +453,40 @@ const buildStyle = (
     // three modes are this one archive filtered rather than another to load.
     layers.push(perCellLayer(years, cause));
   }
-  // Boundaries are drawn last so they sit above the data they frame, and as
-  // lines only. A filled boundary would compete with the loss ramp and invite
-  // reading a district's colour as a measurement of that district.
-  for (const id of overlays) {
+  // Boundaries are drawn last so they sit above the data they frame. Their
+  // fills paint nothing and exist only so the whole area answers the pointer:
+  // a filled boundary would compete with the loss ramp and invite reading a
+  // district's colour as a measurement of that district.
+  const availableOverlays = overlays.filter((id) => {
     const overlay = BOUNDARY_OVERLAYS[id];
-    if (!overlay.available || !overlay.url || !overlay.sourceLayer) continue;
+    return overlay.available && overlay.url && overlay.sourceLayer;
+  });
+  for (const id of availableOverlays) {
+    const overlay = BOUNDARY_OVERLAYS[id];
     const sourceId = `boundary-${id}`;
     sources[sourceId] = {
       type: "vector",
       url: `pmtiles://${overlay.url}`,
       bounds: [-141, 41, -52, 84],
     };
+  }
+  for (const id of availableOverlays) {
+    const overlay = BOUNDARY_OVERLAYS[id];
+    const sourceId = `boundary-${id}`;
+    layers.push({
+      id: `${sourceId}-fill`,
+      type: "fill",
+      source: sourceId,
+      "source-layer": overlay.sourceLayer,
+      paint: {
+        "fill-color": EXPLORE_MAP_COLOURS.ink,
+        "fill-opacity": 0,
+      },
+    });
+  }
+  for (const id of availableOverlays) {
+    const overlay = BOUNDARY_OVERLAYS[id];
+    const sourceId = `boundary-${id}`;
     layers.push({
       id: `${sourceId}-line`,
       type: "line",
@@ -470,6 +501,22 @@ const buildStyle = (
         "line-width": ["interpolate", ["linear"], ["zoom"], 0, 0.4, 5, 0.7, 10, 1.4],
         "line-opacity": ["interpolate", ["linear"], ["zoom"], 0, 0.45, 5, 0.6, 10, 0.8],
         ...(overlay.dash ? { "line-dasharray": [...overlay.dash] } : {}),
+      },
+    });
+  }
+  for (const id of availableOverlays) {
+    const overlay = BOUNDARY_OVERLAYS[id];
+    const sourceId = `boundary-${id}`;
+    layers.push({
+      id: `${sourceId}-selected`,
+      type: "line",
+      source: sourceId,
+      "source-layer": overlay.sourceLayer,
+      filter: ["all", ["==", ["get", "id"], ""], ["==", ["get", "juris"], ""]],
+      paint: {
+        "line-color": overlay.colour ?? EXPLORE_MAP_COLOURS.ink,
+        "line-width": ["interpolate", ["linear"], ["zoom"], 0, 1.5, 5, 2, 10, 3],
+        "line-opacity": 1,
       },
     });
   }
@@ -625,6 +672,7 @@ export function ExploreMapClient({
     let protocolRegistered = false;
     let pmtilesLoaded = false;
     let pmtilesTimeout: ReturnType<typeof setTimeout> | null = null;
+    let hoverFrame: number | null = null;
 
     void Promise.resolve().then(() => {
       if (!active) return;
@@ -726,6 +774,7 @@ export function ExploreMapClient({
           attributionControl: false,
         });
         mapRef.current = map;
+        if (!map) return;
         const publishView = () => {
           if (!active || !map) return;
           setView({
@@ -748,47 +797,58 @@ export function ExploreMapClient({
           setFailureKind(null);
           setMapReady(true);
           publishView();
-          const selectBoundary = (
-            event: MapLayerMouseEvent,
-            persistent: boolean,
-            overlay: BoundaryOverlayId,
-          ) => {
-            const properties = event.features?.[0]?.properties;
-            const boundaryId = properties?.id;
-            const name = properties?.[locale === "fr" ? "name_fr" : "name_en"];
-            const jurisdiction = properties?.juris;
-            if (
-              typeof boundaryId !== "string" ||
-              typeof name !== "string" ||
-              typeof jurisdiction !== "string"
-            )
-              return;
-            const selection: BoundarySelection = {
-              overlay,
-              boundaryId,
-              name,
-              jurisdiction,
-            };
-            if (persistent) setPinnedBoundary(selection);
-            else setHoveredBoundary(selection);
+          let latestPoint: MapMouseEvent["point"] | null = null;
+          let lastHoverKey = "";
+          const queryBoundary = (point: MapMouseEvent["point"]) => {
+            const layers = boundaryPickLayerIds(overlays).filter((layerId) => map?.getLayer(layerId));
+            if (layers.length === 0) return null;
+            const currentMap = map;
+            if (!currentMap) return null;
+            return pickBoundary(
+              currentMap.queryRenderedFeatures(point, { layers }) as readonly BoundaryFeature[],
+              overlays,
+              locale,
+            );
           };
-          for (const layerId of boundaryLineLayerIds(overlays)) {
-            const overlay = overlays.find((candidate) => `boundary-${candidate}-line` === layerId);
-            if (!overlay) continue;
-            map?.on("mouseenter", layerId, (event) => {
-              if (!active || !map) return;
+          const selectionKey = (selection: BoundarySelection | null) =>
+            selection ? `${selection.overlay}:${selection.jurisdiction}:${selection.boundaryId}` : "";
+          const runHoverQuery = () => {
+            hoverFrame = null;
+            if (!active || !map || !latestPoint) return;
+            const selection = queryBoundary(latestPoint);
+            const key = selectionKey(selection);
+            if (key === lastHoverKey) return;
+            lastHoverKey = key;
+            if (selection) {
               map.getCanvas().style.cursor = "pointer";
-              selectBoundary(event, false, overlay);
-            });
-            map?.on("mouseleave", layerId, () => {
-              if (!active || !map) return;
+              setHoveredBoundary(selection);
+            } else {
               map.getCanvas().style.cursor = "";
               setHoveredBoundary(null);
-            });
-            map?.on("click", layerId, (event) => {
-              if (active) selectBoundary(event, true, overlay);
-            });
-          }
+            }
+          };
+          const onMouseMove = (event: MapMouseEvent) => {
+            if (!active || !map) return;
+            latestPoint = event.point;
+            if (hoverFrame === null) hoverFrame = window.requestAnimationFrame(runHoverQuery);
+          };
+          const onMouseOut = () => {
+            if (!active || !map) return;
+            if (hoverFrame !== null) window.cancelAnimationFrame(hoverFrame);
+            hoverFrame = null;
+            latestPoint = null;
+            lastHoverKey = "";
+            map.getCanvas().style.cursor = "";
+            setHoveredBoundary(null);
+          };
+          const onClick = (event: MapMouseEvent) => {
+            if (!active || !map) return;
+            const selection = queryBoundary(event.point);
+            if (selection) setPinnedBoundary(selection);
+          };
+          map!.on("mousemove", onMouseMove);
+          map!.on("mouseout", onMouseOut);
+          map!.on("click", onClick);
         });
         map.on("error", (event) => {
           console.error("Explore PMTiles map error", event.error ?? event);
@@ -813,6 +873,8 @@ export function ExploreMapClient({
     return () => {
       active = false;
       controller.abort();
+      if (hoverFrame !== null) window.cancelAnimationFrame(hoverFrame);
+      hoverFrame = null;
       if (pmtilesTimeout) clearTimeout(pmtilesTimeout);
       map?.remove();
       mapRef.current = null;
@@ -835,7 +897,7 @@ export function ExploreMapClient({
         map,
         perCellYears,
         cause ?? "all",
-        boundaryLineLayerIds(overlays)[0],
+        boundaryLayerIds(overlays)[0],
       );
     } catch (error: unknown) {
       console.error("Explore patch layer swap error", error);
@@ -875,7 +937,7 @@ export function ExploreMapClient({
         : "readyPerCell";
   // Two different absences, two different sentences. A mode with no archive
   // for the selected year is a year problem the reader can fix; condition and
-  // recovery is a missing source they cannot.
+  // recovery is waiting on a decision and an admitted, reviewed product.
   const message =
     state === "unavailable"
       ? cause === null
@@ -907,7 +969,24 @@ export function ExploreMapClient({
   const scaleLabel = scale
     ? `${formatNumber(scale.value, locale)} ${scale.unit}`
     : "";
-  const boundary = hoveredBoundary ?? pinnedBoundary;
+  const activeBoundary = hoveredBoundary ?? pinnedBoundary;
+  const activeBoundaryKey = activeBoundary
+    ? `${activeBoundary.overlay}:${activeBoundary.jurisdiction}:${activeBoundary.boundaryId}`
+    : "";
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!mapReady || !map) return;
+    for (const id of overlays) {
+      const layerId = `boundary-${id}-selected`;
+      if (!map.getLayer(layerId)) continue;
+      const selection = activeBoundary?.overlay === id ? activeBoundary : null;
+      map.setFilter(layerId, boundaryHighlightFilter(selection) as FilterSpecification);
+    }
+    // overlayKey and activeBoundaryKey stand in for the fresh arrays and
+    // selection object used here.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mapReady, overlayKey, activeBoundaryKey]);
+  const boundary = activeBoundary;
   const readout = boundary
     ? boundaryReadout(boundary, ridingMeasurements, locale, { fromYear, toYear: year })
     : null;
@@ -1080,7 +1159,10 @@ export function ExploreMapClient({
                   </>
                 ) : null}
                 {pinnedBoundary ? (
-                  <button type="button" onClick={() => setPinnedBoundary(null)}>
+                  <button type="button" onClick={() => {
+                    setHoveredBoundary(null);
+                    setPinnedBoundary(null);
+                  }}>
                     {text[locale].clearBoundary}
                   </button>
                 ) : null}
