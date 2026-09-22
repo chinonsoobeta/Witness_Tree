@@ -41,8 +41,8 @@ test("the committed observation is current for the deployed client", async () =>
    * which moves components/explore/ExploreMapClient.tsx. Version 36 was
    * deployed from that client and observed at 2026-09-20T18:27:40Z, so the
    * bytes the Site runs are the bytes this branch carries and the record
-   * binds them. lib/explore/map-style.ts never moved, so the second failure
-   * named one file where the first named two.
+   * binds them. On 2026-09-22, Sites version 39 deployed the requested
+   * application commit and the new observation binds both gated files.
    */
   assert.deepEqual(validateDeployedMapRender(), []);
   const gate = resolveDeployedMapRender();

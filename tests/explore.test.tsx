@@ -585,7 +585,7 @@ test("the map uses fixed hydration-safe status and attribution ids", async () =>
   assert.equal(first, second, "the server markup must retain the same fixed ids");
 });
 
-test("the map identifies active boundary lines and uses the riding readout contract", async () => {
+test("the map identifies the boundary under the pointer, inside it or on its line, and uses the riding readout contract", async () => {
   const mapSource = await (await import("node:fs/promises")).readFile(
     new URL("../components/explore/ExploreMapClient.tsx", import.meta.url),
     "utf8",
@@ -601,13 +601,22 @@ test("the map identifies active boundary lines and uses the riding readout contr
   assert.match(mapSource, /mapRef\.current\?\.fitBounds\(MAP_VIEW_BOUNDS\[mapView\]/);
   for (const mapView of ["bc", "ab", "on", "qc"])
     assert.match(mapSource, new RegExp(`${mapView}:`));
-  assert.match(mapSource, /boundaryLineLayerIds\(overlays\)/);
-  assert.match(mapSource, /map\?\.on\("mouseenter", layerId/);
-  assert.match(mapSource, /map\?\.on\("mouseleave", layerId/);
-  assert.match(mapSource, /map\?\.on\("click", layerId/);
-  assert.match(mapSource, /properties\?\.\[locale === "fr" \? "name_fr" : "name_en"\]/);
-  assert.match(mapSource, /properties\?\.id/);
-  assert.match(mapSource, /properties\?\.juris/);
+  assert.match(mapSource, /map!?\.on\("mousemove"/);
+  assert.match(mapSource, /map!?\.on\("mouseout"/);
+  assert.match(mapSource, /map!?\.on\("click"/);
+  assert.match(mapSource, /queryRenderedFeatures\(/);
+  assert.match(mapSource, /cancelAnimationFrame\(/);
+  assert.match(mapSource, /"fill-opacity": 0/);
+  assert.match(mapSource, /pickBoundary\(/);
+  assert.match(mapSource, /setFilter\(/);
+  assert.match(mapSource, /boundaryHighlightFilter\(/);
+  const boundaryPickSource = await (await import("node:fs/promises")).readFile(
+    new URL("../lib/explore/boundary-pick.ts", import.meta.url),
+    "utf8",
+  );
+  assert.match(boundaryPickSource, /properties\?\.\[locale === "fr" \? "name_fr" : "name_en"\]/);
+  assert.match(boundaryPickSource, /properties\?\.id/);
+  assert.match(boundaryPickSource, /properties\?\.juris/);
   const measurementsSource = await (await import("node:fs/promises")).readFile(
     new URL("../lib/explore/riding-measurements.ts", import.meta.url),
     "utf8",

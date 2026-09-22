@@ -9,6 +9,8 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { MethodologyPage } from "../components/transparency/MethodologyPage.tsx";
 // @ts-expect-error Node's TypeScript runner requires explicit local extensions.
 import { EXPLORE_PRODUCTION_LAYER } from "../lib/explore/map-style.ts";
+import { UNMAPPED_REASONS } from "../lib/explore/unmapped-reasons";
+import { provinceSpanMeasurements } from "../lib/explore/province-spans";
 
 const receipt = JSON.parse(readFileSync(new URL("../data/coverage-gap-investigation-2026-09-08.json", import.meta.url), "utf8"));
 const read = (file: string) => readFileSync(new URL(`../${file}`, import.meta.url), "utf8");
@@ -86,8 +88,12 @@ test("notForPublication values occur nowhere under app or components", () => {
   }
 });
 
-test("BC alone has a qualifier and every province presentation carries it", () => {
-  assert.deepEqual(EXPLORE_PRODUCTION_LAYER.rows.filter((row) => "unmappedCharacter" in row).map((row) => row.id), ["59"]);
+test("every province's reason comes from unmapped-reasons.ts, the map style carries none, and every presentation shows it", () => {
+  assert.deepEqual(EXPLORE_PRODUCTION_LAYER.rows.filter((row) => "unmappedCharacter" in row), []);
+  for (const row of provinceSpanMeasurements({ fromYear: 1984, toYear: 2022 })) {
+    assert.equal(row.unmappedCharacter.en, UNMAPPED_REASONS[row.id].en, row.id);
+    assert.equal(row.unmappedCharacter.fr, UNMAPPED_REASONS[row.id].fr, row.id);
+  }
   for (const file of ["app/en/page.tsx", "app/fr/page.tsx", "components/explore/ExploreView.tsx", "components/explore/ExploreMapClient.tsx"]) {
     assert.match(read(file), /row\.unmappedCharacter\.(?:en|fr)|row\.unmappedCharacter\[locale\]/, file);
   }

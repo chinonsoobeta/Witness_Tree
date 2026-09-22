@@ -15,7 +15,10 @@ test("Phase 8 records every literal launch-readiness gate without production inf
    * once on accepted debt, and once here, when this branch took the Explore
    * map chrome out of the map frame and left the version 34 observation
    * describing a client the Site no longer served. Sites version 36 deployed
-   * that client and the harness observed it, so this reads eight again.
+   * that client and the harness observed it, so this reads eight again. On
+   * 2026-09-21 this branch moved both map files, so the count was seven until
+   * Sites version 39 deployed the application commit and the harness observed
+   * it on 2026-09-22.
    *
    * The count is the thing to watch, and the thing not to read. It was eight
    * while the criterion rested on a measurement, eight again while it rested
