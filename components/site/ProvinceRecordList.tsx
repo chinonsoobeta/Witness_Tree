@@ -9,8 +9,8 @@ import {
   formatPercent,
   type Locale,
 } from "@/lib/domain";
-import { EXPLORE_PRODUCTION_LAYER, formatUnknownSharePercent } from "@/lib/explore";
-import { productionAggregatePeriod } from "@/lib/explore/period";
+import { formatUnknownSharePercent, type ProvinceSpanMeasurement } from "@/lib/explore";
+import { provinceSpanReach } from "@/lib/explore/period";
 
 /*
  * One list, two measures, one bar each.
@@ -33,13 +33,13 @@ import { productionAggregatePeriod } from "@/lib/explore/period";
  * needs a disclaimer, and a drawing that needs one is the wrong drawing.
  */
 
-type Row = (typeof EXPLORE_PRODUCTION_LAYER.rows)[number];
+type Row = ProvinceSpanMeasurement;
 type Measure = "loss" | "cover";
 
 // Detected loss only. The unmapped hectares are deliberately not in this
 // maximum: the two measures never share a scale again.
-const scaleHectares = Math.max(
-  ...EXPLORE_PRODUCTION_LAYER.rows.map((row) => row.observedLossHectares),
+const scaleHectares = (rows: readonly Row[]) => Math.max(
+  ...rows.flatMap((row) => row.unionLossHectares === null ? [] : [row.unionLossHectares]),
 );
 
 const COPY = {
@@ -95,13 +95,14 @@ export function ProvinceRecordList({ rows, locale, unknownContexts }: Readonly<{
   const [measure, setMeasure] = useState<Measure>("loss");
   const headlineId = useId();
   const copy = COPY[locale];
-  const span = productionAggregatePeriod(locale);
+  const span = provinceSpanReach(locale);
+  const lossScale = scaleHectares(rows);
   const showingLoss = measure === "loss";
 
   // Each measure ranks on its own figure. Sorting on one and printing the
   // other is how a list implies an order its numbers do not support.
   const ordered = [...rows].sort((a, b) => showingLoss
-    ? b.observedLossHectares - a.observedLossHectares
+    ? (b.unionLossHectares ?? -Infinity) - (a.unionLossHectares ?? -Infinity)
     : b.unknownSharePercent - a.unknownSharePercent);
 
   return (
@@ -143,8 +144,10 @@ export function ProvinceRecordList({ rows, locale, unknownContexts }: Readonly<{
 
       <ol className="province-list" aria-labelledby={headlineId}>
         {ordered.map((row) => {
-          const unknownShare = formatUnknownSharePercent(row.unknownSharePercent, locale);
-          const mappedShare = 100 - row.unknownSharePercent;
+          const unknownShare = row.unknownHectares === null
+            ? "Unknown"
+            : formatUnknownSharePercent(row.unknownSharePercent, locale);
+          const mappedShare = row.unknownHectares === null ? null : 100 - row.unknownSharePercent;
           /*
            * The qualifier rides on both measures, not only on the one that
            * ranks by coverage. It is what stops a reader treating British
@@ -152,9 +155,7 @@ export function ProvinceRecordList({ rows, locale, unknownContexts }: Readonly<{
            * appears once a control has been pressed is a claim most readers
            * never see.
            */
-          const character = "unmappedCharacter" in row
-            ? ` ${copy.charLead} ${row.unmappedCharacter[locale]}.`
-            : "";
+          const character = ` ${copy.charLead} ${row.unmappedCharacter[locale]}.`;
           return (
             <li className="province-list-row" key={row.id}>
               {/*
@@ -197,7 +198,7 @@ export function ProvinceRecordList({ rows, locale, unknownContexts }: Readonly<{
                   {showingLoss ? (
                     <>
                       <span className="province-list-value">
-                        {formatNumber(row.observedLossHectares, locale, 0)}
+                        {row.unionLossHectares === null ? "Unknown" : formatNumber(row.unionLossHectares, locale, 0)}
                       </span>{" "}
                       <span className="province-list-unit">ha</span>
                     </>
@@ -207,19 +208,20 @@ export function ProvinceRecordList({ rows, locale, unknownContexts }: Readonly<{
                 </p>
               </div>
 
+              {((showingLoss && row.unionLossHectares !== null) || (!showingLoss && mappedShare !== null)) && (
               <span className="province-list-track" aria-hidden="true">
-                {showingLoss ? (
+                {showingLoss && row.unionLossHectares !== null ? (
                   <span
                     className="province-list-fill"
-                    style={{ width: `${row.observedLossHectares / scaleHectares * 100}%` }}
+                    style={{ width: `${row.unionLossHectares / lossScale * 100}%` }}
                   />
                 ) : (
                   <>
-                    <span className="province-list-fill" style={{ width: `${mappedShare}%` }} />
+                    <span className="province-list-fill" style={{ width: `${mappedShare ?? 0}%` }} />
                     <span className="province-list-gap" style={{ width: `${row.unknownSharePercent}%` }} />
                   </>
                 )}
-              </span>
+              </span>)}
 
               {/*
                 The caveat and the value it rests on, side by side. They were a
@@ -231,12 +233,12 @@ export function ProvinceRecordList({ rows, locale, unknownContexts }: Readonly<{
               <div className="province-list-base">
                 {showingLoss ? (
                   <p className="province-list-note">
-                    {formatPercent(row.observedLossPercent, locale)} {copy.basis}{" "}
+                    {row.unionLossPercent === null ? "Unknown" : formatPercent(row.unionLossPercent, locale)} {copy.basis}{" "}
                     <strong>{unknownShare}</strong> {copy.basisEnd}{character}
                   </p>
                 ) : (
                   <p className="province-list-note">
-                    <strong>{formatHectares(row.unmappedByProductExtentHectares, locale, 0)}</strong>{" "}
+                    <strong>{row.unknownHectares === null ? "Unknown" : formatHectares(row.unknownHectares, locale, 0)}</strong>{" "}
                     {copy.coverNote} {copy.coverEnd}{character}
                   </p>
                 )}
@@ -246,8 +248,8 @@ export function ProvinceRecordList({ rows, locale, unknownContexts }: Readonly<{
                 <p className="province-list-foot">
                   <span>
                     {showingLoss
-                      ? `${formatNumber(row.observedLossHectares, locale, 2)} ${copy.recorded}`
-                      : `${formatNumber(row.unmappedByProductExtentHectares, locale, 2)} ${copy.measured}`}
+                      ? `${row.unionLossHectares === null ? "Unknown" : formatNumber(row.unionLossHectares, locale, 2)} ${copy.recorded}`
+                      : `${row.unknownHectares === null ? "Unknown" : formatNumber(row.unknownHectares, locale, 2)} ${copy.measured}`}
                   </span>
                   <Link href={locale === "en" ? "/en/data" : "/fr/donnees"}>{copy.sources}</Link>
                 </p>

@@ -11,10 +11,10 @@ function section(source, start, end) {
   return source.slice(from, to);
 }
 
-test("landing pages use the production aggregate and retain the bounded scope", async () => {
+test("landing pages use the released province span and retain the bounded scope", async () => {
   const [english, french] = await Promise.all([read("../app/en/page.tsx"), read("../app/fr/page.tsx")]);
   for (const page of [english, french]) {
-    assert.match(page, /EXPLORE_PRODUCTION_LAYER\.rows/);
+    assert.match(page, /SPAN_ROWS/);
     /*
      * This used to require the page to say the release "is not per-cell
      * geometry". That stopped being true on 2026-09-19, when the clipped
@@ -102,10 +102,9 @@ test("public coverage copy derives from the bounded Explore period", async () =>
   ]);
   for (const source of [gateway, english, french, footer, brand, fixtures]) {
     // Either derived span is acceptable; a literal year range is not. The
-    // landing pages moved to the production aggregate's own period because
-    // that is the span their figures actually cover, which is the point of
-    // putting the window on the number rather than in a masthead badge.
-    assert.match(source, /EXPLORE_COVERAGE_PERIOD|productionAggregatePeriod/);
+    // The landing pages derive the released span instead of repeating a
+    // literal range, which keeps the period attached to the figures.
+    assert.match(source, /EXPLORE_COVERAGE_PERIOD|productionAggregatePeriod|provinceSpanReach/);
     assert.doesNotMatch(source, /1984(?:–| to )present|1984–2025|depuis 1984/i);
   }
   assert.match(period, /EXPLORE_YEAR_MAX = 2022/);

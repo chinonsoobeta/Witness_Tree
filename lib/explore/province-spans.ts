@@ -9,7 +9,7 @@ import {
   type ExploreInterval,
   type IntervalMeasurement,
 } from "./interval";
-import { EXPLORE_PRODUCTION_LAYER } from "./map-style";
+import { UNMAPPED_REASONS } from "./unmapped-reasons";
 
 /*
  * The four provinces, for any span from 1984 to 2022.
@@ -87,7 +87,7 @@ export type ProvinceSpanMeasurement = IntervalMeasurement &
     /** Unknown in the start year, as a share of the whole province. Never folded into the loss share. */
     unknownSharePercent: number;
     /** What the province's unmapped part mostly is, where that is known to differ from unmeasured forest. */
-    unmappedCharacter?: Readonly<{ en: string; fr: string }>;
+    unmappedCharacter: Readonly<{ en: string; fr: string }>;
   }>;
 
 export function provinceSpanMeasurements(interval: ExploreInterval): readonly ProvinceSpanMeasurement[] {
@@ -98,14 +98,13 @@ export function provinceSpanMeasurements(interval: ExploreInterval): readonly Pr
     );
     if (!measurement) return [];
     const unknownCells = (measurement.unknownHectares ?? 0) / CELL_HECTARES;
-    const published = EXPLORE_PRODUCTION_LAYER.rows.find((row) => row.id === province.id);
     return [{
       ...measurement,
       id: province.id,
       code: province.code,
       name: province.name,
       unknownSharePercent: (unknownCells / province.cells) * 100,
-      ...(published && "unmappedCharacter" in published ? { unmappedCharacter: published.unmappedCharacter } : {}),
+      unmappedCharacter: UNMAPPED_REASONS[province.id],
     }];
   });
 }

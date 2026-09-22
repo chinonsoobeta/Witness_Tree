@@ -40,6 +40,15 @@ test("unknown land stays out of the loss share and is reported beside it", () =>
   assert.ok(share.BC < 0.01);
   assert.ok(share.AB > 20 && share.QC > 10 && share.ON > 5);
   assert.ok(rows.find((row) => row.code === "BC")?.unmappedCharacter);
+  assert.equal(rows.length, 4);
+  assert.ok(rows.every((row) => row.unionLossHectares !== null && row.unionLossPercent !== null && row.unknownHectares !== null));
+});
+
+test("the whole-span unknown areas equal the admitted coverage-gap receipt", async () => {
+  const receipt = (await import("../data/coverage-gap-investigation-2026-09-08.json")).default;
+  const expected = receipt.findings.gap.provinceHectares;
+  const rows = provinceSpanMeasurements({ fromYear: 1984, toYear: 2022 });
+  for (const row of rows) assert.equal(Math.round((row.unknownHectares ?? Number.NaN) * 100), Math.round(expected[row.code] * 100), row.code);
 });
 
 test("span share classes use fixed breaks, and a missing share has no class", () => {

@@ -20,10 +20,10 @@
     },
     {
       "path": "/en/explore",
-      "expect": "present",
+      "expect": "absent",
       "text": "Later last year",
-      "source": "components/explore/ExploreYearControl.tsx",
-      "reason": "The interval control ships with the span method. It is not gated on any binding, so its absence is a revision fact and not a configuration fact."
+      "source": null,
+      "reason": "Retired with the year selects on 2026-09-21."
     },
     {
       "path": "/fr/explorer",
@@ -31,6 +31,20 @@
       "text": "Années affichées",
       "source": "components/explore/ExploreYearControl.tsx",
       "reason": "The French half of the interval control, for the same reason."
+    },
+    {
+      "path": "/en/explore",
+      "expect": "present",
+      "text": "Choose a first and last year to set a span.",
+      "source": "components/explore/ExploreYearControl.tsx",
+      "reason": "The English help text is rendered by the native year-select control in this revision."
+    },
+    {
+      "path": "/fr/explorer",
+      "expect": "present",
+      "text": "Choisissez une première et une dernière année pour établir une période.",
+      "source": "components/explore/ExploreYearControl.tsx",
+      "reason": "The French help text is rendered by the native year-select control in this revision."
     },
     {
       "path": "/en/explore",
