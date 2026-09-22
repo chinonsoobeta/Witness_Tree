@@ -9,7 +9,7 @@ const COPY = {
     methodsHref: "/en/methods",
     remedies: "What would change this answer",
     items: [
-      { text: "Per-cell geometry is released, so loss can be read at a place instead of a province.", link: { href: "/en/releases", label: "Release scope" } },
+      { text: "Official boundaries for reserves, settlements, and treaty or agreement lands are admitted and the right-of-reply route is live, so those places can be listed.", link: null },
       { text: "An official harvest authority or fire perimeter is integrated for this area, which would carry the official-record mark rather than satellite observation.", link: null },
       { text: "You file a correction against a figure that is already published.", link: { href: "/en/corrections", label: "How corrections work" } },
     ],
@@ -21,7 +21,7 @@ const COPY = {
     methodsHref: "/fr/methodes",
     remedies: "Ce qui changerait cette réponse",
     items: [
-      { text: "La géométrie par cellule est publiée, de sorte que la perte se lit à l’échelle d’un lieu et non d’une province.", link: { href: "/fr/versions", label: "Portée des versions" } },
+      { text: "Les limites officielles des réserves, des établissements et des terres visées par un traité ou une entente sont admises et la voie de droit de réponse est en place, de sorte que ces lieux peuvent être répertoriés.", link: null },
       { text: "Une autorité de récolte officielle ou un périmètre d’incendie est intégré pour ce secteur, ce qui porterait la marque du registre officiel plutôt que celle de l’observation satellitaire.", link: null },
       { text: "Vous déposez une correction visant un chiffre déjà publié.", link: { href: "/fr/corrections", label: "Fonctionnement des corrections" } },
     ],

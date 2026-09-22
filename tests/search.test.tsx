@@ -7,6 +7,8 @@ from "../components/search/SearchPage.tsx";
 import { PlaceFinder }
 // @ts-expect-error Node test runner needs extensions.
 from "../components/search/PlaceFinder.tsx";
+// @ts-expect-error Node test runner needs extensions.
+import { formatSearchShare, searchSite } from "../lib/search/site-search.ts";
 test("normalizes aliases and diacritics", () => { assert.equal(normalizeSearch("Québec!") , "quebec"); assert.ok(searchPlaces("alias de municipalite quebecoise").length); });
 test("empty and missing results never become zero", () => { assert.deepEqual(searchPlaces(""), []); assert.deepEqual(searchPlaces("not-a-place"), []); });
 test("fixture names have bilingual parity", () => { const found = searchPlaces("illustrative"); assert.equal(found.filter((place) => place.name.en).length, found.filter((place) => place.name.fr).length); });
@@ -15,30 +17,67 @@ test("renders empty and no-result states plainly and never as zero", () => {
     const empty = renderToStaticMarkup(<SearchPage locale={locale} query="" />);
     const noResult = renderToStaticMarkup(<SearchPage locale={locale} query="not-a-place" />);
     assert.doesNotMatch(empty, />0</);
-    assert.match(noResult, /No illustrative place record matches this query|Aucun dossier de lieu illustratif ne correspond à cette recherche/);
+    assert.match(noResult, /No released place, riding, or community record matches this query|Aucun registre publié de province, de circonscription ou de collectivité ne correspond à cette recherche/);
     assert.doesNotMatch(noResult, />0</);
   }
 });
 test("renders alias results with locale-correct links and keeps Explore in header navigation", () => {
-  assert.match(renderToStaticMarkup(<SearchPage locale="en" query="alias de municipalite quebecoise" />), /href="\/en\/places\//);
-  assert.match(renderToStaticMarkup(<SearchPage locale="fr" query="alias de municipalite quebecoise" />), /href="\/fr\/lieux\//);
+  const english = renderToStaticMarkup(<SearchPage locale="en" query="Prince George, British Columbia" />);
+  const french = renderToStaticMarkup(<SearchPage locale="fr" query="Grand Sudbury" />);
+  assert.match(english, /Prince George/);
+  assert.match(english, /City/);
+  assert.match(english, /href="\/en\/compare\?left=federal-/);
+  assert.match(french, /Grand Sudbury/);
+  assert.doesNotMatch(english, /href="\/en\/places\//);
   const header = readFileSync(new URL("../components/site/SiteHeader.tsx", import.meta.url), "utf8");
   assert.match(header, /\["Explore", "\/en\/explore"\]/);
   assert.match(header, /\["Explorer", "\/fr\/explorer"\]/);
 });
 test("Search exposes one field behind a labelled places or districts scope", () => {
-  const places = renderToStaticMarkup(<SearchPage locale="en" scope="places" query="illustrative" />);
+  const places = renderToStaticMarkup(<SearchPage locale="en" scope="places" query="Prince George" />);
   const districts = renderToStaticMarkup(<SearchPage locale="en" scope="districts" query="Abbotsford" />);
   for (const markup of [places, districts]) {
     assert.equal((markup.match(/<input class="input"/g) ?? []).length, 1);
     assert.match(markup, /aria-label="Search scope"/);
-    assert.match(markup, /Place results are illustrative fixtures/);
+    assert.match(markup, /1984 to 2022/);
   }
-  assert.match(places, /href="\/en\/places\//);
+  assert.match(places, /Prince George/);
   assert.doesNotMatch(places, /Find a federal electoral district/);
   assert.match(districts, /Find a federal electoral district/);
   assert.match(districts, /href="\/en\/compare\?left=/);
   assert.doesNotMatch(districts, /<h2>Search places<\/h2>/);
+});
+
+test("real place search handles suffixes, bilingual names, dash spelling, gaps, and share display", () => {
+  for (const query of ["Prince George, British Columbia", "Prince George British Columbia", "Prince George"]) {
+    const result = searchSite(query).results.find((entry) => entry.kind === "community" && entry.id === "5953023");
+    assert.ok(result, query);
+    assert.equal(result?.type, "CY");
+    assert.ok(result?.federal?.length);
+    assert.ok(result?.provincial?.length);
+  }
+  assert.equal(searchSite("Grand Sudbury").results.find((entry) => entry.kind === "community")?.id, "3553005");
+  assert.equal(searchSite("Saint-Lin-Laurentides").results.find((entry) => entry.kind === "community")?.id, "2463048");
+  assert.equal(searchSite("Saint-Lin-Laurentides").results.find((entry) => entry.kind === "community")?.name, "Saint-Lin–Laurentides");
+  const gap = searchSite("L'Ile-Dorval").results.find((entry) => entry.kind === "community");
+  assert.equal(gap?.id, "2466092");
+  assert.deepEqual(gap?.provincial, []);
+  assert.ok(searchSite("Dorval").results.some((entry) => entry.kind === "community" && entry.id === "2466087" && (entry.provincial?.length ?? 0) > 0));
+  const partialRiding = renderToStaticMarkup(<SearchPage locale="en" query="Ungava" />);
+  assert.match(partialRiding, /At least/);
+  assert.doesNotMatch(partialRiding, />0(?: ha)?</);
+  assert.match(renderToStaticMarkup(<SearchPage locale="en" query="Prince George" />), /Statistics Canada/);
+  assert.match(renderToStaticMarkup(<SearchPage locale="fr" query="Grand Sudbury" />), /Statistique Canada/);
+  assert.equal(formatSearchShare(1, "en"), "100 percent");
+  assert.equal(formatSearchShare(0.996, "en"), "over 99 percent");
+  assert.equal(formatSearchShare(0.0092, "en"), "under 1 percent");
+  assert.equal(formatSearchShare(0.0013, "en"), "under 1 percent");
+});
+
+test("the real search module stays out of client modules", () => {
+  for (const file of ["../components/search/AddressFinderClient.tsx", "../components/explore/ExploreMapClient.tsx"]) {
+    assert.doesNotMatch(readFileSync(new URL(file, import.meta.url), "utf8"), /search\/site-search/);
+  }
 });
 test("renders the bilingual place finder with a hidden label and compact submit text", () => {
   const en = renderToStaticMarkup(<PlaceFinder locale="en" query="alias de municipalite quebecoise" />);
@@ -69,7 +108,9 @@ test("search coverage precedes controls and a missing record is a result with a 
       assert.match(markup, /class="no-record-stated"/);
       assert.match(markup, locale === "en" ? /Unknown\. Nothing has been published/ : /Inconnu\. Rien n\u2019a \u00e9t\u00e9 publi\u00e9/);
       assert.match(markup, /class="no-record-remedy-list"/);
-      assert.match(markup, new RegExp(`href="${locale === "en" ? "/en/releases" : "/fr/versions"}"`));
+      if (scope === "places") {
+        assert.match(markup, locale === "en" ? /Reserves, settlements, and treaty or agreement lands are not listed yet/ : /Les réserves, les établissements et les terres visées par un traité ou une entente ne sont pas encore répertoriés/);
+      }
       assert.match(markup, new RegExp(`href="${locale === "en" ? "/en/corrections" : "/fr/corrections"}"`));
     }
   }

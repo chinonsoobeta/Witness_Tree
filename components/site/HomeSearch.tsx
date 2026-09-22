@@ -18,14 +18,14 @@ const COPY = {
     label: "Search a place",
     placeholder: "Prince George, British Columbia",
     submit: "Open the record",
-    note: "Place records are not published yet. A search opens what the record does hold, and says plainly where it stops.",
+    note: "Search covers provinces, federal and provincial ridings, and communities, with figures for 1984 to 2022.",
   },
   fr: {
     action: "/fr/recherche",
     label: "Rechercher un lieu",
     placeholder: "Prince George, Colombie-Britannique",
     submit: "Ouvrir le relevé",
-    note: "Les relevés par lieu ne sont pas encore publiés. Une recherche ouvre ce que le relevé contient et indique clairement où il s’arrête.",
+    note: "La recherche couvre les provinces, les circonscriptions fédérales et provinciales ainsi que les collectivités, avec des chiffres de 1984 à 2022.",
   },
 } as const;
 
