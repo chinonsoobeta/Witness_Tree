@@ -388,9 +388,9 @@ test("Explore uses the exact PMTiles release with a GeoJSON/SVG fallback on map 
   assert.match(map, /role=\{state === "error" \? "alert" : "status"\}/);
   assert.match(map, /const provinceAvailable = mode === "forest-change";/);
   assert.match(map, /unavailableYear/);
-  assert.match(map, /spanRows\.map/);
+  assert.match(map, /spanRows\.find\(\(row\) => row\.id === feature\.properties\.province_id\)/);
   assert.match(map, /setPaintProperty\(PROVINCE_FILL_LAYER_ID, "fill-color", provinceFillColour\(fromYear, year\)\)/);
-  assert.match(map, /Detected loss \(%\)/);
+  assert.match(view, /Detected loss \(%\)/);
   assert.match(style, /phase2_province_loss_2020_2022/);
   assert.match(style, /\.pmtiles/);
   assert.match(
@@ -437,20 +437,19 @@ test("map failures retain diagnostics, retry, and a reachable patch zoom", async
   assert.match(map, /errorTimeout/);
   assert.match(map, /retryMap/);
   assert.match(map, /Retry the interactive map/);
-  assert.match(map, /Zoom to patches/);
+  assert.match(map, /Zoom in to see the patches/);
   assert.match(map, /zoom: EXPLORE_PER_CELL_LAYER\.minZoom/);
   assert.match(map, /center: map\.getCenter\(\)/);
-  assert.match(map, /view\.zoom >= EXPLORE_PER_CELL_LAYER\.minZoom/);
-  assert.match(map, /disabled=\{patchZoomDisabledReason !== null\}/);
-  assert.match(map, /role="tooltip"/);
-  assert.match(map, /aria-describedby=\{patchZoomDisabledReason \? PATCH_ZOOM_REASON_ID : undefined\}/);
+  // The patch zoom sits in the legend beside the patch key, and is offered
+  // only while patches exist and the map is zoomed out past them.
+  assert.match(map, /const patchZoomOffered = perCellYears !== null && view !== null && view\.zoom < EXPLORE_PER_CELL_LAYER\.minZoom/);
+  assert.match(map, /\{patchZoomOffered \? \(\s*<button type="button" className="explore-map-patch-zoom" onClick=\{zoomToPatches\}>/);
   assert.match(map, /className="explore-map-control-cluster"/);
   assert.doesNotMatch(map, /source === "pmtiles" &&\s*perCellArchive &&\s*view &&\s*view\.zoom/);
   assert.doesNotMatch(map, /framingViews|framing views only|servent seulement au cadrage/);
 
   const panel = css.match(/\.explore-map-layer-panel \{[\s\S]*?\n\}/)?.[0] ?? "";
   const controls = css.match(/\.explore-map-controls \{[\s\S]*?\n\}/)?.[0] ?? "";
-  const list = css.match(/\.explore-map-layer-list \{[\s\S]*?\n\}/)?.[0] ?? "";
   /*
    * The floating strip holds only the scale and the zoom cluster now. The
    * layer panel and the province chooser left it for normal flow, because
@@ -466,7 +465,11 @@ test("map failures retain diagnostics, retry, and a reachable patch zoom", async
   assert.match(map, /<\/div>\n\s*\{layerPanel\}\n\s*<\/div>/);
   assert.doesNotMatch(map, /className="explore-map"[\s\S]*?className="explore-map-layer-panel"/);
   assert.match(map, /className="explore-map-layer-panel"[\s\S]*tabIndex=\{0\}[\s\S]*role="region"/);
-  assert.match(map, /className="explore-map-patch-control"[\s\S]*className="[^"]*explore-map-fullscreen-button"[\s\S]*className="explore-map-zoom"/);
+  assert.match(map, /className="[^"]*explore-map-fullscreen-button"[\s\S]*className="explore-map-zoom"/);
+  // The legend under the map is the only one: no second copy of the keys or
+  // the figures table is drawn below it.
+  assert.equal((map.match(/className="explore-map-legend/g) ?? []).length, 2);
+  assert.doesNotMatch(map, /<table/);
   assert.match(panel, /position: static/);
   assert.match(panel, /display: flex/);
   assert.match(panel, /flex-wrap: wrap/);
@@ -474,15 +477,12 @@ test("map failures retain diagnostics, retry, and a reachable patch zoom", async
   assert.match(controls, /inset-block-end: 12px/);
   assert.match(controls, /display: grid/);
   assert.match(controls, /grid-template-columns: minmax\(0, 1fr\) auto/);
-  assert.match(list, /display: flex/);
-  assert.match(list, /flex-wrap: wrap/);
   // Nothing that grows with content may be taken out of flow over the frame.
   const chooser = css.match(/\.province-bar--map \{[\s\S]*?\n\}/)?.[0] ?? "";
   assert.match(chooser, /position: static/);
   assert.doesNotMatch(chooser, /position: absolute/);
   assert.doesNotMatch(panel, /position: absolute/);
   assert.match(css, /\.explore-map-stack \{[\s\S]*?flex-direction: column/);
-  assert.match(css, /\.explore-map-patch-tooltip \{[\s\S]*?inset-inline: 0;[\s\S]*?width: auto/);
 });
 
 test("the map keeps one four-province camera envelope and the forest map alive across intervals", async () => {
@@ -805,11 +805,12 @@ test("Explore shows its coverage caveat before the map and its evidence key besi
     assert.match(keyMarkup, /mark-glyph--satellite/);
     assert.match(keyMarkup, /mark-glyph--unknown/);
     assert.doesNotMatch(markup, /class="evidence-legend"/);
-    // Patch keys are swatches alone: the map draws no glyphs, so the legend
-    // must not promise any.
-    assert.match(markup, /loss-swatch patch-harvest[^>]*><\/i><\/span>/);
-    assert.match(markup, /loss-swatch patch-fire[^>]*><\/i><\/span>/);
-    assert.match(markup, /loss-swatch patch-none[^>]*><\/i><\/span>/);
     assert.doesNotMatch(markup, /map-legend-shape/);
   }
+  // Patch keys are swatches alone: the map draws no glyphs, so the legend
+  // must not promise any. The legend renders once the map is ready, so this
+  // is read from the client source rather than the server markup.
+  const client = readFileSync(new URL("../components/explore/ExploreMapClient.tsx", import.meta.url), "utf8");
+  assert.match(client, /<i className=\{`loss-swatch \$\{className\}`\} \/>/);
+  for (const patch of ["patch-harvest", "patch-fire", "patch-none"]) assert.match(client, new RegExp(`symbol\\("${patch}"\\)`));
 });

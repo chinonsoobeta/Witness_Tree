@@ -62,7 +62,7 @@ test("the sentence is rendered under the same condition that draws the patches",
   // The gate opens the per-cell panel; the next panel after it is the
   // province one. The sentence has to fall inside the first, so it cannot
   // drift into a panel that shows whether or not patches are drawn.
-  const panel = "<div className=\"explore-map-data\">";
+  const panel = "<div className=\"explore-map-key explore-map-data\">";
   const perCellPanel = client.indexOf(panel, gate);
   const nextPanel = client.indexOf(panel, perCellPanel + panel.length);
   assert.notEqual(perCellPanel, -1, "the per-cell panel must open inside the gate");

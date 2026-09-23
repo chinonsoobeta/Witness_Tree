@@ -10,7 +10,7 @@ import {
   EvidenceChip,
   ProvenanceBlock,
 } from "@/components/policy";
-import { colon, formatHectares, formatNumber, formatPercent, formatYearRange, formatYearRangeKey, labelled, yearRange, type Locale } from "@/lib/domain";
+import { colon, formatHectares, formatNumber, formatPercent, formatYearRange, formatYearRangeKey, labelled, SUM_TERM, yearRange, type Locale } from "@/lib/domain";
 import {
   BOUNDARY_OVERLAY_IDS,
   BOUNDARY_OVERLAYS,
@@ -99,6 +99,8 @@ const copy = {
     observedLoss: "Detected loss (ha)",
     observedLossPercent: "Detected loss (%)",
     fourProvinces: "The four provinces together",
+    spanBasis:
+      "Each place counts once, however many times it was cleared, so the share can’t pass 100%. The yearly losses added together count a place each time it was cleared, so they are shown in hectares only. Every province is only partly mapped and nothing was checked on the ground, so every figure is a minimum.",
     partial: "Partly unmapped, so this is a minimum",
     unknownArea: "ha unknown",
     source: "Source attribution",
@@ -179,6 +181,8 @@ const copy = {
     observedLoss: "Perte détectée (ha)",
     observedLossPercent: "Perte détectée (%)",
     fourProvinces: "Les quatre provinces ensemble",
+    spanBasis:
+      "Chaque lieu compte une seule fois, peu importe le nombre de coupes; la part ne peut donc pas dépasser 100 %. Les pertes annuelles additionnées comptent un lieu à chaque coupe; elles sont donc affichées en hectares seulement. Chaque province n’est que partiellement cartographiée et rien n’a été vérifié sur le terrain; chaque chiffre est donc un minimum.",
     partial: "En partie non cartographié; il s’agit donc d’un minimum",
     unknownArea: "ha inconnus",
     source: "Attribution de la source",
@@ -342,6 +346,9 @@ export function ExploreView({
   const fourProvinces = provinceRows.length === 4 ? fourProvinceSpanMeasurement(activeSpan) : null;
   const productionAvailable = provinceRows.length === 4;
   const spanPeriod = formatYearRange(yearRange(activeFrom, activeYear), locale);
+  // Over more than one year a place can be lost twice, so the yearly losses
+  // added together become a second measure beside the union, never in place of it.
+  const multiYear = activeYear > activeFrom + 1;
   const perCellShown =
     perCellCauseForMode(mode) !== null && fourProvinceAnnualForYear(activeYear) !== null;
   const note = !productionAvailable
@@ -669,6 +676,7 @@ export function ExploreView({
                     <th scope="col">{text.year}</th>
                     <th scope="col">{text.observedLoss}</th>
                     <th scope="col">{text.observedLossPercent}</th>
+                    {multiYear ? <th scope="col">{`${SUM_TERM[locale]} (ha)`}</th> : null}
                     <th scope="col">{text.coverage}</th>
                     <th scope="col">{text.source}</th>
                   </tr>
@@ -692,6 +700,7 @@ export function ExploreView({
                           <td>{spanPeriod}</td>
                           <td>{hectaresOrDash(row.unionLossHectares)}</td>
                           <td>{percentOrDash(row.unionLossPercent)}</td>
+                          {multiYear ? <td>{hectaresOrDash(row.summedLossHectares)}</td> : null}
                           <td>{provinceCoverageLabel(row)}</td>
                           <td>
                             <a href={EXPLORE_PRODUCTION_LAYER.attribution.href}>
@@ -706,6 +715,7 @@ export function ExploreView({
                           <td>{spanPeriod}</td>
                           <td>{hectaresOrDash(fourProvinces.unionLossHectares)}</td>
                           <td>{percentOrDash(fourProvinces.unionLossPercent)}</td>
+                          {multiYear ? <td>{hectaresOrDash(fourProvinces.summedLossHectares)}</td> : null}
                           <td>{`${text.partial} (${formatNumber(fourProvinces.unknownHectares ?? 0, locale)} ${text.unknownArea})`}</td>
                           <td>
                             <a href={EXPLORE_PRODUCTION_LAYER.attribution.href}>
@@ -729,6 +739,8 @@ export function ExploreView({
             </table>
           </div>
         ) : null}
+
+        {hasData && productionAvailable ? <p className="explore-note">{text.spanBasis}</p> : null}
 
         {!productionAvailable ? (
           <ul className="explore-legend" aria-label={locale === "en" ? "Legend" : "Légende"}>
