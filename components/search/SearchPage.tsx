@@ -16,18 +16,18 @@ const copy = {
     scope: "Search scope",
     places: "Places",
     districts: "Federal districts",
-    notice: "Search covers provinces, federal and provincial ridings, and communities, with figures for 1984 to 2022.",
-    shareNote: "Each share is of the part of the community covered by that riding map, federal or provincial.",
-    excluded: "Reserves, settlements, and treaty or agreement lands are not listed yet. They will be once their official boundaries are admitted and a right-of-reply route is live.",
+    notice: "Search provinces, ridings and communities. Figures cover 1984 to 2022.",
+    shareNote: "Each share is for the part of the community inside that riding.",
+    excluded: "Reserves, settlements and treaty or agreement lands aren’t listed yet. They will be once their official boundaries are approved and communities have a way to reply.",
   },
   fr: {
     title: "Recherche",
     scope: "Portée de la recherche",
     places: "Lieux",
     districts: "Circonscriptions fédérales",
-    notice: "La recherche couvre les provinces, les circonscriptions fédérales et provinciales ainsi que les collectivités, avec des chiffres de 1984 à 2022.",
-    shareNote: "Chaque part porte sur la partie de la collectivité couverte par la carte des circonscriptions concernée, fédérale ou provinciale.",
-    excluded: "Les réserves, les établissements et les terres visées par un traité ou une entente ne sont pas encore répertoriés. Ils le seront lorsque leurs limites officielles auront été admises et qu’une voie de droit de réponse sera en place.",
+    notice: "Recherchez une province, une circonscription ou une collectivité. Les chiffres couvrent 1984 à 2022.",
+    shareNote: "Chaque part porte sur la partie de la collectivité située dans cette circonscription.",
+    excluded: "Les réserves, les établissements et les terres visées par un traité ou une entente ne sont pas encore répertoriés. Ils le seront lorsque leurs limites officielles auront été approuvées et que les communautés auront un moyen de répondre.",
   },
 } as const;
 
@@ -57,8 +57,8 @@ export function SearchPage({
       <CoverageStatement locale={locale}>
         <p>{text.notice}</p>
         <p>{locale === "en"
-          ? "Finding a boundary does not establish that it has a measurement. A missing record does not establish that no event occurred."
-          : "Trouver une limite ne signifie pas qu’une mesure y est associée. L’absence de registre ne permet pas de conclure qu’aucun événement n’a eu lieu."}</p>
+          ? "Finding a place doesn’t mean we have figures for it. And a missing record doesn’t mean nothing happened."
+          : "Trouver un lieu ne veut pas dire que nous avons des chiffres pour celui-ci. Et l’absence de registre ne veut pas dire que rien ne s’est produit."}</p>
       </CoverageStatement>
       <EvidenceLegend locale={locale} />
       <nav className="segment" aria-label={text.scope}>

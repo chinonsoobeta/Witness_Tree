@@ -55,12 +55,12 @@ const COPY = {
     recorded: "ha recorded",
     measured: "ha unmapped",
     sources: "Source and limits",
-    basis: "of the forest the source mapped. A minimum, because",
+    basis: "of the mapped forest. A minimum, because",
     basisEnd:
-      "of the province was never mapped, and unmapped is never counted as zero.",
-    coverNote: "was never mapped by the source, so nothing in it was checked.",
-    coverEnd: "An unmapped area is Unknown. It is not a zero.",
-    charLead: "Here that gap is",
+      "of the province was never mapped and counts as unknown, not zero.",
+    coverNote: "was never mapped, so nothing there was checked.",
+    coverEnd: "It counts as Unknown, not zero.",
+    charLead: "The gap is",
   },
   fr: {
     group: "Choisir ce qui est affiché",
@@ -74,12 +74,12 @@ const COPY = {
     recorded: "ha consignés",
     measured: "ha non cartographiés",
     sources: "Source et limites",
-    basis: "de la forêt cartographiée par la source. Un minimum, car",
+    basis: "de la forêt cartographiée. Un minimum, car",
     basisEnd:
-      "de la province n’a jamais été cartographiée, et une zone non cartographiée n’est jamais comptée comme zéro.",
-    coverNote: "n’a jamais été cartographié par la source, donc rien n’y a été vérifié.",
-    coverEnd: "Une zone non cartographiée est Inconnue. Ce n’est pas un zéro.",
-    charLead: "Ici, il s’agit d’un",
+      "de la province n’a jamais été cartographiée et compte comme inconnue, pas comme zéro.",
+    coverNote: "n’a jamais été cartographié, donc rien n’y a été vérifié.",
+    coverEnd: "Cela compte comme Inconnu, pas comme zéro.",
+    charLead: "L’écart se trouve",
   },
 } as const;
 

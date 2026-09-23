@@ -43,10 +43,10 @@ test("the comparison lists only four-province districts under truthful coverage 
     <RankedRidingsTable rows={federalRidingComparison.comparisonRows} context={federalRidingComparison.context} locale="fr" />,
   );
   for (const html of [english, french]) assert.equal((html.match(/<th scope="row">/g) ?? []).length, 280);
-  assert.match(english, /36 of 280 federal districts are ranked\./);
-  assert.match(english, /165 have no mapped coverage; 67 have partial mapped coverage; 12 have complete mapped coverage but less than 500 forested hectares\./);
+  assert.match(english, /36 of 280 federal ridings are ranked\./);
+  assert.match(english, /Of the rest, 165 were not mapped at all, 67 were only partly mapped, and 12 have less than 500 hectares of forest\./);
   assert.match(french, /36 des 280 circonscriptions fédérales sont classées\./);
-  assert.match(french, /165 n’ont aucune couverture cartographiée; 67 ont une couverture cartographiée partielle; 12 ont une couverture cartographiée complète, mais moins de 500 hectares forestiers\./);
+  assert.match(french, /Parmi les autres, 165 n’ont pas du tout été cartographiées, 67 ne l’ont été qu’en partie, et 12 comptent moins de 500 hectares de forêt\./);
   assert.doesNotMatch(`${english}${french}`, /Insufficient coverage, not ranked|Couverture insuffisante, non classée/);
 
   const none = english.indexOf("No mapped coverage, not ranked");
@@ -84,8 +84,8 @@ test("both comparison routes use real data and preserve exact selected ids", asy
   const parameters = Promise.resolve({ left: "federal-59001", right: "federal-59006", view: "table", sort: "share-asc" });
   const english = renderToStaticMarkup(await EnglishComparePage({ searchParams: parameters }));
   const french = renderToStaticMarkup(await FrenchComparePage({ searchParams: parameters }));
-  assert.match(english, /Extent-corrected measurements for 2021–2022/);
-  assert.match(french, /Mesures corrigées selon l’étendue pour 2021–2022/);
+  assert.match(english, /Figures for 2021–2022, adjusted for mapped area/);
+  assert.match(french, /Chiffres pour 2021–2022, ajustés selon la zone cartographiée/);
   for (const html of [english, french]) {
     assert.match(html, /option value="federal-59001" selected/);
     assert.match(html, /option value="federal-59006" selected/);
@@ -115,9 +115,9 @@ test("both comparison routes default to covered measured ridings", async () => {
 test("comparison routes disclose an unrecognized requested riding before the fallback result", async () => {
   const english = renderToStaticMarkup(await EnglishComparePage({ searchParams: Promise.resolve({ left: "federal-missing" }) }));
   const french = renderToStaticMarkup(await FrenchComparePage({ searchParams: Promise.resolve({ right: "federal-absente" }) }));
-  assert.match(english, /Requested left riding “federal-missing” is not available in this four-province comparison\. Showing [^<]+ instead\./);
-  assert.match(french, /La circonscription de droite demandée « federal-absente » n’est pas offerte dans cette comparaison limitée à quatre provinces\. [^<]+ est affichée à la place\./);
-  assert.ok(english.indexOf("Requested left riding") < english.indexOf("Side-by-side comparison"));
+  assert.match(english, /The left riding “federal-missing” isn’t available here, since this comparison covers four provinces only\. Showing [^<]+ instead\./);
+  assert.match(french, /La circonscription de droite « federal-absente » n’est pas offerte ici, car cette comparaison ne couvre que quatre provinces\. [^<]+ est affichée à la place\./);
+  assert.ok(english.indexOf("The left riding") < english.indexOf("Side-by-side comparison"));
   assert.ok(french.indexOf("demandée « federal-absente »") < french.indexOf("Comparaison côte à côte"));
 });
 
@@ -126,6 +126,6 @@ test("comparison routes state comparability limits before controls and figures",
     const markup = renderToStaticMarkup(await Page({ searchParams: Promise.resolve({}) }));
     assert.ok(markup.indexOf('class="coverage-statement"') < markup.indexOf('class="comparison-picker"'));
     assert.ok(markup.indexOf('class="evidence-legend"') < markup.indexOf('class="comparison-side-by-side"'));
-    assert.match(markup, /coverage differs|la couverture diffère/);
+    assert.match(markup, /less was mapped|une plus petite partie a été cartographiée/);
   }
 });

@@ -17,14 +17,14 @@ const UNRANKED_COPY = {
     partial: "Partial mapped coverage, not ranked",
     belowFloor: `Complete mapped coverage below ${MINIMUM_RANKED_FOREST_HECTARES} forested hectares, not ranked`,
     summary: (ranked: number, total: number, noneMapped: number, partial: number, belowFloor: number) =>
-      `${ranked} of ${total} federal districts are ranked. ${noneMapped} have no mapped coverage; ${partial} have partial mapped coverage; ${belowFloor} have complete mapped coverage but less than ${MINIMUM_RANKED_FOREST_HECTARES} forested hectares.`,
+      `${ranked} of ${total} federal ridings are ranked. Of the rest, ${noneMapped} were not mapped at all, ${partial} were only partly mapped, and ${belowFloor} have less than ${MINIMUM_RANKED_FOREST_HECTARES} hectares of forest.`,
   },
   fr: {
     noneMapped: "Aucune couverture cartographiée, non classée",
     partial: "Couverture cartographiée partielle, non classée",
     belowFloor: `Couverture cartographiée complète sous le seuil de ${MINIMUM_RANKED_FOREST_HECTARES} hectares forestiers, non classée`,
     summary: (ranked: number, total: number, noneMapped: number, partial: number, belowFloor: number) =>
-      `${ranked} des ${total} circonscriptions fédérales sont classées. ${noneMapped} n’ont aucune couverture cartographiée; ${partial} ont une couverture cartographiée partielle; ${belowFloor} ont une couverture cartographiée complète, mais moins de ${MINIMUM_RANKED_FOREST_HECTARES} hectares forestiers.`,
+      `${ranked} des ${total} circonscriptions fédérales sont classées. Parmi les autres, ${noneMapped} n’ont pas du tout été cartographiées, ${partial} ne l’ont été qu’en partie, et ${belowFloor} comptent moins de ${MINIMUM_RANKED_FOREST_HECTARES} hectares de forêt.`,
   },
 } as const;
 

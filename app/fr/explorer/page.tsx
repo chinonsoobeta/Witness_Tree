@@ -51,7 +51,7 @@ export default async function Page({
       <main id="main" className="page-wrap">
         <header className="masthead">
           <h1>Explorer les pertes forestières</h1>
-          <p className="masthead-note">La portée, les téléchargements et les limites des versions sont répertoriés dans <Link href="/fr/versions">Versions des données</Link>.</p>
+          <p className="masthead-note">Les téléchargements, les notes de version et les limites se trouvent dans <Link href="/fr/versions">Versions des données</Link>.</p>
         </header>
         <ExploreView
           events={exploreFixtures}

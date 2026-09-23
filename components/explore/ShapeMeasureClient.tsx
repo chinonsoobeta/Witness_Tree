@@ -65,7 +65,7 @@ const copy = {
   en: {
     title: "Measure an area you choose",
     intro:
-      "Set the corners of an area and read what the record says about it. The shape is sent to be measured and is not kept.",
+      "Mark out an area to see how much forest it lost. Your shape is measured and then discarded.",
     shapeKind: "Shape",
     rectangle: "Rectangle",
     polygon: "Polygon",
@@ -96,9 +96,9 @@ const copy = {
     hectares: (value: string) => `${value} ha`,
     precisionHeading: "How precise this is",
     precisionExact: (block: number) =>
-      `Every part of this shape fell inside whole ${block} m squares of the record, so these numbers are counts rather than estimates.`,
+      `Your shape lines up with whole ${block} m squares of data, so these numbers are exact counts, not estimates.`,
     precisionEdge: (block: number, edge: number, share: string) =>
-      `The record answers in ${block} m squares. This shape cuts through ${edge} of them, so their contribution is scaled by how much of each square the shape covers. That scaling accounts for about ${share} of the middle number, and the range around it is what the answer would be if none, or all, of those squares counted.`,
+      `The data comes in ${block} m squares, and your shape cuts through ${edge} of them. Those squares are counted in proportion to how much of each your shape covers, which makes up about ${share} of the middle number. The range shows the answer if none, or all, of them counted.`,
     precisionMissing: (blocks: number) =>
       `${blocks} of the squares this shape covers were never measured, so nothing is claimed about them. They are left out rather than counted as no loss.`,
     outsideGrid: (hectares: string) =>
@@ -115,7 +115,7 @@ const copy = {
   fr: {
     title: "Mesurer une zone de votre choix",
     intro:
-      "Placez les coins d'une zone et lisez ce que le relevé en dit. La forme est envoyée pour être mesurée et n'est pas conservée.",
+      "Délimitez une zone pour voir la forêt qu'elle a perdue. Votre forme est mesurée, puis supprimée.",
     shapeKind: "Forme",
     rectangle: "Rectangle",
     polygon: "Polygone",
@@ -146,9 +146,9 @@ const copy = {
     hectares: (value: string) => `${value} ha`,
     precisionHeading: "Précision de ce résultat",
     precisionExact: (block: number) =>
-      `Chaque partie de cette forme se trouvait à l'intérieur de carrés entiers de ${block} m du relevé, donc ces nombres sont des comptes et non des estimations.`,
+      `Votre forme correspond à des carrés entiers de ${block} m, donc ces nombres sont des comptes exacts et non des estimations.`,
     precisionEdge: (block: number, edge: number, share: string) =>
-      `Le relevé répond par carrés de ${block} m. Cette forme en traverse ${edge}, dont l'apport est donc réduit selon la part du carré que la forme couvre. Cet ajustement représente environ ${share} du nombre central, et la fourchette indique le résultat si aucun, ou si tous, ces carrés comptaient.`,
+      `Les données sont en carrés de ${block} m, et votre forme en traverse ${edge}. Ces carrés sont comptés selon la part que votre forme en couvre, ce qui représente environ ${share} du nombre central. La fourchette montre le résultat si aucun, ou si tous, ces carrés comptaient.`,
     precisionMissing: (blocks: number) =>
       `${blocks} des carrés couverts par cette forme n'ont jamais été mesurés, donc rien n'est affirmé à leur sujet. Ils sont exclus plutôt que comptés comme sans perte.`,
     outsideGrid: (hectares: string) =>
@@ -443,8 +443,8 @@ export function ShapeMeasurementResult({ locale, measurement }: Readonly<{ local
       <h3>{words.resultsHeading}</h3>
       <CoverageStatement locale={locale}>
         <p>{locale === "en"
-          ? "The figures below describe only the part the record can measure. Missing blocks and land outside the grid are excluded, never counted as no loss."
-          : "Les chiffres ci-dessous décrivent seulement la partie que le relevé peut mesurer. Les blocs sans données et le territoire hors de la grille sont exclus, jamais comptés comme sans perte."}</p>
+          ? "The figures below cover only the part that could be measured. Land with no data is left out, never counted as no loss."
+          : "Les chiffres ci-dessous portent seulement sur la partie qui a pu être mesurée. Le territoire sans données est exclu, jamais compté comme sans perte."}</p>
         <div className="shape-coverage-states">
           <div>
             <h3>{locale === "en" ? "Blocks without data" : "Blocs sans données"}</h3>

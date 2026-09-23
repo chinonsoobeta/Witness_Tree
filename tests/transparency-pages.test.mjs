@@ -22,7 +22,7 @@ test("methodology states the required definitions, matching and neutral limits",
     read("../components/transparency/MethodologyPage.tsx"),
     read("../lib/explore/types.ts"),
   ]);
-  for (const requirement of ["1 hectare", "10% crown closure", "5 metres", "British Columbia", "north of 52", "50%", "±2 years", "±3 years before 1995"]) assert.ok(page.includes(requirement));
+  for (const requirement of ["1 hectare", "tree crowns cover at least 10% of the ground", "5 metres", "British Columbia", "north of 52", "50%", "±2 years", "±3 years before 1995"]) assert.ok(page.includes(requirement));
   assert.match(page, /EXPLORE_COVERAGE_PERIOD/);
   assert.match(exploreTypes, /EXPLORE_YEAR_MIN = 1985/);
   assert.match(exploreTypes, /EXPLORE_YEAR_MIN - 1/);
@@ -30,24 +30,24 @@ test("methodology states the required definitions, matching and neutral limits",
   assert.match(exploreTypes, /EXPLORE_DEFAULT_YEAR = EXPLORE_YEAR_MAX/);
   assert.match(exploreTypes, /EXPLORE_YEAR_MAX = 2022/);
   assert.match(page, /fire; recorded harvest; recorded insect or disease disturbance; other recorded intervention; then detected change with no matching record/);
-  assert.match(page, /Match rate, non-match rate, and the non-match-reason distribution are not available/);
-  assert.match(page, /No provincial enhancement dataset has been admitted for processing/);
-  assert.match(page, /taux d’appariement, le taux de non-appariement et la répartition des motifs de non-appariement ne sont pas disponibles/i);
+  assert.match(page, /How often detected changes match provincial records is not available yet/);
+  assert.match(page, /No provincial dataset has been approved for processing/);
+  assert.match(page, /correspondent aux registres provinciaux n’est pas encore disponible/i);
 });
 
 test("methodology publishes predecessor VLCE accuracy with its VLCE2 non-applicability boundary", async () => {
   const page = await read("../components/transparency/MethodologyPage.tsx");
-  assert.match(page, /predecessor VLCE land-cover map for 2005: 70\.3% overall classification accuracy with a 95% confidence interval of ±2\.5 percentage points/);
-  assert.match(page, /not a validation of this record’s derived forest-loss detections, a district-specific accuracy, or a validation of every VLCE2 year/);
-  assert.match(page, /directly applicable detected-loss accuracy estimate is therefore Unknown/);
-  assert.match(page, /carte de couverture terrestre VLCE antérieure pour 2005 : une exactitude globale de classification de 70,3 %, avec un intervalle de confiance à 95 % de ±2,5 points de pourcentage/);
-  assert.match(page, /ne valide ni les détections dérivées de perte forestière de ce registre, ni une exactitude propre à une circonscription, ni chaque année de VLCE2/);
-  assert.match(page, /directement applicable de l’exactitude de la perte détectée demeure donc inconnue/);
+  assert.match(page, /earlier 2005 version of this land-cover map: it was 70\.3% accurate overall \(±2\.5 percentage points, 95% confidence\)/);
+  assert.match(page, /does not measure how accurate our forest-loss detections are, for any district or year/);
+  assert.match(page, /So the accuracy of detected loss is Unknown/);
+  assert.match(page, /version antérieure de 2005 de cette carte de couverture terrestre : elle était exacte à 70,3 % dans l’ensemble \(±2,5 points de pourcentage, confiance de 95 %\)/);
+  assert.match(page, /ne mesure pas l’exactitude de nos détections de perte forestière, pour aucune circonscription ni aucune année/);
+  assert.match(page, /L’exactitude de la perte détectée est donc inconnue/);
 });
 
 test("data page labels examples and links the ledger and documentation", async () => {
   const page = await read("../components/transparency/DataPage.tsx");
-  assert.match(page, /examples remain illustrative/i);
+  assert.match(page, /entries are still examples/i);
   /*
    * The span is no longer typed into this sentence, so asserting the literal
    * would only prove someone typed it again. Assert the two halves that
@@ -57,15 +57,15 @@ test("data page labels examples and links the ledger and documentation", async (
    */
   assert.match(
     page,
-    /bounded four-province technical preview for \$\{formatYearRangeKey\(PROVINCE_BULK_TIME_RANGE, "en", "span"\)\}/,
+    /early preview of the province figures for \$\{formatYearRangeKey\(PROVINCE_BULK_TIME_RANGE, "en", "span"\)\}/,
   );
   assert.equal(formatYearRangeKey(PROVINCE_BULK_TIME_RANGE, "en", "span"), "2020 to 2022");
   assert.match(page, /provinceBulkManifestUrl/);
   assert.match(page, /provinceBulkRelease\.artifacts/);
   assert.match(page, /href="https:\/\/github\.com\/chinonsoobeta\/Witness_Tree\/blob\/main\/data\/source-ledger\.json"/);
   assert.match(page, /href="https:\/\/github\.com\/chinonsoobeta\/Witness_Tree\/blob\/main\/docs\/SOURCE_LEDGER\.md"/);
-  assert.match(page, /Two source archives have verified byte lengths/);
-  assert.match(page, /lossless local copy/);
+  assert.match(page, /Two source archives have been checked/);
+  assert.match(page, /verified copy of two Quebec layers/);
   assert.match(page, /608 self-intersections in Alberta/);
   assert.match(page, /href="https:\/\/github\.com\/chinonsoobeta\/Witness_Tree\/blob\/main\/data\/staged-acquisitions\.json"/);
   assert.match(page, /href="https:\/\/github\.com\/chinonsoobeta\/Witness_Tree\/blob\/main\/data\/staged-geospatial-profile\.json"/);
@@ -81,8 +81,8 @@ test("data page puts reader downloads and limits before technical identifiers", 
   assert.ok(access >= 0 && access < limits && limits < technical && technical < staging);
   assert.match(page, /Download province values \(CSV\)/);
   assert.match(page, /Télécharger les valeurs provinciales \(GeoPackage\)/);
-  assert.match(page, /All four provinces include some area where a required mapped input is unknown/);
-  assert.match(page, /does not complete the formal Phase 2 production gate/);
+  assert.match(page, /Every province has some land with no data/);
+  assert.match(page, /not the formal Phase 2 release/);
 });
 
 test("transparency pages do not make prohibited product claims or turn unknown into zero", async () => {
@@ -95,17 +95,16 @@ test("transparency pages do not make prohibited product claims or turn unknown i
 test("methods explain the unmapped extent and inconclusive sampling in both locales", async () => {
   const page = await read("../components/transparency/MethodologyPage.tsx");
   for (const phrase of [
-    "Where the source does not reach", "What we know about the unmapped area",
-    "Là où la source ne cartographie pas le territoire", "Ce que nous savons du territoire non cartographié",
-    "Not mapped is not the same as no forest", "ce registre ne confond jamais ces deux situations",
-    "public use of those records remains pending source admission", "leur utilisation publique reste soumise à l’admission des sources",
-    "It could not constrain the answer sufficiently", "Elle n’a pas permis de resserrer suffisamment l’estimation",
-    "Neither can be measured directly from surface reflectance", "La réflectance de surface ne permet de mesurer directement ni l’un ni l’autre",
-    "Moving the baseline to a later year was also tested and did not help", "une année de référence plus récente a aussi été testé, sans réduire cette incertitude",
-    "field plots, air photos or lidar", "placettes de terrain, des photographies aériennes ou des données lidar",
-    "most of the remainder is the far north of Quebec, beyond the northern limit of the closed-crown forest",
-    "la plus grande partie du reste se trouve dans le Grand Nord québécois, au-delà de la limite septentrionale de la forêt fermée",
-    "unknown is an evidence class, distinct from area the source did not map", "une catégorie de preuve, distincte d’une superficie non cartographiée par la source",
+    "Where the source has no data", "What we know about the unmapped area",
+    "Là où la source n’a pas de données", "Ce que nous savons du territoire non cartographié",
+    "Unmapped does not mean there is no forest", "n’est jamais traité comme dépourvu de forêt",
+    "not yet cleared for public use", "pas encore autorisés pour un usage public",
+    "images can’t show whether the land met the forest definition", "les images ne montrent pas si le territoire répondait à la définition de la forêt",
+    "a later start year didn’t help", "une année de départ plus récente n’a pas aidé",
+    "field plots, air photos or lidar", "placettes de terrain, des photos aériennes ou des données lidar",
+    "Quebec’s far north beyond where dense forest ends",
+    "le Grand Nord québécois au-delà de la forêt dense",
+    "unknown means no official record answers the question, which is different from land the source never mapped", "ce qui diffère d’un territoire que la source n’a jamais cartographié",
   ]) assert.ok(page.includes(phrase), phrase);
   assert.match(page, /\[copy\.coverage, copy\.coverageText\],\s*\[copy\.unmapped, copy\.unmappedText\],\s*\[copy\.unmappedKnowledge, copy\.unmappedKnowledgeText\],\s*\[copy\.evidence, copy\.evidenceText\]/);
 });

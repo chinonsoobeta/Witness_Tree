@@ -48,56 +48,56 @@ const text = {
     label: "Forest loss map",
     loading: "Loading the map layers for the selected year.",
     ready:
-      `Showing each province shaded by the forest it lost over the selected span, counted once per place against the forest known at the span's start. Any span from ${provinceSpanReach("en", "span")} can be chosen, and the shading follows the year control. Display boundaries are simplified and omit small islands.`,
+      `Each province is shaded by how much of its forest was lost in the years you chose, with each place counted once. Pick any years from ${provinceSpanReach("en", "span")}. Boundaries are simplified and leave out small islands.`,
     readyPerCell:
-      `Showing every detected forest-loss patch lost in any year of the selected span, traced from the 30 m grid, in British Columbia, Alberta, Ontario and Québec. Any span within ${perCellArchiveSpan("en")} can be chosen, and the patches follow the year control.`,
+      `Showing every patch of detected forest loss in the years you chose, in all four provinces. Pick any years within ${perCellArchiveSpan("en")}.`,
     readyHarvest:
-      "Showing only the detected forest-loss patches in the selected span that the national disturbance record marks as harvest in the year each was lost.",
+      "Showing only the loss patches that the national record lists as harvested in the year they were lost.",
     readyFire:
-      "Showing only the detected forest-loss patches in the selected span that the national disturbance record marks as fire in the year each was lost.",
+      "Showing only the loss patches that the national record lists as burned in the year they were lost.",
     readyBoth:
-      `Showing two layers for the same selected span: the provinces are shaded by the forest each lost over it, and the detected forest-loss patches drawn as you zoom in are every patch lost in any year of it, in British Columbia, Alberta, Ontario and Québec. Both follow the year control, over ${provinceSpanReach("en", "span")}. Province display boundaries are simplified and omit small islands.`,
+      `Provinces are shaded by how much forest they lost in the years you chose, and zooming in shows each patch of loss. Pick any years from ${provinceSpanReach("en", "span")}. Boundaries are simplified and leave out small islands.`,
     fallbackTimeout:
-      "The interactive map is taking too long to load. A static map is shown instead. The figures below are unaffected. You can retry the interactive map.",
+      "The interactive map is taking too long, so a still map is shown instead. The figures below are not affected.",
     fallbackError:
-      "The interactive map could not be loaded. A static map is shown instead. The figures below are unaffected. You can retry the interactive map.",
+      "The interactive map didn’t load, so a still map is shown instead. The figures below are not affected.",
     unavailable:
-      "Condition and recovery needs a recorded decision on which land-cover classes count as treed cover returning after a loss, and an admitted, reviewed product built on that decision. Neither the decision nor the product exists yet. It is not shown for any year. Forest loss, Recorded harvest and Wildfire are unaffected.",
+      "Condition and recovery isn’t available yet. We still need to decide what counts as trees growing back, and review a map built on that decision. The other layers are not affected.",
     unavailableYear:
-      `Detected patches cover spans within ${perCellArchiveSpan("en")}. Choose ${EXPLORE_YEAR_MAX} or an earlier year to see this mode.`,
+      `Loss patches cover ${perCellArchiveSpan("en")}. Choose ${EXPLORE_YEAR_MAX} or earlier to see this layer.`,
     error:
-      "The map could not be loaded. The figures below are unaffected. You can retry the interactive map or use the list and table.",
+      "The map didn’t load. The figures below are not affected, and you can try again or use the list and table.",
     errorTimeout:
-      "The interactive map is taking too long to load, and no static map is available for this selection. The figures below are unaffected. You can retry the interactive map or use the list and table.",
+      "The map is taking too long to load. The figures below are not affected, and you can try again or use the list and table.",
     retry: "Retry the interactive map",
     attribution: "Map sources",
     perCell:
-      `Zoom in to see individual patches of detected forest loss in British Columbia, Alberta, Ontario and Québec, traced from the 30 m grid rather than generalized from it. Every patch lost in any year of the selected span is drawn; a place lost in more than one of those years is drawn once for each.`,
+      `Zoom in to see each patch of detected forest loss in the years you chose. A place lost in more than one year is drawn once for each year.`,
     perCellLimits:
-      "These patches are drawn, not counted. Below the closest zoom the map simplifies them and leaves out the smallest ones, so adding them up would come out short; the annual figures are counted from the exact cell inventory instead. Nobody has checked these patches against conditions on the ground. An area with no patch is not a claim that no loss happened there.",
-    perCellLegend: "Detected loss patch, by what the official record shows",
+      "These patches are for viewing, not counting: when zoomed out, the map simplifies them and drops the smallest. Nobody has checked them on the ground, and an area with no patch doesn’t mean no loss happened there.",
+    perCellLegend: "Loss patch, by what the official record shows",
     perCellLegendHarvest: "Detected loss patch with a recorded harvest",
     perCellLegendFire: "Detected loss patch with a recorded fire",
     perCellFilteredLimits:
-      "Only patches the disturbance record marks this way are drawn. The record cannot tell nothing-recorded apart from outside the area it maps, so an empty area is not a claim that nothing happened there.",
+      "Only patches the official record marks this way are drawn. An empty area doesn’t mean nothing happened there; the record may just not cover it.",
     perCellHarvest: "A harvest is recorded in the year the patch was lost",
     perCellFire: "A fire is recorded in the year the patch was lost",
     perCellNeither:
-      "Neither is recorded. The disturbance record cannot distinguish nothing recorded from outside the area it maps, so this is not evidence that neither happened.",
-    legend: "Detected forest loss over the span, percent of the forest known at its start",
+      "Neither is recorded. That doesn’t prove neither happened; the record may just not cover this area.",
+    legend: "Detected forest loss in these years, as a share of the forest at the start",
     spanTable: "Detected forest loss by province",
     fourProvinces: "The four provinces together",
     summedLoss: "Yearly losses added together (ha)",
     unknownShare: "Unknown at the start",
     spanBasis:
-      "Each place counts once however many times it was cleared in the span, so the share can never pass 100%. Yearly losses added together count a place again each time it was cleared; that figure is hectares only and has no share. Unknown is never counted as zero, and every province is only partly mapped, so every figure is a minimum. Nothing here has been checked against conditions on the ground.",
+      "Each place counts once, however many times it was cleared, so the share can’t pass 100%. The yearly losses added together count a place each time it was cleared, so they are shown in hectares only. Every province is only partly mapped and nothing was checked on the ground, so every figure is a minimum.",
     province: "Province",
     period: "Period",
     lossHectares: "Detected loss (ha)",
     lossPercent: "Detected loss (%)",
     coverage: "Coverage",
-    complete: "Every input pixel present",
-    partial: "Some pixels unknown, so this is a minimum",
+    complete: "Fully mapped",
+    partial: "Partly unmapped, so this is a minimum",
     unknownArea: "ha unknown",
     zoomIn: "Zoom in",
     zoomOut: "Zoom out",
@@ -131,57 +131,57 @@ const text = {
     loading:
       "Chargement des couches cartographiques pour l’année choisie.",
     ready:
-      `Affichage de chaque province ombrée selon la forêt perdue pendant la période choisie, comptée une seule fois par lieu par rapport à la forêt connue au début de la période. Toute période ${provinceSpanReach("fr", "from")} peut être choisie, et l’ombrage suit la commande d’année. Les limites d’affichage sont simplifiées et omettent les petites îles.`,
+      `Chaque province est ombrée selon la part de sa forêt perdue pendant les années choisies, chaque lieu étant compté une seule fois. Choisissez n’importe quelles années ${provinceSpanReach("fr", "from")}. Les limites sont simplifiées et omettent les petites îles.`,
     readyPerCell:
-      `Affichage de chaque parcelle de perte forestière détectée perdue au cours de n’importe quelle année de la période choisie, tracée à partir de la grille de 30 m, en Colombie-Britannique, en Alberta, en Ontario et au Québec. Toute période comprise dans ${perCellArchiveSpan("fr")} peut être choisie, et les parcelles suivent la commande d’année.`,
+      `Affichage de chaque parcelle de perte forestière détectée pendant les années choisies, dans les quatre provinces. Choisissez n’importe quelles années comprises dans ${perCellArchiveSpan("fr")}.`,
     readyHarvest:
-      "Affichage des seules parcelles de perte forestière détectée de la période choisie que le registre national des perturbations désigne comme récolte pour l’année où chacune a été perdue.",
+      "Affichage des seules parcelles de perte que le registre national indique comme récoltées l’année où elles ont été perdues.",
     readyFire:
-      "Affichage des seules parcelles de perte forestière détectée de la période choisie que le registre national des perturbations désigne comme incendie pour l’année où chacune a été perdue.",
+      "Affichage des seules parcelles de perte que le registre national indique comme brûlées l’année où elles ont été perdues.",
     readyBoth:
-      `Affichage de deux couches pour la même période choisie : les provinces sont ombrées selon la forêt que chacune a perdue pendant cette période, et les parcelles de perte forestière détectée, dessinées au fur et à mesure du zoom, sont toutes celles perdues au cours de n’importe laquelle de ses années, en Colombie-Britannique, en Alberta, en Ontario et au Québec. Les deux suivent la commande d’année, ${provinceSpanReach("fr", "from")}. Les limites provinciales affichées sont simplifiées et omettent les petites îles.`,
+      `Les provinces sont ombrées selon la forêt perdue pendant les années choisies, et le zoom avant montre chaque parcelle de perte. Choisissez n’importe quelles années ${provinceSpanReach("fr", "from")}. Les limites sont simplifiées et omettent les petites îles.`,
     fallbackTimeout:
-      "La carte interactive met trop de temps à se charger. Une carte statique est affichée à sa place. Les chiffres ci-dessous restent inchangés. Vous pouvez réessayer de charger la carte interactive.",
+      "La carte interactive tarde à se charger; une carte fixe est donc affichée à sa place. Les chiffres ci-dessous ne sont pas touchés.",
     fallbackError:
-      "La carte interactive n’a pas pu être chargée. Une carte statique est affichée à sa place. Les chiffres ci-dessous restent inchangés. Vous pouvez réessayer de charger la carte interactive.",
+      "La carte interactive ne s’est pas chargée; une carte fixe est donc affichée à sa place. Les chiffres ci-dessous ne sont pas touchés.",
     unavailable:
-      "L’état et le rétablissement exigent une décision consignée sur les classes de couverture terrestre qui comptent comme un couvert arboré revenant après une perte, ainsi qu’un produit admis et examiné fondé sur cette décision. Ni la décision ni le produit ne sont encore en place. Ce mode n’est affiché pour aucune année. La perte forestière, les récoltes consignées et les incendies ne sont pas touchés.",
+      "L’état et le rétablissement ne sont pas encore offerts. Il faut d’abord décider ce qui compte comme des arbres qui repoussent, puis examiner une carte fondée sur cette décision. Les autres couches ne sont pas touchées.",
     unavailableYear:
-      `Les parcelles détectées couvrent les périodes comprises dans ${perCellArchiveSpan("fr")}. Choisissez ${EXPLORE_YEAR_MAX} ou une année antérieure pour voir ce mode.`,
+      `Les parcelles de perte couvrent ${perCellArchiveSpan("fr")}. Choisissez ${EXPLORE_YEAR_MAX} ou une année antérieure pour voir cette couche.`,
     error:
-      "La carte n’a pas pu être chargée. Les chiffres ci-dessous restent inchangés. Vous pouvez réessayer de charger la carte interactive ou utiliser la liste et le tableau.",
+      "La carte ne s’est pas chargée. Les chiffres ci-dessous ne sont pas touchés; vous pouvez réessayer ou utiliser la liste et le tableau.",
     errorTimeout:
-      "La carte interactive met trop de temps à se charger, et aucune carte statique n’est disponible pour cette sélection. Les chiffres ci-dessous restent inchangés. Vous pouvez réessayer de charger la carte interactive ou utiliser la liste et le tableau.",
+      "La carte tarde à se charger. Les chiffres ci-dessous ne sont pas touchés; vous pouvez réessayer ou utiliser la liste et le tableau.",
     retry: "Réessayer la carte interactive",
     attribution: "Sources de la carte",
     perCell:
-      `Faites un zoom avant pour voir chaque parcelle de perte forestière détectée en Colombie-Britannique, en Alberta, en Ontario et au Québec, tracée à partir de la grille de 30 m plutôt que généralisée. Toutes les parcelles perdues au cours de n’importe quelle année de la période choisie sont dessinées; un lieu perdu au cours de plusieurs de ces années est dessiné une fois pour chacune.`,
+      `Faites un zoom avant pour voir chaque parcelle de perte forestière détectée pendant les années choisies. Un lieu perdu au cours de plusieurs années est dessiné une fois pour chacune.`,
     perCellLimits:
-      "Ces parcelles sont dessinées, et non comptées. Sous le zoom le plus rapproché, la carte les simplifie et omet les plus petites ; les additionner donnerait donc un total trop faible. Les chiffres annuels sont plutôt comptés à partir de l’inventaire exact des cellules. Personne n’a vérifié ces parcelles sur le terrain. Une zone sans parcelle n’affirme pas qu’aucune perte n’y est survenue.",
-    perCellLegend: "Parcelle de perte détectée, selon ce que montre le registre officiel",
+      "Ces parcelles servent à la visualisation, pas au calcul : en zoom arrière, la carte les simplifie et omet les plus petites. Personne ne les a vérifiées sur le terrain, et une zone sans parcelle ne veut pas dire qu’aucune perte n’y est survenue.",
+    perCellLegend: "Parcelle de perte, selon ce que montre le registre officiel",
     perCellLegendHarvest: "Parcelle de perte détectée avec récolte consignée",
     perCellLegendFire: "Parcelle de perte détectée avec incendie consigné",
     perCellFilteredLimits:
-      "Seules les parcelles ainsi désignées par le registre des perturbations sont dessinées. Le registre ne distingue pas l’absence de mention de l’extérieur de la zone qu’il cartographie; une zone vide n’affirme donc pas que rien ne s’y est produit.",
+      "Seules les parcelles ainsi désignées par le registre officiel sont dessinées. Une zone vide ne veut pas dire que rien ne s’y est produit; le registre ne la couvre peut-être pas.",
     perCellHarvest: "Une récolte est consignée pour l’année où la parcelle a été perdue",
     perCellFire: "Un incendie est consigné pour l’année où la parcelle a été perdue",
     perCellNeither:
-      "Ni l’un ni l’autre n’est consigné. Le registre des perturbations ne distingue pas l’absence de mention de l’extérieur de la zone qu’il cartographie; ce n’est donc pas une preuve que rien ne s’est produit.",
+      "Ni l’un ni l’autre n’est consigné. Cela ne prouve pas que rien ne s’est produit; le registre ne couvre peut-être pas cette zone.",
     legend:
-      "Perte forestière détectée pendant la période, en pourcentage de la forêt connue à son début",
+      "Perte forestière détectée pendant ces années, en part de la forêt au début",
     spanTable: "Perte forestière détectée par province",
     fourProvinces: "Les quatre provinces ensemble",
     summedLoss: "Pertes annuelles additionnées (ha)",
     unknownShare: "Inconnu au début",
     spanBasis:
-      "Chaque lieu compte une seule fois, peu importe le nombre de coupes pendant la période; la part ne peut donc jamais dépasser 100 %. Les pertes annuelles additionnées comptent un lieu de nouveau à chaque coupe; ce chiffre est en hectares seulement et n’a pas de part. L’inconnu n’est jamais compté comme zéro, et chaque province n’est que partiellement cartographiée; chaque chiffre est donc un minimum. Rien ici n’a été vérifié sur le terrain.",
+      "Chaque lieu compte une seule fois, peu importe le nombre de coupes; la part ne peut donc pas dépasser 100 %. Les pertes annuelles additionnées comptent un lieu à chaque coupe; elles sont donc affichées en hectares seulement. Chaque province n’est que partiellement cartographiée et rien n’a été vérifié sur le terrain; chaque chiffre est donc un minimum.",
     province: "Province",
     period: "Période",
     lossHectares: "Perte détectée (ha)",
     lossPercent: "Perte détectée (%)",
     coverage: "Couverture",
-    complete: "Tous les pixels d’entrée sont présents",
-    partial: "Certains pixels sont inconnus; il s’agit donc d’un minimum",
+    complete: "Entièrement cartographié",
+    partial: "En partie non cartographié; il s’agit donc d’un minimum",
     unknownArea: "ha inconnus",
     zoomIn: "Zoom avant",
     zoomOut: "Zoom arrière",

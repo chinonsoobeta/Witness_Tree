@@ -42,9 +42,9 @@ export default async function ComparePage({
       <main id="main" className="page-wrap">
         <header className="masthead">
           <h1>{TITLE}</h1>
-          <p className="masthead-note">Extent-corrected measurements for 2021–2022.</p>
+          <p className="masthead-note">Figures for 2021–2022, adjusted for mapped area.</p>
         </header>
-        <CoverageStatement locale="en"><p>Compare the mapped coverage before comparing the figures. A smaller measured loss does not establish less loss where coverage differs. Missing measurements are excluded from the ranking, never counted as zero.</p><p>The forested-area denominator includes only known mapped forest; it does not describe forest in areas without coverage.</p></CoverageStatement>
+        <CoverageStatement locale="en"><p>Check how much of each riding was mapped before comparing figures: a smaller loss may just mean less was mapped. Ridings without full data are left out of the ranking, never counted as zero. Shares are of mapped forest only.</p></CoverageStatement>
         <EvidenceLegend locale="en" />
         <FederalRidingPicker
           rows={federalRidingComparison.comparisonRows}

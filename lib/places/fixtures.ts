@@ -4,8 +4,8 @@ import { PLACE_PROVINCES, PLACE_TYPES, type Location, type Place, type PlaceEven
 
 const local = (en: string, fr: string): LocalizedString => ({ en, fr });
 const provenance: Provenance = { dataset: "Illustrative source-ledger entry", version: "example-1.0", retrievedDate: "2026-08-11", licence: "ogl-canada-2.0", recordUrl: "https://example.local/record" };
-const high: ConfidenceResult = { level: "high", ruleId: "CONF-HIGH-001", reason: local("Direct authoritative record with clear geometry, date and attributes.", "Registre faisant directement autorité, avec une géométrie, une date et des attributs clairs.") };
-const limited: ConfidenceResult = { level: "limited", ruleId: "CONF-LIMITED-001", reason: local("Useful indication only because a documented coverage or resolution limit affects this location.", "Indication utile seulement, car une limite documentée de couverture ou de résolution touche cet emplacement.") };
+const high: ConfidenceResult = { level: "high", ruleId: "CONF-HIGH-001", reason: local("An official record with a clear location, date and details.", "Un registre officiel avec un emplacement, une date et des détails clairs.") };
+const limited: ConfidenceResult = { level: "limited", ruleId: "CONF-LIMITED-001", reason: local("A rough guide only: the data here has a known gap or is not detailed enough.", "Simple indication : les données ont ici une lacune connue ou manquent de précision.") };
 
 function event(id: string, year: number, evidence: PlaceEvent["evidence"], title: LocalizedString, confidence = high): PlaceEvent {
   return { id, year, evidence, title, confidence, limitation: confidence.reason, provenance };
@@ -49,9 +49,9 @@ export const PLACES: readonly Place[] = specs.map(([id, type, province, name], i
     annual: [{ year: 2022, hectares: 8 + index, eventIds: [second.id] }, { year: 2024, hectares: 5 + index, eventIds: [first.id] }], events: [first, second],
     stats: [
       { kind: "figure", value: 13 + index, unit: "ha", evidence: "official-record", confidence: high, provenance },
-      { kind: "unknown", evidence: "unknown", reason: local("No authoritative public record has been integrated for this question.", "Aucun registre public faisant autorité n’a été intégré pour cette question."), coverageGrade: "national-baseline-plus-local-context" },
+      { kind: "unknown", evidence: "unknown", reason: local("No official public record answers this question yet.", "Aucun registre public officiel ne répond encore à cette question."), coverageGrade: "national-baseline-plus-local-context" },
     ], sources: ["example-official-record", "example-satellite-observation"], citation: { timeRange: `${EXPLORE_COVERAGE_PERIOD.compact} (illustrative)`, dataVersion: "example-1.0", method: "example-method-1" },
-    ...(type === "reserve" || type === "treaty-area" ? { safeguard: local("Illustrative geography only. This example does not identify a community contact or speak for rights holders; a right of reply is retained before publication.", "Géographie illustrative seulement. Cet exemple ne désigne aucun contact communautaire et ne parle pas au nom des titulaires de droits; un droit de réponse est maintenu avant publication.") } : {}),
+    ...(type === "reserve" || type === "treaty-area" ? { safeguard: local("Example area only. It names no community contact and does not speak for rights holders; communities will be able to reply before anything is published.", "Zone d’exemple seulement. Elle ne désigne aucun contact communautaire et ne parle pas au nom des titulaires de droits; les communautés pourront répondre avant toute publication.") } : {}),
   };
 });
 

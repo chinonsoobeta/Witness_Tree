@@ -39,8 +39,8 @@ const copy = {
     submit: "Find districts",
     searching: "Searching",
     resolving: "Reading the district index",
-    guide: "Enter a Canadian address. It is sent to look up its location and is not kept.",
-    privacy: "The address is never written into this page's web address, its links, or its history.",
+    guide: "Enter a Canadian address. We use it only to find the location, and don’t keep it.",
+    privacy: "Your address never appears in this page’s web address, links or browser history.",
     results: "Choose the matching address",
     none: "No address matched that search.",
     failed: "The address could not be looked up just now.",
@@ -49,9 +49,9 @@ const copy = {
     provincial: "Provincial district",
     outside: "This point is outside the area the index covers.",
     near: (names: string, metres: number) =>
-      `This point sits within ${metres} m of a district boundary, so the index cannot separate them. It is in one of: ${names}.`,
+      `This point is within ${metres} m of a district boundary, so we can’t tell which side it’s on. It is in one of: ${names}.`,
     precision: (block: number) =>
-      `Resolved on a ${block} m grid. A point within ${block} m of a boundary is reported as being near one rather than inside either.`,
+      `Located on a ${block} m grid, so a point within ${block} m of a boundary is shown as near it, not inside either side.`,
     compare: "See measurements",
     provinces: {
       "bc-2023": "British Columbia",
@@ -66,7 +66,7 @@ const copy = {
     submit: "Trouver les circonscriptions",
     searching: "Recherche en cours",
     resolving: "Lecture de l'index des circonscriptions",
-    guide: "Entrez une adresse canadienne. Elle sert à trouver son emplacement et n'est pas conservée.",
+    guide: "Entrez une adresse canadienne. Nous l'utilisons seulement pour trouver l'emplacement, et ne la conservons pas.",
     privacy:
       "L'adresse n'est jamais inscrite dans l'adresse web de cette page, ni dans ses liens, ni dans son historique.",
     results: "Choisissez l'adresse correspondante",
@@ -77,9 +77,9 @@ const copy = {
     provincial: "Circonscription provinciale",
     outside: "Ce point est à l'extérieur du territoire couvert par l'index.",
     near: (names: string, metres: number) =>
-      `Ce point se trouve à moins de ${metres} m d'une limite de circonscription, et l'index ne peut donc pas les départager. Il est dans l'une des suivantes : ${names}.`,
+      `Ce point est à moins de ${metres} m d'une limite de circonscription; nous ne pouvons donc pas dire de quel côté il se trouve. Il est dans l'une des suivantes : ${names}.`,
     precision: (block: number) =>
-      `Résolu sur une grille de ${block} m. Un point situé à moins de ${block} m d'une limite est signalé comme étant près d'une limite plutôt que dans l'une ou l'autre.`,
+      `Situé sur une grille de ${block} m; un point à moins de ${block} m d'une limite est donc indiqué comme proche de celle-ci, et non d'un côté ou de l'autre.`,
     compare: "Voir les mesures",
     provinces: {
       "bc-2023": "Colombie-Britannique",

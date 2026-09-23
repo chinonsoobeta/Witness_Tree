@@ -42,7 +42,9 @@ test("the committed observation is current for the deployed client", async () =>
    * deployed from that client and observed at 2026-09-20T18:27:40Z, so the
    * bytes the Site runs are the bytes this branch carries and the record
    * binds them. On 2026-09-22, Sites version 39 deployed the requested
-   * application commit and the new observation binds both gated files.
+   * application commit and the new observation binds both gated files. On
+   * 2026-09-23, Sites version 41 deployed this same application commit; the
+   * fresh observation binds both gated files again.
    */
   assert.deepEqual(validateDeployedMapRender(), []);
   const gate = resolveDeployedMapRender();
@@ -363,6 +365,8 @@ test("neither weaker tier exists on this branch, so nothing stands in for the Si
    * for the next client change too. That reasoning was tested immediately: the
    * chrome-in-flow change reopened the gate hours later, and version 36
    * settled it on a measurement with no weaker tier committed at any point.
+   * The wording update later reopened it; version 41 settled it on a fresh
+   * measurement, still with no weaker tier committed.
    */
   for (const relative of [BRANCH_EVIDENCE_PATH, BREAK_GLASS_PATH]) {
     assert.equal(

@@ -72,7 +72,7 @@ test("the drawing surface is an addition to the fields, never a replacement for 
     assert.match(markup, /class="shape-draw-canvas"[^>]*role="img"[^>]*aria-label="[^"]+"/);
     assert.match(markup, /<figcaption/, `${locale}: the map does not say what it is for`);
     assert.ok(
-      markup.includes(locale === "en" ? "Optional." : "Facultatif."),
+      markup.includes(locale === "en" ? "Optional:" : "Facultatif :"),
       `${locale}: the map is not declared optional`,
     );
     for (const label of locale === "en" ? ["North edge", "From", "To"] : ["Limite nord", "De", "À"]) {

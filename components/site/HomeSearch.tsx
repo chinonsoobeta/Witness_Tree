@@ -18,14 +18,14 @@ const COPY = {
     label: "Search a place",
     placeholder: "Prince George, British Columbia",
     submit: "Open the record",
-    note: "Search covers provinces, federal and provincial ridings, and communities, with figures for 1984 to 2022.",
+    note: "Search provinces, ridings and communities. Figures cover 1984 to 2022.",
   },
   fr: {
     action: "/fr/recherche",
     label: "Rechercher un lieu",
     placeholder: "Prince George, Colombie-Britannique",
     submit: "Ouvrir le relevé",
-    note: "La recherche couvre les provinces, les circonscriptions fédérales et provinciales ainsi que les collectivités, avec des chiffres de 1984 à 2022.",
+    note: "Recherchez une province, une circonscription ou une collectivité. Les chiffres couvrent 1984 à 2022.",
   },
 } as const;
 

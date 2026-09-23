@@ -42,7 +42,7 @@ export function PlacePage({
           observed: "What was observed, year by year",
           provenance: "Where these numbers come from",
           caution: "Before you cite this",
-          cautionBody: "The years with a record are not a total for the period. Absence of a record is not absence of change.",
+          cautionBody: "The years with a record don’t add up to a total for the period. No record doesn’t mean no change.",
           method: "Read the method",
           sources: "Illustrative source-ledger entries",
           download: "Download illustrative data",
@@ -52,11 +52,11 @@ export function PlacePage({
           boundary: "Boundary edition",
           denominator: "Forested hectares",
           eyebrow: "An illustrative record",
-          note: "Every figure below carries its evidence class, confidence and source. Unknown is shown as –, never as zero.",
+          note: "Every figure below shows its evidence, confidence and source. Unknown is shown as –, never as zero.",
           absent: (count: number, total: number) =>
             `${count} of ${total} years in ${window?.first}–${window?.last} have no integrated record`,
           lead: (boundary: string, hectares: string) =>
-            `This page reports what has been recorded or observed inside boundary ${boundary}, across ${hectares}. It does not report what has not been recorded.`,
+            `This page shows what has been recorded or seen inside boundary ${boundary}, across ${hectares}. It can’t show what was never recorded.`,
         }
       : {
           panel: "Ce que cette page permet de savoir",
@@ -64,7 +64,7 @@ export function PlacePage({
           observed: "Ce qui a été observé, année par année",
           provenance: "D’où viennent ces chiffres",
           caution: "Avant de citer ces données",
-          cautionBody: "Les années dotées d’un registre ne constituent pas un total pour la période. L’absence de registre n’est pas l’absence de changement.",
+          cautionBody: "Les années dotées d’un registre ne s’additionnent pas en un total pour la période. L’absence de registre ne veut pas dire l’absence de changement.",
           method: "Lire la méthode",
           sources: "Entrées illustratives du registre des sources",
           download: "Télécharger les données illustratives",
@@ -74,11 +74,11 @@ export function PlacePage({
           boundary: "Édition de limite",
           denominator: "Hectares forestiers",
           eyebrow: "Un dossier illustratif",
-          note: "Chaque chiffre ci-dessous porte sa catégorie de preuve, sa confiance et sa source. L’inconnu est indiqué par –, jamais par zéro.",
+          note: "Chaque chiffre ci-dessous affiche sa preuve, sa confiance et sa source. L’inconnu est indiqué par –, jamais par zéro.",
           absent: (count: number, total: number) =>
             `${count} des ${total} années de ${window?.first}–${window?.last} n’ont aucun registre intégré`,
           lead: (boundary: string, hectares: string) =>
-            `Cette page rend compte de ce qui a été consigné ou observé à l’intérieur de la limite ${boundary}, sur ${hectares}. Elle ne rend pas compte de ce qui n’a pas été consigné.`,
+            `Cette page montre ce qui a été consigné ou observé à l’intérieur de la limite ${boundary}, sur ${hectares}. Elle ne peut pas montrer ce qui n’a jamais été consigné.`,
         };
 
   const statLabels = [text.recorded, text.share];

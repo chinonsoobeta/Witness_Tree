@@ -42,9 +42,9 @@ export default async function ComparerPage({
       <main id="main" className="page-wrap">
         <header className="masthead">
           <h1>{TITRE}</h1>
-          <p className="masthead-note">Mesures corrigées selon l’étendue pour 2021–2022.</p>
+          <p className="masthead-note">Chiffres pour 2021–2022, ajustés selon la zone cartographiée.</p>
         </header>
-        <CoverageStatement locale="fr"><p>Comparez la couverture cartographiée avant de comparer les chiffres. Une perte mesurée plus faible ne signifie pas une perte moindre lorsque la couverture diffère. Les mesures manquantes sont exclues du classement, jamais comptées comme zéro.</p><p>Le dénominateur de superficie forestière comprend seulement la forêt connue et cartographiée; il ne décrit pas la forêt des zones sans couverture.</p></CoverageStatement>
+        <CoverageStatement locale="fr"><p>Vérifiez quelle part de chaque circonscription a été cartographiée avant de comparer les chiffres : une perte plus faible peut simplement signifier qu’une plus petite partie a été cartographiée. Les circonscriptions sans données complètes sont exclues du classement, jamais comptées comme zéro. Les parts portent seulement sur la forêt cartographiée.</p></CoverageStatement>
         <EvidenceLegend locale="fr" />
         <FederalRidingPicker
           rows={federalRidingComparison.comparisonRows}

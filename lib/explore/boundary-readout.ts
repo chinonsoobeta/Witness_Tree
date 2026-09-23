@@ -55,7 +55,7 @@ export type BoundaryReadout =
 
 const words = {
   en: {
-    boundaryOnly: "Reference boundary only. No forest-loss measurement is available for this geography.",
+    boundaryOnly: "Reference boundary only. There is no forest-loss figure for this area.",
     complete: "Complete mapped coverage",
     partial: "Partial mapped coverage; unknown area remains",
     none: "No mapped coverage",
@@ -63,7 +63,7 @@ const words = {
     unknown: "Unknown",
   },
   fr: {
-    boundaryOnly: "Limite de référence seulement. Aucune mesure de perte forestière n’est disponible pour cette géographie.",
+    boundaryOnly: "Limite de référence seulement. Il n’y a aucun chiffre de perte forestière pour cette zone.",
     complete: "Couverture cartographiée complète",
     partial: "Couverture cartographiée partielle; une zone inconnue demeure",
     none: "Aucune couverture cartographiée",

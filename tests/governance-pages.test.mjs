@@ -67,9 +67,9 @@ test("glossary separates event grades from measurement states and defines reader
 test("corrections provides interim actions without inventing an intake address", async () => {
   const content = await read("../components/governance/GovernancePage.tsx");
   assert.match(content, /use the publisher’s own correction route/);
-  assert.match(content, /Preparing this record does not file a case or start a service-level clock/);
+  assert.match(content, /Keeping these notes does not file a case or start the response clock/);
   assert.match(content, /utilisez la voie de correction de l’éditeur/);
-  assert.match(content, /Aucune adresse de correction ni aucun formulaire de soumission n’est actuellement autorisé/);
+  assert.match(content, /aucune adresse de correction ni aucun formulaire n’est approuvé/);
   assert.doesNotMatch(content, /mailto:|corrections@|correction@/i);
 });
 
@@ -83,8 +83,8 @@ test("method and decision copy use the current interval control", async () => {
     assert.match(content, /EXPLORE_YEAR_MIN/);
     assert.doesNotMatch(content, /default view (?:starts|begins) in 2000|vue par défaut commence en 2000/);
   }
-  assert.match(method, /each selected year names the interval ending in that year/);
-  assert.match(method, /chaque année choisie désigne l’intervalle qui se termine cette année-là/);
+  assert.match(method, /each year shows the change since the year before/);
+  assert.match(method, /chaque année montre le changement depuis l’année précédente/);
 });
 
 test("Releases indexes the bounded release and Data and Explore point back to it", async () => {

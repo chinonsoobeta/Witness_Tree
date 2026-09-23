@@ -28,7 +28,7 @@ export default function FrenchHome() {
     <header className="masthead masthead--record">
       <p className="eyebrow">Registre public des pertes forestières</p>
       <h1>Qu’est-il arrivé à la forêt ici?</h1>
-      <p className="dek">{PRODUCT_NAME.fr} présente les pertes forestières consignées et détectées dans quatre provinces, avec la source jointe à chaque affirmation.</p>
+      <p className="dek">{PRODUCT_NAME.fr} montre les pertes forestières dans quatre provinces canadiennes, à partir d’images satellites et de registres publics. Chaque fait renvoie à sa source.</p>
       <HomeSearch locale="fr" />
       <ProvinceBar locale="fr" />
     </header>
@@ -41,17 +41,17 @@ export default function FrenchHome() {
     */}
     <CumulativeHeadline locale="fr" />
 
-    <CoverageStatement locale="fr"><p>La perte détectée est un minimum de la zone cartographiée dans quatre provinces. Les superficies non cartographiées par la source restent inconnues, même là où la perte détectée est faible. Une absence dans ce registre n’est pas une affirmation sur ce qui s’est produit dans le monde.</p></CoverageStatement>
+    <CoverageStatement locale="fr"><p>Ces chiffres sont un minimum. Les satellites n’ont cartographié qu’une partie de chaque province, et le reste est traité comme inconnu, jamais comme zéro. Si quelque chose n’apparaît pas ici, cela ne veut pas dire que cela ne s’est pas produit.</p></CoverageStatement>
 
     {/* Voir la note sur app/en/page.tsx : une seule liste des quatre marques. */}
     <section className="content-section evidence-band">
-      <p className="evidence-band-lead">Ouvrez un dossier et consultez l’historique daté des récoltes consignées, des incendies, des perturbations et des changements détectés par satellite. Chaque affirmation porte la catégorie de preuve qui la soutient.</p>
+      <p className="evidence-band-lead">Chaque lieu a un historique daté des récoltes, des incendies et d’autres changements. Chaque fait indique le type de preuve qui le soutient.</p>
       <EvidenceMarks locale="fr" />
     </section>
 
     <section className="content-section landing-coverage" aria-labelledby="registre-actuel">
       <h2 id="registre-actuel">Le registre publié</h2>
-      <p className="lead">L’agrégat provincial provisoire et limité {provinceSpanReach("fr", "from")} présente la perte forestière détectée avec un état de couverture pour chaque province. La vérification de l’étendue cartographiée pour chacune des années est terminée, et ses résultats déterminent le classement des superficies non cartographiées.</p>
+      <p className="lead">La superficie forestière que les satellites ont détectée comme perdue dans chaque province, {provinceSpanReach("fr", "from")}. Ces chiffres sont provisoires, et chacun indique la part de la province qui n’a pas pu être vérifiée.</p>
       <ProvinceRecordList rows={SPAN_ROWS} locale="fr" unknownContexts={UNKNOWN_CONTEXTS} />
       <p><Link href="/fr/methodes#coverage-gap">Pourquoi ces superficies ne sont pas cartographiées et ce que nous en savons</Link></p>
       <p><Link className="btn btn--primary" href="/fr/explorer">Explorer le registre</Link></p>
@@ -61,9 +61,9 @@ export default function FrenchHome() {
     <section className="content-section">
       <h2>Consulter le registre</h2>
       <div className="record-grid">
-        <article className="record-card"><p className="eyebrow">Composants</p><h3>Les preuves avant les chiffres</h3><p>Examinez la présentation des valeurs, des inconnues, de la confiance, de la couverture et de la provenance dans le registre public.</p><Link href="/fr/composants">Ouvrir la galerie de composants</Link></article>
-        <article className="record-card"><p className="eyebrow">Méthodes</p><h3>Les définitions avant les chiffres</h3><p>Consultez le dénominateur forestier, les catégories de preuves, les règles de confiance, les niveaux de couverture et la méthode d’appariement.</p><Link href="/fr/methodes">Lire les méthodes</Link></article>
-        <article className="record-card"><p className="eyebrow">État des données</p><h3>Version provinciale limitée</h3><p>L’agrégat provincial {provinceSpanReach("fr", "from")} est publié avec sa source, son état de couverture et ses limites.</p><Link href="/fr/donnees">Consulter la transparence des données</Link></article>
+        <article className="record-card"><p className="eyebrow">Composants</p><h3>Les preuves avant les chiffres</h3><p>Voyez comment chaque chiffre est présenté avec sa source et ce que nous ignorons.</p><Link href="/fr/composants">Ouvrir la galerie de composants</Link></article>
+        <article className="record-card"><p className="eyebrow">Méthodes</p><h3>Les définitions avant les chiffres</h3><p>Ce qui compte comme forêt, comment les chiffres sont calculés et quel est notre degré de certitude.</p><Link href="/fr/methodes">Lire les méthodes</Link></article>
+        <article className="record-card"><p className="eyebrow">État des données</p><h3>Données provinciales</h3><p>Téléchargez les chiffres provinciaux {provinceSpanReach("fr", "from")}, avec leurs sources et leurs limites.</p><Link href="/fr/donnees">Consulter la transparence des données</Link></article>
       </div>
     </section>
 
@@ -71,16 +71,16 @@ export default function FrenchHome() {
       <h2 id="limites">Ce que ce registre n’affirme pas</h2>
       <div className="limits-body">
         <ul className="limits-list">
-          <li>Qu’un changement détecté soit une exploitation forestière ou une déforestation.</li>
+          <li>Qu’une perte soit due à l’exploitation forestière ou à la déforestation.</li>
           <li>Toute conclusion juridique ou de conformité.</li>
-          <li>Une estimation du bois marchand.</li>
-          <li>Une responsabilité déduite de la proximité.</li>
-          <li>Une affirmation sur la propagation des incendies.</li>
-          <li>Un total. La perte détectée est un plancher, pas une somme.</li>
+          <li>La quantité de bois vendable.</li>
+          <li>Qui est responsable, selon qui se trouve à proximité.</li>
+          <li>Comment un incendie se propagera.</li>
+          <li>Un total complet. La perte détectée est un minimum.</li>
         </ul>
-        <p>{PRODUCT_NAME.fr} rapporte ce que ses sources consignent et ce que ses images détectent, et rien de plus.</p>
-        <p>La perte forestière détectée est dérivée de l’observation satellitaire. Une réduction du couvert arboré n’établit pas à elle seule l’exploitation, la déforestation, la responsabilité ou la conformité. <Link href="/fr/methodes">Lire les définitions de méthode et de preuve</Link>.</p>
-        <p>L’agrégat provincial ci-dessus est un aperçu technique déterministe, limité à quatre provinces, pour {provinceSpanReach("fr", "span")}. Les parcelles de perte par cellule sont dessinées sur la carte Explorer pour les mêmes quatre provinces, tracées à partir de la grille de 30 m. Elles sont dessinées, et non comptées : aucun examen par des spécialistes n’a été réalisé, de sorte qu’elles ne satisfont pas au critère formel de la phase 2 et qu’aucun total ne peut en être tiré. <Link href="/fr/donnees">Lire la portée de la version, la provenance et l’attribution de licence</Link>.</p>
+        <p>{PRODUCT_NAME.fr} rapporte seulement ce que ses sources consignent et ce que les images satellites détectent.</p>
+        <p>Un satellite peut voir que des arbres ont disparu, mais pas pourquoi. <Link href="/fr/methodes">Comment fonctionnent les méthodes</Link>.</p>
+        <p>Les chiffres ci-dessus sont un aperçu technique pour {provinceSpanReach("fr", "span")}, et non la version définitive. Les parcelles de perte de la carte Explorer servent seulement à la visualisation : on ne peut pas les additionner, et aucun spécialiste ne les a examinées. <Link href="/fr/donnees">Données, sources et licences</Link>.</p>
         <p><small>Source du contexte : {EXPLORE_PRODUCTION_LAYER.attribution.fr} <a href={EXPLORE_PRODUCTION_LAYER.attribution.href}>Catalogue source</a>.</small></p>
       </div>
     </section>

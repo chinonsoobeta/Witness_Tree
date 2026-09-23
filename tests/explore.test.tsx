@@ -75,7 +75,7 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
   );
   assert.match(
     en,
-    /list, chart, and table are for the span the year control has selected, and follow it; any span within 1984–2022 can be chosen/,
+    /follow the years you choose, anywhere within 1984–2022/,
   );
   /*
    * The per-cell half of the caption is a promise about a layer the reader can
@@ -99,8 +99,8 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
     // The patches and the provinces now cover the same span, but the per-cell
     // figures are still one annual interval; the caption has to keep that
     // apart rather than let one period stand for both.
-    assert.match(en, /cover the same span: every patch lost in any year of it/);
-    assert.match(en, /one annual interval only, the last of the span/);
+    assert.match(en, /The province figures and the loss patches on the map follow the years you choose/);
+    assert.match(en, /cover only the last year of your span/);
     assert.doesNotMatch(en, /show the last annual interval of the span alone/);
     /*
      * Figures are now counted from the exact cell inventory, so the copy may no
@@ -109,9 +109,9 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
      * limits that survive counting: nothing was checked on the ground, and the
      * source maps only part of the country.
      */
-    assert.match(en, /counted from the exact cell inventory/);
-    assert.match(en, /cannot be added up/);
-    assert.match(en, /checked against conditions on the ground/);
+    assert.match(en, /counted from the 30 m grid cells behind the map/);
+    assert.match(en, /can’t be added up/);
+    assert.match(en, /checked on the ground/);
     assert.match(en, /every figure is a minimum/);
     // The claim that no figure is counted is now false and must be gone.
     assert.doesNotMatch(en, /no figure on this site is counted from them/);
@@ -125,7 +125,7 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
     assert.doesNotMatch(en, /Per-cell detected loss, \d{4}-\d{4}/u);
     assert.match(en, /Detected loss \(ha\)/);
     assert.match(en, /Cause not recorded \(ha\)/);
-    assert.match(en, /One cell is 0\.09 ha/);
+    assert.match(en, /one cell is 0\.09 ha/);
   } else {
     assert.doesNotMatch(en, /per-cell detected loss patches/);
     assert.doesNotMatch(en, /have not been expert-reviewed/);
@@ -162,10 +162,10 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
   // layer's actual scope. A disclaimer creeping back is a copy regression.
   assert.match(en, /overlays=economic-regions/);
   assert.match(en, /overlays=watersheds/);
-  assert.match(en, /The 44 Statistics Canada 2021 economic regions in British Columbia, Alberta, Ontario and Québec are clipped to those provinces and drawn as a bilingual reference framework\./);
-  assert.match(en, /The 105 Canadian sub-drainage areas from NRCan&#x27;s bilingual Water Survey of Canada rollup, version 6\.0, that intersect British Columbia, Alberta, Ontario and Québec are clipped at those provincial boundaries and drawn as a reference framework\./);
-  assert.match(fr, /Les 44 régions économiques de Statistique Canada de 2021 situées en Colombie-Britannique, en Alberta, en Ontario et au Québec sont découpées selon ces provinces et tracées comme cadre de référence bilingue\./);
-  assert.match(fr, /Les 105 aires canadiennes du regroupement bilingue des sous-aires de drainage de la Division des relevés hydrologiques du Canada de RNCan, version 6\.0, qui touchent la Colombie-Britannique, l’Alberta, l’Ontario et le Québec sont découpées aux limites de ces provinces et tracées comme cadre de référence\./);
+  assert.match(en, /The 44 economic regions in the four provinces, as defined by Statistics Canada in 2021\./);
+  assert.match(en, /The 105 watersheds that touch the four provinces, cut off at the provincial borders\./);
+  assert.match(fr, /Les 44 régions économiques des quatre provinces, telles que définies par Statistique Canada en 2021\./);
+  assert.match(fr, /Les 105 bassins versants qui touchent les quatre provinces, coupés aux frontières provinciales\./);
   assert.doesNotMatch(en, /not a regional forest-loss aggregate/);
   assert.doesNotMatch(en, /not a watershed forest-loss aggregate/);
   // The provincial layer names the exact riding count and boundary editions.
@@ -237,15 +237,15 @@ test("Explore puts explanation and controls before the map, then layers and data
     en.indexOf("Per-cell detected loss,") <
       en.indexOf('id="explore-layers-heading"'),
   );
-  assert.match(en, /Real map intervals: 1985–2022/);
-  assert.match(en, /Illustrative data view: 2012/);
-  assert.match(en, /No real map data\. Illustrative data view: 1988/);
+  assert.match(en, /Real map, 1985–2022/);
+  assert.match(en, /The data view uses example data for 2012 only/);
+  assert.match(en, /No real map yet\. The data view uses example data for 1988 only/);
   assert.equal((en.match(/<h2/g) ?? []).length, (fr.match(/<h2/g) ?? []).length);
 });
 
 test("list, chart, and table share one explanatory empty state", () => {
   const empty =
-    "No illustrative data-view record exists for Wildfire in 1990. The nearest illustrative year is 2020.";
+    "There is no example data for Wildfire in 1990. The nearest year with example data is 2020.";
   const chart = renderToStaticMarkup(
     <ExploreView
       events={exploreFixtures}
@@ -280,7 +280,7 @@ test("list, chart, and table share one explanatory empty state", () => {
       year={1990}
     />,
   );
-  assert.match(fr, /L’année illustrative la plus proche est 2020/);
+  assert.match(fr, /L’année la plus proche avec des données d’exemple est 2020/);
 });
 
 test("map/list and chart/table retain evidence, confidence, coverage, provenance, and Unknown is never zero", () => {
@@ -328,7 +328,7 @@ test("map/list and chart/table retain evidence, confidence, coverage, provenance
   assert.match(mapChart, /aria-label="Forest loss map"/);
   assert.match(listChart, /Official record/);
   assert.match(listChart, /Source attribution/);
-  assert.match(listTable, /No authoritative public record/);
+  assert.match(listTable, /No official public record/);
   assert.match(listTable, /Coverage/);
   assert.match(listTable, /Source attribution/);
   assert.equal(/>0<|caused by|logging|deforestation/i.test(listTable), false);
@@ -526,7 +526,7 @@ test("one bilingual inline-SVG province bar serves landing and every map state",
   for (const province of ["Colombie-Britannique", "Alberta", "Ontario", "Québec"]) assert.match(french, new RegExp(province));
   assert.match(english, /Flag of British Columbia/);
   assert.match(french, /Drapeau de la Colombie-Britannique/);
-  assert.ok(english.indexOf("province-bar--map") < english.indexOf("Condition and recovery needs"));
+  assert.ok(english.indexOf("province-bar--map") < english.indexOf("Condition and recovery isn’t available yet"));
 });
 
 test("playback swaps only the patch layer, starts at 1985, and stops visibly", async () => {
@@ -697,10 +697,10 @@ test("condition and recovery explains its missing admitted product", () => {
     <ExploreView events={exploreFixtures} locale="fr" mode="condition-recovery" year={1988} />,
   );
   assert.match(en, /Condition and recovery is not mapped yet/);
-  assert.match(en, /annual land-cover series it would read is already on file/);
-  assert.match(en, /admission and review of a product/);
+  assert.match(en, /We have the yearly land-cover data it needs/);
+  assert.match(en, /reviewed a map built on that decision/);
   assert.match(fr, /ne sont pas encore cartographiés/);
-  assert.match(fr, /série annuelle de couverture terrestre/);
+  assert.match(fr, /série annuelle de couverture terrestre nécessaire/);
 
   const other = renderToStaticMarkup(
     <ExploreView events={exploreFixtures} locale="en" mode="wildfire" year={1984} />,

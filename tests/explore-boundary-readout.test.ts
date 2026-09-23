@@ -63,7 +63,7 @@ test("economic regions and watersheds remain boundary-only even when a matching 
   for (const overlay of ["economic-regions", "watersheds"] as const) {
     assert.deepEqual(boundaryReadout(selection(overlay), [complete], "en", SPAN), {
       kind: "boundary-only",
-      note: "Reference boundary only. No forest-loss measurement is available for this geography.",
+      note: "Reference boundary only. There is no forest-loss figure for this area.",
     });
   }
 });

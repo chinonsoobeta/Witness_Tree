@@ -96,12 +96,12 @@ export function adaptFederalRidingComparison(input: RawComparison): RealFederalR
     dataVersion: "phase2-real-national-1984-2022-v1",
     evidence: "satellite-observation",
     denominatorDefinition: {
-      en: `Share of known forested hectares in the ${interval.fromYear} first-year forest mask.`,
-      fr: `Part des hectares forestiers connus dans le masque forestier de la première année, ${interval.fromYear}.`,
+      en: `Share of the mapped forest as it stood in ${interval.fromYear}.`,
+      fr: `Part de la forêt cartographiée telle qu’elle était en ${interval.fromYear}.`,
     },
     method: {
-      en: "Federal districts with complete mapped coverage and at least 500 forested hectares are ranked by detected-loss share.",
-      fr: "Les circonscriptions fédérales ayant une couverture cartographiée complète et au moins 500 hectares forestiers sont classées selon la part de perte détectée.",
+      en: "Federal ridings that are fully mapped and have at least 500 hectares of forest are ranked by the share of forest lost.",
+      fr: "Les circonscriptions fédérales entièrement cartographiées et comptant au moins 500 hectares de forêt sont classées selon la part de forêt perdue.",
     },
   };
   const comparisonRows = rows.filter((row) =>

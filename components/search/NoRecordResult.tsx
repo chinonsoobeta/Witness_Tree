@@ -3,26 +3,26 @@ import { EvidenceChip } from "@/components/policy";
 
 const COPY = {
   en: {
-    stated: "Unknown. Nothing has been published that answers this.",
-    limit: "This is a limit of the available record, not evidence that no event occurred.",
+    stated: "Unknown. Nothing published answers this yet.",
+    limit: "That’s a gap in our records, not proof that nothing happened.",
     methods: "How to read missing records",
     methodsHref: "/en/methods",
     remedies: "What would change this answer",
     items: [
-      { text: "Official boundaries for reserves, settlements, and treaty or agreement lands are admitted and the right-of-reply route is live, so those places can be listed.", link: null },
-      { text: "An official harvest authority or fire perimeter is integrated for this area, which would carry the official-record mark rather than satellite observation.", link: null },
+      { text: "Official boundaries for reserves, settlements and treaty or agreement lands are approved and communities have a way to reply, so those places can be listed.", link: null },
+      { text: "An official harvest or fire record is added for this area, which would then be marked as an official record, not a satellite observation.", link: null },
       { text: "You file a correction against a figure that is already published.", link: { href: "/en/corrections", label: "How corrections work" } },
     ],
   },
   fr: {
-    stated: "Inconnu. Rien n’a été publié qui réponde à cette question.",
-    limit: "Il s’agit d’une limite du registre disponible, et non d’une preuve qu’aucun événement n’a eu lieu.",
+    stated: "Inconnu. Rien de publié ne répond encore à cette question.",
+    limit: "C’est une lacune de nos registres, et non la preuve que rien ne s’est produit.",
     methods: "Comment interpréter les registres manquants",
     methodsHref: "/fr/methodes",
     remedies: "Ce qui changerait cette réponse",
     items: [
-      { text: "Les limites officielles des réserves, des établissements et des terres visées par un traité ou une entente sont admises et la voie de droit de réponse est en place, de sorte que ces lieux peuvent être répertoriés.", link: null },
-      { text: "Une autorité de récolte officielle ou un périmètre d’incendie est intégré pour ce secteur, ce qui porterait la marque du registre officiel plutôt que celle de l’observation satellitaire.", link: null },
+      { text: "Les limites officielles des réserves, des établissements et des terres visées par un traité ou une entente sont approuvées et les communautés ont un moyen de répondre, de sorte que ces lieux peuvent être répertoriés.", link: null },
+      { text: "Un registre officiel de récolte ou d’incendie est ajouté pour ce secteur; il serait alors marqué comme registre officiel, et non comme observation satellitaire.", link: null },
       { text: "Vous déposez une correction visant un chiffre déjà publié.", link: { href: "/fr/corrections", label: "Fonctionnement des corrections" } },
     ],
   },
