@@ -47,14 +47,38 @@ These are real inconsistencies or open questions, but each is owner copy, legall
 1. **About page is a placeholder.** It says "The owner hasn't written this page yet." A public release needs this page: who runs the site, why, and how to reach them.
 2. **Terms and Privacy titles carry status words.** "Terms and limitations – reviewed" and "Privacy notice – pre-activation" read as internal states. Both are in the legally signed-off text, so any change needs the owner's legal scope.
 3. **Terms uses "change".** "A change seen by satellite doesn't show its cause." It is signed-off legal text; "loss" would match the rest of the site.
-4. **"Phase 2" in public copy.** Data, Releases and the harvest comparison say "not the formal Phase 2 release". Readers don't know what Phase 2 is. Tests pin this wording deliberately, so it needs an owner decision.
-5. **"Other provinces are coming soon."** Home promises coverage that no record backs yet. A test pins it as deliberate. "Other provinces are not covered yet" would claim nothing.
+4. **"Phase 2" in public copy.** Resolved in the second pass below.
+5. **"Other provinces are coming soon."** Resolved in the second pass below.
 6. **Province codes in French.** Tables, filters and the footer use BC, AB, ON and QC in both languages. French convention is C.-B., Alb., Ont. and Qc. This belongs in the professional French review (gate below) rather than a piecemeal change.
 7. **Two evidence-mark styles.** Compare, place pages and the gallery use the older boxed evidence chips. Explore, search and home use the newer round marks. Both are labelled and accessible, but they look different.
-8. **Compare is one very long page.** The full ranking of all ridings renders on one page (about 26,000 px tall on desktop). It works, but paging or a "show more" would be kinder.
+8. **Compare is one very long page.** Resolved in the second pass below.
 9. **404 page title.** It shows only the product name, because this framework applies no route title to a not-found page. Adding a second `<title>` produced two titles, so it was not done.
 10. **Explore province hover.** The approved design showed a tooltip when pointing at a province. It was not built; the reading panel beside the map carries the same figures.
 11. **Account page wording.** It says alerts will give the "time observed". It is about wildfire agency data rather than a loss figure, so it was left.
+
+## Second pass: clean and simple
+
+A second pass asked one question of every page: does a first-time reader see a forest-information site, or the project's internals? Changes, all on the application commit `da6ff5b`:
+
+- **No internal jargon on public pages.** "Phase 2", "gate" and "checkpoint" are gone from Data, Releases, the glossary and the harvest comparison. They now say "the final release", and that it needs an independent comparison that hasn't been done. The dataset name VLCE2 stays only inside the source credit, where it is the dataset's official name.
+- **Home speaks to readers.**
+  - Two "Read the record" cards now say "What the marks mean" and "Download the figures", instead of "Components … Open the component gallery" and "Data status … Review data transparency". The Methods card was already plain.
+  - "Other provinces are coming soon" became "The record covers these four provinces only", which promises nothing.
+  - The gallery page is titled "How figures are marked".
+- **Compare is short.** The three tables of ridings that can't be ranked (not mapped, partly mapped, too little forest) are listed but closed by default. The page went from about 26,500 px to about 4,700 px tall. Inside the tables, coverage and evidence read as plain text rather than a box on every row. Every row still states both.
+- **Downloads look like downloads.** File tiles end in a download mark rather than a chevron that read as "expand".
+- **Two gates this branch had broken are fixed.** The map's full-screen icon has a title, and a code comment no longer hard-codes the product name. The first pass's claim that all 15 checks passed was true before the map and readiness commits, not after them; both checks pass again now.
+
+Checks after the second pass:
+- `npx tsc --noEmit`, `npx eslint .` and `npm run build` pass.
+- These 20 check scripts pass: bilingual, claims, premise-loss-vocabulary, accessibility, contrast, style-tokens, hex-literals, budgets, cross-record-facts, year-range-format, brand-token, ci-check-coverage, shape-measure, district-resolve, address-lookup, persistent-identifiers, boundary-overlays, deployed-revision-markers, and the Phase 3 and Phase 5 exit-status checks.
+- The only failures are the expected checksum and render-gate ones named in the redeploy instructions.
+- axe-core finds no violations on 14 changed pages in desktop light, desktop dark and phone views, with no sideways scrolling and no script errors.
+
+What the pass deliberately left alone:
+- The Data page's technical sidebar (checksums, data being prepared) is already secondary, and tests pin it as intentional transparency.
+- The Terms and Privacy titles are legally signed off.
+- The About page needs the owner's own words.
 
 ## Release gates no code can close
 

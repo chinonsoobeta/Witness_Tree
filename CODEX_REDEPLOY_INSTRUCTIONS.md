@@ -22,14 +22,14 @@ By handing this prompt to Codex, the owner authorizes the evidence-record edits 
 Deployment is an owner-owned decision. This file does not authorize or perform a deployment. If the owner chooses to redeploy, update the existing ChatGPT Sites project. Do not create a new Site.
 
 - Existing project ID: `appgprj_6a7bea9e59988191a9304d4c5a3f379d`
-- Application commit to deploy: `a4ea4647c43709df1ca6ee41e161886d6bfa11d2`
+- Application commit to deploy: `da6ff5b6756806d980279a816578cee7a1be07cb`
 - Source branch: `claude/witness-tree-text-simplify-ynxsep`
 - Open PR: [PR #183](https://github.com/chinonsoobeta/Witness_Tree/pull/183)
 - Canonical domain: `https://www.witnesstree.ca`
 
 Last deployment this repository observed: version 41, source commit `cf54e5a8b5e255c6cf9d122c4a8962e8227aec8a`, completed at 2026-09-23T02:37:13.093437Z, observed in `data/deployed-map-render-evidence-2026-09-23-v41.json`. The control plane records any later version.
 
-The branch head is one commit past the application commit, because this file was written after it. No file under `app/`, `components/`, `lib/`, `public/` or `worker/` differs between the two. Select the application commit explicitly, so the deployed application traces to the tree the checks ran against.
+The branch head is past the application commit only by documentation commits (the readiness record and this file). No file under `app/`, `components/`, `lib/`, `public/` or `worker/` differs between the two. Select the application commit explicitly, so the deployed application traces to the tree the checks ran against.
 
 ## Why this deploy comes before the merge
 
@@ -50,7 +50,9 @@ Numbers, sources, licence attributions and the stated limits are unchanged. What
   - The map has one legend, under the frame.
   - The duplicate legends and table under the map are gone; the yearly losses added together are a column in the figures table.
 - **Wording.** "Detected loss" replaces "Detected change" on Compare and Methods. French page titles end in "Arbre témoin". Home says "ha detected" rather than "ha recorded".
-- **Accessibility and layout.** See `docs/RELEASE_READINESS_2026-09-23.md`.
+- **Plain words.** No "Phase 2", "gate" or "checkpoint" on public pages; they say "the final release". Home's cards speak to readers, and "Other provinces are coming soon" became "The record covers these four provinces only". The component gallery is titled "How figures are marked".
+- **Compare is short.** The tables of ridings that can't be ranked are closed by default, and coverage and evidence read as plain text in the tables.
+- **Accessibility and layout.** See `docs/RELEASE_READINESS_2026-09-23.md`, both passes.
 
 The map client's change is its legend, its controls (full screen is an icon; "Zoom in to see the patches" sits in the legend) and its fit padding. No tile URL, source, layer, style or rendering expression changed, and `lib/explore/map-style.ts` is untouched, so the gate names one file.
 
@@ -60,7 +62,7 @@ Use a clean checkout of the exact application commit:
 
 ```sh
 git fetch origin claude/witness-tree-text-simplify-ynxsep
-git switch --detach a4ea4647c43709df1ca6ee41e161886d6bfa11d2
+git switch --detach da6ff5b6756806d980279a816578cee7a1be07cb
 git status --short
 npm ci
 npx tsc --noEmit
@@ -113,7 +115,7 @@ Any other failure is real: stop and report it.
 
 ## 2. Redeploy
 
-In the ChatGPT Sites control plane, open the existing project `appgprj_6a7bea9e59988191a9304d4c5a3f379d` and deploy commit `a4ea4647c43709df1ca6ee41e161886d6bfa11d2`. Do not use a create-site action. Record the resulting Sites version, deployment URL, start and completion timestamps, and source commit SHA.
+In the ChatGPT Sites control plane, open the existing project `appgprj_6a7bea9e59988191a9304d4c5a3f379d` and deploy commit `da6ff5b6756806d980279a816578cee7a1be07cb`. Do not use a create-site action. Record the resulting Sites version, deployment URL, start and completion timestamps, and source commit SHA.
 
 ## 3. Post-deploy verification
 
@@ -124,6 +126,8 @@ Allow a few minutes for caching, then verify from a browser and an independent H
    - `https://www.witnesstree.ca/fr` contains `ha détectés` and not `ha consignés`.
    - `https://www.witnesstree.ca/en/compare` contains `Detected loss share` and not `Detected change share`.
    - `https://www.witnesstree.ca/fr/methodes` has the title `Méthodologie · Arbre témoin`.
+   - `https://www.witnesstree.ca/en` contains `The record covers these four provinces only` and not `coming soon`.
+   - `https://www.witnesstree.ca/en/releases` contains `Final release` and not `Phase 2`.
 2. **The new worker route.** `https://www.witnesstree.ca/api/search/suggest?locale=en&q=prince` returns HTTP 200 JSON with a `suggestions` array, and carries the site's security headers. The same URL with `locale=xx` returns 400.
 3. **The map client.** The ExploreMapClient chunk loaded by `https://www.witnesstree.ca/en/explore` contains `Zoom in to see the patches` and does not contain `Zoom to patches`. This proves the observation describes this branch's client.
 4. `npm run verify:deployed-revision` exits 0. It proves the markers match, not which commit is deployed; that is why steps 1 to 3 exist.
@@ -159,15 +163,15 @@ The author of this branch has already re-read each reason below against the new 
 
 | Record | Criterion id | Files to refresh | Note to append to `reason` |
 | --- | --- | --- | --- |
-| `data/phase0-foundations-exit-status.json` | `forest-definition-published-bilingually`, `legal-signoff-recorded-in-decision-log`, `both-names-registered-in-both-languages` | `components/governance/GovernancePage.tsx` | Later on 2026-09-23 GovernancePage.tsx drew the Releases page's CSV and GeoPackage links as file tiles, with the same links and words; its digest was refreshed, and this reason still holds. |
+| `data/phase0-foundations-exit-status.json` | `forest-definition-published-bilingually`, `legal-signoff-recorded-in-decision-log`, `both-names-registered-in-both-languages` | `components/governance/GovernancePage.tsx` | Later on 2026-09-23 GovernancePage.tsx drew the Releases page's CSV and GeoPackage links as file tiles, and its public wording says "the final release" where it said "Phase 2", without changing what any statement claims; its digest was refreshed, and this reason still holds. |
 | `data/phase4-exit-status.json` | `published-match-and-non-match-rates` | `components/transparency/MethodologyPage.tsx` | Later on 2026-09-23 MethodologyPage.tsx changed "detected change" to "detected loss" to match the product's loss vocabulary; the page still reports match and non-match rates as unavailable, its digest was refreshed, and this reason still holds. |
 | `data/phase7-indigenous-explore-comparison-exit-status.json` | `right-of-reply-live`, `engagement-register-published`, `mistik-request-recorded` | `components/governance/GovernancePage.tsx` | Same note as the Phase 0 rows. |
 | same | `no-indigenous-ranking`, `ranking-scope-enforced` | `lib/comparison/ranking.ts` | Later on 2026-09-23 ranking.ts renamed its visible labels from "detected change" to "detected loss"; the rankable types are unchanged, its digest was refreshed, and this reason still holds. |
 | same | `normalisation-forced` | `lib/comparison/ranking.ts` | Later on 2026-09-23 ranking.ts renamed its visible labels from "detected change" to "detected loss"; the sole ranking function still orders by the detected-loss share of forested area and has no absolute-hectares sort, its digest was refreshed, and this reason still holds. |
-| same | `comparison-row-context` | `components/comparison/RankedRidingsTable.tsx`, `components/comparison/SideBySideComparison.tsx` | Later on 2026-09-23 SideBySideComparison.tsx renamed its labels from "detected change" to "detected loss", and RankedRidingsTable.tsx dropped a duplicate landmark name from the section around each table; every row still renders percentage, hectares, forested hectares, coverage and evidence, the digests were refreshed, and this reason still holds. |
-| same | `insufficient-coverage-separated` | `lib/comparison/ranking.ts`, `components/comparison/RankedRidingsTable.tsx` | Later on 2026-09-23 ranking.ts renamed its visible labels and RankedRidingsTable.tsx dropped a duplicate landmark name; the unranked collection and its three labelled tables are unchanged, the digests were refreshed, and this reason still holds. |
+| same | `comparison-row-context` | `components/comparison/RankedRidingsTable.tsx`, `components/comparison/SideBySideComparison.tsx` | Later on 2026-09-23 SideBySideComparison.tsx renamed its labels from "detected change" to "detected loss", and RankedRidingsTable.tsx dropped a duplicate landmark name, closed the unranked tables by default and shows coverage and evidence as plain text in its tables; every row still renders percentage, hectares, forested hectares, coverage and evidence, the digests were refreshed, and this reason still holds. |
+| same | `insufficient-coverage-separated` | `lib/comparison/ranking.ts`, `components/comparison/RankedRidingsTable.tsx` | Later on 2026-09-23 ranking.ts renamed its visible labels, and RankedRidingsTable.tsx dropped a duplicate landmark name and closed its three labelled unranked tables by default; the unranked collection and the three labelled tables are otherwise unchanged and still separate from the ranking, the digests were refreshed, and this reason still holds. |
 | same | `explore-modes-and-overlays`, `no-map-tabular-equivalence`, `native-time-control` | `components/explore/ExploreView.tsx`, `tests/explore.test.tsx` | Later on 2026-09-23 ExploreView.tsx added the yearly losses added together to its figures table for multi-year spans and renamed its hidden map heading, and tests/explore.test.tsx followed the map legend moving under the map; the four modes, the four overlays, the native year selects and the chart and table equivalence are unchanged, the digests were refreshed, and this reason still holds. |
-| `data/phase8-launch-readiness-exit-status.json` | `cdn-tile-validation` | `components/explore/ExploreMapClient.tsx`, `tests/explore.test.tsx`, and any other file its evidence binds that step 4 changed | On `<date>` Sites version `<version>` deployed source commit a4ea4647c43709df1ca6ee41e161886d6bfa11d2, whose map client gives the map one legend under the frame; the browser observation at `data/deployed-map-render-evidence-<date>-v<version>.json` passed and binds the current map files. The criterion stays pass and Phase 8 stays at eight of sixteen. |
+| `data/phase8-launch-readiness-exit-status.json` | `cdn-tile-validation` | `components/explore/ExploreMapClient.tsx`, `tests/explore.test.tsx`, and any other file its evidence binds that step 4 changed | On `<date>` Sites version `<version>` deployed source commit da6ff5b6756806d980279a816578cee7a1be07cb, whose map client gives the map one legend under the frame; the browser observation at `data/deployed-map-render-evidence-<date>-v<version>.json` passed and binds the current map files. The criterion stays pass and Phase 8 stays at eight of sixteen. |
 | `data/phase9-public-beta-launch-exit-status.json` | `quarterly-reproducibility-test-passes` | `data/phase8-launch-readiness-exit-status.json` | Later on 2026-09-23 the Phase 8 record changed again to bind the redeployed map client and its observation, with the Phase 8 count unchanged; this criterion does not depend on that change, stays fail, and Phase 9 stays at zero of four. |
 
 Leave these alone:
@@ -188,7 +192,7 @@ Re-run the whole list in step 1 on the branch head. Everything must pass, includ
 
 1. Merge PR #183 through the normal protected path, using the repository's usual merge method.
 2. `git fetch origin main` and confirm the merge commit is `main`'s head.
-3. Confirm `main` serves what was deployed: `git diff --stat a4ea4647c43709df1ca6ee41e161886d6bfa11d2 origin/main -- app components lib public worker` must print nothing. Only data, docs, scripts and tests differ, from steps 4 and 5.
+3. Confirm `main` serves what was deployed: `git diff --stat da6ff5b6756806d980279a816578cee7a1be07cb origin/main -- app components lib public worker` must print nothing. Only data, docs, scripts and tests differ, from steps 4 and 5.
 4. Run `npm ci && npm run build && npm run check:deployed-map-render` on `origin/main`; it must pass.
 5. Report to the owner:
    - the Sites version, source commit, completion time and observation file;
