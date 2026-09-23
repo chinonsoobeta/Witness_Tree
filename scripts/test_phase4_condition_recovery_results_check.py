@@ -81,8 +81,11 @@ def main() -> int:
             with open(os.path.join(pages, name), "w") as fh:
                 json.dump({"type": "FeatureCollection", "features": feats}, fh)
         out = os.path.join(tmp, "out.json")
-        subprocess.run([sys.executable, WORKER, "--pages", pages, "--vrt", vrt, "--out", out, "--workers", "2"],
-                       check=True, capture_output=True, text=True)
+        run = subprocess.run([sys.executable, WORKER, "--pages", pages, "--vrt", vrt, "--out", out, "--workers", "2"],
+                             capture_output=True, text=True)
+        if run.returncode != 0:
+            print(run.stdout, run.stderr, file=sys.stderr)
+            return 1
         r = json.load(open(out))
         ref = r["reference"]
         assert ref["featuresRead"] == 11 and ref["repeatedObjectIds"] == 1, ref
