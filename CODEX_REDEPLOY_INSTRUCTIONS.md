@@ -27,7 +27,7 @@ Deployment is an owner-owned decision. This file does not authorize or perform a
 - Open PR: [PR #183](https://github.com/chinonsoobeta/Witness_Tree/pull/183)
 - Canonical domain: `https://www.witnesstree.ca`
 
-Last deployment this repository observed: version 41, source commit `cf54e5a8b5e255c6cf9d122c4a8962e8227aec8a`, completed at 2026-09-23T02:37:13.093437Z, observed in `data/deployed-map-render-evidence-2026-09-23-v41.json`. The control plane records any later version.
+Last deployment this repository observed: version 42, source commit `51b9adeb6e097b693f4109090a6206c01743694e`, completed at 2026-09-23T15:12:26Z, observed in `data/deployed-map-render-evidence-2026-09-23-v42.json`. The control plane records any later version.
 
 The branch head is past the application commit only by documentation commits (the readiness record and this file). No file under `app/`, `components/`, `lib/`, `public/` or `worker/` differs between the two. Select the application commit explicitly, so the deployed application traces to the tree the checks ran against.
 

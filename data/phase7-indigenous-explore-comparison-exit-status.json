@@ -31,11 +31,11 @@
       "id": "right-of-reply-live",
       "title": "Every reserve and treaty page carries a working right-of-reply route with a named recipient",
       "status": "fail",
-      "reason": "The public engagement page states that no engagement contact route exists. The corrections page states that a named accountable recipient and tested intake channel are still required. Neither page supplies a working right-of-reply route. On 2026-09-21 GovernancePage.tsx was refreshed for the existing glossary wording change alone; its digest was refreshed, and this reason still holds. On 2026-09-23 GovernancePage.tsx changed for a plain-language wording pass alone; its digest was refreshed, and this reason still holds. On 2026-09-23 GovernancePage.tsx moved the page status and the correction link out of a boxed plate and into plain text under the title, with the same words; its digest was refreshed, and this reason still holds.",
+      "reason": "The public engagement page states that no engagement contact route exists. The corrections page states that a named accountable recipient and tested intake channel are still required. Neither page supplies a working right-of-reply route. On 2026-09-21 GovernancePage.tsx was refreshed for the existing glossary wording change alone; its digest was refreshed, and this reason still holds. On 2026-09-23 GovernancePage.tsx changed for a plain-language wording pass alone; its digest was refreshed, and this reason still holds. On 2026-09-23 GovernancePage.tsx moved the page status and the correction link out of a boxed plate and into plain text under the title, with the same words; its digest was refreshed, and this reason still holds.Later on 2026-09-23 GovernancePage.tsx drew the Releases page's CSV and GeoPackage links as file tiles, its public wording says \"the final release\" where it said \"Phase 2\", and the glossary's annual-interval entry describes the first-and-last-year control, without changing what any statement claims; its digest was refreshed, and this reason still holds. ",
       "evidence": [
         {
           "path": "components/governance/GovernancePage.tsx",
-          "sha256": "2f7f0ad0edd2e762710f30f04484e1afec1e45f9e92d76335b0360974c095367"
+          "sha256": "c8ed1befbcce90a10a3c7b591cbf2119127c7c1a0d77c58831c0e6f7f24e9231"
         }
       ]
     },
@@ -59,11 +59,11 @@
       "id": "engagement-register-published",
       "title": "A public register lists engagement contacts made and responses received while respecting confidentiality requests",
       "status": "pass",
-      "reason": "The bilingual public register is published and truthfully lists zero contacts and zero responses, with a confidentiality rule. It is not evidence that the required outreach has occurred. On 2026-09-21 GovernancePage.tsx was refreshed for the existing glossary wording change alone; its digest was refreshed, and this reason still holds. On 2026-09-23 GovernancePage.tsx changed for a plain-language wording pass alone; its digest was refreshed, and this reason still holds. On 2026-09-23 GovernancePage.tsx moved the page status and the correction link out of a boxed plate and into plain text under the title, with the same words; its digest was refreshed, and this reason still holds.",
+      "reason": "The bilingual public register is published and truthfully lists zero contacts and zero responses, with a confidentiality rule. It is not evidence that the required outreach has occurred. On 2026-09-21 GovernancePage.tsx was refreshed for the existing glossary wording change alone; its digest was refreshed, and this reason still holds. On 2026-09-23 GovernancePage.tsx changed for a plain-language wording pass alone; its digest was refreshed, and this reason still holds. On 2026-09-23 GovernancePage.tsx moved the page status and the correction link out of a boxed plate and into plain text under the title, with the same words; its digest was refreshed, and this reason still holds.Later on 2026-09-23 GovernancePage.tsx drew the Releases page's CSV and GeoPackage links as file tiles, its public wording says \"the final release\" where it said \"Phase 2\", and the glossary's annual-interval entry describes the first-and-last-year control, without changing what any statement claims; its digest was refreshed, and this reason still holds. ",
       "evidence": [
         {
           "path": "components/governance/GovernancePage.tsx",
-          "sha256": "2f7f0ad0edd2e762710f30f04484e1afec1e45f9e92d76335b0360974c095367"
+          "sha256": "c8ed1befbcce90a10a3c7b591cbf2119127c7c1a0d77c58831c0e6f7f24e9231"
         }
       ]
     },
@@ -71,11 +71,11 @@
       "id": "no-indigenous-ranking",
       "title": "No ranked view accepts a reserve or treaty-area place type",
       "status": "pass",
-      "reason": "The rankable union contains federal and provincial ridings only, and the type test explicitly rejects a reserve. On 2026-09-23 ranking.ts, comparison.test.tsx changed for a plain-language wording pass alone; their digests were refreshed, and this reason still holds.",
+      "reason": "The rankable union contains federal and provincial ridings only, and the type test explicitly rejects a reserve. On 2026-09-23 ranking.ts, comparison.test.tsx changed for a plain-language wording pass alone; their digests were refreshed, and this reason still holds.Later on 2026-09-23 ranking.ts renamed its visible labels from \"detected change\" to \"detected loss\"; the rankable types are unchanged, its digest was refreshed, and this reason still holds. ",
       "evidence": [
         {
           "path": "lib/comparison/ranking.ts",
-          "sha256": "d4602f6221be810e3b1e553e2f998efe4f2f9b5412e6dd2430c8ed1d98f07e41"
+          "sha256": "6212314752ccfcd375366de013c11baeb3ada3b6e318ffce6157c0de92d18e67"
         },
         {
           "path": "tests/comparison.test.tsx",
@@ -87,11 +87,11 @@
       "id": "mistik-request-recorded",
       "title": "The Mistik request, terms, honorarium, and outcome appear in the decision log and engagement register",
       "status": "pass",
-      "reason": "The decision log and engagement register record the owner's final outcome: Mistik was not pursued, no request was made, no permission, honorarium, or terms exist, and Witness Tree / Arbre témoin remains the product name. The surfaces do not imply that engagement or permission occurred. On 2026-09-21 GovernancePage.tsx was refreshed for the existing glossary wording change alone; its digest was refreshed, and this reason still holds. On 2026-09-23 GovernancePage.tsx changed for a plain-language wording pass alone; its digest was refreshed, and this reason still holds. On 2026-09-23 GovernancePage.tsx moved the page status and the correction link out of a boxed plate and into plain text under the title, with the same words; its digest was refreshed, and this reason still holds.",
+      "reason": "The decision log and engagement register record the owner's final outcome: Mistik was not pursued, no request was made, no permission, honorarium, or terms exist, and Witness Tree / Arbre témoin remains the product name. The surfaces do not imply that engagement or permission occurred. On 2026-09-21 GovernancePage.tsx was refreshed for the existing glossary wording change alone; its digest was refreshed, and this reason still holds. On 2026-09-23 GovernancePage.tsx changed for a plain-language wording pass alone; its digest was refreshed, and this reason still holds. On 2026-09-23 GovernancePage.tsx moved the page status and the correction link out of a boxed plate and into plain text under the title, with the same words; its digest was refreshed, and this reason still holds.Later on 2026-09-23 GovernancePage.tsx drew the Releases page's CSV and GeoPackage links as file tiles, its public wording says \"the final release\" where it said \"Phase 2\", and the glossary's annual-interval entry describes the first-and-last-year control, without changing what any statement claims; its digest was refreshed, and this reason still holds. ",
       "evidence": [
         {
           "path": "components/governance/GovernancePage.tsx",
-          "sha256": "2f7f0ad0edd2e762710f30f04484e1afec1e45f9e92d76335b0360974c095367"
+          "sha256": "c8ed1befbcce90a10a3c7b591cbf2119127c7c1a0d77c58831c0e6f7f24e9231"
         },
         {
           "path": "data/phase0-owner-scope-decisions-2026-08-27.json",
@@ -103,15 +103,15 @@
       "id": "explore-modes-and-overlays",
       "title": "Explore provides the four required modes and four reference-boundary overlays",
       "status": "pass",
-      "reason": "Narrowed by owner scope decision on 2026-08-29, then met. The four modes render. Federal ridings, the BC, Alberta, Ontario and Quebec provincial ridings, the 44 Statistics Canada 2021 economic regions that lie in British Columbia, Alberta, Ontario and Quebec, and the 105 Canadian areas of NRCan's Water Survey of Canada version 6.0 rollup that intersect those four provinces, are drawn from one immutable v4 PMTiles release with exact remote readback and bilingual attribution. The economic-region and watershed layers were clipped to the four provinces on 2026-09-02, so both are now subsets: 44 of 76 regions, and 105 of the 169 Canadian sub-drainage areas, cut at the provincial boundary. An earlier revision of this reason still claimed all 76 regions and all 169 areas after the clip had shipped, because that change refreshed the bound checksums without rereading the sentence they support. Economic regions and watersheds are boundary-only reference frameworks, not forest-loss aggregates. The reserve and treaty-area overlays were removed from Explore, not delivered, and this criterion no longer stands in for them: that obligation is tracked solely by reserve-and-treaty-layers-loaded, which remains failed. If this criterion is ever read as evidence that reserve or treaty geography ships, it is being read wrongly. On 2026-09-19 the version in this reason was corrected from v3 to v4. lib/explore/boundaries.ts has pinned boundary-overlays-v4 release 594e33aa08fd7b60a21e6a17d43f7491757d99e7900fdd697230f6d1f52b78f0 since 2026-09-18, and the v4 record carries the same 44 economic regions and 105 watersheds clipped to the four provinces, and the same unclipped riding layers, that this reason describes. The sentence was wrong about the release it named, not about what ships. This is the second time this criterion has had a claim corrected after a checksum refresh changed the files under it without the sentence being reread. On 2026-09-20 ExploreView.tsx was moved into a three-column grid, controls left, map centre, figures right. The bound digest was refreshed for that move alone: the four modes and the four boundary overlays render exactly as this reason describes, placement is by named grid area so the document order is unchanged, and no release, clip, attribution or removal named above was touched. On 2026-09-21 tests/explore.test.tsx moved for the whole-area boundary pick; its four overlays and modes are unchanged. On 2026-09-23 ExploreView.tsx, explore.test.tsx changed for a plain-language wording pass alone; their digests were refreshed, and this reason still holds. On 2026-09-23 ExploreView.tsx and tests/explore.test.tsx changed for the owner-approved Explore layout: the four modes are a row of links above the map and the four boundary overlays sit in a Boundaries menu beside them, each with the same show and hide control, note and attribution. Their digests were refreshed, and this reason still holds.",
+      "reason": "Narrowed by owner scope decision on 2026-08-29, then met. The four modes render. Federal ridings, the BC, Alberta, Ontario and Quebec provincial ridings, the 44 Statistics Canada 2021 economic regions that lie in British Columbia, Alberta, Ontario and Quebec, and the 105 Canadian areas of NRCan's Water Survey of Canada version 6.0 rollup that intersect those four provinces, are drawn from one immutable v4 PMTiles release with exact remote readback and bilingual attribution. The economic-region and watershed layers were clipped to the four provinces on 2026-09-02, so both are now subsets: 44 of 76 regions, and 105 of the 169 Canadian sub-drainage areas, cut at the provincial boundary. An earlier revision of this reason still claimed all 76 regions and all 169 areas after the clip had shipped, because that change refreshed the bound checksums without rereading the sentence they support. Economic regions and watersheds are boundary-only reference frameworks, not forest-loss aggregates. The reserve and treaty-area overlays were removed from Explore, not delivered, and this criterion no longer stands in for them: that obligation is tracked solely by reserve-and-treaty-layers-loaded, which remains failed. If this criterion is ever read as evidence that reserve or treaty geography ships, it is being read wrongly. On 2026-09-19 the version in this reason was corrected from v3 to v4. lib/explore/boundaries.ts has pinned boundary-overlays-v4 release 594e33aa08fd7b60a21e6a17d43f7491757d99e7900fdd697230f6d1f52b78f0 since 2026-09-18, and the v4 record carries the same 44 economic regions and 105 watersheds clipped to the four provinces, and the same unclipped riding layers, that this reason describes. The sentence was wrong about the release it named, not about what ships. This is the second time this criterion has had a claim corrected after a checksum refresh changed the files under it without the sentence being reread. On 2026-09-20 ExploreView.tsx was moved into a three-column grid, controls left, map centre, figures right. The bound digest was refreshed for that move alone: the four modes and the four boundary overlays render exactly as this reason describes, placement is by named grid area so the document order is unchanged, and no release, clip, attribution or removal named above was touched. On 2026-09-21 tests/explore.test.tsx moved for the whole-area boundary pick; its four overlays and modes are unchanged. On 2026-09-23 ExploreView.tsx, explore.test.tsx changed for a plain-language wording pass alone; their digests were refreshed, and this reason still holds. On 2026-09-23 ExploreView.tsx and tests/explore.test.tsx changed for the owner-approved Explore layout: the four modes are a row of links above the map and the four boundary overlays sit in a Boundaries menu beside them, each with the same show and hide control, note and attribution. Their digests were refreshed, and this reason still holds.Later on 2026-09-23 ExploreView.tsx added the yearly losses added together to its figures table for multi-year spans, renamed its hidden map heading and says \"riding\" where it said \"district\", and tests/explore.test.tsx followed the map legend moving under the map; the four modes, the four overlays, the native year selects and the chart and table equivalence are unchanged, the digests were refreshed, and this reason still holds. ",
       "evidence": [
         {
           "path": "components/explore/ExploreView.tsx",
-          "sha256": "635823540c23dd211d93379e1f8da07577337b15f44138c06d9fb3df9d2eccbb"
+          "sha256": "39e73d8de127ead671e1f1d2cebac631dffa301518dca3301e60d9b9f949122d"
         },
         {
           "path": "tests/explore.test.tsx",
-          "sha256": "1e274d04741215ad8cff372d832dce06e556aed0ee2425803088cff4c05e01fc"
+          "sha256": "6f68078159fc0499d2e353ac56655bf996ec07cd4a725db9999b464d84a0f10e"
         }
       ]
     },
@@ -119,15 +119,15 @@
       "id": "no-map-tabular-equivalence",
       "title": "Explore map/list and chart/table presentations expose the same evidence-bearing records at the same route",
       "status": "pass",
-      "reason": "The view retains evidence, confidence, coverage, provenance, and Unknown reasoning in its accessible table presentation and route parameters. On 2026-09-20 ExploreView.tsx was moved into a three-column grid and the bound digest was refreshed for that move alone. The data-view section, its table and its route parameters were not edited, so the equivalence this reason states is the same one that was passing before. On 2026-09-21 ExploreView.tsx and tests/explore.test.tsx were changed for the condition-and-recovery reading explanation and native year-select assertions; their digests were refreshed for those changes alone, and the map/list and chart/table equivalence remains unchanged. On 2026-09-21 tests/explore.test.tsx moved for the whole-area boundary pick; map/list and chart/table equivalence is unchanged. On 2026-09-23 ExploreView.tsx, explore.test.tsx changed for a plain-language wording pass alone; their digests were refreshed, and this reason still holds. On 2026-09-23 the owner approved removing the separate List presentation, because the table under the map already carries the same rows. The no-map equivalent is now the chart and the table in the data section, which keep evidence, confidence, coverage, provenance and Unknown reasoning exactly as before; an address that still asks for presentation=list opens the map and the same data section rather than failing. ExploreView.tsx and tests/explore.test.tsx changed for that alone; their digests were refreshed, and this reason still holds for the chart and table.",
+      "reason": "The view retains evidence, confidence, coverage, provenance, and Unknown reasoning in its accessible table presentation and route parameters. On 2026-09-20 ExploreView.tsx was moved into a three-column grid and the bound digest was refreshed for that move alone. The data-view section, its table and its route parameters were not edited, so the equivalence this reason states is the same one that was passing before. On 2026-09-21 ExploreView.tsx and tests/explore.test.tsx were changed for the condition-and-recovery reading explanation and native year-select assertions; their digests were refreshed for those changes alone, and the map/list and chart/table equivalence remains unchanged. On 2026-09-21 tests/explore.test.tsx moved for the whole-area boundary pick; map/list and chart/table equivalence is unchanged. On 2026-09-23 ExploreView.tsx, explore.test.tsx changed for a plain-language wording pass alone; their digests were refreshed, and this reason still holds. On 2026-09-23 the owner approved removing the separate List presentation, because the table under the map already carries the same rows. The no-map equivalent is now the chart and the table in the data section, which keep evidence, confidence, coverage, provenance and Unknown reasoning exactly as before; an address that still asks for presentation=list opens the map and the same data section rather than failing. ExploreView.tsx and tests/explore.test.tsx changed for that alone; their digests were refreshed, and this reason still holds for the chart and table.Later on 2026-09-23 ExploreView.tsx added the yearly losses added together to its figures table for multi-year spans, renamed its hidden map heading and says \"riding\" where it said \"district\", and tests/explore.test.tsx followed the map legend moving under the map; the four modes, the four overlays, the native year selects and the chart and table equivalence are unchanged, the digests were refreshed, and this reason still holds. ",
       "evidence": [
         {
           "path": "components/explore/ExploreView.tsx",
-          "sha256": "635823540c23dd211d93379e1f8da07577337b15f44138c06d9fb3df9d2eccbb"
+          "sha256": "39e73d8de127ead671e1f1d2cebac631dffa301518dca3301e60d9b9f949122d"
         },
         {
           "path": "tests/explore.test.tsx",
-          "sha256": "1e274d04741215ad8cff372d832dce06e556aed0ee2425803088cff4c05e01fc"
+          "sha256": "6f68078159fc0499d2e353ac56655bf996ec07cd4a725db9999b464d84a0f10e"
         }
       ]
     },
@@ -135,15 +135,15 @@
       "id": "native-time-control",
       "title": "Explore uses native year selects whose keyboard interaction changes the selected span",
       "status": "pass",
-      "reason": "Explore renders two native select elements with bounded years: the opening year runs from 1984 to 2021 and the closing year from 1985 to 2022. Because they are native selects, the browser supplies their keyboard interaction and their screen-reader announcements, and every change, however it is made, commits the new span to the address and the map. The focused route test pins both elements and their option ranges, and tests/browser/year-control.spec.ts changes the span with the keyboard alone. A choice that would reverse or empty the span moves the other select to the nearest valid year and says so in a status line, so the span is never zero-length. The annual interval is the narrowest span rather than a separate mode, so a link naming only its closing year still means exactly the annual interval it always meant. The control is operable rather than decorative: both selects are named, they sit in a GET form that carries the mode, presentation, and data selections through a submit, and the selected span is reflected in every link on the page, so a chosen span can be linked, bookmarked, and shared. The route parses the span defensively, ordering a reversed one and widening a zero-length one to the annual interval ending at that year, rather than throwing on any value the control could not have produced. Until 2026-09-21 the control was two native range inputs; the owner redefined this criterion on that date (data/owner-scope-decision-2026-09-21-explore-year-control.json). On 2026-09-20 ExploreView.tsx was moved into a three-column grid, controls left, map centre, figures right. The bound digest was refreshed for that move alone: the four modes and the four boundary overlays render exactly as this reason describes, placement is by named grid area so the document order is unchanged, and no release, clip, attribution or removal named above was touched. On 2026-09-21 ExploreYearControl.tsx and tests/browser/year-control.spec.ts were changed for the native year-select interaction described here; their evidence digests were added, and this reason still holds. On 2026-09-21 tests/explore.test.tsx moved for the whole-area boundary pick; its year-select assertions are unchanged. On 2026-09-23 ExploreView.tsx, explore.test.tsx changed for a plain-language wording pass alone; their digests were refreshed, and this reason still holds. On 2026-09-23 ExploreView.tsx and tests/explore.test.tsx changed for the owner-approved Explore layout; the two native year selects, their ranges and the GET form, which still carries mode, presentation and data, are unchanged. Their digests were refreshed, and this reason still holds.",
+      "reason": "Explore renders two native select elements with bounded years: the opening year runs from 1984 to 2021 and the closing year from 1985 to 2022. Because they are native selects, the browser supplies their keyboard interaction and their screen-reader announcements, and every change, however it is made, commits the new span to the address and the map. The focused route test pins both elements and their option ranges, and tests/browser/year-control.spec.ts changes the span with the keyboard alone. A choice that would reverse or empty the span moves the other select to the nearest valid year and says so in a status line, so the span is never zero-length. The annual interval is the narrowest span rather than a separate mode, so a link naming only its closing year still means exactly the annual interval it always meant. The control is operable rather than decorative: both selects are named, they sit in a GET form that carries the mode, presentation, and data selections through a submit, and the selected span is reflected in every link on the page, so a chosen span can be linked, bookmarked, and shared. The route parses the span defensively, ordering a reversed one and widening a zero-length one to the annual interval ending at that year, rather than throwing on any value the control could not have produced. Until 2026-09-21 the control was two native range inputs; the owner redefined this criterion on that date (data/owner-scope-decision-2026-09-21-explore-year-control.json). On 2026-09-20 ExploreView.tsx was moved into a three-column grid, controls left, map centre, figures right. The bound digest was refreshed for that move alone: the four modes and the four boundary overlays render exactly as this reason describes, placement is by named grid area so the document order is unchanged, and no release, clip, attribution or removal named above was touched. On 2026-09-21 ExploreYearControl.tsx and tests/browser/year-control.spec.ts were changed for the native year-select interaction described here; their evidence digests were added, and this reason still holds. On 2026-09-21 tests/explore.test.tsx moved for the whole-area boundary pick; its year-select assertions are unchanged. On 2026-09-23 ExploreView.tsx, explore.test.tsx changed for a plain-language wording pass alone; their digests were refreshed, and this reason still holds. On 2026-09-23 ExploreView.tsx and tests/explore.test.tsx changed for the owner-approved Explore layout; the two native year selects, their ranges and the GET form, which still carries mode, presentation and data, are unchanged. Their digests were refreshed, and this reason still holds.Later on 2026-09-23 ExploreView.tsx added the yearly losses added together to its figures table for multi-year spans, renamed its hidden map heading and says \"riding\" where it said \"district\", and tests/explore.test.tsx followed the map legend moving under the map; the four modes, the four overlays, the native year selects and the chart and table equivalence are unchanged, the digests were refreshed, and this reason still holds. ",
       "evidence": [
         {
           "path": "components/explore/ExploreView.tsx",
-          "sha256": "635823540c23dd211d93379e1f8da07577337b15f44138c06d9fb3df9d2eccbb"
+          "sha256": "39e73d8de127ead671e1f1d2cebac631dffa301518dca3301e60d9b9f949122d"
         },
         {
           "path": "tests/explore.test.tsx",
-          "sha256": "1e274d04741215ad8cff372d832dce06e556aed0ee2425803088cff4c05e01fc"
+          "sha256": "6f68078159fc0499d2e353ac56655bf996ec07cd4a725db9999b464d84a0f10e"
         },
         {
           "path": "data/owner-scope-decision-2026-09-21-explore-year-control.json",
@@ -183,11 +183,11 @@
       "id": "normalisation-forced",
       "title": "The riding ranking has no absolute-hectares-only sort and orders by detected-change share of forested area",
       "status": "pass",
-      "reason": "The sole ranking function orders sufficient rows by detected-change percentage; no absolute-hectares sorting parameter exists. On 2026-09-23 ranking.ts, comparison.test.tsx changed for a plain-language wording pass alone; their digests were refreshed, and this reason still holds.",
+      "reason": "The sole ranking function orders sufficient rows by detected-change percentage; no absolute-hectares sorting parameter exists. On 2026-09-23 ranking.ts, comparison.test.tsx changed for a plain-language wording pass alone; their digests were refreshed, and this reason still holds.Later on 2026-09-23 ranking.ts renamed its visible labels from \"detected change\" to \"detected loss\"; the sole ranking function still orders by the detected-loss share of forested area and has no absolute-hectares sort, its digest was refreshed, and this reason still holds. ",
       "evidence": [
         {
           "path": "lib/comparison/ranking.ts",
-          "sha256": "d4602f6221be810e3b1e553e2f998efe4f2f9b5412e6dd2430c8ed1d98f07e41"
+          "sha256": "6212314752ccfcd375366de013c11baeb3ada3b6e318ffce6157c0de92d18e67"
         },
         {
           "path": "tests/comparison.test.tsx",
@@ -199,15 +199,15 @@
       "id": "comparison-row-context",
       "title": "Every riding comparison row renders normalised and absolute values, forested-hectare denominator, coverage, and evidence",
       "status": "pass",
-      "reason": "The comparison table and cards render percentage, hectares, forested hectares, coverage, and evidence in both locales. The official-matching caveat is stated once in the ranking-context disclosure rather than repeated in each row. The owner authorized this explanation correction on 2026-09-08 to match the existing implementation. The selected riding coverage now appears beneath each name before the figures, and unavailable measurements carry a dash with a coverage reason. The required row context, passing status, and Phase 7 gate count are unchanged. On 2026-09-23 RankedRidingsTable.tsx, comparison.test.tsx changed for a plain-language wording pass alone; their digests were refreshed, and this reason still holds.",
+      "reason": "The comparison table and cards render percentage, hectares, forested hectares, coverage, and evidence in both locales. The official-matching caveat is stated once in the ranking-context disclosure rather than repeated in each row. The owner authorized this explanation correction on 2026-09-08 to match the existing implementation. The selected riding coverage now appears beneath each name before the figures, and unavailable measurements carry a dash with a coverage reason. The required row context, passing status, and Phase 7 gate count are unchanged. On 2026-09-23 RankedRidingsTable.tsx, comparison.test.tsx changed for a plain-language wording pass alone; their digests were refreshed, and this reason still holds.Later on 2026-09-23 SideBySideComparison.tsx renamed its labels from \"detected change\" to \"detected loss\", and RankedRidingsTable.tsx dropped a duplicate landmark name, closed the unranked tables by default and shows coverage and evidence as plain text in its tables; every row still renders percentage, hectares, forested hectares, coverage and evidence, the digests were refreshed, and this reason still holds. ",
       "evidence": [
         {
           "path": "components/comparison/RankedRidingsTable.tsx",
-          "sha256": "c908a48b3e90c666d9d31fd52a215ec0960edb42253d034f1b488d8540510acd"
+          "sha256": "6e54aa8695831cb811f1296393bb7e8eecf2d9c4312df0b6a9dee861e9e6d877"
         },
         {
           "path": "components/comparison/SideBySideComparison.tsx",
-          "sha256": "7b49c0e067c7e7e663229fe45b2f9d9a7e4a0ac03480c6a01ad1b4d2dec83bec"
+          "sha256": "c005bdf3d0c9e62f255dea81102a1507a5bce4d1c402774a026ac61f0753ed04"
         },
         {
           "path": "tests/comparison.test.tsx",
@@ -219,15 +219,15 @@
       "id": "insufficient-coverage-separated",
       "title": "Insufficient-coverage ridings are separated from the ranked table rather than represented as zero",
       "status": "pass",
-      "reason": "The ranking result has a dedicated unranked collection and the rendered component separates its rows into labelled tables for no mapped coverage, partial mapped coverage, and complete mapped coverage below the forest-area floor. On 2026-09-23 RankedRidingsTable.tsx, ranking.ts, comparison.test.tsx changed for a plain-language wording pass alone; their digests were refreshed, and this reason still holds.",
+      "reason": "The ranking result has a dedicated unranked collection and the rendered component separates its rows into labelled tables for no mapped coverage, partial mapped coverage, and complete mapped coverage below the forest-area floor. On 2026-09-23 RankedRidingsTable.tsx, ranking.ts, comparison.test.tsx changed for a plain-language wording pass alone; their digests were refreshed, and this reason still holds.Later on 2026-09-23 ranking.ts renamed its visible labels, and RankedRidingsTable.tsx dropped a duplicate landmark name and closed its three labelled unranked tables by default; the unranked collection and the three labelled tables are otherwise unchanged and still separate from the ranking, the digests were refreshed, and this reason still holds. ",
       "evidence": [
         {
           "path": "lib/comparison/ranking.ts",
-          "sha256": "d4602f6221be810e3b1e553e2f998efe4f2f9b5412e6dd2430c8ed1d98f07e41"
+          "sha256": "6212314752ccfcd375366de013c11baeb3ada3b6e318ffce6157c0de92d18e67"
         },
         {
           "path": "components/comparison/RankedRidingsTable.tsx",
-          "sha256": "c908a48b3e90c666d9d31fd52a215ec0960edb42253d034f1b488d8540510acd"
+          "sha256": "6e54aa8695831cb811f1296393bb7e8eecf2d9c4312df0b6a9dee861e9e6d877"
         },
         {
           "path": "tests/comparison.test.tsx",
@@ -259,7 +259,7 @@
       "evidence": [
         {
           "path": "lib/comparison/ranking.ts",
-          "sha256": "d4602f6221be810e3b1e553e2f998efe4f2f9b5412e6dd2430c8ed1d98f07e41"
+          "sha256": "6212314752ccfcd375366de013c11baeb3ada3b6e318ffce6157c0de92d18e67"
         },
         {
           "path": "tests/comparison.test.tsx",
