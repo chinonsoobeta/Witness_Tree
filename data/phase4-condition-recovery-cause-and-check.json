@@ -405,11 +405,11 @@
     },
     "run": {
       "worker": "scripts/phase4_condition_recovery_results_check.py",
-      "workerSha256": "57deec6d7a89517e69e508ffc76404e3f22b1020063dadcd9cab3137d49b947d",
+      "workerSha256": "0cdf89725ad22653a743fec6f5bf62c11e47dbcb6e524c887ed103b6b8c5fdca",
       "workerTest": "scripts/test_phase4_condition_recovery_results_check.py",
       "workerTestRunner": "tests/phase4-condition-recovery-results-check.test.mjs",
-      "executedAt": "2026-09-23T23:20:26+00:00",
-      "elapsedSeconds": 170.7,
+      "executedAt": "2026-09-23T23:46:03+00:00",
+      "elapsedSeconds": 169.8,
       "workers": 10,
       "cellsFrom": "derived/phase4-condition-recovery-v2/british-columbia-cells.vrt"
     },
@@ -418,13 +418,13 @@
         "slug": "results-agreement",
         "path": "derived/phase4-condition-recovery-v2/results-agreement.json",
         "byteLength": 4290,
-        "sha256": "3d5b667a0a1458934af636e699429dba1bafd1f6fa0fa7d0bd949163f997b88e"
+        "sha256": "1d3bd20ce7fe765fd4d5a5e01d7a60d6373d353acb95bc838d96c3045164fdaf"
       },
       {
         "slug": "results-agreement-log",
         "path": "derived/phase4-condition-recovery-v2/results-agreement.log",
         "byteLength": 1031,
-        "sha256": "ee3885412dd406a37db96fc754f9ed4637e6075e623957c4e4dd96bbe453122c"
+        "sha256": "e973fbe55055b65ac18da3c9fe32a505bc1f5bede21dbdc4735acab65f798937"
       }
     ],
     "reference": {

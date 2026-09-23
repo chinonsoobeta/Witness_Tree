@@ -39,6 +39,8 @@ RECOVERED, NOT_RECOVERED, UNCONFIRMED = 4, 5, 6
 SETS = {"A": (1, 2), "B": (6, 7)}
 CHUNK = 500
 _VRT = {}
+# GDAL 3.11 renamed the in-memory vector driver from "Memory" to "MEM"; CI runs an older GDAL.
+OGR_MEMORY = ogr.GetDriverByName("MEM") or ogr.GetDriverByName("Memory")
 
 
 def ref_class(p):
@@ -80,7 +82,7 @@ def polygon_job(args):
         mem = gdal.GetDriverByName("MEM").Create("", w, h, 1, gdal.GDT_Byte)
         mem.SetGeoTransform((gt[0] + c0 * gt[1], gt[1], 0, gt[3] + r0 * gt[5], 0, gt[5]))
         mem.SetProjection(wkt)
-        mds = ogr.GetDriverByName("MEM").CreateDataSource("p")
+        mds = OGR_MEMORY.CreateDataSource("p")
         lyr = mds.CreateLayer("p", dst, ogr.wkbMultiPolygon)
         f = ogr.Feature(lyr.GetLayerDefn()); f.SetGeometry(g); lyr.CreateFeature(f)
         gdal.RasterizeLayer(mem, [1], lyr, burn_values=[1])
