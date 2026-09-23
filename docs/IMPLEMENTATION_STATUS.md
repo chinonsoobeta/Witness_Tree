@@ -67,6 +67,27 @@ SVG renditions of all four flags. Public-domain source files are recorded in
 `docs/THIRD_PARTY.md`, and no flag image is hotlinked at runtime. The owner
 directed this use on 2 September 2026 without a separate authorization gate.
 
+### Condition and recovery
+
+On 2026-09-23 the owner recorded a scoped decision in
+[the forest-mask decision record](VLCE2_FOREST_MASK_DECISION.md). For the Explore
+"Condition and recovery" mode only, VLCE2 classes 210, 220 and 230 count as treed.
+The decision resolves no register row and does not permit a forest mask.
+
+`scripts/phase4_condition_recovery_v2.py` walks every cell of the four provinces
+through 1984 to 2022 in one pass. It computes the three-class headline set and a
+comparison-only set that adds class 81. Across the four provinces, 55.13 Mha was
+lost, and 36.7% of it was treed again for three consecutive years after its latest
+loss. 46.42 Mha is Unknown and excluded, never counted as zero. The run reproduces
+the recorded federal recovery run within 0.01% of lost area per province, and the
+recorded provincial annual series within 0.15 ha per year. See
+[the evidence record](../data/phase4-condition-recovery-v2.json), checked by
+`npm run check:phase4-condition-recovery-v2`.
+
+The record is `local-nonproduction-executed` and nothing in it is admitted. Cause of
+loss, the BC RESULTS check (61.1% against an 80% target, not met) and the Explore
+display are separate changes. The mode stays empty until the product is admitted.
+
 ## Other formal phase counts
 
 Version 2.1 does not assign Phase 3 a cumulative percentage. Its five literal published exit criteria are nonetheless gated and counted, at 4/5 with moderated bilingual usability testing owner-blocked; that count is not a maturity score and does not mean the phase is four fifths complete. Its historical checkpoint records four completed technical-foundation evidence groups and one execution-ready, empty external-checkpoint envelope; that shorthand is not a Phase 3 exit result or a production-readiness measure.

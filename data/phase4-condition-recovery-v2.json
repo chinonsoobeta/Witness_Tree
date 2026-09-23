@@ -1,0 +1,765 @@
+{
+  "schema": "witness-tree/phase4-condition-recovery-v2-evidence/1",
+  "status": "local-nonproduction-executed",
+  "claims": {
+    "admitted": false,
+    "released": false,
+    "productionEligible": false,
+    "ownerReviewed": false,
+    "nfiForestClaimed": false
+  },
+  "decision": {
+    "record": "docs/VLCE2_FOREST_MASK_DECISION.md",
+    "section": "Scoped decision: the treed-again rule for condition and recovery, 2026-09-23",
+    "headlineSet": "A",
+    "comparisonOnlySet": "B",
+    "note": "Set B is kept so the owner's choice can be re-read. It is not a second headline and is not displayed."
+  },
+  "question": "In British Columbia, Alberta, Ontario and Quebec, did the tree cover lost between 1984 and 2022 come back?",
+  "answer": "Across the four provinces 55,132,072 ha of land was treed in one year and not the next. 36.7 percent of it was treed again for at least three consecutive years after its most recent loss, and 40.6 percent after any loss. 46,424,718 ha is Unknown because at least one year is unclassified or missing, and is excluded, not counted as zero. Treed means VLCE2 classes 210, 220 and 230 only. This measures return of tree cover, not return of the forest that was there, and it is not NFI forest.",
+  "run": {
+    "worker": "scripts/phase4_condition_recovery_v2.py",
+    "workerSha256": "821662ea0e00c938b895a90f977ea48a6e6fd3bafc5030c78e43a3c120f4ac7c",
+    "workerTest": "scripts/test_phase4_condition_recovery_v2.py",
+    "workerTestRunner": "tests/phase4-condition-recovery-v2.test.mjs",
+    "executedAt": "2026-09-23T22:12:11+00:00",
+    "elapsedSeconds": 689.8,
+    "workers": 10,
+    "cpuCount": 10,
+    "strip": 256,
+    "cellHectares": 0.09,
+    "firstYear": 1984,
+    "lastYear": 2022,
+    "confirmYears": 3,
+    "causeWindowYears": 1,
+    "treedClassSets": {
+      "A": [
+        210,
+        220,
+        230
+      ],
+      "B": [
+        81,
+        210,
+        220,
+        230
+      ]
+    },
+    "inputsReadFrom": "The 39 land-cover years and the two disturbance rasters were read from a copy on the internal disk, because the data-root volume reads at about 100 MB/s. Every copy was re-hashed after the run and equals its staged digest. The windows, masks and regions were read from the data root directly."
+  },
+  "sourceInputs": {
+    "staged": [
+      {
+        "stagedId": "wp2-bc-annual-series-20260909--lc--CA_forest_VLCE2_1984.tif",
+        "sha256": "05eb22b9abc058f722a12379dd64dc1bc4690dedb4a49e3a8c16817346929115"
+      },
+      {
+        "stagedId": "wp2-bc-annual-series-20260909--lc--CA_forest_VLCE2_1985.tif",
+        "sha256": "714f985aa5bef947048dd793b3299297a8a246a1ee6c06c84e2488f193e8ddd1"
+      },
+      {
+        "stagedId": "wp2-bc-annual-series-20260909--lc--CA_forest_VLCE2_1986.tif",
+        "sha256": "753d0ca767e348ba823533cfeb5c9503575a75a0e6c606a544b7c0fe50524f0a"
+      },
+      {
+        "stagedId": "wp2-bc-annual-series-20260909--lc--CA_forest_VLCE2_1987.tif",
+        "sha256": "6e4b366143e47c0991f4f593a05b1c71dc16ff5717d762bee6a384152ee591db"
+      },
+      {
+        "stagedId": "wp2-bc-annual-series-20260909--lc--CA_forest_VLCE2_1988.tif",
+        "sha256": "21cb2ad1511c8ccc7769a695e6ba2110e99051433147786ea21b84af47f2e5d0"
+      },
+      {
+        "stagedId": "wp2-bc-annual-series-20260909--lc--CA_forest_VLCE2_1989.tif",
+        "sha256": "f3e3e9edfdb4723d213055b129d1adb180a0d90143dd9966b40a33f7eae2da50"
+      },
+      {
+        "stagedId": "wp2-bc-annual-series-20260909--lc--CA_forest_VLCE2_1990.tif",
+        "sha256": "d3b014a6bd84798749e5bd3e692523bfd75ee425ec72afa47afd7dbdb95bd129"
+      },
+      {
+        "stagedId": "wp2-bc-annual-series-20260909--lc--CA_forest_VLCE2_1991.tif",
+        "sha256": "cc0fce2f5495ea55b7f6b30f8b4f564c6d4d70571572d8afbc1a9d1fb9ed87ba"
+      },
+      {
+        "stagedId": "wp2-bc-annual-series-20260909--lc--CA_forest_VLCE2_1992.tif",
+        "sha256": "a6141ef6e0d51985398834152f1c10f6539ff940d00705318a7bee8ebc038fe4"
+      },
+      {
+        "stagedId": "wp2-bc-annual-series-20260909--lc--CA_forest_VLCE2_1993.tif",
+        "sha256": "e8dab76a0b15d63b6a2711e542c2665a662cad28f726cab24b3d749afcf0d62f"
+      },
+      {
+        "stagedId": "wp2-bc-annual-series-20260909--lc--CA_forest_VLCE2_1994.tif",
+        "sha256": "8eb8a7472fddb8ae7e8e08ea00bf68a0948756b870b7d5dc8c7090f9b1570758"
+      },
+      {
+        "stagedId": "wp2-bc-annual-series-20260909--lc--CA_forest_VLCE2_1995.tif",
+        "sha256": "71c3ef9ac6e8b4c8a86b913f9f2781002979510a4f75d8b691bbc496c6f9d66e"
+      },
+      {
+        "stagedId": "wp2-bc-annual-series-20260909--lc--CA_forest_VLCE2_1996.tif",
+        "sha256": "a6c36f9e4f06e31fc8795439c0309706dbfdcb14d5570cbb8a2bf9c85b3d3f0f"
+      },
+      {
+        "stagedId": "wp2-bc-annual-series-20260909--lc--CA_forest_VLCE2_1997.tif",
+        "sha256": "3babace5e09d5bb9f558131cb2351fa0473377b4218901444978291d4a81bfb1"
+      },
+      {
+        "stagedId": "wp2-bc-annual-series-20260909--lc--CA_forest_VLCE2_1998.tif",
+        "sha256": "9baa99b5e0edc17fd6064b161bf95c58897426e755fa67cf1b0daed1031a2250"
+      },
+      {
+        "stagedId": "wp2-bc-annual-series-20260909--lc--CA_forest_VLCE2_1999.tif",
+        "sha256": "9e349a5ac4a9a5ced510f65cf4a028374a5827b8885576a661402eba561d967a"
+      },
+      {
+        "stagedId": "wp2-bc-annual-series-20260909--lc--CA_forest_VLCE2_2000.tif",
+        "sha256": "e7457b7a2df3d004c64034c2686905c13fe1f3e6682a5a2adf5a8b0268292ac8"
+      },
+      {
+        "stagedId": "wp2-bc-annual-series-20260909--lc--CA_forest_VLCE2_2001.tif",
+        "sha256": "db0592f09677d69e1e7148ab2fae79ee717f22f3fe730f25259300424cbfdf55"
+      },
+      {
+        "stagedId": "wp2-bc-annual-series-20260909--lc--CA_forest_VLCE2_2002.tif",
+        "sha256": "276c7f82b4bf09d30ffcb915b681acbe877563035f0c3cfc432839deb5856ce7"
+      },
+      {
+        "stagedId": "wp2-bc-annual-series-20260909--lc--CA_forest_VLCE2_2003.tif",
+        "sha256": "78816157fbc737a3fbbf2c5a2713487d2a1d7425a7976d362dad96ee075d9bb2"
+      },
+      {
+        "stagedId": "wp2-bc-annual-series-20260909--lc--CA_forest_VLCE2_2004.tif",
+        "sha256": "fab84ed99b331637ddcd8c95749ef8a9c4f178fa3857e341bcb207d48d801295"
+      },
+      {
+        "stagedId": "wp2-bc-annual-series-20260909--lc--CA_forest_VLCE2_2005.tif",
+        "sha256": "d7f5b5b8123c2c4f278c7db1d9a6b90fc6aee3d7dbeec02e30f2b6b3c6966ad3"
+      },
+      {
+        "stagedId": "wp2-bc-annual-series-20260909--lc--CA_forest_VLCE2_2006.tif",
+        "sha256": "9d3c8a3089c60e727ec0ec6165c5e3aef7216beab116ba3a2ac4d025bc1fd624"
+      },
+      {
+        "stagedId": "wp2-bc-annual-series-20260909--lc--CA_forest_VLCE2_2007.tif",
+        "sha256": "da8efd63a7d71cfa4d7e77c09dcd126dead69a3bd98ad8d6f686ea6975ec59bb"
+      },
+      {
+        "stagedId": "wp2-bc-annual-series-20260909--lc--CA_forest_VLCE2_2008.tif",
+        "sha256": "ff33cbf2490df3128d16cb73777080f23ee7df8a304f0ed0f379a66c635b74bf"
+      },
+      {
+        "stagedId": "wp2-bc-annual-series-20260909--lc--CA_forest_VLCE2_2009.tif",
+        "sha256": "250928b11bc07d8c0bfaf3c212d4d6ee2b895332875c0d07001a4f26fb7b93fd"
+      },
+      {
+        "stagedId": "wp2-bc-annual-series-20260909--lc--CA_forest_VLCE2_2010.tif",
+        "sha256": "c1adfb35c3e43d998ea5c44034300a3b145a3f2b67305fa2afcab5124bcbd58f"
+      },
+      {
+        "stagedId": "wp2-bc-annual-series-20260909--lc--CA_forest_VLCE2_2011.tif",
+        "sha256": "8800a85ae7e724b859a253daeae6d4e1fbcfacea918523abb15f31902d22e131"
+      },
+      {
+        "stagedId": "wp2-bc-annual-series-20260909--lc--CA_forest_VLCE2_2012.tif",
+        "sha256": "6bf8f40cb01afa8837a56754c0899f9a5ee5911d5e262b676e1592194e259acb"
+      },
+      {
+        "stagedId": "wp2-bc-annual-series-20260909--lc--CA_forest_VLCE2_2013.tif",
+        "sha256": "05d8241cc3dad696e2cf7129ba4b9c1cacc1cc5497590e373368a986d6e22df4"
+      },
+      {
+        "stagedId": "wp2-bc-annual-series-20260909--lc--CA_forest_VLCE2_2014.tif",
+        "sha256": "335155a31f55345dbc9a3f6ba96cfaf1066c9312d35689e4f25c93dc527f74cc"
+      },
+      {
+        "stagedId": "wp2-bc-annual-series-20260909--lc--CA_forest_VLCE2_2015.tif",
+        "sha256": "de328b6aca047fe157ae33ef0d1203301089ba26408c99b5da756fad572aa35c"
+      },
+      {
+        "stagedId": "wp2-bc-annual-series-20260909--lc--CA_forest_VLCE2_2016.tif",
+        "sha256": "8157bd64c803a83ade48fbe14f5fc281bc20d7d79dcbdd86e78e14baa7bbd78d"
+      },
+      {
+        "stagedId": "wp2-bc-annual-series-20260909--lc--CA_forest_VLCE2_2017.tif",
+        "sha256": "796b00d24fd887fe5650f7ce3f26f426cd8cf5aa8cdfd4548dd5fb010eeac598"
+      },
+      {
+        "stagedId": "wp2-bc-annual-series-20260909--lc--CA_forest_VLCE2_2018.tif",
+        "sha256": "a365a1818743aad4a24ca5a9ec01561d38abb7b500776713c37a59e6bd98d1b2"
+      },
+      {
+        "stagedId": "wp2-bc-annual-series-20260909--lc--CA_forest_VLCE2_2019.tif",
+        "sha256": "771b0a872c55f34c46c73143f455549bfd13eff2d20d37b11d44e66638607b89"
+      },
+      {
+        "stagedId": "wp2-bc-annual-series-20260909--lc--CA_forest_VLCE2_2020.tif",
+        "sha256": "c8a81b3acd47232685555c5bdaea327998140ca05f77087af3be7884c301e2b0"
+      },
+      {
+        "stagedId": "wp2-bc-annual-series-20260909--lc--CA_forest_VLCE2_2021.tif",
+        "sha256": "0c0baae74a89fea9f5229e0fdac5eafa99d2d288862d83b3e922b8c6f156492e"
+      },
+      {
+        "stagedId": "wp2-bc-annual-series-20260909--lc--CA_forest_VLCE2_2022.tif",
+        "sha256": "0adb935df9e17fc40c21b3a588c7b2f1ade8b79c617a1bd9a39f118c24f4a4e5"
+      },
+      {
+        "stagedId": "wp2-bc-annual-series-20260909--rasters--CA_Forest_Fire_1985-2022.tif",
+        "sha256": "c7d9159efa10d10935f98d64ed3c630f17f1626a780b5e69e5deb19ed8773eea"
+      },
+      {
+        "stagedId": "wp2-bc-annual-series-20260909--rasters--CA_Forest_Harvest_1985-2022.tif",
+        "sha256": "81e1cced15d17e0f986b35a006cfe5b3964c6b0aa5b24c36099f35c003fdca08"
+      }
+    ],
+    "derived": [
+      {
+        "slug": "province-windows",
+        "path": "derived/provincial-annual-series-20260909/province-windows.json",
+        "byteLength": 1836,
+        "sha256": "09ba0c977dd9110eb1acc24da5700a1e97a6bf01cf08c6ace1ef5e14658beaf5"
+      },
+      {
+        "slug": "british-columbia-mask",
+        "path": "derived/provincial-annual-series-20260909/masks/british-columbia_mask.tif",
+        "byteLength": 9291257,
+        "sha256": "8c8eb0dbbc78b1f38aa1c8df93d004915c82bd971472834e2eb89528d12f78db"
+      },
+      {
+        "slug": "alberta-mask",
+        "path": "derived/provincial-annual-series-20260909/masks/alberta_mask.tif",
+        "byteLength": 4512474,
+        "sha256": "1a958ff9b56a0af2e8a9bca0770ff220da8c3c5335d985b02c542f69e6edcf0c"
+      },
+      {
+        "slug": "ontario-mask",
+        "path": "derived/provincial-annual-series-20260909/masks/ontario_mask.tif",
+        "byteLength": 11857661,
+        "sha256": "0f4aad570338f6462e50893c7ca429fb7c80024088185ab73561315e4a630a98"
+      },
+      {
+        "slug": "quebec-mask",
+        "path": "derived/provincial-annual-series-20260909/masks/quebec_mask.tif",
+        "byteLength": 13886057,
+        "sha256": "8acce80eec69ae05d77c0f0b78c0c9f18ffbb45fe162550a40bbacc71ac348e1"
+      },
+      {
+        "slug": "statcan-economic-regions-2021-en",
+        "path": "raw/statcan-economic-regions-2021/2026-08-29/ler_000a21s_e.geojson",
+        "byteLength": 28023613,
+        "sha256": "b1bcb1305a04c6ddf9b74bdee545616a85ef6ff2e5622de343c34b122bdb08f7"
+      }
+    ]
+  },
+  "outputs": [
+    {
+      "slug": "condition-recovery-v2",
+      "path": "derived/phase4-condition-recovery-v2/condition-recovery-v2.json",
+      "byteLength": 289622,
+      "sha256": "42749e0454d381c4682700be5b60a9613dea7a91f85c1dfc6b0b1eb33ece1611"
+    },
+    {
+      "slug": "run-log",
+      "path": "derived/phase4-condition-recovery-v2/run.log",
+      "byteLength": 2135,
+      "sha256": "d1c1c0b6ba55d71e5eb63bb68879b5fa91f9929c2e72d2f9d1a87a4c94e36daf"
+    },
+    {
+      "slug": "cells-manifest",
+      "path": "derived/phase4-condition-recovery-v2/cells.sha256",
+      "byteLength": 74965,
+      "sha256": "5bf0130885fecc649488d7a63f0f17b85191d7ce7f498833937934b1a4615656"
+    },
+    {
+      "slug": "british-columbia-cells-vrt",
+      "path": "derived/phase4-condition-recovery-v2/british-columbia-cells.vrt",
+      "byteLength": 956431,
+      "sha256": "7e150339483c2cebe5e688ac72dacfe571ab9e9bcda645a517cb5fea18f234e2"
+    },
+    {
+      "slug": "alberta-cells-vrt",
+      "path": "derived/phase4-condition-recovery-v2/alberta-cells.vrt",
+      "byteLength": 700392,
+      "sha256": "4f6f58908ddabdf5fe8f96b5692799d2cf1b753c8db5fb1f963cfd757e500b54"
+    },
+    {
+      "slug": "ontario-cells-vrt",
+      "path": "derived/phase4-condition-recovery-v2/ontario-cells.vrt",
+      "byteLength": 839007,
+      "sha256": "ec5e2014d25bdb18193ee2d87e79be01eb08e88436b6d647a2ec60eb51e04eb5"
+    },
+    {
+      "slug": "quebec-cells-vrt",
+      "path": "derived/phase4-condition-recovery-v2/quebec-cells.vrt",
+      "byteLength": 962718,
+      "sha256": "10c8e1310e8989cf149bd77b02ae96112fa68d8769d7eed8c25a3731bba96e2f"
+    }
+  ],
+  "cells": {
+    "directory": "derived/phase4-condition-recovery-v2/cells",
+    "files": 860,
+    "totalBytes": 3430526246,
+    "bands": [
+      "A:state",
+      "A:latestLossYearMinus1900",
+      "A:recoveryStartYearMinus1900",
+      "A:firstLossYearMinus1900",
+      "A:causePlus1",
+      "B:state",
+      "B:latestLossYearMinus1900",
+      "B:recoveryStartYearMinus1900",
+      "B:firstLossYearMinus1900",
+      "B:causePlus1"
+    ],
+    "note": "One GeoTIFF per strip. VRTs are per province because province windows overlap; a single VRT would let one province's strip overwrite another's cells."
+  },
+  "provinces": {
+    "british-columbia": {
+      "A": {
+        "maskCells": 1019222375,
+        "unknownCells": 45503,
+        "knownCells": 1019176872,
+        "neverTreedCells": 298016840,
+        "everTreedCells": 721160032,
+        "lostCells": 138611417,
+        "latestLoss": {
+          "recoveredCells": 51177542,
+          "notRecoveredCells": 87433875,
+          "unconfirmedCells": 5194446
+        },
+        "anyLoss": {
+          "recoveredCells": 54981023,
+          "notRecoveredCells": 83630394
+        },
+        "recoveredClass81In2022Cells": 0,
+        "byLatestLossDecade": {
+          "1985-1994": {
+            "lostCells": 25410112,
+            "recoveredCells": 20758498,
+            "unconfirmedCells": 335106
+          },
+          "1995-2004": {
+            "lostCells": 29333058,
+            "recoveredCells": 17650502,
+            "unconfirmedCells": 1027255
+          },
+          "2005-2014": {
+            "lostCells": 40147107,
+            "recoveredCells": 10292942,
+            "unconfirmedCells": 2176677
+          },
+          "2015-2022": {
+            "lostCells": 43721140,
+            "recoveredCells": 2475600,
+            "unconfirmedCells": 1655408
+          }
+        }
+      },
+      "B": {
+        "maskCells": 1019222375,
+        "unknownCells": 45503,
+        "knownCells": 1019176872,
+        "neverTreedCells": 276192763,
+        "everTreedCells": 742984109,
+        "lostCells": 145356429,
+        "latestLoss": {
+          "recoveredCells": 53022241,
+          "notRecoveredCells": 92334188,
+          "unconfirmedCells": 5514305
+        },
+        "anyLoss": {
+          "recoveredCells": 57340153,
+          "notRecoveredCells": 88016276
+        },
+        "recoveredClass81In2022Cells": 1662658,
+        "byLatestLossDecade": {
+          "1985-1994": {
+            "lostCells": 25980121,
+            "recoveredCells": 21128237,
+            "unconfirmedCells": 356562
+          },
+          "1995-2004": {
+            "lostCells": 30705554,
+            "recoveredCells": 18213131,
+            "unconfirmedCells": 1094561
+          },
+          "2005-2014": {
+            "lostCells": 43333177,
+            "recoveredCells": 11120780,
+            "unconfirmedCells": 2355325
+          },
+          "2015-2022": {
+            "lostCells": 45337577,
+            "recoveredCells": 2560093,
+            "unconfirmedCells": 1707857
+          }
+        }
+      }
+    },
+    "alberta": {
+      "A": {
+        "maskCells": 711031921,
+        "unknownCells": 170800264,
+        "knownCells": 540231657,
+        "neverTreedCells": 162985658,
+        "everTreedCells": 377245999,
+        "lostCells": 123824408,
+        "latestLoss": {
+          "recoveredCells": 35318630,
+          "notRecoveredCells": 88505778,
+          "unconfirmedCells": 7385245
+        },
+        "anyLoss": {
+          "recoveredCells": 45684406,
+          "notRecoveredCells": 78140002
+        },
+        "recoveredClass81In2022Cells": 0,
+        "byLatestLossDecade": {
+          "1985-1994": {
+            "lostCells": 12000039,
+            "recoveredCells": 6494143,
+            "unconfirmedCells": 182734
+          },
+          "1995-2004": {
+            "lostCells": 29191534,
+            "recoveredCells": 14057388,
+            "unconfirmedCells": 731803
+          },
+          "2005-2014": {
+            "lostCells": 38767812,
+            "recoveredCells": 10690237,
+            "unconfirmedCells": 1995834
+          },
+          "2015-2022": {
+            "lostCells": 43865023,
+            "recoveredCells": 4076862,
+            "unconfirmedCells": 4474874
+          }
+        }
+      },
+      "B": {
+        "maskCells": 711031921,
+        "unknownCells": 170800264,
+        "knownCells": 540231657,
+        "neverTreedCells": 102363072,
+        "everTreedCells": 437868585,
+        "lostCells": 147034662,
+        "latestLoss": {
+          "recoveredCells": 42614090,
+          "notRecoveredCells": 104420572,
+          "unconfirmedCells": 8336412
+        },
+        "anyLoss": {
+          "recoveredCells": 54799196,
+          "notRecoveredCells": 92235466
+        },
+        "recoveredClass81In2022Cells": 6232436,
+        "byLatestLossDecade": {
+          "1985-1994": {
+            "lostCells": 13439832,
+            "recoveredCells": 7432340,
+            "unconfirmedCells": 246644
+          },
+          "1995-2004": {
+            "lostCells": 37092834,
+            "recoveredCells": 17688365,
+            "unconfirmedCells": 992748
+          },
+          "2005-2014": {
+            "lostCells": 47019609,
+            "recoveredCells": 12771471,
+            "unconfirmedCells": 2371432
+          },
+          "2015-2022": {
+            "lostCells": 49482387,
+            "recoveredCells": 4721914,
+            "unconfirmedCells": 4725588
+          }
+        }
+      }
+    },
+    "ontario": {
+      "A": {
+        "maskCells": 1088143529,
+        "unknownCells": 98262741,
+        "knownCells": 989880788,
+        "neverTreedCells": 393909721,
+        "everTreedCells": 595971067,
+        "lostCells": 112150990,
+        "latestLoss": {
+          "recoveredCells": 59106085,
+          "notRecoveredCells": 53044905,
+          "unconfirmedCells": 4392017
+        },
+        "anyLoss": {
+          "recoveredCells": 62102167,
+          "notRecoveredCells": 50048823
+        },
+        "recoveredClass81In2022Cells": 0,
+        "byLatestLossDecade": {
+          "1985-1994": {
+            "lostCells": 27468031,
+            "recoveredCells": 22248966,
+            "unconfirmedCells": 350566
+          },
+          "1995-2004": {
+            "lostCells": 37712086,
+            "recoveredCells": 26588495,
+            "unconfirmedCells": 1051727
+          },
+          "2005-2014": {
+            "lostCells": 23072555,
+            "recoveredCells": 9214572,
+            "unconfirmedCells": 1637639
+          },
+          "2015-2022": {
+            "lostCells": 23898318,
+            "recoveredCells": 1054052,
+            "unconfirmedCells": 1352085
+          }
+        }
+      },
+      "B": {
+        "maskCells": 1088143529,
+        "unknownCells": 98262741,
+        "knownCells": 989880788,
+        "neverTreedCells": 224849003,
+        "everTreedCells": 765031785,
+        "lostCells": 148286290,
+        "latestLoss": {
+          "recoveredCells": 81466800,
+          "notRecoveredCells": 66819490,
+          "unconfirmedCells": 7221738
+        },
+        "anyLoss": {
+          "recoveredCells": 87598653,
+          "notRecoveredCells": 60687637
+        },
+        "recoveredClass81In2022Cells": 21251849,
+        "byLatestLossDecade": {
+          "1985-1994": {
+            "lostCells": 36099918,
+            "recoveredCells": 30396164,
+            "unconfirmedCells": 676894
+          },
+          "1995-2004": {
+            "lostCells": 46392036,
+            "recoveredCells": 33647155,
+            "unconfirmedCells": 1748274
+          },
+          "2005-2014": {
+            "lostCells": 35145563,
+            "recoveredCells": 15506259,
+            "unconfirmedCells": 2715144
+          },
+          "2015-2022": {
+            "lostCells": 30648773,
+            "recoveredCells": 1917222,
+            "unconfirmedCells": 2081426
+          }
+        }
+      }
+    },
+    "quebec": {
+      "A": {
+        "maskCells": 1639387800,
+        "unknownCells": 246721691,
+        "knownCells": 1392666109,
+        "neverTreedCells": 459377217,
+        "everTreedCells": 933288892,
+        "lostCells": 237991765,
+        "latestLoss": {
+          "recoveredCells": 79123404,
+          "notRecoveredCells": 158868361,
+          "unconfirmedCells": 11771005
+        },
+        "anyLoss": {
+          "recoveredCells": 85822659,
+          "notRecoveredCells": 152169106
+        },
+        "recoveredClass81In2022Cells": 0,
+        "byLatestLossDecade": {
+          "1985-1994": {
+            "lostCells": 54236378,
+            "recoveredCells": 28604921,
+            "unconfirmedCells": 1032177
+          },
+          "1995-2004": {
+            "lostCells": 74742478,
+            "recoveredCells": 32310389,
+            "unconfirmedCells": 2618243
+          },
+          "2005-2014": {
+            "lostCells": 69579264,
+            "recoveredCells": 15747592,
+            "unconfirmedCells": 4188094
+          },
+          "2015-2022": {
+            "lostCells": 39433645,
+            "recoveredCells": 2460502,
+            "unconfirmedCells": 3932491
+          }
+        }
+      },
+      "B": {
+        "maskCells": 1639387800,
+        "unknownCells": 246721691,
+        "knownCells": 1392666109,
+        "neverTreedCells": 434449134,
+        "everTreedCells": 958216975,
+        "lostCells": 245434219,
+        "latestLoss": {
+          "recoveredCells": 82052151,
+          "notRecoveredCells": 163382068,
+          "unconfirmedCells": 12484481
+        },
+        "anyLoss": {
+          "recoveredCells": 89738212,
+          "notRecoveredCells": 155696007
+        },
+        "recoveredClass81In2022Cells": 2566674,
+        "byLatestLossDecade": {
+          "1985-1994": {
+            "lostCells": 55362440,
+            "recoveredCells": 29693779,
+            "unconfirmedCells": 1101418
+          },
+          "1995-2004": {
+            "lostCells": 76093270,
+            "recoveredCells": 33358447,
+            "unconfirmedCells": 2767720
+          },
+          "2005-2014": {
+            "lostCells": 72756540,
+            "recoveredCells": 16385799,
+            "unconfirmedCells": 4425462
+          },
+          "2015-2022": {
+            "lostCells": 41221969,
+            "recoveredCells": 2614126,
+            "unconfirmedCells": 4189881
+          }
+        }
+      }
+    }
+  },
+  "fourProvinces": {
+    "A": {
+      "knownCells": 3941955426,
+      "unknownCells": 515830199,
+      "lostCells": 612578580,
+      "latestLossRecoveredCells": 224725661,
+      "anyLossRecoveredCells": 248590255,
+      "unconfirmedCells": 28742713
+    },
+    "B": {
+      "knownCells": 3941955426,
+      "unknownCells": 515830199,
+      "lostCells": 686111600,
+      "latestLossRecoveredCells": 259155282,
+      "anyLossRecoveredCells": 289476214,
+      "unconfirmedCells": 33556936
+    }
+  },
+  "regions": {
+    "british-columbia": {
+      "inProvinceRegions": 8,
+      "spillRows": 3,
+      "maxSpillCells": 781,
+      "cellsInNoRegion": 951
+    },
+    "alberta": {
+      "inProvinceRegions": 8,
+      "spillRows": 3,
+      "maxSpillCells": 138,
+      "cellsInNoRegion": 1147
+    },
+    "ontario": {
+      "inProvinceRegions": 11,
+      "spillRows": 4,
+      "maxSpillCells": 48,
+      "cellsInNoRegion": 449
+    },
+    "quebec": {
+      "inProvinceRegions": 17,
+      "spillRows": 3,
+      "maxSpillCells": 295,
+      "cellsInNoRegion": 2443
+    }
+  },
+  "regionsNote": "Economic regions are StatCan 2021 (44 in these provinces). Province windows are cut from the 2021 province boundary file, so a few border cells fall in a neighbouring province's region; those rows are reported here and are not displayed.",
+  "reproductions": {
+    "federalRecoveryRun": {
+      "british-columbia": {
+        "federalLostCells": 138624091,
+        "federalRecoveredCells": 54982693,
+        "v2LostCells": 138611417,
+        "v2AnyLossRecoveredCells": 54981023,
+        "lostDifferencePercent": -0.0091,
+        "recoveryRateDifferencePoints": 0.002
+      },
+      "alberta": {
+        "federalLostCells": 123824408,
+        "federalRecoveredCells": 45684406,
+        "v2LostCells": 123824408,
+        "v2AnyLossRecoveredCells": 45684406,
+        "lostDifferencePercent": 0.0,
+        "recoveryRateDifferencePoints": 0.0
+      },
+      "ontario": {
+        "federalLostCells": 112161172,
+        "federalRecoveredCells": 62106159,
+        "v2LostCells": 112150990,
+        "v2AnyLossRecoveredCells": 62102167,
+        "lostDifferencePercent": -0.0091,
+        "recoveryRateDifferencePoints": 0.001
+      },
+      "quebec": {
+        "federalLostCells": 238000965,
+        "federalRecoveredCells": 85825368,
+        "v2LostCells": 237991765,
+        "v2AnyLossRecoveredCells": 85822659,
+        "lostDifferencePercent": -0.0039,
+        "recoveryRateDifferencePoints": 0.0
+      }
+    },
+    "federalRecoveryRunNote": "The recorded federal run (data/phase4-recovery-trajectory-federal-2023.json) used the same three classes over federal electoral districts. Its districts are summed by province. The boundary editions differ at the edges, so a small difference is expected and is recorded rather than required to be zero.",
+    "provincialAnnualSeries": {
+      "toleranceHectares": 0.15,
+      "inputs": {
+        "british-columbia": {
+          "path": "derived/provincial-annual-series-20260909/british-columbia-annual-series-1984-2022.json",
+          "sha256": "61dc817bb83d0dc2bba1cb3fe75f7fbe2ff4d0856062026076726fffedab3357"
+        },
+        "alberta": {
+          "path": "derived/provincial-annual-series-20260909/alberta-annual-series-1984-2022.json",
+          "sha256": "982272c72b6f3a1d23ffb8e4032c1ea92cd4afa364b75e22d91cd0ab55319b94"
+        },
+        "ontario": {
+          "path": "derived/provincial-annual-series-20260909/ontario-annual-series-1984-2022.json",
+          "sha256": "52610b8e6245eada192a5eee639a8fa0b24c7c11be662a91e59755ffcab6bf68"
+        },
+        "quebec": {
+          "path": "derived/provincial-annual-series-20260909/quebec-annual-series-1984-2022.json",
+          "sha256": "91e6f90bbd69c7f34eb1a21d5957a5755621ac3f738e3b8770b120363953e9b9"
+        }
+      },
+      "fields": {
+        "A": "treedUplandHectares",
+        "B": "treedAllHectares"
+      }
+    }
+  },
+  "notMeasured": [
+    "Species, age and structure of the returning cover. The worker reads land-cover classes only.",
+    "Any NFI forest condition: area, width, crown closure, mature height or land use. Treed is not forest.",
+    "Cover that appeared where nothing was lost. Only returns after a loss are counted.",
+    "Year-to-year class changes that are classification noise rather than real loss. Nothing held can separate them.",
+    "Whether losses after 2019 recover. A return needs three treed years by 2022, so the 2015 to 2022 decade is too recent to judge.",
+    "Cause of loss and the independent check against BC RESULTS. Both are recorded separately.",
+    "Any province other than these four."
+  ],
+  "checkedBy": "scripts/check-phase4-condition-recovery-v2.mjs"
+}
