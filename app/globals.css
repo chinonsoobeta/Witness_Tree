@@ -2001,6 +2001,46 @@ h4 {
   place-items: center;
   color: var(--muted);
   text-align: center;
+  /* The outlines stay draggable behind the message. */
+  pointer-events: none;
+}
+/* The message sits on a card, because the province outlines are drawn behind it. */
+.explore-map-panel > span {
+  max-width: 34rem;
+  padding: 12px 16px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  pointer-events: auto;
+}
+/* Shown on the map while a patch mode is zoomed out past its patches. */
+.explore-map-patch-hint {
+  position: absolute;
+  inset-block-start: 12px;
+  inset-inline: 12px;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 4px 14px;
+  width: fit-content;
+  max-width: calc(100% - 24px);
+  margin-inline: auto;
+  padding: 6px 14px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 13px;
+}
+.explore-map-patch-hint p {
+  margin: 0;
+}
+.explore-map-patch-hint .explore-map-patch-zoom {
+  margin: 0;
+  min-height: 44px;
 }
 .explore-map-status {
   margin-top: 8px;

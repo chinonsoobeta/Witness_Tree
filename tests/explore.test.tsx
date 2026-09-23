@@ -438,12 +438,22 @@ test("map failures retain diagnostics, retry, and a reachable patch zoom", async
   assert.match(map, /retryMap/);
   assert.match(map, /Retry the interactive map/);
   assert.match(map, /Zoom in to see the patches/);
-  assert.match(map, /zoom: EXPLORE_PER_CELL_LAYER\.minZoom/);
-  assert.match(map, /center: map\.getCenter\(\)/);
+  assert.match(map, /zoom: PATCH_TARGET_ZOOM/);
+  assert.match(map, /const PATCH_READABLE_ZOOM = 9;/);
+  assert.match(map, /const PATCH_TARGET_ZOOM = 10;/);
+  // The zoom stays where the reader is when that is inside a province, and
+  // otherwise goes to the nearest province's forest rather than the empty
+  // middle of the four-province view.
+  assert.match(map, /center: patchZoomCentre\(map\.getCenter\(\)\)/);
+  assert.match(map, /const PATCH_FOCUS: Readonly<Record<ExploreMapView, Position>>/);
   // The patch zoom sits in the legend beside the patch key, and is offered
   // only while patches exist and the map is zoomed out past them.
-  assert.match(map, /const patchZoomOffered = perCellYears !== null && view !== null && view\.zoom < EXPLORE_PER_CELL_LAYER\.minZoom/);
-  assert.match(map, /\{patchZoomOffered \? \(\s*<button type="button" className="explore-map-patch-zoom" onClick=\{zoomToPatches\}>/);
+  assert.match(map, /const patchZoomOffered = perCellYears !== null && view !== null && view\.zoom < PATCH_READABLE_ZOOM/);
+  // The offer sits on the map itself, where the empty ground is.
+  assert.match(map, /patchZoomOffered \? \(\s*<div className="explore-map-patch-hint">[\s\S]*?<button type="button" className="explore-map-patch-zoom" onClick=\{zoomToPatches\}>/);
+  // Every mode draws the province outlines, so no mode opens on an empty map.
+  assert.match(map, /else layers\.push\(provinceOutlineLayer\(\)\)/);
+  assert.doesNotMatch(map, /if \(!available\) return;\s+const controller/);
   assert.match(map, /className="explore-map-control-cluster"/);
   assert.doesNotMatch(map, /source === "pmtiles" &&\s*perCellArchive &&\s*view &&\s*view\.zoom/);
   assert.doesNotMatch(map, /framingViews|framing views only|servent seulement au cadrage/);
@@ -560,7 +570,8 @@ test("playback swaps only the patch layer, starts at 1985, and stops visibly", a
   assert.doesNotMatch(map, /map\.removeSource\(EXPLORE_PER_CELL/);
   assert.match(map, /map\.addSource\(EXPLORE_PER_CELL_SPAN_LAYER\.sourceId, perCellSource\(\)\)/);
   assert.match(map, /\[mapReady, perCellKey, cause, overlayKey\]/);
-  assert.match(map, /\[available, provinceAvailable, overlayKey, retryNonce\]/);
+  // The map is rebuilt only when a mode changes what it can draw, never for a year.
+  assert.match(map, /\[patchCapable, provinceAvailable, overlayKey, retryNonce\]/);
   assert.doesNotMatch(
     map,
     /\[available, provinceAvailable, perCellArchive, overlayKey, cause\]/,

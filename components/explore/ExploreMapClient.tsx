@@ -98,6 +98,7 @@ const text = {
     totalLoss: "Detected loss",
     knownObservedSubtotal: "Known detected subtotal",
     zoomToPatches: "Zoom in to see the patches",
+    patchHint: "Loss patches appear when you zoom in close.",
     enterFullscreen: "View map full screen",
     exitFullscreen: "Exit full screen",
     mapPanelHarvest: "Harvest recorded",
@@ -162,6 +163,7 @@ const text = {
     totalLoss: "Perte détectée",
     knownObservedSubtotal: "Sous-total détecté connu",
     zoomToPatches: "Zoomer pour voir les parcelles",
+    patchHint: "Les parcelles de perte apparaissent en zoom rapproché.",
     enterFullscreen: "Afficher la carte en plein écran",
     exitFullscreen: "Quitter le plein écran",
     mapPanelHarvest: "Récolte consignée",
@@ -183,6 +185,30 @@ const ATTRIBUTION_ID = "explore-map-attribution";
 
 // The default camera and pan limit share this one four-province envelope so
 // they cannot drift apart. It frames all four provinces but is not a button.
+/*
+ * Where "Zoom in to see the patches" goes when the view is centred outside
+ * the four provinces. The four-province view is centred in northern Manitoba,
+ * which the record does not cover, so zooming on the centre landed on empty
+ * ground. Each point sits in the province's commercial forest, where detected
+ * loss is common in any year.
+ */
+const PATCH_FOCUS: Readonly<Record<ExploreMapView, Position>> = {
+  bc: [-122.5, 53.5],
+  ab: [-116.5, 54.5],
+  on: [-84.5, 48.5],
+  qc: [-75.5, 48.5],
+};
+
+/*
+ * The patch archive starts at zoom 8, but its zoom-8 tiles keep only the
+ * largest few patches of all 38 years (3 to 7 a tile at the focus points
+ * below); hundreds appear from zoom 9. So the offer to zoom in stays until
+ * zoom 9, and following it goes to zoom 10, where a single year's patches of
+ * a few tens of hectares are several pixels across.
+ */
+const PATCH_READABLE_ZOOM = 9;
+const PATCH_TARGET_ZOOM = 10;
+
 const COMBINED_PROVINCE_BOUNDS: MapBounds = [-139.1, 41.5, -57, 62.1];
 
 // These are only camera extents for the province buttons. They neither filter
@@ -192,6 +218,19 @@ const MAP_VIEW_BOUNDS: Readonly<Record<ExploreMapView, MapBounds>> = {
   ab: [-120, 48.9, -109, 60.1],
   on: [-95.2, 41.5, -74.1, 56.9],
   qc: [-79.9, 45, -57, 62.1],
+};
+
+/** Zoom where the reader is if that is in a province; otherwise to the nearest province's forest. */
+const patchZoomCentre = ({ lng, lat }: Readonly<{ lng: number; lat: number }>): Position => {
+  const views = Object.keys(MAP_VIEW_BOUNDS) as ExploreMapView[];
+  const inside = views.some((view) => {
+    const [west, south, east, north] = MAP_VIEW_BOUNDS[view];
+    return lng >= west && lng <= east && lat >= south && lat <= north;
+  });
+  if (inside) return [lng, lat];
+  const distance = ([focusLng, focusLat]: Position) =>
+    Math.hypot((focusLng - lng) * Math.cos((lat * Math.PI) / 180), focusLat - lat);
+  return views.map((view) => PATCH_FOCUS[view]).reduce((best, focus) => (distance(focus) < distance(best) ? focus : best));
 };
 
 // MapLibre resolves its worker as `new URL("./maplibre-gl-worker.mjs",
@@ -308,6 +347,13 @@ const provinceLayers = (fromYear: number, toYear: number): StyleSpecification["l
   },
 ];
 
+/*
+ * The province outlines alone, for the modes that shade nothing. Without them
+ * a patch mode opened on an empty ground: the patches only draw from zoom 8,
+ * so at the four-province view there was nothing to see or steer by.
+ */
+const provinceOutlineLayer = (): StyleSpecification["layers"][number] => provinceLayers(EXPLORE_YEAR_MAX - 1, EXPLORE_YEAR_MAX)[1]!;
+
 const PER_CELL_LAYER_ID = `${EXPLORE_PER_CELL_LAYER.sourceId}-fill`;
 
 type PerCellSpanYears = NonNullable<ReturnType<typeof perCellSpanYears>>;
@@ -395,14 +441,15 @@ const buildStyle = (
     // same ground, so this also makes the two paths agree.
     { id: "ground", type: "background", paint: { "background-color": EXPLORE_MAP_COLOURS.ground } },
   ];
-  if (province) {
-    sources[EXPLORE_PRODUCTION_LAYER.sourceLayer] = {
-      type: "vector",
-      url: `pmtiles://${EXPLORE_PRODUCTION_LAYER.url}`,
-      bounds: [-141, 41, -52, 70],
-    };
-    layers.push(...provinceLayers(span.fromYear, span.toYear));
-  }
+  // The province archive is always loaded: shaded in forest-loss mode,
+  // outlines only in every other mode, so the map always shows where it is.
+  sources[EXPLORE_PRODUCTION_LAYER.sourceLayer] = {
+    type: "vector",
+    url: `pmtiles://${EXPLORE_PRODUCTION_LAYER.url}`,
+    bounds: [-141, 41, -52, 70],
+  };
+  if (province) layers.push(...provinceLayers(span.fromYear, span.toYear));
+  else layers.push(provinceOutlineLayer());
   if (years) {
     sources[EXPLORE_PER_CELL_SPAN_LAYER.sourceId] = perCellSource();
     // Every patch carries its closing year and the harvest and fire counts the
@@ -618,9 +665,10 @@ export function ExploreMapClient({
     };
   }, []);
 
+  // Whether the map may zoom to the patch layer. It is fixed when the map is
+  // built, so a change of it rebuilds the map.
+  const patchCapable = cause !== null;
   useEffect(() => {
-    if (!available) return;
-
     const controller = new AbortController();
     let active = true;
     let fallbackStarted = false;
@@ -727,7 +775,7 @@ export function ExploreMapClient({
           // The per-cell layer is only drawn from zoom 8, so the map has to
           // reach it. Without an archive there is nothing past the province
           // aggregate to magnify and the old ceiling still applies.
-          maxZoom: cause !== null ? EXPLORE_PER_CELL_SPAN_LAYER.maxZoom : 6,
+          maxZoom: patchCapable ? EXPLORE_PER_CELL_SPAN_LAYER.maxZoom : 6,
           attributionControl: false,
         });
         mapRef.current = map;
@@ -843,7 +891,7 @@ export function ExploreMapClient({
     // and rebuild the whole map each time. The key changes exactly when the
     // selected overlay set changes, which is the only thing the style needs.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [available, provinceAvailable, overlayKey, retryNonce]);
+  }, [patchCapable, provinceAvailable, overlayKey, retryNonce]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -958,8 +1006,8 @@ export function ExploreMapClient({
     const map = mapRef.current;
     if (!map) return;
     map.easeTo({
-      center: map.getCenter(),
-      zoom: EXPLORE_PER_CELL_LAYER.minZoom,
+      center: patchZoomCentre(map.getCenter()),
+      zoom: PATCH_TARGET_ZOOM,
       duration: 350,
     });
   };
@@ -973,7 +1021,7 @@ export function ExploreMapClient({
   };
   // Offered only while it would do something: patches exist for this
   // selection and the map is still zoomed out past the point they appear.
-  const patchZoomOffered = perCellYears !== null && view !== null && view.zoom < EXPLORE_PER_CELL_LAYER.minZoom;
+  const patchZoomOffered = perCellYears !== null && view !== null && view.zoom < PATCH_READABLE_ZOOM;
   const toggleFullscreen = async () => {
     const frame = mapFrameRef.current;
     if (!frame || !fullscreenAvailable) return;
@@ -1030,11 +1078,6 @@ export function ExploreMapClient({
           <p>{text[locale].perCell}</p>
           <p>{text[locale].perCellLimits}</p>
           {cause === "all" ? null : <p>{text[locale].perCellFilteredLimits}</p>}
-          {patchZoomOffered ? (
-            <button type="button" className="explore-map-patch-zoom" onClick={zoomToPatches}>
-              {text[locale].zoomToPatches}
-            </button>
-          ) : null}
         </div>
       ) : null}
       {overlays.length > 0 ? (
@@ -1069,8 +1112,7 @@ export function ExploreMapClient({
           source === "geojson" ? "geojson-fallback" : source ?? undefined
         }
       >
-        {available ? (
-          <>
+        <>
             <div
               ref={mapContainerRef}
               className="explore-map-canvas"
@@ -1108,7 +1150,15 @@ export function ExploreMapClient({
           </svg>
             ) : null}
             {state !== "ready" ? (
-              <p className="explore-map-panel">{message}</p>
+              <p className="explore-map-panel"><span>{message}</span></p>
+            ) : null}
+            {state === "ready" && source === "pmtiles" && patchZoomOffered ? (
+              <div className="explore-map-patch-hint">
+                <p>{text[locale].patchHint}</p>
+                <button type="button" className="explore-map-patch-zoom" onClick={zoomToPatches}>
+                  {text[locale].zoomToPatches}
+                </button>
+              </div>
             ) : null}
             {state === "ready" && source === "pmtiles" && boundary ? (
               <aside className="explore-map-boundary-status" role="status">
@@ -1139,10 +1189,7 @@ export function ExploreMapClient({
                 ) : null}
               </aside>
             ) : null}
-          </>
-        ) : (
-          <p className="explore-map-panel">{message}</p>
-        )}
+        </>
         <div className="explore-map-controls">
           {scale && view ? (
             <div
