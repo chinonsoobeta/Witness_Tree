@@ -52,8 +52,8 @@ export const EVIDENCE_DEFINITIONS: Record<EvidenceClass, EvidenceDefinition> = {
   unknown: {
     label: localized("Unknown", "Inconnu"),
     maySay: localized(
-      "No official public record answers this question yet.",
-      "Aucun registre public officiel ne répond encore à cette question.",
+      "No authoritative public record has been integrated for this question.",
+      "Aucun registre public faisant autorité n’a été intégré pour cette question.",
     ),
     mayNotSay: localized(
       "Any inferred organisation, cause or date presented as fact.",

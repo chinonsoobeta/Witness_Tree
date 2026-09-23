@@ -47,5 +47,5 @@ test("generated explanations carry the specific limitation, so a reason is never
 test("unknown is never silently converted into a confident level", () => {
   const unknown = assignConfidence({ authoritativeRecord: false, geometryResolved: false, requiredAttributesPresent: false }) as ConfidenceResult;
   assert.equal(unknown.level, "unknown");
-  assert.match(unknown.reason.en, /No official public record/i);
+  assert.match(unknown.reason.en, /No authoritative public record/i);
 });

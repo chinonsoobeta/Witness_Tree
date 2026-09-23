@@ -21,8 +21,8 @@ export type ConfidenceResult = Readonly<{
 
 const mediumReason = (limitationEn: string, limitationFr: string): LocalizedString =>
   localized(
-    `Good evidence, with one important gap: ${limitationEn}.`,
-    `Bonne preuve, avec une lacune importante : ${limitationFr}.`,
+    `Strong evidence with a material limitation: ${limitationEn}.`,
+    `Preuve solide comportant une limite importante : ${limitationFr}.`,
   );
 
 export function assignConfidence(input: ConfidenceInput): ConfidenceResult {
@@ -30,12 +30,12 @@ export function assignConfidence(input: ConfidenceInput): ConfidenceResult {
     const years = input.inventoryAgeAtEventYears;
     const reason = years && years > 5
       ? localized(
-          `The forest inventory is ${years} years older than the event, and its details were not updated for tree growth.`,
-          `L’inventaire forestier a ${years} ans de plus que l’événement, et ses détails n’ont pas été mis à jour selon la croissance des arbres.`,
+          `Inventory vintage predates the event by ${years} years. Attributes were carried forward without growth modelling.`,
+          `Le millésime de l’inventaire précède l’événement de ${years} ans. Les attributs ont été reportés sans modélisation de la croissance.`,
         )
       : localized(
-          "A rough guide only: the data here has a known gap or is not detailed enough.",
-          "Simple indication : les données ont ici une lacune connue ou manquent de précision.",
+          "Useful indication only because a documented coverage or resolution limit affects this location.",
+          "Indication utile seulement, car une limite documentée de couverture ou de résolution touche cet emplacement.",
         );
     return { level: "limited", ruleId: "CONF-LIMITED-001", reason };
   }
@@ -51,8 +51,8 @@ export function assignConfidence(input: ConfidenceInput): ConfidenceResult {
       level: "high",
       ruleId: "CONF-HIGH-001",
       reason: localized(
-        "An official record with a clear location, date and details.",
-        "Un registre officiel avec un emplacement, une date et des détails clairs.",
+        "Direct authoritative record with clear geometry, date and attributes.",
+        "Registre faisant directement autorité, avec une géométrie, une date et des attributs clairs.",
       ),
     };
   }
@@ -79,7 +79,7 @@ export function assignConfidence(input: ConfidenceInput): ConfidenceResult {
     return {
       level: "medium",
       ruleId: "CONF-MEDIUM-001",
-      reason: mediumReason("a required detail is missing", "un détail requis manque"),
+      reason: mediumReason("one required attribute is unavailable", "un attribut requis n’est pas disponible"),
     };
   }
 
@@ -87,8 +87,8 @@ export function assignConfidence(input: ConfidenceInput): ConfidenceResult {
     level: "unknown",
     ruleId: "CONF-UNKNOWN-001",
     reason: localized(
-      "No official public record answers this question yet.",
-      "Aucun registre public officiel ne répond encore à cette question.",
+      "No authoritative public record has been integrated for this question.",
+      "Aucun registre public faisant autorité n’a été intégré pour cette question.",
     ),
   };
 }
