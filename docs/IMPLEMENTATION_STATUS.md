@@ -84,9 +84,21 @@ recorded provincial annual series within 0.15 ha per year. See
 [the evidence record](../data/phase4-condition-recovery-v2.json), checked by
 `npm run check:phase4-condition-recovery-v2`.
 
-The record is `local-nonproduction-executed` and nothing in it is admitted. Cause of
-loss, the BC RESULTS check (61.1% against an 80% target, not met) and the Explore
-display are separate changes. The mode stays empty until the product is admitted.
+Cause of the latest loss comes from the NTEMS fire and harvest year rasters with a
+one-year window. Across the four provinces, 40.2% of lost area has no fire or harvest
+recorded near its loss year and is shown as "cause not recorded", never as
+undisturbed. `scripts/phase4_condition_recovery_results_check.py` compares our
+recovery calls with BC RESULTS forest cover (OGL-BC) on the rule fixed before any
+figure was computed. The comparison agreed on 61.1% of 25,295 polygons against an
+80% target, so the target was not met. Agreement was 95.8% where RESULTS says not
+restocked and 45.6% where it says regenerated, so the recovery figures likely
+understate recovery. See [the cause and check record](../data/phase4-condition-recovery-cause-and-check.json),
+checked by `npm run check:phase4-condition-recovery-cause-and-check`. The RESULTS
+pages are bound in that record, not entered as a staged acquisition.
+
+Both records are `local-nonproduction-executed` and nothing in them is admitted. The
+Explore display is a separate change. The mode stays empty until the product is
+admitted.
 
 ## Other formal phase counts
 
