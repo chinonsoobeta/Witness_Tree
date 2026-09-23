@@ -70,7 +70,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Annual interval",
           paragraphs: [
-            "The change from one year to the next. On the year control, 1985 means the change from 1984 to 1985, not the calendar year 1985.",
+            "The detected loss from one year to the next, the shortest span you can choose on Explore. Choosing 1984 as the first year and 1985 as the last shows what was lost between those two years.",
           ],
         },
         {
@@ -144,7 +144,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Intervalle annuel",
           paragraphs: [
-            "Le changement d’une année à la suivante. Sur la commande d’année, 1985 désigne le changement de 1984 à 1985, et non l’année civile 1985.",
+            "La perte détectée d’une année à la suivante, soit la période la plus courte que l’on peut choisir sur la page Explorer. Choisir 1984 comme première année et 1985 comme dernière montre ce qui a été perdu entre ces deux années.",
           ],
         },
         {

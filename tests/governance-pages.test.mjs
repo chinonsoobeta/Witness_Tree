@@ -83,8 +83,9 @@ test("method and decision copy use the current interval control", async () => {
     assert.match(content, /EXPLORE_YEAR_MIN/);
     assert.doesNotMatch(content, /default view (?:starts|begins) in 2000|vue par défaut commence en 2000/);
   }
-  assert.match(method, /each year shows the change since the year before/);
-  assert.match(method, /chaque année montre le changement depuis l’année précédente/);
+  // The control is a first and a last year, so the copy describes a span.
+  assert.match(method, /On Explore you choose a first and a last year/);
+  assert.match(method, /vous choisissez une première et une dernière année/);
 });
 
 test("Releases indexes the bounded release and Data and Explore point back to it", async () => {

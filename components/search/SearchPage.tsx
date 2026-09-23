@@ -17,7 +17,7 @@ const copy = {
     title: "Search",
     scope: "Search scope",
     places: "Places",
-    districts: "Federal districts",
+    districts: "Federal ridings",
     notice: "Search provinces, ridings and communities. Figures cover 1984 to 2022.",
     shareNote: "Each share is for the part of the community inside that riding.",
     excluded: "Reserves, settlements and treaty or agreement lands aren’t listed yet. They will be once their official boundaries are approved and communities have a way to reply.",

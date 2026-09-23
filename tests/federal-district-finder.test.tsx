@@ -39,7 +39,7 @@ test("links exact district names to the locale comparison route with the left se
   assert.equal(federalDistrictCompareHref("fr", "a/b"), "/fr/comparer?left=a%2Fb");
   const english = renderToStaticMarkup(<FederalDistrictFinder locale="en" query="Quebec" rows={rows} />);
   const french = renderToStaticMarkup(<FederalDistrictFinder locale="fr" query="Quebec" rows={rows} />);
-  assert.match(english, /<label[^>]*class="field-label sr-only"[^>]*id="federal-district-label"[^>]*>Find a federal electoral district<\/label>/);
+  assert.match(english, /<label[^>]*class="field-label sr-only"[^>]*id="federal-district-label"[^>]*>Find a federal riding<\/label>/);
   assert.match(english, /<input[^>]*aria-labelledby="federal-district-label"/);
   assert.doesNotMatch(english, /<input[^>]*aria-label=/);
   assert.match(english, /<button[^>]*>Find<\/button>/);

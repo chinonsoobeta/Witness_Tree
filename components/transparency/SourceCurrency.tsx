@@ -33,12 +33,12 @@ const COPY = {
     lead: (checkedOn: string) =>
       `Les années présentées ici sont celles que nous avons chargées, qui ne sont pas forcément les plus récentes. Nous vérifions donc directement auprès du diffuseur. Dernière vérification : ${checkedOn}.`,
     product: "Archive source",
-    ingested: "Chargée jusqu'à",
-    published: "Diffusée jusqu'à",
+    ingested: "Chargée jusqu’à",
+    published: "Diffusée jusqu’à",
     current: (lastYear: number) =>
-      `Le diffuseur n'offre rien après ${lastYear}; ce site est donc à jour.`,
+      `Le diffuseur n’offre rien après ${lastYear}; ce site est donc à jour.`,
     behind:
-      "Le diffuseur offre une année plus récente que nous n'avons pas encore chargée; ce site est donc en retard.",
+      "Le diffuseur offre une année plus récente que nous n’avons pas encore chargée; ce site est donc en retard.",
     revised:
       "Le diffuseur a aussi révisé une année déjà chargée; une valeur présentée ici peut donc différer de la source aujourd'hui.",
     hostLabel: "Vérifié auprès de",

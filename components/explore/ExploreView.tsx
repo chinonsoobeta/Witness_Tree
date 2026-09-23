@@ -53,7 +53,7 @@ const copy = {
     figuresFor: (period: string) => `Figures for ${period}`,
     moreWays: "More ways in",
     draw: "Draw and measure an area",
-    findDistrict: "Find a federal electoral district",
+    findDistrict: "Find a federal riding",
     compare: "Compare two ridings",
     yearHeading: "Year",
     mapHeading: "Map and legend",
@@ -75,7 +75,7 @@ const copy = {
     spanNote: (fromYear: number, toYear: number) =>
       `The map shows ${fromYear} to ${toYear}. Point at or select a district to see how much forest it lost in those years, with each place counted once. If the same ground was lost more than once, the yearly losses added together are also shown, in hectares only.`,
     spanPending:
-      "District figures for these years are loading. They stay hidden until they arrive, so older figures are never shown under the wrong years.",
+      "Riding figures for these years are loading. They stay hidden until they arrive, so older figures are never shown under the wrong years.",
     fixtureList:
       "The chart and table use made-up example data, not real records.",
     empty: (mode: string, year: number, nearest: number) =>

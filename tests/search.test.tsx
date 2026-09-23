@@ -42,8 +42,8 @@ test("Search exposes one field behind a labelled places or districts scope", () 
     assert.match(markup, /1984 to 2022/);
   }
   assert.match(places, /Prince George/);
-  assert.doesNotMatch(places, /Find a federal electoral district/);
-  assert.match(districts, /Find a federal electoral district/);
+  assert.doesNotMatch(places, /Find a federal riding/);
+  assert.match(districts, /Find a federal riding/);
   assert.match(districts, /href="\/en\/compare\?left=/);
   assert.doesNotMatch(districts, /<h2>Search places<\/h2>/);
 });

@@ -4,10 +4,10 @@ import type { Locale } from "@/lib/domain";
 
 const copy = {
   en: {
-    title: "Find a federal electoral district",
+    title: "Find a federal riding",
     submit: "Find",
-    guide: "Enter a district name in English or French.",
-    none: "No federal district measurement matches this query.",
+    guide: "Enter a riding name in English or French.",
+    none: "No federal riding measurement matches this query.",
   },
   fr: {
     title: "Trouver une circonscription fédérale",
