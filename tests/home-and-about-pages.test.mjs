@@ -39,8 +39,8 @@ test("landing pages use the released province span and retain the bounded scope"
   assert.match(french, /Ces chiffres sont provisoires/);
   assert.doesNotMatch(english, /The verified .* province aggregate/);
   assert.doesNotMatch(french, /agrégat provincial vérifié/);
-  assert.match(english, /Other provinces are coming soon/);
-  assert.match(french, /D’autres provinces s’ajouteront bientôt/);
+  assert.match(english, /The record covers these four provinces only/);
+  assert.match(french, /Le registre ne couvre que ces quatre provinces/);
   assert.doesNotMatch(english, /Every result shows what the evidence says/);
   assert.doesNotMatch(french, /Chaque résultat indique ce que montrent les preuves/);
 });

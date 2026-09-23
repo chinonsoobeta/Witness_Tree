@@ -97,7 +97,7 @@ test("Releases indexes the bounded release and Data and Explore point back to it
   assert.match(governance, /provinceBulkRelease\.id/);
   assert.match(governance, /provinceCsv\.url/);
   assert.match(governance, /provinceGeoPackage\.url/);
-  assert.match(governance, /No production data release satisfying the formal Phase 2 gate exists/);
+  assert.match(governance, /There is no final release yet\. It needs an independent comparison of the figures/);
   assert.doesNotMatch(governance, /No production data release exists\. The current repository/);
   assert.match(data, /\/en\/releases/);
   assert.match(data, /\/fr\/versions/);

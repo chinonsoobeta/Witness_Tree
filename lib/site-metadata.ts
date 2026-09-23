@@ -58,7 +58,7 @@ export const siteMetadata: Metadata = {
 /**
  * The shared record in the served language, for a locale root layout. A French
  * page is titled and described in French and ends in the French name, rather
- * than every tab reading "Witness Tree" whatever language the page is in.
+ * than every tab carrying the English name whatever language the page is in.
  */
 export function localeMetadata(locale: Locale): Metadata {
   return {

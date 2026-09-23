@@ -1168,6 +1168,7 @@ export function ExploreMapClient({
                 title={isFullscreen ? text[locale].exitFullscreen : text[locale].enterFullscreen}
               >
                 <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+                  <title>{isFullscreen ? text[locale].exitFullscreen : text[locale].enterFullscreen}</title>
                   <path
                     d={isFullscreen ? "M7 3v4H3M11 3v4h4M7 15v-4H3M11 15v-4h4" : "M3 7V3h4M15 7V3h-4M3 11v4h4M15 11v4h-4"}
                     fill="none"

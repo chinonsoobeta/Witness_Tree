@@ -34,7 +34,7 @@ const COPY = {
     limits:
       "Every province has some land with no data, so every loss figure is a minimum for the mapped area. These files don’t show cause, responsibility, legality, sellable timber or conditions on the ground.",
     previewLimits:
-      "This is an early preview, not the formal Phase 2 release. Always read a figure with its evidence label, coverage and confidence, and don’t apply it beyond the boundaries and years it covers.",
+      "This is an early preview, not the final release. Always read a figure with its evidence label, coverage and confidence, and don’t apply it beyond the boundaries and years it covers.",
     recordsTitle: "Source records and documentation",
     description:
       "The source ledger lists each dataset’s name, publisher, licence, version, download date, coverage and origin. Its entries are still examples, and will be replaced with verified details before real data is loaded.",
@@ -82,7 +82,7 @@ const COPY = {
     limits:
       "Chaque province compte un territoire sans données; chaque valeur de perte est donc un minimum pour la zone cartographiée. Ces fichiers n’indiquent ni la cause, ni la responsabilité, ni la légalité, ni le bois vendable, ni les conditions sur le terrain.",
     previewLimits:
-      "Il s’agit d’un aperçu préliminaire, et non de la version officielle de la phase 2. Lisez toujours un chiffre avec sa catégorie de preuve, sa couverture et sa confiance, et ne l’appliquez pas au-delà des limites et des années qu’il couvre.",
+      "Il s’agit d’un aperçu préliminaire, et non de la version définitive. Lisez toujours un chiffre avec sa catégorie de preuve, sa couverture et sa confiance, et ne l’appliquez pas au-delà des limites et des années qu’il couvre.",
     recordsTitle: "Registres des sources et documentation",
     description:
       "Le registre des sources indique, pour chaque jeu de données, le nom, l’éditeur, la licence, la version, la date de téléchargement, la couverture et l’origine. Ses entrées sont encore des exemples, qui seront remplacés par des détails vérifiés avant le chargement de vraies données.",

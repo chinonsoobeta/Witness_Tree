@@ -80,9 +80,11 @@ function UnrankedTable({
 }) {
   if (rows.length === 0) return null;
   const accessibleLabel = `${label} (${rows.length})`;
+  // Closed by default: these rows are listed so no riding goes missing, not
+  // ranked, and open they made the page several screens long.
   return (
-    <section>
-      <h3>{accessibleLabel}</h3>
+    <details className="comparison-unranked">
+      <summary><h3>{accessibleLabel}</h3></summary>
       <div className="table-scroll" tabIndex={0} role="region" aria-label={accessibleLabel}>
         <table>
           <caption className="sr-only">{accessibleLabel}</caption>
@@ -96,7 +98,7 @@ function UnrankedTable({
           </tbody>
         </table>
       </div>
-    </section>
+    </details>
   );
 }
 

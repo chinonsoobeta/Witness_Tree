@@ -3062,6 +3062,42 @@ dd > a:only-child {
 .comparison-table > .table-scroll td:nth-child(4) {
   white-space: nowrap;
 }
+/* In a table every row states its coverage and evidence, and most rows share
+   the same values, so the bands and chips read as plain text there. The
+   words and the evidence glyph stay; only the boxes go. */
+.comparison-table .table-scroll .coverage-band,
+.comparison-table .table-scroll .chip {
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: start;
+}
+.comparison-table .table-scroll thead th:nth-child(5) {
+  text-align: start;
+}
+.comparison-table .table-scroll .chip-glyph {
+  width: auto;
+  height: auto;
+  background: none;
+}
+.comparison-unranked {
+  margin-top: 16px;
+  border-top: 1px solid var(--rule);
+}
+.comparison-unranked > summary {
+  padding: 14px 0;
+  cursor: pointer;
+}
+.comparison-unranked > summary h3 {
+  display: inline;
+  margin: 0;
+  font-size: inherit;
+}
+.comparison-unranked > summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
 .rank-unmatched-share {
   color: var(--ink-2);
   font-family: var(--ui);
@@ -3316,8 +3352,20 @@ dd > a:only-child {
   gap: 2px;
   min-width: 0;
 }
+/* A download mark, an arrow onto a bar, rather than a chevron, which reads as
+   "expand". The empty alternative keeps screen readers from announcing it. */
 .link-list > .file-tile::before {
-  transform: translateY(-70%) rotate(135deg);
+  content: "↓" / "";
+  width: auto;
+  height: auto;
+  padding: 0 1px 1px;
+  border: 0;
+  border-bottom: 2px solid var(--accent);
+  color: var(--accent);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1;
+  transform: translateY(-50%);
 }
 .file-tile-format {
   display: grid;

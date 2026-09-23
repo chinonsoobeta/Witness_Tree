@@ -82,7 +82,7 @@ test("data page puts reader downloads and limits before technical identifiers", 
   assert.match(page, /Download province values \(CSV\)/);
   assert.match(page, /Télécharger les valeurs provinciales \(GeoPackage\)/);
   assert.match(page, /Every province has some land with no data/);
-  assert.match(page, /not the formal Phase 2 release/);
+  assert.match(page, /not the final release/);
 });
 
 test("transparency pages do not make prohibited product claims or turn unknown into zero", async () => {

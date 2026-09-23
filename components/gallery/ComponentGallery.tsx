@@ -16,7 +16,7 @@ type GalleryCopy = Readonly<{
 
 const COPY: Record<Locale, GalleryCopy> = {
   en: {
-    title: "Component gallery",
+    title: "How figures are marked",
     intro: "Every figure on this site shows its evidence, confidence, coverage and source.",
     light: "Light theme",
     dark: "Dark theme",
@@ -28,7 +28,7 @@ const COPY: Record<Locale, GalleryCopy> = {
     unknown: "Unknown",
   },
   fr: {
-    title: "Galerie de composants",
+    title: "Comment les chiffres sont marqués",
     intro: "Chaque chiffre du site affiche sa preuve, sa confiance, sa couverture et sa source.",
     light: "Thème clair",
     dark: "Thème sombre",

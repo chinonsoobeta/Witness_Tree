@@ -82,7 +82,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Provisional",
           paragraphs: [
-            "Published for review and use, with its limits stated, but not the formal Phase 2 release. A provisional figure keeps its stated limits on coverage, comparison and checks on the ground.",
+            "Published for review and use, with its limits stated, but not the final release. A provisional figure keeps its stated limits on coverage, comparison and checks on the ground.",
           ],
         },
         {
@@ -156,7 +156,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Provisoire",
           paragraphs: [
-            "Publié pour examen et utilisation, avec ses limites indiquées, mais ce n’est pas la version officielle de la phase 2. Une valeur provisoire conserve ses limites de couverture, de comparaison et de vérification sur le terrain.",
+            "Publié pour examen et utilisation, avec ses limites indiquées, mais ce n’est pas la version définitive. Une valeur provisoire conserve ses limites de couverture, de comparaison et de vérification sur le terrain.",
           ],
         },
         {
@@ -488,7 +488,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
     en: {
       title: "Data releases",
       status:
-        "One early preview release is published here. It is not the final release needed to pass the formal Phase 2 checkpoint.",
+        "One early preview release is published here. It is not the final release.",
       sections: [
         {
           heading: "Published preview release",
@@ -503,15 +503,15 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
           ],
         },
         {
-          heading: "Formal Phase 2 release",
+          heading: "Final release",
           paragraphs: [
-            "No production data release satisfying the formal Phase 2 gate exists yet. This preview doesn’t replace the independent comparison that is still missing.",
+            "There is no final release yet. It needs an independent comparison of the figures, which hasn’t been done, and this preview doesn’t replace it.",
           ],
         },
         {
           heading: "Citation format",
           paragraphs: [
-            `${enBrand}, province aggregate, ${formatYearRangeKey(PROVINCE_BULK_TIME_RANGE, "en")}, ${provinceCsv.boundaryEdition}, release ${provinceBulkRelease.id}, method ${provinceCsv.methodVersion}, retrieval date and stable artifact URL. Cite it as a technical preview; a citation for the formal Phase 2 release will be possible once that release exists.`,
+            `${enBrand}, province aggregate, ${formatYearRangeKey(PROVINCE_BULK_TIME_RANGE, "en")}, ${provinceCsv.boundaryEdition}, release ${provinceBulkRelease.id}, method ${provinceCsv.methodVersion}, retrieval date and stable artifact URL. Cite it as a technical preview; a citation for the final release will be possible once that release exists.`,
           ],
         },
       ],
@@ -519,7 +519,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
     fr: {
       title: "Versions des données",
       status:
-        "Une version d’aperçu préliminaire est publiée ici. Ce n’est pas la version définitive exigée pour franchir l’étape formelle de la phase 2.",
+        "Une version d’aperçu préliminaire est publiée ici. Ce n’est pas la version définitive.",
       sections: [
         {
           heading: "Version d’aperçu publiée",
@@ -534,15 +534,15 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
           ],
         },
         {
-          heading: "Version officielle de la phase 2",
+          heading: "Version définitive",
           paragraphs: [
-            "Aucune version de données de production satisfaisant au critère formel de la phase 2 n’existe encore. Cet aperçu ne remplace pas la comparaison indépendante qui manque toujours.",
+            "Il n’existe pas encore de version définitive. Elle exige une comparaison indépendante des chiffres, qui n’a pas été faite, et cet aperçu ne la remplace pas.",
           ],
         },
         {
           heading: "Format de citation",
           paragraphs: [
-            `${frBrand}, agrégat provincial, ${formatYearRangeKey(PROVINCE_BULK_TIME_RANGE, "fr")}, ${provinceCsv.boundaryEdition}, version ${provinceBulkRelease.id}, méthode ${provinceCsv.methodVersion}, date de consultation et URL stable de l’artefact. Citez-la comme aperçu technique; une citation de la version officielle de la phase 2 sera possible une fois cette version publiée.`,
+            `${frBrand}, agrégat provincial, ${formatYearRangeKey(PROVINCE_BULK_TIME_RANGE, "fr")}, ${provinceCsv.boundaryEdition}, version ${provinceBulkRelease.id}, méthode ${provinceCsv.methodVersion}, date de consultation et URL stable de l’artefact. Citez-la comme aperçu technique; une citation de la version définitive sera possible une fois cette version publiée.`,
           ],
         },
       ],
