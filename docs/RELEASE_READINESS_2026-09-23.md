@@ -80,6 +80,23 @@ What the pass deliberately left alone:
 - The Terms and Privacy titles are legally signed off.
 - The About page needs the owner's own words.
 
+## Third pass: a whole-site read-through
+
+The second pass looked closely only at the pages it changed. A third pass read the full text of every remaining page: Methods, the glossary, the decision log, engagement, corrections, privacy, terms, account, about, wildfire, draw, district search and every Explore mode. Fixed on application commit `a30b750`:
+
+- **One forest definition.** Methods said forest is "at least 1 hectare"; the glossary and the code (`lib/domain/forest.ts`) add "and at least 20 metres wide". Methods now gives the full definition.
+- **The year control as it is now.** Methods and the glossary still described a single-year control starting at 1985. Explore has used a first-year and last-year pair since 2026-09-21. Both now say so, with the one-year span as the shortest choice.
+- **One word for ridings.** English Search, the address finder and Explore said "federal electoral district" or "district", while every other page says "riding".
+- **French typography.** The address finder, the source-currency table and the draw tool used straight apostrophes (d'une) where the rest of the site uses typographic ones (d’une).
+
+Read and left as they are:
+- The decision log quotes the plan as dated, so its older wording is a record.
+- Engagement, corrections, privacy and account state plainly what does not exist yet, which is accurate.
+- The place and location example pages are unlinked, absent from the sitemap and marked `noindex`.
+- Explore's harvest, wildfire and condition modes label their example data as made up; the plan requires those modes.
+
+Checks at `a30b750`: the same as after the second pass, with the full suite's failure set unchanged and axe clean on the pages changed.
+
 ## Release gates no code can close
 
 From [external gates](EXTERNAL_GATES.md) and [implementation status](IMPLEMENTATION_STATUS.md), as they stand today. None is closed by this branch.
