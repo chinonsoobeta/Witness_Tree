@@ -9,7 +9,7 @@ import {
 const COPY = {
   en: {
     title: "Methodology",
-    statement: "How we sort evidence, and where it stops. A detected change alone shows neither the cause nor who is responsible.",
+    statement: "How we sort evidence, and where it stops. A detected loss alone shows neither the cause nor who is responsible.",
     confidenceRules: "How confidence is decided (the first rule that fits applies)",
     confidenceLevel: "Level and rule",
     confidenceCondition: "When it applies",
@@ -37,17 +37,17 @@ const COPY = {
     accuracyLink: "Read the accuracy study",
     matching: "Matching to official records",
     matchingText:
-      "A detected change matches an official record when they overlap by at least 50% of the smaller area and their dates are within ±2 years (±3 years before 1995). When events overlap in the same place and year, the one shown is picked in this order: fire; recorded harvest; recorded insect or disease disturbance; other recorded intervention; then detected change with no matching record. The other evidence is kept.",
+      "A detected loss matches an official record when they overlap by at least 50% of the smaller area and their dates are within ±2 years (±3 years before 1995). When events overlap in the same place and year, the one shown is picked in this order: fire; recorded harvest; recorded insect or disease disturbance; other recorded intervention; then detected loss with no matching record. The other evidence is kept.",
     provincialMatching: "Provincial matching results",
     provincialMatchingText:
-      "How often detected changes match provincial records is not available yet. No provincial dataset has been approved for processing, so any number here would be misleading.",
+      "How often detected losses match provincial records is not available yet. No provincial dataset has been approved for processing, so any number here would be misleading.",
     limits: "What this record does not claim",
     limitsText:
-      "We never label a detected change as logging, deforestation, a rule violation or the fault of a named organisation. Where no official record exists, we say so instead of filling in a number.",
+      "We never label a detected loss as logging, deforestation, a rule violation or the fault of a named organisation. Where no official record exists, we say so instead of filling in a number.",
   },
   fr: {
     title: "Méthodologie",
-    statement: "Comment nous classons les preuves, et où elles s’arrêtent. Un changement détecté ne montre à lui seul ni la cause ni qui en est responsable.",
+    statement: "Comment nous classons les preuves, et où elles s’arrêtent. Une perte détectée ne montre à elle seule ni la cause ni qui en est responsable.",
     confidenceRules: "Comment la confiance est établie (la première règle applicable est retenue)",
     confidenceLevel: "Niveau et règle",
     confidenceCondition: "Conditions d’application",
@@ -75,13 +75,13 @@ const COPY = {
     accuracyLink: "Lire l’étude d’exactitude",
     matching: "Appariement aux registres officiels",
     matchingText:
-      "Un changement détecté correspond à un registre officiel lorsqu’ils se chevauchent sur au moins 50 % de la plus petite superficie et que leurs dates sont à ±2 ans l’une de l’autre (±3 ans avant 1995). Lorsque des événements se chevauchent au même endroit la même année, celui qui est affiché est choisi dans cet ordre : incendie; récolte consignée; perturbation consignée par insecte ou maladie; autre intervention consignée; puis changement détecté sans registre correspondant. Les autres preuves sont conservées.",
+      "Une perte détectée correspond à un registre officiel lorsqu’ils se chevauchent sur au moins 50 % de la plus petite superficie et que leurs dates sont à ±2 ans l’une de l’autre (±3 ans avant 1995). Lorsque des événements se chevauchent au même endroit la même année, celui qui est affiché est choisi dans cet ordre : incendie; récolte consignée; perturbation consignée par insecte ou maladie; autre intervention consignée; puis perte détectée sans registre correspondant. Les autres preuves sont conservées.",
     provincialMatching: "Résultats de l’appariement provincial",
     provincialMatchingText:
-      "La fréquence à laquelle les changements détectés correspondent aux registres provinciaux n’est pas encore disponible. Aucun jeu de données provincial n’a été approuvé pour traitement; tout chiffre ici serait donc trompeur.",
+      "La fréquence à laquelle les pertes détectées correspondent aux registres provinciaux n’est pas encore disponible. Aucun jeu de données provincial n’a été approuvé pour traitement; tout chiffre ici serait donc trompeur.",
     limits: "Ce que ce registre n’affirme pas",
     limitsText:
-      "Nous ne qualifions jamais un changement détecté d’exploitation, de déforestation, d’infraction ou de faute d’une organisation désignée. Lorsqu’aucun registre officiel n’existe, nous le disons au lieu d’inscrire un chiffre.",
+      "Nous ne qualifions jamais une perte détectée d’exploitation, de déforestation, d’infraction ou de faute d’une organisation désignée. Lorsqu’aucun registre officiel n’existe, nous le disons au lieu d’inscrire un chiffre.",
   },
 } as const;
 

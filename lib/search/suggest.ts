@@ -75,6 +75,22 @@ export function ridingFigure(row: RidingRow | undefined, locale: Locale): string
   return `${text.unknown}; ${unknown} ${text.unknownShare}`;
 }
 
+/** Whether {@link ridingFigure} states a detected figure, rather than only an unknown share. */
+export function ridingFigureIsDetected(row: RidingRow | undefined): boolean {
+  if (!row) return false;
+  if (row.coverage === "complete") return row.observedLossHectares !== null && row.observedLossPercent !== null;
+  return row.coverage === "partial-with-unknown" && (row.knownObservedSubtotalHectares ?? 0) > 0;
+}
+
+/** A riding's level and province, such as "Federal riding · QC", read the same in results and suggestions. */
+export function ridingMeta(result: SiteSearchResult, locale: Locale): string {
+  const level = result.id.startsWith("CA-") ? "federal" : "provincial";
+  const levelName = locale === "en"
+    ? (level === "federal" ? "Federal riding" : "Provincial riding")
+    : (level === "federal" ? "Circonscription fédérale" : "Circonscription provinciale");
+  return `${levelName} · ${provinceCode(result)}`;
+}
+
 function compareHref(ridingId: string, locale: Locale) {
   if (!ridingId.startsWith("CA-")) return null;
   return `${locale === "en" ? "/en/compare" : "/fr/comparer"}?left=${encodeURIComponent(`federal-${ridingId.slice(3)}`)}`;
@@ -130,15 +146,11 @@ function toSuggestion(result: SiteSearchResult, locale: Locale): Suggestion {
   }
   if (result.kind === "riding") {
     const row = ridingSearchRow(result.id);
-    const level = result.id.startsWith("CA-") ? "federal" : "provincial";
-    const levelName = locale === "en"
-      ? (level === "federal" ? "Federal riding" : "Provincial riding")
-      : (level === "federal" ? "Circonscription fédérale" : "Circonscription provinciale");
     return {
       kind: "riding",
       id: result.id,
       name,
-      meta: `${levelName} · ${code}`,
+      meta: ridingMeta(result, locale),
       figure: completeFigure(row, locale),
       detail: ridingDetail(row, locale),
       compareHref: compareHref(result.id, locale),

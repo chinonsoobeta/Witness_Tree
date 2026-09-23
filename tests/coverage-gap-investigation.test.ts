@@ -94,7 +94,8 @@ test("every province's reason comes from unmapped-reasons.ts, the map style carr
     assert.equal(row.unmappedCharacter.en, UNMAPPED_REASONS[row.id].en, row.id);
     assert.equal(row.unmappedCharacter.fr, UNMAPPED_REASONS[row.id].fr, row.id);
   }
-  for (const file of ["app/en/page.tsx", "app/fr/page.tsx", "components/explore/ExploreView.tsx", "components/explore/ExploreMapClient.tsx"]) {
+  // The map draws no figures table of its own; Explore's figures section is where its province rows are read.
+  for (const file of ["app/en/page.tsx", "app/fr/page.tsx", "components/explore/ExploreView.tsx"]) {
     assert.match(read(file), /row\.unmappedCharacter\.(?:en|fr)|row\.unmappedCharacter\[locale\]/, file);
   }
   assert.match(read("components/explore/ExploreView.tsx"), /<p key=\{item\.id\}>[^\n]*item\.unmappedCharacter\[locale\]/, "the chart also needs a visible qualifier");

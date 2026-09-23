@@ -92,8 +92,8 @@ test("both comparison routes use real data and preserve exact selected ids", asy
     assert.match(html, /name="sort" value="share-asc"/);
     assert.match(html, /unknown|inconnu/i);
   }
-  assert.ok(english.indexOf("Side-by-side comparison") < english.indexOf("Detected change as a share of forested area"));
-  assert.ok(french.indexOf("Comparaison côte à côte") < french.indexOf("Changement détecté en part de la superficie forestière"));
+  assert.ok(english.indexOf("Side-by-side comparison") < english.indexOf("Detected loss as a share of forested area"));
+  assert.ok(french.indexOf("Comparaison côte à côte") < french.indexOf("Perte détectée en part de la superficie forestière"));
   const englishSource = readFileSync(new URL("../app/en/compare/page.tsx", import.meta.url), "utf8");
   const frenchSource = readFileSync(new URL("../app/fr/comparer/page.tsx", import.meta.url), "utf8");
   for (const source of [englishSource, frenchSource]) {

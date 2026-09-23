@@ -22,7 +22,8 @@ export type GovernancePageKind =
 type Section = Readonly<{
   heading: string;
   paragraphs: readonly string[];
-  links?: readonly Readonly<{ label: string; href: string }>[];
+  /** A link with a format is a file download and is drawn as a file tile, as on the Data page. */
+  links?: readonly Readonly<{ label: string; href: string; format?: string }>[];
 }>;
 type PageCopy = Readonly<{
   title: string;
@@ -496,8 +497,8 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
             "It is a province-level preview, not detailed map shapes. Every province has some land with no data, so its loss figures are minimums.",
           ],
           links: [
-            { label: "Download the province CSV", href: provinceCsv.url },
-            { label: "Download the province GeoPackage", href: provinceGeoPackage.url },
+            { label: "Download the province CSV", href: provinceCsv.url, format: "CSV" },
+            { label: "Download the province GeoPackage", href: provinceGeoPackage.url, format: "GPKG" },
             { label: "Open the machine-readable release manifest", href: provinceBulkManifestUrl },
           ],
         },
@@ -527,8 +528,8 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
             "Il s’agit d’un aperçu au niveau provincial, et non de formes cartographiques détaillées. Chaque province compte un territoire sans données; ses chiffres de perte sont donc des minimums.",
           ],
           links: [
-            { label: "Télécharger le CSV provincial", href: provinceCsv.url },
-            { label: "Télécharger le GeoPackage provincial", href: provinceGeoPackage.url },
+            { label: "Télécharger le CSV provincial", href: provinceCsv.url, format: "CSV" },
+            { label: "Télécharger le GeoPackage provincial", href: provinceGeoPackage.url, format: "GPKG" },
             { label: "Ouvrir le manifeste de version lisible par machine", href: provinceBulkManifestUrl },
           ],
         },
@@ -594,9 +595,16 @@ export function GovernancePage({
             {section.links ? (
               <ul className="link-list">
                 {section.links.map((link) => (
-                  <li className="card card--lift" key={link.href}>
-                    <a href={link.href}>{link.label}</a>
-                  </li>
+                  link.format ? (
+                    <li className="card card--lift file-tile" key={link.href}>
+                      <span className="file-tile-format" aria-hidden="true">{link.format}</span>
+                      <span className="file-tile-body"><a href={link.href}>{link.label}</a></span>
+                    </li>
+                  ) : (
+                    <li className="card card--lift" key={link.href}>
+                      <a href={link.href}>{link.label}</a>
+                    </li>
+                  )
                 ))}
               </ul>
             ) : null}

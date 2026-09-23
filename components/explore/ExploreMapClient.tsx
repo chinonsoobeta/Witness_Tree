@@ -1047,7 +1047,7 @@ export function ExploreMapClient({
   ) : null;
 
   return (
-    <section aria-label={text[locale].label}>
+    <div className="explore-map-client">
       <div className="explore-map-stack">
       <ProvinceBar
         locale={locale}
@@ -1229,6 +1229,6 @@ export function ExploreMapClient({
           {EXPLORE_PRODUCTION_LAYER.attribution[locale]}
         </a>
       </p>
-    </section>
+    </div>
   );
 }

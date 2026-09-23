@@ -56,7 +56,7 @@ const copy = {
     findDistrict: "Find a federal electoral district",
     compare: "Compare two ridings",
     yearHeading: "Year",
-    mapHeading: "Map",
+    mapHeading: "Map and legend",
     layersHeading: "Layers and overlays",
     dataViewsHeading: "Data views",
     production:
@@ -138,7 +138,7 @@ const copy = {
     findDistrict: "Trouver une circonscription fédérale",
     compare: "Comparer deux circonscriptions",
     yearHeading: "Année",
-    mapHeading: "Carte",
+    mapHeading: "Carte et légende",
     layersHeading: "Couches et superpositions",
     dataViewsHeading: "Vues des données",
     production:

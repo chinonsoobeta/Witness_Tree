@@ -23,7 +23,7 @@ const COPY: Record<Locale, GalleryCopy> = {
     evidence: "Evidence classes",
     confidence: "Confidence",
     coverage: "Coverage",
-    values: "Reported values",
+    values: "Example values (made up, not records)",
     figure: "Figure",
     unknown: "Unknown",
   },
@@ -35,7 +35,7 @@ const COPY: Record<Locale, GalleryCopy> = {
     evidence: "Catégories de preuves",
     confidence: "Confiance",
     coverage: "Couverture",
-    values: "Valeurs déclarées",
+    values: "Valeurs d’exemple (inventées, pas des registres)",
     figure: "Valeur chiffrée",
     unknown: "Inconnu",
   },
@@ -55,7 +55,8 @@ export type ComponentGalleryProps = Readonly<{ locale: Locale }>;
 export function ComponentGallery({ locale }: ComponentGalleryProps) {
   const copy = COPY[locale];
   const provenance: Provenance = {
-    dataset: locale === "en" ? "National baseline record" : "Registre de référence nationale",
+    // A made-up source for a made-up value, named as such so it cannot be read as a real record.
+    dataset: locale === "en" ? "Example record" : "Registre d’exemple",
     version: "2026.1",
     retrievedDate: "2026-08-11",
     licence: "ogl-canada-2.0",

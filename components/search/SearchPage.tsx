@@ -8,7 +8,7 @@ import { formatSearchShare, searchAttribution, searchPlaceTypeLabel, searchSite,
 import { NoRecordResult } from "./NoRecordResult";
 import { SearchSuggest } from "./SearchSuggest";
 import { EvidenceKey } from "@/components/policy/EvidenceKey";
-import { ridingFigure } from "@/lib/search/suggest";
+import { ridingFigure, ridingFigureIsDetected, ridingMeta } from "@/lib/search/suggest";
 
 export type SearchScope = "places" | "districts";
 
@@ -160,14 +160,15 @@ function SearchResultCard({ locale, result }: { locale: Locale; result: SiteSear
       <h4>{resultName(result, locale)}</h4>
       <p className="search-result-figure"><span className="mark-glyph mark-glyph--satellite" aria-hidden="true" />{result.unionLossHectares === null || result.unionLossHectares === undefined ? unknown : formatHectares(result.unionLossHectares, locale)} · {result.unionLossPercent === null || result.unionLossPercent === undefined ? unknown : formatPercent(result.unionLossPercent, locale)}</p>
       <p className="search-result-figure"><span className="mark-glyph mark-glyph--unknown" aria-hidden="true" />{result.unknownHectares === null || result.unknownHectares === undefined ? unknown : formatHectares(result.unknownHectares, locale)} {locale === "en" ? "Unknown area" : "zone inconnue"}; {result.unknownSharePercent === null || result.unknownSharePercent === undefined ? unknown : formatUnknownSharePercent(result.unknownSharePercent, locale)}</p>
-      {result.unmappedCharacter ? <p>{locale === "en" ? "Here that gap is" : "Ici, il s’agit d’un"} {result.unmappedCharacter[locale]}.</p> : null}
+      {result.unmappedCharacter ? <p>{locale === "en" ? "Here that gap is" : "Ici, l’écart se trouve"} {result.unmappedCharacter[locale]}.</p> : null}
     </li>;
   }
   if (result.kind === "riding") {
+    const row = ridingSearchRow(result.id);
     return <li className="card card--lift search-result">
       <h4>{resultName(result, locale)}</h4>
-      <p>{result.province} · {locale === "en" ? "Riding" : "Circonscription"}</p>
-      <p className="search-result-figure"><span className="mark-glyph mark-glyph--satellite" aria-hidden="true" />{ridingFigure(ridingSearchRow(result.id), locale)}</p>
+      <p>{ridingMeta(result, locale)}</p>
+      <p className="search-result-figure"><span className={`mark-glyph ${ridingFigureIsDetected(row) ? "mark-glyph--satellite" : "mark-glyph--unknown"}`} aria-hidden="true" />{ridingFigure(row, locale)}</p>
     </li>;
   }
   return <li className="card card--lift search-result">

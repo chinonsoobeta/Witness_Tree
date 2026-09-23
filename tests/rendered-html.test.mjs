@@ -130,7 +130,7 @@ test("landing figures show detected loss alone, on a scale of detected loss", as
     // The exact value stays at the foot of the row, which is what makes the
     // rounded headline cost nothing.
     const exact = new Intl.NumberFormat(`${locale}-CA`, { maximumFractionDigits: 2 });
-    const unit = locale === "en" ? "ha recorded" : "ha consignés";
+    const unit = locale === "en" ? "ha detected" : "ha détectés";
     const recorded = rows.flatMap((row) => [...row.matchAll(/class="province-list-foot"><span>([^<]+)</g)].map((match) => match[1]));
     assert.deepEqual(recorded, hectares.map((value) => `${exact.format(value)} ${unit}`));
 

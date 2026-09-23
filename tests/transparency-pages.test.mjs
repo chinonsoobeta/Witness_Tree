@@ -29,8 +29,8 @@ test("methodology states the required definitions, matching and neutral limits",
   assert.match(page, /EXPLORE_DEFAULT_YEAR/);
   assert.match(exploreTypes, /EXPLORE_DEFAULT_YEAR = EXPLORE_YEAR_MAX/);
   assert.match(exploreTypes, /EXPLORE_YEAR_MAX = 2022/);
-  assert.match(page, /fire; recorded harvest; recorded insect or disease disturbance; other recorded intervention; then detected change with no matching record/);
-  assert.match(page, /How often detected changes match provincial records is not available yet/);
+  assert.match(page, /fire; recorded harvest; recorded insect or disease disturbance; other recorded intervention; then detected loss with no matching record/);
+  assert.match(page, /How often detected losses match provincial records is not available yet/);
   assert.match(page, /No provincial dataset has been approved for processing/);
   assert.match(page, /correspondent aux registres provinciaux n’est pas encore disponible/i);
 });

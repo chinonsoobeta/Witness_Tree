@@ -81,7 +81,7 @@ function UnrankedTable({
   if (rows.length === 0) return null;
   const accessibleLabel = `${label} (${rows.length})`;
   return (
-    <section aria-label={accessibleLabel}>
+    <section>
       <h3>{accessibleLabel}</h3>
       <div className="table-scroll" tabIndex={0} role="region" aria-label={accessibleLabel}>
         <table>
@@ -137,7 +137,7 @@ export function RankedRidingsTable({
     return `?${query.toString()}`;
   };
   return (
-    <section className="comparison-table" aria-label={copy.metric}>
+    <section className="comparison-table">
       <details className="card card--sand comparison-context">
         <summary>{locale === "en" ? "How this ranking works" : "Comment fonctionne ce classement"}</summary>
         <div className="comparison-context-body">
