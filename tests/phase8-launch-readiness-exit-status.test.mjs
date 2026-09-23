@@ -19,8 +19,10 @@ test("Phase 8 records every literal launch-readiness gate without production inf
    * 2026-09-21 this branch moved both map files, so the count was seven until
    * Sites version 39 deployed the application commit and the harness observed
    * it on 2026-09-22. On 2026-09-23 a plain-language wording pass changed the
-   * map client's captions, so the count is seven again until the Site is
-   * redeployed from this branch and the harness observes it.
+   * map client's captions, so the count returned to seven. Sites version 41
+   * deployed the application commit cf54e5a8, and the harness observed it at
+   * data/deployed-map-render-evidence-2026-09-23-v41.json; the count is eight
+   * again on a fresh measurement.
    *
    * The count is the thing to watch, and the thing not to read. It was eight
    * while the criterion rested on a measurement, eight again while it rested
@@ -34,11 +36,11 @@ test("Phase 8 records every literal launch-readiness gate without production inf
    * The gate stays a delivery-and-rendering gate either way: it asserts no
    * production admission, and the other fifteen criteria are untouched.
    */
-  assert.equal(record.completedCriteria, 7);
+  assert.equal(record.completedCriteria, 8);
   assert.equal(record.totalCriteria, 16);
-  assert.equal(record.percentage, 43.75);
+  assert.equal(record.percentage, 50);
   assert.equal(record.phaseComplete, false);
-  assert.deepEqual(record.exitCriteria.filter((item) => item.status === "pass").map((item) => item.id), ["raw-archive-reproducibility", "governance-and-corrections-procedures", "operations-handbook", "bulk-downloads", "citation-format", "release-notes", "restore-tests"]);
+  assert.deepEqual(record.exitCriteria.filter((item) => item.status === "pass").map((item) => item.id), ["raw-archive-reproducibility", "governance-and-corrections-procedures", "operations-handbook", "bulk-downloads", "citation-format", "release-notes", "restore-tests", "cdn-tile-validation"]);
 
   // The criterion tracks the gate rather than the code: whenever
   // check:deployed-map-render is red, cdn-tile-validation must not read as pass.

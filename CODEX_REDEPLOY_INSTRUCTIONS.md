@@ -10,7 +10,7 @@ Deployment is an owner-owned decision. This record does not authorize or perform
 - Open PR: [PR #182](https://github.com/chinonsoobeta/Witness_Tree/pull/182)
 - Canonical domain: `https://www.witnesstree.ca`
 
-Last deployment this repository observed: version 39, source commit `b69c1e35e980bcaa1ab2264734c7b64a4687de63`, completed at 2026-09-22T05:17:31.421743Z, with the browser observation in `data/deployed-map-render-evidence-2026-09-22-v39.json`. The control plane records any later version.
+Last deployment this repository observed: version 41, source commit `cf54e5a8b5e255c6cf9d122c4a8962e8227aec8a`, completed at 2026-09-23T02:37:13.093437Z, with the browser observation in `data/deployed-map-render-evidence-2026-09-23-v41.json`. The control plane records any later version.
 
 The branch head may be one commit past the application commit because this file was rewritten after it. No file under `app/`, `components/`, `lib/`, `public/` or `styles/` differs between the two. Select the application commit explicitly so the deployed application stays traceable to the tree the checks ran against.
 
@@ -126,4 +126,4 @@ If the live probe or the harness fails, stop and report; do not edit or delete t
 
 The superseded admission records may continue to contain stale pins by design. The Phase 6 coarse-grid owner-admission packet and record bind the Phase 8 record as it was on 2026-09-22; do not refresh those pins as part of this deploy. A stale pin in a frozen or superseded admission record is not a reason to edit the record.
 
-If a blocking verification fails, redeploy the last known-good commit (`b69c1e35e980bcaa1ab2264734c7b64a4687de63`, Sites version 39) through the same existing Site and record the rollback. Do not mutate archive objects or the external data root as part of a Site rollback.
+If a blocking verification shows the live Site itself is broken, redeploy the last known-good commit (`ae5da5b13cd1bc4c872042cad783f5e7d6b434be`, Sites version 40) through the same existing Site and record the rollback. A failure in the map-check tooling alone is not grounds for rollback. Do not mutate archive objects or the external data root as part of a Site rollback.
