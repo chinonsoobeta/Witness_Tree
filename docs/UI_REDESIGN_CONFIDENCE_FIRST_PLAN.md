@@ -121,6 +121,10 @@ a number.** Every screen gets:
 > `EvidenceLegend` is removed. Where coverage states are themselves the figures (the place hero,
 > the draw result) the statement stays open (`variant="panel"`). Safety text, such as the wildfire
 > page's "not live" warning, is never folded into the note. The remaining rules below are unchanged.
+>
+> The same review retired Explore's separate List presentation: the figures table under the map
+> carries the same rows, so Explore shows the map, one legend under it, a reading panel beside it and
+> one figures section. An old `presentation=list` address still opens.
 - **Unknowns at the same visual weight as figures.** The load-bearing rule. On the landing page
   each province's unknown area gets its own bar beside its loss figure, because the province with
   the least loss is also the one with the largest unseen share.
