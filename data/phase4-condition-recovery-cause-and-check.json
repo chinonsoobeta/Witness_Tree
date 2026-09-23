@@ -1,0 +1,575 @@
+{
+  "schema": "witness-tree/phase4-condition-recovery-cause-and-check-evidence/1",
+  "status": "local-nonproduction-executed",
+  "claims": {
+    "admitted": false,
+    "released": false,
+    "productionEligible": false,
+    "ownerReviewed": false,
+    "nfiForestClaimed": false,
+    "agreementTargetMet": false
+  },
+  "basedOn": {
+    "record": "data/phase4-condition-recovery-v2.json",
+    "output": "derived/phase4-condition-recovery-v2/condition-recovery-v2.json",
+    "outputSha256": "42749e0454d381c4682700be5b60a9613dea7a91f85c1dfc6b0b1eb33ece1611"
+  },
+  "decision": {
+    "record": "docs/VLCE2_FOREST_MASK_DECISION.md",
+    "section": "Scoped decision: the treed-again rule for condition and recovery, 2026-09-23",
+    "headlineSet": "A",
+    "comparisonOnlySet": "B"
+  },
+  "causeOfLatestLoss": {
+    "rule": "A loss is attributed to fire or harvest when the NTEMS fire or harvest year raster holds a year within one year of the loss year, where the loss year is the first year the cell was not treed. Each raster holds one year per cell and records nothing before 1985. A loss with no match is 'cause not recorded', never 'undisturbed'. A cell matched by both is counted once, as fire and harvest.",
+    "windowYears": 1,
+    "sourceRasters": [
+      {
+        "stagedId": "wp2-bc-annual-series-20260909--rasters--CA_Forest_Fire_1985-2022.tif",
+        "sha256": "c7d9159efa10d10935f98d64ed3c630f17f1626a780b5e69e5deb19ed8773eea"
+      },
+      {
+        "stagedId": "wp2-bc-annual-series-20260909--rasters--CA_Forest_Harvest_1985-2022.tif",
+        "sha256": "81e1cced15d17e0f986b35a006cfe5b3964c6b0aa5b24c36099f35c003fdca08"
+      }
+    ],
+    "provinces": {
+      "british-columbia": {
+        "A": {
+          "notRecorded": {
+            "lostCells": 48254194,
+            "recoveredCells": 15925168
+          },
+          "fire": {
+            "lostCells": 26661871,
+            "recoveredCells": 3483546
+          },
+          "harvest": {
+            "lostCells": 63694876,
+            "recoveredCells": 31768685
+          },
+          "fireAndHarvest": {
+            "lostCells": 476,
+            "recoveredCells": 143
+          }
+        },
+        "B": {
+          "notRecorded": {
+            "lostCells": 53909029,
+            "recoveredCells": 17426133
+          },
+          "fire": {
+            "lostCells": 27495857,
+            "recoveredCells": 3587200
+          },
+          "harvest": {
+            "lostCells": 63951067,
+            "recoveredCells": 32008765
+          },
+          "fireAndHarvest": {
+            "lostCells": 476,
+            "recoveredCells": 143
+          }
+        }
+      },
+      "alberta": {
+        "A": {
+          "notRecorded": {
+            "lostCells": 68523016,
+            "recoveredCells": 10763086
+          },
+          "fire": {
+            "lostCells": 31468734,
+            "recoveredCells": 13533399
+          },
+          "harvest": {
+            "lostCells": 23832185,
+            "recoveredCells": 11021953
+          },
+          "fireAndHarvest": {
+            "lostCells": 473,
+            "recoveredCells": 192
+          }
+        },
+        "B": {
+          "notRecorded": {
+            "lostCells": 80925476,
+            "recoveredCells": 15226253
+          },
+          "fire": {
+            "lostCells": 41648346,
+            "recoveredCells": 16028035
+          },
+          "harvest": {
+            "lostCells": 24460364,
+            "recoveredCells": 11359608
+          },
+          "fireAndHarvest": {
+            "lostCells": 476,
+            "recoveredCells": 194
+          }
+        }
+      },
+      "ontario": {
+        "A": {
+          "notRecorded": {
+            "lostCells": 33052403,
+            "recoveredCells": 13485143
+          },
+          "fire": {
+            "lostCells": 34941476,
+            "recoveredCells": 14679831
+          },
+          "harvest": {
+            "lostCells": 44155280,
+            "recoveredCells": 30939427
+          },
+          "fireAndHarvest": {
+            "lostCells": 1831,
+            "recoveredCells": 1684
+          }
+        },
+        "B": {
+          "notRecorded": {
+            "lostCells": 64075282,
+            "recoveredCells": 31276233
+          },
+          "fire": {
+            "lostCells": 39767357,
+            "recoveredCells": 18149112
+          },
+          "harvest": {
+            "lostCells": 44441801,
+            "recoveredCells": 32039746
+          },
+          "fireAndHarvest": {
+            "lostCells": 1850,
+            "recoveredCells": 1709
+          }
+        }
+      },
+      "quebec": {
+        "A": {
+          "notRecorded": {
+            "lostCells": 96335778,
+            "recoveredCells": 24999332
+          },
+          "fire": {
+            "lostCells": 73854713,
+            "recoveredCells": 13734731
+          },
+          "harvest": {
+            "lostCells": 67797095,
+            "recoveredCells": 40388058
+          },
+          "fireAndHarvest": {
+            "lostCells": 4179,
+            "recoveredCells": 1283
+          }
+        },
+        "B": {
+          "notRecorded": {
+            "lostCells": 101135124,
+            "recoveredCells": 26809932
+          },
+          "fire": {
+            "lostCells": 76565017,
+            "recoveredCells": 14224632
+          },
+          "harvest": {
+            "lostCells": 67729899,
+            "recoveredCells": 41016304
+          },
+          "fireAndHarvest": {
+            "lostCells": 4179,
+            "recoveredCells": 1283
+          }
+        }
+      }
+    },
+    "fourProvinces": {
+      "A": {
+        "notRecorded": {
+          "lostCells": 246165391,
+          "recoveredCells": 65172729
+        },
+        "fire": {
+          "lostCells": 166926794,
+          "recoveredCells": 45431507
+        },
+        "harvest": {
+          "lostCells": 199479436,
+          "recoveredCells": 114118123
+        },
+        "fireAndHarvest": {
+          "lostCells": 6959,
+          "recoveredCells": 3302
+        }
+      },
+      "B": {
+        "notRecorded": {
+          "lostCells": 300044911,
+          "recoveredCells": 90738551
+        },
+        "fire": {
+          "lostCells": 185476577,
+          "recoveredCells": 51988979
+        },
+        "harvest": {
+          "lostCells": 200583131,
+          "recoveredCells": 116424423
+        },
+        "fireAndHarvest": {
+          "lostCells": 6981,
+          "recoveredCells": 3329
+        }
+      }
+    },
+    "windowCoverage": {
+      "british-columbia": {
+        "A": {
+          "fire": {
+            "recordedCells": 28956557,
+            "offset0Cells": 26463657,
+            "withinOneYearCells": 26662347,
+            "withinTwoYearsCells": 26756609
+          },
+          "harvest": {
+            "recordedCells": 66184373,
+            "offset0Cells": 62445317,
+            "withinOneYearCells": 63695352,
+            "withinTwoYearsCells": 64002204
+          }
+        },
+        "B": {
+          "fire": {
+            "recordedCells": 29870141,
+            "offset0Cells": 27295177,
+            "withinOneYearCells": 27496333,
+            "withinTwoYearsCells": 27595870
+          },
+          "harvest": {
+            "recordedCells": 66493384,
+            "offset0Cells": 62697887,
+            "withinOneYearCells": 63951543,
+            "withinTwoYearsCells": 64261246
+          }
+        }
+      },
+      "alberta": {
+        "A": {
+          "fire": {
+            "recordedCells": 34922327,
+            "offset0Cells": 31363638,
+            "withinOneYearCells": 31469207,
+            "withinTwoYearsCells": 31543313
+          },
+          "harvest": {
+            "recordedCells": 25603454,
+            "offset0Cells": 23570803,
+            "withinOneYearCells": 23832658,
+            "withinTwoYearsCells": 23948246
+          }
+        },
+        "B": {
+          "fire": {
+            "recordedCells": 45547848,
+            "offset0Cells": 41525119,
+            "withinOneYearCells": 41648822,
+            "withinTwoYearsCells": 41748985
+          },
+          "harvest": {
+            "recordedCells": 26328048,
+            "offset0Cells": 24191430,
+            "withinOneYearCells": 24460840,
+            "withinTwoYearsCells": 24584343
+          }
+        }
+      },
+      "ontario": {
+        "A": {
+          "fire": {
+            "recordedCells": 36783308,
+            "offset0Cells": 34634761,
+            "withinOneYearCells": 34943307,
+            "withinTwoYearsCells": 35056623
+          },
+          "harvest": {
+            "recordedCells": 46479292,
+            "offset0Cells": 43636700,
+            "withinOneYearCells": 44157111,
+            "withinTwoYearsCells": 44574360
+          }
+        },
+        "B": {
+          "fire": {
+            "recordedCells": 42285087,
+            "offset0Cells": 39429094,
+            "withinOneYearCells": 39769207,
+            "withinTwoYearsCells": 39927976
+          },
+          "harvest": {
+            "recordedCells": 46825144,
+            "offset0Cells": 43929858,
+            "withinOneYearCells": 44443651,
+            "withinTwoYearsCells": 44860744
+          }
+        }
+      },
+      "quebec": {
+        "A": {
+          "fire": {
+            "recordedCells": 77580529,
+            "offset0Cells": 73351638,
+            "withinOneYearCells": 73858892,
+            "withinTwoYearsCells": 74278145
+          },
+          "harvest": {
+            "recordedCells": 70054740,
+            "offset0Cells": 67341629,
+            "withinOneYearCells": 67801274,
+            "withinTwoYearsCells": 68155542
+          }
+        },
+        "B": {
+          "fire": {
+            "recordedCells": 80596987,
+            "offset0Cells": 76044634,
+            "withinOneYearCells": 76569196,
+            "withinTwoYearsCells": 77009572
+          },
+          "harvest": {
+            "recordedCells": 70114713,
+            "offset0Cells": 67276675,
+            "withinOneYearCells": 67734078,
+            "withinTwoYearsCells": 68090116
+          }
+        }
+      }
+    },
+    "windowCoverageNote": "Counts of known lost cells whose raster holds a fire or harvest year at any offset, at offset 0, within one year and within two years of the loss year. Offsets are disturbance year minus loss year. Widening the window to two years would add the difference between the last two figures; it was not widened because the owner fixed one year in advance."
+  },
+  "resultsCheck": {
+    "question": "Where BC RESULTS says a harvested stand regenerated or was not restocked, does our recovery call agree?",
+    "answer": "On the rule fixed before any figure was computed, the call agreed for 61.1 percent of 25,295 RESULTS polygons: 95.8 percent where RESULTS says not restocked and 45.6 percent where it says regenerated. The target was 80 percent and was not met. Recovery figures are therefore likely to understate recovery.",
+    "targetAgreement": 0.8,
+    "targetMet": false,
+    "targetNote": "The owner set 80 percent and asked for the result to be published whatever it showed.",
+    "source": {
+      "publisher": "Province of British Columbia, Ministry of Forests",
+      "datasetTitle": "RESULTS - Forest Cover Inventory",
+      "catalogueUrl": "https://catalogue.data.gov.bc.ca/dataset/results-forest-cover-inventory",
+      "service": "https://openmaps.gov.bc.ca/geo/pub/wfs",
+      "typeName": "pub:WHSE_FOREST_VEGETATION.RSLT_FOREST_COVER_INV_SVW",
+      "filter": "STOCKING_STATUS_CODE IN ('IMM','MAT','NSR')",
+      "srsName": "EPSG:3005",
+      "retrievedAt": {
+        "first": "2026-09-23T17:24:27Z",
+        "last": "2026-09-23T17:54:04Z",
+        "basis": "Local file modification times of the first and last page; project record, not publisher attestation."
+      },
+      "sourceVersion": "undeclared",
+      "licenceId": "ogl-bc",
+      "licenceVersion": "2.0",
+      "licenceUrl": "https://www2.gov.bc.ca/gov/content?id=A519A56BC2BF44E4A008B33FCF527F61",
+      "licenceBasis": "The BC Data Catalogue API record results-forest-cover-inventory lists Open Government Licence - British Columbia (licence_id 2), read 2026-09-23.",
+      "attribution": "Contains information licensed under the Open Government Licence – British Columbia. Source: Ministry of Forests, RESULTS - Forest Cover Inventory.",
+      "stagedAcquisition": false,
+      "stagedAcquisitionNote": "Not entered in data/staged-acquisitions.json. The raw pages are bound here by the manifest and by each page's digest, and are used only for this check."
+    },
+    "raw": {
+      "directory": "raw/bc-results-forest-cover-inventory/2026-09-23",
+      "manifest": {
+        "slug": "results-sha256sums",
+        "path": "raw/bc-results-forest-cover-inventory/2026-09-23/SHA256SUMS",
+        "byteLength": 7024,
+        "sha256": "c9403d3932944cf2888ad0523010994b4f9c4ca5267a43834875f589eb553c2d"
+      },
+      "fetchScripts": [
+        {
+          "slug": "fetch",
+          "path": "raw/bc-results-forest-cover-inventory/2026-09-23/fetch.sh",
+          "byteLength": 1116,
+          "sha256": "a5229125e49a06459098e16a744a2a714fe7e86aa15e68fa66e29be8a454e05b"
+        },
+        {
+          "slug": "fetch-keyset",
+          "path": "raw/bc-results-forest-cover-inventory/2026-09-23/fetch_keyset.sh",
+          "byteLength": 1432,
+          "sha256": "b9c5f74326b6e1acc350714487a4cb43fe7beb618d94bc84bb736ab2aaf50697"
+        }
+      ],
+      "pageFiles": 77,
+      "pageBytes": 5344686577,
+      "pagingNote": "Pages 0 to 69 were fetched by offset. Offsets from 700,000 timed out, so the rest were fetched by OBJECTID keyset. The worker counts every OBJECTID once; none repeated."
+    },
+    "run": {
+      "worker": "scripts/phase4_condition_recovery_results_check.py",
+      "workerSha256": "0cdf89725ad22653a743fec6f5bf62c11e47dbcb6e524c887ed103b6b8c5fdca",
+      "workerTest": "scripts/test_phase4_condition_recovery_results_check.py",
+      "workerTestRunner": "tests/phase4-condition-recovery-results-check.test.mjs",
+      "executedAt": "2026-09-23T23:46:03+00:00",
+      "elapsedSeconds": 169.8,
+      "workers": 10,
+      "cellsFrom": "derived/phase4-condition-recovery-v2/british-columbia-cells.vrt"
+    },
+    "outputs": [
+      {
+        "slug": "results-agreement",
+        "path": "derived/phase4-condition-recovery-v2/results-agreement.json",
+        "byteLength": 4290,
+        "sha256": "1d3bd20ce7fe765fd4d5a5e01d7a60d6373d353acb95bc838d96c3045164fdaf"
+      },
+      {
+        "slug": "results-agreement-log",
+        "path": "derived/phase4-condition-recovery-v2/results-agreement.log",
+        "byteLength": 1031,
+        "sha256": "e973fbe55055b65ac18da3c9fe32a505bc1f5bede21dbdc4735acab65f798937"
+      }
+    ],
+    "reference": {
+      "pageFiles": 77,
+      "featuresRead": 761447,
+      "repeatedObjectIds": 0,
+      "nullGeometry": 140390,
+      "uniqueObjectIds": 761447,
+      "qualifying": {
+        "regenerated": 39073,
+        "notRestocked": 9523
+      }
+    },
+    "sets": {
+      "A": {
+        "confusion": {
+          "regenerated": [
+            7957,
+            9502
+          ],
+          "notRestocked": [
+            326,
+            7510
+          ]
+        },
+        "eligible": 25295,
+        "agreement": 0.6114647163471042,
+        "agreementByReferenceClass": {
+          "regenerated": 0.455753479580732,
+          "notRestocked": 0.9583971413986728
+        },
+        "balancedAgreement": 0.7070753104897024,
+        "tooFewLostCells": {
+          "regenerated": 21612,
+          "notRestocked": 1687
+        },
+        "outsideRaster": {
+          "regenerated": 2,
+          "notRestocked": 0
+        },
+        "postHoc": {
+          "label": "Written after the agreement figure was seen. An explanation, not a pass criterion.",
+          "latestLossMostlyBeforeReferenceYear": {
+            "confusion": {
+              "regenerated": [
+                7927,
+                5609
+              ],
+              "notRestocked": [
+                317,
+                4554
+              ]
+            },
+            "eligible": 18407,
+            "agreement": 0.6780572608246863,
+            "agreementByReferenceClass": {
+              "regenerated": 0.5856235224586288,
+              "notRestocked": 0.9349209607883392
+            },
+            "balancedAgreement": 0.760272241623484,
+            "latestLossMostlyAfterReferenceYear": {
+              "regenerated": {
+                "polygons": 3867,
+                "ofEligible": 17459,
+                "share": 0.22149034881722893
+              },
+              "notRestocked": {
+                "polygons": 2941,
+                "ofEligible": 7836,
+                "share": 0.3753190403266973
+              }
+            }
+          }
+        }
+      },
+      "B": {
+        "confusion": {
+          "regenerated": [
+            7992,
+            9514
+          ],
+          "notRestocked": [
+            332,
+            7516
+          ]
+        },
+        "eligible": 25354,
+        "agreement": 0.6116589098367121,
+        "agreementByReferenceClass": {
+          "regenerated": 0.45652918999200276,
+          "notRestocked": 0.9576962283384302
+        },
+        "balancedAgreement": 0.7071127091652165,
+        "tooFewLostCells": {
+          "regenerated": 21565,
+          "notRestocked": 1675
+        },
+        "outsideRaster": {
+          "regenerated": 2,
+          "notRestocked": 0
+        },
+        "postHoc": {
+          "label": "Written after the agreement figure was seen. An explanation, not a pass criterion.",
+          "latestLossMostlyBeforeReferenceYear": {
+            "confusion": {
+              "regenerated": [
+                7961,
+                5603
+              ],
+              "notRestocked": [
+                323,
+                4562
+              ]
+            },
+            "eligible": 18449,
+            "agreement": 0.6787901783294488,
+            "agreementByReferenceClass": {
+              "regenerated": 0.5869212621645532,
+              "notRestocked": 0.9338792221084954
+            },
+            "balancedAgreement": 0.7604002421365244,
+            "latestLossMostlyAfterReferenceYear": {
+              "regenerated": {
+                "polygons": 3884,
+                "ofEligible": 17506,
+                "share": 0.22186678852964697
+              },
+              "notRestocked": {
+                "polygons": 2941,
+                "ofEligible": 7848,
+                "share": 0.3747451580020387
+              }
+            }
+          }
+        }
+      }
+    },
+    "postHocNote": "The breakdown under postHoc was written after the agreement figure was seen. It explains part of the gap and is never a pass criterion."
+  },
+  "notMeasured": [
+    "Causes other than fire and harvest: insects, drought, wind, flooding, land conversion and classification noise are all 'cause not recorded'.",
+    "Fire or harvest before 1985, which the NTEMS rasters do not hold.",
+    "A second disturbance in the same cell: each raster holds one year per cell.",
+    "Agreement outside British Columbia. RESULTS covers BC only and no comparable open source is held for the other three provinces.",
+    "Agreement for stands RESULTS did not survey in 2015 to 2022, or whose leading species is under 5 m."
+  ],
+  "checkedBy": "scripts/check-phase4-condition-recovery-cause-and-check.mjs"
+}
