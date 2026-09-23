@@ -10,6 +10,8 @@ const PATH = "docs/VLCE2_FOREST_MASK_DECISION.md";
 /** Every VLCE2 class code the register must dispose of explicitly. */
 const CLASS_CODES = [0, 20, 31, 32, 33, 40, 50, 80, 81, 100, 210, 220, 230];
 
+const SCOPED_LIMIT = "decision resolves no row of the class-treatment register above and does not permit mask implementation";
+
 export function validateVlce2ForestMaskDecision(doc) {
   const failures = [];
   const rows = doc
@@ -48,6 +50,12 @@ export function validateVlce2ForestMaskDecision(doc) {
   // absent mask is Unknown rather than zero.
   if (!doc.includes("it is not zero and is not a provisional national-baseline figure")) {
     failures.push("The non-implementation gate no longer states that an absent mask is Unknown rather than zero.");
+  }
+
+  // A scoped decision may settle a class treatment for one use without opening the gate. It
+  // must keep saying so, or a later edit could quietly widen it into a mask decision.
+  if (doc.includes("## Scoped decision:") && !doc.replace(/\s+/g, " ").includes(SCOPED_LIMIT)) {
+    failures.push("A scoped decision no longer states that it resolves no register row and does not permit mask implementation.");
   }
 
   if (failures.length > 0) {
