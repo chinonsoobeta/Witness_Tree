@@ -20,7 +20,6 @@
  */
 
 import { CoverageStatement } from "@/components/policy/CoverageStatement";
-import { EvidenceLegend } from "@/components/policy/EvidenceLegend";
 import { useId, useState } from "react";
 import { formatYearRange, type Locale } from "@/lib/domain";
 import { EXPLORE_COVERAGE_SPAN } from "@/lib/explore/types";
@@ -441,7 +440,7 @@ export function ShapeMeasurementResult({ locale, measurement }: Readonly<{ local
   return (
     <>
       <h3>{words.resultsHeading}</h3>
-      <CoverageStatement locale={locale}>
+      <CoverageStatement locale={locale} variant="panel">
         <p>{locale === "en"
           ? "The figures below cover only the part that could be measured. Land with no data is left out, never counted as no loss."
           : "Les chiffres ci-dessous portent seulement sur la partie qui a pu être mesurée. Le territoire sans données est exclu, jamais compté comme sans perte."}</p>
@@ -456,7 +455,6 @@ export function ShapeMeasurementResult({ locale, measurement }: Readonly<{ local
           </div>
         </div>
       </CoverageStatement>
-      <EvidenceLegend locale={locale} />
       <dl className="shape-readout">
         <dt>{words.unionHeading}</dt>
         <dd>

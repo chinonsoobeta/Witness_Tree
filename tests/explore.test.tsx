@@ -53,12 +53,11 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
   const en = renderToStaticMarkup(
     <ExploreView events={exploreFixtures} locale="en" />,
   );
-  const listTable = renderToStaticMarkup(
+  const fixtureTable = renderToStaticMarkup(
     <ExploreView
       events={exploreFixtures}
       locale="en"
       mode="recorded-harvest"
-      presentation="list"
       data="table"
       year={2012}
     />,
@@ -68,7 +67,6 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
       events={exploreFixtures}
       locale="fr"
       mode="condition-recovery"
-      presentation="list"
       data="chart"
       year={1988}
     />,
@@ -140,10 +138,13 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
     "Condition and recovery",
   ])
     assert.match(en, new RegExp(label));
+  // The map is the only presentation; the list view was removed, so no link
+  // may offer it. The chart and the table stay the two data views.
   assert.match(en, /presentation=map&amp;data=chart/);
-  assert.match(en, /presentation=list&amp;data=chart/);
+  assert.doesNotMatch(en, /presentation=list/);
   assert.match(en, /presentation=map&amp;data=table/);
-  assert.match(en, /Boundary overlays/);
+  assert.match(en, /<details class="explore-boundaries"><summary>Boundaries<\/summary>/);
+  assert.match(en, /aria-label="Boundary overlays"/);
   for (const label of ["Watersheds", "Federal ridings", "Provincial ridings"])
     assert.match(en, new RegExp(label));
   // The reserve and treaty-area overlays were removed rather than shown as
@@ -182,12 +183,13 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
   // layer, not something a reader of the map can act on. It must not come back.
   assert.doesNotMatch(en, /Use ridings, not districts/);
   assert.doesNotMatch(fr, /Utilisez le terme circonscriptions, et non districts/);
-  assert.match(listTable, /aria-label="List"/);
-  assert.match(listTable, /<table/);
-  assert.equal((listTable.match(/scope="col"/g) ?? []).length, 6);
-  assert.match(listTable, /scope="row"/);
+  assert.doesNotMatch(fixtureTable, /aria-label="List"/);
+  assert.match(fixtureTable, /<table/);
+  assert.equal((fixtureTable.match(/scope="col"/g) ?? []).length, 6);
+  assert.match(fixtureTable, /scope="row"/);
   assert.match(fr, /État et rétablissement/);
-  assert.match(fr, /La liste, le graphique et le tableau/);
+  assert.match(fr, /Le graphique et le tableau utilisent des données d’exemple/);
+  assert.match(fr, /<summary>Limites<\/summary>/);
   assert.match(fr, /Superpositions de limites/);
 
   const withOverlay = renderToStaticMarkup(
@@ -198,6 +200,7 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
     />,
   );
   assert.match(withOverlay, /Shown on the map/);
+  assert.match(withOverlay, /<summary>Boundaries · 1 shown<\/summary>/);
   // The active overlay's own control offers to remove it, and every other
   // link on the page carries the selection forward rather than dropping it.
   assert.match(withOverlay, /Hide<\/a>/);
@@ -207,7 +210,7 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
   }
 });
 
-test("Explore puts explanation and controls before the map, then layers and data views", () => {
+test("Explore puts explanation and controls before the map, then the reading panel and data views", () => {
   const en = renderToStaticMarkup(
     <ExploreView events={exploreFixtures} locale="en" year={1990} />,
   );
@@ -215,35 +218,45 @@ test("Explore puts explanation and controls before the map, then layers and data
     <ExploreView events={exploreFixtures} locale="fr" year={1990} />,
   );
   const orderedMarkers = [
+    'class="coverage-note"',
     "explore-note",
     "explore-modes",
+    "explore-boundaries",
     'id="explore-year-heading"',
     'id="explore-map-heading"',
-    'id="explore-layers-heading"',
+    'id="explore-reading-heading"',
     'id="explore-data-heading"',
+    'class="explore-more"',
   ];
   for (const markup of [en, fr]) {
     const positions = orderedMarkers.map((marker) => markup.indexOf(marker));
     assert.ok(positions.every((position) => position >= 0));
     assert.deepEqual(positions, [...positions].sort((a, b) => a - b));
-    assert.ok(markup.indexOf('class="explore-map"') < markup.indexOf('id="explore-layers-heading"'));
-    assert.ok(markup.indexOf("overlay-toggle") > markup.indexOf('class="explore-map"'));
+    // The boundary controls sit in the toolbar, before the map they change.
+    assert.ok(markup.indexOf("overlay-toggle") < markup.indexOf('class="explore-map"'));
   }
   assert.ok(
     en.indexOf("Per-cell detected loss,") >
-      en.indexOf('id="explore-map-heading"'),
+      en.indexOf('id="explore-reading-heading"'),
   );
   assert.ok(
     en.indexOf("Per-cell detected loss,") <
-      en.indexOf('id="explore-layers-heading"'),
+      en.indexOf('id="explore-data-heading"'),
   );
-  assert.match(en, /Real map, 1985–2022/);
-  assert.match(en, /The data view uses example data for 2012 only/);
-  assert.match(en, /No real map yet\. The data view uses example data for 1988 only/);
+  // Only the chosen view's status is stated, under the toolbar.
+  assert.match(en, /<p class="explore-mode-status">Real map, 1985–2022/);
+  assert.match(
+    renderToStaticMarkup(<ExploreView events={exploreFixtures} locale="en" mode="recorded-harvest" />),
+    /<p class="explore-mode-status">[^<]*The data view uses example data for 2012 only/,
+  );
+  assert.match(
+    renderToStaticMarkup(<ExploreView events={exploreFixtures} locale="en" mode="condition-recovery" />),
+    /<p class="explore-mode-status">No real map yet\. The data view uses example data for 1988 only/,
+  );
   assert.equal((en.match(/<h2/g) ?? []).length, (fr.match(/<h2/g) ?? []).length);
 });
 
-test("list, chart, and table share one explanatory empty state", () => {
+test("chart and table share one explanatory empty state", () => {
   const empty =
     "There is no example data for Wildfire in 1990. The nearest year with example data is 2020.";
   const chart = renderToStaticMarkup(
@@ -251,7 +264,6 @@ test("list, chart, and table share one explanatory empty state", () => {
       events={exploreFixtures}
       locale="en"
       mode="wildfire"
-      presentation="list"
       data="chart"
       year={1990}
     />,
@@ -261,21 +273,19 @@ test("list, chart, and table share one explanatory empty state", () => {
       events={exploreFixtures}
       locale="en"
       mode="wildfire"
-      presentation="list"
       data="table"
       year={1990}
     />,
   );
   assert.equal((chart.match(new RegExp(empty, "g")) ?? []).length, 1);
   assert.equal((table.match(new RegExp(empty, "g")) ?? []).length, 1);
-  assert.doesNotMatch(chart, /class="explore-list"|class="explore-chart"/);
-  assert.doesNotMatch(table, /class="explore-list"|class="explore-table"/);
+  assert.doesNotMatch(chart, /class="explore-chart"/);
+  assert.doesNotMatch(table, /class="explore-table"/);
   const fr = renderToStaticMarkup(
     <ExploreView
       events={exploreFixtures}
       locale="fr"
       mode="wildfire"
-      presentation="list"
       data="chart"
       year={1990}
     />,
@@ -283,32 +293,32 @@ test("list, chart, and table share one explanatory empty state", () => {
   assert.match(fr, /L’année la plus proche avec des données d’exemple est 2020/);
 });
 
-test("map/list and chart/table retain evidence, confidence, coverage, provenance, and Unknown is never zero", () => {
+test("the map and chart/table retain evidence, confidence, coverage, provenance, and Unknown is never zero", () => {
   const mapChart = renderToStaticMarkup(
     <ExploreView
       events={exploreFixtures}
       locale="en"
       mode="forest-change"
-      presentation="map"
       data="chart"
     />,
   );
-  const listChart = renderToStaticMarkup(
+  const fixtureChart = renderToStaticMarkup(
     <ExploreView
       events={exploreFixtures}
       locale="en"
       mode="recorded-harvest"
-      presentation="list"
       data="chart"
       year={2012}
     />,
   );
-  const listTable = renderToStaticMarkup(
+  const harvestTable = renderToStaticMarkup(
+    <ExploreView events={exploreFixtures} locale="en" mode="recorded-harvest" data="table" year={2012} />,
+  );
+  const fixtureTable = renderToStaticMarkup(
     <ExploreView
       events={exploreFixtures}
       locale="en"
       mode="condition-recovery"
-      presentation="list"
       data="table"
       year={1988}
     />,
@@ -319,19 +329,21 @@ test("map/list and chart/table retain evidence, confidence, coverage, provenance
   // read from the span release rather than the fixed 2020-2022 aggregate.
   assert.match(mapChart, /class="explore-bar-label">0\.58%<\/span>/);
   const aggregateSpan = renderToStaticMarkup(
-    <ExploreView events={exploreFixtures} locale="en" mode="forest-change" presentation="map" data="chart" year={2022} fromYear={2020} />,
+    <ExploreView events={exploreFixtures} locale="en" mode="forest-change" data="chart" year={2022} fromYear={2020} />,
   );
   // The 2020-2022 span is the admitted aggregate, to the hectare.
   assert.match(aggregateSpan, /class="explore-bar-label">1\.39%<\/span>/);
   assert.doesNotMatch(mapChart, /<svg[^>]*class="explore-chart"/);
-  assert.match(listChart, /class="explore-bar-label">2012<\/span>/);
+  assert.match(fixtureChart, /class="explore-bar-label">2012<\/span>/);
   assert.match(mapChart, /aria-label="Forest loss map"/);
-  assert.match(listChart, /Official record/);
-  assert.match(listChart, /Source attribution/);
-  assert.match(listTable, /No official public record/);
-  assert.match(listTable, /Coverage/);
-  assert.match(listTable, /Source attribution/);
-  assert.equal(/>0<|caused by|logging|deforestation/i.test(listTable), false);
+  // The chart names each example event and its year; the table carries the
+  // evidence class, coverage and source for the same rows.
+  assert.match(harvestTable, /Official record/);
+  assert.match(harvestTable, /Source attribution/);
+  assert.match(fixtureTable, /No official public record/);
+  assert.match(fixtureTable, /Coverage/);
+  assert.match(fixtureTable, /Source attribution/);
+  assert.equal(/>0<|caused by|logging|deforestation/i.test(fixtureTable), false);
 });
 test("Explore uses the exact PMTiles release with a GeoJSON/SVG fallback on map routes", async () => {
   const { readFile } = await import("node:fs/promises");
@@ -385,8 +397,9 @@ test("Explore uses the exact PMTiles release with a GeoJSON/SVG fallback on map 
     style,
     /101561ed48f511a3e65676fa084ee517c4fa722e14f4a3c844c698b247238505/,
   );
-  assert.match(view, /presentation === "map" \? \(/);
   assert.match(view, /<ExploreMapClient/);
+  assert.match(view, /\/en\/search\?scope=districts/);
+  assert.match(view, /\/fr\/recherche\?scope=districts/);
   assert.match(view, /year=\{activeYear\}/);
   assert.match(view, /fromYear=\{activeFrom\}/);
   // District figures are resolved for the span the server was asked for, and
@@ -394,7 +407,8 @@ test("Explore uses the exact PMTiles release with a GeoJSON/SVG fallback on map 
   assert.match(view, /ridingMeasurements=\{servedMeasurements\}/);
   assert.match(view, /const spanIsServed = activeYear === year && activeFrom === routeFrom/);
   for (const route of [enRoute, frRoute]) {
-    assert.equal((route.match(/<FederalDistrictFinder/g) ?? []).length, 1);
+    // The district finder lives on the search page; Explore links to it.
+    assert.doesNotMatch(route, /<FederalDistrictFinder/);
     assert.doesNotMatch(route, /PlaceFinder/);
     assert.match(route, /<ExploreView/);
     assert.match(route, /ridingMeasurements=\{ridingIntervalMeasurements\(interval\)\}/);
@@ -639,7 +653,6 @@ test("the year control is a real, shareable control rather than a decorative sli
       events={exploreFixtures}
       locale="en"
       mode="wildfire"
-      presentation="list"
       data="table"
       year={1995}
     />,
@@ -653,7 +666,7 @@ test("the year control is a real, shareable control rather than a decorative sli
 
   // The other selections survive a submit, so changing the year does not silently reset them.
   assert.match(en, /<input type="hidden" name="mode" value="wildfire"\/>/);
-  assert.match(en, /<input type="hidden" name="presentation" value="list"\/>/);
+  assert.match(en, /<input type="hidden" name="presentation" value="map"\/>/);
   assert.match(en, /<input type="hidden" name="data" value="table"\/>/);
 
   // Every other control carries the year forward, so no link discards it.
@@ -777,15 +790,21 @@ test("switching language keeps the selected year", async () => {
   assert.match(href, /mode=wildfire/);
 });
 
-test("Explore shows its coverage caveat and shaped evidence legend before the map in both locales", () => {
+test("Explore shows its coverage caveat before the map and its evidence key beside the figures in both locales", () => {
   for (const locale of ["en", "fr"] as const) {
     const markup = renderToStaticMarkup(<ExploreView events={exploreFixtures} locale={locale} />);
-    const coverage = markup.indexOf('class="coverage-statement"');
-    const legend = markup.indexOf('class="evidence-legend"');
+    const coverage = markup.indexOf('<details class="coverage-note">');
     const map = markup.indexOf('class="explore-map"');
-    assert.ok(coverage >= 0 && coverage < legend && legend < map);
+    const reading = markup.indexOf('id="explore-reading-heading"');
+    const key = markup.indexOf('class="evidence-key"');
+    assert.ok(coverage >= 0 && coverage < map && map < reading && reading < key);
     assert.match(markup, /blank area|zone vide/);
-    for (const glyph of ["■", "●", "▲", "○"]) assert.ok(markup.includes(glyph));
+    // The key names only the marks the reading panel uses.
+    const keyMarkup = markup.slice(key, markup.indexOf("</p>", key));
+    assert.equal((keyMarkup.match(/class="evidence-key-item"/g) ?? []).length, 2);
+    assert.match(keyMarkup, /mark-glyph--satellite/);
+    assert.match(keyMarkup, /mark-glyph--unknown/);
+    assert.doesNotMatch(markup, /class="evidence-legend"/);
     // Patch keys are swatches alone: the map draws no glyphs, so the legend
     // must not promise any.
     assert.match(markup, /loss-swatch patch-harvest[^>]*><\/i><\/span>/);

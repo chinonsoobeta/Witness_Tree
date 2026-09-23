@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { CoverageStatement } from "@/components/policy/CoverageStatement";
-import { EvidenceLegend } from "@/components/policy/EvidenceLegend";
+import { EvidenceKey } from "@/components/policy/EvidenceKey";
 
 import {
   ConfidenceBadge,
@@ -10,7 +10,7 @@ import {
   EvidenceChip,
   ProvenanceBlock,
 } from "@/components/policy";
-import { colon, formatNumber, formatPercent, formatYearRange, formatYearRangeKey, labelled, yearRange, type Locale } from "@/lib/domain";
+import { colon, formatHectares, formatNumber, formatPercent, formatYearRange, formatYearRangeKey, labelled, yearRange, type Locale } from "@/lib/domain";
 import {
   BOUNDARY_OVERLAY_IDS,
   BOUNDARY_OVERLAYS,
@@ -41,12 +41,24 @@ import { ExploreYearControl } from "./ExploreYearControl";
 const copy = {
   en: {
     title: "Explore",
+    boundaries: "Boundaries",
+    boundariesShown: (count: number) => `${count} shown`,
+    readingHeading: "Four provinces",
+    detectedAsLost: "Detected as lost",
+    shareOfMapped: (share: string) => `${share} of the mapped forest`,
+    minimum: "A minimum.",
+    neverMapped: (hectares: string) => `${hectares} were never mapped.`,
+    byProvince: "By province",
+    provinceUnknown: (share: string) => `${share} unknown`,
+    figuresFor: (period: string) => `Figures for ${period}`,
+    moreWays: "More ways in",
+    draw: "Draw and measure an area",
+    findDistrict: "Find a federal electoral district",
+    compare: "Compare two ridings",
     yearHeading: "Year",
     mapHeading: "Map",
     layersHeading: "Layers and overlays",
     dataViewsHeading: "Data views",
-    mapHidden:
-      "The map is hidden in List view. Choose Map above to show it.",
     production:
       `The province figures follow the years you choose, anywhere within ${provinceSpanReach("en")}. A place cleared more than once counts once, and no loss patches are drawn for these years. Nothing here was checked on the ground, and only part of each province was mapped, so every figure is a minimum.`,
     productionWithPerCell:
@@ -65,13 +77,10 @@ const copy = {
     spanPending:
       "District figures for these years are loading. They stay hidden until they arrive, so older figures are never shown under the wrong years.",
     fixtureList:
-      "The list, chart and table use made-up example data, not real records.",
+      "The chart and table use made-up example data, not real records.",
     empty: (mode: string, year: number, nearest: number) =>
       `There is no example data for ${mode} in ${year}. The nearest year with example data is ${nearest}.`,
     year: "Year",
-    presentation: "Presentation",
-    map: "Map",
-    list: "List",
     data: "Data",
     chart: "Chart",
     table: "Table",
@@ -112,12 +121,24 @@ const copy = {
   },
   fr: {
     title: "Explorer",
+    boundaries: "Limites",
+    boundariesShown: (count: number) => `${count} affichée${count > 1 ? "s" : ""}`,
+    readingHeading: "Quatre provinces",
+    detectedAsLost: "Détectée comme perdue",
+    shareOfMapped: (share: string) => `${share} de la forêt cartographiée`,
+    minimum: "Un minimum.",
+    neverMapped: (hectares: string) => `${hectares} n’ont jamais été cartographiés.`,
+    byProvince: "Par province",
+    provinceUnknown: (share: string) => `${share} inconnu`,
+    figuresFor: (period: string) => `Chiffres pour ${period}`,
+    moreWays: "D’autres façons d’explorer",
+    draw: "Dessiner et mesurer une zone",
+    findDistrict: "Trouver une circonscription fédérale",
+    compare: "Comparer deux circonscriptions",
     yearHeading: "Année",
     mapHeading: "Carte",
     layersHeading: "Couches et superpositions",
     dataViewsHeading: "Vues des données",
-    mapHidden:
-      "La carte est masquée en vue Liste. Choisissez Carte ci-dessus pour l’afficher.",
     production:
       `Les chiffres provinciaux suivent les années que vous choisissez, n’importe où ${provinceSpanReach("fr", "from")}. Un lieu coupé plus d’une fois compte une seule fois, et aucune parcelle de perte n’est dessinée pour ces années. Rien ici n’a été vérifié sur le terrain, et seule une partie de chaque province a été cartographiée\u202F: chaque chiffre est donc un minimum.`,
     productionWithPerCell:
@@ -136,13 +157,10 @@ const copy = {
     spanPending:
       "Les chiffres par circonscription pour ces années sont en cours de chargement. Ils restent masqués d’ici là, pour ne jamais afficher d’anciens chiffres sous les mauvaises années.",
     fixtureList:
-      "La liste, le graphique et le tableau utilisent des données d’exemple inventées, et non de vrais registres.",
+      "Le graphique et le tableau utilisent des données d’exemple inventées, et non de vrais registres.",
     empty: (mode: string, year: number, nearest: number) =>
       `Il n’y a pas de données d’exemple pour ${mode} en ${year}. L’année la plus proche avec des données d’exemple est ${nearest}.`,
     year: "Année",
-    presentation: "Présentation",
-    map: "Carte",
-    list: "Liste",
     data: "Données",
     chart: "Graphique",
     table: "Tableau",
@@ -226,28 +244,10 @@ function href(
   return exploreHref({ mode, presentation, data, year, overlays, fromYear });
 }
 
-function Details({ event, locale }: { event: ExploreEvent; locale: Locale }) {
-  const text = copy[locale];
-  return (
-    <>
-      <EvidenceChip evidence={event.evidence} locale={locale} /> · {text.confidence}
-      {colon(locale)} <ConfidenceBadge confidence={event.confidence} locale={locale} /> ·{" "}
-      {text.coverage}
-      {colon(locale)} <CoverageBand coverageGrade={event.coverageGrade} locale={locale} />
-      <span>{event.unknownReason ? `${colon(locale)} ${event.unknownReason}` : ""}</span>
-      <p>
-        {text.source}
-        {colon(locale)} <ProvenanceBlock provenance={event.provenance} locale={locale} />
-      </p>
-    </>
-  );
-}
-
 export function ExploreView({
   events,
   locale,
   mode = "forest-change",
-  presentation = "map",
   data = "chart",
   year = EXPLORE_DEFAULT_YEAR,
   fromYear,
@@ -257,7 +257,6 @@ export function ExploreView({
   events: readonly ExploreEvent[];
   locale: Locale;
   mode?: ExploreMode;
-  presentation?: ExplorePresentation;
   data?: ExploreDataView;
   year?: number;
   /**
@@ -279,6 +278,10 @@ export function ExploreView({
   ridingMeasurements?: readonly RidingBoundaryMeasurement[];
 }) {
   const text = copy[locale];
+  // The map is the only presentation since the List view was retired; the
+  // table under the map carries the same rows. Links still name it, so an
+  // address shared before or after reads the same.
+  const presentation: ExplorePresentation = "map";
   const routeFrom = fromYear ?? year - 1;
   const [activeYear, setActiveYear] = useState(year);
   const [activeFrom, setActiveFrom] = useState(routeFrom);
@@ -361,91 +364,130 @@ export function ExploreView({
   const emptyMessage = text.empty(text.modes[mode], activeYear, nearestYear);
   const hasData = productionAvailable || selected.length > 0;
 
+  const shownOverlays = overlays.filter((id) => BOUNDARY_OVERLAYS[id].available);
+  const maxShare = Math.max(...provinceRows.map((row) => row.unionLossPercent ?? 0), 0);
+  const rankedProvinces = [...provinceRows].sort((a, b) => (b.unionLossPercent ?? -1) - (a.unionLossPercent ?? -1));
+
   return (
     <section className="explore" aria-label={text.title}>
       <CoverageStatement locale={locale}>
         <p className="explore-caveat">{locale === "en"
           ? "A blank area on the map doesn’t mean no forest was lost there. Check what years and areas each layer covers before comparing figures."
           : "Une zone vide sur la carte ne veut pas dire qu’aucune forêt n’y a été perdue. Vérifiez les années et les zones couvertes par chaque couche avant de comparer les chiffres."}</p>
-        <details className="explore-coverage-details">
-          <summary>{locale === "en" ? "What each layer covers" : "Ce que couvre chaque couche"}</summary>
-          <p className="explore-note">{note}</p>
-        </details>
+        <p className="explore-note">{note}</p>
       </CoverageStatement>
-      <EvidenceLegend locale={locale} />
+
+      {/*
+        One toolbar in place of the old left column: what to show, for which
+        years, and which boundaries to draw. It precedes the map in the source
+        as well as on screen, because every control in it changes the map.
+      */}
+      <div className="explore-toolbar">
+        <div className="explore-toolbar-row">
+          <nav className="explore-modes" aria-label={text.title}>
+            {EXPLORE_MODES.map((item) => (
+              <a
+                key={item}
+                className="segment-option"
+                href={href(item, presentation, data, activeYear, overlays, activeFrom)}
+                aria-current={item === mode ? "page" : undefined}
+              >
+                {text.modes[item]}
+              </a>
+            ))}
+          </nav>
+          <details className="explore-boundaries">
+            <summary>
+              {text.boundaries}
+              {shownOverlays.length > 0 ? ` · ${text.boundariesShown(shownOverlays.length)}` : ""}
+            </summary>
+            <div className="explore-boundaries-panel">
+              <p className="explore-note">{text.overlaysNote}</p>
+              <ul className="overlay-list" aria-label={text.overlays}>
+                {BOUNDARY_OVERLAY_IDS.map((id) => {
+                  const overlay = BOUNDARY_OVERLAYS[id];
+                  const active = overlays.includes(id);
+                  return (
+                    <li className="overlay-row" key={id}>
+                      <span className="overlay-name">{overlay.label[locale]}</span>
+                      {overlay.available ? (
+                        <a
+                          className="segment-option overlay-toggle"
+                          href={href(
+                            mode,
+                            presentation,
+                            data,
+                            activeYear,
+                            toggleBoundaryOverlay(overlays, id),
+                            activeFrom,
+                          )}
+                          aria-label={labelled(
+                            locale,
+                            active ? text.hide : text.show,
+                            overlay.label[locale],
+                          )}
+                        >
+                          {active ? text.hide : text.show}
+                        </a>
+                      ) : (
+                        <span className="overlay-state">{text.notAvailable}</span>
+                      )}
+                      {active ? <span className="overlay-state">{text.shown}</span> : null}
+                      <p className="overlay-note">{overlay.note[locale]}</p>
+                      {overlay.reason ? (
+                        <p className="overlay-note">
+                          {text.whyNot}
+                          {colon(locale)} {overlay.reason[locale]}
+                        </p>
+                      ) : null}
+                      {overlay.attribution ? (
+                        <p className="overlay-attribution">{overlay.attribution[locale]}</p>
+                      ) : null}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          </details>
+        </div>
+        <section className="explore-window" aria-labelledby="explore-year-heading">
+          <h2 id="explore-year-heading" className="sr-only">{text.yearHeading}</h2>
+          <form className="explore-year" method="get">
+            <input type="hidden" name="mode" value={mode} />
+            <input type="hidden" name="presentation" value={presentation} />
+            <input type="hidden" name="data" value={data} />
+            {overlays.length > 0 ? (
+              <input
+                type="hidden"
+                name="overlays"
+                value={serializeBoundaryOverlays(overlays)}
+              />
+            ) : null}
+            <ExploreYearControl
+              locale={locale}
+              state={{ mode, presentation, data, year: activeYear, fromYear: activeFrom, overlays }}
+              onYearChange={setActiveYear}
+              onIntervalChange={(span) => {
+                setActiveFrom(span.fromYear);
+                setActiveYear(span.toYear);
+              }}
+            />
+          </form>
+        </section>
+        <p className="explore-mode-status">{text.modeStatus[mode]}</p>
+      </div>
 
       <div className="explore-workspace">
-      <nav className="explore-modes" aria-label={text.title}>
-        {EXPLORE_MODES.map((item) => (
-          <div className="explore-mode" key={item}>
-            <a
-              className="segment-option"
-              href={href(item, presentation, data, activeYear, overlays, activeFrom)}
-              aria-current={item === mode ? "page" : undefined}
-            >
-              {text.modes[item]}
-            </a>
-            <p className="explore-mode-status">{text.modeStatus[item]}</p>
-          </div>
-        ))}
-      </nav>
-
-      <section className="explore-section explore-window" aria-labelledby="explore-year-heading">
-        <h2 id="explore-year-heading">{text.yearHeading}</h2>
-        <form className="explore-year" method="get">
-          <input type="hidden" name="mode" value={mode} />
-          <input type="hidden" name="presentation" value={presentation} />
-          <input type="hidden" name="data" value={data} />
-          {overlays.length > 0 ? (
-            <input
-              type="hidden"
-              name="overlays"
-              value={serializeBoundaryOverlays(overlays)}
-            />
-          ) : null}
-          <ExploreYearControl
-            locale={locale}
-            state={{ mode, presentation, data, year: activeYear, fromYear: activeFrom, overlays }}
-            onYearChange={setActiveYear}
-            onIntervalChange={(span) => {
-              setActiveFrom(span.fromYear);
-              setActiveYear(span.toYear);
-            }}
-          />
-        </form>
-      </section>
-
       <section className="explore-section explore-canvas" aria-labelledby="explore-map-heading">
-        <h2 id="explore-map-heading">{text.mapHeading}</h2>
-        <fieldset className="segment-set">
-          <legend>{text.presentation}</legend>
-          <a
-            className="segment-option"
-            href={href(mode, "map", data, activeYear, overlays, activeFrom)}
-            aria-current={presentation === "map" ? "page" : undefined}
-          >
-            {text.map}
-          </a>{" "}
-          <a
-            className="segment-option"
-            href={href(mode, "list", data, activeYear, overlays, activeFrom)}
-            aria-current={presentation === "list" ? "page" : undefined}
-          >
-            {text.list}
-          </a>
-        </fieldset>
-        {presentation === "map" ? (
-          <ExploreMapClient
-            locale={locale}
-            mode={mode}
-            year={activeYear}
-            fromYear={activeFrom}
-            overlays={overlays}
-            ridingMeasurements={servedMeasurements}
-          />
-        ) : (
-          <p className="explore-note">{text.mapHidden}</p>
-        )}
+        <h2 id="explore-map-heading" className="sr-only">{text.mapHeading}</h2>
+        <ExploreMapClient
+          locale={locale}
+          mode={mode}
+          year={activeYear}
+          fromYear={activeFrom}
+          overlays={overlays}
+          ridingMeasurements={servedMeasurements}
+        />
         {activeYear > activeFrom + 1 ? (
           <p className="explore-note">{text.spanNote(activeFrom, activeYear)}</p>
         ) : null}
@@ -456,12 +498,29 @@ export function ExploreView({
 
       {/*
         The reading panel: what the map currently says, beside the map rather
-        than under it. It is a sibling of the map section and not a child of it
-        so the grid can place it in the right column, and it stays here in the
-        source, ahead of the layers, because the figures explain the view the
-        reader is looking at before the controls that would change it.
+        than under it. It follows the map in the source, because the figures
+        explain the view the reader is looking at.
       */}
-      <aside className="explore-annual explore-reading" aria-labelledby="explore-annual-heading">
+      <aside className="explore-annual explore-reading" aria-labelledby="explore-reading-heading">
+          <p className="eyebrow" id="explore-reading-heading">{`${text.readingHeading} · ${spanPeriod}`}</p>
+          {fourProvinces && fourProvinces.unionLossHectares !== null ? (
+            <div className="explore-reading-total">
+              <p className="explore-reading-label">
+                <span className="mark-glyph mark-glyph--satellite" aria-hidden="true" />
+                {text.detectedAsLost}
+              </p>
+              <p className="explore-reading-figure">{formatHectares(fourProvinces.unionLossHectares, locale)}</p>
+              {fourProvinces.unionLossPercent !== null ? (
+                <p className="explore-reading-share">{text.shareOfMapped(formatPercent(fourProvinces.unionLossPercent, locale))}</p>
+              ) : null}
+              {fourProvinces.unknownHectares !== null ? (
+                <p className="explore-reading-minimum">
+                  <span className="mark-glyph mark-glyph--unknown" aria-hidden="true" />
+                  <span><strong>{text.minimum}</strong> {text.neverMapped(formatHectares(fourProvinces.unknownHectares, locale))}</span>
+                </p>
+              ) : null}
+            </div>
+          ) : null}
           <h3 id="explore-annual-heading">{`${text.annualHeading}, ${annual ? formatYearRangeKey(annual.interval, locale) : formatYearRange(yearRange(activeYear - 1, activeYear), locale)}`}</h3>
           {annual ? (
             <>
@@ -511,64 +570,31 @@ export function ExploreView({
           ) : (
             <p className="explore-annual-basis">{mode === "condition-recovery" ? text.conditionRecoveryNone : text.annualNone}</p>
           )}
+          {productionAvailable ? (
+            <div className="explore-reading-provinces">
+              <p className="eyebrow">{text.byProvince}</p>
+              <ul>
+                {rankedProvinces.map((row) => (
+                  <li key={row.id}>
+                    <span className="explore-province-name">{row.name[locale]}</span>
+                    <span className="explore-province-share">{row.unionLossPercent === null ? "–" : formatPercent(row.unionLossPercent, locale)}</span>
+                    <span className="explore-province-detail">
+                      <span className="explore-province-bar" aria-hidden="true">
+                        <span style={{ width: `${maxShare > 0 ? ((row.unionLossPercent ?? 0) / maxShare) * 100 : 0}%` }} />
+                      </span>
+                      {`${row.unionLossHectares === null ? "–" : formatHectares(row.unionLossHectares, locale)} · ${text.provinceUnknown(formatUnknownSharePercent(row.unknownSharePercent, locale))}`}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+          <EvidenceKey locale={locale} classes={["satellite-observation", "unknown"]} />
       </aside>
-
-      <section
-        className="explore-section explore-overlays"
-        aria-labelledby="explore-layers-heading"
-      >
-        <h2 id="explore-layers-heading">{text.layersHeading}</h2>
-        <p className="explore-note">{text.overlaysNote}</p>
-        <h3>{text.overlays}</h3>
-        <ul className="overlay-grid">
-          {BOUNDARY_OVERLAY_IDS.map((id) => {
-            const overlay = BOUNDARY_OVERLAYS[id];
-            const active = overlays.includes(id);
-            return (
-              <li className="card card--sand overlay-card" key={id}>
-                <span className="overlay-name">{overlay.label[locale]}</span>
-                {overlay.available ? (
-                  <a
-                    className="segment-option overlay-toggle"
-                    href={href(
-                      mode,
-                      presentation,
-                      data,
-                      activeYear,
-                      toggleBoundaryOverlay(overlays, id),
-                      activeFrom,
-                    )}
-                    aria-label={labelled(
-                      locale,
-                      active ? text.hide : text.show,
-                      overlay.label[locale],
-                    )}
-                  >
-                    {active ? text.hide : text.show}
-                  </a>
-                ) : (
-                  <span className="overlay-state">{text.notAvailable}</span>
-                )}
-                {active ? <span className="overlay-state">{text.shown}</span> : null}
-                <p className="overlay-note">{overlay.note[locale]}</p>
-                {overlay.reason ? (
-                  <p className="overlay-note">
-                    {text.whyNot}
-                    {colon(locale)} {overlay.reason[locale]}
-                  </p>
-                ) : null}
-                {overlay.attribution ? (
-                  <p className="overlay-attribution">{overlay.attribution[locale]}</p>
-                ) : null}
-              </li>
-            );
-          })}
-        </ul>
-      </section>
       </div>
 
       <section className="explore-section explore-data" aria-labelledby="explore-data-heading">
-        <h2 id="explore-data-heading">{text.dataViewsHeading}</h2>
+        <h2 id="explore-data-heading">{productionAvailable ? text.figuresFor(spanPeriod) : text.dataViewsHeading}</h2>
         <fieldset className="segment-set">
           <legend>{text.data}</legend>
           <a
@@ -589,43 +615,6 @@ export function ExploreView({
 
         {!hasData ? (
           <p className="explore-empty" role="status">{emptyMessage}</p>
-        ) : null}
-
-        {presentation === "list" && hasData ? (
-          <ul className="explore-list" aria-label={text.list}>
-              {productionAvailable
-                ? provinceRows.map((row) => (
-                    <li className="card card--lift" key={row.id}>
-                      <h3>{row.name[locale]}</h3>
-                      <p>{spanPeriod}</p>
-                      <p>
-                        {text.observedLoss}
-                        {colon(locale)} {hectaresOrDash(row.unionLossHectares)} ·{" "}
-                        {text.observedLossPercent}
-                        {colon(locale)} {percentOrDash(row.unionLossPercent)} ·{" "}
-                        {text.coverage}
-                        {colon(locale)} {provinceCoverageLabel(row)}
-                      </p>
-                      <p>
-                        {text.source}
-                        {colon(locale)}{" "}
-                        <a href={EXPLORE_PRODUCTION_LAYER.attribution.href}>
-                          {EXPLORE_PRODUCTION_LAYER.attribution[locale]}
-                        </a>
-                      </p>
-                    </li>
-                  ))
-                : selected.map((event) => (
-                    <li className="card card--lift" key={event.id}>
-                      <h3>{event.name[locale]}</h3>
-                      <p>
-                        {text.year}
-                        {colon(locale)} {event.year}
-                      </p>
-                      <Details event={event} locale={locale} />
-                    </li>
-                  ))}
-          </ul>
         ) : null}
 
         {hasData && data === "chart" ? (
@@ -755,6 +744,15 @@ export function ExploreView({
           </ul>
         ) : null}
       </section>
+
+      <nav className="explore-more" aria-labelledby="explore-more-heading">
+        <h2 id="explore-more-heading">{text.moreWays}</h2>
+        <ul className="link-list explore-more-list">
+          <li className="card card--lift"><a href={locale === "en" ? "/en/explore/draw" : "/fr/explorer/dessiner"}>{text.draw}</a></li>
+          <li className="card card--lift"><a href={locale === "en" ? "/en/search?scope=districts" : "/fr/recherche?scope=districts"}>{text.findDistrict}</a></li>
+          <li className="card card--lift"><a href={locale === "en" ? "/en/compare" : "/fr/comparer"}>{text.compare}</a></li>
+        </ul>
+      </nav>
     </section>
   );
 }

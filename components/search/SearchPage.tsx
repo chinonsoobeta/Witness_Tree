@@ -1,5 +1,4 @@
 import { CoverageStatement } from "@/components/policy/CoverageStatement";
-import { EvidenceLegend } from "@/components/policy/EvidenceLegend";
 import { formatHectares, formatPercent, type Locale } from "@/lib/domain";
 import { federalRidingComparison } from "@/lib/comparison";
 import { FederalDistrictFinder } from "./FederalDistrictFinder";
@@ -7,6 +6,9 @@ import { AddressFinderClient } from "./AddressFinderClient";
 import { formatUnknownSharePercent } from "@/lib/explore/map-style";
 import { formatSearchShare, searchAttribution, searchPlaceTypeLabel, searchSite, ridingSearchRow, type SearchRidingReference, type SiteSearchResult } from "@/lib/search/site-search";
 import { NoRecordResult } from "./NoRecordResult";
+import { SearchSuggest } from "./SearchSuggest";
+import { EvidenceKey } from "@/components/policy/EvidenceKey";
+import { ridingFigure } from "@/lib/search/suggest";
 
 export type SearchScope = "places" | "districts";
 
@@ -60,7 +62,6 @@ export function SearchPage({
           ? "Finding a place doesn’t mean we have figures for it. And a missing record doesn’t mean nothing happened."
           : "Trouver un lieu ne veut pas dire que nous avons des chiffres pour celui-ci. Et l’absence de registre ne veut pas dire que rien ne s’est produit."}</p>
       </CoverageStatement>
-      <EvidenceLegend locale={locale} />
       <nav className="segment" aria-label={text.scope}>
         <a
           className="segment-option"
@@ -81,7 +82,15 @@ export function SearchPage({
       {scope === "places" ? (
         <section>
           <h2>{text.places}</h2>
-          <form className="search-form" method="get"><label className="field-label sr-only" htmlFor="search-q">{text.places}</label><input className="input" id="search-q" name="q" defaultValue={query} /><button className="btn btn--primary" type="submit">{locale === "en" ? "Find" : "Trouver"}</button></form>
+          <SearchSuggest
+            className="search-page-field"
+            locale={locale}
+            action={locale === "en" ? "/en/search" : "/fr/recherche"}
+            label={text.places}
+            labelHidden
+            submitLabel={locale === "en" ? "Find" : "Trouver"}
+            defaultValue={query}
+          />
           {!query ? <p className="search-note">{locale === "en" ? "Enter a province, riding, or community." : "Entrez une province, une circonscription ou une collectivité."}</p> : <SearchResults locale={locale} query={query} />}
           <p className="search-note">{text.excluded}</p>
         </section>
@@ -114,6 +123,9 @@ function SearchResults({ locale, query }: { locale: Locale; query: string }) {
     fr: { province: "Provinces", riding: "Circonscriptions", community: "Collectivités" },
   }[locale];
   return <>
+    <div className="search-results-key">
+      <EvidenceKey locale={locale} classes={["satellite-observation", "unknown"]} />
+    </div>
     {groups.map(([kind, results]) => results.length ? (
       <section key={kind} aria-label={groupTitle[kind]}>
         <h3>{groupTitle[kind]}</h3>
@@ -132,21 +144,6 @@ function resultName(result: SiteSearchResult, locale: Locale) {
   return locale === "fr" && result.nameFr ? result.nameFr : result.name;
 }
 
-function ridingFigure(row: ReturnType<typeof ridingSearchRow>, locale: Locale) {
-  if (!row) return null;
-  const text = locale === "en"
-    ? { unknown: "Unknown", atLeast: "At least", loss: "detected loss", unknownShare: "unknown share" }
-    : { unknown: "Inconnu", atLeast: "Au moins", loss: "perte détectée", unknownShare: "part inconnue" };
-  if (row.coverage === "complete" && row.observedLossHectares !== null && row.observedLossPercent !== null) {
-    return `${formatHectares(row.observedLossHectares, locale)} · ${formatPercent(row.observedLossPercent, locale)} ${text.loss}`;
-  }
-  const unknown = row.unknownSharePercent === null ? text.unknown : formatUnknownSharePercent(row.unknownSharePercent, locale);
-  if (row.coverage === "partial-with-unknown" && row.knownObservedSubtotalHectares !== null && row.knownObservedSubtotalHectares !== undefined && row.knownObservedSubtotalHectares > 0) {
-    return `${text.atLeast} ${formatHectares(row.knownObservedSubtotalHectares, locale)} ${text.loss}; ${unknown} ${text.unknownShare}`;
-  }
-  return `${text.unknown}; ${unknown} ${text.unknownShare}`;
-}
-
 function ridingReferenceMarkup(reference: SearchRidingReference, locale: Locale, federal: boolean) {
   const row = ridingSearchRow(reference.id);
   const name = locale === "fr" ? reference.nameFr : reference.name;
@@ -161,8 +158,8 @@ function SearchResultCard({ locale, result }: { locale: Locale; result: SiteSear
     const unknown = locale === "en" ? "Unknown" : "Inconnu";
     return <li className="card card--lift search-result">
       <h4>{resultName(result, locale)}</h4>
-      <p>{result.unionLossHectares === null || result.unionLossHectares === undefined ? unknown : formatHectares(result.unionLossHectares, locale)} · {result.unionLossPercent === null || result.unionLossPercent === undefined ? unknown : formatPercent(result.unionLossPercent, locale)}</p>
-      <p>{result.unknownHectares === null || result.unknownHectares === undefined ? unknown : formatHectares(result.unknownHectares, locale)} {locale === "en" ? "Unknown area" : "zone inconnue"}; {result.unknownSharePercent === null || result.unknownSharePercent === undefined ? unknown : formatUnknownSharePercent(result.unknownSharePercent, locale)}</p>
+      <p className="search-result-figure"><span className="mark-glyph mark-glyph--satellite" aria-hidden="true" />{result.unionLossHectares === null || result.unionLossHectares === undefined ? unknown : formatHectares(result.unionLossHectares, locale)} · {result.unionLossPercent === null || result.unionLossPercent === undefined ? unknown : formatPercent(result.unionLossPercent, locale)}</p>
+      <p className="search-result-figure"><span className="mark-glyph mark-glyph--unknown" aria-hidden="true" />{result.unknownHectares === null || result.unknownHectares === undefined ? unknown : formatHectares(result.unknownHectares, locale)} {locale === "en" ? "Unknown area" : "zone inconnue"}; {result.unknownSharePercent === null || result.unknownSharePercent === undefined ? unknown : formatUnknownSharePercent(result.unknownSharePercent, locale)}</p>
       {result.unmappedCharacter ? <p>{locale === "en" ? "Here that gap is" : "Ici, il s’agit d’un"} {result.unmappedCharacter[locale]}.</p> : null}
     </li>;
   }
@@ -170,7 +167,7 @@ function SearchResultCard({ locale, result }: { locale: Locale; result: SiteSear
     return <li className="card card--lift search-result">
       <h4>{resultName(result, locale)}</h4>
       <p>{result.province} · {locale === "en" ? "Riding" : "Circonscription"}</p>
-      <p>{ridingFigure(ridingSearchRow(result.id), locale)}</p>
+      <p className="search-result-figure"><span className="mark-glyph mark-glyph--satellite" aria-hidden="true" />{ridingFigure(ridingSearchRow(result.id), locale)}</p>
     </li>;
   }
   return <li className="card card--lift search-result">

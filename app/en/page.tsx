@@ -3,7 +3,6 @@ import Link from "next/link";
 import { HomeSearch, ProvinceBar, SiteShell } from "@/components/site";
 import { ProvinceRecordList } from "@/components/site/ProvinceRecordList";
 import { CumulativeHeadline } from "@/components/site/CumulativeHeadline";
-import { CoverageStatement } from "@/components/policy/CoverageStatement";
 import { EvidenceMarks } from "@/components/policy/EvidenceMarks";
 import { PRODUCT_NAME } from "@/lib/domain";
 import { provinceSpanReach } from "@/lib/explore/period";
@@ -45,13 +44,12 @@ export default function EnglishHome() {
 
     {/*
       The answer to the question in the h1, immediately under it.
-      It carries its own denominator, its own unmapped share and its own
-      refusal of the annual sum, so it does not lean on the standing
-      coverage banner below it to stay honest when it is read alone.
+      It carries its own denominator, its own unmapped share, its own
+      minimum and its own refusal of the annual sum, so it stays honest
+      when it is read alone.
     */}
     <CumulativeHeadline locale="en" />
 
-    <CoverageStatement locale="en"><p>These numbers are a minimum. Satellites mapped only part of each province, and the rest is treated as unknown, never as zero. If something isn’t shown here, that doesn’t mean it didn’t happen.</p></CoverageStatement>
 
     {/*
       The four marks and their definitions, in one place. They used to be a

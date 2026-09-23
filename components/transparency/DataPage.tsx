@@ -1,5 +1,4 @@
 import { CoverageStatement } from "@/components/policy/CoverageStatement";
-import { EvidenceLegend } from "@/components/policy/EvidenceLegend";
 import { colon, formatYearRangeKey, type Locale } from "@/lib/domain";
 import { SourceCurrency } from "./SourceCurrency";
 import {
@@ -118,7 +117,6 @@ export function DataPage({ locale }: Readonly<{ locale: Locale }>) {
         <h1>{copy.title}</h1>
       </header>
       <CoverageStatement locale={locale}><p>{copy.limits}</p></CoverageStatement>
-      <EvidenceLegend locale={locale} />
       <div className="data-layout">
       <div className="data-reader">
 
@@ -127,11 +125,17 @@ export function DataPage({ locale }: Readonly<{ locale: Locale }>) {
         <p>{copy.accessSummary}</p>
         <p className="notice card--sand"><strong>{copy.notice}</strong></p>
         <ul className="link-list">
-          <li className="card card--lift">
-            <a className="btn btn--primary" href={csv.url}>{copy.csv}</a>
+          <li className="card card--lift file-tile">
+            <span className="file-tile-format" aria-hidden="true">CSV</span>
+            <span className="file-tile-body">
+              <a href={csv.url}>{copy.csv}</a>
+            </span>
           </li>
-          <li className="card card--lift">
-            <a className="btn btn--primary" href={geopackage.url}>{copy.geopackage}</a>
+          <li className="card card--lift file-tile">
+            <span className="file-tile-format" aria-hidden="true">GPKG</span>
+            <span className="file-tile-body">
+              <a href={geopackage.url}>{copy.geopackage}</a>
+            </span>
           </li>
           <li className="card card--lift">
             <a href={locale === "en" ? "/en/data/official-harvest-comparison" : "/fr/donnees/comparaison-recolte-officielle"}>
@@ -152,13 +156,19 @@ export function DataPage({ locale }: Readonly<{ locale: Locale }>) {
         <p>{copy.spanSummary}</p>
         <p className="notice card--sand">{copy.spanLimits}</p>
         <ul className="link-list">
-          <li className="card card--lift">
-            <a className="btn btn--primary" href={provinceSpanRelease.csv.url}>{copy.spanCsv}</a>
-            <br /><small>{copy.checksum}{colon(locale)} <code>{provinceSpanRelease.csv.sha256}</code></small>
+          <li className="card card--lift file-tile">
+            <span className="file-tile-format" aria-hidden="true">CSV</span>
+            <span className="file-tile-body">
+              <a href={provinceSpanRelease.csv.url}>{copy.spanCsv}</a>
+              <small>{copy.checksum}{colon(locale)} <code>{provinceSpanRelease.csv.sha256}</code></small>
+            </span>
           </li>
-          <li className="card card--lift">
-            <a className="btn btn--primary" href={provinceSpanRelease.json.url}>{copy.spanJson}</a>
-            <br /><small>{copy.checksum}{colon(locale)} <code>{provinceSpanRelease.json.sha256}</code></small>
+          <li className="card card--lift file-tile">
+            <span className="file-tile-format" aria-hidden="true">JSON</span>
+            <span className="file-tile-body">
+              <a href={provinceSpanRelease.json.url}>{copy.spanJson}</a>
+              <small>{copy.checksum}{colon(locale)} <code>{provinceSpanRelease.json.sha256}</code></small>
+            </span>
           </li>
           <li className="card card--lift">
             <a href={provinceSpanRelease.manifestUrl}>{copy.spanManifest}</a>

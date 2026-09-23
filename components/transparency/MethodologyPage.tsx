@@ -1,5 +1,3 @@
-import { CoverageStatement } from "@/components/policy/CoverageStatement";
-import { EvidenceLegend } from "@/components/policy/EvidenceLegend";
 import type { ConfidenceResult } from "@/lib/domain/confidence";
 import type { Locale } from "@/lib/domain";
 import {
@@ -133,9 +131,8 @@ export function MethodologyPage({ locale }: Readonly<{ locale: Locale }>) {
     <main id="main" className="page-wrap methods-page">
       <header className="masthead">
         <h1>{copy.title}</h1>
+        <p className="dek">{copy.statement}</p>
       </header>
-      <CoverageStatement locale={locale}><p>{copy.statement}</p></CoverageStatement>
-      <EvidenceLegend locale={locale} />
       <div className="content-section prose-measure">
         {sections.map(([heading, text], index) => (
           <section className="governance-section" key={heading} id={heading === copy.unmapped ? "coverage-gap" : undefined}>

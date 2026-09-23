@@ -106,10 +106,13 @@ test("Releases indexes the bounded release and Data and Explore point back to it
 });
 
 
-test("governance foregrounds accountability with a correction-instructions primary link", async () => {
+test("governance states its status under the title and links to the correction instructions", async () => {
   const source = await read("../components/governance/GovernancePage.tsx");
-  assert.ok(source.indexOf('className="coverage-statement governance-accountability"') < source.indexOf('page.sections.map'));
-  assert.match(source, /className="btn btn--primary" href=\{kind === "corrections" \? "#correction-instructions" : `\/\$\{locale\}\/corrections`\}/);
+  // No figures on these pages, so no figures caveat and no evidence key: the
+  // status and the way to report an error sit under the title as plain text.
+  assert.doesNotMatch(source, /CoverageStatement|EvidenceKey/);
+  assert.ok(source.indexOf('<p className="dek">{page.status}</p>') < source.indexOf("page.sections.map"));
+  assert.match(source, /href=\{kind === "corrections" \? "#correction-instructions" : `\/\$\{locale\}\/corrections`\}/);
   assert.match(source, /id=\{kind === "corrections" && index === 2 \? "correction-instructions" : undefined\}/);
-  for (const label of ["Accountability", "Responsabilité", "Read the correction instructions", "Consulter les instructions de correction"]) assert.ok(source.includes(label));
+  for (const label of ["Read the correction instructions", "Consulter les instructions de correction"]) assert.ok(source.includes(label));
 });

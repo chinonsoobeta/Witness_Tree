@@ -1,5 +1,4 @@
 import { CoverageStatement } from "@/components/policy/CoverageStatement";
-import { EvidenceLegend } from "@/components/policy/EvidenceLegend";
 import type { Metadata } from "next";
 import {
   FederalRidingPicker,
@@ -45,7 +44,6 @@ export default async function ComparePage({
           <p className="masthead-note">Figures for 2021–2022, adjusted for mapped area.</p>
         </header>
         <CoverageStatement locale="en"><p>Check how much of each riding was mapped before comparing figures: a smaller loss may just mean less was mapped. Ridings without full data are left out of the ranking, never counted as zero. Shares are of mapped forest only.</p></CoverageStatement>
-        <EvidenceLegend locale="en" />
         <FederalRidingPicker
           rows={federalRidingComparison.comparisonRows}
           locale="en"

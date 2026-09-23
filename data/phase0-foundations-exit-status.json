@@ -6,7 +6,7 @@
       "id": "forest-definition-published-bilingually",
       "title": "The forest definition is published in the glossary in English and French",
       "status": "pass",
-      "reason": "FOREST_DEFINITION carries bilingual text and per-locale glossary anchors, the glossary publishes a Forest and a Forêt entry, and a test pins the published minimum area, minimum width, crown closure and mature height to the constant so the prose cannot drift from the value that drives computation. Version nfi-2 added the minimum width on 2026-09-09; the condition is published, not implemented, and cannot be evaluated on the 30 m grid. On 2026-09-21 GovernancePage.tsx was refreshed for the existing glossary wording change alone; its digest was refreshed, and this reason still holds. On 2026-09-23 GovernancePage.tsx changed for a plain-language wording pass alone; its digest was refreshed, and this reason still holds.",
+      "reason": "FOREST_DEFINITION carries bilingual text and per-locale glossary anchors, the glossary publishes a Forest and a Forêt entry, and a test pins the published minimum area, minimum width, crown closure and mature height to the constant so the prose cannot drift from the value that drives computation. Version nfi-2 added the minimum width on 2026-09-09; the condition is published, not implemented, and cannot be evaluated on the 30 m grid. On 2026-09-21 GovernancePage.tsx was refreshed for the existing glossary wording change alone; its digest was refreshed, and this reason still holds. On 2026-09-23 GovernancePage.tsx changed for a plain-language wording pass alone; its digest was refreshed, and this reason still holds. On 2026-09-23 GovernancePage.tsx moved the page status and the correction link out of a boxed plate and into plain text under the title, with the same words; its digest was refreshed, and this reason still holds.",
       "evidence": [
         {
           "path": "lib/domain/forest.ts",
@@ -14,7 +14,7 @@
         },
         {
           "path": "components/governance/GovernancePage.tsx",
-          "sha256": "f2021f580958260db3fb94b212d16b90a09c6c6333e9d235f5f5f4c50c83b445"
+          "sha256": "2f7f0ad0edd2e762710f30f04484e1afec1e45f9e92d76335b0360974c095367"
         },
         {
           "path": "tests/forest-definition-publication.test.ts",
@@ -58,7 +58,7 @@
       "id": "legal-signoff-recorded-in-decision-log",
       "title": "Legal sign-off is recorded in the decision log",
       "status": "pass",
-      "reason": "The accountable owner recorded full bilingual legal sign-off for the current disclaimers, terms, privacy notice, source-licensing and attribution rules, account and alert controls, and correction and dispute routes. The bilingual public decision log exposes the scope and its limits without representing it as an independent counsel opinion. On 2026-09-21 GovernancePage.tsx was refreshed for the existing glossary wording change alone; its digest was refreshed, and this reason still holds. On 2026-09-23 GovernancePage.tsx changed for a plain-language wording pass alone; its digest was refreshed, and this reason still holds.",
+      "reason": "The accountable owner recorded full bilingual legal sign-off for the current disclaimers, terms, privacy notice, source-licensing and attribution rules, account and alert controls, and correction and dispute routes. The bilingual public decision log exposes the scope and its limits without representing it as an independent counsel opinion. On 2026-09-21 GovernancePage.tsx was refreshed for the existing glossary wording change alone; its digest was refreshed, and this reason still holds. On 2026-09-23 GovernancePage.tsx changed for a plain-language wording pass alone; its digest was refreshed, and this reason still holds. On 2026-09-23 GovernancePage.tsx moved the page status and the correction link out of a boxed plate and into plain text under the title, with the same words; its digest was refreshed, and this reason still holds.",
       "evidence": [
         {
           "path": "data/phase0-legal-signoff-owner-record-2026-08-27.json",
@@ -66,7 +66,7 @@
         },
         {
           "path": "components/governance/GovernancePage.tsx",
-          "sha256": "f2021f580958260db3fb94b212d16b90a09c6c6333e9d235f5f5f4c50c83b445"
+          "sha256": "2f7f0ad0edd2e762710f30f04484e1afec1e45f9e92d76335b0360974c095367"
         }
       ]
     },
@@ -109,7 +109,7 @@
       "id": "both-names-registered-in-both-languages",
       "title": "Both names are registered in both languages",
       "status": "pass",
-      "reason": "The accountable owner attested that bilingual name-registration evidence is complete and retained Witness Tree / Arbre témoin as the product names. The repository records that attestation without exposing private registrar credentials or payment data. On 2026-09-21 GovernancePage.tsx was refreshed for the existing glossary wording change alone; its digest was refreshed, and this reason still holds. On 2026-09-23 GovernancePage.tsx changed for a plain-language wording pass alone; its digest was refreshed, and this reason still holds.",
+      "reason": "The accountable owner attested that bilingual name-registration evidence is complete and retained Witness Tree / Arbre témoin as the product names. The repository records that attestation without exposing private registrar credentials or payment data. On 2026-09-21 GovernancePage.tsx was refreshed for the existing glossary wording change alone; its digest was refreshed, and this reason still holds. On 2026-09-23 GovernancePage.tsx changed for a plain-language wording pass alone; its digest was refreshed, and this reason still holds. On 2026-09-23 GovernancePage.tsx moved the page status and the correction link out of a boxed plate and into plain text under the title, with the same words; its digest was refreshed, and this reason still holds.",
       "evidence": [
         {
           "path": "data/phase0-owner-scope-decisions-2026-08-27.json",
@@ -117,7 +117,7 @@
         },
         {
           "path": "components/governance/GovernancePage.tsx",
-          "sha256": "f2021f580958260db3fb94b212d16b90a09c6c6333e9d235f5f5f4c50c83b445"
+          "sha256": "2f7f0ad0edd2e762710f30f04484e1afec1e45f9e92d76335b0360974c095367"
         }
       ]
     },

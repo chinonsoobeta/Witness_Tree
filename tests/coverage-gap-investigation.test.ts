@@ -113,6 +113,8 @@ test("methods publish every confidence rule in an accessible bilingual table", (
     assert.equal((table.match(/scope="row"/g) ?? []).length, 4);
     const ids = [...table.matchAll(/<code>(CONF-[A-Z]+-001)<\/code>/g)].map((match) => match[1]);
     assert.deepEqual(ids, ["CONF-LIMITED-001", "CONF-HIGH-001", "CONF-MEDIUM-001", "CONF-UNKNOWN-001"]);
-    assert.ok(html.indexOf('class="coverage-statement"') < html.indexOf('class="governance-section"'));
+    // The methods page reports no figure, so its statement is the line under the title.
+    const dek = html.indexOf('class="dek"');
+    assert.ok(dek >= 0 && dek < html.indexOf('class="governance-section"'));
   }
 });

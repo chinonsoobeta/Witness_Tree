@@ -51,11 +51,11 @@
       "id": "published-match-and-non-match-rates",
       "title": "Match rate, non-match rate, and non-match-reason distribution are published on the methods page",
       "status": "fail",
-      "reason": "The methods page explicitly reports these results as unavailable; no admitted, versioned provincial processing run exists from which numeric rates or a reason distribution can be published. On 2026-09-23 MethodologyPage.tsx changed for a plain-language wording pass alone; its digest was refreshed, and this reason still holds.",
+      "reason": "The methods page explicitly reports these results as unavailable; no admitted, versioned provincial processing run exists from which numeric rates or a reason distribution can be published. On 2026-09-23 MethodologyPage.tsx changed for a plain-language wording pass alone; its digest was refreshed, and this reason still holds. On 2026-09-23 MethodologyPage.tsx moved its opening statement out of a boxed plate and into plain text under the title, with the same words, and dropped the evidence legend; its digest was refreshed, and this reason still holds.",
       "evidence": [
         {
           "path": "components/transparency/MethodologyPage.tsx",
-          "sha256": "3660cb0a9e72965d5644fda696b55ac66097996de88a9b4053675c02509ee6fe"
+          "sha256": "1d1afa1f9eb2acdfff86f239020eba3e7340eacb5cec77909c5a235c72263ffa"
         },
         {
           "path": "docs/PHASE4_OPTIONAL_ENHANCEMENT_GATE.md",

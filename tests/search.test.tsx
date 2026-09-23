@@ -97,8 +97,9 @@ test("search coverage precedes controls and a missing record is a result with a 
   for (const locale of ["en", "fr"] as const) {
     for (const scope of ["places", "districts"] as const) {
       const markup = renderToStaticMarkup(<SearchPage locale={locale} scope={scope} query="not-a-place" />);
-      assert.ok(markup.indexOf('class="coverage-statement"') < markup.indexOf('<form'));
-      assert.match(markup, /class="evidence-legend"/);
+      assert.ok(markup.indexOf('class="coverage-note"') > 0 && markup.indexOf('class="coverage-note"') < markup.indexOf('<form'));
+      // No result carries a mark here, so there is no key to read.
+      assert.doesNotMatch(markup, /class="evidence-(legend|key)"/);
       assert.match(markup, /class="no-record-result"/);
       assert.match(markup, /<strong>– /);
       assert.match(markup, new RegExp(`href="${locale === "en" ? "/en/methods" : "/fr/methodes"}"`));

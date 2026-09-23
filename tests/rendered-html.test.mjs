@@ -93,7 +93,8 @@ test("landing figures show detected loss alone, on a scale of detected loss", as
     const html = await (await render(`/${locale}`)).text();
     const rows = [...html.matchAll(/<li class="province-list-row"[^>]*>([\s\S]*?)<\/li>/g)].map((match) => match[1]);
     assert.equal(rows.length, 4);
-    assert.ok(html.indexOf('class="coverage-statement"') < html.indexOf('class="province-list-row"'));
+    // The headline states its own minimum, so the home page carries no separate caveat note.
+    assert.doesNotMatch(html, /class="coverage-(note|statement)"/);
     assert.ok(html.indexOf('class="evidence-marks"') < html.indexOf('class="province-list-row"'));
 
     // Whole hectares on the headline. Two decimal places on a satellite-derived
@@ -220,7 +221,7 @@ test("renders localized place and location records with semantic content and pro
   assert.match(frenchLocation, /Provenance/);
 });
 
-test("renders localized search results and Explore list/table alternatives without browser JavaScript", async () => {
+test("renders localized search results and the Explore table without browser JavaScript, including from an old List address", async () => {
   const [englishSearch, frenchSearch, englishExplore, frenchExplore] = await Promise.all([
     render("/en/search?q=British%20Columbia").then((response) => response.text()),
     render("/fr/recherche?q=Colombie-Britannique").then((response) => response.text()),
@@ -239,13 +240,13 @@ test("renders localized search results and Explore list/table alternatives witho
 
   assert.match(englishExplore, /<main\b[^>]*id="main"/);
   assert.match(englishExplore, /Explore forest loss/);
-  assert.match(englishExplore, /The list, chart and table use made-up example data, not real records/);
+  assert.match(englishExplore, /The chart and table use made-up example data, not real records/);
   assert.match(englishExplore, /Reported fire perimeter/);
   assert.match(englishExplore, /<table/);
   assert.match(englishExplore, /Source attribution/);
   assert.match(frenchExplore, /<main\b[^>]*id="main"/);
   assert.match(frenchExplore, /Explorer les pertes forestières/);
-  assert.match(frenchExplore, /La liste, le graphique et le tableau utilisent des données d’exemple inventées, et non de vrais registres/);
+  assert.match(frenchExplore, /Le graphique et le tableau utilisent des données d’exemple inventées, et non de vrais registres/);
   assert.match(frenchExplore, /Périmètre d’incendie déclaré/);
   assert.match(frenchExplore, /<table/);
   assert.match(frenchExplore, /Attribution de la source/);

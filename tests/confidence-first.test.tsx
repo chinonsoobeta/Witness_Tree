@@ -3,29 +3,36 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 import { renderToStaticMarkup } from "react-dom/server";
 import { CoverageStatement } from "../components/policy/CoverageStatement";
-import { EvidenceLegend } from "../components/policy/EvidenceLegend";
+import { EvidenceKey } from "../components/policy/EvidenceKey";
 import { EVIDENCE_CLASSES, EVIDENCE_DEFINITIONS } from "../lib/domain";
 import { ratio } from "../scripts/check-contrast.mjs";
 
 for (const locale of ["en", "fr"] as const) {
   for (const theme of ["light", "dark"] as const) {
-    test(`coverage statement and evidence legend retain their meaning in ${locale} ${theme}`, () => {
+    test(`coverage note and evidence key retain their meaning in ${locale} ${theme}`, () => {
       const reason = locale === "en" ? "No record is held for this question." : "Aucun registre n’est détenu pour cette question.";
       const markup = renderToStaticMarkup(
         <section data-theme={theme}>
           <CoverageStatement locale={locale}><p>{reason}</p></CoverageStatement>
-          <EvidenceLegend locale={locale} />
+          <EvidenceKey locale={locale} classes={EVIDENCE_CLASSES} />
         </section>,
       );
       assert.ok(markup.includes(reason));
-      assert.ok(markup.includes(locale === "en" ? "What this view can tell you" : "Ce que cette vue permet de savoir"));
-      assert.equal((markup.match(/<li>/g) ?? []).length, 4);
+      assert.match(markup, /<details class="coverage-note">/);
+      assert.ok(markup.includes(locale === "en" ? "What these figures can’t tell you" : "Ce que ces chiffres ne disent pas"));
+      assert.equal((markup.match(/class="evidence-key-item"/g) ?? []).length, 4);
       for (const evidence of EVIDENCE_CLASSES) assert.ok(markup.includes(EVIDENCE_DEFINITIONS[evidence].label[locale]));
-      for (const shape of ["■", "●", "▲", "○"]) assert.ok(markup.includes(shape));
       assert.doesNotMatch(markup, />0</);
     });
   }
 }
+
+test("the evidence key lists only the classes shown beside it", () => {
+  const markup = renderToStaticMarkup(<EvidenceKey locale="en" classes={["unknown", "satellite-observation"]} />);
+  assert.equal((markup.match(/class="evidence-key-item"/g) ?? []).length, 2);
+  assert.ok(markup.indexOf(EVIDENCE_DEFINITIONS["satellite-observation"].label.en) < markup.indexOf(EVIDENCE_DEFINITIONS.unknown.label.en));
+  assert.equal(renderToStaticMarkup(<EvidenceKey locale="en" classes={[]} />), "");
+});
 
 test("topbar stays dark with readable text and control edges in every palette", () => {
   const css = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");

@@ -3,7 +3,6 @@ import Link from "next/link";
 import { HomeSearch, ProvinceBar, SiteShell } from "@/components/site";
 import { ProvinceRecordList } from "@/components/site/ProvinceRecordList";
 import { CumulativeHeadline } from "@/components/site/CumulativeHeadline";
-import { CoverageStatement } from "@/components/policy/CoverageStatement";
 import { EvidenceMarks } from "@/components/policy/EvidenceMarks";
 import { PRODUCT_NAME } from "@/lib/domain";
 import { EXPLORE_PRODUCTION_LAYER, formatUnknownSharePercent, provinceSpanMeasurements } from "@/lib/explore";
@@ -35,13 +34,12 @@ export default function FrenchHome() {
 
     {/*
       The answer to the question in the h1, immediately under it.
-      It carries its own denominator, its own unmapped share and its own
-      refusal of the annual sum, so it does not lean on the standing
-      coverage banner below it to stay honest when it is read alone.
+      It carries its own denominator, its own unmapped share, its own
+      minimum and its own refusal of the annual sum, so it stays honest
+      when it is read alone.
     */}
     <CumulativeHeadline locale="fr" />
 
-    <CoverageStatement locale="fr"><p>Ces chiffres sont un minimum. Les satellites n’ont cartographié qu’une partie de chaque province, et le reste est traité comme inconnu, jamais comme zéro. Si quelque chose n’apparaît pas ici, cela ne veut pas dire que cela ne s’est pas produit.</p></CoverageStatement>
 
     {/* Voir la note sur app/en/page.tsx : une seule liste des quatre marques. */}
     <section className="content-section evidence-band">
