@@ -24,17 +24,19 @@ test("landing pages use the released province span and retain the bounded scope"
      * The binding limit is countable:false, not absence, so the page is held
      * to that instead, at the same strictness: the patches exist, they may be
      * drawn, no total may be taken from them, and the formal gate stays open.
+     * The 2026-09-23 plain-language pass says the same four things in plainer
+     * words, so the assertions follow the words and keep the four claims.
      */
-    assert.match(page, /drawn, not counted|dessinées, et non comptées/);
-    assert.match(page, /no total may be taken|aucun total ne peut en être tiré/);
-    assert.match(page, /expert review|examen par des spécialistes/);
-    assert.match(page, /Phase 2|phase 2/);
+    assert.match(page, /for viewing only|servent seulement à la visualisation/);
+    assert.match(page, /can’t be added up|on ne peut pas les additionner/);
+    assert.match(page, /no expert has reviewed|aucun spécialiste ne les a examinées/);
+    assert.match(page, /not the final release|et non la version définitive/);
     assert.match(page, /attribution\.href/);
   }
   assert.match(english, /technical preview/);
   assert.match(french, /aperçu technique/);
-  assert.match(english, /bounded, provisional/);
-  assert.match(french, /provisoire et limité/);
+  assert.match(english, /These figures are provisional/);
+  assert.match(french, /Ces chiffres sont provisoires/);
   assert.doesNotMatch(english, /The verified .* province aggregate/);
   assert.doesNotMatch(french, /agrégat provincial vérifié/);
   assert.match(english, /Other provinces are coming soon/);
@@ -187,11 +189,11 @@ test("localized not-found pages use the site shell and offer three exits", async
 
 test("about routes are bilingual and reserve owner statements for owner copy", async () => {
   const [english, french, header, footer] = await Promise.all([read("../app/en/about/page.tsx"), read("../app/fr/a-propos/page.tsx"), read("../components/site/SiteHeader.tsx"), read("../components/site/SiteFooter.tsx")]);
-  assert.match(english, /Owner copy pending/);
-  assert.match(english, /No owner statement has been supplied/);
+  assert.match(english, /Coming soon/);
+  assert.match(english, /The owner hasn’t written this page yet/);
   assert.match(english, /fr: "\/fr\/a-propos"/);
-  assert.match(french, /Texte du propriétaire à venir/);
-  assert.match(french, /Aucune déclaration du propriétaire n’a été fournie/);
+  assert.match(french, /À venir/);
+  assert.match(french, /Le propriétaire n’a pas encore rédigé cette page/);
   assert.match(french, /en: "\/en\/about"/);
   assert.doesNotMatch(header, /\["About", "\/en\/about"\]/);
   assert.doesNotMatch(header, /\["À propos", "\/fr\/a-propos"\]/);

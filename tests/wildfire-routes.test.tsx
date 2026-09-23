@@ -29,7 +29,7 @@ export function validateWildfireRouteSource(source: string) {
 
 test("the public wildfire page is an agency directory, not a product feed", () => {
   const english = renderToStaticMarkup(<WildfireView locale="en" />);
-  assert.match(english, /does not publish a live wildfire feed/);
+  assert.match(english, /doesn’t show live wildfires/);
   assert.match(english, /call 911/);
   for (const [agency, url] of officialDestinations) {
     assert.ok(english.includes(agency));
@@ -57,7 +57,7 @@ test("removing a required safety field fails the blocking validator", () => {
 
 test("the French directory uses the official French destinations where available", () => {
   const french = renderToStaticMarkup(<WildfireView locale="fr" />);
-  assert.match(french, /ne publie pas de flux en direct/);
+  assert.match(french, /n’affiche pas les feux en direct/);
   assert.match(french, /composez le 911/);
   assert.match(french, /Services d’urgence, d’aviation et de lutte contre les feux de forêt de l’Ontario/);
   assert.match(french, /https:\/\/www\.ontario\.ca\/fr\/page\/incendies-de-foret/);

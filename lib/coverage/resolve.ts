@@ -25,7 +25,7 @@ export function aggregateDetectedChange(input: ForestAggregateInput): ForestAggr
   if (!input.boundaryEdition.trim() || !input.timeRange.trim()) throw new Error("Boundary edition and time range are required.");
   if (!Number.isFinite(input.detectedChangeHectares) || (input.forestedHectares !== undefined && !Number.isFinite(input.forestedHectares)) || !validGrade(input.coverageGrade)) throw new Error("Finite hectares and a registered coverage grade are required.");
   if (input.detectedChangeHectares < 0 || (input.forestedHectares !== undefined && input.forestedHectares < 0)) throw new Error("Hectares must be non-negative.");
-  if (!input.forestedHectares || input.coverageGrade === "not-applicable" || input.coverageGrade === "extended-record-sparse-official-matching") return { kind: "unknown", reason: "No sufficient forested-hectare denominator is available for this coverage.", boundaryEdition: input.boundaryEdition, timeRange: input.timeRange };
+  if (!input.forestedHectares || input.coverageGrade === "not-applicable" || input.coverageGrade === "extended-record-sparse-official-matching") return { kind: "unknown", reason: "There isn’t enough forest data here to work out a share.", boundaryEdition: input.boundaryEdition, timeRange: input.timeRange };
   if (input.detectedChangeHectares > input.forestedHectares) throw new Error("Detected change cannot exceed forested hectares.");
   return { kind: "figure", value: input.detectedChangeHectares / input.forestedHectares * 100, unit: "%", boundaryEdition: input.boundaryEdition, timeRange: input.timeRange };
 }

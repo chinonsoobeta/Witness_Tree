@@ -41,8 +41,8 @@ test("the standing sentence follows the record rather than the copy", () => {
   // and must say the opposite when the record does.
   assert.equal(sourceCurrency.laterYearPublished, false);
   const current = renderToStaticMarkup(<SourceCurrency locale="en" />);
-  assert.match(current, /is the period the publisher offers/);
-  assert.doesNotMatch(current, /behind the publisher/);
+  assert.match(current, /so this site is up to date with it/);
+  assert.doesNotMatch(current, /this site is behind/);
   assert.doesNotMatch(current, /can differ from the same year read from the source today/);
 });
 

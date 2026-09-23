@@ -11,11 +11,11 @@ export function DrawPage({ locale, available }: Readonly<{ locale: Locale; avail
       </header>
       <CoverageStatement locale={locale}>
         <p>{locale === "en"
-          ? "A shape can cross measured land, blocks without data, and land outside the mapped area. The result separates these coverage states before showing a range. Missing coverage never means no loss."
-          : "Une forme peut traverser du territoire mesuré, des blocs sans données et du territoire hors de la zone cartographiée. Le résultat distingue ces états de couverture avant d’afficher une fourchette. Une couverture manquante ne signifie jamais une absence de perte."}</p>
+          ? "Your shape may cover land that was measured, land with no data, and land outside the mapped area. The result shows each part separately. Missing data never means no loss."
+          : "Votre forme peut couvrir du territoire mesuré, du territoire sans données et du territoire hors de la zone cartographiée. Le résultat présente chaque partie séparément. Des données manquantes ne signifient jamais une absence de perte."}</p>
         <p>{locale === "en"
-          ? "The measurement comes from the source grid. The drawn map is a guide; it is not the measurement."
-          : "La mesure provient de la grille source. La carte dessinée sert de guide ; elle ne constitue pas la mesure."}</p>
+          ? "The map is only a guide. The measurement comes from the underlying data grid."
+          : "La carte sert seulement de guide. La mesure provient de la grille de données sous-jacente."}</p>
       </CoverageStatement>
       <EvidenceLegend locale={locale} />
       {available ? <ShapeMeasureClient locale={locale} /> : (

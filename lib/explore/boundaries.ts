@@ -52,8 +52,8 @@ export const BOUNDARY_OVERLAYS: Readonly<Record<BoundaryOverlayId, BoundaryOverl
       sourceLayer: "federal_ridings",
       colour: EXPLORE_MAP_COLOURS.ink,
       note: {
-        en: "All 343 federal electoral districts under the 2023 representation order, used from the 45th general election.",
-        fr: "Les 343 circonscriptions électorales fédérales du décret de représentation de 2023, en usage depuis la 45e élection générale.",
+        en: "All 343 federal ridings, as drawn for elections from 2025 onward (the 2023 representation order).",
+        fr: "Les 343 circonscriptions fédérales, telles que tracées pour les élections depuis 2025 (décret de représentation de 2023).",
       },
       attribution: {
         en: "Elections Canada, 2023 representation order.",
@@ -86,8 +86,8 @@ export const BOUNDARY_OVERLAYS: Readonly<Record<BoundaryOverlayId, BoundaryOverl
       colour: EXPLORE_MAP_COLOURS.observation,
       dash: [5, 2],
       note: {
-        en: "The 44 Statistics Canada 2021 economic regions in British Columbia, Alberta, Ontario and Québec are clipped to those provinces and drawn as a bilingual reference framework.",
-        fr: "Les 44 régions économiques de Statistique Canada de 2021 situées en Colombie-Britannique, en Alberta, en Ontario et au Québec sont découpées selon ces provinces et tracées comme cadre de référence bilingue.",
+        en: "The 44 economic regions in the four provinces, as defined by Statistics Canada in 2021.",
+        fr: "Les 44 régions économiques des quatre provinces, telles que définies par Statistique Canada en 2021.",
       },
       attribution: {
         en: "Statistics Canada, 2021 Economic Region Boundary File.",
@@ -103,8 +103,8 @@ export const BOUNDARY_OVERLAYS: Readonly<Record<BoundaryOverlayId, BoundaryOverl
       colour: EXPLORE_MAP_COLOURS.ink,
       dash: [2, 2],
       note: {
-        en: "The 105 Canadian sub-drainage areas from NRCan's bilingual Water Survey of Canada rollup, version 6.0, that intersect British Columbia, Alberta, Ontario and Québec are clipped at those provincial boundaries and drawn as a reference framework.",
-        fr: "Les 105 aires canadiennes du regroupement bilingue des sous-aires de drainage de la Division des relevés hydrologiques du Canada de RNCan, version 6.0, qui touchent la Colombie-Britannique, l’Alberta, l’Ontario et le Québec sont découpées aux limites de ces provinces et tracées comme cadre de référence.",
+        en: "The 105 watersheds that touch the four provinces, cut off at the provincial borders.",
+        fr: "Les 105 bassins versants qui touchent les quatre provinces, coupés aux frontières provinciales.",
       },
       attribution: {
         en: "Natural Resources Canada, Atlas of Canada drainage areas, version 6.0 (2008).",

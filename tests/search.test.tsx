@@ -106,10 +106,10 @@ test("search coverage precedes controls and a missing record is a result with a 
       // Unknown is stated as the answer before the reason for it, and the panel
       // says what would turn it into a figure rather than stopping at the absence.
       assert.match(markup, /class="no-record-stated"/);
-      assert.match(markup, locale === "en" ? /Unknown\. Nothing has been published/ : /Inconnu\. Rien n\u2019a \u00e9t\u00e9 publi\u00e9/);
+      assert.match(markup, locale === "en" ? /Unknown\. Nothing published answers this yet/ : /Inconnu\. Rien de publi\u00e9 ne r\u00e9pond/);
       assert.match(markup, /class="no-record-remedy-list"/);
       if (scope === "places") {
-        assert.match(markup, locale === "en" ? /Reserves, settlements, and treaty or agreement lands are not listed yet/ : /Les réserves, les établissements et les terres visées par un traité ou une entente ne sont pas encore répertoriés/);
+        assert.match(markup, locale === "en" ? /Reserves, settlements and treaty or agreement lands aren’t listed yet/ : /Les réserves, les établissements et les terres visées par un traité ou une entente ne sont pas encore répertoriés/);
       }
       assert.match(markup, new RegExp(`href="${locale === "en" ? "/en/corrections" : "/fr/corrections"}"`));
     }

@@ -46,28 +46,28 @@ const copy = {
     layersHeading: "Layers and overlays",
     dataViewsHeading: "Data views",
     mapHidden:
-      "The map is hidden in the List presentation. Choose Map above to show it.",
+      "The map is hidden in List view. Choose Map above to show it.",
     production:
-      `The province figures on the map and in the list, chart, and table are for the span the year control has selected, and follow it; any span within ${provinceSpanReach("en")} can be chosen. Each place counts once however many times it was cleared, against the forest known at the start of the span. No per-cell patches are drawn for the selected year. Nothing here has been checked against conditions on the ground, and the source maps only part of each province, so every figure is a minimum.`,
+      `The province figures follow the years you choose, anywhere within ${provinceSpanReach("en")}. A place cleared more than once counts once, and no loss patches are drawn for these years. Nothing here was checked on the ground, and only part of each province was mapped, so every figure is a minimum.`,
     productionWithPerCell:
-      `Each layer on this page carries its own period, so no single span describes the whole view. The provinces on the map and the list, chart, and table are for the span the year control has selected, and follow it; any span within ${provinceSpanReach("en")} can be chosen. Each place counts once however many times it was cleared, against the forest known at the start of the span. The per-cell patches drawn as you zoom in, traced from the 30 m grid for British Columbia, Alberta, Ontario and Québec, cover the same span: every patch lost in any year of it. The per-cell figures below are one annual interval only, the last of the span, which the heading below names; they are counted from the exact cell inventory, not from the drawn patches, which are simplified for display and cannot be added up. Nothing here has been checked against conditions on the ground, and the source maps only part of each province, so every figure is a minimum.`,
+      `The province figures and the loss patches on the map follow the years you choose, anywhere within ${provinceSpanReach("en")}; a place cleared more than once counts once. The per-cell figures below cover only the last year of your span, and the map patches are simplified for viewing, so they can’t be added up. Nothing here was checked on the ground, and only part of each province was mapped, so every figure is a minimum.`,
     annualHeading: "Per-cell detected loss",
     annualDetected: "Detected loss (ha)",
     annualHarvest: "Recorded harvest (ha)",
     annualFire: "Recorded fire (ha)",
     annualUnattributed: "Cause not recorded (ha)",
     annualBasis:
-      `This is one annual interval, the one ending in the last year selected, for British Columbia, Alberta, Ontario and Québec together. It is not a total for a wider span, not a total for ${perCellArchiveSpan("en")}, and not the province figures for the selected span. Counted from the exact 30 m cell inventory behind the map. One cell is 0.09 ha.`,
+      `This covers only the last year you selected, for all four provinces together. It is not a total for your span or for ${perCellArchiveSpan("en")}. It is counted from the 30 m grid cells behind the map (one cell is 0.09 ha).`,
     annualNone: "No per-cell interval covers this year and mode.",
-    conditionRecoveryNone: "Condition and recovery is not mapped yet. The annual land-cover series it would read is already on file; what is missing is a recorded decision on which land-cover classes count as treed cover returning after a loss, and the admission and review of a product built on that decision.",
+    conditionRecoveryNone: "Condition and recovery is not mapped yet. We have the yearly land-cover data it needs, but have not yet decided what counts as trees growing back, or reviewed a map built on that decision.",
     spanNote: (fromYear: number, toYear: number) =>
-      `The provinces are shaded for the whole span, ${fromYear} to ${toYear}, and a district boundary you point at or select on the map reads out its figures for the same span: the forest lost at least once inside it, counted once no matter how many times a place was cleared. Districts are drawn as outlines only and are not shaded. Where a district lost the same ground more than once, the yearly losses added together are shown alongside, in hectares only. That figure has no denominator and is never given as a share. The per-cell patches drawn on the map cover the same span, one patch for each year a place was lost in it.`,
+      `The map shows ${fromYear} to ${toYear}. Point at or select a district to see how much forest it lost in those years, with each place counted once. If the same ground was lost more than once, the yearly losses added together are also shown, in hectares only.`,
     spanPending:
-      "District figures for the selected years are loading. Until they arrive they are held back rather than shown under years they were not measured over.",
+      "District figures for these years are loading. They stay hidden until they arrive, so older figures are never shown under the wrong years.",
     fixtureList:
-      "The list, chart, and table use illustrative fixtures. This view does not imply a production geographic layer.",
+      "The list, chart and table use made-up example data, not real records.",
     empty: (mode: string, year: number, nearest: number) =>
-      `No illustrative data-view record exists for ${mode} in ${year}. The nearest illustrative year is ${nearest}.`,
+      `There is no example data for ${mode} in ${year}. The nearest year with example data is ${nearest}.`,
     year: "Year",
     presentation: "Presentation",
     map: "Map",
@@ -82,7 +82,7 @@ const copy = {
     notAvailable: "Not available yet",
     whyNot: "Why not",
     overlaysNote:
-      "Reference boundaries drawn over the map. They show where something is and who represents it. They never carry a loss figure of their own.",
+      "Boundaries you can draw over the map, for reference only. They show where places are and who represents them, not how much forest they lost.",
     event: "Event",
     evidence: "Evidence",
     confidence: "Confidence",
@@ -90,7 +90,7 @@ const copy = {
     observedLoss: "Detected loss (ha)",
     observedLossPercent: "Detected loss (%)",
     fourProvinces: "The four provinces together",
-    partial: "Some pixels unknown, so this is a minimum",
+    partial: "Partly unmapped, so this is a minimum",
     unknownArea: "ha unknown",
     source: "Source attribution",
     modes: {
@@ -101,13 +101,13 @@ const copy = {
     },
     modeStatus: {
       "forest-change":
-        "Real map intervals: 1985–2022; real province figures: any span within 1984–2022.",
+        "Real map, 1985–2022. Real province figures for any years from 1984 to 2022.",
       "recorded-harvest":
-        "Real map intervals: 1985–2022. Illustrative data view: 2012; other data-view years have no illustrative record.",
+        "Real map, 1985–2022. The data view uses example data for 2012 only.",
       wildfire:
-        "Real map intervals: 1985–2022. Illustrative data view: 2020; other data-view years have no illustrative record.",
+        "Real map, 1985–2022. The data view uses example data for 2020 only.",
       "condition-recovery":
-        "No real map data. Illustrative data view: 1988; every other year has neither.",
+        "No real map yet. The data view uses example data for 1988 only.",
     },
   },
   fr: {
@@ -117,28 +117,28 @@ const copy = {
     layersHeading: "Couches et superpositions",
     dataViewsHeading: "Vues des données",
     mapHidden:
-      "La carte est masquée dans la présentation en liste. Choisissez Carte ci-dessus pour l’afficher.",
+      "La carte est masquée en vue Liste. Choisissez Carte ci-dessus pour l’afficher.",
     production:
-      `Les chiffres provinciaux de la carte, de la liste, du graphique et du tableau portent sur la période choisie par la commande d’année et la suivent; toute période ${provinceSpanReach("fr", "from")} peut être choisie. Chaque lieu compte une seule fois, peu importe le nombre de coupes, par rapport à la forêt connue au début de la période. Aucune parcelle par cellule n’est dessinée pour l’année choisie. Rien ici n’a été vérifié sur le terrain, et la source ne cartographie qu’une partie de chaque province\u202F: chaque chiffre est donc un minimum.`,
+      `Les chiffres provinciaux suivent les années que vous choisissez, n’importe où ${provinceSpanReach("fr", "from")}. Un lieu coupé plus d’une fois compte une seule fois, et aucune parcelle de perte n’est dessinée pour ces années. Rien ici n’a été vérifié sur le terrain, et seule une partie de chaque province a été cartographiée\u202F: chaque chiffre est donc un minimum.`,
     productionWithPerCell:
-      `Chaque couche de cette page porte sa propre période\u202F; aucune période unique ne décrit donc l’ensemble de la vue. Les provinces de la carte ainsi que la liste, le graphique et le tableau portent sur la période choisie par la commande d’année et la suivent; toute période ${provinceSpanReach("fr", "from")} peut être choisie. Chaque lieu compte une seule fois, peu importe le nombre de coupes, par rapport à la forêt connue au début de la période. Les parcelles par cellule dessinées au fur et à mesure du zoom, tracées à partir de la grille de 30 m pour la Colombie-Britannique, l’Alberta, l’Ontario et le Québec, couvrent la même période\u202F: toutes les parcelles perdues au cours de n’importe laquelle de ses années. Les chiffres par cellule ci-dessous ne portent que sur un intervalle annuel, le dernier de la période, que nomme le titre ci-dessous\u202F; ils sont comptés à partir de l’inventaire exact des cellules, et non des parcelles dessinées, qui sont simplifiées pour l’affichage et ne peuvent pas être additionnées. Rien ici n’a été vérifié sur le terrain, et la source ne cartographie qu’une partie de chaque province\u202F: chaque chiffre est donc un minimum.`,
+      `Les chiffres provinciaux et les parcelles de perte de la carte suivent les années que vous choisissez, n’importe où ${provinceSpanReach("fr", "from")}; un lieu coupé plus d’une fois compte une seule fois. Les chiffres par cellule ci-dessous ne portent que sur la dernière année de votre période, et les parcelles de la carte sont simplifiées pour l’affichage\u202F: elles ne peuvent pas être additionnées. Rien ici n’a été vérifié sur le terrain, et seule une partie de chaque province a été cartographiée\u202F: chaque chiffre est donc un minimum.`,
     annualHeading: "Perte détectée par cellule",
     annualDetected: "Perte détectée (ha)",
     annualHarvest: "Récoltes consignées (ha)",
     annualFire: "Incendies consignés (ha)",
     annualUnattributed: "Cause non consignée (ha)",
     annualBasis:
-      `Il s’agit d’un seul intervalle annuel, celui qui se termine à la dernière année choisie, pour la Colombie-Britannique, l’Alberta, l’Ontario et le Québec ensemble. Ce n’est pas un total pour une période plus large, ni pour ${perCellArchiveSpan("fr")}, ni les chiffres provinciaux de la période choisie. Comptée à partir de l’inventaire exact des cellules de 30 m derrière la carte. Une cellule représente 0,09 ha.`,
+      `Ce chiffre ne porte que sur la dernière année choisie, pour les quatre provinces ensemble. Ce n’est pas un total pour votre période ni pour ${perCellArchiveSpan("fr")}. Il est compté à partir des cellules de 30 m derrière la carte (une cellule représente 0,09 ha).`,
     annualNone: "Aucun intervalle par cellule ne couvre cette année et ce mode.",
-    conditionRecoveryNone: "L’état et le rétablissement ne sont pas encore cartographiés. La série annuelle de couverture terrestre qu’ils utiliseraient est déjà conservée; il manque une décision consignée sur les classes de couverture terrestre qui comptent comme un couvert arboré revenant après une perte, ainsi que l’admission et l’examen d’un produit fondé sur cette décision.",
+    conditionRecoveryNone: "L’état et le rétablissement ne sont pas encore cartographiés. Nous avons la série annuelle de couverture terrestre nécessaire, mais nous n’avons pas encore décidé ce qui compte comme des arbres qui repoussent, ni examiné une carte fondée sur cette décision.",
     spanNote: (fromYear: number, toYear: number) =>
-      `Les provinces sont ombrées pour toute la période, de ${fromYear} à ${toYear}, et une limite de circonscription pointée ou choisie sur la carte affiche ses chiffres pour la même période : la forêt perdue au moins une fois, comptée une seule fois peu importe le nombre de coupes. Les circonscriptions sont tracées en contour seulement et ne sont pas ombrées. Lorsqu’une circonscription a perdu le même terrain plus d’une fois, les pertes annuelles additionnées sont affichées à côté, en hectares seulement. Ce chiffre n’a pas de dénominateur et n’est jamais présenté comme une part. Les parcelles par cellule dessinées sur la carte couvrent la même période, une parcelle pour chaque année où un lieu y a été perdu.`,
+      `La carte montre la période de ${fromYear} à ${toYear}. Pointez ou choisissez une circonscription pour voir la forêt qu’elle a perdue pendant ces années, chaque lieu étant compté une seule fois. Si le même terrain a été perdu plus d’une fois, les pertes annuelles additionnées sont aussi affichées, en hectares seulement.`,
     spanPending:
-      "Les chiffres par circonscription pour les années choisies sont en cours de chargement. D’ici là, ils sont retenus plutôt qu’affichés sous des années qu’ils ne mesurent pas.",
+      "Les chiffres par circonscription pour ces années sont en cours de chargement. Ils restent masqués d’ici là, pour ne jamais afficher d’anciens chiffres sous les mauvaises années.",
     fixtureList:
-      "La liste, le graphique et le tableau utilisent des exemples illustratifs. Cette vue n’implique aucune couche géographique de production.",
+      "La liste, le graphique et le tableau utilisent des données d’exemple inventées, et non de vrais registres.",
     empty: (mode: string, year: number, nearest: number) =>
-      `Aucun dossier illustratif de vue des données n’existe pour ${mode} en ${year}. L’année illustrative la plus proche est ${nearest}.`,
+      `Il n’y a pas de données d’exemple pour ${mode} en ${year}. L’année la plus proche avec des données d’exemple est ${nearest}.`,
     year: "Année",
     presentation: "Présentation",
     map: "Carte",
@@ -153,7 +153,7 @@ const copy = {
     notAvailable: "Pas encore disponible",
     whyNot: "Pourquoi",
     overlaysNote:
-      "Limites de référence tracées sur la carte. Elles indiquent où se trouve un lieu et qui le représente. Elles ne portent jamais de chiffre de perte.",
+      "Des limites à superposer à la carte, à titre de référence seulement. Elles montrent où se trouvent les lieux et qui les représente, et non la forêt qu’ils ont perdue.",
     event: "Événement",
     evidence: "Preuve",
     confidence: "Confiance",
@@ -161,7 +161,7 @@ const copy = {
     observedLoss: "Perte détectée (ha)",
     observedLossPercent: "Perte détectée (%)",
     fourProvinces: "Les quatre provinces ensemble",
-    partial: "Certains pixels sont inconnus; il s’agit donc d’un minimum",
+    partial: "En partie non cartographié; il s’agit donc d’un minimum",
     unknownArea: "ha inconnus",
     source: "Attribution de la source",
     modes: {
@@ -172,13 +172,13 @@ const copy = {
     },
     modeStatus: {
       "forest-change":
-        "Intervalles cartographiques réels : 1985–2022; chiffres provinciaux réels : toute période comprise dans 1984–2022.",
+        "Carte réelle, 1985–2022. Chiffres provinciaux réels pour toutes les années de 1984 à 2022.",
       "recorded-harvest":
-        "Intervalles cartographiques réels : 1985–2022. Vue des données illustrative : 2012; les autres années n’ont aucun dossier illustratif.",
+        "Carte réelle, 1985–2022. La vue des données utilise des données d’exemple pour 2012 seulement.",
       wildfire:
-        "Intervalles cartographiques réels : 1985–2022. Vue des données illustrative : 2020; les autres années n’ont aucun dossier illustratif.",
+        "Carte réelle, 1985–2022. La vue des données utilise des données d’exemple pour 2020 seulement.",
       "condition-recovery":
-        "Aucune donnée cartographique réelle. Vue des données illustrative : 1988; toutes les autres années n’ont ni l’une ni l’autre.",
+        "Pas encore de carte réelle. La vue des données utilise des données d’exemple pour 1988 seulement.",
     },
   },
 } as const;
@@ -365,10 +365,10 @@ export function ExploreView({
     <section className="explore" aria-label={text.title}>
       <CoverageStatement locale={locale}>
         <p className="explore-caveat">{locale === "en"
-          ? "A blank area on the map does not establish that no loss occurred. Read each layer’s coverage and period before comparing its figures."
-          : "Une zone vide sur la carte ne permet pas de conclure qu’aucune perte n’a eu lieu. Consultez la couverture et la période de chaque couche avant de comparer ses chiffres."}</p>
+          ? "A blank area on the map doesn’t mean no forest was lost there. Check what years and areas each layer covers before comparing figures."
+          : "Une zone vide sur la carte ne veut pas dire qu’aucune forêt n’y a été perdue. Vérifiez les années et les zones couvertes par chaque couche avant de comparer les chiffres."}</p>
         <details className="explore-coverage-details">
-          <summary>{locale === "en" ? "Layer periods and limits" : "Périodes et limites des couches"}</summary>
+          <summary>{locale === "en" ? "What each layer covers" : "Ce que couvre chaque couche"}</summary>
           <p className="explore-note">{note}</p>
         </details>
       </CoverageStatement>

@@ -57,13 +57,13 @@ for (const locale of ["en", "fr"] as const) {
       await expect(map).toHaveAttribute("data-state", expectedState);
       if (failure === "both-maps-unavailable") {
         await expect(page.locator(".explore-map-fallback")).toHaveCount(0);
-        await expect(status).not.toContainText(locale === "en" ? "A static map is shown" : "Une carte statique est affichée");
+        await expect(status).not.toContainText(locale === "en" ? "a still map is shown" : "une carte fixe est donc affichée");
       } else {
         await expect(map).toHaveAttribute("data-map-source", "geojson-fallback");
         await expect(page.locator(".explore-map-fallback path")).toHaveCount(EXPLORE_PRODUCTION_LAYER.rows.length);
-        await expect(status).toContainText(locale === "en" ? "A static map is shown instead" : "Une carte statique est affichée à sa place");
+        await expect(status).toContainText(locale === "en" ? "a still map is shown instead" : "une carte fixe est donc affichée à sa place");
       }
-      await expect(status).toContainText(locale === "en" ? "The figures below are unaffected" : "Les chiffres ci-dessous restent inchangés");
+      await expect(status).toContainText(locale === "en" ? "The figures below are not affected" : "Les chiffres ci-dessous ne sont pas touchés");
       await expect(status).not.toContainText(/PMTiles|GeoJSON|compatibility/i);
       await expect(canvas).toHaveAttribute("inert", "");
       expect(await figures.innerText()).toBe(before);

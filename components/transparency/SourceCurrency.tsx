@@ -16,31 +16,31 @@ const COPY = {
   en: {
     title: "How current the source is",
     lead: (checkedOn: string) =>
-      `The years on this site are the years that have been ingested. That is not the same as a statement about today, and from the page alone the two look identical. So the publisher is asked directly, and the date it was asked is written here: ${checkedOn}.`,
+      `The years on this site are the years we have loaded, which may not be the latest. So we check with the publisher directly. Last checked: ${checkedOn}.`,
     product: "Source archive",
-    ingested: "Ingested through",
-    published: "Published through",
+    ingested: "Loaded up to",
+    published: "Published up to",
     current: (lastYear: number) =>
-      `Nothing later than ${lastYear} is published for any of these archives, so the period on this site is the period the publisher offers.`,
+      `The publisher has nothing later than ${lastYear}, so this site is up to date with it.`,
     behind:
-      "A later year is published and has not been ingested, so the period on this site is behind the publisher. Finding that gap records it; it does not close it.",
+      "The publisher has a newer year that we haven’t loaded yet, so this site is behind.",
     revised:
-      "The publisher has also revised a year that was already ingested, which means a figure here can differ from the same year read from the source today.",
+      "The publisher has also revised a year we already loaded, so a figure here may differ from the source today.",
     hostLabel: "Checked against",
   },
   fr: {
     title: "Actualité de la source",
     lead: (checkedOn: string) =>
-      `Les années présentées ici sont les années intégrées. Ce n'est pas la même chose qu'un énoncé sur aujourd'hui, et à la lecture de la page les deux se ressemblent. Le diffuseur est donc interrogé directement, et la date de cette vérification est inscrite ici : ${checkedOn}.`,
+      `Les années présentées ici sont celles que nous avons chargées, qui ne sont pas forcément les plus récentes. Nous vérifions donc directement auprès du diffuseur. Dernière vérification : ${checkedOn}.`,
     product: "Archive source",
-    ingested: "Intégrée jusqu'à",
+    ingested: "Chargée jusqu'à",
     published: "Diffusée jusqu'à",
     current: (lastYear: number) =>
-      `Aucune année postérieure à ${lastYear} n'est diffusée pour ces archives; la période présentée ici est donc celle qu'offre le diffuseur.`,
+      `Le diffuseur n'offre rien après ${lastYear}; ce site est donc à jour.`,
     behind:
-      "Une année postérieure est diffusée sans avoir été intégrée; la période présentée ici est donc en retard sur le diffuseur. Constater cet écart le consigne, sans le combler.",
+      "Le diffuseur offre une année plus récente que nous n'avons pas encore chargée; ce site est donc en retard.",
     revised:
-      "Le diffuseur a aussi révisé une année déjà intégrée, ce qui signifie qu'une valeur présentée ici peut différer de la même année lue aujourd'hui à la source.",
+      "Le diffuseur a aussi révisé une année déjà chargée; une valeur présentée ici peut donc différer de la source aujourd'hui.",
     hostLabel: "Vérifié auprès de",
   },
 } as const;

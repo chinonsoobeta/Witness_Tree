@@ -47,8 +47,8 @@ test("the bilingual GET picker uses exact ids and preserves view and sort", () =
 test("the picker names an unresolved request and its visible fallback", () => {
   const english = renderToStaticMarkup(<FederalRidingPicker rows={rankedRidingFixtures} locale="en" leftId="missing-left" rightId="r2" />);
   const french = renderToStaticMarkup(<FederalRidingPicker rows={rankedRidingFixtures} locale="fr" leftId="r2" rightId="missing-right" />);
-  assert.match(english, /Requested left riding “missing-left” is not available in this four-province comparison\. Showing Example North instead\./);
+  assert.match(english, /The left riding “missing-left” isn’t available here, since this comparison covers four provinces only\. Showing Example North instead\./);
   assert.match(english, /role="status"/);
-  assert.match(french, /La circonscription de droite demandée « missing-right » n’est pas offerte dans cette comparaison limitée à quatre provinces\. Exemple Nord est affichée à la place\./);
+  assert.match(french, /La circonscription de droite « missing-right » n’est pas offerte ici, car cette comparaison ne couvre que quatre provinces\. Exemple Nord est affichée à la place\./);
   assert.doesNotMatch(renderToStaticMarkup(<FederalRidingPicker rows={rankedRidingFixtures} locale="en" leftId="r1" rightId="r2" />), /not available/);
 });

@@ -65,12 +65,12 @@ test("NFD rows display source decimals, coverage and caveats in both languages w
   assert.match(fr, /112[\s\u00a0\u202f]901,942/);
   assert.match(en, /NFD, Table 5.2; edition undeclared/);
   assert.match(fr, /BDNF, tableau 5.2; édition non déclarée/);
-  assert.match(en, /Required-input area unknown \(ha\): Unknown/);
-  assert.match(fr, /Superficie inconnue des données requises \(ha\): Inconnu/);
-  assert.match(en, /Incomplete input; difference unknown/);
+  assert.match(en, /Area with no data \(ha\): Unknown/);
+  assert.match(fr, /Superficie sans données \(ha\): Inconnu/);
+  assert.match(en, /Data incomplete; difference unknown/);
   assert.match(fr, /Données incomplètes; écart inconnu/);
-  assert.match(en, /year-label join does not establish that reporting periods are identical/);
-  assert.match(fr, /jointure par année ne prouve pas que les périodes de déclaration sont identiques/);
+  assert.match(en, /matching rows by year label doesn’t prove the reporting periods are the same/);
+  assert.match(fr, /apparier les lignes par année ne prouve pas que les périodes de déclaration sont les mêmes/);
   assert.doesNotMatch(en, /<td>0<\/td>/);
   assert.doesNotMatch(fr, /<td>0<\/td>/);
 });

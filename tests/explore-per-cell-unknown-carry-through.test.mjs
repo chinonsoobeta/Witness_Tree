@@ -32,19 +32,19 @@ test("both locales say that a blank area is not a claim of no loss", async () =>
   // sentences carry is the whole reason the geometry may be published.
   assert.match(
     client,
-    /An area with no patch is not a claim that no loss happened there\./u,
+    /an area with no patch doesn’t mean no loss happened there\./u,
     "the English per-cell limits must carry the blank-is-not-zero sentence",
   );
   assert.match(
     client,
-    /Une zone sans parcelle n’affirme pas qu’aucune perte n’y est survenue\./u,
+    /une zone sans parcelle ne veut pas dire qu’aucune perte n’y est survenue\./u,
     "the French per-cell limits must carry the blank-is-not-zero sentence",
   );
 
   // The filtered modes draw a subset, so they carry their own version of the
   // same warning about the disturbance record's own blanks.
-  assert.match(client, /an empty area is not a claim that nothing happened there\./u);
-  assert.match(client, /une zone vide n’affirme donc pas que rien ne s’y est produit\./u);
+  assert.match(client, /An empty area doesn’t mean nothing happened there/u);
+  assert.match(client, /Une zone vide ne veut pas dire que rien ne s’y est produit/u);
 });
 
 test("the sentence is rendered under the same condition that draws the patches", async () => {

@@ -17,7 +17,7 @@ type GalleryCopy = Readonly<{
 const COPY: Record<Locale, GalleryCopy> = {
   en: {
     title: "Component gallery",
-    intro: "Every public value keeps its evidence, confidence, coverage and source visible.",
+    intro: "Every figure on this site shows its evidence, confidence, coverage and source.",
     light: "Light theme",
     dark: "Dark theme",
     evidence: "Evidence classes",
@@ -29,7 +29,7 @@ const COPY: Record<Locale, GalleryCopy> = {
   },
   fr: {
     title: "Galerie de composants",
-    intro: "Chaque valeur publique conserve visibles ses preuves, sa confiance, sa couverture et sa source.",
+    intro: "Chaque chiffre du site affiche sa preuve, sa confiance, sa couverture et sa source.",
     light: "Thème clair",
     dark: "Thème sombre",
     evidence: "Catégories de preuves",
@@ -44,8 +44,8 @@ const COPY: Record<Locale, GalleryCopy> = {
 const EVIDENCE: EvidenceClass[] = ["official-record", "satellite-observation", "derived-estimate", "unknown"];
 const CONFIDENCE: ConfidenceResult[] = [
   { level: "high", ruleId: "CONF-HIGH-001", reason: { en: "Direct authoritative record with clear geometry, date and attributes.", fr: "Registre faisant directement autorité, avec une géométrie, une date et des attributs clairs." } },
-  { level: "medium", ruleId: "CONF-MEDIUM-001", reason: { en: "Strong evidence with a material limitation: the attribution is partial.", fr: "Preuve solide comportant une limite importante : l’attribution est partielle." } },
-  { level: "limited", ruleId: "CONF-LIMITED-001", reason: { en: "Inventory vintage predates the event by 6 years. Attributes were carried forward without growth modelling.", fr: "Le millésime de l’inventaire précède l’événement de 6 ans. Les attributs ont été reportés sans modélisation de la croissance." } },
+  { level: "medium", ruleId: "CONF-MEDIUM-001", reason: { en: "Good evidence, with one important gap: the attribution is partial.", fr: "Bonne preuve, avec une lacune importante : l’attribution est partielle." } },
+  { level: "limited", ruleId: "CONF-LIMITED-001", reason: { en: "The forest inventory is 6 years older than the event, and its details were not updated for tree growth.", fr: "L’inventaire forestier a 6 ans de plus que l’événement, et ses détails n’ont pas été mis à jour selon la croissance des arbres." } },
 ];
 
 const COVERAGE = ["national-baseline", "extended-record-sparse-official-matching", "national-baseline-plus-local-context"] as const;
@@ -72,8 +72,8 @@ export function ComponentGallery({ locale }: ComponentGalleryProps) {
     kind: "unknown",
     evidence: "unknown",
     reason: {
-      en: "No authoritative public record has been integrated for this question.",
-      fr: "Aucun registre public faisant autorité n’a été intégré pour cette question.",
+      en: "No official public record answers this question yet.",
+      fr: "Aucun registre public officiel ne répond encore à cette question.",
     },
     coverageGrade: "national-baseline-plus-local-context",
   };

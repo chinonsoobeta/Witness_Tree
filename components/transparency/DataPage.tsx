@@ -15,16 +15,16 @@ const COPY = {
     title: "Data and transparency",
     accessTitle: "What you can download",
     accessSummary:
-      `A bounded four-province technical preview for ${formatYearRangeKey(PROVINCE_BULK_TIME_RANGE, "en", "span")} is available as a CSV table and a GeoPackage. Both files contain the same province-level values for British Columbia, Alberta, Ontario and Quebec.`,
+      `An early preview of the province figures for ${formatYearRangeKey(PROVINCE_BULK_TIME_RANGE, "en", "span")} is available as a spreadsheet (CSV) and a map file (GeoPackage). Both hold the same figures for British Columbia, Alberta, Ontario and Quebec.`,
     notice:
-      "These are province summaries for reading and analysis. They are not per-cell geometry or a live data service.",
+      "These are province-level summaries, not detailed map shapes or a live data feed.",
     csv: "Download province values (CSV)",
     geopackage: "Download province values (GeoPackage)",
     spanTitle: "Every span, 1984 to 2022",
     spanSummary:
-      `Detected forest loss for every span ${formatYearRangeKey(PROVINCE_SPAN_TIME_RANGE, "en", "from")} (741 spans) for British Columbia, Alberta, Ontario and Quebec: one row per province per span, the same figures the Explore page shows. Each row gives the forest known at the start year, the forest lost at least once, its share of the known forest, the yearly losses added together, and the land nobody could see in the start year.`,
+      `Detected forest loss for every span of years ${formatYearRangeKey(PROVINCE_SPAN_TIME_RANGE, "en", "from")} (741 in all), one row per province per span, matching the Explore page. Each row shows the forest at the start, the forest lost at least once and its share, the yearly losses added together, and the land with no data at the start.`,
     spanLimits:
-      "Every figure is a minimum, because every province has land that was unmapped or nodata in the start year; that land is Unknown, never no loss. Yearly losses added together count a place lost in two years twice, so they are hectares only and carry no percentage. Nothing has been expert reviewed, and harvest and wildfire are not attributed as causes.",
+      "Every figure is a minimum, because each province has land with no data in the start year; that land counts as Unknown, never as no loss. The yearly losses added together count a place lost twice as two, so they are in hectares with no percentage. No expert has reviewed these figures, and they don’t say whether harvest or wildfire caused the loss.",
     spanCsv: "Download every span (CSV)",
     spanJson: "Download every span (JSON)",
     spanManifest: "Open the span download manifest",
@@ -33,17 +33,17 @@ const COPY = {
     releases: "Read the release notes and citation format",
     limitsTitle: "Limits to understand first",
     limits:
-      "All four provinces include some area where a required mapped input is unknown, so every detected-loss figure is a minimum for the known mapped area. The files do not establish cause, responsibility, legality, compliance, merchantable timber or conditions on the ground.",
+      "Every province has some land with no data, so every loss figure is a minimum for the mapped area. These files don’t show cause, responsibility, legality, sellable timber or conditions on the ground.",
     previewLimits:
-      "This technical preview does not complete the formal Phase 2 production gate. Use the evidence class, coverage state and confidence reason shown with a public claim; do not extend a result beyond its stated boundary edition and period.",
+      "This is an early preview, not the formal Phase 2 release. Always read a figure with its evidence label, coverage and confidence, and don’t apply it beyond the boundaries and years it covers.",
     recordsTitle: "Source records and documentation",
     description:
-      "The source ledger records dataset name, publisher, licence, version, retrieval date, coverage limits and provenance. Its examples remain illustrative and must be replaced by verified source metadata and immutable archive checksums before production ingestion.",
-    ledger: "Open the illustrative source ledger",
+      "The source ledger lists each dataset’s name, publisher, licence, version, download date, coverage and origin. Its entries are still examples, and will be replaced with verified details before real data is loaded.",
+    ledger: "Open the example source ledger",
     docs: "Read the source-ledger documentation",
     technicalTitle: "Technical release details",
     gate:
-      "Release identifiers, checksums and gate language are provided here for verification. They do not change the reader-facing limits above.",
+      "Release IDs and checksums, so you can verify the files. They don’t change the limits above.",
     release: "Release identifier",
     csvArtifact: "CSV artifact",
     geopackageArtifact: "GeoPackage artifact",
@@ -52,27 +52,27 @@ const COPY = {
     licence: "Licence and attribution",
     attribution:
       "Contains information licensed under the Open Government Licence - Canada. Adapted from Natural Resources Canada, Annual High-resolution forest land cover for Canada (1984-2022). Adapted from Statistics Canada, 2021 Census Province/Territory Cartographic Boundary File, reference date January 1, 2021. These adaptations do not constitute endorsement by Natural Resources Canada or Statistics Canada.",
-    stagingTitle: "Technical staging evidence",
+    stagingTitle: "Data being prepared",
     staging:
-      "Two source archives have verified byte lengths, ZIP integrity and SHA-256 checksums in a separate local staging area. Quebec attribution is verified from official metadata. A lossless local copy of the two clean Quebec layers is checksum-bound and validated; it is not ingested, immutable, or production data. Profiling found 608 self-intersections in Alberta, so Alberta remains blocked.",
-    stagingEvidence: "Review the staged-acquisition evidence",
-    profileEvidence: "Review the geospatial profile",
-    transformationEvidence: "Review the Quebec transformation evidence",
+      "Two source archives have been checked in a separate test area, and Quebec’s attribution was confirmed from official metadata. A verified copy of two Quebec layers exists but is not yet used on the site. Alberta is on hold because checks found 608 self-intersections in Alberta (shapes that cross over themselves).",
+    stagingEvidence: "See the archive checks",
+    profileEvidence: "See the shape checks",
+    transformationEvidence: "See the Quebec conversion record",
   },
   fr: {
     title: "Données et transparence",
     accessTitle: "Ce que vous pouvez télécharger",
     accessSummary:
-      `Un aperçu technique limité à quatre provinces pour ${formatYearRangeKey(PROVINCE_BULK_TIME_RANGE, "fr", "span")} est offert sous forme de tableau CSV et de GeoPackage. Les deux fichiers contiennent les mêmes valeurs au niveau provincial pour la Colombie-Britannique, l’Alberta, l’Ontario et le Québec.`,
+      `Un aperçu préliminaire des chiffres provinciaux pour ${formatYearRangeKey(PROVINCE_BULK_TIME_RANGE, "fr", "span")} est offert en tableur (CSV) et en fichier cartographique (GeoPackage). Les deux contiennent les mêmes chiffres pour la Colombie-Britannique, l’Alberta, l’Ontario et le Québec.`,
     notice:
-      "Il s’agit de résumés provinciaux destinés à la lecture et à l’analyse. Ils ne constituent ni une géométrie par cellule ni un service de données en direct.",
+      "Il s’agit de résumés provinciaux, et non de formes cartographiques détaillées ni d’un flux de données en direct.",
     csv: "Télécharger les valeurs provinciales (CSV)",
     geopackage: "Télécharger les valeurs provinciales (GeoPackage)",
     spanTitle: "Toutes les périodes, de 1984 à 2022",
     spanSummary:
-      `La perte forestière détectée pour chaque période ${formatYearRangeKey(PROVINCE_SPAN_TIME_RANGE, "fr", "from")} (741 périodes) en Colombie-Britannique, en Alberta, en Ontario et au Québec : une ligne par province et par période, soit les mêmes valeurs que la page Explorer. Chaque ligne donne la forêt connue l’année de départ, la forêt perdue au moins une fois, sa part de la forêt connue, les pertes annuelles additionnées et le territoire que personne ne pouvait voir l’année de départ.`,
+      `La perte forestière détectée pour chaque période ${formatYearRangeKey(PROVINCE_SPAN_TIME_RANGE, "fr", "from")} (741 au total), une ligne par province et par période, comme sur la page Explorer. Chaque ligne donne la forêt au départ, la forêt perdue au moins une fois et sa part, les pertes annuelles additionnées et le territoire sans données au départ.`,
     spanLimits:
-      "Chaque valeur est un minimum, car chaque province compte un territoire non cartographié ou sans données l’année de départ; ce territoire est Inconnu, jamais une absence de perte. Les pertes annuelles additionnées comptent deux fois un lieu perdu deux fois : elles sont donc en hectares seulement, sans pourcentage. Rien n’a fait l’objet d’un examen par des experts, et la récolte et les feux ne sont pas attribués comme causes.",
+      "Chaque valeur est un minimum, car chaque province compte un territoire sans données l’année de départ; ce territoire est Inconnu, jamais une absence de perte. Les pertes annuelles additionnées comptent deux fois un lieu perdu deux fois : elles sont donc en hectares, sans pourcentage. Aucun spécialiste n’a examiné ces chiffres, et ils n’indiquent pas si la récolte ou un incendie a causé la perte.",
     spanCsv: "Télécharger toutes les périodes (CSV)",
     spanJson: "Télécharger toutes les périodes (JSON)",
     spanManifest: "Ouvrir le manifeste du téléchargement par période",
@@ -81,17 +81,17 @@ const COPY = {
     releases: "Lire les notes de version et le format de citation",
     limitsTitle: "Limites à comprendre d’abord",
     limits:
-      "Les quatre provinces comprennent une superficie où un intrant cartographié requis est inconnu; chaque valeur de perte détectée est donc un minimum pour la zone cartographiée connue. Les fichiers n’établissent ni cause, ni responsabilité, ni légalité, ni conformité, ni volume de bois marchand, ni conditions sur le terrain.",
+      "Chaque province compte un territoire sans données; chaque valeur de perte est donc un minimum pour la zone cartographiée. Ces fichiers n’indiquent ni la cause, ni la responsabilité, ni la légalité, ni le bois vendable, ni les conditions sur le terrain.",
     previewLimits:
-      "Cet aperçu technique ne satisfait pas au critère formel de production de la phase 2. Utilisez la catégorie de preuves, l’état de couverture et la raison de confiance affichés avec une affirmation publique; ne prolongez pas un résultat au-delà de l’édition de limite et de la période indiquées.",
+      "Il s’agit d’un aperçu préliminaire, et non de la version officielle de la phase 2. Lisez toujours un chiffre avec sa catégorie de preuve, sa couverture et sa confiance, et ne l’appliquez pas au-delà des limites et des années qu’il couvre.",
     recordsTitle: "Registres des sources et documentation",
     description:
-      "Le registre des sources consigne le nom du jeu de données, l’éditeur, la licence, la version, la date de récupération, les limites de couverture et la provenance. Ses exemples demeurent illustratifs et doivent être remplacés par des métadonnées de source vérifiées et des sommes de contrôle d’archives immuables avant toute ingestion de production.",
-    ledger: "Ouvrir le registre illustratif des sources",
+      "Le registre des sources indique, pour chaque jeu de données, le nom, l’éditeur, la licence, la version, la date de téléchargement, la couverture et l’origine. Ses entrées sont encore des exemples, qui seront remplacés par des détails vérifiés avant le chargement de vraies données.",
+    ledger: "Ouvrir le registre d’exemple des sources",
     docs: "Lire la documentation du registre des sources",
     technicalTitle: "Détails techniques de la version",
     gate:
-      "Les identifiants de version, les sommes de contrôle et le libellé du critère sont fournis ici aux fins de vérification. Ils ne modifient pas les limites destinées aux lecteurs ci-dessus.",
+      "Identifiants de version et sommes de contrôle, pour vérifier les fichiers. Ils ne modifient pas les limites ci-dessus.",
     release: "Identifiant de version",
     csvArtifact: "Artefact CSV",
     geopackageArtifact: "Artefact GeoPackage",
@@ -100,12 +100,12 @@ const COPY = {
     licence: "Licence et attribution",
     attribution:
       "Contient des informations octroyées sous licence en vertu de la Licence du gouvernement ouvert - Canada. Adapté de Ressources naturelles Canada, Couverture terrestre annuelle à haute résolution des forêts du Canada (1984-2022). Adapté de Statistique Canada, Fichier des limites cartographiques des provinces et territoires du Recensement de 2021, date de référence le 1er janvier 2021. Ces adaptations ne constituent pas une approbation de Ressources naturelles Canada ni de Statistique Canada.",
-    stagingTitle: "Preuves techniques de mise en attente",
+    stagingTitle: "Données en préparation",
     staging:
-      "Deux archives sources ont une taille en octets, une intégrité ZIP et une somme de contrôle SHA-256 vérifiées dans une zone locale distincte. L’attribution du Québec est vérifiée à partir des métadonnées officielles. Une copie locale sans perte des deux couches québécoises propres est liée par somme de contrôle et validée; elle n’est ni ingérée, ni immuable, ni une donnée de production. Le profilage a relevé 608 auto-intersections en Alberta; l’Alberta demeure donc bloquée.",
-    stagingEvidence: "Consulter les preuves de mise en attente",
-    profileEvidence: "Consulter le profil géospatial",
-    transformationEvidence: "Consulter les preuves de transformation du Québec",
+      "Deux archives sources ont été vérifiées dans une zone d’essai distincte, et l’attribution du Québec a été confirmée à partir des métadonnées officielles. Une copie vérifiée de deux couches québécoises existe, mais n’est pas encore utilisée sur le site. L’Alberta est en attente, car les vérifications ont relevé 608 auto-intersections (des formes qui se croisent elles-mêmes).",
+    stagingEvidence: "Voir les vérifications des archives",
+    profileEvidence: "Voir les vérifications des formes",
+    transformationEvidence: "Voir le registre de conversion du Québec",
   },
 } as const;
 

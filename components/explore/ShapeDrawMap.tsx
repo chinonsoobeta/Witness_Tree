@@ -41,7 +41,7 @@ const copy = {
   en: {
     label: "Map for drawing an area",
     caption:
-      "Optional. Click the map to place corners. The corner fields above do the same thing with the keyboard, and they always show what the map has drawn.",
+      "Optional: click the map to place corners, or type them in the fields above.",
     hintPolygon: "Click the map to add a corner.",
     hintRectangleStart: "Click one corner of the rectangle.",
     hintRectangleFinish: "Click the opposite corner.",
@@ -57,7 +57,7 @@ const copy = {
   fr: {
     label: "Carte pour dessiner une zone",
     caption:
-      "Facultatif. Cliquez sur la carte pour placer des coins. Les champs de coins ci-dessus font la même chose au clavier, et ils montrent toujours ce que la carte a dessiné.",
+      "Facultatif : cliquez sur la carte pour placer des coins, ou saisissez-les dans les champs ci-dessus.",
     hintPolygon: "Cliquez sur la carte pour ajouter un coin.",
     hintRectangleStart: "Cliquez sur un coin du rectangle.",
     hintRectangleFinish: "Cliquez sur le coin opposé.",

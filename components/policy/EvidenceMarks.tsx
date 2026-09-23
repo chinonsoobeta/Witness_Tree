@@ -26,20 +26,20 @@ const GLYPH: Record<EvidenceClass, string> = {
 
 const MEANING: Record<EvidenceClass, Record<Locale, string>> = {
   "official-record": {
-    en: "A public authority records an event, perimeter, intervention or named role.",
-    fr: "Une autorité publique consigne un événement, un périmètre, une intervention ou un rôle désigné.",
+    en: "A public agency recorded it, such as a harvest, a fire or who held a licence.",
+    fr: "Un organisme public l’a consigné, par exemple une récolte, un incendie ou le titulaire d’un permis.",
   },
   "satellite-observation": {
-    en: "Imagery shows tree-cover reduction or later canopy recovery. It does not, by itself, establish a cause.",
-    fr: "Les images montrent une réduction du couvert arboré ou une reprise ultérieure du couvert. À elles seules, elles n’en établissent pas la cause.",
+    en: "Satellite images show trees lost or growing back. Images alone can’t tell us why.",
+    fr: "Les images satellites montrent des arbres perdus ou qui repoussent. Les images seules ne disent pas pourquoi.",
   },
   "derived-estimate": {
-    en: "A calculation made from documented records and a published method.",
-    fr: "Un calcul fondé sur des registres documentés et une méthode publiée.",
+    en: "A number calculated from documented records, using a published method.",
+    fr: "Un chiffre calculé à partir de registres documentés, selon une méthode publiée.",
   },
   unknown: {
-    en: "No authoritative public record has been integrated for the question.",
-    fr: "Aucun registre public faisant autorité n’a été intégré pour la question.",
+    en: "We don’t yet have an official public record that answers this.",
+    fr: "Nous n’avons pas encore de registre public officiel qui répond à cette question.",
   },
 };
 

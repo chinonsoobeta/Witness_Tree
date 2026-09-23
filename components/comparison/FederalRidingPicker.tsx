@@ -64,7 +64,7 @@ export function FederalRidingPicker({
         right: "Right riding",
         submit: "Compare",
         fallback: (side: string, requested: string, shown: string) =>
-          `Requested ${side} riding “${requested}” is not available in this four-province comparison. Showing ${shown} instead.`,
+          `The ${side} riding “${requested}” isn’t available here, since this comparison covers four provinces only. Showing ${shown} instead.`,
       }
     : {
         title: "Choisir les circonscriptions à comparer",
@@ -72,7 +72,7 @@ export function FederalRidingPicker({
         right: "Circonscription de droite",
         submit: "Comparer",
         fallback: (side: string, requested: string, shown: string) =>
-          `La circonscription de ${side} demandée « ${requested} » n’est pas offerte dans cette comparaison limitée à quatre provinces. ${shown} est affichée à la place.`,
+          `La circonscription de ${side} « ${requested} » n’est pas offerte ici, car cette comparaison ne couvre que quatre provinces. ${shown} est affichée à la place.`,
       };
   const missing = [
     leftId && !candidates.some((row) => row.id === leftId)

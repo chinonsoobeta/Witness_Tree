@@ -38,7 +38,7 @@ export default function EnglishHome() {
     <header className="masthead masthead--record">
       <p className="eyebrow">Public forest-loss record</p>
       <h1>What happened to the forest here?</h1>
-      <p className="dek">{PRODUCT_NAME.en} reports recorded and detected forest loss in four provinces, with the source attached to every claim.</p>
+      <p className="dek">{PRODUCT_NAME.en} shows forest loss in four Canadian provinces, from satellite images and public records. Every fact links to its source.</p>
       <HomeSearch locale="en" />
       <ProvinceBar locale="en" />
     </header>
@@ -51,7 +51,7 @@ export default function EnglishHome() {
     */}
     <CumulativeHeadline locale="en" />
 
-    <CoverageStatement locale="en"><p>Detected loss is a minimum from the mapped area in four provinces. Areas the source did not map remain unknown, even where detected loss is small. An absence in this record is not a claim about what happened in the world.</p></CoverageStatement>
+    <CoverageStatement locale="en"><p>These numbers are a minimum. Satellites mapped only part of each province, and the rest is treated as unknown, never as zero. If something isn’t shown here, that doesn’t mean it didn’t happen.</p></CoverageStatement>
 
     {/*
       The four marks and their definitions, in one place. They used to be a
@@ -59,13 +59,13 @@ export default function EnglishHome() {
       several screens down, in different words.
     */}
     <section className="content-section evidence-band">
-      <p className="evidence-band-lead">Open a record and read a dated history of recorded harvest, wildfire, disturbance and satellite-detected change. Every claim carries the class of evidence behind it.</p>
+      <p className="evidence-band-lead">Each place has a dated history of harvests, wildfires and other changes. Every fact is marked with the kind of evidence behind it.</p>
       <EvidenceMarks locale="en" />
     </section>
 
     <section className="content-section landing-coverage" aria-labelledby="current-record">
       <h2 id="current-record">The published record</h2>
-      <p className="lead">The bounded, provisional {provinceSpanReach("en")} province aggregate reports detected forest loss with a coverage state for each province. Verification of the mapped extent for every year is complete, and its results govern how unmapped areas are classified.</p>
+      <p className="lead">How much forest satellites detected as lost in each province, {provinceSpanReach("en")}. These figures are provisional, and each shows how much of the province could not be checked.</p>
       <ProvinceRecordList rows={SPAN_ROWS} locale="en" unknownContexts={UNKNOWN_CONTEXTS} />
       <p><Link href="/en/methods#coverage-gap">Why these areas were not mapped, and what we know about them</Link></p>
       <p><Link className="btn btn--primary" href="/en/explore">Explore the record</Link></p>
@@ -75,9 +75,9 @@ export default function EnglishHome() {
     <section className="content-section">
       <h2>Read the record</h2>
       <div className="record-grid">
-        <article className="record-card"><p className="eyebrow">Components</p><h3>Evidence before numbers</h3><p>Inspect how figures, unknowns, confidence, coverage and provenance appear across the public record.</p><Link href="/en/components">Open the component gallery</Link></article>
-        <article className="record-card"><p className="eyebrow">Methods</p><h3>Definitions before numbers</h3><p>See the forest denominator, evidence classes, confidence rules, coverage grades and matching method.</p><Link href="/en/methods">Read the methods</Link></article>
-        <article className="record-card"><p className="eyebrow">Data status</p><h3>Bounded province release</h3><p>The {provinceSpanReach("en", "span")} province aggregate is published with its source, coverage state and limits.</p><Link href="/en/data">Review data transparency</Link></article>
+        <article className="record-card"><p className="eyebrow">Components</p><h3>Evidence before numbers</h3><p>See how each figure is shown with its source and what we don’t know.</p><Link href="/en/components">Open the component gallery</Link></article>
+        <article className="record-card"><p className="eyebrow">Methods</p><h3>Definitions before numbers</h3><p>What counts as forest, how the figures are worked out, and how sure we are.</p><Link href="/en/methods">Read the methods</Link></article>
+        <article className="record-card"><p className="eyebrow">Data status</p><h3>Province data</h3><p>Download the province figures for {provinceSpanReach("en", "span")}, with their sources and limits.</p><Link href="/en/data">Review data transparency</Link></article>
       </div>
     </section>
 
@@ -90,16 +90,16 @@ export default function EnglishHome() {
       <h2 id="limits">What this record does not claim</h2>
       <div className="limits-body">
         <ul className="limits-list">
-          <li>That detected change was logging, or deforestation.</li>
+          <li>That a loss was caused by logging or deforestation.</li>
           <li>Any legal or compliance finding.</li>
-          <li>An estimate of merchantable timber.</li>
-          <li>Responsibility inferred from proximity.</li>
-          <li>A statement about how wildfire will spread.</li>
-          <li>A total. Detected loss is a floor, not a sum.</li>
+          <li>How much sellable timber there is.</li>
+          <li>Who is responsible, based on who is nearby.</li>
+          <li>How a wildfire will spread.</li>
+          <li>A complete total. Detected loss is a minimum.</li>
         </ul>
-        <p>{PRODUCT_NAME.en} reports what its sources record and what its imagery detects, and nothing beyond that.</p>
-        <p>Detected forest loss is satellite-derived. A reduction in tree cover does not by itself establish logging, deforestation, responsibility or compliance. <Link href="/en/methods">Read the method and evidence definitions</Link>.</p>
-        <p>The province aggregate above is a deterministic, four-province technical preview for {provinceSpanReach("en", "span")}. Per-cell loss patches are drawn on the Explore map for the same four provinces, traced from the 30 m grid. They are drawn, not counted: no expert review has been completed, so they do not close the formal Phase 2 gate and no total may be taken from them. <Link href="/en/data">Read the release scope, provenance and licence attribution</Link>.</p>
+        <p>{PRODUCT_NAME.en} reports only what its sources record and what satellite images detect.</p>
+        <p>A satellite can see that trees are gone, but not why. <Link href="/en/methods">How the methods work</Link>.</p>
+        <p>The figures above are a technical preview for {provinceSpanReach("en", "span")}, not the final release. The loss patches on the Explore map are for viewing only: they can’t be added up, and no expert has reviewed them. <Link href="/en/data">Data, sources and licences</Link>.</p>
         <p><small>Context source: {EXPLORE_PRODUCTION_LAYER.attribution.en} <a href={EXPLORE_PRODUCTION_LAYER.attribution.href}>Source catalogue</a>.</small></p>
       </div>
     </section>

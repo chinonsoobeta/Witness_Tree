@@ -137,9 +137,9 @@ test("landing figures show detected loss alone, on a scale of detected loss", as
       // The span rides on the figure now, not on a masthead badge that claimed
       // 1984 to 2022 over figures covering three years.
       assert.match(row, /class="province-list-span">\d{4}\u2013\d{4}</u);
-      assert.match(row, /of the forest the source mapped|de la forêt cartographiée par la source/);
+      assert.match(row, /of the mapped forest|de la forêt cartographiée/);
       assert.match(row, /<strong>[^<]*%<\/strong>/);
-      assert.match(row, /never counted as zero|jamais comptée comme zéro/);
+      assert.match(row, /counts as unknown, not zero|compte comme inconnue, pas comme zéro/);
       assert.match(row, /href="\/en\/data"|href="\/fr\/donnees"/);
     }
     // British Columbia leads the loss ranking and carries the qualifier that
@@ -148,7 +148,7 @@ test("landing figures show detected loss alone, on a scale of detected loss", as
     const bcRow = rows.find((row) => /British Columbia|Colombie-Britannique/.test(row));
     assert.ok(bcRow);
     assert.match(bcRow, /&lt;0[.,]01/);
-    assert.match(bcRow, /GeoBC/);
+    assert.match(bcRow, /shoreline|littoral/);
   }
 });
 
@@ -185,9 +185,9 @@ test("renders both localized public records with neutral non-claims", async () =
   assert.match(french, /<html lang="fr">/);
   assert.doesNotMatch(french, /<html lang="en">/);
   assert.match(english, /What happened to the forest here\?/);
-  assert.match(english, /An estimate of merchantable timber/);
+  assert.match(english, /How much sellable timber there is/);
   assert.match(french, /Qu’est-il arrivé à la forêt ici\?/);
-  assert.match(french, /Une estimation du bois marchand/);
+  assert.match(french, /La quantité de bois vendable/);
   assert.doesNotMatch(`${english}\n${french}`, /the truth|real-time|complete record/i);
 });
 
@@ -230,24 +230,22 @@ test("renders localized search results and Explore list/table alternatives witho
 
   assert.match(englishSearch, /<main\b[^>]*id="main"/);
   assert.match(englishSearch, /<h2>Places<\/h2>/);
-  assert.match(englishSearch, /Search covers provinces, federal and provincial ridings, and communities, with figures for 1984 to 2022\./);
+  assert.match(englishSearch, /Search provinces, ridings and communities\. Figures cover 1984 to 2022\./);
   assert.match(englishSearch, /British Columbia/);
   assert.match(frenchSearch, /<main\b[^>]*id="main"/);
   assert.match(frenchSearch, /<h2>Lieux<\/h2>/);
-  assert.match(frenchSearch, /La recherche couvre les provinces, les circonscriptions fédérales et provinciales ainsi que les collectivités, avec des chiffres de 1984 à 2022\./);
+  assert.match(frenchSearch, /Recherchez une province, une circonscription ou une collectivité\. Les chiffres couvrent 1984 à 2022\./);
   assert.match(frenchSearch, /Colombie-Britannique/);
 
   assert.match(englishExplore, /<main\b[^>]*id="main"/);
   assert.match(englishExplore, /Explore forest loss/);
-  assert.match(englishExplore, /The list, chart, and table use illustrative fixtures/);
-  assert.match(englishExplore, /This view does not imply a production geographic layer/);
+  assert.match(englishExplore, /The list, chart and table use made-up example data, not real records/);
   assert.match(englishExplore, /Reported fire perimeter/);
   assert.match(englishExplore, /<table/);
   assert.match(englishExplore, /Source attribution/);
   assert.match(frenchExplore, /<main\b[^>]*id="main"/);
   assert.match(frenchExplore, /Explorer les pertes forestières/);
-  assert.match(frenchExplore, /La liste, le graphique et le tableau utilisent des exemples illustratifs/);
-  assert.match(frenchExplore, /Cette vue n’implique aucune couche géographique de production/);
+  assert.match(frenchExplore, /La liste, le graphique et le tableau utilisent des données d’exemple inventées, et non de vrais registres/);
   assert.match(frenchExplore, /Périmètre d’incendie déclaré/);
   assert.match(frenchExplore, /<table/);
   assert.match(frenchExplore, /Attribution de la source/);
