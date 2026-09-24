@@ -96,9 +96,29 @@ understate recovery. See [the cause and check record](../data/phase4-condition-r
 checked by `npm run check:phase4-condition-recovery-cause-and-check`. The RESULTS
 pages are bound in that record, not entered as a staged acquisition.
 
-Both records are `local-nonproduction-executed` and nothing in them is admitted. The
-Explore display is a separate change. The mode stays empty until the product is
-admitted.
+Both records are `local-nonproduction-executed` and nothing in them is admitted.
+
+The figures the mode would show are in
+[the Explore figures file](../data/phase4-condition-recovery-explore.json), built by
+`scripts/build-phase4-condition-recovery-explore.mjs` from the v2 run output. It has
+the four provinces and the 44 StatCan 2021 economic regions, each with its unknown
+area, a coverage grade, recovery after the latest loss and after any loss, decades
+and cause. A row, decade or cause with less than 500 ha lost shows its lost area and
+withholds recovery; seven all-unknown southern regions are withheld this way. The
+2015-2022 decade is labelled too recent to judge and 2005-2014 partial follow-up.
+`scripts/phase4_condition_recovery_tiles.py` built per-cell tiles (z8 to 14) on the
+data root. They are recorded in the same file and have not been uploaded. The
+builder keeps memory bounded: GDAL 3.13's Python JSON export leaks about 3.6 KB per
+feature and exhausted the machine twice, so geometry leaves GDAL as WKB, strips are
+polygonized in 1024-column blocks, and four workers run by default. On macOS,
+launch it with `caffeinate` and without zsh's background nice, or idle sleep and
+I/O throttling stretch the run from hours to days. The PMTiles conversion reads a
+temporary copy of the tile set on the local disk, because the USB data root
+serves its random reads at about 15 tiles a second.
+`lib/explore/condition-recovery.ts` reads the file and returns nothing unless it is
+admitted and owner reviewed, so the mode stays empty. Checked by
+`npm run check:phase4-condition-recovery-explore`. The French strings are drafts
+awaiting bilingual review. The view itself is a separate change.
 
 ## Other formal phase counts
 

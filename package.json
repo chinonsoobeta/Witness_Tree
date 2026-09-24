@@ -43,6 +43,7 @@
     "check:phase4-recovery-trajectory": "node scripts/check-phase4-recovery-trajectory.mjs",
     "check:phase4-condition-recovery-v2": "node scripts/check-phase4-condition-recovery-v2.mjs",
     "check:phase4-condition-recovery-cause-and-check": "node scripts/check-phase4-condition-recovery-cause-and-check.mjs",
+    "check:phase4-condition-recovery-explore": "node scripts/check-phase4-condition-recovery-explore.mjs",
     "check:source-candidates": "node scripts/check-source-candidates.mjs",
     "check:cpcad-acquisition-block": "node scripts/check-cpcad-acquisition-block.mjs",
     "check:bc-provincial-electoral": "node scripts/check-bc-provincial-electoral-2023.mjs",
