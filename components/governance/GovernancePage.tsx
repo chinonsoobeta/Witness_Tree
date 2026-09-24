@@ -1,4 +1,3 @@
-import { CoverageStatement } from "@/components/policy/CoverageStatement";
 import { formatYearRangeKey, PRODUCT_NAME, type Locale } from "@/lib/domain";
 import {
   EXPLORE_COVERAGE_PERIOD,
@@ -23,7 +22,8 @@ export type GovernancePageKind =
 type Section = Readonly<{
   heading: string;
   paragraphs: readonly string[];
-  links?: readonly Readonly<{ label: string; href: string }>[];
+  /** A link with a format is a file download and is drawn as a file tile, as on the Data page. */
+  links?: readonly Readonly<{ label: string; href: string; format?: string }>[];
 }>;
 type PageCopy = Readonly<{
   title: string;
@@ -70,7 +70,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Annual interval",
           paragraphs: [
-            "The change from one year to the next. On the year control, 1985 means the change from 1984 to 1985, not the calendar year 1985.",
+            "The detected loss from one year to the next, the shortest span you can choose on Explore. Choosing 1984 as the first year and 1985 as the last shows what was lost between those two years.",
           ],
         },
         {
@@ -82,7 +82,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Provisional",
           paragraphs: [
-            "Published for review and use, with its limits stated, but not the formal Phase 2 release. A provisional figure keeps its stated limits on coverage, comparison and checks on the ground.",
+            "Published for review and use, with its limits stated, but not the final release. A provisional figure keeps its stated limits on coverage, comparison and checks on the ground.",
           ],
         },
         {
@@ -144,7 +144,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Intervalle annuel",
           paragraphs: [
-            "Le changement d’une année à la suivante. Sur la commande d’année, 1985 désigne le changement de 1984 à 1985, et non l’année civile 1985.",
+            "La perte détectée d’une année à la suivante, soit la période la plus courte que l’on peut choisir sur la page Explorer. Choisir 1984 comme première année et 1985 comme dernière montre ce qui a été perdu entre ces deux années.",
           ],
         },
         {
@@ -156,7 +156,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Provisoire",
           paragraphs: [
-            "Publié pour examen et utilisation, avec ses limites indiquées, mais ce n’est pas la version officielle de la phase 2. Une valeur provisoire conserve ses limites de couverture, de comparaison et de vérification sur le terrain.",
+            "Publié pour examen et utilisation, avec ses limites indiquées, mais ce n’est pas la version définitive. Une valeur provisoire conserve ses limites de couverture, de comparaison et de vérification sur le terrain.",
           ],
         },
         {
@@ -488,7 +488,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
     en: {
       title: "Data releases",
       status:
-        "One early preview release is published here. It is not the final release needed to pass the formal Phase 2 checkpoint.",
+        "One early preview release is published here. It is not the final release.",
       sections: [
         {
           heading: "Published preview release",
@@ -497,21 +497,21 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
             "It is a province-level preview, not detailed map shapes. Every province has some land with no data, so its loss figures are minimums.",
           ],
           links: [
-            { label: "Download the province CSV", href: provinceCsv.url },
-            { label: "Download the province GeoPackage", href: provinceGeoPackage.url },
+            { label: "Download the province CSV", href: provinceCsv.url, format: "CSV" },
+            { label: "Download the province GeoPackage", href: provinceGeoPackage.url, format: "GPKG" },
             { label: "Open the machine-readable release manifest", href: provinceBulkManifestUrl },
           ],
         },
         {
-          heading: "Formal Phase 2 release",
+          heading: "Final release",
           paragraphs: [
-            "No production data release satisfying the formal Phase 2 gate exists yet. This preview doesn’t replace the independent comparison that is still missing.",
+            "There is no final release yet. It needs an independent comparison of the figures, which hasn’t been done, and this preview doesn’t replace it.",
           ],
         },
         {
           heading: "Citation format",
           paragraphs: [
-            `${enBrand}, province aggregate, ${formatYearRangeKey(PROVINCE_BULK_TIME_RANGE, "en")}, ${provinceCsv.boundaryEdition}, release ${provinceBulkRelease.id}, method ${provinceCsv.methodVersion}, retrieval date and stable artifact URL. Cite it as a technical preview; a citation for the formal Phase 2 release will be possible once that release exists.`,
+            `${enBrand}, province aggregate, ${formatYearRangeKey(PROVINCE_BULK_TIME_RANGE, "en")}, ${provinceCsv.boundaryEdition}, release ${provinceBulkRelease.id}, method ${provinceCsv.methodVersion}, retrieval date and stable artifact URL. Cite it as a technical preview; a citation for the final release will be possible once that release exists.`,
           ],
         },
       ],
@@ -519,7 +519,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
     fr: {
       title: "Versions des données",
       status:
-        "Une version d’aperçu préliminaire est publiée ici. Ce n’est pas la version définitive exigée pour franchir l’étape formelle de la phase 2.",
+        "Une version d’aperçu préliminaire est publiée ici. Ce n’est pas la version définitive.",
       sections: [
         {
           heading: "Version d’aperçu publiée",
@@ -528,21 +528,21 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
             "Il s’agit d’un aperçu au niveau provincial, et non de formes cartographiques détaillées. Chaque province compte un territoire sans données; ses chiffres de perte sont donc des minimums.",
           ],
           links: [
-            { label: "Télécharger le CSV provincial", href: provinceCsv.url },
-            { label: "Télécharger le GeoPackage provincial", href: provinceGeoPackage.url },
+            { label: "Télécharger le CSV provincial", href: provinceCsv.url, format: "CSV" },
+            { label: "Télécharger le GeoPackage provincial", href: provinceGeoPackage.url, format: "GPKG" },
             { label: "Ouvrir le manifeste de version lisible par machine", href: provinceBulkManifestUrl },
           ],
         },
         {
-          heading: "Version officielle de la phase 2",
+          heading: "Version définitive",
           paragraphs: [
-            "Aucune version de données de production satisfaisant au critère formel de la phase 2 n’existe encore. Cet aperçu ne remplace pas la comparaison indépendante qui manque toujours.",
+            "Il n’existe pas encore de version définitive. Elle exige une comparaison indépendante des chiffres, qui n’a pas été faite, et cet aperçu ne la remplace pas.",
           ],
         },
         {
           heading: "Format de citation",
           paragraphs: [
-            `${frBrand}, agrégat provincial, ${formatYearRangeKey(PROVINCE_BULK_TIME_RANGE, "fr")}, ${provinceCsv.boundaryEdition}, version ${provinceBulkRelease.id}, méthode ${provinceCsv.methodVersion}, date de consultation et URL stable de l’artefact. Citez-la comme aperçu technique; une citation de la version officielle de la phase 2 sera possible une fois cette version publiée.`,
+            `${frBrand}, agrégat provincial, ${formatYearRangeKey(PROVINCE_BULK_TIME_RANGE, "fr")}, ${provinceCsv.boundaryEdition}, version ${provinceBulkRelease.id}, méthode ${provinceCsv.methodVersion}, date de consultation et URL stable de l’artefact. Citez-la comme aperçu technique; une citation de la version définitive sera possible une fois cette version publiée.`,
           ],
         },
       ],
@@ -572,20 +572,16 @@ export function GovernancePage({
     <main id="main" className="page-wrap governance-page">
       <header className="masthead">
         <h1>{page.title}</h1>
+        {/* This screen reports no figure, so it carries no figures caveat and
+            no evidence key. Its status and the way to report an error sit
+            under the title as plain text rather than in a plate. */}
+        <p className="dek">{page.status}</p>
+        <p className="masthead-note">
+          <a href={kind === "corrections" ? "#correction-instructions" : `/${locale}/corrections`}>
+            {locale === "en" ? "Read the correction instructions" : "Consulter les instructions de correction"}
+          </a>
+        </p>
       </header>
-      {/* This screen reports no figure, so the plate carries accountability
-          rather than coverage, and no evidence legend belongs on it: the
-          legend annotates figures, and there are none here. */}
-      <CoverageStatement
-        locale={locale}
-        className="governance-accountability"
-        title={locale === "en" ? "Accountability" : "Responsabilité"}
-      >
-        <p>{page.status}</p>
-        <a className="btn btn--primary" href={kind === "corrections" ? "#correction-instructions" : `/${locale}/corrections`}>
-          {locale === "en" ? "Read the correction instructions" : "Consulter les instructions de correction"}
-        </a>
-      </CoverageStatement>
       <div className="content-section prose-measure">
         {page.sections.map((section, index) => (
           <section className="governance-section" key={section.heading} id={kind === "corrections" && index === 2 ? "correction-instructions" : undefined}>
@@ -599,9 +595,16 @@ export function GovernancePage({
             {section.links ? (
               <ul className="link-list">
                 {section.links.map((link) => (
-                  <li className="card card--lift" key={link.href}>
-                    <a href={link.href}>{link.label}</a>
-                  </li>
+                  link.format ? (
+                    <li className="card card--lift file-tile" key={link.href}>
+                      <span className="file-tile-format" aria-hidden="true">{link.format}</span>
+                      <span className="file-tile-body"><a href={link.href}>{link.label}</a></span>
+                    </li>
+                  ) : (
+                    <li className="card card--lift" key={link.href}>
+                      <a href={link.href}>{link.label}</a>
+                    </li>
+                  )
                 ))}
               </ul>
             ) : null}

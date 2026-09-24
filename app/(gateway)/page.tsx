@@ -26,7 +26,8 @@ const shown = photographs.slice(0, slideshow ? 4 : 1);
 const locations = shown.map((name) => GATE_PHOTOGRAPHS.find((photo) => photo.file === name)?.location ?? "");
 
 export const metadata: Metadata = {
-  title: PRODUCT_NAME.en,
+  // The gateway is in both languages, so its title names the product in both.
+  title: { absolute: `${PRODUCT_NAME.en} / ${PRODUCT_NAME.fr}` },
   description: `Choose English or French to enter the public forest-loss record for ${EXPLORE_COVERAGE_PERIOD.en}.`,
   alternates: gatewayAlternates,
 };

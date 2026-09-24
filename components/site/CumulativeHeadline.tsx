@@ -1,4 +1,4 @@
-import { formatHectares, formatPercent, formatYearRange, yearRange, type Locale } from "@/lib/domain";
+import { colon, formatHectares, formatPercent, formatYearRange, SUM_TERM, yearRange, type Locale } from "@/lib/domain";
 import { EXPLORE_INTERVAL_FIRST_YEAR, EXPLORE_INTERVAL_LAST_YEAR } from "@/lib/explore/interval";
 import { fourProvinceSpanMeasurement } from "@/lib/explore/province-spans";
 
@@ -10,25 +10,27 @@ const COPY = {
     eyebrow: "Four provinces",
     heading: "Forest detected as lost",
     claim: "of the forest mapped in 1984 was detected as lost at least once.",
+    minimumLead: "This is a minimum.",
+    minimumBody: "Satellites mapped only part of each province, and the rest counts as unknown, never as zero. If something isn’t shown here, that doesn’t mean it didn’t happen.",
     shareLabel: "Share of the mapped forest",
-    shareBasis: (share: string, known: string) => `${share} of the ${known} of forest the sources mapped in 1984.`,
+    shareBasis: (share: string, known: string) => `${share} of the ${known} of forest mapped in 1984`,
     gradeLabel: "Coverage of this figure",
     gradeName: "Partial, with unknown",
-    gradeBasis: (unknown: string) => `${unknown} of these provinces were never mapped, so they count as unknown, not zero. That makes this figure a minimum.`,
-    sumLabel: "Why the yearly figures do not add up to this",
-    sumBasis: (summed: string, counts: number) => `Adding up the ${counts} yearly figures gives ${summed}. That is a different measure, not a correction: a place cleared twice counts once here, but twice in the yearly figures.`,
+    gradeBasis: (unknown: string) => `${unknown} were never mapped`,
+    sumBasis: (summed: string) => `${summed}. That is a different measure, not a correction: a place lost in two different years counts twice here, but once in the figure above.`,
   },
   fr: {
     eyebrow: "Quatre provinces",
     heading: "Forêt détectée comme perdue",
     claim: "de la forêt cartographiée en 1984 a été détectée comme perdue au moins une fois.",
+    minimumLead: "C’est un minimum.",
+    minimumBody: "Les satellites n’ont cartographié qu’une partie de chaque province, et le reste compte comme inconnu, jamais comme zéro. Si quelque chose n’apparaît pas ici, cela ne veut pas dire que cela ne s’est pas produit.",
     shareLabel: "Part de la forêt cartographiée",
-    shareBasis: (share: string, known: string) => `${share} des ${known} de forêt cartographiés par les sources en 1984.`,
+    shareBasis: (share: string, known: string) => `${share} des ${known} de forêt cartographiés en 1984`,
     gradeLabel: "Couverture de ce chiffre",
     gradeName: "Partielle, avec inconnu",
-    gradeBasis: (unknown: string) => `${unknown} de ces provinces n’ont jamais été cartographiés; ils comptent comme inconnus, pas comme zéro. Ce chiffre est donc un minimum.`,
-    sumLabel: "Pourquoi l’addition des chiffres annuels ne donne pas ce résultat",
-    sumBasis: (summed: string, counts: number) => `L’addition des ${counts} chiffres annuels donne ${summed}. Il s’agit d’une autre mesure, et non d’une correction : un lieu coupé deux fois compte une fois ici, mais deux fois dans les chiffres annuels.`,
+    gradeBasis: (unknown: string) => `${unknown} n’ont jamais été cartographiés`,
+    sumBasis: (summed: string) => `${summed}. Il s’agit d’une autre mesure, et non d’une correction : un lieu perdu au cours de deux années différentes compte deux fois ici, mais une seule fois dans le chiffre ci-dessus.`,
   },
 } as const;
 
@@ -55,7 +57,6 @@ export function CumulativeHeadline({ locale }: Readonly<{ locale: Locale }>) {
 
   const copy = COPY[locale];
   const span = formatYearRange(yearRange(WHOLE_RECORD.fromYear, WHOLE_RECORD.toYear), locale, "compact");
-  const steps = WHOLE_RECORD.toYear - WHOLE_RECORD.fromYear;
 
   return (
     <section className="content-section cumulative-headline" aria-labelledby="cumulative-headline-heading">
@@ -70,6 +71,12 @@ export function CumulativeHeadline({ locale }: Readonly<{ locale: Locale }>) {
       */}
       <p className="cumulative-figure">{formatHectares(unionLossHectares, locale)}</p>
       <p className="cumulative-claim">{copy.claim}</p>
+      {/* The minimum is said inside the unit, next to the number it bounds.
+          It used to be a separate banner under this panel. */}
+      <p className="cumulative-minimum">
+        <span className="mark-glyph mark-glyph--unknown" aria-hidden="true" />
+        <span><strong>{copy.minimumLead}</strong> {copy.minimumBody}</span>
+      </p>
       <dl className="cumulative-basis">
         <div>
           <dt>{copy.shareLabel}</dt>
@@ -77,11 +84,11 @@ export function CumulativeHeadline({ locale }: Readonly<{ locale: Locale }>) {
         </div>
         <div className="cumulative-basis-grade">
           <dt>{copy.gradeLabel}</dt>
-          <dd><strong>{copy.gradeName}.</strong> {copy.gradeBasis(formatHectares(unknownHectares, locale))}</dd>
+          <dd><strong>{copy.gradeName}{colon(locale)}</strong> {copy.gradeBasis(formatHectares(unknownHectares, locale))}</dd>
         </div>
         <div>
-          <dt>{copy.sumLabel}</dt>
-          <dd>{copy.sumBasis(formatHectares(summedLossHectares, locale), steps)}</dd>
+          <dt>{SUM_TERM[locale]}</dt>
+          <dd>{copy.sumBasis(formatHectares(summedLossHectares, locale))}</dd>
         </div>
       </dl>
     </section>

@@ -55,9 +55,20 @@ export const siteMetadata: Metadata = {
   },
 };
 
-/** The shared record plus the served language, for a locale root layout. */
+/**
+ * The shared record in the served language, for a locale root layout. A French
+ * page is titled and described in French and ends in the French name, rather
+ * than every tab carrying the English name whatever language the page is in.
+ */
 export function localeMetadata(locale: Locale): Metadata {
-  return { ...siteMetadata, other: { "content-language": locale } };
+  return {
+    ...siteMetadata,
+    title: { default: PRODUCT_NAME[locale], template: `%s · ${PRODUCT_NAME[locale]}` },
+    description: PRODUCT_PURPOSE[locale],
+    openGraph: { ...siteMetadata.openGraph, title: PRODUCT_NAME[locale], description: PRODUCT_PURPOSE[locale], locale: locale === "en" ? "en_CA" : "fr_CA" },
+    twitter: { ...siteMetadata.twitter, title: PRODUCT_NAME[locale], description: PRODUCT_PURPOSE[locale] },
+    other: { "content-language": locale },
+  };
 }
 
 export function localizedAlternates(

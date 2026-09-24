@@ -68,7 +68,7 @@ const copy = {
     removed: (index: number) => `Coin ${index} retiré.`,
     rectangleSet: "Rectangle défini à partir des deux coins cliqués.",
     cleared: "Coins effacés.",
-    unavailable: "La carte n'a pas pu être chargée. Les champs de coins ci-dessus fonctionnent toujours.",
+    unavailable: "La carte n’a pas pu être chargée. Les champs de coins ci-dessus fonctionnent toujours.",
   },
 } as const;
 

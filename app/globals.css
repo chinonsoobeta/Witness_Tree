@@ -1392,33 +1392,61 @@ h4 {
 
 .record-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
   margin-top: 32px;
-  border: 1px solid var(--rule);
-  background: var(--rule);
 }
+/* A link tile. Tiles sit apart and never share an edge, and the whole tile is
+   the link: its one anchor is stretched over it, so there is no smaller target
+   inside a larger one that looks like it should work. */
 .record-card {
-  min-height: 220px;
-  padding: 22px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 20px 22px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-control);
   background: var(--surface);
+  transition: border-color var(--dur) var(--ease);
 }
-.record-card h3 {
-  margin: 12px 0 7px;
-  font-size: 20px;
+.record-card:hover,
+.record-card:focus-within {
+  border-color: var(--rule-strong);
+}
+.record-card:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.page-wrap .record-card h3 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
 }
 .record-card p {
   margin: 0;
   color: var(--ink-2);
   font-size: 15px;
 }
+.record-card .eyebrow {
+  font-size: var(--text-compact);
+}
 .record-card a {
   display: inline-flex;
   align-items: center;
   min-height: 44px;
-  margin-top: 8px;
+  margin-top: auto;
   font-family: var(--ui);
-  font-size: 13px;
+  font-size: var(--text-small);
+  font-weight: 700;
+}
+.record-card a::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+.record-card a:focus-visible {
+  outline: none;
 }
 
 .gallery-grid {
@@ -1693,47 +1721,105 @@ h4 {
   background: var(--accent-soft);
   color: var(--ink);
 }
+/* The map's one legend, in flow under the frame. Each part takes a full row. */
 .explore-map-layer-panel {
   position: static;
   display: flex;
   margin: 0;
   min-width: 0;
   flex-wrap: wrap;
-  align-items: center;
-  gap: 6px 14px;
-  padding: 7px 10px;
+  gap: 12px;
+  padding: 12px 14px 14px;
   border: 1px solid var(--rule-strong);
   border-radius: var(--radius-sm);
   background: var(--surface);
   color: var(--ink);
-  font-size: 12px;
+  font-size: 13px;
+  line-height: 1.45;
   pointer-events: auto;
-}
-.explore-map-layer-panel > strong {
-  flex: 0 0 auto;
-  white-space: nowrap;
 }
 .explore-map-layer-panel:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
-.explore-map-layer-list {
+.explore-map-key {
   display: flex;
+  flex: 1 1 100%;
   min-width: 0;
-  flex: 0 1 auto;
-  flex-wrap: wrap;
-  gap: 4px 12px;
+  flex-direction: column;
+  gap: 6px;
+}
+.explore-map-key + .explore-map-key {
+  padding-top: 10px;
+  border-top: 1px solid var(--rule);
+}
+.explore-map-key p {
   margin: 0;
-  padding: 0;
-  list-style: none;
+  color: var(--muted);
+  font-size: 12.5px;
+}
+.explore-map-key .explore-map-key-title {
+  display: flex;
+  flex-direction: column;
+  color: var(--ink);
+  font-size: 13.5px;
+  line-height: 1.35;
+}
+.explore-map-key-title span {
+  color: var(--muted);
+  font-size: 12px;
 }
 .explore-map-layer-panel .explore-map-legend {
   min-width: 0;
-  flex: 0 1 auto;
-  flex-wrap: wrap;
   margin: 0;
-  gap: 4px 8px;
-  font-size: 12px;
+  gap: 4px 14px;
+  font-size: 12.5px;
+}
+.explore-map-layer-panel .explore-map-legend--scale {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  align-items: start;
+  gap: 2px;
+}
+.explore-map-layer-panel .explore-map-legend--scale li {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  padding-inline-end: 6px;
+  line-height: 1.3;
+}
+.explore-map-legend--scale .map-legend-key {
+  display: block;
+}
+.explore-map-legend--scale .loss-swatch {
+  display: block;
+  width: 100%;
+  height: 12px;
+  border-color: var(--rule-strong);
+}
+.explore-map-patch-zoom {
+  align-self: flex-start;
+  min-height: 44px;
+  margin: -6px 0 -10px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.explore-map-key-boundaries {
+  flex: 1 1 100%;
+  margin: 0;
+  padding-top: 10px;
+  border-top: 1px solid var(--rule);
+  color: var(--muted);
+  font-size: 12.5px;
 }
 .explore-map-boundary-status {
   position: absolute;
@@ -1783,7 +1869,7 @@ h4 {
 }
 .explore-map-control-cluster {
   display: grid;
-  grid-template-columns: minmax(84px, 132px) 36px;
+  grid-template-columns: 36px 36px;
   grid-template-rows: repeat(2, 36px);
   gap: 6px;
   align-items: stretch;
@@ -1822,17 +1908,15 @@ h4 {
   cursor: default;
 }
 .explore-map-corner-button {
-  min-height: 36px;
-  max-width: 132px;
-  padding: 5px 9px;
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  padding: 0;
   border: 1px solid var(--rule-strong);
   border-radius: var(--radius-sm);
-  background: var(--header-fill);
+  background: var(--surface);
   color: var(--ink);
-  font-family: var(--ui);
-  font-size: 12px;
-  font-weight: 700;
-  line-height: 1.2;
   cursor: pointer;
 }
 .explore-map-corner-button:hover:not(:disabled) {
@@ -1842,38 +1926,13 @@ h4 {
   color: var(--muted);
   cursor: default;
 }
-.explore-map-patch-control {
-  position: relative;
-  display: inline-flex;
-  grid-column: 1;
-  grid-row: 1;
-}
-.explore-map-patch-control .explore-map-corner-button,
-.explore-map-fullscreen-button {
-  width: 100%;
-  max-width: none;
-}
 .explore-map-fullscreen-button {
   grid-column: 1;
   grid-row: 2;
 }
-.explore-map-patch-tooltip {
-  position: absolute;
-  inset-block-end: calc(100% + 6px);
-  inset-inline: 0;
-  z-index: 4;
-  display: block;
-  width: auto;
-  padding: 6px 8px;
-  border: 1px solid var(--rule-strong);
-  border-radius: var(--radius-sm);
-  background: var(--ink);
-  color: var(--surface);
-  font-size: 12px;
-  line-height: 1.3;
-}
 .explore-map-scale {
   display: flex;
+  justify-self: start;
   flex-direction: column;
   gap: 3px;
   padding: 4px 7px;
@@ -1942,6 +2001,46 @@ h4 {
   place-items: center;
   color: var(--muted);
   text-align: center;
+  /* The outlines stay draggable behind the message. */
+  pointer-events: none;
+}
+/* The message sits on a card, because the province outlines are drawn behind it. */
+.explore-map-panel > span {
+  max-width: 34rem;
+  padding: 12px 16px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  pointer-events: auto;
+}
+/* Shown on the map while a patch mode is zoomed out past its patches. */
+.explore-map-patch-hint {
+  position: absolute;
+  inset-block-start: 12px;
+  inset-inline: 12px;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 4px 14px;
+  width: fit-content;
+  max-width: calc(100% - 24px);
+  margin-inline: auto;
+  padding: 6px 14px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 13px;
+}
+.explore-map-patch-hint p {
+  margin: 0;
+}
+.explore-map-patch-hint .explore-map-patch-zoom {
+  margin: 0;
+  min-height: 44px;
 }
 .explore-map-status {
   margin-top: 8px;
@@ -1958,9 +2057,6 @@ h4 {
   margin-top: 6px;
   color: var(--muted);
   font-size: 12px;
-}
-.explore-map-data {
-  margin-top: 18px;
 }
 .explore-map-legend {
   display: flex;
@@ -2541,9 +2637,38 @@ h4 {
   list-style: none;
 }
 .search-result {
+  padding: 18px 22px;
+}
+.search-result:has(> a),
+.search-result:has(> .search-result-choice) {
   padding: 0;
 }
-.search-result a {
+.search-result h4 {
+  margin: 0 0 4px;
+}
+.search-result p {
+  margin: 0;
+  color: var(--ink-2);
+}
+.search-result ul {
+  margin: 4px 0 8px;
+  padding-inline-start: 18px;
+}
+.search-result-figure {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+.search-result-figure .mark-glyph {
+  width: 10px;
+  height: 10px;
+}
+.search-results-key {
+  margin: 0 0 12px;
+}
+.search-result > a {
   display: flex;
   align-items: center;
   min-height: 56px;
@@ -2553,7 +2678,7 @@ h4 {
   font-weight: 700;
   text-decoration: none;
 }
-.search-result a:hover {
+.search-result > a:hover {
   color: var(--accent);
   text-decoration: underline;
 }
@@ -2832,7 +2957,7 @@ h4 {
   padding: 18px 20px;
   border: 1px solid var(--rule);
   border-radius: var(--radius);
-  background: var(--surface-2);
+  background: var(--surface);
 }
 .stat dt {
   margin: 0 0 6px;
@@ -2967,6 +3092,51 @@ dd > a:only-child {
   position: sticky;
   left: 0;
   background: var(--surface-2);
+}
+/* A figure with its unit, or a year range, reads as one token and does not break. */
+.nowrap {
+  white-space: nowrap;
+}
+/* Ranked rows always carry both figures, so a figure and its unit stay on one line. */
+.comparison-table > .table-scroll td:nth-child(3),
+.comparison-table > .table-scroll td:nth-child(4) {
+  white-space: nowrap;
+}
+/* In a table every row states its coverage and evidence, and most rows share
+   the same values, so the bands and chips read as plain text there. The
+   words and the evidence glyph stay; only the boxes go. */
+.comparison-table .table-scroll .coverage-band,
+.comparison-table .table-scroll .chip {
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: start;
+}
+.comparison-table .table-scroll thead th:nth-child(5) {
+  text-align: start;
+}
+.comparison-table .table-scroll .chip-glyph {
+  width: auto;
+  height: auto;
+  background: none;
+}
+.comparison-unranked {
+  margin-top: 16px;
+  border-top: 1px solid var(--rule);
+}
+.comparison-unranked > summary {
+  padding: 14px 0;
+  cursor: pointer;
+}
+.comparison-unranked > summary h3 {
+  display: inline;
+  margin: 0;
+  font-size: inherit;
+}
+.comparison-unranked > summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 .rank-unmatched-share {
   color: var(--ink-2);
@@ -3158,10 +3328,100 @@ dd > a:only-child {
   display: grid;
   gap: 12px;
 }
+.link-list + p {
+  margin-top: 16px;
+}
 
 .link-list > .card {
-  padding: 14px 18px;
+  position: relative;
+  padding: 14px 22px;
   overflow-wrap: anywhere;
+}
+/* A link tile: the tile is the link. Its one anchor is stretched over it and a
+   single arrow says where it goes. */
+.link-list > .card--lift {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 56px;
+  padding-inline-end: 56px;
+}
+.link-list > .card--lift a {
+  color: var(--ink);
+  font-weight: 700;
+  text-decoration: none;
+}
+.link-list > .card--lift a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.link-list > .card--lift a::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+.link-list > .card--lift a:focus-visible {
+  outline: none;
+}
+.link-list > .card--lift:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.link-list > .card--lift::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 24px;
+  width: 8px;
+  height: 8px;
+  border-top: 2px solid var(--accent);
+  border-right: 2px solid var(--accent);
+  transform: translateY(-50%) rotate(45deg);
+}
+/* A file tile: a download, with its format and, where published, its
+   checksum. The arrow points down because following it saves a file. */
+.link-list > .file-tile {
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 16px;
+}
+.file-tile-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+/* A download mark, an arrow onto a bar, rather than a chevron, which reads as
+   "expand". The empty alternative keeps screen readers from announcing it. */
+.link-list > .file-tile::before {
+  content: "↓" / "";
+  width: auto;
+  height: auto;
+  padding: 0 1px 1px;
+  border: 0;
+  border-bottom: 2px solid var(--accent);
+  color: var(--accent);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1;
+  transform: translateY(-50%);
+}
+.file-tile-format {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 46px;
+  height: 50px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-control);
+  color: var(--accent);
+  font-size: var(--text-compact);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+.file-tile small {
+  color: var(--ink-2);
 }
 
 /* ==========================================================================
@@ -3188,71 +3448,217 @@ dd > a:only-child {
 }
 
 /* ==========================================================================
-   Explore workspace: controls left, map centre, reading panel right.
+   Explore workspace: one toolbar above, the map with its reading panel below.
 
-   Placed by named areas rather than by source order, on purpose. The source
-   order is explain, choose, map, figures, layers, and a test pins it, because
-   that is the order the record has to be read in and the order a screen reader
-   takes. Grid areas move the boxes without moving that reading order.
-
-   The one cost is a tab step that returns to the left rail after the map and
-   the figures, which is what any layout with controls on both sides of a
-   canvas incurs. It is preferred here to reshuffling the document so the
-   layers precede the map they apply to.
-
-   Nothing in this block floats over the map frame. The chooser-over-frame
-   overlap that #170 removed stays removed: every column grows downward in
-   normal flow, so a legend that gets longer pushes its own column and cannot
-   reach across into another one.
+   The controls used to fill a 258px left column beside the map, which left the
+   map the narrowest thing on its own page. They are now one toolbar that every
+   control in it changes, above the map in the source as well as on screen, so
+   the reading order and the visual order agree. The reading panel sits beside
+   the map from 1100px and under it below that.
    ========================================================================== */
 .explore-workspace {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 24px;
+  align-items: start;
 }
-/* Two tiers, because the centre column is the one that has to stay usable.
-   The rail and the reading panel are fixed, so every pixel the window loses
-   comes out of the map: at 1100px the three-column form leaves the map about
-   440px, which is narrower than the panel beside it. Below 1280px the reading
-   panel drops under the map instead and gets the whole centre width. */
-@media (min-width: 1000px) {
+@media (min-width: 1100px) {
   .explore-workspace {
-    grid-template-columns: 258px minmax(0, 1fr);
-    grid-template-areas:
-      "modes  canvas"
-      "window canvas"
-      "layers canvas"
-      "layers reading";
-    grid-template-rows: auto auto auto 1fr;
-    align-items: start;
-    column-gap: 24px;
-    row-gap: 22px;
+    grid-template-columns: minmax(0, 1fr) 336px;
   }
 }
-@media (min-width: 1280px) {
-  .explore-workspace {
-    grid-template-columns: 258px minmax(0, 1fr) 296px;
-    grid-template-areas:
-      "modes  canvas reading"
-      "window canvas reading"
-      "layers canvas reading"
-      ".      canvas reading";
-  }
+
+.explore-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 0 12px;
+  border-block: 1px solid var(--rule);
 }
-@media (min-width: 1000px) {
-  .explore-workspace > .explore-modes { grid-area: modes; }
-  .explore-workspace > .explore-window { grid-area: window; }
-  .explore-workspace > .explore-canvas { grid-area: canvas; }
-  .explore-workspace > .explore-reading { grid-area: reading; }
-  .explore-workspace > .explore-overlays { grid-area: layers; }
-  /* In one column the four modes sit side by side; in a 258px rail they stack,
-     which is also the only way their status lines stay readable. */
-  .explore-workspace > .explore-modes {
-    grid-template-columns: minmax(0, 1fr);
-  }
-  .explore-workspace > .explore-overlays .overlay-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
+.explore-toolbar-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px 24px;
+}
+.explore-toolbar .explore-year {
+  padding: 0;
+  border: 0;
+  background: none;
+}
+.explore-toolbar .year-control {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+.explore-toolbar .year-head {
+  flex-basis: 100%;
+  justify-content: flex-start;
+}
+.explore-toolbar .year-handle-label {
+  color: var(--ink-2);
+  font-size: var(--text-small);
+}
+.explore-toolbar .explore-year-select {
+  width: auto;
+}
+.explore-toolbar .year-row {
+  flex: 1 1 320px;
+}
+
+/* Boundaries: a menu of overlays rather than four cards in a column. A native
+   <details> so it opens without script; each toggle is a link, as before. */
+.explore-boundaries {
+  position: relative;
+}
+.explore-boundaries > summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+  list-style: none;
+}
+.explore-boundaries > summary::-webkit-details-marker {
+  display: none;
+}
+.explore-boundaries > summary::after {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+}
+.explore-boundaries[open] > summary {
+  border-color: var(--ink);
+}
+.explore-boundaries[open] > summary::after {
+  transform: translateY(2px) rotate(-135deg);
+}
+.explore-boundaries > summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+.explore-boundaries-panel {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 6px);
+  right: 0;
+  width: min(24rem, calc(100vw - 40px));
+  padding: 12px 14px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+}
+.explore-boundaries-panel > .explore-note {
+  margin: 0 0 8px;
+  font-size: var(--text-small);
+}
+
+/* The reading panel: the span's total, its minimum, the per-cell split and
+   the provinces, beside the map. */
+.explore-reading {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.explore-reading > .eyebrow {
+  margin: 0;
+}
+.explore-reading-total {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.explore-reading-total p {
+  margin: 0;
+}
+.explore-reading-label,
+.explore-reading-minimum {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  color: var(--ink-2);
+  font-size: var(--text-small);
+}
+.explore-reading-label .mark-glyph,
+.explore-reading-minimum .mark-glyph {
+  width: 10px;
+  height: 10px;
+  margin-top: 5px;
+}
+.explore-reading-total .explore-reading-minimum {
+  margin-top: 8px;
+  color: var(--ink);
+}
+.explore-reading-figure {
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+.explore-reading-share {
+  color: var(--ink-2);
+  font-size: 15px;
+}
+.explore-reading-provinces {
+  padding-top: 12px;
+  border-top: 1px solid var(--rule);
+}
+.explore-reading-provinces .eyebrow {
+  margin: 0 0 6px;
+}
+.explore-reading-provinces ul {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.explore-reading-provinces li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0 10px;
+}
+.explore-province-name,
+.explore-province-share {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+.explore-province-detail {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  grid-column: 1 / -1;
+  color: var(--ink-2);
+  font-size: var(--text-small);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+.explore-province-bar {
+  display: block;
+  flex: none;
+  width: 56px;
+  height: 4px;
+  background: var(--rule);
+}
+.explore-province-bar > span {
+  display: block;
+  height: 4px;
+  background: var(--accent-fill);
+}
+
+.explore-more-list {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
 }
 
 /* The reading panel carries a composition, so it needs its own marks. */
@@ -3321,15 +3727,8 @@ dd > a:only-child {
 }
 
 .explore-modes {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 12px;
-}
-
-.explore-mode {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  flex-wrap: wrap;
   gap: 8px;
 }
 
@@ -3565,22 +3964,18 @@ dd > a:only-child {
   font-weight: 700;
 }
 
-.overlay-grid {
-  list-style: none;
+.overlay-list {
+  display: flex;
+  flex-direction: column;
   margin: 0;
   padding: 0;
-  display: grid;
-  gap: 12px;
-  /* The cards now carry a coverage note and an attribution rather than a
-     single label, so they need room to be read rather than skimmed. */
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  list-style: none;
 }
-
-.overlay-card {
+.overlay-row {
   display: grid;
-  gap: 6px;
-  padding: 14px 18px;
-  align-content: start;
+  gap: 4px;
+  padding: 10px 0;
+  border-top: 1px solid var(--rule-soft);
 }
 
 .overlay-name {
@@ -3610,19 +4005,6 @@ dd > a:only-child {
   margin: 0;
   font-size: 0.8rem;
   color: var(--muted);
-}
-
-.explore-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 16px;
-}
-
-.explore-list > .card > h2 {
-  font-size: 1.1rem;
-  margin-block-end: 8px;
 }
 
 .explore-chart {
@@ -3735,17 +4117,96 @@ dd > a:only-child {
 .coverage-statement p:last-child {
   margin-bottom: 0;
 }
-.evidence-legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px 20px;
-  padding: 16px 0;
-  margin: 0;
-  list-style: none;
+/* The figures caveat, closed by default under the page title. It replaced a
+   tinted plate that sat above every page's content. The chevron is drawn with
+   borders so it follows the text colour in both palettes and forced colours. */
+.coverage-note {
+  margin: 12px 0 0;
   color: var(--ink);
 }
-.evidence-legend li {
-  min-width: 0;
+.coverage-note > summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  font-family: var(--ui);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  list-style: none;
+}
+.coverage-note > summary::-webkit-details-marker {
+  display: none;
+}
+.coverage-note > summary::after {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform var(--dur) var(--ease);
+}
+.coverage-note[open] > summary::after {
+  transform: translateY(2px) rotate(-135deg);
+}
+.coverage-note > summary:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.coverage-note > summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+.coverage-note .mark-glyph {
+  width: 13px;
+  height: 13px;
+}
+.coverage-note-body {
+  max-width: var(--measure);
+  padding: 0 0 8px 23px;
+  color: var(--ink-2);
+  font-size: 16px;
+}
+.coverage-note-body > * + * {
+  margin-block-start: 8px;
+}
+/* Directly under a masthead the note sits above the masthead's rule, so the
+   title, its caveat and the rule read as one header. */
+.masthead:has(+ .coverage-note) {
+  padding-bottom: 6px;
+  border-bottom: 0;
+}
+.masthead + .coverage-note {
+  margin: 0;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--ink);
+}
+
+/* A key for the evidence marks, placed beside the figures that carry them and
+   listing only the marks shown there. */
+.evidence-key {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 16px;
+  margin: 0;
+  color: var(--ink-2);
+  font-family: var(--ui);
+  font-size: var(--text-small);
+}
+.evidence-key-title {
+  color: var(--ink);
+  font-weight: 700;
+}
+.evidence-key-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.evidence-key .mark-glyph {
+  width: 10px;
+  height: 10px;
 }
 @media (min-width: 1180px) {
   .nav-panel a, .theme-option > span {
@@ -3957,9 +4418,6 @@ dd > a:only-child {
   font-family: var(--mono);
   font-size: 0.75rem;
   font-weight: 400;
-}
-.governance-accountability .btn {
-  margin-top: 20px;
 }
 .account-state {
   max-width: var(--measure);
@@ -4331,20 +4789,34 @@ dd > a:only-child {
   color: var(--ink-2);
   text-wrap: balance;
 }
-/* Three bases, side by side where there is room. They are peers: none of them
-   is a footnote to the other two, and stacking them would rank them. */
+/* The minimum, said inside the unit beside the number it bounds. */
+.cumulative-minimum {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 14px 0 0;
+  max-width: var(--measure);
+  color: var(--ink);
+  font-size: 16px;
+  line-height: 1.55;
+}
+.cumulative-minimum .mark-glyph {
+  margin-top: 6px;
+}
+/* Three bases as three short rows: a label and one line each. They are peers,
+   so they share one column rather than one being set as a footnote. */
 .cumulative-basis {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 22px 32px;
-  margin: 24px 0 0;
-  padding-top: 20px;
+  gap: 8px;
+  margin: 20px 0 0;
+  padding-top: 16px;
   border-top: 1px solid var(--rule);
 }
 .cumulative-basis > div {
   display: grid;
-  gap: 5px;
-  align-content: start;
+  grid-template-columns: minmax(0, 18rem) minmax(0, 1fr);
+  gap: 4px 24px;
+  align-items: baseline;
 }
 .cumulative-basis dt {
   font-size: 0.75rem;
@@ -4359,17 +4831,11 @@ dd > a:only-child {
   line-height: 1.55;
   color: var(--ink-2);
 }
-/* The unknown share carries the unknown edge, the same mark it has everywhere
-   else, so the grade reads as evidence class rather than as emphasis. */
-.cumulative-basis-grade {
-  padding-left: 15px;
-  border-left: 2px solid var(--edge-unknown);
-}
-.cumulative-basis-grade dd strong {
+.cumulative-basis dd strong {
   color: var(--ink);
 }
 @media (max-width: 900px) {
-  .cumulative-basis { grid-template-columns: minmax(0, 1fr); }
+  .cumulative-basis > div { grid-template-columns: minmax(0, 1fr); }
   .cumulative-headline { padding: 24px 20px 22px; }
 }
 
@@ -4428,26 +4894,199 @@ dd > a:only-child {
 }
 
 /* The search control the homepage grew when Search left the global nav. */
-.home-search {
+/* The place search field and its suggestions. The same control sits under
+   the home page question and at the top of the search page. The popup is an
+   overlay, so it takes an opaque surface and a --rule-strong edge, the same
+   treatment as the other panels that sit over content. */
+.search-suggest {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.search-suggest-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.search-suggest-label { font-weight: 700; }
+.search-suggest-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  align-items: end;
+  align-items: start;
   gap: 12px;
-  margin-block: 24px;
-  max-width: 34rem;
 }
-.home-search-field { min-width: 0; display: flex; flex-direction: column; gap: 6px; }
-.home-search-label { font-weight: 700; }
-.home-search .input { width: 100%; }
-.home-search .btn { white-space: nowrap; }
+.search-suggest-field {
+  position: relative;
+  min-width: 0;
+}
+.search-suggest .input { width: 100%; }
+.search-suggest .btn { white-space: nowrap; }
+.search-suggest-popup {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 6px);
+  left: 0;
+  width: min(42rem, calc(100vw - 40px));
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  color: var(--ink);
+}
+.search-suggest-list {
+  margin: 0;
+  padding: 6px 0;
+  list-style: none;
+}
+.search-suggest-group {
+  padding: 8px 16px 2px;
+  color: var(--muted);
+  font-size: var(--text-compact);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.search-suggest-option {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 56px;
+  padding: 6px 16px;
+  cursor: pointer;
+}
+.search-suggest-option[aria-selected="true"] { background: var(--surface-2); }
+.search-suggest-text {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-width: 0;
+  line-height: 1.35;
+}
+.search-suggest-name { font-size: 16px; }
+.search-suggest-meta { color: var(--ink-2); font-size: var(--text-small); }
+.search-suggest-figure,
+.search-chosen-value,
+.search-chosen-riding-figure {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums lining-nums;
+  white-space: nowrap;
+}
+.search-suggest-figure .mark-glyph,
+.search-suggest-footnote .mark-glyph,
+.search-chosen-riding-figure .mark-glyph { width: 9px; height: 9px; }
+.search-suggest-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 16px;
+  padding: 0 16px;
+  border-top: 1px solid var(--rule);
+  font-size: var(--text-small);
+}
+.search-suggest-footnote {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink-2);
+}
+.search-suggest-footer a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-weight: 700;
+}
+.search-suggest-message {
+  margin: 0;
+  padding: 14px 16px;
+  font-size: 15px;
+}
+
+/* A chosen suggestion, shown under the field: one record tile. */
+.search-chosen {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 22px 24px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+}
+.search-chosen-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.page-wrap .search-chosen h2 { margin: 2px 0 0; font-size: 26px; font-weight: 700; }
+.search-chosen-clear {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--ink);
+  font-size: 22px;
+  cursor: pointer;
+}
+.search-chosen-figure {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  margin: 0;
+  color: var(--ink-2);
+}
+.search-chosen-value { color: var(--ink); font-size: 40px; line-height: 1.05; letter-spacing: -0.02em; }
+.search-chosen-detail { margin: 0; color: var(--ink-2); font-size: 15px; }
+.search-chosen-ridings {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 32px;
+}
+.page-wrap .search-chosen-ridings h3 { margin: 0; font-size: var(--text-compact); font-weight: 400; }
+.search-chosen-ridings ul { margin: 4px 0 0; padding: 0; list-style: none; }
+.search-chosen-ridings li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--rule-soft);
+}
+.search-chosen-riding-name { font-weight: 700; }
+.search-chosen-riding-share,
+.search-chosen-riding-detail { color: var(--ink-2); font-size: var(--text-small); }
+.search-chosen-riding-detail { grid-column: 1 / -1; }
+.search-chosen-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 24px;
+  padding-top: 12px;
+  border-top: 1px solid var(--rule);
+}
+.search-chosen-foot a { font-weight: 700; }
+.search-chosen-foot .evidence-key { margin-inline-start: auto; }
+
+.home-search {
+  margin-block: 24px;
+  max-width: 42rem;
+}
+.home-search .search-suggest-row { max-width: 34rem; }
 .home-search-note {
-  grid-column: 1 / -1;
   margin: 0;
   font-size: var(--text-small);
   color: var(--ink-2);
 }
+.search-page-field { margin-bottom: 32px; }
 @media (max-width: 560px) {
-  .home-search { grid-template-columns: minmax(0, 1fr); align-items: stretch; }
+  .search-suggest-row { grid-template-columns: minmax(0, 1fr); }
+  .search-chosen-ridings { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* Place record, confidence-first arrangement.
@@ -4496,10 +5135,9 @@ dd > a:only-child {
 
 .place-evidence-strip {
   display: flex; gap: 20px; flex-wrap: wrap; align-items: center;
-  padding: 14px max(32px, calc((100% - var(--plate)) / 2)); background: var(--sand); border-bottom: 1px solid var(--rule-strong);
+  padding: 14px max(32px, calc((100% - var(--plate)) / 2)); background: var(--surface-2); border-bottom: 1px solid var(--rule);
 }
-.place-evidence-strip .eyebrow { margin: 0; }
-.place-evidence-strip .evidence-legend { margin: 0; }
+.place-evidence-strip .evidence-key { margin: 0; }
 
 .place-body { padding: 30px max(32px, calc((100% - var(--plate)) / 2)); display: flex; flex-direction: column; gap: 28px; }
 .place-stat-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }

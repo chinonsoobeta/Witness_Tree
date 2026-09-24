@@ -39,8 +39,8 @@ test("landing pages use the released province span and retain the bounded scope"
   assert.match(french, /Ces chiffres sont provisoires/);
   assert.doesNotMatch(english, /The verified .* province aggregate/);
   assert.doesNotMatch(french, /agrégat provincial vérifié/);
-  assert.match(english, /Other provinces are coming soon/);
-  assert.match(french, /D’autres provinces s’ajouteront bientôt/);
+  assert.match(english, /The record covers these four provinces only/);
+  assert.match(french, /Le registre ne couvre que ces quatre provinces/);
   assert.doesNotMatch(english, /Every result shows what the evidence says/);
   assert.doesNotMatch(french, /Chaque résultat indique ce que montrent les preuves/);
 });
@@ -67,12 +67,14 @@ test("the landing composition puts coverage and the legend before any figure", a
     assert.match(hero, /<ProvinceBar/);
     // Nothing leaves the hero: the reader meets the coverage statement first.
     assert.equal((hero.match(/<Link\b/g) ?? []).length, 0);
-    // Order is the claim. The coverage statement and the legend both stand
+    // Order is the claim. The headline carries its own minimum inside the
+    // panel, so there is no separate coverage banner; the legend still stands
     // ahead of the section that reports a province's figures.
-    const coverage = page.indexOf("<CoverageStatement");
+    assert.equal(page.indexOf("<CoverageStatement"), -1, "the headline panel says the minimum itself");
+    const headline = page.indexOf("<CumulativeHeadline");
     const legend = page.indexOf("<EvidenceMarks");
     const record = page.indexOf('<section className="content-section landing-coverage"');
-    assert.ok(coverage > 0 && legend > coverage && record > legend, "coverage, then legend, then figures");
+    assert.ok(headline > 0 && legend > headline && record > legend, "headline with its minimum, then legend, then figures");
     const band = section(page, '<section className="content-section landing-coverage"', '<section className="content-section">');
     assert.match(band, /<ProvinceRecordList/);
     assert.match(band, new RegExp(`href="${methods}"`));

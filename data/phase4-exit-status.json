@@ -51,11 +51,11 @@
       "id": "published-match-and-non-match-rates",
       "title": "Match rate, non-match rate, and non-match-reason distribution are published on the methods page",
       "status": "fail",
-      "reason": "The methods page explicitly reports these results as unavailable; no admitted, versioned provincial processing run exists from which numeric rates or a reason distribution can be published. On 2026-09-23 MethodologyPage.tsx changed for a plain-language wording pass alone; its digest was refreshed, and this reason still holds.",
+      "reason": "The methods page explicitly reports these results as unavailable; no admitted, versioned provincial processing run exists from which numeric rates or a reason distribution can be published. On 2026-09-23 MethodologyPage.tsx changed for a plain-language wording pass alone; its digest was refreshed, and this reason still holds. On 2026-09-23 MethodologyPage.tsx moved its opening statement out of a boxed plate and into plain text under the title, with the same words, and dropped the evidence legend; its digest was refreshed, and this reason still holds.Later on 2026-09-23 MethodologyPage.tsx changed \"detected change\" to \"detected loss\" to match the product's loss vocabulary, gave the full published forest definition including the 20 m width, and described Explore's first-and-last-year control; the page still reports match and non-match rates as unavailable, its digest was refreshed, and this reason still holds. ",
       "evidence": [
         {
           "path": "components/transparency/MethodologyPage.tsx",
-          "sha256": "3660cb0a9e72965d5644fda696b55ac66097996de88a9b4053675c02509ee6fe"
+          "sha256": "432bced5d0c216866ec038be31acfa238ad3a867dd794427134b31cd558f0615"
         },
         {
           "path": "docs/PHASE4_OPTIONAL_ENHANCEMENT_GATE.md",

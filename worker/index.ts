@@ -3,6 +3,7 @@ import { handleImageOptimization, DEFAULT_DEVICE_SIZES, DEFAULT_IMAGE_SIZES } fr
 import handler from "vinext/server/app-router-entry";
 import { ADDRESS_SEARCH_PATH, addressLookupConfigured, handleAddressSearch, withAddressFlag, type AddressEnv } from "./address";
 import { DISTRICT_SPANS_PATH, handleDistrictSpans } from "./district-spans";
+import { SEARCH_SUGGEST_PATH, handleSearchSuggest } from "./search-suggest";
 import { DISTRICT_RESOLVE_PATH, districtIndexConfigured, handleDistrictResolve, withDistrictFlag, type DistrictEnv } from "./district";
 import { SHAPE_MEASURE_PATH, coarseGridConfigured, handleShapeMeasure, withShapeFlag, type ShapeEnv } from "./shape";
 
@@ -96,6 +97,13 @@ const worker = {
     // without a navigation. It reads only committed data and needs no binding.
     if (url.pathname === DISTRICT_SPANS_PATH) {
       return withSecurityHeaders(handleDistrictSpans(request));
+    }
+
+    // Search suggestions read only committed data, like the district spans.
+    // They stay off the app router so the index behind them is never bundled
+    // into a page and a typed query never becomes a page cache key.
+    if (url.pathname === SEARCH_SUGGEST_PATH) {
+      return withSecurityHeaders(handleSearchSuggest(request));
     }
 
     // Measuring a drawn shape reads whole grid tiles. It stays off the app

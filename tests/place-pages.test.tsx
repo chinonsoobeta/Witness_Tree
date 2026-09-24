@@ -82,7 +82,8 @@ test("place records put coverage before unchanged figures and provenance before 
   for (const locale of ["en", "fr"] as const) {
     for (const place of PLACES) {
       const markup = renderToStaticMarkup(<PlacePage locale={locale} place={place} view="chart" />);
-      assert.ok(markup.indexOf('class="coverage-statement"') < markup.indexOf('<output'));
+      const panel = markup.indexOf('class="coverage-statement place-hero-panel"');
+      assert.ok(panel >= 0 && panel < markup.indexOf('<output'));
       assert.ok(markup.indexOf('class="place-provenance"') < markup.indexOf('class="annual-change"'));
       assert.ok(markup.includes('class="place-identity"'));
       for (const stat of place.stats) {
@@ -98,7 +99,8 @@ test("place records put coverage before unchanged figures and provenance before 
 test("location fixtures state their limits before coordinates and explain an absent event record", () => {
   for (const locale of ["en", "fr"] as const) {
     const markup = renderToStaticMarkup(<LocationResult locale={locale} location={{ ...LOCATIONS[0], events: [] }} places={[]} />);
-    assert.ok(markup.indexOf('class="coverage-statement"') < markup.indexOf('class="coordinates"'));
+    const note = markup.indexOf('<details class="coverage-note">');
+    assert.ok(note >= 0 && note < markup.indexOf('class="coordinates"'));
     assert.match(markup, /class="no-record-result"/);
     assert.match(markup, /<strong>– /);
     assert.doesNotMatch(markup, />0</);

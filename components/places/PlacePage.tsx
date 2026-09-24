@@ -2,7 +2,7 @@ import { colon, COVERAGE_LABELS, formatHectares, formatPercent, semicolon, type 
 import type { Place } from "@/lib/places";
 import { ProvenanceBlock, ReportedValue } from "@/components/policy";
 import { CoverageStatement } from "@/components/policy/CoverageStatement";
-import { EvidenceLegend } from "@/components/policy/EvidenceLegend";
+import { EvidenceKey } from "@/components/policy/EvidenceKey";
 import { AnnualChangeChart } from "./AnnualChangeChart";
 import { absentYearCount, PlaceYearRows, yearRows } from "./PlaceYearRows";
 
@@ -38,7 +38,6 @@ export function PlacePage({
     locale === "en"
       ? {
           panel: "What this page can tell you",
-          evidenceClasses: "Evidence classes",
           observed: "What was observed, year by year",
           provenance: "Where these numbers come from",
           caution: "Before you cite this",
@@ -60,7 +59,6 @@ export function PlacePage({
         }
       : {
           panel: "Ce que cette page permet de savoir",
-          evidenceClasses: "Catégories de preuves",
           observed: "Ce qui a été observé, année par année",
           provenance: "D’où viennent ces chiffres",
           caution: "Avant de citer ces données",
@@ -95,7 +93,7 @@ export function PlacePage({
           <p className="place-hero-alias">{place.aliases[locale]}</p>
         </header>
 
-        <CoverageStatement locale={locale} title={text.panel} className="place-hero-panel">
+        <CoverageStatement locale={locale} title={text.panel} className="place-hero-panel" variant="panel">
           <ul className="place-coverage-keys">
             {place.coverage.map((item) => (
               <li key={item.grade}>
@@ -117,8 +115,7 @@ export function PlacePage({
       </div>
 
       <div className="place-evidence-strip">
-        <h2 className="eyebrow">{text.evidenceClasses}</h2>
-        <EvidenceLegend locale={locale} />
+        <EvidenceKey locale={locale} classes={[...place.events.map((event) => event.evidence), ...(absent > 0 ? (["unknown"] as const) : [])]} />
       </div>
 
       <div className="place-body">

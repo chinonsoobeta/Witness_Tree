@@ -83,8 +83,9 @@ test("method and decision copy use the current interval control", async () => {
     assert.match(content, /EXPLORE_YEAR_MIN/);
     assert.doesNotMatch(content, /default view (?:starts|begins) in 2000|vue par défaut commence en 2000/);
   }
-  assert.match(method, /each year shows the change since the year before/);
-  assert.match(method, /chaque année montre le changement depuis l’année précédente/);
+  // The control is a first and a last year, so the copy describes a span.
+  assert.match(method, /On Explore you choose a first and a last year/);
+  assert.match(method, /vous choisissez une première et une dernière année/);
 });
 
 test("Releases indexes the bounded release and Data and Explore point back to it", async () => {
@@ -97,7 +98,7 @@ test("Releases indexes the bounded release and Data and Explore point back to it
   assert.match(governance, /provinceBulkRelease\.id/);
   assert.match(governance, /provinceCsv\.url/);
   assert.match(governance, /provinceGeoPackage\.url/);
-  assert.match(governance, /No production data release satisfying the formal Phase 2 gate exists/);
+  assert.match(governance, /There is no final release yet\. It needs an independent comparison of the figures/);
   assert.doesNotMatch(governance, /No production data release exists\. The current repository/);
   assert.match(data, /\/en\/releases/);
   assert.match(data, /\/fr\/versions/);
@@ -106,10 +107,13 @@ test("Releases indexes the bounded release and Data and Explore point back to it
 });
 
 
-test("governance foregrounds accountability with a correction-instructions primary link", async () => {
+test("governance states its status under the title and links to the correction instructions", async () => {
   const source = await read("../components/governance/GovernancePage.tsx");
-  assert.ok(source.indexOf('className="coverage-statement governance-accountability"') < source.indexOf('page.sections.map'));
-  assert.match(source, /className="btn btn--primary" href=\{kind === "corrections" \? "#correction-instructions" : `\/\$\{locale\}\/corrections`\}/);
+  // No figures on these pages, so no figures caveat and no evidence key: the
+  // status and the way to report an error sit under the title as plain text.
+  assert.doesNotMatch(source, /CoverageStatement|EvidenceKey/);
+  assert.ok(source.indexOf('<p className="dek">{page.status}</p>') < source.indexOf("page.sections.map"));
+  assert.match(source, /href=\{kind === "corrections" \? "#correction-instructions" : `\/\$\{locale\}\/corrections`\}/);
   assert.match(source, /id=\{kind === "corrections" && index === 2 \? "correction-instructions" : undefined\}/);
-  for (const label of ["Accountability", "Responsabilité", "Read the correction instructions", "Consulter les instructions de correction"]) assert.ok(source.includes(label));
+  for (const label of ["Read the correction instructions", "Consulter les instructions de correction"]) assert.ok(source.includes(label));
 });

@@ -3,7 +3,6 @@ import Link from "next/link";
 import { HomeSearch, ProvinceBar, SiteShell } from "@/components/site";
 import { ProvinceRecordList } from "@/components/site/ProvinceRecordList";
 import { CumulativeHeadline } from "@/components/site/CumulativeHeadline";
-import { CoverageStatement } from "@/components/policy/CoverageStatement";
 import { EvidenceMarks } from "@/components/policy/EvidenceMarks";
 import { PRODUCT_NAME } from "@/lib/domain";
 import { provinceSpanReach } from "@/lib/explore/period";
@@ -45,13 +44,12 @@ export default function EnglishHome() {
 
     {/*
       The answer to the question in the h1, immediately under it.
-      It carries its own denominator, its own unmapped share and its own
-      refusal of the annual sum, so it does not lean on the standing
-      coverage banner below it to stay honest when it is read alone.
+      It carries its own denominator, its own unmapped share, its own
+      minimum and its own refusal of the annual sum, so it stays honest
+      when it is read alone.
     */}
     <CumulativeHeadline locale="en" />
 
-    <CoverageStatement locale="en"><p>These numbers are a minimum. Satellites mapped only part of each province, and the rest is treated as unknown, never as zero. If something isn’t shown here, that doesn’t mean it didn’t happen.</p></CoverageStatement>
 
     {/*
       The four marks and their definitions, in one place. They used to be a
@@ -69,15 +67,15 @@ export default function EnglishHome() {
       <ProvinceRecordList rows={SPAN_ROWS} locale="en" unknownContexts={UNKNOWN_CONTEXTS} />
       <p><Link href="/en/methods#coverage-gap">Why these areas were not mapped, and what we know about them</Link></p>
       <p><Link className="btn btn--primary" href="/en/explore">Explore the record</Link></p>
-      <p><small>Other provinces are coming soon.</small></p>
+      <p><small>The record covers these four provinces only.</small></p>
     </section>
 
     <section className="content-section">
       <h2>Read the record</h2>
       <div className="record-grid">
-        <article className="record-card"><p className="eyebrow">Components</p><h3>Evidence before numbers</h3><p>See how each figure is shown with its source and what we don’t know.</p><Link href="/en/components">Open the component gallery</Link></article>
+        <article className="record-card"><p className="eyebrow">How to read it</p><h3>What the marks mean</h3><p>Each figure is marked with its kind of evidence, how sure we are and how much was mapped.</p><Link href="/en/components">See the marks and labels</Link></article>
         <article className="record-card"><p className="eyebrow">Methods</p><h3>Definitions before numbers</h3><p>What counts as forest, how the figures are worked out, and how sure we are.</p><Link href="/en/methods">Read the methods</Link></article>
-        <article className="record-card"><p className="eyebrow">Data status</p><h3>Province data</h3><p>Download the province figures for {provinceSpanReach("en", "span")}, with their sources and limits.</p><Link href="/en/data">Review data transparency</Link></article>
+        <article className="record-card"><p className="eyebrow">Data</p><h3>Download the figures</h3><p>Download the province figures for {provinceSpanReach("en", "span")}, with their sources and limits.</p><Link href="/en/data">Go to downloads and sources</Link></article>
       </div>
     </section>
 

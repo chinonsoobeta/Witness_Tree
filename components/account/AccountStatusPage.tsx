@@ -75,7 +75,7 @@ export function AccountStatusPage({ locale }: Readonly<{ locale: Locale }>) {
         <h2>{copy.planned}</h2>
         <ul className="capability-grid">
           {copy.capabilities.map((item) => (
-            <li className="card card--sand" key={item}>
+            <li className="card" key={item}>
               {item}
             </li>
           ))}

@@ -111,6 +111,20 @@ a number.** Every screen gets:
   with no numbers it states accountability instead.
 - The **four evidence classes as a standing legend**, not a footnote. The repo already has the
   colours as `--edge-record`, `--edge-satellite`, `--edge-derived`, `--edge-unknown`.
+
+> **Superseded by an owner decision, 2026-09-23.** A full-width panel and a four-chip legend above
+> every title pushed the content down and repeated itself on pages with no figures. The rule is now:
+> a page that shows figures opens with a collapsed note, "What these figures can’t tell you" /
+> "Ce que ces chiffres ne disent pas" (`CoverageStatement`, default `note` variant); a page with no
+> figures states its status in a line under the title instead. An **evidence key**
+> (`EvidenceKey`) sits beside the marked figures and lists only the classes those figures use;
+> `EvidenceLegend` is removed. Where coverage states are themselves the figures (the place hero,
+> the draw result) the statement stays open (`variant="panel"`). Safety text, such as the wildfire
+> page's "not live" warning, is never folded into the note. The remaining rules below are unchanged.
+>
+> The same review retired Explore's separate List presentation: the figures table under the map
+> carries the same rows, so Explore shows the map, one legend under it, a reading panel beside it and
+> one figures section. An old `presentation=list` address still opens.
 - **Unknowns at the same visual weight as figures.** The load-bearing rule. On the landing page
   each province's unknown area gets its own bar beside its loss figure, because the province with
   the least loss is also the one with the largest unseen share.

@@ -57,7 +57,8 @@ test("the Data page carries the section in both locales", () => {
 test("Data leads with coverage and keeps provenance beside the reader downloads", () => {
   for (const locale of ["en", "fr"] as const) {
     const html = renderToStaticMarkup(<DataPage locale={locale} />);
-    assert.ok(html.indexOf('class="coverage-statement"') < html.indexOf('class="data-layout"'));
+    const note = html.indexOf('<details class="coverage-note">');
+    assert.ok(note >= 0 && note < html.indexOf('class="data-layout"'));
     assert.match(html, /<aside class="data-provenance" aria-label="[^"]+">/);
     assert.ok(html.indexOf('class="data-reader"') < html.indexOf('class="data-provenance"'));
     assert.match(html, /source-ledger\.json/);

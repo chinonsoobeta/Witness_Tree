@@ -1,5 +1,4 @@
 import { CoverageStatement } from "@/components/policy/CoverageStatement";
-import { EvidenceLegend } from "@/components/policy/EvidenceLegend";
 import { colon, formatYearRangeKey, type Locale } from "@/lib/domain";
 import { SourceCurrency } from "./SourceCurrency";
 import {
@@ -35,7 +34,7 @@ const COPY = {
     limits:
       "Every province has some land with no data, so every loss figure is a minimum for the mapped area. These files don’t show cause, responsibility, legality, sellable timber or conditions on the ground.",
     previewLimits:
-      "This is an early preview, not the formal Phase 2 release. Always read a figure with its evidence label, coverage and confidence, and don’t apply it beyond the boundaries and years it covers.",
+      "This is an early preview, not the final release. Always read a figure with its evidence label, coverage and confidence, and don’t apply it beyond the boundaries and years it covers.",
     recordsTitle: "Source records and documentation",
     description:
       "The source ledger lists each dataset’s name, publisher, licence, version, download date, coverage and origin. Its entries are still examples, and will be replaced with verified details before real data is loaded.",
@@ -83,7 +82,7 @@ const COPY = {
     limits:
       "Chaque province compte un territoire sans données; chaque valeur de perte est donc un minimum pour la zone cartographiée. Ces fichiers n’indiquent ni la cause, ni la responsabilité, ni la légalité, ni le bois vendable, ni les conditions sur le terrain.",
     previewLimits:
-      "Il s’agit d’un aperçu préliminaire, et non de la version officielle de la phase 2. Lisez toujours un chiffre avec sa catégorie de preuve, sa couverture et sa confiance, et ne l’appliquez pas au-delà des limites et des années qu’il couvre.",
+      "Il s’agit d’un aperçu préliminaire, et non de la version définitive. Lisez toujours un chiffre avec sa catégorie de preuve, sa couverture et sa confiance, et ne l’appliquez pas au-delà des limites et des années qu’il couvre.",
     recordsTitle: "Registres des sources et documentation",
     description:
       "Le registre des sources indique, pour chaque jeu de données, le nom, l’éditeur, la licence, la version, la date de téléchargement, la couverture et l’origine. Ses entrées sont encore des exemples, qui seront remplacés par des détails vérifiés avant le chargement de vraies données.",
@@ -118,7 +117,6 @@ export function DataPage({ locale }: Readonly<{ locale: Locale }>) {
         <h1>{copy.title}</h1>
       </header>
       <CoverageStatement locale={locale}><p>{copy.limits}</p></CoverageStatement>
-      <EvidenceLegend locale={locale} />
       <div className="data-layout">
       <div className="data-reader">
 
@@ -127,11 +125,17 @@ export function DataPage({ locale }: Readonly<{ locale: Locale }>) {
         <p>{copy.accessSummary}</p>
         <p className="notice card--sand"><strong>{copy.notice}</strong></p>
         <ul className="link-list">
-          <li className="card card--lift">
-            <a className="btn btn--primary" href={csv.url}>{copy.csv}</a>
+          <li className="card card--lift file-tile">
+            <span className="file-tile-format" aria-hidden="true">CSV</span>
+            <span className="file-tile-body">
+              <a href={csv.url}>{copy.csv}</a>
+            </span>
           </li>
-          <li className="card card--lift">
-            <a className="btn btn--primary" href={geopackage.url}>{copy.geopackage}</a>
+          <li className="card card--lift file-tile">
+            <span className="file-tile-format" aria-hidden="true">GPKG</span>
+            <span className="file-tile-body">
+              <a href={geopackage.url}>{copy.geopackage}</a>
+            </span>
           </li>
           <li className="card card--lift">
             <a href={locale === "en" ? "/en/data/official-harvest-comparison" : "/fr/donnees/comparaison-recolte-officielle"}>
@@ -152,13 +156,19 @@ export function DataPage({ locale }: Readonly<{ locale: Locale }>) {
         <p>{copy.spanSummary}</p>
         <p className="notice card--sand">{copy.spanLimits}</p>
         <ul className="link-list">
-          <li className="card card--lift">
-            <a className="btn btn--primary" href={provinceSpanRelease.csv.url}>{copy.spanCsv}</a>
-            <br /><small>{copy.checksum}{colon(locale)} <code>{provinceSpanRelease.csv.sha256}</code></small>
+          <li className="card card--lift file-tile">
+            <span className="file-tile-format" aria-hidden="true">CSV</span>
+            <span className="file-tile-body">
+              <a href={provinceSpanRelease.csv.url}>{copy.spanCsv}</a>
+              <small>{copy.checksum}{colon(locale)} <code>{provinceSpanRelease.csv.sha256}</code></small>
+            </span>
           </li>
-          <li className="card card--lift">
-            <a className="btn btn--primary" href={provinceSpanRelease.json.url}>{copy.spanJson}</a>
-            <br /><small>{copy.checksum}{colon(locale)} <code>{provinceSpanRelease.json.sha256}</code></small>
+          <li className="card card--lift file-tile">
+            <span className="file-tile-format" aria-hidden="true">JSON</span>
+            <span className="file-tile-body">
+              <a href={provinceSpanRelease.json.url}>{copy.spanJson}</a>
+              <small>{copy.checksum}{colon(locale)} <code>{provinceSpanRelease.json.sha256}</code></small>
+            </span>
           </li>
           <li className="card card--lift">
             <a href={provinceSpanRelease.manifestUrl}>{copy.spanManifest}</a>

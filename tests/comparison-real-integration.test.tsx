@@ -90,10 +90,10 @@ test("both comparison routes use real data and preserve exact selected ids", asy
     assert.match(html, /option value="federal-59001" selected/);
     assert.match(html, /option value="federal-59006" selected/);
     assert.match(html, /name="sort" value="share-asc"/);
-    assert.match(html, /Unknown|Inconnu/);
+    assert.match(html, /unknown|inconnu/i);
   }
-  assert.ok(english.indexOf("Side-by-side comparison") < english.indexOf("Detected change as a share of forested area"));
-  assert.ok(french.indexOf("Comparaison côte à côte") < french.indexOf("Changement détecté en part de la superficie forestière"));
+  assert.ok(english.indexOf("Side-by-side comparison") < english.indexOf("Detected loss as a share of forested area"));
+  assert.ok(french.indexOf("Comparaison côte à côte") < french.indexOf("Perte détectée en part de la superficie forestière"));
   const englishSource = readFileSync(new URL("../app/en/compare/page.tsx", import.meta.url), "utf8");
   const frenchSource = readFileSync(new URL("../app/fr/comparer/page.tsx", import.meta.url), "utf8");
   for (const source of [englishSource, frenchSource]) {
@@ -124,8 +124,10 @@ test("comparison routes disclose an unrecognized requested riding before the fal
 test("comparison routes state comparability limits before controls and figures", async () => {
   for (const Page of [EnglishComparePage, FrenchComparePage]) {
     const markup = renderToStaticMarkup(await Page({ searchParams: Promise.resolve({}) }));
-    assert.ok(markup.indexOf('class="coverage-statement"') < markup.indexOf('class="comparison-picker"'));
-    assert.ok(markup.indexOf('class="evidence-legend"') < markup.indexOf('class="comparison-side-by-side"'));
+    const note = markup.indexOf('<details class="coverage-note">');
+    assert.ok(note >= 0 && note < markup.indexOf('class="comparison-picker"'));
+    // The comparison's figures carry no evidence marks, so no key is shown.
+    assert.doesNotMatch(markup, /class="evidence-(legend|key)"/);
     assert.match(markup, /less was mapped|une plus petite partie a été cartographiée/);
   }
 });
