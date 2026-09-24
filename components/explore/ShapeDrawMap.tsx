@@ -294,6 +294,7 @@ export function ShapeDrawMap({
         {kind === "polygon" ? (
           <button
             type="button"
+            className="btn btn--ghost"
             onClick={() => {
               const removed = removeLastCorner(cornersRef.current);
               if (!removed) return;
@@ -307,6 +308,7 @@ export function ShapeDrawMap({
         ) : null}
         <button
           type="button"
+          className="btn btn--ghost"
           onClick={() => {
             anchorRef.current = null;
             setAnchor(null);
