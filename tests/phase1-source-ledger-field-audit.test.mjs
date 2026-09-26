@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
-import { OPTIONAL_ROW_IDS, REQUIRED_FIELDS, validatePhase1SourceLedgerFieldAudit } from "../scripts/check-phase1-source-ledger-field-audit.mjs";
+import { OPTIONAL_ROW_IDS, REQUIRED_FIELDS, WITHDRAWABLE_ROW_IDS, validatePhase1SourceLedgerFieldAudit } from "../scripts/check-phase1-source-ledger-field-audit.mjs";
 
 const read = (file) => JSON.parse(readFileSync(new URL(`../${file}`, import.meta.url), "utf8"));
 const audit = read("data/phase1-source-ledger-field-audit.json");
@@ -13,7 +13,10 @@ test("field audit accounts for the exact 31 canonical rows and every required fi
   assert.equal(validatePhase1SourceLedgerFieldAudit(audit, ledger, inventory), audit);
   assert.deepEqual(audit.requiredFields, REQUIRED_FIELDS);
   assert.equal(audit.rows.length, 31);
-  assert.equal(audit.coreRequiredRowCount, 22);
+  // 22 core rows less the four reserve and treaty rows the owner withdrew on 2026-09-26.
+  assert.equal(audit.coreRequiredRowCount, 18);
+  assert.equal(audit.withdrawnRowCount, 4);
+  assert.deepEqual(audit.rows.filter((row) => row.classification === "withdrawn").map((row) => row.id), ["indian-reserves", "first-nation-reserves", "historic-treaties", "modern-treaties"]);
   assert.equal(audit.optionalTrackedRowCount, 9);
   assert.equal(audit.coreCompleteRowCount, 2);
   assert.equal(audit.optionalCompleteRowCount, 0);
@@ -30,7 +33,7 @@ test("field audit accounts for the exact 31 canonical rows and every required fi
     assert.equal(row.fields.admissionState.status, "verified");
     assert.equal(row.fields.admissionState.value, isFederalAdmitted);
     assert.equal(row.fields.admissionState.evidenceBinding.expectedValue, isFederalAdmitted);
-    assert.equal(row.classification, OPTIONAL_ROW_IDS.includes(row.id) ? "optional" : "core");
+    assert.equal(row.classification, OPTIONAL_ROW_IDS.includes(row.id) ? "optional" : WITHDRAWABLE_ROW_IDS.includes(row.id) ? "withdrawn" : "core");
     assert.equal(row.canonicalProductionEligible, isFederalAdmitted);
     assert.equal(row.canonicalProductionAdmission, isFederalAdmitted);
     assert.equal(row.complete, isFederalAdmitted);
@@ -172,4 +175,12 @@ test("field records and evidence bindings reject uncontracted or unsafe fields",
   const traversal = structuredClone(audit);
   traversal.rows[0].fields.publisher.evidenceRefs[0] = "data/../data/phase1-production-source-ledger.json";
   assert.throws(() => validatePhase1SourceLedgerFieldAudit(traversal, ledger, inventory), /safe repository data paths/i);
+});
+
+test("a core row leaves the ledger count only by the owner's recorded scope decision", () => {
+  const decision = read("data/phase-scope-decision-2026-09-26.json");
+  // Without the withdrawal, the four rows must be core again and the audit no longer fits.
+  assert.throws(() => validatePhase1SourceLedgerFieldAudit(audit, ledger, inventory, undefined, undefined, { ...decision, withdrawnLedgerRows: [] }), /must be classified as core|core, optional and withdrawn/);
+  // And the decision cannot withdraw a row that is not a reserve or treaty source.
+  assert.throws(() => validatePhase1SourceLedgerFieldAudit(audit, ledger, inventory, undefined, undefined, { ...decision, withdrawnLedgerRows: [...decision.withdrawnLedgerRows, "ntems-annual-land-cover"] }), /may not be withdrawn/);
 });

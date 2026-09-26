@@ -7147,7 +7147,7 @@
         }
       },
       "complete": false,
-      "classification": "core"
+      "classification": "withdrawn"
     },
     {
       "id": "first-nation-reserves",
@@ -7257,7 +7257,7 @@
         }
       },
       "complete": false,
-      "classification": "core"
+      "classification": "withdrawn"
     },
     {
       "id": "historic-treaties",
@@ -7367,7 +7367,7 @@
         }
       },
       "complete": false,
-      "classification": "core"
+      "classification": "withdrawn"
     },
     {
       "id": "modern-treaties",
@@ -7478,11 +7478,12 @@
         }
       },
       "complete": false,
-      "classification": "core"
+      "classification": "withdrawn"
     }
   ],
-  "coreRequiredRowCount": 22,
+  "coreRequiredRowCount": 18,
   "optionalTrackedRowCount": 9,
+  "withdrawnRowCount": 4,
   "coreCompleteRowCount": 2,
   "optionalCompleteRowCount": 0,
   "coreAdmittedRowCount": 2,

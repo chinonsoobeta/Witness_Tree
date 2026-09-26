@@ -4,13 +4,18 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { readScopeDecision, removedCriteria, SCOPE_DECISION_PATH } from "./phase-scope-decision.mjs";
+
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const REQUIRED_GATES = [
+const PLAN_GATES = [
   ["complete-production-ledger", "fail"],
   ["raw-file-archive-recovery", "fail"],
   ["coverage-geometry", "pass"],
   ["corruption-validation-suite", "pass"]
 ];
+// The owner's scope decision of 2026-09-26 may remove the archive-recovery gate
+// and nothing else; a gate leaves the count only while that record names it.
+const REMOVABLE = ["raw-file-archive-recovery"];
 
 function nonEmptyString(value, name) {
   assert.equal(typeof value, "string", `${name} must be a string.`);
@@ -30,7 +35,9 @@ function validateEvidence(evidence, name, root, verifyHashes) {
   }
 }
 
-export function validatePhase1ExitStatus(record, { root = ROOT, verifyHashes = true } = {}) {
+export function validatePhase1ExitStatus(record, { root = ROOT, verifyHashes = true, decision = readScopeDecision(root) } = {}) {
+  const removed = removedCriteria(decision, 1, REMOVABLE);
+  const REQUIRED_GATES = PLAN_GATES.filter(([id]) => !removed.includes(id));
   assert.equal(record?.schemaVersion, "phase1-exit-status/v1");
   assert.match(record.asOf, /^\d{4}-\d{2}-\d{2}$/);
   const requirements = record.requirementsEvidence;
@@ -38,8 +45,9 @@ export function validatePhase1ExitStatus(record, { root = ROOT, verifyHashes = t
   validateEvidence([requirements], "requirementsEvidence", root, verifyHashes);
 
   const exit = record.formalExit;
-  assert.equal(exit?.method, "unweighted-four-gate-count");
-  assert.ok(Array.isArray(exit.gates) && exit.gates.length === REQUIRED_GATES.length, "Formal exit must have exactly four gates.");
+  assert.equal(exit?.method, "unweighted-gate-count");
+  assert.ok(Array.isArray(exit.gates) && exit.gates.length === REQUIRED_GATES.length, "Formal exit must have the plan's four gates less those the scope decision removes.");
+  assert.deepEqual(exit.removedGates ?? [], removed.map((id) => ({ id, decision: SCOPE_DECISION_PATH })), "Removed gates must match the scope decision.");
   assert.deepEqual(exit.gates.map(({ id, status }) => [id, status]), REQUIRED_GATES, "The report must retain the authoritative current gate results.");
   for (const gate of exit.gates) {
     nonEmptyString(gate.requirement, `${gate.id}.requirement`);
@@ -50,11 +58,11 @@ export function validatePhase1ExitStatus(record, { root = ROOT, verifyHashes = t
   }
   const passed = exit.gates.filter(({ status }) => status === "pass").length;
   assert.equal(exit.passed, passed, "Passed gates must be derived from gate statuses.");
-  assert.equal(exit.total, REQUIRED_GATES.length, "Formal exit denominator is always four gates.");
+  assert.equal(exit.total, REQUIRED_GATES.length, "Formal exit denominator is the plan's four gates less those the scope decision removes.");
   assert.equal(exit.ratio, `${passed}/${REQUIRED_GATES.length}`, "Formal exit ratio must be derived from gate statuses.");
-  assert.equal(exit.status, passed === REQUIRED_GATES.length ? "complete" : "incomplete", "Complete status is allowed only when all four gates pass.");
+  assert.equal(exit.status, passed === REQUIRED_GATES.length ? "complete" : "incomplete", "Complete status is allowed only when every counted gate passes.");
   nonEmptyString(exit.completionRule, "formalExit.completionRule");
-  assert.match(exit.completionRule, /only when every one.*four.*passes/i, "Completion rule must remain fail closed.");
+  assert.match(exit.completionRule, /only when every one.*passes/i, "Completion rule must remain fail closed.");
   assert.doesNotMatch(JSON.stringify(exit), /39\.2741935/, "Historical raw-evidence tracking must not enter formal exit coverage.");
 
   const historical = record.historicalRawEvidenceTracking;

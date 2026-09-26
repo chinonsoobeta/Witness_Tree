@@ -5,8 +5,16 @@ import { checkPhase1ExitStatus, validatePhase1ExitStatus } from "../scripts/chec
 
 const read = () => JSON.parse(readFileSync(new URL("../data/phase1-exit-status.json", import.meta.url), "utf8"));
 
-test("Phase 1 exit status derives the current unweighted 2/4 result", () => {
-  assert.deepEqual(checkPhase1ExitStatus(), { status: "incomplete", passed: 2, total: 4, ratio: "2/4" });
+test("Phase 1 exit status derives the current unweighted 2/3 result after the archive gate was removed", () => {
+  assert.deepEqual(checkPhase1ExitStatus(), { status: "incomplete", passed: 2, total: 3, ratio: "2/3" });
+});
+
+test("the archive gate leaves the count only by the owner's recorded scope decision", () => {
+  const decision = JSON.parse(readFileSync(new URL("../data/phase-scope-decision-2026-09-26.json", import.meta.url), "utf8"));
+  const withoutRemoval = { ...decision, removedCriteria: decision.removedCriteria.filter((item) => item.phase !== 1) };
+  assert.throws(() => validatePhase1ExitStatus(read(), { verifyHashes: false, decision: withoutRemoval }), /four gates less those|Removed gates/);
+  const ledgerRemoved = { ...decision, removedCriteria: [...decision.removedCriteria, { phase: 1, criterion: "complete-production-ledger", reason: "An attempt to remove a gate this phase does not allow." }] };
+  assert.throws(() => validatePhase1ExitStatus(read(), { verifyHashes: false, decision: ledgerRemoved }), /does not allow complete-production-ledger/);
 });
 
 test("Phase 1 exit status rejects a premature completion or stale tracker in formal coverage", () => {

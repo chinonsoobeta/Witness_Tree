@@ -1,18 +1,19 @@
 {
   "schemaVersion": "phase1-exit-status/v1",
-  "asOf": "2026-08-27",
+  "asOf": "2026-09-26",
   "requirementsEvidence": {
     "path": "docs/CONTROLLING_IMPLEMENTATION_PLAN.md",
     "sha256": "9c861da1b185ee2b561040458def3f244377f907a886601236b08c0a71a29b7b",
     "sections": ["Phase 1 — Exit criteria", "Verified completion checkpoint through 2026-08-25"]
   },
   "formalExit": {
-    "method": "unweighted-four-gate-count",
+    "method": "unweighted-gate-count",
     "status": "incomplete",
     "passed": 2,
-    "total": 4,
-    "ratio": "2/4",
-    "completionRule": "Complete only when every one of the four Phase 1 exit gates passes.",
+    "total": 3,
+    "ratio": "2/3",
+    "completionRule": "Complete only when every one of the Phase 1 exit gates the owner's scope decision keeps in the count passes. On 2026-09-26 the owner removed the raw-file archive recovery gate; no archive or recovery proof is claimed.",
+    "removedGates": [{"id": "raw-file-archive-recovery", "decision": "data/phase-scope-decision-2026-09-26.json"}],
     "gates": [
       {
         "id": "complete-production-ledger",
@@ -21,28 +22,11 @@
         "requirement": "100 percent of production datasets have a complete ledger entry.",
         "evidence": [
           {"path": "data/phase1-production-source-ledger.json", "sha256": "4ffc278a2b0bfc6308f8d6af57fc1f2fe36466b1fba758538749a9e4dd2693ee"},
-          {"path": "data/phase1-source-ledger-field-audit.json", "sha256": "6a5ce00a68e50e3a5be33ea9d67389b320141847f91925751c187d4ca00c3599"},
+          {"path": "data/phase1-source-ledger-field-audit.json", "sha256": "c71d7d1c1bde3fa5f5af897f19b36b0966768c2af431c94a4d476bf2ef86d128"},
           {"path": "data/phase1-optional-enhancements.json", "sha256": "2617e8a975b2fe7d328b7cb43834cf89aa34f2df028a57d517168277c57d24be"},
           {"path": "data/phase1-current-state-completion-audit.json", "sha256": "f0c59e0f66a0cfdc26d4f97a4defd6ec09db4379623db303e09b1d9d5b2a3c07"}
         ],
         "reason": "The authoritative ledger is partially admitted. The Version 2.1 field audit separates 22 core rows from nine tracked optional enhancements and records 2/22 complete and admitted core rows; the universal 22-row criterion remains open, and optional permission risks do not block core completion."
-      },
-      {
-        "id": "raw-file-archive-recovery",
-        "label": {"en": "Raw-file archive recovery", "fr": "Récupération des fichiers bruts archivés"},
-        "status": "fail",
-        "requirement": "Every raw file has a checksum and can be re-fetched or restored from the archive.",
-        "evidence": [
-          {"path": "data/phase1-current-state-completion-audit.json", "sha256": "f0c59e0f66a0cfdc26d4f97a4defd6ec09db4379623db303e09b1d9d5b2a3c07"},
-          {"path": "data/phase1-archive-live-readback-2026-08-20.json", "sha256": "0e9430e3aebf258a592b2c310e8a01400d2eb925e699be901e90cb2650fed342"},
-          {"path": "data/federal-electoral-archive-recovery-evidence.json", "sha256": "18b9fbfa5e3eecdc33ad0098f5ffa55f7bfebb1a47d2e33b7f01a94e05a6ed32"},
-          {"path": "data/current-wildfire-exact-raw-archive-capture-2026-08-25.json", "sha256": "6600c3b7eb00c80ae8220c976a5b4038c2c59c959dc14a239d1cacdb979b9990"},
-          {"path": "data/qc-fourth-inventory-exact-archive-readback-2026-08-25.json", "sha256": "8624b6283177c5910d04a4933714e7bd4193e9c7becc821d04c4d64582d4c689"},
-          {"path": "data/phase1-nbac-profile-2026-08-27.json", "sha256": "edc03f721a04427f06480e24e85b7d056eac2b9026a852ef11a6a571bcac8b42"},
-          {"path": "data/nbac-archive-receipt-2026-08-27.json", "sha256": "51fad635a0984a51807245de2f507d9a47f02c982e4d72a2c341eac7ffccb219"},
-          {"path": "data/phase1-canonical-raw-inventory-2026-08-27.json", "sha256": "0e262c5b3f3b9b9acb6299c09e1846115d67c2d8e152c42d46dd78eb44d061f8"}
-        ],
-        "reason": "The federal raw payload/manifest, four current-wildfire raw payload/manifest pairs, and the Québec 62-object archive have checksum-bound exact-version evidence. The exact NBAC payload now also has a durable exact-version primary readback and COMPLIANCE-retention receipt, but no recovery-replica proof. The canonical local inventory verifies 120 physical artifacts byte-for-byte across 17 complete local rows and one partial row, while four core rows remain unstaged. Local checksums do not prove archive restoration. The requirement is universal, and other raw files still lack the complete archive-and-recovery evidence needed to pass."
       },
       {
         "id": "coverage-geometry",

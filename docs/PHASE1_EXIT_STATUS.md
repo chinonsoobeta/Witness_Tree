@@ -1,5 +1,7 @@
 # Phase 1 exit status
 
+**Current: 2/3.** On 2026-09-26 the owner removed the raw-file archive recovery gate and withdrew the four reserve and treaty rows from the ledger core, which now has 18 rows, 2 of them complete ([decision](PHASE_SCOPE_DECISION_2026-09-26.md)). No archive or recovery proof is claimed. The rest of this page describes the position before that decision.
+
 As of 2026-08-27, the formal Version 2.1 Phase 1 exit status is **incomplete: 2/4 unweighted gates pass (50%)**. This record implements the four exit criteria in the controlling plan; it does not claim production admission, release, or a factual upgrade.
 
 | Gate | Result | Bound evidence |
