@@ -1,6 +1,7 @@
 import {
   matchDetectedChange,
   type DetectedChange,
+  type MatchingResult,
   type OfficialRecordCandidate,
 } from "../pipeline/matching";
 import type { ChangePatchBinding } from "./raster-to-change-vector";
@@ -131,6 +132,18 @@ function validateCandidateSets(candidateSets: unknown): readonly string[] {
 }
 
 /**
+ * The non-match reason for one unmatched change: no candidate at all, or the
+ * sorted set of the reasons its candidates were rejected. The report and the
+ * large-scale matching runner both use this, so the two cannot disagree.
+ */
+export function nonMatchReasonKey(candidateCount: number, result: MatchingResult): string {
+  if (candidateCount === 0) return "no-official-record-candidates";
+  return [...new Set(result.rejectedCandidates.map(({ reason }) => reason))]
+    .sort((left, right) => left < right ? -1 : left > right ? 1 : 0)
+    .join(",") || "no-qualifying-official-record";
+}
+
+/**
  * Produces the Phase 4 reporting values only from an explicitly admitted,
  * transform-approved local source and materialized change geometry. This is a
  * non-production calculation: publication and production eligibility are
@@ -164,11 +177,7 @@ export function reportProvincialMatching(
       matchedChanges += 1;
       continue;
     }
-    const reason = candidates.length === 0
-      ? "no-official-record-candidates"
-      : [...new Set(result.rejectedCandidates.map(({ reason: rejected }) => rejected))]
-        .sort((left, right) => left < right ? -1 : left > right ? 1 : 0)
-        .join(",") || "no-qualifying-official-record";
+    const reason = nonMatchReasonKey(candidates.length, result);
     reasons[reason] = (reasons[reason] ?? 0) + 1;
   }
   const assessedChanges = candidateSets.length;

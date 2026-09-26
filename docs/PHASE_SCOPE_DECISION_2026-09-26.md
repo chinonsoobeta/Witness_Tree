@@ -56,6 +56,7 @@ officer's confirmation.
 ## What this does not claim
 
 No expert review, independent comparison, archive recovery, reserve or treaty
-geography, or right-of-reply route exists because of this decision. Phase 4
-still needs its matching run, and Phase 1 still needs complete ledger entries
-for its 18 core rows.
+geography, or right-of-reply route exists because of this decision. Phase 1's
+18 core ledger entries were completed separately the same day. Phase 4's
+matching run was computed the same day and awaits the owner's admission and an
+outside review.

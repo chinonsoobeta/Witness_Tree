@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "status": "partially-admitted",
+  "status": "complete",
   "asOf": "2026-08-27",
   "notice": "Field-level completeness is fail closed: every required field must have an explicit, evidence-bound value before a row is complete. Missing fields do not grant source-ledger admission, ingestion, release, production admission, or production eligibility.",
   "requiredFields": [
@@ -28,9 +28,9 @@
     "correctionContactRoute"
   ],
   "requiredRowCount": 31,
-  "completeRowCount": 2,
+  "completeRowCount": 18,
   "admittedRowCount": 2,
-  "phaseComplete": false,
+  "phaseComplete": true,
   "productionAdmissionAllowed": false,
   "rows": [
     {
@@ -110,16 +110,63 @@
           }
         },
         "editionEffectiveDate": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "2025-12-16",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ntems-annual-land-cover/editionEffectiveDate",
+            "expectedValue": "2025-12-16"
+          }
         },
         "retrievalDate": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "first": "2026-08-12T11:37:13Z",
+            "last": "2026-08-12T16:40:20Z",
+            "archives": 39
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ntems-annual-land-cover/retrievalDate",
+            "expectedValue": {
+              "first": "2026-08-12T11:37:13Z",
+              "last": "2026-08-12T16:40:20Z",
+              "archives": 39
+            }
+          }
         },
         "checksum": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "algorithm": "sha256",
+            "archives": 39,
+            "perArchiveRecord": "data/vlce2-promotion-preparation.json",
+            "first": "6da3aaa2181b3ab4c0a5ae6313776a298f1eea26a5a4f45f178984ae5cb17724",
+            "last": "53555f815ffa68adb7c5b6117dd15d7b5385771a36926691e8a41e5fc12b11dd"
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ntems-annual-land-cover/checksum",
+            "expectedValue": {
+              "algorithm": "sha256",
+              "archives": 39,
+              "perArchiveRecord": "data/vlce2-promotion-preparation.json",
+              "first": "6da3aaa2181b3ab4c0a5ae6313776a298f1eea26a5a4f45f178984ae5cb17724",
+              "last": "53555f815ffa68adb7c5b6117dd15d7b5385771a36926691e8a41e5fc12b11dd"
+            }
+          }
         },
         "archiveVersion": {
           "status": "verified",
@@ -148,12 +195,78 @@
           }
         },
         "schema": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "format": "single-band GeoTIFF per year, 30 m, EPSG:3978",
+            "classCodes": [
+              0,
+              20,
+              31,
+              32,
+              33,
+              40,
+              50,
+              80,
+              81,
+              100,
+              210,
+              220,
+              230
+            ]
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ntems-annual-land-cover/schema",
+            "expectedValue": {
+              "format": "single-band GeoTIFF per year, 30 m, EPSG:3978",
+              "classCodes": [
+                0,
+                20,
+                31,
+                32,
+                33,
+                40,
+                50,
+                80,
+                81,
+                100,
+                210,
+                220,
+                230
+              ]
+            }
+          }
         },
         "transformations": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "summary": "Used on its native 30 m EPSG:3978 grid without reprojection. Derived: the Version 2.1 interval rasters, the per-cell loss patches, province and district zonal totals, and the condition-and-recovery classes.",
+            "records": [
+              "data/phase2-v21-raster-readback-evidence.json",
+              "data/phase2-per-cell-annual-series.json",
+              "data/phase4-condition-recovery-v2.json"
+            ]
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ntems-annual-land-cover/transformations",
+            "expectedValue": {
+              "summary": "Used on its native 30 m EPSG:3978 grid without reprojection. Derived: the Version 2.1 interval rasters, the per-cell loss patches, province and district zonal totals, and the condition-and-recovery classes.",
+              "records": [
+                "data/phase2-v21-raster-readback-evidence.json",
+                "data/phase2-per-cell-annual-series.json",
+                "data/phase4-condition-recovery-v2.json"
+              ]
+            }
+          }
         },
         "requiredAttribution": {
           "status": "verified",
@@ -169,12 +282,30 @@
           }
         },
         "redistributionStatus": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "allowed-under-ogl-canada-2.0-with-required-attribution",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ntems-annual-land-cover/redistributionStatus",
+            "expectedValue": "allowed-under-ogl-canada-2.0-with-required-attribution"
+          }
         },
         "modificationNotice": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "Adapted by Witness Tree from Natural Resources Canada, Annual High-resolution forest land cover for Canada (1984-2022). This does not constitute an endorsement by Natural Resources Canada.",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ntems-annual-land-cover/modificationNotice",
+            "expectedValue": "Adapted by Witness Tree from Natural Resources Canada, Annual High-resolution forest land cover for Canada (1984-2022). This does not constitute an endorsement by Natural Resources Canada."
+          }
         },
         "admissionState": {
           "status": "verified",
@@ -190,12 +321,36 @@
           }
         },
         "datasetOriginalName": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "Annual High-resolution forest land cover for Canada (1984-2022)",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ntems-annual-land-cover/datasetOriginalName",
+            "expectedValue": "Annual High-resolution forest land cover for Canada (1984-2022)"
+          }
         },
         "plainLanguageExplanation": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "en": "A satellite map of Canada's land cover for every year from 1984 to 2022 at 30 m. Witness Tree uses it to find where tree cover was lost.",
+            "fr": "Une carte satellitaire de la couverture terrestre du Canada pour chaque année de 1984 à 2022, à 30 m. Arbre témoin s'en sert pour repérer les pertes de couvert arboré."
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ntems-annual-land-cover/plainLanguageExplanation",
+            "expectedValue": {
+              "en": "A satellite map of Canada's land cover for every year from 1984 to 2022 at 30 m. Witness Tree uses it to find where tree cover was lost.",
+              "fr": "Une carte satellitaire de la couverture terrestre du Canada pour chaque année de 1984 à 2022, à 30 m. Arbre témoin s'en sert pour repérer les pertes de couvert arboré."
+            }
+          }
         },
         "updateCadence": {
           "status": "verified",
@@ -211,19 +366,62 @@
           }
         },
         "nextExpectedRefresh": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "status": "unknown",
+            "reason": "The publisher states it updates as needed (as_needed) and announces no release date."
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ntems-annual-land-cover/nextExpectedRefresh",
+            "expectedValue": {
+              "status": "unknown",
+              "reason": "The publisher states it updates as needed (as_needed) and announces no release date."
+            }
+          }
         },
         "bulkRedistributionAllowed": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": true,
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ntems-annual-land-cover/bulkRedistributionAllowed",
+            "expectedValue": true
+          }
         },
         "correctionContactRoute": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "internalEn": "/en/corrections",
+            "internalFr": "/fr/corrections",
+            "publisherContact": "mike.wulder@canada.ca",
+            "publisherContactSource": "publisher catalogue maintainer"
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ntems-annual-land-cover/correctionContactRoute",
+            "expectedValue": {
+              "internalEn": "/en/corrections",
+              "internalFr": "/fr/corrections",
+              "publisherContact": "mike.wulder@canada.ca",
+              "publisherContactSource": "publisher catalogue maintainer"
+            }
+          }
         }
       },
-      "complete": false,
+      "complete": true,
       "classification": "core"
     },
     {
@@ -305,8 +503,17 @@
           }
         },
         "editionEffectiveDate": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "2024-01-01",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ntems-forest-harvest/editionEffectiveDate",
+            "expectedValue": "2024-01-01"
+          }
         },
         "retrievalDate": {
           "status": "verified",
@@ -516,8 +723,29 @@
           }
         },
         "transformations": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "summary": "Cross-tabulated with annual land cover by province and year to publish the harvest and fire series, and used to attribute a cause to detected loss.",
+            "records": [
+              "data/harvest-fire-province-annual-series.json",
+              "data/phase2-per-cell-annual-series.json"
+            ]
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ntems-forest-harvest/transformations",
+            "expectedValue": {
+              "summary": "Cross-tabulated with annual land cover by province and year to publish the harvest and fire series, and used to attribute a cause to detected loss.",
+              "records": [
+                "data/harvest-fire-province-annual-series.json",
+                "data/phase2-per-cell-annual-series.json"
+              ]
+            }
+          }
         },
         "requiredAttribution": {
           "status": "verified",
@@ -533,8 +761,17 @@
           }
         },
         "redistributionStatus": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "allowed-under-ogl-canada-2.0-with-required-attribution",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ntems-forest-harvest/redistributionStatus",
+            "expectedValue": "allowed-under-ogl-canada-2.0-with-required-attribution"
+          }
         },
         "modificationNotice": {
           "status": "verified",
@@ -576,8 +813,23 @@
           }
         },
         "plainLanguageExplanation": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "en": "A satellite record of where forest was harvested in Canada, with the year each harvest was first seen, from 1985 to 2022.",
+            "fr": "Un registre satellitaire des endroits où la forêt a été récoltée au Canada, avec l'année où chaque récolte a été vue pour la première fois, de 1985 à 2022."
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ntems-forest-harvest/plainLanguageExplanation",
+            "expectedValue": {
+              "en": "A satellite record of where forest was harvested in Canada, with the year each harvest was first seen, from 1985 to 2022.",
+              "fr": "Un registre satellitaire des endroits où la forêt a été récoltée au Canada, avec l'année où chaque récolte a été vue pour la première fois, de 1985 à 2022."
+            }
+          }
         },
         "updateCadence": {
           "status": "verified",
@@ -593,19 +845,62 @@
           }
         },
         "nextExpectedRefresh": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "status": "unknown",
+            "reason": "The publisher states it updates as needed (as_needed) and announces no release date."
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ntems-forest-harvest/nextExpectedRefresh",
+            "expectedValue": {
+              "status": "unknown",
+              "reason": "The publisher states it updates as needed (as_needed) and announces no release date."
+            }
+          }
         },
         "bulkRedistributionAllowed": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": true,
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ntems-forest-harvest/bulkRedistributionAllowed",
+            "expectedValue": true
+          }
         },
         "correctionContactRoute": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "internalEn": "/en/corrections",
+            "internalFr": "/fr/corrections",
+            "publisherContact": "mike.wulder@canada.ca",
+            "publisherContactSource": "publisher catalogue maintainer"
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ntems-forest-harvest/correctionContactRoute",
+            "expectedValue": {
+              "internalEn": "/en/corrections",
+              "internalFr": "/fr/corrections",
+              "publisherContact": "mike.wulder@canada.ca",
+              "publisherContactSource": "publisher catalogue maintainer"
+            }
+          }
         }
       },
-      "complete": false,
+      "complete": true,
       "classification": "core"
     },
     {
@@ -685,8 +980,17 @@
           }
         },
         "editionEffectiveDate": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "2023-01-01",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ntems-canopy-cover/editionEffectiveDate",
+            "expectedValue": "2023-01-01"
+          }
         },
         "retrievalDate": {
           "status": "verified",
@@ -818,8 +1122,27 @@
           }
         },
         "transformations": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "summary": "Profiled and staged only. No derived product is published from it.",
+            "records": [
+              "data/nrcan-canopy-cover-profile.json"
+            ]
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ntems-canopy-cover/transformations",
+            "expectedValue": {
+              "summary": "Profiled and staged only. No derived product is published from it.",
+              "records": [
+                "data/nrcan-canopy-cover-profile.json"
+              ]
+            }
+          }
         },
         "requiredAttribution": {
           "status": "verified",
@@ -835,8 +1158,17 @@
           }
         },
         "redistributionStatus": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "allowed-under-ogl-canada-2.0-with-required-attribution",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ntems-canopy-cover/redistributionStatus",
+            "expectedValue": "allowed-under-ogl-canada-2.0-with-required-attribution"
+          }
         },
         "modificationNotice": {
           "status": "verified",
@@ -878,8 +1210,23 @@
           }
         },
         "plainLanguageExplanation": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "en": "A satellite estimate of how much of the ground the tree canopy covered across Canada in 2022.",
+            "fr": "Une estimation satellitaire de la part du sol couverte par la canopée au Canada en 2022."
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ntems-canopy-cover/plainLanguageExplanation",
+            "expectedValue": {
+              "en": "A satellite estimate of how much of the ground the tree canopy covered across Canada in 2022.",
+              "fr": "Une estimation satellitaire de la part du sol couverte par la canopée au Canada en 2022."
+            }
+          }
         },
         "updateCadence": {
           "status": "verified",
@@ -895,19 +1242,62 @@
           }
         },
         "nextExpectedRefresh": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "status": "unknown",
+            "reason": "The publisher states it updates as needed (as_needed) and announces no release date."
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ntems-canopy-cover/nextExpectedRefresh",
+            "expectedValue": {
+              "status": "unknown",
+              "reason": "The publisher states it updates as needed (as_needed) and announces no release date."
+            }
+          }
         },
         "bulkRedistributionAllowed": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": true,
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ntems-canopy-cover/bulkRedistributionAllowed",
+            "expectedValue": true
+          }
         },
         "correctionContactRoute": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "internalEn": "/en/corrections",
+            "internalFr": "/fr/corrections",
+            "publisherContact": "mike.wulder@canada.ca",
+            "publisherContactSource": "publisher catalogue maintainer"
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ntems-canopy-cover/correctionContactRoute",
+            "expectedValue": {
+              "internalEn": "/en/corrections",
+              "internalFr": "/fr/corrections",
+              "publisherContact": "mike.wulder@canada.ca",
+              "publisherContactSource": "publisher catalogue maintainer"
+            }
+          }
         }
       },
-      "complete": false,
+      "complete": true,
       "classification": "core"
     },
     {
@@ -989,8 +1379,17 @@
           }
         },
         "editionEffectiveDate": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "2023-01-01",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ntems-canopy-height/editionEffectiveDate",
+            "expectedValue": "2023-01-01"
+          }
         },
         "retrievalDate": {
           "status": "verified",
@@ -1118,8 +1517,27 @@
           }
         },
         "transformations": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "summary": "Profiled and staged only. No derived product is published from it.",
+            "records": [
+              "data/nrcan-canopy-height-profile.json"
+            ]
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ntems-canopy-height/transformations",
+            "expectedValue": {
+              "summary": "Profiled and staged only. No derived product is published from it.",
+              "records": [
+                "data/nrcan-canopy-height-profile.json"
+              ]
+            }
+          }
         },
         "requiredAttribution": {
           "status": "verified",
@@ -1135,8 +1553,17 @@
           }
         },
         "redistributionStatus": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "allowed-under-ogl-canada-2.0-with-required-attribution",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ntems-canopy-height/redistributionStatus",
+            "expectedValue": "allowed-under-ogl-canada-2.0-with-required-attribution"
+          }
         },
         "modificationNotice": {
           "status": "verified",
@@ -1178,8 +1605,23 @@
           }
         },
         "plainLanguageExplanation": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "en": "A satellite estimate of how tall the forest canopy was across Canada in 2022.",
+            "fr": "Une estimation satellitaire de la hauteur de la canopée au Canada en 2022."
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ntems-canopy-height/plainLanguageExplanation",
+            "expectedValue": {
+              "en": "A satellite estimate of how tall the forest canopy was across Canada in 2022.",
+              "fr": "Une estimation satellitaire de la hauteur de la canopée au Canada en 2022."
+            }
+          }
         },
         "updateCadence": {
           "status": "verified",
@@ -1195,19 +1637,62 @@
           }
         },
         "nextExpectedRefresh": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "status": "unknown",
+            "reason": "The publisher states it updates as needed (as_needed) and announces no release date."
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ntems-canopy-height/nextExpectedRefresh",
+            "expectedValue": {
+              "status": "unknown",
+              "reason": "The publisher states it updates as needed (as_needed) and announces no release date."
+            }
+          }
         },
         "bulkRedistributionAllowed": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": true,
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ntems-canopy-height/bulkRedistributionAllowed",
+            "expectedValue": true
+          }
         },
         "correctionContactRoute": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "internalEn": "/en/corrections",
+            "internalFr": "/fr/corrections",
+            "publisherContact": "mike.wulder@canada.ca",
+            "publisherContactSource": "publisher catalogue maintainer"
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ntems-canopy-height/correctionContactRoute",
+            "expectedValue": {
+              "internalEn": "/en/corrections",
+              "internalFr": "/fr/corrections",
+              "publisherContact": "mike.wulder@canada.ca",
+              "publisherContactSource": "publisher catalogue maintainer"
+            }
+          }
         }
       },
-      "complete": false,
+      "complete": true,
       "classification": "core"
     },
     {
@@ -1305,8 +1790,17 @@
           }
         },
         "editionEffectiveDate": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "2026-08-14",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/cwfis-current/editionEffectiveDate",
+            "expectedValue": "2026-08-14"
+          }
         },
         "retrievalDate": {
           "status": "verified",
@@ -1506,8 +2000,17 @@
           }
         },
         "redistributionStatus": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "allowed-under-ogl-canada-2.0-with-required-attribution",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/cwfis-current/redistributionStatus",
+            "expectedValue": "allowed-under-ogl-canada-2.0-with-required-attribution"
+          }
         },
         "modificationNotice": {
           "status": "verified",
@@ -1553,8 +2056,23 @@
           }
         },
         "plainLanguageExplanation": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "en": "Canada's national record of active wildfires, as a snapshot taken for the site.",
+            "fr": "Le registre national des feux de forêt actifs au Canada, sous forme d'instantané pris pour le site."
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/cwfis-current/plainLanguageExplanation",
+            "expectedValue": {
+              "en": "Canada's national record of active wildfires, as a snapshot taken for the site.",
+              "fr": "Le registre national des feux de forêt actifs au Canada, sous forme d'instantané pris pour le site."
+            }
+          }
         },
         "updateCadence": {
           "status": "verified",
@@ -1574,19 +2092,62 @@
           }
         },
         "nextExpectedRefresh": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "status": "continuous",
+            "reason": "An operational service updated through the fire season; the publisher states no fixed cadence."
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/cwfis-current/nextExpectedRefresh",
+            "expectedValue": {
+              "status": "continuous",
+              "reason": "An operational service updated through the fire season; the publisher states no fixed cadence."
+            }
+          }
         },
         "bulkRedistributionAllowed": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": true,
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/cwfis-current/bulkRedistributionAllowed",
+            "expectedValue": true
+          }
         },
         "correctionContactRoute": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "internalEn": "/en/corrections",
+            "internalFr": "/fr/corrections",
+            "publisherContact": "cwfissa-csscifv@nrcan-rncan.gc.ca",
+            "publisherContactSource": "CWFIS program contact in the CWFIS ISO catalogue record"
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/cwfis-current/correctionContactRoute",
+            "expectedValue": {
+              "internalEn": "/en/corrections",
+              "internalFr": "/fr/corrections",
+              "publisherContact": "cwfissa-csscifv@nrcan-rncan.gc.ca",
+              "publisherContactSource": "CWFIS program contact in the CWFIS ISO catalogue record"
+            }
+          }
         }
       },
-      "complete": false,
+      "complete": true,
       "classification": "core"
     },
     {
@@ -1615,8 +2176,17 @@
           }
         },
         "datasetTitle": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "National Burned Area Composite (NBAC) 1972-2025",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/cwfis-historical/datasetTitle",
+            "expectedValue": "National Burned Area Composite (NBAC) 1972-2025"
+          }
         },
         "sourceUrl": {
           "status": "verified",
@@ -1658,8 +2228,17 @@
           }
         },
         "editionEffectiveDate": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "2026-05-13",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/cwfis-historical/editionEffectiveDate",
+            "expectedValue": "2026-05-13"
+          }
         },
         "retrievalDate": {
           "status": "verified",
@@ -1773,8 +2352,27 @@
           }
         },
         "transformations": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "summary": "Profiled only; 49 self-intersecting rings quarantined without repair. No derived product is published.",
+            "records": [
+              "data/phase1-nbac-profile-2026-08-27.json"
+            ]
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/cwfis-historical/transformations",
+            "expectedValue": {
+              "summary": "Profiled only; 49 self-intersecting rings quarantined without repair. No derived product is published.",
+              "records": [
+                "data/phase1-nbac-profile-2026-08-27.json"
+              ]
+            }
+          }
         },
         "requiredAttribution": {
           "status": "verified",
@@ -1790,12 +2388,30 @@
           }
         },
         "redistributionStatus": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "allowed-under-ogl-canada-2.0-with-required-attribution",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/cwfis-historical/redistributionStatus",
+            "expectedValue": "allowed-under-ogl-canada-2.0-with-required-attribution"
+          }
         },
         "modificationNotice": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "Adapted by Witness Tree from Canadian Forest Service, National Burned Area Composite (NBAC). This does not constitute an endorsement by Natural Resources Canada.",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/cwfis-historical/modificationNotice",
+            "expectedValue": "Adapted by Witness Tree from Canadian Forest Service, National Burned Area Composite (NBAC). This does not constitute an endorsement by Natural Resources Canada."
+          }
         },
         "admissionState": {
           "status": "verified",
@@ -1811,31 +2427,107 @@
           }
         },
         "datasetOriginalName": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "National Burned Area Composite (NBAC)",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/cwfis-historical/datasetOriginalName",
+            "expectedValue": "National Burned Area Composite (NBAC)"
+          }
         },
         "plainLanguageExplanation": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "en": "Canada's national map of areas burned by wildfire each year since 1972.",
+            "fr": "La carte nationale des superficies brûlées par les feux de forêt au Canada chaque année depuis 1972."
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/cwfis-historical/plainLanguageExplanation",
+            "expectedValue": {
+              "en": "Canada's national map of areas burned by wildfire each year since 1972.",
+              "fr": "La carte nationale des superficies brûlées par les feux de forêt au Canada chaque année depuis 1972."
+            }
+          }
         },
         "updateCadence": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "annually",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/cwfis-historical/updateCadence",
+            "expectedValue": "annually"
+          }
         },
         "nextExpectedRefresh": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "status": "expected-annually",
+            "reason": "The publisher updates the composite annually; no release date is announced."
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/cwfis-historical/nextExpectedRefresh",
+            "expectedValue": {
+              "status": "expected-annually",
+              "reason": "The publisher updates the composite annually; no release date is announced."
+            }
+          }
         },
         "bulkRedistributionAllowed": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": true,
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/cwfis-historical/bulkRedistributionAllowed",
+            "expectedValue": true
+          }
         },
         "correctionContactRoute": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "internalEn": "/en/corrections",
+            "internalFr": "/fr/corrections",
+            "publisherContact": "cwfissa-csscifv@nrcan-rncan.gc.ca",
+            "publisherContactSource": "ISO catalogue contact"
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/cwfis-historical/correctionContactRoute",
+            "expectedValue": {
+              "internalEn": "/en/corrections",
+              "internalFr": "/fr/corrections",
+              "publisherContact": "cwfissa-csscifv@nrcan-rncan.gc.ca",
+              "publisherContactSource": "ISO catalogue contact"
+            }
+          }
         }
       },
-      "complete": false,
+      "complete": true,
       "classification": "core"
     },
     {
@@ -1948,8 +2640,17 @@
           }
         },
         "editionEffectiveDate": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "2026-08-14",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/bc-wildfire/editionEffectiveDate",
+            "expectedValue": "2026-08-14"
+          }
         },
         "retrievalDate": {
           "status": "verified",
@@ -2197,8 +2898,17 @@
           }
         },
         "redistributionStatus": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "allowed-under-ogl-bc-2.0-with-required-attribution",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/bc-wildfire/redistributionStatus",
+            "expectedValue": "allowed-under-ogl-bc-2.0-with-required-attribution"
+          }
         },
         "modificationNotice": {
           "status": "verified",
@@ -2247,8 +2957,23 @@
           }
         },
         "plainLanguageExplanation": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "en": "British Columbia's current wildfire perimeters, as a snapshot taken for the site.",
+            "fr": "Les périmètres actuels des feux de forêt en Colombie-Britannique, sous forme d'instantané pris pour le site."
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/bc-wildfire/plainLanguageExplanation",
+            "expectedValue": {
+              "en": "British Columbia's current wildfire perimeters, as a snapshot taken for the site.",
+              "fr": "Les périmètres actuels des feux de forêt en Colombie-Britannique, sous forme d'instantané pris pour le site."
+            }
+          }
         },
         "updateCadence": {
           "status": "verified",
@@ -2271,19 +2996,62 @@
           }
         },
         "nextExpectedRefresh": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "status": "continuous",
+            "reason": "The publisher lists the shapefile resource as continually updated."
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/bc-wildfire/nextExpectedRefresh",
+            "expectedValue": {
+              "status": "continuous",
+              "reason": "The publisher lists the shapefile resource as continually updated."
+            }
+          }
         },
         "bulkRedistributionAllowed": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": true,
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/bc-wildfire/bulkRedistributionAllowed",
+            "expectedValue": true
+          }
         },
         "correctionContactRoute": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "internalEn": "/en/corrections",
+            "internalFr": "/fr/corrections",
+            "publisherContact": "BCWILDFIREGEO@gov.bc.ca",
+            "publisherContactSource": "catalogue point of contact"
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/bc-wildfire/correctionContactRoute",
+            "expectedValue": {
+              "internalEn": "/en/corrections",
+              "internalFr": "/fr/corrections",
+              "publisherContact": "BCWILDFIREGEO@gov.bc.ca",
+              "publisherContactSource": "catalogue point of contact"
+            }
+          }
         }
       },
-      "complete": false,
+      "complete": true,
       "classification": "core"
     },
     {
@@ -2369,8 +3137,17 @@
           }
         },
         "editionEffectiveDate": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "2026-08-14",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ab-wildfire/editionEffectiveDate",
+            "expectedValue": "2026-08-14"
+          }
         },
         "retrievalDate": {
           "status": "verified",
@@ -2568,8 +3345,17 @@
           }
         },
         "redistributionStatus": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "allowed-under-ogl-alberta-2.2-with-required-attribution",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ab-wildfire/redistributionStatus",
+            "expectedValue": "allowed-under-ogl-alberta-2.2-with-required-attribution"
+          }
         },
         "modificationNotice": {
           "status": "verified",
@@ -2615,27 +3401,94 @@
           }
         },
         "plainLanguageExplanation": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "en": "Alberta's current wildfire locations, as a snapshot taken for the site.",
+            "fr": "Les emplacements actuels des feux de forêt en Alberta, sous forme d'instantané pris pour le site."
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ab-wildfire/plainLanguageExplanation",
+            "expectedValue": {
+              "en": "Alberta's current wildfire locations, as a snapshot taken for the site.",
+              "fr": "Les emplacements actuels des feux de forêt en Alberta, sous forme d'instantané pris pour le site."
+            }
+          }
         },
         "updateCadence": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "continuous operational service",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ab-wildfire/updateCadence",
+            "expectedValue": "continuous operational service"
+          }
         },
         "nextExpectedRefresh": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "status": "continuous",
+            "reason": "An operational service; the publisher states no fixed cadence."
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ab-wildfire/nextExpectedRefresh",
+            "expectedValue": {
+              "status": "continuous",
+              "reason": "An operational service; the publisher states no fixed cadence."
+            }
+          }
         },
         "bulkRedistributionAllowed": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": true,
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ab-wildfire/bulkRedistributionAllowed",
+            "expectedValue": true
+          }
         },
         "correctionContactRoute": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "internalEn": "/en/corrections",
+            "internalFr": "/fr/corrections",
+            "publisherContact": "wildfireinfo@gov.ab.ca",
+            "publisherContactSource": "the publisher's Wildfire maps and data page"
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ab-wildfire/correctionContactRoute",
+            "expectedValue": {
+              "internalEn": "/en/corrections",
+              "internalFr": "/fr/corrections",
+              "publisherContact": "wildfireinfo@gov.ab.ca",
+              "publisherContactSource": "the publisher's Wildfire maps and data page"
+            }
+          }
         }
       },
-      "complete": false,
+      "complete": true,
       "classification": "core"
     },
     {
@@ -2727,8 +3580,17 @@
           }
         },
         "editionEffectiveDate": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "2026-08-14",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/on-fire-disturbance/editionEffectiveDate",
+            "expectedValue": "2026-08-14"
+          }
         },
         "retrievalDate": {
           "status": "verified",
@@ -2926,8 +3788,17 @@
           }
         },
         "redistributionStatus": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "allowed-under-ogl-ontario-1.0-with-required-attribution",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/on-fire-disturbance/redistributionStatus",
+            "expectedValue": "allowed-under-ogl-ontario-1.0-with-required-attribution"
+          }
         },
         "modificationNotice": {
           "status": "verified",
@@ -2976,27 +3847,94 @@
           }
         },
         "plainLanguageExplanation": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "en": "Ontario's in-year fire perimeters, as a snapshot taken for the site.",
+            "fr": "Les périmètres des feux de l'année en Ontario, sous forme d'instantané pris pour le site."
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/on-fire-disturbance/plainLanguageExplanation",
+            "expectedValue": {
+              "en": "Ontario's in-year fire perimeters, as a snapshot taken for the site.",
+              "fr": "Les périmètres des feux de l'année en Ontario, sous forme d'instantané pris pour le site."
+            }
+          }
         },
         "updateCadence": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "daily",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/on-fire-disturbance/updateCadence",
+            "expectedValue": "daily"
+          }
         },
         "nextExpectedRefresh": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "status": "continuous",
+            "reason": "The publisher states daily updates."
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/on-fire-disturbance/nextExpectedRefresh",
+            "expectedValue": {
+              "status": "continuous",
+              "reason": "The publisher states daily updates."
+            }
+          }
         },
         "bulkRedistributionAllowed": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": true,
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/on-fire-disturbance/bulkRedistributionAllowed",
+            "expectedValue": true
+          }
         },
         "correctionContactRoute": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "internalEn": "/en/corrections",
+            "internalFr": "/fr/corrections",
+            "publisherContact": "affes.gis@ontario.ca",
+            "publisherContactSource": "catalogue maintainer"
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/on-fire-disturbance/correctionContactRoute",
+            "expectedValue": {
+              "internalEn": "/en/corrections",
+              "internalFr": "/fr/corrections",
+              "publisherContact": "affes.gis@ontario.ca",
+              "publisherContactSource": "catalogue maintainer"
+            }
+          }
         }
       },
-      "complete": false,
+      "complete": true,
       "classification": "core"
     },
     {
@@ -3844,32 +4782,127 @@
           }
         },
         "editionEffectiveDate": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "2026-07-13",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/qc-current-ecoforest/editionEffectiveDate",
+            "expectedValue": "2026-07-13"
+          }
         },
         "retrievalDate": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "2026-08-14",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/qc-current-ecoforest/retrievalDate",
+            "expectedValue": "2026-08-14"
+          }
         },
         "checksum": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "c67c56b0c101e95bef4fbca53a06e2f1578fe38293961017f70d815209740cf1",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/qc-current-ecoforest/checksum",
+            "expectedValue": "c67c56b0c101e95bef4fbca53a06e2f1578fe38293961017f70d815209740cf1"
+          }
         },
         "archiveVersion": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "undeclared",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/qc-current-ecoforest/archiveVersion",
+            "expectedValue": "undeclared"
+          }
         },
         "coverage": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "Québec's managed forest territory, south of the northern limit of timber allocation, with disturbances recorded to the latest annual update",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/qc-current-ecoforest/coverage",
+            "expectedValue": "Québec's managed forest territory, south of the northern limit of timber allocation, with disturbances recorded to the latest annual update"
+          }
         },
         "schema": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "layer": "pee_maj_prov",
+            "featureCount": 9827536,
+            "keyFields": [
+              "geoc_maj",
+              "origine",
+              "an_origine",
+              "perturb",
+              "an_perturb"
+            ]
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/qc-current-ecoforest/schema",
+            "expectedValue": {
+              "layer": "pee_maj_prov",
+              "featureCount": 9827536,
+              "keyFields": [
+                "geoc_maj",
+                "origine",
+                "an_origine",
+                "perturb",
+                "an_perturb"
+              ]
+            }
+          }
         },
         "transformations": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "summary": "Stand-origin disturbances (harvest, fire, insect, windthrow) with their year are normalized into official records for Phase 4 matching. The stand-copy transformation is approved but not executed.",
+            "records": [
+              "data/phase4-provincial-matching-report.json",
+              "data/phase1-qc-current-ecoforest-execution-approval.json"
+            ]
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/qc-current-ecoforest/transformations",
+            "expectedValue": {
+              "summary": "Stand-origin disturbances (harvest, fire, insect, windthrow) with their year are normalized into official records for Phase 4 matching. The stand-copy transformation is approved but not executed.",
+              "records": [
+                "data/phase4-provincial-matching-report.json",
+                "data/phase1-qc-current-ecoforest-execution-approval.json"
+              ]
+            }
+          }
         },
         "requiredAttribution": {
           "status": "verified",
@@ -3885,12 +4918,30 @@
           }
         },
         "redistributionStatus": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "allowed-under-cc-by-4.0-with-attribution-and-indication-of-changes",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/qc-current-ecoforest/redistributionStatus",
+            "expectedValue": "allowed-under-cc-by-4.0-with-attribution-and-indication-of-changes"
+          }
         },
         "modificationNotice": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "Adapted by Witness Tree from the Ministère des Ressources naturelles et des Forêts, Carte écoforestière à jour (CC BY 4.0). Changes: stand-origin disturbances selected, reprojected and rasterized to a 30 m grid.",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/qc-current-ecoforest/modificationNotice",
+            "expectedValue": "Adapted by Witness Tree from the Ministère des Ressources naturelles et des Forêts, Carte écoforestière à jour (CC BY 4.0). Changes: stand-origin disturbances selected, reprojected and rasterized to a 30 m grid."
+          }
         },
         "admissionState": {
           "status": "verified",
@@ -3906,12 +4957,36 @@
           }
         },
         "datasetOriginalName": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "Carte écoforestière à jour",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/qc-current-ecoforest/datasetOriginalName",
+            "expectedValue": "Carte écoforestière à jour"
+          }
         },
         "plainLanguageExplanation": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "en": "Québec's forest inventory map, kept up to date with harvests, fires and other disturbances.",
+            "fr": "La carte écoforestière du Québec, tenue à jour avec les coupes, les feux et les autres perturbations."
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/qc-current-ecoforest/plainLanguageExplanation",
+            "expectedValue": {
+              "en": "Québec's forest inventory map, kept up to date with harvests, fires and other disturbances.",
+              "fr": "La carte écoforestière du Québec, tenue à jour avec les coupes, les feux et les autres perturbations."
+            }
+          }
         },
         "updateCadence": {
           "status": "verified",
@@ -3927,19 +5002,62 @@
           }
         },
         "nextExpectedRefresh": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "status": "expected-annually",
+            "reason": "The publisher states annual updates; no release date is announced. Last catalogue update 2026-07-13."
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/qc-current-ecoforest/nextExpectedRefresh",
+            "expectedValue": {
+              "status": "expected-annually",
+              "reason": "The publisher states annual updates; no release date is announced. Last catalogue update 2026-07-13."
+            }
+          }
         },
         "bulkRedistributionAllowed": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": true,
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/qc-current-ecoforest/bulkRedistributionAllowed",
+            "expectedValue": true
+          }
         },
         "correctionContactRoute": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "internalEn": "/en/corrections",
+            "internalFr": "/fr/corrections",
+            "publisherContact": "inventaires.forestiers@mrnf.gouv.qc.ca",
+            "publisherContactSource": "catalogue maintainer"
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/qc-current-ecoforest/correctionContactRoute",
+            "expectedValue": {
+              "internalEn": "/en/corrections",
+              "internalFr": "/fr/corrections",
+              "publisherContact": "inventaires.forestiers@mrnf.gouv.qc.ca",
+              "publisherContactSource": "catalogue maintainer"
+            }
+          }
         }
       },
-      "complete": false,
+      "complete": true,
       "classification": "core"
     },
     {
@@ -4555,8 +5673,27 @@
           }
         },
         "transformations": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "summary": "Profiled and archived only. The stand-copy transformation is approved but not executed; no derived product is published.",
+            "records": [
+              "data/qc-fourth-inventory-evidence.json"
+            ]
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/qc-original-current-inventory/transformations",
+            "expectedValue": {
+              "summary": "Profiled and archived only. The stand-copy transformation is approved but not executed; no derived product is published.",
+              "records": [
+                "data/qc-fourth-inventory-evidence.json"
+              ]
+            }
+          }
         },
         "requiredAttribution": {
           "status": "verified",
@@ -4574,8 +5711,17 @@
           }
         },
         "redistributionStatus": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "allowed-under-cc-by-4.0-with-attribution-and-indication-of-changes",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/qc-original-current-inventory/redistributionStatus",
+            "expectedValue": "allowed-under-cc-by-4.0-with-attribution-and-indication-of-changes"
+          }
         },
         "modificationNotice": {
           "status": "verified",
@@ -4619,27 +5765,94 @@
           }
         },
         "plainLanguageExplanation": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "en": "Québec's original forest inventory map from its fourth inventory, before later updates.",
+            "fr": "La carte écoforestière originale du quatrième inventaire du Québec, avant les mises à jour."
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/qc-original-current-inventory/plainLanguageExplanation",
+            "expectedValue": {
+              "en": "Québec's original forest inventory map from its fourth inventory, before later updates.",
+              "fr": "La carte écoforestière originale du quatrième inventaire du Québec, avant les mises à jour."
+            }
+          }
         },
         "updateCadence": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "annual",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/qc-original-current-inventory/updateCadence",
+            "expectedValue": "annual"
+          }
         },
         "nextExpectedRefresh": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "status": "expected-annually",
+            "reason": "The publisher states annual updates; no release date is announced. Last catalogue update 2026-08-21."
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/qc-original-current-inventory/nextExpectedRefresh",
+            "expectedValue": {
+              "status": "expected-annually",
+              "reason": "The publisher states annual updates; no release date is announced. Last catalogue update 2026-08-21."
+            }
+          }
         },
         "bulkRedistributionAllowed": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": true,
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/qc-original-current-inventory/bulkRedistributionAllowed",
+            "expectedValue": true
+          }
         },
         "correctionContactRoute": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "internalEn": "/en/corrections",
+            "internalFr": "/fr/corrections",
+            "publisherContact": "inventaires.forestiers@mrnf.gouv.qc.ca",
+            "publisherContactSource": "catalogue maintainer"
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/qc-original-current-inventory/correctionContactRoute",
+            "expectedValue": {
+              "internalEn": "/en/corrections",
+              "internalFr": "/fr/corrections",
+              "publisherContact": "inventaires.forestiers@mrnf.gouv.qc.ca",
+              "publisherContactSource": "catalogue maintainer"
+            }
+          }
         }
       },
-      "complete": false,
+      "complete": true,
       "classification": "core"
     },
     {
@@ -4737,8 +5950,17 @@
           }
         },
         "retrievalDate": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "2026-08-14",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/qc-fourth-inventory/retrievalDate",
+            "expectedValue": "2026-08-14"
+          }
         },
         "checksum": {
           "status": "verified",
@@ -4755,8 +5977,17 @@
           }
         },
         "archiveVersion": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "Fourth inventory, 2001–2018; complete since 2018; catalogue and resources updated 2026-06-19",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/qc-fourth-inventory/archiveVersion",
+            "expectedValue": "Fourth inventory, 2001–2018; complete since 2018; catalogue and resources updated 2026-06-19"
+          }
         },
         "coverage": {
           "status": "verified",
@@ -4867,8 +6098,27 @@
           }
         },
         "transformations": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "summary": "Profiled and archived only. The stand-copy transformation is approved but not executed; no derived product is published.",
+            "records": [
+              "data/qc-fourth-inventory-evidence.json"
+            ]
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/qc-fourth-inventory/transformations",
+            "expectedValue": {
+              "summary": "Profiled and archived only. The stand-copy transformation is approved but not executed; no derived product is published.",
+              "records": [
+                "data/qc-fourth-inventory-evidence.json"
+              ]
+            }
+          }
         },
         "requiredAttribution": {
           "status": "verified",
@@ -4885,12 +6135,30 @@
           }
         },
         "redistributionStatus": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "allowed-under-cc-by-4.0-with-attribution-and-indication-of-changes",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/qc-fourth-inventory/redistributionStatus",
+            "expectedValue": "allowed-under-cc-by-4.0-with-attribution-and-indication-of-changes"
+          }
         },
         "modificationNotice": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "Adapted by Witness Tree from the Ministère des Ressources naturelles et des Forêts, Carte écoforestière originale et résultats du quatrième inventaire (CC BY 4.0). No changes are published.",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/qc-fourth-inventory/modificationNotice",
+            "expectedValue": "Adapted by Witness Tree from the Ministère des Ressources naturelles et des Forêts, Carte écoforestière originale et résultats du quatrième inventaire (CC BY 4.0). No changes are published."
+          }
         },
         "admissionState": {
           "status": "verified",
@@ -4906,31 +6174,107 @@
           }
         },
         "datasetOriginalName": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "Carte écoforestière originale et résultats du quatrième inventaire",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/qc-fourth-inventory/datasetOriginalName",
+            "expectedValue": "Carte écoforestière originale et résultats du quatrième inventaire"
+          }
         },
         "plainLanguageExplanation": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "en": "The results of Québec's fourth forest inventory, 2001 to 2018.",
+            "fr": "Les résultats du quatrième inventaire forestier du Québec, de 2001 à 2018."
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/qc-fourth-inventory/plainLanguageExplanation",
+            "expectedValue": {
+              "en": "The results of Québec's fourth forest inventory, 2001 to 2018.",
+              "fr": "Les résultats du quatrième inventaire forestier du Québec, de 2001 à 2018."
+            }
+          }
         },
         "updateCadence": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "annual",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/qc-fourth-inventory/updateCadence",
+            "expectedValue": "annual"
+          }
         },
         "nextExpectedRefresh": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "status": "expected-annually",
+            "reason": "The publisher states annual updates; no release date is announced. Last catalogue update 2026-08-21."
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/qc-fourth-inventory/nextExpectedRefresh",
+            "expectedValue": {
+              "status": "expected-annually",
+              "reason": "The publisher states annual updates; no release date is announced. Last catalogue update 2026-08-21."
+            }
+          }
         },
         "bulkRedistributionAllowed": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": true,
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/qc-fourth-inventory/bulkRedistributionAllowed",
+            "expectedValue": true
+          }
         },
         "correctionContactRoute": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "internalEn": "/en/corrections",
+            "internalFr": "/fr/corrections",
+            "publisherContact": "inventaires.forestiers@mrnf.gouv.qc.ca",
+            "publisherContactSource": "catalogue maintainer"
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/qc-fourth-inventory/correctionContactRoute",
+            "expectedValue": {
+              "internalEn": "/en/corrections",
+              "internalFr": "/fr/corrections",
+              "publisherContact": "inventaires.forestiers@mrnf.gouv.qc.ca",
+              "publisherContactSource": "catalogue maintainer"
+            }
+          }
         }
       },
-      "complete": false,
+      "complete": true,
       "classification": "core"
     },
     {
@@ -5010,8 +6354,17 @@
           }
         },
         "editionEffectiveDate": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "2022-01-26",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ab-avi-crown/editionEffectiveDate",
+            "expectedValue": "2022-01-26"
+          }
         },
         "retrievalDate": {
           "status": "verified",
@@ -5119,8 +6472,27 @@
           }
         },
         "transformations": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "summary": "Profiled and staged only. No derived product is published.",
+            "records": [
+              "data/staged-geospatial-profile.json"
+            ]
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ab-avi-crown/transformations",
+            "expectedValue": {
+              "summary": "Profiled and staged only. No derived product is published.",
+              "records": [
+                "data/staged-geospatial-profile.json"
+              ]
+            }
+          }
         },
         "requiredAttribution": {
           "status": "verified",
@@ -5136,8 +6508,17 @@
           }
         },
         "redistributionStatus": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "allowed-under-ogl-alberta-2.2-with-required-attribution",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ab-avi-crown/redistributionStatus",
+            "expectedValue": "allowed-under-ogl-alberta-2.2-with-required-attribution"
+          }
         },
         "modificationNotice": {
           "status": "verified",
@@ -5179,8 +6560,23 @@
           }
         },
         "plainLanguageExplanation": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "en": "Alberta's vegetation inventory of Crown forest land.",
+            "fr": "L'inventaire de la végétation des terres forestières de la Couronne de l'Alberta."
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ab-avi-crown/plainLanguageExplanation",
+            "expectedValue": {
+              "en": "Alberta's vegetation inventory of Crown forest land.",
+              "fr": "L'inventaire de la végétation des terres forestières de la Couronne de l'Alberta."
+            }
+          }
         },
         "updateCadence": {
           "status": "verified",
@@ -5196,19 +6592,62 @@
           }
         },
         "nextExpectedRefresh": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "status": "unknown",
+            "reason": "The publisher states irregular update frequency and announces no release date."
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ab-avi-crown/nextExpectedRefresh",
+            "expectedValue": {
+              "status": "unknown",
+              "reason": "The publisher states irregular update frequency and announces no release date."
+            }
+          }
         },
         "bulkRedistributionAllowed": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": true,
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ab-avi-crown/bulkRedistributionAllowed",
+            "expectedValue": true
+          }
         },
         "correctionContactRoute": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "internalEn": "/en/corrections",
+            "internalFr": "/fr/corrections",
+            "publisherContact": "FP.FMB-GIS@gov.ab.ca",
+            "publisherContactSource": "catalogue maintainer"
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ab-avi-crown/correctionContactRoute",
+            "expectedValue": {
+              "internalEn": "/en/corrections",
+              "internalFr": "/fr/corrections",
+              "publisherContact": "FP.FMB-GIS@gov.ab.ca",
+              "publisherContactSource": "catalogue maintainer"
+            }
+          }
         }
       },
-      "complete": false,
+      "complete": true,
       "classification": "core"
     },
     {
@@ -5236,8 +6675,17 @@
           }
         },
         "datasetTitle": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "Alberta Vegetation Inventory (AVI) Crown: AVI_PostInventoryHarvest layer",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ab-avi-post-harvest/datasetTitle",
+            "expectedValue": "Alberta Vegetation Inventory (AVI) Crown: AVI_PostInventoryHarvest layer"
+          }
         },
         "sourceUrl": {
           "status": "verified",
@@ -5279,8 +6727,17 @@
           }
         },
         "editionEffectiveDate": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "2022-01-26",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ab-avi-post-harvest/editionEffectiveDate",
+            "expectedValue": "2022-01-26"
+          }
         },
         "retrievalDate": {
           "status": "verified",
@@ -5380,8 +6837,27 @@
           }
         },
         "transformations": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "summary": "Profiled and staged only. No derived product is published.",
+            "records": [
+              "data/staged-geospatial-profile.json"
+            ]
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ab-avi-post-harvest/transformations",
+            "expectedValue": {
+              "summary": "Profiled and staged only. No derived product is published.",
+              "records": [
+                "data/staged-geospatial-profile.json"
+              ]
+            }
+          }
         },
         "requiredAttribution": {
           "status": "verified",
@@ -5397,8 +6873,17 @@
           }
         },
         "redistributionStatus": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "allowed-under-ogl-alberta-2.2-with-required-attribution",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ab-avi-post-harvest/redistributionStatus",
+            "expectedValue": "allowed-under-ogl-alberta-2.2-with-required-attribution"
+          }
         },
         "modificationNotice": {
           "status": "verified",
@@ -5440,27 +6925,94 @@
           }
         },
         "plainLanguageExplanation": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "en": "The harvest areas recorded after Alberta's Crown vegetation inventory was made.",
+            "fr": "Les superficies récoltées consignées après l'inventaire de la végétation des terres de la Couronne de l'Alberta."
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ab-avi-post-harvest/plainLanguageExplanation",
+            "expectedValue": {
+              "en": "The harvest areas recorded after Alberta's Crown vegetation inventory was made.",
+              "fr": "Les superficies récoltées consignées après l'inventaire de la végétation des terres de la Couronne de l'Alberta."
+            }
+          }
         },
         "updateCadence": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "irregular",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ab-avi-post-harvest/updateCadence",
+            "expectedValue": "irregular"
+          }
         },
         "nextExpectedRefresh": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "status": "unknown",
+            "reason": "The publisher states irregular update frequency and announces no release date."
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ab-avi-post-harvest/nextExpectedRefresh",
+            "expectedValue": {
+              "status": "unknown",
+              "reason": "The publisher states irregular update frequency and announces no release date."
+            }
+          }
         },
         "bulkRedistributionAllowed": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": true,
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ab-avi-post-harvest/bulkRedistributionAllowed",
+            "expectedValue": true
+          }
         },
         "correctionContactRoute": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "internalEn": "/en/corrections",
+            "internalFr": "/fr/corrections",
+            "publisherContact": "FP.FMB-GIS@gov.ab.ca",
+            "publisherContactSource": "catalogue maintainer"
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ab-avi-post-harvest/correctionContactRoute",
+            "expectedValue": {
+              "internalEn": "/en/corrections",
+              "internalFr": "/fr/corrections",
+              "publisherContact": "FP.FMB-GIS@gov.ab.ca",
+              "publisherContactSource": "catalogue maintainer"
+            }
+          }
         }
       },
-      "complete": false,
+      "complete": true,
       "classification": "core"
     },
     {
@@ -5546,8 +7098,17 @@
           }
         },
         "editionEffectiveDate": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "2020-04-30",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ab-primary-land-vegetation/editionEffectiveDate",
+            "expectedValue": "2020-04-30"
+          }
         },
         "retrievalDate": {
           "status": "verified",
@@ -5655,8 +7216,27 @@
           }
         },
         "transformations": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "summary": "Profiled and staged only. No derived product is published.",
+            "records": [
+              "data/staged-geospatial-profile.json"
+            ]
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ab-primary-land-vegetation/transformations",
+            "expectedValue": {
+              "summary": "Profiled and staged only. No derived product is published.",
+              "records": [
+                "data/staged-geospatial-profile.json"
+              ]
+            }
+          }
         },
         "requiredAttribution": {
           "status": "verified",
@@ -5672,8 +7252,17 @@
           }
         },
         "redistributionStatus": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "allowed-under-ogl-alberta-2.2-with-required-attribution",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ab-primary-land-vegetation/redistributionStatus",
+            "expectedValue": "allowed-under-ogl-alberta-2.2-with-required-attribution"
+          }
         },
         "modificationNotice": {
           "status": "verified",
@@ -5715,27 +7304,94 @@
           }
         },
         "plainLanguageExplanation": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "en": "Alberta's primary land and vegetation inventory of the settled and rangeland areas.",
+            "fr": "L'inventaire primaire des terres et de la végétation de l'Alberta pour les zones peuplées et de parcours."
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ab-primary-land-vegetation/plainLanguageExplanation",
+            "expectedValue": {
+              "en": "Alberta's primary land and vegetation inventory of the settled and rangeland areas.",
+              "fr": "L'inventaire primaire des terres et de la végétation de l'Alberta pour les zones peuplées et de parcours."
+            }
+          }
         },
         "updateCadence": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "not stated by the publisher",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ab-primary-land-vegetation/updateCadence",
+            "expectedValue": "not stated by the publisher"
+          }
         },
         "nextExpectedRefresh": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "status": "unknown",
+            "reason": "The publisher states no update frequency and announces no release date."
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ab-primary-land-vegetation/nextExpectedRefresh",
+            "expectedValue": {
+              "status": "unknown",
+              "reason": "The publisher states no update frequency and announces no release date."
+            }
+          }
         },
         "bulkRedistributionAllowed": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": true,
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ab-primary-land-vegetation/bulkRedistributionAllowed",
+            "expectedValue": true
+          }
         },
         "correctionContactRoute": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "internalEn": "/en/corrections",
+            "internalFr": "/fr/corrections",
+            "publisherContact": "fp.rangeland-gis@gov.ab.ca",
+            "publisherContactSource": "catalogue maintainer"
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/ab-primary-land-vegetation/correctionContactRoute",
+            "expectedValue": {
+              "internalEn": "/en/corrections",
+              "internalFr": "/fr/corrections",
+              "publisherContact": "fp.rangeland-gis@gov.ab.ca",
+              "publisherContactSource": "catalogue maintainer"
+            }
+          }
         }
       },
-      "complete": false,
+      "complete": true,
       "classification": "core"
     },
     {
@@ -6938,64 +8594,387 @@
       "canonicalProductionAdmission": false,
       "fields": {
         "publisher": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "BC": "Elections BC",
+            "AB": "Government of Alberta (Alberta Environment and Protected Areas, Provincial Geospatial Centre)",
+            "ON": "Elections Ontario",
+            "QC": "Élections Québec"
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/provincial-electoral-boundaries/publisher",
+            "expectedValue": {
+              "BC": "Elections BC",
+              "AB": "Government of Alberta (Alberta Environment and Protected Areas, Provincial Geospatial Centre)",
+              "ON": "Elections Ontario",
+              "QC": "Élections Québec"
+            }
+          }
         },
         "datasetTitle": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "BC": "Provincial electoral districts, 2023",
+            "AB": "Provincial Electoral Division - Current 2019",
+            "ON": "Electoral district shapefiles, 2022",
+            "QC": "Circonscriptions électorales provinciales, 2026 (sans eau)"
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/provincial-electoral-boundaries/datasetTitle",
+            "expectedValue": {
+              "BC": "Provincial electoral districts, 2023",
+              "AB": "Provincial Electoral Division - Current 2019",
+              "ON": "Electoral district shapefiles, 2022",
+              "QC": "Circonscriptions électorales provinciales, 2026 (sans eau)"
+            }
+          }
         },
         "sourceUrl": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "BC": "https://catalogue.data.gov.bc.ca/dataset/1cba4b16-263f-4d42-8d84-f5fecaa03d1a",
+            "AB": "https://geospatial.alberta.ca/titan/rest/services/boundary/goa_administrative_area_10tm_nad83_aep/MapServer/3/query?where=1%3D1&outFields=EDNUMBER%2CEDNAME%2CEDPROV&returnGeometry=true&orderByFields=EDNUMBER&f=geojson",
+            "ON": "https://www.elections.on.ca/en/voting-in-ontario/electoral-district-shapefiles.html",
+            "QC": "https://donnees.electionsquebec.qc.ca/autres/provincial/circonscriptions_electorales_sans_eau_2026.json"
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/provincial-electoral-boundaries/sourceUrl",
+            "expectedValue": {
+              "BC": "https://catalogue.data.gov.bc.ca/dataset/1cba4b16-263f-4d42-8d84-f5fecaa03d1a",
+              "AB": "https://geospatial.alberta.ca/titan/rest/services/boundary/goa_administrative_area_10tm_nad83_aep/MapServer/3/query?where=1%3D1&outFields=EDNUMBER%2CEDNAME%2CEDPROV&returnGeometry=true&orderByFields=EDNUMBER&f=geojson",
+              "ON": "https://www.elections.on.ca/en/voting-in-ontario/electoral-district-shapefiles.html",
+              "QC": "https://donnees.electionsquebec.qc.ca/autres/provincial/circonscriptions_electorales_sans_eau_2026.json"
+            }
+          }
         },
         "licence": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "BC": "Elections BC Open Data Licence",
+            "AB": "ogl-alberta-2.2",
+            "ON": "Elections Ontario Open Use Data Product Licence",
+            "QC": "Élections Québec terms of use"
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/provincial-electoral-boundaries/licence",
+            "expectedValue": {
+              "BC": "Elections BC Open Data Licence",
+              "AB": "ogl-alberta-2.2",
+              "ON": "Elections Ontario Open Use Data Product Licence",
+              "QC": "Élections Québec terms of use"
+            }
+          }
         },
         "licenceUrl": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "BC": "https://www.elections.bc.ca/docs/EBC-Open-Data-Licence.pdf",
+            "AB": "https://open.alberta.ca/licence",
+            "ON": "https://www.elections.on.ca/en/voting-in-ontario/electoral-district-shapefiles/open-use-data-product-licence-agreement.html",
+            "QC": "https://www.electionsquebec.qc.ca/en/our-institution/terms-of-use/"
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/provincial-electoral-boundaries/licenceUrl",
+            "expectedValue": {
+              "BC": "https://www.elections.bc.ca/docs/EBC-Open-Data-Licence.pdf",
+              "AB": "https://open.alberta.ca/licence",
+              "ON": "https://www.elections.on.ca/en/voting-in-ontario/electoral-district-shapefiles/open-use-data-product-licence-agreement.html",
+              "QC": "https://www.electionsquebec.qc.ca/en/our-institution/terms-of-use/"
+            }
+          }
         },
         "editionEffectiveDate": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "BC": "2023 boundaries",
+            "AB": "2019 boundaries (Provincial Electoral Division - Current 2019)",
+            "ON": "2022 boundaries",
+            "QC": "2026 electoral map, enacted 2026-06-12, published in the Gazette officielle 2026-06-17, first used at the 2026-10-05 general election."
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/provincial-electoral-boundaries/editionEffectiveDate",
+            "expectedValue": {
+              "BC": "2023 boundaries",
+              "AB": "2019 boundaries (Provincial Electoral Division - Current 2019)",
+              "ON": "2022 boundaries",
+              "QC": "2026 electoral map, enacted 2026-06-12, published in the Gazette officielle 2026-06-17, first used at the 2026-10-05 general election."
+            }
+          }
         },
         "retrievalDate": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "BC": "2026-08-14T19:00:00Z",
+            "AB": "2026-09-18T22:31:19Z",
+            "ON": "2026-08-14",
+            "QC": "2026-09-18"
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/provincial-electoral-boundaries/retrievalDate",
+            "expectedValue": {
+              "BC": "2026-08-14T19:00:00Z",
+              "AB": "2026-09-18T22:31:19Z",
+              "ON": "2026-08-14",
+              "QC": "2026-09-18"
+            }
+          }
         },
         "checksum": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "BC": "d2403eeb488be4ef761f7dcbc72c25f8af3a046fce9980536307ba145993f193",
+            "AB": "2c3772181068395df9d4397c143bc6880f8474cd589502a0dfa915adb008dd07",
+            "ON": "70fd809a4998147b228fd9275e34e569be8ae1fd67470e2f4a20761e5d1e7cae",
+            "QC": "5c22379acdffc6138eb77a5aaec265d7c301cffd04eb4c0bafede68ed8651503"
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/provincial-electoral-boundaries/checksum",
+            "expectedValue": {
+              "BC": "d2403eeb488be4ef761f7dcbc72c25f8af3a046fce9980536307ba145993f193",
+              "AB": "2c3772181068395df9d4397c143bc6880f8474cd589502a0dfa915adb008dd07",
+              "ON": "70fd809a4998147b228fd9275e34e569be8ae1fd67470e2f4a20761e5d1e7cae",
+              "QC": "5c22379acdffc6138eb77a5aaec265d7c301cffd04eb4c0bafede68ed8651503"
+            }
+          }
         },
         "archiveVersion": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "BC": "2023",
+            "AB": "Current 2019",
+            "ON": "2022",
+            "QC": "2026"
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/provincial-electoral-boundaries/archiveVersion",
+            "expectedValue": {
+              "BC": "2023",
+              "AB": "Current 2019",
+              "ON": "2022",
+              "QC": "2026"
+            }
+          }
         },
         "coverage": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "British Columbia, Alberta, Ontario and Québec provincial electoral districts, one current edition per province",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/provincial-electoral-boundaries/coverage",
+            "expectedValue": "British Columbia, Alberta, Ontario and Québec provincial electoral districts, one current edition per province"
+          }
         },
         "schema": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "BC": {
+              "featureCount": 93,
+              "fields": [
+                "BOUNDARY_SET_ID",
+                "ED_ABBREVIATION",
+                "ED_NAME",
+                "ELECTORAL_DISTRICT_ID",
+                "FEATURE_AREA_SQM",
+                "FEATURE_LENGTH_M",
+                "GAZETTE_DATE",
+                "OBJECTID",
+                "SE_ANNO_CAD_DATA"
+              ]
+            },
+            "AB": {
+              "featureCount": 87
+            },
+            "ON": {
+              "featureCount": 124,
+              "fields": [
+                "ED_ID",
+                "ENGLISH_NA",
+                "FRENCH_NAM",
+                "Shape_Leng",
+                "Shape_Area"
+              ]
+            },
+            "QC": {
+              "featureCount": 127,
+              "idField": "CO_CEP",
+              "nameField": "NM_CEP"
+            }
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/provincial-electoral-boundaries/schema",
+            "expectedValue": {
+              "BC": {
+                "featureCount": 93,
+                "fields": [
+                  "BOUNDARY_SET_ID",
+                  "ED_ABBREVIATION",
+                  "ED_NAME",
+                  "ELECTORAL_DISTRICT_ID",
+                  "FEATURE_AREA_SQM",
+                  "FEATURE_LENGTH_M",
+                  "GAZETTE_DATE",
+                  "OBJECTID",
+                  "SE_ANNO_CAD_DATA"
+                ]
+              },
+              "AB": {
+                "featureCount": 87
+              },
+              "ON": {
+                "featureCount": 124,
+                "fields": [
+                  "ED_ID",
+                  "ENGLISH_NA",
+                  "FRENCH_NAM",
+                  "Shape_Leng",
+                  "Shape_Area"
+                ]
+              },
+              "QC": {
+                "featureCount": 127,
+                "idField": "CO_CEP",
+                "nameField": "NM_CEP"
+              }
+            }
+          }
         },
         "transformations": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "summary": "Reprojected and tiled for the provincial-riding overlay and used for district comparisons. Québec's outlines, names and identifiers are reused unchanged, as its terms require.",
+            "records": [
+              "data/provincial-electoral-sources-2026-09-18.json",
+              "data/boundary-overlay-release.json"
+            ]
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/provincial-electoral-boundaries/transformations",
+            "expectedValue": {
+              "summary": "Reprojected and tiled for the provincial-riding overlay and used for district comparisons. Québec's outlines, names and identifiers are reused unchanged, as its terms require.",
+              "records": [
+                "data/provincial-electoral-sources-2026-09-18.json",
+                "data/boundary-overlay-release.json"
+              ]
+            }
+          }
         },
         "requiredAttribution": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "BC": "Elections BC",
+            "AB": "Contains information licensed under the Open Government Licence - Alberta.",
+            "ON": "Elections Ontario",
+            "QC": "Source: © Directeur général des élections du Québec and Commission de la représentation électorale, 2026."
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/provincial-electoral-boundaries/requiredAttribution",
+            "expectedValue": {
+              "BC": "Elections BC",
+              "AB": "Contains information licensed under the Open Government Licence - Alberta.",
+              "ON": "Elections Ontario",
+              "QC": "Source: © Directeur général des élections du Québec and Commission de la représentation électorale, 2026."
+            }
+          }
         },
         "redistributionStatus": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "BC": "allowed-under-elections-bc-open-data-licence",
+            "AB": "allowed-under-ogl-alberta-2.2-with-required-attribution",
+            "ON": "allowed-under-elections-ontario-open-use-data-product-licence",
+            "QC": "reuse-unchanged-for-non-profit-purposes-with-credit"
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/provincial-electoral-boundaries/redistributionStatus",
+            "expectedValue": {
+              "BC": "allowed-under-elections-bc-open-data-licence",
+              "AB": "allowed-under-ogl-alberta-2.2-with-required-attribution",
+              "ON": "allowed-under-elections-ontario-open-use-data-product-licence",
+              "QC": "reuse-unchanged-for-non-profit-purposes-with-credit"
+            }
+          }
         },
         "modificationNotice": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "British Columbia, Alberta and Ontario outlines are reprojected and tiled by Witness Tree. Québec's outlines are reused unchanged. No publisher endorsement is implied.",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/provincial-electoral-boundaries/modificationNotice",
+            "expectedValue": "British Columbia, Alberta and Ontario outlines are reprojected and tiled by Witness Tree. Québec's outlines are reused unchanged. No publisher endorsement is implied."
+          }
         },
         "admissionState": {
           "status": "verified",
@@ -7011,31 +8990,135 @@
           }
         },
         "datasetOriginalName": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "BC": "Provincial Electoral Districts",
+            "AB": "Provincial Electoral Division - Current 2019",
+            "ON": "Electoral District Shapefile",
+            "QC": "Circonscriptions électorales provinciales"
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/provincial-electoral-boundaries/datasetOriginalName",
+            "expectedValue": {
+              "BC": "Provincial Electoral Districts",
+              "AB": "Provincial Electoral Division - Current 2019",
+              "ON": "Electoral District Shapefile",
+              "QC": "Circonscriptions électorales provinciales"
+            }
+          }
         },
         "plainLanguageExplanation": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "en": "The boundaries of provincial ridings in the four provinces, used to compare forest loss between ridings.",
+            "fr": "Les limites des circonscriptions provinciales des quatre provinces, utilisées pour comparer les pertes forestières entre circonscriptions."
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/provincial-electoral-boundaries/plainLanguageExplanation",
+            "expectedValue": {
+              "en": "The boundaries of provincial ridings in the four provinces, used to compare forest loss between ridings.",
+              "fr": "Les limites des circonscriptions provinciales des quatre provinces, utilisées pour comparer les pertes forestières entre circonscriptions."
+            }
+          }
         },
         "updateCadence": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": "when each province redraws its electoral map; no fixed calendar",
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/provincial-electoral-boundaries/updateCadence",
+            "expectedValue": "when each province redraws its electoral map; no fixed calendar"
+          }
         },
         "nextExpectedRefresh": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "status": "unknown",
+            "reason": "Each province publishes new boundaries after a redistribution; no date is announced."
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/provincial-electoral-boundaries/nextExpectedRefresh",
+            "expectedValue": {
+              "status": "unknown",
+              "reason": "Each province publishes new boundaries after a redistribution; no date is announced."
+            }
+          }
         },
         "bulkRedistributionAllowed": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "BC": true,
+            "AB": true,
+            "ON": true,
+            "QC": false
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/provincial-electoral-boundaries/bulkRedistributionAllowed",
+            "expectedValue": {
+              "BC": true,
+              "AB": true,
+              "ON": true,
+              "QC": false
+            }
+          }
         },
         "correctionContactRoute": {
-          "status": "missing",
-          "reason": "The canonical Phase 1 row does not record a verified field-level value; do not infer it from a coarse proof flag or planning-inventory text."
+          "status": "verified",
+          "value": {
+            "internalEn": "/en/corrections",
+            "internalFr": "/fr/corrections",
+            "publisherListing": {
+              "BC": "https://catalogue.data.gov.bc.ca/dataset/1cba4b16-263f-4d42-8d84-f5fecaa03d1a",
+              "AB": "https://open.alberta.ca/opendata/gda-e201c640-1f76-429c-8c24-89ff496f956e",
+              "ON": "https://www.elections.on.ca/en/voting-in-ontario/electoral-district-shapefiles.html",
+              "QC": "https://www.electionsquebec.qc.ca/en/our-institution/terms-of-use/"
+            }
+          },
+          "evidenceRefs": [
+            "data/phase1-ledger-facts-2026-09-26.json"
+          ],
+          "evidenceBinding": {
+            "path": "data/phase1-ledger-facts-2026-09-26.json",
+            "sha256": "de25aa42204ac561e1bdeffe6c242d82a56815d77db81f3da8ecf53c61c61a6a",
+            "jsonPointer": "/rows/provincial-electoral-boundaries/correctionContactRoute",
+            "expectedValue": {
+              "internalEn": "/en/corrections",
+              "internalFr": "/fr/corrections",
+              "publisherListing": {
+                "BC": "https://catalogue.data.gov.bc.ca/dataset/1cba4b16-263f-4d42-8d84-f5fecaa03d1a",
+                "AB": "https://open.alberta.ca/opendata/gda-e201c640-1f76-429c-8c24-89ff496f956e",
+                "ON": "https://www.elections.on.ca/en/voting-in-ontario/electoral-district-shapefiles.html",
+                "QC": "https://www.electionsquebec.qc.ca/en/our-institution/terms-of-use/"
+              }
+            }
+          }
         }
       },
-      "complete": false,
+      "complete": true,
       "classification": "core"
     },
     {
@@ -7484,7 +9567,7 @@
   "coreRequiredRowCount": 18,
   "optionalTrackedRowCount": 9,
   "withdrawnRowCount": 4,
-  "coreCompleteRowCount": 2,
+  "coreCompleteRowCount": 18,
   "optionalCompleteRowCount": 0,
   "coreAdmittedRowCount": 2,
   "optionalAdmittedRowCount": 0

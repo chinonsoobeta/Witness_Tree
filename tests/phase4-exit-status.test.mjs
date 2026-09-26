@@ -133,7 +133,10 @@ test("Phase 4 records the four literal plan criteria with an honest unweighted r
   assert.equal(record.percentage, 75);
   const reporting = record.exitCriteria.find((item) => item.id === "published-match-and-non-match-rates");
   assert.equal(reporting?.status, "fail");
-  assert.match(reporting?.reason ?? "", /explicitly reports these results as unavailable/);
+  // A run is computed and published, but not admitted, released or reviewed, so the gate stays failed.
+  assert.match(reporting?.reason ?? "", /computed on 2026-09-26/);
+  assert.match(reporting?.reason ?? "", /owner admission/);
+  assert.equal(reporting?.evidence.some((item) => item.path === "data/phase4-provincial-matching-report.json"), true);
   assert.equal(reporting?.evidence.some((item) => item.path === "components/transparency/MethodologyPage.tsx"), true);
   assert.equal(record.checkpoints.every((item) => item.status === "blocked"), true);
 });

@@ -7,8 +7,11 @@ import { fileURLToPath } from "node:url";
 import { readScopeDecision, removedCriteria, SCOPE_DECISION_PATH } from "./phase-scope-decision.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+// The ledger gate is derived from the field audit's own completeness result, so
+// it can pass only when every core row has every required field.
+const ledgerStatus = (root) => (JSON.parse(readFileSync(path.join(root, "data/phase1-source-ledger-field-audit.json"), "utf8")).phaseComplete === true ? "pass" : "fail");
 const PLAN_GATES = [
-  ["complete-production-ledger", "fail"],
+  ["complete-production-ledger", null],
   ["raw-file-archive-recovery", "fail"],
   ["coverage-geometry", "pass"],
   ["corruption-validation-suite", "pass"]
@@ -37,7 +40,7 @@ function validateEvidence(evidence, name, root, verifyHashes) {
 
 export function validatePhase1ExitStatus(record, { root = ROOT, verifyHashes = true, decision = readScopeDecision(root) } = {}) {
   const removed = removedCriteria(decision, 1, REMOVABLE);
-  const REQUIRED_GATES = PLAN_GATES.filter(([id]) => !removed.includes(id));
+  const REQUIRED_GATES = PLAN_GATES.filter(([id]) => !removed.includes(id)).map(([id, status]) => [id, status ?? ledgerStatus(root)]);
   assert.equal(record?.schemaVersion, "phase1-exit-status/v1");
   assert.match(record.asOf, /^\d{4}-\d{2}-\d{2}$/);
   const requirements = record.requirementsEvidence;

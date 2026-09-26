@@ -1,5 +1,12 @@
 # Phase 4 match-rate readiness
 
+**2026-09-26:** a matching run has now been computed; see
+[the run record](PHASE4_PROVINCIAL_MATCHING_RUN.md). BC harvest records were
+obtained under recorded rights, the Québec events were normalized from the
+up-to-date ecoforest map, and the per-cell change geometry was used. What
+remains is the owner's admission, the release record, and the outside review.
+The rest of this document describes the position before the run.
+
 This remains a readiness and blocker document. No real provincial result in it
 was computed, admitted, or published. The repository now contains a bounded,
 deterministic nonproduction raster-to-vector and spatial-join foundation, but

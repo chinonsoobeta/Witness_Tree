@@ -4,11 +4,9 @@
 
 ## Current Phase 1 and 2 position
 
-### Phase 1 – 2/3 formal exit criteria
+### Phase 1 – 3/3 formal exit criteria, complete
 
-On 2026-09-26 the owner removed the gate requiring every raw file to be re-fetchable or restorable from the archive, and withdrew the four reserve and treaty rows from the ledger core. See [the phase scope decision](PHASE_SCOPE_DECISION_2026-09-26.md). Two criteria pass: national coverage geometry and the corruption-validation suite. One does not:
-
-- The production source ledger is incomplete: **2/18 core rows** have every required field.
+On 2026-09-26 the owner removed the gate requiring every raw file to be re-fetchable or restorable from the archive, and withdrew the four reserve and treaty rows from the ledger core. See [the phase scope decision](PHASE_SCOPE_DECISION_2026-09-26.md). The same day every one of the 18 core rows received every required ledger field, bound to [the ledger facts](../data/phase1-ledger-facts-2026-09-26.json), whose publisher facts come from each publisher's catalogue record ([readback](../data/phase1-catalogue-readback-2026-09-26.json)). The checker derives the ledger gate from the field audit. Production admission is separate and remains 2/18. The history below records the position before that decision.
 
 The recovered federal-electoral pair, four current-wildfire raw payload/manifest pairs, two derived wildfire payload/manifest pairs, Québec fourth-inventory's 62-object product, and the NBAC primary payload have checksum-bound exact-version evidence. NBAC's receipt proves primary readback and COMPLIANCE retention but not recovery. The normal archive-control exercise also completed its legal-hold, denied-delete, unchanged-retention, and bounded recovery-replica checks. The canonical external-SSD inventory verifies all 120 listed physical artifacts; 17 core rows have all listed canonical local bytes, the provincial-boundary row is partial, and four rows are unstaged. These facts do not satisfy universal archive recovery or prove remaining transformations, admission, or release. See [Phase 1 exit status](PHASE1_EXIT_STATUS.md), [canonical raw inventory](PHASE1_CANONICAL_RAW_INVENTORY.md), [federal recovery evidence](FEDERAL_ELECTORAL_ARCHIVE_RECOVERY_2026-08-25.md), [current-wildfire exact capture](CURRENT_WILDFIRE_EXACT_RAW_ARCHIVE_CAPTURE_2026-08-25.md), and [Québec fourth-inventory promotion/readback](QC_FOURTH_INVENTORY_IMMUTABLE_PROMOTION.md).
 
@@ -120,6 +118,10 @@ serves its random reads at about 15 tiles a second.
 admitted and owner reviewed, so the mode stays empty. Checked by
 `npm run check:phase4-condition-recovery-explore`. The French strings are drafts
 awaiting bilingual review. The view itself is a separate change.
+
+### Phase 4 provincial matching run
+
+On 2026-09-26 the first Phase 4 matching run was computed for British Columbia and Québec: 11.1% of 100,731,284 detected changes match an official harvest, fire, insect or windthrow record (56% by area). The methods page publishes the rates, marked as computed and not yet approved. An independent recount agrees exactly on four intervals. See [the run record](PHASE4_PROVINCIAL_MATCHING_RUN.md). Phase 4 stays at 3/4: the gate needs the owner's admission, a release record and an outside reviewer for each province.
 
 ### Harvest and fire by province
 
