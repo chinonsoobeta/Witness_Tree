@@ -1,0 +1,1109 @@
+{
+ "schema": "witness-tree/harvest-fire-province-annual-series/1",
+ "status": "owner-published-unreviewed",
+ "claims": {
+  "ownerPublished": true,
+  "expertReviewed": false,
+  "frenchReviewed": false,
+  "groundTruthed": false,
+  "released": false,
+  "productionEligible": false
+ },
+ "ownerDecision": {
+  "decidedAt": "2026-09-25",
+  "decidedBy": "owner",
+  "decision": "Publish these four provincial series on the site, and allow years to be added into multi-year totals in the harvest and fire view only.",
+  "record": "docs/HARVEST_FIRE_SERIES_DECISION.md"
+ },
+ "builtBy": "scripts/build-harvest-fire-province-series.mjs",
+ "checkedBy": "scripts/check-harvest-fire-province-series.mjs",
+ "cellHectares": 0.09,
+ "firstYear": 1985,
+ "lastYear": 2022,
+ "baselineYear": 1984,
+ "measure": {
+  "en": "Area of forested land whose change the national satellite record dates to a year and attributes to harvest or to fire. It is stand-replacing change, not official burned or harvested area, and not permanent forest loss.",
+  "fr": "Superficie de terres forestières dont le changement est daté d’une année et attribué à la récolte ou au feu par le registre satellitaire national. Il s’agit d’un changement qui remplace le peuplement, et non de la superficie brûlée ou récoltée officielle, ni d’une perte forestière permanente."
+ },
+ "sumRule": {
+  "allowed": "within-one-product",
+  "en": "Years may be added within harvest, or within fire. Each cell carries at most one change year per product, so a total counts each cell once. Harvest and fire are never added to each other, because one cell can carry both.",
+  "fr": "Les années peuvent être additionnées pour la récolte, ou pour le feu. Chaque cellule porte au plus une année de changement par produit, de sorte qu’un total compte chaque cellule une seule fois. La récolte et le feu ne sont jamais additionnés, car une même cellule peut porter les deux.",
+  "record": "docs/HARVEST_FIRE_SERIES_DECISION.md"
+ },
+ "unknownPolicy": "1984 has no datable change and is Unknown, never zero. The land the land-cover product leaves unmapped is Unknown for every year and is reported per province; no harvest or fire is dated there.",
+ "limits": [
+  {
+   "en": "The year is when the change first appears in an image taken around 1 August, give or take 30 days. Fires that burn later in the season can be dated to the following year.",
+   "fr": "L’année est celle où le changement apparaît pour la première fois sur une image prise vers le 1er août, à 30 jours près. Les incendies qui brûlent plus tard dans la saison peuvent être datés de l’année suivante."
+  },
+  {
+   "en": "Each 30 m cell carries one change year per product, so a stand that burned twice, or was cut twice, appears once.",
+   "fr": "Chaque cellule de 30 m porte une seule année de changement par produit : un peuplement brûlé deux fois, ou coupé deux fois, n’apparaît qu’une fois."
+  },
+  {
+   "en": "A burned stand that was later salvage-logged is usually counted as fire.",
+   "fr": "Un peuplement brûlé puis soumis à une coupe de récupération est habituellement compté comme feu."
+  },
+  {
+   "en": "Change near farmland may be missing, because farmland was masked out during change detection.",
+   "fr": "Des changements près des terres agricoles peuvent manquer, car celles-ci ont été masquées lors de la détection."
+  },
+  {
+   "en": "The record ends in 2022. Later fire seasons, including 2023, are not in it.",
+   "fr": "La série se termine en 2022. Les saisons des feux suivantes, dont celle de 2023, n’y figurent pas."
+  }
+ ],
+ "sources": {
+  "harvest": {
+   "title": "CA Forest Harvest 1985-2022",
+   "publisher": "Natural Resources Canada, Canadian Forest Service, National Terrestrial Ecosystem Monitoring System (NTEMS)",
+   "url": "https://opendata.nfis.org/downloads/forest_change/CA_Forest_Harvest_1985-2022.zip"
+  },
+  "fire": {
+   "title": "Wildfire change year 1985-2022",
+   "publisher": "Natural Resources Canada, Canadian Forest Service, National Terrestrial Ecosystem Monitoring System (NTEMS)",
+   "url": "https://opendata.nfis.org/downloads/forest_change/CA_Forest_Fire_1985-2022.zip"
+  },
+  "citation": "Hermosilla, T., M.A. Wulder, J.C. White, N.C. Coops, G.W. Hobart, L.B. Campbell, 2016. Mass data processing of time series Landsat imagery: pixels to data products for forest monitoring. International Journal of Digital Earth 9(11), 1035-1054. https://doi.org/10.1080/17538947.2016.1187673.",
+  "boundary": "Statistics Canada, 2021 Census Province/Territory Cartographic Boundary File, reference date January 1, 2021.",
+  "licenceId": "ogl-canada-2.0",
+  "licenceUrl": "https://open.canada.ca/en/open-government-licence-canada",
+  "attribution": {
+   "en": "Contains information licensed under the Open Government Licence - Canada. Adapted from Natural Resources Canada, CA Forest Harvest 1985-2022 and Wildfire change year 1985-2022, and from Statistics Canada, 2021 Census Province/Territory Cartographic Boundary File. This does not constitute an endorsement by Natural Resources Canada or Statistics Canada.",
+   "fr": "Contient de l’information visée par la Licence du gouvernement ouvert – Canada. Adapté de Ressources naturelles Canada, CA Forest Harvest 1985-2022 et Wildfire change year 1985-2022, et de Statistique Canada, Fichier des limites cartographiques des provinces et territoires, Recensement de 2021. Cela ne constitue pas une approbation de Ressources naturelles Canada ni de Statistique Canada."
+  },
+  "inputs": [
+   {
+    "province": "59",
+    "path": "derived/provincial-annual-series-20260909/british-columbia-annual-series-1984-2022.json",
+    "manifestId": "wp2-provincial-annual-series-20260909--british-columbia-annual-series-1984-2022.json",
+    "sha256": "61dc817bb83d0dc2bba1cb3fe75f7fbe2ff4d0856062026076726fffedab3357",
+    "byteLength": 619951
+   },
+   {
+    "province": "48",
+    "path": "derived/provincial-annual-series-20260909/alberta-annual-series-1984-2022.json",
+    "manifestId": "wp2-provincial-annual-series-20260909--alberta-annual-series-1984-2022.json",
+    "sha256": "982272c72b6f3a1d23ffb8e4032c1ea92cd4afa364b75e22d91cd0ab55319b94",
+    "byteLength": 619611
+   },
+   {
+    "province": "35",
+    "path": "derived/provincial-annual-series-20260909/ontario-annual-series-1984-2022.json",
+    "manifestId": "wp2-provincial-annual-series-20260909--ontario-annual-series-1984-2022.json",
+    "sha256": "52610b8e6245eada192a5eee639a8fa0b24c7c11be662a91e59755ffcab6bf68",
+    "byteLength": 630137
+   },
+   {
+    "province": "24",
+    "path": "derived/provincial-annual-series-20260909/quebec-annual-series-1984-2022.json",
+    "manifestId": "wp2-provincial-annual-series-20260909--quebec-annual-series-1984-2022.json",
+    "sha256": "91e6f90bbd69c7f34eb1a21d5957a5755621ac3f738e3b8770b120363953e9b9",
+    "byteLength": 634370
+   }
+  ]
+ },
+ "provinces": [
+  {
+   "id": "59",
+   "code": "BC",
+   "key": "british-columbia",
+   "name": {
+    "en": "British Columbia",
+    "fr": "Colombie-Britannique"
+   },
+   "landCells": 1019222375,
+   "unknownCells": 45503,
+   "years": [
+    {
+     "year": 1984,
+     "harvestCells": null,
+     "fireCells": null,
+     "unknownReason": {
+      "en": "1984 is the first image in the record. A change is dated by comparing a year with the year before it, so no harvest or fire can be dated to 1984.",
+      "fr": "1984 est la première image de la série. Un changement est daté en comparant une année à la précédente; aucune récolte ni aucun incendie ne peut donc être daté de 1984."
+     }
+    },
+    {
+     "year": 1985,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 2026901,
+     "fireCells": 991350
+    },
+    {
+     "year": 1986,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 2006200,
+     "fireCells": 300319
+    },
+    {
+     "year": 1987,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 1967658,
+     "fireCells": 246001
+    },
+    {
+     "year": 1988,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 2330436,
+     "fireCells": 218200
+    },
+    {
+     "year": 1989,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 2234812,
+     "fireCells": 192234
+    },
+    {
+     "year": 1990,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 2221587,
+     "fireCells": 156599
+    },
+    {
+     "year": 1991,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 2086030,
+     "fireCells": 561055
+    },
+    {
+     "year": 1992,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 1950268,
+     "fireCells": 199527
+    },
+    {
+     "year": 1993,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 1937612,
+     "fireCells": 174931
+    },
+    {
+     "year": 1994,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 1729608,
+     "fireCells": 63980
+    },
+    {
+     "year": 1995,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 1582156,
+     "fireCells": 431166
+    },
+    {
+     "year": 1996,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 1750891,
+     "fireCells": 128624
+    },
+    {
+     "year": 1997,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 1683339,
+     "fireCells": 95255
+    },
+    {
+     "year": 1998,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 1715302,
+     "fireCells": 157166
+    },
+    {
+     "year": 1999,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 1587779,
+     "fireCells": 545966
+    },
+    {
+     "year": 2000,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 2093379,
+     "fireCells": 85966
+    },
+    {
+     "year": 2001,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 1920394,
+     "fireCells": 58748
+    },
+    {
+     "year": 2002,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 1883844,
+     "fireCells": 140925
+    },
+    {
+     "year": 2003,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 2612494,
+     "fireCells": 267909
+    },
+    {
+     "year": 2004,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 2465655,
+     "fireCells": 2950682
+    },
+    {
+     "year": 2005,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 2772076,
+     "fireCells": 824267
+    },
+    {
+     "year": 2006,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 2341788,
+     "fireCells": 1011951
+    },
+    {
+     "year": 2007,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 2458615,
+     "fireCells": 267448
+    },
+    {
+     "year": 2008,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 1709575,
+     "fireCells": 174470
+    },
+    {
+     "year": 2009,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 1483827,
+     "fireCells": 477650
+    },
+    {
+     "year": 2010,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 2045053,
+     "fireCells": 1678688
+    },
+    {
+     "year": 2011,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 2108132,
+     "fireCells": 1717901
+    },
+    {
+     "year": 2012,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 1936742,
+     "fireCells": 161624
+    },
+    {
+     "year": 2013,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 2161681,
+     "fireCells": 636799
+    },
+    {
+     "year": 2014,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 2275084,
+     "fireCells": 1393062
+    },
+    {
+     "year": 2015,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 2471297,
+     "fireCells": 3278799
+    },
+    {
+     "year": 2016,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 2228484,
+     "fireCells": 787113
+    },
+    {
+     "year": 2017,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 2198127,
+     "fireCells": 2706199
+    },
+    {
+     "year": 2018,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 2385154,
+     "fireCells": 4970285
+    },
+    {
+     "year": 2019,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 1966962,
+     "fireCells": 8023106
+    },
+    {
+     "year": 2020,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 1228207,
+     "fireCells": 119223
+    },
+    {
+     "year": 2021,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 1642376,
+     "fireCells": 2935664
+    },
+    {
+     "year": 2022,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 1694443,
+     "fireCells": 2781184
+    }
+   ]
+  },
+  {
+   "id": "48",
+   "code": "AB",
+   "key": "alberta",
+   "name": {
+    "en": "Alberta",
+    "fr": "Alberta"
+   },
+   "landCells": 711031921,
+   "unknownCells": 170800264,
+   "years": [
+    {
+     "year": 1984,
+     "harvestCells": null,
+     "fireCells": null,
+     "unknownReason": {
+      "en": "1984 is the first image in the record. A change is dated by comparing a year with the year before it, so no harvest or fire can be dated to 1984.",
+      "fr": "1984 est la première image de la série. Un changement est daté en comparant une année à la précédente; aucune récolte ni aucun incendie ne peut donc être daté de 1984."
+     }
+    },
+    {
+     "year": 1985,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 466839,
+     "fireCells": 692075
+    },
+    {
+     "year": 1986,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 312832,
+     "fireCells": 28357
+    },
+    {
+     "year": 1987,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 362007,
+     "fireCells": 204594
+    },
+    {
+     "year": 1988,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 496749,
+     "fireCells": 126998
+    },
+    {
+     "year": 1989,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 432601,
+     "fireCells": 43322
+    },
+    {
+     "year": 1990,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 504194,
+     "fireCells": 164048
+    },
+    {
+     "year": 1991,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 601757,
+     "fireCells": 288564
+    },
+    {
+     "year": 1992,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 551467,
+     "fireCells": 61509
+    },
+    {
+     "year": 1993,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 528047,
+     "fireCells": 226715
+    },
+    {
+     "year": 1994,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 679161,
+     "fireCells": 224548
+    },
+    {
+     "year": 1995,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 761324,
+     "fireCells": 3190251
+    },
+    {
+     "year": 1996,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 646496,
+     "fireCells": 62204
+    },
+    {
+     "year": 1997,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 779047,
+     "fireCells": 24114
+    },
+    {
+     "year": 1998,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 971013,
+     "fireCells": 2895233
+    },
+    {
+     "year": 1999,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 618076,
+     "fireCells": 3206370
+    },
+    {
+     "year": 2000,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 810499,
+     "fireCells": 136714
+    },
+    {
+     "year": 2001,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 967264,
+     "fireCells": 1074948
+    },
+    {
+     "year": 2002,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 1001513,
+     "fireCells": 4145245
+    },
+    {
+     "year": 2003,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 960292,
+     "fireCells": 583599
+    },
+    {
+     "year": 2004,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 922297,
+     "fireCells": 2138012
+    },
+    {
+     "year": 2005,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 994324,
+     "fireCells": 1986321
+    },
+    {
+     "year": 2006,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 977863,
+     "fireCells": 1368281
+    },
+    {
+     "year": 2007,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 770322,
+     "fireCells": 1902434
+    },
+    {
+     "year": 2008,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 753749,
+     "fireCells": 270600
+    },
+    {
+     "year": 2009,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 820847,
+     "fireCells": 582250
+    },
+    {
+     "year": 2010,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 851461,
+     "fireCells": 506949
+    },
+    {
+     "year": 2011,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 764903,
+     "fireCells": 6653452
+    },
+    {
+     "year": 2012,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 775311,
+     "fireCells": 4211855
+    },
+    {
+     "year": 2013,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 956457,
+     "fireCells": 867708
+    },
+    {
+     "year": 2014,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 900292,
+     "fireCells": 868967
+    },
+    {
+     "year": 2015,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 1106859,
+     "fireCells": 5560712
+    },
+    {
+     "year": 2016,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 992304,
+     "fireCells": 4003427
+    },
+    {
+     "year": 2017,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 1016553,
+     "fireCells": 144483
+    },
+    {
+     "year": 2018,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 1061773,
+     "fireCells": 953137
+    },
+    {
+     "year": 2019,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 1034820,
+     "fireCells": 4748891
+    },
+    {
+     "year": 2020,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 1012075,
+     "fireCells": 249697
+    },
+    {
+     "year": 2021,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 1039977,
+     "fireCells": 471607
+    },
+    {
+     "year": 2022,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 934250,
+     "fireCells": 746258
+    }
+   ]
+  },
+  {
+   "id": "35",
+   "code": "ON",
+   "key": "ontario",
+   "name": {
+    "en": "Ontario",
+    "fr": "Ontario"
+   },
+   "landCells": 1088143529,
+   "unknownCells": 98262741,
+   "years": [
+    {
+     "year": 1984,
+     "harvestCells": null,
+     "fireCells": null,
+     "unknownReason": {
+      "en": "1984 is the first image in the record. A change is dated by comparing a year with the year before it, so no harvest or fire can be dated to 1984.",
+      "fr": "1984 est la première image de la série. Un changement est daté en comparant une année à la précédente; aucune récolte ni aucun incendie ne peut donc être daté de 1984."
+     }
+    },
+    {
+     "year": 1985,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 1271648,
+     "fireCells": 212592
+    },
+    {
+     "year": 1986,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 1310774,
+     "fireCells": 959155
+    },
+    {
+     "year": 1987,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 1433979,
+     "fireCells": 939586
+    },
+    {
+     "year": 1988,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 1379158,
+     "fireCells": 1539521
+    },
+    {
+     "year": 1989,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 1500667,
+     "fireCells": 2846949
+    },
+    {
+     "year": 1990,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 1809051,
+     "fireCells": 2177012
+    },
+    {
+     "year": 1991,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 1730552,
+     "fireCells": 2390495
+    },
+    {
+     "year": 1992,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 1179486,
+     "fireCells": 2548379
+    },
+    {
+     "year": 1993,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 1316562,
+     "fireCells": 778293
+    },
+    {
+     "year": 1994,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 1099110,
+     "fireCells": 870194
+    },
+    {
+     "year": 1995,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 1654680,
+     "fireCells": 3499308
+    },
+    {
+     "year": 1996,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 1799608,
+     "fireCells": 4510232
+    },
+    {
+     "year": 1997,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 1852993,
+     "fireCells": 915277
+    },
+    {
+     "year": 1998,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 2253306,
+     "fireCells": 1251048
+    },
+    {
+     "year": 1999,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 1697634,
+     "fireCells": 2772253
+    },
+    {
+     "year": 2000,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 2440098,
+     "fireCells": 208574
+    },
+    {
+     "year": 2001,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 2203257,
+     "fireCells": 232967
+    },
+    {
+     "year": 2002,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 2034264,
+     "fireCells": 1340509
+    },
+    {
+     "year": 2003,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 2198568,
+     "fireCells": 2659757
+    },
+    {
+     "year": 2004,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 1814078,
+     "fireCells": 443860
+    },
+    {
+     "year": 2005,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 2015132,
+     "fireCells": 349397
+    },
+    {
+     "year": 2006,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 2178169,
+     "fireCells": 262179
+    },
+    {
+     "year": 2007,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 1545973,
+     "fireCells": 1047980
+    },
+    {
+     "year": 2008,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 1205432,
+     "fireCells": 47658
+    },
+    {
+     "year": 2009,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 917157,
+     "fireCells": 183061
+    },
+    {
+     "year": 2010,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 1098702,
+     "fireCells": 110587
+    },
+    {
+     "year": 2011,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 1058764,
+     "fireCells": 2932101
+    },
+    {
+     "year": 2012,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 980108,
+     "fireCells": 1965786
+    },
+    {
+     "year": 2013,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 971049,
+     "fireCells": 432085
+    },
+    {
+     "year": 2014,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 1182574,
+     "fireCells": 183130
+    },
+    {
+     "year": 2015,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 1169440,
+     "fireCells": 343409
+    },
+    {
+     "year": 2016,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 1292040,
+     "fireCells": 582115
+    },
+    {
+     "year": 2017,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 1439209,
+     "fireCells": 373583
+    },
+    {
+     "year": 2018,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 1248560,
+     "fireCells": 1484528
+    },
+    {
+     "year": 2019,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 1138221,
+     "fireCells": 2216800
+    },
+    {
+     "year": 2020,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 1173851,
+     "fireCells": 314644
+    },
+    {
+     "year": 2021,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 1147073,
+     "fireCells": 1647268
+    },
+    {
+     "year": 2022,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 879312,
+     "fireCells": 3031167
+    }
+   ]
+  },
+  {
+   "id": "24",
+   "code": "QC",
+   "key": "quebec",
+   "name": {
+    "en": "Québec",
+    "fr": "Québec"
+   },
+   "landCells": 1639387800,
+   "unknownCells": 246721691,
+   "years": [
+    {
+     "year": 1984,
+     "harvestCells": null,
+     "fireCells": null,
+     "unknownReason": {
+      "en": "1984 is the first image in the record. A change is dated by comparing a year with the year before it, so no harvest or fire can be dated to 1984.",
+      "fr": "1984 est la première image de la série. Un changement est daté en comparant une année à la précédente; aucune récolte ni aucun incendie ne peut donc être daté de 1984."
+     }
+    },
+    {
+     "year": 1985,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 1216510,
+     "fireCells": 773218
+    },
+    {
+     "year": 1986,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 1594296,
+     "fireCells": 1682596
+    },
+    {
+     "year": 1987,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 1918515,
+     "fireCells": 579131
+    },
+    {
+     "year": 1988,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 2111432,
+     "fireCells": 1161324
+    },
+    {
+     "year": 1989,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 2366485,
+     "fireCells": 14193915
+    },
+    {
+     "year": 1990,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 2188650,
+     "fireCells": 5967990
+    },
+    {
+     "year": 1991,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 1906917,
+     "fireCells": 3952546
+    },
+    {
+     "year": 1992,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 1530097,
+     "fireCells": 513262
+    },
+    {
+     "year": 1993,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 1913077,
+     "fireCells": 1040960
+    },
+    {
+     "year": 1994,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 1739015,
+     "fireCells": 1287788
+    },
+    {
+     "year": 1995,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 2599088,
+     "fireCells": 3472465
+    },
+    {
+     "year": 1996,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 2516469,
+     "fireCells": 7413327
+    },
+    {
+     "year": 1997,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 2085082,
+     "fireCells": 6247435
+    },
+    {
+     "year": 1998,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 2556490,
+     "fireCells": 3296038
+    },
+    {
+     "year": 1999,
+     "coverageGrade": "extended-record-sparse-official-matching",
+     "harvestCells": 2877199,
+     "fireCells": 2602238
+    },
+    {
+     "year": 2000,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 2946810,
+     "fireCells": 579338
+    },
+    {
+     "year": 2001,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 2642744,
+     "fireCells": 456472
+    },
+    {
+     "year": 2002,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 2566545,
+     "fireCells": 10576510
+    },
+    {
+     "year": 2003,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 2734662,
+     "fireCells": 1385642
+    },
+    {
+     "year": 2004,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 2471576,
+     "fireCells": 417148
+    },
+    {
+     "year": 2005,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 2770154,
+     "fireCells": 6623601
+    },
+    {
+     "year": 2006,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 2451287,
+     "fireCells": 1683007
+    },
+    {
+     "year": 2007,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 1882361,
+     "fireCells": 3528115
+    },
+    {
+     "year": 2008,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 1335188,
+     "fireCells": 143796
+    },
+    {
+     "year": 2009,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 1217198,
+     "fireCells": 1541469
+    },
+    {
+     "year": 2010,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 1558899,
+     "fireCells": 3336438
+    },
+    {
+     "year": 2011,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 1490561,
+     "fireCells": 292959
+    },
+    {
+     "year": 2012,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 1160021,
+     "fireCells": 1293951
+    },
+    {
+     "year": 2013,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 1653049,
+     "fireCells": 11310857
+    },
+    {
+     "year": 2014,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 2030005,
+     "fireCells": 2971229
+    },
+    {
+     "year": 2015,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 1818377,
+     "fireCells": 176012
+    },
+    {
+     "year": 2016,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 1953177,
+     "fireCells": 241339
+    },
+    {
+     "year": 2017,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 2204706,
+     "fireCells": 415092
+    },
+    {
+     "year": 2018,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 1911563,
+     "fireCells": 756080
+    },
+    {
+     "year": 2019,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 1799693,
+     "fireCells": 152577
+    },
+    {
+     "year": 2020,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 1705166,
+     "fireCells": 567322
+    },
+    {
+     "year": 2021,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 1684199,
+     "fireCells": 446329
+    },
+    {
+     "year": 2022,
+     "coverageGrade": "national-baseline",
+     "harvestCells": 1260745,
+     "fireCells": 213313
+    }
+   ]
+  }
+ ]
+}

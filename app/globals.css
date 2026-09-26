@@ -2926,6 +2926,164 @@ dd > a:only-child {
 }
 
 /* ==========================================================================
+   Surfaces: harvest and fire by province.
+   The builder is a plain GET form beside the charts on wide screens and above
+   them on narrow ones. Bars wear the semantic --harvest and --fire tokens, the
+   same identities the Explore map legend uses, so the two never disagree. The
+   chart keeps a minimum width inside its own scroller, as .annual-chart does,
+   so labels stay legible at 375 without a horizontal page scroll.
+   ========================================================================== */
+.hf-workspace {
+  display: grid;
+  gap: 32px;
+  align-items: start;
+}
+@media (min-width: 1000px) {
+  .hf-workspace {
+    grid-template-columns: minmax(250px, 300px) minmax(0, 1fr);
+  }
+}
+.hf-builder {
+  display: grid;
+  gap: 18px;
+}
+.hf-builder h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+.hf-fieldset {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.hf-fieldset > legend {
+  margin-block-end: 6px;
+  padding: 0;
+  color: var(--ink-2);
+  font-family: var(--ui);
+  font-size: 13px;
+  font-weight: 700;
+}
+.hf-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+  font-family: var(--ui);
+}
+.hf-years {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.hf-output {
+  display: grid;
+  gap: 40px;
+  min-width: 0;
+}
+.hf-figure {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  justify-items: start;
+}
+.hf-figure > * {
+  max-width: 100%;
+}
+.hf-figure-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.hf-figure-head .province-flag {
+  width: 42px;
+  height: 26px;
+}
+.hf-figure-head h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.25;
+}
+.hf-subtitle,
+.hf-caption,
+.hf-note {
+  margin: 0;
+  color: var(--ink-2);
+  font-size: var(--text-small);
+}
+.hf-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--ui);
+}
+.hf-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.hf-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+}
+.hf-swatch--harvest,
+.hf-bar--harvest {
+  background: var(--harvest);
+  fill: var(--harvest);
+}
+.hf-swatch--fire,
+.hf-bar--fire {
+  background: var(--fire);
+  fill: var(--fire);
+}
+.hf-chart-scroll {
+  width: 100%;
+  overflow-x: auto;
+}
+.hf-chart-svg {
+  display: block;
+  min-width: 640px;
+}
+.hf-grid {
+  stroke: var(--rule);
+  stroke-width: 1;
+}
+.hf-axis {
+  stroke: var(--rule-strong);
+  stroke-width: 1;
+}
+.hf-tick,
+.hf-value,
+.hf-label,
+.hf-axis-title {
+  fill: var(--ink-2);
+  font-family: var(--ui);
+  font-variant-numeric: tabular-nums lining-nums;
+  font-size: 12px;
+}
+.hf-label {
+  fill: var(--ink);
+  font-size: 13px;
+}
+/* The citation carries a DOI address with no break opportunity; at 375 it
+   would push the page sideways. */
+.hf-sources {
+  overflow-wrap: anywhere;
+}
+.hf-downloads {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0;
+}
+
+/* ==========================================================================
    Surfaces: comparison.
    .comparison-table was declared in markup and never styled; it is now the
    real section wrapper. Both tables sit inside .table-scroll, which is what
@@ -3658,6 +3816,16 @@ dd > a:only-child {
   background: var(--accent-fill);
 }
 
+/* Harvest and fire modes: the bar wears the record type's identity, as the
+   map legend and the harvest and fire page do. */
+.explore-bar--harvest {
+  border-color: var(--harvest);
+  background: var(--harvest);
+}
+.explore-bar--fire {
+  border-color: var(--fire);
+  background: var(--fire);
+}
 .explore-bar-name,
 .explore-bar-label {
   color: var(--ink-2);
