@@ -18,7 +18,7 @@
         },
         {
           "path": ".github/workflows/ci.yml",
-          "sha256": "a4b2c34ffe0ff1c1936fd15246a73f7aa234ba0c8dabb0c8feeeacad92c1e380"
+          "sha256": "7942dec0055d469227e710c5edd0fd6276d8cd4dfae9f45dcf780e7ddd49212e"
         }
       ]
     },
@@ -37,11 +37,11 @@
       "evidence": [
         {
           "path": "scripts/check-bilingual.mjs",
-          "sha256": "3378c40093db778da506ea462276a050c32ddeded2755bb4da5c99a40712b1fb"
+          "sha256": "c0303aee4d454de0cddf23b3c54c697552d5d951bedd1760f27a33aa48223276"
         },
         {
           "path": ".github/workflows/ci.yml",
-          "sha256": "a4b2c34ffe0ff1c1936fd15246a73f7aa234ba0c8dabb0c8feeeacad92c1e380"
+          "sha256": "7942dec0055d469227e710c5edd0fd6276d8cd4dfae9f45dcf780e7ddd49212e"
         }
       ]
     },

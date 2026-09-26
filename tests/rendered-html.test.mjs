@@ -221,11 +221,13 @@ test("renders localized place and location records with semantic content and pro
 });
 
 test("renders localized search results and Explore list/table alternatives without browser JavaScript", async () => {
-  const [englishSearch, frenchSearch, englishExplore, frenchExplore] = await Promise.all([
+  const [englishSearch, frenchSearch, englishExplore, frenchExplore, englishFixtures, frenchFixtures] = await Promise.all([
     render("/en/search?q=British%20Columbia").then((response) => response.text()),
     render("/fr/recherche?q=Colombie-Britannique").then((response) => response.text()),
     render("/en/explore?mode=wildfire&presentation=list&data=table&year=2020").then((response) => response.text()),
     render("/fr/explorer?mode=wildfire&presentation=list&data=table&year=2020").then((response) => response.text()),
+    render("/en/explore?mode=condition-recovery&presentation=list&data=table&year=1988").then((response) => response.text()),
+    render("/fr/explorer?mode=condition-recovery&presentation=list&data=table&year=1988").then((response) => response.text()),
   ]);
 
   assert.match(englishSearch, /<main\b[^>]*id="main"/);
@@ -237,18 +239,27 @@ test("renders localized search results and Explore list/table alternatives witho
   assert.match(frenchSearch, /Recherchez une province, une circonscription ou une collectivité\. Les chiffres couvrent 1984 à 2022\./);
   assert.match(frenchSearch, /Colombie-Britannique/);
 
+  // Wildfire reads the national harvest and fire series, so its list and table
+  // are real province figures served without browser JavaScript.
   assert.match(englishExplore, /<main\b[^>]*id="main"/);
   assert.match(englishExplore, /Explore forest loss/);
-  assert.match(englishExplore, /The list, chart and table use made-up example data, not real records/);
-  assert.match(englishExplore, /Reported fire perimeter/);
-  assert.match(englishExplore, /<table/);
+  assert.match(englishExplore, /add up the harvest, and separately the fire/);
+  assert.match(englishExplore, /<th scope="col">Harvest \(ha\)<\/th><th scope="col">Fire \(ha\)<\/th>/);
+  assert.match(englishExplore, /href="\/en\/data\/harvest-and-fire\?from=2020&amp;to=2020"/);
   assert.match(englishExplore, /Source attribution/);
+  assert.doesNotMatch(englishExplore, /made-up example data/);
   assert.match(frenchExplore, /<main\b[^>]*id="main"/);
   assert.match(frenchExplore, /Explorer les pertes forestières/);
-  assert.match(frenchExplore, /La liste, le graphique et le tableau utilisent des données d’exemple inventées, et non de vrais registres/);
-  assert.match(frenchExplore, /Périmètre d’incendie déclaré/);
-  assert.match(frenchExplore, /<table/);
+  assert.match(frenchExplore, /<th scope="col">Récolte \(ha\)<\/th><th scope="col">Feu \(ha\)<\/th>/);
+  assert.match(frenchExplore, /href="\/fr\/donnees\/recolte-et-incendies\?from=2020&amp;to=2020"/);
   assert.match(frenchExplore, /Attribution de la source/);
+  // Condition and recovery is the one mode still on example data, and says so.
+  assert.match(englishFixtures, /The list, chart and table use made-up example data, not real records/);
+  assert.match(englishFixtures, /<table/);
+  assert.match(englishFixtures, /Source attribution/);
+  assert.match(frenchFixtures, /La liste, le graphique et le tableau utilisent des données d’exemple inventées, et non de vrais registres/);
+  assert.match(frenchFixtures, /<table/);
+  assert.match(frenchFixtures, /Attribution de la source/);
 });
 
 // The synthetic uptime probe decides a route is healthy when the response body contains a
