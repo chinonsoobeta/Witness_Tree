@@ -207,6 +207,7 @@
     "verify:deployed-map-render": "node scripts/verify-deployed-map-render.mjs",
     "check:deployed-revision-markers": "node scripts/check-deployed-revision-markers.mjs && node --test tests/deployed-revision-markers.test.mjs",
     "verify:deployed-revision": "node scripts/verify-deployed-revision.mjs",
+    "verify:deploy-source": "node scripts/verify-deploy-source.mjs",
     "check:observability-deployment": "node scripts/check-observability-deployment.mjs && node --test tests/observability-deployment.test.mjs",
     "check:phase9-public-beta-launch-exit-status": "node scripts/check-phase9-public-beta-launch-exit-status.mjs",
     "run:phase9-quarterly-reproducibility": "node scripts/run-phase9-quarterly-reproducibility.mjs",

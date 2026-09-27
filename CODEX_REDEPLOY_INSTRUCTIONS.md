@@ -35,6 +35,12 @@ When the owner authorizes it for a deploy, reconcile like this:
 
 The deployed application is always the `main` commit's tree. Record both SHAs.
 
+**Deploy only from `main`.** Before saving a version, run
+`npm run verify:deploy-source -- <commit to be saved>` after `git fetch origin main`.
+It must name the `main` commit whose tree the saved commit carries. If it fails,
+stop: the commit carries code that isn't on `main`. On 2026-09-23 the Site ran an
+unmerged pull request for three days.
+
 ## 1. Pre-deploy verification
 
 In a clean checkout of the commit to be saved (`git status --short` empty):
@@ -56,11 +62,10 @@ every check passed. Suite files the runner excludes as `REQUIRES_DATA_ROOT` or
 `REQUIRES_MACOS_RUNNER` are expected; read the suite's `FAILED:` summary, not
 the TAP stream.
 
-`check:deployed-map-render` fails whenever `lib/explore/map-style.ts` or
-`components/explore/ExploreMapClient.tsx` changed after the last observation,
-unless the owner has authorized a break-glass record for that change. The
-failure clears after this deploy is observed (section 4). Any other failure is
-real: stop and report.
+`check:deployed-map-render` reports "awaiting deploy" when
+`lib/explore/map-style.ts` or `components/explore/ExploreMapClient.tsx` changed
+after the last observation. That's expected: the deploy you're about to make
+owes the observation (section 4). Any other failure is real: stop and report.
 
 ## 2. Deploy
 
@@ -83,16 +88,19 @@ the live Site itself is broken, roll back by redeploying the previous version
 through the same Site, and record the rollback. A failure in the map-check
 tooling alone is not grounds for a rollback.
 
-## 4. Settle the render gate (only when the map client changed)
+## 4. Record the observation (only when the map client changed)
 
-If either gated map file changed since the last observation:
+The daily "Deployed map render" workflow drives the live Site in a real browser
+and fails if the map stops rendering, so a broken deploy is caught within a day
+either way. When either gated map file changed since the last committed
+observation, also commit a fresh one:
 
 1. Run `npm run verify:deployed-map-render` once against the live Site. Save
    the result as `data/deployed-map-render-evidence-<date>-v<version>.json`;
    it must pass all five checks.
 2. Point `RENDER_EVIDENCE_PATH` in `scripts/check-deployed-map-render.mjs` at
-   it. Delete any break-glass record, and restore the settled render-gate tests
-   in `tests/deployed-map-render.test.mjs`.
+   it, and return the render-gate tests in `tests/deployed-map-render.test.mjs`
+   to the deployed-site tier.
 3. Rebind the evidence records, following the rule in
    `docs/UI_REDESIGN_CONFIDENCE_FIRST_PLAN.md` (C5):
    - re-read each bound criterion's reason, and confirm it still holds;

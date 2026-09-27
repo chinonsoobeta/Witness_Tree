@@ -13,6 +13,24 @@ the client and the record no longer describes the page that was measured, so the
 check fails and names the file that moved. This is the failure that let PR #84
 sit on main: the observation was real, and it had stopped being about the code.
 
+## Since 2026-09-26: a map change waits for its deploy
+
+The circle the tiers below were built to bridge is gone. A stale observation
+whose checks all still hold is answered as **awaiting deploy**: merging does not
+deploy, so until the next deploy the Site keeps serving exactly the client that
+was observed, and the observation still describes it. The debt starts at the
+deploy, and two things cover it:
+
+- `.github/workflows/deployed-map-render.yml` runs the same harness against the
+  live Site every day and fails if the map stops rendering, so a broken deploy
+  is caught within a day;
+- the redeploy runbook (`CODEX_REDEPLOY_INSTRUCTIONS.md`, section 4) commits the
+  new observation after each deploy that changed the map client.
+
+Awaiting deploy covers staleness only. A failed or missing check, a fallback
+fetch, or an observation of the wrong origin still fails the gate. The preview
+and break-glass tiers below still work, but a map change no longer needs either.
+
 ## Why there are three tiers
 
 The gate used to be circular. A map fix could not merge without being deployed,

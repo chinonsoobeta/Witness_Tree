@@ -9,6 +9,7 @@ import {
   BREAK_GLASS_MAX_DAYS,
   BREAK_GLASS_PATH,
   BRANCH_EVIDENCE_PATH,
+  DEPLOYED_MAP_RENDER_WORKFLOW,
   DEPLOYED_ORIGIN,
   RENDER_EVIDENCE_PATH,
   RENDER_EVIDENCE_SCHEMA,
@@ -31,26 +32,25 @@ const withRecord = async (mutate) => {
   return validateDeployedMapRender({ record });
 };
 
-test("the Site observation is stale for exactly this branch's client change", async () => {
+test("the Site observation waits for the next deploy after this map client change", async () => {
   /*
-   * Between deploys this test holds whichever shape is true. The gate rested on
-   * an authorized break-glass from 2026-09-19 to the first 2026-09-20 deploy,
-   * and again on 2026-09-26 until version 43 settled it on a fresh measurement.
-   * On 2026-09-26 it is inverted a third time: this branch frames all four
-   * provinces when Explore opens, which moves
-   * components/explore/ExploreMapClient.tsx after the version 43 observation.
-   * The test pins the staleness to exactly that file, so any other source
-   * drifting out of the observation is still caught. When the next deploy is
-   * observed, restore the settled shape: the observation is current and the
-   * gate is answered by the deployed Site.
+   * Since 2026-09-26 a map change no longer blocks its own merge. The version
+   * 43 observation is stale for exactly one file: #191 framed all four
+   * provinces when Explore opens, which moved
+   * components/explore/ExploreMapClient.tsx. Merging does not deploy, so the
+   * Site still serves the observed client, and the gate is answered as
+   * awaiting deploy. The staleness is still pinned to that file, so any other
+   * source drifting out of the observation is caught, and a failing check is
+   * still a failure (tested below). After the next deploy the new observation
+   * is committed and this returns to the deployed-site tier.
    */
   const failures = validateDeployedMapRender();
   assert.equal(failures.length, 1, failures.join(" "));
   assert.ok(failures[0].startsWith("components/explore/ExploreMapClient.tsx changed since"), failures[0]);
-  // The gate is answered meanwhile, but by accepted debt, not by measurement.
   const gate = resolveDeployedMapRender();
-  assert.equal(gate.satisfiedBy, "break-glass");
+  assert.equal(gate.satisfiedBy, "awaiting-deploy");
   assert.deepEqual(gate.failures, []);
+  assert.ok(gate.notes.join(" ").includes(DEPLOYED_MAP_RENDER_WORKFLOW));
   const record = await loadRecord();
   assert.equal(record.schemaVersion, RENDER_EVIDENCE_SCHEMA);
   assert.ok(record.url.startsWith(DEPLOYED_ORIGIN));
@@ -215,12 +215,30 @@ const breakGlassRecord = async (overrides = {}) => ({
 
 const write = (root, relative, record) => writeFile(path.join(root, relative), `${JSON.stringify(record, null, 2)}\n`);
 
-test("a stale Site observation still fails when nothing stands in for it", async () => {
+test("a Site observation that is only stale waits for the next deploy", async () => {
   const root = await fixtureRoot();
   await write(root, RENDER_EVIDENCE_PATH, { ...(await loadRecord()), sources: [{ path: "lib/explore/map-style.ts", sha256: "0".repeat(64) }] });
-  const { satisfiedBy, failures } = resolveDeployedMapRender({ root, now: NOW });
-  assert.equal(satisfiedBy, null);
-  assert.ok(failures.some((message) => message.includes("changed since")));
+  const { satisfiedBy, failures, notes } = resolveDeployedMapRender({ root, now: NOW });
+  assert.equal(satisfiedBy, "awaiting-deploy");
+  assert.deepEqual(failures, []);
+  assert.ok(notes.join(" ").includes("changed since"));
+});
+
+test("a stale observation that is also broken fails, rather than waiting for a deploy", async () => {
+  // Awaiting deploy covers staleness only. A failed check, a missing check, a
+  // fallback fetch or the wrong origin is a real failure whatever the digests say.
+  const root = await fixtureRoot();
+  const failing = { ...(await loadRecord()), sources: [{ path: "lib/explore/map-style.ts", sha256: "0".repeat(64) }] };
+  failing.checks = failing.checks.map((entry) => (entry.id === "no-geojson-fallback" ? { ...entry, pass: false } : entry));
+  await write(root, RENDER_EVIDENCE_PATH, failing);
+  const broken = resolveDeployedMapRender({ root, now: NOW });
+  assert.equal(broken.satisfiedBy, null);
+  assert.ok(broken.failures.some((message) => message.startsWith("no-geojson-fallback did not pass")));
+
+  await write(root, RENDER_EVIDENCE_PATH, { ...(await loadRecord()), url: "http://localhost:5173/en/explore", sources: [{ path: "lib/explore/map-style.ts", sha256: "0".repeat(64) }] });
+  const elsewhere = resolveDeployedMapRender({ root, now: NOW });
+  assert.equal(elsewhere.satisfiedBy, null);
+  assert.ok(elsewhere.failures.some((message) => message.includes("not on the deployed origin")));
 });
 
 test("a preview observation answers the gate but leaves the Site observation owed", async () => {
@@ -348,35 +366,29 @@ test("a settled debt has to be deleted rather than left on the branch", async ()
   assert.ok(superseded.failures.some((message) => message.includes("is not needed. Delete it")));
 });
 
-test("the only weaker tier on this branch is the authorized break-glass, and it is real debt", async () => {
+test("neither weaker tier exists on this branch, so nothing stands in for the Site", async () => {
   /*
    * The gate resolves a tier on presence, so a leftover file silently answers
-   * for a measurement nobody took. Whenever the Site observation is current,
-   * both weaker tiers must be absent; restore that assertion once the next
-   * deploy is observed and the break-glass is deleted.
-   *
-   * On 2026-09-26 the owner authorized a break-glass for this branch's map
-   * client change, as before: no preview measurement is possible, because the
-   * ChatGPT Sites control plane exposes no preview URL for this project and its
-   * only deployment operation publishes to production. The break-glass is held
-   * to its own terms: it expires, binds only the file it covers, and may not
-   * report checks or claim anything was observed.
+   * for a measurement nobody took. Since awaiting deploy covers a map change
+   * on its own, neither the preview record nor a break-glass is needed, and
+   * the 2026-09-26 break-glass was deleted when that tier arrived.
    */
-  assert.equal(
-    existsSync(new URL(`../${BRANCH_EVIDENCE_PATH}`, import.meta.url)),
-    false,
-    `${BRANCH_EVIDENCE_PATH} is committed, but no preview deployment was ever measured`,
-  );
-  assert.equal(existsSync(new URL(`../${BREAK_GLASS_PATH}`, import.meta.url)), true);
-  assert.deepEqual(validateBreakGlass({}), []);
+  for (const relative of [BRANCH_EVIDENCE_PATH, BREAK_GLASS_PATH]) {
+    assert.equal(
+      existsSync(new URL(`../${relative}`, import.meta.url)),
+      false,
+      `${relative} is committed, but a map change now waits for its deploy without one`,
+    );
+  }
+  assert.equal(resolveDeployedMapRender().satisfiedBy, "awaiting-deploy");
+});
 
-  const record = JSON.parse(await readFile(new URL(`../${BREAK_GLASS_PATH}`, import.meta.url), "utf8"));
-  assert.equal(record.status, "gate-debt-not-an-observation");
-  assert.equal(record.siteObservationOwed, true);
-  assert.equal(record.allChecksPassed, false);
-  assert.equal(record.checks, undefined, "a break-glass that reports checks is claiming a measurement");
-  assert.deepEqual(record.sources.map((entry) => entry.path), ["components/explore/ExploreMapClient.tsx"]);
-  assert.equal(resolveDeployedMapRender().satisfiedBy, "break-glass");
+test("the daily workflow drives the live Site with the same harness", async () => {
+  const workflow = await readFile(new URL(`../${DEPLOYED_MAP_RENDER_WORKFLOW}`, import.meta.url), "utf8");
+  assert.match(workflow, /schedule:\s*\n\s*- cron: "[^"]+"/);
+  assert.match(workflow, /workflow_dispatch:/);
+  assert.match(workflow, /node scripts\/verify-deployed-map-render\.mjs --browser/);
+  assert.doesNotMatch(workflow, /--write-evidence/, "the scheduled run measures; it never commits evidence");
 });
 
 test("the harness labels a run by the origin it measured, not by the file it is written to", async () => {

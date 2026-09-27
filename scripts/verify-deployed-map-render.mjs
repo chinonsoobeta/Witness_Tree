@@ -217,6 +217,9 @@ async function run(options) {
       "--use-angle=swiftshader",
       "--hide-scrollbars",
       "--window-size=1280,900",
+      // GitHub's Linux runners cannot give Chromium a user namespace, which its
+      // sandbox needs; the scheduled workflow runs there. macOS keeps the sandbox.
+      ...(process.platform === "linux" ? ["--no-sandbox"] : []),
     ],
     { stdio: ["ignore", "ignore", "pipe"] },
   );
