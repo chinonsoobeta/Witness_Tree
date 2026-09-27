@@ -48,11 +48,13 @@ test("the release order and the reader's arithmetic agree on all 741 spans", () 
 
 test("the annual span reproduces the annual product it was checked against", () => {
   const annual = ridingIntervalMeasurements({ fromYear: 2021, toYear: 2022 });
-  assert.equal(annual.length, 774);
-  const avalon = annual.find((row) => row.boundaryId === "CA-10001");
-  assert.ok(avalon);
-  assert.equal(avalon.fromYear, 2021);
-  assert.equal(avalon.toYear, 2022);
+  // 774 districts in the release, less the 63 federal ridings outside the four
+  // provinces, which no page may publish.
+  assert.equal(annual.length, 711);
+  const abbotsford = annual.find((row) => row.boundaryId === "CA-59001");
+  assert.ok(abbotsford);
+  assert.equal(abbotsford.fromYear, 2021);
+  assert.equal(abbotsford.toYear, 2022);
   // One annual step, so nothing can be lost twice inside it.
   for (const row of annual) {
     assert.equal(row.summedLossHectares, row.knownObservedSubtotalHectares);
@@ -131,4 +133,17 @@ test("the release checker rejects a document whose span order has drifted", () =
   target.annualLossCells = target.annualLossCells.map(() => 0);
   target.unionLossCellDeltas[0] = 1;
   assert.throws(() => validateIntervalRelease(overcounted), /exceeds the yearly losses added together/);
+});
+
+test("only ridings inside the four provinces reach a page", () => {
+  // The release measures all 343 federal ridings from national data; the
+  // record covers four provinces, so a federal riding elsewhere is dropped.
+  const rows = ridingIntervalMeasurements({ fromYear: 1984, toYear: 2022 });
+  const federal = rows.filter((row: { jurisdiction: string }) => row.jurisdiction === "CA");
+  assert.equal(federal.length, 280);
+  for (const row of federal) assert.match(row.boundaryId, /^CA-(24|35|48|59)/, `${row.boundaryId} is outside the four provinces`);
+  assert.equal(rows.some((row: { boundaryId: string }) => row.boundaryId === "CA-11004"), false, "Malpeque (PEI) must not be measured");
+  for (const jurisdiction of ["BC", "AB", "ON", "QC"]) {
+    assert.ok(rows.some((row: { jurisdiction: string }) => row.jurisdiction === jurisdiction), `${jurisdiction} provincial ridings are kept`);
+  }
 });

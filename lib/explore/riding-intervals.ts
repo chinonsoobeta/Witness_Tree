@@ -1,5 +1,6 @@
 import source from "@/data/phase3-riding-interval-measurements.json";
 import type { BoundaryMeasurementCoverage, RidingBoundaryMeasurement } from "./boundary-readout";
+import { COVERED_FEDERAL_DISTRICT_PREFIXES } from "@/lib/comparison/real-adapter";
 import {
   EXPLORE_ANNUAL_STEP_COUNT,
   EXPLORE_INTERVAL_COUNT,
@@ -168,6 +169,11 @@ export type RidingIntervalMeasurement = RidingBoundaryMeasurement &
     summedLossHectares: number;
   }>;
 
+function inRecordScope(district: Readonly<{ jurisdiction: string; boundaryId: string }>) {
+  return district.jurisdiction !== "CA"
+    || COVERED_FEDERAL_DISTRICT_PREFIXES.some((prefix) => district.boundaryId.startsWith(`CA-${prefix}`));
+}
+
 /**
  * Resolves every district for one span.
  *
@@ -183,7 +189,11 @@ export function ridingIntervalMeasurements(
   const start = interval.fromYear - EXPLORE_INTERVAL_FIRST_YEAR;
   const end = interval.toYear - EXPLORE_INTERVAL_FIRST_YEAR - 1;
   const window = intervalWindowIndex(interval);
-  return districts.map((district) => {
+  // The release measures all 343 federal ridings from national data, but the
+  // record covers four provinces only (plan: no coverage beyond them in
+  // version 1). A federal riding elsewhere is left out here, so no page
+  // publishes a figure for it; Compare already applies the same rule.
+  return districts.filter(inRecordScope).map((district) => {
     const union = district.unionLossCells[window];
     const known = district.knownForestCellsByStartYear[start];
     const unknown = district.unknownCellsByStartYear[start];
