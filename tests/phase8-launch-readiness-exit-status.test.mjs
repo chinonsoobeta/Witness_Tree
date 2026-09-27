@@ -37,8 +37,10 @@ test("Phase 8 records every literal launch-readiness gate without production inf
    * criterion's status to the live gate, so neither can drift from the other.
    *
    * On 2026-09-27 Sites version 43 deployed the reconciled main tree and the
-   * fresh browser observation settled the gate by the deployed-site tier again;
-   * the gate stays a delivery-and-rendering gate and asserts no
+   * fresh browser observation settled the gate by the deployed-site tier again.
+   * Later on 2026-09-26 the Explore map framing fix moved the map client, and
+   * the count stays eight on an owner-authorized break-glass until the next
+   * deploy is observed. The gate stays a delivery-and-rendering gate and asserts no
    * production admission, and the other fifteen criteria are untouched.
    */
   assert.equal(record.completedCriteria, 8);
