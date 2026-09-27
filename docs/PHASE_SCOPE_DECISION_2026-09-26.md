@@ -20,6 +20,7 @@ status file without this record still fails.
 | --- | --- | --- | --- |
 | 1. Data acquisition and source ledger | Every raw file re-fetchable or restorable from the archive | 2/4 | 2/3 |
 | 2. National baseline | Expert review of 100 samples per province; published independent comparisons | 2/4 | **2/2, complete** |
+| 4. Provincial enhancement | The outside provincial review checkpoint (one independent reviewer each for BC and Québec) | checkpoint blocked | checkpoint removed |
 | 7. Indigenous geographies, Explore and comparison | Every reserve and treaty area has a page with its official name; every reserve and treaty page carries a right-of-reply route | 14/16 | **14/14, complete** |
 
 The four reserve and treaty source rows (`indian-reserves`,
@@ -38,6 +39,12 @@ stay in the ledger, and are never admitted.
 - **Reserve and treaty pages (Phase 7).** Witness Tree will not publish
   reserve or treaty geography. The Plan scopes the right-of-reply criterion to
   reserve and treaty pages, so it goes with them.
+
+## Outside review (Phase 4)
+
+Retired later the same day, after the matching run was computed. The Phase 4
+checker then requires no review record, refuses a release that claims one, and
+drops the checkpoint. No outside review took place.
 
 ## Rights (Phase 4)
 
@@ -58,5 +65,5 @@ officer's confirmation.
 No expert review, independent comparison, archive recovery, reserve or treaty
 geography, or right-of-reply route exists because of this decision. Phase 1's
 18 core ledger entries were completed separately the same day. Phase 4's
-matching run was computed the same day and awaits the owner's admission and an
-outside review.
+matching run was computed and admitted by the owner the same day; that
+admission is recorded separately and is not part of this decision.

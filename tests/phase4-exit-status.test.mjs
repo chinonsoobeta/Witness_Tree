@@ -8,6 +8,10 @@ import { validatePhase4ExitStatus } from "../scripts/check-phase4-exit-status.mj
 
 const record = JSON.parse(readFileSync(new URL("../data/phase4-exit-status.json", import.meta.url), "utf8"));
 const repositoryRoot = fileURLToPath(new URL("../", import.meta.url));
+const decision = JSON.parse(readFileSync(new URL("../data/phase-scope-decision-2026-09-26.json", import.meta.url), "utf8"));
+// The scope decision as it stood before the owner retired the outside review,
+// so the review-required path stays tested.
+const reviewDecision = { ...decision, removedCriteria: decision.removedCriteria.filter((item) => item.phase !== 4) };
 
 function digest(bytes) {
   return createHash("sha256").update(bytes).digest("hex");
@@ -80,7 +84,7 @@ function writePositiveBundle(directory, production = true, options = {}) {
     nonMatchRate: .25,
     nonMatchReasonDistribution: reasons,
   });
-  const review = writeBound(directory, "provincial-matching-outside-review.json", {
+  const review = options.retired ? null : writeBound(directory, "provincial-matching-outside-review.json", {
     schemaVersion: "witness-tree/phase4-provincial-matching-outside-review/1",
     status: "approved",
     reportSha256: report.sha256,
@@ -99,9 +103,9 @@ function writePositiveBundle(directory, production = true, options = {}) {
     reportSha256: report.sha256,
     admissionSha256: admission.sha256,
     publicationSha256: publication.sha256,
-    outsideReviewSha256: review.sha256,
+    ...(review ? { outsideReviewSha256: review.sha256 } : {}),
   });
-  return [input, report, admission, methodsEn, methodsFr, publication, review, release];
+  return [input, report, admission, methodsEn, methodsFr, publication, review, release].filter(Boolean);
 }
 
 function completeRecord(bundleEvidence) {
@@ -113,8 +117,14 @@ function completeRecord(bundleEvidence) {
     exitCriteria: record.exitCriteria.map((criterion) => criterion.id === "published-match-and-non-match-rates"
       ? { ...criterion, status: "pass", reason: "An admitted production run is published with checksum-bound rates and reasons.", evidence: bundleEvidence }
       : criterion),
-    checkpoints: record.checkpoints.map((checkpoint) => ({ ...checkpoint, title: checkpoint.id === "rights-and-admission" ? "Rights/admission" : "Outside provincial review", status: "pass", reason: "The production evidence bundle closes this checkpoint.", evidence: bundleEvidence })),
+    removedCheckpoints: [],
+    checkpoints: ["rights-and-admission", "outside-provincial-review"].map((id) => ({ id, title: id === "rights-and-admission" ? "Rights/admission" : "Outside provincial review", status: "pass", reason: "The production evidence bundle closes this checkpoint.", evidence: bundleEvidence })),
   };
+}
+
+function retiredRecord(bundleEvidence) {
+  const complete = completeRecord(bundleEvidence);
+  return { ...complete, removedCheckpoints: record.removedCheckpoints, checkpoints: complete.checkpoints.filter((checkpoint) => checkpoint.id === "rights-and-admission") };
 }
 
 async function withPositiveFixture(production, callback, options = {}) {
@@ -129,16 +139,23 @@ async function withPositiveFixture(production, callback, options = {}) {
 
 test("Phase 4 records the four literal plan criteria with an honest unweighted result", async () => {
   assert.equal(await validatePhase4ExitStatus(record), record);
-  assert.equal(record.completedCriteria, 3);
-  assert.equal(record.percentage, 75);
+  assert.equal(record.completedCriteria, 4);
+  assert.equal(record.percentage, 100);
   const reporting = record.exitCriteria.find((item) => item.id === "published-match-and-non-match-rates");
-  assert.equal(reporting?.status, "fail");
-  // A run is computed and published, but not admitted, released or reviewed, so the gate stays failed.
-  assert.match(reporting?.reason ?? "", /computed on 2026-09-26/);
-  assert.match(reporting?.reason ?? "", /owner admission/);
-  assert.equal(reporting?.evidence.some((item) => item.path === "data/phase4-provincial-matching-report.json"), true);
-  assert.equal(reporting?.evidence.some((item) => item.path === "components/transparency/MethodologyPage.tsx"), true);
-  assert.equal(record.checkpoints.every((item) => item.status === "blocked"), true);
+  assert.equal(reporting?.status, "pass");
+  // The 2026-09-26 run is admitted, published and released; the outside review was retired, not completed.
+  assert.match(reporting?.reason ?? "", /admitted, published on the methods page in both languages, and released/);
+  assert.match(reporting?.reason ?? "", /retired by the owner/);
+  for (const path of [
+    "data/phase4-provincial-matching-report.json",
+    "data/phase4-provincial-matching-admission-2026-09-26.json",
+    "data/phase4-provincial-matching-publication-2026-09-26.json",
+    "data/phase4-provincial-matching-release-2026-09-26.json",
+    "lib/phase4/methods-matching-en.ts",
+    "lib/phase4/methods-matching-fr.ts",
+  ]) assert.equal(reporting?.evidence.some((item) => item.path === path), true, path);
+  assert.deepEqual(record.checkpoints.map((item) => [item.id, item.status]), [["rights-and-admission", "pass"]]);
+  assert.deepEqual(record.removedCheckpoints, [{ id: "outside-provincial-review", decision: "data/phase-scope-decision-2026-09-26.json" }]);
 });
 
 test("Phase 4 rejects a tampered percentage, criteria, or checksum", async () => {
@@ -147,15 +164,16 @@ test("Phase 4 rejects a tampered percentage, criteria, or checksum", async () =>
   await assert.rejects(validatePhase4ExitStatus({ ...record, exitCriteria: record.exitCriteria.map((item, index) => index === 0 ? { ...item, evidence: [{ ...item.evidence[0], sha256: "0".repeat(64) }] } : item) }), /checksum/);
 });
 
-test("Phase 4 rejects an in-memory flip of every declared criterion to pass", async () => {
-  const forgedComplete = {
+test("Phase 4 needs the scope decision to drop the outside review", async () => {
+  // Without the retirement the removed checkpoint is refused outright.
+  await assert.rejects(validatePhase4ExitStatus(record, reviewDecision), /removed checkpoints must match/);
+  // Restoring the review checkpoint does not help: the bundle names no review.
+  const restored = {
     ...record,
-    status: "complete",
-    completedCriteria: 4,
-    percentage: 100,
-    exitCriteria: record.exitCriteria.map((criterion) => ({ ...criterion, status: "pass" })),
+    removedCheckpoints: [],
+    checkpoints: [...record.checkpoints, { ...record.checkpoints[0], id: "outside-provincial-review", title: "Outside provincial review" }],
   };
-  await assert.rejects(validatePhase4ExitStatus(forgedComplete), /semantic evidence/);
+  await assert.rejects(validatePhase4ExitStatus(restored, reviewDecision), /semantic evidence/);
 });
 
 test("Phase 4 evidence paths are relative regular files, not symlinks", async () => {
@@ -193,24 +211,38 @@ test("Phase 4 evidence paths are relative regular files, not symlinks", async ()
 test("Phase 4 accepts a fully bound admitted-production 4/4 completion path", async () => {
   await withPositiveFixture(true, async (bundleEvidence) => {
     const complete = completeRecord(bundleEvidence);
-    assert.equal(await validatePhase4ExitStatus(complete), complete);
+    assert.equal(await validatePhase4ExitStatus(complete, reviewDecision), complete);
     assert.equal(complete.completedCriteria, 4);
     assert.equal(complete.percentage, 100);
     assert.equal(complete.checkpoints.every((checkpoint) => checkpoint.status === "pass"), true);
   });
 });
 
+test("Phase 4 accepts an admitted bundle without a review once the review is retired", async () => {
+  await withPositiveFixture(true, async (bundleEvidence) => {
+    const retired = retiredRecord(bundleEvidence);
+    assert.equal(await validatePhase4ExitStatus(retired), retired);
+    // The same bundle does not satisfy the review-required path.
+    await assert.rejects(validatePhase4ExitStatus(completeRecord(bundleEvidence), reviewDecision), /semantic evidence/);
+  }, { retired: true });
+  // A release that still names a review is refused once the review is retired,
+  // so a retired requirement is never recorded as met.
+  await withPositiveFixture(true, async (bundleEvidence) => {
+    await assert.rejects(validatePhase4ExitStatus(retiredRecord(bundleEvidence)), /semantic evidence/);
+  });
+});
+
 test("Phase 4 rejects a nonproduction numeric report and checkpoint/status tampering", async () => {
   await withPositiveFixture(false, async (bundleEvidence) => {
     const nonproduction = completeRecord(bundleEvidence);
-    await assert.rejects(validatePhase4ExitStatus(nonproduction), /semantic evidence/);
+    await assert.rejects(validatePhase4ExitStatus(nonproduction, reviewDecision), /semantic evidence/);
   });
   await withPositiveFixture(true, async (bundleEvidence) => {
     const complete = completeRecord(bundleEvidence);
     const blockedCheckpoint = { ...complete, checkpoints: complete.checkpoints.map((checkpoint, index) => index === 0 ? { ...checkpoint, status: "blocked" } : checkpoint) };
-    await assert.rejects(validatePhase4ExitStatus(blockedCheckpoint), /checkpoint status/);
+    await assert.rejects(validatePhase4ExitStatus(blockedCheckpoint, reviewDecision), /checkpoint status/);
     const brokenBinding = { ...complete, exitCriteria: complete.exitCriteria.map((criterion) => criterion.id === "published-match-and-non-match-rates" ? { ...criterion, evidence: criterion.evidence.map((item, index) => index === 7 ? { ...item, sha256: "0".repeat(64) } : item) } : criterion) };
-    await assert.rejects(validatePhase4ExitStatus(brokenBinding), /checksum/);
+    await assert.rejects(validatePhase4ExitStatus(brokenBinding, reviewDecision), /checksum/);
   });
 });
 
@@ -218,10 +250,10 @@ test("Phase 4 rejects thin owner/reviewer records and placeholder identities in 
   await withPositiveFixture(true, async (bundleEvidence) => {
     const complete = completeRecord(bundleEvidence);
     const wrongTitle = { ...complete, checkpoints: complete.checkpoints.map((checkpoint) => ({ ...checkpoint, title: "wrong title" })) };
-    await assert.rejects(validatePhase4ExitStatus(wrongTitle), /titles/);
+    await assert.rejects(validatePhase4ExitStatus(wrongTitle, reviewDecision), /titles/);
   });
   await withPositiveFixture(true, async (bundleEvidence) => {
-    await assert.rejects(validatePhase4ExitStatus(completeRecord(bundleEvidence)), /semantic evidence/);
+    await assert.rejects(validatePhase4ExitStatus(completeRecord(bundleEvidence), reviewDecision), /semantic evidence/);
   }, {
     parent: "scripts",
     ownerDecision: {
@@ -234,7 +266,7 @@ test("Phase 4 rejects thin owner/reviewer records and placeholder identities in 
     },
   });
   await withPositiveFixture(true, async (bundleEvidence) => {
-    await assert.rejects(validatePhase4ExitStatus(completeRecord(bundleEvidence)), /semantic evidence/);
+    await assert.rejects(validatePhase4ExitStatus(completeRecord(bundleEvidence), reviewDecision), /semantic evidence/);
   }, {
     parent: "scripts",
     reviewers: [

@@ -1,11 +1,11 @@
 {
  "schemaVersion": "witness-tree/phase4-provincial-matching-report/1",
  "runId": "phase4-provincial-matching-2026-09-26",
- "status": "computed-awaiting-owner-admission",
- "productionEligible": false,
+ "status": "admitted-production",
+ "productionEligible": true,
  "claims": {
   "comparisonResultsExist": true,
-  "productionEligible": false,
+  "productionEligible": true,
   "released": false
  },
  "scope": {
@@ -20,16 +20,42 @@
  },
  "readiness": {
   "sourceRightsVerified": true,
-  "sourceEvidenceAdmitted": false,
-  "sourceTransformationApproved": false,
-  "sourceReleaseApproved": false,
+  "sourceEvidenceAdmitted": true,
+  "sourceTransformationApproved": true,
+  "sourceReleaseApproved": true,
   "changeGeometryMaterialized": true
  },
  "readinessBasis": {
   "sourceRightsVerified": "data/bc-harvest-source-rights-2026-09-26.json records BC rights; the Québec sources are CC BY 4.0.",
   "changeGeometryMaterialized": "Detected changes are the per-cell loss patches of the admitted four-province store (data/phase2-per-cell-four-province-admission-record-2026-09-19.json).",
-  "pending": "The owner has not yet admitted the source evidence, the record transformation, or the release."
+  "ownerApproval": "The owner admitted the source evidence, the record transformation and the release on 2026-09-26; see data/phase4-provincial-matching-admission-2026-09-26.json."
  },
+ "inputBindings": [
+  {
+   "path": "data/bc-harvest-source-rights-2026-09-26.json",
+   "sha256": "fa3b7c52a301a8e96acfcdd09ecb812416f24df2b2c8d11ccd16718a6fb1bfb8"
+  },
+  {
+   "path": "data/phase2-per-cell-four-province-admission-record-2026-09-19.json",
+   "sha256": "de9eb39a18f097802cc3ef61eca81fba3a010a103979fd6f84b46fdd18532243"
+  },
+  {
+   "path": "lib/pipeline/matching.ts",
+   "sha256": "ccde63ade96901a040dc9b896b57fcd6588e4d90c2ebe75ca4ecbfffb4badef8"
+  },
+  {
+   "path": "lib/phase4/provincial-matching.ts",
+   "sha256": "1b28cb6942ab8255a9c440ff1ab842a7854ec3222b2fd58a88d3c97dbf68e953"
+  },
+  {
+   "path": "scripts/phase4-match-provincial.mts",
+   "sha256": "64dcc7f4a3ffe63d82ef55d1ecac746a64872625ad7948c421b8154174187303"
+  },
+  {
+   "path": "scripts/phase4_rasterize_records.py",
+   "sha256": "55ad00c4695dd6b91d4a66e5b214998fc3204470fa7616aba19a8b05113f6573"
+  }
+ ],
  "method": {
   "detectedChanges": "Every per-cell loss patch of the four-province store, 1984-1985 to 2021-2022, in the province holding most of its cells. The observation year is the interval's closing year.",
   "officialRecords": "Official harvest, fire, insect and windthrow records, reprojected to the national 30 m EPSG:3978 grid and rasterized one source at a time by GDAL's cell-centre rule (scripts/phase4_rasterize_records.py).",

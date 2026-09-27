@@ -18,7 +18,18 @@ import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const { values } = parseArgs({ options: { work: { type: "string" }, checks: { type: "string" } } });
+const { values } = parseArgs({ options: { work: { type: "string" }, checks: { type: "string" }, admitted: { type: "boolean", default: false } } });
+// --admitted writes the form the owner admitted on 2026-09-26: production status,
+// every readiness flag true, and the repository inputs bound by checksum so the
+// admission and the Phase 4 checker can hold the report to them.
+const INPUTS = [
+  "data/bc-harvest-source-rights-2026-09-26.json",
+  "data/phase2-per-cell-four-province-admission-record-2026-09-19.json",
+  "lib/pipeline/matching.ts",
+  "lib/phase4/provincial-matching.ts",
+  "scripts/phase4-match-provincial.mts",
+  "scripts/phase4_rasterize_records.py",
+];
 const W = values.work;
 // Work-directory paths as they sit on the data root once copied back.
 const DERIVED = "derived/phase4-provincial-matching-2026-09-26";
@@ -73,23 +84,26 @@ const checks = values.checks ? await json(values.checks) : [];
 const report = {
   schemaVersion: "witness-tree/phase4-provincial-matching-report/1",
   runId: "phase4-provincial-matching-2026-09-26",
-  status: "computed-awaiting-owner-admission",
-  productionEligible: false,
-  claims: { comparisonResultsExist: true, productionEligible: false, released: false },
+  status: values.admitted ? "admitted-production" : "computed-awaiting-owner-admission",
+  productionEligible: values.admitted,
+  claims: { comparisonResultsExist: true, productionEligible: values.admitted, released: false },
   scope: { provinces: ["BC", "QC"] },
   dataRoot: { derived: DERIVED, note: "Paths are relative to the data root; the run was computed on the internal disk and copied back byte for byte." },
   readiness: {
     sourceRightsVerified: true,
-    sourceEvidenceAdmitted: false,
-    sourceTransformationApproved: false,
-    sourceReleaseApproved: false,
+    sourceEvidenceAdmitted: values.admitted,
+    sourceTransformationApproved: values.admitted,
+    sourceReleaseApproved: values.admitted,
     changeGeometryMaterialized: true,
   },
   readinessBasis: {
     sourceRightsVerified: "data/bc-harvest-source-rights-2026-09-26.json records BC rights; the Québec sources are CC BY 4.0.",
     changeGeometryMaterialized: "Detected changes are the per-cell loss patches of the admitted four-province store (data/phase2-per-cell-four-province-admission-record-2026-09-19.json).",
-    pending: "The owner has not yet admitted the source evidence, the record transformation, or the release.",
+    ...(values.admitted
+      ? { ownerApproval: "The owner admitted the source evidence, the record transformation and the release on 2026-09-26; see data/phase4-provincial-matching-admission-2026-09-26.json." }
+      : { pending: "The owner has not yet admitted the source evidence, the record transformation, or the release." }),
   },
+  inputBindings: await Promise.all(INPUTS.map(async (input) => ({ path: input, sha256: await sha(path.join(ROOT, input)) }))),
   method: {
     detectedChanges: "Every per-cell loss patch of the four-province store, 1984-1985 to 2021-2022, in the province holding most of its cells. The observation year is the interval's closing year.",
     officialRecords: "Official harvest, fire, insect and windthrow records, reprojected to the national 30 m EPSG:3978 grid and rasterized one source at a time by GDAL's cell-centre rule (scripts/phase4_rasterize_records.py).",

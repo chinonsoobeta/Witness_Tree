@@ -4,9 +4,16 @@ The first computed run of the Phase 4 matching criterion for British Columbia
 and Québec. Record: [`data/phase4-provincial-matching-report.json`](../data/phase4-provincial-matching-report.json).
 Outputs on the data root: `derived/phase4-provincial-matching-2026-09-26/`.
 
-**Status: computed, awaiting owner admission.** The Phase 4 gate stays failed
-until the owner admits the source evidence, transformation and release, a
-release record exists, and an outside reviewer for each province signs off.
+**Status: admitted and released.** The owner admitted the source evidence,
+record transformation and release on 2026-09-26
+([admission](../data/phase4-provincial-matching-admission-2026-09-26.json)).
+The rates are published on the methods page in both languages
+([publication](../data/phase4-provincial-matching-publication-2026-09-26.json))
+and released as `phase4-provincial-matching-v1`
+([release](../data/phase4-provincial-matching-release-2026-09-26.json)). The
+owner retired the outside provincial review the same day
+([scope decision](PHASE_SCOPE_DECISION_2026-09-26.md)); no outside review took
+place. Phase 4 is 4/4.
 
 ## Result
 
@@ -84,7 +91,12 @@ to grow past its cap.
 ```sh
 python3 scripts/phase4_rasterize_records.py --gpkg WORK/records/records-BC.gpkg --src bc-fta-4-cutblocks --out WORK/runs/BC/bc-fta-4-cutblocks --workers 5
 node scripts/run-phase4-provincial-matching.mjs --work WORK --workers 8 --heap 2048
-node scripts/build-phase4-provincial-matching-report.mjs --work WORK --checks WORK/checks/all.json
+node scripts/build-phase4-provincial-matching-report.mjs --work WORK --checks WORK/checks/all.json --admitted
+node scripts/record-phase4-provincial-matching-admission.mjs --decided-at <UTC time of the owner's decision>
 ```
+
+`--admitted` is only for a run the owner has admitted. The internal-disk
+working copy was deleted after the run; the SSD holds the outputs and the
+source downloads.
 
 The whole matching run takes about 95 seconds on a 10-core Apple M4.

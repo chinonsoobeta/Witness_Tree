@@ -30,6 +30,11 @@
    "phase": 7,
    "criterion": "right-of-reply-live",
    "reason": "The Plan's criterion is that every reserve and treaty page carries a right-of-reply route. With no reserve or treaty pages, it has nothing to apply to and is removed with them."
+  },
+  {
+   "phase": 4,
+   "criterion": "outside-provincial-review",
+   "reason": "The owner retired the Phase 4 outside provincial review, one independent reviewer each for BC and Québec. No review took place and none is claimed."
   }
  ],
  "retiredRequirements": [],
@@ -45,7 +50,8 @@
   "independentlyCompared": false,
   "archiveRecoveryProven": false,
   "indigenousGeographyPublished": false,
-  "rightOfReplyRouteLive": false
+  "rightOfReplyRouteLive": false,
+  "outsideProvincialReviewCompleted": false
  },
  "rightsNote": "The owner first retired the Phase 4 source-rights requirement, then withdrew that retirement on 2026-09-26 after the publishers' replies showed the British Columbia harvest sources are open or granted. Rights are recorded, not retired: see data/bc-harvest-source-rights-2026-09-26.json."
 }

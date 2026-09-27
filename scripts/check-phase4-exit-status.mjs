@@ -3,6 +3,8 @@ import { lstat, readFile, realpath } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { isAbsolute, relative, resolve, sep } from "node:path";
 
+import { readScopeDecision, removedCriteria, SCOPE_DECISION_PATH } from "./phase-scope-decision.mjs";
+
 const CRITERIA = new Map([
   ["pending-or-uncorroborated-active-not-recorded-harvest", "PENDING or uncorroborated ACTIVE never renders as recorded harvest"],
   ["quebec-north-of-52-national-baseline", "Québec north of 52 grades national baseline, not enhanced"],
@@ -19,6 +21,11 @@ const CHECKPOINTS = new Map([
   ["rights-and-admission", "Rights/admission"],
   ["outside-provincial-review", "Outside provincial review"],
 ]);
+// The owner's scope decision of 2026-09-26 may retire the outside provincial
+// review, and nothing else in Phase 4. While it does, the review record is not
+// required, the release must not claim one, and the checkpoint leaves the list.
+// No review is recorded as having happened.
+const REMOVABLE = ["outside-provincial-review"];
 
 function requiredString(value, name) {
   if (typeof value !== "string" || !value.trim()) throw new Error(`${name} is required.`);
@@ -195,7 +202,7 @@ function validNumericReport(item) {
   return reasonCount === counts.unmatchedChanges;
 }
 
-function inspectReportingBundle(files) {
+function inspectReportingBundle(files, reviewRequired = true) {
   const json = parseJsonEvidence(files);
   const byPath = new Map(files.map((item) => [item.path, item.sha256]));
   const allowTestIdentity = testOnlyEvidence(files);
@@ -208,22 +215,29 @@ function inspectReportingBundle(files) {
   const publication = json.find(({ value }) => value?.schemaVersion === PUBLICATION_SCHEMA);
   const release = json.find(({ value }) => value?.schemaVersion === RELEASE_SCHEMA);
   const review = json.find(({ value }) => value?.schemaVersion === REVIEW_SCHEMA);
-  if (!admission || !publication || !release || !review) return { valid: false };
+  if (!admission || !publication || !release || (reviewRequired && !review)) return { valid: false };
 
   const admissionValue = admission.value;
   const publicationValue = publication.value;
   const releaseValue = release.value;
-  const reviewValue = review.value;
+  const reviewValue = review?.value;
   if (admissionValue.status !== "recorded-production-admission" || !exactObject(admissionValue.claims, { admitted: true, released: false, productionEligible: true }) || admissionValue.reportSha256 !== reportSha || admissionValue.runId !== report.value.runId || !validPhase4Scope(admissionValue.scope) || JSON.stringify(admissionValue.scope) !== JSON.stringify(report.value.scope) || !sameBindings(admissionValue.inputBindings, report.value.inputBindings) || !validOwnerDecision(admissionValue.ownerDecision, allowTestIdentity)) return { valid: false };
   if (admissionValue.sourceRightsVerified !== true || admissionValue.sourceEvidenceAdmitted !== true || admissionValue.sourceTransformationApproved !== true || admissionValue.sourceReleaseApproved !== true || admissionValue.changeGeometryMaterialized !== true) return { valid: false };
   if (publicationValue.status !== "published-bilingual-production" || publicationValue.reportSha256 !== reportSha || publicationValue.admissionSha256 !== admission.sha256 || publicationValue.released !== true || publicationValue.productionEligible !== true || !Array.isArray(publicationValue.methodsPagePaths) || publicationValue.methodsPagePaths.length !== 2 || publicationValue.methodsPagePaths.some((path) => typeof path !== "string" || !hasEvidence(files, path))) return { valid: false };
   if (!finiteRate(publicationValue.matchRate) || !finiteRate(publicationValue.nonMatchRate) || publicationValue.matchRate !== report.value.matchRate || publicationValue.nonMatchRate !== report.value.nonMatchRate || !sameReasonDistribution(publicationValue.nonMatchReasonDistribution, report.value.nonMatchReasonDistribution)) return { valid: false };
-  if (releaseValue.status !== "released-production" || releaseValue.released !== true || releaseValue.productionEligible !== true || typeof releaseValue.version !== "string" || !releaseValue.version.trim() || releaseValue.reportSha256 !== reportSha || releaseValue.admissionSha256 !== admission.sha256 || releaseValue.publicationSha256 !== publication.sha256 || releaseValue.outsideReviewSha256 !== review.sha256) return { valid: false };
-  if (reviewValue.status !== "approved" || reviewValue.reportSha256 !== reportSha || reviewValue.admissionSha256 !== admission.sha256 || reviewValue.runId !== report.value.runId || !validPhase4Scope(reviewValue.scope) || JSON.stringify(reviewValue.scope) !== JSON.stringify(report.value.scope)) return { valid: false };
-  if (!Array.isArray(reviewValue.provinces) || reviewValue.provinces.length !== 2 || new Set(reviewValue.provinces).size !== 2 || !reviewValue.provinces.includes("BC") || !reviewValue.provinces.includes("QC")) return { valid: false };
-  if (!Array.isArray(reviewValue.reviewers) || reviewValue.reviewers.length !== 2 || reviewValue.reviewers.some((reviewer) => !validReviewer(reviewer, allowTestIdentity))) return { valid: false };
-  const reviewerProvinces = new Set(reviewValue.reviewers.map((reviewer) => reviewer.province));
-  if (reviewerProvinces.size !== 2 || !reviewerProvinces.has("BC") || !reviewerProvinces.has("QC")) return { valid: false };
+  if (releaseValue.status !== "released-production" || releaseValue.released !== true || releaseValue.productionEligible !== true || typeof releaseValue.version !== "string" || !releaseValue.version.trim() || releaseValue.reportSha256 !== reportSha || releaseValue.admissionSha256 !== admission.sha256 || releaseValue.publicationSha256 !== publication.sha256) return { valid: false };
+  if (!reviewRequired) {
+    // A retired review cannot be claimed by the release.
+    if (releaseValue.outsideReviewSha256 !== undefined && releaseValue.outsideReviewSha256 !== null) return { valid: false };
+  } else if (releaseValue.outsideReviewSha256 !== review.sha256) return { valid: false };
+  if (reviewRequired && (reviewValue.status !== "approved" || reviewValue.reportSha256 !== reportSha || reviewValue.admissionSha256 !== admission.sha256 || reviewValue.runId !== report.value.runId || !validPhase4Scope(reviewValue.scope) || JSON.stringify(reviewValue.scope) !== JSON.stringify(report.value.scope))) return { valid: false };
+  if (reviewRequired && !Array.isArray(reviewValue.provinces)) return { valid: false };
+  if (reviewRequired && (reviewValue.provinces.length !== 2 || new Set(reviewValue.provinces).size !== 2 || !reviewValue.provinces.includes("BC") || !reviewValue.provinces.includes("QC"))) return { valid: false };
+  if (reviewRequired) {
+    if (!Array.isArray(reviewValue.reviewers) || reviewValue.reviewers.length !== 2 || reviewValue.reviewers.some((reviewer) => !validReviewer(reviewer, allowTestIdentity))) return { valid: false };
+    const reviewerProvinces = new Set(reviewValue.reviewers.map((reviewer) => reviewer.province));
+    if (reviewerProvinces.size !== 2 || !reviewerProvinces.has("BC") || !reviewerProvinces.has("QC")) return { valid: false };
+  }
 
   for (const path of publicationValue.methodsPagePaths) {
     const page = textFor(files, path);
@@ -232,19 +246,19 @@ function inspectReportingBundle(files) {
   return { valid: true, report, admission, publication, release, review };
 }
 
-function validReportingBundle(files) {
-  return inspectReportingBundle(files).valid;
+function validReportingBundle(files, reviewRequired) {
+  return inspectReportingBundle(files, reviewRequired).valid;
 }
 
-function deriveCheckpointStatus(id, files) {
-  const bundle = inspectReportingBundle(files);
+function deriveCheckpointStatus(id, files, reviewRequired) {
+  const bundle = inspectReportingBundle(files, reviewRequired);
   if (!bundle.valid) return "blocked";
   if (id === "rights-and-admission") return bundle.admission.value.sourceRightsVerified === true && bundle.admission.value.sourceEvidenceAdmitted === true && bundle.admission.value.sourceTransformationApproved === true && bundle.admission.value.sourceReleaseApproved === true ? "pass" : "blocked";
   if (id === "outside-provincial-review") return bundle.review.value.status === "approved" ? "pass" : "blocked";
   throw new Error(`Unknown Phase 4 checkpoint: ${id}.`);
 }
 
-function deriveCriterionStatus(id, files) {
+function deriveCriterionStatus(id, files, reviewRequired) {
   switch (id) {
     case "pending-or-uncorroborated-active-not-recorded-harvest": {
       const normalize = textFor(files, "lib/events/normalize.ts");
@@ -267,7 +281,7 @@ function deriveCriterionStatus(id, files) {
         && /province: "QC",\s*latitude: 53/.test(fixture);
     }
     case "published-match-and-non-match-rates":
-      return validReportingBundle(files);
+      return validReportingBundle(files, reviewRequired);
     case "subtypes-distinguished-or-undetermined": {
       const types = textFor(files, "lib/events/types.ts");
       const normalize = textFor(files, "lib/events/normalize.ts");
@@ -286,7 +300,11 @@ function deriveCriterionStatus(id, files) {
   }
 }
 
-export async function validatePhase4ExitStatus(record) {
+export async function validatePhase4ExitStatus(record, decision = readScopeDecision()) {
+  const removed = removedCriteria(decision, 4, REMOVABLE);
+  const reviewRequired = !removed.includes("outside-provincial-review");
+  const expectedCheckpoints = [...CHECKPOINTS.keys()].filter((id) => !removed.includes(id));
+  if (JSON.stringify(record?.removedCheckpoints ?? []) !== JSON.stringify(removed.map((id) => ({ id, decision: SCOPE_DECISION_PATH })))) throw new Error("Phase 4 removed checkpoints must match the scope decision.");
   if (record?.schemaVersion !== "witness-tree/phase4-exit-status/1" || record.phase !== 4) throw new Error("Phase 4 status must be a Version 2.1 record.");
   if (!Array.isArray(record.exitCriteria) || record.exitCriteria.length !== CRITERIA.size) throw new Error("Phase 4 requires exactly the four plan exit criteria.");
   const seen = new Set();
@@ -296,22 +314,22 @@ export async function validatePhase4ExitStatus(record) {
     if (criterion.status !== "pass" && criterion.status !== "fail") throw new Error("Each Phase 4 exit criterion must have an evidence-derived pass or fail status.");
     requiredString(criterion.reason, `${criterion.id} reason`);
     const evidence = await verifyEvidence(criterion.evidence);
-    const derivedStatus = deriveCriterionStatus(criterion.id, evidence) ? "pass" : "fail";
+    const derivedStatus = deriveCriterionStatus(criterion.id, evidence, reviewRequired) ? "pass" : "fail";
     if (criterion.status !== derivedStatus) throw new Error(`Phase 4 criterion status is not supported by semantic evidence: ${criterion.id}.`);
     seen.add(criterion.id);
     if (criterion.status === "pass") completed += 1;
   }
   const percentage = completed / CRITERIA.size * 100;
   if (record.completedCriteria !== completed || record.totalCriteria !== CRITERIA.size || record.percentage !== percentage) throw new Error("Phase 4 completion must equal the unweighted formal exit-criterion result.");
-  if (!Array.isArray(record.checkpoints) || record.checkpoints.length !== CHECKPOINTS.size) throw new Error("Phase 4 requires exactly the rights/admission and outside-review checkpoints.");
+  if (!Array.isArray(record.checkpoints) || record.checkpoints.length !== expectedCheckpoints.length) throw new Error("Phase 4 requires exactly the plan checkpoints less those the scope decision removes.");
   const checkpointIds = new Set();
   const checkpointStatuses = [];
   for (const checkpoint of record.checkpoints) {
-    if (!CHECKPOINTS.has(checkpoint?.id) || checkpointIds.has(checkpoint.id) || checkpoint.title !== CHECKPOINTS.get(checkpoint.id)) throw new Error("Phase 4 checkpoint ids and titles must exactly match the plan.");
+    if (!expectedCheckpoints.includes(checkpoint?.id) || checkpointIds.has(checkpoint.id) || checkpoint.title !== CHECKPOINTS.get(checkpoint.id)) throw new Error("Phase 4 checkpoint ids and titles must exactly match the plan.");
     if (checkpoint.status !== "pass" && checkpoint.status !== "blocked") throw new Error("Each Phase 4 checkpoint must have an evidence-derived pass or blocked status.");
     requiredString(checkpoint.reason, `${checkpoint.id} checkpoint reason`);
     const evidence = await verifyEvidence(checkpoint.evidence);
-    const derivedStatus = deriveCheckpointStatus(checkpoint.id, evidence);
+    const derivedStatus = deriveCheckpointStatus(checkpoint.id, evidence, reviewRequired);
     if (checkpoint.status !== derivedStatus) throw new Error(`Phase 4 checkpoint status is not supported by semantic evidence: ${checkpoint.id}.`);
     checkpointIds.add(checkpoint.id);
     checkpointStatuses.push(checkpoint.status);

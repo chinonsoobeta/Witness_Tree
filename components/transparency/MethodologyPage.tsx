@@ -2,8 +2,8 @@ import { CoverageStatement } from "@/components/policy/CoverageStatement";
 import { EvidenceLegend } from "@/components/policy/EvidenceLegend";
 import type { ConfidenceResult } from "@/lib/domain/confidence";
 import type { Locale } from "@/lib/domain";
-import { formatNumber } from "@/lib/domain";
-import matchingReport from "@/data/phase4-provincial-matching-report.json";
+import { provincialMatchingTextEn } from "@/lib/phase4/methods-matching-en";
+import { provincialMatchingTextFr } from "@/lib/phase4/methods-matching-fr";
 import {
   EXPLORE_COVERAGE_PERIOD,
   EXPLORE_DEFAULT_YEAR,
@@ -114,24 +114,9 @@ const CONFIDENCE_RULES: readonly Readonly<{
   },
 ];
 
-/*
- * The provincial matching results, read from the run's own record
- * (data/phase4-provincial-matching-report.json) so the page cannot drift from
- * it. The run is computed but not yet admitted by the owner, and the text says so.
- */
-function provincialMatchingText(locale: Locale) {
-  const r = matchingReport;
-  const reasons = r.nonMatchReasonDistribution;
-  const n = (value: number) => formatNumber(value, locale, 0);
-  const pct = (value: number) => `${formatNumber(value * 100, locale, 1)}${locale === "fr" ? " %" : "%"}`;
-  if (locale === "fr") {
-    return `Taux d’appariement : ${pct(r.matchRate)} des ${n(r.counts.assessedChanges)} changements détectés en Colombie-Britannique et au Québec de 1985 à 2022 correspondent à un registre officiel de coupe, de feu, d’insectes ou de chablis selon les tolérances ci-dessus; en superficie, ${pct(r.areaWeighted.matchedShare)} des pertes détectées y correspondent. Taux de non-appariement : ${pct(r.nonMatchRate)}. Répartition des motifs de non-appariement : ${n(reasons["no-official-record-candidates"])} changements ne recoupent aucun registre officiel; ${n(reasons["outside-temporal-tolerance"])} recoupent un registre daté hors tolérance; ${n(reasons["below-spatial-tolerance"])} recoupent des registres sur moins de la moitié; ${n(reasons["below-spatial-tolerance,outside-temporal-tolerance"])} échouent aux deux. Un changement sans registre ne prouve pas qu’il ne s’est rien passé : le registre peut manquer, ne pas être publié ou viser une terre privée. Ces résultats sont calculés; le propriétaire ne les a pas encore approuvés pour diffusion.`;
-  }
-  return `Match rate: ${pct(r.matchRate)} of the ${n(r.counts.assessedChanges)} detected changes in British Columbia and Québec from 1985 to 2022 match an official harvest, fire, insect or windthrow record within the tolerances above; by area, ${pct(r.areaWeighted.matchedShare)} of the detected loss matches. Non-match rate: ${pct(r.nonMatchRate)}. Non-match-reason distribution: ${n(reasons["no-official-record-candidates"])} changes overlap no official record; ${n(reasons["outside-temporal-tolerance"])} overlap a record dated outside the tolerance; ${n(reasons["below-spatial-tolerance"])} overlap records by less than half; ${n(reasons["below-spatial-tolerance,outside-temporal-tolerance"])} fail on both counts. A change with no record is not evidence that nothing happened: a record can be missing, unpublished, or on private land. These results are computed; the owner has not yet approved them for release.`;
-}
-
 export function MethodologyPage({ locale }: Readonly<{ locale: Locale }>) {
-  const copy = { ...COPY[locale], provincialMatchingText: provincialMatchingText(locale) };
+  // The matching results are in one file per language, as the Phase 4 publication record binds them.
+  const copy = { ...COPY[locale], provincialMatchingText: locale === "fr" ? provincialMatchingTextFr() : provincialMatchingTextEn() };
   const sections = [
     [copy.definition, copy.definitionText],
     [copy.denominator, copy.denominatorText],
