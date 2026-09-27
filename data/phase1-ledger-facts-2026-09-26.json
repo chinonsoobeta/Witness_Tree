@@ -1,0 +1,747 @@
+{
+ "schemaVersion": "witness-tree/phase1-ledger-facts/1",
+ "recordedOn": "2026-09-26",
+ "notice": "Values for the Phase 1 core ledger fields the field audit reported missing on 2026-09-26. Publisher facts are copied from the catalogue readback and existing records; plain-language explanations, transformations and notices are Witness Tree's own and say so. French text is a draft awaiting bilingual review.",
+ "rows": {
+  "ntems-annual-land-cover": {
+   "editionEffectiveDate": "2025-12-16",
+   "transformations": {
+    "summary": "Used on its native 30 m EPSG:3978 grid without reprojection. Derived: the Version 2.1 interval rasters, the per-cell loss patches, province and district zonal totals, and the condition-and-recovery classes.",
+    "records": [
+     "data/phase2-v21-raster-readback-evidence.json",
+     "data/phase2-per-cell-annual-series.json",
+     "data/phase4-condition-recovery-v2.json"
+    ]
+   },
+   "redistributionStatus": "allowed-under-ogl-canada-2.0-with-required-attribution",
+   "bulkRedistributionAllowed": true,
+   "plainLanguageExplanation": {
+    "en": "A satellite map of Canada's land cover for every year from 1984 to 2022 at 30 m. Witness Tree uses it to find where tree cover was lost.",
+    "fr": "Une carte satellitaire de la couverture terrestre du Canada pour chaque année de 1984 à 2022, à 30 m. Arbre témoin s'en sert pour repérer les pertes de couvert arboré."
+   },
+   "nextExpectedRefresh": {
+    "status": "unknown",
+    "reason": "The publisher states it updates as needed (as_needed) and announces no release date."
+   },
+   "correctionContactRoute": {
+    "internalEn": "/en/corrections",
+    "internalFr": "/fr/corrections",
+    "publisherContact": "mike.wulder@canada.ca",
+    "publisherContactSource": "publisher catalogue maintainer"
+   },
+   "retrievalDate": {
+    "first": "2026-08-12T11:37:13Z",
+    "last": "2026-08-12T16:40:20Z",
+    "archives": 39
+   },
+   "checksum": {
+    "algorithm": "sha256",
+    "archives": 39,
+    "perArchiveRecord": "data/vlce2-promotion-preparation.json",
+    "first": "6da3aaa2181b3ab4c0a5ae6313776a298f1eea26a5a4f45f178984ae5cb17724",
+    "last": "53555f815ffa68adb7c5b6117dd15d7b5385771a36926691e8a41e5fc12b11dd"
+   },
+   "schema": {
+    "format": "single-band GeoTIFF per year, 30 m, EPSG:3978",
+    "classCodes": [
+     0,
+     20,
+     31,
+     32,
+     33,
+     40,
+     50,
+     80,
+     81,
+     100,
+     210,
+     220,
+     230
+    ]
+   },
+   "modificationNotice": "Adapted by Witness Tree from Natural Resources Canada, Annual High-resolution forest land cover for Canada (1984-2022). This does not constitute an endorsement by Natural Resources Canada.",
+   "datasetOriginalName": "Annual High-resolution forest land cover for Canada (1984-2022)"
+  },
+  "ntems-forest-harvest": {
+   "editionEffectiveDate": "2024-01-01",
+   "transformations": {
+    "summary": "Cross-tabulated with annual land cover by province and year to publish the harvest and fire series, and used to attribute a cause to detected loss.",
+    "records": [
+     "data/harvest-fire-province-annual-series.json",
+     "data/phase2-per-cell-annual-series.json"
+    ]
+   },
+   "redistributionStatus": "allowed-under-ogl-canada-2.0-with-required-attribution",
+   "bulkRedistributionAllowed": true,
+   "plainLanguageExplanation": {
+    "en": "A satellite record of where forest was harvested in Canada, with the year each harvest was first seen, from 1985 to 2022.",
+    "fr": "Un registre satellitaire des endroits où la forêt a été récoltée au Canada, avec l'année où chaque récolte a été vue pour la première fois, de 1985 à 2022."
+   },
+   "nextExpectedRefresh": {
+    "status": "unknown",
+    "reason": "The publisher states it updates as needed (as_needed) and announces no release date."
+   },
+   "correctionContactRoute": {
+    "internalEn": "/en/corrections",
+    "internalFr": "/fr/corrections",
+    "publisherContact": "mike.wulder@canada.ca",
+    "publisherContactSource": "publisher catalogue maintainer"
+   }
+  },
+  "ntems-canopy-cover": {
+   "editionEffectiveDate": "2023-01-01",
+   "transformations": {
+    "summary": "Profiled and staged only. No derived product is published from it.",
+    "records": [
+     "data/nrcan-canopy-cover-profile.json"
+    ]
+   },
+   "redistributionStatus": "allowed-under-ogl-canada-2.0-with-required-attribution",
+   "bulkRedistributionAllowed": true,
+   "plainLanguageExplanation": {
+    "en": "A satellite estimate of how much of the ground the tree canopy covered across Canada in 2022.",
+    "fr": "Une estimation satellitaire de la part du sol couverte par la canopée au Canada en 2022."
+   },
+   "nextExpectedRefresh": {
+    "status": "unknown",
+    "reason": "The publisher states it updates as needed (as_needed) and announces no release date."
+   },
+   "correctionContactRoute": {
+    "internalEn": "/en/corrections",
+    "internalFr": "/fr/corrections",
+    "publisherContact": "mike.wulder@canada.ca",
+    "publisherContactSource": "publisher catalogue maintainer"
+   }
+  },
+  "ntems-canopy-height": {
+   "editionEffectiveDate": "2023-01-01",
+   "transformations": {
+    "summary": "Profiled and staged only. No derived product is published from it.",
+    "records": [
+     "data/nrcan-canopy-height-profile.json"
+    ]
+   },
+   "redistributionStatus": "allowed-under-ogl-canada-2.0-with-required-attribution",
+   "bulkRedistributionAllowed": true,
+   "plainLanguageExplanation": {
+    "en": "A satellite estimate of how tall the forest canopy was across Canada in 2022.",
+    "fr": "Une estimation satellitaire de la hauteur de la canopée au Canada en 2022."
+   },
+   "nextExpectedRefresh": {
+    "status": "unknown",
+    "reason": "The publisher states it updates as needed (as_needed) and announces no release date."
+   },
+   "correctionContactRoute": {
+    "internalEn": "/en/corrections",
+    "internalFr": "/fr/corrections",
+    "publisherContact": "mike.wulder@canada.ca",
+    "publisherContactSource": "publisher catalogue maintainer"
+   }
+  },
+  "cwfis-current": {
+   "editionEffectiveDate": "2026-08-14",
+   "redistributionStatus": "allowed-under-ogl-canada-2.0-with-required-attribution",
+   "bulkRedistributionAllowed": true,
+   "plainLanguageExplanation": {
+    "en": "Canada's national record of active wildfires, as a snapshot taken for the site.",
+    "fr": "Le registre national des feux de forêt actifs au Canada, sous forme d'instantané pris pour le site."
+   },
+   "nextExpectedRefresh": {
+    "status": "continuous",
+    "reason": "An operational service updated through the fire season; the publisher states no fixed cadence."
+   },
+   "correctionContactRoute": {
+    "internalEn": "/en/corrections",
+    "internalFr": "/fr/corrections",
+    "publisherContact": "cwfissa-csscifv@nrcan-rncan.gc.ca",
+    "publisherContactSource": "CWFIS program contact in the CWFIS ISO catalogue record"
+   }
+  },
+  "bc-wildfire": {
+   "editionEffectiveDate": "2026-08-14",
+   "redistributionStatus": "allowed-under-ogl-bc-2.0-with-required-attribution",
+   "bulkRedistributionAllowed": true,
+   "plainLanguageExplanation": {
+    "en": "British Columbia's current wildfire perimeters, as a snapshot taken for the site.",
+    "fr": "Les périmètres actuels des feux de forêt en Colombie-Britannique, sous forme d'instantané pris pour le site."
+   },
+   "nextExpectedRefresh": {
+    "status": "continuous",
+    "reason": "The publisher lists the shapefile resource as continually updated."
+   },
+   "correctionContactRoute": {
+    "internalEn": "/en/corrections",
+    "internalFr": "/fr/corrections",
+    "publisherContact": "BCWILDFIREGEO@gov.bc.ca",
+    "publisherContactSource": "catalogue point of contact"
+   }
+  },
+  "ab-wildfire": {
+   "editionEffectiveDate": "2026-08-14",
+   "redistributionStatus": "allowed-under-ogl-alberta-2.2-with-required-attribution",
+   "bulkRedistributionAllowed": true,
+   "plainLanguageExplanation": {
+    "en": "Alberta's current wildfire locations, as a snapshot taken for the site.",
+    "fr": "Les emplacements actuels des feux de forêt en Alberta, sous forme d'instantané pris pour le site."
+   },
+   "nextExpectedRefresh": {
+    "status": "continuous",
+    "reason": "An operational service; the publisher states no fixed cadence."
+   },
+   "correctionContactRoute": {
+    "internalEn": "/en/corrections",
+    "internalFr": "/fr/corrections",
+    "publisherContact": "wildfireinfo@gov.ab.ca",
+    "publisherContactSource": "the publisher's Wildfire maps and data page"
+   },
+   "updateCadence": "continuous operational service"
+  },
+  "on-fire-disturbance": {
+   "editionEffectiveDate": "2026-08-14",
+   "redistributionStatus": "allowed-under-ogl-ontario-1.0-with-required-attribution",
+   "bulkRedistributionAllowed": true,
+   "plainLanguageExplanation": {
+    "en": "Ontario's in-year fire perimeters, as a snapshot taken for the site.",
+    "fr": "Les périmètres des feux de l'année en Ontario, sous forme d'instantané pris pour le site."
+   },
+   "nextExpectedRefresh": {
+    "status": "continuous",
+    "reason": "The publisher states daily updates."
+   },
+   "correctionContactRoute": {
+    "internalEn": "/en/corrections",
+    "internalFr": "/fr/corrections",
+    "publisherContact": "affes.gis@ontario.ca",
+    "publisherContactSource": "catalogue maintainer"
+   },
+   "updateCadence": "daily"
+  },
+  "cwfis-historical": {
+   "datasetTitle": "National Burned Area Composite (NBAC) 1972-2025",
+   "datasetOriginalName": "National Burned Area Composite (NBAC)",
+   "editionEffectiveDate": "2026-05-13",
+   "updateCadence": "annually",
+   "transformations": {
+    "summary": "Profiled only; 49 self-intersecting rings quarantined without repair. No derived product is published.",
+    "records": [
+     "data/phase1-nbac-profile-2026-08-27.json"
+    ]
+   },
+   "modificationNotice": "Adapted by Witness Tree from Canadian Forest Service, National Burned Area Composite (NBAC). This does not constitute an endorsement by Natural Resources Canada.",
+   "redistributionStatus": "allowed-under-ogl-canada-2.0-with-required-attribution",
+   "bulkRedistributionAllowed": true,
+   "plainLanguageExplanation": {
+    "en": "Canada's national map of areas burned by wildfire each year since 1972.",
+    "fr": "La carte nationale des superficies brûlées par les feux de forêt au Canada chaque année depuis 1972."
+   },
+   "nextExpectedRefresh": {
+    "status": "expected-annually",
+    "reason": "The publisher updates the composite annually; no release date is announced."
+   },
+   "correctionContactRoute": {
+    "internalEn": "/en/corrections",
+    "internalFr": "/fr/corrections",
+    "publisherContact": "cwfissa-csscifv@nrcan-rncan.gc.ca",
+    "publisherContactSource": "ISO catalogue contact"
+   }
+  },
+  "qc-current-ecoforest": {
+   "redistributionStatus": "allowed-under-cc-by-4.0-with-attribution-and-indication-of-changes",
+   "bulkRedistributionAllowed": true,
+   "plainLanguageExplanation": {
+    "en": "Québec's forest inventory map, kept up to date with harvests, fires and other disturbances.",
+    "fr": "La carte écoforestière du Québec, tenue à jour avec les coupes, les feux et les autres perturbations."
+   },
+   "nextExpectedRefresh": {
+    "status": "expected-annually",
+    "reason": "The publisher states annual updates; no release date is announced. Last catalogue update 2026-07-13."
+   },
+   "correctionContactRoute": {
+    "internalEn": "/en/corrections",
+    "internalFr": "/fr/corrections",
+    "publisherContact": "inventaires.forestiers@mrnf.gouv.qc.ca",
+    "publisherContactSource": "catalogue maintainer"
+   },
+   "editionEffectiveDate": "2026-07-13",
+   "retrievalDate": "2026-08-14",
+   "checksum": "c67c56b0c101e95bef4fbca53a06e2f1578fe38293961017f70d815209740cf1",
+   "archiveVersion": "undeclared",
+   "coverage": "Québec's managed forest territory, south of the northern limit of timber allocation, with disturbances recorded to the latest annual update",
+   "schema": {
+    "layer": "pee_maj_prov",
+    "featureCount": 9827536,
+    "keyFields": [
+     "geoc_maj",
+     "origine",
+     "an_origine",
+     "perturb",
+     "an_perturb"
+    ]
+   },
+   "transformations": {
+    "summary": "Stand-origin disturbances (harvest, fire, insect, windthrow) with their year are normalized into official records for Phase 4 matching. The stand-copy transformation is approved but not executed.",
+    "records": [
+     "data/phase4-provincial-matching-report.json",
+     "data/phase1-qc-current-ecoforest-execution-approval.json"
+    ]
+   },
+   "modificationNotice": "Adapted by Witness Tree from the Ministère des Ressources naturelles et des Forêts, Carte écoforestière à jour (CC BY 4.0). Changes: stand-origin disturbances selected, reprojected and rasterized to a 30 m grid.",
+   "datasetOriginalName": "Carte écoforestière à jour"
+  },
+  "qc-original-current-inventory": {
+   "redistributionStatus": "allowed-under-cc-by-4.0-with-attribution-and-indication-of-changes",
+   "bulkRedistributionAllowed": true,
+   "plainLanguageExplanation": {
+    "en": "Québec's original forest inventory map from its fourth inventory, before later updates.",
+    "fr": "La carte écoforestière originale du quatrième inventaire du Québec, avant les mises à jour."
+   },
+   "nextExpectedRefresh": {
+    "status": "expected-annually",
+    "reason": "The publisher states annual updates; no release date is announced. Last catalogue update 2026-08-21."
+   },
+   "correctionContactRoute": {
+    "internalEn": "/en/corrections",
+    "internalFr": "/fr/corrections",
+    "publisherContact": "inventaires.forestiers@mrnf.gouv.qc.ca",
+    "publisherContactSource": "catalogue maintainer"
+   },
+   "updateCadence": "annual",
+   "transformations": {
+    "summary": "Profiled and archived only. The stand-copy transformation is approved but not executed; no derived product is published.",
+    "records": [
+     "data/qc-fourth-inventory-evidence.json"
+    ]
+   }
+  },
+  "qc-fourth-inventory": {
+   "redistributionStatus": "allowed-under-cc-by-4.0-with-attribution-and-indication-of-changes",
+   "bulkRedistributionAllowed": true,
+   "plainLanguageExplanation": {
+    "en": "The results of Québec's fourth forest inventory, 2001 to 2018.",
+    "fr": "Les résultats du quatrième inventaire forestier du Québec, de 2001 à 2018."
+   },
+   "nextExpectedRefresh": {
+    "status": "expected-annually",
+    "reason": "The publisher states annual updates; no release date is announced. Last catalogue update 2026-08-21."
+   },
+   "correctionContactRoute": {
+    "internalEn": "/en/corrections",
+    "internalFr": "/fr/corrections",
+    "publisherContact": "inventaires.forestiers@mrnf.gouv.qc.ca",
+    "publisherContactSource": "catalogue maintainer"
+   },
+   "updateCadence": "annual",
+   "transformations": {
+    "summary": "Profiled and archived only. The stand-copy transformation is approved but not executed; no derived product is published.",
+    "records": [
+     "data/qc-fourth-inventory-evidence.json"
+    ]
+   },
+   "retrievalDate": "2026-08-14",
+   "archiveVersion": "Fourth inventory, 2001–2018; complete since 2018; catalogue and resources updated 2026-06-19",
+   "modificationNotice": "Adapted by Witness Tree from the Ministère des Ressources naturelles et des Forêts, Carte écoforestière originale et résultats du quatrième inventaire (CC BY 4.0). No changes are published.",
+   "datasetOriginalName": "Carte écoforestière originale et résultats du quatrième inventaire"
+  },
+  "ab-avi-crown": {
+   "editionEffectiveDate": "2022-01-26",
+   "transformations": {
+    "summary": "Profiled and staged only. No derived product is published.",
+    "records": [
+     "data/staged-geospatial-profile.json"
+    ]
+   },
+   "redistributionStatus": "allowed-under-ogl-alberta-2.2-with-required-attribution",
+   "bulkRedistributionAllowed": true,
+   "plainLanguageExplanation": {
+    "en": "Alberta's vegetation inventory of Crown forest land.",
+    "fr": "L'inventaire de la végétation des terres forestières de la Couronne de l'Alberta."
+   },
+   "nextExpectedRefresh": {
+    "status": "unknown",
+    "reason": "The publisher states irregular update frequency and announces no release date."
+   },
+   "correctionContactRoute": {
+    "internalEn": "/en/corrections",
+    "internalFr": "/fr/corrections",
+    "publisherContact": "FP.FMB-GIS@gov.ab.ca",
+    "publisherContactSource": "catalogue maintainer"
+   }
+  },
+  "ab-avi-post-harvest": {
+   "editionEffectiveDate": "2022-01-26",
+   "transformations": {
+    "summary": "Profiled and staged only. No derived product is published.",
+    "records": [
+     "data/staged-geospatial-profile.json"
+    ]
+   },
+   "redistributionStatus": "allowed-under-ogl-alberta-2.2-with-required-attribution",
+   "bulkRedistributionAllowed": true,
+   "plainLanguageExplanation": {
+    "en": "The harvest areas recorded after Alberta's Crown vegetation inventory was made.",
+    "fr": "Les superficies récoltées consignées après l'inventaire de la végétation des terres de la Couronne de l'Alberta."
+   },
+   "nextExpectedRefresh": {
+    "status": "unknown",
+    "reason": "The publisher states irregular update frequency and announces no release date."
+   },
+   "correctionContactRoute": {
+    "internalEn": "/en/corrections",
+    "internalFr": "/fr/corrections",
+    "publisherContact": "FP.FMB-GIS@gov.ab.ca",
+    "publisherContactSource": "catalogue maintainer"
+   },
+   "datasetTitle": "Alberta Vegetation Inventory (AVI) Crown: AVI_PostInventoryHarvest layer",
+   "updateCadence": "irregular"
+  },
+  "ab-primary-land-vegetation": {
+   "editionEffectiveDate": "2020-04-30",
+   "transformations": {
+    "summary": "Profiled and staged only. No derived product is published.",
+    "records": [
+     "data/staged-geospatial-profile.json"
+    ]
+   },
+   "redistributionStatus": "allowed-under-ogl-alberta-2.2-with-required-attribution",
+   "bulkRedistributionAllowed": true,
+   "plainLanguageExplanation": {
+    "en": "Alberta's primary land and vegetation inventory of the settled and rangeland areas.",
+    "fr": "L'inventaire primaire des terres et de la végétation de l'Alberta pour les zones peuplées et de parcours."
+   },
+   "nextExpectedRefresh": {
+    "status": "unknown",
+    "reason": "The publisher states no update frequency and announces no release date."
+   },
+   "correctionContactRoute": {
+    "internalEn": "/en/corrections",
+    "internalFr": "/fr/corrections",
+    "publisherContact": "fp.rangeland-gis@gov.ab.ca",
+    "publisherContactSource": "catalogue maintainer"
+   },
+   "updateCadence": "not stated by the publisher"
+  },
+  "provincial-electoral-boundaries": {
+   "publisher": {
+    "BC": "Elections BC",
+    "AB": "Government of Alberta (Alberta Environment and Protected Areas, Provincial Geospatial Centre)",
+    "ON": "Elections Ontario",
+    "QC": "Élections Québec"
+   },
+   "datasetTitle": {
+    "BC": "Provincial electoral districts, 2023",
+    "AB": "Provincial Electoral Division - Current 2019",
+    "ON": "Electoral district shapefiles, 2022",
+    "QC": "Circonscriptions électorales provinciales, 2026 (sans eau)"
+   },
+   "sourceUrl": {
+    "BC": "https://catalogue.data.gov.bc.ca/dataset/1cba4b16-263f-4d42-8d84-f5fecaa03d1a",
+    "AB": "https://geospatial.alberta.ca/titan/rest/services/boundary/goa_administrative_area_10tm_nad83_aep/MapServer/3/query?where=1%3D1&outFields=EDNUMBER%2CEDNAME%2CEDPROV&returnGeometry=true&orderByFields=EDNUMBER&f=geojson",
+    "ON": "https://www.elections.on.ca/en/voting-in-ontario/electoral-district-shapefiles.html",
+    "QC": "https://donnees.electionsquebec.qc.ca/autres/provincial/circonscriptions_electorales_sans_eau_2026.json"
+   },
+   "licence": {
+    "BC": "Elections BC Open Data Licence",
+    "AB": "ogl-alberta-2.2",
+    "ON": "Elections Ontario Open Use Data Product Licence",
+    "QC": "Élections Québec terms of use"
+   },
+   "licenceUrl": {
+    "BC": "https://www.elections.bc.ca/docs/EBC-Open-Data-Licence.pdf",
+    "AB": "https://open.alberta.ca/licence",
+    "ON": "https://www.elections.on.ca/en/voting-in-ontario/electoral-district-shapefiles/open-use-data-product-licence-agreement.html",
+    "QC": "https://www.electionsquebec.qc.ca/en/our-institution/terms-of-use/"
+   },
+   "retrievalDate": {
+    "BC": "2026-08-14T19:00:00Z",
+    "AB": "2026-09-18T22:31:19Z",
+    "ON": "2026-08-14",
+    "QC": "2026-09-18"
+   },
+   "checksum": {
+    "BC": "d2403eeb488be4ef761f7dcbc72c25f8af3a046fce9980536307ba145993f193",
+    "AB": "2c3772181068395df9d4397c143bc6880f8474cd589502a0dfa915adb008dd07",
+    "ON": "70fd809a4998147b228fd9275e34e569be8ae1fd67470e2f4a20761e5d1e7cae",
+    "QC": "5c22379acdffc6138eb77a5aaec265d7c301cffd04eb4c0bafede68ed8651503"
+   },
+   "schema": {
+    "BC": {
+     "featureCount": 93,
+     "fields": [
+      "BOUNDARY_SET_ID",
+      "ED_ABBREVIATION",
+      "ED_NAME",
+      "ELECTORAL_DISTRICT_ID",
+      "FEATURE_AREA_SQM",
+      "FEATURE_LENGTH_M",
+      "GAZETTE_DATE",
+      "OBJECTID",
+      "SE_ANNO_CAD_DATA"
+     ]
+    },
+    "AB": {
+     "featureCount": 87
+    },
+    "ON": {
+     "featureCount": 124,
+     "fields": [
+      "ED_ID",
+      "ENGLISH_NA",
+      "FRENCH_NAM",
+      "Shape_Leng",
+      "Shape_Area"
+     ]
+    },
+    "QC": {
+     "featureCount": 127,
+     "idField": "CO_CEP",
+     "nameField": "NM_CEP"
+    }
+   },
+   "requiredAttribution": {
+    "BC": "Elections BC",
+    "AB": "Contains information licensed under the Open Government Licence - Alberta.",
+    "ON": "Elections Ontario",
+    "QC": "Source: © Directeur général des élections du Québec and Commission de la représentation électorale, 2026."
+   },
+   "editionEffectiveDate": {
+    "BC": "2023 boundaries",
+    "AB": "2019 boundaries (Provincial Electoral Division - Current 2019)",
+    "ON": "2022 boundaries",
+    "QC": "2026 electoral map, enacted 2026-06-12, published in the Gazette officielle 2026-06-17, first used at the 2026-10-05 general election."
+   },
+   "archiveVersion": {
+    "BC": "2023",
+    "AB": "Current 2019",
+    "ON": "2022",
+    "QC": "2026"
+   },
+   "coverage": "British Columbia, Alberta, Ontario and Québec provincial electoral districts, one current edition per province",
+   "transformations": {
+    "summary": "Reprojected and tiled for the provincial-riding overlay and used for district comparisons. Québec's outlines, names and identifiers are reused unchanged, as its terms require.",
+    "records": [
+     "data/provincial-electoral-sources-2026-09-18.json",
+     "data/boundary-overlay-release.json"
+    ]
+   },
+   "redistributionStatus": {
+    "BC": "allowed-under-elections-bc-open-data-licence",
+    "AB": "allowed-under-ogl-alberta-2.2-with-required-attribution",
+    "ON": "allowed-under-elections-ontario-open-use-data-product-licence",
+    "QC": "reuse-unchanged-for-non-profit-purposes-with-credit"
+   },
+   "bulkRedistributionAllowed": {
+    "BC": true,
+    "AB": true,
+    "ON": true,
+    "QC": false
+   },
+   "modificationNotice": "British Columbia, Alberta and Ontario outlines are reprojected and tiled by Witness Tree. Québec's outlines are reused unchanged. No publisher endorsement is implied.",
+   "datasetOriginalName": {
+    "BC": "Provincial Electoral Districts",
+    "AB": "Provincial Electoral Division - Current 2019",
+    "ON": "Electoral District Shapefile",
+    "QC": "Circonscriptions électorales provinciales"
+   },
+   "plainLanguageExplanation": {
+    "en": "The boundaries of provincial ridings in the four provinces, used to compare forest loss between ridings.",
+    "fr": "Les limites des circonscriptions provinciales des quatre provinces, utilisées pour comparer les pertes forestières entre circonscriptions."
+   },
+   "updateCadence": "when each province redraws its electoral map; no fixed calendar",
+   "nextExpectedRefresh": {
+    "status": "unknown",
+    "reason": "Each province publishes new boundaries after a redistribution; no date is announced."
+   },
+   "correctionContactRoute": {
+    "internalEn": "/en/corrections",
+    "internalFr": "/fr/corrections",
+    "publisherListing": {
+     "BC": "https://catalogue.data.gov.bc.ca/dataset/1cba4b16-263f-4d42-8d84-f5fecaa03d1a",
+     "AB": "https://open.alberta.ca/opendata/gda-e201c640-1f76-429c-8c24-89ff496f956e",
+     "ON": "https://www.elections.on.ca/en/voting-in-ontario/electoral-district-shapefiles.html",
+     "QC": "https://www.electionsquebec.qc.ca/en/our-institution/terms-of-use/"
+    }
+   }
+  }
+ },
+ "basis": {
+  "ntems-annual-land-cover": {
+   "editionEffectiveDate": "Catalogue date_published in data/phase1-catalogue-readback-2026-09-26.json; the publisher declares no separate edition.",
+   "transformations": "Witness Tree's own processing, from the records named in the value.",
+   "redistributionStatus": "Open Government Licence - Canada 2.0: copy, modify, publish, adapt and distribute in any medium, with attribution.",
+   "bulkRedistributionAllowed": "Open Government Licence - Canada 2.0: copy, modify, publish, adapt and distribute in any medium, with attribution. The licence sets no limit on volume or medium.",
+   "plainLanguageExplanation": "Authored by Witness Tree; French is a draft awaiting bilingual review.",
+   "nextExpectedRefresh": "Catalogue frequency in data/phase1-catalogue-readback-2026-09-26.json.",
+   "correctionContactRoute": "Catalogue maintainer email in data/phase1-catalogue-readback-2026-09-26.json.",
+   "retrievalDate": "Per-archive retrievedAt in data/vlce2-promotion-preparation.json.",
+   "checksum": "One SHA-256 per annual archive in data/vlce2-promotion-preparation.json.",
+   "schema": "Class codes as profiled in the WP2 provincial annual series (docs/FALL_DOWN_WP2_ANNUAL_SERIES_STAGING.md).",
+   "modificationNotice": "The adaptation notice the site already shows (components/transparency/DataPage.tsx).",
+   "datasetOriginalName": "Catalogue title in data/phase1-catalogue-readback-2026-09-26.json."
+  },
+  "ntems-forest-harvest": {
+   "editionEffectiveDate": "Catalogue date_published in data/phase1-catalogue-readback-2026-09-26.json; the publisher declares no separate edition.",
+   "transformations": "Witness Tree's own processing, from the records named in the value.",
+   "redistributionStatus": "Open Government Licence - Canada 2.0: copy, modify, publish, adapt and distribute in any medium, with attribution.",
+   "bulkRedistributionAllowed": "Open Government Licence - Canada 2.0: copy, modify, publish, adapt and distribute in any medium, with attribution. The licence sets no limit on volume or medium.",
+   "plainLanguageExplanation": "Authored by Witness Tree; French is a draft awaiting bilingual review.",
+   "nextExpectedRefresh": "Catalogue frequency in data/phase1-catalogue-readback-2026-09-26.json.",
+   "correctionContactRoute": "Catalogue maintainer email in data/phase1-catalogue-readback-2026-09-26.json."
+  },
+  "ntems-canopy-cover": {
+   "editionEffectiveDate": "Catalogue date_published in data/phase1-catalogue-readback-2026-09-26.json; the publisher declares no separate edition.",
+   "transformations": "Witness Tree's own processing, from the records named in the value.",
+   "redistributionStatus": "Open Government Licence - Canada 2.0: copy, modify, publish, adapt and distribute in any medium, with attribution.",
+   "bulkRedistributionAllowed": "Open Government Licence - Canada 2.0: copy, modify, publish, adapt and distribute in any medium, with attribution. The licence sets no limit on volume or medium.",
+   "plainLanguageExplanation": "Authored by Witness Tree; French is a draft awaiting bilingual review.",
+   "nextExpectedRefresh": "Catalogue frequency in data/phase1-catalogue-readback-2026-09-26.json.",
+   "correctionContactRoute": "Catalogue maintainer email in data/phase1-catalogue-readback-2026-09-26.json."
+  },
+  "ntems-canopy-height": {
+   "editionEffectiveDate": "Catalogue date_published in data/phase1-catalogue-readback-2026-09-26.json; the publisher declares no separate edition.",
+   "transformations": "Witness Tree's own processing, from the records named in the value.",
+   "redistributionStatus": "Open Government Licence - Canada 2.0: copy, modify, publish, adapt and distribute in any medium, with attribution.",
+   "bulkRedistributionAllowed": "Open Government Licence - Canada 2.0: copy, modify, publish, adapt and distribute in any medium, with attribution. The licence sets no limit on volume or medium.",
+   "plainLanguageExplanation": "Authored by Witness Tree; French is a draft awaiting bilingual review.",
+   "nextExpectedRefresh": "Catalogue frequency in data/phase1-catalogue-readback-2026-09-26.json.",
+   "correctionContactRoute": "Catalogue maintainer email in data/phase1-catalogue-readback-2026-09-26.json."
+  },
+  "cwfis-current": {
+   "editionEffectiveDate": "An operational layer with no declared edition; the date is the staged snapshot's (data/staged-acquisitions.json).",
+   "redistributionStatus": "Open Government Licence - Canada 2.0: copy, modify, publish, adapt and distribute in any medium, with attribution.",
+   "bulkRedistributionAllowed": "Open Government Licence - Canada 2.0: copy, modify, publish, adapt and distribute in any medium, with attribution. The licence sets no limit on volume or medium.",
+   "plainLanguageExplanation": "Authored by Witness Tree; French is a draft awaiting bilingual review.",
+   "nextExpectedRefresh": "Publisher statement recorded in the catalogue readback or source profile.",
+   "correctionContactRoute": "Publisher contact recorded in the catalogue readback."
+  },
+  "bc-wildfire": {
+   "editionEffectiveDate": "An operational layer with no declared edition; the date is the staged snapshot's (data/staged-acquisitions.json).",
+   "redistributionStatus": "Open Government Licence - British Columbia 2.0: copy, modify, publish, adapt and distribute in any medium, with attribution.",
+   "bulkRedistributionAllowed": "Open Government Licence - British Columbia 2.0: copy, modify, publish, adapt and distribute in any medium, with attribution. The licence sets no limit on volume or medium.",
+   "plainLanguageExplanation": "Authored by Witness Tree; French is a draft awaiting bilingual review.",
+   "nextExpectedRefresh": "Publisher statement recorded in the catalogue readback or source profile.",
+   "correctionContactRoute": "Publisher contact recorded in the catalogue readback."
+  },
+  "ab-wildfire": {
+   "editionEffectiveDate": "An operational layer with no declared edition; the date is the staged snapshot's (data/staged-acquisitions.json).",
+   "redistributionStatus": "Open Government Licence - Alberta 2.2: copy, modify, publish, adapt and distribute in any medium, with attribution.",
+   "bulkRedistributionAllowed": "Open Government Licence - Alberta 2.2: copy, modify, publish, adapt and distribute in any medium, with attribution. The licence sets no limit on volume or medium.",
+   "plainLanguageExplanation": "Authored by Witness Tree; French is a draft awaiting bilingual review.",
+   "nextExpectedRefresh": "Publisher statement recorded in the catalogue readback or source profile.",
+   "correctionContactRoute": "Publisher contact recorded in the catalogue readback.",
+   "updateCadence": "Publisher statement recorded in the catalogue readback."
+  },
+  "on-fire-disturbance": {
+   "editionEffectiveDate": "An operational layer with no declared edition; the date is the staged snapshot's (data/staged-acquisitions.json).",
+   "redistributionStatus": "Open Government Licence - Ontario 1.0: copy, modify, publish, adapt and distribute in any medium, with attribution.",
+   "bulkRedistributionAllowed": "Open Government Licence - Ontario 1.0: copy, modify, publish, adapt and distribute in any medium, with attribution. The licence sets no limit on volume or medium.",
+   "plainLanguageExplanation": "Authored by Witness Tree; French is a draft awaiting bilingual review.",
+   "nextExpectedRefresh": "Publisher statement recorded in the catalogue readback or source profile.",
+   "correctionContactRoute": "Publisher contact recorded in the catalogue readback.",
+   "updateCadence": "Publisher statement recorded in the catalogue readback."
+  },
+  "cwfis-historical": {
+   "datasetTitle": "ISO catalogue title with the release's year span.",
+   "datasetOriginalName": "ISO catalogue title.",
+   "editionEffectiveDate": "ISO catalogue publication date of the 20260513 release.",
+   "updateCadence": "ISO catalogue maintenance and update frequency.",
+   "transformations": "From the NBAC profile.",
+   "modificationNotice": "Required citation in data/phase1-nbac-profile-2026-08-27.json, with the adaptation notice.",
+   "redistributionStatus": "Open Government Licence - Canada 2.0: copy, modify, publish, adapt and distribute in any medium, with attribution.",
+   "bulkRedistributionAllowed": "Open Government Licence - Canada 2.0: copy, modify, publish, adapt and distribute in any medium, with attribution. The licence sets no limit on volume or medium.",
+   "plainLanguageExplanation": "Authored by Witness Tree; French is a draft awaiting bilingual review.",
+   "nextExpectedRefresh": "ISO catalogue maintenance frequency.",
+   "correctionContactRoute": "ISO catalogue contact in the readback."
+  },
+  "qc-current-ecoforest": {
+   "redistributionStatus": "Creative Commons Attribution 4.0: copy, redistribute and adapt in any medium or format, with attribution and an indication of changes.",
+   "bulkRedistributionAllowed": "Creative Commons Attribution 4.0: copy, redistribute and adapt in any medium or format, with attribution and an indication of changes. The licence sets no limit on volume or medium.",
+   "plainLanguageExplanation": "Authored by Witness Tree; French is a draft awaiting bilingual review.",
+   "nextExpectedRefresh": "Catalogue frequency and modification date in data/phase1-catalogue-readback-2026-09-26.json.",
+   "correctionContactRoute": "Catalogue maintainer email in data/phase1-catalogue-readback-2026-09-26.json.",
+   "editionEffectiveDate": "Catalogue modification date in data/phase1-catalogue-readback-2026-09-26.json; the map is updated annually and declares no edition.",
+   "retrievalDate": "Raw acquisition directory raw/qc-current-ecoforest/2026-08-14 named by the execution approval.",
+   "checksum": "Raw archive SHA-256 bound by data/phase1-qc-current-ecoforest-execution-approval.json.",
+   "archiveVersion": "The publisher declares no version for the archive.",
+   "coverage": "Publisher description of the up-to-date ecoforest map.",
+   "schema": "Layer and count bound by the execution approval; key fields read from the GeoPackage.",
+   "transformations": "Witness Tree's own processing.",
+   "modificationNotice": "CC BY 4.0 requires an indication of changes.",
+   "datasetOriginalName": "Catalogue title in data/phase1-catalogue-readback-2026-09-26.json."
+  },
+  "qc-original-current-inventory": {
+   "redistributionStatus": "Creative Commons Attribution 4.0: copy, redistribute and adapt in any medium or format, with attribution and an indication of changes.",
+   "bulkRedistributionAllowed": "Creative Commons Attribution 4.0: copy, redistribute and adapt in any medium or format, with attribution and an indication of changes. The licence sets no limit on volume or medium.",
+   "plainLanguageExplanation": "Authored by Witness Tree; French is a draft awaiting bilingual review.",
+   "nextExpectedRefresh": "Catalogue frequency and modification date in data/phase1-catalogue-readback-2026-09-26.json.",
+   "correctionContactRoute": "Catalogue maintainer email in data/phase1-catalogue-readback-2026-09-26.json.",
+   "updateCadence": "Catalogue frequency in data/phase1-catalogue-readback-2026-09-26.json.",
+   "transformations": "Witness Tree's own processing."
+  },
+  "qc-fourth-inventory": {
+   "redistributionStatus": "Creative Commons Attribution 4.0: copy, redistribute and adapt in any medium or format, with attribution and an indication of changes.",
+   "bulkRedistributionAllowed": "Creative Commons Attribution 4.0: copy, redistribute and adapt in any medium or format, with attribution and an indication of changes. The licence sets no limit on volume or medium.",
+   "plainLanguageExplanation": "Authored by Witness Tree; French is a draft awaiting bilingual review.",
+   "nextExpectedRefresh": "Catalogue frequency and modification date in data/phase1-catalogue-readback-2026-09-26.json.",
+   "correctionContactRoute": "Catalogue maintainer email in data/phase1-catalogue-readback-2026-09-26.json.",
+   "updateCadence": "Catalogue frequency in data/phase1-catalogue-readback-2026-09-26.json.",
+   "transformations": "Witness Tree's own processing.",
+   "retrievalDate": "Publisher records in data/qc-fourth-inventory-evidence.json sit under raw/qc-fourth-inventory/2026-08-14.",
+   "archiveVersion": "Edition statement in data/qc-fourth-inventory-evidence.json.",
+   "modificationNotice": "CC BY 4.0 requires an indication of changes.",
+   "datasetOriginalName": "Title in data/qc-fourth-inventory-evidence.json."
+  },
+  "ab-avi-crown": {
+   "editionEffectiveDate": "Catalogue date_published in data/phase1-catalogue-readback-2026-09-26.json; the publisher declares no separate edition.",
+   "transformations": "Witness Tree's own processing.",
+   "redistributionStatus": "Open Government Licence - Alberta 2.2: copy, modify, publish, adapt and distribute in any medium, with attribution.",
+   "bulkRedistributionAllowed": "Open Government Licence - Alberta 2.2: copy, modify, publish, adapt and distribute in any medium, with attribution. The licence sets no limit on volume or medium.",
+   "plainLanguageExplanation": "Authored by Witness Tree; French is a draft awaiting bilingual review.",
+   "nextExpectedRefresh": "Catalogue frequency in data/phase1-catalogue-readback-2026-09-26.json.",
+   "correctionContactRoute": "Catalogue maintainer email in data/phase1-catalogue-readback-2026-09-26.json."
+  },
+  "ab-avi-post-harvest": {
+   "editionEffectiveDate": "Catalogue date_published in data/phase1-catalogue-readback-2026-09-26.json; the publisher declares no separate edition.",
+   "transformations": "Witness Tree's own processing.",
+   "redistributionStatus": "Open Government Licence - Alberta 2.2: copy, modify, publish, adapt and distribute in any medium, with attribution.",
+   "bulkRedistributionAllowed": "Open Government Licence - Alberta 2.2: copy, modify, publish, adapt and distribute in any medium, with attribution. The licence sets no limit on volume or medium.",
+   "plainLanguageExplanation": "Authored by Witness Tree; French is a draft awaiting bilingual review.",
+   "nextExpectedRefresh": "Catalogue frequency in data/phase1-catalogue-readback-2026-09-26.json.",
+   "correctionContactRoute": "Catalogue maintainer email in data/phase1-catalogue-readback-2026-09-26.json.",
+   "datasetTitle": "Catalogue title with the layer name in data/staged-geospatial-profile.json.",
+   "updateCadence": "Same catalogue record as AVI Crown."
+  },
+  "ab-primary-land-vegetation": {
+   "editionEffectiveDate": "Catalogue date_published in data/phase1-catalogue-readback-2026-09-26.json; the publisher declares no separate edition.",
+   "transformations": "Witness Tree's own processing.",
+   "redistributionStatus": "Open Government Licence - Alberta 2.2: copy, modify, publish, adapt and distribute in any medium, with attribution.",
+   "bulkRedistributionAllowed": "Open Government Licence - Alberta 2.2: copy, modify, publish, adapt and distribute in any medium, with attribution. The licence sets no limit on volume or medium.",
+   "plainLanguageExplanation": "Authored by Witness Tree; French is a draft awaiting bilingual review.",
+   "nextExpectedRefresh": "Catalogue frequency in data/phase1-catalogue-readback-2026-09-26.json.",
+   "correctionContactRoute": "Catalogue maintainer email in data/phase1-catalogue-readback-2026-09-26.json.",
+   "updateCadence": "The catalogue record in data/phase1-catalogue-readback-2026-09-26.json states no frequency."
+  },
+  "provincial-electoral-boundaries": {
+   "publisher": "Per-province component values from the electoral profiles and data/provincial-electoral-sources-2026-09-18.json.",
+   "datasetTitle": "Per-province component values from the electoral profiles and data/provincial-electoral-sources-2026-09-18.json.",
+   "sourceUrl": "Per-province component values from the electoral profiles and data/provincial-electoral-sources-2026-09-18.json.",
+   "licence": "Per-province component values from the electoral profiles and data/provincial-electoral-sources-2026-09-18.json.",
+   "licenceUrl": "Per-province component values from the electoral profiles and data/provincial-electoral-sources-2026-09-18.json.",
+   "retrievalDate": "Per-province component values from the electoral profiles and data/provincial-electoral-sources-2026-09-18.json.",
+   "checksum": "Per-province component values from the electoral profiles and data/provincial-electoral-sources-2026-09-18.json.",
+   "schema": "Per-province component values from the electoral profiles and data/provincial-electoral-sources-2026-09-18.json.",
+   "requiredAttribution": "Per-province attribution from the same records.",
+   "editionEffectiveDate": "Boundary editions named by each component record.",
+   "archiveVersion": "Edition labels of the four components.",
+   "coverage": "The four component records.",
+   "transformations": "Witness Tree's own processing.",
+   "redistributionStatus": "Licence terms recorded per component.",
+   "bulkRedistributionAllowed": "Québec's terms allow reproduction without adaptation for non-profit purposes; Witness Tree does not offer its outlines for bulk download.",
+   "modificationNotice": "From the component records' reuse conditions.",
+   "datasetOriginalName": "Original-language dataset names of the components.",
+   "plainLanguageExplanation": "Authored by Witness Tree; French is a draft awaiting bilingual review.",
+   "updateCadence": "Electoral boundaries change by redistribution, not on a schedule.",
+   "nextExpectedRefresh": "Electoral redistribution practice.",
+   "correctionContactRoute": "Each component's publisher listing."
+  }
+ }
+}

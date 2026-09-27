@@ -1,0 +1,122 @@
+{
+ "schemaVersion": "witness-tree/bc-harvest-source-rights/1",
+ "status": "rights-recorded-from-publisher-correspondence",
+ "recordedOn": "2026-09-26",
+ "verificationBasis": "The owner's mailbox was read with the owner's authorization on 2026-09-26 for replies received in the preceding two months. Each entry records the channel, sender domain, subject and received date, and quotes only the operative words. No permission is inferred beyond what the reply states.",
+ "purpose": "Phase 4 provincial matching needs British Columbia harvest records with verified reuse rights. The owner first retired the rights requirement, then withdrew that retirement once these replies showed the rights exist. See data/phase-scope-decision-2026-09-26.json.",
+ "sources": [
+  {
+   "sourceId": "bc-consolidated-cutblocks",
+   "dataset": "Harvested Areas of BC (Consolidated Cutblocks)",
+   "catalogueUrl": "https://catalogue.data.gov.bc.ca/dataset/harvested-areas-of-bc-consolidated-cutblocks-",
+   "rightsBasis": "written-permission",
+   "rightsStatus": "granted",
+   "receivedOn": "2026-09-18",
+   "provenance": {
+    "channel": "official email",
+    "senderDomain": "gov.bc.ca",
+    "sender": "Forest Analysis and Inventory Branch, Data Analysis and Data Management Group",
+    "subject": "RE: Permission request — Harvested Areas of BC (Consolidated Cutblocks)"
+   },
+   "operativeText": "You may use the Harvested Areas of BC as you have detailed below.",
+   "grantedUses": [
+    "An internal, access-controlled working layer derived from the source, with the original file retained unchanged for reproducibility.",
+    "Aggregates such as mapped area, feature counts or proportions by reporting geography and time period.",
+    "Generalized map tiles for browser display, not offered as a bulk download or designed to reconstruct the source.",
+    "Public outputs: an interactive map, legends and method notes, and static charts, tables or screenshots derived from the aggregates."
+   ],
+   "conditions": [
+    "No standalone downloadable feature dataset and no raw source attributes, unless separately authorized.",
+    "Every output identifies the Province and the branch as the source, states the edition or retrieval date, and carries the attribution and limitations.",
+    "Not represented as live, complete, survey-grade, or suitable for legal or operational decisions."
+   ],
+   "acquired": false
+  },
+  {
+   "sourceId": "bc-fta-cutblocks",
+   "dataset": "Forest Tenure Cutblock Polygons (FTA 4.0)",
+   "catalogueUrl": "https://catalogue.data.gov.bc.ca/dataset/forest-tenure-cutblock-polygons-fta-4-0",
+   "rightsBasis": "open-licence",
+   "licenceId": "ogl-bc",
+   "licenceUrl": "https://www2.gov.bc.ca/gov/content?id=A519A56BC2BF44E4A008B33FCF527F61",
+   "rightsStatus": "open",
+   "receivedOn": "2026-09-11",
+   "provenance": {
+    "channel": "official email",
+    "senderDomain": "gov.bc.ca",
+    "sender": "Intellectual Property Program, Ministry of Citizens' Services",
+    "subject": "FW: Permission and authoritative-export request — VRI 2025, FOM Cutblocks, and TAP deferral layer"
+   },
+   "operativeText": "available under the Open Government Licence-British Columbia (OGL-BC)",
+   "corroboration": "data/bc-forest-tenure-foi-catalogue-response-2026-08-27.json records the same licence from the catalogue and the FOI program area on 2026-08-27.",
+   "acquired": true
+  },
+  {
+   "sourceId": "bc-harvesting-authorities",
+   "dataset": "Forest Tenure Harvesting Authority Polygons",
+   "catalogueUrl": "https://catalogue.data.gov.bc.ca/dataset/forest-tenure-harvesting-authority-polygons",
+   "rightsBasis": "open-licence",
+   "licenceId": "ogl-bc",
+   "licenceUrl": "https://www2.gov.bc.ca/gov/content?id=A519A56BC2BF44E4A008B33FCF527F61",
+   "rightsStatus": "open",
+   "receivedOn": "2026-09-11",
+   "provenance": {
+    "channel": "official email",
+    "senderDomain": "gov.bc.ca",
+    "sender": "Intellectual Property Program, Ministry of Citizens' Services",
+    "subject": "FW: Permission and authoritative-export request — VRI 2025, FOM Cutblocks, and TAP deferral layer"
+   },
+   "operativeText": "available under the Open Government Licence-British Columbia (OGL-BC)",
+   "corroboration": "data/bc-forest-tenure-foi-catalogue-response-2026-08-27.json records the same licence from the catalogue and the FOI program area on 2026-08-27.",
+   "acquired": true
+  },
+  {
+   "sourceId": "bc-vri",
+   "dataset": "VRI - 2025 - Forest Vegetation Composite Polygons",
+   "catalogueUrl": "https://catalogue.data.gov.bc.ca/dataset/vri-2025-forest-vegetation-composite-polygons",
+   "rightsBasis": "conditional-custodian-consent",
+   "rightsStatus": "offered-owner-acceptance-sent-awaiting-grant",
+   "receivedOn": "2026-09-11",
+   "provenance": {
+    "channel": "official email",
+    "senderDomain": "gov.bc.ca",
+    "sender": "Intellectual Property Program, Ministry of Citizens' Services",
+    "subject": "FW: Permission and authoritative-export request — VRI 2025, FOM Cutblocks, and TAP deferral layer"
+   },
+   "operativeText": "the data custodian will also allow us to grant you permission provided that your use of the layer links back to and references the original data source",
+   "conditions": [
+    "Every use links back to and references the BC Data Catalogue record, including the date accessed.",
+    "View-only or limited access: the data cannot be re-downloaded from Witness Tree."
+   ],
+   "nextStep": "The owner sent a reply on 2026-09-26 accepting both conditions for VRI 2025 and the TAP deferral layer (owner-stated; the send was not read back from the mailbox). Permission is recorded as granted only once the copyright officer confirms it.",
+   "acquired": true
+  },
+  {
+   "sourceId": "bc-forest-operations-map",
+   "dataset": "Forest Operations Map (FOM) - Cutblocks",
+   "catalogueUrl": "https://catalogue.data.gov.bc.ca/dataset/forest-operations-map-fom-cutblocks",
+   "rightsBasis": "none",
+   "rightsStatus": "refused",
+   "receivedOn": "2026-09-11",
+   "provenance": {
+    "channel": "official email",
+    "senderDomain": "gov.bc.ca",
+    "sender": "Intellectual Property Program, Ministry of Citizens' Services",
+    "subject": "FW: Permission and authoritative-export request — VRI 2025, FOM Cutblocks, and TAP deferral layer"
+   },
+   "operativeText": "the FOM layers in the BCGW are view-only and not downloadable (i.e. permission cannot be granted)",
+   "consequence": "Not acquired and not used. The custodian points to the two OGL-BC forest tenure layers above instead.",
+   "acquired": false
+  }
+ ],
+ "noReplyYet": [
+  "sopfeu",
+  "on-fri-term-2"
+ ],
+ "noReplyNote": "SOPFEU did not reply to the 2026-08-14 request. Ontario's FRI team replied on 2026-08-18 that Term 2 products will be posted to Ontario GeoHub when they are available for public use; none is available yet.",
+ "claims": {
+  "rightsInferredBeyondReplies": false,
+  "rawRedistributionPermitted": false,
+  "productionAdmitted": false
+ }
+}

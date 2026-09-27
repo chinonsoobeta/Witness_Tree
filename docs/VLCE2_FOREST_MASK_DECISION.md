@@ -334,6 +334,122 @@ All are reproducible from the repository against the staged archives recorded in
 - `scripts/bc_forest_age_profile.py`, the age and approach profile
 - `scripts/bc_sbfi_stand_conditions.py`, the per-stand NFI test
 
+## Scoped decision: the treed-again rule for condition and recovery, 2026-09-23
+
+**Status:** Decided by the project owner on 2026-09-23 for one use only. This
+decision resolves no row of the class-treatment register above and does not
+permit mask implementation. The gate outcome below still reads No.
+
+### What is decided
+
+For the Explore "Condition and recovery" mode, and for nothing else, a cell is
+treed in a year when its VLCE2 class that year is Coniferous (210), Broadleaf
+(220) or Mixedwood (230).
+
+- Wetland, treed (81) does not count as treed for this rule.
+- Every other legend class counts as not treed.
+- Unclassified (0), nodata (255), or a code outside the legend in any year from
+  1984 to 2022 makes the cell Unknown for the whole series. An Unknown cell is
+  never counted as not treed and never as 0.
+
+The recovery rule built on that class treatment:
+
+- A loss is a cell that is treed in year t and not treed in year t+1.
+- The headline counts a cell as recovered when, after its most recent loss, it
+  is treed again for at least 3 consecutive years. Recovery after any loss is
+  reported beside it.
+- A cell whose return has not yet lasted 3 years is reported separately as
+  unconfirmed. Recovered plus not recovered always equals lost.
+
+### What is not decided
+
+"Treed again" is a land-cover statement. It is not NFI forest and not a forest
+denominator, and it must not be displayed or described as either. The NFI
+conditions listed above (land use, temporarily unstocked land, width, area,
+connectivity, crown closure, mature-tree height, temporal alignment and
+boundary intersection) stay Unresolved. No other Explore measure changes class
+treatment because of this decision.
+
+### Why these three classes
+
+The same three classes build the project's recorded federal recovery run
+(`scripts/phase2_raster_window.py`, used by
+`scripts/phase4_recovery_trajectory.py`) and the upland series in the
+provincial annual records. The recomputation of 2026-09-23 reproduces both:
+Alberta's lost area matches the recorded run to the cell, the other three
+provinces match within 0.01 percent, and every yearly treed count matches the
+recorded provincial series within 0.1 ha.
+
+Class 81 was computed alongside and left out because nothing held can test it
+where it matters. Its effect is concentrated in Alberta and Ontario, while the
+only independent reference check is in British Columbia, where it is small:
+
+| Province | Lost, three classes (ha) | Lost, with class 81 (ha) | Change in lost area (%) | Recovered after latest loss, three classes (%) | Recovered after latest loss, with class 81 (%) | Treed wetland share of recovered area in 2022 (%) |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| British Columbia | 12,475,028 | 13,082,079 | 4.9 | 36.9 | 36.5 | 3.1 |
+| Alberta | 11,144,197 | 13,233,120 | 18.7 | 28.5 | 29.0 | 14.6 |
+| Ontario | 10,093,589 | 13,345,766 | 32.2 | 52.7 | 54.9 | 26.1 |
+| Quebec | 21,419,259 | 22,089,080 | 3.1 | 33.2 | 33.4 | 3.1 |
+
+The extra loss that class 81 adds in Ontario may be real, or it may be wetland
+cells changing class from year to year. Nothing held can tell the two apart.
+The with-class-81 figures are kept in the evidence record and are not a second
+headline. Where the mode shows Alberta or Ontario, it states the treed wetland
+share beside the figure.
+
+### The independent check did not meet its target
+
+The rule for the check against BC RESULTS forest cover (OGL-BC, 761,447
+features acquired 2026-09-23) was fixed before any agreement figure was
+computed:
+
+- A RESULTS polygon is "regenerated" when its stocking status is immature or
+  mature, its leading species is at least 5 m tall, and its reference year is
+  2015 to 2022.
+- It is "not restocked" when its stocking status is NSR and its reference year
+  is 2015 to 2022.
+- Our call for a polygon is "recovered" when more than half of its known lost
+  cells are recovered. Polygons with fewer than 10 lost cells are not called.
+
+| Reference class | Polygons compared | Agreement (%) |
+| --- | ---: | ---: |
+| All | 25,295 | 61.1 |
+| Not restocked | 7,836 | 95.8 |
+| Regenerated | 17,459 | 45.6 |
+
+The target was 80 percent. **It was not met.** The result is published as
+measured and the target is not treated as met.
+
+The misses point one way. Where RESULTS says a stand is not restocked, we
+agree 96 percent of the time, so we rarely call recovery that did not happen.
+Where RESULTS says a stand regenerated, we agree less than half the time, so
+the recovery figures most likely understate recovery. The mode must say so
+beside every recovery figure.
+
+A breakdown written after seeing the result, and so not a pass criterion,
+explains part of the gap. In 22 percent of regenerated polygons most of the
+detected loss comes after the RESULTS survey year, so the reference describes
+the stand before the loss we measure. Counting only losses before the survey
+year raises agreement to about 68 percent, still below the target.
+
+### What this decision leaves open
+
+- The forestry/NFI reviewer and the independent validator roles below remain
+  unassigned. This decision was made without them.
+- Condition 2 of the WP3 reopening
+  (`docs/FALL_DOWN_WP3_CONDITION_RECOVERY_DETERMINATION.md`): admission and
+  owner review of a recovery product built on this decision. The product and
+  its evidence record come in a separate change.
+- Condition 3: a coverage grade and an unknown area for every row the mode
+  shows.
+- Bilingual editorial review of the French text for the mode.
+
+### Approval
+
+| Role | Decision | Reference | Date |
+| --- | --- | --- | --- |
+| Editorial decision authority: Chinonso Obeta, project owner | Three classes, recovery scope only, agreement published as below target | Owner's reply "I agree with all three." to the three recommendations in the implementing session | 2026-09-23 |
+
 ## Owners and sign-off
 
 Roles are named deliberately; no individual is implied or invented by this

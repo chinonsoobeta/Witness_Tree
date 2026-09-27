@@ -1,0 +1,57 @@
+{
+ "schemaVersion": "witness-tree/phase-scope-decision/1",
+ "status": "owner-scope-decision",
+ "decidedAt": "2026-09-26",
+ "decidedBy": "owner",
+ "record": "docs/PHASE_SCOPE_DECISION_2026-09-26.md",
+ "convention": "A removed criterion leaves its phase's count, so the denominator shrinks. It was not met, and nothing it required may be claimed. A retired requirement stops blocking a gate without being recorded as satisfied.",
+ "removedCriteria": [
+  {
+   "phase": 1,
+   "criterion": "raw-file-archive-recovery",
+   "reason": "The owner removed the requirement that every raw file be proven re-fetchable or restorable from the archive. Per-file checksums already recorded remain; no universal archive or recovery proof is claimed."
+  },
+  {
+   "phase": 2,
+   "criterion": "expert-review-100-per-province",
+   "reason": "Retired on 2026-08-30 and now removed from the count. No expert review took place."
+  },
+  {
+   "phase": 2,
+   "criterion": "published-independent-comparisons",
+   "reason": "The owner removed the requirement for a formal published independent comparison. No independent comparison result is claimed."
+  },
+  {
+   "phase": 7,
+   "criterion": "reserve-and-treaty-layers-loaded",
+   "reason": "Witness Tree will not publish reserve or treaty geography, so the requirement to load and name every reserve and treaty area is removed."
+  },
+  {
+   "phase": 7,
+   "criterion": "right-of-reply-live",
+   "reason": "The Plan's criterion is that every reserve and treaty page carries a right-of-reply route. With no reserve or treaty pages, it has nothing to apply to and is removed with them."
+  },
+  {
+   "phase": 4,
+   "criterion": "outside-provincial-review",
+   "reason": "The owner retired the Phase 4 outside provincial review, one independent reviewer each for BC and Québec. No review took place and none is claimed."
+  }
+ ],
+ "retiredRequirements": [],
+ "withdrawnLedgerRows": [
+  "indian-reserves",
+  "first-nation-reserves",
+  "historic-treaties",
+  "modern-treaties"
+ ],
+ "claims": {
+  "requirementsMet": false,
+  "expertReviewed": false,
+  "independentlyCompared": false,
+  "archiveRecoveryProven": false,
+  "indigenousGeographyPublished": false,
+  "rightOfReplyRouteLive": false,
+  "outsideProvincialReviewCompleted": false
+ },
+ "rightsNote": "The owner first retired the Phase 4 source-rights requirement, then withdrew that retirement on 2026-09-26 after the publishers' replies showed the British Columbia harvest sources are open or granted. Rights are recorded, not retired: see data/bc-harvest-source-rights-2026-09-26.json."
+}

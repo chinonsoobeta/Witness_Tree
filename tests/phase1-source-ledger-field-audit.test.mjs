@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
-import { OPTIONAL_ROW_IDS, REQUIRED_FIELDS, validatePhase1SourceLedgerFieldAudit } from "../scripts/check-phase1-source-ledger-field-audit.mjs";
+import { OPTIONAL_ROW_IDS, REQUIRED_FIELDS, WITHDRAWABLE_ROW_IDS, validatePhase1SourceLedgerFieldAudit } from "../scripts/check-phase1-source-ledger-field-audit.mjs";
 
 const read = (file) => JSON.parse(readFileSync(new URL(`../${file}`, import.meta.url), "utf8"));
 const audit = read("data/phase1-source-ledger-field-audit.json");
@@ -13,16 +13,20 @@ test("field audit accounts for the exact 31 canonical rows and every required fi
   assert.equal(validatePhase1SourceLedgerFieldAudit(audit, ledger, inventory), audit);
   assert.deepEqual(audit.requiredFields, REQUIRED_FIELDS);
   assert.equal(audit.rows.length, 31);
-  assert.equal(audit.coreRequiredRowCount, 22);
+  // 22 core rows less the four reserve and treaty rows the owner withdrew on 2026-09-26.
+  assert.equal(audit.coreRequiredRowCount, 18);
+  assert.equal(audit.withdrawnRowCount, 4);
+  assert.deepEqual(audit.rows.filter((row) => row.classification === "withdrawn").map((row) => row.id), ["indian-reserves", "first-nation-reserves", "historic-treaties", "modern-treaties"]);
   assert.equal(audit.optionalTrackedRowCount, 9);
-  assert.equal(audit.coreCompleteRowCount, 2);
+  // Every core row has every field (2026-09-26); admission is separate and stays 2/18.
+  assert.equal(audit.coreCompleteRowCount, 18);
   assert.equal(audit.optionalCompleteRowCount, 0);
-  assert.equal(audit.completeRowCount, 2);
+  assert.equal(audit.completeRowCount, 18);
   assert.equal(audit.coreAdmittedRowCount, 2);
   assert.equal(audit.optionalAdmittedRowCount, 0);
   assert.equal(audit.admittedRowCount, 2);
-  assert.equal(audit.status, "partially-admitted");
-  assert.equal(audit.phaseComplete, false);
+  assert.equal(audit.status, "complete");
+  assert.equal(audit.phaseComplete, true);
   assert.equal(audit.productionAdmissionAllowed, false);
   for (const row of audit.rows) {
     const isFederalAdmitted = FEDERAL_ADMITTED_ROW_IDS.includes(row.id);
@@ -30,10 +34,10 @@ test("field audit accounts for the exact 31 canonical rows and every required fi
     assert.equal(row.fields.admissionState.status, "verified");
     assert.equal(row.fields.admissionState.value, isFederalAdmitted);
     assert.equal(row.fields.admissionState.evidenceBinding.expectedValue, isFederalAdmitted);
-    assert.equal(row.classification, OPTIONAL_ROW_IDS.includes(row.id) ? "optional" : "core");
+    assert.equal(row.classification, OPTIONAL_ROW_IDS.includes(row.id) ? "optional" : WITHDRAWABLE_ROW_IDS.includes(row.id) ? "withdrawn" : "core");
     assert.equal(row.canonicalProductionEligible, isFederalAdmitted);
     assert.equal(row.canonicalProductionAdmission, isFederalAdmitted);
-    assert.equal(row.complete, isFederalAdmitted);
+    assert.equal(row.complete, row.classification === "core");
   }
 });
 
@@ -41,9 +45,12 @@ test("field audit carries only directly bound source-profile facts", () => {
   const cwfis = audit.rows.find((row) => row.id === "cwfis-current");
   assert.equal(cwfis.fields.publisher.status, "verified");
   assert.equal(cwfis.fields.publisher.evidenceBinding.path, "data/cwfis-current-active-fires-profile.json");
-  // datasetTitle is bound now. redistributionStatus stands in for the same point:
-  // a field no record states literally stays missing rather than being derived.
-  assert.equal(cwfis.fields.redistributionStatus.status, "missing");
+  // A field completed on 2026-09-26 binds to the facts record, which names the
+  // basis of every value; a field no record supports stays missing (see the
+  // optional rows below), never derived.
+  assert.equal(cwfis.fields.redistributionStatus.status, "verified");
+  assert.equal(cwfis.fields.redistributionStatus.evidenceBinding.path, "data/phase1-ledger-facts-2026-09-26.json");
+  assert.equal(audit.rows.find((row) => row.id === "sopfeu").fields.redistributionStatus.status, "missing");
 
   const qcOriginal = audit.rows.find((row) => row.id === "qc-original-current-inventory");
   assert.equal(qcOriginal.fields.checksum.value, "c10d691516569de76642dc1fc64e662f2569b5b58ab5d945b58b8b7834ba9c61");
@@ -56,20 +63,21 @@ test("field audit carries only directly bound source-profile facts", () => {
 
 test("field audit exhaustively records the directly evidenced fields for every archive-evidenced core row", () => {
   const expectedVerifiedCounts = {
-    "ntems-annual-land-cover": 10,
-    "ntems-forest-harvest": 15,
-    "ntems-canopy-cover": 15,
-    "ntems-canopy-height": 15,
-    "cwfis-current": 16,
-    "bc-wildfire": 16,
-    "ab-wildfire": 15,
-    "on-fire-disturbance": 15,
-    "qc-current-ecoforest": 8,
-    "qc-original-current-inventory": 15,
-    "qc-fourth-inventory": 11,
-    "ab-avi-crown": 15,
-    "ab-avi-post-harvest": 13,
-    "ab-primary-land-vegetation": 14,
+    "ntems-annual-land-cover": 22,
+    "ntems-forest-harvest": 22,
+    "ntems-canopy-cover": 22,
+    "ntems-canopy-height": 22,
+    "cwfis-current": 22,
+    "bc-wildfire": 22,
+    "ab-wildfire": 22,
+    "on-fire-disturbance": 22,
+    "qc-current-ecoforest": 22,
+    "qc-original-current-inventory": 22,
+    "qc-fourth-inventory": 22,
+    "ab-avi-crown": 22,
+    "ab-avi-post-harvest": 22,
+    "ab-primary-land-vegetation": 22,
+    "provincial-electoral-boundaries": 22,
     "fed-2023-ridings": 22,
     "elections-canada-45th-files": 22
   };
@@ -126,10 +134,12 @@ test("field audit rejects invented values, unsupported evidence, and complete/ad
   };
   assert.throws(() => validatePhase1SourceLedgerFieldAudit(unrelatedEvidence, ledger, inventory), /does not match its bound evidence value/i);
 
+  // Completion is derived: dropping one core field makes the stored "complete" false.
   const falselyComplete = structuredClone(audit);
-  falselyComplete.phaseComplete = true;
-  falselyComplete.status = "complete";
-  assert.throws(() => validatePhase1SourceLedgerFieldAudit(falselyComplete, ledger, inventory), /cannot be marked complete|cannot claim phase completion|phase-complete state must be derived/i);
+  const dropped = falselyComplete.rows.find((row) => row.id === "ntems-canopy-cover");
+  dropped.fields.correctionContactRoute = { status: "missing", reason: "Tamper test." };
+  dropped.complete = false;
+  assert.throws(() => validatePhase1SourceLedgerFieldAudit(falselyComplete, ledger, inventory), /complete-row count must be derived|completeness counts must be derived|phase-complete state must be derived/i);
 
   const falselyAdmitted = structuredClone(audit);
   falselyAdmitted.productionAdmissionAllowed = true;
@@ -151,12 +161,14 @@ test("field audit rejects invented values, unsupported evidence, and complete/ad
 });
 
 test("missing fields cannot carry asserted values or omit the missing reason", () => {
+  // Core rows are complete now, so the missing-field rules are exercised on an optional row.
+  const optional = (copy) => copy.rows.find((row) => row.id === "sopfeu");
   const assertedMissing = structuredClone(audit);
-  assertedMissing.rows[0].fields.checksum.value = "sha256:invented";
+  optional(assertedMissing).fields.checksum.value = "sha256:invented";
   assert.throws(() => validatePhase1SourceLedgerFieldAudit(assertedMissing, ledger, inventory), /cannot carry an asserted value/i);
 
   const unexplainedMissing = structuredClone(audit);
-  delete unexplainedMissing.rows[0].fields.schema.reason;
+  delete optional(unexplainedMissing).fields.schema.reason;
   assert.throws(() => validatePhase1SourceLedgerFieldAudit(unexplainedMissing, ledger, inventory), /needs a reason/i);
 });
 
@@ -172,4 +184,26 @@ test("field records and evidence bindings reject uncontracted or unsafe fields",
   const traversal = structuredClone(audit);
   traversal.rows[0].fields.publisher.evidenceRefs[0] = "data/../data/phase1-production-source-ledger.json";
   assert.throws(() => validatePhase1SourceLedgerFieldAudit(traversal, ledger, inventory), /safe repository data paths/i);
+});
+
+test("a core row leaves the ledger count only by the owner's recorded scope decision", () => {
+  const decision = read("data/phase-scope-decision-2026-09-26.json");
+  // Without the withdrawal, the four rows must be core again and the audit no longer fits.
+  assert.throws(() => validatePhase1SourceLedgerFieldAudit(audit, ledger, inventory, undefined, undefined, { ...decision, withdrawnLedgerRows: [] }), /must be classified as core|core, optional and withdrawn/);
+  // And the decision cannot withdraw a row that is not a reserve or treaty source.
+  assert.throws(() => validatePhase1SourceLedgerFieldAudit(audit, ledger, inventory, undefined, undefined, { ...decision, withdrawnLedgerRows: [...decision.withdrawnLedgerRows, "ntems-annual-land-cover"] }), /may not be withdrawn/);
+});
+
+test("every fact bound on 2026-09-26 states its basis, and the catalogue readback backs the publisher facts", () => {
+  const facts = read("data/phase1-ledger-facts-2026-09-26.json");
+  const catalogue = read("data/phase1-catalogue-readback-2026-09-26.json");
+  for (const [id, fields] of Object.entries(facts.rows)) {
+    for (const field of Object.keys(fields)) {
+      assert.ok(typeof facts.basis[id]?.[field] === "string" && facts.basis[id][field].length >= 16, `${id}.${field} has no stated basis`);
+      assert.equal(audit.rows.find((row) => row.id === id).fields[field].evidenceBinding.path, "data/phase1-ledger-facts-2026-09-26.json");
+    }
+  }
+  for (const entry of catalogue.entries) assert.match(entry.responseSha256, /^[0-9a-f]{64}$/, entry.row);
+  // Plain-language explanations are bilingual, as the federal rows are.
+  for (const fields of Object.values(facts.rows)) if (fields.plainLanguageExplanation) assert.ok(fields.plainLanguageExplanation.en && fields.plainLanguageExplanation.fr);
 });

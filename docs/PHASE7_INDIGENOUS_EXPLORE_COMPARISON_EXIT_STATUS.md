@@ -1,5 +1,7 @@
 # Phase 7 Indigenous geographies, Explore, and comparison exit status
 
+**Current: 14/14, complete.** On 2026-09-26 the owner removed the reserve-and-treaty layer gate and the right-of-reply gate, which the Plan scopes to reserve and treaty pages, because Witness Tree will not publish reserve or treaty geography ([decision](PHASE_SCOPE_DECISION_2026-09-26.md)). Neither removed gate was met. No reserve or treaty geometry, Indigenous name, or reply route is published. The rest of this page describes the position before that decision.
+
 The checksum-verified record at [`data/phase7-indigenous-explore-comparison-exit-status.json`](../data/phase7-indigenous-explore-comparison-exit-status.json) records **14/16 (87.5%)** literal engineering and evidence gates. This is an unweighted implementation result, not a production or public-release claim.
 
 The complete local controls are the below-threshold raw-record/no-rate guard, the bilingual no-contact engagement register, ranking exclusion for reserves and treaty areas, Explore’s modes/overlays/table path/native time input, retained boundary editions, and all six riding-comparison safeguards. Indigenous inputs remain clearly labelled illustrative. The riding comparison now exercises its safeguards against 343 real, extent-corrected 2021-2022 federal district rows, which remain explicitly local, non-admitted, non-released and nonproduction.

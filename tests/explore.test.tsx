@@ -184,9 +184,16 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
   assert.doesNotMatch(en, /Use ridings, not districts/);
   assert.doesNotMatch(fr, /Utilisez le terme circonscriptions, et non districts/);
   assert.doesNotMatch(fixtureTable, /aria-label="List"/);
+  // Recorded harvest reads the national harvest and fire series now, not the
+  // fixtures: one row per province for the change year 2012, harvest and fire
+  // in separate columns, and a link that opens the chart builder on those years.
   assert.match(fixtureTable, /<table/);
-  assert.equal((fixtureTable.match(/scope="col"/g) ?? []).length, 6);
-  assert.match(fixtureTable, /scope="row"/);
+  assert.equal((fixtureTable.match(/scope="col"/g) ?? []).length, 4);
+  assert.equal((fixtureTable.match(/scope="row"/g) ?? []).length, 4);
+  assert.match(fixtureTable, /<th scope="col">Harvest \(ha\)<\/th><th scope="col">Fire \(ha\)<\/th>/);
+  assert.match(fixtureTable, /<th scope="row">British Columbia<\/th><td>2012<\/td><td>174,306\.78<\/td><td>14,546\.16<\/td>/);
+  assert.match(fixtureTable, /href="\/en\/data\/harvest-and-fire\?from=2012&amp;to=2012"/);
+  assert.doesNotMatch(fixtureTable, /made-up example data/);
   assert.match(fr, /État et rétablissement/);
   assert.match(fr, /Le graphique et le tableau utilisent des données d’exemple/);
   assert.match(fr, /<summary>Limites<\/summary>/);
@@ -247,50 +254,35 @@ test("Explore puts explanation and controls before the map, then the reading pan
   assert.match(en, /<p class="explore-mode-status">Real map, 1985–2022/);
   assert.match(
     renderToStaticMarkup(<ExploreView events={exploreFixtures} locale="en" mode="recorded-harvest" />),
-    /<p class="explore-mode-status">[^<]*The data view uses example data for 2012 only/,
+    /<p class="explore-mode-status">[^<]*Real province figures for harvest and fire, 1985–2022/,
   );
   assert.match(
     renderToStaticMarkup(<ExploreView events={exploreFixtures} locale="en" mode="condition-recovery" />),
     /<p class="explore-mode-status">No real map yet\. The data view uses example data for 1988 only/,
   );
+  assert.doesNotMatch(en, /example data for 2012|example data for 2020/);
   assert.equal((en.match(/<h2/g) ?? []).length, (fr.match(/<h2/g) ?? []).length);
 });
 
 test("chart and table share one explanatory empty state", () => {
+  // Condition and recovery is the one mode still on example data, which exists
+  // for 1988 only, so 1990 is empty in every view.
   const empty =
-    "There is no example data for Wildfire in 1990. The nearest year with example data is 2020.";
-  const chart = renderToStaticMarkup(
-    <ExploreView
-      events={exploreFixtures}
-      locale="en"
-      mode="wildfire"
-      data="chart"
-      year={1990}
-    />,
+    "There is no example data for Condition and recovery in 1990. The nearest year with example data is 1988.";
+  const view = (locale: "en" | "fr", mode: "condition-recovery" | "wildfire", data: "chart" | "table") => renderToStaticMarkup(
+    <ExploreView events={exploreFixtures} locale={locale} mode={mode} data={data} year={1990} />,
   );
-  const table = renderToStaticMarkup(
-    <ExploreView
-      events={exploreFixtures}
-      locale="en"
-      mode="wildfire"
-      data="table"
-      year={1990}
-    />,
-  );
+  const chart = view("en", "condition-recovery", "chart");
+  const table = view("en", "condition-recovery", "table");
   assert.equal((chart.match(new RegExp(empty, "g")) ?? []).length, 1);
   assert.equal((table.match(new RegExp(empty, "g")) ?? []).length, 1);
   assert.doesNotMatch(chart, /class="explore-chart"/);
   assert.doesNotMatch(table, /class="explore-table"/);
-  const fr = renderToStaticMarkup(
-    <ExploreView
-      events={exploreFixtures}
-      locale="fr"
-      mode="wildfire"
-      data="chart"
-      year={1990}
-    />,
-  );
-  assert.match(fr, /L’année la plus proche avec des données d’exemple est 2020/);
+  assert.match(view("fr", "condition-recovery", "chart"), /L’année la plus proche avec des données d’exemple est 1988/);
+  // Wildfire has real figures for every year from 1985, so it is never empty.
+  const wildfire = view("en", "wildfire", "chart");
+  assert.doesNotMatch(wildfire, /There is no example data/);
+  assert.match(wildfire, /class="explore-bar explore-bar--fire"/);
 });
 
 test("the map and chart/table retain evidence, confidence, coverage, provenance, and Unknown is never zero", () => {
@@ -334,12 +326,12 @@ test("the map and chart/table retain evidence, confidence, coverage, provenance,
   // The 2020-2022 span is the admitted aggregate, to the hectare.
   assert.match(aggregateSpan, /class="explore-bar-label">1\.39%<\/span>/);
   assert.doesNotMatch(mapChart, /<svg[^>]*class="explore-chart"/);
-  assert.match(fixtureChart, /class="explore-bar-label">2012<\/span>/);
+  assert.match(fixtureChart, /class="explore-bar-name">British Columbia, Harvest \(ha\)<\/span><span class="explore-bar-label">174,307<\/span>/);
+  assert.match(fixtureChart, /class="explore-bar explore-bar--harvest"/);
   assert.match(mapChart, /aria-label="Forest loss map"/);
-  // The chart names each example event and its year; the table carries the
-  // evidence class, coverage and source for the same rows.
-  assert.match(harvestTable, /Official record/);
-  assert.match(harvestTable, /Source attribution/);
+  assert.match(fixtureChart, /Source attribution/);
+  assert.match(fixtureChart, /national harvest and wildfire change-year records/);
+  assert.match(harvestTable, /national harvest and wildfire change-year records/);
   assert.match(fixtureTable, /No official public record/);
   assert.match(fixtureTable, /Coverage/);
   assert.match(fixtureTable, /Source attribution/);

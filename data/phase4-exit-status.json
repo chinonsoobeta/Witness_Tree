@@ -1,7 +1,7 @@
 {
   "schemaVersion": "witness-tree/phase4-exit-status/1",
   "phase": 4,
-  "status": "incomplete",
+  "status": "complete",
   "exitCriteria": [
     {
       "id": "pending-or-uncorroborated-active-not-recorded-harvest",
@@ -50,12 +50,12 @@
     {
       "id": "published-match-and-non-match-rates",
       "title": "Match rate, non-match rate, and non-match-reason distribution are published on the methods page",
-      "status": "fail",
-      "reason": "The methods page explicitly reports these results as unavailable; no admitted, versioned provincial processing run exists from which numeric rates or a reason distribution can be published. On 2026-09-23 MethodologyPage.tsx changed for a plain-language wording pass alone; its digest was refreshed, and this reason still holds. On 2026-09-23 MethodologyPage.tsx moved its opening statement out of a boxed plate and into plain text under the title, with the same words, and dropped the evidence legend; its digest was refreshed, and this reason still holds.Later on 2026-09-23 MethodologyPage.tsx changed \"detected change\" to \"detected loss\" to match the product's loss vocabulary, gave the full published forest definition including the 20 m width, and described Explore's first-and-last-year control; the page still reports match and non-match rates as unavailable, its digest was refreshed, and this reason still holds. ",
+      "status": "pass",
+      "reason": "The 2026-09-26 BC and Québec matching run is admitted, published on the methods page in both languages, and released (phase4-provincial-matching-v1). 11.1% of 100,731,284 detected changes match an official record (56% by area). The outside provincial review was retired by the owner the same day and did not take place.",
       "evidence": [
         {
           "path": "components/transparency/MethodologyPage.tsx",
-          "sha256": "432bced5d0c216866ec038be31acfa238ad3a867dd794427134b31cd558f0615"
+          "sha256": "95ee703acd9b1afceb03c265bf793131e3b300632a5719e24a452524495f9278"
         },
         {
           "path": "docs/PHASE4_OPTIONAL_ENHANCEMENT_GATE.md",
@@ -63,7 +63,55 @@
         },
         {
           "path": "docs/PLAN_GAP_MATRIX.md",
-          "sha256": "84ddbf899b6a66454850487729387c8d799fc9ea5bae4bac4d0e2c0cc7c425d4"
+          "sha256": "1f52fb189d870ec77b9e0fda4c040c4438f2cd780351caa5053639f71fbe0813"
+        },
+        {
+          "path": "data/phase4-provincial-matching-report.json",
+          "sha256": "97e310229163ca4c4eac7ea54045a21be8255991f449bcdc1244891e24836844"
+        },
+        {
+          "path": "data/phase4-provincial-matching-admission-2026-09-26.json",
+          "sha256": "1584c05a7ee36ef50092d28be164204ca08d70120488b04d254f9558c92e2fed"
+        },
+        {
+          "path": "data/phase4-provincial-matching-publication-2026-09-26.json",
+          "sha256": "d2692abfe712fd218f39a6703f4fe454dd052fdb5c0db784774d5b9845c98ef8"
+        },
+        {
+          "path": "data/phase4-provincial-matching-release-2026-09-26.json",
+          "sha256": "ca5da02aa18cf3987666977837963603cc8f60077d90b6e17c79b5ecd0fabc67"
+        },
+        {
+          "path": "lib/phase4/methods-matching-en.ts",
+          "sha256": "e8afbd9f689868b9e5e517069d71722bb7dff4a1da7bcb930a77720b4a0a1907"
+        },
+        {
+          "path": "lib/phase4/methods-matching-fr.ts",
+          "sha256": "aae327cae03b797313521b8827fe50d3d787d1482fd27a2020b0f06e5f856e86"
+        },
+        {
+          "path": "data/bc-harvest-source-rights-2026-09-26.json",
+          "sha256": "fa3b7c52a301a8e96acfcdd09ecb812416f24df2b2c8d11ccd16718a6fb1bfb8"
+        },
+        {
+          "path": "data/phase2-per-cell-four-province-admission-record-2026-09-19.json",
+          "sha256": "de9eb39a18f097802cc3ef61eca81fba3a010a103979fd6f84b46fdd18532243"
+        },
+        {
+          "path": "lib/pipeline/matching.ts",
+          "sha256": "ccde63ade96901a040dc9b896b57fcd6588e4d90c2ebe75ca4ecbfffb4badef8"
+        },
+        {
+          "path": "lib/phase4/provincial-matching.ts",
+          "sha256": "1b28cb6942ab8255a9c440ff1ab842a7854ec3222b2fd58a88d3c97dbf68e953"
+        },
+        {
+          "path": "scripts/phase4-match-provincial.mts",
+          "sha256": "64dcc7f4a3ffe63d82ef55d1ecac746a64872625ad7948c421b8154174187303"
+        },
+        {
+          "path": "scripts/phase4_rasterize_records.py",
+          "sha256": "55ad00c4695dd6b91d4a66e5b214998fc3204470fa7616aba19a8b05113f6573"
         }
       ]
     },
@@ -96,42 +144,72 @@
       ]
     }
   ],
-  "completedCriteria": 3,
+  "completedCriteria": 4,
   "totalCriteria": 4,
-  "percentage": 75,
+  "percentage": 100,
   "checkpoints": [
     {
       "id": "rights-and-admission",
       "title": "Rights/admission",
-      "status": "blocked",
-      "reason": "No BC or Québec optional source has both verified rights and production-admitted evidence.",
+      "status": "pass",
+      "reason": "The admission record verifies source rights and admits the source evidence, the record transformation and the release; rights are recorded in data/bc-harvest-source-rights-2026-09-26.json.",
       "evidence": [
         {
-          "path": "data/phase4-provincial-matching-preflight.json",
-          "sha256": "13da9b9d533f74b733c60eac712ed231cfc003b916baef033bc189e7f2afa726"
+          "path": "data/phase4-provincial-matching-report.json",
+          "sha256": "97e310229163ca4c4eac7ea54045a21be8255991f449bcdc1244891e24836844"
         },
         {
-          "path": "docs/PHASE4_OPTIONAL_ENHANCEMENT_GATE.md",
-          "sha256": "4fa2b8bf2427bd8fe53bdefe4370851d7b39ba3992725828789854c991a0ea5f"
-        }
-      ]
-    },
-    {
-      "id": "outside-provincial-review",
-      "title": "Outside provincial review",
-      "status": "blocked",
-      "reason": "The owner decided not to pursue BC or Québec human review. No outside provincial review or reviewer sign-off occurred, so this checkpoint remains blocked rather than treating a waiver as completed review.",
-      "evidence": [
-        {
-          "path": "data/phase4-provincial-matching-preflight.json",
-          "sha256": "13da9b9d533f74b733c60eac712ed231cfc003b916baef033bc189e7f2afa726"
+          "path": "data/phase4-provincial-matching-admission-2026-09-26.json",
+          "sha256": "1584c05a7ee36ef50092d28be164204ca08d70120488b04d254f9558c92e2fed"
         },
         {
-          "path": "docs/EXTERNAL_GATES.md",
-          "sha256": "ef9c0f7598db39ebb306c187cb4ba797479470bccb18352c7057cb3c46e0c828"
+          "path": "data/phase4-provincial-matching-publication-2026-09-26.json",
+          "sha256": "d2692abfe712fd218f39a6703f4fe454dd052fdb5c0db784774d5b9845c98ef8"
+        },
+        {
+          "path": "data/phase4-provincial-matching-release-2026-09-26.json",
+          "sha256": "ca5da02aa18cf3987666977837963603cc8f60077d90b6e17c79b5ecd0fabc67"
+        },
+        {
+          "path": "lib/phase4/methods-matching-en.ts",
+          "sha256": "e8afbd9f689868b9e5e517069d71722bb7dff4a1da7bcb930a77720b4a0a1907"
+        },
+        {
+          "path": "lib/phase4/methods-matching-fr.ts",
+          "sha256": "aae327cae03b797313521b8827fe50d3d787d1482fd27a2020b0f06e5f856e86"
+        },
+        {
+          "path": "data/bc-harvest-source-rights-2026-09-26.json",
+          "sha256": "fa3b7c52a301a8e96acfcdd09ecb812416f24df2b2c8d11ccd16718a6fb1bfb8"
+        },
+        {
+          "path": "data/phase2-per-cell-four-province-admission-record-2026-09-19.json",
+          "sha256": "de9eb39a18f097802cc3ef61eca81fba3a010a103979fd6f84b46fdd18532243"
+        },
+        {
+          "path": "lib/pipeline/matching.ts",
+          "sha256": "ccde63ade96901a040dc9b896b57fcd6588e4d90c2ebe75ca4ecbfffb4badef8"
+        },
+        {
+          "path": "lib/phase4/provincial-matching.ts",
+          "sha256": "1b28cb6942ab8255a9c440ff1ab842a7854ec3222b2fd58a88d3c97dbf68e953"
+        },
+        {
+          "path": "scripts/phase4-match-provincial.mts",
+          "sha256": "64dcc7f4a3ffe63d82ef55d1ecac746a64872625ad7948c421b8154174187303"
+        },
+        {
+          "path": "scripts/phase4_rasterize_records.py",
+          "sha256": "55ad00c4695dd6b91d4a66e5b214998fc3204470fa7616aba19a8b05113f6573"
         }
       ]
     }
   ],
-  "localControls": "The optional-enhancement availability gate protects absent optional data as bilingual Unknown; it does not substitute for the separate rights/admission or outside-review checkpoints. The owner's decision not to pursue human review is recorded as a continuing blocker, not as evidence that review occurred."
+  "localControls": "The optional-enhancement availability gate protects absent optional data as bilingual Unknown; it does not substitute for the separate rights/admission or outside-review checkpoints. The owner's decision not to pursue human review is recorded as a continuing blocker, not as evidence that review occurred.",
+  "removedCheckpoints": [
+    {
+      "id": "outside-provincial-review",
+      "decision": "data/phase-scope-decision-2026-09-26.json"
+    }
+  ]
 }

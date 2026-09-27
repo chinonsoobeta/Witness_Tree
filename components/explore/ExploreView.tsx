@@ -35,6 +35,7 @@ import {
   type ExplorePresentation,
   type RidingBoundaryMeasurement,
 } from "@/lib/explore";
+import { harvestFireHref, harvestFireSpanTotals } from "@/lib/harvest-fire";
 import { ExploreMapClient } from "./ExploreMapClient";
 import { ExploreYearControl } from "./ExploreYearControl";
 
@@ -78,6 +79,13 @@ const copy = {
       "Riding figures for these years are loading. They stay hidden until they arrive, so older figures are never shown under the wrong years.",
     fixtureList:
       "The chart and table use made-up example data, not real records.",
+    harvestFireNote:
+      "The province figures add up the harvest, and separately the fire, dated to the years after the first year you choose, up to the last. The national satellite record gives each 30 m square at most one harvest year and one fire year, so each square counts once. Harvest and fire are never added together. The record ends in 2022, and every figure is a minimum because part of each province is not mapped.",
+    harvestFireHectares: "Harvest (ha)",
+    fireHectares: "Fire (ha)",
+    changeYears: "Change years",
+    buildChart: "Build a chart for these years",
+    harvestFireSource: "Natural Resources Canada, national harvest and wildfire change-year records, 1985–2022",
     empty: (mode: string, year: number, nearest: number) =>
       `There is no example data for ${mode} in ${year}. The nearest year with example data is ${nearest}.`,
     year: "Year",
@@ -114,9 +122,9 @@ const copy = {
       "forest-change":
         "Real map, 1985–2022. Real province figures for any years from 1984 to 2022.",
       "recorded-harvest":
-        "Real map, 1985–2022. The data view uses example data for 2012 only.",
+        "Real map, 1985–2022. Real province figures for harvest and fire, 1985–2022.",
       wildfire:
-        "Real map, 1985–2022. The data view uses example data for 2020 only.",
+        "Real map, 1985–2022. Real province figures for harvest and fire, 1985–2022.",
       "condition-recovery":
         "No real map yet. The data view uses example data for 1988 only.",
     },
@@ -160,6 +168,13 @@ const copy = {
       "Les chiffres par circonscription pour ces années sont en cours de chargement. Ils restent masqués d’ici là, pour ne jamais afficher d’anciens chiffres sous les mauvaises années.",
     fixtureList:
       "Le graphique et le tableau utilisent des données d’exemple inventées, et non de vrais registres.",
+    harvestFireNote:
+      "Les chiffres provinciaux additionnent la récolte, et séparément le feu, datés des années qui suivent la première année choisie, jusqu’à la dernière. Le registre satellitaire national donne à chaque carré de 30 m au plus une année de récolte et une année de feu\u202F: chaque carré compte donc une seule fois. La récolte et le feu ne sont jamais additionnés. La série se termine en 2022, et chaque chiffre est un minimum, car une partie de chaque province n’est pas cartographiée.",
+    harvestFireHectares: "Récolte (ha)",
+    fireHectares: "Feu (ha)",
+    changeYears: "Années de changement",
+    buildChart: "Créer un graphique pour ces années",
+    harvestFireSource: "Ressources naturelles Canada, registres nationaux des années de récolte et de feu, 1985–2022",
     empty: (mode: string, year: number, nearest: number) =>
       `Il n’y a pas de données d’exemple pour ${mode} en ${year}. L’année la plus proche avec des données d’exemple est ${nearest}.`,
     year: "Année",
@@ -196,9 +211,9 @@ const copy = {
       "forest-change":
         "Carte réelle, 1985–2022. Chiffres provinciaux réels pour toutes les années de 1984 à 2022.",
       "recorded-harvest":
-        "Carte réelle, 1985–2022. La vue des données utilise des données d’exemple pour 2012 seulement.",
+        "Carte réelle, 1985–2022. Chiffres provinciaux réels pour la récolte et le feu, 1985–2022.",
       wildfire:
-        "Carte réelle, 1985–2022. La vue des données utilise des données d’exemple pour 2020 seulement.",
+        "Carte réelle, 1985–2022. Chiffres provinciaux réels pour la récolte et le feu, 1985–2022.",
       "condition-recovery":
         "Pas encore de carte réelle. La vue des données utilise des données d’exemple pour 1988 seulement.",
     },
@@ -345,13 +360,21 @@ export function ExploreView({
   const provinceRows = mode === "forest-change" ? provinceSpanMeasurements(activeSpan) : [];
   const fourProvinces = provinceRows.length === 4 ? fourProvinceSpanMeasurement(activeSpan) : null;
   const productionAvailable = provinceRows.length === 4;
+  // Harvest and fire modes read the national harvest and fire series, where the
+  // owner decision lets years be added: docs/HARVEST_FIRE_SERIES_DECISION.md.
+  const harvestFireRows =
+    mode === "recorded-harvest" || mode === "wildfire" ? harvestFireSpanTotals(activeFrom, activeYear) : null;
+  const changeYears = formatYearRange(yearRange(activeFrom + 1, activeYear), locale);
+  const buildChartHref = harvestFireHref(locale, { firstYear: activeFrom + 1, lastYear: activeYear });
   const spanPeriod = formatYearRange(yearRange(activeFrom, activeYear), locale);
   // Over more than one year a place can be lost twice, so the yearly losses
   // added together become a second measure beside the union, never in place of it.
   const multiYear = activeYear > activeFrom + 1;
   const perCellShown =
     perCellCauseForMode(mode) !== null && fourProvinceAnnualForYear(activeYear) !== null;
-  const note = !productionAvailable
+  const note = harvestFireRows
+    ? text.harvestFireNote
+    : !productionAvailable
     ? text.fixtureList
     : perCellShown
       ? text.productionWithPerCell
@@ -369,7 +392,7 @@ export function ExploreView({
     modeEvents[0]?.year ?? activeYear,
   );
   const emptyMessage = text.empty(text.modes[mode], activeYear, nearestYear);
-  const hasData = productionAvailable || selected.length > 0;
+  const hasData = productionAvailable || harvestFireRows !== null || selected.length > 0;
 
   const shownOverlays = overlays.filter((id) => BOUNDARY_OVERLAYS[id].available);
   const maxShare = Math.max(...provinceRows.map((row) => row.unionLossPercent ?? 0), 0);
@@ -624,7 +647,60 @@ export function ExploreView({
           <p className="explore-empty" role="status">{emptyMessage}</p>
         ) : null}
 
-        {hasData && data === "chart" ? (
+        {harvestFireRows ? (
+          <>
+            {data === "chart" ? (() => {
+              const scale = Math.max(1, ...harvestFireRows.flatMap((row) => [row.harvestHectares, row.fireHectares]));
+              return (
+                <ul className="explore-chart" aria-label={text.chart}>
+                  {harvestFireRows.flatMap((row) => ([
+                    ["harvest", text.harvestFireHectares, row.harvestHectares],
+                    ["fire", text.fireHectares, row.fireHectares],
+                  ] as const).map(([kind, label, value]) => (
+                    <li key={`${row.province.id}-${kind}`}>
+                      <span className="explore-bar-name">{`${row.province.name[locale]}, ${label}`}</span>
+                      <span className="explore-bar-label">{formatNumber(value, locale, 0)}</span>
+                      <span className="explore-bar-track" aria-hidden="true">
+                        <span className={`explore-bar explore-bar--${kind}`} style={{ width: `${(value / scale) * 100}%` }} />
+                      </span>
+                    </li>
+                  )))}
+                </ul>
+              );
+            })() : (
+              <div className="table-scroll" tabIndex={0} role="region" aria-labelledby="explore-hf-table-caption">
+                <table className="explore-table">
+                  <caption id="explore-hf-table-caption">{`${text.table}${colon(locale)} ${changeYears}`}</caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">{text.event}</th>
+                      <th scope="col">{text.changeYears}</th>
+                      <th scope="col">{text.harvestFireHectares}</th>
+                      <th scope="col">{text.fireHectares}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {harvestFireRows.map((row) => (
+                      <tr key={row.province.id}>
+                        <th scope="row">{row.province.name[locale]}</th>
+                        <td>{changeYears}</td>
+                        <td>{formatNumber(row.harvestHectares, locale)}</td>
+                        <td>{formatNumber(row.fireHectares, locale)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+            <p className="explore-note">
+              {text.source}
+              {colon(locale)} <a href={`${buildChartHref.split("?")[0]}#sources`}>{text.harvestFireSource}</a>
+            </p>
+            <p><a className="btn btn--outline" href={buildChartHref}>{text.buildChart}</a></p>
+          </>
+        ) : null}
+
+        {!harvestFireRows && hasData && data === "chart" ? (
           (() => {
               const rows = productionAvailable ? provinceRows : selected;
               const values = rows.map((item) =>
@@ -662,7 +738,7 @@ export function ExploreView({
           })()
         ) : null}
 
-        {hasData && data === "table" ? (
+        {!harvestFireRows && hasData && data === "table" ? (
           <div className="table-scroll" tabIndex={0} role="region" aria-labelledby="explore-data-table-caption">
             <table className="explore-table">
               <caption id="explore-data-table-caption">
@@ -742,7 +818,7 @@ export function ExploreView({
 
         {hasData && productionAvailable ? <p className="explore-note">{text.spanBasis}</p> : null}
 
-        {!productionAvailable ? (
+        {!productionAvailable && !harvestFireRows ? (
           <ul className="explore-legend" aria-label={locale === "en" ? "Legend" : "Légende"}>
             {EXPLORE_MODES.map((item) => (
               <li key={item}>
