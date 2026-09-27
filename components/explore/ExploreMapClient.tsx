@@ -10,6 +10,7 @@ import type {
 } from "maplibre-gl";
 import { colon, formatNumber, formatPercent, formatYearRange, labelled, PRODUCT_NAME, yearRange, type Locale } from "@/lib/domain";
 import { chooseScaleBar, metresPerPixel, type ScaleBar } from "@/lib/explore/map-scale";
+import { panLimitFor } from "@/lib/explore/map-camera";
 import {
   perCellArchiveSpan,
   BOUNDARY_OVERLAYS,
@@ -210,6 +211,8 @@ const PATCH_READABLE_ZOOM = 9;
 const PATCH_TARGET_ZOOM = 10;
 
 const COMBINED_PROVINCE_BOUNDS: MapBounds = [-139.1, 41.5, -57, 62.1];
+// Space kept around the four provinces when the map opens.
+const FRAME_PADDING = 36;
 
 // These are only camera extents for the province buttons. They neither filter
 // a layer nor imply that a layer supplies a provincial measurement there.
@@ -769,9 +772,18 @@ export function ExploreMapClient({
           container: mapContainerRef.current,
           style: buildStyle(provinceAvailable, null, overlays, "all", { fromYear, toYear: year }),
           bounds: COMBINED_PROVINCE_BOUNDS,
-          fitBoundsOptions: { padding: 36, maxZoom: 6 },
-          maxBounds: COMBINED_PROVINCE_BOUNDS,
-          minZoom: 1.5,
+          fitBoundsOptions: { padding: FRAME_PADDING, maxZoom: 6 },
+          // The pan limit is the same envelope widened to what the framed
+          // view shows, or it would crop the provinces it is meant to frame.
+          maxBounds: panLimitFor(
+            COMBINED_PROVINCE_BOUNDS,
+            mapContainerRef.current.clientWidth,
+            mapContainerRef.current.clientHeight,
+            FRAME_PADDING,
+          ),
+          // Low enough that a phone can frame all four provinces with their
+          // padding; the pan limit above still stops the map zooming out past them.
+          minZoom: 1,
           // The per-cell layer is only drawn from zoom 8, so the map has to
           // reach it. Without an archive there is nothing past the province
           // aggregate to magnify and the old ceiling still applies.
@@ -793,6 +805,12 @@ export function ExploreMapClient({
           });
         };
         map.on("move", publishView);
+        // A rotated phone or full screen changes the frame, and so the limit.
+        map.on("resize", () => {
+          if (!map) return;
+          const container = map.getContainer();
+          map.setMaxBounds(panLimitFor(COMBINED_PROVINCE_BOUNDS, container.clientWidth, container.clientHeight, FRAME_PADDING));
+        });
         map.once("load", () => {
           if (!active) return;
           if (pmtilesTimeout) clearTimeout(pmtilesTimeout);
