@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "witness-tree/census-subdivision-overlay-release-readback/1",
+  "releaseId": "dfba0ca5796496c84703f9602da6507a6b5a2f8f5dbc7e450a8790e2073e6482",
+  "recordedAt": "2026-09-27T21:13:29.392Z",
+  "s3ExactReadback": true,
+  "cloudFrontExactReadback": true,
+  "files": [
+    {
+      "fileName": "census-subdivisions-v1.pmtiles",
+      "byteLength": 6888318,
+      "sha256": "9f72ce95e1f4aeb063cd669ca8de4de1d8d2dc45069601cf43df91763003117c"
+    },
+    {
+      "fileName": "census-subdivisions-BC.json",
+      "byteLength": 466461,
+      "sha256": "09316c623905ef7f09f7da0436b7b2a1cf9762f5bbfb71ede4880e986124b668"
+    },
+    {
+      "fileName": "census-subdivisions-AB.json",
+      "byteLength": 188397,
+      "sha256": "2df15c85cbffa70bcc0ef8629082fc79b3787f0e82e2042b7fad25c00d2dfb05"
+    },
+    {
+      "fileName": "census-subdivisions-ON.json",
+      "byteLength": 305737,
+      "sha256": "494c706cd489be8551ad636f52f63f63715a7f0fb625df535b024301ec5355c9"
+    },
+    {
+      "fileName": "census-subdivisions-QC.json",
+      "byteLength": 1260035,
+      "sha256": "f303d0bc84a37763cba7083368bec70b5f55360fb24b74fa0b62210c0b20bed6"
+    }
+  ]
+}
