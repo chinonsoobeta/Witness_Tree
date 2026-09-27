@@ -50,6 +50,7 @@ const copy = {
     minimum: "A minimum.",
     neverMapped: (hectares: string) => `${hectares} were never mapped.`,
     byProvince: "By province",
+    ridingsMostLost: "Ridings with the largest share of forest lost, 1984–2022",
     provinceUnknown: (share: string) => `${share} unknown`,
     figuresFor: (period: string) => `Figures for ${period}`,
     moreWays: "More ways in",
@@ -139,6 +140,7 @@ const copy = {
     minimum: "Un minimum.",
     neverMapped: (hectares: string) => `${hectares} n’ont jamais été cartographiés.`,
     byProvince: "Par province",
+    ridingsMostLost: "Circonscriptions ayant perdu la plus grande part de leur forêt, 1984–2022",
     provinceUnknown: (share: string) => `${share} inconnu`,
     figuresFor: (period: string) => `Chiffres pour ${period}`,
     moreWays: "D’autres façons d’explorer",
@@ -617,6 +619,7 @@ export function ExploreView({
                   </li>
                 ))}
               </ul>
+              <p className="explore-reading-ridings"><a href={locale === "en" ? "/en#ridings-most-lost" : "/fr#ridings-most-lost"}>{text.ridingsMostLost}</a></p>
             </div>
           ) : null}
           <EvidenceKey locale={locale} classes={["satellite-observation", "unknown"]} />

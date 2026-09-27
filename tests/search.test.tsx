@@ -85,6 +85,23 @@ test("a federal riding result opens in Compare, and a provincial one names no li
   }
 });
 
+test("a province can be written as its standard abbreviation", () => {
+  for (const query of ["Prince George, C.-B.", "Prince George, B.C.", "Prince George, BC", "Prince George, British Columbia"]) {
+    assert.ok(searchSite(query).results.some((result: { name: string }) => result.name === "Prince George"), query);
+  }
+  for (const [query, province] of [["Sudbury, Ont.", "ON"], ["Grande Prairie, Alta.", "AB"], ["Grande Prairie, Alb.", "AB"], ["Rimouski, Que.", "QC"], ["Rimouski, Qc", "QC"]] as const) {
+    const results = searchSite(query).results;
+    assert.ok(results.length > 0, query);
+    assert.ok(results.every((result: { province?: string; id: string }) => result.province === province || result.province === "CA"), `${query} stays in ${province}`);
+  }
+});
+
+test("search publishes no figure for a riding outside the four provinces", () => {
+  for (const query of ["Malpeque", "Cumberland—Colchester", "Desnethé—Missinippi—Churchill River"]) {
+    assert.deepEqual(searchSite(query).results.filter((result: { kind: string }) => result.kind === "riding"), [], query);
+  }
+});
+
 test("the real search module stays out of client modules", () => {
   for (const file of ["../components/search/AddressFinderClient.tsx", "../components/explore/ExploreMapClient.tsx"]) {
     assert.doesNotMatch(readFileSync(new URL(file, import.meta.url), "utf8"), /search\/site-search/);

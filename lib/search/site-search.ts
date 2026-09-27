@@ -42,10 +42,20 @@ const normalizeSearch = (value: string) => value
   .replace(/[^a-z0-9]+/g, " ")
   .trim();
 
+// The standard written abbreviations, English and French, as a reader types
+// them after a place name: "Prince George, C.-B." or "Sudbury, Ont.".
+const PROVINCE_ABBREVIATIONS: Readonly<Record<string, readonly string[]>> = {
+  BC: ["B.C.", "C.-B."],
+  AB: ["Alta.", "Alb."],
+  ON: ["Ont."],
+  QC: ["Que.", "Qc"],
+};
+
 const provinceAliases = PROVINCES.flatMap((province) => [
   { value: normalizeSearch(province.en), code: province.code },
   { value: normalizeSearch(province.fr), code: province.code },
   { value: province.code.toLowerCase(), code: province.code },
+  ...(PROVINCE_ABBREVIATIONS[province.code] ?? []).map((abbreviation) => ({ value: normalizeSearch(abbreviation), code: province.code })),
 ]).sort((left, right) => right.value.length - left.value.length);
 
 function splitQuery(query: string) {
@@ -244,3 +254,42 @@ export function ridingSearchRow(id: string) { return ridingById.get(id); }
 export function indexedPlaceForSearch(id: string): IndexedPlace | undefined { return indexedPlace(id); }
 export function searchAttribution(locale: Locale) { return PLACE_NAME_INDEX.attribution[locale]; }
 export function searchPlaceTypeLabel(type: string, locale: Locale) { return placeTypeLabel(type, locale); }
+
+const FEDERAL_PROVINCE_BY_NUMBER: Readonly<Record<string, string>> = { "24": "QC", "35": "ON", "48": "AB", "59": "BC" };
+
+export type WholeRecordRidingRank = Readonly<{
+  id: string;
+  name: Readonly<{ en: string; fr: string }>;
+  province: string;
+  lossPercent: number;
+  lossHectares: number;
+}>;
+
+/**
+ * The mapped forest a riding needs, in 1984, to be ranked by share of forest
+ * lost. Below it, a city riding's few hundred hectares of woodland lead the
+ * list on a single development, which says little about forests.
+ */
+export const WHOLE_RECORD_RANK_FLOOR_HECTARES = 50_000;
+
+/**
+ * Ridings ranked by the share of their mapped forest detected as lost at least
+ * once from 1984 to 2022. Only ridings mapped in full, with at least the floor
+ * above, are ranked: a partly mapped riding has no known denominator. Ties
+ * break on hectares, then name, so the order never depends on input order.
+ */
+export function ridingsByWholeRecordLoss(level: "federal" | "provincial", limit: number): readonly WholeRecordRidingRank[] {
+  return ridingSearchRows
+    .filter((row) => (level === "federal" ? row.jurisdiction === "CA" : row.jurisdiction !== "CA"))
+    .filter((row) => row.coverage === "complete" && row.observedLossPercent !== null && row.observedLossHectares !== null)
+    .filter((row) => row.knownForestedHectares !== null && row.knownForestedHectares >= WHOLE_RECORD_RANK_FLOOR_HECTARES)
+    .map((row) => ({
+      id: row.boundaryId,
+      name: row.name,
+      province: row.jurisdiction === "CA" ? FEDERAL_PROVINCE_BY_NUMBER[row.boundaryId.slice(3, 5)] ?? "CA" : row.jurisdiction,
+      lossPercent: row.observedLossPercent!,
+      lossHectares: row.observedLossHectares!,
+    }))
+    .sort((a, b) => b.lossPercent - a.lossPercent || b.lossHectares - a.lossHectares || a.name.en.localeCompare(b.name.en))
+    .slice(0, limit);
+}

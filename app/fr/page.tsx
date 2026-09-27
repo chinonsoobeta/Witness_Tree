@@ -3,6 +3,7 @@ import Link from "next/link";
 import { HomeSearch, ProvinceBar, SiteShell } from "@/components/site";
 import { ProvinceRecordList } from "@/components/site/ProvinceRecordList";
 import { CumulativeHeadline } from "@/components/site/CumulativeHeadline";
+import { RidingsMostLost } from "@/components/site/RidingsMostLost";
 import { EvidenceMarks } from "@/components/policy/EvidenceMarks";
 import { PRODUCT_NAME } from "@/lib/domain";
 import { EXPLORE_PRODUCTION_LAYER, formatUnknownSharePercent, provinceSpanMeasurements } from "@/lib/explore";
@@ -55,6 +56,8 @@ export default function FrenchHome() {
       <p><Link className="btn btn--primary" href="/fr/explorer">Explorer le registre</Link></p>
       <p><small>Le registre ne couvre que ces quatre provinces.</small></p>
     </section>
+
+    <RidingsMostLost locale="fr" />
 
     <section className="content-section">
       <h2>Consulter le registre</h2>

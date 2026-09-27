@@ -1445,6 +1445,37 @@ h4 {
   position: absolute;
   inset: 0;
 }
+/* The riding rankings on the home page: two plain cards, each an ordered list
+   of links, so every riding is its own target rather than one stretched tile. */
+.ridings-most-lost-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 24px;
+}
+@media (max-width: 760px) {
+  .ridings-most-lost-grid { grid-template-columns: minmax(0, 1fr); }
+}
+.page-wrap .ridings-most-lost-card h3 {
+  margin: 0 0 12px;
+  font-size: 17px;
+  font-weight: 700;
+}
+.ridings-most-lost-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding-left: 1.4em;
+}
+.ridings-most-lost-list a { font-weight: 700; }
+.ridings-most-lost-figure {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ink-2);
+  font-size: var(--text-small);
+}
 .record-card a:focus-visible {
   outline: none;
 }
