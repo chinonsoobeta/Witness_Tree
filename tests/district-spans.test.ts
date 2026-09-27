@@ -15,7 +15,8 @@ test("the route answers exactly the span the page route would render", async () 
   assert.equal(body.fromYear, 1990);
   assert.equal(body.toYear, 1998);
   assert.deepEqual(body.measurements, JSON.parse(JSON.stringify(ridingIntervalMeasurements({ fromYear: 1990, toYear: 1998 }))));
-  assert.equal(body.measurements.length, 774);
+  // Every district in the four provinces; federal ridings elsewhere are never served.
+  assert.equal(body.measurements.length, 711);
   for (const entry of body.measurements) {
     assert.equal(entry.fromYear, 1990);
     assert.equal(entry.toYear, 1998);
