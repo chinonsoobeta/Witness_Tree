@@ -36,6 +36,7 @@ import {
   type RidingBoundaryMeasurement,
 } from "@/lib/explore";
 import { harvestFireHref, harvestFireSpanTotals } from "@/lib/harvest-fire";
+import type { ProvincialCauseBreakdown } from "@/lib/phase4/provincial-cause";
 import { ExploreMapClient } from "./ExploreMapClient";
 import { ExploreYearControl } from "./ExploreYearControl";
 
@@ -69,6 +70,8 @@ const copy = {
     annualHarvest: "Recorded harvest (ha)",
     annualFire: "Recorded fire (ha)",
     annualUnattributed: "Cause not recorded (ha)",
+    provincialCause: (none: string, harvest: string, fire: string, other: string, noRecord: string) =>
+      `In British Columbia and Québec, ${none} ha of this year’s loss has no national cause. Provincial records match ${harvest} ha of it to harvest, ${fire} ha to fire and ${other} ha to insects or windthrow; ${noRecord} ha has no provincial record either.`,
     annualBasis:
       `This covers only the last year you selected, for all four provinces together. It is not a total for your span or for ${perCellArchiveSpan("en")}. It is counted from the 30 m grid cells behind the map (one cell is 0.09 ha).`,
     annualNone: "No per-cell interval covers this year and mode.",
@@ -158,6 +161,8 @@ const copy = {
     annualHarvest: "Récoltes consignées (ha)",
     annualFire: "Incendies consignés (ha)",
     annualUnattributed: "Cause non consignée (ha)",
+    provincialCause: (none: string, harvest: string, fire: string, other: string, noRecord: string) =>
+      `En Colombie-Britannique et au Québec, ${none} ha des pertes de cette année n’ont pas de cause nationale. Les registres provinciaux en associent ${harvest} ha à la récolte, ${fire} ha au feu et ${other} ha aux insectes ou au chablis; ${noRecord} ha n’ont pas non plus de registre provincial.`,
     annualBasis:
       `Ce chiffre ne porte que sur la dernière année choisie, pour les quatre provinces ensemble. Ce n’est pas un total pour votre période ni pour ${perCellArchiveSpan("fr")}. Il est compté à partir des cellules de 30 m derrière la carte (une cellule représente 0,09 ha).`,
     annualNone: "Aucun intervalle par cellule ne couvre cette année et ce mode.",
@@ -272,6 +277,7 @@ export function ExploreView({
   fromYear,
   overlays = [],
   ridingMeasurements = [],
+  provincialCause = {},
 }: {
   events: readonly ExploreEvent[];
   locale: Locale;
@@ -295,6 +301,8 @@ export function ExploreView({
    * the route picks the span and sends only its answer.
    */
   ridingMeasurements?: readonly RidingBoundaryMeasurement[];
+  /** BC and Québec loss with no national cause, split by provincial record kind, per interval. Computed on the server. */
+  provincialCause?: Readonly<Record<string, ProvincialCauseBreakdown>>;
 }) {
   const text = copy[locale];
   // The map is the only presentation since the List view was retired; the
@@ -380,6 +388,8 @@ export function ExploreView({
       ? text.productionWithPerCell
       : text.production;
   const annual = perCellShown ? fourProvinceAnnualForYear(activeYear) : null;
+  // Only the forest-loss view shows every cause, so only it explains the rest.
+  const annualProvincialCause = annual && mode === "forest-change" ? provincialCause[annual.interval] ?? null : null;
   const provinceCoverageLabel = (row: (typeof provinceRows)[number]) =>
     `${text.partial} (${formatUnknownSharePercent(row.unknownSharePercent, locale)}; ${formatNumber(row.unknownHectares ?? 0, locale)} ${text.unknownArea})${row.unmappedCharacter ? `; ${row.unmappedCharacter[locale]}` : ""}`;
   const hectaresOrDash = (value: number | null) => (value === null ? "–" : formatNumber(value, locale));
@@ -596,6 +606,18 @@ export function ExploreView({
                 </div>
               </dl>
               <p className="explore-annual-basis">{text.annualBasis}</p>
+              {annualProvincialCause ? (
+                <p className="explore-annual-basis explore-annual-provincial">
+                  {text.provincialCause(
+                    formatNumber(annualProvincialCause.noNationalCauseHectares, locale, 0),
+                    formatNumber(annualProvincialCause.harvestHectares, locale, 0),
+                    formatNumber(annualProvincialCause.fireHectares, locale, 0),
+                    formatNumber(annualProvincialCause.insectOrWindthrowHectares, locale, 0),
+                    formatNumber(annualProvincialCause.noRecordHectares, locale, 0),
+                  )}{" "}
+                  <a href={locale === "en" ? "/en/methods" : "/fr/methodes"}>{locale === "en" ? "How the matching works" : "Fonctionnement de l’appariement"}</a>
+                </p>
+              ) : null}
             </>
           ) : (
             <p className="explore-annual-basis">{mode === "condition-recovery" ? text.conditionRecoveryNone : text.annualNone}</p>
