@@ -74,6 +74,17 @@ test("real place search handles suffixes, bilingual names, dash spelling, gaps, 
   assert.equal(formatSearchShare(0.0013, "en"), "under 1 percent");
 });
 
+test("a federal riding result opens in Compare, and a provincial one names no link", () => {
+  for (const locale of ["en", "fr"] as const) {
+    const markup = renderToStaticMarkup(<SearchPage locale={locale} query="Prince George" />);
+    const compare = locale === "en" ? "/en/compare" : "/fr/comparer";
+    // The riding's own result card links, as its suggestion and a community's
+    // list already did; Compare covers federal ridings only.
+    assert.match(markup, new RegExp(`<h4><a href="${compare}\\?left=federal-59026">Prince George—Peace River—Northern Rockies</a></h4>`));
+    assert.match(markup, /<h4>Prince George-Mackenzie<\/h4>/);
+  }
+});
+
 test("the real search module stays out of client modules", () => {
   for (const file of ["../components/search/AddressFinderClient.tsx", "../components/explore/ExploreMapClient.tsx"]) {
     assert.doesNotMatch(readFileSync(new URL(file, import.meta.url), "utf8"), /search\/site-search/);

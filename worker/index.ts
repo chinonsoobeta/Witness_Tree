@@ -38,12 +38,25 @@ const CONTENT_SECURITY_POLICY = [
   "worker-src 'self'",
 ].join("; ");
 
+// The site uses no camera, microphone, location, payment or USB access, so a
+// page or a script it loads cannot ask for them. Full screen stays open to the
+// site itself, because the Explore map offers it.
+const PERMISSIONS_POLICY = [
+  "camera=()",
+  "microphone=()",
+  "geolocation=()",
+  "payment=()",
+  "usb=()",
+  "fullscreen=(self)",
+].join(", ");
+
 const SECURITY_HEADERS = {
   "Content-Security-Policy": CONTENT_SECURITY_POLICY,
   "Strict-Transport-Security": "max-age=31536000",
   "X-Content-Type-Options": "nosniff",
   "Referrer-Policy": "strict-origin-when-cross-origin",
   "X-Frame-Options": "DENY",
+  "Permissions-Policy": PERMISSIONS_POLICY,
 } as const;
 
 function withSecurityHeaders(response: Response): Response {

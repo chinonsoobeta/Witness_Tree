@@ -91,7 +91,8 @@ export function ridingMeta(result: SiteSearchResult, locale: Locale): string {
   return `${levelName} · ${provinceCode(result)}`;
 }
 
-function compareHref(ridingId: string, locale: Locale) {
+/** The Compare page for a federal riding, or null for a provincial one, which Compare does not cover. */
+export function ridingCompareHref(ridingId: string, locale: Locale) {
   if (!ridingId.startsWith("CA-")) return null;
   return `${locale === "en" ? "/en/compare" : "/fr/comparer"}?left=${encodeURIComponent(`federal-${ridingId.slice(3)}`)}`;
 }
@@ -117,7 +118,7 @@ function suggestionRiding(reference: SearchRidingReference, level: "federal" | "
     share: formatSearchShare(reference.share, locale),
     figure: completeFigure(row, locale),
     detail: ridingDetail(row, locale),
-    compareHref: level === "federal" ? compareHref(reference.id, locale) : null,
+    compareHref: level === "federal" ? ridingCompareHref(reference.id, locale) : null,
   };
 }
 
@@ -153,7 +154,7 @@ function toSuggestion(result: SiteSearchResult, locale: Locale): Suggestion {
       meta: ridingMeta(result, locale),
       figure: completeFigure(row, locale),
       detail: ridingDetail(row, locale),
-      compareHref: compareHref(result.id, locale),
+      compareHref: ridingCompareHref(result.id, locale),
       ridings: [],
     };
   }
