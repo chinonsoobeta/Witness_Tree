@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { provincialCauseByInterval } from "@/lib/phase4/provincial-cause";
 import { ExploreView } from "@/components/explore";
 import { SiteShell } from "@/components/site";
 import {
@@ -59,6 +60,7 @@ export default async function Page({
           fromYear={interval.fromYear}
           overlays={overlays}
           ridingMeasurements={ridingIntervalMeasurements(interval)}
+          provincialCause={provincialCauseByInterval()}
         />
       </main>
     </SiteShell>

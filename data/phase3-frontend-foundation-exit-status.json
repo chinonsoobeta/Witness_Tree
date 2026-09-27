@@ -6,7 +6,7 @@
       "id": "budgets-pass-in-ci",
       "title": "Every performance and accessibility budget in section 12.7 passes in CI",
       "status": "pass",
-      "reason": "The budget and accessibility contract checkers both run as required steps on the branch gate.",
+      "reason": "The budget and accessibility contract checkers both run as required steps on the branch gate. On 2026-09-26 .github/workflows/ci.yml gained one step, npm run check:phase4-provincial-cause-crosstab; no existing step changed, the digest was refreshed, and this reason still holds.",
       "evidence": [
         {
           "path": "scripts/check-budgets.mjs",
@@ -18,7 +18,7 @@
         },
         {
           "path": ".github/workflows/ci.yml",
-          "sha256": "7942dec0055d469227e710c5edd0fd6276d8cd4dfae9f45dcf780e7ddd49212e"
+          "sha256": "7bfa569831ea357e5c4c5209e085170c52b0ad69714fbdb9c3c6c0518925d46e"
         }
       ]
     },
@@ -33,7 +33,7 @@
       "id": "french-page-count-equals-english-with-zero-missing-strings",
       "title": "French page count equals English page count, with zero missing strings",
       "status": "pass",
-      "reason": "The bilingual checker enforces route-pair parity across every locale route and fails on a missing route or a missing locale content token, and it runs as a required CI step.",
+      "reason": "The bilingual checker enforces route-pair parity across every locale route and fails on a missing route or a missing locale content token, and it runs as a required CI step. On 2026-09-26 .github/workflows/ci.yml gained one step, npm run check:phase4-provincial-cause-crosstab; no existing step changed, the digest was refreshed, and this reason still holds.",
       "evidence": [
         {
           "path": "scripts/check-bilingual.mjs",
@@ -41,7 +41,7 @@
         },
         {
           "path": ".github/workflows/ci.yml",
-          "sha256": "7942dec0055d469227e710c5edd0fd6276d8cd4dfae9f45dcf780e7ddd49212e"
+          "sha256": "7bfa569831ea357e5c4c5209e085170c52b0ad69714fbdb9c3c6c0518925d46e"
         }
       ]
     },

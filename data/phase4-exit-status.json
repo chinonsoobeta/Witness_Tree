@@ -51,7 +51,7 @@
       "id": "published-match-and-non-match-rates",
       "title": "Match rate, non-match rate, and non-match-reason distribution are published on the methods page",
       "status": "pass",
-      "reason": "The 2026-09-26 BC and Québec matching run is admitted, published on the methods page in both languages, and released (phase4-provincial-matching-v1). 11.1% of 100,731,284 detected changes match an official record (56% by area). The outside provincial review was retired by the owner the same day and did not take place.",
+      "reason": "The 2026-09-26 BC and Québec matching run is admitted, published on the methods page in both languages, and released (phase4-provincial-matching-v1). 11.1% of 100,731,284 detected changes match an official record (56% by area). The outside provincial review was retired by the owner the same day and did not take place. On 2026-09-26 the methods text in both languages gained one sentence stating, for British Columbia and Québec, how the loss with no national cause splits by provincial record kind (data/phase4-provincial-cause-crosstab.json, a view of this admitted run); the match rate, the non-match rate, the reason distribution and the admitted run are unchanged, the digests were refreshed, and this reason still holds.",
       "evidence": [
         {
           "path": "components/transparency/MethodologyPage.tsx",
@@ -83,11 +83,11 @@
         },
         {
           "path": "lib/phase4/methods-matching-en.ts",
-          "sha256": "e8afbd9f689868b9e5e517069d71722bb7dff4a1da7bcb930a77720b4a0a1907"
+          "sha256": "5b65b0763341c5a3d9c448cdb6128df27c084e75a54a89888d938672dda505c3"
         },
         {
           "path": "lib/phase4/methods-matching-fr.ts",
-          "sha256": "aae327cae03b797313521b8827fe50d3d787d1482fd27a2020b0f06e5f856e86"
+          "sha256": "e5f3f2936072c6284528085639fd401f2d003a354a248d027edd2b5008133c67"
         },
         {
           "path": "data/bc-harvest-source-rights-2026-09-26.json",
@@ -152,7 +152,7 @@
       "id": "rights-and-admission",
       "title": "Rights/admission",
       "status": "pass",
-      "reason": "The admission record verifies source rights and admits the source evidence, the record transformation and the release; rights are recorded in data/bc-harvest-source-rights-2026-09-26.json.",
+      "reason": "The admission record verifies source rights and admits the source evidence, the record transformation and the release; rights are recorded in data/bc-harvest-source-rights-2026-09-26.json. On 2026-09-26 the methods text in both languages gained one sentence stating, for British Columbia and Québec, how the loss with no national cause splits by provincial record kind (data/phase4-provincial-cause-crosstab.json, a view of this admitted run); the match rate, the non-match rate, the reason distribution and the admitted run are unchanged, the digests were refreshed, and this reason still holds.",
       "evidence": [
         {
           "path": "data/phase4-provincial-matching-report.json",
@@ -172,11 +172,11 @@
         },
         {
           "path": "lib/phase4/methods-matching-en.ts",
-          "sha256": "e8afbd9f689868b9e5e517069d71722bb7dff4a1da7bcb930a77720b4a0a1907"
+          "sha256": "5b65b0763341c5a3d9c448cdb6128df27c084e75a54a89888d938672dda505c3"
         },
         {
           "path": "lib/phase4/methods-matching-fr.ts",
-          "sha256": "aae327cae03b797313521b8827fe50d3d787d1482fd27a2020b0f06e5f856e86"
+          "sha256": "e5f3f2936072c6284528085639fd401f2d003a354a248d027edd2b5008133c67"
         },
         {
           "path": "data/bc-harvest-source-rights-2026-09-26.json",

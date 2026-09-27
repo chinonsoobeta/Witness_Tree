@@ -45,6 +45,7 @@
     "check:phase4-condition-recovery-cause-and-check": "node scripts/check-phase4-condition-recovery-cause-and-check.mjs",
     "check:phase4-condition-recovery-explore": "node scripts/check-phase4-condition-recovery-explore.mjs",
     "check:harvest-fire-province-series": "node scripts/check-harvest-fire-province-series.mjs",
+    "check:phase4-provincial-cause-crosstab": "node scripts/check-phase4-provincial-cause-crosstab.mjs && node --test tests/phase4-provincial-cause-crosstab.test.mjs",
     "check:source-candidates": "node scripts/check-source-candidates.mjs",
     "check:cpcad-acquisition-block": "node scripts/check-cpcad-acquisition-block.mjs",
     "check:bc-provincial-electoral": "node scripts/check-bc-provincial-electoral-2023.mjs",

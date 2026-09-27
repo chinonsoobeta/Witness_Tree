@@ -32,6 +32,39 @@ Matched changes by record kind: fire 5,705,243; harvest 5,302,627; insect
 
 Most unmatched changes are small. By count 11% match; by area 56% do.
 
+## What the provincial records add to the national cause
+
+The national disturbance rasters give each loss cell a harvest year, a fire year
+or neither. For British Columbia and Québec, the matching run can say what the
+provincial records show for the cells with neither. Record:
+[`data/phase4-provincial-cause-crosstab.json`](../data/phase4-provincial-cause-crosstab.json),
+checked by `npm run check:phase4-provincial-cause-crosstab`.
+
+| BC and Québec, 1985–2022 | Hectares | Share |
+| --- | ---: | ---: |
+| Detected loss with no national cause | 18,879,291 | 100% |
+| In changes matching a provincial harvest record | 2,244,748 | 11.9% |
+| In changes matching a provincial fire record | 1,361,551 | 7.2% |
+| In changes matching a provincial insect or windthrow record | 44,661 | 0.2% |
+| With no provincial record either | 15,228,330 | 80.7% |
+
+The two sources agree where both speak: 82% of national harvest cells lie in
+changes matched to a provincial harvest record, and 92% of national fire cells
+in changes matched to a provincial fire record.
+
+How it was made: `scripts/run-phase4-cause-crosstab.mjs` runs
+`scripts/phase4-match-provincial-crosstab.mts`, the admitted matcher plus a
+per-patch tally of the national cause filed under the patch's provincial
+outcome, over the same inputs, with bounded memory (six workers, 2 GB heap
+each). The rerun reproduced the admitted report's counts, reasons, record kinds
+and hectares exactly, per province, and the builder refuses any output that
+does not. The admitted matcher and runner are left byte for byte as they ran,
+because the admitted report binds them. The outputs are on the data root at
+`derived/phase4-provincial-cause-crosstab-2026-09-26/`.
+
+The table is a view of the admitted run, not a separately reviewed product. The
+site states it on the methods page and, per year, in Explore's forest-loss view.
+
 ## Method
 
 - **Detected changes.** Every per-cell loss patch in the admitted four-province
