@@ -5088,6 +5088,9 @@ dd > a:only-child {
   min-width: 0;
 }
 .search-suggest .input { width: 100%; }
+/* A long example such as "Prince George, Colombie-Britannique" ends in an
+   ellipsis on a narrow phone instead of being cut mid-word. */
+.search-suggest .input:placeholder-shown { text-overflow: ellipsis; }
 .search-suggest .btn { white-space: nowrap; }
 .search-suggest-popup {
   position: absolute;

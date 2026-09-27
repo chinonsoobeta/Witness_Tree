@@ -8,7 +8,7 @@ import { formatSearchShare, searchAttribution, searchPlaceTypeLabel, searchSite,
 import { NoRecordResult } from "./NoRecordResult";
 import { SearchSuggest } from "./SearchSuggest";
 import { EvidenceKey } from "@/components/policy/EvidenceKey";
-import { ridingFigure, ridingFigureIsDetected, ridingMeta } from "@/lib/search/suggest";
+import { ridingCompareHref, ridingFigure, ridingFigureIsDetected, ridingMeta } from "@/lib/search/suggest";
 
 export type SearchScope = "places" | "districts";
 
@@ -147,9 +147,8 @@ function resultName(result: SiteSearchResult, locale: Locale) {
 function ridingReferenceMarkup(reference: SearchRidingReference, locale: Locale, federal: boolean) {
   const row = ridingSearchRow(reference.id);
   const name = locale === "fr" ? reference.nameFr : reference.name;
-  const label = federal ? (
-    <a href={`${locale === "en" ? "/en/compare" : "/fr/comparer"}?left=${encodeURIComponent(`federal-${reference.id.slice(3)}`)}`}>{name}</a>
-  ) : name;
+  const href = federal ? ridingCompareHref(reference.id, locale) : null;
+  const label = href ? <a href={href}>{name}</a> : name;
   return <li key={reference.id}>{label}: {formatSearchShare(reference.share, locale)}{row ? <>; {ridingFigure(row, locale)}</> : null}</li>;
 }
 
@@ -165,8 +164,11 @@ function SearchResultCard({ locale, result }: { locale: Locale; result: SiteSear
   }
   if (result.kind === "riding") {
     const row = ridingSearchRow(result.id);
+    // A federal riding opens in Compare, as it does from the suggestions and
+    // from a community's list; Compare does not cover provincial ridings.
+    const href = ridingCompareHref(result.id, locale);
     return <li className="card card--lift search-result">
-      <h4>{resultName(result, locale)}</h4>
+      <h4>{href ? <a href={href}>{resultName(result, locale)}</a> : resultName(result, locale)}</h4>
       <p>{ridingMeta(result, locale)}</p>
       <p className="search-result-figure"><span className={`mark-glyph ${ridingFigureIsDetected(row) ? "mark-glyph--satellite" : "mark-glyph--unknown"}`} aria-hidden="true" />{ridingFigure(row, locale)}</p>
     </li>;
