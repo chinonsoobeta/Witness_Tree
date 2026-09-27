@@ -57,8 +57,8 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Coverage",
           paragraphs: [
-            "Event coverage grades describe how many records sit behind a single event: enhanced local records, national baseline plus local context, national baseline, extended record with sparse official matching, or not applicable. They don’t mean a whole province or riding was measured.",
-            "Province and riding measurement coverage states say how much of an area was mapped: complete, partial with unknown area, or none mapped. Only a fully mapped area gets a full figure and percentage. Explore labels these “Fully mapped” or “Partly unmapped, so this is a minimum”; Compare uses “Complete mapped coverage”, “Partial mapped coverage; unknown area remains” and “No mapped coverage”.",
+            "Event coverage grades say how many records support one event, from most to least: enhanced local records, national baseline plus local context, national baseline, extended record with few official matches, or not applicable. A grade describes one event, not a whole province or riding.",
+            "Coverage for a province or riding says how much of it was mapped: all of it, part of it with the rest unknown, or none of it. Only a fully mapped area gets a full figure and a percentage. Explore shows these as “Fully mapped” or “Some of this area has no data, so this is a minimum”; Compare uses “Complete mapped coverage”, “Partial mapped coverage; unknown area remains” and “No mapped coverage”.",
           ],
         },
         {
@@ -82,7 +82,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Provisional",
           paragraphs: [
-            "Published for review and use, with its limits stated, but not the final release. A provisional figure keeps its stated limits on coverage, comparison and checks on the ground.",
+            "Published for review and use, with its limits stated, but not the final release. A provisional figure keeps those limits on coverage, comparison and checks on the ground.",
           ],
         },
         {
@@ -131,8 +131,8 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Couverture",
           paragraphs: [
-            "Les catégories de couverture des événements indiquent combien de registres appuient un événement : registres locaux enrichis, référence nationale avec contexte local, référence nationale, registre prolongé avec appariement officiel limité, ou sans objet. Elles ne signifient pas qu’une province ou une circonscription entière a été mesurée.",
-            "Les états de couverture des mesures provinciales et des circonscriptions indiquent quelle part d’une zone a été cartographiée : couverture complète, couverture partielle avec zone inconnue, ou aucune couverture cartographiée. Seule une zone entièrement cartographiée reçoit un chiffre complet et un pourcentage. Explorer affiche « Entièrement cartographié » ou « En partie non cartographié; il s’agit donc d’un minimum »; Comparer emploie « Couverture cartographiée complète », « Couverture cartographiée partielle; une zone inconnue demeure » et « Aucune couverture cartographiée ».",
+            "Les catégories de couverture des événements indiquent combien de registres appuient un événement, du plus au moins : registres locaux enrichis, référence nationale avec contexte local, référence nationale, registre prolongé avec peu d’appariements officiels, ou sans objet. Une catégorie décrit un événement, et non une province ou une circonscription entière.",
+            "La couverture d’une province ou d’une circonscription indique quelle part a été cartographiée : la totalité, une partie avec le reste inconnu, ou rien. Seule une zone entièrement cartographiée reçoit un chiffre complet et un pourcentage. Explorer affiche « Entièrement cartographié » ou « Une partie de cette zone n’a pas de données : il s’agit donc d’un minimum »; Comparer emploie « Couverture cartographiée complète », « Couverture cartographiée partielle; une zone inconnue demeure » et « Aucune couverture cartographiée ».",
           ],
         },
         {
@@ -156,7 +156,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Provisoire",
           paragraphs: [
-            "Publié pour examen et utilisation, avec ses limites indiquées, mais ce n’est pas la version définitive. Une valeur provisoire conserve ses limites de couverture, de comparaison et de vérification sur le terrain.",
+            "Publié pour examen et utilisation, avec ses limites indiquées, mais ce n’est pas la version définitive. Un chiffre provisoire garde ces limites de couverture, de comparaison et de vérification sur le terrain.",
           ],
         },
         {
@@ -195,7 +195,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Service levels",
           paragraphs: [
-            "Critical: acknowledge within 1 business day and resolve within 5. Indigenous geography content: 1 and 10. Material: 3 and 15. Minor: 5 and 30.",
+            "Response times, in business days to acknowledge and then to resolve: critical, 1 and 5; Indigenous geography content, 1 and 10; material, 3 and 15; minor, 5 and 30.",
           ],
         },
         {
@@ -207,7 +207,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Interim instructions",
           paragraphs: [
-            `If the problem is in a source’s own public record, follow its source link and use the publisher’s own correction route. If the problem is on ${enBrand}, note the page link, the exact words or number, the date and time, the language, why it looks wrong and any official source, then check back here for where to send it; don’t send personal information to any address not listed on this page. Keeping these notes does not file a case or start the response clock.`,
+            `If the mistake is in a source’s own record, follow the source link and use that publisher’s correction process. If it’s on ${enBrand}, write down the page link, the exact words or number, the date and time, the language, why it looks wrong and any official source. There’s no way to send it to us yet, so check back here; don’t send personal information to any address this page doesn’t list. Your notes don’t open a case or start the response clock.`,
           ],
         },
         {
@@ -226,7 +226,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Délais de service",
           paragraphs: [
-            "Critique : accusé de réception dans un jour ouvrable et résolution dans cinq. Contenu de géographie autochtone : un et dix. Important : trois et quinze. Mineur : cinq et trente.",
+            "Délais de réponse, en jours ouvrables pour accuser réception puis pour régler\u202F: critique, 1 et 5; contenu de géographie autochtone, 1 et 10; important, 3 et 15; mineur, 5 et 30.",
           ],
         },
         {
@@ -238,7 +238,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Instructions provisoires",
           paragraphs: [
-            `Si le problème se trouve dans le registre public d’une source, suivez son lien source et utilisez la voie de correction de l’éditeur. Si le problème se trouve sur ${frBrand}, notez le lien de la page, les mots ou le chiffre exacts, la date et l’heure, la langue, pourquoi l’information semble erronée et toute source officielle, puis revenez ici pour savoir où l’envoyer; n’envoyez aucun renseignement personnel à une adresse qui n’est pas indiquée sur cette page. Prendre ces notes ne dépose pas de demande et ne déclenche aucun délai de réponse.`,
+            `Si l’erreur se trouve dans le registre d’une source, suivez le lien source et utilisez le processus de correction de cet éditeur. Si elle se trouve sur ${frBrand}, notez le lien de la page, les mots ou le chiffre exacts, la date et l’heure, la langue, pourquoi l’information semble erronée et toute source officielle. Il n’y a pas encore de moyen de nous l’envoyer\u202F: revenez ici; n’envoyez aucun renseignement personnel à une adresse que cette page n’indique pas. Vos notes n’ouvrent pas de demande et ne déclenchent aucun délai de réponse.`,
           ],
         },
         {
@@ -505,7 +505,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Final release",
           paragraphs: [
-            "There is no final release yet. It needs an independent comparison of the figures, which hasn’t been done, and this preview doesn’t replace it.",
+            "There is no final release yet. This preview stays in place until the remaining launch checks, such as the accessibility, security and translation reviews, are done.",
           ],
         },
         {
@@ -536,7 +536,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Version définitive",
           paragraphs: [
-            "Il n’existe pas encore de version définitive. Elle exige une comparaison indépendante des chiffres, qui n’a pas été faite, et cet aperçu ne la remplace pas.",
+            "Il n’existe pas encore de version définitive. Cet aperçu reste en place jusqu’à ce que les dernières vérifications avant le lancement, comme les examens d’accessibilité, de sécurité et de traduction, soient faites.",
           ],
         },
         {

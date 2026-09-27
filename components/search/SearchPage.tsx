@@ -1,5 +1,5 @@
 import { CoverageStatement } from "@/components/policy/CoverageStatement";
-import { formatHectares, formatPercent, type Locale } from "@/lib/domain";
+import { formatHectares, formatPercent, PRODUCT_NAME, type Locale } from "@/lib/domain";
 import { federalRidingComparison } from "@/lib/comparison";
 import { FederalDistrictFinder } from "./FederalDistrictFinder";
 import { AddressFinderClient } from "./AddressFinderClient";
@@ -8,7 +8,8 @@ import { formatSearchShare, searchAttribution, searchPlaceTypeLabel, searchSite,
 import { NoRecordResult } from "./NoRecordResult";
 import { SearchSuggest } from "./SearchSuggest";
 import { EvidenceKey } from "@/components/policy/EvidenceKey";
-import { ridingCompareHref, ridingFigure, ridingFigureIsDetected, ridingMeta } from "@/lib/search/suggest";
+import { placeDetail, ridingCompareHref, ridingFigure, ridingFigureIsDetected, ridingMeta } from "@/lib/search/suggest";
+import { placeFigure } from "@/lib/search/place-figures";
 
 export type SearchScope = "places" | "districts";
 
@@ -19,8 +20,8 @@ const copy = {
     places: "Places",
     districts: "Federal ridings",
     notice: "Search provinces, ridings and communities. Figures cover 1984 to 2022.",
-    shareNote: "Each share is for the part of the community inside that riding.",
-    excluded: "Reserves, settlements and treaty or agreement lands aren’t listed yet. They will be once their official boundaries are approved and communities have a way to reply.",
+    shareNote: "Each riding’s share is how much of the place lies inside it. The riding figures are for the whole riding.",
+    excluded: `${PRODUCT_NAME.en} does not list reserves, settlements or treaty and agreement lands on their own. Their land still counts in the province and riding totals.`,
   },
   fr: {
     title: "Recherche",
@@ -28,8 +29,8 @@ const copy = {
     places: "Lieux",
     districts: "Circonscriptions fédérales",
     notice: "Recherchez une province, une circonscription ou une collectivité. Les chiffres couvrent 1984 à 2022.",
-    shareNote: "Chaque part porte sur la partie de la collectivité située dans cette circonscription.",
-    excluded: "Les réserves, les établissements et les terres visées par un traité ou une entente ne sont pas encore répertoriés. Ils le seront lorsque leurs limites officielles auront été approuvées et que les communautés auront un moyen de répondre.",
+    shareNote: "La part de chaque circonscription indique quelle partie du lieu s’y trouve. Les chiffres des circonscriptions portent sur toute la circonscription.",
+    excluded: `${PRODUCT_NAME.fr} ne répertorie pas séparément les réserves, les établissements ni les terres visées par un traité ou une entente. Leurs terres comptent quand même dans les totaux des provinces et des circonscriptions.`,
   },
 } as const;
 
@@ -149,7 +150,7 @@ function ridingReferenceMarkup(reference: SearchRidingReference, locale: Locale,
   const name = locale === "fr" ? reference.nameFr : reference.name;
   const href = federal ? ridingCompareHref(reference.id, locale) : null;
   const label = href ? <a href={href}>{name}</a> : name;
-  return <li key={reference.id}>{label}: {formatSearchShare(reference.share, locale)}{row ? <>; {ridingFigure(row, locale)}</> : null}</li>;
+  return <li key={reference.id}>{label}: {formatSearchShare(reference.share, locale)}{row ? <>. {locale === "en" ? "Whole riding" : "Toute la circonscription"}: {ridingFigure(row, locale)}</> : null}</li>;
 }
 
 function SearchResultCard({ locale, result }: { locale: Locale; result: SiteSearchResult }) {
@@ -173,9 +174,11 @@ function SearchResultCard({ locale, result }: { locale: Locale; result: SiteSear
       <p className="search-result-figure"><span className={`mark-glyph ${ridingFigureIsDetected(row) ? "mark-glyph--satellite" : "mark-glyph--unknown"}`} aria-hidden="true" />{ridingFigure(row, locale)}</p>
     </li>;
   }
+  const figure = placeFigure(result.id);
   return <li className="card card--lift search-result">
     <h4>{resultName(result, locale)}</h4>
     <p>{result.province} · {searchPlaceTypeLabel(result.type!, locale)}</p>
+    <p className="search-result-figure"><span className={`mark-glyph ${ridingFigureIsDetected(figure) ? "mark-glyph--satellite" : "mark-glyph--unknown"}`} aria-hidden="true" />{figure?.coverage === "complete" && figure.observedLossPercent !== null ? `${formatPercent(figure.observedLossPercent, locale)} · ` : null}{placeDetail(figure, locale)}</p>
     <p>{locale === "en" ? "Federal ridings" : "Circonscriptions fédérales"}</p>
     <ul>{result.federal?.length ? result.federal.map((reference) => ridingReferenceMarkup(reference, locale, true)) : <li>{locale === "en" ? "No federal riding is recorded for this community." : "Aucune circonscription fédérale n’est enregistrée pour cette collectivité."}</li>}</ul>
     <p>{locale === "en" ? "Provincial ridings" : "Circonscriptions provinciales"}</p>

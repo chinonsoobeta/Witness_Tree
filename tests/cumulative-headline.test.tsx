@@ -53,21 +53,25 @@ test("the figure, its denominator, its unmapped share and its span are one block
     // headings, still has to say which period the figure covers.
     assert.match(markup, /<h2 id="cumulative-headline-heading">[^<]*1984[^<]*2022[^<]*<\/h2>/);
 
-    // Percentage and denominator share one description. A share printed away
-    // from its basis is the exact failure the province series checker exists
-    // to refuse, and it would be a total in everything but name.
+    // Percentage and denominator share one description, in the same block as
+    // the figure. A share printed away from its basis is the exact failure the
+    // province series checker exists to refuse, and it would be a total in
+    // everything but name.
     const share = formatPercent(measured.unionLossPercent, locale);
     const known = formatHectares(measured.knownForestedHectares, locale);
-    const shareCell = [...markup.matchAll(/<dd[^>]*>([\s\S]*?)<\/dd>/g)].map((match) => match[1])
-      .find((cell) => cell.includes(share));
-    assert.ok(shareCell, `the share is missing in ${locale}`);
-    assert.ok(shareCell.includes(known), `the share is printed without its denominator in ${locale}`);
+    const measures = [...markup.matchAll(/<div class="cumulative-measure">([\s\S]*?)<\/div>/g)].map((match) => match[1]);
+    const union = measures.find((block) => block.includes(formatHectares(measured.unionLossHectares, locale)));
+    assert.ok(union, `the union block is missing in ${locale}`);
+    assert.ok(union.includes(share), `the share is missing in ${locale}`);
+    assert.ok(union.includes(known), `the share is printed without its denominator in ${locale}`);
 
-    // The coverage grade is inside the block, not a footnote under it.
-    const gradeCell = [...markup.matchAll(/<div class="cumulative-basis-grade">([\s\S]*?)<\/div>/g)][0]?.[1];
-    assert.ok(gradeCell, `no grade cell in ${locale}`);
-    assert.match(gradeCell, locale === "en" ? /Partial, with unknown/ : /Partielle, avec inconnu/);
-    assert.ok(gradeCell.includes(formatHectares(measured.unknownHectares, locale)));
+    // The unknown area is stated in the same section, as a minimum, not as a
+    // footnote under it.
+    const minimum = /<p class="cumulative-minimum">([\s\S]*?)<\/p>/.exec(markup)?.[1];
+    assert.ok(minimum, `no minimum statement in ${locale}`);
+    assert.match(minimum, locale === "en" ? /Both are minimums/ : /Ce sont deux minimums/);
+    assert.ok(minimum.includes(formatHectares(measured.unknownHectares, locale)));
+    assert.match(minimum, locale === "en" ? /unknown, not zero/ : /inconnues, pas comme nulles/);
   }
 });
 
@@ -82,13 +86,13 @@ test("the annual sum appears only as a different measure, never as the figure", 
     // once per interval there. The larger number is on the page on purpose,
     // and it is only defensible while it is named as a second measure.
     assert.ok(measured.summedLossHectares > measured.unionLossHectares);
-    const cells = [...markup.matchAll(/<dd[^>]*>([\s\S]*?)<\/dd>/g)].map((match) => match[1]);
-    const summedCells = cells.filter((cell) => cell.includes(summed));
-    assert.equal(summedCells.length, 1, `the annual sum appears ${summedCells.length} times in ${locale}`);
-    assert.match(
-      summedCells[0],
-      locale === "en" ? /different measure, not a correction/ : /une autre mesure, et non d’une correction/,
-    );
+    const measures = [...markup.matchAll(/<div class="cumulative-measure">([\s\S]*?)<\/div>/g)].map((match) => match[1]);
+    const summedBlocks = measures.filter((block) => block.includes(summed));
+    assert.equal(summedBlocks.length, 1, `the annual sum appears in ${summedBlocks.length} blocks in ${locale}`);
+    // It is named as its own measure, says why it is larger, and carries no share.
+    assert.match(summedBlocks[0], locale === "en" ? /counts twice/ : /compte deux fois/);
+    assert.match(summedBlocks[0], locale === "en" ? /has no percentage/ : /n’a pas de pourcentage/);
+    assert.doesNotMatch(summedBlocks[0], /\d\s?%/);
 
     // And it is never the headline figure itself.
     const figure = /<p class="cumulative-figure">([^<]+)<\/p>/.exec(markup)?.[1];

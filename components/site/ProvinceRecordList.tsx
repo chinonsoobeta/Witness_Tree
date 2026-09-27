@@ -1,10 +1,9 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useId, useState, type ReactNode } from "react";
 import Link from "next/link";
 import {
   EVIDENCE_DEFINITIONS,
-  formatHectares,
   formatNumber,
   formatPercent,
   type Locale,
@@ -46,40 +45,38 @@ const COPY = {
   en: {
     group: "Choose what to read",
     loss: "Forest lost",
-    cover: "Area not checked",
+    cover: "Area not covered",
     lossHeadline: "How much forest was detected as lost",
-    coverHeadline: "How much of each province could not be checked",
-    keyMapped: "Mapped by the source",
-    keyUnmapped: "Never mapped, and therefore Unknown",
+    coverHeadline: "How much of each province the source didn’t cover",
+    keyMapped: "Covered by the source",
+    keyUnmapped: "Not covered, so unknown",
     keyLabel: "What the coverage bar shows",
     recorded: "ha detected",
-    measured: "ha unmapped",
+    measured: "ha not covered",
     sources: "Source and limits",
-    basis: "of the mapped forest. A minimum, because",
-    basisEnd:
-      "of the province was never mapped and counts as unknown, not zero.",
-    coverNote: "was never mapped, so nothing there was checked.",
-    coverEnd: "It counts as Unknown, not zero.",
-    charLead: "The gap is",
+    lossNote: (share: string, forestShare: string, unknownShare: string, reason: ReactNode) => <>
+      <strong>{share}</strong> of the forest mapped in 1984 was lost at least once. In 1984, {forestShare} of the province was forest. The satellite source didn’t cover {unknownShare} of the province: {reason}. Any loss there counts as unknown, not zero.
+    </>,
+    coverNote: (hectares: string, reason: string) =>
+      `${hectares} ha weren’t covered by the satellite source: ${reason}. Any loss there counts as unknown, not zero.`,
   },
   fr: {
     group: "Choisir ce qui est affiché",
     loss: "Pertes forestières",
-    cover: "Superficie non vérifiée",
+    cover: "Superficie non couverte",
     lossHeadline: "Quelle superficie forestière a été détectée comme perdue",
-    coverHeadline: "Quelle part de chaque province n’a pas pu être vérifiée",
-    keyMapped: "Cartographié par la source",
-    keyUnmapped: "Jamais cartographié, donc Inconnu",
+    coverHeadline: "Quelle part de chaque province la source n’a pas couverte",
+    keyMapped: "Couvert par la source",
+    keyUnmapped: "Non couvert, donc inconnu",
     keyLabel: "Ce que montre la barre de couverture",
     recorded: "ha détectés",
-    measured: "ha non cartographiés",
+    measured: "ha non couverts",
     sources: "Source et limites",
-    basis: "de la forêt cartographiée. Un minimum, car",
-    basisEnd:
-      "de la province n’a jamais été cartographiée et compte comme inconnue, pas comme zéro.",
-    coverNote: "n’a jamais été cartographié, donc rien n’y a été vérifié.",
-    coverEnd: "Cela compte comme Inconnu, pas comme zéro.",
-    charLead: "L’écart se trouve",
+    lossNote: (share: string, forestShare: string, unknownShare: string, reason: ReactNode) => <>
+      <strong>{share}</strong> de la forêt cartographiée en 1984 a été perdue au moins une fois. En 1984, la forêt couvrait {forestShare} de la province. La source satellitaire n’a pas couvert {unknownShare} de la province{"\u202F"}: {reason}. Toute perte à cet endroit compte comme inconnue, pas comme nulle.
+    </>,
+    coverNote: (hectares: string, reason: string) =>
+      `${hectares} ha n’ont pas été couverts par la source satellitaire\u202F: ${reason}. Toute perte à cet endroit compte comme inconnue, pas comme nulle.`,
   },
 } as const;
 
@@ -156,7 +153,6 @@ export function ProvinceRecordList({ rows, locale, unknownContexts }: Readonly<{
            * appears once a control has been pressed is a claim most readers
            * never see.
            */
-          const character = ` ${copy.charLead} ${row.unmappedCharacter[locale]}.`;
           return (
             <li className="province-list-row" key={row.id}>
               {/*
@@ -234,13 +230,20 @@ export function ProvinceRecordList({ rows, locale, unknownContexts }: Readonly<{
               <div className="province-list-base">
                 {showingLoss ? (
                   <p className="province-list-note">
-                    {row.unionLossPercent === null ? unknownWord : formatPercent(row.unionLossPercent, locale)} {copy.basis}{" "}
-                    <strong>{unknownShare}</strong> {copy.basisEnd}{character}
+                    {copy.lossNote(
+                      row.unionLossPercent === null ? unknownWord : formatPercent(row.unionLossPercent, locale),
+                      row.forestSharePercent === null ? unknownWord : formatPercent(Math.round(row.forestSharePercent), locale),
+                      unknownShare,
+                      // The reason links to the Methods section that explains the gap.
+                      <Link href={locale === "en" ? "/en/methods#coverage-gap" : "/fr/methodes#coverage-gap"}>{row.unmappedCharacter[locale]}</Link>,
+                    )}
                   </p>
                 ) : (
                   <p className="province-list-note">
-                    <strong>{row.unknownHectares === null ? unknownWord : formatHectares(row.unknownHectares, locale, 0)}</strong>{" "}
-                    {copy.coverNote} {copy.coverEnd}{character}
+                    {copy.coverNote(
+                      row.unknownHectares === null ? unknownWord : formatNumber(row.unknownHectares, locale, 0),
+                      row.unmappedCharacter[locale],
+                    )}
                   </p>
                 )}
 

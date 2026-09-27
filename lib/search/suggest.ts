@@ -11,6 +11,7 @@
 
 import { formatHectares, formatPercent, type Locale } from "@/lib/domain";
 import { formatUnknownSharePercent } from "@/lib/explore/map-style";
+import { placeFigure, type PlaceFigure } from "./place-figures";
 import {
   formatSearchShare,
   ridingSearchRow,
@@ -42,6 +43,8 @@ export type Suggestion = Readonly<{
   /** One line under the figure: the hectares and coverage, or why there is no share. */
   detail: string;
   compareHref: string | null;
+  /** For a place: what its riding figures cover, shown above them. */
+  ridingsNote?: string;
   ridings: readonly SuggestionRiding[];
 }>;
 
@@ -54,7 +57,11 @@ function provinceCode(result: SiteSearchResult) {
   return PROVINCE_CODE_BY_NUMBER[result.id.slice(3, 5)] ?? "CA";
 }
 
-type RidingRow = NonNullable<ReturnType<typeof ridingSearchRow>>;
+/** The fields a figure line reads, which a riding and a place both carry. */
+type RidingRow = Pick<
+  NonNullable<ReturnType<typeof ridingSearchRow>>,
+  "coverage" | "observedLossHectares" | "observedLossPercent" | "knownObservedSubtotalHectares" | "unknownSharePercent"
+>;
 
 /**
  * A riding's figure as one line of text. The search results page and the
@@ -103,6 +110,25 @@ function completeFigure(row: RidingRow | undefined, locale: Locale) {
     : null;
 }
 
+/**
+ * A place's own figure line. A city the satellite source doesn't reach says
+ * so, rather than reading as a place that lost nothing.
+ */
+export function placeDetail(figure: PlaceFigure | undefined, locale: Locale): string {
+  if (figure?.noSatelliteData) {
+    return locale === "en"
+      ? "No satellite data here. The source covers only Canada’s forest regions, so any loss here is unknown."
+      : "Aucune donnée satellitaire ici. La source ne couvre que les régions forestières du Canada, donc toute perte ici est inconnue.";
+  }
+  if (figure?.coverage === "none-mapped") {
+    return locale === "en" ? "No forest was mapped here in 1984." : "Aucune forêt n’était cartographiée ici en 1984.";
+  }
+  if (figure?.coverage === "complete" && figure.observedLossHectares !== null) {
+    return `${formatHectares(figure.observedLossHectares, locale)} · ${locale === "en" ? "Fully mapped" : "Entièrement cartographiée"}`;
+  }
+  return ridingFigure(figure, locale) ?? (locale === "en" ? "No figure for this place." : "Aucun chiffre pour ce lieu.");
+}
+
 function ridingDetail(row: RidingRow | undefined, locale: Locale) {
   if (row && row.coverage === "complete" && row.observedLossHectares !== null) {
     return `${formatHectares(row.observedLossHectares, locale)} · ${locale === "en" ? "Fully mapped" : "Entièrement cartographiée"}`;
@@ -139,8 +165,8 @@ function toSuggestion(result: SiteSearchResult, locale: Locale): Suggestion {
       meta: "Province",
       figure: result.unionLossPercent === null || result.unionLossPercent === undefined ? null : formatPercent(result.unionLossPercent, locale),
       detail: locale === "en"
-        ? `${hectares} · A minimum: ${unknown} of the province was never mapped`
-        : `${hectares} · Un minimum : ${unknown} de la province n’a jamais été cartographié`,
+        ? `${hectares} · A minimum: ${unknown} of the province has no satellite data`
+        : `${hectares} · Un minimum : ${unknown} de la province n’a pas de données satellitaires`,
       compareHref: null,
       ridings: [],
     };
@@ -158,22 +184,20 @@ function toSuggestion(result: SiteSearchResult, locale: Locale): Suggestion {
       ridings: [],
     };
   }
+  const figure = placeFigure(result.id);
   const federal = (result.federal ?? []).map((reference) => suggestionRiding(reference, "federal", locale));
   const provincial = (result.provincial ?? []).map((reference) => suggestionRiding(reference, "provincial", locale));
-  const count = federal.length + provincial.length;
-  const inRidings = locale === "en"
-    ? `in ${count} riding${count === 1 ? "" : "s"}`
-    : `dans ${count} circonscription${count === 1 ? "" : "s"}`;
   return {
     kind: "community",
     id: result.id,
     name,
-    meta: `${searchPlaceTypeLabel(result.type!, locale)} · ${code} · ${inRidings}`,
-    figure: null,
-    detail: locale === "en"
-      ? "Each riding’s figure is for the whole riding. The share is the part of the community inside it."
-      : "Le chiffre de chaque circonscription porte sur toute la circonscription. La part est la portion de la collectivité qui s’y trouve.",
+    meta: `${searchPlaceTypeLabel(result.type!, locale)} · ${code}`,
+    figure: completeFigure(figure, locale),
+    detail: placeDetail(figure, locale),
     compareHref: null,
+    ridingsNote: locale === "en"
+      ? `The ridings it’s in. Their figures are for the whole riding.`
+      : `Les circonscriptions où il se trouve. Leurs chiffres portent sur toute la circonscription.`,
     ridings: [...federal, ...provincial],
   };
 }

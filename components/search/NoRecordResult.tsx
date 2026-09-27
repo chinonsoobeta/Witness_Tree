@@ -9,7 +9,6 @@ const COPY = {
     methodsHref: "/en/methods",
     remedies: "What would change this answer",
     items: [
-      { text: "Official boundaries for reserves, settlements and treaty or agreement lands are approved and communities have a way to reply, so those places can be listed.", link: null },
       { text: "An official harvest or fire record is added for this area, which would then be marked as an official record, not a satellite observation.", link: null },
       { text: "You file a correction against a figure that is already published.", link: { href: "/en/corrections", label: "How corrections work" } },
     ],
@@ -21,7 +20,6 @@ const COPY = {
     methodsHref: "/fr/methodes",
     remedies: "Ce qui changerait cette réponse",
     items: [
-      { text: "Les limites officielles des réserves, des établissements et des terres visées par un traité ou une entente sont approuvées et les communautés ont un moyen de répondre, de sorte que ces lieux peuvent être répertoriés.", link: null },
       { text: "Un registre officiel de récolte ou d’incendie est ajouté pour ce secteur; il serait alors marqué comme registre officiel, et non comme observation satellitaire.", link: null },
       { text: "Vous déposez une correction visant un chiffre déjà publié.", link: { href: "/fr/corrections", label: "Fonctionnement des corrections" } },
     ],

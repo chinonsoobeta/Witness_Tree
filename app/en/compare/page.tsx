@@ -41,9 +41,9 @@ export default async function ComparePage({
       <main id="main" className="page-wrap">
         <header className="masthead">
           <h1>{TITLE}</h1>
-          <p className="masthead-note">Figures for 2021–2022, adjusted for mapped area.</p>
+          <p className="masthead-note">Figures for 2021–2022, for the mapped part of each riding.</p>
         </header>
-        <CoverageStatement locale="en"><p>Check how much of each riding was mapped before comparing figures: a smaller loss may just mean less was mapped. Ridings without full data are left out of the ranking, never counted as zero. Shares are of mapped forest only.</p></CoverageStatement>
+        <CoverageStatement locale="en"><p>Before comparing two ridings, check how much of each was mapped: a smaller loss can just mean less was mapped. Ridings without full data are left out of the ranking rather than counted as zero, and every share is of mapped forest only.</p></CoverageStatement>
         <FederalRidingPicker
           rows={federalRidingComparison.comparisonRows}
           locale="en"

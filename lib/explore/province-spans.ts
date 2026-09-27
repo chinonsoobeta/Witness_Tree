@@ -86,6 +86,10 @@ export type ProvinceSpanMeasurement = IntervalMeasurement &
     name: ProvinceSpanEntry["name"];
     /** Unknown in the start year, as a share of the whole province. Never folded into the loss share. */
     unknownSharePercent: number;
+    /** The province's whole area on the grid, in hectares. */
+    areaHectares: number;
+    /** Forest mapped in the start year, as a share of the whole province. */
+    forestSharePercent: number | null;
     /** What the province's unmapped part mostly is, where that is known to differ from unmeasured forest. */
     unmappedCharacter: Readonly<{ en: string; fr: string }>;
   }>;
@@ -104,6 +108,8 @@ export function provinceSpanMeasurements(interval: ExploreInterval): readonly Pr
       code: province.code,
       name: province.name,
       unknownSharePercent: (unknownCells / province.cells) * 100,
+      areaHectares: province.cells * CELL_HECTARES,
+      forestSharePercent: measurement.knownForestedHectares === null ? null : (measurement.knownForestedHectares / (province.cells * CELL_HECTARES)) * 100,
       unmappedCharacter: UNMAPPED_REASONS[province.id],
     }];
   });

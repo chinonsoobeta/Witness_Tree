@@ -68,10 +68,24 @@ test("real place search handles suffixes, bilingual names, dash spelling, gaps, 
   assert.doesNotMatch(partialRiding, />0(?: ha)?</);
   assert.match(renderToStaticMarkup(<SearchPage locale="en" query="Prince George" />), /Statistics Canada/);
   assert.match(renderToStaticMarkup(<SearchPage locale="fr" query="Grand Sudbury" />), /Statistique Canada/);
-  assert.equal(formatSearchShare(1, "en"), "100 percent");
-  assert.equal(formatSearchShare(0.996, "en"), "over 99 percent");
-  assert.equal(formatSearchShare(0.0092, "en"), "under 1 percent");
-  assert.equal(formatSearchShare(0.0013, "en"), "under 1 percent");
+  assert.equal(formatSearchShare(1, "en"), "100% of this place");
+  assert.equal(formatSearchShare(0.996, "en"), "over 99% of this place");
+  assert.equal(formatSearchShare(0.0092, "en"), "under 1% of this place");
+  assert.equal(formatSearchShare(0.0013, "en"), "under 1% of this place");
+  assert.match(formatSearchShare(0.6, "fr"), /^60\u00a0?%|^60\s?% de ce lieu$/);
+});
+
+test("a community result leads with the place's own figure, before its ridings", () => {
+  // Prince George was fully mapped, so its own share and area read first.
+  const en = renderToStaticMarkup(<SearchPage locale="en" query="Prince George" />);
+  const card = en.slice(en.indexOf("<h4>Prince George</h4>"));
+  assert.match(card, /Fully mapped/);
+  assert.ok(card.indexOf("Fully mapped") < card.indexOf("Federal ridings"));
+  assert.match(card, /of this place\. Whole riding: /);
+  // A city the satellite source doesn't reach says so rather than reading as zero.
+  const montreal = renderToStaticMarkup(<SearchPage locale="fr" query="Montréal" />);
+  assert.match(montreal, /Aucune donnée satellitaire ici/);
+  assert.doesNotMatch(montreal, />0(?: ha)?</);
 });
 
 test("a federal riding result opens in Compare, and a provincial one names no link", () => {
@@ -138,7 +152,10 @@ test("search coverage precedes controls and a missing record is a result with a 
       assert.match(markup, locale === "en" ? /Unknown\. Nothing published answers this yet/ : /Inconnu\. Rien de publi\u00e9 ne r\u00e9pond/);
       assert.match(markup, /class="no-record-remedy-list"/);
       if (scope === "places") {
-        assert.match(markup, locale === "en" ? /Reserves, settlements and treaty or agreement lands aren’t listed yet/ : /Les réserves, les établissements et les terres visées par un traité ou une entente ne sont pas encore répertoriés/);
+        // The owner decided not to publish reserve or treaty geography, so the
+        // page says so plainly and never promises those places are coming.
+        assert.match(markup, locale === "en" ? /Witness Tree does not list reserves/ : /Arbre témoin ne répertorie pas séparément les réserves/);
+        assert.doesNotMatch(markup, /aren’t listed yet|pas encore répertoriés|reserves, settlements and treaty or agreement lands are approved|limites officielles des réserves/i);
       }
       assert.match(markup, new RegExp(`href="${locale === "en" ? "/en/corrections" : "/fr/corrections"}"`));
     }

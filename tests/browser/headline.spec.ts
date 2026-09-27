@@ -21,24 +21,29 @@ for (const locale of ["en", "fr"] as const) {
     await page.evaluate(() => document.fonts.ready);
 
     const measured = await page.evaluate(() => {
-      const figure = document.querySelector(".cumulative-figure");
+      // Both measures are set at the same size since 2026-09-27, so each
+      // figure has to hold its unit on one line.
+      const figures = [...document.querySelectorAll(".cumulative-figure")];
       const block = document.querySelector(".cumulative-headline");
-      if (!figure || !block) return null;
+      if (figures.length === 0 || !block) return null;
       // Client rects, one per rendered line box, so this counts what the
       // browser drew rather than what the stylesheet asked for.
-      const range = document.createRange();
-      range.selectNodeContents(figure);
-      const lines = [...range.getClientRects()].filter((rect) => rect.width > 0);
+      const linesOf = (figure: Element) => {
+        const range = document.createRange();
+        range.selectNodeContents(figure);
+        return [...range.getClientRects()].filter((rect) => rect.width > 0).length;
+      };
       return {
-        text: figure.textContent ?? "",
-        lines: lines.length,
-        fontSize: getComputedStyle(figure).fontSize,
+        figures: figures.length,
+        text: figures.map((figure) => figure.textContent ?? ""),
+        lines: figures.map(linesOf),
+        fontSize: figures.map((figure) => getComputedStyle(figure).fontSize),
         blockWidth: Math.round(block.getBoundingClientRect().width),
         documentWidth: document.documentElement.scrollWidth,
         viewport: document.documentElement.clientWidth,
-        // Every description in the block, so a basis that fell out is visible
-        // here and not only in the server-rendered markup.
-        bases: document.querySelectorAll(".cumulative-basis dd").length,
+        // Each measure's basis and the shared minimum, so a basis that fell
+        // out is visible here and not only in the server-rendered markup.
+        bases: document.querySelectorAll(".cumulative-claim, .cumulative-minimum").length,
       };
     });
 
@@ -48,7 +53,9 @@ for (const locale of ["en", "fr"] as const) {
     });
 
     expect(measured).not.toBeNull();
-    expect(measured!.lines).toBe(1);
+    expect(measured!.figures).toBe(2);
+    expect(measured!.lines).toEqual([1, 1]);
+    expect(new Set(measured!.fontSize).size).toBe(1);
     expect(measured!.bases).toBe(3);
     expect(measured!.documentWidth).toBeLessThanOrEqual(measured!.viewport + 1);
     expect(measured!.blockWidth).toBeLessThanOrEqual(measured!.viewport);

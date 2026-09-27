@@ -55,7 +55,9 @@ workers, peak 534 MB, 38 minutes), and
 its point on surface falls in. The 44 regions add up to the province figures to
 within rounding. The same run gives the 2,291 published places their own figures:
 the whole record for search in
-[the place file](../data/place-whole-record-measurements.json), and every span for
+[the place file](../data/place-whole-record-measurements.json) (read by
+`lib/search/place-figures.ts`, so a town result leads with its own figure and
+then its ridings), and every span for
 the map's cities-and-towns layer, built by
 `scripts/build-census-subdivision-overlay-tiles.mjs`. That layer's tiles and
 per-province figure files are planned as their own immutable release

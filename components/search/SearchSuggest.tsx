@@ -25,7 +25,7 @@ const COPY = {
     groups: { community: "Communities", riding: "Ridings", province: "Provinces" },
     footer: "Share of the mapped forest detected as lost, 1984–2022",
     seeAll: "See all results",
-    none: (query: string) => `No place matches “${query}”. Try a town, riding or province. Reserves, settlements and treaty or agreement lands aren’t listed yet.`,
+    none: (query: string) => `No place matches “${query}”. Try a town, riding or province.`,
     count: (count: number) => (count === 1 ? "1 suggestion" : `${count} suggestions`),
     failed: "Suggestions aren’t available right now. Press Enter to search.",
     clear: "Clear this result",
@@ -40,7 +40,7 @@ const COPY = {
     groups: { community: "Collectivités", riding: "Circonscriptions", province: "Provinces" },
     footer: "Part de la forêt cartographiée détectée comme perdue, 1984–2022",
     seeAll: "Voir tous les résultats",
-    none: (query: string) => `Aucun lieu ne correspond à « ${query} ». Essayez une ville, une circonscription ou une province. Les réserves, les établissements et les terres visées par un traité ou une entente ne sont pas encore répertoriés.`,
+    none: (query: string) => `Aucun lieu ne correspond à « ${query} ». Essayez une ville, une circonscription ou une province.`,
     count: (count: number) => (count === 1 ? "1 suggestion" : `${count} suggestions`),
     failed: "Les suggestions ne sont pas disponibles pour le moment. Appuyez sur Entrée pour lancer la recherche.",
     clear: "Effacer ce résultat",
@@ -271,6 +271,7 @@ export function SearchSuggest({
           <p className="search-chosen-detail">{chosen.detail}</p>
           {chosen.ridings.length > 0 ? (
             <div className="search-chosen-ridings">
+              {chosen.ridingsNote ? <p className="search-chosen-ridings-note">{chosen.ridingsNote}</p> : null}
               {(["federal", "provincial"] as const).map((level) => {
                 const rows = chosen.ridings.filter((riding) => riding.level === level);
                 if (rows.length === 0) return null;

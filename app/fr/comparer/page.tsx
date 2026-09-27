@@ -41,9 +41,9 @@ export default async function ComparerPage({
       <main id="main" className="page-wrap">
         <header className="masthead">
           <h1>{TITRE}</h1>
-          <p className="masthead-note">Chiffres pour 2021–2022, ajustés selon la zone cartographiée.</p>
+          <p className="masthead-note">Chiffres pour 2021–2022, pour la partie cartographiée de chaque circonscription.</p>
         </header>
-        <CoverageStatement locale="fr"><p>Vérifiez quelle part de chaque circonscription a été cartographiée avant de comparer les chiffres : une perte plus faible peut simplement signifier qu’une plus petite partie a été cartographiée. Les circonscriptions sans données complètes sont exclues du classement, jamais comptées comme zéro. Les parts portent seulement sur la forêt cartographiée.</p></CoverageStatement>
+        <CoverageStatement locale="fr"><p>Avant de comparer deux circonscriptions, vérifiez quelle part de chacune a été cartographiée{"\u202F"}: une perte plus faible peut simplement signifier qu’une plus petite partie a été cartographiée. Les circonscriptions sans données complètes sont exclues du classement plutôt que comptées comme zéro, et chaque part porte seulement sur la forêt cartographiée.</p></CoverageStatement>
         <FederalRidingPicker
           rows={federalRidingComparison.comparisonRows}
           locale="fr"

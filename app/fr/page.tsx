@@ -15,7 +15,7 @@ export const metadata: Metadata = { title: "Registre public des pertes forestiè
 const SPAN_ROWS = provinceSpanMeasurements({ fromYear: 1984, toYear: 2022 });
 
 function coverageLabel(row: (typeof SPAN_ROWS)[number]) {
-  return `${formatUnknownSharePercent(row.unknownSharePercent, "fr")} de la superficie provinciale n’a pas été cartographiée par la source; ${row.unmappedCharacter.fr}`;
+  return `${formatUnknownSharePercent(row.unknownSharePercent, "fr")} de la province n’a pas de données satellitaires\u202F: ${row.unmappedCharacter.fr}`;
 }
 
 const UNKNOWN_CONTEXTS = Object.fromEntries(
@@ -26,9 +26,8 @@ const UNKNOWN_CONTEXTS = Object.fromEntries(
 export default function FrenchHome() {
   return <SiteShell locale="fr"><main id="main" className="page-wrap">
     <header className="masthead masthead--record">
-      <p className="eyebrow">Registre public des pertes forestières</p>
       <h1>Qu’est-il arrivé à la forêt ici?</h1>
-      <p className="dek">{PRODUCT_NAME.fr} montre les pertes forestières dans quatre provinces canadiennes, à partir d’images satellites et de registres publics. Chaque fait renvoie à sa source.</p>
+      <p className="dek">{PRODUCT_NAME.fr} montre les pertes forestières dans quatre provinces canadiennes, à partir d’images satellites et de registres publics.</p>
       <HomeSearch locale="fr" />
       <ProvinceBar locale="fr" />
     </header>
@@ -44,13 +43,13 @@ export default function FrenchHome() {
 
     {/* Voir la note sur app/en/page.tsx : une seule liste des quatre marques. */}
     <section className="content-section evidence-band">
-      <p className="evidence-band-lead">Chaque lieu a un historique daté des récoltes, des incendies et d’autres changements. Chaque fait indique le type de preuve qui le soutient.</p>
+      <p className="evidence-band-lead">Chaque chiffre de ce site indique le type de preuve qui le soutient.</p>
       <EvidenceMarks locale="fr" />
     </section>
 
     <section className="content-section landing-coverage" aria-labelledby="registre-actuel">
       <h2 id="registre-actuel">Le registre publié</h2>
-      <p className="lead">La superficie forestière que les satellites ont détectée comme perdue dans chaque province, {provinceSpanReach("fr", "from")}. Ces chiffres sont provisoires, et chacun indique la part de la province qui n’a pas pu être vérifiée.</p>
+      <p className="lead">La superficie forestière que les satellites ont détectée comme perdue dans chaque province, {provinceSpanReach("fr", "from")}.</p>
       <ProvinceRecordList rows={SPAN_ROWS} locale="fr" unknownContexts={UNKNOWN_CONTEXTS} />
       <p><Link href="/fr/methodes#coverage-gap">Pourquoi ces superficies ne sont pas cartographiées et ce que nous en savons</Link></p>
       <p><Link className="btn btn--primary" href="/fr/explorer">Explorer le registre</Link></p>
@@ -81,7 +80,7 @@ export default function FrenchHome() {
         </ul>
         <p>{PRODUCT_NAME.fr} rapporte seulement ce que ses sources consignent et ce que les images satellites détectent.</p>
         <p>Un satellite peut voir que des arbres ont disparu, mais pas pourquoi. <Link href="/fr/methodes">Comment fonctionnent les méthodes</Link>.</p>
-        <p>Les chiffres ci-dessus sont un aperçu technique pour {provinceSpanReach("fr", "span")}, et non la version définitive. Les parcelles de perte de la carte Explorer servent seulement à la visualisation : on ne peut pas les additionner, et aucun spécialiste ne les a examinées. <Link href="/fr/donnees">Données, sources et licences</Link>.</p>
+        <p>Ces chiffres pour {provinceSpanReach("fr", "span")} sont un premier aperçu, et non la version définitive. Les parcelles de perte de la carte Explorer servent à regarder, pas à additionner, et aucun spécialiste ne les a examinées. <Link href="/fr/donnees">Données, sources et licences</Link>.</p>
         <p><small>Source du contexte : {EXPLORE_PRODUCTION_LAYER.attribution.fr} <a href={EXPLORE_PRODUCTION_LAYER.attribution.href}>Catalogue source</a>.</small></p>
       </div>
     </section>

@@ -84,8 +84,8 @@ test("both comparison routes use real data and preserve exact selected ids", asy
   const parameters = Promise.resolve({ left: "federal-59001", right: "federal-59006", view: "table", sort: "share-asc" });
   const english = renderToStaticMarkup(await EnglishComparePage({ searchParams: parameters }));
   const french = renderToStaticMarkup(await FrenchComparePage({ searchParams: parameters }));
-  assert.match(english, /Figures for 2021–2022, adjusted for mapped area/);
-  assert.match(french, /Chiffres pour 2021–2022, ajustés selon la zone cartographiée/);
+  assert.match(english, /Figures for 2021–2022, for the mapped part of each riding/);
+  assert.match(french, /Chiffres pour 2021–2022, pour la partie cartographiée de chaque circonscription/);
   for (const html of [english, french]) {
     assert.match(html, /option value="federal-59001" selected/);
     assert.match(html, /option value="federal-59006" selected/);
