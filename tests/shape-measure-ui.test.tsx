@@ -112,8 +112,9 @@ test("draw has its own coverage-first page and keeps unavailable measurement exp
   for (const locale of ["en", "fr"] as const) {
     const enabled = renderToStaticMarkup(<DrawPage locale={locale} available />);
     const unavailable = renderToStaticMarkup(<DrawPage locale={locale} available={false} />);
-    assert.ok(enabled.indexOf('class="coverage-statement"') < enabled.indexOf('<form'));
-    assert.match(enabled, /class="evidence-legend"/);
+    // The caveat is a closed note under the title, still ahead of the form.
+    assert.ok(enabled.indexOf('class="coverage-note"') > 0 && enabled.indexOf('class="coverage-note"') < enabled.indexOf('<form'));
+    assert.doesNotMatch(enabled, /class="evidence-legend"/);
     assert.match(unavailable, /role="status">– /);
     assert.doesNotMatch(unavailable, /<form|class="shape-readout"/);
   }

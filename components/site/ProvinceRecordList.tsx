@@ -52,7 +52,7 @@ const COPY = {
     keyMapped: "Mapped by the source",
     keyUnmapped: "Never mapped, and therefore Unknown",
     keyLabel: "What the coverage bar shows",
-    recorded: "ha recorded",
+    recorded: "ha detected",
     measured: "ha unmapped",
     sources: "Source and limits",
     basis: "of the mapped forest. A minimum, because",
@@ -71,7 +71,7 @@ const COPY = {
     keyMapped: "Cartographié par la source",
     keyUnmapped: "Jamais cartographié, donc Inconnu",
     keyLabel: "Ce que montre la barre de couverture",
-    recorded: "ha consignés",
+    recorded: "ha détectés",
     measured: "ha non cartographiés",
     sources: "Source et limites",
     basis: "de la forêt cartographiée. Un minimum, car",
@@ -95,6 +95,7 @@ export function ProvinceRecordList({ rows, locale, unknownContexts }: Readonly<{
   const [measure, setMeasure] = useState<Measure>("loss");
   const headlineId = useId();
   const copy = COPY[locale];
+  const unknownWord = locale === "en" ? "Unknown" : "Inconnu";
   const span = provinceSpanReach(locale);
   const lossScale = scaleHectares(rows);
   const showingLoss = measure === "loss";
@@ -145,7 +146,7 @@ export function ProvinceRecordList({ rows, locale, unknownContexts }: Readonly<{
       <ol className="province-list" aria-labelledby={headlineId}>
         {ordered.map((row) => {
           const unknownShare = row.unknownHectares === null
-            ? "Unknown"
+            ? unknownWord
             : formatUnknownSharePercent(row.unknownSharePercent, locale);
           const mappedShare = row.unknownHectares === null ? null : 100 - row.unknownSharePercent;
           /*
@@ -198,7 +199,7 @@ export function ProvinceRecordList({ rows, locale, unknownContexts }: Readonly<{
                   {showingLoss ? (
                     <>
                       <span className="province-list-value">
-                        {row.unionLossHectares === null ? "Unknown" : formatNumber(row.unionLossHectares, locale, 0)}
+                        {row.unionLossHectares === null ? unknownWord : formatNumber(row.unionLossHectares, locale, 0)}
                       </span>{" "}
                       <span className="province-list-unit">ha</span>
                     </>
@@ -233,12 +234,12 @@ export function ProvinceRecordList({ rows, locale, unknownContexts }: Readonly<{
               <div className="province-list-base">
                 {showingLoss ? (
                   <p className="province-list-note">
-                    {row.unionLossPercent === null ? "Unknown" : formatPercent(row.unionLossPercent, locale)} {copy.basis}{" "}
+                    {row.unionLossPercent === null ? unknownWord : formatPercent(row.unionLossPercent, locale)} {copy.basis}{" "}
                     <strong>{unknownShare}</strong> {copy.basisEnd}{character}
                   </p>
                 ) : (
                   <p className="province-list-note">
-                    <strong>{row.unknownHectares === null ? "Unknown" : formatHectares(row.unknownHectares, locale, 0)}</strong>{" "}
+                    <strong>{row.unknownHectares === null ? unknownWord : formatHectares(row.unknownHectares, locale, 0)}</strong>{" "}
                     {copy.coverNote} {copy.coverEnd}{character}
                   </p>
                 )}
@@ -248,8 +249,8 @@ export function ProvinceRecordList({ rows, locale, unknownContexts }: Readonly<{
                 <p className="province-list-foot">
                   <span>
                     {showingLoss
-                      ? `${row.unionLossHectares === null ? "Unknown" : formatNumber(row.unionLossHectares, locale, 2)} ${copy.recorded}`
-                      : `${row.unknownHectares === null ? "Unknown" : formatNumber(row.unknownHectares, locale, 2)} ${copy.measured}`}
+                      ? `${row.unionLossHectares === null ? unknownWord : formatNumber(row.unionLossHectares, locale, 2)} ${copy.recorded}`
+                      : `${row.unknownHectares === null ? unknownWord : formatNumber(row.unknownHectares, locale, 2)} ${copy.measured}`}
                   </span>
                   <Link href={locale === "en" ? "/en/data" : "/fr/donnees"}>{copy.sources}</Link>
                 </p>

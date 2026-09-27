@@ -42,6 +42,9 @@ for (const route of routes) {
     await info.attach("responsive-page-evidence", { body: JSON.stringify({ route, theme, ...layout }), contentType: "application/json" });
     expect.soft(layout.documentWidth, `${route}: page must not scroll sideways`).toBeLessThanOrEqual(layout.viewport + 1);
     expect.soft(layout.smallText, `${route}: visible text must render at 12 px or larger, including scaled SVG text`).toEqual([]);
+    // A table in a collapsed section is hidden, so it has no computed name
+    // until a reader opens it. Open every section so each table is checked.
+    await page.locator("details:not([open])").evaluateAll((sections) => sections.forEach((section) => { (section as HTMLDetailsElement).open = true; }));
     for (const region of await page.locator(".table-scroll").all()) {
       await expect(region).toHaveAttribute("tabindex", "0");
       await expect(region).toHaveAttribute("role", "region");

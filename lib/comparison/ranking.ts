@@ -6,8 +6,8 @@ from "./types.ts";
 export type RankedRidingsResult = Readonly<{ ranked: readonly RankedRiding[]; unranked: readonly RankedRiding[] }>;
 export type RankingSort = "share-desc" | "share-asc";
 export const RANKING_COPY = {
-  en: { metric: "Detected change as a share of forested area", hectares: "Detected change (ha)", forested: "Forested area (ha)", officialMatching: "Match to official records: not yet done for any riding, so this is Unknown for every row.", unknown: "Unknown" },
-  fr: { metric: "Changement détecté en part de la superficie forestière", hectares: "Changement détecté (ha)", forested: "Superficie forestière (ha)", officialMatching: "Appariement aux registres officiels : pas encore fait pour aucune circonscription; cette valeur est donc inconnue pour chaque ligne.", unknown: "Inconnu" },
+  en: { metric: "Detected loss as a share of forested area", hectares: "Detected loss (ha)", forested: "Forested area (ha)", officialMatching: "Match to official records: not yet done for any riding, so this is Unknown for every row.", unknown: "Unknown" },
+  fr: { metric: "Perte détectée en part de la superficie forestière", hectares: "Perte détectée (ha)", forested: "Superficie forestière (ha)", officialMatching: "Appariement aux registres officiels : pas encore fait pour aucune circonscription; cette valeur est donc inconnue pour chaque ligne.", unknown: "Inconnu" },
 } as const;
 
 export function parseRankingSort(value: string | undefined): RankingSort {

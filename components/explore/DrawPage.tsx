@@ -1,6 +1,5 @@
 import type { Locale } from "@/lib/domain";
 import { CoverageStatement } from "@/components/policy/CoverageStatement";
-import { EvidenceLegend } from "@/components/policy/EvidenceLegend";
 import { ShapeMeasureClient } from "./ShapeMeasureClient";
 
 export function DrawPage({ locale, available }: Readonly<{ locale: Locale; available: boolean }>) {
@@ -17,7 +16,6 @@ export function DrawPage({ locale, available }: Readonly<{ locale: Locale; avail
           ? "The map is only a guide. The measurement comes from the underlying data grid."
           : "La carte sert seulement de guide. La mesure provient de la grille de données sous-jacente."}</p>
       </CoverageStatement>
-      <EvidenceLegend locale={locale} />
       {available ? <ShapeMeasureClient locale={locale} /> : (
         <p className="no-record-result" role="status">{locale === "en"
           ? "– Area measurement is not available on this site yet. No result has been calculated."

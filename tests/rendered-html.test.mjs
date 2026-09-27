@@ -93,7 +93,8 @@ test("landing figures show detected loss alone, on a scale of detected loss", as
     const html = await (await render(`/${locale}`)).text();
     const rows = [...html.matchAll(/<li class="province-list-row"[^>]*>([\s\S]*?)<\/li>/g)].map((match) => match[1]);
     assert.equal(rows.length, 4);
-    assert.ok(html.indexOf('class="coverage-statement"') < html.indexOf('class="province-list-row"'));
+    // The headline states its own minimum, so the home page carries no separate caveat note.
+    assert.doesNotMatch(html, /class="coverage-(note|statement)"/);
     assert.ok(html.indexOf('class="evidence-marks"') < html.indexOf('class="province-list-row"'));
 
     // Whole hectares on the headline. Two decimal places on a satellite-derived
@@ -129,7 +130,7 @@ test("landing figures show detected loss alone, on a scale of detected loss", as
     // The exact value stays at the foot of the row, which is what makes the
     // rounded headline cost nothing.
     const exact = new Intl.NumberFormat(`${locale}-CA`, { maximumFractionDigits: 2 });
-    const unit = locale === "en" ? "ha recorded" : "ha consignés";
+    const unit = locale === "en" ? "ha detected" : "ha détectés";
     const recorded = rows.flatMap((row) => [...row.matchAll(/class="province-list-foot"><span>([^<]+)</g)].map((match) => match[1]));
     assert.deepEqual(recorded, hectares.map((value) => `${exact.format(value)} ${unit}`));
 
@@ -220,7 +221,7 @@ test("renders localized place and location records with semantic content and pro
   assert.match(frenchLocation, /Provenance/);
 });
 
-test("renders localized search results and Explore list/table alternatives without browser JavaScript", async () => {
+test("renders localized search results and the Explore table without browser JavaScript, including from an old List address", async () => {
   const [englishSearch, frenchSearch, englishExplore, frenchExplore, englishFixtures, frenchFixtures] = await Promise.all([
     render("/en/search?q=British%20Columbia").then((response) => response.text()),
     render("/fr/recherche?q=Colombie-Britannique").then((response) => response.text()),
@@ -239,8 +240,8 @@ test("renders localized search results and Explore list/table alternatives witho
   assert.match(frenchSearch, /Recherchez une province, une circonscription ou une collectivité\. Les chiffres couvrent 1984 à 2022\./);
   assert.match(frenchSearch, /Colombie-Britannique/);
 
-  // Wildfire reads the national harvest and fire series, so its list and table
-  // are real province figures served without browser JavaScript.
+  // Wildfire reads the national harvest and fire series, so its table shows
+  // real province figures served without browser JavaScript.
   assert.match(englishExplore, /<main\b[^>]*id="main"/);
   assert.match(englishExplore, /Explore forest loss/);
   assert.match(englishExplore, /add up the harvest, and separately the fire/);
@@ -254,10 +255,10 @@ test("renders localized search results and Explore list/table alternatives witho
   assert.match(frenchExplore, /href="\/fr\/donnees\/recolte-et-incendies\?from=2020&amp;to=2020"/);
   assert.match(frenchExplore, /Attribution de la source/);
   // Condition and recovery is the one mode still on example data, and says so.
-  assert.match(englishFixtures, /The list, chart and table use made-up example data, not real records/);
+  assert.match(englishFixtures, /The chart and table use made-up example data, not real records/);
   assert.match(englishFixtures, /<table/);
   assert.match(englishFixtures, /Source attribution/);
-  assert.match(frenchFixtures, /La liste, le graphique et le tableau utilisent des données d’exemple inventées, et non de vrais registres/);
+  assert.match(frenchFixtures, /Le graphique et le tableau utilisent des données d’exemple inventées, et non de vrais registres/);
   assert.match(frenchFixtures, /<table/);
   assert.match(frenchFixtures, /Attribution de la source/);
 });

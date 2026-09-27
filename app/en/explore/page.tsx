@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ExploreView } from "@/components/explore";
-import { FederalDistrictFinder } from "@/components/search";
 import { SiteShell } from "@/components/site";
-import { federalRidingComparison } from "@/lib/comparison";
 import {
   exploreFixtures,
   EXPLORE_MODES,
@@ -40,7 +38,6 @@ export default async function Page({
   )
     ? (query.mode as (typeof EXPLORE_MODES)[number])
     : "forest-change";
-  const presentation = query.presentation === "list" ? "list" : "map";
   const year = parseExploreYear(query.year);
   // The span, not just its closing year. A URL that names only `year` still
   // means the annual interval ending there, which is what it has always meant.
@@ -57,28 +54,11 @@ export default async function Page({
           events={exploreFixtures}
           locale="en"
           mode={mode}
-          presentation={presentation}
           data={query.data === "table" ? "table" : "chart"}
           year={interval.toYear}
           fromYear={interval.fromYear}
           overlays={overlays}
           ridingMeasurements={ridingIntervalMeasurements(interval)}
-        />
-        <p className="explore-draw-link"><Link className="btn btn--outline" href="/en/explore/draw">Draw and measure an area</Link></p>
-        <FederalDistrictFinder
-          locale="en"
-          query={query.district ?? ""}
-          rows={federalRidingComparison.places}
-          parameters={[
-            { name: "mode", value: mode },
-            { name: "presentation", value: presentation },
-            { name: "data", value: query.data === "table" ? "table" : "chart" },
-            { name: "year", value: String(interval.toYear) },
-            ...(interval.fromYear !== interval.toYear - 1
-              ? [{ name: "from", value: String(interval.fromYear) }]
-              : []),
-            ...(overlays.length > 0 ? [{ name: "overlays", value: overlays.join(",") }] : []),
-          ]}
         />
       </main>
     </SiteShell>

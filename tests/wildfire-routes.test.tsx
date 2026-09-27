@@ -78,8 +78,13 @@ test("locale routes no longer import or pass the illustrative feed", async () =>
 test("wildfire puts its limits and missing times before the directory without inventing an observation", () => {
   for (const locale of ["en", "fr"] as const) {
     const markup = renderToStaticMarkup(<WildfireView locale={locale} />);
-    assert.ok(markup.indexOf('class="coverage-statement"') < markup.indexOf('class="wildfire-disclaimer-symbol"'));
-    assert.match(markup, /class="evidence-legend"/);
+    // The page shows no figures, so its limit is not tucked into a closed
+    // figures note: "no live wildfires" is said in the visible emergency notice,
+    // before the 911 line, and there is no evidence key with nothing to key.
+    const notice = markup.slice(markup.indexOf('class="notice notice--alert wildfire-disclaimer"'), markup.indexOf("</aside>"));
+    assert.match(notice, locale === "en" ? /doesn’t show live wildfires/ : /n’affiche pas les feux en direct/);
+    assert.ok(notice.indexOf(locale === "en" ? "live wildfires" : "feux en direct") < notice.indexOf("911"));
+    assert.doesNotMatch(markup, /coverage-note|evidence-key|evidence-legend/);
     assert.match(markup, /<dd>– (Unavailable|Indisponible);/);
     assert.match(markup, /<dd>– (None|Aucune);/);
     assert.ok(markup.indexOf('id="wildfire-status-heading"') < markup.indexOf('id="wildfire-directory-heading"'));

@@ -26,33 +26,33 @@ function renderToStaticMarkup(element: ReactElement): string {
 }
 
 /*
- * Explore's three columns are a placement, not a reordering.
- *
- * The workspace puts the controls left, the map centre and the figures right
- * through named grid areas, so the document keeps the order a screen reader
- * takes: explain, choose, map, figures, layers. tests/explore.test.tsx already
- * pins that order and is checksum-bound evidence in two phase records, so these
- * assertions live in their own file: the layout has to be free to be tested
- * without moving a digest that describes something else.
+ * Explore is a toolbar over a two-column workspace: the controls sit above,
+ * the map on the left and the figures on the right. The document keeps the
+ * order a screen reader takes: explain, choose, map, figures, data.
+ * tests/explore.test.tsx pins that order and is checksum-bound evidence in two
+ * phase records, so these layout assertions live in their own file.
  */
-test("the explore workspace holds the rail, the map and the reading panel", () => {
+test("the explore workspace holds the map and the reading panel, under the toolbar", () => {
   for (const locale of ["en", "fr"] as const) {
     const markup = renderToStaticMarkup(
       <ExploreView events={exploreFixtures} locale={locale} year={1990} />,
     );
-    assert.match(markup, /class="explore-workspace"/);
-    // Every column is a direct child of the workspace, because a grid area
-    // cannot place a box that is nested inside another one.
-    const workspace = markup.slice(markup.indexOf('class="explore-workspace"'));
-    for (const marker of ["explore-modes", "explore-window", "explore-canvas", "explore-reading", "explore-overlays"]) {
-      assert.match(workspace, new RegExp(`class="[^"]*${marker}[^"]*"`), `${marker} missing in ${locale}`);
+    const toolbar = markup.indexOf('class="explore-toolbar"');
+    const workspace = markup.indexOf('class="explore-workspace"');
+    assert.ok(toolbar >= 0 && toolbar < workspace);
+    // The controls are in the toolbar, before the workspace they change.
+    for (const marker of ["explore-modes", "explore-boundaries", "explore-window"]) {
+      const at = markup.indexOf(marker);
+      assert.ok(at > toolbar && at < workspace, `${marker} misplaced in ${locale}`);
     }
-    // The reading panel is a sibling of the map section, not a child of it.
-    assert.ok(markup.indexOf('class="explore-section explore-canvas"') < markup.indexOf("explore-reading"));
-    assert.ok(markup.indexOf("explore-reading") < markup.indexOf('id="explore-layers-heading"'));
+    // The map and the reading panel are siblings inside the workspace.
+    const inside = markup.slice(workspace, markup.indexOf('id="explore-data-heading"'));
+    assert.match(inside, /class="explore-section explore-canvas"/);
+    assert.match(inside, /class="explore-annual explore-reading"/);
+    assert.ok(inside.indexOf("explore-canvas") < inside.indexOf("explore-reading"));
     // The panel is named, so it is reachable as a landmark rather than an
     // unlabelled aside the reader has to guess the purpose of.
-    assert.match(markup, /aria-labelledby="explore-annual-heading"/);
+    assert.match(markup, /<aside class="explore-annual explore-reading" aria-labelledby="explore-reading-heading">/);
     assert.match(markup, /id="explore-annual-heading"/);
   }
 });

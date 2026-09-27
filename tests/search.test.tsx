@@ -42,8 +42,8 @@ test("Search exposes one field behind a labelled places or districts scope", () 
     assert.match(markup, /1984 to 2022/);
   }
   assert.match(places, /Prince George/);
-  assert.doesNotMatch(places, /Find a federal electoral district/);
-  assert.match(districts, /Find a federal electoral district/);
+  assert.doesNotMatch(places, /Find a federal riding/);
+  assert.match(districts, /Find a federal riding/);
   assert.match(districts, /href="\/en\/compare\?left=/);
   assert.doesNotMatch(districts, /<h2>Search places<\/h2>/);
 });
@@ -97,8 +97,9 @@ test("search coverage precedes controls and a missing record is a result with a 
   for (const locale of ["en", "fr"] as const) {
     for (const scope of ["places", "districts"] as const) {
       const markup = renderToStaticMarkup(<SearchPage locale={locale} scope={scope} query="not-a-place" />);
-      assert.ok(markup.indexOf('class="coverage-statement"') < markup.indexOf('<form'));
-      assert.match(markup, /class="evidence-legend"/);
+      assert.ok(markup.indexOf('class="coverage-note"') > 0 && markup.indexOf('class="coverage-note"') < markup.indexOf('<form'));
+      // No result carries a mark here, so there is no key to read.
+      assert.doesNotMatch(markup, /class="evidence-(legend|key)"/);
       assert.match(markup, /class="no-record-result"/);
       assert.match(markup, /<strong>– /);
       assert.match(markup, new RegExp(`href="${locale === "en" ? "/en/methods" : "/fr/methodes"}"`));

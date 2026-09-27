@@ -43,11 +43,11 @@
    "id": "five-required-display-fields",
    "title": "Both public routes retain the five required safety display fields and block deployment if one is absent",
    "status": "pass",
-   "reason": "Rendered route tests require source updated, last successful refresh, source agency, next scheduled refresh, and official emergency information in both English and French; deleting a field fails the validator. On 2026-09-23 wildfire-routes.test.tsx changed for a plain-language wording pass alone; its digest was refreshed, and this reason still holds.",
+   "reason": "Rendered route tests require source updated, last successful refresh, source agency, next scheduled refresh, and official emergency information in both English and French; deleting a field fails the validator. On 2026-09-23 wildfire-routes.test.tsx changed for a plain-language wording pass alone; its digest was refreshed, and this reason still holds. On 2026-09-23 wildfire-routes.test.tsx changed to require the not-live warning inside the visible notice, where it now sits, instead of in a coverage plate; the five-field assertions are unchanged, its digest was refreshed, and this reason still holds.",
    "evidence": [
     {
      "path": "tests/wildfire-routes.test.tsx",
-     "sha256": "d1341b3010b9f1a43241084fda56f15d61096f8febca60d99cb003b82ec7fd80"
+     "sha256": "4345730f89647d31796c76620a692e2b69e405e00fc612e2df3a24b06accc4ce"
     }
    ]
   },
@@ -55,7 +55,7 @@
    "id": "stale-25-hour-safe-state",
    "title": "At 25 hours without a successful refresh, the static route shows unavailable guidance and an agency link",
    "status": "pass",
-   "reason": "The stale-state contract begins after 24 hours, removes the derived illustrative summary, and retains official-agency guidance. The workflow test covers the stricter 25-hour case through the same persisted last-success state. On 2026-09-23 wildfire-routes.test.tsx changed for a plain-language wording pass alone; its digest was refreshed, and this reason still holds.",
+   "reason": "The stale-state contract begins after 24 hours, removes the derived illustrative summary, and retains official-agency guidance. The workflow test covers the stricter 25-hour case through the same persisted last-success state. On 2026-09-23 wildfire-routes.test.tsx changed for a plain-language wording pass alone; its digest was refreshed, and this reason still holds. On 2026-09-23 wildfire-routes.test.tsx changed to require the not-live warning inside the visible notice, where it now sits, instead of in a coverage plate; the stale-state assertions are unchanged, its digest was refreshed, and this reason still holds.",
    "evidence": [
     {
      "path": "tests/wildfire-workflow.test.mjs",
@@ -63,7 +63,7 @@
     },
     {
      "path": "tests/wildfire-routes.test.tsx",
-     "sha256": "d1341b3010b9f1a43241084fda56f15d61096f8febca60d99cb003b82ec7fd80"
+     "sha256": "4345730f89647d31796c76620a692e2b69e405e00fc612e2df3a24b06accc4ce"
     }
    ]
   },

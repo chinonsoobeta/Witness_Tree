@@ -3,7 +3,6 @@ import Link from "next/link";
 import { HomeSearch, ProvinceBar, SiteShell } from "@/components/site";
 import { ProvinceRecordList } from "@/components/site/ProvinceRecordList";
 import { CumulativeHeadline } from "@/components/site/CumulativeHeadline";
-import { CoverageStatement } from "@/components/policy/CoverageStatement";
 import { EvidenceMarks } from "@/components/policy/EvidenceMarks";
 import { PRODUCT_NAME } from "@/lib/domain";
 import { EXPLORE_PRODUCTION_LAYER, formatUnknownSharePercent, provinceSpanMeasurements } from "@/lib/explore";
@@ -35,13 +34,12 @@ export default function FrenchHome() {
 
     {/*
       The answer to the question in the h1, immediately under it.
-      It carries its own denominator, its own unmapped share and its own
-      refusal of the annual sum, so it does not lean on the standing
-      coverage banner below it to stay honest when it is read alone.
+      It carries its own denominator, its own unmapped share, its own
+      minimum and its own refusal of the annual sum, so it stays honest
+      when it is read alone.
     */}
     <CumulativeHeadline locale="fr" />
 
-    <CoverageStatement locale="fr"><p>Ces chiffres sont un minimum. Les satellites n’ont cartographié qu’une partie de chaque province, et le reste est traité comme inconnu, jamais comme zéro. Si quelque chose n’apparaît pas ici, cela ne veut pas dire que cela ne s’est pas produit.</p></CoverageStatement>
 
     {/* Voir la note sur app/en/page.tsx : une seule liste des quatre marques. */}
     <section className="content-section evidence-band">
@@ -55,15 +53,15 @@ export default function FrenchHome() {
       <ProvinceRecordList rows={SPAN_ROWS} locale="fr" unknownContexts={UNKNOWN_CONTEXTS} />
       <p><Link href="/fr/methodes#coverage-gap">Pourquoi ces superficies ne sont pas cartographiées et ce que nous en savons</Link></p>
       <p><Link className="btn btn--primary" href="/fr/explorer">Explorer le registre</Link></p>
-      <p><small>D’autres provinces s’ajouteront bientôt.</small></p>
+      <p><small>Le registre ne couvre que ces quatre provinces.</small></p>
     </section>
 
     <section className="content-section">
       <h2>Consulter le registre</h2>
       <div className="record-grid">
-        <article className="record-card"><p className="eyebrow">Composants</p><h3>Les preuves avant les chiffres</h3><p>Voyez comment chaque chiffre est présenté avec sa source et ce que nous ignorons.</p><Link href="/fr/composants">Ouvrir la galerie de composants</Link></article>
+        <article className="record-card"><p className="eyebrow">Comment lire</p><h3>Ce que signifient les marques</h3><p>Chaque chiffre indique son type de preuve, notre degré de certitude et la part cartographiée.</p><Link href="/fr/composants">Voir les marques et les étiquettes</Link></article>
         <article className="record-card"><p className="eyebrow">Méthodes</p><h3>Les définitions avant les chiffres</h3><p>Ce qui compte comme forêt, comment les chiffres sont calculés et quel est notre degré de certitude.</p><Link href="/fr/methodes">Lire les méthodes</Link></article>
-        <article className="record-card"><p className="eyebrow">État des données</p><h3>Données provinciales</h3><p>Téléchargez les chiffres provinciaux {provinceSpanReach("fr", "from")}, avec leurs sources et leurs limites.</p><Link href="/fr/donnees">Consulter la transparence des données</Link></article>
+        <article className="record-card"><p className="eyebrow">Données</p><h3>Télécharger les chiffres</h3><p>Téléchargez les chiffres provinciaux {provinceSpanReach("fr", "from")}, avec leurs sources et leurs limites.</p><Link href="/fr/donnees">Voir les téléchargements et les sources</Link></article>
       </div>
     </section>
 

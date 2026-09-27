@@ -53,12 +53,11 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
   const en = renderToStaticMarkup(
     <ExploreView events={exploreFixtures} locale="en" />,
   );
-  const listTable = renderToStaticMarkup(
+  const fixtureTable = renderToStaticMarkup(
     <ExploreView
       events={exploreFixtures}
       locale="en"
       mode="recorded-harvest"
-      presentation="list"
       data="table"
       year={2012}
     />,
@@ -68,7 +67,6 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
       events={exploreFixtures}
       locale="fr"
       mode="condition-recovery"
-      presentation="list"
       data="chart"
       year={1988}
     />,
@@ -140,10 +138,13 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
     "Condition and recovery",
   ])
     assert.match(en, new RegExp(label));
+  // The map is the only presentation; the list view was removed, so no link
+  // may offer it. The chart and the table stay the two data views.
   assert.match(en, /presentation=map&amp;data=chart/);
-  assert.match(en, /presentation=list&amp;data=chart/);
+  assert.doesNotMatch(en, /presentation=list/);
   assert.match(en, /presentation=map&amp;data=table/);
-  assert.match(en, /Boundary overlays/);
+  assert.match(en, /<details class="explore-boundaries"><summary>Boundaries<\/summary>/);
+  assert.match(en, /aria-label="Boundary overlays"/);
   for (const label of ["Watersheds", "Federal ridings", "Provincial ridings"])
     assert.match(en, new RegExp(label));
   // The reserve and treaty-area overlays were removed rather than shown as
@@ -182,19 +183,20 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
   // layer, not something a reader of the map can act on. It must not come back.
   assert.doesNotMatch(en, /Use ridings, not districts/);
   assert.doesNotMatch(fr, /Utilisez le terme circonscriptions, et non districts/);
+  assert.doesNotMatch(fixtureTable, /aria-label="List"/);
   // Recorded harvest reads the national harvest and fire series now, not the
   // fixtures: one row per province for the change year 2012, harvest and fire
   // in separate columns, and a link that opens the chart builder on those years.
-  assert.match(listTable, /aria-label="List"/);
-  assert.match(listTable, /<table/);
-  assert.equal((listTable.match(/scope="col"/g) ?? []).length, 4);
-  assert.equal((listTable.match(/scope="row"/g) ?? []).length, 4);
-  assert.match(listTable, /<th scope="col">Harvest \(ha\)<\/th><th scope="col">Fire \(ha\)<\/th>/);
-  assert.match(listTable, /<th scope="row">British Columbia<\/th><td>2012<\/td><td>174,306\.78<\/td><td>14,546\.16<\/td>/);
-  assert.match(listTable, /href="\/en\/data\/harvest-and-fire\?from=2012&amp;to=2012"/);
-  assert.doesNotMatch(listTable, /made-up example data/);
+  assert.match(fixtureTable, /<table/);
+  assert.equal((fixtureTable.match(/scope="col"/g) ?? []).length, 4);
+  assert.equal((fixtureTable.match(/scope="row"/g) ?? []).length, 4);
+  assert.match(fixtureTable, /<th scope="col">Harvest \(ha\)<\/th><th scope="col">Fire \(ha\)<\/th>/);
+  assert.match(fixtureTable, /<th scope="row">British Columbia<\/th><td>2012<\/td><td>174,306\.78<\/td><td>14,546\.16<\/td>/);
+  assert.match(fixtureTable, /href="\/en\/data\/harvest-and-fire\?from=2012&amp;to=2012"/);
+  assert.doesNotMatch(fixtureTable, /made-up example data/);
   assert.match(fr, /État et rétablissement/);
-  assert.match(fr, /La liste, le graphique et le tableau/);
+  assert.match(fr, /Le graphique et le tableau utilisent des données d’exemple/);
+  assert.match(fr, /<summary>Limites<\/summary>/);
   assert.match(fr, /Superpositions de limites/);
 
   const withOverlay = renderToStaticMarkup(
@@ -205,6 +207,7 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
     />,
   );
   assert.match(withOverlay, /Shown on the map/);
+  assert.match(withOverlay, /<summary>Boundaries · 1 shown<\/summary>/);
   // The active overlay's own control offers to remove it, and every other
   // link on the page carries the selection forward rather than dropping it.
   assert.match(withOverlay, /Hide<\/a>/);
@@ -214,7 +217,7 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
   }
 });
 
-test("Explore puts explanation and controls before the map, then layers and data views", () => {
+test("Explore puts explanation and controls before the map, then the reading panel and data views", () => {
   const en = renderToStaticMarkup(
     <ExploreView events={exploreFixtures} locale="en" year={1990} />,
   );
@@ -222,49 +225,59 @@ test("Explore puts explanation and controls before the map, then layers and data
     <ExploreView events={exploreFixtures} locale="fr" year={1990} />,
   );
   const orderedMarkers = [
+    'class="coverage-note"',
     "explore-note",
     "explore-modes",
+    "explore-boundaries",
     'id="explore-year-heading"',
     'id="explore-map-heading"',
-    'id="explore-layers-heading"',
+    'id="explore-reading-heading"',
     'id="explore-data-heading"',
+    'class="explore-more"',
   ];
   for (const markup of [en, fr]) {
     const positions = orderedMarkers.map((marker) => markup.indexOf(marker));
     assert.ok(positions.every((position) => position >= 0));
     assert.deepEqual(positions, [...positions].sort((a, b) => a - b));
-    assert.ok(markup.indexOf('class="explore-map"') < markup.indexOf('id="explore-layers-heading"'));
-    assert.ok(markup.indexOf("overlay-toggle") > markup.indexOf('class="explore-map"'));
+    // The boundary controls sit in the toolbar, before the map they change.
+    assert.ok(markup.indexOf("overlay-toggle") < markup.indexOf('class="explore-map"'));
   }
   assert.ok(
     en.indexOf("Per-cell detected loss,") >
-      en.indexOf('id="explore-map-heading"'),
+      en.indexOf('id="explore-reading-heading"'),
   );
   assert.ok(
     en.indexOf("Per-cell detected loss,") <
-      en.indexOf('id="explore-layers-heading"'),
+      en.indexOf('id="explore-data-heading"'),
   );
-  assert.match(en, /Real map, 1985–2022/);
-  assert.match(en, /Real province figures for harvest and fire, 1985–2022/);
+  // Only the chosen view's status is stated, under the toolbar.
+  assert.match(en, /<p class="explore-mode-status">Real map, 1985–2022/);
+  assert.match(
+    renderToStaticMarkup(<ExploreView events={exploreFixtures} locale="en" mode="recorded-harvest" />),
+    /<p class="explore-mode-status">[^<]*Real province figures for harvest and fire, 1985–2022/,
+  );
+  assert.match(
+    renderToStaticMarkup(<ExploreView events={exploreFixtures} locale="en" mode="condition-recovery" />),
+    /<p class="explore-mode-status">No real map yet\. The data view uses example data for 1988 only/,
+  );
   assert.doesNotMatch(en, /example data for 2012|example data for 2020/);
-  assert.match(en, /No real map yet\. The data view uses example data for 1988 only/);
   assert.equal((en.match(/<h2/g) ?? []).length, (fr.match(/<h2/g) ?? []).length);
 });
 
-test("list, chart, and table share one explanatory empty state", () => {
+test("chart and table share one explanatory empty state", () => {
   // Condition and recovery is the one mode still on example data, which exists
   // for 1988 only, so 1990 is empty in every view.
   const empty =
     "There is no example data for Condition and recovery in 1990. The nearest year with example data is 1988.";
   const view = (locale: "en" | "fr", mode: "condition-recovery" | "wildfire", data: "chart" | "table") => renderToStaticMarkup(
-    <ExploreView events={exploreFixtures} locale={locale} mode={mode} presentation="list" data={data} year={1990} />,
+    <ExploreView events={exploreFixtures} locale={locale} mode={mode} data={data} year={1990} />,
   );
   const chart = view("en", "condition-recovery", "chart");
   const table = view("en", "condition-recovery", "table");
   assert.equal((chart.match(new RegExp(empty, "g")) ?? []).length, 1);
   assert.equal((table.match(new RegExp(empty, "g")) ?? []).length, 1);
-  assert.doesNotMatch(chart, /class="explore-list"|class="explore-chart"/);
-  assert.doesNotMatch(table, /class="explore-list"|class="explore-table"/);
+  assert.doesNotMatch(chart, /class="explore-chart"/);
+  assert.doesNotMatch(table, /class="explore-table"/);
   assert.match(view("fr", "condition-recovery", "chart"), /L’année la plus proche avec des données d’exemple est 1988/);
   // Wildfire has real figures for every year from 1985, so it is never empty.
   const wildfire = view("en", "wildfire", "chart");
@@ -272,32 +285,32 @@ test("list, chart, and table share one explanatory empty state", () => {
   assert.match(wildfire, /class="explore-bar explore-bar--fire"/);
 });
 
-test("map/list and chart/table retain evidence, confidence, coverage, provenance, and Unknown is never zero", () => {
+test("the map and chart/table retain evidence, confidence, coverage, provenance, and Unknown is never zero", () => {
   const mapChart = renderToStaticMarkup(
     <ExploreView
       events={exploreFixtures}
       locale="en"
       mode="forest-change"
-      presentation="map"
       data="chart"
     />,
   );
-  const listChart = renderToStaticMarkup(
+  const fixtureChart = renderToStaticMarkup(
     <ExploreView
       events={exploreFixtures}
       locale="en"
       mode="recorded-harvest"
-      presentation="list"
       data="chart"
       year={2012}
     />,
   );
-  const listTable = renderToStaticMarkup(
+  const harvestTable = renderToStaticMarkup(
+    <ExploreView events={exploreFixtures} locale="en" mode="recorded-harvest" data="table" year={2012} />,
+  );
+  const fixtureTable = renderToStaticMarkup(
     <ExploreView
       events={exploreFixtures}
       locale="en"
       mode="condition-recovery"
-      presentation="list"
       data="table"
       year={1988}
     />,
@@ -308,20 +321,21 @@ test("map/list and chart/table retain evidence, confidence, coverage, provenance
   // read from the span release rather than the fixed 2020-2022 aggregate.
   assert.match(mapChart, /class="explore-bar-label">0\.58%<\/span>/);
   const aggregateSpan = renderToStaticMarkup(
-    <ExploreView events={exploreFixtures} locale="en" mode="forest-change" presentation="map" data="chart" year={2022} fromYear={2020} />,
+    <ExploreView events={exploreFixtures} locale="en" mode="forest-change" data="chart" year={2022} fromYear={2020} />,
   );
   // The 2020-2022 span is the admitted aggregate, to the hectare.
   assert.match(aggregateSpan, /class="explore-bar-label">1\.39%<\/span>/);
   assert.doesNotMatch(mapChart, /<svg[^>]*class="explore-chart"/);
-  assert.match(listChart, /class="explore-bar-name">British Columbia, Harvest \(ha\)<\/span><span class="explore-bar-label">174,307<\/span>/);
-  assert.match(listChart, /class="explore-bar explore-bar--harvest"/);
+  assert.match(fixtureChart, /class="explore-bar-name">British Columbia, Harvest \(ha\)<\/span><span class="explore-bar-label">174,307<\/span>/);
+  assert.match(fixtureChart, /class="explore-bar explore-bar--harvest"/);
   assert.match(mapChart, /aria-label="Forest loss map"/);
-  assert.match(listChart, /Source attribution/);
-  assert.match(listChart, /national harvest and wildfire change-year records/);
-  assert.match(listTable, /No official public record/);
-  assert.match(listTable, /Coverage/);
-  assert.match(listTable, /Source attribution/);
-  assert.equal(/>0<|caused by|logging|deforestation/i.test(listTable), false);
+  assert.match(fixtureChart, /Source attribution/);
+  assert.match(fixtureChart, /national harvest and wildfire change-year records/);
+  assert.match(harvestTable, /national harvest and wildfire change-year records/);
+  assert.match(fixtureTable, /No official public record/);
+  assert.match(fixtureTable, /Coverage/);
+  assert.match(fixtureTable, /Source attribution/);
+  assert.equal(/>0<|caused by|logging|deforestation/i.test(fixtureTable), false);
 });
 test("Explore uses the exact PMTiles release with a GeoJSON/SVG fallback on map routes", async () => {
   const { readFile } = await import("node:fs/promises");
@@ -366,17 +380,18 @@ test("Explore uses the exact PMTiles release with a GeoJSON/SVG fallback on map 
   assert.match(map, /role=\{state === "error" \? "alert" : "status"\}/);
   assert.match(map, /const provinceAvailable = mode === "forest-change";/);
   assert.match(map, /unavailableYear/);
-  assert.match(map, /spanRows\.map/);
+  assert.match(map, /spanRows\.find\(\(row\) => row\.id === feature\.properties\.province_id\)/);
   assert.match(map, /setPaintProperty\(PROVINCE_FILL_LAYER_ID, "fill-color", provinceFillColour\(fromYear, year\)\)/);
-  assert.match(map, /Detected loss \(%\)/);
+  assert.match(view, /Detected loss \(%\)/);
   assert.match(style, /phase2_province_loss_2020_2022/);
   assert.match(style, /\.pmtiles/);
   assert.match(
     style,
     /101561ed48f511a3e65676fa084ee517c4fa722e14f4a3c844c698b247238505/,
   );
-  assert.match(view, /presentation === "map" \? \(/);
   assert.match(view, /<ExploreMapClient/);
+  assert.match(view, /\/en\/search\?scope=districts/);
+  assert.match(view, /\/fr\/recherche\?scope=districts/);
   assert.match(view, /year=\{activeYear\}/);
   assert.match(view, /fromYear=\{activeFrom\}/);
   // District figures are resolved for the span the server was asked for, and
@@ -384,7 +399,8 @@ test("Explore uses the exact PMTiles release with a GeoJSON/SVG fallback on map 
   assert.match(view, /ridingMeasurements=\{servedMeasurements\}/);
   assert.match(view, /const spanIsServed = activeYear === year && activeFrom === routeFrom/);
   for (const route of [enRoute, frRoute]) {
-    assert.equal((route.match(/<FederalDistrictFinder/g) ?? []).length, 1);
+    // The district finder lives on the search page; Explore links to it.
+    assert.doesNotMatch(route, /<FederalDistrictFinder/);
     assert.doesNotMatch(route, /PlaceFinder/);
     assert.match(route, /<ExploreView/);
     assert.match(route, /ridingMeasurements=\{ridingIntervalMeasurements\(interval\)\}/);
@@ -413,20 +429,29 @@ test("map failures retain diagnostics, retry, and a reachable patch zoom", async
   assert.match(map, /errorTimeout/);
   assert.match(map, /retryMap/);
   assert.match(map, /Retry the interactive map/);
-  assert.match(map, /Zoom to patches/);
-  assert.match(map, /zoom: EXPLORE_PER_CELL_LAYER\.minZoom/);
-  assert.match(map, /center: map\.getCenter\(\)/);
-  assert.match(map, /view\.zoom >= EXPLORE_PER_CELL_LAYER\.minZoom/);
-  assert.match(map, /disabled=\{patchZoomDisabledReason !== null\}/);
-  assert.match(map, /role="tooltip"/);
-  assert.match(map, /aria-describedby=\{patchZoomDisabledReason \? PATCH_ZOOM_REASON_ID : undefined\}/);
+  assert.match(map, /Zoom in to see the patches/);
+  assert.match(map, /zoom: PATCH_TARGET_ZOOM/);
+  assert.match(map, /const PATCH_READABLE_ZOOM = 9;/);
+  assert.match(map, /const PATCH_TARGET_ZOOM = 10;/);
+  // The zoom stays where the reader is when that is inside a province, and
+  // otherwise goes to the nearest province's forest rather than the empty
+  // middle of the four-province view.
+  assert.match(map, /center: patchZoomCentre\(map\.getCenter\(\)\)/);
+  assert.match(map, /const PATCH_FOCUS: Readonly<Record<ExploreMapView, Position>>/);
+  // The patch zoom sits in the legend beside the patch key, and is offered
+  // only while patches exist and the map is zoomed out past them.
+  assert.match(map, /const patchZoomOffered = perCellYears !== null && view !== null && view\.zoom < PATCH_READABLE_ZOOM/);
+  // The offer sits on the map itself, where the empty ground is.
+  assert.match(map, /patchZoomOffered \? \(\s*<div className="explore-map-patch-hint">[\s\S]*?<button type="button" className="explore-map-patch-zoom" onClick=\{zoomToPatches\}>/);
+  // Every mode draws the province outlines, so no mode opens on an empty map.
+  assert.match(map, /else layers\.push\(provinceOutlineLayer\(\)\)/);
+  assert.doesNotMatch(map, /if \(!available\) return;\s+const controller/);
   assert.match(map, /className="explore-map-control-cluster"/);
   assert.doesNotMatch(map, /source === "pmtiles" &&\s*perCellArchive &&\s*view &&\s*view\.zoom/);
   assert.doesNotMatch(map, /framingViews|framing views only|servent seulement au cadrage/);
 
   const panel = css.match(/\.explore-map-layer-panel \{[\s\S]*?\n\}/)?.[0] ?? "";
   const controls = css.match(/\.explore-map-controls \{[\s\S]*?\n\}/)?.[0] ?? "";
-  const list = css.match(/\.explore-map-layer-list \{[\s\S]*?\n\}/)?.[0] ?? "";
   /*
    * The floating strip holds only the scale and the zoom cluster now. The
    * layer panel and the province chooser left it for normal flow, because
@@ -442,7 +467,11 @@ test("map failures retain diagnostics, retry, and a reachable patch zoom", async
   assert.match(map, /<\/div>\n\s*\{layerPanel\}\n\s*<\/div>/);
   assert.doesNotMatch(map, /className="explore-map"[\s\S]*?className="explore-map-layer-panel"/);
   assert.match(map, /className="explore-map-layer-panel"[\s\S]*tabIndex=\{0\}[\s\S]*role="region"/);
-  assert.match(map, /className="explore-map-patch-control"[\s\S]*className="[^"]*explore-map-fullscreen-button"[\s\S]*className="explore-map-zoom"/);
+  assert.match(map, /className="[^"]*explore-map-fullscreen-button"[\s\S]*className="explore-map-zoom"/);
+  // The legend under the map is the only one: no second copy of the keys or
+  // the figures table is drawn below it.
+  assert.equal((map.match(/className="explore-map-legend/g) ?? []).length, 2);
+  assert.doesNotMatch(map, /<table/);
   assert.match(panel, /position: static/);
   assert.match(panel, /display: flex/);
   assert.match(panel, /flex-wrap: wrap/);
@@ -450,15 +479,12 @@ test("map failures retain diagnostics, retry, and a reachable patch zoom", async
   assert.match(controls, /inset-block-end: 12px/);
   assert.match(controls, /display: grid/);
   assert.match(controls, /grid-template-columns: minmax\(0, 1fr\) auto/);
-  assert.match(list, /display: flex/);
-  assert.match(list, /flex-wrap: wrap/);
   // Nothing that grows with content may be taken out of flow over the frame.
   const chooser = css.match(/\.province-bar--map \{[\s\S]*?\n\}/)?.[0] ?? "";
   assert.match(chooser, /position: static/);
   assert.doesNotMatch(chooser, /position: absolute/);
   assert.doesNotMatch(panel, /position: absolute/);
   assert.match(css, /\.explore-map-stack \{[\s\S]*?flex-direction: column/);
-  assert.match(css, /\.explore-map-patch-tooltip \{[\s\S]*?inset-inline: 0;[\s\S]*?width: auto/);
 });
 
 test("the map keeps one four-province camera envelope and the forest map alive across intervals", async () => {
@@ -536,7 +562,8 @@ test("playback swaps only the patch layer, starts at 1985, and stops visibly", a
   assert.doesNotMatch(map, /map\.removeSource\(EXPLORE_PER_CELL/);
   assert.match(map, /map\.addSource\(EXPLORE_PER_CELL_SPAN_LAYER\.sourceId, perCellSource\(\)\)/);
   assert.match(map, /\[mapReady, perCellKey, cause, overlayKey\]/);
-  assert.match(map, /\[available, provinceAvailable, overlayKey, retryNonce\]/);
+  // The map is rebuilt only when a mode changes what it can draw, never for a year.
+  assert.match(map, /\[patchCapable, provinceAvailable, overlayKey, retryNonce\]/);
   assert.doesNotMatch(
     map,
     /\[available, provinceAvailable, perCellArchive, overlayKey, cause\]/,
@@ -629,7 +656,6 @@ test("the year control is a real, shareable control rather than a decorative sli
       events={exploreFixtures}
       locale="en"
       mode="wildfire"
-      presentation="list"
       data="table"
       year={1995}
     />,
@@ -643,7 +669,7 @@ test("the year control is a real, shareable control rather than a decorative sli
 
   // The other selections survive a submit, so changing the year does not silently reset them.
   assert.match(en, /<input type="hidden" name="mode" value="wildfire"\/>/);
-  assert.match(en, /<input type="hidden" name="presentation" value="list"\/>/);
+  assert.match(en, /<input type="hidden" name="presentation" value="map"\/>/);
   assert.match(en, /<input type="hidden" name="data" value="table"\/>/);
 
   // Every other control carries the year forward, so no link discards it.
@@ -767,20 +793,27 @@ test("switching language keeps the selected year", async () => {
   assert.match(href, /mode=wildfire/);
 });
 
-test("Explore shows its coverage caveat and shaped evidence legend before the map in both locales", () => {
+test("Explore shows its coverage caveat before the map and its evidence key beside the figures in both locales", () => {
   for (const locale of ["en", "fr"] as const) {
     const markup = renderToStaticMarkup(<ExploreView events={exploreFixtures} locale={locale} />);
-    const coverage = markup.indexOf('class="coverage-statement"');
-    const legend = markup.indexOf('class="evidence-legend"');
+    const coverage = markup.indexOf('<details class="coverage-note">');
     const map = markup.indexOf('class="explore-map"');
-    assert.ok(coverage >= 0 && coverage < legend && legend < map);
+    const reading = markup.indexOf('id="explore-reading-heading"');
+    const key = markup.indexOf('class="evidence-key"');
+    assert.ok(coverage >= 0 && coverage < map && map < reading && reading < key);
     assert.match(markup, /blank area|zone vide/);
-    for (const glyph of ["■", "●", "▲", "○"]) assert.ok(markup.includes(glyph));
-    // Patch keys are swatches alone: the map draws no glyphs, so the legend
-    // must not promise any.
-    assert.match(markup, /loss-swatch patch-harvest[^>]*><\/i><\/span>/);
-    assert.match(markup, /loss-swatch patch-fire[^>]*><\/i><\/span>/);
-    assert.match(markup, /loss-swatch patch-none[^>]*><\/i><\/span>/);
+    // The key names only the marks the reading panel uses.
+    const keyMarkup = markup.slice(key, markup.indexOf("</p>", key));
+    assert.equal((keyMarkup.match(/class="evidence-key-item"/g) ?? []).length, 2);
+    assert.match(keyMarkup, /mark-glyph--satellite/);
+    assert.match(keyMarkup, /mark-glyph--unknown/);
+    assert.doesNotMatch(markup, /class="evidence-legend"/);
     assert.doesNotMatch(markup, /map-legend-shape/);
   }
+  // Patch keys are swatches alone: the map draws no glyphs, so the legend
+  // must not promise any. The legend renders once the map is ready, so this
+  // is read from the client source rather than the server markup.
+  const client = readFileSync(new URL("../components/explore/ExploreMapClient.tsx", import.meta.url), "utf8");
+  assert.match(client, /<i className=\{`loss-swatch \$\{className\}`\} \/>/);
+  for (const patch of ["patch-harvest", "patch-fire", "patch-none"]) assert.match(client, new RegExp(`symbol\\("${patch}"\\)`));
 });

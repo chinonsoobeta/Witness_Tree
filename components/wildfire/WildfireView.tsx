@@ -1,5 +1,3 @@
-import { CoverageStatement } from "@/components/policy/CoverageStatement";
-import { EvidenceLegend } from "@/components/policy/EvidenceLegend";
 import { PRODUCT_NAME, type Locale } from "@/lib/domain";
 
 const AGENCIES = [
@@ -91,16 +89,15 @@ export function WildfireView({ locale }: WildfireViewProps) {
         <h1>{copy.title}</h1>
       </header>
 
-      <CoverageStatement locale={locale}><p>{copy.context}</p></CoverageStatement>
       <aside className="notice notice--alert wildfire-disclaimer" role="note">
         <span className="wildfire-disclaimer-symbol" aria-hidden="true">△</span>
         <div>
           <h2>{locale === "en" ? "Use official emergency instructions" : "Suivez les consignes officielles des services d’urgence"}</h2>
+          <p>{copy.context}</p>
           <p><strong>{copy.urgent}</strong></p>
           <a href="#wildfire-directory-heading">{copy.emergencyValue}</a>
         </div>
       </aside>
-      <EvidenceLegend locale={locale} />
 
       <section className="content-section" aria-labelledby="wildfire-status-heading">
         <h2 id="wildfire-status-heading">{copy.status}</h2>

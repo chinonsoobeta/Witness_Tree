@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "witness-tree/deployed-map-render-break-glass/1",
+  "status": "gate-debt-not-an-observation",
+  "siteObservationOwed": true,
+  "published": false,
+  "productionEligible": false,
+  "admissionClaim": false,
+  "productionAdmission": false,
+  "allChecksPassed": false,
+  "reason": "Commit 826f897e (\"Stop Explore's patch modes from opening on an empty map\") changed components/explore/ExploreMapClient.tsx after Sites version 42 was observed on 2026-09-23, so data/deployed-map-render-evidence-2026-09-23-v42.json no longer describes the client the Site would serve, and the gate correctly went stale. No preview measurement is possible: the ChatGPT Sites control plane exposes no preview URL for this project, and its only deployment operation publishes to production. That leaves the same circle as on 2026-09-19: OPERATIONS_HANDBOOK section 6.1 requires CI green on the exact commit being deployed, this gate is what holds CI red, and the measurement that would clear it can only be taken from a deployment. This record bridges that gap so PR #183 can merge with main and main can be redeployed. Nothing was measured. The Site observation is owed and will be taken against the live Site immediately after the next production deploy, at which point this record is deleted and replaced by that observation.",
+  "authorizedBy": "Chinonso Obeta, accountable owner",
+  "authorizedAt": "2026-09-26",
+  "settleBy": "2026-10-03",
+  "sources": [
+    {
+      "path": "components/explore/ExploreMapClient.tsx",
+      "sha256": "2a578f042f69e4bdbec490654f8c015aa0222cd268a55a2585f3b73f10fd83d9"
+    }
+  ]
+}

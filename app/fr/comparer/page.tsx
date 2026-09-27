@@ -1,5 +1,4 @@
 import { CoverageStatement } from "@/components/policy/CoverageStatement";
-import { EvidenceLegend } from "@/components/policy/EvidenceLegend";
 import type { Metadata } from "next";
 import {
   FederalRidingPicker,
@@ -45,7 +44,6 @@ export default async function ComparerPage({
           <p className="masthead-note">Chiffres pour 2021–2022, ajustés selon la zone cartographiée.</p>
         </header>
         <CoverageStatement locale="fr"><p>Vérifiez quelle part de chaque circonscription a été cartographiée avant de comparer les chiffres : une perte plus faible peut simplement signifier qu’une plus petite partie a été cartographiée. Les circonscriptions sans données complètes sont exclues du classement, jamais comptées comme zéro. Les parts portent seulement sur la forêt cartographiée.</p></CoverageStatement>
-        <EvidenceLegend locale="fr" />
         <FederalRidingPicker
           rows={federalRidingComparison.comparisonRows}
           locale="fr"
