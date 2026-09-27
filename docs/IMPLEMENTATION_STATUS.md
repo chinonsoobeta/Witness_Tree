@@ -60,11 +60,12 @@ the whole record for search in
 then its ridings), and every span for
 the map's cities-and-towns layer, built by
 `scripts/build-census-subdivision-overlay-tiles.mjs`. That layer's tiles and
-per-province figure files are planned as their own immutable release
-([record](../data/census-subdivision-overlay-release.json)) and
-`npm run check:census-subdivision-overlay` fails until
-`scripts/publish-census-subdivision-overlay-release.mjs` has uploaded them and read
-them back. Reserves, settlements and treaty or agreement lands get no figures of
+per-province figure files are their own immutable release
+([record](../data/census-subdivision-overlay-release.json)), uploaded with the
+owner's approval on 2026-09-27 and read back exactly from S3 and CloudFront
+([readback](../data/census-subdivision-overlay-release-readback.json)).
+`npm run check:census-subdivision-overlay` holds the loader's pinned URLs to that
+record and fails without the readback. Reserves, settlements and treaty or agreement lands get no figures of
 their own; their land counts in the region totals.
 
 The source-admitted watershed geometry is NRCan's national Water Survey of Canada
