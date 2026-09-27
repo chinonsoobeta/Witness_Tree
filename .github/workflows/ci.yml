@@ -140,6 +140,7 @@ jobs:
       - run: npm run check:phase4-condition-recovery-v2
       - run: npm run check:phase4-condition-recovery-cause-and-check
       - run: npm run check:phase4-condition-recovery-explore
+      - run: npm run check:harvest-fire-province-series
       - run: npm run check:source-candidates
       - run: npm run check:bc-forest-tenure-foi-catalogue-response
       - run: npm run check:archive-direct-mfa-runners

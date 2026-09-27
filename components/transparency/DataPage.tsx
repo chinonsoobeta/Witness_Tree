@@ -1,6 +1,7 @@
 import { CoverageStatement } from "@/components/policy/CoverageStatement";
 import { EvidenceLegend } from "@/components/policy/EvidenceLegend";
 import { colon, formatYearRangeKey, type Locale } from "@/lib/domain";
+import { HARVEST_FIRE_ROUTES } from "@/lib/harvest-fire";
 import { SourceCurrency } from "./SourceCurrency";
 import {
   PROVINCE_BULK_TIME_RANGE,
@@ -30,6 +31,7 @@ const COPY = {
     spanManifest: "Open the span download manifest",
     comparison: "Compare the values with official harvest statistics",
     harvestVolume: "BC harvest volume and allowable annual cut",
+    harvestFire: "Harvest and fire by province, 1985 to 2022: build a chart and download it",
     releases: "Read the release notes and citation format",
     limitsTitle: "Limits to understand first",
     limits:
@@ -78,6 +80,7 @@ const COPY = {
     spanManifest: "Ouvrir le manifeste du téléchargement par période",
     comparison: "Comparer les valeurs aux statistiques officielles sur la récolte",
     harvestVolume: "Volume récolté et possibilité annuelle de coupe en C.-B.",
+    harvestFire: "Récolte et feu par province, de 1985 à 2022 : créer un graphique et le télécharger",
     releases: "Lire les notes de version et le format de citation",
     limitsTitle: "Limites à comprendre d’abord",
     limits:
@@ -140,6 +143,9 @@ export function DataPage({ locale }: Readonly<{ locale: Locale }>) {
           </li>
           <li className="card card--lift">
             <a href={locale === "en" ? "/en/data/bc-harvest-volume" : "/fr/donnees/volume-recolte-bc"}>{copy.harvestVolume}</a>
+          </li>
+          <li className="card card--lift">
+            <a href={HARVEST_FIRE_ROUTES[locale]}>{copy.harvestFire}</a>
           </li>
           <li className="card card--lift">
             <a href={locale === "en" ? "/en/releases" : "/fr/versions"}>{copy.releases}</a>

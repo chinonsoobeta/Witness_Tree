@@ -12,6 +12,7 @@ export const PUBLIC_LOCALE_ROUTE_PAIRS = [
   { en: "/en/data", fr: "/fr/donnees" },
   { en: "/en/data/official-harvest-comparison", fr: "/fr/donnees/comparaison-recolte-officielle" },
   { en: "/en/data/bc-harvest-volume", fr: "/fr/donnees/volume-recolte-bc" },
+  { en: "/en/data/harvest-and-fire", fr: "/fr/donnees/recolte-et-incendies" },
   { en: "/en/wildfire", fr: "/fr/incendies" },
   { en: "/en/about", fr: "/fr/a-propos" },
   { en: "/en/account", fr: "/fr/compte" },

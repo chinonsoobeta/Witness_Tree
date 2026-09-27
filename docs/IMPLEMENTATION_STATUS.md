@@ -120,6 +120,30 @@ admitted and owner reviewed, so the mode stays empty. Checked by
 `npm run check:phase4-condition-recovery-explore`. The French strings are drafts
 awaiting bilingual review. The view itself is a separate change.
 
+### Harvest and fire by province
+
+On 2026-09-25 the owner decided to publish the four provincial harvest and fire
+series and to allow multi-year totals in that view only. See
+[the decision record](HARVEST_FIRE_SERIES_DECISION.md). The series is
+[the harvest and fire record](../data/harvest-fire-province-annual-series.json),
+built by `scripts/build-harvest-fire-province-series.mjs` from the four WP2
+provincial annual-series files and checked by
+`npm run check:harvest-fire-province-series`, which rebuilds it byte for byte
+when the data root is mounted. It holds harvest and fire cells per province for
+1985 to 2022; 1984 is Unknown, and each province's unmapped part is Unknown and
+equals the province span release's unmapped cells.
+
+The Data page "Harvest and fire by province" (`/en/data/harvest-and-fire`,
+`/fr/donnees/recolte-et-incendies`) builds a chart per province from the page
+address: provinces, first and last year, single, five-year, ten-year or whole
+span intervals, a shared or per-chart scale, and a table view. A reader can
+download each chart as a PNG, drawn in the browser with its flag, notes and
+sources, and the rows on screen as CSV. The Explore "Recorded harvest" and
+"Wildfire" modes now show the same figures for the selected years in place of
+example data, with a link to the page. The series is not expert reviewed, not a
+formal release and not production eligible; the French strings are drafts
+awaiting bilingual review.
+
 ## Other formal phase counts
 
 Version 2.1 does not assign Phase 3 a cumulative percentage. Its five literal published exit criteria are nonetheless gated and counted, at 4/5 with moderated bilingual usability testing owner-blocked; that count is not a maturity score and does not mean the phase is four fifths complete. Its historical checkpoint records four completed technical-foundation evidence groups and one execution-ready, empty external-checkpoint envelope; that shorthand is not a Phase 3 exit result or a production-readiness measure.

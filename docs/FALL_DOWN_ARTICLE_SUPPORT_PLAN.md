@@ -21,7 +21,9 @@ The site's publication discipline is not negotiable by this plan. Four rules
 bind every row any package adds:
 
 1. Annual intervals may not be summed. The province aggregate is one fixed
-   window and it ignores the year control.
+   window and it ignores the year control. On 2026-09-25 the owner relaxed
+   this for the harvest and fire view only, where each cell carries one change
+   year per product; see [the harvest and fire decision](HARVEST_FIRE_SERIES_DECISION.md).
 2. Unknown is never zero-filled and never proxy-imputed.
 3. Coverage is graded per row, and an ungraded row may not be published.
 4. Area measured from imagery and volume reported by an administrator are two
