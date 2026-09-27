@@ -30,9 +30,20 @@ test("methodology states the required definitions, matching and neutral limits",
   assert.match(exploreTypes, /EXPLORE_DEFAULT_YEAR = EXPLORE_YEAR_MAX/);
   assert.match(exploreTypes, /EXPLORE_YEAR_MAX = 2022/);
   assert.match(page, /fire; recorded harvest; recorded insect or disease disturbance; other recorded intervention; then detected change with no matching record/);
-  assert.match(page, /How often detected changes match provincial records is not available yet/);
-  assert.match(page, /No provincial dataset has been approved for processing/);
-  assert.match(page, /correspondent aux registres provinciaux n’est pas encore disponible/i);
+  // The matching results come from the run's own record, one methods file per
+  // language, and say the run is admitted without an outside review.
+  const [methodsEn, methodsFr] = await Promise.all([
+    read("../lib/phase4/methods-matching-en.ts"),
+    read("../lib/phase4/methods-matching-fr.ts"),
+  ]);
+  assert.match(page, /provincialMatchingTextEn\(\)/);
+  assert.match(page, /provincialMatchingTextFr\(\)/);
+  for (const methods of [methodsEn, methodsFr]) assert.match(methods, /data\/phase4-provincial-matching-report\.json/);
+  assert.match(methodsEn, /Match rate: \$\{pct\(r\.matchRate\)\}/);
+  assert.match(methodsEn, /Non-match-reason distribution/);
+  assert.match(methodsEn, /no outside provincial review took place/);
+  assert.match(methodsFr, /Répartition des motifs de non-appariement/);
+  assert.match(methodsFr, /aucun examen provincial externe n’a eu lieu/);
 });
 
 test("methodology publishes predecessor VLCE accuracy with its VLCE2 non-applicability boundary", async () => {

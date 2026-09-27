@@ -4,6 +4,7 @@ import { deepStrictEqual } from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { readScopeDecision } from "./phase-scope-decision.mjs";
 
 /**
  * These are the source-ledger facts named by Phase 1 of the implementation
@@ -51,6 +52,15 @@ export const OPTIONAL_ROW_IDS = [
   "on-fri"
 ];
 const DEFAULT_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+/*
+ * The owner's scope decision of 2026-09-26 withdraws the four reserve and treaty
+ * rows from the Phase 1 core, because Witness Tree will not publish that
+ * geography. Only these four may be withdrawn, and only while the decision
+ * names them. A withdrawn row stays in the ledger and the audit, is never
+ * admitted, and no longer counts toward core completion.
+ */
+export const WITHDRAWABLE_ROW_IDS = ["indian-reserves", "first-nation-reserves", "historic-treaties", "modern-treaties"];
+const CORE_CONTRACT_ROW_COUNT = 22;
 const DEFAULT_OPTIONAL_ENHANCEMENTS = JSON.parse(readFileSync(path.join(DEFAULT_ROOT, "data/phase1-optional-enhancements.json"), "utf8"));
 
 function assertCondition(condition, message) {
@@ -174,7 +184,7 @@ function classifyRows(optionalEnhancements, expectedIds) {
  * existing raw-evidence score: a true coarser proof flag cannot fill in an
  * absent licence, URL, version, attribution, or modification notice.
  */
-export function validatePhase1SourceLedgerFieldAudit(audit, ledger, inventory, root = DEFAULT_ROOT, optionalEnhancements = DEFAULT_OPTIONAL_ENHANCEMENTS) {
+export function validatePhase1SourceLedgerFieldAudit(audit, ledger, inventory, root = DEFAULT_ROOT, optionalEnhancements = DEFAULT_OPTIONAL_ENHANCEMENTS, decision = readScopeDecision(root)) {
   assertCondition(audit && audit.schemaVersion === 1, "Field audit must be schema-versioned.");
   assertCondition(ALLOWED_STATUSES.has(audit.status), "Field audit has an invalid status.");
   assertCondition(audit.asOf === "2026-08-27", "Field audit must use the current evidence date 2026-08-27.");
@@ -187,8 +197,11 @@ export function validatePhase1SourceLedgerFieldAudit(audit, ledger, inventory, r
   assertCondition(expectedRows.length === 31, "The authoritative inventory must contain exactly 31 production rows.");
   const expectedIds = expectedRows.map(({ id }) => id);
   const optionalIds = classifyRows(optionalEnhancements, expectedIds);
-  const coreIds = expectedIds.filter((id) => !optionalIds.has(id));
-  assertCondition(coreIds.length === 22, "Version 2.1 must retain exactly 22 Phase 1 core rows.");
+  const withdrawnIds = new Set(decision.withdrawnLedgerRows);
+  for (const id of withdrawnIds) assertCondition(WITHDRAWABLE_ROW_IDS.includes(id) && expectedIds.includes(id) && !optionalIds.has(id), `Ledger row ${id} may not be withdrawn from the Phase 1 core.`);
+  const coreIds = expectedIds.filter((id) => !optionalIds.has(id) && !withdrawnIds.has(id));
+  const coreRequired = CORE_CONTRACT_ROW_COUNT - withdrawnIds.size;
+  assertCondition(coreIds.length === coreRequired, "Version 2.1 must retain its 22 Phase 1 core rows less those the owner's scope decision withdraws.");
   assertCondition(ledger.entries.length === expectedIds.length, "The canonical production ledger must contain all 31 rows.");
   exactIds(ledger.entries.map(({ id }) => id), expectedIds, "Canonical production ledger IDs");
   exactIds(audit.rows?.map(({ id }) => id), expectedIds, "Field audit IDs");
@@ -207,8 +220,9 @@ export function validatePhase1SourceLedgerFieldAudit(audit, ledger, inventory, r
     assertCondition(row.canonicalEvidenceState === ledgerRow.evidenceState, `Field audit row ${row.id} has stale evidence state.`);
     sameReferences(row.canonicalEvidenceRefs, ledgerRow.evidenceRefs, `Field audit row ${row.id} evidence references`);
     assertCondition(row.canonicalProductionEligible === ledgerRow.productionEligible && row.canonicalProductionAdmission === ledgerRow.proof?.productionAdmission, `Field audit row ${row.id} has stale production eligibility or admission.`);
-    const expectedClassification = optionalIds.has(row.id) ? "optional" : "core";
-    assertCondition(row.classification === expectedClassification, `Field audit row ${row.id} must be classified as ${expectedClassification} by the optional-enhancement register.`);
+    const expectedClassification = optionalIds.has(row.id) ? "optional" : withdrawnIds.has(row.id) ? "withdrawn" : "core";
+    assertCondition(row.classification === expectedClassification, `Field audit row ${row.id} must be classified as ${expectedClassification} by the optional-enhancement register and the scope decision.`);
+    if (expectedClassification === "withdrawn") assertCondition(ledgerRow.productionEligible === false && ledgerRow.proof?.productionAdmission !== true, `Withdrawn row ${row.id} can never be admitted.`);
     assertCondition(row.fields && typeof row.fields === "object" && !Array.isArray(row.fields), `Field audit row ${row.id} needs field statuses.`);
     assertCondition(Object.keys(row.fields).length === REQUIRED_FIELDS.length && REQUIRED_FIELDS.every((field) => Object.hasOwn(row.fields, field)), `Field audit row ${row.id} must show every required field exactly once.`);
 
@@ -228,14 +242,14 @@ export function validatePhase1SourceLedgerFieldAudit(audit, ledger, inventory, r
   const optionalCompleteRowCount = audit.rows.filter((row) => row.classification === "optional" && row.complete).length;
   const coreAdmittedRowCount = audit.rows.filter((row) => row.classification === "core" && row.fields.admissionState.status === "verified" && [true, "admitted", "production-admitted", "production-eligible"].includes(row.fields.admissionState.value)).length;
   const optionalAdmittedRowCount = audit.rows.filter((row) => row.classification === "optional" && row.fields.admissionState.status === "verified" && [true, "admitted", "production-admitted", "production-eligible"].includes(row.fields.admissionState.value)).length;
-  assertCondition(audit.coreRequiredRowCount === 22 && audit.optionalTrackedRowCount === 9, "Field audit must expose the Version 2.1 22-core/9-optional row contract.");
+  assertCondition(audit.coreRequiredRowCount === coreRequired && audit.optionalTrackedRowCount === 9 && audit.withdrawnRowCount === withdrawnIds.size, "Field audit must expose the core, optional and withdrawn row counts.");
   assertCondition(audit.coreCompleteRowCount === coreCompleteRowCount && audit.optionalCompleteRowCount === optionalCompleteRowCount, "Field audit core/optional completeness counts must be derived from row classifications.");
   assertCondition(audit.coreAdmittedRowCount === coreAdmittedRowCount && audit.optionalAdmittedRowCount === optionalAdmittedRowCount, "Field audit core/optional admission counts must be derived from row classifications.");
   assertCondition(audit.completeRowCount === completeRowCount, "Field audit complete-row count must be derived from field statuses.");
   assertCondition(audit.admittedRowCount === admittedRowCount, "Field audit admitted-row count must be derived from admission states.");
-  assertCondition(audit.phaseComplete === (coreCompleteRowCount === 22), "Field audit phase-complete state must be derived from all core required fields.");
-  assertCondition(audit.productionAdmissionAllowed === (coreCompleteRowCount === 22 && coreAdmittedRowCount === 22), "Field audit production-admission state must be derived from complete/admitted core rows and fail closed.");
-  if (coreCompleteRowCount < 22) {
+  assertCondition(audit.phaseComplete === (coreCompleteRowCount === coreRequired), "Field audit phase-complete state must be derived from all core required fields.");
+  assertCondition(audit.productionAdmissionAllowed === (coreCompleteRowCount === coreRequired && coreAdmittedRowCount === coreRequired), "Field audit production-admission state must be derived from complete/admitted core rows and fail closed.");
+  if (coreCompleteRowCount < coreRequired) {
     assertCondition(audit.status === (coreAdmittedRowCount > 0 ? "partially-admitted" : "blocked"), "A field-incomplete audit must truthfully state blocked or partial admission.");
     assertCondition(audit.phaseComplete === false && audit.productionAdmissionAllowed === false, "A field-incomplete audit cannot claim phase completion or admission.");
   }

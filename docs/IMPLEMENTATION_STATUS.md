@@ -4,12 +4,9 @@
 
 ## Current Phase 1 and 2 position
 
-### Phase 1 – 2/4 (50%) formal exit criteria
+### Phase 1 – 3/3 formal exit criteria, complete
 
-Two criteria pass: national coverage geometry and the corruption-validation suite. Two do not:
-
-- The production source ledger is incomplete: **2/22 core rows** have every required field and production admission.
-- Archive/refetch/restore evidence is not yet universal for every required raw file.
+On 2026-09-26 the owner removed the gate requiring every raw file to be re-fetchable or restorable from the archive, and withdrew the four reserve and treaty rows from the ledger core. See [the phase scope decision](PHASE_SCOPE_DECISION_2026-09-26.md). The same day every one of the 18 core rows received every required ledger field, bound to [the ledger facts](../data/phase1-ledger-facts-2026-09-26.json), whose publisher facts come from each publisher's catalogue record ([readback](../data/phase1-catalogue-readback-2026-09-26.json)). The checker derives the ledger gate from the field audit. Production admission is separate and remains 2/18. The history below records the position before that decision.
 
 The recovered federal-electoral pair, four current-wildfire raw payload/manifest pairs, two derived wildfire payload/manifest pairs, Québec fourth-inventory's 62-object product, and the NBAC primary payload have checksum-bound exact-version evidence. NBAC's receipt proves primary readback and COMPLIANCE retention but not recovery. The normal archive-control exercise also completed its legal-hold, denied-delete, unchanged-retention, and bounded recovery-replica checks. The canonical external-SSD inventory verifies all 120 listed physical artifacts; 17 core rows have all listed canonical local bytes, the provincial-boundary row is partial, and four rows are unstaged. These facts do not satisfy universal archive recovery or prove remaining transformations, admission, or release. See [Phase 1 exit status](PHASE1_EXIT_STATUS.md), [canonical raw inventory](PHASE1_CANONICAL_RAW_INVENTORY.md), [federal recovery evidence](FEDERAL_ELECTORAL_ARCHIVE_RECOVERY_2026-08-25.md), [current-wildfire exact capture](CURRENT_WILDFIRE_EXACT_RAW_ARCHIVE_CAPTURE_2026-08-25.md), and [Québec fourth-inventory promotion/readback](QC_FOURTH_INVENTORY_IMMUTABLE_PROMOTION.md).
 
@@ -19,7 +16,9 @@ The current Phase 1 ledger is **17.00/31 raw credits**, with a bounded evidence-
 
 The exact NBAC ZIP was acquired on 2026-08-27 under the current official Open Government Licence - Canada metadata. It is 1,257,052,370 bytes with SHA-256 `c42740eb9d2fe3991a27344d0c33927705ec3e78c277efc5311b502439cb2165`; ZIP integrity passed, and the local profile records 52,610 polygons with 49 ring self-intersections quarantined. The durable receipt proves exact-version primary payload readback and COMPLIANCE retention. Recovery, transformation, ingestion, release, publication, and production admission remain false. See [`NBAC profile`](../data/phase1-nbac-profile-2026-08-27.json), [`archive receipt`](../data/nbac-archive-receipt-2026-08-27.json), and [`IAM readback`](../data/nbac-archive-iam-applied-2026-08-27.json).
 
-### Phase 2 – 2/4 (50%) formal exit criteria
+### Phase 2 – 2/2 formal exit criteria, complete
+
+On 2026-09-26 the owner removed the expert-review and published-independent-comparison criteria from the count, so the two admitted criteria make Phase 2 complete. Neither removed criterion was met, and neither is claimed. See [the phase scope decision](PHASE_SCOPE_DECISION_2026-09-26.md). The history below records the position before that decision.
 
 The local Version 2.1 implementation contract specifies **11 national snapshots** and **10 whole-interval rasters**, calculates each interval across every annual pair, and fails closed for incompatible grid/CRS/nodata/Unknown/lineage/sidecar conditions.
 
@@ -120,6 +119,10 @@ admitted and owner reviewed, so the mode stays empty. Checked by
 `npm run check:phase4-condition-recovery-explore`. The French strings are drafts
 awaiting bilingual review. The view itself is a separate change.
 
+### Phase 4 provincial matching run
+
+On 2026-09-26 the first Phase 4 matching run was computed for British Columbia and Québec: 11.1% of 100,731,284 detected changes match an official harvest, fire, insect or windthrow record (56% by area). An independent recount agrees exactly on four intervals. The owner admitted the run the same day ([admission](../data/phase4-provincial-matching-admission-2026-09-26.json)); it is published on the methods page in both languages ([publication](../data/phase4-provincial-matching-publication-2026-09-26.json)) and released as `phase4-provincial-matching-v1` ([release](../data/phase4-provincial-matching-release-2026-09-26.json)). The owner retired the outside provincial review checkpoint ([scope decision](PHASE_SCOPE_DECISION_2026-09-26.md)); no outside review took place. Phase 4 is 4/4. See [the run record](PHASE4_PROVINCIAL_MATCHING_RUN.md).
+
 ### Harvest and fire by province
 
 On 2026-09-25 the owner decided to publish the four provincial harvest and fire
@@ -154,10 +157,10 @@ Phase 0 is complete under its recorded scope: seven of its eight literal gates p
 | --- | --- | --- |
 | Phase 0 | **7/8 passed-only (87.5%); complete under recorded scope** | Seven literal gates pass. The eighth is the explicit accountable-owner-approved Indigenous-engagement exclusion, not an engagement result. Legal sign-off is owner-recorded and bilingual name registration is owner-attested complete. No engagement route, test, or engagement occurred. Phase 7 production source and right-of-reply gates remain open. |
 | Phase 3 | **No cumulative percentage (Version 2.1)**; literal exit criteria **4/5** | Four historical technical-foundation evidence groups are recorded; real national place content, admitted Phase 2 aggregates, and required human/release checkpoints remain open. |
-| Phase 4 | **3/4 (75%)** | Provincial safeguards exist; admitted enhancement inputs and published match results do not. |
+| Phase 4 | **4/4, complete** | Provincial safeguards pass, and the 2026-09-26 BC and Québec matching run is admitted, published in both languages and released. The owner retired the outside provincial review checkpoint; no outside review took place. |
 | Phase 5 | **3/4 (75%) local; production blocked** | The safety and simulation controls pass. The dated 100-run receipt records zero real refresh successes; the observed runs of 2026-09-13 and 2026-09-14 record the first three, each archived and read back. The scheduled cadence still needs observation over a longer window that crosses a daylight saving transition. |
 | Phase 6 | **4/5 (80%)** | Managed Canadian database isolation is proven. Sender infrastructure and the independent timed kill-switch rehearsal remain absent. |
-| Phase 7 | **14/16 (87.5%)** | The Mistik outcome is recorded as not pursued. Indigenous-source authority and a named tested reply operation remain missing. The modes-and-overlays gate now covers the released federal-riding, provincial-riding, economic-region and watershed reference boundaries; reserve and treaty geography is tracked only by the still-failed reserve-and-treaty gate. |
+| Phase 7 | **14/14, complete** | On 2026-09-26 the owner removed the reserve-and-treaty layer gate and the right-of-reply gate, which the Plan scopes to reserve and treaty pages, because Witness Tree will not publish that geography. No reserve or treaty geometry, name or reply route exists. The modes-and-overlays gate covers the released federal-riding, provincial-riding, economic-region and watershed reference boundaries. |
 | Phase 8 | **8/16 (50%)** | Raw-archive reproducibility, the operations handbook, bounded independently retrieved bulk downloads, and CDN/tile validation pass. Sites version 41 deployed source commit `cf54e5a8b5e255c6cf9d122c4a8962e8227aec8a`; a browser observation at `data/deployed-map-render-evidence-2026-09-23-v41.json` passed all five checks and binds the current map files. Other operated production evidence remains incomplete. |
 | Phase 9 | **0/4 (0%)** | No operated beta, real correction metrics, source-agency confirmation, or quarterly published-figure reproduction. |
 

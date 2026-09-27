@@ -1,0 +1,24 @@
+{
+ "schemaVersion": "witness-tree/phase4-provincial-matching-publication/1",
+ "status": "published-bilingual-production",
+ "released": true,
+ "productionEligible": true,
+ "reportSha256": "97e310229163ca4c4eac7ea54045a21be8255991f449bcdc1244891e24836844",
+ "admissionSha256": "1584c05a7ee36ef50092d28be164204ca08d70120488b04d254f9558c92e2fed",
+ "methodsPagePaths": [
+  "lib/phase4/methods-matching-en.ts",
+  "lib/phase4/methods-matching-fr.ts"
+ ],
+ "methodsPageRoutes": {
+  "en": "/en/methods",
+  "fr": "/fr/methodes"
+ },
+ "matchRate": 0.11116669574071944,
+ "nonMatchRate": 0.8888333042592805,
+ "nonMatchReasonDistribution": {
+  "below-spatial-tolerance": 249943,
+  "below-spatial-tolerance,outside-temporal-tolerance": 14178,
+  "no-official-record-candidates": 86411020,
+  "outside-temporal-tolerance": 2858179
+ }
+}

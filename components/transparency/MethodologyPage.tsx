@@ -2,6 +2,8 @@ import { CoverageStatement } from "@/components/policy/CoverageStatement";
 import { EvidenceLegend } from "@/components/policy/EvidenceLegend";
 import type { ConfidenceResult } from "@/lib/domain/confidence";
 import type { Locale } from "@/lib/domain";
+import { provincialMatchingTextEn } from "@/lib/phase4/methods-matching-en";
+import { provincialMatchingTextFr } from "@/lib/phase4/methods-matching-fr";
 import {
   EXPLORE_COVERAGE_PERIOD,
   EXPLORE_DEFAULT_YEAR,
@@ -41,8 +43,7 @@ const COPY = {
     matchingText:
       "A detected change matches an official record when they overlap by at least 50% of the smaller area and their dates are within ±2 years (±3 years before 1995). When events overlap in the same place and year, the one shown is picked in this order: fire; recorded harvest; recorded insect or disease disturbance; other recorded intervention; then detected change with no matching record. The other evidence is kept.",
     provincialMatching: "Provincial matching results",
-    provincialMatchingText:
-      "How often detected changes match provincial records is not available yet. No provincial dataset has been approved for processing, so any number here would be misleading.",
+    provincialMatchingText: "",
     limits: "What this record does not claim",
     limitsText:
       "We never label a detected change as logging, deforestation, a rule violation or the fault of a named organisation. Where no official record exists, we say so instead of filling in a number.",
@@ -79,8 +80,7 @@ const COPY = {
     matchingText:
       "Un changement détecté correspond à un registre officiel lorsqu’ils se chevauchent sur au moins 50 % de la plus petite superficie et que leurs dates sont à ±2 ans l’une de l’autre (±3 ans avant 1995). Lorsque des événements se chevauchent au même endroit la même année, celui qui est affiché est choisi dans cet ordre : incendie; récolte consignée; perturbation consignée par insecte ou maladie; autre intervention consignée; puis changement détecté sans registre correspondant. Les autres preuves sont conservées.",
     provincialMatching: "Résultats de l’appariement provincial",
-    provincialMatchingText:
-      "La fréquence à laquelle les changements détectés correspondent aux registres provinciaux n’est pas encore disponible. Aucun jeu de données provincial n’a été approuvé pour traitement; tout chiffre ici serait donc trompeur.",
+    provincialMatchingText: "",
     limits: "Ce que ce registre n’affirme pas",
     limitsText:
       "Nous ne qualifions jamais un changement détecté d’exploitation, de déforestation, d’infraction ou de faute d’une organisation désignée. Lorsqu’aucun registre officiel n’existe, nous le disons au lieu d’inscrire un chiffre.",
@@ -115,7 +115,8 @@ const CONFIDENCE_RULES: readonly Readonly<{
 ];
 
 export function MethodologyPage({ locale }: Readonly<{ locale: Locale }>) {
-  const copy = COPY[locale];
+  // The matching results are in one file per language, as the Phase 4 publication record binds them.
+  const copy = { ...COPY[locale], provincialMatchingText: locale === "fr" ? provincialMatchingTextFr() : provincialMatchingTextEn() };
   const sections = [
     [copy.definition, copy.definitionText],
     [copy.denominator, copy.denominatorText],

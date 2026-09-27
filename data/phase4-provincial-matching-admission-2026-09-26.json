@@ -1,0 +1,57 @@
+{
+ "schemaVersion": "witness-tree/phase4-provincial-matching-admission/1",
+ "status": "recorded-production-admission",
+ "claims": {
+  "admitted": true,
+  "released": false,
+  "productionEligible": true
+ },
+ "runId": "phase4-provincial-matching-2026-09-26",
+ "reportSha256": "97e310229163ca4c4eac7ea54045a21be8255991f449bcdc1244891e24836844",
+ "scope": {
+  "provinces": [
+   "BC",
+   "QC"
+  ]
+ },
+ "inputBindings": [
+  {
+   "path": "data/bc-harvest-source-rights-2026-09-26.json",
+   "sha256": "fa3b7c52a301a8e96acfcdd09ecb812416f24df2b2c8d11ccd16718a6fb1bfb8"
+  },
+  {
+   "path": "data/phase2-per-cell-four-province-admission-record-2026-09-19.json",
+   "sha256": "de9eb39a18f097802cc3ef61eca81fba3a010a103979fd6f84b46fdd18532243"
+  },
+  {
+   "path": "lib/pipeline/matching.ts",
+   "sha256": "ccde63ade96901a040dc9b896b57fcd6588e4d90c2ebe75ca4ecbfffb4badef8"
+  },
+  {
+   "path": "lib/phase4/provincial-matching.ts",
+   "sha256": "1b28cb6942ab8255a9c440ff1ab842a7854ec3222b2fd58a88d3c97dbf68e953"
+  },
+  {
+   "path": "scripts/phase4-match-provincial.mts",
+   "sha256": "64dcc7f4a3ffe63d82ef55d1ecac746a64872625ad7948c421b8154174187303"
+  },
+  {
+   "path": "scripts/phase4_rasterize_records.py",
+   "sha256": "55ad00c4695dd6b91d4a66e5b214998fc3204470fa7616aba19a8b05113f6573"
+  }
+ ],
+ "sourceRightsVerified": true,
+ "sourceEvidenceAdmitted": true,
+ "sourceTransformationApproved": true,
+ "sourceReleaseApproved": true,
+ "changeGeometryMaterialized": true,
+ "ownerDecision": {
+  "decision": "approve",
+  "isHuman": true,
+  "name": "Chinonso Obeta",
+  "role": "Owner, Witness Tree",
+  "decidedAt": "2026-09-27T00:09:15Z",
+  "rationale": "The owner approved admission of the 2026-09-26 BC and Québec provincial matching run in the working session, in these words: \"I approve admission of the run.\""
+ },
+ "note": "This admits the matching run's source evidence, record transformation and release. It does not admit the underlying provincial sources as general Phase 1 production rows, and no outside provincial review took place."
+}

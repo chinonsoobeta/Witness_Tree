@@ -1,44 +1,12 @@
 {
   "schemaVersion": "witness-tree/phase7-indigenous-explore-comparison-exit-status/1",
   "phase": 7,
-  "localImplementationStatus": "incomplete",
-  "phaseComplete": false,
+  "localImplementationStatus": "complete",
+  "phaseComplete": true,
   "completedCriteria": 14,
-  "totalCriteria": 16,
-  "percentage": 87.5,
+  "totalCriteria": 14,
+  "percentage": 100,
   "exitCriteria": [
-    {
-      "id": "reserve-and-treaty-layers-loaded",
-      "title": "Every reserve and treaty area in the four provinces has a page with the correct official name and diacritics, checked against the federal source",
-      "status": "fail",
-      "reason": "All four authoritative source families remain access, authority, rights, precision, checksum, and engagement blocked. The illustrative reserve and treaty fixtures are deliberately not federal geography and cannot support page generation.",
-      "evidence": [
-        {
-          "path": "data/indian-reserves-authority-access-block.json",
-          "sha256": "eeace407f3eb9971e8233b6ccd9759dd7ce9e698e9c8e86248c6aa8db7e722c7"
-        },
-        {
-          "path": "data/modern-treaties-authority-access-block.json",
-          "sha256": "1f9058ac3f1a4658a83393ce1f8cebdc44173cc7f2079e378dffb9e71fccac50"
-        },
-        {
-          "path": "docs/PHASE1_INDIGENOUS_BOUNDARY_SOURCE_GATE.md",
-          "sha256": "0fd767e46ac2d01e2b8f1a8cd9b4683895b5f8f9c7e52b4f26c9d4f3a8bb5e1e"
-        }
-      ]
-    },
-    {
-      "id": "right-of-reply-live",
-      "title": "Every reserve and treaty page carries a working right-of-reply route with a named recipient",
-      "status": "fail",
-      "reason": "The public engagement page states that no engagement contact route exists. The corrections page states that a named accountable recipient and tested intake channel are still required. Neither page supplies a working right-of-reply route. On 2026-09-21 GovernancePage.tsx was refreshed for the existing glossary wording change alone; its digest was refreshed, and this reason still holds. On 2026-09-23 GovernancePage.tsx changed for a plain-language wording pass alone; its digest was refreshed, and this reason still holds.",
-      "evidence": [
-        {
-          "path": "components/governance/GovernancePage.tsx",
-          "sha256": "f2021f580958260db3fb94b212d16b90a09c6c6333e9d235f5f5f4c50c83b445"
-        }
-      ]
-    },
     {
       "id": "minimum-area-rule",
       "title": "A reserve below the admitted area threshold shows the raw record and declines to publish a rate, proven by a fixture",
@@ -103,7 +71,7 @@
       "id": "explore-modes-and-overlays",
       "title": "Explore provides the four required modes and four reference-boundary overlays",
       "status": "pass",
-      "reason": "Narrowed by owner scope decision on 2026-08-29, then met. The four modes render. Federal ridings, the BC, Alberta, Ontario and Quebec provincial ridings, the 44 Statistics Canada 2021 economic regions that lie in British Columbia, Alberta, Ontario and Quebec, and the 105 Canadian areas of NRCan's Water Survey of Canada version 6.0 rollup that intersect those four provinces, are drawn from one immutable v4 PMTiles release with exact remote readback and bilingual attribution. The economic-region and watershed layers were clipped to the four provinces on 2026-09-02, so both are now subsets: 44 of 76 regions, and 105 of the 169 Canadian sub-drainage areas, cut at the provincial boundary. An earlier revision of this reason still claimed all 76 regions and all 169 areas after the clip had shipped, because that change refreshed the bound checksums without rereading the sentence they support. Economic regions and watersheds are boundary-only reference frameworks, not forest-loss aggregates. The reserve and treaty-area overlays were removed from Explore, not delivered, and this criterion no longer stands in for them: that obligation is tracked solely by reserve-and-treaty-layers-loaded, which remains failed. If this criterion is ever read as evidence that reserve or treaty geography ships, it is being read wrongly. On 2026-09-19 the version in this reason was corrected from v3 to v4. lib/explore/boundaries.ts has pinned boundary-overlays-v4 release 594e33aa08fd7b60a21e6a17d43f7491757d99e7900fdd697230f6d1f52b78f0 since 2026-09-18, and the v4 record carries the same 44 economic regions and 105 watersheds clipped to the four provinces, and the same unclipped riding layers, that this reason describes. The sentence was wrong about the release it named, not about what ships. This is the second time this criterion has had a claim corrected after a checksum refresh changed the files under it without the sentence being reread. On 2026-09-20 ExploreView.tsx was moved into a three-column grid, controls left, map centre, figures right. The bound digest was refreshed for that move alone: the four modes and the four boundary overlays render exactly as this reason describes, placement is by named grid area so the document order is unchanged, and no release, clip, attribution or removal named above was touched. On 2026-09-21 tests/explore.test.tsx moved for the whole-area boundary pick; its four overlays and modes are unchanged. On 2026-09-23 ExploreView.tsx, explore.test.tsx changed for a plain-language wording pass alone; their digests were refreshed, and this reason still holds.",
+      "reason": "Narrowed by owner scope decision on 2026-08-29, then met. The four modes render. Federal ridings, the BC, Alberta, Ontario and Quebec provincial ridings, the 44 Statistics Canada 2021 economic regions that lie in British Columbia, Alberta, Ontario and Quebec, and the 105 Canadian areas of NRCan's Water Survey of Canada version 6.0 rollup that intersect those four provinces, are drawn from one immutable v4 PMTiles release with exact remote readback and bilingual attribution. The economic-region and watershed layers were clipped to the four provinces on 2026-09-02, so both are now subsets: 44 of 76 regions, and 105 of the 169 Canadian sub-drainage areas, cut at the provincial boundary. An earlier revision of this reason still claimed all 76 regions and all 169 areas after the clip had shipped, because that change refreshed the bound checksums without rereading the sentence they support. Economic regions and watersheds are boundary-only reference frameworks, not forest-loss aggregates. The reserve and treaty-area overlays were removed from Explore, not delivered, and this criterion no longer stands in for them: that obligation was tracked solely by reserve-and-treaty-layers-loaded, which the owner removed on 2026-09-26 because Witness Tree will not publish reserve or treaty geography. Nothing here ships it. If this criterion is ever read as evidence that reserve or treaty geography ships, it is being read wrongly. On 2026-09-19 the version in this reason was corrected from v3 to v4. lib/explore/boundaries.ts has pinned boundary-overlays-v4 release 594e33aa08fd7b60a21e6a17d43f7491757d99e7900fdd697230f6d1f52b78f0 since 2026-09-18, and the v4 record carries the same 44 economic regions and 105 watersheds clipped to the four provinces, and the same unclipped riding layers, that this reason describes. The sentence was wrong about the release it named, not about what ships. This is the second time this criterion has had a claim corrected after a checksum refresh changed the files under it without the sentence being reread. On 2026-09-20 ExploreView.tsx was moved into a three-column grid, controls left, map centre, figures right. The bound digest was refreshed for that move alone: the four modes and the four boundary overlays render exactly as this reason describes, placement is by named grid area so the document order is unchanged, and no release, clip, attribution or removal named above was touched. On 2026-09-21 tests/explore.test.tsx moved for the whole-area boundary pick; its four overlays and modes are unchanged. On 2026-09-23 ExploreView.tsx, explore.test.tsx changed for a plain-language wording pass alone; their digests were refreshed, and this reason still holds.",
       "evidence": [
         {
           "path": "components/explore/ExploreView.tsx",
@@ -280,17 +248,16 @@
       ]
     }
   ],
-  "externalBlockers": [
+  "removedCriteria": [
     {
-      "id": "official-indigenous-boundary-admission",
-      "status": "blocked",
-      "reason": "Affected authorities and rights-holders must identify authoritative versioned reserve and treaty artifacts with exact terms, checksum-bound recovery, attribution, and approved use before any production acquisition or page generation."
+      "id": "reserve-and-treaty-layers-loaded",
+      "decision": "data/phase-scope-decision-2026-09-26.json"
     },
     {
-      "id": "owner-managed-right-of-reply-route",
-      "status": "blocked",
-      "reason": "A named accountable recipient, tested bilingual intake route, and owner-managed engagement process are required before a right-of-reply claim can be live."
+      "id": "right-of-reply-live",
+      "decision": "data/phase-scope-decision-2026-09-26.json"
     }
   ],
+  "externalBlockers": [],
   "nonProductionBoundary": "No official reserve or treaty geometry, Indigenous names, page, contact route, or engagement outcome is admitted to production. Indigenous fixtures remain illustrative and nonproduction. The federal riding comparison uses real extent-corrected 2021-2022 rows, but those rows remain explicitly local, non-admitted, non-released and nonproduction."
 }
