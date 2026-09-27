@@ -22,7 +22,10 @@ test("Phase 8 records every literal launch-readiness gate without production inf
    * map client's captions, so the count returned to seven. Sites version 41
    * deployed the application commit cf54e5a8, and the harness observed it at
    * data/deployed-map-render-evidence-2026-09-23-v41.json; the count is eight
-   * again on a fresh measurement.
+   * again on a fresh measurement. Version 42 was observed the same day. On
+   * 2026-09-26 an Explore map fix moved the map client again, and the count
+   * stays eight on an owner-authorized break-glass until the next deploy is
+   * observed.
    *
    * The count is the thing to watch, and the thing not to read. It was eight
    * while the criterion rested on a measurement, eight again while it rested
