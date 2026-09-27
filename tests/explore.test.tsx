@@ -494,7 +494,11 @@ test("the map keeps one four-province camera envelope and the forest map alive a
   assert.match(types, /EXPLORE_MAP_VIEWS = \["bc", "ab", "on", "qc"\] as const/);
   assert.match(map, /const COMBINED_PROVINCE_BOUNDS: MapBounds = \[-139\.1, 41\.5, -57, 62\.1\]/);
   assert.match(map, /bounds: COMBINED_PROVINCE_BOUNDS/);
-  assert.match(map, /maxBounds: COMBINED_PROVINCE_BOUNDS/);
+  // The pan limit derives from the same envelope, widened to the framed view
+  // so it cannot crop the provinces (tests/explore-map-camera.test.ts), and
+  // follows the frame when it is resized.
+  assert.match(map, /maxBounds: panLimitFor\(\s*COMBINED_PROVINCE_BOUNDS,/);
+  assert.match(map, /setMaxBounds\(panLimitFor\(COMBINED_PROVINCE_BOUNDS,/);
   assert.match(map, /const provinceAvailable = mode === "forest-change";/);
   assert.doesNotMatch(map, /provinceAvailable = mode === "forest-change" && year === 2022/);
   assert.doesNotMatch(map, /mapView === "national"|^\s*national:/m);

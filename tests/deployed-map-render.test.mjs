@@ -31,24 +31,25 @@ const withRecord = async (mutate) => {
   return validateDeployedMapRender({ record });
 };
 
-test("the current Site observation settles the gate for this branch's client", async () => {
+test("the Site observation is stale for exactly this branch's client change", async () => {
   /*
-   * This asserts the settled shape after the v43 deploy. The current
-   * before: between 2026-09-19 and the first 2026-09-20 deploy the gate rested
-   * on an authorized break-glass, and later deploys (versions 34, 36, 39, 41
-   * and 42) each settled it on a fresh measurement. On 2026-09-26 it is
-   * inverted again. Commit 826f897e stops Explore's patch modes opening on an
-   * empty map, which moves components/explore/ExploreMapClient.tsx after the
-   * version 42 observation, so asserting the observation is current would be a
-   * false statement about the deployed Site. The test pins the staleness to
-   * exactly that file, so any other source drifting out of the observation is
-   * still caught. When the next deploy is observed, restore the settled shape:
-   * the observation is current and the gate is answered by the deployed Site.
+   * Between deploys this test holds whichever shape is true. The gate rested on
+   * an authorized break-glass from 2026-09-19 to the first 2026-09-20 deploy,
+   * and again on 2026-09-26 until version 43 settled it on a fresh measurement.
+   * On 2026-09-26 it is inverted a third time: this branch frames all four
+   * provinces when Explore opens, which moves
+   * components/explore/ExploreMapClient.tsx after the version 43 observation.
+   * The test pins the staleness to exactly that file, so any other source
+   * drifting out of the observation is still caught. When the next deploy is
+   * observed, restore the settled shape: the observation is current and the
+   * gate is answered by the deployed Site.
    */
   const failures = validateDeployedMapRender();
-  assert.deepEqual(failures, []);
+  assert.equal(failures.length, 1, failures.join(" "));
+  assert.ok(failures[0].startsWith("components/explore/ExploreMapClient.tsx changed since"), failures[0]);
+  // The gate is answered meanwhile, but by accepted debt, not by measurement.
   const gate = resolveDeployedMapRender();
-  assert.equal(gate.satisfiedBy, "deployed-site");
+  assert.equal(gate.satisfiedBy, "break-glass");
   assert.deepEqual(gate.failures, []);
   const record = await loadRecord();
   assert.equal(record.schemaVersion, RENDER_EVIDENCE_SCHEMA);
@@ -347,23 +348,35 @@ test("a settled debt has to be deleted rather than left on the branch", async ()
   assert.ok(superseded.failures.some((message) => message.includes("is not needed. Delete it")));
 });
 
-test("the weaker tiers are absent after the deployed Site observation", async () => {
+test("the only weaker tier on this branch is the authorized break-glass, and it is real debt", async () => {
   /*
    * The gate resolves a tier on presence, so a leftover file silently answers
    * for a measurement nobody took. Whenever the Site observation is current,
-   * both weaker tiers must be absent, and this test asserts that again once
-   * the next deploy is observed and the break-glass is deleted.
+   * both weaker tiers must be absent; restore that assertion once the next
+   * deploy is observed and the break-glass is deleted.
    *
-   * weaker tiers stay absent: the Site observation is current and the gate is
-   * satisfied by deployed-site.
+   * On 2026-09-26 the owner authorized a break-glass for this branch's map
+   * client change, as before: no preview measurement is possible, because the
+   * ChatGPT Sites control plane exposes no preview URL for this project and its
+   * only deployment operation publishes to production. The break-glass is held
+   * to its own terms: it expires, binds only the file it covers, and may not
+   * report checks or claim anything was observed.
    */
   assert.equal(
     existsSync(new URL(`../${BRANCH_EVIDENCE_PATH}`, import.meta.url)),
     false,
     `${BRANCH_EVIDENCE_PATH} is committed, but no preview deployment was ever measured`,
   );
-  assert.equal(existsSync(new URL(`../${BREAK_GLASS_PATH}`, import.meta.url)), false);
-  assert.equal(resolveDeployedMapRender().satisfiedBy, "deployed-site");
+  assert.equal(existsSync(new URL(`../${BREAK_GLASS_PATH}`, import.meta.url)), true);
+  assert.deepEqual(validateBreakGlass({}), []);
+
+  const record = JSON.parse(await readFile(new URL(`../${BREAK_GLASS_PATH}`, import.meta.url), "utf8"));
+  assert.equal(record.status, "gate-debt-not-an-observation");
+  assert.equal(record.siteObservationOwed, true);
+  assert.equal(record.allChecksPassed, false);
+  assert.equal(record.checks, undefined, "a break-glass that reports checks is claiming a measurement");
+  assert.deepEqual(record.sources.map((entry) => entry.path), ["components/explore/ExploreMapClient.tsx"]);
+  assert.equal(resolveDeployedMapRender().satisfiedBy, "break-glass");
 });
 
 test("the harness labels a run by the origin it measured, not by the file it is written to", async () => {
