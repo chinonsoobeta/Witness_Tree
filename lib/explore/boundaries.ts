@@ -1,15 +1,17 @@
+import { CENSUS_SUBDIVISION_RELEASE } from "./census-subdivisions";
 import { EXPLORE_MAP_COLOURS } from "./map-style";
 
-// Reference geometry drawn over the loss map. These are not data layers: they
-// answer "where is this" and "who represents it", never "how much loss". They
-// are deliberately drawn in the neutral ink and observation greys rather than
-// in any of the disturbance colours, so that nothing on the map reads as a
-// measurement when it is only a boundary.
+// Boundaries drawn over the loss map. Ridings, economic regions and census
+// subdivisions carry forest-loss figures, shown when the reader points at one;
+// watersheds are reference only. All are drawn as outlines in the neutral ink
+// and observation greys rather than in any of the disturbance colours, so an
+// outline never reads as a measurement of the area it encloses.
 
 export const BOUNDARY_OVERLAY_IDS = [
   "federal-ridings",
   "provincial-ridings",
   "economic-regions",
+  "census-subdivisions",
   "watersheds",
 ] as const;
 export type BoundaryOverlayId = (typeof BOUNDARY_OVERLAY_IDS)[number];
@@ -86,12 +88,29 @@ export const BOUNDARY_OVERLAYS: Readonly<Record<BoundaryOverlayId, BoundaryOverl
       colour: EXPLORE_MAP_COLOURS.observation,
       dash: [5, 2],
       note: {
-        en: "The 44 economic regions in the four provinces, as defined by Statistics Canada in 2021.",
-        fr: "Les 44 régions économiques des quatre provinces, telles que définies par Statistique Canada en 2021.",
+        en: "The 44 economic regions in the four provinces, as defined by Statistics Canada in 2021. Each region’s figures add up the cities, towns and other places inside it.",
+        fr: "Les 44 régions économiques des quatre provinces, telles que définies par Statistique Canada en 2021. Les chiffres de chaque région additionnent ceux des villes et autres lieux qu’elle contient.",
       },
       attribution: {
         en: "Statistics Canada, 2021 Economic Region Boundary File.",
         fr: "Statistique Canada, Fichier des limites des régions économiques de 2021.",
+      },
+    },
+    "census-subdivisions": {
+      id: "census-subdivisions",
+      label: { en: "Cities and towns", fr: "Villes et municipalités" },
+      available: true,
+      url: `${CENSUS_SUBDIVISION_RELEASE.base}/${CENSUS_SUBDIVISION_RELEASE.tiles}`,
+      sourceLayer: CENSUS_SUBDIVISION_RELEASE.sourceLayer,
+      colour: EXPLORE_MAP_COLOURS.observation,
+      dash: [1, 1.5],
+      note: {
+        en: "2,291 cities, towns, municipalities and unorganized areas in the four provinces (Statistics Canada census subdivisions, 2021). Reserves, settlements and treaty or agreement lands are not shown on their own; their land still counts in the economic-region totals.",
+        fr: "2\u202F291 villes, municipalités et territoires non organisés des quatre provinces (subdivisions de recensement de Statistique Canada, 2021). Les réserves, les établissements et les terres visées par un traité ou une entente ne sont pas affichés séparément; leurs terres comptent tout de même dans les totaux des régions économiques.",
+      },
+      attribution: {
+        en: "Statistics Canada, 2021 Census Subdivision Boundary File.",
+        fr: "Statistique Canada, Fichier des limites des subdivisions de recensement de 2021.",
       },
     },
     watersheds: {

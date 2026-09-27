@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { DISTRICT_SPANS_PATH, handleDistrictSpans } from "../worker/district-spans";
+import { regionIntervalMeasurements } from "../lib/explore/region-intervals";
 import { ridingIntervalMeasurements } from "../lib/explore/riding-intervals";
 
 const ask = (query: string, method = "GET") =>
@@ -14,9 +15,14 @@ test("the route answers exactly the span the page route would render", async () 
   const body = (await response.json()) as { fromYear: number; toYear: number; measurements: { fromYear: number; toYear: number }[] };
   assert.equal(body.fromYear, 1990);
   assert.equal(body.toYear, 1998);
-  assert.deepEqual(body.measurements, JSON.parse(JSON.stringify(ridingIntervalMeasurements({ fromYear: 1990, toYear: 1998 }))));
-  // Every district in the four provinces; federal ridings elsewhere are never served.
-  assert.equal(body.measurements.length, 711);
+  const span = { fromYear: 1990, toYear: 1998 };
+  assert.deepEqual(
+    body.measurements,
+    JSON.parse(JSON.stringify([...ridingIntervalMeasurements(span), ...regionIntervalMeasurements(span)])),
+  );
+  // Every riding in the four provinces and their 44 economic regions; federal
+  // ridings elsewhere are never served.
+  assert.equal(body.measurements.length, 711 + 44);
   for (const entry of body.measurements) {
     assert.equal(entry.fromYear, 1990);
     assert.equal(entry.toYear, 1998);

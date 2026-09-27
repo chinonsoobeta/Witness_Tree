@@ -13,9 +13,18 @@ export type BoundarySelection = Readonly<{
   jurisdiction: string;
 }>;
 
-/** A local riding measurement, keyed exactly as its boundary feature is. */
+/** The overlays whose areas carry forest-loss figures. Watersheds are drawn for reference only. */
+export const MEASURED_BOUNDARY_OVERLAYS = [
+  "federal-ridings",
+  "provincial-ridings",
+  "economic-regions",
+  "census-subdivisions",
+] as const satisfies readonly BoundaryOverlayId[];
+export type MeasuredBoundaryOverlayId = (typeof MEASURED_BOUNDARY_OVERLAYS)[number];
+
+/** One area's measurement, keyed exactly as its boundary feature is. */
 export type RidingBoundaryMeasurement = Readonly<{
-  overlay: "federal-ridings" | "provincial-ridings";
+  overlay: MeasuredBoundaryOverlayId;
   boundaryId: string;
   jurisdiction: string;
   coverage: BoundaryMeasurementCoverage;
@@ -59,7 +68,7 @@ const words = {
     complete: "Complete mapped coverage",
     partial: "Partial mapped coverage; unknown area remains",
     none: "No mapped coverage",
-    unavailable: "No local riding measurement",
+    unavailable: "No figure for this area",
     unknown: "Unknown",
   },
   fr: {
@@ -67,13 +76,13 @@ const words = {
     complete: "Couverture cartographiée complète",
     partial: "Couverture cartographiée partielle; une zone inconnue demeure",
     none: "Aucune couverture cartographiée",
-    unavailable: "Aucune mesure locale pour cette circonscription",
+    unavailable: "Aucun chiffre pour cette zone",
     unknown: "Inconnu",
   },
 } as const;
 
-const isRidingOverlay = (overlay: BoundaryOverlayId): overlay is RidingBoundaryMeasurement["overlay"] =>
-  overlay === "federal-ridings" || overlay === "provincial-ridings";
+const isMeasuredOverlay = (overlay: BoundaryOverlayId): overlay is MeasuredBoundaryOverlayId =>
+  (MEASURED_BOUNDARY_OVERLAYS as readonly BoundaryOverlayId[]).includes(overlay);
 
 const finiteNonNegative = (value: number | null | undefined) =>
   value !== null && value !== undefined && Number.isFinite(value) && value >= 0;
@@ -119,7 +128,7 @@ export function boundaryReadout(
   interval: Readonly<{ fromYear: number; toYear: number }>,
 ): BoundaryReadout {
   const copy = words[locale];
-  if (!isRidingOverlay(selection.overlay)) return { kind: "boundary-only", note: copy.boundaryOnly };
+  if (!isMeasuredOverlay(selection.overlay)) return { kind: "boundary-only", note: copy.boundaryOnly };
 
   const measurement = measurements.find((candidate) =>
     candidate.overlay === selection.overlay &&

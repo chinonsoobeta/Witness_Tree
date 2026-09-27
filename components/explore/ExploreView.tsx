@@ -103,7 +103,7 @@ const copy = {
     notAvailable: "Not available yet",
     whyNot: "Why not",
     overlaysNote:
-      "Boundaries you can draw over the map, for reference only. They show where places are and who represents them, not how much forest they lost.",
+      "Outlines you can draw over the map. Point at a riding, region, city or town to see how much forest it lost in the years you chose. Watersheds are for reference only.",
     event: "Event",
     evidence: "Evidence",
     confidence: "Confidence",
@@ -195,7 +195,7 @@ const copy = {
     notAvailable: "Pas encore disponible",
     whyNot: "Pourquoi",
     overlaysNote:
-      "Des limites à superposer à la carte, à titre de référence seulement. Elles montrent où se trouvent les lieux et qui les représente, et non la forêt qu’ils ont perdue.",
+      "Des contours à superposer à la carte. Pointez une circonscription, une région, une ville ou une municipalité pour voir la forêt qu’elle a perdue pendant les années choisies. Les bassins versants sont affichés à titre de référence seulement.",
     event: "Événement",
     evidence: "Preuve",
     confidence: "Confiance",

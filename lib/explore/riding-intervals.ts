@@ -1,14 +1,14 @@
 import source from "@/data/phase3-riding-interval-measurements.json";
-import type { BoundaryMeasurementCoverage, RidingBoundaryMeasurement } from "./boundary-readout";
+import type { RidingBoundaryMeasurement } from "./boundary-readout";
 import { COVERED_FEDERAL_DISTRICT_PREFIXES } from "@/lib/comparison/real-adapter";
 import {
   EXPLORE_ANNUAL_STEP_COUNT,
   EXPLORE_INTERVAL_COUNT,
   EXPLORE_INTERVAL_FIRST_YEAR,
   EXPLORE_INTERVAL_LAST_YEAR,
-  intervalWindowIndex,
   type ExploreInterval,
 } from "./interval";
+import { decodeIntervalArea, intervalSpanFigures, type DecodedIntervalArea } from "./interval-spans";
 
 /**
  * Reads the checked-in interval measurements.
@@ -38,17 +38,10 @@ const EXPECTED_COUNTS = {
 const OVERLAY_FOR = (jurisdiction: string) =>
   jurisdiction === "CA" ? "federal-ridings" : "provincial-ridings";
 
-type District = Readonly<{
+type District = DecodedIntervalArea & Readonly<{
   overlay: RidingBoundaryMeasurement["overlay"];
   jurisdiction: string;
   boundaryId: string;
-  unmappedCells: number;
-  /** Running totals, so a span's summed figure is one subtraction. */
-  annualLossPrefix: readonly number[];
-  knownForestCellsByStartYear: readonly number[];
-  unknownCellsByStartYear: readonly number[];
-  /** Cumulative along the closing year, already summed out of the deltas. */
-  unionLossCells: readonly number[];
 }>;
 
 const object = (value: unknown): value is Record<string, unknown> =>
@@ -58,11 +51,6 @@ const exactClaims = (value: unknown) =>
   object(value) &&
   Object.keys(value).length === 4 &&
   Object.entries(CLAIMS).every(([key, expected]) => value[key] === expected);
-
-const counts = (value: unknown, length: number): value is number[] =>
-  Array.isArray(value) &&
-  value.length === length &&
-  value.every((entry) => typeof entry === "number" && Number.isInteger(entry) && entry >= 0);
 
 /**
  * Fails closed before any interval number reaches a page.
@@ -102,18 +90,7 @@ export function parseRidingIntervalRelease(value: unknown): readonly District[] 
     }
     const overlay = OVERLAY_FOR(jurisdiction);
     for (const candidate of entry.districts) {
-      if (
-        !object(candidate) ||
-        typeof candidate.boundaryId !== "string" ||
-        candidate.boundaryId.trim() === "" ||
-        typeof candidate.unmappedCells !== "number" ||
-        !Number.isInteger(candidate.unmappedCells) ||
-        candidate.unmappedCells < 0 ||
-        !counts(candidate.annualLossCells, EXPLORE_ANNUAL_STEP_COUNT) ||
-        !counts(candidate.knownForestCellsByStartYear, EXPLORE_ANNUAL_STEP_COUNT) ||
-        !counts(candidate.unknownCellsByStartYear, EXPLORE_ANNUAL_STEP_COUNT) ||
-        !counts(candidate.unionLossCellDeltas, EXPLORE_INTERVAL_COUNT)
-      ) {
+      if (!object(candidate) || typeof candidate.boundaryId !== "string" || candidate.boundaryId.trim() === "") {
         throw new Error("A riding interval measurement has an invalid contract.");
       }
       // Boundary tiles namespace every identifier with its jurisdiction, and the
@@ -121,35 +98,11 @@ export function parseRidingIntervalRelease(value: unknown): readonly District[] 
       const boundaryId = `${jurisdiction}-${candidate.boundaryId}`;
       if (seen.has(boundaryId)) throw new Error(`Duplicate riding interval measurement ${boundaryId}.`);
       seen.add(boundaryId);
-
-      const annualLossPrefix = [0];
-      for (const step of candidate.annualLossCells) annualLossPrefix.push(annualLossPrefix.at(-1)! + step);
-
-      const unionLossCells: number[] = [];
-      let running = 0;
-      let index = 0;
-      for (let start = 0; start < EXPLORE_ANNUAL_STEP_COUNT; start += 1) {
-        running = 0;
-        for (let end = start; end < EXPLORE_ANNUAL_STEP_COUNT; end += 1) {
-          running += candidate.unionLossCellDeltas[index];
-          const summed = annualLossPrefix[end + 1] - annualLossPrefix[start];
-          if (running > summed || running > candidate.knownForestCellsByStartYear[start]) {
-            throw new Error(`Riding interval measurement ${boundaryId} breaks a span invariant.`);
-          }
-          unionLossCells.push(running);
-          index += 1;
-        }
-      }
-
       districts.push({
         overlay,
         jurisdiction,
         boundaryId,
-        unmappedCells: candidate.unmappedCells,
-        annualLossPrefix,
-        knownForestCellsByStartYear: candidate.knownForestCellsByStartYear,
-        unknownCellsByStartYear: candidate.unknownCellsByStartYear,
-        unionLossCells,
+        ...decodeIntervalArea(candidate, `Riding interval measurement ${boundaryId}`),
       });
     }
   }
@@ -157,8 +110,6 @@ export function parseRidingIntervalRelease(value: unknown): readonly District[] 
 }
 
 const districts = parseRidingIntervalRelease(source);
-const CELL_HECTARES = 0.09;
-const hectares = (cells: number) => Math.round(cells * CELL_HECTARES * 100) / 100;
 
 /** A district's numbers for one span, as the map and the readout want them. */
 export type RidingIntervalMeasurement = RidingBoundaryMeasurement &
@@ -174,48 +125,20 @@ function inRecordScope(district: Readonly<{ jurisdiction: string; boundaryId: st
     || COVERED_FEDERAL_DISTRICT_PREFIXES.some((prefix) => district.boundaryId.startsWith(`CA-${prefix}`));
 }
 
-/**
- * Resolves every district for one span.
- *
- * A district reports a share of its own forest only when the whole district was
- * mapped, which is the same rule the annual product has always applied. Where
- * part of the district is unmapped the observed subtotal is still reported,
- * because withholding a number that was measured is its own kind of error; what
- * is withheld is the share, because its denominator is not known.
- */
+/** Resolves every district for one span. The coverage rule is intervalSpanFigures'. */
 export function ridingIntervalMeasurements(
   interval: ExploreInterval,
 ): readonly RidingIntervalMeasurement[] {
-  const start = interval.fromYear - EXPLORE_INTERVAL_FIRST_YEAR;
-  const end = interval.toYear - EXPLORE_INTERVAL_FIRST_YEAR - 1;
-  const window = intervalWindowIndex(interval);
   // The release measures all 343 federal ridings from national data, but the
   // record covers four provinces only (plan: no coverage beyond them in
   // version 1). A federal riding elsewhere is left out here, so no page
   // publishes a figure for it; Compare already applies the same rule.
-  return districts.filter(inRecordScope).map((district) => {
-    const union = district.unionLossCells[window];
-    const known = district.knownForestCellsByStartYear[start];
-    const unknown = district.unknownCellsByStartYear[start];
-    const summed = district.annualLossPrefix[end + 1] - district.annualLossPrefix[start];
-    const coverage: BoundaryMeasurementCoverage =
-      unknown > 0 || district.unmappedCells > 0
-        ? "partial-with-unknown"
-        : known === 0
-          ? "none-mapped"
-          : "complete";
-    const complete = coverage === "complete";
-    return {
-      overlay: district.overlay,
-      jurisdiction: district.jurisdiction,
-      boundaryId: district.boundaryId,
-      coverage,
-      fromYear: interval.fromYear,
-      toYear: interval.toYear,
-      observedLossPercent: complete ? (union / known) * 100 : null,
-      observedLossHectares: complete ? hectares(union) : null,
-      knownObservedSubtotalHectares: hectares(union),
-      summedLossHectares: hectares(summed),
-    };
-  });
+  return districts.filter(inRecordScope).map((district) => ({
+    overlay: district.overlay,
+    jurisdiction: district.jurisdiction,
+    boundaryId: district.boundaryId,
+    fromYear: interval.fromYear,
+    toYear: interval.toYear,
+    ...intervalSpanFigures(district, interval),
+  }));
 }

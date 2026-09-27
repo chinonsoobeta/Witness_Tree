@@ -41,6 +41,12 @@ import {
   pickBoundary,
   type BoundaryFeature,
 } from "@/lib/explore/boundary-pick";
+import {
+  censusSubdivisionMeasurement,
+  censusSubdivisionProvince,
+  loadCensusSubdivisionFigures,
+  type CensusSubdivisionFigures,
+} from "@/lib/explore/census-subdivisions";
 import { ProvinceBar } from "@/components/site";
 
 const text = {
@@ -96,6 +102,9 @@ const text = {
     boundariesShown: "Boundaries shown",
     boundary: "Boundary",
     jurisdiction: "Jurisdiction",
+    province: "Province",
+    placeFiguresLoading: "Loading this place’s figures…",
+    placeFiguresFailed: "This place’s figures didn’t load. Try again later.",
     clearBoundary: "Clear boundary",
     interval: "Interval",
     normalizedShare: "Detected loss share",
@@ -163,6 +172,9 @@ const text = {
     boundariesShown: "Limites affichées",
     boundary: "Limite",
     jurisdiction: "Autorité compétente",
+    province: "Province",
+    placeFiguresLoading: "Chargement des chiffres de ce lieu…",
+    placeFiguresFailed: "Les chiffres de ce lieu n’ont pas pu être chargés. Réessayez plus tard.",
     clearBoundary: "Effacer la limite",
     interval: "Intervalle",
     normalizedShare: "Part de perte détectée",
@@ -322,6 +334,20 @@ const boundaryLayerIds = (overlays: readonly BoundaryOverlayId[]) =>
 
 const boundaryPickLayerIds = (overlays: readonly BoundaryOverlayId[]) =>
   boundaryLayerIds(overlays).filter((id) => id.endsWith("-fill") || id.endsWith("-line"));
+
+const PROVINCE_CODE_FOR_PRUID: Readonly<Record<string, string>> = { "59": "BC", "48": "AB", "35": "ON", "24": "QC" };
+
+/**
+ * The province an economic region or census subdivision lies in. Their tiles
+ * carry the national jurisdiction, but "Canada" tells a reader nothing about
+ * where a town is.
+ */
+const boundaryProvince = (boundary: BoundarySelection): string | null =>
+  boundary.overlay === "census-subdivisions"
+    ? censusSubdivisionProvince(boundary.boundaryId)
+    : boundary.overlay === "economic-regions"
+      ? PROVINCE_CODE_FOR_PRUID[boundary.boundaryId.slice(12, 14)] ?? null
+      : null;
 
 const boundaryJurisdiction = (locale: Locale, jurisdiction: string) =>
   ({
@@ -1033,9 +1059,35 @@ export function ExploreMapClient({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mapReady, overlayKey, activeBoundaryKey]);
   const boundary = activeBoundary;
-  const readout = boundary
-    ? boundaryReadout(boundary, ridingMeasurements, locale, { fromYear, toYear: year })
+  // A town's figures come from its province's file, fetched the first time a
+  // reader points at a town there.
+  const [placeFigures, setPlaceFigures] = useState<Readonly<Record<string, CensusSubdivisionFigures | "failed">>>({});
+  const placeProvince = boundary?.overlay === "census-subdivisions" ? censusSubdivisionProvince(boundary.boundaryId) : null;
+  const placeEntry = placeProvince ? placeFigures[placeProvince] : undefined;
+  useEffect(() => {
+    if (!placeProvince || placeEntry !== undefined) return;
+    let live = true;
+    loadCensusSubdivisionFigures(placeProvince)
+      .then((figures) => { if (live) setPlaceFigures((loaded) => ({ ...loaded, [placeProvince]: figures })); })
+      .catch((error: unknown) => {
+        console.error("Explore place figures error", error);
+        if (live) setPlaceFigures((loaded) => ({ ...loaded, [placeProvince]: "failed" }));
+      });
+    return () => { live = false; };
+  }, [placeProvince, placeEntry]);
+  const placeState = placeProvince ? (placeEntry === undefined ? "loading" : placeEntry === "failed" ? "failed" : "ready") : null;
+  const placeMeasurement = boundary && placeEntry && placeEntry !== "failed"
+    ? censusSubdivisionMeasurement(placeEntry, boundary.boundaryId, { fromYear, toYear: year })
     : null;
+  const readout = boundary && (placeState === null || placeState === "ready")
+    ? boundaryReadout(
+      boundary,
+      placeMeasurement ? [...ridingMeasurements, placeMeasurement] : ridingMeasurements,
+      locale,
+      { fromYear, toYear: year },
+    )
+    : null;
+  const province = boundary ? boundaryProvince(boundary) : null;
   const fitMapToView = (mapView: ExploreMapView) => {
     // The controls sit along the bottom edge, so the fitted province keeps
     // clear of them rather than sliding underneath.
@@ -1226,9 +1278,11 @@ export function ExploreMapClient({
                 <strong>{text[locale].boundary}</strong>
                 <p>{boundary.name}</p>
                 <p>
-                  {text[locale].jurisdiction}
-                  {colon(locale)} {boundaryJurisdiction(locale, boundary.jurisdiction)}
+                  {province ? text[locale].province : text[locale].jurisdiction}
+                  {colon(locale)} {boundaryJurisdiction(locale, province ?? boundary.jurisdiction)}
                 </p>
+                {placeState === "loading" ? <p>{text[locale].placeFiguresLoading}</p> : null}
+                {placeState === "failed" ? <p>{text[locale].placeFiguresFailed}</p> : null}
                 {readout?.kind === "boundary-only" ? <p>{readout.note}</p> : null}
                 {readout?.kind === "riding-measurement" ? (
                   <>

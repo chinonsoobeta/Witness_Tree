@@ -44,7 +44,26 @@ The exact Statistics Canada 2021 economic-region geometry is source-admitted:
 76 features and 76 distinct DGUIDs, including 44 regions in the four initial
 provinces. The bilingual immutable v3 tile archive contains those 44 regions
 clipped to the official province boundaries and passed exact S3 and CloudFront
-readback. A regional forest-loss aggregate remains unreleased.
+readback.
+
+Since 2026-09-27 each region has forest-loss figures for every span, in
+[the region file](../data/phase3-economic-region-interval-measurements.json). The
+riding method (`scripts/phase3_interval_zonal_aggregate.py`) was run over the
+3,033 census subdivisions of the four provinces (2021 cartographic file, 10
+workers, peak 534 MB, 38 minutes), and
+`scripts/build-place-region-measurements.mjs` adds each subdivision into the region
+its point on surface falls in. The 44 regions add up to the province figures to
+within rounding. The same run gives the 2,291 published places their own figures:
+the whole record for search in
+[the place file](../data/place-whole-record-measurements.json), and every span for
+the map's cities-and-towns layer, built by
+`scripts/build-census-subdivision-overlay-tiles.mjs`. That layer's tiles and
+per-province figure files are planned as their own immutable release
+([record](../data/census-subdivision-overlay-release.json)) and
+`npm run check:census-subdivision-overlay` fails until
+`scripts/publish-census-subdivision-overlay-release.mjs` has uploaded them and read
+them back. Reserves, settlements and treaty or agreement lands get no figures of
+their own; their land counts in the region totals.
 
 The source-admitted watershed geometry is NRCan's national Water Survey of Canada
 sub-drainage-area rollup archive, version 6.0 at 1:1,000,000 scale. It is a
