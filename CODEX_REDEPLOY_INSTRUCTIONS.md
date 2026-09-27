@@ -9,11 +9,11 @@ commit and any history reconciliation it allows.
 
 - Existing Sites project: `appgprj_6a7bea9e59988191a9304d4c5a3f379d`. Never create a new Site.
 - Canonical domain: `https://www.witnesstree.ca`
-- Last deployment this repository recorded: **Sites version 43**, completed on
+- Last deployment this repository recorded: **Sites version 44**, completed on
   2026-09-27. Its application tree is `main` at
-  `8da80114743c2ad6436d255862f88ebd466c7f53` (#183). Its Sites source commit is
-  the reconciliation merge `96ad8e140f1f0213e45a46d84a4e2cb815d6d191`. The
-  browser observation is `data/deployed-map-render-evidence-2026-09-27-v43.json`.
+  `18427fde24d268861ccbf42483f998c9704bcc82` (#195). Its Sites source commit is
+  the reconciliation merge `71fe20b444a46e0485b20bb4e8b1401060c9c380`. The
+  browser observation is `data/deployed-map-render-evidence-2026-09-27-v44.json`.
 - The control plane records any later version; check it before relying on this list.
 
 ## Why the Sites history needs reconciling

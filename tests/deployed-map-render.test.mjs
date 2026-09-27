@@ -32,7 +32,7 @@ const withRecord = async (mutate) => {
   return validateDeployedMapRender({ record });
 };
 
-test("the Site observation waits for the next deploy after this map client change", async () => {
+test("the fresh Site observation settles the map render gate", async () => {
   /*
    * Since 2026-09-26 a map change no longer blocks its own merge. The version
    * 43 observation is stale for exactly one file: #191 framed all four
@@ -45,12 +45,11 @@ test("the Site observation waits for the next deploy after this map client chang
    * is committed and this returns to the deployed-site tier.
    */
   const failures = validateDeployedMapRender();
-  assert.equal(failures.length, 1, failures.join(" "));
-  assert.ok(failures[0].startsWith("components/explore/ExploreMapClient.tsx changed since"), failures[0]);
+  assert.deepEqual(failures, []);
   const gate = resolveDeployedMapRender();
-  assert.equal(gate.satisfiedBy, "awaiting-deploy");
+  assert.equal(gate.satisfiedBy, "deployed-site");
   assert.deepEqual(gate.failures, []);
-  assert.ok(gate.notes.join(" ").includes(DEPLOYED_MAP_RENDER_WORKFLOW));
+  assert.deepEqual(gate.notes, []);
   const record = await loadRecord();
   assert.equal(record.schemaVersion, RENDER_EVIDENCE_SCHEMA);
   assert.ok(record.url.startsWith(DEPLOYED_ORIGIN));
@@ -369,18 +368,17 @@ test("a settled debt has to be deleted rather than left on the branch", async ()
 test("neither weaker tier exists on this branch, so nothing stands in for the Site", async () => {
   /*
    * The gate resolves a tier on presence, so a leftover file silently answers
-   * for a measurement nobody took. Since awaiting deploy covers a map change
-   * on its own, neither the preview record nor a break-glass is needed, and
-   * the 2026-09-26 break-glass was deleted when that tier arrived.
+   * for a measurement nobody took. The deployed-site observation now settles
+   * the gate, so neither weaker tier is needed.
    */
   for (const relative of [BRANCH_EVIDENCE_PATH, BREAK_GLASS_PATH]) {
     assert.equal(
       existsSync(new URL(`../${relative}`, import.meta.url)),
       false,
-      `${relative} is committed, but a map change now waits for its deploy without one`,
+      `${relative} is committed, but the deployed-site observation makes it unnecessary`,
     );
   }
-  assert.equal(resolveDeployedMapRender().satisfiedBy, "awaiting-deploy");
+  assert.equal(resolveDeployedMapRender().satisfiedBy, "deployed-site");
 });
 
 test("the daily workflow drives the live Site with the same harness", async () => {
