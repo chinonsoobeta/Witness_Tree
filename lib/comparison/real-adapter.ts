@@ -2,7 +2,8 @@ import { rankRidings } from "./ranking";
 import type { ComparisonPlace, RankedRiding, RankingContext } from "./types";
 
 export const MINIMUM_RANKED_FOREST_HECTARES = 500;
-const COVERED_FEDERAL_DISTRICT_PREFIXES = ["24", "35", "48", "59"] as const;
+/** Federal district numbers start with the province code: Quebec, Ontario, Alberta, British Columbia. */
+export const COVERED_FEDERAL_DISTRICT_PREFIXES = ["24", "35", "48", "59"] as const;
 
 type RawRow = Readonly<{
   boundaryId: string;
