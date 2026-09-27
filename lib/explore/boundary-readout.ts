@@ -1,5 +1,6 @@
 import { formatHectares, formatPercent, formatYearRange, SUM_TERM, yearRange, type Locale } from "@/lib/domain";
 import type { BoundaryOverlayId } from "./boundaries";
+import { formatUnknownSharePercent } from "./map-style";
 
 export type BoundaryMeasurementCoverage =
   | "complete"
@@ -42,6 +43,11 @@ export type RidingBoundaryMeasurement = Readonly<{
    * and invites them to read a distinction into numbers that do not differ.
    */
   summedLossHectares?: number | null;
+  /**
+   * An unknown share small enough that the owner admitted the area as
+   * complete. Only economic regions carry it, and only below 1%.
+   */
+  admittedUnknownPercent?: number;
 }>;
 
 export type BoundaryReadout =
@@ -66,6 +72,7 @@ const words = {
   en: {
     boundaryOnly: "Reference boundary only. There is no forest-loss figure for this area.",
     complete: "Complete mapped coverage",
+    admitted: (share: string) => `Nearly complete mapped coverage; ${share} of the forest has no satellite data`,
     partial: "Partial mapped coverage; unknown area remains",
     none: "No mapped coverage",
     unavailable: "No figure for this area",
@@ -74,6 +81,7 @@ const words = {
   fr: {
     boundaryOnly: "Limite de référence seulement. Il n’y a aucun chiffre de perte forestière pour cette zone.",
     complete: "Couverture cartographiée complète",
+    admitted: (share: string) => `Couverture cartographiée presque complète; ${share} de la forêt n’a aucune donnée satellitaire`,
     partial: "Couverture cartographiée partielle; une zone inconnue demeure",
     none: "Aucune couverture cartographiée",
     unavailable: "Aucun chiffre pour cette zone",
@@ -98,6 +106,11 @@ function assertMeasurement(measurement: RidingBoundaryMeasurement) {
   }
   if (!complete && (measurement.observedLossPercent !== null || measurement.observedLossHectares !== null)) {
     throw new Error("Incomplete riding coverage must not report a complete loss or share.");
+  }
+  const admitted = measurement.admittedUnknownPercent;
+  if (admitted !== undefined && (!complete || measurement.overlay !== "economic-regions" ||
+    !Number.isFinite(admitted) || admitted <= 0 || admitted >= 1)) {
+    throw new Error("Only an economic region may admit an unknown share, and only one below 1%.");
   }
   if (measurement.knownObservedSubtotalHectares !== undefined && measurement.knownObservedSubtotalHectares !== null && !finiteNonNegative(measurement.knownObservedSubtotalHectares)) {
     throw new Error("Known observed subtotal must be a non-negative finite number.");
@@ -151,7 +164,9 @@ export function boundaryReadout(
     throw new Error("A riding measurement was resolved for a different span than the one on display.");
   }
   const coverage = measurement.coverage === "complete"
-    ? copy.complete
+    ? measurement.admittedUnknownPercent === undefined
+      ? copy.complete
+      : copy.admitted(formatUnknownSharePercent(measurement.admittedUnknownPercent, locale))
     : measurement.coverage === "partial-with-unknown"
       ? copy.partial
       : copy.none;

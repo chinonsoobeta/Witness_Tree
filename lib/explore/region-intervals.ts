@@ -28,6 +28,14 @@ const CLAIMS = {
 
 const REGION_COUNT = 44;
 
+/**
+ * The owner decided on 2026-09-27 that a region with less than 1% of its
+ * forest unmapped is treated as fully measured. The share is taken over the
+ * mapped forest and the readout names the unmapped share beside it. Ridings
+ * and census subdivisions keep the strict rule.
+ */
+export const REGION_UNKNOWN_TOLERANCE_PERCENT = 1;
+
 type Region = DecodedIntervalArea & Readonly<{ boundaryId: string }>;
 
 const object = (value: unknown): value is Record<string, unknown> =>
@@ -80,6 +88,6 @@ export function regionIntervalMeasurements(interval: ExploreInterval): readonly 
     boundaryId: region.boundaryId,
     fromYear: interval.fromYear,
     toYear: interval.toYear,
-    ...intervalSpanFigures(region, interval),
+    ...intervalSpanFigures(region, interval, REGION_UNKNOWN_TOLERANCE_PERCENT),
   }));
 }
