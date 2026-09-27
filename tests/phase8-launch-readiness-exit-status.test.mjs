@@ -36,7 +36,9 @@ test("Phase 8 records every literal launch-readiness gate without production inf
    * count. The assertion below this one is the real guard: it ties the
    * criterion's status to the live gate, so neither can drift from the other.
    *
-   * The gate stays a delivery-and-rendering gate either way: it asserts no
+   * On 2026-09-27 Sites version 43 deployed the reconciled main tree and the
+   * fresh browser observation settled the gate by the deployed-site tier again;
+   * the gate stays a delivery-and-rendering gate and asserts no
    * production admission, and the other fifteen criteria are untouched.
    */
   assert.equal(record.completedCriteria, 8);
