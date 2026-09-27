@@ -1,7 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import release from "../data/phase3-economic-region-interval-measurements.json";
-import { parseRegionIntervalRelease, regionIntervalMeasurements } from "../lib/explore/region-intervals";
+import { parseRegionIntervalRelease, REGION_UNKNOWN_TOLERANCE_PERCENT, regionIntervalMeasurements } from "../lib/explore/region-intervals";
+import { intervalSpanFigures } from "../lib/explore/interval-spans";
+import { intervalWindowIndex } from "../lib/explore/interval";
 import { provinceSpanMeasurements } from "../lib/explore/province-spans";
 
 const clone = () => JSON.parse(JSON.stringify(release));
@@ -38,15 +40,49 @@ test("regions are keyed as the overlay tiles key them", () => {
   }
 });
 
-test("a partly unmapped region keeps its subtotal and withholds its share", () => {
+test("a region more than 1% unmapped keeps its subtotal and withholds its share", () => {
   const regions = regionIntervalMeasurements(SPANS[0]);
   const partial = regions.filter((region) => region.coverage === "partial-with-unknown");
   assert.ok(partial.length > 0);
   for (const region of partial) {
     assert.equal(region.observedLossPercent, null);
     assert.equal(region.observedLossHectares, null);
+    assert.equal(region.admittedUnknownPercent, undefined);
     assert.ok(region.knownObservedSubtotalHectares! >= 0);
   }
+});
+
+test("a region under 1% unmapped is admitted and names its unmapped share", () => {
+  // The owner's 2026-09-27 decision. Eight regions fall under the line at the
+  // 1984 start; their share is taken over the mapped forest alone.
+  const admitted = regionIntervalMeasurements(SPANS[0]).filter((region) => region.admittedUnknownPercent !== undefined);
+  assert.deepEqual(admitted.map((region) => region.boundaryId).sort(), [
+    "CA-2021S05002410", "CA-2021S05002460", "CA-2021S05003595", "CA-2021S05004870",
+    "CA-2021S05004880", "CA-2021S05005910", "CA-2021S05005960", "CA-2021S05005970",
+  ]);
+  const byId = new Map(parseRegionIntervalRelease(release).map((region) => [region.boundaryId, region]));
+  for (const region of admitted) {
+    assert.equal(region.coverage, "complete");
+    assert.ok(region.admittedUnknownPercent! > 0 && region.admittedUnknownPercent! < REGION_UNKNOWN_TOLERANCE_PERCENT);
+    const source = byId.get(region.boundaryId)!;
+    const known = source.knownForestCellsByStartYear[0];
+    assert.ok(Math.abs(region.observedLossPercent! - (source.unionLossCells[intervalWindowIndex(SPANS[0])] / known) * 100) < 1e-9);
+    assert.equal(region.observedLossHectares, region.knownObservedSubtotalHectares);
+  }
+});
+
+test("the tolerance is the regions' alone", () => {
+  const edge = { unmappedCells: 5, annualLossPrefix: [0, 1], knownForestCellsByStartYear: [995], unknownCellsByStartYear: [5], unionLossCells: [1] };
+  const span = { fromYear: 1984, toYear: 1985 };
+  const strict = intervalSpanFigures(edge as never, span);
+  assert.equal(strict.coverage, "partial-with-unknown");
+  assert.equal(strict.admittedUnknownPercent, undefined);
+  const tolerant = intervalSpanFigures(edge as never, span, 1);
+  assert.equal(tolerant.coverage, "complete");
+  assert.equal(tolerant.admittedUnknownPercent, 0.5);
+  // Exactly at the line is not under it.
+  const onLine = { ...edge, knownForestCellsByStartYear: [990], unknownCellsByStartYear: [10], unmappedCells: 10 };
+  assert.equal(intervalSpanFigures(onLine as never, span, 1).coverage, "partial-with-unknown");
 });
 
 test("the loader fails closed on a short or impossible region", () => {
