@@ -229,6 +229,7 @@ jobs:
       # endpoint that BC does not name.
       - run: npm run check:bc-ften-endpoint-divergence
       - run: npm run check:boundary-overlays
+      - run: npm run check:census-subdivision-overlay
       - run: npm run check:phase2-v21-province-zonal-pilot
       - run: npm run check:phase2-expert-review-workflow
       - run: npm run check:phase2-validation-comparison

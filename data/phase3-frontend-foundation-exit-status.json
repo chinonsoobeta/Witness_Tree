@@ -6,7 +6,7 @@
       "id": "budgets-pass-in-ci",
       "title": "Every performance and accessibility budget in section 12.7 passes in CI",
       "status": "pass",
-      "reason": "The budget and accessibility contract checkers both run as required steps on the branch gate. On 2026-09-26 .github/workflows/ci.yml gained one step, npm run check:phase4-provincial-cause-crosstab; no existing step changed, the digest was refreshed, and this reason still holds.",
+      "reason": "The budget and accessibility contract checkers both run as required steps on the branch gate. On 2026-09-26 .github/workflows/ci.yml gained one step, npm run check:phase4-provincial-cause-crosstab; no existing step changed, the digest was refreshed, and this reason still holds. On 2026-09-27 .github/workflows/ci.yml gained one step, npm run check:census-subdivision-overlay; no existing step changed, the digest was refreshed, and this reason still holds.",
       "evidence": [
         {
           "path": "scripts/check-budgets.mjs",
@@ -18,7 +18,7 @@
         },
         {
           "path": ".github/workflows/ci.yml",
-          "sha256": "7bfa569831ea357e5c4c5209e085170c52b0ad69714fbdb9c3c6c0518925d46e"
+          "sha256": "45c1723f2c3d09f5adc81b8641ba89f99f45e20f81be6380d94ab9d8056ec06e"
         }
       ]
     },
@@ -33,7 +33,7 @@
       "id": "french-page-count-equals-english-with-zero-missing-strings",
       "title": "French page count equals English page count, with zero missing strings",
       "status": "pass",
-      "reason": "The bilingual checker enforces route-pair parity across every locale route and fails on a missing route or a missing locale content token, and it runs as a required CI step. On 2026-09-26 .github/workflows/ci.yml gained one step, npm run check:phase4-provincial-cause-crosstab; no existing step changed, the digest was refreshed, and this reason still holds.",
+      "reason": "The bilingual checker enforces route-pair parity across every locale route and fails on a missing route or a missing locale content token, and it runs as a required CI step. On 2026-09-26 .github/workflows/ci.yml gained one step, npm run check:phase4-provincial-cause-crosstab; no existing step changed, the digest was refreshed, and this reason still holds. On 2026-09-27 .github/workflows/ci.yml gained one step, npm run check:census-subdivision-overlay; no existing step changed, the digest was refreshed, and this reason still holds.",
       "evidence": [
         {
           "path": "scripts/check-bilingual.mjs",
@@ -41,7 +41,7 @@
         },
         {
           "path": ".github/workflows/ci.yml",
-          "sha256": "7bfa569831ea357e5c4c5209e085170c52b0ad69714fbdb9c3c6c0518925d46e"
+          "sha256": "45c1723f2c3d09f5adc81b8641ba89f99f45e20f81be6380d94ab9d8056ec06e"
         }
       ]
     },

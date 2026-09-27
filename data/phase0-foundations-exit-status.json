@@ -125,7 +125,7 @@
       "id": "no-persistent-identifier-contains-the-product-name",
       "title": "no persistent identifier contains the product name",
       "status": "pass",
-      "reason": "A gate reads the product name from the brand token and rejects any route segment or path literal that carries it in any joined, accent-stripped spelling. Its tests prove it rejects a violating route and a violating path, and that renaming the brand token changes what it rejects. On 2026-09-26 .github/workflows/ci.yml gained one step, npm run check:phase4-provincial-cause-crosstab; no existing step changed, the digest was refreshed, and this reason still holds.",
+      "reason": "A gate reads the product name from the brand token and rejects any route segment or path literal that carries it in any joined, accent-stripped spelling. Its tests prove it rejects a violating route and a violating path, and that renaming the brand token changes what it rejects. On 2026-09-26 .github/workflows/ci.yml gained one step, npm run check:phase4-provincial-cause-crosstab; no existing step changed, the digest was refreshed, and this reason still holds. On 2026-09-27 .github/workflows/ci.yml gained one step, npm run check:census-subdivision-overlay; no existing step changed, the digest was refreshed, and this reason still holds.",
       "evidence": [
         {
           "path": "scripts/check-persistent-identifiers.mjs",
@@ -141,7 +141,7 @@
         },
         {
           "path": ".github/workflows/ci.yml",
-          "sha256": "7bfa569831ea357e5c4c5209e085170c52b0ad69714fbdb9c3c6c0518925d46e"
+          "sha256": "45c1723f2c3d09f5adc81b8641ba89f99f45e20f81be6380d94ab9d8056ec06e"
         }
       ]
     }

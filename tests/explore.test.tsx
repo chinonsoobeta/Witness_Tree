@@ -150,8 +150,11 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
   // The reserve and treaty-area overlays were removed rather than shown as
   // pending. Their sources are authority-blocked, so a "not available yet"
   // label would imply work in progress that is not happening.
-  assert.doesNotMatch(en, /Reserves/);
+  // The towns layer names them only to say they are left out.
+  assert.doesNotMatch(en, /overlay-name">Reserves/);
   assert.doesNotMatch(en, /Treaty areas/);
+  assert.match(en, /overlays=census-subdivisions/);
+  assert.match(en, /Reserves, settlements and treaty or agreement lands are not shown on their own/);
   // The ridings overlays are real layers now, so the blanket unavailable
   // label is gone and each card offers a control instead.
   assert.doesNotMatch(en, /geometry unavailable/);
@@ -381,7 +384,7 @@ test("Explore uses the exact PMTiles release with a GeoJSON/SVG fallback on map 
   assert.match(map, /const provinceAvailable = mode === "forest-change";/);
   assert.match(map, /unavailableYear/);
   assert.match(map, /spanRows\.find\(\(row\) => row\.id === feature\.properties\.province_id\)/);
-  assert.match(map, /setPaintProperty\(PROVINCE_FILL_LAYER_ID, "fill-color", provinceFillColour\(fromYear, year\)\)/);
+  assert.match(map, /setPaintProperty\(PROVINCE_FILL_LAYER_ID, "fill-color", provinceFillColour\(fromYear, year, shading\)\)/);
   assert.match(view, /Detected loss \(%\)/);
   assert.match(style, /phase2_province_loss_2020_2022/);
   assert.match(style, /\.pmtiles/);
@@ -403,13 +406,14 @@ test("Explore uses the exact PMTiles release with a GeoJSON/SVG fallback on map 
     assert.doesNotMatch(route, /<FederalDistrictFinder/);
     assert.doesNotMatch(route, /PlaceFinder/);
     assert.match(route, /<ExploreView/);
-    assert.match(route, /ridingMeasurements=\{ridingIntervalMeasurements\(interval\)\}/);
+    assert.match(route, /ridingMeasurements=\{\[\.\.\.ridingIntervalMeasurements\(interval\), \.\.\.regionIntervalMeasurements\(interval\)\]\}/);
     /*
      * The interval table holds all 741 spans for all 774 districts. Importing
      * it through the barrel would put it in reach of every client component
      * that imports from "@/lib/explore", so the route names the module.
      */
     assert.match(route, /from "@\/lib\/explore\/riding-intervals"/);
+    assert.match(route, /from "@\/lib\/explore\/region-intervals"/);
   }
 });
 
@@ -469,8 +473,10 @@ test("map failures retain diagnostics, retry, and a reachable patch zoom", async
   assert.match(map, /className="explore-map-layer-panel"[\s\S]*tabIndex=\{0\}[\s\S]*role="region"/);
   assert.match(map, /className="[^"]*explore-map-fullscreen-button"[\s\S]*className="explore-map-zoom"/);
   // The legend under the map is the only one: no second copy of the keys or
-  // the figures table is drawn below it.
-  assert.equal((map.match(/className="explore-map-legend/g) ?? []).length, 2);
+  // the figures table is drawn below it. Three legend lists exist in the
+  // source: the forest-loss shading, the harvest or fire shading (never both
+  // at once), and the patches.
+  assert.equal((map.match(/className="explore-map-legend/g) ?? []).length, 3);
   assert.doesNotMatch(map, /<table/);
   assert.match(panel, /position: static/);
   assert.match(panel, /display: flex/);
@@ -567,7 +573,7 @@ test("playback swaps only the patch layer, starts at 1985, and stops visibly", a
   assert.match(map, /map\.addSource\(EXPLORE_PER_CELL_SPAN_LAYER\.sourceId, perCellSource\(\)\)/);
   assert.match(map, /\[mapReady, perCellKey, cause, overlayKey\]/);
   // The map is rebuilt only when a mode changes what it can draw, never for a year.
-  assert.match(map, /\[patchCapable, provinceAvailable, overlayKey, retryNonce\]/);
+  assert.match(map, /\[patchCapable, shaded, overlayKey, retryNonce\]/);
   assert.doesNotMatch(
     map,
     /\[available, provinceAvailable, perCellArchive, overlayKey, cause\]/,
@@ -647,7 +653,10 @@ test("the map identifies the boundary under the pointer, inside it or on its lin
   assert.match(mapSource, /setHoveredBoundary\(null\)/);
   assert.match(mapSource, /setPinnedBoundary\(selection\)/);
   assert.match(mapSource, /className="explore-map-boundary-status" role="status"/);
-  assert.match(mapSource, /boundaryReadout\(boundary, ridingMeasurements, locale, \{ fromYear, toYear: year \}\)/);
+  assert.match(mapSource, /boundaryReadout\(\s*boundary,\s*placeMeasurement \? \[\.\.\.ridingMeasurements, placeMeasurement\] : ridingMeasurements,\s*locale,\s*\{ fromYear, toYear: year \},\s*\)/);
+  // A town's figures load on demand; until they arrive the readout says so
+  // rather than claiming the town has no figure.
+  assert.match(mapSource, /placeState === "loading" \? <p>\{text\[locale\]\.placeFiguresLoading\}<\/p>/);
   assert.match(mapSource, /readout\?\.kind === "boundary-only"/);
   assert.match(mapSource, /readout\?\.kind === "riding-measurement"/);
   assert.match(mapSource, /text\[locale\]\.normalizedShare/);

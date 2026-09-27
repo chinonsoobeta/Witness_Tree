@@ -12,6 +12,8 @@ import {
 } from "@/lib/explore";
 // Imported by path rather than through the barrel: this module carries every
 // span for every district and must never be pulled into a browser bundle.
+// The same holds for the economic-region table.
+import { regionIntervalMeasurements } from "@/lib/explore/region-intervals";
 import { ridingIntervalMeasurements } from "@/lib/explore/riding-intervals";
 import { localizedAlternates } from "@/lib/site-metadata";
 
@@ -59,7 +61,7 @@ export default async function Page({
           year={interval.toYear}
           fromYear={interval.fromYear}
           overlays={overlays}
-          ridingMeasurements={ridingIntervalMeasurements(interval)}
+          ridingMeasurements={[...ridingIntervalMeasurements(interval), ...regionIntervalMeasurements(interval)]}
           provincialCause={provincialCauseByInterval()}
         />
       </main>

@@ -16,6 +16,7 @@
  *   the file can reach the browser. It is 2.4 MB, and the one thing keeping it
  *   server-side is that no client component imports it, directly or through the
  *   barrel. That is a property of the import graph, so it is checked as one.
+ *   The economic-region table is held to the same rule.
  */
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import path from "node:path";
@@ -24,6 +25,7 @@ import { fileURLToPath } from "node:url";
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 export const RELEASE_PATH = "data/phase3-riding-interval-measurements.json";
 export const LOADER_PATH = "lib/explore/riding-intervals.ts";
+export const REGION_LOADER_PATH = "lib/explore/region-intervals.ts";
 export const BARREL_PATH = "lib/explore/index.ts";
 export const RELEASE_SCHEMA = "witness-tree/phase3-riding-interval-measurements/1";
 export const STEPS = 38;
@@ -156,15 +158,15 @@ function clientModules(root) {
  */
 export function validateServerOnly(root) {
   const barrel = readFileSync(path.join(root, BARREL_PATH), "utf8");
-  if (/riding-intervals/.test(barrel)) {
+  if (/riding-intervals|region-intervals/.test(barrel)) {
     throw new Error(
-      `${BARREL_PATH} re-exports ${LOADER_PATH}. Every client module importing the barrel would then carry all 741 spans.`,
+      `${BARREL_PATH} re-exports ${LOADER_PATH} or ${REGION_LOADER_PATH}. Every client module importing the barrel would then carry all 741 spans.`,
     );
   }
   const offenders = [];
   for (const [file, text] of clientModules(root)) {
-    if (/from\s+["'][^"']*riding-intervals["']/.test(text) ||
-      /from\s+["'][^"']*phase3-riding-interval-measurements\.json["']/.test(text)) {
+    if (/from\s+["'][^"']*(riding|region)-intervals["']/.test(text) ||
+      /from\s+["'][^"']*phase3-(riding|economic-region)-interval-measurements\.json["']/.test(text)) {
       offenders.push(file);
     }
   }

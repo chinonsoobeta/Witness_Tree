@@ -9,10 +9,11 @@
  * asked for, and the caller checks that.
  *
  * The table itself never leaves the server: every response is one span, about
- * 774 districts, never the 741 spans behind it.
+ * 755 ridings and economic regions, never the 741 spans behind them.
  */
 
 import { parseExploreInterval } from "../lib/explore/interval";
+import { regionIntervalMeasurements } from "../lib/explore/region-intervals";
 import { ridingIntervalMeasurements } from "../lib/explore/riding-intervals";
 
 export const DISTRICT_SPANS_PATH = "/api/explore/district-spans";
@@ -41,7 +42,11 @@ export function handleDistrictSpans(request: Request): Response {
   // The answer changes only when a deploy changes the table, so a short shared
   // cache is safe and spares the worker a recomputation per slider step.
   return json(
-    { fromYear: interval.fromYear, toYear: interval.toYear, measurements: ridingIntervalMeasurements(interval) },
+    {
+      fromYear: interval.fromYear,
+      toYear: interval.toYear,
+      measurements: [...ridingIntervalMeasurements(interval), ...regionIntervalMeasurements(interval)],
+    },
     200,
     "public, max-age=300",
   );

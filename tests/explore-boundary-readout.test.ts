@@ -39,7 +39,7 @@ test("riding readout joins on overlay, jurisdiction, and boundary id with share 
   const wrongJurisdiction = { ...complete, jurisdiction: "QC" };
   const unmatched = boundaryReadout(selection("federal-ridings"), [wrongJurisdiction], "en", SPAN);
   assert.equal(unmatched.kind, "riding-measurement");
-  assert.equal(unmatched.coverage, "No local riding measurement");
+  assert.equal(unmatched.coverage, "No figure for this area");
 });
 
 test("incomplete and unmapped riding coverage never turn unknown totals into zero", () => {
@@ -59,12 +59,20 @@ test("incomplete and unmapped riding coverage never turn unknown totals into zer
   }
 });
 
-test("economic regions and watersheds remain boundary-only even when a matching riding record exists", () => {
-  for (const overlay of ["economic-regions", "watersheds"] as const) {
-    assert.deepEqual(boundaryReadout(selection(overlay), [complete], "en", SPAN), {
-      kind: "boundary-only",
-      note: "Reference boundary only. There is no forest-loss figure for this area.",
-    });
+test("watersheds remain boundary-only even when a matching riding record exists", () => {
+  assert.deepEqual(boundaryReadout(selection("watersheds"), [complete], "en", SPAN), {
+    kind: "boundary-only",
+    note: "Reference boundary only. There is no forest-loss figure for this area.",
+  });
+});
+
+test("economic regions and census subdivisions join only their own overlay's figures", () => {
+  for (const overlay of ["economic-regions", "census-subdivisions"] as const) {
+    // A riding's figure never answers for a region that happens to share its id.
+    const other = boundaryReadout(selection(overlay), [complete], "en", SPAN);
+    assert.equal(other.kind === "riding-measurement" && other.coverage, "No figure for this area");
+    const own = boundaryReadout(selection(overlay), [{ ...complete, overlay }], "en", SPAN);
+    assert.equal(own.kind === "riding-measurement" && own.normalizedShare, "1.25%");
   }
 });
 
