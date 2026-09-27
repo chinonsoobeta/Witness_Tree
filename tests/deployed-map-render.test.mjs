@@ -31,9 +31,9 @@ const withRecord = async (mutate) => {
   return validateDeployedMapRender({ record });
 };
 
-test("the Site observation is stale for exactly this branch's client change", async () => {
+test("the current Site observation settles the gate for this branch's client", async () => {
   /*
-   * This asserts the settled shape between deploys, and it has been inverted
+   * This asserts the settled shape after the v43 deploy. The current
    * before: between 2026-09-19 and the first 2026-09-20 deploy the gate rested
    * on an authorized break-glass, and later deploys (versions 34, 36, 39, 41
    * and 42) each settled it on a fresh measurement. On 2026-09-26 it is
@@ -46,11 +46,9 @@ test("the Site observation is stale for exactly this branch's client change", as
    * the observation is current and the gate is answered by the deployed Site.
    */
   const failures = validateDeployedMapRender();
-  assert.equal(failures.length, 1, failures.join(" "));
-  assert.ok(failures[0].startsWith("components/explore/ExploreMapClient.tsx changed since"), failures[0]);
-  // The gate is answered meanwhile, but by accepted debt, not by measurement.
+  assert.deepEqual(failures, []);
   const gate = resolveDeployedMapRender();
-  assert.equal(gate.satisfiedBy, "break-glass");
+  assert.equal(gate.satisfiedBy, "deployed-site");
   assert.deepEqual(gate.failures, []);
   const record = await loadRecord();
   assert.equal(record.schemaVersion, RENDER_EVIDENCE_SCHEMA);
@@ -349,37 +347,23 @@ test("a settled debt has to be deleted rather than left on the branch", async ()
   assert.ok(superseded.failures.some((message) => message.includes("is not needed. Delete it")));
 });
 
-test("the only weaker tier on this branch is the authorized break-glass, and it is real debt", async () => {
+test("the weaker tiers are absent after the deployed Site observation", async () => {
   /*
    * The gate resolves a tier on presence, so a leftover file silently answers
    * for a measurement nobody took. Whenever the Site observation is current,
    * both weaker tiers must be absent, and this test asserts that again once
    * the next deploy is observed and the break-glass is deleted.
    *
-   * On 2026-09-26 the owner authorized a second break-glass, for the same
-   * reason as the first on 2026-09-19: the Explore client changed (commit
-   * 826f897e), and no preview measurement is possible, because the ChatGPT
-   * Sites control plane exposes no preview URL for this project and its only
-   * deployment operation publishes to production. The preview tier stays
-   * absent, and the break-glass is held to its own terms: it expires, it binds
-   * only the file it covers, and it is forbidden from reporting checks or
-   * claiming anything was observed.
+   * weaker tiers stay absent: the Site observation is current and the gate is
+   * satisfied by deployed-site.
    */
   assert.equal(
     existsSync(new URL(`../${BRANCH_EVIDENCE_PATH}`, import.meta.url)),
     false,
     `${BRANCH_EVIDENCE_PATH} is committed, but no preview deployment was ever measured`,
   );
-  assert.equal(existsSync(new URL(`../${BREAK_GLASS_PATH}`, import.meta.url)), true);
-  assert.deepEqual(validateBreakGlass({}), []);
-
-  const record = JSON.parse(await readFile(new URL(`../${BREAK_GLASS_PATH}`, import.meta.url), "utf8"));
-  assert.equal(record.status, "gate-debt-not-an-observation");
-  assert.equal(record.siteObservationOwed, true);
-  assert.equal(record.allChecksPassed, false);
-  assert.equal(record.checks, undefined, "a break-glass that reports checks is claiming a measurement");
-  assert.deepEqual(record.sources.map((entry) => entry.path), ["components/explore/ExploreMapClient.tsx"]);
-  assert.equal(resolveDeployedMapRender().satisfiedBy, "break-glass");
+  assert.equal(existsSync(new URL(`../${BREAK_GLASS_PATH}`, import.meta.url)), false);
+  assert.equal(resolveDeployedMapRender().satisfiedBy, "deployed-site");
 });
 
 test("the harness labels a run by the origin it measured, not by the file it is written to", async () => {
