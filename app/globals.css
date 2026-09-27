@@ -4660,7 +4660,6 @@ dd > a:only-child {
 }
 .province-list-headline {
   margin: 0;
-  max-width: 24ch;
   font-size: clamp(21px, 2.3vw, 27px);
   font-weight: 700;
   line-height: 1.2;
@@ -4988,6 +4987,28 @@ dd > a:only-child {
   color: var(--ink-2);
   text-wrap: balance;
 }
+/* The two measures side by side, as equals. */
+.cumulative-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px 32px;
+  margin-top: 12px;
+}
+.cumulative-pair .cumulative-figure {
+  margin-top: 4px;
+  font-size: clamp(30px, 3.6vw, 46px);
+}
+.cumulative-label {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+@media (max-width: 760px) {
+  .cumulative-pair { grid-template-columns: minmax(0, 1fr); }
+}
 /* The minimum, said inside the unit beside the number it bounds. */
 .cumulative-minimum {
   display: flex;
@@ -5251,6 +5272,7 @@ dd > a:only-child {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px 32px;
 }
+.search-chosen-ridings-note { grid-column: 1 / -1; margin: 0; color: var(--ink-2); font-size: var(--text-small); }
 .page-wrap .search-chosen-ridings h3 { margin: 0; font-size: var(--text-compact); font-weight: 400; }
 .search-chosen-ridings ul { margin: 4px 0 0; padding: 0; list-style: none; }
 .search-chosen-ridings li {

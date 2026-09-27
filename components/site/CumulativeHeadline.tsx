@@ -1,4 +1,4 @@
-import { colon, formatHectares, formatPercent, formatYearRange, SUM_TERM, yearRange, type Locale } from "@/lib/domain";
+import { formatHectares, formatPercent, formatYearRange, SUM_TERM, yearRange, type Locale } from "@/lib/domain";
 import { EXPLORE_INTERVAL_FIRST_YEAR, EXPLORE_INTERVAL_LAST_YEAR } from "@/lib/explore/interval";
 import { fourProvinceSpanMeasurement } from "@/lib/explore/province-spans";
 
@@ -9,28 +9,24 @@ const COPY = {
   en: {
     eyebrow: "Four provinces",
     heading: "Forest detected as lost",
-    claim: "of the forest mapped in 1984 was detected as lost at least once.",
-    minimumLead: "This is a minimum.",
-    minimumBody: "Satellites mapped only part of each province, and the rest counts as unknown, never as zero. If something isn’t shown here, that doesn’t mean it didn’t happen.",
-    shareLabel: "Share of the mapped forest",
-    shareBasis: (share: string, known: string) => `${share} of the ${known} of forest mapped in 1984`,
-    gradeLabel: "Coverage of this figure",
-    gradeName: "Partial, with unknown",
-    gradeBasis: (unknown: string) => `${unknown} were never mapped`,
-    sumBasis: (summed: string) => `${summed}. That is a different measure, not a correction: a place lost in two different years counts twice here, but once in the figure above.`,
+    unionLabel: "Lost at least once",
+    unionBasis: (share: string, known: string) =>
+      `${share} of the ${known} of forest mapped in 1984. A place counts once, however many times it was cleared.`,
+    sumBasis: "A place cleared in two different years counts twice, so this is larger. It has no percentage, because it can count the same forest more than once.",
+    minimumLead: "Both are minimums.",
+    minimumBody: (unknown: string) =>
+      `The satellite source covers only Canada’s forest regions, so ${unknown} of these provinces have no data. Loss there counts as unknown, not zero.`,
   },
   fr: {
     eyebrow: "Quatre provinces",
     heading: "Forêt détectée comme perdue",
-    claim: "de la forêt cartographiée en 1984 a été détectée comme perdue au moins une fois.",
-    minimumLead: "C’est un minimum.",
-    minimumBody: "Les satellites n’ont cartographié qu’une partie de chaque province, et le reste compte comme inconnu, jamais comme zéro. Si quelque chose n’apparaît pas ici, cela ne veut pas dire que cela ne s’est pas produit.",
-    shareLabel: "Part de la forêt cartographiée",
-    shareBasis: (share: string, known: string) => `${share} des ${known} de forêt cartographiés en 1984`,
-    gradeLabel: "Couverture de ce chiffre",
-    gradeName: "Partielle, avec inconnu",
-    gradeBasis: (unknown: string) => `${unknown} n’ont jamais été cartographiés`,
-    sumBasis: (summed: string) => `${summed}. Il s’agit d’une autre mesure, et non d’une correction : un lieu perdu au cours de deux années différentes compte deux fois ici, mais une seule fois dans le chiffre ci-dessus.`,
+    unionLabel: "Perdue au moins une fois",
+    unionBasis: (share: string, known: string) =>
+      `${share} des ${known} de forêt cartographiés en 1984. Un lieu compte une seule fois, peu importe le nombre de coupes.`,
+    sumBasis: "Un lieu coupé au cours de deux années différentes compte deux fois; ce chiffre est donc plus élevé. Il n’a pas de pourcentage, car il peut compter la même forêt plus d’une fois.",
+    minimumLead: "Ce sont deux minimums.",
+    minimumBody: (unknown: string) =>
+      `La source satellitaire ne couvre que les régions forestières du Canada\u202F: ${unknown} de ces provinces n’ont donc pas de données. Les pertes à cet endroit comptent comme inconnues, pas comme nulles.`,
   },
 } as const;
 
@@ -65,32 +61,28 @@ export function CumulativeHeadline({ locale }: Readonly<{ locale: Locale }>) {
       <p className="eyebrow">{copy.eyebrow}</p>
       <h2 id="cumulative-headline-heading">{`${copy.heading}, ${span}`}</h2>
       {/*
-        The figure is exact to the hectare. Rounding it to a readable headline
-        would put a number on the page that appears nowhere in the record, and
-        the record is the thing being published.
+        Two measures of the same loss, set as equals. The union counts a place
+        once and carries a share; the yearly sum counts a place each time it
+        was lost and carries none. Neither corrects the other. The figures are
+        exact to the hectare, because rounding would put a number on the page
+        that appears nowhere in the record.
       */}
-      <p className="cumulative-figure">{formatHectares(unionLossHectares, locale)}</p>
-      <p className="cumulative-claim">{copy.claim}</p>
-      {/* The minimum is said inside the unit, next to the number it bounds.
-          It used to be a separate banner under this panel. */}
+      <div className="cumulative-pair">
+        <div className="cumulative-measure">
+          <p className="cumulative-label">{copy.unionLabel}</p>
+          <p className="cumulative-figure">{formatHectares(unionLossHectares, locale)}</p>
+          <p className="cumulative-claim">{copy.unionBasis(formatPercent(unionLossPercent, locale), formatHectares(knownForestedHectares, locale))}</p>
+        </div>
+        <div className="cumulative-measure">
+          <p className="cumulative-label">{SUM_TERM[locale]}</p>
+          <p className="cumulative-figure">{formatHectares(summedLossHectares, locale)}</p>
+          <p className="cumulative-claim">{copy.sumBasis}</p>
+        </div>
+      </div>
       <p className="cumulative-minimum">
         <span className="mark-glyph mark-glyph--unknown" aria-hidden="true" />
-        <span><strong>{copy.minimumLead}</strong> {copy.minimumBody}</span>
+        <span><strong>{copy.minimumLead}</strong> {copy.minimumBody(formatHectares(unknownHectares, locale))}</span>
       </p>
-      <dl className="cumulative-basis">
-        <div>
-          <dt>{copy.shareLabel}</dt>
-          <dd>{copy.shareBasis(formatPercent(unionLossPercent, locale), formatHectares(knownForestedHectares, locale))}</dd>
-        </div>
-        <div className="cumulative-basis-grade">
-          <dt>{copy.gradeLabel}</dt>
-          <dd><strong>{copy.gradeName}{colon(locale)}</strong> {copy.gradeBasis(formatHectares(unknownHectares, locale))}</dd>
-        </div>
-        <div>
-          <dt>{SUM_TERM[locale]}</dt>
-          <dd>{copy.sumBasis(formatHectares(summedLossHectares, locale))}</dd>
-        </div>
-      </dl>
     </section>
   );
 }

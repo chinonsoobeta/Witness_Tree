@@ -29,8 +29,8 @@ test("all seven governance surfaces have independently citable locale routes", a
 
 test("required correction service levels and Indigenous safeguards are present", async () => {
   const content = await read("../components/governance/GovernancePage.tsx");
-  assert.match(content, /Critical: acknowledge within 1 business day and resolve within 5/);
-  assert.match(content, /Indigenous geography content: 1 and 10/);
+  assert.match(content, /Response times, in business days to acknowledge and then to resolve: critical, 1 and 5/);
+  assert.match(content, /Indigenous geography content, 1 and 10/);
   assert.match(content, /do not describe the full extent of Indigenous lands, rights, title or relationships/);
   assert.match(content, /No ranking, rights finding, consent finding or compliance claim/);
 });
@@ -40,10 +40,10 @@ test("glossary separates event grades from measurement states and defines reader
   for (const phrase of [
     "Event coverage grades",
     "enhanced local records",
-    "Province and riding measurement coverage states",
-    "complete, partial with unknown area, or none mapped",
+    "Coverage for a province or riding says how much of it was mapped",
+    "all of it, part of it with the rest unknown, or none of it",
     "Les catégories de couverture des événements",
-    "Les états de couverture des mesures provinciales et des circonscriptions",
+    "La couverture d’une province ou d’une circonscription indique quelle part a été cartographiée",
   ]) assert.match(content, new RegExp(phrase));
   for (const heading of [
     "Per-cell",
@@ -66,9 +66,9 @@ test("glossary separates event grades from measurement states and defines reader
 
 test("corrections provides interim actions without inventing an intake address", async () => {
   const content = await read("../components/governance/GovernancePage.tsx");
-  assert.match(content, /use the publisher’s own correction route/);
-  assert.match(content, /Keeping these notes does not file a case or start the response clock/);
-  assert.match(content, /utilisez la voie de correction de l’éditeur/);
+  assert.match(content, /use that publisher’s correction process/);
+  assert.match(content, /Your notes don’t open a case or start the response clock/);
+  assert.match(content, /utilisez le processus de correction de cet éditeur/);
   assert.match(content, /aucune adresse de correction ni aucun formulaire n’est approuvé/);
   assert.doesNotMatch(content, /mailto:|corrections@|correction@/i);
 });
@@ -98,7 +98,9 @@ test("Releases indexes the bounded release and Data and Explore point back to it
   assert.match(governance, /provinceBulkRelease\.id/);
   assert.match(governance, /provinceCsv\.url/);
   assert.match(governance, /provinceGeoPackage\.url/);
-  assert.match(governance, /There is no final release yet\. It needs an independent comparison of the figures/);
+  assert.match(governance, /There is no final release yet\. This preview stays in place until the remaining launch checks/);
+  // The owner removed the independent-comparison requirement; nothing may claim one took place.
+  assert.doesNotMatch(governance, /independent comparison (?:was|has been) (?:done|completed|published)/i);
   assert.doesNotMatch(governance, /No production data release exists\. The current repository/);
   assert.match(data, /\/en\/releases/);
   assert.match(data, /\/fr\/versions/);

@@ -55,7 +55,9 @@ workers, peak 534 MB, 38 minutes), and
 its point on surface falls in. The 44 regions add up to the province figures to
 within rounding. The same run gives the 2,291 published places their own figures:
 the whole record for search in
-[the place file](../data/place-whole-record-measurements.json), and every span for
+[the place file](../data/place-whole-record-measurements.json) (read by
+`lib/search/place-figures.ts`, so a town result leads with its own figure and
+then its ridings), and every span for
 the map's cities-and-towns layer, built by
 `scripts/build-census-subdivision-overlay-tiles.mjs`. That layer's tiles and
 per-province figure files are their own immutable release
@@ -65,6 +67,13 @@ owner's approval on 2026-09-27 and read back exactly from S3 and CloudFront
 `npm run check:census-subdivision-overlay` holds the loader's pinned URLs to that
 record and fails without the readback. Reserves, settlements and treaty or agreement lands get no figures of
 their own; their land counts in the region totals.
+
+On 2026-09-27 the owner decided that an economic region with less than 1% of its
+forest unmapped at a span's start is treated as fully measured
+(`REGION_UNKNOWN_TOLERANCE_PERCENT` in `lib/explore/region-intervals.ts`). Eight
+regions meet it over 1984-2022. Their share is taken over the mapped forest, and
+the readout names the unmapped share beside it. Ridings, census subdivisions and
+provinces keep the strict rule: any unknown area withholds the share.
 
 The source-admitted watershed geometry is NRCan's national Water Survey of Canada
 sub-drainage-area rollup archive, version 6.0 at 1:1,000,000 scale. It is a

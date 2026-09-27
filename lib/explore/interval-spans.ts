@@ -32,6 +32,8 @@ export type IntervalSpanFigures = Readonly<{
   knownObservedSubtotalHectares: number;
   /** Annual losses added together. It has no denominator and never carries a percentage. */
   summedLossHectares: number;
+  /** Set only where a small unknown share was admitted; see intervalSpanFigures. */
+  admittedUnknownPercent?: number;
 }>;
 
 const object = (value: unknown): value is Record<string, unknown> =>
@@ -97,16 +99,29 @@ const hectares = (cells: number) => Math.round(cells * CELL_HECTARES * 100) / 10
  * the observed subtotal is still reported, because withholding a number that
  * was measured is its own kind of error; what is withheld is the share, because
  * its denominator is not known.
+ *
+ * A caller may admit an unknown share below `unknownTolerancePercent`. The
+ * share is then taken over the mapped forest alone and the admitted unknown
+ * share travels with it, so the reader is told what was left out.
  */
-export function intervalSpanFigures(area: DecodedIntervalArea, interval: ExploreInterval): IntervalSpanFigures {
+export function intervalSpanFigures(
+  area: DecodedIntervalArea,
+  interval: ExploreInterval,
+  unknownTolerancePercent = 0,
+): IntervalSpanFigures {
   const start = interval.fromYear - EXPLORE_INTERVAL_FIRST_YEAR;
   const end = interval.toYear - EXPLORE_INTERVAL_FIRST_YEAR - 1;
   const union = area.unionLossCells[intervalWindowIndex(interval)];
   const known = area.knownForestCellsByStartYear[start];
   const unknown = area.unknownCellsByStartYear[start];
   const summed = area.annualLossPrefix[end + 1] - area.annualLossPrefix[start];
+  // The unknown share as the rest of the site states it, taking the larger of
+  // the two unmapped counts so the tolerance can never be met by the smaller.
+  const unknownCells = Math.max(unknown, area.unmappedCells);
+  const unknownPercent = known > 0 ? (unknownCells / (known + unknownCells)) * 100 : 100;
+  const admitted = unknownCells > 0 && unknownPercent < unknownTolerancePercent;
   const coverage: BoundaryMeasurementCoverage =
-    unknown > 0 || area.unmappedCells > 0
+    unknownCells > 0 && !admitted
       ? "partial-with-unknown"
       : known === 0
         ? "none-mapped"
@@ -118,5 +133,6 @@ export function intervalSpanFigures(area: DecodedIntervalArea, interval: Explore
     observedLossHectares: complete ? hectares(union) : null,
     knownObservedSubtotalHectares: hectares(union),
     summedLossHectares: hectares(summed),
+    ...(admitted ? { admittedUnknownPercent: unknownPercent } : {}),
   };
 }

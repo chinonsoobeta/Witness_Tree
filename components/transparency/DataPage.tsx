@@ -34,13 +34,13 @@ const COPY = {
     releases: "Read the release notes and citation format",
     limitsTitle: "Limits to understand first",
     limits:
-      "Every province has some land with no data, so every loss figure is a minimum for the mapped area. These files don’t show cause, responsibility, legality, sellable timber or conditions on the ground.",
+      "Every province has some land with no data, so every loss figure is a minimum. These files don’t show what caused a loss, who is responsible, whether it was legal, how much sellable timber there is, or conditions on the ground.",
     previewLimits:
       "This is an early preview, not the final release. Always read a figure with its evidence label, coverage and confidence, and don’t apply it beyond the boundaries and years it covers.",
     recordsTitle: "Source records and documentation",
     description:
-      "The source ledger lists each dataset’s name, publisher, licence, version, download date, coverage and origin. Its entries are still examples, and will be replaced with verified details before real data is loaded.",
-    ledger: "Open the example source ledger",
+      "The source ledger lists the 31 sources the plan names, with the evidence we hold for each and anything still blocking its use. Not all of them are used: four reserve and treaty sources were withdrawn, because we don’t publish that geography.",
+    ledger: "Open the source ledger",
     docs: "Read the source-ledger documentation",
     technicalTitle: "Technical release details",
     gate:
@@ -83,13 +83,13 @@ const COPY = {
     releases: "Lire les notes de version et le format de citation",
     limitsTitle: "Limites à comprendre d’abord",
     limits:
-      "Chaque province compte un territoire sans données; chaque valeur de perte est donc un minimum pour la zone cartographiée. Ces fichiers n’indiquent ni la cause, ni la responsabilité, ni la légalité, ni le bois vendable, ni les conditions sur le terrain.",
+      "Chaque province compte un territoire sans données; chaque chiffre de perte est donc un minimum. Ces fichiers n’indiquent ni la cause d’une perte, ni qui en est responsable, ni sa légalité, ni la quantité de bois vendable, ni les conditions sur le terrain.",
     previewLimits:
       "Il s’agit d’un aperçu préliminaire, et non de la version définitive. Lisez toujours un chiffre avec sa catégorie de preuve, sa couverture et sa confiance, et ne l’appliquez pas au-delà des limites et des années qu’il couvre.",
     recordsTitle: "Registres des sources et documentation",
     description:
-      "Le registre des sources indique, pour chaque jeu de données, le nom, l’éditeur, la licence, la version, la date de téléchargement, la couverture et l’origine. Ses entrées sont encore des exemples, qui seront remplacés par des détails vérifiés avant le chargement de vraies données.",
-    ledger: "Ouvrir le registre d’exemple des sources",
+      "Le registre des sources énumère les 31 sources prévues par le plan, avec les preuves que nous avons pour chacune et ce qui bloque encore son usage. Elles ne sont pas toutes utilisées\u202F: quatre sources sur les réserves et les traités ont été retirées, car nous ne publions pas cette géographie.",
+    ledger: "Ouvrir le registre des sources",
     docs: "Lire la documentation du registre des sources",
     technicalTitle: "Détails techniques de la version",
     gate:
@@ -196,10 +196,10 @@ export function DataPage({ locale }: Readonly<{ locale: Locale }>) {
         <p>{copy.description}</p>
         <ul className="link-list">
           <li className="card card--lift">
-            <a href="https://github.com/chinonsoobeta/Witness_Tree/blob/main/data/source-ledger.json">{copy.ledger}</a>
+            <a href="https://github.com/chinonsoobeta/Witness_Tree/blob/main/data/phase1-production-source-ledger.json">{copy.ledger}</a>
           </li>
           <li className="card card--lift">
-            <a href="https://github.com/chinonsoobeta/Witness_Tree/blob/main/docs/SOURCE_LEDGER.md">{copy.docs}</a>
+            <a href="https://github.com/chinonsoobeta/Witness_Tree/blob/main/docs/PHASE1_PRODUCTION_SOURCE_LEDGER.md">{copy.docs}</a>
           </li>
         </ul>
       </section>

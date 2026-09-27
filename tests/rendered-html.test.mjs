@@ -138,9 +138,11 @@ test("landing figures show detected loss alone, on a scale of detected loss", as
       // The span rides on the figure now, not on a masthead badge that claimed
       // 1984 to 2022 over figures covering three years.
       assert.match(row, /class="province-list-span">\d{4}\u2013\d{4}</u);
-      assert.match(row, /of the mapped forest|de la forêt cartographiée/);
+      assert.match(row, /of the forest mapped in 1984|de la forêt cartographiée en 1984/);
       assert.match(row, /<strong>[^<]*%<\/strong>/);
-      assert.match(row, /counts as unknown, not zero|compte comme inconnue, pas comme zéro/);
+      assert.match(row, /counts as unknown, not zero|compte comme inconnue, pas comme nulle/);
+      // The unknown-area reason links to the Methods section that explains it.
+      assert.match(row, /href="\/en\/methods#coverage-gap"|href="\/fr\/methodes#coverage-gap"/);
       assert.match(row, /href="\/en\/data"|href="\/fr\/donnees"/);
     }
     // British Columbia leads the loss ranking and carries the qualifier that
@@ -245,7 +247,7 @@ test("renders localized search results and the Explore table without browser Jav
   // real province figures served without browser JavaScript.
   assert.match(englishExplore, /<main\b[^>]*id="main"/);
   assert.match(englishExplore, /Explore forest loss/);
-  assert.match(englishExplore, /add up the harvest, and separately the fire/);
+  assert.match(englishExplore, /add up harvest, and separately fire/);
   assert.match(englishExplore, /<th scope="col">Harvest \(ha\)<\/th><th scope="col">Fire \(ha\)<\/th>/);
   assert.match(englishExplore, /href="\/en\/data\/harvest-and-fire\?from=2020&amp;to=2020"/);
   assert.match(englishExplore, /Source attribution/);

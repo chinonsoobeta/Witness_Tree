@@ -27,16 +27,17 @@ test("landing pages use the released province span and retain the bounded scope"
      * The 2026-09-23 plain-language pass says the same four things in plainer
      * words, so the assertions follow the words and keep the four claims.
      */
-    assert.match(page, /for viewing only|servent seulement à la visualisation/);
-    assert.match(page, /can’t be added up|on ne peut pas les additionner/);
+    assert.match(page, /for looking at, not adding up|servent à regarder, pas à additionner/);
     assert.match(page, /no expert has reviewed|aucun spécialiste ne les a examinées/);
     assert.match(page, /not the final release|et non la version définitive/);
     assert.match(page, /attribution\.href/);
   }
-  assert.match(english, /technical preview/);
-  assert.match(french, /aperçu technique/);
-  assert.match(english, /These figures are provisional/);
-  assert.match(french, /Ces chiffres sont provisoires/);
+  assert.match(english, /are an early preview, not the final release/);
+  assert.match(french, /sont un premier aperçu, et non la version définitive/);
+  // The owner asked on 2026-09-27 for the "provisional" sentence to go; the
+  // preview status above still says the figures are not final.
+  assert.doesNotMatch(english, /These figures are provisional/);
+  assert.doesNotMatch(french, /Ces chiffres sont provisoires/);
   assert.doesNotMatch(english, /The verified .* province aggregate/);
   assert.doesNotMatch(french, /agrégat provincial vérifié/);
   assert.match(english, /The record covers these four provinces only/);
@@ -62,7 +63,8 @@ test("the landing composition puts coverage and the legend before any figure", a
     [french, "/fr/explorer", "/fr/methodes#coverage-gap"],
   ]) {
     const hero = section(page, '<header className="masthead masthead--record">', "</header>");
-    assert.match(hero, /<p className="eyebrow">/);
+    // The owner removed the hero eyebrow on 2026-09-27; the question is the title.
+    assert.doesNotMatch(hero, /<p className="eyebrow">/);
     assert.match(hero, /<h1>/);
     assert.match(hero, /<ProvinceBar/);
     // Nothing leaves the hero: the reader meets the coverage statement first.

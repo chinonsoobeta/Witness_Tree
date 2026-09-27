@@ -58,7 +58,9 @@ test("methodology publishes predecessor VLCE accuracy with its VLCE2 non-applica
 
 test("data page labels examples and links the ledger and documentation", async () => {
   const page = await read("../components/transparency/DataPage.tsx");
-  assert.match(page, /entries are still examples/i);
+  // The page links the production ledger, and says it is not all in use.
+  assert.match(page, /lists the 31 sources the plan names/);
+  assert.match(page, /four reserve and treaty sources were withdrawn/);
   /*
    * The span is no longer typed into this sentence, so asserting the literal
    * would only prove someone typed it again. Assert the two halves that
@@ -73,8 +75,8 @@ test("data page labels examples and links the ledger and documentation", async (
   assert.equal(formatYearRangeKey(PROVINCE_BULK_TIME_RANGE, "en", "span"), "2020 to 2022");
   assert.match(page, /provinceBulkManifestUrl/);
   assert.match(page, /provinceBulkRelease\.artifacts/);
-  assert.match(page, /href="https:\/\/github\.com\/chinonsoobeta\/Witness_Tree\/blob\/main\/data\/source-ledger\.json"/);
-  assert.match(page, /href="https:\/\/github\.com\/chinonsoobeta\/Witness_Tree\/blob\/main\/docs\/SOURCE_LEDGER\.md"/);
+  assert.match(page, /href="https:\/\/github\.com\/chinonsoobeta\/Witness_Tree\/blob\/main\/data\/phase1-production-source-ledger\.json"/);
+  assert.match(page, /href="https:\/\/github\.com\/chinonsoobeta\/Witness_Tree\/blob\/main\/docs\/PHASE1_PRODUCTION_SOURCE_LEDGER\.md"/);
   assert.match(page, /Two source archives have been checked/);
   assert.match(page, /verified copy of two Quebec layers/);
   assert.match(page, /608 self-intersections in Alberta/);
@@ -106,16 +108,16 @@ test("transparency pages do not make prohibited product claims or turn unknown i
 test("methods explain the unmapped extent and inconclusive sampling in both locales", async () => {
   const page = await read("../components/transparency/MethodologyPage.tsx");
   for (const phrase of [
-    "Where the source has no data", "What we know about the unmapped area",
-    "Là où la source n’a pas de données", "Ce que nous savons du territoire non cartographié",
-    "Unmapped does not mean there is no forest", "n’est jamais traité comme dépourvu de forêt",
+    "Where the source has no data", "What we know about the area with no data",
+    "Là où la source n’a pas de données", "Ce que nous savons de la zone sans données",
+    "No data doesn’t mean no forest, and we never treat it that way", "L’absence de données ne veut pas dire l’absence de forêt",
     "not yet cleared for public use", "pas encore autorisés pour un usage public",
     "images can’t show whether the land met the forest definition", "les images ne montrent pas si le territoire répondait à la définition de la forêt",
     "a later start year didn’t help", "une année de départ plus récente n’a pas aidé",
     "field plots, air photos or lidar", "placettes de terrain, des photos aériennes ou des données lidar",
     "Quebec’s far north beyond where dense forest ends",
     "le Grand Nord québécois au-delà de la forêt dense",
-    "unknown means no official record answers the question, which is different from land the source never mapped", "ce qui diffère d’un territoire que la source n’a jamais cartographié",
+    "unknown means no official record answers the question, which is different from land with no satellite data", "ce qui diffère d’un territoire sans données satellitaires",
   ]) assert.ok(page.includes(phrase), phrase);
   assert.match(page, /\[copy\.coverage, copy\.coverageText\],\s*\[copy\.unmapped, copy\.unmappedText\],\s*\[copy\.unmappedKnowledge, copy\.unmappedKnowledgeText\],\s*\[copy\.evidence, copy\.evidenceText\]/);
 });

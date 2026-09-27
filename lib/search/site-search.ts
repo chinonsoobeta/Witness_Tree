@@ -103,12 +103,16 @@ export type SiteSearchPage = Readonly<{
   more: Readonly<Record<SiteSearchResult["kind"], number>>;
 }>;
 
+/** How much of a place lies in one riding, such as "60% of this place". */
 export function formatSearchShare(share: number, locale: Locale) {
-  if (share >= 1) return locale === "en" ? "100 percent" : formatPercent(100, locale);
-  if (share > 0.99) return locale === "en" ? "over 99 percent" : `plus de ${formatPercent(99, locale)}`;
-  if (share < 0.01) return locale === "en" ? "under 1 percent" : `moins de ${formatPercent(1, locale)}`;
-  const rounded = Math.max(1, Math.round(share * 100));
-  return locale === "en" ? `${rounded} percent` : formatPercent(rounded, locale);
+  const amount = share >= 1
+    ? formatPercent(100, locale)
+    : share > 0.99
+      ? `${locale === "en" ? "over" : "plus de"} ${formatPercent(99, locale)}`
+      : share < 0.01
+        ? `${locale === "en" ? "under" : "moins de"} ${formatPercent(1, locale)}`
+        : formatPercent(Math.max(1, Math.round(share * 100)), locale);
+  return locale === "en" ? `${amount} of this place` : `${amount} de ce lieu`;
 }
 
 const rawRidings = (release as RawRelease).jurisdictions.flatMap((jurisdiction) =>

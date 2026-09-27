@@ -15,7 +15,7 @@ export const metadata: Metadata = { title: "Public forest-loss record", alternat
 const SPAN_ROWS = provinceSpanMeasurements({ fromYear: 1984, toYear: 2022 });
 
 function coverageLabel(row: (typeof SPAN_ROWS)[number]) {
-  return `${formatUnknownSharePercent(row.unknownSharePercent, "en")} of the province was not mapped by the source; ${row.unmappedCharacter.en}`;
+  return `${formatUnknownSharePercent(row.unknownSharePercent, "en")} of the province has no satellite data: ${row.unmappedCharacter.en}`;
 }
 
 const UNKNOWN_CONTEXTS = Object.fromEntries(
@@ -36,9 +36,8 @@ const UNKNOWN_CONTEXTS = Object.fromEntries(
 export default function EnglishHome() {
   return <SiteShell locale="en"><main id="main" className="page-wrap">
     <header className="masthead masthead--record">
-      <p className="eyebrow">Public forest-loss record</p>
       <h1>What happened to the forest here?</h1>
-      <p className="dek">{PRODUCT_NAME.en} shows forest loss in four Canadian provinces, from satellite images and public records. Every fact links to its source.</p>
+      <p className="dek">{PRODUCT_NAME.en} shows forest loss in four Canadian provinces, from satellite images and public records.</p>
       <HomeSearch locale="en" />
       <ProvinceBar locale="en" />
     </header>
@@ -58,13 +57,13 @@ export default function EnglishHome() {
       several screens down, in different words.
     */}
     <section className="content-section evidence-band">
-      <p className="evidence-band-lead">Each place has a dated history of harvests, wildfires and other changes. Every fact is marked with the kind of evidence behind it.</p>
+      <p className="evidence-band-lead">Every figure on this site is marked with the kind of evidence behind it.</p>
       <EvidenceMarks locale="en" />
     </section>
 
     <section className="content-section landing-coverage" aria-labelledby="current-record">
       <h2 id="current-record">The published record</h2>
-      <p className="lead">How much forest satellites detected as lost in each province, {provinceSpanReach("en")}. These figures are provisional, and each shows how much of the province could not be checked.</p>
+      <p className="lead">How much forest satellites detected as lost in each province, {provinceSpanReach("en")}.</p>
       <ProvinceRecordList rows={SPAN_ROWS} locale="en" unknownContexts={UNKNOWN_CONTEXTS} />
       <p><Link href="/en/methods#coverage-gap">Why these areas were not mapped, and what we know about them</Link></p>
       <p><Link className="btn btn--primary" href="/en/explore">Explore the record</Link></p>
@@ -100,7 +99,7 @@ export default function EnglishHome() {
         </ul>
         <p>{PRODUCT_NAME.en} reports only what its sources record and what satellite images detect.</p>
         <p>A satellite can see that trees are gone, but not why. <Link href="/en/methods">How the methods work</Link>.</p>
-        <p>The figures above are a technical preview for {provinceSpanReach("en", "span")}, not the final release. The loss patches on the Explore map are for viewing only: they can’t be added up, and no expert has reviewed them. <Link href="/en/data">Data, sources and licences</Link>.</p>
+        <p>These figures for {provinceSpanReach("en", "span")} are an early preview, not the final release. The loss patches on the Explore map are for looking at, not adding up, and no expert has reviewed them. <Link href="/en/data">Data, sources and licences</Link>.</p>
         <p><small>Context source: {EXPLORE_PRODUCTION_LAYER.attribution.en} <a href={EXPLORE_PRODUCTION_LAYER.attribution.href}>Source catalogue</a>.</small></p>
       </div>
     </section>

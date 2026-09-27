@@ -19,8 +19,12 @@ test("suggestions are the search page's own matches, grouped and trimmed", () =>
   }
   const city = page.suggestions.find((suggestion) => suggestion.kind === "community" && suggestion.name === "Prince George");
   assert.ok(city, "the city itself is suggested");
-  assert.equal(city.figure, null, "a community spans ridings, so it carries no single figure");
-  assert.match(city.meta, /in 5 ridings$/);
+  // The city carries its own figure, measured over its own boundary; the
+  // ridings it touches follow, each with its whole-riding figure.
+  assert.equal(city.figure, "26.29%");
+  assert.match(city.detail, /Fully mapped/);
+  assert.doesNotMatch(city.meta, /ridings/);
+  assert.match(city.ridingsNote ?? "", /whole riding/);
   const federal = city.ridings.filter((riding) => riding.level === "federal");
   assert.equal(federal.length, 2);
   for (const riding of federal) assert.match(riding.compareHref ?? "", /^\/en\/compare\?left=federal-/);

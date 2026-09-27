@@ -97,8 +97,8 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
     // The patches and the provinces now cover the same span, but the per-cell
     // figures are still one annual interval; the caption has to keep that
     // apart rather than let one period stand for both.
-    assert.match(en, /The province figures and the loss patches on the map follow the years you choose/);
-    assert.match(en, /cover only the last year of your span/);
+    assert.match(en, /The province figures and the loss patches follow the years you choose/);
+    assert.match(en, /are for the last year of your span only/);
     assert.doesNotMatch(en, /show the last annual interval of the span alone/);
     /*
      * Figures are now counted from the exact cell inventory, so the copy may no
@@ -108,7 +108,7 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
      * source maps only part of the country.
      */
     assert.match(en, /counted from the 30 m grid cells behind the map/);
-    assert.match(en, /can’t be added up/);
+    assert.match(en, /don’t add them up/);
     assert.match(en, /checked on the ground/);
     assert.match(en, /every figure is a minimum/);
     // The claim that no figure is counted is now false and must be gone.
@@ -123,7 +123,7 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
     assert.doesNotMatch(en, /Per-cell detected loss, \d{4}-\d{4}/u);
     assert.match(en, /Detected loss \(ha\)/);
     assert.match(en, /Cause not recorded \(ha\)/);
-    assert.match(en, /one cell is 0\.09 ha/);
+    assert.match(en, /each cell is 0\.09 ha/);
   } else {
     assert.doesNotMatch(en, /per-cell detected loss patches/);
     assert.doesNotMatch(en, /have not been expert-reviewed/);
@@ -254,14 +254,14 @@ test("Explore puts explanation and controls before the map, then the reading pan
       en.indexOf('id="explore-data-heading"'),
   );
   // Only the chosen view's status is stated, under the toolbar.
-  assert.match(en, /<p class="explore-mode-status">Real map, 1985–2022/);
+  assert.match(en, /<p class="explore-mode-status">Map: 1985–2022/);
   assert.match(
     renderToStaticMarkup(<ExploreView events={exploreFixtures} locale="en" mode="recorded-harvest" />),
-    /<p class="explore-mode-status">[^<]*Real province figures for harvest and fire, 1985–2022/,
+    /<p class="explore-mode-status">[^<]*Province figures for harvest and fire, 1985–2022/,
   );
   assert.match(
     renderToStaticMarkup(<ExploreView events={exploreFixtures} locale="en" mode="condition-recovery" />),
-    /<p class="explore-mode-status">No real map yet\. The data view uses example data for 1988 only/,
+    /<p class="explore-mode-status">No map yet\. The chart and table use example data for 1988 only/,
   );
   assert.doesNotMatch(en, /example data for 2012|example data for 2020/);
   assert.equal((en.match(/<h2/g) ?? []).length, (fr.match(/<h2/g) ?? []).length);
@@ -725,17 +725,17 @@ test("condition and recovery explains its missing admitted product", () => {
   const fr = renderToStaticMarkup(
     <ExploreView events={exploreFixtures} locale="fr" mode="condition-recovery" year={1988} />,
   );
-  assert.match(en, /Condition and recovery is not mapped yet/);
+  assert.match(en, /Condition and recovery isn’t on the map yet/);
   assert.match(en, /We have the yearly land-cover data it needs/);
   assert.match(en, /reviewed a map built on that decision/);
-  assert.match(fr, /ne sont pas encore cartographiés/);
-  assert.match(fr, /série annuelle de couverture terrestre nécessaire/);
+  assert.match(fr, /ne sont pas encore sur la carte/);
+  assert.match(fr, /données annuelles de couverture terrestre nécessaires/);
 
   const other = renderToStaticMarkup(
     <ExploreView events={exploreFixtures} locale="en" mode="wildfire" year={1984} />,
   );
-  assert.match(other, /No per-cell interval covers this year and mode\./);
-  assert.doesNotMatch(other, /Condition and recovery is not mapped yet/);
+  assert.match(other, /No per-cell figures cover this year and mode\./);
+  assert.doesNotMatch(other, /Condition and recovery isn’t on the map yet/);
 });
 
 test("the year query is parsed defensively and fixtures use one selected interval", async () => {
