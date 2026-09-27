@@ -381,7 +381,7 @@ test("Explore uses the exact PMTiles release with a GeoJSON/SVG fallback on map 
   assert.match(map, /const provinceAvailable = mode === "forest-change";/);
   assert.match(map, /unavailableYear/);
   assert.match(map, /spanRows\.find\(\(row\) => row\.id === feature\.properties\.province_id\)/);
-  assert.match(map, /setPaintProperty\(PROVINCE_FILL_LAYER_ID, "fill-color", provinceFillColour\(fromYear, year\)\)/);
+  assert.match(map, /setPaintProperty\(PROVINCE_FILL_LAYER_ID, "fill-color", provinceFillColour\(fromYear, year, shading\)\)/);
   assert.match(view, /Detected loss \(%\)/);
   assert.match(style, /phase2_province_loss_2020_2022/);
   assert.match(style, /\.pmtiles/);
@@ -469,8 +469,10 @@ test("map failures retain diagnostics, retry, and a reachable patch zoom", async
   assert.match(map, /className="explore-map-layer-panel"[\s\S]*tabIndex=\{0\}[\s\S]*role="region"/);
   assert.match(map, /className="[^"]*explore-map-fullscreen-button"[\s\S]*className="explore-map-zoom"/);
   // The legend under the map is the only one: no second copy of the keys or
-  // the figures table is drawn below it.
-  assert.equal((map.match(/className="explore-map-legend/g) ?? []).length, 2);
+  // the figures table is drawn below it. Three legend lists exist in the
+  // source: the forest-loss shading, the harvest or fire shading (never both
+  // at once), and the patches.
+  assert.equal((map.match(/className="explore-map-legend/g) ?? []).length, 3);
   assert.doesNotMatch(map, /<table/);
   assert.match(panel, /position: static/);
   assert.match(panel, /display: flex/);
@@ -567,7 +569,7 @@ test("playback swaps only the patch layer, starts at 1985, and stops visibly", a
   assert.match(map, /map\.addSource\(EXPLORE_PER_CELL_SPAN_LAYER\.sourceId, perCellSource\(\)\)/);
   assert.match(map, /\[mapReady, perCellKey, cause, overlayKey\]/);
   // The map is rebuilt only when a mode changes what it can draw, never for a year.
-  assert.match(map, /\[patchCapable, provinceAvailable, overlayKey, retryNonce\]/);
+  assert.match(map, /\[patchCapable, shaded, overlayKey, retryNonce\]/);
   assert.doesNotMatch(
     map,
     /\[available, provinceAvailable, perCellArchive, overlayKey, cause\]/,

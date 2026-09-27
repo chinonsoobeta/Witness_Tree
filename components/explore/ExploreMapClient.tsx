@@ -11,6 +11,7 @@ import type {
 import { colon, formatNumber, formatPercent, formatYearRange, labelled, PRODUCT_NAME, yearRange, type Locale } from "@/lib/domain";
 import { chooseScaleBar, metresPerPixel, type ScaleBar } from "@/lib/explore/map-scale";
 import { panLimitFor } from "@/lib/explore/map-camera";
+import { CAUSE_BREAKS, CAUSE_RAMPS, provinceCauseColours, type ProvinceCause } from "@/lib/explore/province-cause-shares";
 import {
   perCellArchiveSpan,
   BOUNDARY_OVERLAYS,
@@ -82,6 +83,8 @@ const text = {
     legend: "Detected forest loss in these years, as a share of the forest at the start",
     legendHeading: "Detected forest loss",
     legendCaption: "As a share of the forest at the start",
+    causeLegendHeading: { harvest: "Recorded harvest", fire: "Recorded fire" },
+    causeLegendCaption: "Average share of the forest per year",
     coverage: "Coverage",
     zoomIn: "Zoom in",
     zoomOut: "Zoom out",
@@ -147,6 +150,8 @@ const text = {
       "Perte forestière détectée pendant ces années, en part de la forêt au début",
     legendHeading: "Perte forestière détectée",
     legendCaption: "En part de la forêt au début",
+    causeLegendHeading: { harvest: "Récoltes consignées", fire: "Incendies consignés" },
+    causeLegendCaption: "Part moyenne de la forêt par année",
     coverage: "Couverture",
     zoomIn: "Zoom avant",
     zoomOut: "Zoom arrière",
@@ -292,8 +297,11 @@ const provinceSpanColours = (fromYear: number, toYear: number): Readonly<Record<
     }),
   );
 
-const provinceFillColour = (fromYear: number, toYear: number) => {
-  const colours = provinceSpanColours(fromYear, toYear);
+/** What the province fill shows: detected loss, or recorded harvest or fire. */
+type ProvinceShading = "loss" | ProvinceCause;
+
+const provinceFillColour = (fromYear: number, toYear: number, shading: ProvinceShading = "loss") => {
+  const colours = shading === "loss" ? provinceSpanColours(fromYear, toYear) : provinceCauseColours(shading, fromYear, toYear);
   return [
     "match",
     ["get", "province_id"],
@@ -327,14 +335,14 @@ const boundaryJurisdiction = (locale: Locale, jurisdiction: string) =>
 // The tiles carry only the province geometry and its id that matter here; the
 // 2020-2022 figures baked into them are not read. The colour comes from the
 // span release, so it follows the year control without a new tile request.
-const provinceLayers = (fromYear: number, toYear: number): StyleSpecification["layers"] => [
+const provinceLayers = (fromYear: number, toYear: number, shading: ProvinceShading = "loss"): StyleSpecification["layers"] => [
   {
     id: PROVINCE_FILL_LAYER_ID,
     type: "fill",
     source: EXPLORE_PRODUCTION_LAYER.sourceLayer,
     "source-layer": EXPLORE_PRODUCTION_LAYER.sourceLayer,
     paint: {
-      "fill-color": provinceFillColour(fromYear, toYear),
+      "fill-color": provinceFillColour(fromYear, toYear, shading),
       "fill-opacity": 0.88,
     },
   },
@@ -428,7 +436,7 @@ function swapPerCellLayer(
 }
 
 const buildStyle = (
-  province: boolean,
+  province: ProvinceShading | null,
   years: PerCellSpanYears | null,
   overlays: readonly BoundaryOverlayId[],
   cause: PerCellCause,
@@ -451,7 +459,7 @@ const buildStyle = (
     url: `pmtiles://${EXPLORE_PRODUCTION_LAYER.url}`,
     bounds: [-141, 41, -52, 70],
   };
-  if (province) layers.push(...provinceLayers(span.fromYear, span.toYear));
+  if (province) layers.push(...provinceLayers(span.fromYear, span.toYear, province));
   else layers.push(provinceOutlineLayer());
   if (years) {
     sources[EXPLORE_PER_CELL_SPAN_LAYER.sourceId] = perCellSource();
@@ -575,6 +583,19 @@ const spanLegend = (locale: Locale) => {
   ].map((label, band) => [`loss-${band}`, label] as const);
 };
 
+// The same wording, on the per-year breaks the harvest and fire shading uses.
+const causeLegend = (locale: Locale) => {
+  const pct = (value: number) => formatPercent(value, locale);
+  const [first] = CAUSE_BREAKS;
+  const last = CAUSE_BREAKS[CAUSE_BREAKS.length - 1];
+  return [
+    locale === "fr" ? `Moins de ${pct(first)}` : `Under ${pct(first)}`,
+    ...CAUSE_BREAKS.slice(1).map((edge, i) =>
+      locale === "fr" ? `${pct(CAUSE_BREAKS[i])} à moins de ${pct(edge)}` : `${pct(CAUSE_BREAKS[i])} to under ${pct(edge)}`),
+    locale === "fr" ? `${pct(last)} ou plus` : `${pct(last)} or more`,
+  ];
+};
+
 export function ExploreMapClient({
   locale,
   mode,
@@ -624,6 +645,10 @@ export function ExploreMapClient({
   // not rebuild the layer.
   const perCellKey = perCellYears ? `${perCellYears.after}-${perCellYears.through}` : "";
   const provinceAvailable = mode === "forest-change";
+  // Harvest and wildfire shade the provinces too, in their own colour, so the
+  // map is not bare outlines until the patches draw at zoom 8.
+  const shading: ProvinceShading | null = provinceAvailable ? "loss" : mode === "recorded-harvest" ? "harvest" : mode === "wildfire" ? "fire" : null;
+  const shaded = shading !== null;
   const available = provinceAvailable || perCellYears !== null;
   // A stable primitive, so the effect re-runs when the selection changes
   // rather than on every render of a fresh array literal.
@@ -770,7 +795,7 @@ export function ExploreMapClient({
         protocolRegistered = true;
         map = new maplibre.Map({
           container: mapContainerRef.current,
-          style: buildStyle(provinceAvailable, null, overlays, "all", { fromYear, toYear: year }),
+          style: buildStyle(shading, null, overlays, "all", { fromYear, toYear: year }),
           bounds: COMBINED_PROVINCE_BOUNDS,
           fitBoundsOptions: { padding: FRAME_PADDING, maxZoom: 6 },
           // The pan limit is the same envelope widened to what the framed
@@ -909,7 +934,7 @@ export function ExploreMapClient({
     // and rebuild the whole map each time. The key changes exactly when the
     // selected overlay set changes, which is the only thing the style needs.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [patchCapable, provinceAvailable, overlayKey, retryNonce]);
+  }, [patchCapable, shaded, overlayKey, retryNonce]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -941,9 +966,9 @@ export function ExploreMapClient({
   // The span moves without rebuilding the map: only the province colours change.
   useEffect(() => {
     const map = mapRef.current;
-    if (!mapReady || !map || !provinceAvailable || !map.getLayer(PROVINCE_FILL_LAYER_ID)) return;
-    map.setPaintProperty(PROVINCE_FILL_LAYER_ID, "fill-color", provinceFillColour(fromYear, year));
-  }, [mapReady, provinceAvailable, fromYear, year]);
+    if (!mapReady || !map || !shading || !map.getLayer(PROVINCE_FILL_LAYER_ID)) return;
+    map.setPaintProperty(PROVINCE_FILL_LAYER_ID, "fill-color", provinceFillColour(fromYear, year, shading));
+  }, [mapReady, shading, fromYear, year]);
   const spanRows = provinceAvailable ? provinceSpanMeasurements({ fromYear, toYear: year }) : [];
   const fallbackColours = provinceSpanColours(fromYear, year);
   const spanLabel = formatYearRange(yearRange(fromYear, year), locale);
@@ -1080,6 +1105,24 @@ export function ExploreMapClient({
           </p>
           <ol className="explore-map-legend explore-map-legend--scale" aria-label={text[locale].legend}>
             {spanLegend(locale).map(([band, label]) => <li key={band}>{symbol(band)}<span>{label}</span></li>)}
+          </ol>
+        </div>
+      ) : null}
+      {shading === "harvest" || shading === "fire" ? (
+        <div className="explore-map-key">
+          <p className="explore-map-key-title">
+            <strong>{`${text[locale].causeLegendHeading[shading]}, ${spanLabel}`}</strong>
+            <span>{text[locale].causeLegendCaption}</span>
+          </p>
+          <ol className="explore-map-legend explore-map-legend--scale" aria-label={text[locale].legend}>
+            {causeLegend(locale).map((label, band) => (
+              <li key={band}>
+                <span className="map-legend-key" aria-hidden="true">
+                  <i className="loss-swatch" style={{ background: CAUSE_RAMPS[shading][band] }} />
+                </span>
+                <span>{label}</span>
+              </li>
+            ))}
           </ol>
         </div>
       ) : null}
