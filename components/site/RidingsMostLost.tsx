@@ -23,12 +23,12 @@ const COPY = {
   },
   fr: {
     heading: "Circonscriptions ayant perdu la plus grande part de leur forêt, 1984–2022",
-    lead: (floor: string) => `La part de la forêt cartographiée de chaque circonscription détectée comme perdue au moins une fois de 1984 à 2022. Seules les circonscriptions entièrement cartographiées, avec au moins ${floor} de forêt, sont classées; les autres sont exclues, jamais comptées comme zéro.`,
+    lead: (floor: string) => `La part de la forêt cartographiée de chaque circonscription détectée comme perdue au moins une fois de 1984 à 2022. Seules les circonscriptions entièrement cartographiées, avec au moins ${floor} de forêt, sont classées\u202F; les autres sont exclues, jamais comptées comme zéro.`,
     federal: "Circonscriptions fédérales",
     provincial: "Circonscriptions provinciales",
     search: "/fr/recherche",
     lost: "perdus",
-    note: "Une part peut être élevée à cause de la récolte, du feu ou des deux; un satellite ne peut pas dire pourquoi les arbres ont disparu. La perte détectée est un minimum.",
+    note: "Une part peut être élevée à cause de la récolte, du feu ou des deux\u202F; un satellite ne peut pas dire pourquoi les arbres ont disparu. La perte détectée est un minimum.",
   },
 } as const;
 

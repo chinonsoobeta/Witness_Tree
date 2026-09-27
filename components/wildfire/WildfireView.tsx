@@ -1,4 +1,4 @@
-import { PRODUCT_NAME, type Locale } from "@/lib/domain";
+import { colon, PRODUCT_NAME, type Locale } from "@/lib/domain";
 
 const AGENCIES = [
   {
@@ -23,7 +23,7 @@ const AGENCIES = [
     url: { en: "https://www.ontario.ca/page/forest-fires", fr: "https://www.ontario.ca/fr/page/incendies-de-foret" },
   },
   {
-    province: { en: "Quebec", fr: "Québec" },
+    province: { en: "Québec", fr: "Québec" },
     name: {
       en: "Société de protection des forêts contre le feu (SOPFEU)",
       fr: "Société de protection des forêts contre le feu (SOPFEU)",
@@ -120,7 +120,7 @@ export function WildfireView({ locale }: WildfireViewProps) {
             <li className="card card--lift" key={agency.url.en}>
               <p className="eyebrow">{agency.province[locale]}</p>
               <a href={agency.url[locale]}>
-                {agency.name[locale]}: {agency.destination[locale]}
+                {agency.name[locale]}{colon(locale)} {agency.destination[locale]}
               </a>
             </li>
           ))}

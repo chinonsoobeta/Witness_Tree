@@ -72,11 +72,11 @@ export const BOUNDARY_OVERLAYS: Readonly<Record<BoundaryOverlayId, BoundaryOverl
       dash: [3, 2],
       note: {
         en: "British Columbia, Alberta, Ontario and Québec · 431 ridings\nRepresentation orders: British Columbia 2023, Alberta 2019, Ontario 2022, Québec 2026.",
-        fr: "Colombie-Britannique, Alberta, Ontario et Québec · 431 circonscriptions\nDécrets de représentation : Colombie-Britannique 2023, Alberta 2019, Ontario 2022, Québec 2026.",
+        fr: "Colombie-Britannique, Alberta, Ontario et Québec · 431 circonscriptions\nDécrets de représentation\u202F: Colombie-Britannique 2023, Alberta 2019, Ontario 2022, Québec 2026.",
       },
       attribution: {
         en: "Elections BC. Alberta: Contains information licensed under the Open Government Licence – Alberta. Elections Ontario. Québec: Source: © Directeur général des élections du Québec and Commission de la représentation électorale, 2026.",
-        fr: "Elections BC. Alberta : Contains information licensed under the Open Government Licence – Alberta. Élections Ontario. Québec : Source : © Directeur général des élections du Québec et Commission de la représentation électorale, 2026.",
+        fr: "Elections BC. Alberta\u202F: Contains information licensed under the Open Government Licence – Alberta. Élections Ontario. Québec\u202F: Source\u202F: © Directeur général des élections du Québec et Commission de la représentation électorale, 2026.",
       },
     },
     "economic-regions": {
@@ -106,7 +106,7 @@ export const BOUNDARY_OVERLAYS: Readonly<Record<BoundaryOverlayId, BoundaryOverl
       dash: [1, 1.5],
       note: {
         en: "2,291 cities, towns, municipalities and unorganized areas in the four provinces (Statistics Canada census subdivisions, 2021). Reserves, settlements and treaty or agreement lands are not shown on their own; their land still counts in the economic-region totals.",
-        fr: "2\u202F291 villes, municipalités et territoires non organisés des quatre provinces (subdivisions de recensement de Statistique Canada, 2021). Les réserves, les établissements et les terres visées par un traité ou une entente ne sont pas affichés séparément; leurs terres comptent tout de même dans les totaux des régions économiques.",
+        fr: "2\u202F291 villes, municipalités et territoires non organisés des quatre provinces (subdivisions de recensement de Statistique Canada, 2021). Les réserves, les établissements et les terres visées par un traité ou une entente ne sont pas affichés séparément\u202F; leurs terres comptent tout de même dans les totaux des régions économiques.",
       },
       attribution: {
         en: "Statistics Canada, 2021 Census Subdivision Boundary File.",

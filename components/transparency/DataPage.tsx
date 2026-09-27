@@ -15,7 +15,7 @@ const COPY = {
     title: "Data and transparency",
     accessTitle: "What you can download",
     accessSummary:
-      `An early preview of the province figures for ${formatYearRangeKey(PROVINCE_BULK_TIME_RANGE, "en", "span")} is available as a spreadsheet (CSV) and a map file (GeoPackage). Both hold the same figures for British Columbia, Alberta, Ontario and Quebec.`,
+      `An early preview of the province figures for ${formatYearRangeKey(PROVINCE_BULK_TIME_RANGE, "en", "span")} is available as a spreadsheet (CSV) and a map file (GeoPackage). Both hold the same figures for British Columbia, Alberta, Ontario and Québec.`,
     notice:
       "These are province-level summaries, not detailed map shapes or a live data feed.",
     csv: "Download province values (CSV)",
@@ -55,10 +55,10 @@ const COPY = {
       "Contains information licensed under the Open Government Licence - Canada. Adapted from Natural Resources Canada, Annual High-resolution forest land cover for Canada (1984-2022). Adapted from Statistics Canada, 2021 Census Province/Territory Cartographic Boundary File, reference date January 1, 2021. These adaptations do not constitute endorsement by Natural Resources Canada or Statistics Canada.",
     stagingTitle: "Data being prepared",
     staging:
-      "Two source archives have been checked in a separate test area, and Quebec’s attribution was confirmed from official metadata. A verified copy of two Quebec layers exists but is not yet used on the site. Alberta is on hold because checks found 608 self-intersections in Alberta (shapes that cross over themselves).",
+      "Two source archives have been checked in a separate test area, and Québec’s attribution was confirmed from official metadata. A verified copy of two Québec layers exists but is not yet used on the site. Alberta is on hold because checks found 608 self-intersections in Alberta (shapes that cross over themselves).",
     stagingEvidence: "See the archive checks",
     profileEvidence: "See the shape checks",
-    transformationEvidence: "See the Quebec conversion record",
+    transformationEvidence: "See the Québec conversion record",
   },
   fr: {
     title: "Données et transparence",
@@ -73,17 +73,17 @@ const COPY = {
     spanSummary:
       `La perte forestière détectée pour chaque période ${formatYearRangeKey(PROVINCE_SPAN_TIME_RANGE, "fr", "from")} (741 au total), une ligne par province et par période, comme sur la page Explorer. Chaque ligne donne la forêt au départ, la forêt perdue au moins une fois et sa part, les pertes annuelles additionnées et le territoire sans données au départ.`,
     spanLimits:
-      "Chaque valeur est un minimum, car chaque province compte un territoire sans données l’année de départ; ce territoire est Inconnu, jamais une absence de perte. Les pertes annuelles additionnées comptent deux fois un lieu perdu deux fois : elles sont donc en hectares, sans pourcentage. Aucun spécialiste n’a examiné ces chiffres, et ils n’indiquent pas si la récolte ou un incendie a causé la perte.",
+      "Chaque valeur est un minimum, car chaque province compte un territoire sans données l’année de départ\u202F; ce territoire est Inconnu, jamais une absence de perte. Les pertes annuelles additionnées comptent deux fois un lieu perdu deux fois\u202F: elles sont donc en hectares, sans pourcentage. Aucun spécialiste n’a examiné ces chiffres, et ils n’indiquent pas si la récolte ou un incendie a causé la perte.",
     spanCsv: "Télécharger toutes les périodes (CSV)",
     spanJson: "Télécharger toutes les périodes (JSON)",
     spanManifest: "Ouvrir le manifeste du téléchargement par période",
     comparison: "Comparer les valeurs aux statistiques officielles sur la récolte",
     harvestVolume: "Volume récolté et possibilité annuelle de coupe en C.-B.",
-    harvestFire: "Récolte et feu par province, de 1985 à 2022 : créer un graphique et le télécharger",
+    harvestFire: "Récolte et feu par province, de 1985 à 2022\u202F: créer un graphique et le télécharger",
     releases: "Lire les notes de version et le format de citation",
     limitsTitle: "Limites à comprendre d’abord",
     limits:
-      "Chaque province compte un territoire sans données; chaque chiffre de perte est donc un minimum. Ces fichiers n’indiquent ni la cause d’une perte, ni qui en est responsable, ni sa légalité, ni la quantité de bois vendable, ni les conditions sur le terrain.",
+      "Chaque province compte un territoire sans données\u202F; chaque chiffre de perte est donc un minimum. Ces fichiers n’indiquent ni la cause d’une perte, ni qui en est responsable, ni sa légalité, ni la quantité de bois vendable, ni les conditions sur le terrain.",
     previewLimits:
       "Il s’agit d’un aperçu préliminaire, et non de la version définitive. Lisez toujours un chiffre avec sa catégorie de preuve, sa couverture et sa confiance, et ne l’appliquez pas au-delà des limites et des années qu’il couvre.",
     recordsTitle: "Registres des sources et documentation",

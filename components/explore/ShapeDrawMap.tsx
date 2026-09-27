@@ -57,7 +57,7 @@ const copy = {
   fr: {
     label: "Carte pour dessiner une zone",
     caption:
-      "Facultatif : cliquez sur la carte pour placer des coins, ou saisissez-les dans les champs ci-dessus.",
+      "Facultatif\u202F: cliquez sur la carte pour placer des coins, ou saisissez-les dans les champs ci-dessus.",
     hintPolygon: "Cliquez sur la carte pour ajouter un coin.",
     hintRectangleStart: "Cliquez sur un coin du rectangle.",
     hintRectangleFinish: "Cliquez sur le coin opposé.",

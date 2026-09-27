@@ -10,7 +10,7 @@ import {
   EvidenceChip,
   ProvenanceBlock,
 } from "@/components/policy";
-import { colon, formatHectares, formatNumber, formatPercent, formatYearRange, formatYearRangeKey, labelled, SUM_TERM, yearRange, type Locale } from "@/lib/domain";
+import { colon, formatHectares, formatNumber, formatPercent, formatYearRange, formatYearRangeKey, labelled, semicolon, SUM_TERM, yearRange, type Locale } from "@/lib/domain";
 import {
   BOUNDARY_OVERLAY_IDS,
   BOUNDARY_OVERLAYS,
@@ -66,14 +66,14 @@ const copy = {
     productionWithPerCell: `The province figures and the loss patches follow the years you choose, anywhere within ${provinceSpanReach("en")}. A place cleared more than once counts once. The per-cell figures below are for the last year of your span only. The patches are simplified for display, so don’t add them up. Nothing here was checked on the ground, and parts of each province have no data, so every figure is a minimum.`,
     annualHeading: "Per-cell detected loss",
     annualDetected: "Detected loss (ha)",
-    annualHarvest: "Recorded harvest (ha)",
-    annualFire: "Recorded fire (ha)",
-    annualUnattributed: "Cause not recorded (ha)",
+    annualHarvest: "Of that loss, logged (ha)",
+    annualFire: "Of that loss, burned (ha)",
+    annualUnattributed: "Of that loss, cause not recorded (ha)",
     provincialCause: (none: string, harvest: string, fire: string, other: string, noRecord: string) =>
       `In British Columbia and Québec, ${none} ha of this year’s loss has no national cause. Provincial records match ${harvest} ha of it to harvest, ${fire} ha to fire and ${other} ha to insects or windthrow; ${noRecord} ha has no provincial record either.`,
     annualBasis: `These figures are for the last year you picked, for all four provinces together. They aren’t a total for your span or for ${perCellArchiveSpan("en")}. They’re counted from the 30 m grid cells behind the map (each cell is 0.09 ha).`,
     annualNone: "No per-cell figures cover this year and mode.",
-    conditionRecoveryNone: "Condition and recovery isn’t on the map yet. We have the yearly land-cover data it needs, but haven’t yet decided what counts as trees growing back, or reviewed a map built on that decision.",
+    conditionRecoveryNone: "Condition and recovery isn’t on the map yet. We have the yearly land-cover data it needs and have decided what counts as trees growing back, but a map built on that decision hasn’t been reviewed yet.",
     spanNote: (fromYear: number, toYear: number) =>
       `The map shows ${fromYear} to ${toYear}. Point at or tap a district to see how much forest it lost in those years, counting each place once. If some ground was lost more than once, the yearly losses added together are shown too, in hectares only.`,
     spanPending: "Loading riding figures for these years. They stay hidden until they arrive, so you never see old figures under the wrong years.",
@@ -152,14 +152,14 @@ const copy = {
     productionWithPerCell: `Les chiffres provinciaux et les parcelles de perte suivent les années que vous choisissez, n’importe où ${provinceSpanReach("fr", "from")}. Un lieu coupé plus d’une fois compte une seule fois. Les chiffres par cellule ci-dessous ne portent que sur la dernière année de votre période. Les parcelles sont simplifiées pour l’affichage\u202F: ne les additionnez pas. Rien ici n’a été vérifié sur le terrain, et certaines parties de chaque province n’ont pas de données\u202F: chaque chiffre est donc un minimum.`,
     annualHeading: "Perte détectée par cellule",
     annualDetected: "Perte détectée (ha)",
-    annualHarvest: "Récoltes consignées (ha)",
-    annualFire: "Incendies consignés (ha)",
-    annualUnattributed: "Cause non consignée (ha)",
+    annualHarvest: "Dont récolte (ha)",
+    annualFire: "Dont incendies (ha)",
+    annualUnattributed: "Dont cause non consignée (ha)",
     provincialCause: (none: string, harvest: string, fire: string, other: string, noRecord: string) =>
-      `En Colombie-Britannique et au Québec, ${none} ha des pertes de cette année n’ont pas de cause nationale. Les registres provinciaux en associent ${harvest} ha à la récolte, ${fire} ha au feu et ${other} ha aux insectes ou au chablis; ${noRecord} ha n’ont pas non plus de registre provincial.`,
+      `En Colombie-Britannique et au Québec, ${none} ha des pertes de cette année n’ont pas de cause nationale. Les registres provinciaux en associent ${harvest} ha à la récolte, ${fire} ha au feu et ${other} ha aux insectes ou au chablis\u202F; ${noRecord} ha n’ont pas non plus de registre provincial.`,
     annualBasis: `Ces chiffres portent sur la dernière année choisie, pour les quatre provinces ensemble. Ce ne sont pas des totaux pour votre période ni pour ${perCellArchiveSpan("fr")}. Ils sont comptés à partir des cellules de 30 m derrière la carte (chaque cellule fait 0,09 ha).`,
     annualNone: "Aucun chiffre par cellule ne couvre cette année et ce mode.",
-    conditionRecoveryNone: "L’état et le rétablissement ne sont pas encore sur la carte. Nous avons les données annuelles de couverture terrestre nécessaires, mais nous n’avons pas encore décidé ce qui compte comme des arbres qui repoussent, ni examiné une carte fondée sur cette décision.",
+    conditionRecoveryNone: "L’état et le rétablissement ne sont pas encore sur la carte. Nous avons les données annuelles de couverture terrestre nécessaires et avons décidé ce qui compte comme des arbres qui repoussent, mais la carte fondée sur cette décision n’a pas encore été examinée.",
     spanNote: (fromYear: number, toYear: number) =>
       `La carte montre la période de ${fromYear} à ${toYear}. Pointez ou touchez une circonscription pour voir la forêt qu’elle a perdue pendant ces années, chaque lieu étant compté une seule fois. Si un même terrain a été perdu plus d’une fois, les pertes annuelles additionnées sont aussi affichées, en hectares seulement.`,
     spanPending: "Chargement des chiffres par circonscription pour ces années. Ils restent masqués jusqu’à leur arrivée, pour que d’anciens chiffres n’apparaissent jamais sous les mauvaises années.",
@@ -192,7 +192,7 @@ const copy = {
     observedLoss: "Perte détectée (ha)",
     observedLossPercent: "Perte détectée (%)",
     fourProvinces: "Les quatre provinces ensemble",
-    spanBasis: "Chaque lieu compte une seule fois, peu importe le nombre de coupes\u202F: la part ne peut donc pas dépasser 100 %. Les pertes annuelles additionnées comptent un lieu à chaque coupe\u202F: elles sont donc affichées en hectares seulement. Chaque province n’est que partiellement couverte et rien n’a été vérifié sur le terrain\u202F: chaque chiffre est donc un minimum.",
+    spanBasis: "Chaque lieu compte une seule fois, peu importe le nombre de coupes\u202F: la part ne peut donc pas dépasser 100\u00A0%. Les pertes annuelles additionnées comptent un lieu à chaque coupe\u202F: elles sont donc affichées en hectares seulement. Chaque province n’est que partiellement couverte et rien n’a été vérifié sur le terrain\u202F: chaque chiffre est donc un minimum.",
     partial: "Une partie de cette zone n’a pas de données\u202F: il s’agit donc d’un minimum",
     unknownArea: "ha inconnus",
     source: "Attribution de la source",
@@ -381,7 +381,7 @@ export function ExploreView({
   // Only the forest-loss view shows every cause, so only it explains the rest.
   const annualProvincialCause = annual && mode === "forest-change" ? provincialCause[annual.interval] ?? null : null;
   const provinceCoverageLabel = (row: (typeof provinceRows)[number]) =>
-    `${text.partial} (${formatUnknownSharePercent(row.unknownSharePercent, locale)}; ${formatNumber(row.unknownHectares ?? 0, locale)} ${text.unknownArea})${row.unmappedCharacter ? `; ${row.unmappedCharacter[locale]}` : ""}`;
+    `${text.partial} (${formatUnknownSharePercent(row.unknownSharePercent, locale)}${semicolon(locale)} ${formatNumber(row.unknownHectares ?? 0, locale)} ${text.unknownArea})${row.unmappedCharacter ? `${semicolon(locale)} ${row.unmappedCharacter[locale]}` : ""}`;
   const hectaresOrDash = (value: number | null) => (value === null ? "–" : formatNumber(value, locale));
   const percentOrDash = (value: number | null) => (value === null ? "–" : formatNumber(value, locale));
   const nearestYear = modeEvents.reduce(
@@ -551,7 +551,7 @@ export function ExploreView({
               ) : null}
             </div>
           ) : null}
-          <h3 id="explore-annual-heading">{`${text.annualHeading}, ${annual ? formatYearRangeKey(annual.interval, locale) : formatYearRange(yearRange(activeYear - 1, activeYear), locale)}`}</h3>
+          {mode === "condition-recovery" ? null : <h3 id="explore-annual-heading">{`${text.annualHeading}, ${annual ? formatYearRangeKey(annual.interval, locale) : formatYearRange(yearRange(activeYear - 1, activeYear), locale)}`}</h3>}
           {annual ? (
             <>
               {/*
@@ -605,7 +605,7 @@ export function ExploreView({
                     formatNumber(annualProvincialCause.insectOrWindthrowHectares, locale, 0),
                     formatNumber(annualProvincialCause.noRecordHectares, locale, 0),
                   )}{" "}
-                  <a href={locale === "en" ? "/en/methods" : "/fr/methodes"}>{locale === "en" ? "How the matching works" : "Fonctionnement de l’appariement"}</a>
+                  <a href={`${locale === "en" ? "/en/methods" : "/fr/methodes"}#provincial-matching`}>{locale === "en" ? "How the matching works" : "Fonctionnement de l’appariement"}</a>
                 </p>
               ) : null}
             </>

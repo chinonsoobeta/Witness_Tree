@@ -119,20 +119,20 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Forêt",
           paragraphs: [
-            "Terre d’au moins 1 hectare et d’au moins 20 mètres de largeur, où les cimes des arbres couvrent au moins 10 % du sol et où les arbres peuvent atteindre 5 mètres. Les pourcentages sont une part de la forêt, et non de tout le territoire.",
+            "Terre d’au moins 1 hectare et d’au moins 20 mètres de largeur, où les cimes des arbres couvrent au moins 10\u00A0% du sol et où les arbres peuvent atteindre 5 mètres. Les pourcentages sont une part de la forêt, et non de tout le territoire.",
           ],
         },
         {
           heading: "Preuves",
           paragraphs: [
-            "Registre officiel : un organisme public l’a consigné. Observation satellitaire : un changement vu dans les images satellites, qui ne montre pas à lui seul la cause. Estimation dérivée : un chiffre calculé selon une méthode documentée. Inconnu : aucun registre public officiel ne répond encore à la question.",
+            "Registre officiel\u202F: un organisme public l’a consigné. Observation satellitaire\u202F: un changement vu dans les images satellites, qui ne montre pas à lui seul la cause. Estimation dérivée\u202F: un chiffre calculé selon une méthode documentée. Inconnu\u202F: aucun registre public officiel ne répond encore à la question.",
           ],
         },
         {
           heading: "Couverture",
           paragraphs: [
-            "Les catégories de couverture des événements indiquent combien de registres appuient un événement, du plus au moins : registres locaux enrichis, référence nationale avec contexte local, référence nationale, registre prolongé avec peu d’appariements officiels, ou sans objet. Une catégorie décrit un événement, et non une province ou une circonscription entière.",
-            "La couverture d’une province ou d’une circonscription indique quelle part a été cartographiée : la totalité, une partie avec le reste inconnu, ou rien. Seule une zone entièrement cartographiée reçoit un chiffre complet et un pourcentage. Explorer affiche « Entièrement cartographié » ou « Une partie de cette zone n’a pas de données : il s’agit donc d’un minimum »; Comparer emploie « Couverture cartographiée complète », « Couverture cartographiée partielle; une zone inconnue demeure » et « Aucune couverture cartographiée ».",
+            "Les catégories de couverture des événements indiquent combien de registres appuient un événement, du plus au moins\u202F: registres locaux enrichis, référence nationale avec contexte local, référence nationale, registre prolongé avec peu d’appariements officiels, ou sans objet. Une catégorie décrit un événement, et non une province ou une circonscription entière.",
+            "La couverture d’une province ou d’une circonscription indique quelle part a été cartographiée\u202F: la totalité, une partie avec le reste inconnu, ou rien. Seule une zone entièrement cartographiée reçoit un chiffre complet et un pourcentage. Explorer affiche «\u00A0Entièrement cartographié\u00A0» ou «\u00A0Une partie de cette zone n’a pas de données\u202F: il s’agit donc d’un minimum\u00A0»\u202F; Comparer emploie «\u00A0Couverture cartographiée complète\u00A0», «\u00A0Couverture cartographiée partielle\u202F; une zone inconnue demeure\u00A0» et «\u00A0Aucune couverture cartographiée\u00A0».",
           ],
         },
         {
@@ -226,7 +226,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Délais de service",
           paragraphs: [
-            "Délais de réponse, en jours ouvrables pour accuser réception puis pour régler\u202F: critique, 1 et 5; contenu de géographie autochtone, 1 et 10; important, 3 et 15; mineur, 5 et 30.",
+            "Délais de réponse, en jours ouvrables pour accuser réception puis pour régler\u202F: critique, 1 et 5\u202F; contenu de géographie autochtone, 1 et 10\u202F; important, 3 et 15\u202F; mineur, 5 et 30.",
           ],
         },
         {
@@ -238,7 +238,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Instructions provisoires",
           paragraphs: [
-            `Si l’erreur se trouve dans le registre d’une source, suivez le lien source et utilisez le processus de correction de cet éditeur. Si elle se trouve sur ${frBrand}, notez le lien de la page, les mots ou le chiffre exacts, la date et l’heure, la langue, pourquoi l’information semble erronée et toute source officielle. Il n’y a pas encore de moyen de nous l’envoyer\u202F: revenez ici; n’envoyez aucun renseignement personnel à une adresse que cette page n’indique pas. Vos notes n’ouvrent pas de demande et ne déclenchent aucun délai de réponse.`,
+            `Si l’erreur se trouve dans le registre d’une source, suivez le lien source et utilisez le processus de correction de cet éditeur. Si elle se trouve sur ${frBrand}, notez le lien de la page, les mots ou le chiffre exacts, la date et l’heure, la langue, pourquoi l’information semble erronée et toute source officielle. Il n’y a pas encore de moyen de nous l’envoyer\u202F: revenez ici\u202F; n’envoyez aucun renseignement personnel à une adresse que cette page n’indique pas. Vos notes n’ouvrent pas de demande et ne déclenchent aucun délai de réponse.`,
           ],
         },
         {
@@ -259,7 +259,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Product",
           paragraphs: [
-            `Working name: ${enBrand}. The record covers ${EXPLORE_COVERAGE_PERIOD.en} in British Columbia, Alberta, Ontario and Quebec; the year control starts at ${EXPLORE_YEAR_MIN}, the first year-to-year change, and opens on ${EXPLORE_DEFAULT_YEAR}.`,
+            `Working name: ${enBrand}. The record covers ${EXPLORE_COVERAGE_PERIOD.en} in British Columbia, Alberta, Ontario and Québec; the year control starts at ${EXPLORE_YEAR_MIN}, the first year-to-year change, and opens on ${EXPLORE_DEFAULT_YEAR}.`,
             "The satellite data comes from NTEMS, Canada’s national land-monitoring system. Version 1 includes live wildfire, riding comparison, accounts and alerts, and reserve and treaty pages; advanced layer controls and asserted traditional territories are left out.",
           ],
         },
@@ -291,8 +291,8 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Produit",
           paragraphs: [
-            `Nom de travail : ${frBrand}. Le registre couvre la période de ${EXPLORE_COVERAGE_PERIOD.fr} en Colombie-Britannique, en Alberta, en Ontario et au Québec; la commande d’année commence à ${EXPLORE_YEAR_MIN}, le premier changement d’une année à l’autre, et s’ouvre sur ${EXPLORE_DEFAULT_YEAR}.`,
-            "Les données satellitaires proviennent de NTEMS, le système national de surveillance du territoire du Canada. La version 1 comprend les incendies actuels, la comparaison des circonscriptions, les comptes et alertes, et les pages de réserves et de traités; les commandes avancées de couches et les territoires traditionnels revendiqués sont exclus.",
+            `Nom de travail\u202F: ${frBrand}. Le registre couvre la période de ${EXPLORE_COVERAGE_PERIOD.fr} en Colombie-Britannique, en Alberta, en Ontario et au Québec\u202F; la commande d’année commence à ${EXPLORE_YEAR_MIN}, le premier changement d’une année à l’autre, et s’ouvre sur ${EXPLORE_DEFAULT_YEAR}.`,
+            "Les données satellitaires proviennent de NTEMS, le système national de surveillance du territoire du Canada. La version 1 comprend les incendies actuels, la comparaison des circonscriptions, les comptes et alertes, et les pages de réserves et de traités\u202F; les commandes avancées de couches et les territoires traditionnels revendiqués sont exclus.",
           ],
         },
         {
@@ -304,7 +304,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Approbation juridique",
           paragraphs: [
-            "Le 27 août 2026, le propriétaire a consigné une approbation juridique complète, dans les deux langues, des mesures contre la diffamation, des avertissements, des conditions, de l’avis de confidentialité, des règles de licence et de mention des sources, des contrôles des comptes et des alertes, et des voies de correction et de contestation du site. Il s’agit du registre du propriétaire, et non de l’avis d’un avocat indépendant; il n’accorde aucun droit manquant sur les données et n’approuve pas de changements importants ultérieurs.",
+            "Le 27 août 2026, le propriétaire a consigné une approbation juridique complète, dans les deux langues, des mesures contre la diffamation, des avertissements, des conditions, de l’avis de confidentialité, des règles de licence et de mention des sources, des contrôles des comptes et des alertes, et des voies de correction et de contestation du site. Il s’agit du registre du propriétaire, et non de l’avis d’un avocat indépendant\u202F; il n’accorde aucun droit manquant sur les données et n’approuve pas de changements importants ultérieurs.",
           ],
         },
         {
@@ -363,20 +363,20 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Registre de la demande de nom",
           paragraphs: [
-            `Demande concernant Mistik : non ouverte. Conditions : aucune. Honoraire : aucun. Permission : aucune. Résultat final : non poursuivie; ${enBrand} / ${frBrand} sont retenus.`,
+            `Demande concernant Mistik\u202F: non ouverte. Conditions\u202F: aucune. Honoraire\u202F: aucun. Permission\u202F: aucune. Résultat final\u202F: non poursuivie\u202F; ${enBrand} / ${frBrand} sont retenus.`,
           ],
         },
         {
           heading: "Mesures de protection",
           paragraphs: [
-            "Les limites de réserves et de traités sont des registres gouvernementaux et juridiques; elles ne décrivent pas toute l’étendue des terres, droits, titres ou relations autochtones. Aucun classement ni aucune conclusion sur les droits, le consentement ou la conformité ne s’applique à ces zones.",
+            "Les limites de réserves et de traités sont des registres gouvernementaux et juridiques\u202F; elles ne décrivent pas toute l’étendue des terres, droits, titres ou relations autochtones. Aucun classement ni aucune conclusion sur les droits, le consentement ou la conformité ne s’applique à ces zones.",
             "Une limite de traité marque un accord consigné par la Couronne, et non la limite d’une nation. Les zones trop petites pour être mesurées de façon fiable présenteront le registre original, sans taux calculé.",
           ],
         },
         {
           heading: "Registre public",
           paragraphs: [
-            "Contacts établis : aucun. Réponses reçues : aucune. Toute personne qui demande la confidentialité ne sera pas nommée.",
+            "Contacts établis\u202F: aucun. Réponses reçues\u202F: aucune. Toute personne qui demande la confidentialité ne sera pas nommée.",
           ],
         },
       ],
@@ -414,7 +414,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Données minimales prévues",
           paragraphs: [
-            "Seulement avec votre consentement clair : votre adresse courriel, un mot de passe brouillé (haché), la langue, les zones enregistrées, les réglages d’alerte et l’historique des alertes envoyées. Les zones enregistrées seront traitées comme sensibles, et ne seront jamais reliées à des outils d’analyse ni inscrites dans les journaux.",
+            "Seulement avec votre consentement clair\u202F: votre adresse courriel, un mot de passe brouillé (haché), la langue, les zones enregistrées, les réglages d’alerte et l’historique des alertes envoyées. Les zones enregistrées seront traitées comme sensibles, et ne seront jamais reliées à des outils d’analyse ni inscrites dans les journaux.",
           ],
         },
         {
@@ -472,7 +472,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Interprétation",
           paragraphs: [
-            "Un changement vu par satellite ne montre pas sa cause. Une organisation n’est nommée que dans le rôle exact, et la version datée, indiqués dans un registre public officiel; la proximité ne la rend jamais responsable.",
+            "Un changement vu par satellite ne montre pas sa cause. Une organisation n’est nommée que dans le rôle exact, et la version datée, indiqués dans un registre public officiel\u202F; la proximité ne la rend jamais responsable.",
           ],
         },
         {
@@ -493,7 +493,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Published preview release",
           paragraphs: [
-            `Release ${provinceBulkRelease.id} holds the ${formatYearRangeKey(PROVINCE_BULK_TIME_RANGE, "en", "span")} province figures for British Columbia, Alberta, Ontario and Quebec, as a CSV and a GeoPackage. Each file comes with its checksum (SHA-256), licence credit, boundary version and method version.`,
+            `Release ${provinceBulkRelease.id} holds the ${formatYearRangeKey(PROVINCE_BULK_TIME_RANGE, "en", "span")} province figures for British Columbia, Alberta, Ontario and Québec, as a CSV and a GeoPackage. Each file comes with its checksum (SHA-256), licence credit, boundary version and method version.`,
             "It is a province-level preview, not detailed map shapes. Every province has some land with no data, so its loss figures are minimums.",
           ],
           links: [
@@ -525,7 +525,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
           heading: "Version d’aperçu publiée",
           paragraphs: [
             `La version ${provinceBulkRelease.id} contient les chiffres provinciaux ${formatYearRangeKey(PROVINCE_BULK_TIME_RANGE, "fr", "from")} pour la Colombie-Britannique, l’Alberta, l’Ontario et le Québec, en formats CSV et GeoPackage. Chaque fichier est accompagné de sa somme de contrôle (SHA-256), de la mention de licence, de la version des limites et de la version de la méthode.`,
-            "Il s’agit d’un aperçu au niveau provincial, et non de formes cartographiques détaillées. Chaque province compte un territoire sans données; ses chiffres de perte sont donc des minimums.",
+            "Il s’agit d’un aperçu au niveau provincial, et non de formes cartographiques détaillées. Chaque province compte un territoire sans données\u202F; ses chiffres de perte sont donc des minimums.",
           ],
           links: [
             { label: "Télécharger le CSV provincial", href: provinceCsv.url, format: "CSV" },
@@ -542,7 +542,7 @@ const PAGES: Record<GovernancePageKind, Record<Locale, PageCopy>> = {
         {
           heading: "Format de citation",
           paragraphs: [
-            `${frBrand}, agrégat provincial, ${formatYearRangeKey(PROVINCE_BULK_TIME_RANGE, "fr")}, ${provinceCsv.boundaryEdition}, version ${provinceBulkRelease.id}, méthode ${provinceCsv.methodVersion}, date de consultation et URL stable de l’artefact. Citez-la comme aperçu technique; une citation de la version définitive sera possible une fois cette version publiée.`,
+            `${frBrand}, agrégat provincial, ${formatYearRangeKey(PROVINCE_BULK_TIME_RANGE, "fr")}, ${provinceCsv.boundaryEdition}, version ${provinceBulkRelease.id}, méthode ${provinceCsv.methodVersion}, date de consultation et URL stable de l’artefact. Citez-la comme aperçu technique\u202F; une citation de la version définitive sera possible une fois cette version publiée.`,
           ],
         },
       ],

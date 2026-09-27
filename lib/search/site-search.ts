@@ -19,7 +19,7 @@ const PROVINCES = [
   { id: "59", code: "BC", en: "British Columbia", fr: "Colombie-Britannique" },
   { id: "48", code: "AB", en: "Alberta", fr: "Alberta" },
   { id: "35", code: "ON", en: "Ontario", fr: "Ontario" },
-  { id: "24", code: "QC", en: "Quebec", fr: "Québec" },
+  { id: "24", code: "QC", en: "Québec", fr: "Québec" },
 ] as const;
 
 type RawRiding = Readonly<{

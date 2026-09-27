@@ -1992,6 +1992,10 @@ h4 {
   .explore-map-fallback {
     min-height: 30rem;
   }
+  /* The canvas fills the taller frame, so no dead band sits under the map. */
+  .explore-map-canvas {
+    height: 30rem;
+  }
   .province-bar--map {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2178,7 +2182,8 @@ h4 {
   max-width: 100%;
   overflow-x: auto;
 }
-.table-scroll:focus-visible {
+.table-scroll:focus-visible,
+.hf-chart-scroll:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
 }

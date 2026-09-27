@@ -6,6 +6,7 @@ export const SITE_ORIGIN = "https://www.witnesstree.ca";
 export const PUBLIC_LOCALE_ROUTE_PAIRS = [
   { en: "/en", fr: "/fr" },
   { en: "/en/explore", fr: "/fr/explorer" },
+  { en: "/en/explore/draw", fr: "/fr/explorer/dessiner" },
   { en: "/en/compare", fr: "/fr/comparer" },
   { en: "/en/search", fr: "/fr/recherche" },
   { en: "/en/methods", fr: "/fr/methodes" },

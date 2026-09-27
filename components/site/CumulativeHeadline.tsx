@@ -23,7 +23,7 @@ const COPY = {
     unionLabel: "Perdue au moins une fois",
     unionBasis: (share: string, known: string) =>
       `${share} des ${known} de forêt cartographiés en 1984. Un lieu compte une seule fois, peu importe le nombre de coupes.`,
-    sumBasis: "Un lieu coupé au cours de deux années différentes compte deux fois; ce chiffre est donc plus élevé. Il n’a pas de pourcentage, car il peut compter la même forêt plus d’une fois.",
+    sumBasis: "Un lieu coupé au cours de deux années différentes compte deux fois\u202F; ce chiffre est donc plus élevé. Il n’a pas de pourcentage, car il peut compter la même forêt plus d’une fois.",
     minimumLead: "Ce sont deux minimums.",
     minimumBody: (unknown: string) =>
       `La source satellitaire ne couvre que les régions forestières du Canada\u202F: ${unknown} de ces provinces n’ont donc pas de données. Les pertes à cet endroit comptent comme inconnues, pas comme nulles.`,

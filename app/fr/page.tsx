@@ -26,7 +26,7 @@ const UNKNOWN_CONTEXTS = Object.fromEntries(
 export default function FrenchHome() {
   return <SiteShell locale="fr"><main id="main" className="page-wrap">
     <header className="masthead masthead--record">
-      <h1>Qu’est-il arrivé à la forêt ici?</h1>
+      <h1>{"Qu’est-il arrivé à la forêt ici\u202F?"}</h1>
       <p className="dek">{PRODUCT_NAME.fr} montre les pertes forestières dans quatre provinces canadiennes, à partir d’images satellites et de registres publics.</p>
       <HomeSearch locale="fr" />
       <ProvinceBar locale="fr" />
@@ -81,7 +81,7 @@ export default function FrenchHome() {
         <p>{PRODUCT_NAME.fr} rapporte seulement ce que ses sources consignent et ce que les images satellites détectent.</p>
         <p>Un satellite peut voir que des arbres ont disparu, mais pas pourquoi. <Link href="/fr/methodes">Comment fonctionnent les méthodes</Link>.</p>
         <p>Ces chiffres pour {provinceSpanReach("fr", "span")} sont un premier aperçu, et non la version définitive. Les parcelles de perte de la carte Explorer servent à regarder, pas à additionner, et aucun spécialiste ne les a examinées. <Link href="/fr/donnees">Données, sources et licences</Link>.</p>
-        <p><small>Source du contexte : {EXPLORE_PRODUCTION_LAYER.attribution.fr} <a href={EXPLORE_PRODUCTION_LAYER.attribution.href}>Catalogue source</a>.</small></p>
+        <p><small>{"Source du contexte\u202F: "}{EXPLORE_PRODUCTION_LAYER.attribution.fr} <a href={EXPLORE_PRODUCTION_LAYER.attribution.href}>Catalogue source</a>.</small></p>
       </div>
     </section>
   </main></SiteShell>;

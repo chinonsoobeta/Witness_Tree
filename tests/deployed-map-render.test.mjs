@@ -35,18 +35,23 @@ const withRecord = async (mutate) => {
 test("the Site observation waits for the next deploy after this map client change", async () => {
   /*
    * Since 2026-09-26 a map change no longer blocks its own merge. The version
-   * 43 observation is stale for exactly one file: #191 framed all four
+   * 43 observation is stale for exactly two files: #191 framed all four
    * provinces when Explore opens, which moved
-   * components/explore/ExploreMapClient.tsx. Merging does not deploy, so the
-   * Site still serves the observed client, and the gate is answered as
-   * awaiting deploy. The staleness is still pinned to that file, so any other
-   * source drifting out of the observation is caught, and a failing check is
-   * still a failure (tested below). After the next deploy the new observation
-   * is committed and this returns to the deployed-site tier.
+   * components/explore/ExploreMapClient.tsx. The site-crawl fixes (English
+   * "Québec" per the owner's 2026-09-27 decision, and French typography in the
+   * production-layer attribution) moved lib/explore/map-style.ts. Merging does
+   * not deploy, so the Site still serves the observed client, and the gate is
+   * answered as awaiting deploy. The staleness is still pinned to those two
+   * files, so any other source drifting out of the observation is caught, and a
+   * failing check is still a failure (tested below). After the next deploy the
+   * new observation is committed and this returns to the deployed-site tier.
    */
   const failures = validateDeployedMapRender();
-  assert.equal(failures.length, 1, failures.join(" "));
-  assert.ok(failures[0].startsWith("components/explore/ExploreMapClient.tsx changed since"), failures[0]);
+  assert.equal(failures.length, 2, failures.join(" "));
+  const stale = ["components/explore/ExploreMapClient.tsx", "lib/explore/map-style.ts"];
+  // A failure counts only as the staleness of one of these files; anything else stays itself and fails.
+  const paths = failures.map((failure) => stale.find((path) => failure.startsWith(`${path} changed since`)) ?? failure);
+  assert.deepEqual(paths.sort(), stale);
   const gate = resolveDeployedMapRender();
   assert.equal(gate.satisfiedBy, "awaiting-deploy");
   assert.deepEqual(gate.failures, []);

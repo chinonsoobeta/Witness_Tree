@@ -9,7 +9,7 @@
  * rows of text.
  */
 
-import { formatHectares, formatPercent, type Locale } from "@/lib/domain";
+import { formatHectares, formatPercent, semicolon, type Locale } from "@/lib/domain";
 import { formatUnknownSharePercent } from "@/lib/explore/map-style";
 import { placeFigure, type PlaceFigure } from "./place-figures";
 import {
@@ -77,9 +77,9 @@ export function ridingFigure(row: RidingRow | undefined, locale: Locale): string
   }
   const unknown = row.unknownSharePercent === null ? text.unknown : formatUnknownSharePercent(row.unknownSharePercent, locale);
   if (row.coverage === "partial-with-unknown" && row.knownObservedSubtotalHectares !== null && row.knownObservedSubtotalHectares !== undefined && row.knownObservedSubtotalHectares > 0) {
-    return `${text.atLeast} ${formatHectares(row.knownObservedSubtotalHectares, locale)} ${text.loss}; ${unknown} ${text.unknownShare}`;
+    return `${text.atLeast} ${formatHectares(row.knownObservedSubtotalHectares, locale)} ${text.loss}${semicolon(locale)} ${unknown} ${text.unknownShare}`;
   }
-  return `${text.unknown}; ${unknown} ${text.unknownShare}`;
+  return `${text.unknown}${semicolon(locale)} ${unknown} ${text.unknownShare}`;
 }
 
 /** Whether {@link ridingFigure} states a detected figure, rather than only an unknown share. */
@@ -166,7 +166,7 @@ function toSuggestion(result: SiteSearchResult, locale: Locale): Suggestion {
       figure: result.unionLossPercent === null || result.unionLossPercent === undefined ? null : formatPercent(result.unionLossPercent, locale),
       detail: locale === "en"
         ? `${hectares} · A minimum: ${unknown} of the province has no satellite data`
-        : `${hectares} · Un minimum : ${unknown} de la province n’a pas de données satellitaires`,
+        : `${hectares} · Un minimum\u202F: ${unknown} de la province n’a pas de données satellitaires`,
       compareHref: null,
       ridings: [],
     };

@@ -5,9 +5,10 @@ import test from "node:test";
 const read = (path) => readFile(new URL(path, import.meta.url), "utf8");
 
 test("governance content is bilingual and truthful about unfinished external gates", async () => {
-  const content = await read("../components/governance/GovernancePage.tsx");
+  // The French copy writes its narrow no-break spaces as \u202F escapes, so read them as the character.
+  const content = (await read("../components/governance/GovernancePage.tsx")).replaceAll("\\u202F", "\u202F");
   for (const phrase of ["No production correction", "Aucune correction de production", "No engagement contact route", "Aucune voie de dialogue", "stores no account", "ne conserve actuellement aucune donnée", "not to pursue Mistik", "ne pas poursuivre Mistik"]) assert.match(content, new RegExp(phrase));
-  for (const phrase of ["Mistik request: not opened", "Terms: none", "Honorarium: none", "Final outcome: not pursued", "Demande concernant Mistik : non ouverte", "Conditions : aucune", "Honoraire : aucun", "Résultat final : non poursuivie"]) assert.match(content, new RegExp(phrase));
+  for (const phrase of ["Mistik request: not opened", "Terms: none", "Honorarium: none", "Final outcome: not pursued", "Demande concernant Mistik\u202F: non ouverte", "Conditions\u202F: aucune", "Honoraire\u202F: aucun", "Résultat final\u202F: non poursuivie"]) assert.match(content, new RegExp(phrase));
   assert.doesNotMatch(content, /permission (?:was|has been) granted|contacted on \d|legally approved/i);
 });
 
