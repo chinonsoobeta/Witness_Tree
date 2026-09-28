@@ -20,6 +20,8 @@ export type PlaceFigure = Readonly<{
   observedLossHectares: number | null;
   /** Forest detected as lost at least once where the place was mapped. */
   knownObservedSubtotalHectares: number;
+  /** Mapped forest in 1984, the denominator of the share. */
+  knownForestedHectares: number;
   /** The share of the place's forest-or-unknown area that is unknown, as for ridings. */
   unknownSharePercent: number | null;
   /** True when the satellite source has no data anywhere in the place. */
@@ -56,6 +58,7 @@ function parse(value: unknown): ReadonlyMap<string, PlaceFigure> {
       observedLossPercent: complete ? (union / known) * 100 : null,
       observedLossHectares: complete ? hectares(union) : null,
       knownObservedSubtotalHectares: hectares(union),
+      knownForestedHectares: hectares(known),
       unknownSharePercent: known + unknown > 0 ? (unknown / (known + unknown)) * 100 : null,
       noSatelliteData: known === 0 && unknown > 0,
     });
