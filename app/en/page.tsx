@@ -3,7 +3,8 @@ import Link from "next/link";
 import { HomeSearch, ProvinceBar, SiteShell } from "@/components/site";
 import { ProvinceRecordList } from "@/components/site/ProvinceRecordList";
 import { CumulativeHeadline } from "@/components/site/CumulativeHeadline";
-import { RidingsMostLost } from "@/components/site/RidingsMostLost";
+import { CitiesMostLost, RidingsMostLost } from "@/components/site/RidingsMostLost";
+import { HarvestSources } from "@/components/site/HarvestSources";
 import { EvidenceMarks } from "@/components/policy/EvidenceMarks";
 import { PRODUCT_NAME } from "@/lib/domain";
 import { provinceSpanReach } from "@/lib/explore/period";
@@ -70,7 +71,11 @@ export default function EnglishHome() {
       <p><small>The record covers these four provinces only.</small></p>
     </section>
 
+    <HarvestSources locale="en" />
+
     <RidingsMostLost locale="en" />
+
+    <CitiesMostLost locale="en" />
 
     <section className="content-section">
       <h2>Read the record</h2>

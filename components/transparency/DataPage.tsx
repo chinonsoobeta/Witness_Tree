@@ -28,6 +28,8 @@ const COPY = {
     spanCsv: "Download every span (CSV)",
     spanJson: "Download every span (JSON)",
     spanManifest: "Open the span download manifest",
+    harvestTitle: "What was logged, and what burned",
+    harvestLead: "A satellite can see that trees are gone, but not why. These pages bring in official harvest statistics, British Columbia’s timber volumes, and Natural Resources Canada’s yearly maps of harvest and fire.",
     comparison: "Compare the values with official harvest statistics",
     harvestVolume: "BC harvest volume and allowable annual cut",
     harvestFire: "Harvest and fire by province, 1985 to 2022: build a chart and download it",
@@ -77,6 +79,8 @@ const COPY = {
     spanCsv: "Télécharger toutes les périodes (CSV)",
     spanJson: "Télécharger toutes les périodes (JSON)",
     spanManifest: "Ouvrir le manifeste du téléchargement par période",
+    harvestTitle: "Ce qui a été récolté, et ce qui a brûlé",
+    harvestLead: "Un satellite peut voir que des arbres ont disparu, mais pas pourquoi. Ces pages font appel aux statistiques officielles sur la récolte, aux volumes de bois de la Colombie-Britannique et aux cartes annuelles de la récolte et des feux de Ressources naturelles Canada.",
     comparison: "Comparer les valeurs aux statistiques officielles sur la récolte",
     harvestVolume: "Volume récolté et possibilité annuelle de coupe en C.-B.",
     harvestFire: "Récolte et feu par province, de 1985 à 2022\u202F: créer un graphique et le télécharger",
@@ -123,6 +127,24 @@ export function DataPage({ locale }: Readonly<{ locale: Locale }>) {
       <div className="data-layout">
       <div className="data-reader">
 
+      <section className="content-section prose-measure" aria-labelledby="harvest-and-fire-sources">
+        <h2 id="harvest-and-fire-sources">{copy.harvestTitle}</h2>
+        <p>{copy.harvestLead}</p>
+        <ul className="link-list">
+          <li className="card card--lift">
+            <a href={locale === "en" ? "/en/data/official-harvest-comparison" : "/fr/donnees/comparaison-recolte-officielle"}>
+              {copy.comparison}
+            </a>
+          </li>
+          <li className="card card--lift">
+            <a href={HARVEST_FIRE_ROUTES[locale]}>{copy.harvestFire}</a>
+          </li>
+          <li className="card card--lift">
+            <a href={locale === "en" ? "/en/data/bc-harvest-volume" : "/fr/donnees/volume-recolte-bc"}>{copy.harvestVolume}</a>
+          </li>
+        </ul>
+      </section>
+
       <section className="content-section prose-measure">
         <h2>{copy.accessTitle}</h2>
         <p>{copy.accessSummary}</p>
@@ -139,17 +161,6 @@ export function DataPage({ locale }: Readonly<{ locale: Locale }>) {
             <span className="file-tile-body">
               <a href={geopackage.url}>{copy.geopackage}</a>
             </span>
-          </li>
-          <li className="card card--lift">
-            <a href={locale === "en" ? "/en/data/official-harvest-comparison" : "/fr/donnees/comparaison-recolte-officielle"}>
-              {copy.comparison}
-            </a>
-          </li>
-          <li className="card card--lift">
-            <a href={locale === "en" ? "/en/data/bc-harvest-volume" : "/fr/donnees/volume-recolte-bc"}>{copy.harvestVolume}</a>
-          </li>
-          <li className="card card--lift">
-            <a href={HARVEST_FIRE_ROUTES[locale]}>{copy.harvestFire}</a>
           </li>
           <li className="card card--lift">
             <a href={locale === "en" ? "/en/releases" : "/fr/versions"}>{copy.releases}</a>
