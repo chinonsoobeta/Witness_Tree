@@ -7,12 +7,12 @@ import { RidingsMostLost } from "@/components/site/RidingsMostLost";
 import { EvidenceMarks } from "@/components/policy/EvidenceMarks";
 import { PRODUCT_NAME } from "@/lib/domain";
 import { provinceSpanReach } from "@/lib/explore/period";
-import { EXPLORE_PRODUCTION_LAYER, formatUnknownSharePercent, provinceSpanMeasurements } from "@/lib/explore";
+import { EXPLORE_PRODUCTION_LAYER, formatUnknownSharePercent, provinceSpanDisplayRows } from "@/lib/explore";
 import { localizedAlternates } from "@/lib/site-metadata";
 
 export const metadata: Metadata = { title: "Public forest-loss record", alternates: localizedAlternates("en", { en: "/en", fr: "/fr" }) };
 
-const SPAN_ROWS = provinceSpanMeasurements({ fromYear: 1984, toYear: 2022 });
+const SPAN_ROWS = provinceSpanDisplayRows({ fromYear: 1984, toYear: 2022 });
 
 function coverageLabel(row: (typeof SPAN_ROWS)[number]) {
   return `${formatUnknownSharePercent(row.unknownSharePercent, "en")} of the province has no satellite data: ${row.unmappedCharacter.en}`;

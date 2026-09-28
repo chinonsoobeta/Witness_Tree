@@ -79,7 +79,7 @@ export function LocationResult({
           {location.events.map((event) => (
             <article className="card event-card" key={event.id}>
               <h3>
-                {event.year}: {event.title[locale]}
+                {event.year}{colon(locale)} {event.title[locale]}
               </h3>
               <p className="cluster">
                 <EvidenceChip evidence={event.evidence} locale={locale} />

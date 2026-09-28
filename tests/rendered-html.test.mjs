@@ -190,7 +190,7 @@ test("renders both localized public records with neutral non-claims", async () =
   assert.doesNotMatch(french, /<html lang="en">/);
   assert.match(english, /What happened to the forest here\?/);
   assert.match(english, /How much sellable timber there is/);
-  assert.match(french, /Qu’est-il arrivé à la forêt ici\?/);
+  assert.match(french, /Qu’est-il arrivé à la forêt ici\u202F\?/);
   assert.match(french, /La quantité de bois vendable/);
   assert.doesNotMatch(`${english}\n${french}`, /the truth|real-time|complete record/i);
 });
@@ -240,7 +240,7 @@ test("renders localized search results and the Explore table without browser Jav
   assert.match(englishSearch, /British Columbia/);
   assert.match(frenchSearch, /<main\b[^>]*id="main"/);
   assert.match(frenchSearch, /<h2>Lieux<\/h2>/);
-  assert.match(frenchSearch, /Recherchez une province, une circonscription ou une collectivité\. Les chiffres couvrent 1984 à 2022\./);
+  assert.match(frenchSearch, /Recherchez une province, une circonscription ou une collectivité\. Les chiffres couvrent la période de 1984 à 2022\./);
   assert.match(frenchSearch, /Colombie-Britannique/);
 
   // Wildfire reads the national harvest and fire series, so its table shows

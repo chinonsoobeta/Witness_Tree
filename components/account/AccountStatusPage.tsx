@@ -38,7 +38,7 @@ const COPY = {
       "Enregistrer jusqu’à 25 lieux ou zones dessinées, chacune d’au plus 5 000 km².",
       "Utiliser une adresse courriel vérifiée et recevoir les alertes dans l’une ou l’autre langue, quelle que soit la langue de navigation.",
       "Choisir les alertes reçues et leur fréquence, consulter les alertes passées avec la version exacte des données utilisée, et télécharger vos zones et vos alertes.",
-      "Demander la suppression de votre compte et de vos données personnelles; une fois cette fonction en place, la suppression se fera dans les 30 jours.",
+      "Demander la suppression de votre compte et de vos données personnelles\u202F; une fois cette fonction en place, la suppression se fera dans les 30 jours.",
     ],
     safeguards: "Conditions requises avant la mise en service",
     safeguardsList: [

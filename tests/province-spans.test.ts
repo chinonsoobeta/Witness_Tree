@@ -6,6 +6,7 @@ import { EXPLORE_PRODUCTION_LAYER } from "../lib/explore/map-style";
 import {
   fourProvinceSpanMeasurement,
   parseProvinceSpanRelease,
+  provinceSpanDisplayRows,
   provinceSpanMeasurements,
   spanShareClass,
 } from "../lib/explore/province-spans";
@@ -49,6 +50,17 @@ test("the whole-span unknown areas equal the admitted coverage-gap receipt", asy
   const expected = receipt.findings.gap.provinceHectares;
   const rows = provinceSpanMeasurements({ fromYear: 1984, toYear: 2022 });
   for (const row of rows) assert.equal(Math.round((row.unknownHectares ?? Number.NaN) * 100), Math.round(expected[row.code] * 100), row.code);
+});
+
+test("pages spell Québec in English, while the released rows behind the downloads keep their spelling", () => {
+  const span = { fromYear: 1984, toYear: 2022 };
+  const shown = provinceSpanDisplayRows(span);
+  const released = provinceSpanMeasurements(span);
+  assert.deepEqual(shown.find((row) => row.code === "QC")?.name, { en: "Québec", fr: "Québec" });
+  assert.deepEqual(released.find((row) => row.code === "QC")?.name, { en: "Quebec", fr: "Québec" });
+  // Only that one name differs; every figure and every other province is the released row.
+  assert.deepEqual(shown.map((row) => ({ ...row, name: null })), released.map((row) => ({ ...row, name: null })));
+  assert.deepEqual(shown.filter((row) => row.code !== "QC"), released.filter((row) => row.code !== "QC"));
 });
 
 test("span share classes use fixed breaks, and a missing share has no class", () => {

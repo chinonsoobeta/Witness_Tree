@@ -57,7 +57,7 @@ const copy = {
       "bc-2023": "British Columbia",
       "ab-2019": "Alberta",
       "on-2022": "Ontario",
-      "qc-2026": "Quebec",
+      "qc-2026": "Québec",
     } as Record<string, string>,
   },
   fr: {
@@ -77,9 +77,9 @@ const copy = {
     provincial: "Circonscription provinciale",
     outside: "Ce point est à l’extérieur du territoire couvert par l’index.",
     near: (names: string, metres: number) =>
-      `Ce point est à moins de ${metres} m d’une limite de circonscription; nous ne pouvons donc pas dire de quel côté il se trouve. Il est dans l’une des suivantes : ${names}.`,
+      `Ce point est à moins de ${metres} m d’une limite de circonscription\u202F; nous ne pouvons donc pas dire de quel côté il se trouve. Il est dans l’une des suivantes\u202F: ${names}.`,
     precision: (block: number) =>
-      `Situé sur une grille de ${block} m; un point à moins de ${block} m d’une limite est donc indiqué comme proche de celle-ci, et non d’un côté ou de l’autre.`,
+      `Situé sur une grille de ${block} m\u202F; un point à moins de ${block} m d’une limite est donc indiqué comme proche de celle-ci, et non d’un côté ou de l’autre.`,
     compare: "Voir les mesures",
     provinces: {
       "bc-2023": "Colombie-Britannique",

@@ -44,7 +44,7 @@ const COPY: Record<Locale, GalleryCopy> = {
 const EVIDENCE: EvidenceClass[] = ["official-record", "satellite-observation", "derived-estimate", "unknown"];
 const CONFIDENCE: ConfidenceResult[] = [
   { level: "high", ruleId: "CONF-HIGH-001", reason: { en: "Direct authoritative record with clear geometry, date and attributes.", fr: "Registre faisant directement autorité, avec une géométrie, une date et des attributs clairs." } },
-  { level: "medium", ruleId: "CONF-MEDIUM-001", reason: { en: "Good evidence, with one important gap: the attribution is partial.", fr: "Bonne preuve, avec une lacune importante : l’attribution est partielle." } },
+  { level: "medium", ruleId: "CONF-MEDIUM-001", reason: { en: "Good evidence, with one important gap: the attribution is partial.", fr: "Bonne preuve, avec une lacune importante\u202F: l’attribution est partielle." } },
   { level: "limited", ruleId: "CONF-LIMITED-001", reason: { en: "The forest inventory is 6 years older than the event, and its details were not updated for tree growth.", fr: "L’inventaire forestier a 6 ans de plus que l’événement, et ses détails n’ont pas été mis à jour selon la croissance des arbres." } },
 ];
 

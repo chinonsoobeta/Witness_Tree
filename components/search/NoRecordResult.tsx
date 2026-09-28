@@ -20,7 +20,7 @@ const COPY = {
     methodsHref: "/fr/methodes",
     remedies: "Ce qui changerait cette réponse",
     items: [
-      { text: "Un registre officiel de récolte ou d’incendie est ajouté pour ce secteur; il serait alors marqué comme registre officiel, et non comme observation satellitaire.", link: null },
+      { text: "Un registre officiel de récolte ou d’incendie est ajouté pour ce secteur\u202F; il serait alors marqué comme registre officiel, et non comme observation satellitaire.", link: null },
       { text: "Vous déposez une correction visant un chiffre déjà publié.", link: { href: "/fr/corrections", label: "Fonctionnement des corrections" } },
     ],
   },

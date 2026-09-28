@@ -72,7 +72,7 @@ export function FederalRidingPicker({
         right: "Circonscription de droite",
         submit: "Comparer",
         fallback: (side: string, requested: string, shown: string) =>
-          `La circonscription de ${side} « ${requested} » n’est pas offerte ici, car cette comparaison ne couvre que quatre provinces. ${shown} est affichée à la place.`,
+          `La circonscription de ${side} «\u00A0${requested}\u00A0» n’est pas offerte ici, car cette comparaison ne couvre que quatre provinces. ${shown} est affichée à la place.`,
       };
   const missing = [
     leftId && !candidates.some((row) => row.id === leftId)

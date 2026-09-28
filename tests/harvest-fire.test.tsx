@@ -152,7 +152,7 @@ test("both languages render the flags, the limits, Unknown areas and sources bes
   assert.match(english, /2020–2022 covers 3 years only/);
   assert.match(english, /counts as unknown, never zero/);
   assert.match(english, /Later fire seasons, including 2023, are not in it/);
-  assert.match(french, /Colombie-Britannique : forêt dégagée par la récolte et par le feu, 1985–2022/);
+  assert.match(french, /Colombie-Britannique\u202F: forêt dégagée par la récolte et par le feu, 1985–2022/);
   assert.match(french, /inconnu, jamais comme zéro/);
   assert.match(french, /dont celle de 2023/);
 });

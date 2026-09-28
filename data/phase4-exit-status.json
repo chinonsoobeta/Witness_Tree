@@ -51,11 +51,11 @@
       "id": "published-match-and-non-match-rates",
       "title": "Match rate, non-match rate, and non-match-reason distribution are published on the methods page",
       "status": "pass",
-      "reason": "The 2026-09-26 BC and Québec matching run is admitted, published on the methods page in both languages, and released (phase4-provincial-matching-v1). 11.1% of 100,731,284 detected changes match an official record (56% by area). The outside provincial review was retired by the owner the same day and did not take place. On 2026-09-26 the methods text in both languages gained one sentence stating, for British Columbia and Québec, how the loss with no national cause splits by provincial record kind (data/phase4-provincial-cause-crosstab.json, a view of this admitted run); the match rate, the non-match rate, the reason distribution and the admitted run are unchanged, the digests were refreshed, and this reason still holds. On 2026-09-27 a plain-language pass reworded the methods text in both languages and the surrounding methods page. The match rate, the non-match rate, the area share, the reason distribution, the cause split and the admitted run are unchanged; one clause now says the area share is higher because unmatched changes are smaller on average (11.1% by count against 56.1% by area in data/phase4-provincial-matching-report.json). The digests were refreshed, and this reason still holds.",
+      "reason": "The 2026-09-26 BC and Québec matching run is admitted, published on the methods page in both languages, and released (phase4-provincial-matching-v1). 11.1% of 100,731,284 detected changes match an official record (56% by area). The outside provincial review was retired by the owner the same day and did not take place. On 2026-09-26 the methods text in both languages gained one sentence stating, for British Columbia and Québec, how the loss with no national cause splits by provincial record kind (data/phase4-provincial-cause-crosstab.json, a view of this admitted run); the match rate, the non-match rate, the reason distribution and the admitted run are unchanged, the digests were refreshed, and this reason still holds. On 2026-09-27 a plain-language pass reworded the methods text in both languages and the surrounding methods page. The match rate, the non-match rate, the area share, the reason distribution, the cause split and the admitted run are unchanged; one clause now says the area share is higher because unmatched changes are smaller on average (11.1% by count against 56.1% by area in data/phase4-provincial-matching-report.json). The digests were refreshed, and this reason still holds. Later on 2026-09-27 a site-crawl pass changed punctuation, one spelling and one anchor only: the French methods text and page now put a no-break space before the percent sign, a narrow no-break space before colons and semicolons and no-break spaces inside « »; the English page spells Québec, per the owner's 2026-09-27 decision; and the provincial-matching section carries the id provincial-matching, so Explore's “How the matching works” link lands on it. The match rate, the non-match rate, the area share, the reason distribution, the cause split and the admitted run are unchanged; the digests were refreshed, and this reason still holds.",
       "evidence": [
         {
           "path": "components/transparency/MethodologyPage.tsx",
-          "sha256": "14a368c095122555ade7539c9b2e4fbdd2359bf034c4b630aa2dfef23c4699d9"
+          "sha256": "11c58d6aca17aafd91e8d4d90164aba5245c2535d578729f2dcddbab5423361f"
         },
         {
           "path": "docs/PHASE4_OPTIONAL_ENHANCEMENT_GATE.md",
@@ -87,7 +87,7 @@
         },
         {
           "path": "lib/phase4/methods-matching-fr.ts",
-          "sha256": "0639d9234ddd9603119d3fa763c90826290fe5df8dc5e17467ad62055fdc9800"
+          "sha256": "83e50699e112bdb94544d234feee8c027b932de093e12ebc454dcf8327995882"
         },
         {
           "path": "data/bc-harvest-source-rights-2026-09-26.json",
@@ -152,7 +152,7 @@
       "id": "rights-and-admission",
       "title": "Rights/admission",
       "status": "pass",
-      "reason": "The admission record verifies source rights and admits the source evidence, the record transformation and the release; rights are recorded in data/bc-harvest-source-rights-2026-09-26.json. On 2026-09-26 the methods text in both languages gained one sentence stating, for British Columbia and Québec, how the loss with no national cause splits by provincial record kind (data/phase4-provincial-cause-crosstab.json, a view of this admitted run); the match rate, the non-match rate, the reason distribution and the admitted run are unchanged, the digests were refreshed, and this reason still holds. On 2026-09-27 a plain-language pass reworded the methods text in both languages and the surrounding methods page. The match rate, the non-match rate, the area share, the reason distribution, the cause split and the admitted run are unchanged; one clause now says the area share is higher because unmatched changes are smaller on average (11.1% by count against 56.1% by area in data/phase4-provincial-matching-report.json). The digests were refreshed, and this reason still holds.",
+      "reason": "The admission record verifies source rights and admits the source evidence, the record transformation and the release; rights are recorded in data/bc-harvest-source-rights-2026-09-26.json. On 2026-09-26 the methods text in both languages gained one sentence stating, for British Columbia and Québec, how the loss with no national cause splits by provincial record kind (data/phase4-provincial-cause-crosstab.json, a view of this admitted run); the match rate, the non-match rate, the reason distribution and the admitted run are unchanged, the digests were refreshed, and this reason still holds. On 2026-09-27 a plain-language pass reworded the methods text in both languages and the surrounding methods page. The match rate, the non-match rate, the area share, the reason distribution, the cause split and the admitted run are unchanged; one clause now says the area share is higher because unmatched changes are smaller on average (11.1% by count against 56.1% by area in data/phase4-provincial-matching-report.json). The digests were refreshed, and this reason still holds. Later on 2026-09-27 a site-crawl pass changed the French methods text's punctuation only: a no-break space before the percent sign and a narrow no-break space before colons and semicolons. The match rate, the non-match rate, the reason distribution, the cause split and the admitted run are unchanged; the digest was refreshed, and this reason still holds.",
       "evidence": [
         {
           "path": "data/phase4-provincial-matching-report.json",
@@ -176,7 +176,7 @@
         },
         {
           "path": "lib/phase4/methods-matching-fr.ts",
-          "sha256": "0639d9234ddd9603119d3fa763c90826290fe5df8dc5e17467ad62055fdc9800"
+          "sha256": "83e50699e112bdb94544d234feee8c027b932de093e12ebc454dcf8327995882"
         },
         {
           "path": "data/bc-harvest-source-rights-2026-09-26.json",

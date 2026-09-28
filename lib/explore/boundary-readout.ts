@@ -81,8 +81,8 @@ const words = {
   fr: {
     boundaryOnly: "Limite de référence seulement. Il n’y a aucun chiffre de perte forestière pour cette zone.",
     complete: "Couverture cartographiée complète",
-    admitted: (share: string) => `Couverture cartographiée presque complète; ${share} de la forêt n’a aucune donnée satellitaire`,
-    partial: "Couverture cartographiée partielle; une zone inconnue demeure",
+    admitted: (share: string) => `Couverture cartographiée presque complète\u202F; ${share} de la forêt n’a aucune donnée satellitaire`,
+    partial: "Couverture cartographiée partielle\u202F; une zone inconnue demeure",
     none: "Aucune couverture cartographiée",
     unavailable: "Aucun chiffre pour cette zone",
     unknown: "Inconnu",
@@ -181,7 +181,8 @@ export function boundaryReadout(
     coverage,
     normalizedShare: complete ? formatPercent(measurement.observedLossPercent!, locale) : copy.unknown,
     absoluteLoss: complete ? formatHectares(measurement.observedLossHectares!, locale) : copy.unknown,
-    ...(finiteNonNegative(measurement.knownObservedSubtotalHectares)
+    // A complete figure is the whole answer; a subtotal beside it would read as a second one.
+    ...(!complete && finiteNonNegative(measurement.knownObservedSubtotalHectares)
       ? { knownObservedSubtotal: formatHectares(measurement.knownObservedSubtotalHectares!, locale) }
       : {}),
     ...(summedExceedsUnion

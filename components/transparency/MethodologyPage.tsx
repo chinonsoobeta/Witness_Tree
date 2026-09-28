@@ -23,9 +23,9 @@ const COPY = {
       `Percentages are a share of the forest that existed at the start of the years you choose, not a share of all land. The record covers ${EXPLORE_COVERAGE_PERIOD.en}. On Explore you choose a first and a last year. The shortest span is one year, such as ${EXPLORE_YEAR_MIN - 1} to ${EXPLORE_YEAR_MIN}, and Explore opens on ${EXPLORE_DEFAULT_YEAR - 1} to ${EXPLORE_DEFAULT_YEAR}.`,
     coverage: "Geographic coverage",
     coverageText:
-      "The record covers British Columbia, Alberta, Ontario and Quebec, using national data. Quebec north of 52° has national data only, with no extra local records. Coverage is worked out from the area actually mapped, not just from province names.",
+      "The record covers British Columbia, Alberta, Ontario and Québec, using national data. Québec north of 52° has national data only, with no extra local records. Coverage is worked out from the area actually mapped, not just from province names.",
     unmapped: "Where the source has no data",
-    unmappedText: "The satellite land-cover source (NTEMS VLCE2) covers Canada’s forest regions only, so it has no data for 46,424,717.91 hectares of these four provinces: 22,204,952.19 in Quebec, 15,372,023.76 in Alberta, 8,843,646.69 in Ontario and 4,095.27 in British Columbia. It leaves out most of the prairies and the settled south, and Quebec’s far north beyond where dense forest ends; in British Columbia the small gap is mostly along the shoreline. No data doesn’t mean no forest, and we never treat it that way.",
+    unmappedText: "The satellite land-cover source (NTEMS VLCE2) covers Canada’s forest regions only, so it has no data for 46,424,717.91 hectares of these four provinces: 22,204,952.19 in Québec, 15,372,023.76 in Alberta, 8,843,646.69 in Ontario and 4,095.27 in British Columbia. It leaves out most of the prairies and the settled south, and Québec’s far north beyond where dense forest ends; in British Columbia the small gap is mostly along the shoreline. No data doesn’t mean no forest, and we never treat it that way.",
     unmappedKnowledge: "What we know about the area with no data",
     unmappedKnowledgeText:
       "We don’t assume this area has no forest, and we hold dated records of forestry work there that are not yet cleared for public use. We tried estimating loss from satellite images back to 1984, but images can’t show whether the land met the forest definition (tree crowns covering at least 10% of the ground, trees able to reach 5 metres) in 1984, and a later start year didn’t help. Settling it would need field plots, air photos or lidar.",
@@ -52,7 +52,7 @@ const COPY = {
     confidenceCondition: "Conditions d’application",
     definition: "Définition de la forêt",
     definitionText:
-      "La forêt est une terre d’au moins 1 hectare et d’au moins 20 mètres de largeur, où les cimes des arbres couvrent au moins 10 % du sol, avec des arbres pouvant atteindre 5 mètres.",
+      "La forêt est une terre d’au moins 1 hectare et d’au moins 20 mètres de largeur, où les cimes des arbres couvrent au moins 10\u00A0% du sol, avec des arbres pouvant atteindre 5 mètres.",
     denominator: "Ce que mesurent les pourcentages",
     denominatorText:
       `Les pourcentages sont une part de la forêt présente au début des années choisies, et non une part de tout le territoire. Le registre couvre la période de ${EXPLORE_COVERAGE_PERIOD.fr}. Sur la page Explorer, vous choisissez une première et une dernière année. La période la plus courte est d’un an, par exemple de ${EXPLORE_YEAR_MIN - 1} à ${EXPLORE_YEAR_MIN}, et la page s’ouvre sur ${EXPLORE_DEFAULT_YEAR - 1} à ${EXPLORE_DEFAULT_YEAR}.`,
@@ -60,19 +60,19 @@ const COPY = {
     coverageText:
       "Le registre couvre la Colombie-Britannique, l’Alberta, l’Ontario et le Québec, à partir de données nationales. Le Québec au nord du 52e degré n’a que des données nationales, sans registres locaux supplémentaires. La couverture est établie à partir de la zone réellement cartographiée, et non du seul nom de la province.",
     unmapped: "Là où la source n’a pas de données",
-    unmappedText: "La source satellitaire de couverture terrestre (NTEMS VLCE2) ne couvre que les régions forestières du Canada\u202F: elle n’a donc pas de données pour 46 424 717,91 hectares de ces quatre provinces, soit 22 204 952,19 au Québec, 15 372 023,76 en Alberta, 8 843 646,69 en Ontario et 4 095,27 en Colombie-Britannique. Elle laisse de côté la plupart des Prairies et du sud habité, ainsi que le Grand Nord québécois au-delà de la forêt dense; en Colombie-Britannique, le petit écart se situe surtout le long du littoral. L’absence de données ne veut pas dire l’absence de forêt, et nous ne la traitons jamais ainsi.",
+    unmappedText: "La source satellitaire de couverture terrestre (NTEMS VLCE2) ne couvre que les régions forestières du Canada\u202F: elle n’a donc pas de données pour 46 424 717,91 hectares de ces quatre provinces, soit 22 204 952,19 au Québec, 15 372 023,76 en Alberta, 8 843 646,69 en Ontario et 4 095,27 en Colombie-Britannique. Elle laisse de côté la plupart des Prairies et du sud habité, ainsi que le Grand Nord québécois au-delà de la forêt dense\u202F; en Colombie-Britannique, le petit écart se situe surtout le long du littoral. L’absence de données ne veut pas dire l’absence de forêt, et nous ne la traitons jamais ainsi.",
     unmappedKnowledge: "Ce que nous savons de la zone sans données",
     unmappedKnowledgeText:
-      "Nous ne supposons pas que ce territoire est sans forêt, et nous détenons des documents datés sur des travaux forestiers qui n’y sont pas encore autorisés pour un usage public. Nous avons tenté d’estimer la perte à partir d’images satellites remontant à 1984, mais les images ne montrent pas si le territoire répondait à la définition de la forêt (cimes couvrant au moins 10 % du sol, arbres pouvant atteindre 5 mètres) en 1984, et une année de départ plus récente n’a pas aidé. Pour trancher, il faudrait des placettes de terrain, des photos aériennes ou des données lidar.",
+      "Nous ne supposons pas que ce territoire est sans forêt, et nous détenons des documents datés sur des travaux forestiers qui n’y sont pas encore autorisés pour un usage public. Nous avons tenté d’estimer la perte à partir d’images satellites remontant à 1984, mais les images ne montrent pas si le territoire répondait à la définition de la forêt (cimes couvrant au moins 10\u00A0% du sol, arbres pouvant atteindre 5 mètres) en 1984, et une année de départ plus récente n’a pas aidé. Pour trancher, il faudrait des placettes de terrain, des photos aériennes ou des données lidar.",
     evidence: "Preuves et confiance",
-    evidenceText: "Chaque fait est classé comme registre officiel, observation satellitaire, estimation dérivée ou inconnu. Ici, « inconnu » veut dire qu’aucun registre officiel ne répond à la question, ce qui diffère d’un territoire sans données satellitaires. Chaque fait a aussi un niveau de confiance (élevé, moyen, limité ou inconnu) accompagné de sa raison, jamais indiqué par la seule couleur.",
+    evidenceText: "Chaque fait est classé comme registre officiel, observation satellitaire, estimation dérivée ou inconnu. Ici, «\u00A0inconnu\u00A0» veut dire qu’aucun registre officiel ne répond à la question, ce qui diffère d’un territoire sans données satellitaires. Chaque fait a aussi un niveau de confiance (élevé, moyen, limité ou inconnu) accompagné de sa raison, jamais indiqué par la seule couleur.",
     accuracy: "Exactitude de la détection",
     accuracyText:
-      "L’éditeur des données cite une étude de la version antérieure de 2005 de cette carte de couverture terrestre : elle était exacte à 70,3 % dans l’ensemble (±2,5 points de pourcentage, confiance de 95 %). Cette étude ne mesure pas l’exactitude de nos détections de perte forestière, pour aucune circonscription ni aucune année. L’exactitude de la perte détectée est donc inconnue.",
+      "L’éditeur des données cite une étude de la version antérieure de 2005 de cette carte de couverture terrestre\u202F: elle était exacte à 70,3\u00A0% dans l’ensemble (±2,5 points de pourcentage, confiance de 95\u00A0%). Cette étude ne mesure pas l’exactitude de nos détections de perte forestière, pour aucune circonscription ni aucune année. L’exactitude de la perte détectée est donc inconnue.",
     accuracyLink: "Lire l’étude d’exactitude",
     matching: "Appariement aux registres officiels",
     matchingText:
-      "Une perte détectée correspond à un registre officiel lorsqu’ils se chevauchent sur au moins 50 % de la plus petite superficie et que leurs dates sont à ±2 ans l’une de l’autre (±3 ans avant 1995). Lorsque des événements se chevauchent au même endroit la même année, celui qui est affiché est choisi dans cet ordre : incendie; récolte consignée; perturbation consignée par insecte ou maladie; autre intervention consignée; puis perte détectée sans registre correspondant. Les autres preuves sont conservées.",
+      "Une perte détectée correspond à un registre officiel lorsqu’ils se chevauchent sur au moins 50\u00A0% de la plus petite superficie et que leurs dates sont à ±2 ans l’une de l’autre (±3 ans avant 1995). Lorsque des événements se chevauchent au même endroit la même année, celui qui est affiché est choisi dans cet ordre\u202F: incendie\u202F; récolte consignée\u202F; perturbation consignée par insecte ou maladie\u202F; autre intervention consignée\u202F; puis perte détectée sans registre correspondant. Les autres preuves sont conservées.",
     provincialMatching: "Résultats de l’appariement provincial",
     provincialMatchingText: "",
     limits: "Ce que ce registre n’affirme pas",
@@ -104,7 +104,7 @@ const CONFIDENCE_RULES: readonly Readonly<{
   {
     id: "CONF-UNKNOWN-001",
     en: ["Unknown", "There is neither an official record nor a precise location, so nothing official answers this question yet."],
-    fr: ["Inconnue", "Il n’y a ni registre officiel ni emplacement précis; rien d’officiel ne répond donc encore à cette question."],
+    fr: ["Inconnue", "Il n’y a ni registre officiel ni emplacement précis\u202F; rien d’officiel ne répond donc encore à cette question."],
   },
 ];
 
@@ -132,7 +132,7 @@ export function MethodologyPage({ locale }: Readonly<{ locale: Locale }>) {
       </header>
       <div className="content-section prose-measure">
         {sections.map(([heading, text], index) => (
-          <section className="governance-section" key={heading} id={heading === copy.unmapped ? "coverage-gap" : undefined}>
+          <section className="governance-section" key={heading} id={heading === copy.unmapped ? "coverage-gap" : heading === copy.provincialMatching ? "provincial-matching" : undefined}>
             <p className="governance-index" aria-hidden="true">
               {String(index + 1).padStart(2, "0")}
             </p>

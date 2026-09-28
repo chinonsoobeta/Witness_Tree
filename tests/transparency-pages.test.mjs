@@ -51,7 +51,7 @@ test("methodology publishes predecessor VLCE accuracy with its VLCE2 non-applica
   assert.match(page, /earlier 2005 version of this land-cover map: it was 70\.3% accurate overall \(±2\.5 percentage points, 95% confidence\)/);
   assert.match(page, /does not measure how accurate our forest-loss detections are, for any district or year/);
   assert.match(page, /So the accuracy of detected loss is Unknown/);
-  assert.match(page, /version antérieure de 2005 de cette carte de couverture terrestre : elle était exacte à 70,3 % dans l’ensemble \(±2,5 points de pourcentage, confiance de 95 %\)/);
+  assert.match(page, /version antérieure de 2005 de cette carte de couverture terrestre\\u202F: elle était exacte à 70,3\\u00A0% dans l’ensemble \(±2,5 points de pourcentage, confiance de 95\\u00A0%\)/);
   assert.match(page, /ne mesure pas l’exactitude de nos détections de perte forestière, pour aucune circonscription ni aucune année/);
   assert.match(page, /L’exactitude de la perte détectée est donc inconnue/);
 });
@@ -78,7 +78,7 @@ test("data page labels examples and links the ledger and documentation", async (
   assert.match(page, /href="https:\/\/github\.com\/chinonsoobeta\/Witness_Tree\/blob\/main\/data\/phase1-production-source-ledger\.json"/);
   assert.match(page, /href="https:\/\/github\.com\/chinonsoobeta\/Witness_Tree\/blob\/main\/docs\/PHASE1_PRODUCTION_SOURCE_LEDGER\.md"/);
   assert.match(page, /Two source archives have been checked/);
-  assert.match(page, /verified copy of two Quebec layers/);
+  assert.match(page, /verified copy of two Québec layers/);
   assert.match(page, /608 self-intersections in Alberta/);
   assert.match(page, /href="https:\/\/github\.com\/chinonsoobeta\/Witness_Tree\/blob\/main\/data\/staged-acquisitions\.json"/);
   assert.match(page, /href="https:\/\/github\.com\/chinonsoobeta\/Witness_Tree\/blob\/main\/data\/staged-geospatial-profile\.json"/);
@@ -115,7 +115,7 @@ test("methods explain the unmapped extent and inconclusive sampling in both loca
     "images can’t show whether the land met the forest definition", "les images ne montrent pas si le territoire répondait à la définition de la forêt",
     "a later start year didn’t help", "une année de départ plus récente n’a pas aidé",
     "field plots, air photos or lidar", "placettes de terrain, des photos aériennes ou des données lidar",
-    "Quebec’s far north beyond where dense forest ends",
+    "Québec’s far north beyond where dense forest ends",
     "le Grand Nord québécois au-delà de la forêt dense",
     "unknown means no official record answers the question, which is different from land with no satellite data", "ce qui diffère d’un territoire sans données satellitaires",
   ]) assert.ok(page.includes(phrase), phrase);

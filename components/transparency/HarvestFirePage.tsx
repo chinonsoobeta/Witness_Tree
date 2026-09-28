@@ -81,7 +81,7 @@ const COPY = {
     unavailable: "Ces chiffres ne sont pas disponibles pour le moment.",
     measureTitle: "Ce que montrent les barres",
     sumTitle: "Pourquoi les années peuvent être additionnées ici",
-    sumBody: "Ailleurs sur ce site, les pertes annuelles ne sont jamais additionnées, car un lieu perdu deux années serait compté deux fois. Ces chiffres sont différents : le registre national donne à chaque carré de 30 m au plus une année de récolte et une année de feu. Additionner les années de récolte compte chaque carré une seule fois, tout comme additionner les années de feu.",
+    sumBody: "Ailleurs sur ce site, les pertes annuelles ne sont jamais additionnées, car un lieu perdu deux années serait compté deux fois. Ces chiffres sont différents\u202F: le registre national donne à chaque carré de 30 m au plus une année de récolte et une année de feu. Additionner les années de récolte compte chaque carré une seule fois, tout comme additionner les années de feu.",
     sumNever: "La récolte et le feu ne sont jamais additionnés, car un même carré peut porter les deux.",
     builderTitle: "Créer un graphique",
     provinces: "Provinces",
@@ -96,15 +96,15 @@ const COPY = {
     chart: "Graphiques",
     table: "Tableau",
     submit: "Afficher",
-    chartTitle: (name: string, range: string) => `${name} : forêt dégagée par la récolte et par le feu, ${range}`,
+    chartTitle: (name: string, range: string) => `${name}\u202F: forêt dégagée par la récolte et par le feu, ${range}`,
     subtitle: { 1: "Hectares par année", 5: "Hectares par période de cinq ans", 10: "Hectares par période de dix ans", span: "Hectares sur toute la période" } as Record<string, string>,
     sharedNote: "même échelle pour chaque graphique",
     harvest: "Récolte",
     fire: "Feu",
     xAxis: { 1: "Année", 5: "Période de cinq ans", 10: "Période de dix ans", span: "Années" } as Record<string, string>,
     yAxis: "Hectares",
-    tooltip: (name: string, label: string, kind: string, value: string) => `${name}, ${label}, ${kind.toLowerCase()} : ${value} ha`,
-    short: (label: string, years: number) => `* ${label} ne couvre que ${years} ${years === 1 ? "année" : "années"}; la série se termine en 2022.`,
+    tooltip: (name: string, label: string, kind: string, value: string) => `${name}, ${label}, ${kind.toLowerCase()}\u202F: ${value} ha`,
+    short: (label: string, years: number) => `* ${label} ne couvre que ${years} ${years === 1 ? "année" : "années"}\u202F; la série se termine en 2022.`,
     png: (name: string) => `Télécharger le graphique ${name} (PNG)`,
     csv: "Télécharger ces chiffres (CSV)",
     record: "Ouvrir la série annuelle complète (JSON)",
@@ -116,12 +116,12 @@ const COPY = {
     fireHa: "Feu (ha)",
     unknownHa: "Non cartographié, inconnu (ha)",
     coverageTitle: "Ce que la série ne voit pas",
-    coverage: (name: string, hectares: string, reason: string) => `${name} : ${hectares} ha n’ont pas de données satellitaires, ${reason}. Aucune récolte ni aucun feu ne peut y être daté; ce territoire compte donc comme inconnu, jamais comme zéro.`,
-    baseline: "1984 est la première image; rien ne peut donc y être daté. Les graphiques commencent en 1985.",
+    coverage: (name: string, hectares: string, reason: string) => `${name}\u202F: ${hectares} ha n’ont pas de données satellitaires, ${reason}. Aucune récolte ni aucun feu ne peut y être daté\u202F; ce territoire compte donc comme inconnu, jamais comme zéro.`,
+    baseline: "1984 est la première image\u202F; rien ne peut donc y être daté. Les graphiques commencent en 1985.",
     limitsTitle: "À lire avant de comparer",
     notesHeading: "Notes",
     sourceTitle: "Sources",
-    tabulation: `Compilation : ${PRODUCT_NAME.fr}, aperçu technique, non examiné par des spécialistes.`,
+    tabulation: `Compilation\u202F: ${PRODUCT_NAME.fr}, aperçu technique, non examiné par des spécialistes.`,
     explore: "Voir la récolte et le feu sur la carte",
   },
 } as const;
@@ -170,7 +170,7 @@ function Chart({ chart, locale, text, query }: Readonly<{ chart: HarvestFireChar
   const { plot } = geometry;
   const label = text.chartTitle(name, formatYearRange(yearRange(query.firstYear, query.lastYear), locale, "compact"));
   return (
-    <div className="hf-chart-scroll">
+    <div className="hf-chart-scroll" tabIndex={0} role="region" aria-label={label}>
       <svg className="hf-chart-svg" role="img" aria-label={label} viewBox={`0 0 ${geometry.width} ${geometry.height}`} width="100%">
         <title>{label}</title>
         {geometry.ticks.map((tick) => (

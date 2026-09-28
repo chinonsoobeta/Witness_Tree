@@ -25,7 +25,7 @@ export const EXPLORE_PRODUCTION_LAYER = Object.freeze({
   period: "2020-2022",
   attribution: {
     en: "Statistics Canada 2021 cartographic boundaries; province aggregate derived from Natural Resources Canada VLCE2.",
-    fr: "Limites cartographiques de 2021 de Statistique Canada; agrégat provincial dérivé de VLCE2 de Ressources naturelles Canada.",
+    fr: "Limites cartographiques de 2021 de Statistique Canada\u202F; agrégat provincial dérivé de VLCE2 de Ressources naturelles Canada.",
     href: "https://www150.statcan.gc.ca/n1/en/catalogue/92-160-X",
   },
   /*

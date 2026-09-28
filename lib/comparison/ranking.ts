@@ -7,7 +7,7 @@ export type RankedRidingsResult = Readonly<{ ranked: readonly RankedRiding[]; un
 export type RankingSort = "share-desc" | "share-asc";
 export const RANKING_COPY = {
   en: { metric: "Detected loss as a share of forested area", hectares: "Detected loss (ha)", forested: "Forested area (ha)", officialMatching: "Matching to official records hasn’t been done for ridings yet, so it is Unknown in every row.", unknown: "Unknown" },
-  fr: { metric: "Perte détectée en part de la superficie forestière", hectares: "Perte détectée (ha)", forested: "Superficie forestière (ha)", officialMatching: "L’appariement aux registres officiels n’a pas encore été fait pour les circonscriptions; il est donc inconnu dans chaque ligne.", unknown: "Inconnu" },
+  fr: { metric: "Perte détectée en part de la superficie forestière", hectares: "Perte détectée (ha)", forested: "Superficie forestière (ha)", officialMatching: "L’appariement aux registres officiels n’a pas encore été fait pour les circonscriptions\u202F; il est donc inconnu dans chaque ligne.", unknown: "Inconnu" },
 } as const;
 
 export function parseRankingSort(value: string | undefined): RankingSort {

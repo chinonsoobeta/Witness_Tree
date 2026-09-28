@@ -102,7 +102,8 @@ function ProvinceItem({
   selected: ExploreMapView | null;
   onSelect?: (province: ExploreMapView) => void;
 }>) {
-  const contents = <><ProvinceFlag province={province} locale={locale} /><span>{PROVINCES[province].name[locale]}</span></>;
+  // The province is named beside its flag, so the flag's own label would only repeat it.
+  const contents = <><span aria-hidden="true"><ProvinceFlag province={province} locale={locale} /></span><span>{PROVINCES[province].name[locale]}</span></>;
   return onSelect ? (
     <button type="button" aria-pressed={selected === province} onClick={() => onSelect(province)}>{contents}</button>
   ) : (

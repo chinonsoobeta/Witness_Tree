@@ -1,5 +1,5 @@
 import { EXPLORE_DEFAULT_YEAR, EXPLORE_YEAR_MAX, EXPLORE_YEAR_MIN, type ExploreEvent } from "./types";
-const confidence = { level: "medium", ruleId: "CONF-MEDIUM-001", reason: { en: "Good evidence, with one important gap: a required detail is missing.", fr: "Bonne preuve, avec une lacune importante : un détail requis manque." } } as const;
+const confidence = { level: "medium", ruleId: "CONF-MEDIUM-001", reason: { en: "Good evidence, with one important gap: a required detail is missing.", fr: "Bonne preuve, avec une lacune importante\u202F: un détail requis manque." } } as const;
 const provenance = { dataset: "Illustrative fixture only", version: "example-1", retrievedDate: "2026-08-11", licence: "ogl-canada-2.0" } as const;
 export const exploreFixtures: readonly ExploreEvent[] = [
   { id: "change", mode: "forest-change", year: 2004, coordinates: [-123.12, 49.28], name: { en: "Detected tree-cover change", fr: "Changement de couvert arboré détecté" }, evidence: "satellite-observation", confidence, coverageGrade: "national-baseline", provenance },

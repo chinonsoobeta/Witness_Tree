@@ -59,6 +59,19 @@ test("incomplete and unmapped riding coverage never turn unknown totals into zer
   }
 });
 
+test("a complete figure stands alone, with no known subtotal beside it", () => {
+  const withSubtotal = { ...complete, knownObservedSubtotalHectares: 50 };
+  const riding = boundaryReadout(selection("federal-ridings"), [withSubtotal], "en", SPAN);
+  assert.equal(riding.kind === "riding-measurement" && riding.knownObservedSubtotal, undefined);
+  // An admitted economic region is complete coverage too, so the same holds there.
+  const region = boundaryReadout(selection("economic-regions"), [{
+    ...withSubtotal,
+    overlay: "economic-regions",
+    admittedUnknownPercent: 0.42,
+  }], "en", SPAN);
+  assert.equal(region.kind === "riding-measurement" && region.knownObservedSubtotal, undefined);
+});
+
 test("watersheds remain boundary-only even when a matching riding record exists", () => {
   assert.deepEqual(boundaryReadout(selection("watersheds"), [complete], "en", SPAN), {
     kind: "boundary-only",
@@ -142,7 +155,7 @@ test("an admitted region names its unmapped share, and nothing else may admit on
     "Nearly complete mapped coverage; 0.42% of the forest has no satellite data",
   );
   const fr = boundaryReadout(regionSelection, [region], "fr", SPAN) as { coverage: string; normalizedShare: string };
-  assert.match(fr.coverage, /^Couverture cartographiée presque complète; 0,42\s?% de la forêt n’a aucune donnée satellitaire$/);
+  assert.match(fr.coverage, /^Couverture cartographiée presque complète\u202F; 0,42\s?% de la forêt n’a aucune donnée satellitaire$/);
   assert.match(fr.normalizedShare, /^1,25\s?%$/);
   assert.throws(() => boundaryReadout(selection("federal-ridings"), [{ ...complete, admittedUnknownPercent: 0.42 }], "en", SPAN), /economic region/);
   assert.throws(() => boundaryReadout(regionSelection, [{ ...region, admittedUnknownPercent: 1 }], "en", SPAN), /below 1%/);

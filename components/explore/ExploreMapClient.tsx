@@ -68,7 +68,7 @@ const text = {
     fallbackError:
       "The interactive map didn’t load, so a still map is shown instead. The figures below are not affected.",
     unavailable:
-      "Condition and recovery isn’t available yet. We still need to decide what counts as trees growing back, and review a map built on that decision. The other layers are not affected.",
+      "Condition and recovery isn’t available yet. We have decided what counts as trees growing back, but a map built on that decision hasn’t been reviewed yet. The other layers are not affected.",
     unavailableYear:
       `Loss patches cover ${perCellArchiveSpan("en")}. Choose ${EXPLORE_YEAR_MAX} or earlier to see this layer.`,
     error:
@@ -133,28 +133,28 @@ const text = {
     readyBoth:
       `Les provinces sont ombrées selon la forêt perdue pendant les années choisies, et le zoom avant montre chaque parcelle de perte. Choisissez n’importe quelles années ${provinceSpanReach("fr", "from")}. Les limites sont simplifiées et omettent les petites îles.`,
     fallbackTimeout:
-      "La carte interactive tarde à se charger; une carte fixe est donc affichée à sa place. Les chiffres ci-dessous ne sont pas touchés.",
+      "La carte interactive tarde à se charger\u202F; une carte fixe est donc affichée à sa place. Les chiffres ci-dessous ne sont pas touchés.",
     fallbackError:
-      "La carte interactive ne s’est pas chargée; une carte fixe est donc affichée à sa place. Les chiffres ci-dessous ne sont pas touchés.",
+      "La carte interactive ne s’est pas chargée\u202F; une carte fixe est donc affichée à sa place. Les chiffres ci-dessous ne sont pas touchés.",
     unavailable:
-      "L’état et le rétablissement ne sont pas encore offerts. Il faut d’abord décider ce qui compte comme des arbres qui repoussent, puis examiner une carte fondée sur cette décision. Les autres couches ne sont pas touchées.",
+      "L’état et le rétablissement ne sont pas encore offerts. Nous avons décidé ce qui compte comme des arbres qui repoussent, mais la carte fondée sur cette décision n’a pas encore été examinée. Les autres couches ne sont pas touchées.",
     unavailableYear:
       `Les parcelles de perte couvrent ${perCellArchiveSpan("fr")}. Choisissez ${EXPLORE_YEAR_MAX} ou une année antérieure pour voir cette couche.`,
     error:
-      "La carte ne s’est pas chargée. Les chiffres ci-dessous ne sont pas touchés; vous pouvez réessayer ou consulter le tableau ci-dessous.",
+      "La carte ne s’est pas chargée. Les chiffres ci-dessous ne sont pas touchés\u202F; vous pouvez réessayer ou consulter le tableau ci-dessous.",
     errorTimeout:
-      "La carte tarde à se charger. Les chiffres ci-dessous ne sont pas touchés; vous pouvez réessayer ou consulter le tableau ci-dessous.",
+      "La carte tarde à se charger. Les chiffres ci-dessous ne sont pas touchés\u202F; vous pouvez réessayer ou consulter le tableau ci-dessous.",
     retry: "Réessayer la carte interactive",
     attribution: "Sources de la carte",
     perCell:
       `Faites un zoom avant pour voir chaque parcelle de perte forestière détectée pendant les années choisies. Un lieu perdu au cours de plusieurs années est dessiné une fois pour chacune.`,
     perCellLimits:
-      "Ces parcelles servent à la visualisation, pas au calcul : en zoom arrière, la carte les simplifie et omet les plus petites. Personne ne les a vérifiées sur le terrain, et une zone sans parcelle ne veut pas dire qu’aucune perte n’y est survenue.",
+      "Ces parcelles servent à la visualisation, pas au calcul\u202F: en zoom arrière, la carte les simplifie et omet les plus petites. Personne ne les a vérifiées sur le terrain, et une zone sans parcelle ne veut pas dire qu’aucune perte n’y est survenue.",
     perCellLegend: "Parcelle de perte, selon ce que montre le registre officiel",
     perCellLegendHarvest: "Parcelle de perte détectée avec récolte consignée",
     perCellLegendFire: "Parcelle de perte détectée avec incendie consigné",
     perCellFilteredLimits:
-      "Seules les parcelles ainsi désignées par le registre officiel sont dessinées. Une zone vide ne veut pas dire que rien ne s’y est produit; le registre ne la couvre peut-être pas.",
+      "Seules les parcelles ainsi désignées par le registre officiel sont dessinées. Une zone vide ne veut pas dire que rien ne s’y est produit\u202F; le registre ne la couvre peut-être pas.",
     legend:
       "Perte forestière détectée pendant ces années, en part de la forêt au début",
     legendHeading: "Perte forestière détectée",
@@ -186,7 +186,7 @@ const text = {
     exitFullscreen: "Quitter le plein écran",
     mapPanelHarvest: "Récolte consignée",
     mapPanelFire: "Incendie consigné",
-    mapPanelNeither: "Ni l’un ni l’autre consigné; le registre ne couvre peut-être pas cette zone",
+    mapPanelNeither: "Ni l’un ni l’autre consigné\u202F; le registre ne couvre peut-être pas cette zone",
   },
 } as const;
 
@@ -355,7 +355,7 @@ const boundaryJurisdiction = (locale: Locale, jurisdiction: string) =>
     AB: { en: "Alberta", fr: "Alberta" },
     BC: { en: "British Columbia", fr: "Colombie-Britannique" },
     ON: { en: "Ontario", fr: "Ontario" },
-    QC: { en: "Quebec", fr: "Québec" },
+    QC: { en: "Québec", fr: "Québec" },
   })[jurisdiction]?.[locale] ?? jurisdiction;
 
 // The tiles carry only the province geometry and its id that matter here; the
@@ -1253,7 +1253,9 @@ export function ExploreMapClient({
               >
                 <title>
                   {(() => {
-                    const name = locale === "fr" ? feature.properties.province_name_fr : feature.properties.province_name_en;
+                    // The page's own names, so English reads Québec; the published fallback keeps its spelling.
+                    const code = PROVINCE_CODE_FOR_PRUID[feature.properties.province_id];
+                    const name = code ? boundaryJurisdiction(locale, code) : locale === "fr" ? feature.properties.province_name_fr : feature.properties.province_name_en;
                     const share = spanRows.find((row) => row.id === feature.properties.province_id)?.unionLossPercent;
                     return typeof share === "number" ? labelled(locale, name, formatPercent(share, locale)) : name;
                   })()}

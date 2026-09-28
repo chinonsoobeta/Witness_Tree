@@ -116,9 +116,9 @@ test("comparison routes disclose an unrecognized requested riding before the fal
   const english = renderToStaticMarkup(await EnglishComparePage({ searchParams: Promise.resolve({ left: "federal-missing" }) }));
   const french = renderToStaticMarkup(await FrenchComparePage({ searchParams: Promise.resolve({ right: "federal-absente" }) }));
   assert.match(english, /The left riding “federal-missing” isn’t available here, since this comparison covers four provinces only\. Showing [^<]+ instead\./);
-  assert.match(french, /La circonscription de droite « federal-absente » n’est pas offerte ici, car cette comparaison ne couvre que quatre provinces\. [^<]+ est affichée à la place\./);
+  assert.match(french, /La circonscription de droite «\u00A0federal-absente\u00A0» n’est pas offerte ici, car cette comparaison ne couvre que quatre provinces\. [^<]+ est affichée à la place\./);
   assert.ok(english.indexOf("The left riding") < english.indexOf("Side-by-side comparison"));
-  assert.ok(french.indexOf("demandée « federal-absente »") < french.indexOf("Comparaison côte à côte"));
+  assert.ok(french.indexOf("La circonscription de droite") < french.indexOf("Comparaison côte à côte"));
 });
 
 test("comparison routes state comparability limits before controls and figures", async () => {

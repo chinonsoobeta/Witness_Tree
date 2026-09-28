@@ -14,7 +14,7 @@ export const UNMAPPED_REASONS: Readonly<Record<ProvinceSpanId, UnmappedReason>> 
   },
   "48": {
     en: "mostly in the prairies and the settled south, outside the forest areas the source maps; the rest lies between 52° and 56° north",
-    fr: "surtout dans les Prairies et le sud habité, hors des zones forestières que la source cartographie; le reste se trouve entre 52° et 56° de latitude nord",
+    fr: "surtout dans les Prairies et le sud habité, hors des zones forestières que la source cartographie\u202F; le reste se trouve entre 52° et 56° de latitude nord",
     basis: ["findings.gap.provinceHectares.AB", "findings.gap.distribution.albertaMid52To56NHectares"],
   },
   "35": {
@@ -24,7 +24,7 @@ export const UNMAPPED_REASONS: Readonly<Record<ProvinceSpanId, UnmappedReason>> 
   },
   "24": {
     en: "mostly in the far north, beyond where dense forest ends; the rest is in the settled south",
-    fr: "surtout dans le Grand Nord, au-delà de la limite de la forêt dense; le reste se trouve dans le sud habité",
+    fr: "surtout dans le Grand Nord, au-delà de la limite de la forêt dense\u202F; le reste se trouve dans le sud habité",
     basis: ["findings.gap.distribution.quebecFarNorthHectares", "findings.gap.provinceHectares.QC"],
   },
 };

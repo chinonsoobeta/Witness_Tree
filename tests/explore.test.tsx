@@ -122,7 +122,9 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
     assert.match(en, /Per-cell detected loss, \d{4}\u2013\d{4}/u);
     assert.doesNotMatch(en, /Per-cell detected loss, \d{4}-\d{4}/u);
     assert.match(en, /Detected loss \(ha\)/);
-    assert.match(en, /Cause not recorded \(ha\)/);
+    assert.match(en, /Of that loss, logged \(ha\)/);
+    assert.match(en, /Of that loss, burned \(ha\)/);
+    assert.match(en, /Of that loss, cause not recorded \(ha\)/);
     assert.match(en, /each cell is 0\.09 ha/);
   } else {
     assert.doesNotMatch(en, /per-cell detected loss patches/);
@@ -181,7 +183,7 @@ test("renders four plan modes, independent same-url controls, fixture boundaries
   ])
     assert.match(en, new RegExp(province));
   assert.match(en, /431 ridings\s+Representation orders: British Columbia 2023, Alberta 2019, Ontario 2022, Québec 2026\./);
-  assert.match(fr, /431 circonscriptions\s+Décrets de représentation : Colombie-Britannique 2023, Alberta 2019, Ontario 2022, Québec 2026\./);
+  assert.match(fr, /431 circonscriptions\s+Décrets de représentation\u202F: Colombie-Britannique 2023, Alberta 2019, Ontario 2022, Québec 2026\./);
   // "Use ridings, not districts" was an instruction to whoever wrote this
   // layer, not something a reader of the map can act on. It must not come back.
   assert.doesNotMatch(en, /Use ridings, not districts/);
@@ -727,7 +729,10 @@ test("condition and recovery explains its missing admitted product", () => {
   );
   assert.match(en, /Condition and recovery isn’t on the map yet/);
   assert.match(en, /We have the yearly land-cover data it needs/);
-  assert.match(en, /reviewed a map built on that decision/);
+  assert.match(en, /a map built on that decision hasn’t been reviewed yet/);
+  // The per-cell heading names an interval this mode has no figures for, so it is not shown.
+  assert.doesNotMatch(en, /id="explore-annual-heading"/);
+  assert.doesNotMatch(fr, /id="explore-annual-heading"/);
   assert.match(fr, /ne sont pas encore sur la carte/);
   assert.match(fr, /données annuelles de couverture terrestre nécessaires/);
 
@@ -735,6 +740,7 @@ test("condition and recovery explains its missing admitted product", () => {
     <ExploreView events={exploreFixtures} locale="en" mode="wildfire" year={1984} />,
   );
   assert.match(other, /No per-cell figures cover this year and mode\./);
+  assert.match(other, /id="explore-annual-heading"/);
   assert.doesNotMatch(other, /Condition and recovery isn’t on the map yet/);
 });
 

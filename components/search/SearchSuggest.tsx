@@ -40,7 +40,7 @@ const COPY = {
     groups: { community: "Collectivités", riding: "Circonscriptions", province: "Provinces" },
     footer: "Part de la forêt cartographiée détectée comme perdue, 1984–2022",
     seeAll: "Voir tous les résultats",
-    none: (query: string) => `Aucun lieu ne correspond à « ${query} ». Essayez une ville, une circonscription ou une province.`,
+    none: (query: string) => `Aucun lieu ne correspond à «\u00A0${query}\u00A0». Essayez une ville, une circonscription ou une province.`,
     count: (count: number) => (count === 1 ? "1 suggestion" : `${count} suggestions`),
     failed: "Les suggestions ne sont pas disponibles pour le moment. Appuyez sur Entrée pour lancer la recherche.",
     clear: "Effacer ce résultat",
@@ -170,7 +170,7 @@ export function SearchSuggest({
               role="combobox"
               aria-autocomplete="list"
               aria-expanded={showList}
-              aria-controls={listId}
+              aria-controls={showList ? listId : undefined}
               aria-activedescendant={showList && active >= 0 ? `${listId}-${active}` : undefined}
               onChange={(event) => {
                 setQuery(event.target.value);
