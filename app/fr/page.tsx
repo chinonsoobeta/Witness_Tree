@@ -6,13 +6,13 @@ import { CumulativeHeadline } from "@/components/site/CumulativeHeadline";
 import { RidingsMostLost } from "@/components/site/RidingsMostLost";
 import { EvidenceMarks } from "@/components/policy/EvidenceMarks";
 import { PRODUCT_NAME } from "@/lib/domain";
-import { EXPLORE_PRODUCTION_LAYER, formatUnknownSharePercent, provinceSpanMeasurements } from "@/lib/explore";
+import { EXPLORE_PRODUCTION_LAYER, formatUnknownSharePercent, provinceSpanDisplayRows } from "@/lib/explore";
 import { provinceSpanReach } from "@/lib/explore/period";
 import { localizedAlternates } from "@/lib/site-metadata";
 
 export const metadata: Metadata = { title: "Registre public des pertes forestières", alternates: localizedAlternates("fr", { en: "/en", fr: "/fr" }) };
 
-const SPAN_ROWS = provinceSpanMeasurements({ fromYear: 1984, toYear: 2022 });
+const SPAN_ROWS = provinceSpanDisplayRows({ fromYear: 1984, toYear: 2022 });
 
 function coverageLabel(row: (typeof SPAN_ROWS)[number]) {
   return `${formatUnknownSharePercent(row.unknownSharePercent, "fr")} de la province n’a pas de données satellitaires\u202F: ${row.unmappedCharacter.fr}`;

@@ -1253,7 +1253,9 @@ export function ExploreMapClient({
               >
                 <title>
                   {(() => {
-                    const name = locale === "fr" ? feature.properties.province_name_fr : feature.properties.province_name_en;
+                    // The page's own names, so English reads Québec; the published fallback keeps its spelling.
+                    const code = PROVINCE_CODE_FOR_PRUID[feature.properties.province_id];
+                    const name = code ? boundaryJurisdiction(locale, code) : locale === "fr" ? feature.properties.province_name_fr : feature.properties.province_name_en;
                     const share = spanRows.find((row) => row.id === feature.properties.province_id)?.unionLossPercent;
                     return typeof share === "number" ? labelled(locale, name, formatPercent(share, locale)) : name;
                   })()}

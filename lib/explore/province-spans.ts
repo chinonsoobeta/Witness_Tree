@@ -116,6 +116,17 @@ export function provinceSpanMeasurements(interval: ExploreInterval): readonly Pr
 }
 
 /**
+ * The rows as the pages show them. The owner decided on 2026-09-27 that the
+ * site's English copy spells Québec. The released record keeps the spelling it
+ * was released with, and so do the downloads that
+ * scripts/publish-province-span-downloads.mts builds from provinceSpanMeasurements,
+ * so the name changes here and nowhere upstream.
+ */
+export function provinceSpanDisplayRows(interval: ExploreInterval): readonly ProvinceSpanMeasurement[] {
+  return provinceSpanMeasurements(interval).map((row) => (row.code === "QC" ? { ...row, name: { ...row.name, en: "Québec" } } : row));
+}
+
+/**
  * The four provinces together. Exact, because the provinces are disjoint by the
  * same centre rule, so each cell is counted in exactly one of them. Never called
  * a national figure: the rest of the country is not in it.

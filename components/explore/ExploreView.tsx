@@ -24,7 +24,7 @@ import {
   perCellArchiveSpan,
   perCellCauseForMode,
   fourProvinceSpanMeasurement,
-  provinceSpanMeasurements,
+  provinceSpanDisplayRows,
   provinceSpanReach,
   serializeBoundaryOverlays,
   toggleBoundaryOverlay,
@@ -355,7 +355,7 @@ export function ExploreView({
   const modeEvents = events.filter((event) => event.mode === mode);
   const selected = fixturesForYear(modeEvents, activeYear);
   const activeSpan = { fromYear: activeFrom, toYear: activeYear };
-  const provinceRows = mode === "forest-change" ? provinceSpanMeasurements(activeSpan) : [];
+  const provinceRows = mode === "forest-change" ? provinceSpanDisplayRows(activeSpan) : [];
   const fourProvinces = provinceRows.length === 4 ? fourProvinceSpanMeasurement(activeSpan) : null;
   const productionAvailable = provinceRows.length === 4;
   // Harvest and fire modes read the national harvest and fire series, where the

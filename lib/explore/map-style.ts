@@ -44,7 +44,7 @@ export const EXPLORE_PRODUCTION_LAYER = Object.freeze({
   rows: [
     {
       id: "24",
-      name: { en: "Québec", fr: "Québec" },
+      name: { en: "Quebec", fr: "Québec" },
       observedLossHectares: 680273.64,
       observedLossPercent: 0.9745108171576637,
       unknownRequiredInputHectares: 22204952.19,
