@@ -3,6 +3,7 @@ import { provinceSpanMeasurements } from "@/lib/explore/province-spans";
 import { ridingIntervalMeasurements, type RidingIntervalMeasurement } from "@/lib/explore/riding-intervals";
 import { formatPercent, type Locale } from "@/lib/domain";
 import release from "@/data/phase3-riding-interval-measurements.json";
+import { placeFigure } from "./place-figures";
 import {
   PLACE_NAME_INDEX,
   displayPlaceName,
@@ -294,6 +295,45 @@ export function ridingsByWholeRecordLoss(level: "federal" | "provincial", limit:
       lossPercent: row.observedLossPercent!,
       lossHectares: row.observedLossHectares!,
     }))
+    .sort((a, b) => b.lossPercent - a.lossPercent || b.lossHectares - a.lossHectares || a.name.en.localeCompare(b.name.en))
+    .slice(0, limit);
+}
+
+/**
+ * The census types that name a city: City in British Columbia, Alberta and
+ * Ontario, and Ville or Cité in Québec. Towns, villages and other
+ * municipalities are left out.
+ */
+const CITY_TYPES: ReadonlySet<string> = new Set(["CY", "C", "CV", "V"]);
+
+/**
+ * The mapped forest a city needs to be ranked by share of forest lost. Half the
+ * fully mapped cities have less; below it, a few hundred hectares of urban
+ * woodland lead the list on the city's own growth, which says little about
+ * forests.
+ */
+export const CITY_RANK_FLOOR_HECTARES = 5_000;
+
+/**
+ * Cities ranked the same way as the ridings above, from each place's own
+ * 1984 to 2022 figure: only cities mapped in full, with at least the floor,
+ * are ranked, and ties break on hectares, then name.
+ */
+export function citiesByWholeRecordLoss(limit: number): readonly WholeRecordRidingRank[] {
+  return PLACE_NAME_INDEX.places
+    .filter((place) => CITY_TYPES.has(place.type))
+    .flatMap((place) => {
+      const figure = placeFigure(place.id);
+      if (!figure || figure.coverage !== "complete" || figure.observedLossPercent === null || figure.observedLossHectares === null) return [];
+      if (figure.knownForestedHectares < CITY_RANK_FLOOR_HECTARES) return [];
+      return [{
+        id: place.id,
+        name: { en: displayPlaceName(place, "en"), fr: displayPlaceName(place, "fr") },
+        province: place.province,
+        lossPercent: figure.observedLossPercent,
+        lossHectares: figure.observedLossHectares,
+      }];
+    })
     .sort((a, b) => b.lossPercent - a.lossPercent || b.lossHectares - a.lossHectares || a.name.en.localeCompare(b.name.en))
     .slice(0, limit);
 }
