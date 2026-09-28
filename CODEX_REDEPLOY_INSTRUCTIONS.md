@@ -9,14 +9,23 @@ commit and any history reconciliation it allows.
 
 - Existing Sites project: `appgprj_6a7bea9e59988191a9304d4c5a3f379d`. Never create a new Site.
 - Canonical domain: `https://www.witnesstree.ca`
-- Last deployment this repository recorded: **Sites version 45**, completed on
-  2026-09-27. Its application tree is `main` at
-  `3e68029df6e8e045f477d8909606fde13c912138` (#199). Its Sites source commit is
-  the reconciliation merge `4b97fba6017770767f474420b6911ca179130f4b`. It
-  replaced version 44, whose application tree was `main` at
-  `18427fde24d268861ccbf42483f998c9704bcc82` (#195) through reconciliation
-  merge `71fe20b444a46e0485b20bb4e8b1401060c9c380`. The current browser
-  observation is `data/deployed-map-render-evidence-2026-09-27-v45.json`.
+- Last deployment this repository recorded: **Sites version 47**, completed on
+  2026-09-28. Its application tree is `main` at
+  `2ecefdf812e5f49ae827275e95c07eb867ca6753` (#202). Its Sites source commit
+  is the reconciliation merge `ec4bc74abb1802649ec34dd560e15b6559d08c65`.
+  Live checks passed for the English and French home pages, the 10 federal and
+  10 provincial riding rankings, the numbered top ten city rankings and
+  province names, the French comparer labels, Prince George search wording,
+  French wildfire punctuation, and the Explore map smoke check. The map gate
+  passed; the current browser observation remains
+  `data/deployed-map-render-evidence-2026-09-27-v45.json` because neither gated
+  map file changed.
+- Version 47 replaced **Sites version 46**, deployed from `main` at
+  `8485d77679b216faf1ca2844b573d7800e744de4` (#200) through Sites-history
+  reconciliation merge `31f26986e9715f73198db7a90c1f6f629a24b4b7`. Version 46
+  replaced version 45, deployed from `main` at
+  `3e68029df6e8e045f477d8909606fde13c912138` (#199) through reconciliation
+  merge `4b97fba6017770767f474420b6911ca179130f4b`.
 - The control plane records any later version; check it before relying on this list.
 
 ## Why the Sites history needs reconciling
