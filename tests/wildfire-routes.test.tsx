@@ -85,8 +85,8 @@ test("wildfire puts its limits and missing times before the directory without in
     assert.match(notice, locale === "en" ? /doesn’t show live wildfires/ : /n’affiche pas les feux en direct/);
     assert.ok(notice.indexOf(locale === "en" ? "live wildfires" : "feux en direct") < notice.indexOf("911"));
     assert.doesNotMatch(markup, /coverage-note|evidence-key|evidence-legend/);
-    assert.match(markup, /<dd>– (Unavailable|Indisponible);/);
-    assert.match(markup, /<dd>– (None|Aucune);/);
+    assert.match(markup, /<dd>– (Unavailable|Indisponible\u202F);/);
+    assert.match(markup, /<dd>– (None|Aucune\u202F);/);
     assert.ok(markup.indexOf('id="wildfire-status-heading"') < markup.indexOf('id="wildfire-directory-heading"'));
     assert.doesNotMatch(markup, /<time|datetime=/i);
     assert.match(markup, /aria-hidden="true">△/);

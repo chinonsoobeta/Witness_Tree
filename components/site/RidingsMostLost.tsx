@@ -1,4 +1,5 @@
 import { formatHectares, formatNumber, formatPercent, type Locale } from "@/lib/domain";
+import { provinceSpanDisplayRows } from "@/lib/explore/province-spans";
 import { CITY_RANK_FLOOR_HECTARES, citiesByWholeRecordLoss, ridingsByWholeRecordLoss, WHOLE_RECORD_RANK_FLOOR_HECTARES, type WholeRecordRidingRank } from "@/lib/search/site-search";
 
 /*
@@ -9,7 +10,7 @@ import { CITY_RANK_FLOOR_HECTARES, citiesByWholeRecordLoss, ridingsByWholeRecord
  * the target, because it reads 2021 to 2022.
  */
 
-const LIMIT = 5;
+const LIMIT = 10;
 
 const COPY = {
   en: {
@@ -32,21 +33,31 @@ const COPY = {
   },
 } as const;
 
-function RankList({ rows, locale, label }: { rows: readonly WholeRecordRidingRank[]; locale: Locale; label?: string }) {
+/** Full province names, as the rest of the home page spells them (Québec, not Quebec). */
+const PROVINCE_NAMES: Readonly<Record<string, Readonly<{ en: string; fr: string }>>> = Object.fromEntries(
+  provinceSpanDisplayRows({ fromYear: 1984, toYear: 2022 }).map((row) => [row.code, row.name]),
+);
+
+function RankList({ rows, locale, label, start = 1, provinceInName = false }: { rows: readonly WholeRecordRidingRank[]; locale: Locale; label?: string; start?: number; provinceInName?: boolean }) {
   const copy = COPY[locale];
   return (
     <article className="card ridings-most-lost-card">
       {label ? <h3>{label}</h3> : null}
-      <ol className="ridings-most-lost-list">
-        {rows.map((row) => (
-          <li key={row.id}>
-            <a href={`${copy.search}?q=${encodeURIComponent(row.name[locale])}`}>{row.name[locale]}</a>
-            <span className="ridings-most-lost-figure">
-              <span className="mark-glyph mark-glyph--satellite" aria-hidden="true" />
-              {row.province} · {formatPercent(row.lossPercent, locale)} · {formatHectares(row.lossHectares, locale, 0)} {copy.lost}
-            </span>
-          </li>
-        ))}
+      <ol className="ridings-most-lost-list" start={start === 1 ? undefined : start}>
+        {rows.map((row) => {
+          const province = PROVINCE_NAMES[row.province]?.[locale];
+          return (
+            <li key={row.id}>
+              <a href={`${copy.search}?q=${encodeURIComponent(row.name[locale])}`}>
+                {provinceInName && province ? `${row.name[locale]}, ${province}` : row.name[locale]}
+              </a>
+              <span className="ridings-most-lost-figure">
+                <span className="mark-glyph mark-glyph--satellite" aria-hidden="true" />
+                {provinceInName ? null : <>{row.province} · </>}{formatPercent(row.lossPercent, locale)} · {formatHectares(row.lossHectares, locale, 0)} {copy.lost}
+              </span>
+            </li>
+          );
+        })}
       </ol>
     </article>
   );
@@ -89,6 +100,9 @@ const CITY_COPY = {
   },
 } as const;
 
+/** Ten cities read as two columns of five, level with the two riding lists above. */
+const CITY_COLUMN = 5;
+
 export function CitiesMostLost({ locale }: { locale: Locale }) {
   const copy = CITY_COPY[locale];
   const cities = citiesByWholeRecordLoss(LIMIT);
@@ -99,7 +113,8 @@ export function CitiesMostLost({ locale }: { locale: Locale }) {
       <h2 id="cities-most-lost-heading">{copy.heading}</h2>
       <p className="lead">{copy.lead(floor)}</p>
       <div className="ridings-most-lost-grid">
-        <RankList rows={cities} locale={locale} />
+        <RankList rows={cities.slice(0, CITY_COLUMN)} locale={locale} provinceInName />
+        {cities.length > CITY_COLUMN ? <RankList rows={cities.slice(CITY_COLUMN)} locale={locale} start={CITY_COLUMN + 1} provinceInName /> : null}
       </div>
       <p><small>{copy.note}</small></p>
     </section>

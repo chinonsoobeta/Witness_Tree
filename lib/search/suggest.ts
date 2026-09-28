@@ -70,16 +70,16 @@ type RidingRow = Pick<
 export function ridingFigure(row: RidingRow | undefined, locale: Locale): string | null {
   if (!row) return null;
   const text = locale === "en"
-    ? { unknown: "Unknown", atLeast: "At least", loss: "detected loss", unknownShare: "unknown share" }
-    : { unknown: "Inconnu", atLeast: "Au moins", loss: "perte détectée", unknownShare: "part inconnue" };
+    ? { unknown: "Unknown", lossUnknown: "Loss unknown", atLeast: "At least", share: "of the mapped forest detected as lost", lost: "detected as lost", unknownShare: "of the forest is unknown" }
+    : { unknown: "Inconnu", lossUnknown: "Perte inconnue", atLeast: "Au moins", share: "de la forêt cartographiée détectée comme perdue", lost: "détectés comme perdus", unknownShare: "de la forêt est inconnue" };
   if (row.coverage === "complete" && row.observedLossHectares !== null && row.observedLossPercent !== null) {
-    return `${formatHectares(row.observedLossHectares, locale)} · ${formatPercent(row.observedLossPercent, locale)} ${text.loss}`;
+    return `${formatHectares(row.observedLossHectares, locale)} · ${formatPercent(row.observedLossPercent, locale)} ${text.share}`;
   }
-  const unknown = row.unknownSharePercent === null ? text.unknown : formatUnknownSharePercent(row.unknownSharePercent, locale);
+  const unknown = row.unknownSharePercent === null ? null : `${formatUnknownSharePercent(row.unknownSharePercent, locale)} ${text.unknownShare}`;
   if (row.coverage === "partial-with-unknown" && row.knownObservedSubtotalHectares !== null && row.knownObservedSubtotalHectares !== undefined && row.knownObservedSubtotalHectares > 0) {
-    return `${text.atLeast} ${formatHectares(row.knownObservedSubtotalHectares, locale)} ${text.loss}${semicolon(locale)} ${unknown} ${text.unknownShare}`;
+    return `${text.atLeast} ${formatHectares(row.knownObservedSubtotalHectares, locale)} ${text.lost}${unknown ? `${semicolon(locale)} ${unknown}` : ""}`;
   }
-  return `${text.unknown}${semicolon(locale)} ${unknown} ${text.unknownShare}`;
+  return unknown ? `${text.lossUnknown}${semicolon(locale)} ${unknown}` : text.unknown;
 }
 
 /** Whether {@link ridingFigure} states a detected figure, rather than only an unknown share. */

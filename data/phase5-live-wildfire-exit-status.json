@@ -43,11 +43,11 @@
    "id": "five-required-display-fields",
    "title": "Both public routes retain the five required safety display fields and block deployment if one is absent",
    "status": "pass",
-   "reason": "Rendered route tests require source updated, last successful refresh, source agency, next scheduled refresh, and official emergency information in both English and French; deleting a field fails the validator. On 2026-09-23 wildfire-routes.test.tsx changed for a plain-language wording pass alone; its digest was refreshed, and this reason still holds. On 2026-09-23 wildfire-routes.test.tsx changed to require the not-live warning inside the visible notice, where it now sits, instead of in a coverage plate; the five-field assertions are unchanged, its digest was refreshed, and this reason still holds.",
+   "reason": "Rendered route tests require source updated, last successful refresh, source agency, next scheduled refresh, and official emergency information in both English and French; deleting a field fails the validator. On 2026-09-23 wildfire-routes.test.tsx changed for a plain-language wording pass alone; its digest was refreshed, and this reason still holds. On 2026-09-23 wildfire-routes.test.tsx changed to require the not-live warning inside the visible notice, where it now sits, instead of in a coverage plate; the five-field assertions are unchanged, its digest was refreshed, and this reason still holds. On 2026-09-28 a French typography fix gave the two French status values a narrow no-break space (U+202F) before their semicolons (“Indisponible ;”, “Aucune ;”), as the rest of the French site sets it. tests/wildfire-routes.test.tsx changed only to match that space in the French alternatives of its two status assertions; the English alternatives, the five status fields and the stale-state wording are unchanged, its digest was refreshed, and this reason still holds.",
    "evidence": [
     {
      "path": "tests/wildfire-routes.test.tsx",
-     "sha256": "4345730f89647d31796c76620a692e2b69e405e00fc612e2df3a24b06accc4ce"
+     "sha256": "1e5947c12404c1f36c6b8ba18c61fbba77b879147b4126a8cc632dc6834fa3e8"
     }
    ]
   },
@@ -55,7 +55,7 @@
    "id": "stale-25-hour-safe-state",
    "title": "At 25 hours without a successful refresh, the static route shows unavailable guidance and an agency link",
    "status": "pass",
-   "reason": "The stale-state contract begins after 24 hours, removes the derived illustrative summary, and retains official-agency guidance. The workflow test covers the stricter 25-hour case through the same persisted last-success state. On 2026-09-23 wildfire-routes.test.tsx changed for a plain-language wording pass alone; its digest was refreshed, and this reason still holds. On 2026-09-23 wildfire-routes.test.tsx changed to require the not-live warning inside the visible notice, where it now sits, instead of in a coverage plate; the stale-state assertions are unchanged, its digest was refreshed, and this reason still holds.",
+   "reason": "The stale-state contract begins after 24 hours, removes the derived illustrative summary, and retains official-agency guidance. The workflow test covers the stricter 25-hour case through the same persisted last-success state. On 2026-09-23 wildfire-routes.test.tsx changed for a plain-language wording pass alone; its digest was refreshed, and this reason still holds. On 2026-09-23 wildfire-routes.test.tsx changed to require the not-live warning inside the visible notice, where it now sits, instead of in a coverage plate; the stale-state assertions are unchanged, its digest was refreshed, and this reason still holds. On 2026-09-28 a French typography fix gave the two French status values a narrow no-break space (U+202F) before their semicolons (“Indisponible ;”, “Aucune ;”), as the rest of the French site sets it. tests/wildfire-routes.test.tsx changed only to match that space in the French alternatives of its two status assertions; the English alternatives, the five status fields and the stale-state wording are unchanged, its digest was refreshed, and this reason still holds.",
    "evidence": [
     {
      "path": "tests/wildfire-workflow.test.mjs",
@@ -63,7 +63,7 @@
     },
     {
      "path": "tests/wildfire-routes.test.tsx",
-     "sha256": "4345730f89647d31796c76620a692e2b69e405e00fc612e2df3a24b06accc4ce"
+     "sha256": "1e5947c12404c1f36c6b8ba18c61fbba77b879147b4126a8cc632dc6834fa3e8"
     }
    ]
   },

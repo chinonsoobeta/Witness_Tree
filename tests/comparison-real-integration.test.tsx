@@ -56,9 +56,9 @@ test("the comparison lists only four-province districts under truthful coverage 
   assert.doesNotMatch(english, /Central Nova|Charlottetown|Malpeque|Cardigan|Kings\u2014Hants|Beauséjour|Prince Albert/);
   assert.ok(none > 0 && partial > none && belowFloor > partial);
   assert.ok(cloverdale > belowFloor, "a completely mapped small-forest district belongs only under the ranking-floor heading");
-  assert.equal((english.slice(none, partial).match(/<span class="coverage-band">No mapped coverage<\/span>/g) ?? []).length, 165);
-  assert.equal((english.slice(partial, belowFloor).match(/<span class="coverage-band">Partial mapped coverage; unknown area remains<\/span>/g) ?? []).length, 67);
-  assert.equal((english.slice(belowFloor).match(/<span class="coverage-band">Complete mapped coverage<\/span>/g) ?? []).length, 12);
+  assert.equal((english.slice(none, partial).match(/<span class="coverage-band">Not mapped<\/span>/g) ?? []).length, 165);
+  assert.equal((english.slice(partial, belowFloor).match(/<span class="coverage-band">Partly mapped; an unknown area remains<\/span>/g) ?? []).length, 67);
+  assert.equal((english.slice(belowFloor).match(/<span class="coverage-band">Fully mapped<\/span>/g) ?? []).length, 12);
   assert.match(french, /aria-label="Aucune couverture cartographiée, non classée \(165\)"/);
   assert.match(french, /aria-label="Couverture cartographiée partielle, non classée \(67\)"/);
   assert.match(french, /aria-label="Couverture cartographiée complète sous le seuil de 500 hectares forestiers, non classée \(12\)"/);
