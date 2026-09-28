@@ -32,30 +32,20 @@ const withRecord = async (mutate) => {
   return validateDeployedMapRender({ record });
 };
 
-test("the Site observation waits for the next deploy after this map client change", async () => {
+test("the fresh Site observation settles the map render gate", async () => {
   /*
-   * Since 2026-09-26 a map change no longer blocks its own merge. The version
-   * 43 observation is stale for exactly two files: #191 framed all four
-   * provinces when Explore opens, which moved
-   * components/explore/ExploreMapClient.tsx. The site-crawl fixes (English
-   * "Québec" per the owner's 2026-09-27 decision, and French typography in the
-   * production-layer attribution) moved lib/explore/map-style.ts. Merging does
-   * not deploy, so the Site still serves the observed client, and the gate is
-   * answered as awaiting deploy. The staleness is still pinned to those two
-   * files, so any other source drifting out of the observation is caught, and a
-   * failing check is still a failure (tested below). After the next deploy the
-   * new observation is committed and this returns to the deployed-site tier.
+   * The version 45 observation covers the map client deployed from main commit
+   * 3e68029d through its Sites-history reconciliation merge. It replaces the
+   * version 44 observation of main commit 18427fde through merge 71fe20b4.
+   * The gate is now satisfied by the deployed Site; a failing check remains a
+   * failure (tested below).
    */
   const failures = validateDeployedMapRender();
-  assert.equal(failures.length, 2, failures.join(" "));
-  const stale = ["components/explore/ExploreMapClient.tsx", "lib/explore/map-style.ts"];
-  // A failure counts only as the staleness of one of these files; anything else stays itself and fails.
-  const paths = failures.map((failure) => stale.find((path) => failure.startsWith(`${path} changed since`)) ?? failure);
-  assert.deepEqual(paths.sort(), stale);
+  assert.deepEqual(failures, []);
   const gate = resolveDeployedMapRender();
-  assert.equal(gate.satisfiedBy, "awaiting-deploy");
+  assert.equal(gate.satisfiedBy, "deployed-site");
   assert.deepEqual(gate.failures, []);
-  assert.ok(gate.notes.join(" ").includes(DEPLOYED_MAP_RENDER_WORKFLOW));
+  assert.deepEqual(gate.notes, []);
   const record = await loadRecord();
   assert.equal(record.schemaVersion, RENDER_EVIDENCE_SCHEMA);
   assert.ok(record.url.startsWith(DEPLOYED_ORIGIN));
@@ -374,18 +364,17 @@ test("a settled debt has to be deleted rather than left on the branch", async ()
 test("neither weaker tier exists on this branch, so nothing stands in for the Site", async () => {
   /*
    * The gate resolves a tier on presence, so a leftover file silently answers
-   * for a measurement nobody took. Since awaiting deploy covers a map change
-   * on its own, neither the preview record nor a break-glass is needed, and
-   * the 2026-09-26 break-glass was deleted when that tier arrived.
+   * for a measurement nobody took. The deployed-site observation now settles
+   * the gate, so neither weaker tier is needed.
    */
   for (const relative of [BRANCH_EVIDENCE_PATH, BREAK_GLASS_PATH]) {
     assert.equal(
       existsSync(new URL(`../${relative}`, import.meta.url)),
       false,
-      `${relative} is committed, but a map change now waits for its deploy without one`,
+      `${relative} is committed, but the deployed-site observation makes it unnecessary`,
     );
   }
-  assert.equal(resolveDeployedMapRender().satisfiedBy, "awaiting-deploy");
+  assert.equal(resolveDeployedMapRender().satisfiedBy, "deployed-site");
 });
 
 test("the daily workflow drives the live Site with the same harness", async () => {
