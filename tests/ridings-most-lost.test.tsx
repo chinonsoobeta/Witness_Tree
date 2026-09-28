@@ -28,13 +28,13 @@ test("ridings are ranked by share of mapped forest lost, fully mapped and above 
   }
 });
 
-test("the home section lists five ridings of each kind in both languages, each opening its search result", () => {
+test("the home section lists ten ridings of each kind in both languages, each opening its search result", () => {
   const english = renderToStaticMarkup(<RidingsMostLost locale="en" />);
   const french = renderToStaticMarkup(<RidingsMostLost locale="fr" />);
   for (const [markup, search] of [[english, "/en/search"], [french, "/fr/recherche"]] as const) {
     assert.match(markup, /id="ridings-most-lost"/);
-    assert.equal((markup.match(/<li>/g) ?? []).length, 10);
-    assert.equal((markup.match(new RegExp(`href="${search}\\?q=`, "g")) ?? []).length, 10);
+    assert.equal((markup.match(/<li>/g) ?? []).length, 20);
+    assert.equal((markup.match(new RegExp(`href="${search}\\?q=`, "g")) ?? []).length, 20);
     assert.doesNotMatch(markup, />0(?:[.,]0+)? ?%/);
   }
   assert.match(english, /Only ridings mapped in full, with at least 50,000 ha of forest, are ranked/);
@@ -64,14 +64,23 @@ test("cities are ranked from their own figures, fully mapped, above the forest f
   assert.ok(partial && !rows.some((row) => row.id === partial.id));
 });
 
-test("the home section lists five cities in both languages, each opening its search result", () => {
+test("the home section lists ten cities, each named with its province in full, in both languages", () => {
   const english = renderToStaticMarkup(<CitiesMostLost locale="en" />);
   const french = renderToStaticMarkup(<CitiesMostLost locale="fr" />);
   for (const [markup, search] of [[english, "/en/search"], [french, "/fr/recherche"]] as const) {
     assert.match(markup, /id="cities-most-lost"/);
-    assert.equal((markup.match(/<li>/g) ?? []).length, 5);
-    assert.equal((markup.match(new RegExp(`href="${search}\\?q=`, "g")) ?? []).length, 5);
+    assert.equal((markup.match(/<li>/g) ?? []).length, 10);
+    assert.equal((markup.match(new RegExp(`href="${search}\\?q=`, "g")) ?? []).length, 10);
+    // The second column carries on from six, so the ranks read 1 to 10.
+    assert.match(markup, /<ol class="ridings-most-lost-list" start="6">/);
+    // The province is spelled out after the name, not abbreviated in the figure line.
+    assert.doesNotMatch(markup, /(BC|AB|ON|QC) · /);
   }
+  assert.match(english, />Campbell River, British Columbia</);
+  assert.match(english, />Dolbeau-Mistassini, Québec</);
+  assert.match(french, />Campbell River, Colombie-Britannique</);
+  // The search link still looks the city up by its own name.
+  assert.match(english, /href="\/en\/search\?q=Campbell%20River"/);
   assert.match(english, /Only cities mapped in full, with at least 5,000 ha of forest, are ranked/);
   assert.match(english, /never counted as zero/);
   assert.match(french, /jamais comptées comme zéro/);

@@ -46,7 +46,7 @@ test("each selected riding carries coverage in its heading before any figures", 
         const firstCard = markup.slice(markup.indexOf('<article'));
         assert.ok(firstCard.indexOf('comparison-heading-coverage') < firstCard.indexOf('comparison-figures'));
       } else {
-        assert.match(markup.slice(markup.indexOf('<thead'), markup.indexOf('</thead>')), /Partial mapped coverage|Couverture cartographiée partielle/);
+        assert.match(markup.slice(markup.indexOf('<thead'), markup.indexOf('</thead>')), /Partly mapped|Partiellement cartographiée/);
       }
       assert.match(markup, new RegExp(`href="${locale === "en" ? "/en/data" : "/fr/donnees"}"`));
       assert.match(markup, new RegExp(`href="${locale === "en" ? "/en/methods" : "/fr/methodes"}"`));

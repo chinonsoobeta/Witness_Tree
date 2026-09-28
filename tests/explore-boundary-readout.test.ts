@@ -31,7 +31,7 @@ test("riding readout joins on overlay, jurisdiction, and boundary id with share 
   assert.deepEqual(boundaryReadout(selection("federal-ridings"), [complete], "en", SPAN), {
     kind: "riding-measurement",
     intervalLabel: "2021–2022",
-    coverage: "Complete mapped coverage",
+    coverage: "Fully mapped",
     normalizedShare: "1.25%",
     absoluteLoss: "50 ha",
   });
@@ -152,10 +152,10 @@ test("an admitted region names its unmapped share, and nothing else may admit on
   assert.equal(
     boundaryReadout(regionSelection, [region], "en", SPAN).kind === "riding-measurement" &&
       (boundaryReadout(regionSelection, [region], "en", SPAN) as { coverage: string }).coverage,
-    "Nearly complete mapped coverage; 0.42% of the forest has no satellite data",
+    "Almost fully mapped; 0.42% of the forest has no satellite data",
   );
   const fr = boundaryReadout(regionSelection, [region], "fr", SPAN) as { coverage: string; normalizedShare: string };
-  assert.match(fr.coverage, /^Couverture cartographiée presque complète\u202F; 0,42\s?% de la forêt n’a aucune donnée satellitaire$/);
+  assert.match(fr.coverage, /^Presque entièrement cartographiée\u202F; 0,42\s?% de la forêt n’a aucune donnée satellitaire$/);
   assert.match(fr.normalizedShare, /^1,25\s?%$/);
   assert.throws(() => boundaryReadout(selection("federal-ridings"), [{ ...complete, admittedUnknownPercent: 0.42 }], "en", SPAN), /economic region/);
   assert.throws(() => boundaryReadout(regionSelection, [{ ...region, admittedUnknownPercent: 1 }], "en", SPAN), /below 1%/);

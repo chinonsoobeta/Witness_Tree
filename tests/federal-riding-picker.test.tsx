@@ -52,3 +52,14 @@ test("the picker names an unresolved request and its visible fallback", () => {
   assert.match(french, /La circonscription de droite «\u00A0missing-right\u00A0» n’est pas offerte ici, car cette comparaison ne couvre que quatre provinces\. Exemple Nord est affichée à la place\./);
   assert.doesNotMatch(renderToStaticMarkup(<FederalRidingPicker rows={rankedRidingFixtures} locale="en" leftId="r1" rightId="r2" />), /not available/);
 });
+
+test("real ridings are grouped by province, west to east, and alphabetical within each", () => {
+  const riding = (id: string, en: string, fr = en) => ({ ...rankedRidingFixtures[0]!, id: `federal-${id}`, name: { en, fr } });
+  const rows = [riding("24001", "Abitibi"), riding("59002", "Surrey"), riding("35001", "Ajax"), riding("59001", "Burnaby"), riding("48001", "Banff")];
+  const english = renderToStaticMarkup(<FederalRidingPicker rows={rows} locale="en" />);
+  const french = renderToStaticMarkup(<FederalRidingPicker rows={rows} locale="fr" />);
+  const left = english.slice(english.indexOf('<select name="left"'), english.indexOf("</select>"));
+  assert.deepEqual([...left.matchAll(/<optgroup label="([^"]+)"/g)].map((match) => match[1]), ["British Columbia", "Alberta", "Ontario", "Québec"]);
+  assert.ok(left.indexOf(">Burnaby<") < left.indexOf(">Surrey<"));
+  assert.match(french, /<optgroup label="Colombie-Britannique">/);
+});
