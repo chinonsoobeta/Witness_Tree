@@ -26,9 +26,12 @@ export function AnnualChangeChart({
     return (
       <section className="annual-change">
         <h2>{title}</h2>
-        <div className="table-scroll">
+        <div className="table-scroll" tabIndex={0} role="region" aria-label={title}>
           <table>
-            <caption>{title}</caption>
+            {/* The <h2> above already shows this heading, and the region is
+                named from it; the caption stays as the table's own accessible
+                name without repeating the words on screen. */}
+            <caption className="sr-only">{title}</caption>
             <thead>
               <tr>
                 <th scope="col">{locale === "en" ? "Year" : "Année"}</th>
